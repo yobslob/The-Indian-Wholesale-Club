@@ -8,9 +8,10 @@
  * Results are FACTS for docs/plan/current.md — nothing is "verified" without one.
  *
  * Usage (from repo root):
- *   node scripts/check.mjs                 # typecheck, lint, test, build, http
+ *   node scripts/check.mjs                 # typecheck, lint, test, build, http, db
  *   node scripts/check.mjs test build      # only the named steps
  *   node scripts/check.mjs http --routes=/,/states/kerala
+ *   node scripts/check.mjs db              # needs Docker + `npx supabase start` once
  *
  * No dependencies. Works on Windows, macOS, Linux (Node >= 20).
  */
@@ -18,12 +19,15 @@ import { spawn, execSync } from 'node:child_process';
 import { mkdirSync, writeFileSync } from 'node:fs';
 import os from 'node:os';
 
-const ALL_STEPS = ['typecheck', 'lint', 'test', 'build', 'http'];
+const ALL_STEPS = ['typecheck', 'lint', 'test', 'build', 'http', 'db'];
 const COMMANDS = {
   typecheck: 'pnpm turbo typecheck --force',
   lint: 'pnpm turbo lint --force',
   test: 'pnpm turbo test --force',
   build: 'pnpm turbo build --filter=web --force',
+  // Local Supabase only: rebuild the DB from migrations + seeds, then run the
+  // invariant tests in supabase/tests (each rolls back). Never touches hosted DBs.
+  db: 'npx supabase db reset && node scripts/db-test.mjs',
 };
 // Routes timed by the `http` step against a production build (`next start`).
 const DEFAULT_ROUTES = ['/', '/shop', '/search?q=a', '/api/search?q=a', '/api/health'];

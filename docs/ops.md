@@ -28,10 +28,15 @@ layer, D-004), `DIRECT_URL` (unused by code).
 ## Database workflow (from R3)
 - Schema changes = a new file in `supabase/migrations/`. Never edit an applied migration.
 - Generate types after every schema change into `packages/db` (the command is added in R4 as a root script).
-- Reset dev = apply the baseline + `seed/regions.sql` + `seed/categories.sql` (+ `seed/demo.sql` in dev only).
+- **Local DB (Docker Desktop running):** `npx supabase start` once, then `npx supabase db reset` rebuilds it from
+  migrations + seeds (`supabase/config.toml` `[db.seed]`: regions, categories, demo). Studio: http://127.0.0.1:54323.
+- **DB tests:** `node scripts/check.mjs db` (= reset + `scripts/db-test.mjs`). It refuses non-local databases.
 - R3 builds the new schema on local Supabase (Docker, D-031). The hosted dev DB is wiped to the new schema only in R5, once the app
   code matches (allowed, D-013). Claude still announces it before running.
-- Admin bootstrap: set `profiles.role = 'admin'` and `desk` for the founder and COO emails, and list them in `ADMIN_EMAILS`.
+- Admin bootstrap (after the person has signed up once): `insert into admin_emails (email) values ('<email>')` and
+  `update profiles set role = 'admin', desk = 'us' | 'india' where email = '<email>'`, **and** add the email to the
+  `ADMIN_EMAILS` env var. All three are required (INV-7). The app guard enforces role + env since R3 (the old
+  code accepted either one).
 
 ## Deploy (to be finalised, Q-9)
 `.github/workflows/deploy.yml` (old) pushes migrations, triggers Vercel and runs EAS builds. It gets reviewed in R7. CI runs lint,

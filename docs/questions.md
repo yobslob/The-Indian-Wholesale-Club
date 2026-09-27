@@ -10,4 +10,5 @@ founder doesn't know yet. **None blocks the restructure (R2–R8). All must be a
 | Q-3 | Which US carrier ships orders to customers (USPS / UPS / other)? | tracking links, label integration (F-1) | admins type the carrier + tracking number by hand |
 | Q-5 | What is the returns/exchanges policy (wrong size, damaged)? | policy page, refunds | no returns flow (D-028). The policy page shows `TODO(founder): Q-5` |
 | Q-9 | Domain name, support email, hosting (Vercel, US region?) | ops, emails, SEO | placeholders from `.env` only |
+| Q-15 | Pricing settings: FX rate (source), freight per kg, duty %, target margin, US domestic delivery days (min/max), and after how many days a listing's quantity counts as stale? | suggested prices and delivery windows. `create_order` refuses to run until domestic days are set | all NULL in `pricing_settings`, never invented. Dev uses placeholder 3–7 days (`seed/demo.sql`) |
 | Q-10 | Who is the FDA-registered facility for spices, and who makes the English labels? | compliance (`ops.md`) | spices can be drafted, never published (D-032) |

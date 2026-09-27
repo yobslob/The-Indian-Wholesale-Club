@@ -6,13 +6,13 @@ import { createClient } from '@/lib/supabase/server';
 /**
  * Admin authorization for API routes and server components.
  *
- * Rules (see BUGS.md C1):
+ * Rules (D-006, INV-7 in docs/data-model.md):
  *  1. No session -> 401. There is no authentication bypass.
- *  2. Session must be an admin: either profiles.role = 'admin', or the
- *     email is listed in the ADMIN_EMAILS environment variable.
- *  3. If the profiles.role column does not exist yet (migration
- *     20260926000001 not applied) the request is allowed ONLY outside
- *     production so local development keeps working; production denies.
+ *  2. Admin = profiles.role is 'admin' AND the email is listed in the
+ *     ADMIN_EMAILS environment variable. Both are required: the old
+ *     either/or rule let any user who could set their own profiles.role
+ *     become an admin (backlog B-14).
+ *  3. Any doubt (profile lookup fails, env var missing) denies. No dev fail-open.
  *
  * Usage in an API route handler:
  *   const denied = await requireAdmin();
@@ -22,7 +22,7 @@ import { createClient } from '@/lib/supabase/server';
 export interface AdminIdentity {
   userId: string;
   email: string | null;
-  role: 'admin' | 'staff' | 'customer' | 'unknown';
+  role: 'admin' | 'customer';
 }
 
 function adminEmailAllowlist(): Set<string> {
@@ -58,8 +58,8 @@ export async function getAdminIdentity(): Promise<AdminIdentity | null> {
     if (error || !user) return null;
 
     const email = user.email?.toLowerCase() ?? null;
-    if (email && adminEmailAllowlist().has(email)) {
-      return { userId: user.id, email, role: 'admin' };
+    if (!email || !adminEmailAllowlist().has(email)) {
+      return { userId: user.id, email, role: 'customer' };
     }
 
     const { data: profile, error: profileError } = await supabaseAdmin
@@ -68,26 +68,15 @@ export async function getAdminIdentity(): Promise<AdminIdentity | null> {
       .eq('id', user.id)
       .maybeSingle();
 
-    if (profileError) {
-      // Migration 20260926000001 (profiles.role) not applied yet.
-      return { userId: user.id, email, role: 'unknown' };
-    }
-
-    const role = (profile?.role as AdminIdentity['role'] | undefined) ?? 'customer';
-    return { userId: user.id, email, role };
+    const isAdminRole = !profileError && profile?.role === 'admin';
+    return { userId: user.id, email, role: isAdminRole ? 'admin' : 'customer' };
   } catch {
     return null;
   }
 }
 
 export function isGranted(identity: AdminIdentity | null): boolean {
-  if (!identity) return false;
-  if (identity.role === 'admin' || identity.role === 'staff') return true;
-  if (identity.role === 'unknown') {
-    // profiles.role unavailable: keep local dev usable, never production.
-    return process.env.NODE_ENV !== 'production';
-  }
-  return false;
+  return identity?.role === 'admin';
 }
 
 /** Returns a 401/403 NextResponse to send back, or null when authorized. */
@@ -95,9 +84,6 @@ export async function requireAdmin(): Promise<NextResponse | null> {
   const identity = await getAdminIdentity();
   if (!identity) return unauthorized();
   if (isGranted(identity)) return null;
-  if (identity.role === 'unknown') {
-    return forbidden('admin role column missing - run migration 20260926000001 or set ADMIN_EMAILS');
-  }
   return forbidden('user is not an admin');
 }
 

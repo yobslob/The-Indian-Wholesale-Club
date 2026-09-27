@@ -13,7 +13,7 @@ Baseline numbers come from the founder's first `node scripts/check.mjs` run and 
 | P3 | Query waterfalls + over-fetching. The product page fetches the product twice (metadata l.20-21 and page l.52-53), then variants/images/category, then related products (l.56), then their images (l.63): about 6 round trips, 4 of them sequential. The category page is 4 sequential, the home page 2. `select('*')` everywhere, `count: 'exact'` on lists | `apps/web/app/(public)/product/[slug]/page.tsx`, `apps/web/app/(public)/category/[slug]/page.tsx`, `apps/web/lib/queries/products.ts` |
 | P4 | A Framer Motion page transition wraps every storefront page: client JS everywhere, delayed first paint | `app/(public)/layout.tsx:14` |
 | P5 | In dev, the machine is in India and the DB is in the US (the old docs said US-East, unverified), so every round trip above is intercontinental | — |
-| P6 | Tests don't test behaviour. The "RLS tests" assert on migration SQL *text*, and they passed while customers could edit their own orders. Route tests mock the DB | `apps/web/tests/rls-and-triggers.test.ts` |
+| P6 | Tests don't test behaviour. The "RLS tests" assert on migration SQL *text*, and they passed while customers could edit their own orders. Route tests mock the DB | `apps/web/tests/rls-and-triggers.test.ts` (deleted in R3, replaced by `supabase/tests/`) |
 | P7 | `next build` re-runs ESLint and the type-check after turbo already ran them (not disabled in `next.config.js`). Cost to be measured | `apps/web/next.config.js` |
 | P8 | (correctness) The rate limiter is an in-memory `Map`: per instance, reset on cold start, ineffective on serverless | `apps/web/lib/rate-limit.ts:14` |
 
@@ -40,9 +40,16 @@ A test must **fail when the rule it protects breaks**. Never assert on source-co
 | Layer | Tool | What | Where |
 |---|---|---|---|
 | Unit | Vitest | pure logic: pricing, delivery window, state machines, zod schemas | `packages/shared/tests` |
-| DB | plain SQL run by `check.mjs db` (no npm needed) against local Supabase via Docker (D-031) | invariants INV-1…INV-9, impersonating anon / customer / admin via `request.jwt.claims` | `supabase/tests/*.test.sql` |
+| DB | plain SQL (`supabase/tests/*.test.sql`), run by `check.mjs db` → `scripts/db-test.mjs` against local Supabase (D-031) | invariants INV-1…INV-9 and the business functions, as anon / customer / admin (`request.jwt.claims`), each file rolled back | `supabase/tests/` |
 | E2E smoke | Playwright | (1) region → product → cart → checkout (Stripe test card) → order page · (2) admin sign-in → list product → publish → visible on the storefront · (3) a customer gets 404 on `/admin`, and page source has no vendor fields | `apps/web/e2e` |
-The old suites (stealth, SQL-text RLS, mocked routes) are deleted in R2/R7. Everything runs through `node scripts/check.mjs`.
+The old suites (stealth, SQL-text RLS, mocked routes) are deleted in R2/R3/R7. Everything runs through `node scripts/check.mjs`.
+
+**Claude can verify SQL itself:** its sandbox has plain PostgreSQL 16 but no Docker/npm. `supabase/tests/_stub/supabase_stub.sql`
+emulates the few Supabase pieces the schema needs (roles, `auth.uid()`, storage tables, realtime publication). Apply stub →
+migrations → seeds → `_helpers.sql` → each `*.test.sql` with `psql -v ON_ERROR_STOP=1`. After adding a test, break the rule
+on purpose and confirm the test fails (mutation check). The founder's run on real local Supabase (Postgres 15) is still
+the evidence of record. Keep SQL PG15-compatible.
+**Migrations:** never edit an applied migration. Every new function gets explicit grants (Supabase grants all by default), or `schema.test.sql` fails.
 
 ## Layout (target)
 ```

@@ -7,7 +7,6 @@
     "lint": "turbo lint",
     "typecheck": "turbo typecheck",
     "test": "turbo test",
-    "db:seed": "tsx scripts/apply-seed.ts",
     "check": "node scripts/check.mjs",
     "script:connections": "tsx scripts/test-connections.ts",
     "script:checkout-intent": "tsx scripts/test-checkout-intent.ts",

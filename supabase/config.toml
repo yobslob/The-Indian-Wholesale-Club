@@ -13,6 +13,12 @@ port = 54322
 shadow_port = 54320
 major_version = 15
 
+[db.seed]
+# Applied by `supabase db reset` (local only). demo.sql is DEV-ONLY placeholder
+# data (is_placeholder = true); never apply it to production (INV-8).
+enabled = true
+sql_paths = ["./seed/regions.sql", "./seed/categories.sql", "./seed/demo.sql"]
+
 [db.pooler]
 enabled = false
 port = 54329

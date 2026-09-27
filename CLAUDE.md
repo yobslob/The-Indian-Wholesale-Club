@@ -71,7 +71,8 @@ Claude's sandboxes are blocked from the npm registry, so Claude can't install, b
   GitHub (`yobslob/The-Indian_Wholesale-Club`, branch `main`).
 - To verify, the founder runs `node scripts/check.mjs` (or named steps, e.g. `node scripts/check.mjs test`) and tells
   Claude. Claude reads `.checks/latest.json` and records the numbers in `docs/plan/current.md`.
-- Claude *can* run git, `node --check`, and dependency-free Node scripts.
+- Claude *can* run git, `node --check`, dependency-free Node scripts, and **SQL on a local Postgres 16** with the Supabase
+  stub (`engineering.md` §Testing), so DB changes are tested by Claude before the founder's run.
 
 ## Session ritual
 1. Read this file, then the "Resume here" section of `docs/plan/current.md`.
