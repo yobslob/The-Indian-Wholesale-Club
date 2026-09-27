@@ -1,10 +1,9 @@
 # Current status
 
 ## Resume here
-**R4 (packages) is committed and Claude-verified. It is waiting for the founder's run** (steps below: `pnpm install`,
-`pnpm db:types`, `node scripts/check.mjs`). Then commit the generated `packages/db/src/database.types.ts` + updated
-`pnpm-lock.yaml`. Next: **R5** (web reshape + speed: new routes on `@repo/db/store`, hidden admin, performance
-rules, delete the old types/queries, reset the hosted dev DB).
+**R4 is done** (founder run 2026-09-28: all 8 SQL test files pass on real local Supabase; the one red item, an unused
+import left by R2, is fixed). **R5 (web reshape + speed) is in progress**: new routes on `@repo/db/store`, hidden admin,
+performance rules, delete the old web types/queries, reset the hosted dev DB. See the R5 sub-steps below.
 The web/app code still reads the **old** schema on the hosted dev DB until R5/R6.
 
 ## Steps
@@ -12,10 +11,11 @@ The web/app code still reads the **old** schema on the hosted dev DB until R5/R6
 |---|---|---|
 | R0 Safety net | ✅ done | commit `d5342ae`, tag `pre-restructure`. Baseline timings recorded 2026-09-28 (log) |
 | R1 Docs system | ✅ done, approved (D-023) | |
-| R2 Remove dead paths | ✅ committed · founder `check.mjs` pending | commit `c22656b`. Claude: shared package type-checks with real `tsc` 5.9.3 (2026-09-28) |
-| R3 DB baseline | ✅ committed · **applied on real local Supabase** by the founder (`supabase start`, 2026-09-28) · DB tests pending | commit `96b964c` |
-| R4 Packages | ✅ committed · Claude-verified · founder run pending | commit "feat: R4 …" (2026-09-28). See the log |
-| R5 – R8 | not started | — |
+| R2 Remove dead paths | ✅ done | commit `c22656b`. One leftover (unused `Ionicons` import in the app) was caught by the founder's run and fixed in the R4 fix commit |
+| R3 DB baseline | ✅ done | commit `96b964c`. Applied and tested on real local Supabase (log) |
+| R4 Packages | ✅ done | commit `7d7c525` + fix commit (generated `database.types.ts`, lockfile, `check.mjs --continue`) |
+| R5 Web reshape + speed | 🔄 in progress | sub-steps below |
+| R6 – R8 | not started | — |
 
 ## Verification log (facts only. Add a row per run)
 | Date | Commit | Who / where | What | Result |
@@ -27,19 +27,21 @@ The web/app code still reads the **old** schema on the hosted dev DB until R5/R6
 | 2026-09-28 | R4 | Claude, `tsc` 5.9.3 + supabase-js 2.117.1 + zod 3.25.76 types copied from the founder's `node_modules` | typecheck `packages/shared` (src + tests), `packages/db` (against approximate DB types) | 0 errors. This fixed 2 latent type errors in the old `checkout-calculator.test.ts` |
 | 2026-09-28 | R4 | Claude, same | real store payloads (demo data) parsed with the `@repo/db/store` zod schemas | 6/6 payloads valid. An injected `vendor_id`/`shop_price_paise` is stripped |
 | 2026-09-28 | R4 | Claude, Node 22 | unit tests: `packages/shared` (compiled with `tsc`), `packages/tokens` | 39/39 + 3/3 pass |
-| — | — | founder | `node scripts/check.mjs` on current code (incl. `db`) | **not run yet** |
+| 2026-09-28 | `7d7c525` (+ uncommitted generated types, lockfile) | founder, same machine, local Supabase running | `node scripts/check.mjs` (all steps) | typecheck **FAIL** 5.0 s and lint **FAIL** 5.4 s, both from one unused import in `apps/app/app/profile/orders/[id].tsx` (turbo stopped there, so web was not reported) · test OK 2.0 s · build OK 42.8 s · pages (old app vs hosted DB): `/` 420 ms, `/shop` 427 ms, `/search` 440 ms, `/api/search` 411 ms, `/api/health` 230 ms · **db OK 38.8 s: 8/8 SQL test files pass on real Supabase (Postgres 15)** |
+| 2026-09-28 | R4 fix | Claude, `tsc` 5.9.3 | typecheck `packages/db` against the **official** generated `database.types.ts` | 0 errors |
 
 ## Invariant tests (`data-model.md`)
-INV-1 … INV-9: implemented and passing on Claude's Postgres 16 runs (see log). Pending: the founder's `check.mjs db` on real
-local Supabase (Postgres 15).
+INV-1 … INV-9: implemented and passing on Claude's Postgres 16 runs and on real local Supabase, Postgres 15 (see log).
 
-## Waiting on the founder (in this order, from `C:\kod\root`, Docker + local Supabase running)
-1. `git pull` is not needed (Claude commits in your folder). Just run `pnpm install`: it links the new `@repo/db` and
-   `@repo/tokens` packages and updates `pnpm-lock.yaml`.
-2. `npx supabase db reset`: applies the new migration 2 (store page functions) locally.
-3. `pnpm db:types`: writes the official `packages/db/src/database.types.ts`.
-4. `node scripts/check.mjs`: typecheck, lint, test, build, http (old app vs hosted DB) and db (SQL tests on local Supabase).
-5. Tell Claude. Claude reads `.checks/latest.json`, fixes anything red, and commits `database.types.ts` + `pnpm-lock.yaml`.
+## R5 sub-steps
+| # | Sub-step | Status |
+|---|---|---|
+| 5.0 | Close R4: remove the unused import, `check.mjs` runs turbo with `--continue` (every package reports), commit generated types + lockfile | ✅ this commit |
+| 5.1 | Web on `@repo/db`: server Supabase clients, `features/` layout, storefront routes (`storefront.md`) | next |
+| 5.2 | Hidden admin (`admin.md` access model), lazy admin bundle | — |
+| 5.3 | Cart + checkout on `createOrder`, order pages, guest lookup | — |
+| 5.4 | Performance rules PR-1 … PR-8, import-boundary lint, delete the old web types/queries, rebrand | — |
+| 5.5 | `check.mjs` routes → new routes. Founder: reset the hosted dev DB (announced first), then measure against the baseline | — |
 
 ## Known leftovers (tracked, not forgotten)
 - Brand strings still say "ROOT" → rebrand sweep in R5/R6 (D-009).

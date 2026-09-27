@@ -21,9 +21,9 @@ import os from 'node:os';
 
 const ALL_STEPS = ['typecheck', 'lint', 'test', 'build', 'http', 'db'];
 const COMMANDS = {
-  typecheck: 'pnpm turbo typecheck --force',
-  lint: 'pnpm turbo lint --force',
-  test: 'pnpm turbo test --force',
+  typecheck: 'pnpm turbo typecheck --force --continue',
+  lint: 'pnpm turbo lint --force --continue',
+  test: 'pnpm turbo test --force --continue',
   build: 'pnpm turbo build --filter=web --force',
   // Local Supabase only: rebuild the DB from migrations + seeds, then run the
   // invariant tests in supabase/tests (each rolls back). Never touches hosted DBs.
