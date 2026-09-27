@@ -1,0 +1,50 @@
+{
+  "name": "root",
+  "private": true,
+  "scripts": {
+    "dev": "turbo dev",
+    "build": "turbo build",
+    "lint": "turbo lint",
+    "typecheck": "turbo typecheck",
+    "test": "turbo test",
+    "db:seed": "tsx scripts/apply-seed.ts",
+    "db:migrate:legacy": "tsx scripts/apply-migration-05.ts",
+    "script:connections": "tsx scripts/test-connections.ts",
+    "script:checkout-intent": "tsx scripts/test-checkout-intent.ts",
+    "script:health": "tsx scripts/test-health.ts",
+    "format": "prettier --write \"**/*.{ts,tsx,js,jsx,json,md,css}\"",
+    "format:check": "prettier --check \"**/*.{ts,tsx,js,jsx,json,md,css}\"",
+    "prepare": "husky"
+  },
+  "devDependencies": {
+    "@repo/eslint-config": "workspace:*",
+    "@repo/typescript-config": "workspace:*",
+    "@supabase/supabase-js": "^2.49.1",
+    "@types/pg": "^8.23.1",
+    "dotenv": "^16.4.7",
+    "eslint": "^8.57.1",
+    "husky": "^9.1.7",
+    "lint-staged": "^15.4.3",
+    "pg": "^8.23.0",
+    "prettier": "^3.5.3",
+    "prettier-plugin-tailwindcss": "^0.6.14",
+    "resend": "^6.29.0",
+    "stripe": "^22.6.2",
+    "tsx": "^4.23.15",
+    "turbo": "^2.11.3",
+    "typescript": "^5.8.2"
+  },
+  "lint-staged": {
+    "*.{ts,tsx,js,jsx}": [
+      "eslint --fix",
+      "prettier --write"
+    ],
+    "*.{json,md,css}": [
+      "prettier --write"
+    ]
+  },
+  "packageManager": "pnpm@9.12.0",
+  "engines": {
+    "node": ">=20.0.0"
+  }
+}

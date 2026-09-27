@@ -1,0 +1,212 @@
+# 01 - Architecture and Tech Stack
+
+## 1. High-Level Architecture Diagram
+
+```mermaid
+flowchart TD
+    %% Clients
+    subgraph Clients["Clients"]
+        Web["Next.js Web App\n(Vercel Edge/Node)"]
+        Mobile["Expo React Native App\n(iOS/Android)"]
+    end
+
+    %% CDN / Edge Layer
+    subgraph CDN["CDN / Edge Network"]
+        VercelCDN["Vercel Edge Network\n(Caching, Routing)"]
+    end
+
+    %% Backend Services
+    subgraph Backend["Supabase Backend (US-East)"]
+        Auth["Supabase Auth"]
+        DB[(PostgreSQL)]
+        Storage["Supabase Storage"]
+        Realtime["Realtime Engine"]
+    end
+
+    %% Third-party Integrations
+    subgraph External["External Services"]
+        Payments["Payment Gateway\n(Stripe/Razorpay)"]
+        Email["Resend (Email)"]
+        Tracking["Tracking Proxy API\n(Origin Masking)"]
+    end
+
+    %% Connections
+    Web -->|HTTPS| VercelCDN
+    VercelCDN -->|API & RSC| Web
+    VercelCDN -->|Direct DB / Auth| Backend
+
+    Mobile -->|API / WebSockets| Backend
+    Web -->|SQL / Auth| DB
+    Web -->|Send email| Email
+    Web -->|Webhook processing| Payments
+    Web -->|Fetch status| Tracking
+
+    Auth -->|User Data| DB
+    DB -->|CDC| Realtime
+    Realtime -.->|WebSockets| Clients
+
+    %% Payment Flow
+    Web -->|Tokenization| Payments
+    Mobile -->|Tokenization| Payments
+```
+
+## 2. Complete Directory Layout
+
+```text
+c:\kod\root\
+├── .github/
+│   └── workflows/
+│       ├── ci.yml                 # Main CI pipeline (lint, typecheck, tests)
+│       └── deploy.yml             # Deployment pipeline for production
+├── apps/
+│   ├── app/                       # Expo Mobile Application
+│   │   ├── app/                   # Expo Router file-based routing
+│   │   │   ├── (auth)/            # Auth group (login, register)
+│   │   │   ├── (tabs)/            # Main app tabs (home, shop, profile)
+│   │   │   └── _layout.tsx        # Root layout for mobile
+│   │   ├── components/            # Mobile-specific UI components
+│   │   ├── hooks/                 # Mobile-specific React hooks
+│   │   ├── lib/                   # Supabase client setup for React Native
+│   │   ├── stores/                # Zustand state management
+│   │   ├── app.json               # Expo configuration
+│   │   ├── babel.config.js        # Babel configuration
+│   │   ├── package.json
+│   │   └── tsconfig.json
+│   └── web/                       # Next.js Web Application
+│       ├── app/                   # Next.js App Router
+│       │   ├── (shop)/            # Shop routes (products, categories)
+│       │   ├── (checkout)/        # Checkout flow
+│       │   ├── api/               # Next.js API Routes and webhook handlers
+│       │   ├── layout.tsx         # Root layout with global providers
+│       │   └── page.tsx           # Landing page
+│       ├── components/            # Web-specific components (Shadcn UI)
+│       │   ├── ui/                # Base Shadcn components
+│       │   └── shared/            # Reusable complex components
+│       ├── hooks/                 # Web-specific React hooks
+│       ├── lib/                   # Supabase SSR clients (server/browser/middleware)
+│       ├── stores/                # Zustand state management
+│       ├── styles/                # Global CSS (Tailwind)
+│       ├── next.config.js         # Next.js configuration
+│       ├── tailwind.config.ts     # Tailwind CSS configuration
+│       ├── package.json
+│       └── tsconfig.json
+├── packages/
+│   ├── shared/                    # Shared code between Web and Mobile
+│   │   ├── src/
+│   │   │   ├── constants/         # Shared constants (e.g., SITE_NAME, categories)
+│   │   │   ├── schemas/           # Zod validation schemas
+│   │   │   ├── types/             # Generated database types and custom TypeScript types
+│   │   │   └── utils/             # Helper functions (formatting, validation)
+│   │   ├── package.json
+│   │   └── tsconfig.json
+│   ├── eslint-config/             # Shared ESLint configuration
+│   └── typescript-config/         # Shared base tsconfig files
+├── supabase/
+│   ├── migrations/                # Database migration SQL files
+│   ├── seed.sql                   # Initial database seed data
+│   └── config.toml                # Supabase local development configuration
+├── .env.example                   # Example environment variables
+├── .gitignore                     # Git ignore rules
+├── package.json                   # Root workspace package.json
+├── turbo.json                     # Turborepo build configuration
+└── tsconfig.json                  # Root TypeScript configuration
+```
+
+## 3. Shared Package Strategy
+
+The `packages/shared` workspace is critical for maintaining consistency between the Next.js web application and the Expo mobile application. It acts as the single source of truth for business logic, types, and validation.
+
+**What goes in `packages/shared`:**
+
+- **Types (`packages/shared/src/types`):**
+  - Database types generated by the Supabase CLI (`supabase gen types typescript --project-id "$PROJECT_REF" > types/database.types.ts`).
+  - Derived TypeScript types for frontend consumption.
+- **Schemas (`packages/shared/src/schemas`):**
+  - Zod schemas for form validation (e.g., `checkoutSchema`, `loginSchema`) and API response validation.
+  - Using Zod ensures the same validation logic runs on the web client, mobile client, and backend edge functions.
+- **Constants (`packages/shared/src/constants`):**
+  - Application-wide constants like `ORDER_STATUSES`, `SHIPPING_RATES`, `SUPPORT_EMAIL`, and `US_STATES`.
+- **Utilities (`packages/shared/src/utils`):**
+  - Pure functions for formatting currency (always in USD), date formatting, and price calculations.
+
+**Consumption Pattern:**
+Both `apps/web` and `apps/app` include `"@repo/shared": "workspace:*"` in their `package.json` dependencies. They import shared logic natively, leveraging Turborepo's caching for fast compilation.
+
+```typescript
+// Example usage in apps/web/app/checkout/page.tsx
+import { checkoutSchema } from '@repo/shared/schemas';
+import type { Database } from '@repo/shared/types';
+import { formatUSD } from '@repo/shared/utils';
+```
+
+## 4. Environment Variable Matrix
+
+Development intentionally fails open for optional third-party services: local health
+checks report simulator status when Stripe or Resend is not configured. Production
+still fails closed for required secrets. There are no Supabase Edge Functions in the
+deployment architecture; API routes and webhooks run in the Next.js application.
+
+Below are the required environment variables mapped across environments. Next.js uses `NEXT_PUBLIC_` prefix for client-side variables, while Expo uses `EXPO_PUBLIC_`.
+
+| Variable                             | Description                          | Development (Local)                                       | Staging                                                               | Production                                                            |
+| :----------------------------------- | :----------------------------------- | :-------------------------------------------------------- | :-------------------------------------------------------------------- | :-------------------------------------------------------------------- |
+| `NEXT_PUBLIC_SUPABASE_URL`           | Supabase API URL                     | `http://127.0.0.1:54321`                                  | `https://<stage-ref>.supabase.co`                                     | `https://<prod-ref>.supabase.co`                                      |
+| `NEXT_PUBLIC_SUPABASE_ANON_KEY`      | Public Supabase Key                  | `eyJhbGci... (local anon key)`                            | `eyJhbGci... (stage anon key)`                                        | `eyJhbGci... (prod anon key)`                                         |
+| `SUPABASE_SERVICE_ROLE_KEY`          | Admin Supabase Key (Backend Only)    | `eyJhbGci... (local role key)`                            | `eyJhbGci... (stage role key)`                                        | `eyJhbGci... (prod role key)`                                         |
+| `DATABASE_URL`                       | Direct Postgres Connection           | `postgresql://postgres:postgres@127.0.0.1:54322/postgres` | `postgresql://postgres:[PASSWORD]@db.[ref].supabase.co:5432/postgres` | `postgresql://postgres:[PASSWORD]@db.[ref].supabase.co:5432/postgres` |
+| `NEXT_PUBLIC_STRIPE_PUBLISHABLE_KEY` | Stripe Public Key                    | `pk_test_...`                                             | `pk_test_...`                                                         | `pk_live_...`                                                         |
+| `STRIPE_SECRET_KEY`                  | Stripe Secret Key (Backend Only)     | `sk_test_...`                                             | `sk_test_...`                                                         | `sk_live_...`                                                         |
+| `STRIPE_WEBHOOK_SECRET`              | Stripe Webhook Secret (Backend Only) | `whsec_...`                                               | `whsec_...`                                                           | `whsec_...`                                                           |
+| `NEXT_PUBLIC_RAZORPAY_KEY_ID`        | Razorpay Public Key                  | `rzp_test_...`                                            | `rzp_test_...`                                                        | `rzp_live_...`                                                        |
+| `RAZORPAY_KEY_SECRET`                | Razorpay Secret Key (Backend Only)   | `secret_test_...`                                         | `secret_test_...`                                                     | `secret_live_...`                                                     |
+| `RESEND_API_KEY`                     | Resend Email API Key                 | `re_test_...`                                             | `re_test_...`                                                         | `re_live_...`                                                         |
+| `TRACKING_PROXY_API_URL`             | Custom Logistics Proxy URL           | `http://localhost:3000/api/tracking`                      | `https://api.stage.tracking.com`                                      | `https://api.prod.tracking.com`                                       |
+| `TRACKING_PROXY_API_KEY`             | Secret for Logistics Proxy           | `dev_proxy_secret`                                        | `stage_proxy_...`                                                     | `prod_proxy_...`                                                      |
+| `NEXT_PUBLIC_APP_URL`                | Main Application URL                 | `http://localhost:3000`                                   | `https://stage.example.com`                                           | `https://www.example.com`                                             |
+
+## 5. Deployment Architecture
+
+**Frontend (Next.js) on Vercel:**
+
+- Automatically deployed via GitHub integration.
+- `apps/web` is configured as the Root Directory in Vercel project settings.
+- Build command relies on Turborepo: `npx turbo run build --filter=web`.
+- PRs automatically generate preview environments connecting to the Staging Supabase project.
+
+**Mobile (Expo):**
+
+- Handled by EAS (Expo Application Services).
+- Over-the-air (OTA) updates for JavaScript/asset changes via EAS Update.
+- Native builds deployed to TestFlight and Google Play Beta via GitHub Actions triggering `eas build` and `eas submit`.
+
+**Backend (Supabase US-East):**
+
+- Supabase projects are geographically located in `US-East` (N. Virginia) for optimal latency to the US customer base.
+- Next.js API routes and webhook handlers run on the web deployment; no Edge Functions are deployed.
+- Database migrations are applied automatically during CI/CD using the Supabase CLI (`supabase db push`).
+
+**CI/CD Pipeline:**
+
+- **Pull Requests:** Trigger Linting, Type Checking across all workspaces (`turbo run lint typecheck`), and unit tests.
+- **Merge to Main:**
+  1. Applies pending Supabase migrations to Staging.
+  2. Vercel automatically deploys `apps/web` to Staging.
+  3. EAS builds new mobile preview clients.
+- **Release (Tag):** Triggers the Production deployment workflow for Supabase, Vercel, and EAS Submit.
+
+## 6. Performance & Security Considerations
+
+**Performance:**
+
+- **Vercel Edge Caching:** Static pages (like product catalogs and marketing pages) use Next.js Incremental Static Regeneration (ISR) and are heavily cached at the edge.
+- **Image Optimization:** All product images (hosted in Supabase Storage) are served through Next.js `<Image />` component or a dedicated CDN for on-the-fly resizing and WebP/AVIF formatting.
+- **Database Connection Pooling:** Next.js Route Handlers and Server Actions connect through Supabase's connection pooler (PgBouncer / Supavisor) to prevent connection exhaustion.
+- **Local Font Loading:** Fonts are loaded locally using `next/font` to prevent layout shifts and eliminate external network requests.
+
+**Security:**
+
+- **Origin Masking (Logistics):** `packages/shared/src/utils/stealth-sanitizer.ts` (unit-tested) scrubs origin country data (e.g., hiding India origin scans) and reformats customer-facing tracking statuses before events are surfaced to the client, presenting a seamless US-native brand experience.
+- **Row Level Security (RLS):** Supabase Postgres uses strict RLS policies. Clients can only read their own orders and public product data. Service role keys are never exposed to clients.
+- **CORS Configuration:** Same-origin API routes only; there are no separate edge/proxy services to configure.
+- **Content Security Policy (CSP):** Static headers are applied by `apps/web/next.config.js` (not middleware): scripts from self plus Stripe (`https://js.stripe.com`), styles/fonts from Google Fonts, images from Supabase Storage, Unsplash, and Picsum, and API calls limited to Supabase and the Stripe API.
+- **API Rate Limiting:** In-process sliding-window rate limiting in the Next.js middleware guards sensitive endpoints (login, orders/create, create-intent, contact, newsletter, admin).

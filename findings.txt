@@ -1,0 +1,175 @@
+I read BUGS.md §1 (C1–C10) and verified every > **Status:** claim against the actual working tree (ignoring node_modules, .next, dist).
+
+C1 — Zero authentication/authorization in the API: SOLVED
+All 9 apps/web/app/api/admin/*/route.ts files call requireAdmin() in every exported handler (15 handlers / 15 calls, e.g. api/admin/orders/[id]/route.ts:13,32, api/admin/promo-codes/route.ts:13,26,56), which uses supabase.auth.getUser() + profiles.role and returns 401/403 (lib/auth/admin.ts:56,94-102); app/admin/layout.tsx:13-14 redirects to /login and app/(public)/login/page.tsx:46 exists with a real signInWithPassword. Status overstates slightly: admin.ts:86-89 grants access when profiles.role is missing if NODE_ENV !== 'production' (a dev fail-open), and docs/STATUS.md:77 correspondingly claims "no dev bypass remains".
+
+C2 — Order PII/IDOR leak: SOLVED
+api/orders/[id]/route.ts:48-79 now requires a matching ?email= or an authenticated owner session (401 otherwise) and :82-97 replaces raw tracking_events with sanitizeTrackingEvent output; both pages gate rendering behind canViewOrder (app/(public)/order-status/[id]/page.tsx:126-129, app/(public)/checkout/success/page.tsx:57-61), and supabase/migrations/20260926000002:11-12 regenerates 10-hex (40-bit) order numbers. Minor residual not mentioned: api/orders/[id]/route.ts:44-46 returns 404 before the auth check, an order-existence oracle.
+
+C3 — Payment never verified (free orders): SOLVED
+api/orders/create/route.ts:20-27 parses through createPaymentIntentSchema (which includes paymentIntentId, packages/shared/src/schemas/index.ts:78), then :108-140 retrieves the intent and enforces succeeded|processing, exact amount, usd, and livemode in production; :101-114 rejects stripe_simulator/mock_pi_/pi_test_, and :157-183 returns a 409 reconcile so one intent can only pay for one order.
+
+C4 — Live payment flow dead end / test flow confirms nothing: PARTIAL
+The live path is genuinely fixed: payment-step.tsx:3,24 loads Stripe, :61-83 mounts a real Payment Element on the clientSecret, :90-123 confirms via confirmPayment, :312-353 renders the pay button, and @stripe/stripe-js is in apps/web/package.json:15. But two listed sub-defects remain: test mode still fakes payment with an 800 ms setTimeout → onSuccess(..., 'stripe_simulator') (payment-step.tsx:145-148, reachable whenever Stripe is unconfigured), and the hard-coded security marketing footer "256-bit SSL Encryption"/"PCI-DSS Level 1 Compliant" is untouched (payment-step.tsx:357-371) — part of the finding's own "UI misrepresents payment readiness" impact. The SOLVED status only describes the Payment Element work.
+
+C5 — Inventory never deducted/restored: SOLVED
+supabase/migrations/20260925000005:12-31 drops trigger_deduct_inventory and adds an AFTER INSERT ON order_items deduction trigger, and :34-64 adds restock/re-deduct guards for cancelled/refunded transitions; lib/queries/orders.ts:310-313 really does insert order_items (so the trigger fires) and the old misleading comment at api/orders/create/route.ts:193 is now accurate. Residual worth flagging: C5's bullet 4 is untouched — verifyVariantStock (orders.ts:117-184) is still check-then-act with no reservation/lock and the trigger uses GREATEST(0, …) (migration :20), so a narrow concurrent-checkout race can still oversell.
+
+C6 — Carrier webhook unauthenticated: SOLVED
+api/webhooks/carrier/route.ts:40-60 enforces HMAC-SHA256/bearer auth when CARRIER_WEBHOOK_SECRET is set and returns 503 in production when it is not; :126-142 gates status writes on canTransitionOrder, and insert/update errors are checked (:119-122, :138-141). mapTrackingMilestoneToOrderStatus defaults to null for unknown milestones (packages/shared/src/utils/stealth-sanitizer.ts:212-213) with the real state machine at order-state-machine.ts:6-25; minor overstatement: unknown tracking numbers return HTTP 200 {success:true, recorded:false} (route.ts:94-97), i.e. the body still says "success", and sanitizeTrackingEvent still maps unknown raw statuses (e.g. "Order Cancelled") to the "In Transit" milestone (stealth-sanitizer.ts:157-158) — only the transition guard stops regression.
+
+C7 — Live secrets committed: SOLVED
+scripts/apply-seed.ts:6-23 builds the connection string from process.env.DATABASE_URL (no hardcoded string), .env.example exists for both apps/web and apps/app, .gitignore:32-37 covers .env*, and apps/web/.env contains only sk_test_51UJ… (no sk_live_); no secret appears in any tracked file (only eyJhbGciOi... placeholders in docs/10:49-53). Residuals the status glosses over: apply-seed.ts:31 still sets ssl: { rejectUnauthorized: false }, and apps/web/.env still holds real credentials on disk (Supabase sb_secret_… service-role key, postgresql://postgres:…@db.hfxb… password, re_… Resend key) — safe only because the file is gitignored.
+
+C8 — Stripe webhook: SOLVED
+api/webhooks/stripe/route.ts:13-19 returns 503 (not 200) when unconfigured, :34-43 verifies the stripe-signature HMAC, :50-62 dedupes via the webhook_events table (migration 20260926000003:7-12), :87-105 fails closed on amount/currency mismatch, :113-115 only sets status='confirmed' from pending, and :117-128/:135-140 check update/insert errors via lib/logger. All four original bullets are addressed.
+
+C9 — Fabricated admin data: SOLVED
+app/admin/analytics/page.tsx:28-76 computes category/top-product/refund figures from live order_items/orders queries, conversion rate now renders "Not tracked" (:114-118), lib/queries/admin.ts:71-85 returns zeros plus dataUnavailable: true instead of 1285000/14.8%, getAdminLogisticsOverview uses real head:true counts (admin.ts:951-998, deliveredCount: deliveredRes.count ?? 0 at :981), and a repo-wide grep finds no "Demo Admin Session" badge left in any .tsx.
+
+C10 — Mobile demo shell: PARTIAL (status honestly says PARTIAL)
+Real progress is verified: apps/app/app/bag/checkout.tsx:75-106 POSTs /api/orders/create with a full payload (no more setTimeout/random ORD-#####), lib/queries/catalog.ts:693-741 queries live Supabase (fallback only when EXPO_PUBLIC_* absent) and :822-829 fetches orders from the real API, the bag starts empty (lib/store/cart.ts:53) and promos go through /api/checkout/validate-promo (cart.ts:121). Still fabricated, as the status admits: app/(tabs)/profile.tsx:17,36,52-53 renders "Alex Morgan" / "ORD-94821", and there are no auth screens anywhere under apps/app/app (no login/signup directory, zero signInWithPassword/signUp calls in apps/app).
+
+Summary: SOLVED — C1, C2, C3, C5, C6, C7, C8, C9 · PARTIAL — C4, C10. Status lines that overstate: C4 (claims SOLVED while the hard-coded PCI/SSL footer and the fake test-mode confirmation remain), C1/"no dev bypass" in docs/STATUS.md:77 (dev fail-open at lib/auth/admin.ts:86-89 when the role migration is missing), and C6's "without pretending success" (HTTP 200 success:true).
+
+I read BUGS.md §2 (H1–H15) and verified each status claim against the working tree. Results:
+
+H1 — Client/server totals diverge → SOLVED
+packages/shared/src/utils/checkout.ts:44-81 is the only breakdown implementation; it is re-exported by apps/web/lib/queries/orders.ts:112 and consumed by checkout/page.tsx:7,58,69,98,119, cart/page.tsx:20,98, the API routes (orders/create/route.ts:85, create-intent/route.ts:65) and the mobile store uses the sibling shared helpers calculateShipping/calculateTax (apps/app/lib/store/cart.ts:3,182,190). A scan of all *.ts/*.tsx in apps/web and apps/app (excluding node_modules/.next) finds zero occurrences of 599/1299/7500/0.08.
+
+H2 — Cart promo codes are client fiction → SOLVED
+cart/page.tsx:119-124 (and :67-74) POST to /api/checkout/validate-promo, which runs validatePromoCode enforcing validity window, max_uses and min_order_cents (orders.ts:69-92). Promo persists in the store (lib/store/cart.ts:89-106) and via ?promo= (cart/page.tsx:432), and checkout re-validates server-side (checkout/page.tsx:83-96).
+
+H3 — Line items priced from client → SOLVED
+orders/create/route.ts:186-191 maps priceCents: serverPriceCents from verifyVariantStock and passes verifiedItemsToInsert to createOrderInDb (:200), which writes unit_price_cents: item.priceCents (orders.ts:306) — same source as the totals at route.ts:85-90.
+
+H4 — Order items/tracking silently lost → SOLVED
+orders.ts:315-319 deletes the order shell and throws on order_items failure; the initial tracking event failure is logged loudly (orders.ts:331-336). Admin writes are checked and surfaced: admin.ts:249-251, 282-288, 876-878, 895-897, and the API routes return those errors (api/admin/orders/[id]/route.ts:48-55, api/admin/tracking/route.ts:24-29); carrier webhook checks its insert (webhooks/carrier/route.ts:109-121).
+
+H5 — Promo-code integrity → SOLVED
+Atomic increment_promo_uses() in supabase/migrations/20260926000004:8-25 enforces max_uses + validity in one UPDATE; result checked at orders.ts:257-267. Invalid promo now returns 400 in both orders/create/route.ts:74-79 and create-intent/route.ts:52-57. FREESHIP seeded with discount_value 0 (supabase/seed.sql:242) and double-discount additionally zeroed in the shared calculator (checkout.ts:56-58).
+
+H6 — Missing login/signup/account routes → SOLVED
+app/(public)/login, /signup, /account, /account/orders, /account/addresses (and /account/wishlist) all exist as real pages; the signup form actually calls supabase.auth.signUp (components/auth/signup-form.tsx:31), so handle_new_user (migrations/20260924000003:47-63) fires; getAdminCustomers reads profiles (admin.ts:786-793). All previously-404 link targets resolve (mobile-nav.tsx:130,137, header.tsx:111,119, contact-shipping-step.tsx:67, order-lookup/page.tsx:130).
+
+H7 — Fake account pages / dead query modules → PARTIAL (status accurate)
+Addresses page is genuinely wired to Supabase: account/addresses/page.tsx:58,80,89,110 call getAddresses/updateAddress/createAddress/deleteAddress; no DEMO_ADDRESS/setTimeout remains. But lib/queries/cart.ts still has no call sites (its getCartItems/addToWishlist/... are referenced nowhere — only re-exported by lib/queries/index.ts:2), and the wishlist is still localStorage-only (lib/store/wishlist.ts:57-59 persist key root_wishlist_storage); .from('wishlists') appears only inside the dead cart.ts. Note: the status line "queries/cart.ts is imported by nobody" is slightly overstated — the barrel index.ts:2 does export * from './cart', so it is transitively imported (and bundled, see .next/server/chunks), just never called.
+
+H8 — Contact/newsletter silently discard → SOLVED
+contact/page.tsx:25-34 POSTs /api/contact and throws on !res.ok; api/contact/route.ts:37-55 sends via Resend and logs the full payload on failure; api/newsletter/route.ts:26-33 upserts into newsletter_subscribers (migration 20260926000005); both clients check res.ok (footer.tsx:43-49, newsletter-signup.tsx:17-23).
+
+H9 — Raw interpolation into PostgREST or() → SOLVED
+Every or()/ilike site strips input first with /[,()"'\\%_]/g: admin.ts:127,342,582,791 and products.ts:106,140. /api/search goes through the sanitized getProducts (api/search/route.ts:16-17); no unsanitized .or( remains in apps/web source.
+
+H10 — /api/health discloses config → SOLVED
+api/health/route.ts:22-30 returns only status + timestamp when NODE_ENV === 'production'; uptime/latency/service flags are dev-only (:39-49).
+
+H11 — No rate limiting anywhere → PARTIAL (status overstates)
+middleware.ts:10-29 + lib/rate-limit.ts:50-66 do rate-limit orders/create, checkout/*, contact/newsletter, api/admin/* and order-lookup, and docs/01:215 was updated. However no rule matches /login — the /api/auth/ rule (rate-limit.ts:60-62) matches no existing route, and login/signup call Supabase directly from the browser (login/page.tsx:46), so credential brute force through this app is still unlimited; /api/search, /api/health and /api/webhooks/* also remain unlimited. The status claim "(login, orders/create, ...)" and docs/01:215 both overstate coverage; X-RateLimit-* headers are emitted only on the 429 response (middleware.ts:22-25).
+
+H12 — No CSP, SVG allowed → SOLVED
+next.config.js:31-41 sets a Content-Security-Policy for /(.*) (with HSTS/XFO/etc. still present) and images.dangerouslyAllowSVG is gone from the file entirely. Residual unsafe-inline/unsafe-eval in script-src (:34) is disclosed in the status line itself.
+
+H13 — State machine only in tests → SOLVED
+Real module packages/shared/src/utils/order-state-machine.ts:6-25 (ALLOWED_ORDER_TRANSITIONS, canTransitionOrder), exported via utils/index.ts:55, enforced in updateAdminOrderStatus (admin.ts:223-229), addAdminTrackingEvent (admin.ts:889-898) and the carrier webhook (webhooks/carrier/route.ts:128). ORDER_STATUSES (constants/index.ts:16-26) no longer contains 'returned' and matches the DB enum (20260924000001:14-17).
+
+H14 — Fragile/injection-prone email → PARTIAL (status accurate, refs off)
+Injection is fixed: escapeHtml (resend.ts:37-45) is applied to product names, variant labels, order number and all shipping-address fields (resend.ts:68,71,91,104,156-159), and the from-address is env-driven with a production guard (resend.ts:19-30). But the send is still fire-and-forget: orders/create/route.ts:205-208 calls sendOrderConfirmationEmail(...).catch(console.error) with no queue, outbox or retry anywhere in apps/web (grep for queue/retry/outbox returns nothing email-related). One nit: the status cites resend.ts:17-25 for escapeHtml — the function is actually at :37-45.
+
+H15 — supabaseAdmin silent degradation → SOLVED
+lib/supabase/admin.ts:26-46 throws an actionable error listing the missing env vars with "no localhost or placeholder fallback" (lazy Proxy at :58-78); the mobile client throws for production builds (apps/app/lib/supabase.ts:12-17) with the 127.0.0.1 fallback only in dev (:20-21); apps/web/.env.example:7-9 documents NEXT_PUBLIC_SUPABASE_URL + SUPABASE_SERVICE_ROLE_KEY. No placeholder-service-role-key/mock.supabase literals remain.
+
+Status lines that overstate
+H11 (SOLVED): overstates "login" rate limiting — no rule covers /login/auth, and /api/search, /api/health, webhooks are still unlimited.
+H7 (PARTIAL): "queries/cart.ts is imported by nobody" is not literally true (barrel re-export lib/queries/index.ts:2); the correct claim is "never called".
+H14 (PARTIAL): correct verdict, but the cited resend.ts:17-25 line range does not contain escapeHtml (it's :37-45).
+H1 (SOLVED): minor — the mobile store consumes calculateShipping/calculateTax rather than calculateCheckoutBreakdown; same shared module, so the substance holds.
+
+Audit results (37 findings, verified against the working tree)
+## 3. MEDIUM
+ID	Verdict	Evidence
+M1	PARTIAL	Root package.json:10-14,20-23 now declares db:seed/script:health/etc. plus dotenv/stripe/resend/@supabase/supabase-js and apply-seed.ts:6-23 reads env, but scripts/test-health.ts:9 (and test-checkout-intent.ts:8) import Next route handlers whose @/lib/* aliases don't resolve from the root (root tsconfig.json has no paths) — running tsx scripts/test-health.ts fails with Cannot find module '@/lib/email/resend'.
+M2	SOLVED	.github/workflows/ci.yml:41-63 runs an independent test job (pnpm turbo test) beside lint/typecheck/build, apps/web/package.json:11 defines web's 13-test suite, and deploy.yml:31-32,68 omits edge functions and uses pnpm install --frozen-lockfile.
+M3	SOLVED	apps/web/lib/queries/admin.ts:51 aggregates via RPC admin_dashboard_stats, :588-593 applies lowStockOnly before .range(), :817 sums only payment_status === 'paid' (DB-side, migration 20260926000004:32).
+M4	PARTIAL	Success/email/mobile-confirmation/orders all read SHIPPING_RATES (checkout/success/page.tsx:164, lib/email/resend.ts:60-61, apps/app/app/bag/confirmation.tsx:63, orders.ts:237-238), but apps/app/app/(tabs)/index.tsx:168 still promises "Free 7-14 business day standard delivery" — contradicts constants/index.ts:33 (5-7).
+M5	SOLVED	apps/web/lib/logistics/ no longer exists (Test-Path → False) and all production consumers import the shared copy, e.g. app/api/webhooks/carrier/route.ts:8-10 and lib/queries/admin.ts:3-5 (@repo/shared/utils).
+M6	PARTIAL	Role system/storage re-key exists (migrations/20260926000001_profiles_role_and_admin_rbac.sql:46-59, is_admin()), but 20260924000002_create_rls_policies.sql:120-122 still requires auth.uid() = user_id for orders INSERT and no UPDATE/DELETE policy for orders/order_items/tracking_events exists in any migration.
+M7	PARTIAL	Webhooks/contact/newsletter do use lib/logger (webhooks/carrier/route.ts:43-151), but lib/logger.ts:22-26 is console-only JSON, there is zero alerting/dead-lettering anywhere (docs/08-roadmap-and-phases.md:47 still lists "error monitoring (Sentry)" as open), and all 9 admin routes still console.error (e.g. app/api/admin/tracking/route.ts:33) — contradicting the status's "admin writes now go through structured lib/logger".
+M8	SOLVED	app/sitemap.ts:80-86 pages the catalog in PRODUCT_PAGE_SIZE chunks, :10/:102 wraps dates in safeLastModified, and app/robots.ts:15-16 disallows /order-status/ and /order-lookup/.
+M9	PARTIAL	lib/queries/products.ts:108-110 searches name/slug/description/long_description with :139-155 only a fallback .contains('tags', …) when nothing matches, no tsvector/full-text exists anywhere (0 grep hits), while app/api/search/route.ts:18 caps at 20 vs /search page's 12 (search/page.tsx:10) and roadmap docs/08:85 is still unchecked.
+M10	SOLVED	checkout/page.tsx:197-257 has its own try/catch with network-retry message and 409 + orderNumber reconciliation (:240-241), and the 500 handlers are generic + logged (api/orders/create/route.ts:216-223, create-intent/route.ts:113-120, api/orders/[id]/route.ts:106-111).
+M11	SOLVED	apps/app/lib/store/cart.ts:3,182,190 uses shared calculateShipping/calculateTax, the bag POSTs its promo to /api/orders/create (apps/app/app/bag/checkout.tsx:81,104) with only a hint left ((tabs)/bag.tsx:198), and seed.sql:242,245 seeds FREESHIP(0)/ROOT20.
+M12	SOLVED	supabase/seed.sql has 0 U+FFFD characters, images are picsum.photos (seed.sql:210+), FREESHIP discount_value 0 (:242), and next.config.js:7-22 whitelists only supabase/unsplash/picsum (no placehold.co/via.placeholder outside BUGS.md).
+M13	SOLVED	lib/queries/products.ts:1 imports the typed Client from lib/supabase/types (repo-wide grep: no SupabaseClient<any,…> and no no-explicit-any disables remain), and orders.ts:26-27,288 inserts shipping_address through ShippingAddressPayload with no cast.
+## 4. LOW
+ID	Verdict	Evidence
+L1	SOLVED	admin/promo-codes/promo-codes-client.tsx:37-47 sets toggleError on non-OK/network failure and renders it at :125-127.
+L2	SOLVED	lib/queries/products.ts:204-214 filters is_active unless includeInactive, the only passer being admin/products/[id]/edit/page.tsx:18.
+L3	SOLVED	api/checkout/create-intent/route.ts:106-108 mints mock_pi_*/mock_secret_* only when isStripeConfigured() is false (:73), and orders/create/route.ts:40,101-103,135 rejects mock_/pi_test_/non-livemode in production.
+L4	SOLVED	payment-step.tsx:131-142 validates card length, MM/YY regex and CVC length before the simulated charge at :145-148.
+L5	SOLVED	checkout/page.tsx:334 derives isFreeShipping={breakdown.shippingCents === 0} (same as cart/page.tsx:105); no fourth rule copy or 7500 literal remains in either page.
+L6	SOLVED	packages/shared/src/constants/index.ts:8-14 reads NEXT_PUBLIC_CONTACT_EMAIL/CONTACT_EMAIL with support@root.com only as last resort, documented at apps/web/.env.example:36-37.
+L7	SOLVED	Byte scan of every apps/app .ts/.tsx file reports 0 U+FFFD replacement characters.
+L8	SOLVED	api/admin/orders/[id]/route.ts:49-53 returns 409 when result.conflict, and admin/orders/[id]/order-detail-client.tsx:94-106 shows an error toast and rolls back selectedStatus/trackingCode/carrier (:100-102).
+L9	SOLVED	turbo.json — the lint task is {} (no dependsOn), while typecheck/test still declare ^build.
+L10	SOLVED	apps/web/next.config.js images block contains only formats, contentSecurityPolicy, remotePatterns — no deviceSizes/imageSizes.
+L11	SOLVED	docs/02-database-schema-and-rls.md:32,45,155,158,204 uses full_name, ('pending','paid',…), payment_intent_id, tracking_code, event_timestamp with zero hits for first_name/last_name/PAID/stripe_session_id/tracking_number/occurred_at.
+L12	SOLVED	docs/04:382 and docs/06:65 both explicitly state there are no Supabase Edge Functions / list the Next route groups (leftover edge-function text now only in docs/01, scored under D4).
+## 5. TEST COVERAGE GAPS
+ID	Verdict	Evidence
+T1	SOLVED	packages/shared/tests/checkout-calculator.test.ts:4-8 imports calculateCheckoutBreakdown/calculateShipping/calculateTax and asserts against them (:14-80).
+T2	SOLVED	packages/shared/tests/order-state-machine.test.ts:4 imports ALLOWED_ORDER_TRANSITIONS/canTransitionOrder from ../src/utils (:8-31).
+T3	PARTIAL	Only 7 test files exist repo-wide: apps/web/tests/orders-queries.test.ts:4 covers just validatePromoCode/verifyVariantStock and 6 shared suites (31 tests) — no test touches API routes, Stripe/carrier webhooks, RLS, trigger execution, email rendering, and apps/app/package.json has no scripts/tests at all.
+T4	SOLVED	docs/STATUS.md:107,109,234 state "44 tests (31 shared + 13 web)", which exactly matches the counted it( blocks (31 + 13 = 44); no "100% pass" claim remains anywhere.
+T5	SOLVED	.github/workflows/ci.yml:41-63 defines an independent test job running pnpm turbo test on both push and pull_request.
+## 6. DOCS vs. CODE DRIFT
+ID	Verdict	Evidence
+D1	SOLVED	A CSP really is set for all routes (apps/web/next.config.js:26-38), so the claims at docs/01:214, docs/09:57-58 and docs/STATUS.md:105 are no longer drift.
+D2	PARTIAL	The RBAC code now exists (lib/auth/admin.ts:94-102, imported by all 9 admin routes), but docs/STATUS.md:77 still says "no dev bypass remains" and "/login?next=/admin" while admin.ts:86-88 grants access on role === 'unknown' whenever NODE_ENV !== 'production' and admin/layout.tsx:13 redirects to /login?redirect=/admin.
+D3	SOLVED	docs/STATUS.md:105 lists exactly the headers next.config.js:26-64 emits (CSP, HSTS, X-Frame-Options, X-Content-Type-Options, Referrer-Policy, Permissions-Policy).
+D4	PARTIAL	deploy.yml:31-32,68 no longer deploys edge functions and docs/04/docs/06 are corrected, but docs/01-architecture-and-stack.md:108-111 still shows supabase/functions/{payment-webhook,tracking-proxy,send-email} in the repo tree and :187,195 still say Edge Functions are deployed to Staging.
+D5	SOLVED	docs/05:80-81 states flat 8% on discounted subtotal + shipping via ESTIMATED_TAX_RATE and says Stripe Tax is "not integrated yet", matching packages/shared/src/utils/checkout.ts:13,38.
+D6	SOLVED	docs/05:76-77, docs/09:48, docs/10:158-159 all say 5-7 / 2-3 business days, matching constants/index.ts:33,40 (its "all surfaces" wording is contradicted by apps/app/(tabs)/index.tsx:168, counted under M4).
+D7	SOLVED	docs/04:335-336,359,369,430 uses payment_status: 'paid', payment_intent_id, tracking_code, event_timestamp with zero hits for first_name/PAID/stripe_session_id/tracking_number/occurred_at.
+Status lines that overstate the fix
+M1 — "the operational scripts execute": pnpm script:health/script:checkout-intent die at module resolution (Cannot find module '@/lib/email/resend').
+M4 — "every customer-facing surface reads the shared SHIPPING_RATES labels": apps/app/app/(tabs)/index.tsx:168 still hardcodes 7-14.
+M7 — "…and admin writes now go through structured lib/logger events": every /api/admin/* route and lib/queries/admin.ts still uses console.* (e.g. api/admin/tracking/route.ts:33, lib/queries/admin.ts:72).
+D2 — "no dev bypass remains": lib/auth/admin.ts:86-88 still bypasses the role check outside production (plus the ?next=/?redirect= param mismatch).
+D6 (and the file header at BUGS.md:6, "every finding … re-verified") — "all surfaces now read the shared labels": same mobile-home counterexample.
+M9 status slightly understates the fix: a tags fallback does exist (products.ts:139-155), though tsvector/full-text genuinely does not.
+
+Verification of BUGS.md §8 — N1..N19
+All line numbers verified against the current working tree (node_modules/.next/dist ignored). I re-derived each verdict from code, not from the > **Status:** text.
+
+#	Verdict	Evidence
+N1	SOLVED	apps/web/app/admin/products/new/page.tsx:37-46 fetches /api/admin/categories and :238-242 renders categories.map(c => <option value={c.id}>); the endpoint exists (apps/web/app/api/admin/categories/route.ts:11). Repo-wide grep for the four fake UUIDs returns matches only inside BUGS.md itself.
+N2	SOLVED	apps/web/lib/queries/admin.ts:430-435 destructures variantError, deletes the parent product and returns failure; :448-454 does the same for imageError (rolling back variants + product).
+N3	SOLVED	apps/web/app/api/admin/products/[id]/route.ts:12-42 exports PATCH → updateAdminProduct; apps/web/app/admin/products/[id]/edit/page.tsx:24 renders ProductEditForm, which is a real form submitting PATCH /api/admin/products/${id} (components/admin/product-edit-form.tsx:86-87, inputs at 159-269).
+N4	SOLVED	Fix lives in a later migration than the one cited: supabase/migrations/20260925000005_fix_triggers_and_constraints.sql:12-13 drops the non-firing AFTER UPDATE ON orders trigger and :28-31 creates trigger_deduct_stock_on_item_insert AFTER INSERT ON order_items. App code no longer deducts manually (lib/queries/orders.ts:299-319).
+N5	SOLVED	Cart persists promo in the store (apps/web/lib/store/cart.ts:33,106) and the CTA carries it: cart/page.tsx:430-433 → /checkout?promo=...; checkout reads URL/store and re-validates server-side (checkout/page.tsx:135-141 → /api/checkout/validate-promo at :83).
+N6	SOLVED	Cart now uses the shared calculator (cart/page.tsx:98-105) whose calculateShipping returns 0 for FREESHIP (packages/shared/src/utils/checkout.ts:26-29); summary renders "Free" at cart/page.tsx:346-350.
+N7	SOLVED	admin.ts:588-593 applies query.or('inventory_count.lte.low_stock_threshold') before .range(), so count/totalPages are correct. Note: the status line's stated residual ("hardcodes 5") is stale/understated — line 590 uses each row's threshold, so that residual no longer exists.
+N8	SOLVED	admin.ts:560-571 computes warehouse-wide warehouseTotalUnits/warehouseLowStockCount over all active variants; admin/inventory/page.tsx:53,58 renders those instead of reducing the page slice. (Status line cites wrong line numbers, claim holds.)
+N9	SOLVED	order-status/[id]/page.tsx:246-273 runs every event through sanitizeTrackingEvent and renders only customerFacingStatus/Description/Location (no fallback to raw status/location); API strips raw fields too: app/api/orders/[id]/route.ts:81-97.
+N10	NOT SOLVED	Webhook only retries: app/api/webhooks/stripe/route.ts:76-84 returns 409 when no order matches. PaymentIntent metadata has no checkout payload (api/checkout/create-intent/route.ts:81-86 — only customerEmail, itemCount, shippingMethod, promoCode), the webhook never inserts an order, and no reconciliation table/queue exists in any migration or script. The 409 covers the timing race only; if the browser never POSTs /api/orders/create, the charge still has no order. Status line is accurate.
+N11	SOLVED	Shared calc zeroes the fixed discount for FREESHIP (checkout.ts:55-59), migration 20260925000005:84-86 sets discount_value = 0, and supabase/seed.sql:242 seeds ('FREESHIP','fixed',0,7500,...) — so validatePromoCode (orders.ts:97-100) returns 0 discount.
+N12	PARTIAL	lib/email/resend.ts:19-30 uses RESEND_FROM_EMAIL, refuses to send in production when unset (:23-28 returns null + error log), and :200-207 logs send failures. But apps/web/.env contains only RESEND_API_KEY (no RESEND_FROM_EMAIL), so the @resend.dev sandbox fallback (resend.ts:29) is still active locally, and api/orders/create/route.ts:205-208 remains fire-and-forget .catch(...) that ignores the returned {success:false}. Status line is accurate (also note docs/STATUS.md claims J1 "set RESEND_FROM_EMAIL" — that overstates it).
+N13	SOLVED	migration 20260925000005:67-69 adds the partial unique index idx_orders_payment_intent_id; app-level pre-check at lib/queries/orders.ts:218-232 and 409 duplicate guard at api/orders/create/route.ts:157-183. Caveat: the base schema (20260924000001:156) still has plain payment_intent_id TEXT — correctness depends on migration 05 having been applied to the live DB (cannot be verified from the tree).
+N14	SOLVED	The `
+N15	SOLVED	admin.ts:517-521 cascades is_active=false to product_variants, and getAdminInventory filters .eq('is_active', true) on variants (admin.ts:579), so orphans no longer appear. Residual confirmed: the cascade's error is not destructured/checked (:518-521), exactly as the status admits.
+N16	SOLVED	orders.ts:142-149 builds a Map summing quantities per variantId, and :163-169 compares inventory_count < totalRequested — duplicate line items can no longer under-check stock.
+N17	SOLVED	product/[slug]/page.tsx:69-72 logs and rethrows fetch errors; :74-76 calls notFound() only on a genuine null. getProductBySlug itself throws non-PGRST116 errors (lib/queries/products.ts:172), so a DB blip no longer becomes a cacheable 404 under revalidate = 3600.
+N18	SOLVED	apps/app/lib/queries/catalog.ts:693-697 queries live Supabase (fallback only when !isSupabaseConfigured), :763-783 for single product, and :822-829 fetches orders via /api/orders/{id}; checkout posts to /api/orders/create (app/bag/checkout.tsx:81). Caveat the status omits: mobile hardcodes paymentProvider: 'stripe_simulator' (checkout.tsx:105), which the server rejects with 402 in production (api/orders/create/route.ts:101-106) — so mobile order creation would fail in prod even though it no longer uses mocks.
+N19	SOLVED	One implementation remains: packages/shared/src/utils/checkout.ts:44-81, re-exported by the server (lib/queries/orders.ts:112, consumed at api/checkout/create-intent/route.ts:65 and api/orders/create/route.ts:85) and imported directly by web checkout (checkout/page.tsx:7) and web cart (cart/page.tsx:20). Mobile composes the same shared primitives (app/lib/store/cart.ts:3,182,190 → calculateShipping/calculateTax) rather than calling calculateCheckoutBreakdown itself — slightly looser than the status's wording, but totals are numerically identical to the server. No local tax/shipping constants remain anywhere in apps/.
+Summary
+SOLVED (17): N1, N2, N3, N4, N5, N6, N7, N8, N9, N11, N13, N14, N15, N16, N17, N18, N19
+PARTIAL (1): N12
+NOT SOLVED (1): N10
+Status-line accuracy notes
+Accurate: N10 and N12 (both correctly self-describe as not/partially fixed), N15 (honestly flags the unchecked cascade error).
+Understated (stale residual): N7 — the "hardcodes 5" residual it still warns about is already fixed (admin.ts:590 uses low_stock_threshold).
+Slightly overstated: N18 — "orders go through /api/orders/create instead of a mock" is true, but it omits that the mobile client sends paymentProvider: 'stripe_simulator', which production rejects (orders/create/route.ts:101-106), so real mobile checkout still can't complete in prod.
+Line references stale (claim itself true): N2 (admin.ts:469-493 → actually 430-455), N3 (route.ts:10-37 → actually 12-42), N7, N8, N14, N15, N16 all cite old line numbers.
+Location header misleading: N4 points at 20260924000003_create_triggers.sql:68-88, which still contains the defective AFTER UPDATE trigger; the actual fix is in 20260925000005, which drops it — meaning the fix exists only if migrations have been applied to the target database.
+Outside BUGS.md: docs/STATUS.md marks "J1 … Set RESEND_FROM_EMAIL" complete, which contradicts apps/web/.env.
