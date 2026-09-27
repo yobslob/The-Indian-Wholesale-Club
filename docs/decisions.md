@@ -109,3 +109,8 @@ and the storefront shows them only after the founder approves them.
 **D-021 · 2026-09-27 · proposed: Verification runs on the founder's machine**
 Claude's sandboxes can't reach npm, so `scripts/check.mjs` is the single verification run. Its output (`.checks/latest.json`)
 is the only accepted evidence for build, test and speed claims.
+
+**D-022 · 2026-09-28 · founder: Couriers are also expensive**
+Adds to D-001: international couriers are not only slow but also very expensive for Indians living abroad.
+> "takes a long time and is very expensive for Indian locals who are abroad."
+(founder review comment on `product.md`)

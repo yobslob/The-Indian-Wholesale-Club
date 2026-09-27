@@ -2,9 +2,9 @@
 
 Last reviewed 2026-09-27. Every rule cites `decisions.md`. Unknowns live in `questions.md`, not here.
 
-## The problem [D-001]
+## The problem [D-001, D-022]
 Indians living in the US miss home, and specifically the clothing and spices of *their* region. Today they either:
-- wait for international couriers, which take a long time, or
+- wait for international couriers, which take a long time and are very expensive for Indians living abroad, or
 - ask a relative or friend travelling from India, and carry the feeling of owing them a favour.
 
 ## Who it's for [D-001]
