@@ -65,3 +65,6 @@ coverage/
 
 # Sentry
 .sentryclirc
+
+# Verification results (scripts/check.mjs)
+.checks/
