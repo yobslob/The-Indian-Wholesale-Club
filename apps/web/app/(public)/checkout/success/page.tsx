@@ -235,7 +235,7 @@ export default async function OrderSuccessPage({
                 <div className="font-semibold text-neutral-900">Credit / Debit Card</div>
                 <div className="text-neutral-500">Payment Status: Confirmed</div>
                 <div className="mt-2 text-neutral-500">
-                  Carrier: {order?.carrier || 'USPS / Regional Carrier'}
+                  Carrier: {order?.carrier || 'Assigned when shipped'}
                 </div>
               </div>
             </div>

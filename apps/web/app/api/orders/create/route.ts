@@ -32,12 +32,9 @@ export async function POST(req: Request): Promise<NextResponse> {
       shippingMethod,
       promoCode,
       paymentIntentId = null,
-      paymentProvider = 'stripe',
     } = parseResult.data;
 
     const isProduction = process.env.NODE_ENV === 'production';
-    const isMockIntent =
-      !paymentIntentId || paymentIntentId.startsWith('mock_pi_') || paymentIntentId.startsWith('pi_test_');
 
     // 1. Check for authenticated user (if any)
     let userId: string | null = null;
@@ -90,66 +87,55 @@ export async function POST(req: Request): Promise<NextResponse> {
     );
 
     // 3. Payment verification (C3 / C8)
-    if (isProduction && !isStripeConfigured()) {
-      // Misconfigured production must never create orders without verification.
+    if (!isStripeConfigured()) {
+      // Orders are only ever created after Stripe verification (no fake payments, R2).
       return NextResponse.json(
         { error: 'Payments are not configured on this server' },
         { status: 503 },
       );
     }
 
-    if (isProduction && paymentProvider !== 'stripe') {
+    if (!paymentIntentId) {
       return NextResponse.json(
-        { error: 'Simulated payments are not accepted in production' },
+        { error: 'Payment has not been completed with the payment processor' },
         { status: 402 },
       );
     }
 
-    if (isStripeConfigured()) {
-      if (isMockIntent) {
+    try {
+      const stripe = getStripeServer();
+      const pi = await stripe.paymentIntents.retrieve(paymentIntentId);
+
+      if (!pi || (pi.status !== 'succeeded' && pi.status !== 'processing')) {
         return NextResponse.json(
-          { error: 'Payment has not been completed with the payment processor' },
+          { error: `Payment not verified with processor (status: ${pi?.status || 'unknown'})` },
           { status: 402 },
         );
       }
-
-      try {
-        const stripe = getStripeServer();
-        const pi = await stripe.paymentIntents.retrieve(paymentIntentId!);
-
-        if (!pi || (pi.status !== 'succeeded' && pi.status !== 'processing')) {
-          return NextResponse.json(
-            { error: `Payment not verified with processor (status: ${pi?.status || 'unknown'})` },
-            { status: 402 },
-          );
-        }
-        if (pi.amount !== breakdown.totalCents) {
-          return NextResponse.json(
-            { error: 'Payment amount mismatch between processor and order breakdown' },
-            { status: 400 },
-          );
-        }
-        if (pi.currency.toLowerCase() !== 'usd') {
-          return NextResponse.json({ error: 'Unsupported payment currency' }, { status: 400 });
-        }
-        if (isProduction && pi.livemode !== true) {
-          return NextResponse.json(
-            { error: 'Test-mode payments are not accepted in production' },
-            { status: 402 },
-          );
-        }
-      } catch (stripeErr) {
-        logger.error('orders.create.stripe_verification_failed', {
-          error: stripeErr instanceof Error ? stripeErr.message : String(stripeErr),
-        });
+      if (pi.amount !== breakdown.totalCents) {
         return NextResponse.json(
-          { error: 'Payment verification failed' },
-          { status: 502 },
+          { error: 'Payment amount mismatch between processor and order breakdown' },
+          { status: 400 },
         );
       }
+      if (pi.currency.toLowerCase() !== 'usd') {
+        return NextResponse.json({ error: 'Unsupported payment currency' }, { status: 400 });
+      }
+      if (isProduction && pi.livemode !== true) {
+        return NextResponse.json(
+          { error: 'Test-mode payments are not accepted in production' },
+          { status: 402 },
+        );
+      }
+    } catch (stripeErr) {
+      logger.error('orders.create.stripe_verification_failed', {
+        error: stripeErr instanceof Error ? stripeErr.message : String(stripeErr),
+      });
+      return NextResponse.json(
+        { error: 'Payment verification failed' },
+        { status: 502 },
+      );
     }
-    // Stripe not configured (local/test only - production guarded above):
-    // the simulator path runs with mock_pi_* intents.
 
     // Idempotency: a payment intent may only ever pay for one order (N13).
     // Runs for every provider so a client retry after a lost response
@@ -195,7 +181,7 @@ export async function POST(req: Request): Promise<NextResponse> {
       userId,
       shippingAddress,
       breakdown,
-      paymentProvider,
+      paymentProvider: 'stripe',
       paymentIntentId,
       items: verifiedItemsToInsert,
       status: 'confirmed',

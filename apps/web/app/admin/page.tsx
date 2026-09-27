@@ -4,7 +4,6 @@ import {
   Boxes,
   DollarSign,
   Package,
-  ShieldCheck,
   ShoppingBag,
 } from 'lucide-react';
 import Link from 'next/link';
@@ -34,7 +33,7 @@ export default async function AdminDashboardPage(): Promise<React.JSX.Element> {
             Operations & Logistics Overview
           </h2>
           <p className="mt-1 text-xs text-zinc-500">
-            Real-time fulfillment metrics, revenue tracking, and stealth logistics health.
+            Real-time fulfillment metrics and revenue tracking.
           </p>
         </div>
 
@@ -44,13 +43,6 @@ export default async function AdminDashboardPage(): Promise<React.JSX.Element> {
             className="shadow-2xs rounded-lg border border-zinc-200 bg-white px-3.5 py-2 text-xs font-semibold text-zinc-700 transition-colors hover:bg-zinc-50"
           >
             Manage Orders
-          </Link>
-          <Link
-            href="/admin/logistics"
-            className="shadow-xs flex items-center gap-2 rounded-lg bg-zinc-900 px-3.5 py-2 text-xs font-semibold text-white transition-colors hover:bg-zinc-800"
-          >
-            <ShieldCheck className="h-3.5 w-3.5 text-emerald-400" />
-            Logistics Hub
           </Link>
         </div>
       </div>
@@ -90,50 +82,8 @@ export default async function AdminDashboardPage(): Promise<React.JSX.Element> {
         />
       </div>
 
-      {/* Revenue Chart & Stealth Logistics Pulse */}
-      <div className="grid grid-cols-1 gap-6 lg:grid-cols-3">
-        <div className="lg:col-span-2">
-          <RevenueChart data={stats.salesTrend} />
-        </div>
-
-        {/* Stealth Logistics Health Card */}
-        <div className="shadow-xs flex flex-col justify-between rounded-xl border border-zinc-200 bg-white p-6">
-          <div>
-            <div className="flex items-center justify-between border-b border-zinc-100 pb-3">
-              <h3 className="flex items-center gap-2 text-sm font-semibold text-zinc-900">
-                <ShieldCheck className="h-4 w-4 text-emerald-600" />
-                Stealth Shield Status
-              </h3>
-              <span className="rounded-full border border-emerald-200 bg-emerald-50 px-2 py-0.5 text-[10px] font-bold uppercase tracking-wider text-emerald-700">
-                100% Protected
-              </span>
-            </div>
-
-            <div className="mt-4 space-y-3">
-              <div className="flex items-center justify-between rounded-lg border border-zinc-200 bg-zinc-50 p-3">
-                <span className="text-xs text-zinc-600">Origin Masking Engine</span>
-                <span className="text-xs font-semibold text-emerald-600">Active</span>
-              </div>
-              <div className="flex items-center justify-between rounded-lg border border-zinc-200 bg-zinc-50 p-3">
-                <span className="text-xs text-zinc-600">Foreign Leaks Prevented</span>
-                <span className="font-mono text-xs font-bold text-zinc-900">0 Leaks</span>
-              </div>
-              <div className="flex items-center justify-between rounded-lg border border-zinc-200 bg-zinc-50 p-3">
-                <span className="text-xs text-zinc-600">Carrier Hub Mapping</span>
-                <span className="text-xs font-semibold text-zinc-700">US Domestic Virtual</span>
-              </div>
-            </div>
-          </div>
-
-          <Link
-            href="/admin/logistics"
-            className="mt-6 flex w-full items-center justify-center gap-2 rounded-lg border border-zinc-200 bg-zinc-50 py-2.5 text-xs font-semibold text-zinc-700 transition-colors hover:bg-zinc-100"
-          >
-            Open Logistics Hub & Simulator
-            <ArrowRight className="h-3.5 w-3.5" />
-          </Link>
-        </div>
-      </div>
+      {/* Revenue Chart */}
+      <RevenueChart data={stats.salesTrend} />
 
       {/* Recent Orders & Low Stock Alerts */}
       <div className="grid grid-cols-1 gap-6 lg:grid-cols-3">

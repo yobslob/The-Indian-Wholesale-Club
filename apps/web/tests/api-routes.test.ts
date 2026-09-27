@@ -20,7 +20,6 @@ import {
   checkoutItemSchema,
   adminUpdateOrderStatusSchema,
   adminCreatePromoCodeSchema,
-  carrierWebhookPayloadSchema,
   guestOrderLookupSchema,
 } from '@repo/shared/schemas';
 
@@ -121,12 +120,12 @@ describe('createPaymentIntentSchema validation', () => {
     });
     assert.ok(goodPi.success, 'pi_ prefix should be accepted');
 
-    const goodMock = createPaymentIntentSchema.safeParse({
+    const mock = createPaymentIntentSchema.safeParse({
       items: [validItem],
       shippingAddress: validAddress,
       paymentIntentId: 'mock_pi_test123',
     });
-    assert.ok(goodMock.success, 'mock_pi_ prefix should be accepted');
+    assert.equal(mock.success, false, 'mock_pi_ (old simulator) must be rejected');
 
     const badPi = createPaymentIntentSchema.safeParse({
       items: [validItem],
@@ -218,36 +217,6 @@ describe('adminCreatePromoCodeSchema validation', () => {
 });
 
 // ---------------------------------------------------------------------------
-// Carrier Webhook Schema Tests
-// ---------------------------------------------------------------------------
-
-describe('carrierWebhookPayloadSchema validation', () => {
-  it('accepts valid carrier payloads', () => {
-    const result = carrierWebhookPayloadSchema.safeParse({
-      trackingNumber: 'TRACK123',
-      status: 'delivered',
-    });
-    assert.ok(result.success);
-  });
-
-  it('defaults carrier to Carrier Partner', () => {
-    const result = carrierWebhookPayloadSchema.safeParse({
-      trackingNumber: 'TRACK123',
-      status: 'in_transit',
-    });
-    assert.ok(result.success);
-    assert.equal(result.data?.carrier, 'Carrier Partner');
-  });
-
-  it('rejects missing trackingNumber', () => {
-    const result = carrierWebhookPayloadSchema.safeParse({
-      status: 'delivered',
-    });
-    assert.equal(result.success, false);
-  });
-});
-
-// ---------------------------------------------------------------------------
 // Guest Order Lookup Schema
 // ---------------------------------------------------------------------------
 
@@ -277,34 +246,3 @@ describe('guestOrderLookupSchema validation', () => {
   });
 });
 
-// ---------------------------------------------------------------------------
-// Payment Provider Logic Tests
-// ---------------------------------------------------------------------------
-
-describe('Payment Provider Validation Logic', () => {
-  it('rejects stripe_simulator in production', () => {
-    const isProduction = true;
-    const paymentProvider: string = 'stripe_simulator';
-    const shouldReject = isProduction && paymentProvider !== 'stripe';
-    assert.ok(shouldReject, 'stripe_simulator should be rejected in production');
-  });
-
-  it('accepts stripe in production', () => {
-    const isProduction = true;
-    const paymentProvider: string = 'stripe';
-    const shouldReject = isProduction && paymentProvider !== 'stripe';
-    assert.equal(shouldReject, false, 'stripe should be accepted in production');
-  });
-
-  it('identifies mock payment intents', () => {
-    const mockIds = ['mock_pi_test_123', 'pi_test_abc', null, undefined];
-    for (const id of mockIds) {
-      const isMock = !id || id.startsWith('mock_pi_') || id.startsWith('pi_test_');
-      assert.ok(isMock, `${id ?? 'null'} should be identified as mock`);
-    }
-
-    const realId = 'pi_3P4abc123';
-    const isMock = !realId || realId.startsWith('mock_pi_') || realId.startsWith('pi_test_');
-    assert.equal(isMock, false, 'Real pi_ should not be identified as mock');
-  });
-});

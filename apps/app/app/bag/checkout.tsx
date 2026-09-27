@@ -314,10 +314,8 @@ export default function CheckoutScreen(): React.JSX.Element {
                 {shippingMethod === 'standard' && <View style={styles.radioInner} />}
               </View>
               <View style={styles.methodDetails}>
-                <Text style={styles.methodName}>Standard Domestic Transit</Text>
-                <Text style={styles.methodSubtext}>
-                  {`${SHIPPING_RATES.standard.windowLabel} via regional partner network`}
-                </Text>
+                <Text style={styles.methodName}>Standard Shipping</Text>
+                <Text style={styles.methodSubtext}>{SHIPPING_RATES.standard.windowLabel}</Text>
               </View>
               <Text style={styles.methodPrice}>
                 {subtotal >= FREE_SHIPPING_THRESHOLD_CENTS

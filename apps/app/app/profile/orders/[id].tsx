@@ -107,7 +107,7 @@ export default function OrderTrackingScreen(): React.JSX.Element {
           )}
         </View>
 
-        {/* Stealth Logistics Timeline */}
+        {/* Order progress timeline */}
         <View style={styles.timelineCard}>
           <Text style={styles.sectionHeader}>SHIPMENT PROGRESS</Text>
           <StatusTimeline
@@ -119,18 +119,6 @@ export default function OrderTrackingScreen(): React.JSX.Element {
             })}
             estimatedDelivery={order.estimated_delivery_date ?? undefined}
           />
-        </View>
-
-        {/* Domestic Partner Assurance (Stealth Masking Guarantee) */}
-        <View style={styles.stealthAssuranceCard}>
-          <Ionicons name="shield-checkmark" size={18} color="#059669" />
-          <View style={styles.stealthAssuranceContent}>
-            <Text style={styles.stealthAssuranceTitle}>Domestic Network Routing</Text>
-            <Text style={styles.stealthAssuranceBody}>
-              Packages transit through our verified regional fulfillment partner network with final
-              delivery by USPS. Zero customs delays or international duties.
-            </Text>
-          </View>
         </View>
 
         {/* Ordered Items Preview */}
@@ -303,31 +291,6 @@ const styles = StyleSheet.create({
     letterSpacing: 0.8,
     color: '#71717A',
     marginBottom: 12,
-  },
-  stealthAssuranceCard: {
-    flexDirection: 'row',
-    alignItems: 'flex-start',
-    backgroundColor: '#ECFDF5',
-    borderWidth: 1,
-    borderColor: '#A7F3D0',
-    borderRadius: 8,
-    padding: 14,
-    gap: 10,
-    marginBottom: 14,
-  },
-  stealthAssuranceContent: {
-    flex: 1,
-  },
-  stealthAssuranceTitle: {
-    fontSize: 12,
-    fontWeight: '700',
-    color: '#047857',
-    marginBottom: 2,
-  },
-  stealthAssuranceBody: {
-    fontSize: 11,
-    color: '#065F46',
-    lineHeight: 16,
   },
   itemsCard: {
     backgroundColor: '#FFFFFF',

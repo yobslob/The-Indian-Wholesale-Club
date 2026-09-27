@@ -5,11 +5,9 @@ import {
   Boxes,
   ExternalLink,
   LayoutDashboard,
-  ShieldCheck,
   Shirt,
   ShoppingBag,
   Tag,
-  Truck,
   Users,
 } from 'lucide-react';
 import Link from 'next/link';
@@ -21,7 +19,6 @@ const NAV_ITEMS = [
   { label: 'Orders', href: '/admin/orders', icon: ShoppingBag },
   { label: 'Products', href: '/admin/products', icon: Shirt },
   { label: 'Inventory', href: '/admin/inventory', icon: Boxes },
-  { label: 'Logistics', href: '/admin/logistics', icon: Truck },
   { label: 'Customers', href: '/admin/customers', icon: Users },
   { label: 'Promo Codes', href: '/admin/promo-codes', icon: Tag },
   { label: 'Analytics', href: '/admin/analytics', icon: BarChart3 },
@@ -81,15 +78,6 @@ export function AdminSidebar({ className = '', onNavigate }: AdminSidebarProps):
 
       {/* Footer controls & links */}
       <div className="space-y-3 border-t border-zinc-800/80 p-4">
-        {/* Stealth Logistics Indicator */}
-        <div className="flex items-center gap-2.5 rounded-lg border border-zinc-800 bg-zinc-900 p-2.5">
-          <ShieldCheck className="h-4 w-4 shrink-0 text-emerald-400" />
-          <div className="text-[11px] leading-tight text-zinc-300">
-            <span className="block font-semibold text-white">Stealth Shield</span>
-            Origin Masking 100% Active
-          </div>
-        </div>
-
         <Link
           href="/"
           target="_blank"

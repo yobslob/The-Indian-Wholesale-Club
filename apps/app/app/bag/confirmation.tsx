@@ -53,31 +53,9 @@ export default function ConfirmationScreen(): React.JSX.Element {
             <Text style={styles.value}>${total} USD</Text>
           </View>
 
-          <View style={styles.row}>
-            <Text style={styles.label}>FULFILLMENT</Text>
-            <Text style={styles.value}>US Domestic Partner Network</Text>
-          </View>
-
-          <View style={styles.row}>
+          <View style={styles.rowLast}>
             <Text style={styles.label}>DELIVERY ESTIMATE</Text>
             <Text style={styles.value}>{SHIPPING_RATES.standard.windowLabel}</Text>
-          </View>
-
-          <View style={styles.rowLast}>
-            <Text style={styles.label}>ROUTING ORIGIN</Text>
-            <Text style={styles.value}>Carrier Regional Hub</Text>
-          </View>
-        </View>
-
-        {/* Stealth Guarantee Card */}
-        <View style={styles.stealthCard}>
-          <Ionicons name="shield-checkmark" size={20} color="#059669" />
-          <View style={styles.stealthTextContainer}>
-            <Text style={styles.stealthTitle}>Stealth Delivery Assurance</Text>
-            <Text style={styles.stealthDesc}>
-              Your parcel undergoes rigorous inspection at our regional fulfillment center and is
-              handed over to USPS for doorstep delivery.
-            </Text>
           </View>
         </View>
 
@@ -181,32 +159,6 @@ const styles = StyleSheet.create({
     fontSize: 12,
     fontWeight: '600',
     color: '#18181B',
-  },
-  stealthCard: {
-    width: '100%',
-    flexDirection: 'row',
-    backgroundColor: '#ECFDF5',
-    borderWidth: 1,
-    borderColor: '#A7F3D0',
-    borderRadius: 8,
-    padding: 14,
-    gap: 12,
-    alignItems: 'flex-start',
-    marginBottom: 28,
-  },
-  stealthTextContainer: {
-    flex: 1,
-  },
-  stealthTitle: {
-    fontSize: 12,
-    fontWeight: '700',
-    color: '#047857',
-    marginBottom: 2,
-  },
-  stealthDesc: {
-    fontSize: 11,
-    color: '#065F46',
-    lineHeight: 16,
   },
   actions: {
     width: '100%',

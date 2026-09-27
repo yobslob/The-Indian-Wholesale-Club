@@ -8,7 +8,7 @@
     "typecheck": "turbo typecheck",
     "test": "turbo test",
     "db:seed": "tsx scripts/apply-seed.ts",
-    "db:migrate:legacy": "tsx scripts/apply-migration-05.ts",
+    "check": "node scripts/check.mjs",
     "script:connections": "tsx scripts/test-connections.ts",
     "script:checkout-intent": "tsx scripts/test-checkout-intent.ts",
     "script:health": "tsx scripts/test-health.ts",

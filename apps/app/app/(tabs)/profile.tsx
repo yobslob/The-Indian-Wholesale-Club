@@ -188,7 +188,7 @@ export default function ProfileScreen(): React.JSX.Element {
           <Text style={styles.footerLogo}>ROOT</Text>
           <Text style={styles.footerVersion}>Mobile Version 1.0.0 (Expo SDK 52)</Text>
           <Text style={styles.footerCopyright}>
-            Direct Domestic Partner Network • All Rights Reserved
+            All Rights Reserved
           </Text>
         </View>
       </ScrollView>

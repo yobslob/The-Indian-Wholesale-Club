@@ -14,15 +14,9 @@ import {
 import Link from 'next/link';
 import React, { useState } from 'react';
 
-import { sanitizeTrackingEvent } from '@repo/shared/utils';
+import { StatusBadge } from '@/components/admin';
 
-import { StatusBadge, StealthPreviewCard } from '@/components/admin';
-
-import type {
-  OrderStatusEnum,
-  OrderWithFullDetails,
-  SanitizedTrackingEvent,
-} from '@repo/shared/types';
+import type { OrderStatusEnum, OrderWithFullDetails } from '@repo/shared/types';
 
 interface OrderDetailClientProps {
   initialOrder: OrderWithFullDetails;
@@ -39,33 +33,12 @@ export function OrderDetailClient({ initialOrder }: OrderDetailClientProps): Rea
     message: string;
   } | null>(null);
 
-  // Manual tracking event form state
-  const [newEventStatus, setNewEventStatus] = useState<string>(
-    'Package processing at regional hub',
-  );
-  const [newEventLocation, setNewEventLocation] = useState<string>('Delhi Air Cargo Hub');
-  const [newEventDesc, setNewEventDesc] = useState<string>('International outbound linehaul scan');
+  // Manual order update form state. Status + details are shown to the customer
+  // as written (no rewriting, D-004); location is internal only (D-003).
+  const [newEventStatus, setNewEventStatus] = useState<string>('');
+  const [newEventLocation, setNewEventLocation] = useState<string>('');
+  const [newEventDesc, setNewEventDesc] = useState<string>('');
   const [isSubmittingEvent, setIsSubmittingEvent] = useState<boolean>(false);
-  const [previewEvent, setPreviewEvent] = useState<SanitizedTrackingEvent>(
-    sanitizeTrackingEvent({
-      rawStatus: newEventStatus,
-      rawLocation: newEventLocation,
-      rawDescription: newEventDesc,
-    }),
-  );
-
-  const handlePreviewUpdate = (statusVal: string, locVal: string, descVal: string): void => {
-    setNewEventStatus(statusVal);
-    setNewEventLocation(locVal);
-    setNewEventDesc(descVal);
-    setPreviewEvent(
-      sanitizeTrackingEvent({
-        rawStatus: statusVal,
-        rawLocation: locVal,
-        rawDescription: descVal,
-      }),
-    );
-  };
 
   const handleUpdateStatus = async (): Promise<void> => {
     setIsUpdatingStatus(true);
@@ -285,7 +258,7 @@ export function OrderDetailClient({ initialOrder }: OrderDetailClientProps): Rea
           </div>
         </div>
 
-        {/* Right Column: Status Transitions & Stealth Tracking Logger */}
+        {/* Right Column: Status Transitions & Order Update Logger */}
         <div className="space-y-6">
           {/* Order Lifecycle Controller */}
           <div className="shadow-xs space-y-4 rounded-xl border border-zinc-200 bg-white p-5">
@@ -370,71 +343,57 @@ export function OrderDetailClient({ initialOrder }: OrderDetailClientProps): Rea
             </div>
           </div>
 
-          {/* Stealth Tracking Event Logger */}
+          {/* Order update logger */}
           <div className="shadow-xs space-y-4 rounded-xl border border-zinc-200 bg-white p-5">
             <div className="flex items-center justify-between border-b border-zinc-100 pb-3">
               <h3 className="flex items-center gap-2 text-sm font-semibold text-zinc-900">
                 <Shield className="h-4 w-4 text-emerald-600" />
-                Log Tracking Event
+                Post Order Update
               </h3>
-              <span className="rounded-full border border-emerald-200 bg-emerald-50 px-2 py-0.5 text-[10px] font-bold text-emerald-800">
-                Auto-Sanitized
+              <span className="rounded-full border border-amber-200 bg-amber-50 px-2 py-0.5 text-[10px] font-bold text-amber-800">
+                Customer sees status + details
               </span>
             </div>
 
             <form onSubmit={handleAddTrackingEvent} className="space-y-3">
               <div>
                 <label className="mb-1 block text-[11px] font-semibold text-zinc-700">
-                  Raw Status / Event
+                  Status (shown to customer)
                 </label>
                 <input
                   type="text"
                   value={newEventStatus}
-                  onChange={(e) =>
-                    handlePreviewUpdate(e.target.value, newEventLocation, newEventDesc)
-                  }
+                  onChange={(e) => setNewEventStatus(e.target.value)}
                   required
-                  placeholder="e.g. Customs Clearance Complete"
+                  placeholder="e.g. Preparing your order"
                   className="w-full rounded-lg border border-zinc-200 bg-zinc-50 p-2 text-xs"
                 />
               </div>
 
               <div>
                 <label className="mb-1 block text-[11px] font-semibold text-zinc-700">
-                  Raw Origin Location
+                  Location (internal, never shown to customer)
                 </label>
                 <input
                   type="text"
                   value={newEventLocation}
-                  onChange={(e) =>
-                    handlePreviewUpdate(newEventStatus, e.target.value, newEventDesc)
-                  }
-                  placeholder="e.g. Delhi Air Cargo Terminal"
+                  onChange={(e) => setNewEventLocation(e.target.value)}
+                  placeholder="optional"
                   className="w-full rounded-lg border border-zinc-200 bg-zinc-50 p-2 font-mono text-xs"
                 />
               </div>
 
               <div>
                 <label className="mb-1 block text-[11px] font-semibold text-zinc-700">
-                  Raw Carrier Notes
+                  Details (shown to customer. No shop or India-side operations info)
                 </label>
                 <input
                   type="text"
                   value={newEventDesc}
-                  onChange={(e) =>
-                    handlePreviewUpdate(newEventStatus, newEventLocation, e.target.value)
-                  }
-                  placeholder="e.g. Departed international sorting center"
+                  onChange={(e) => setNewEventDesc(e.target.value)}
+                  placeholder="optional"
                   className="w-full rounded-lg border border-zinc-200 bg-zinc-50 p-2 text-xs"
                 />
-              </div>
-
-              {/* Real-time stealth preview */}
-              <div className="pt-2">
-                <span className="mb-1 block text-[10px] font-bold uppercase text-zinc-400">
-                  Live Sanitization Preview:
-                </span>
-                <StealthPreviewCard event={previewEvent} />
               </div>
 
               <button
@@ -447,7 +406,7 @@ export function OrderDetailClient({ initialOrder }: OrderDetailClientProps): Rea
                 ) : (
                   <Plus className="h-3.5 w-3.5" />
                 )}
-                Post Sanitized Tracking Event
+                Post Update
               </button>
             </form>
           </div>
@@ -471,7 +430,7 @@ export function OrderDetailClient({ initialOrder }: OrderDetailClientProps): Rea
                       {evt.customer_facing_status || evt.status}
                     </div>
                     <div className="text-[11px] text-zinc-500">
-                      📍 {evt.location || 'Regional Facility'}
+                      📍 {evt.location || '—'}
                     </div>
                     {evt.description && (
                       <div className="text-xs text-zinc-600">{evt.description}</div>

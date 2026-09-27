@@ -11,8 +11,6 @@ import {
 } from 'react-native';
 import { SafeAreaView } from 'react-native-safe-area-context';
 
-import { SHIPPING_RATES } from '@repo/shared/constants';
-
 import { Header } from '../../components/ui/header';
 import { ProductCard } from '../../components/ui/product-card';
 import { fetchCategories, fetchProducts } from '../../lib/queries/catalog';
@@ -164,11 +162,10 @@ export default function ShopScreen(): React.JSX.Element {
         {/* Brand Philosophy Card */}
         <View style={styles.brandCard}>
           <Text style={styles.brandCardSubtitle}>OUR COMMITMENT</Text>
-          <Text style={styles.brandCardTitle}>DIRECT DOMESTIC FULFILLMENT</Text>
+          <Text style={styles.brandCardTitle}>DELIVERED TO YOUR DOOR</Text>
           <Text style={styles.brandCardBody}>
-            Every ROOT garment undergoes stringent multi-point inspection at our regional hub before
-            final carrier dispatch. {SHIPPING_RATES.standard.windowLabel} standard delivery is free
-            on orders over ${SHIPPING_RATES.freeThreshold}.
+            Every order is delivered to your US address. Your delivery estimate is shown at
+            checkout.
           </Text>
         </View>
       </ScrollView>

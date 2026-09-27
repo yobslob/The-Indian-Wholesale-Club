@@ -69,79 +69,76 @@ export async function POST(req: Request): Promise<NextResponse> {
       validatedPromo,
     );
 
-    // 5. Create Stripe PaymentIntent or return development simulator
-    if (isStripeConfigured()) {
-      try {
-        const stripe = getStripeServer();
-        const paymentIntent = await stripe.paymentIntents.create({
-          amount: breakdown.totalCents,
-          currency: 'usd',
-          automatic_payment_methods: { enabled: true },
-          receipt_email: shippingAddress.email,
-          metadata: {
-            customerEmail: shippingAddress.email,
-            itemCount: items.length.toString(),
-            shippingMethod,
-            promoCode: promoCode || '',
-          },
-        });
-
-        // N10: Store checkout payload in pending_orders for webhook reconciliation.
-        // If the browser never POSTs /api/orders/create, the Stripe webhook can
-        // use this data to create the order.
-        const { error: pendingError } = await supabaseAdmin.from('pending_orders').upsert(
-          {
-            payment_intent_id: paymentIntent.id,
-            checkout_payload: {
-              items,
-              shippingAddress,
-              shippingMethod,
-              promoCode: promoCode || null,
-              breakdown,
-            } as unknown as import('@repo/shared/types').Json,
-          },
-          { onConflict: 'payment_intent_id' },
-        );
-        if (pendingError) {
-          logger.error('checkout.pending_order_persist_failed', {
-            paymentIntentId: paymentIntent.id,
-            error: pendingError.message,
-          });
-          await stripe.paymentIntents.cancel(paymentIntent.id).catch((cancelError) =>
-            logger.error('checkout.pending_order_cancel_failed', {
-              paymentIntentId: paymentIntent.id,
-              error: cancelError instanceof Error ? cancelError.message : String(cancelError),
-            }),
-          );
-          return NextResponse.json({ error: 'Unable to persist checkout safely' }, { status: 503 });
-        }
-
-        return NextResponse.json({
-          clientSecret: paymentIntent.client_secret,
-          paymentIntentId: paymentIntent.id,
-          breakdown,
-          isTestMode: false,
-        });
-      } catch (stripeErr) {
-        logger.error('checkout.createIntent.stripe_error', {
-          error: stripeErr instanceof Error ? stripeErr.message : String(stripeErr),
-        });
-        return NextResponse.json(
-          { error: 'Failed to initialize payment processor' },
-          { status: 502 },
-        );
-      }
+    // 5. Create the Stripe PaymentIntent. No fake-payment path: dev uses Stripe
+    //    test-mode keys (D-021 / R2), so an unconfigured server refuses checkout.
+    if (!isStripeConfigured()) {
+      logger.error('checkout.createIntent.stripe_unconfigured');
+      return NextResponse.json(
+        { error: 'Payments are not configured on this server' },
+        { status: 503 },
+      );
     }
 
-    // Fallback: Test mode simulation when Stripe keys are not yet provided.
-    // Prefixed mock_ so it can never be mistaken for a real intent (L3).
-    const mockIntentId = `mock_pi_${Date.now()}`;
-    return NextResponse.json({
-      clientSecret: `mock_secret_${mockIntentId}`,
-      paymentIntentId: mockIntentId,
-      breakdown,
-      isTestMode: true,
-    });
+    try {
+      const stripe = getStripeServer();
+      const paymentIntent = await stripe.paymentIntents.create({
+        amount: breakdown.totalCents,
+        currency: 'usd',
+        automatic_payment_methods: { enabled: true },
+        receipt_email: shippingAddress.email,
+        metadata: {
+          customerEmail: shippingAddress.email,
+          itemCount: items.length.toString(),
+          shippingMethod,
+          promoCode: promoCode || '',
+        },
+      });
+
+      // N10: Store checkout payload in pending_orders for webhook reconciliation.
+      // If the browser never POSTs /api/orders/create, the Stripe webhook can
+      // use this data to create the order.
+      const { error: pendingError } = await supabaseAdmin.from('pending_orders').upsert(
+        {
+          payment_intent_id: paymentIntent.id,
+          checkout_payload: {
+            items,
+            shippingAddress,
+            shippingMethod,
+            promoCode: promoCode || null,
+            breakdown,
+          } as unknown as import('@repo/shared/types').Json,
+        },
+        { onConflict: 'payment_intent_id' },
+      );
+      if (pendingError) {
+        logger.error('checkout.pending_order_persist_failed', {
+          paymentIntentId: paymentIntent.id,
+          error: pendingError.message,
+        });
+        await stripe.paymentIntents.cancel(paymentIntent.id).catch((cancelError) =>
+          logger.error('checkout.pending_order_cancel_failed', {
+            paymentIntentId: paymentIntent.id,
+            error: cancelError instanceof Error ? cancelError.message : String(cancelError),
+          }),
+        );
+        return NextResponse.json({ error: 'Unable to persist checkout safely' }, { status: 503 });
+      }
+
+      return NextResponse.json({
+        clientSecret: paymentIntent.client_secret,
+        paymentIntentId: paymentIntent.id,
+        breakdown,
+        isTestMode: false,
+      });
+    } catch (stripeErr) {
+      logger.error('checkout.createIntent.stripe_error', {
+        error: stripeErr instanceof Error ? stripeErr.message : String(stripeErr),
+      });
+      return NextResponse.json(
+        { error: 'Failed to initialize payment processor' },
+        { status: 502 },
+      );
+    }
   } catch (error: unknown) {
     logger.error('checkout.createIntent.failed', {
       error: error instanceof Error ? error.message : String(error),

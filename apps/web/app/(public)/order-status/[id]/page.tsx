@@ -4,7 +4,6 @@ import { notFound } from 'next/navigation';
 
 import { SHIPPING_RATES, SITE_NAME, SUPPORT_EMAIL } from '@repo/shared/constants';
 import { formatDate, formatUSD } from '@repo/shared/utils';
-import { sanitizeTrackingEvent } from '@repo/shared/utils';
 
 import { canViewOrder } from '@/lib/orders/access';
 import { getOrderById } from '@/lib/queries/orders';
@@ -78,10 +77,10 @@ const TIMELINE_STEPS = [
   { key: 'confirmed', label: 'Order Confirmed', desc: 'Order placed and payment authorized.' },
   {
     key: 'processing',
-    label: 'Carrier Processing',
-    desc: 'Items inspected, packaged, and prepared for carrier pickup.',
+    label: 'Preparing your order',
+    desc: 'We are preparing your pieces for delivery.',
   },
-  { key: 'shipped', label: 'In Transit', desc: 'Dispatched to US Regional Sorting Facility.' },
+  { key: 'shipped', label: 'Shipped', desc: 'On its way to you with our US carrier.' },
   {
     key: 'out_for_delivery',
     label: 'Out for Delivery',
@@ -175,7 +174,7 @@ export default async function OrderStatusPage({
             </h1>
             <p className="mt-1 text-xs text-neutral-500">
               Placed on {formatDate(order.created_at)} · Carrier:{' '}
-              {order.carrier || 'USPS / Regional Carrier'}
+              {order.carrier || 'Assigned when shipped'}
             </p>
           </div>
 
@@ -244,32 +243,26 @@ export default async function OrderStatusPage({
             {order.tracking_events && order.tracking_events.length > 0 ? (
               <div className="relative mt-6 space-y-6 pl-6 before:absolute before:bottom-2 before:left-2 before:top-2 before:w-0.5 before:bg-neutral-200">
                 {order.tracking_events.map((event) => {
-                  const sanitized = sanitizeTrackingEvent({
-                    rawStatus: event.status,
-                    rawLocation: event.location,
-                    rawDescription: event.description,
-                    eventTimestamp: event.event_timestamp,
-                  });
-
+                  // Status + description shown as admins wrote them (D-004);
+                  // internal location is never shown to customers (D-003).
                   return (
                     <div key={event.id} className="relative">
                       <div className="absolute -left-6 top-1 h-2.5 w-2.5 rounded-full border-2 border-white bg-neutral-900 ring-2 ring-neutral-200" />
                       <div className="text-xs font-semibold text-neutral-900">
-                        {sanitized.customerFacingStatus}
+                        {event.customer_facing_status ?? event.status}
                       </div>
-                      <p className="mt-0.5 text-xs leading-relaxed text-neutral-600">
-                        {sanitized.customerFacingDescription}
-                      </p>
+                      {event.description && (
+                        <p className="mt-0.5 text-xs leading-relaxed text-neutral-600">
+                          {event.description}
+                        </p>
+                      )}
                       <div className="mt-1 flex items-center gap-2 text-[11px] text-neutral-400">
                         <span>
-                          {formatDate(sanitized.eventTimestamp, {
+                          {formatDate(event.event_timestamp, {
                             hour: 'numeric',
                             minute: 'numeric',
                           })}
                         </span>
-                        {sanitized.customerFacingLocation && (
-                          <span>· {sanitized.customerFacingLocation}</span>
-                        )}
                       </div>
                     </div>
                   );
@@ -278,8 +271,8 @@ export default async function OrderStatusPage({
               </div>
             ) : (
               <div className="mt-4 rounded-lg bg-neutral-50 p-4 text-xs leading-relaxed text-neutral-600">
-                Your order is currently processing at the fulfillment center. Detailed carrier
-                milestones will populate as the package travels through the regional network.
+                We&apos;re preparing your order. Updates will appear here as it moves toward
+                delivery.
               </div>
             )}
           </div>

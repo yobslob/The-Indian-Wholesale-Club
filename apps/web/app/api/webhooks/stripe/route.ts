@@ -138,7 +138,7 @@ export async function POST(req: Request): Promise<NextResponse> {
               payment_intent_id: paymentIntent.id,
               payment_status: 'paid',
               shipping_address: payload.shippingAddress as unknown as import('@repo/shared/types').Json,
-              carrier: 'USPS / Regional Carrier',
+              carrier: null, // set by an admin when the order ships
             })
             .select('id, order_number, status, total_cents, currency')
             .single();

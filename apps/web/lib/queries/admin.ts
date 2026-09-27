@@ -1,8 +1,4 @@
-import {
-  canTransitionOrder,
-  mapTrackingMilestoneToOrderStatus,
-  sanitizeTrackingEvent,
-} from '@repo/shared/utils';
+import { canTransitionOrder } from '@repo/shared/utils';
 
 import { logger } from '@/lib/logger';
 import { supabaseAdmin } from '@/lib/supabase/admin';
@@ -253,33 +249,30 @@ export async function updateAdminOrderStatus(
       return { success: false, error: updateError.message };
     }
 
-    // Automatically create a corresponding sanitized tracking event if status was updated
-    const milestoneMap: Record<OrderStatusEnum, string> = {
-      pending: 'Order Received',
-      confirmed: 'Order Confirmed',
-      processing: 'Processing & Quality Inspection',
-      shipped: 'In Transit',
-      in_transit: 'In Transit',
-      out_for_delivery: 'Out for Delivery',
+    // Record the status change as a customer-facing event. Labels follow D-034; the
+    // text is stored as-is (no origin rewriting, D-004) and carries no operations
+    // detail (D-003). Transitional until order_events replaces tracking_events (R3/R5).
+    const customerLabel: Record<OrderStatusEnum, string> = {
+      pending: 'Order received',
+      confirmed: 'Confirmed',
+      processing: 'Preparing your order',
+      shipped: 'Shipped',
+      in_transit: 'In transit',
+      out_for_delivery: 'Out for delivery',
       delivered: 'Delivered',
-      cancelled: 'Order Cancelled',
-      refunded: 'Order Refunded',
+      cancelled: 'Cancelled',
+      refunded: 'Refunded',
     };
-
-    const sanitized = sanitizeTrackingEvent({
-      rawStatus: payload.status,
-      rawLocation: 'Carrier Regional Hub',
-      rawDescription: `Order status updated to ${milestoneMap[payload.status] || payload.status}.`,
-    });
+    const label = customerLabel[payload.status] ?? payload.status;
 
     const { error: eventError } = await client.from('tracking_events').insert({
       order_id: orderId,
-      status: sanitized.customerFacingStatus,
+      status: label,
       raw_status: payload.status,
-      location: sanitized.customerFacingLocation,
-      description: sanitized.customerFacingDescription,
-      customer_facing_status: sanitized.customerFacingStatus,
-      event_timestamp: sanitized.eventTimestamp,
+      location: null,
+      description: `Order status updated: ${label}.`,
+      customer_facing_status: label,
+      event_timestamp: new Date().toISOString(),
     });
 
     if (eventError) {
@@ -847,31 +840,29 @@ export async function getAdminCustomers(
 }
 
 // ==========================================
-// 7. Stealth Logistics & Tracking Events
+// 7. Order updates (tracking events)
 // ==========================================
 
+/**
+ * Admin-posted order update. Status and description are shown to the customer exactly
+ * as written (D-004); location is internal only (D-003). Does not change the order's
+ * status; admins change status explicitly with updateAdminOrderStatus.
+ */
 export async function addAdminTrackingEvent(
   payload: AdminCreateTrackingEventInput,
   client: SupabaseClient<Database> = supabaseAdmin,
 ): Promise<{ success: boolean; eventId?: string; error?: string }> {
   try {
-    const sanitized = sanitizeTrackingEvent({
-      rawStatus: payload.status,
-      rawLocation: payload.rawLocation,
-      rawDescription: payload.rawDescription,
-      eventTimestamp: payload.eventTimestamp,
-    });
-
     const { data, error } = await client
       .from('tracking_events')
       .insert({
         order_id: payload.orderId,
-        status: sanitized.customerFacingStatus,
+        status: payload.status,
         raw_status: payload.status,
-        location: sanitized.customerFacingLocation,
-        description: sanitized.customerFacingDescription,
-        customer_facing_status: sanitized.customerFacingStatus,
-        event_timestamp: sanitized.eventTimestamp,
+        location: payload.rawLocation ?? null,
+        description: payload.rawDescription ?? null,
+        customer_facing_status: payload.status,
+        event_timestamp: payload.eventTimestamp ?? new Date().toISOString(),
       })
       .select('id')
       .single();
@@ -880,123 +871,11 @@ export async function addAdminTrackingEvent(
       return { success: false, error: error?.message || 'Failed to insert tracking event' };
     }
 
-    // Advance order status if milestone indicates advancement and transition is valid (H13)
-    const nextOrderStatus = mapTrackingMilestoneToOrderStatus(sanitized.customerFacingStatus);
-
-    const { data: currentOrder } = await client
-      .from('orders')
-      .select('status')
-      .eq('id', payload.orderId)
-      .maybeSingle();
-
-    if (nextOrderStatus && currentOrder && canTransitionOrder(currentOrder.status, nextOrderStatus)) {
-      const { error: statusError } = await client
-        .from('orders')
-        .update({ status: nextOrderStatus, updated_at: new Date().toISOString() })
-        .eq('id', payload.orderId);
-
-      if (statusError) {
-        return { success: false, error: statusError.message };
-      }
-    }
-
     return { success: true, eventId: data.id };
-
   } catch (err) {
     return {
       success: false,
       error: err instanceof Error ? err.message : 'Error adding tracking event',
-    };
-  }
-}
-
-export async function getAdminLogisticsOverview(
-  client: SupabaseClient<Database> = supabaseAdmin,
-): Promise<{
-  activeShipments: AdminOrderListItem[];
-  recentEvents: TrackingEvent[];
-  stats: {
-    totalInTransit: number;
-    deliveredCount: number;
-    delayedCount: number;
-    flaggedScansCount: number;
-  };
-}> {
-  try {
-    // 1. Fetch active shipments (orders with status confirmed, processing, shipped, in_transit, out_for_delivery)
-    const { data: activeOrders } = await client
-      .from('orders')
-      .select('*, order_items(id)')
-      .in('status', ['confirmed', 'processing', 'shipped', 'in_transit', 'out_for_delivery'])
-      .order('created_at', { ascending: false })
-      .limit(20);
-
-    const activeShipments: AdminOrderListItem[] = (activeOrders || []).map((row) => {
-      const addr = (row.shipping_address as Record<string, unknown>) || {};
-      const orderItemsList = (row.order_items as unknown as Array<{ id: string }>) || [];
-      return {
-        ...row,
-        customerEmail: (addr.email as string) || 'guest@example.com',
-        customerName: (addr.fullName as string) || (addr.full_name as string) || 'Valued Customer',
-        itemCount: orderItemsList.length,
-      };
-    });
-
-    // 2. Fetch recent tracking events
-    const { data: events } = await client
-      .from('tracking_events')
-      .select('*')
-      .order('event_timestamp', { ascending: false })
-      .limit(25);
-
-    const recentEvents = events || [];
-
-    // 3. Real aggregates for the KPI stats - never fabricated (C9)
-    const delayedBefore = new Date(Date.now() - 10 * 24 * 60 * 60 * 1000).toISOString();
-    const [deliveredRes, transitRes, delayedRes, flaggedRes] = await Promise.all([
-      client.from('orders').select('id', { count: 'exact', head: true }).eq('status', 'delivered'),
-      client
-        .from('orders')
-        .select('id', { count: 'exact', head: true })
-        .in('status', ['shipped', 'in_transit', 'out_for_delivery']),
-      // Active longer than the longest advertised window (10d > 7d standard) = delayed.
-      client
-        .from('orders')
-        .select('id', { count: 'exact', head: true })
-        .in('status', ['confirmed', 'processing', 'shipped', 'in_transit', 'out_for_delivery'])
-        .lt('created_at', delayedBefore),
-      client
-        .from('tracking_events')
-        .select('id', { count: 'exact', head: true })
-        .eq('customer_facing_status', 'Exception / Hub Delay'),
-    ]);
-    for (const res of [deliveredRes, transitRes, delayedRes, flaggedRes]) {
-      if (res.error) {
-        console.warn('[Admin Queries] logistics stat count failed:', res.error.message);
-      }
-    }
-
-    return {
-      activeShipments,
-      recentEvents,
-      stats: {
-        totalInTransit: transitRes.count ?? 0,
-        deliveredCount: deliveredRes.count ?? 0,
-        delayedCount: delayedRes.count ?? 0,
-        flaggedScansCount: flaggedRes.count ?? 0,
-      },
-    };
-  } catch (err) {
-    console.error('[Admin Queries] getAdminLogisticsOverview exception:', err);
-    return {
-      activeShipments: [],
-      recentEvents: [],
-      stats: {
-        totalInTransit: 0,
-        deliveredCount: 0,
-        delayedCount: 0,
-        flaggedScansCount: 0,
-      },
     };
   }
 }

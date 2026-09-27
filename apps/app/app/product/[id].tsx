@@ -271,12 +271,11 @@ export default function ProductDetailScreen(): React.JSX.Element {
                   {`• Free standard US delivery on orders over $${FREE_SHIPPING_THRESHOLD_CENTS / 100}`}
                 </Text>
                 <Text style={styles.bulletItem}>
-                  {`• Standard shipping: ${SHIPPING_RATES.standard.windowLabel} via domestic carrier network`}
+                  {`• Standard shipping: ${SHIPPING_RATES.standard.windowLabel}`}
                 </Text>
                 <Text style={styles.bulletItem}>
                   {`• Express priority: ${SHIPPING_RATES.express.windowLabel}`}
                 </Text>
-                <Text style={styles.bulletItem}>• 30-day hassle-free domestic US returns</Text>
               </View>
             )}
           </View>

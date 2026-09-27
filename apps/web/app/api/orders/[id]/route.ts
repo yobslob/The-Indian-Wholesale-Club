@@ -1,7 +1,5 @@
 import { NextResponse } from 'next/server';
 
-import { sanitizeTrackingEvent } from '@repo/shared/utils';
-
 import { logger } from '@/lib/logger';
 import { getOrderById } from '@/lib/queries/orders';
 import { supabaseAdmin } from '@/lib/supabase/admin';
@@ -78,28 +76,21 @@ export async function GET(req: Request, context: RouteContext): Promise<NextResp
       );
     }
 
-    // 3. Sanitize tracking events for customer stealth protection (N9)
-    const sanitizedTrackingEvents = (order.tracking_events || []).map((event) => {
-      const sanitized = sanitizeTrackingEvent({
-        rawStatus: event.status,
-        rawLocation: event.location,
-        rawDescription: event.description,
-        eventTimestamp: event.event_timestamp,
-      });
-      return {
-        id: event.id,
-        status: sanitized.customerFacingStatus,
-        customer_facing_status: sanitized.customerFacingStatus,
-        description: sanitized.customerFacingDescription,
-        location: sanitized.customerFacingLocation,
-        event_timestamp: sanitized.eventTimestamp,
-      };
-    });
+    // 3. Customer-facing events only: status + description as admins wrote them
+    //    (no rewriting, D-004). Internal fields (raw_status, location) are never
+    //    returned to customers (D-003).
+    const customerTrackingEvents = (order.tracking_events || []).map((event) => ({
+      id: event.id,
+      status: event.customer_facing_status ?? event.status,
+      customer_facing_status: event.customer_facing_status ?? event.status,
+      description: event.description,
+      event_timestamp: event.event_timestamp,
+    }));
 
     return NextResponse.json({
       order: {
         ...order,
-        tracking_events: sanitizedTrackingEvents,
+        tracking_events: customerTrackingEvents,
       },
     });
   } catch (err: unknown) {

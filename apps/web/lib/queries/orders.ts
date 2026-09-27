@@ -288,7 +288,7 @@ export async function createOrderInDb(
         // Type alias above makes the payload structurally assignable to the
         // JSONB column - no unchecked cast at this DB boundary (M13).
         shipping_address: shippingAddress,
-      carrier: 'USPS / Regional Carrier',
+      carrier: null, // set by an admin when the order ships
       estimated_delivery_date: estimatedDeliveryDate,
     })
     .select('*')

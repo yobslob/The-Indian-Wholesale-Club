@@ -50,6 +50,5 @@ export function calcDiscountPercent(originalPrice: number, salePrice: number): n
   return Math.round(((originalPrice - salePrice) / originalPrice) * 100);
 }
 
-export * from './stealth-sanitizer';
 export * from './checkout';
 export * from './order-state-machine';

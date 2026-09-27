@@ -77,9 +77,9 @@ export const createPaymentIntentSchema = z.object({
   promoCode: z.string().optional(),
   paymentIntentId: z
     .string()
-    .regex(/^(?:pi_|mock_pi_)[A-Za-z0-9_-]+$/, 'Invalid payment intent id')
+    .regex(/^pi_[A-Za-z0-9_-]+$/, 'Invalid payment intent id')
     .optional(),
-  paymentProvider: z.enum(['stripe', 'stripe_simulator']).default('stripe'),
+  paymentProvider: z.literal('stripe').default('stripe'),
 });
 
 export type CreatePaymentIntentInput = z.infer<typeof createPaymentIntentSchema>;
@@ -183,15 +183,3 @@ export const adminCreateTrackingEventSchema = z.object({
 });
 
 export type AdminCreateTrackingEventInput = z.infer<typeof adminCreateTrackingEventSchema>;
-
-export const carrierWebhookPayloadSchema = z.object({
-  trackingNumber: z.string().min(2),
-  carrier: z.string().default('Carrier Partner'),
-  status: z.string(),
-  statusDetails: z.string().optional(),
-  location: z.string().optional(),
-  timestamp: z.string().optional(),
-  signature: z.string().optional(),
-});
-
-export type CarrierWebhookPayload = z.infer<typeof carrierWebhookPayloadSchema>;

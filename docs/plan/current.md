@@ -1,15 +1,15 @@
 # Current status
 
 ## Resume here
-**R1 (docs system) is committed and waiting at the founder review checkpoint.** No application code has changed since
-baseline `d5342ae`. Next: the founder reviews the docs (see the list below) and runs the baseline check. After approval, start **R2**.
+**R1 approved (D-023). R2 committed, unverified: waiting for a founder `check.mjs` run.** Next: **R3** (new DB baseline on local Supabase).
 
 ## Steps
 | Step | Status | Evidence |
 |---|---|---|
 | R0 Safety net | ✅ done · baseline timings **pending** | commit `d5342ae`, tag `pre-restructure`, pushed by founder 2026-09-27 (`git status -sb` → `main...origin/main`) |
-| R1 Docs system | ✅ committed · ⏸ awaiting founder review | commit "docs: R1 – new docs system for IWC" (2026-09-27) |
-| R2 – R8 | not started | — |
+| R1 Docs system | ✅ done, approved 2026-09-28 (D-023) | commits "docs: R1 …", "docs: founder approvals …" |
+| R2 Remove dead paths | ✅ committed · **unverified** (no `check.mjs` run yet) | commit "refactor: R2 …" (2026-09-28). Proof: the dead-path search (roadmap R2) matches only `apps/web/tests/api-routes.test.ts`, which asserts old `mock_pi_` ids are rejected. All 25 edited TS/TSX files compile-checked by Claude (syntax + undefined names, no dependency types) with 0 problems |
+| R3 – R8 | not started | — |
 
 ## Verification log (facts only. Add a row per `check.mjs` run)
 | Date | Commit | Steps | Result | Key numbers |
@@ -20,11 +20,15 @@ baseline `d5342ae`. Next: the founder reviews the docs (see the list below) and 
 INV-1 … INV-9: **not implemented** (planned in R3).
 
 ## Waiting on the founder
-1. Push the R1 commit.
-2. Run the baseline on the unchanged app code: `node scripts/check.mjs` from `C:\kod\root` (needs `pnpm install` done and
-   `apps/web/.env` present). Then tell Claude, who reads `.checks/latest.json`.
-3. Review, in order: `docs/decisions.md` (especially the **proposed** entries and the D-003 interpretation) →
-   `docs/questions.md` (answer what you can) → `docs/product.md` → `docs/flows.md` → `docs/storefront.md` → `docs/admin.md`.
+1. `git push`.
+2. **Baseline** (old code, before R2): `git checkout 11127d8` → `node scripts/check.mjs` → `git checkout main`.
+   Then copy `.checks/latest.json` to `.checks/baseline.json`.
+3. **After R2:** `node scripts/check.mjs`. Then tell Claude, who reads `.checks/latest.json` and fills the verification log.
+
+## Known leftovers (tracked, not forgotten)
+- Brand strings still say "ROOT" (`SITE_NAME`, footers, emails, app header) → rebrand sweep in R5/R6 (D-009).
+- Old `SHIPPING_RATES` windows (5–7 / 2–3 days) are still shown. They are replaced by cycle-based windows (D-008) in R4/R5.
+- The founder's local `apps/web/.env` still has unused `RAZORPAY_*` / `TRACKING_PROXY_*` lines, which are safe to delete (Claude never edits `.env`).
 
 ## Session notes (environment facts, re-check each session)
 - Claude's sandboxes (cloud and the VM on the founder's PC) get **403 from the npm registry**, and GitHub is unreachable from the VM

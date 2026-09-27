@@ -971,26 +971,3 @@ export interface AdminCustomerListItem {
   lastOrderDate: string | null;
 }
 
-export type CustomerFacingMilestone =
-  | 'Order Confirmed'
-  | 'Processing & Quality Inspection'
-  | 'In Transit'
-  | 'Out for Delivery'
-  | 'Delivered'
-  | 'Exception / Hub Delay';
-
-export interface SanitizedTrackingEvent {
-  rawStatus: string;
-  rawLocation?: string | null;
-  rawDescription?: string | null;
-  sanitizedStatus?: string;
-  sanitizedLocation?: string;
-  sanitizedDescription?: string;
-  customerFacingStatus: string;
-  customerFacingLocation: string;
-  customerFacingDescription: string;
-  customerFacingMilestone?: CustomerFacingMilestone;
-  isOriginConcealed?: boolean;
-  flaggedForReview: boolean;
-  eventTimestamp: string;
-}

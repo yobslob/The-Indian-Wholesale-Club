@@ -43,8 +43,8 @@ export async function GET(): Promise<NextResponse> {
     latencyMs,
     services: {
       database: dbStatus,
-      stripe: stripeConfigured ? 'configured' : 'simulator',
-      resend: resendConfigured ? 'configured' : 'simulator',
+      stripe: stripeConfigured ? 'configured' : 'not_configured',
+      resend: resendConfigured ? 'configured' : 'not_configured',
     },
   });
 }
