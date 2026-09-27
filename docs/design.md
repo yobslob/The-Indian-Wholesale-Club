@@ -31,8 +31,19 @@
 7. **Light and dark:** tokens support both. Dark mode on customer pages is optional and decided at mockup time.
 
 ## Tokens (`packages/tokens`, created in R4)
-One source for web (Tailwind preset) and app (NativeWind): colour roles (bg, surface, text, muted, border, brand,
-accent, success, warning, danger), type scale, spacing, radii, shadows, motion durations. Components use roles, never raw hex.
+One source for web (Tailwind preset) and app (NativeWind): `packages/tokens/tokens.js` → `preset.js`. Components use
+roles, never raw hex. Values are **placeholders** (the pre-restructure UI's own colours) until the mockups are approved.
+| Role | Tailwind name | Use |
+|---|---|---|
+| page background | `canvas` | `bg-canvas` |
+| cards, panels | `surface` | `bg-surface` |
+| main / secondary text | `ink`, `ink-muted` | `text-ink`, `text-ink-muted` |
+| borders | `line` | `border-line` |
+| IWC brand | `brand` | buttons, logo |
+| region accent (fallback) | `region` | overridden per region by `regions.accent_color` |
+| status | `positive`, `caution`, `danger` | alerts, badges |
+Also `rounded-sm/md/lg` and `duration-fast/base/slow`. The names avoid the legacy theme's keys (`primary`, `accent`,
+`success`, …) until R5/R6 delete it. A test enforces this. Type scale, spacing and shadows are added with the mockups.
 
 ## Accessibility (non-negotiable)
 WCAG 2.2 AA: contrast, focus states, keyboard navigation, alt text on every product image (entered at listing),

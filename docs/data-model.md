@@ -50,7 +50,10 @@ feature), `product_images` (→ `product_media`), the `size_enum` type (→ `opt
 
 ## Store read path (`store_*`, D-017)
 Views: `store_regions`, `store_categories`, `store_products`, `store_variants`, `store_media`, `store_orders`,
-`store_order_items`, `store_order_events`. Function: `store_next_delivery()` ("order by" + next window, D-035).
+`store_order_items`, `store_order_events`. Functions: `store_next_delivery()` ("order by" + next window, D-035), and
+one-round-trip page reads (PR-2, migration 2) that read **only** the views: `store_home()`, `store_region_page(slug)`,
+`store_product_page(region, slug)`, `store_my_order(number)` (signed-in). `guest_order_lookup(number, email)` returns the
+same shape for guests and is **service-only** (the server route rate-limits it). A test keeps its fields identical to the views'.
 They run with the owner's rights and expose only whitelisted columns (`storefront.md`). `store_orders.customer_status`
 collapses internal statuses into what customers see (`flows.md` §8).
 
@@ -63,6 +66,7 @@ collapses internal statuses into what customers see (`flows.md` §8).
 | `record_payout(vendor, pickups[], method, …)` | admin | §5: computes the amount from pickups, one payout per pickup |
 | `change_delivery_window(order, from, to, note)` | admin | §7: the only way to move a window (INV-6) |
 | `increment_promo_uses(promo)` | service | guarded promo redemption |
+| `admin_set_listed_qty(variant, qty, note)` | admin | stock correction with a ledger note. It also counts as re-confirmed with the shop |
 
 **Privileges rule:** Supabase grants every new function to everyone by default. Any migration adding a function must set
 its grants explicitly. `schema.test.sql` fails if anon/customers can execute anything beyond the whitelisted functions.

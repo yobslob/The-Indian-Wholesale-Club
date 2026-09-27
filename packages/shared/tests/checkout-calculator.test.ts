@@ -64,9 +64,7 @@ describe('Checkout Calculations & Financial Rules (Shared Source of Truth)', () 
       valid_from: '2026-01-01',
       valid_until: null,
       is_active: true,
-      description: 'Free Shipping',
       created_at: '',
-      updated_at: '',
     });
 
     assert.equal(breakdown.subtotalCents, 5000);
@@ -88,9 +86,7 @@ describe('Checkout Calculations & Financial Rules (Shared Source of Truth)', () 
       valid_from: '2026-01-01',
       valid_until: null,
       is_active: true,
-      description: '10% off',
       created_at: '',
-      updated_at: '',
     });
 
     assert.equal(breakdown.subtotalCents, 10000);

@@ -37,6 +37,7 @@
   "devDependencies": {
     "@babel/core": "^7.25.0",
     "@repo/eslint-config": "workspace:*",
+    "@repo/tokens": "workspace:*",
     "@repo/typescript-config": "workspace:*",
     "@types/node": "^22.13.0",
     "@types/react": "~18.3.0",

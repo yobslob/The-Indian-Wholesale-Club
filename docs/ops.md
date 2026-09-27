@@ -27,7 +27,8 @@ layer, D-004), `DIRECT_URL` (unused by code).
 
 ## Database workflow (from R3)
 - Schema changes = a new file in `supabase/migrations/`. Never edit an applied migration.
-- Generate types after every schema change into `packages/db` (the command is added in R4 as a root script).
+- After every schema change: `npx supabase db reset`, then **`pnpm db:types`** (writes `packages/db/src/database.types.ts`,
+  UTF-8), then commit it. Never edit that file by hand.
 - **Local DB (Docker Desktop running):** `npx supabase start` once, then `npx supabase db reset` rebuilds it from
   migrations + seeds (`supabase/config.toml` `[db.seed]`: regions, categories, demo). Studio: http://127.0.0.1:54323.
 - **DB tests:** `node scripts/check.mjs db` (= reset + `scripts/db-test.mjs`). It refuses non-local databases.

@@ -1,7 +1,8 @@
 /** @type {import('tailwindcss').Config} */
 module.exports = {
   content: ['./app/**/*.{js,ts,jsx,tsx}', './components/**/*.{js,ts,jsx,tsx}'],
-  presets: [require('nativewind/preset')],
+  // IWC design tokens (bg-canvas, text-ink, …): docs/design.md. The legacy colours below go in R6.
+  presets: [require('nativewind/preset'), require('@repo/tokens/preset')],
   theme: {
     extend: {
       colors: {

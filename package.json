@@ -8,6 +8,8 @@
     "typecheck": "turbo typecheck",
     "test": "turbo test",
     "check": "node scripts/check.mjs",
+    "db:types": "node scripts/gen-db-types.mjs",
+    "db:test": "node scripts/db-test.mjs",
     "script:connections": "tsx scripts/test-connections.ts",
     "script:checkout-intent": "tsx scripts/test-checkout-intent.ts",
     "script:health": "tsx scripts/test-health.ts",

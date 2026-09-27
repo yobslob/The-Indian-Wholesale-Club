@@ -53,6 +53,34 @@ begin
   return v_count;
 end $$;
 
+-- Every object key anywhere inside a JSON document (for "no forbidden keys" checks).
+create function tests.json_keys(p_doc jsonb) returns setof text
+language sql immutable as $$
+  with recursive walk(v) as (
+    select p_doc
+    union all
+    select c.value
+    from walk w
+    cross join lateral (
+      select value from jsonb_each(case when jsonb_typeof(w.v) = 'object' then w.v else '{}'::jsonb end)
+      union all
+      select value from jsonb_array_elements(case when jsonb_typeof(w.v) = 'array' then w.v else '[]'::jsonb end)
+    ) c
+  )
+  select distinct k.key
+  from walk w
+  cross join lateral jsonb_object_keys(case when jsonb_typeof(w.v) = 'object' then w.v else '{}'::jsonb end) as k(key);
+$$;
+
+-- Keys that must never appear in anything a customer can read (INV-1).
+create function tests.forbidden_keys() returns text[]
+language sql immutable as $$
+  select array['vendor_id', 'shop_price_paise', 'origin_town', 'is_placeholder', 'qty_listed', 'qty_reserved',
+               'qty_confirmed_at', 'sku', 'cycle_id', 'notes', 'internal_note', 'user_id', 'licences',
+               'payment_intent_id', 'promo_code_id', 'content_status', 'visible_to_customer', 'created_by',
+               'has_origin_label', 'actor', 'shop_name', 'weight_g'];
+$$;
+
 create function tests.act_as(p_user uuid) returns void
 language sql as $$
   select set_config('request.jwt.claims', json_build_object('sub', p_user, 'role', 'authenticated')::text, true);

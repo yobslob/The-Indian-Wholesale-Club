@@ -1,0 +1,29 @@
+{
+  "name": "@repo/db",
+  "version": "0.0.0",
+  "private": true,
+  "description": "Typed Supabase access for IWC. store/* = customer-safe (store_* only), admin/* = admin RLS, server/* = service role.",
+  "main": "./src/index.ts",
+  "types": "./src/index.ts",
+  "exports": {
+    ".": "./src/index.ts",
+    "./store": "./src/store/index.ts",
+    "./admin": "./src/admin/index.ts",
+    "./server": "./src/server/index.ts"
+  },
+  "scripts": {
+    "typecheck": "tsc --noEmit"
+  },
+  "dependencies": {
+    "@repo/shared": "workspace:*",
+    "zod": "^3.24.2"
+  },
+  "peerDependencies": {
+    "@supabase/supabase-js": "^2.49.1"
+  },
+  "devDependencies": {
+    "@repo/typescript-config": "workspace:*",
+    "@supabase/supabase-js": "^2.49.1",
+    "typescript": "^5.8.2"
+  }
+}

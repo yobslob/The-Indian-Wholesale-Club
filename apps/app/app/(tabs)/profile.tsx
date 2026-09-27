@@ -5,8 +5,8 @@ import { Alert, ScrollView, StyleSheet, Text, TouchableOpacity, View } from 'rea
 import { SafeAreaView } from 'react-native-safe-area-context';
 
 import { Header } from '../../components/ui/header';
-import { supabase } from '../../lib/supabase';
 import { useCartStore } from '../../lib/store/cart';
+import { supabase } from '../../lib/supabase';
 
 import type { User } from '@supabase/supabase-js';
 

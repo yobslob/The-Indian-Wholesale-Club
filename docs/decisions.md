@@ -154,3 +154,8 @@ are settled (Q-10). Spices can still be drafted in the admin.
 
 **D-036 · 2026-09-28 · founder (was Q-14): USD only, no compare-at prices.**
 
+**D-037 · 2026-09-28 · proposed: Keep `node:test` + `tsx` as the unit-test runner**
+Supersedes the "Vitest replaces node:test" line of the R1 `engineering.md` (approved in D-023). Why: the baseline test step
+took 1.8 s (`.checks/baseline.json`), and Vitest would add a dependency without solving a measured problem. What was wrong
+with the old tests was their content, not the runner (they asserted on SQL text).
+

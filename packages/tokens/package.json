@@ -1,0 +1,15 @@
+{
+  "name": "@repo/tokens",
+  "version": "0.0.0",
+  "private": true,
+  "description": "Design tokens: one source for web (Tailwind) and app (NativeWind). See docs/design.md.",
+  "main": "./tokens.js",
+  "types": "./tokens.d.ts",
+  "exports": {
+    ".": { "types": "./tokens.d.ts", "default": "./tokens.js" },
+    "./preset": "./preset.js"
+  },
+  "scripts": {
+    "test": "node --test tests/preset.test.js"
+  }
+}

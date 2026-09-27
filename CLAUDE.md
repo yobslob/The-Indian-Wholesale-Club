@@ -61,7 +61,8 @@ This file is the only one to read at the start of every session. Everything else
 
 ## Repo map
 `apps/web` Next.js storefront + `/admin` (hidden from R5) · `apps/app` Expo app (customer; admin mode from R6) ·
-`packages/shared` pure domain logic · `packages/*-config` tooling presets · `supabase/` migrations + seed ·
+`packages/shared` pure domain logic (`src/domain`) · `packages/db` typed DB access (`store`/`admin`/`server`) ·
+`packages/tokens` design tokens · `packages/*-config` tooling presets · `supabase/` migrations + seed + SQL tests ·
 `scripts/` dev scripts (`check.mjs` = verification) · `docs/` everything above.
 The target layout is in `docs/engineering.md` §Layout.
 
@@ -71,8 +72,9 @@ Claude's sandboxes are blocked from the npm registry, so Claude can't install, b
   GitHub (`yobslob/The-Indian_Wholesale-Club`, branch `main`).
 - To verify, the founder runs `node scripts/check.mjs` (or named steps, e.g. `node scripts/check.mjs test`) and tells
   Claude. Claude reads `.checks/latest.json` and records the numbers in `docs/plan/current.md`.
-- Claude *can* run git, `node --check`, dependency-free Node scripts, and **SQL on a local Postgres 16** with the Supabase
-  stub (`engineering.md` §Testing), so DB changes are tested by Claude before the founder's run.
+- Claude *can* run git, `node --check`, dependency-free Node scripts, **SQL on a local Postgres 16** with the Supabase
+  stub, and the repo's `tsc` on `packages/*` using type definitions copied from the founder's `node_modules`
+  (`engineering.md` §Testing). DB changes and package code are checked by Claude before the founder's run.
 
 ## Session ritual
 1. Read this file, then the "Resume here" section of `docs/plan/current.md`.

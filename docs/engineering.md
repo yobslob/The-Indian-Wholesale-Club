@@ -39,7 +39,7 @@ response ≤ 100 ms on a local production build · `turbo build --filter=web` �
 A test must **fail when the rule it protects breaks**. Never assert on source-code or SQL text.
 | Layer | Tool | What | Where |
 |---|---|---|---|
-| Unit | Vitest | pure logic: pricing, delivery window, state machines, zod schemas | `packages/shared/tests` |
+| Unit | `node:test` via `tsx` (D-037) | pure logic: pricing, delivery window, status labels, attribute schemas, token preset | `packages/shared/tests`, `packages/tokens/tests` |
 | DB | plain SQL (`supabase/tests/*.test.sql`), run by `check.mjs db` → `scripts/db-test.mjs` against local Supabase (D-031) | invariants INV-1…INV-9 and the business functions, as anon / customer / admin (`request.jwt.claims`), each file rolled back | `supabase/tests/` |
 | E2E smoke | Playwright | (1) region → product → cart → checkout (Stripe test card) → order page · (2) admin sign-in → list product → publish → visible on the storefront · (3) a customer gets 404 on `/admin`, and page source has no vendor fields | `apps/web/e2e` |
 The old suites (stealth, SQL-text RLS, mocked routes) are deleted in R2/R3/R7. Everything runs through `node scripts/check.mjs`.
@@ -49,6 +49,10 @@ emulates the few Supabase pieces the schema needs (roles, `auth.uid()`, storage 
 migrations → seeds → `_helpers.sql` → each `*.test.sql` with `psql -v ON_ERROR_STOP=1`. After adding a test, break the rule
 on purpose and confirm the test fails (mutation check). The founder's run on real local Supabase (Postgres 15) is still
 the evidence of record. Keep SQL PG15-compatible.
+**Claude can type-check too:** the founder's `node_modules/.pnpm` holds real package folders (TypeScript 5.9.3, supabase-js
+2.117.1, zod, @types/node). Claude copies their type definitions into its sandbox and runs the repo's own `tsc` on
+`packages/*`. Until `pnpm db:types` has been run, Claude type-checks `@repo/db` against an approximate
+`database.types.ts` generated from its local Postgres (not committed; the official file replaces it).
 **Migrations:** never edit an applied migration. Every new function gets explicit grants (Supabase grants all by default), or `schema.test.sql` fails.
 
 ## Layout (target)
@@ -57,7 +61,7 @@ apps/web/app/(store)/…     customer routes (storefront.md)       apps/web/app/
 apps/web/features/<name>/  regions, catalog, cart, checkout, orders, account, admin/<section>
 apps/web/components/ui/    design-system primitives only          apps/web/lib/          infra: supabase, stripe, email, auth, log
 apps/app/app/(customer)/…  customer tabs                           apps/app/app/(admin)/… admin mode (lazy)
-packages/db       generated DB types + typed queries: store/* (customer-safe) and admin/*
+packages/db       generated DB types (`pnpm db:types`) + typed queries: store/* (customer-safe, zod) · admin/* · server/*
 packages/shared   pure domain logic + zod schemas (no I/O)         packages/tokens  design tokens → Tailwind + NativeWind
 supabase/migrations  one baseline (R3) + small increments          supabase/seed/  regions, categories, demo (dev only)
 ```
@@ -72,5 +76,5 @@ supabase/migrations  one baseline (R3) + small increments          supabase/seed
 - Every commit leaves typecheck + lint + tests green (verified by `check.mjs` at step boundaries).
 
 ## Tooling changes (planned, measure first)
-Vitest replaces `node:test` + `tsx`. Remove the duplicate lint and type-check from `next build` once turbo runs them in CI. If
+Test runner stays `node:test` + `tsx` (D-037: baseline test step 1.8 s, no new dependency). Remove the duplicate lint and type-check from `next build` once turbo runs them in CI. If
 the baseline shows lint is slow, evaluate Biome as a *proposal* (needs a decision entry). CI runs `check.mjs`-equivalent steps.

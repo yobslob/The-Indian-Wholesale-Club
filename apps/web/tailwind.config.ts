@@ -2,6 +2,8 @@ import type { Config } from 'tailwindcss';
 
 const config = {
   darkMode: ['class'],
+  // IWC design tokens (bg-canvas, text-ink, …): docs/design.md. The legacy colours below go in R5.
+  presets: [require('@repo/tokens/preset')],
   content: ['./components/**/*.{ts,tsx}', './app/**/*.{ts,tsx}', './lib/**/*.{ts,tsx}'],
   theme: {
     extend: {
