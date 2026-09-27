@@ -114,3 +114,43 @@ is the only accepted evidence for build, test and speed claims.
 Adds to D-001: international couriers are not only slow but also very expensive for Indians living abroad.
 > "takes a long time and is very expensive for Indian locals who are abroad."
 (founder review comment on `product.md`)
+
+**D-023 · 2026-09-28 · founder: The docs and all `proposed` decisions are approved**
+The founder reviewed the R1 docs and approved them. Every entry marked `proposed` above (D-003 interpretation, D-004,
+D-006 implementation, D-007 proposal, D-008, D-015 – D-021) now counts as `approved`. Every "current assumption" in
+`questions.md` was accepted as the answer (recorded as D-024 – D-036 below).
+> "All answers in Questions.md are assumed correctly and yes I do have docker desktop and you have the access for it and yes
+> the above markdown is approved you can start."
+
+**D-024 · 2026-09-28 · founder (was Q-1): Order-first only**
+Build only the order-first flow (D-005). Keep room for a future faster option through `orders.fulfilment_mode`. Nothing else is built for it.
+
+**D-025 · 2026-09-28 · founder (was Q-2): Retail to consumers.** No B2B or bulk pricing, and no membership. "Wholesale Club" is only the brand name.
+
+**D-026 · 2026-09-28 · founder (was Q-3, first half): No fixed lead times**
+Admins enter each cycle's dates (cutoff, estimated export, estimated arrival). Nothing is hard-coded. The US carrier is still open (Q-3).
+
+**D-027 · 2026-09-28 · founder (was Q-4): The COO is a full admin**, with the same access as the founder. `desk` only picks the default screen.
+Supersedes the "COO scope is open" note in D-007.
+
+**D-028 · 2026-09-28 · founder (was Q-5, first half): No returns/exchanges flow in the restructure.** Policy text is still needed before launch (Q-5).
+
+**D-029 · 2026-09-28 · founder (was Q-6): Payout records** hold the method, reference and an optional receipt photo.
+
+**D-030 · 2026-09-28 · founder (was Q-7): Piece unavailable at pickup** → refund that item and notify the customer. No substitutes.
+
+**D-031 · 2026-09-28 · founder (was Q-8): Local Supabase via Docker**
+The founder has Docker Desktop. The new schema is developed and tested on local Supabase (`supabase start`) first. The hosted
+dev DB is reset only when the app code matches the new schema (R5).
+
+**D-032 · 2026-09-28 · founder (was Q-10, first half): Spice listings stay unpublished** until the FDA facility and labels
+are settled (Q-10). Spices can still be drafted in the admin.
+
+**D-033 · 2026-09-28 · founder (was Q-11): Sales tax is a flat 8% estimate for now.** Stripe Tax is a later option (F-2).
+
+**D-034 · 2026-09-28 · founder (was Q-12): "Preparing your order"** is the customer-facing status while goods are in India or in transit.
+
+**D-035 · 2026-09-28 · founder (was Q-13): The home page may show "Order by <date>"** for the next delivery window.
+
+**D-036 · 2026-09-28 · founder (was Q-14): USD only, no compare-at prices.**
+

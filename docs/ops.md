@@ -3,7 +3,7 @@
 ## Environments
 | Env | Web | DB | Notes |
 |---|---|---|---|
-| dev | `pnpm dev` on the founder's machine | hosted Supabase dev project (may be reset, D-013) | local Supabase instead is an option (Q-8) |
+| dev | `pnpm dev` on the founder's machine | hosted Supabase dev project (may be reset, D-013) | the new schema is built and tested on local Supabase in Docker first (D-031) |
 | prod | not set up yet. Vercel is the likely host, US region (Q-9) | a separate Supabase project in a US region | hosted in the US (D-003) |
 
 ## Environment variables
@@ -29,7 +29,8 @@ layer, D-004), `DIRECT_URL` (unused by code).
 - Schema changes = a new file in `supabase/migrations/`. Never edit an applied migration.
 - Generate types after every schema change into `packages/db` (the command is added in R4 as a root script).
 - Reset dev = apply the baseline + `seed/regions.sql` + `seed/categories.sql` (+ `seed/demo.sql` in dev only).
-- The first R3 reset wipes the hosted dev DB (allowed, D-013). Claude still announces it before running.
+- R3 builds the new schema on local Supabase (Docker, D-031). The hosted dev DB is wiped to the new schema only in R5, once the app
+  code matches (allowed, D-013). Claude still announces it before running.
 - Admin bootstrap: set `profiles.role = 'admin'` and `desk` for the founder and COO emails, and list them in `ADMIN_EMAILS`.
 
 ## Deploy (to be finalised, Q-9)
@@ -45,8 +46,8 @@ Recorded because they shape the data model and flows. Each needs an owner before
 | Area | Requirement (as understood 2026-09-27) | Where it lands in the product |
 |---|---|---|
 | Clothing labels | garments need country-of-origin ("Made in India"), fibre-content and care labels. Online listings must say "Imported" (FTC textile rules) | origin line on product pages (D-004). Intake records whether a label is attached |
-| Spices (food) | FDA food-facility registration of the maker/packer, FDA Prior Notice for each shipment, importer duties under FSVP, English labels (ingredients, net weight, allergens, origin) | spice listings stay unpublished until Q-10 is answered. `vendors.licences` stores the numbers |
+| Spices (food) | FDA food-facility registration of the maker/packer, FDA Prior Notice for each shipment, importer duties under FSVP, English labels (ingredients, net weight, allergens, origin) | spice listings stay unpublished until Q-10 is answered (D-032). `vendors.licences` stores the numbers |
 | Delivery promises | FTC Mail/Internet Order Rule: ship within the stated time (30 days if none stated), delays need customer consent with a refund option | delivery windows + delay flow (D-008, `flows.md` §7) |
 | Export from India | the exporting entity needs an IEC (Importer-Exporter Code) | cycle export documents |
-| Sales tax | US state sales tax obligations | flat 8% estimate today (Q-11) |
+| Sales tax | US state sales tax obligations | flat 8% estimate (D-033) |
 | Privacy | privacy policy + terms for a US site | info pages (founder input needed) |

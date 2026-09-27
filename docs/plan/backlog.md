@@ -25,8 +25,8 @@ recoverable from tag `pre-restructure`), not re-verified.
 | ID | Item | Blocked by |
 |---|---|---|
 | F-1 | US shipping labels / carrier integration | Q-3 |
-| F-2 | Stripe Tax instead of the flat 8% estimate | Q-11 |
+| F-2 | Stripe Tax instead of the flat 8% estimate | founder decision (D-033) |
 | F-3 | Offline drafts for field listing on weak networks | coding phase |
 | F-4 | Returns / exchanges flow | Q-5 |
-| F-5 | Faster-delivery option (US stock or express) | Q-1 |
+| F-5 | Faster-delivery option (US stock or express) | founder decision (D-024) |
 | F-6 | "Ask for it from home" requests, notify-me, gift boxes, reviews | founder approval |

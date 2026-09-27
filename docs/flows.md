@@ -10,7 +10,7 @@ open ──cutoff──► collecting ──► packed ──► exported ──
                   from vendors)  the export)  to the US)    receives)   each order)
 ```
 - Exactly one cycle is `open` (INV-5). When a cycle hits its cutoff, the next cycle opens immediately. Its dates are entered by an admin.
-- An admin sets each cycle's `cutoff_at`, estimated export and estimated arrival dates. Typical lead times are unknown (Q-3), so nothing is
+- An admin sets each cycle's `cutoff_at`, estimated export and estimated arrival dates. There are no fixed lead times (D-026), so nothing is
   hard-coded.
 - Status changes are manual admin actions. Each one writes an internal `order_event` for every affected order.
 
@@ -19,12 +19,12 @@ open ──cutoff──► collecting ──► packed ──► exported ──
 2. Take photos, then pick the type and category, then fill the name and details. `attributes` are validated per type.
 3. Add variants with their options and the quantity the shop has (`qty_listed`).
 4. Enter the shop price in ₹. The system suggests a USD price from `pricing_settings` (landed cost + margin), and an admin sets the final `price_cents`.
-5. Save as `draft`. An admin reviews it and sets it `live`. Spices stay unpublished until Q-10 is answered.
+5. Save as `draft`. An admin reviews it and sets it `live`. Spices stay unpublished until Q-10 is answered (D-032).
 - `qty_confirmed_at` records when the shop last confirmed quantities. The admin sees listings not confirmed within N days
   (N is set in `pricing_settings`) so they can re-check with the shop.
 
 ## 3. Placing an order (customer)
-1. The cart holds variants. At checkout, the server computes totals: subtotal, promo, shipping, tax (flat 8% estimate, Q-11).
+1. The cart holds variants. At checkout, the server computes totals: subtotal, promo, shipping, tax (flat 8% estimate, D-033).
 2. The server computes the **delivery window** from the open cycle's estimated arrival plus domestic delivery days. It is shown before payment
    (D-008).
 3. Payment: a Stripe PaymentIntent (USD). After confirmation, the server verifies amount, currency and status, and only then
@@ -38,11 +38,11 @@ open ──cutoff──► collecting ──► packed ──► exported ──
 2. The COO visits each shop and marks every piece `picked` (optional photo) or `unavailable`.
 3. `picked` → stock moves from reserved to picked, and the shop price is added to that vendor's payable.
 4. `unavailable` → stock is released, the order item becomes `unavailable`, and the customer is refunded for that item and notified
-   (default. Substitutes are an open question, Q-7). The customer message never mentions shops (D-003).
+   (no substitutes, D-030). The customer message never mentions shops (D-003).
 
 ## 5. Payouts (India desk) [D-005]
 - A vendor's payable is the sum of their `picked` pickups not yet covered by a payout.
-- The COO records a payout (amount ₹, method, reference, optional receipt photo, Q-6) linked to the pickups it covers.
+- The COO records a payout (amount ₹, method, reference, optional receipt photo, D-029) linked to the pickups it covers.
 
 ## 6. Export → arrival → US fulfilment
 1. `packed`: the COO generates the packing list and commercial invoice (CSV/PDF) from the cycle's picked items.
@@ -61,7 +61,7 @@ notice with the new estimate and the option to **cancel for a full refund**. The
 |---|---|
 | `pending_payment` | (no order yet) |
 | `confirmed` (paid, in open cycle) | **Confirmed** |
-| `collecting`, `packed`, `in_transit`, `arrived` | **Preparing your order** (wording pending Q-12) |
+| `collecting`, `packed`, `in_transit`, `arrived` | **Preparing your order** (D-034) |
 | `shipped` | **Shipped** + carrier tracking link |
 | `delivered` | **Delivered** |
 | `cancelled` / `refunded` / partly refunded | **Cancelled** / **Refunded** (with amounts) |

@@ -1,6 +1,6 @@
 # Data model (target)
 
-> **Status:** this is the *target* model, implemented as one new baseline migration in roadmap step R3 (D-020).
+> **Status:** this is the *target* model, implemented as one new baseline migration in roadmap step R3 (D-020), built on local Supabase first (D-031).
 > Until R3 lands, the actual schema is the old one in `supabase/migrations/`. Check `plan/current.md`.
 > This doc lists tables, purpose, visibility and invariants. Column types and constraints live in the migration, not here.
 
@@ -49,7 +49,7 @@ Customer-facing code (storefront, customer screens in the app) may query **only*
 **Orders**
 | Table | Purpose | Visibility |
 |---|---|---|
-| `orders` | number, customer or guest email, internal `status`, `cycle_id`*, `fulfilment_mode` (Q-1), `est_delivery_from/_to` (D-008), money totals (cents, USD), Stripe ids, shipping address snapshot, `tracking_number`, carrier, `notes`* | owner via `store_orders` / admin |
+| `orders` | number, customer or guest email, internal `status`, `cycle_id`*, `fulfilment_mode` (only `order_first` for now, D-024), `est_delivery_from/_to` (D-008), money totals (cents, USD), Stripe ids, shipping address snapshot, `tracking_number`, carrier, `notes`* | owner via `store_orders` / admin |
 | `order_items` | variant + snapshot (product name, variant label, region name), qty, unit price, status (`active`/`unavailable`/`refunded`) | owner via `store_*` / admin |
 | `order_events` | timeline: `customer_message` (shown) or internal note* (admin only) | owner (customer rows only) / admin |
 | `promo_codes` | codes, limits, validity. Validated server-side only | admin |
@@ -70,15 +70,15 @@ text). "Test" = planned location. `current.md` records whether each one exists y
 
 | ID | Invariant | Enforced by | Test |
 |---|---|---|---|
-| INV-1 | anon/customer can't read any admin-only table or column (vendors, pickups, payouts, cycles, stock ledger, pricing, `*` columns) | RLS + `store_*` views | `packages/db/tests/rls.visibility.test.ts` |
-| INV-2 | customers can never UPDATE/DELETE orders, items or events. Orders are created only by the server after payment verification (fixes the hole in old migration `20260926000007`) | RLS | `rls.orders.test.ts` |
-| INV-3 | no overselling: a reservation is one conditional statement, and `qty_listed − qty_reserved ≥ 0` is a CHECK | SQL function + CHECK | `stock.test.ts` (concurrent reservations) |
-| INV-4 | every stock change writes one `stock_movements` row. Totals are trigger-maintained | trigger | `stock.test.ts` |
-| INV-5 | at most one cycle is `open` | partial unique index | `cycles.test.ts` |
-| INV-6 | an order's delivery window is fixed at payment. Any change adds an `order_event` + customer notice (D-008) | server + event | `orders.window.test.ts` |
-| INV-7 | admin = `role = 'admin'` **and** email in `ADMIN_EMAILS` (D-006) | `is_admin()` + server guard | `rls.admin.test.ts` |
-| INV-8 | draft region text and placeholder products never appear in `store_*` output | view filters | `rls.visibility.test.ts` |
-| INV-9 | money columns are integers (`*_cents` USD, `*_paise` INR) | column types | schema review |
+| INV-1 | anon/customer can't read any admin-only table or column (vendors, pickups, payouts, cycles, stock ledger, pricing, `*` columns) | RLS + `store_*` views | `supabase/tests/rls_visibility.test.sql` |
+| INV-2 | customers can never UPDATE/DELETE orders, items or events. Orders are created only by the server after payment verification (fixes the hole in old migration `20260926000007`) | RLS | `rls_orders.test.sql` |
+| INV-3 | no overselling: a reservation is one conditional statement, and `qty_listed − qty_reserved ≥ 0` is a CHECK | SQL function + CHECK | `stock.test.sql` |
+| INV-4 | every stock change writes one `stock_movements` row. Totals are trigger-maintained | trigger | `stock.test.sql` |
+| INV-5 | at most one cycle is `open` | partial unique index | `cycles.test.sql` |
+| INV-6 | an order's delivery window is fixed at payment. Any change adds an `order_event` + customer notice (D-008) | server + event | `orders_window.test.sql` |
+| INV-7 | admin = `role = 'admin'` **and** email in `ADMIN_EMAILS` (D-006) | `is_admin()` + server guard | `rls_admin.test.sql` |
+| INV-8 | draft region text and placeholder products never appear in `store_*` output | view filters | `rls_visibility.test.sql` |
+| INV-9 | money columns are integers (`*_cents` USD, `*_paise` INR) | column types | `schema.test.sql` |
 
 ## Seed (R3)
 - `supabase/seed/regions.sql`: all 36 regions. Names and slugs are factual. Greetings, stories and taglines are Claude-drafted

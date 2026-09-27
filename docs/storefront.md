@@ -9,7 +9,7 @@ JSON sent to the browser.
 - **Product:** name, summary, description, story, craft/style name (e.g. "Kanjeevaram silk"), type, category, attributes
   (fibre and care, or ingredients, allergens and shelf life), photos, price, variants (size/colour/weight), availability count, and
   **"Made in India" / "Imported"**.
-- **Delivery:** the estimated delivery window, and "order by <date>" (Q-13).
+- **Delivery:** the estimated delivery window, and "order by <date>" (D-035).
 - **Own orders:** number, items, totals, customer-facing status (`flows.md` §8), delivery window, US carrier + tracking link.
 
 **Never shown:** vendor or shop anything, the shop's town, shop price or cost, cycle codes, pickups, payouts, export or AWB

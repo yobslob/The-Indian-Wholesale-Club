@@ -1,6 +1,6 @@
 # Admin: hidden web panel + app admin mode
 
-Users: founder (US desk) and COO (India desk), both `role = 'admin'` (D-007). COO scope is open (Q-4).
+Users: founder (US desk) and COO (India desk), both `role = 'admin'` with the same access (D-007, D-027).
 Shops never get logins. The founder and COO enter all shop data (D-018).
 
 ## Access model (D-006)
@@ -20,7 +20,7 @@ Shops never get logins. The founder and COO enter all shop data (D-018).
 - Admin screens are bundled in the app binary (mobile apps can't hide code), so all protection is server-side, as on the web.
 
 ## Desks (D-007)
-`profiles.desk` picks the default "Today" screen. Both admins can open every section unless Q-4 changes that.
+`profiles.desk` picks the default "Today" screen. Both admins can open every section (D-027).
 
 ## Sections
 | Section | Job | Main desk | Web | App |

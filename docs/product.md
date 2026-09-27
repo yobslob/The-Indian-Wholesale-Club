@@ -38,7 +38,7 @@ Indians living in the US miss home, and specifically the clothing and spices of 
 
 ## Brand [D-009]
 Name: **The Indian Wholesale Club** (short: IWC). A US-based site, hosted in the US (D-003).
-Whether "Wholesale"/"Club" implies anything functional is open (Q-2). Voice and look: `design.md`.
+Retail to consumers. "Wholesale Club" is only the name, with no B2B or membership (D-025). Voice and look: `design.md`.
 
 ## Principles
 1. **Emotion first.** Each region page should feel like that place: its greeting, its colours, its story. (D-002)
@@ -56,8 +56,7 @@ Whether "Wholesale"/"Club" implies anything functional is open (Q-2). Voice and 
 | App admin mode | founder, COO | field jobs: listing with camera, pickups, payouts, US packing |
 
 ## Not decided yet (see `questions.md`)
-Faster-delivery option (Q-1) · B2B/membership (Q-2) · lead times and carrier (Q-3) · returns (Q-5) · spices
-compliance owner (Q-10) · sales tax (Q-11).
+US carrier (Q-3) · returns policy (Q-5) · domain, support email and hosting (Q-9) · spices compliance owner (Q-10).
 
 ## Later ideas (not scheduled, founder must approve)
 - **"Ask for it from home":** a customer requests an item from a region and the team sources it. This directly replaces asking a relative.

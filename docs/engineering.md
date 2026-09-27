@@ -40,7 +40,7 @@ A test must **fail when the rule it protects breaks**. Never assert on source-co
 | Layer | Tool | What | Where |
 |---|---|---|---|
 | Unit | Vitest | pure logic: pricing, delivery window, state machines, zod schemas | `packages/shared/tests` |
-| DB | Vitest + real Postgres (local Supabase or a test project, Q-8) | invariants INV-1…INV-8 using anon / customer / admin JWTs | `packages/db/tests` |
+| DB | plain SQL run by `check.mjs db` (no npm needed) against local Supabase via Docker (D-031) | invariants INV-1…INV-9, impersonating anon / customer / admin via `request.jwt.claims` | `supabase/tests/*.test.sql` |
 | E2E smoke | Playwright | (1) region → product → cart → checkout (Stripe test card) → order page · (2) admin sign-in → list product → publish → visible on the storefront · (3) a customer gets 404 on `/admin`, and page source has no vendor fields | `apps/web/e2e` |
 The old suites (stealth, SQL-text RLS, mocked routes) are deleted in R2/R7. Everything runs through `node scripts/check.mjs`.
 
