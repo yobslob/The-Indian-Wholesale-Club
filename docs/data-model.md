@@ -1,6 +1,7 @@
 # Data model
 
-> **Status:** implemented in `supabase/migrations/` (R3 baseline, D-020; R4 store page functions; R5 checkout + cycle steps).
+> **Status:** implemented in `supabase/migrations/` (R3 baseline, D-020; R4 store page functions; R5 checkout + cycle steps;
+> migration 4: shipping options + refunds, D-041/D-042).
 > Built and tested on local Supabase first (D-031). The web app uses it since R5; the mobile app switches in R6.
 > See `plan/current.md`. This doc lists tables, purpose, visibility and invariants. Column types and constraints live in the
 > migration, so read it for details and don't copy them here.
@@ -35,8 +36,8 @@ never queried directly from customer code.
 | | `pickups` | one per ordered piece: vendor, cycle, variant, qty, shop price, status, who/when, photo, payout | admin |
 | | `vendor_payouts` | INR paid to a vendor. The amount is computed from the pickups it covers | admin |
 | | `stock_movements` | append-only ledger, written by trigger only (INV-4) | admin (read) |
-| | `pricing_settings` | one row: FX, freight/kg, duty %, margin %, domestic delivery days, stale-listing days, shipping charge + free-shipping threshold (R5). **Starts all NULL** (values: Q-15, Q-16) | admin |
-| Orders | `orders` | number `IWC-YYMMDD-<10 hex>`, email, internal `status`, `cycle_id`*, `fulfilment_mode` (`order_first`, D-024), `est_delivery_from/_to` (D-008), totals in cents (USD only, D-036), Stripe ids, address snapshot, tracking, carrier, `notes`* | owner via `store_orders` / admin |
+| | `pricing_settings` | one row: FX, freight/kg, duty %, margin %, domestic delivery days, stale-listing days, standard shipping + free threshold, express shipping + express days. Price-suggestion values and days start NULL (Q-15, Q-18); shipping prices set by migration 4 (D-041) | admin |
+| Orders | `orders` | number `IWC-YYMMDD-<10 hex>`, email, internal `status`, `cycle_id`*, `fulfilment_mode` (`order_first`, D-024), `shipping_method` (D-041), `est_delivery_from/_to` (D-008), totals in cents (USD only, D-036), `refunded_cents` (D-042), Stripe ids, address snapshot, tracking, carrier, `notes`* | owner via `store_orders` / admin |
 | | `order_items` | snapshot (product, variant label, region name), qty, unit price, status (`active`/`unavailable`/`refunded`) | owner via `store_order_items` / admin |
 | | `order_events` | timeline: `kind` + `visible_to_customer`. The app turns `kind` into copy (no customer text stored in SQL). `internal_note`* | owner (visible rows) / admin |
 | | `promo_codes` | codes, limits, validity. Redeemed via `increment_promo_uses()` | admin |
@@ -70,7 +71,10 @@ collapses internal statuses into what customers see (`flows.md` §8).
 | `record_payout(vendor, pickups[], method, …)` | admin | §5: computes the amount from pickups, one payout per pickup |
 | `change_delivery_window(order, from, to, note)` | admin | §7: the only way to move a window (INV-6) |
 | `increment_promo_uses(promo)` | service | guarded promo redemption |
-| `checkout_context(variant_ids, promo)` | service | §3 step 1: pricing inputs for a bag (read-only) |
+| `checkout_context(variant_ids, promo)` | service | §3 step 1: pricing inputs for a bag, incl. the express option when set up (read-only) |
+| `item_refund_cents(item)`, `cancel_refund_cents(order, reason)` | admin | D-042 refund amounts (the only place the rules live) |
+| `refund_order_item(item, amount, ref)` | admin | §4.4: records the Stripe refund of an unavailable piece; re-checks the amount |
+| `cancel_order(order, reason, amount, ref)` | admin | §7b: cancels before cutoff, releases stock, records the refund; re-checks the amount |
 | `admin_set_listed_qty(variant, qty, note)` | admin | stock correction with a ledger note. It also counts as re-confirmed with the shop |
 
 **Privileges rule:** Supabase grants every new function to everyone by default. Any migration adding a function must set

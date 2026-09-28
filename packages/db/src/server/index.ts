@@ -28,12 +28,15 @@ export interface CreateOrderInput {
   totalCents: number;
   paymentIntentId: string;
   promoCodeId: string | null;
+  /** D-041. Express uses the express delivery days for the window. */
+  shippingMethod: 'standard' | 'express';
 }
 
 /** Business reasons create_order can refuse (docs/data-model.md, business functions). */
 export type CreateOrderRefusal =
   | 'no_open_cycle'
   | 'delivery_window_unconfigured'
+  | 'express_unavailable'
   | 'order_has_no_items'
   | 'variant_unavailable'
   | 'price_mismatch'
@@ -43,6 +46,7 @@ export type CreateOrderRefusal =
 const REFUSALS: ReadonlySet<string> = new Set<CreateOrderRefusal>([
   'no_open_cycle',
   'delivery_window_unconfigured',
+  'express_unavailable',
   'order_has_no_items',
   'variant_unavailable',
   'price_mismatch',
@@ -78,6 +82,7 @@ export async function createOrder(
     total_cents: input.totalCents,
     payment_intent_id: input.paymentIntentId,
     promo_code_id: input.promoCodeId,
+    shipping_method: input.shippingMethod,
   };
   const { data, error } = await service.rpc('create_order', { p_order: payload });
   if (error) {

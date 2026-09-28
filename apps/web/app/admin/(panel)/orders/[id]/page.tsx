@@ -1,6 +1,6 @@
 import { notFound } from 'next/navigation';
 
-import { getAdminOrder } from '@repo/db/admin';
+import { cancelRefundCents, getAdminOrder, itemRefundCents } from '@repo/db/admin';
 import { formatUsd, orderEventLabel } from '@repo/shared/domain';
 
 import {
@@ -9,6 +9,7 @@ import {
   markDeliveredAction,
   markShippedAction,
 } from '@/features/admin/actions/orders';
+import { cancelOrderAction, refundItemAction } from '@/features/admin/actions/refunds';
 import { requireAdminPage } from '@/features/admin/guard';
 import { button, Cell, Field, input, PageTitle, Table, utc } from '@/features/admin/ui';
 
@@ -26,6 +27,18 @@ export default async function AdminOrderPage({
   const order = await getAdminOrder(client, id);
   if (!order) notFound();
   const address = order.shipping_address as Record<string, string | null>;
+  // Refund amounts come from the database rules (D-042), shown before anyone clicks.
+  const unavailable = order.items.filter((i) => i.status === 'unavailable');
+  const [itemRefunds, cancelAmounts] = await Promise.all([
+    Promise.all(unavailable.map(async (i) => [i.id, await itemRefundCents(client, i.id)] as const)),
+    order.status === 'confirmed'
+      ? Promise.all([
+          cancelRefundCents(client, order.id, 'customer_request'),
+          cancelRefundCents(client, order.id, 'our_fault'),
+        ])
+      : null,
+  ]);
+  const refundFor = new Map(itemRefunds);
   const events = [...order.events].sort((a, b) => a.created_at.localeCompare(b.created_at));
 
   return (
@@ -33,7 +46,9 @@ export default async function AdminOrderPage({
       <PageTitle>Order {order.order_number}</PageTitle>
       <p>
         {order.email} · {order.status} · payment {order.payment_status} · placed{' '}
-        {utc(order.created_at)} · total {formatUsd(order.total_cents)}
+        {utc(order.created_at)} · total {formatUsd(order.total_cents)} · {order.shipping_method}{' '}
+        shipping
+        {order.refunded_cents > 0 ? ` · refunded ${formatUsd(order.refunded_cents)}` : ''}
       </p>
       <p>
         Promised window: {order.est_delivery_from ?? '—'} → {order.est_delivery_to ?? '—'}
@@ -64,8 +79,13 @@ export default async function AdminOrderPage({
             <Cell>{formatUsd(item.total_price_cents)}</Cell>
             <Cell className={item.status === 'unavailable' ? 'text-caution' : ''}>
               {item.status}
-              {/* TODO(founder): Q-17. The refund button comes once the refund amount rule is decided. */}
-              {item.status === 'unavailable' ? ' · refund due' : ''}
+              {refundFor.has(item.id) ? (
+                <form action={refundItemAction.bind(null, order.id, item.id)} className="mt-1">
+                  <button type="submit" className={button}>
+                    Refund {formatUsd(refundFor.get(item.id) ?? 0)}
+                  </button>
+                </form>
+              ) : null}
             </Cell>
             <Cell>
               {item.pickup ? `${item.pickup.status}${item.pickup.payout_id ? ' · paid' : ''}` : '—'}
@@ -114,6 +134,21 @@ export default async function AdminOrderPage({
         </form>
 
         <div className="border-line space-y-3 rounded-md border p-3">
+          {cancelAmounts ? (
+            <div className="space-y-2">
+              <h2 className="font-medium">Cancel (before cutoff, D-042)</h2>
+              <form action={cancelOrderAction.bind(null, order.id, 'customer_request')}>
+                <button type="submit" className="min-h-11 underline">
+                  Customer asked to cancel: refund {formatUsd(cancelAmounts[0])} (tax kept)
+                </button>
+              </form>
+              <form action={cancelOrderAction.bind(null, order.id, 'our_fault')}>
+                <button type="submit" className="min-h-11 underline">
+                  Cancel because of us: refund {formatUsd(cancelAmounts[1])}
+                </button>
+              </form>
+            </div>
+          ) : null}
           <form action={markDeliveredAction.bind(null, order.id)}>
             <button type="submit" className={button}>
               Mark delivered

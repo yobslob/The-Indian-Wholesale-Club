@@ -27,11 +27,11 @@ Enforcement: customer code reads only `store_*` (D-017), and INV-1/INV-8 tests (
 | `/clothing`, `/spices` | browse across regions with a region filter | static + client filtering |
 | `/search` | search products and regions | dynamic (no auth) |
 | `/cart` | the bag ("Bag" in the UI; on-device state) | static shell |
-| `/checkout`, `/checkout/success` | details → server-priced total + delivery window → payment (Stripe) → order (D-038) | dynamic |
+| `/checkout`, `/checkout/success` | details → server-priced total + Standard (free) / Express ($8) with each delivery window (D-041) → payment (Stripe) → order (D-038) | dynamic |
 | `/orders/lookup`, `/orders/[number]` | order tracking. The signed-in owner sees the order directly; anyone else confirms the order email first | dynamic |
 | `/account`, `/account/orders`, `/account/addresses`, `/account/saved` | signed-in customer ("Save for later" on product pages fills `saved`) | dynamic |
 | `/login`, `/signup` | customer auth. **No admin mention anywhere** (D-006) | static |
-| `/about`, `/how-it-works`, `/faq`, `/contact`, `/shipping-returns`, `/privacy`, `/terms` | info pages. Text needs founder input (Q-5, Q-9, Q-16); until then they say "being written" | static |
+| `/about`, `/how-it-works`, `/faq`, `/contact`, `/shipping-returns`, `/privacy`, `/terms` | info pages. Text needs founder input (Q-5, Q-9); until then they say "being written" | static |
 
 Why `/states` in URLs: it's the founder's own word for the concept. UTs live under it too (D-002). Headings that list all 36
 avoid calling them "states" (e.g. "Pick your home").

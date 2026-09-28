@@ -37,6 +37,7 @@ export const pendingCheckoutSchema = z.object({
   taxCents: z.number().int(),
   totalCents: z.number().int(),
   promoCodeId: z.string().uuid().nullable(),
+  shippingMethod: z.enum(['standard', 'express']).default('standard'),
 });
 export type PendingCheckout = z.infer<typeof pendingCheckoutSchema>;
 

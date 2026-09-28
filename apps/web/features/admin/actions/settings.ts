@@ -9,7 +9,7 @@ import { STORE_TAG } from '@/features/catalog/data';
 
 import { requireAdminAction } from '../guard';
 
-/** Empty input = not decided yet = NULL (Q-15, Q-16). Never a default. */
+/** Empty input = not decided yet = NULL (Q-15, Q-18). Never a default. */
 const optionalNumber = (schema: z.ZodNumber) =>
   z
     .string()
@@ -35,6 +35,9 @@ export async function updatePricingSettingsAction(form: FormData): Promise<void>
       staleDays: optionalNumber(z.number().int().min(1).max(365)),
       shippingFlat: optionalCents,
       freeShippingMin: optionalCents,
+      expressShipping: optionalCents,
+      expressMin: optionalNumber(z.number().int().min(0).max(60)),
+      expressMax: optionalNumber(z.number().int().min(0).max(60)),
     })
     .parse(Object.fromEntries(form));
   await updatePricingSettings(client, {
@@ -47,6 +50,9 @@ export async function updatePricingSettingsAction(form: FormData): Promise<void>
     stale_listing_days: input.staleDays,
     shipping_flat_cents: input.shippingFlat,
     free_shipping_min_cents: input.freeShippingMin,
+    express_shipping_cents: input.expressShipping,
+    express_days_min: input.expressMin,
+    express_days_max: input.expressMax,
     updated_by: user.id,
   });
   revalidateTag(STORE_TAG); // delivery windows use the domestic days (D-008)

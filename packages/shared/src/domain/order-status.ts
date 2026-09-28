@@ -24,7 +24,12 @@ export const CUSTOMER_STATUS_LABEL: Record<CustomerStatus, string> = {
 };
 
 /** The happy-path steps of the order timeline, in order. */
-export const CUSTOMER_TIMELINE: readonly CustomerStatus[] = ['confirmed', 'preparing', 'shipped', 'delivered'];
+export const CUSTOMER_TIMELINE: readonly CustomerStatus[] = [
+  'confirmed',
+  'preparing',
+  'shipped',
+  'delivered',
+];
 
 /** Index in CUSTOMER_TIMELINE, or -1 for statuses outside it (pending, cancelled, refunded). */
 export function timelineIndex(status: CustomerStatus): number {
@@ -42,6 +47,7 @@ export const ORDER_EVENT_LABEL: Record<string, string> = {
   item_unavailable: 'An item is no longer available. It will be refunded.', // D-030
   item_refunded: 'Item refunded',
   delivery_window_changed: 'New delivery estimate', // D-008
+  order_cancelled: 'Order cancelled', // D-042
   shipped: 'Shipped',
   delivered: 'Delivered',
 };

@@ -10,9 +10,9 @@ update public.app_settings set value = 'true'::jsonb where key = 'dev_preview';
 -- DEV PLACEHOLDER delivery days so checkout can compute a window locally.
 update public.pricing_settings set domestic_days_min = 3, domestic_days_max = 7 where id = 1;
 
--- DEV PLACEHOLDER shipping charge so checkout can be tried locally (the real
--- values are Q-16; production keeps them NULL until the founder decides).
-update public.pricing_settings set shipping_flat_cents = 0, free_shipping_min_cents = null where id = 1;
+-- DEV PLACEHOLDER express delivery days so the express option (D-041) can be
+-- tried locally. The real days are Q-18; production keeps them NULL until decided.
+update public.pricing_settings set express_days_min = 1, express_days_max = 2 where id = 1;
 
 update public.regions set is_live = true where slug in ('kerala', 'rajasthan', 'punjab');
 

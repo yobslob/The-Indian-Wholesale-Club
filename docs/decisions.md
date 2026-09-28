@@ -161,7 +161,7 @@ with the old tests was their content, not the runner (they asserted on SQL text)
 Status: offered to the founder as "reply only if you disagree"; no objection in the founder's next two messages (2026-09-28).
 
 
-**D-038 · 2026-09-28 · proposed: The order is created from the checkout the server stored, never from the browser**
+**D-038 · 2026-09-28 · approved: The order is created from the checkout the server stored, never from the browser**
 `POST /api/checkout` prices the bag from the catalog (`checkout_context()`, one round trip), creates the Stripe
 PaymentIntent for that exact total and stores the priced checkout in `pending_orders`. After payment the browser sends only
 the PaymentIntent id (`POST /api/orders`); the Stripe webhook does the same if the browser never comes back. Whichever
@@ -169,11 +169,36 @@ arrives second finds the existing order (`payment_intent_id` is unique). If `cre
 changed, no open cycle), the payment is refunded in full and the refusal is recorded in `failed_reconciliations` (flows.md §3.5).
 Why: the old flow re-sent the cart from the browser and trusted it for the webhook fallback.
 
-**D-039 · 2026-09-28 · proposed: `/admin` is not named in robots.txt**
+**D-039 · 2026-09-28 · approved: `/admin` is not named in robots.txt**
 Listing it there would advertise it, which D-006 forbids. Admin pages send `noindex` instead (response header set by the
 middleware + page metadata). Supersedes the "robots.txt disallows it" line of the R1 `admin.md`.
 
-**D-040 · 2026-09-28 · proposed: Shipping charge is a setting, empty until the founder decides (Q-16)**
+**D-040 · 2026-09-28 · approved: Shipping charge is a setting, empty until the founder decides (Q-16)**
 `pricing_settings.shipping_flat_cents` + `free_shipping_min_cents` (migration 3). While the flat charge is empty, checkout
 is closed ("not open right now") instead of guessing a fee (D-012). The dev demo seed sets it to 0 as a placeholder. The
 old code's $5.99 / free over $75 / $12.99 express were generic-store numbers, not IWC decisions, and are gone.
+The founder then set the values (D-041).
+
+D-038 – D-040 were offered as "reply only if you disagree"; the founder replied "this all was good" (2026-09-28).
+
+**D-041 · 2026-09-28 · founder (was Q-16): Standard shipping is free, express shipping is $8**
+Founder, verbatim: "for fast express shipping we can show $8 and for normal we can show free. This is an abstract
+information". So both are settings (admin → Settings), not code, and can change. Implemented in migration 4: the
+customer picks Standard or Express at checkout; the order keeps the choice (`orders.shipping_method`).
+*Interpretation (proposed, confirm with Q-18):* everything still ships together from India every cycle (D-005), so
+express can only be faster **inside the US** after the export arrives. Its window = estimated arrival + express days.
+Those days are not decided, so express is not offered until they are set (Q-18).
+
+**D-042 · 2026-09-28 · founder (was Q-17): Refunds**
+Founder, verbatim: "if the person deliberately cancels the product then dont add tax, we will take the tax money but if
+the piece is not available and it's our fault then we do complete refund."
+Implemented in migration 4 (the amounts live only in SQL: `item_refund_cents`, `cancel_refund_cents`):
+- Piece unavailable at pickup (our fault, D-030): its price after its share of any discount + its share of the tax.
+  When it is the last piece of the order, everything left is refunded (incl. shipping): a complete refund.
+- The customer cancels (their choice): everything except the tax.
+- We cancel (our fault): everything.
+*Interpretation (proposed):* cancelling is possible only before the cycle's cutoff (after that, pieces are being
+collected; late problems go through the unavailable-piece path). For now an admin cancels on the customer's request;
+a self-service cancel button is a coding-phase item. **Compliance check before launch (Q-19):** in most US states,
+sales tax collected on a sale that is cancelled has to go back to the customer or to the state; confirm with an
+accountant that keeping it is allowed.

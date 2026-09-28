@@ -84,7 +84,9 @@ export function OrderView({ order }: { order: OrderDetail }): React.JSX.Element 
           </div>
         ) : null}
         <div className="flex justify-between">
-          <dt className="text-ink-muted">Shipping</dt>
+          <dt className="text-ink-muted">
+            {o.shipping_method === 'express' ? 'Express shipping' : 'Shipping'}
+          </dt>
           <dd>{o.shipping_cents === 0 ? 'Free' : formatUsd(o.shipping_cents)}</dd>
         </div>
         <div className="flex justify-between">
@@ -95,6 +97,12 @@ export function OrderView({ order }: { order: OrderDetail }): React.JSX.Element 
           <dt>Total</dt>
           <dd>{formatUsd(o.total_cents)}</dd>
         </div>
+        {o.refunded_cents > 0 ? (
+          <div className="text-positive flex justify-between">
+            <dt>Refunded</dt>
+            <dd>{formatUsd(o.refunded_cents)}</dd>
+          </div>
+        ) : null}
       </dl>
 
       {order.events.length > 0 ? (

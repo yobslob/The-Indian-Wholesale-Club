@@ -28,7 +28,10 @@ export function OrderSummary({ quote }: { quote: CheckoutQuote }): React.JSX.Ele
         {b.discountCents > 0
           ? row(`Discount (${quote.promoCode})`, `−${formatUsd(b.discountCents)}`)
           : null}
-        {row('Shipping', b.shippingCents === 0 ? 'Free' : formatUsd(b.shippingCents))}
+        {row(
+          quote.shippingMethod === 'express' ? 'Express shipping' : 'Shipping',
+          b.shippingCents === 0 ? 'Free' : formatUsd(b.shippingCents),
+        )}
         {row('Estimated tax', formatUsd(b.taxCents))}
         <div className="border-line flex justify-between border-t pt-2 font-medium">
           <dt>Total</dt>

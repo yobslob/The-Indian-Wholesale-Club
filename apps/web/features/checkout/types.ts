@@ -1,5 +1,5 @@
 /** Shapes shared by the checkout client and its API routes (no runtime code, no zod in the bundle). */
-import type { CheckoutBreakdown } from '@repo/shared/domain';
+import type { CheckoutBreakdown, ShippingMethod } from '@repo/shared/domain';
 
 export interface CheckoutRequestBody {
   email: string;
@@ -14,6 +14,7 @@ export interface CheckoutRequestBody {
   };
   lines: { variantId: string; quantity: number }[];
   promoCode?: string | null;
+  shippingMethod?: ShippingMethod;
 }
 
 export interface QuotedLine {
@@ -26,10 +27,23 @@ export interface QuotedLine {
   totalCents: number;
 }
 
+export interface DeliveryDates {
+  est_delivery_from: string;
+  est_delivery_to: string;
+  order_by: string;
+}
+
 export interface CheckoutQuote {
   lines: QuotedLine[];
   breakdown: CheckoutBreakdown;
-  delivery: { est_delivery_from: string; est_delivery_to: string; order_by: string };
+  shippingMethod: ShippingMethod;
+  /** Window of the chosen option. */
+  delivery: DeliveryDates;
+  /** Both options for the picker; express is null until it is set up (D-041, Q-18). */
+  options: {
+    standard: { shippingCents: number; delivery: DeliveryDates };
+    express: { shippingCents: number; delivery: DeliveryDates } | null;
+  };
   promoCode: string | null;
   /** A code was entered but is not valid right now. */
   promoRejected: boolean;
@@ -45,6 +59,7 @@ export interface CheckoutStartResponse {
 export type CheckoutProblem =
   | { kind: 'unavailable'; variantIds: string[] }
   | { kind: 'sold_out'; variantIds: string[] }
+  | { kind: 'express_unavailable' }
   | { kind: 'closed' };
 
 export interface CheckoutErrorResponse {

@@ -94,6 +94,7 @@ describe('customer-facing order status (D-034, D-003)', () => {
 
   it('never shows a raw internal event kind to customers', () => {
     assert.equal(orderEventLabel('order_confirmed'), 'Order confirmed');
+    assert.equal(orderEventLabel('order_cancelled'), 'Order cancelled');
     assert.equal(orderEventLabel('vendor_called_back'), 'Order updated');
   });
 });
@@ -142,8 +143,8 @@ describe('product attributes are strict (D-003)', () => {
   });
 });
 
-describe('checkout quote (flows.md §3, D-033, Q-16)', () => {
-  const shipping = { flatCents: 900, freeMinCents: 10000 };
+describe('checkout quote (flows.md §3, D-033, D-041)', () => {
+  const shipping = { flatCents: 900, freeMinCents: 10000, expressCents: 800 };
 
   it('adds subtotal, flat shipping and the 8% tax estimate on (subtotal + shipping)', () => {
     const quote = quoteCheckout([{ unitPriceCents: 2500, quantity: 2 }], null, shipping);
@@ -163,11 +164,12 @@ describe('checkout quote (flows.md §3, D-033, Q-16)', () => {
     assert.equal(quote?.totalCents, 10800);
   });
 
-  it('refuses to guess shipping when it is not configured (Q-16)', () => {
+  it('refuses to guess shipping when an option has no price (D-040)', () => {
     assert.equal(
       quoteCheckout([{ unitPriceCents: 100, quantity: 1 }], null, {
         flatCents: null,
         freeMinCents: null,
+        expressCents: null,
       }),
       null,
     );
@@ -220,6 +222,16 @@ describe('checkout quote (flows.md §3, D-033, Q-16)', () => {
       () => quoteCheckout([{ unitPriceCents: 1.5, quantity: 1 }], null, shipping),
       RangeError,
     );
+  });
+
+  it('D-041: standard is free, express costs $8 and never gets the free threshold', () => {
+    const d041 = { flatCents: 0, freeMinCents: null, expressCents: 800 };
+    const lines = [{ unitPriceCents: 20000, quantity: 1 }];
+    assert.equal(quoteCheckout(lines, null, d041)?.shippingCents, 0);
+    const express = quoteCheckout(lines, null, { ...d041, freeMinCents: 100 }, 'express');
+    assert.equal(express?.shippingCents, 800);
+    assert.equal(express?.taxCents, 1664); // 8% of 20800
+    assert.equal(quoteCheckout(lines, null, { ...d041, expressCents: null }, 'express'), null);
   });
 
   it('formats cents as US dollars', () => {

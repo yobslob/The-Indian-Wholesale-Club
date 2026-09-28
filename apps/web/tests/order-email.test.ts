@@ -34,6 +34,8 @@ const order: OrderDetail = {
     tracking_number: null,
     carrier: null,
     created_at: '2026-09-28T10:00:00Z',
+    shipping_method: 'standard',
+    refunded_cents: 0,
   },
   items: [
     {

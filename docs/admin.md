@@ -40,8 +40,11 @@ Shops never get logins. The founder and COO enter all shop data (D-018).
 | **Insights** | sales by region/category/vendor, demand signals (searches, saved items) → what to list next | both | ✓ | — |
 | **Settings** | pricing settings, admin list | both | ✓ | — |
 
-**Not in the R5 skeleton yet** (coding phase unless noted): photo upload for products/vendors/receipts, the refund button
-for unavailable items (Q-17), stale-listing and delay warnings on Today, live (Realtime) order/stock feed, packing list +
+The order page refunds unavailable pieces and cancels orders before cutoff, with the amounts from the D-042 rules shown on
+the buttons (Stripe first, then the database).
+
+**Not in the R5 skeleton yet** (coding phase unless noted): photo upload for products/vendors/receipts, customer emails for
+refunds and cancellations, stale-listing and delay warnings on Today, live (Realtime) order/stock feed, packing list +
 commercial invoice export, bulk edits, category editing, app admin mode (R6).
 
 ## Design principles for the admin

@@ -10,6 +10,7 @@ import { useCart } from '@/features/cart/store';
 
 import { OrderSummary } from './order-summary';
 import { PaymentForm } from './payment-form';
+import { ShippingPicker } from './shipping-picker';
 
 import type {
   CheckoutErrorResponse,
@@ -26,6 +27,7 @@ function Field(props: {
   required?: boolean;
   type?: string;
   autoComplete?: string;
+  defaultValue?: string | null;
 }) {
   return (
     <label className="text-ink block text-sm">
@@ -35,6 +37,7 @@ function Field(props: {
         type={props.type ?? 'text'}
         required={props.required}
         autoComplete={props.autoComplete}
+        defaultValue={props.defaultValue ?? undefined}
         className={input}
       />
     </label>
@@ -64,6 +67,7 @@ export function CheckoutFlow(): React.JSX.Element {
   const [busy, setBusy] = useState(false);
   const [error, setError] = useState<string | null>(null);
   const [started, setStarted] = useState<CheckoutStartResponse | null>(null);
+  const [request, setRequest] = useState<CheckoutRequestBody | null>(null);
   useEffect(() => setMounted(true), []);
 
   if (!mounted) return <p className="text-ink-muted text-sm">Loading your bag…</p>;
@@ -79,9 +83,23 @@ export function CheckoutFlow(): React.JSX.Element {
     );
   }
 
-  async function start(form: FormData): Promise<void> {
+  /** Prices the bag on the server and creates the payment for that exact total. */
+  async function post(body: CheckoutRequestBody): Promise<void> {
     setBusy(true);
     setError(null);
+    setRequest(body);
+    const res = await fetch('/api/checkout', {
+      method: 'POST',
+      headers: { 'content-type': 'application/json' },
+      body: JSON.stringify(body),
+    });
+    const json = (await res.json()) as CheckoutStartResponse | CheckoutErrorResponse;
+    setBusy(false);
+    if ('clientSecret' in json) setStarted(json);
+    else setError(json.error);
+  }
+
+  async function start(form: FormData): Promise<void> {
     const text = (key: string) => String(form.get(key) ?? '').trim();
     const body: CheckoutRequestBody = {
       email: text('email'),
@@ -96,16 +114,9 @@ export function CheckoutFlow(): React.JSX.Element {
       },
       lines: lines.map((l) => ({ variantId: l.variantId, quantity: l.quantity })),
       promoCode: text('promoCode') || null,
+      shippingMethod: request?.shippingMethod ?? 'standard',
     };
-    const res = await fetch('/api/checkout', {
-      method: 'POST',
-      headers: { 'content-type': 'application/json' },
-      body: JSON.stringify(body),
-    });
-    const json = (await res.json()) as CheckoutStartResponse | CheckoutErrorResponse;
-    setBusy(false);
-    if ('clientSecret' in json) setStarted(json);
-    else setError(json.error);
+    await post(body);
   }
 
   async function paid(paymentIntentId: string, status: string): Promise<void> {
@@ -133,7 +144,13 @@ export function CheckoutFlow(): React.JSX.Element {
               {error}
             </p>
           ) : null}
+          <ShippingPicker
+            quote={started.quote}
+            disabled={busy}
+            onChange={(method) => request && void post({ ...request, shippingMethod: method })}
+          />
           <PaymentForm
+            key={started.clientSecret}
             clientSecret={started.clientSecret}
             totalLabel={formatUsd(started.quote.breakdown.totalCents)}
             onPaid={(id, status) => void paid(id, status)}
@@ -154,12 +171,42 @@ export function CheckoutFlow(): React.JSX.Element {
       }}
       className="grid max-w-xl gap-4"
     >
-      <Field name="email" label="Email" type="email" autoComplete="email" required />
-      <Field name="fullName" label="Full name" autoComplete="name" required />
-      <Field name="line1" label="Street address" autoComplete="address-line1" required />
-      <Field name="line2" label="Apartment, suite (optional)" autoComplete="address-line2" />
+      <Field
+        name="email"
+        label="Email"
+        type="email"
+        autoComplete="email"
+        required
+        defaultValue={request?.email}
+      />
+      <Field
+        name="fullName"
+        label="Full name"
+        autoComplete="name"
+        required
+        defaultValue={request?.address.fullName}
+      />
+      <Field
+        name="line1"
+        label="Street address"
+        autoComplete="address-line1"
+        required
+        defaultValue={request?.address.line1}
+      />
+      <Field
+        name="line2"
+        label="Apartment, suite (optional)"
+        autoComplete="address-line2"
+        defaultValue={request?.address.line2}
+      />
       <div className="grid grid-cols-2 gap-4">
-        <Field name="city" label="City" autoComplete="address-level2" required />
+        <Field
+          name="city"
+          label="City"
+          autoComplete="address-level2"
+          required
+          defaultValue={request?.address.city}
+        />
         <label className="text-ink block text-sm">
           State
           <select
@@ -167,7 +214,7 @@ export function CheckoutFlow(): React.JSX.Element {
             required
             autoComplete="address-level1"
             className={input}
-            defaultValue=""
+            defaultValue={request?.address.state ?? ''}
           >
             <option value="" disabled>
               Choose…
@@ -181,12 +228,28 @@ export function CheckoutFlow(): React.JSX.Element {
         </label>
       </div>
       <div className="grid grid-cols-2 gap-4">
-        <Field name="zipCode" label="ZIP code" autoComplete="postal-code" required />
-        <Field name="phone" label="Phone (optional)" type="tel" autoComplete="tel" />
+        <Field
+          name="zipCode"
+          label="ZIP code"
+          autoComplete="postal-code"
+          required
+          defaultValue={request?.address.zipCode}
+        />
+        <Field
+          name="phone"
+          label="Phone (optional)"
+          type="tel"
+          autoComplete="tel"
+          defaultValue={request?.address.phone}
+        />
       </div>
       <label className="text-ink block text-sm">
         Promo code (optional)
-        <input name="promoCode" defaultValue={savedPromo ?? ''} className={input} />
+        <input
+          name="promoCode"
+          defaultValue={request?.promoCode ?? savedPromo ?? ''}
+          className={input}
+        />
       </label>
       {error ? (
         <p className="text-danger text-sm" role="alert">

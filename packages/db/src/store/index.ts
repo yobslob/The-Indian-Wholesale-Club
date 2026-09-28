@@ -94,7 +94,8 @@ export async function listProducts(
 }
 
 const ORDER_SUMMARY_COLUMNS = `id, order_number, email, customer_status, est_delivery_from, est_delivery_to, subtotal_cents, discount_cents,
-  shipping_cents, tax_cents, total_cents, currency, payment_status, shipping_address, tracking_number, carrier, created_at`;
+  shipping_cents, tax_cents, total_cents, currency, payment_status, shipping_address, tracking_number, carrier, created_at,
+  shipping_method, refunded_cents`;
 
 /** /account/orders: the signed-in customer's own orders (the view filters by auth.uid()). */
 export async function listMyOrders(client: IwcClient): Promise<OrderSummary[]> {

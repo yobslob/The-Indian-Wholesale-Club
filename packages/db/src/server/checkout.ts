@@ -39,6 +39,14 @@ export const checkoutContextSchema = z.object({
     free_min_cents: z.number().int().nullable(),
   }),
   delivery: deliveryWindowSchema.nullable(),
+  /** Offered only when the express price AND express days are set (D-041, Q-18). */
+  express: z
+    .object({
+      price_cents: z.number().int(),
+      est_delivery_from: z.string(),
+      est_delivery_to: z.string(),
+    })
+    .nullable(),
 });
 
 export type CheckoutVariant = z.infer<typeof checkoutVariantSchema>;

@@ -35,6 +35,8 @@ schema until R6, so it breaks against a reset hosted DB until then.
 | 2026-09-28 | `a0aa811` (+ regenerated types, lockfile) | founder, same machine, web on **local** Supabase (`.env.local`) | `node scripts/check.mjs` (all steps) | typecheck **FAIL** 11.5 s: only stale `.next/types/validator.ts` from the old app's build naming deleted routes (fixed: `next typegen` runs before `tsc`) · lint OK 37.8 s · test OK 2.4 s · build OK 51.7 s · **pages (prod build, median of 3): `/` 10 ms, `/states` 15 ms, `/states/kerala` 16 ms, product page 10 ms, `/clothing` 11 ms, `/search?q=saree` 39 ms, `/api/health` 57 ms** (baseline `/` 428 ms). Not like-for-like: the baseline read the hosted DB and the new run a local DB; the cached pages make no DB call per request, the search page and health make one · db OK 43.6 s (all SQL test files pass on Postgres 15) |
 | 2026-09-28 | `a0aa811` | founder, `pnpm --filter web dev` + Stripe test card | click-through: region → product → bag → checkout → pay → thank-you page → order page (email check) | order `IWC-260928-127BA2716C` created and tracked. The confirmation email was not sent: Resend refused the placeholder sender domain (`RESEND_FROM_EMAIL`, Q-9); the email stays in the outbox and is retried |
 | 2026-09-28 | R5 close | Claude | `pnpm db:types` output vs Claude's hand patch for migration 3 (both formatted the same way) | identical |
+| 2026-09-28 | R5.6 | Claude, PostgreSQL 16.13 + stub | **11 SQL test files, 187 assertions** (with and without `demo.sql`), incl. new `shipping_refunds.test.sql` (26). Mutation check: 10 breaks (no tax share, no last-piece rule, customer cancel refunds tax, no stock release, cancel after cutoff, refund without admin, amounts readable by customers, express without days, express window from standard days, guest lookup drifting from `store_orders`) | all pass. All 10 caught |
+| 2026-09-28 | R5.6 | Claude, `tsc` 5.9.3 + ESLint 8.57.1 + Node 22 | typecheck web/db/shared, lint web, unit tests (shared `domain.test.ts` 26, web 10) | 0 errors, 0 warnings, all pass |
 
 ## Invariant tests (`data-model.md`)
 INV-1 … INV-9: implemented and passing on Claude's Postgres 16 runs and on real local Supabase, Postgres 15 (see log).
@@ -48,6 +50,7 @@ INV-1 … INV-9: implemented and passing on Claude's Postgres 16 runs and on rea
 | 5.3 | Checkout on `create_order` (D-038), order pages, guest lookup, account pages | ✅ committed |
 | 5.4 | Performance rules (`engineering.md` says where each lives), import-boundary lint, old web code deleted, web rebrand | ✅ committed |
 | 5.5 | `check.mjs` routes → new routes (✅). Founder run on local Supabase (✅, log). Hosted dev DB reset | ⏳ founder, when ready |
+| 5.6 | Founder answers (D-041 shipping options, D-042 refunds): migration 4, checkout shipping picker, admin refund + cancel, Settings | ✅ committed · Claude-verified (log) · founder run pending |
 
 **Not verified by anyone yet:** a delivered email (needs a verified sender, Q-9) and the admin screens in a browser.
 

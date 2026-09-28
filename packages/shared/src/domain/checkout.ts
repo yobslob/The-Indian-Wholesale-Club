@@ -18,10 +18,17 @@ export interface QuotePromo {
   minOrderCents: number;
 }
 
-/** From pricing_settings. Both NULL until the founder answers Q-16. */
+/** D-041: standard (free) or express ($8, faster US delivery after arrival). */
+export type ShippingMethod = 'standard' | 'express';
+
+/** From pricing_settings. NULL = not decided: that option can't be quoted. */
 export interface ShippingSettings {
+  /** Standard shipping per order (D-041: 0 = free). */
   flatCents: number | null;
+  /** Standard ships free from this discounted subtotal (NULL = no threshold). */
   freeMinCents: number | null;
+  /** Express shipping per order (D-041: $8). No free threshold. */
+  expressCents: number | null;
 }
 
 export interface CheckoutBreakdown {
@@ -39,13 +46,14 @@ function assertCents(value: number, name: string): void {
 }
 
 /**
- * Returns null when shipping is not configured yet (Q-16): checkout must refuse
- * rather than guess a fee. Throws on impossible input.
+ * Returns null when the chosen shipping option has no price set: checkout must
+ * refuse rather than guess a fee. Throws on impossible input.
  */
 export function quoteCheckout(
   lines: readonly QuoteLine[],
   promo: QuotePromo | null,
   shipping: ShippingSettings,
+  method: ShippingMethod = 'standard',
 ): CheckoutBreakdown | null {
   if (lines.length === 0) throw new RangeError('A quote needs at least one line');
   let subtotalCents = 0;
@@ -56,8 +64,9 @@ export function quoteCheckout(
     subtotalCents += line.unitPriceCents * line.quantity;
   }
 
-  if (shipping.flatCents === null) return null;
-  assertCents(shipping.flatCents, 'flatCents');
+  const price = method === 'express' ? shipping.expressCents : shipping.flatCents;
+  if (price === null) return null;
+  assertCents(price, method === 'express' ? 'expressCents' : 'flatCents');
   if (shipping.freeMinCents !== null) assertCents(shipping.freeMinCents, 'freeMinCents');
 
   let discountCents = 0;
@@ -71,8 +80,9 @@ export function quoteCheckout(
   }
 
   const discounted = subtotalCents - discountCents;
-  const freeShipping = shipping.freeMinCents !== null && discounted >= shipping.freeMinCents;
-  const shippingCents = freeShipping ? 0 : shipping.flatCents;
+  const freeShipping =
+    method === 'standard' && shipping.freeMinCents !== null && discounted >= shipping.freeMinCents;
+  const shippingCents = freeShipping ? 0 : price;
   const taxCents = Math.round(((discounted + shippingCents) * ESTIMATED_TAX_PCT) / 100);
 
   return {

@@ -68,7 +68,7 @@ select tests.assert(position('Test Shop' in current_setting('tests.ctx')) = 0
   'INV-1: no shop name or origin town in the checkout context');
 reset role;
 
--- Q-16: shipping stays NULL until the founder decides; the server then refuses checkout.
+-- D-040: an option without a price refuses checkout (never a guessed fee).
 update public.pricing_settings set shipping_flat_cents = null, free_shipping_min_cents = null where id = 1;
 set local role service_role;
 select tests.assert(

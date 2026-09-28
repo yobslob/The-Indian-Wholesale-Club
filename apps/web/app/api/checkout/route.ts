@@ -15,6 +15,7 @@ import type { CheckoutErrorResponse, CheckoutStartResponse } from '@/features/ch
 const PROBLEM_MESSAGE = {
   unavailable: 'Some items in your bag are no longer available.',
   sold_out: 'Some items in your bag just sold out.',
+  express_unavailable: 'Express shipping is not available right now.',
   closed: 'Checkout is not open right now. Please try again soon.',
 } as const;
 
@@ -77,6 +78,7 @@ export async function POST(
       taxCents: quote.breakdown.taxCents,
       totalCents: quote.breakdown.totalCents,
       promoCodeId: priced.promoCodeId,
+      shippingMethod: quote.shippingMethod,
     };
     try {
       await savePendingCheckout(service, intent.id, { ...pending });

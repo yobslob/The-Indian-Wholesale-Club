@@ -225,13 +225,13 @@ isOneToOne: false
                   ]
                 },"orders": {
                   Row: {
-                    "carrier": string | null,"created_at": string,"currency": string,"cycle_id": string | null,"discount_cents": number,"email": string,"est_delivery_from": string | null,"est_delivery_to": string | null,"fulfilment_mode": Database["public"]['Enums']["fulfilment_mode"],"id": string,"notes": string | null,"order_number": string,"payment_intent_id": string | null,"payment_status": Database["public"]['Enums']["payment_status"],"promo_code_id": string | null,"shipping_address": NonNullable<Json>,"shipping_cents": number,"status": Database["public"]['Enums']["order_status"],"subtotal_cents": number,"tax_cents": number,"total_cents": number,"tracking_number": string | null,"updated_at": string,"user_id": string | null
+                    "carrier": string | null,"created_at": string,"currency": string,"cycle_id": string | null,"discount_cents": number,"email": string,"est_delivery_from": string | null,"est_delivery_to": string | null,"fulfilment_mode": Database["public"]['Enums']["fulfilment_mode"],"id": string,"notes": string | null,"order_number": string,"payment_intent_id": string | null,"payment_status": Database["public"]['Enums']["payment_status"],"promo_code_id": string | null,"refunded_cents": number,"shipping_address": NonNullable<Json>,"shipping_cents": number,"shipping_method": Database["public"]['Enums']["shipping_method"],"status": Database["public"]['Enums']["order_status"],"subtotal_cents": number,"tax_cents": number,"total_cents": number,"tracking_number": string | null,"updated_at": string,"user_id": string | null
                   }
                   Insert: {
-                    "carrier"?: string | null,"created_at"?: string,"currency"?: string,"cycle_id"?: string | null,"discount_cents"?: number,"email": string,"est_delivery_from"?: string | null,"est_delivery_to"?: string | null,"fulfilment_mode"?: Database["public"]['Enums']["fulfilment_mode"],"id"?: string,"notes"?: string | null,"order_number"?: string,"payment_intent_id"?: string | null,"payment_status"?: Database["public"]['Enums']["payment_status"],"promo_code_id"?: string | null,"shipping_address": NonNullable<Json>,"shipping_cents"?: number,"status"?: Database["public"]['Enums']["order_status"],"subtotal_cents": number,"tax_cents"?: number,"total_cents": number,"tracking_number"?: string | null,"updated_at"?: string,"user_id"?: string | null
+                    "carrier"?: string | null,"created_at"?: string,"currency"?: string,"cycle_id"?: string | null,"discount_cents"?: number,"email": string,"est_delivery_from"?: string | null,"est_delivery_to"?: string | null,"fulfilment_mode"?: Database["public"]['Enums']["fulfilment_mode"],"id"?: string,"notes"?: string | null,"order_number"?: string,"payment_intent_id"?: string | null,"payment_status"?: Database["public"]['Enums']["payment_status"],"promo_code_id"?: string | null,"refunded_cents"?: number,"shipping_address": NonNullable<Json>,"shipping_cents"?: number,"shipping_method"?: Database["public"]['Enums']["shipping_method"],"status"?: Database["public"]['Enums']["order_status"],"subtotal_cents": number,"tax_cents"?: number,"total_cents": number,"tracking_number"?: string | null,"updated_at"?: string,"user_id"?: string | null
                   }
                   Update: {
-                    "carrier"?: string | null,"created_at"?: string,"currency"?: string,"cycle_id"?: string | null,"discount_cents"?: number,"email"?: string,"est_delivery_from"?: string | null,"est_delivery_to"?: string | null,"fulfilment_mode"?: Database["public"]['Enums']["fulfilment_mode"],"id"?: string,"notes"?: string | null,"order_number"?: string,"payment_intent_id"?: string | null,"payment_status"?: Database["public"]['Enums']["payment_status"],"promo_code_id"?: string | null,"shipping_address"?: NonNullable<Json>,"shipping_cents"?: number,"status"?: Database["public"]['Enums']["order_status"],"subtotal_cents"?: number,"tax_cents"?: number,"total_cents"?: number,"tracking_number"?: string | null,"updated_at"?: string,"user_id"?: string | null
+                    "carrier"?: string | null,"created_at"?: string,"currency"?: string,"cycle_id"?: string | null,"discount_cents"?: number,"email"?: string,"est_delivery_from"?: string | null,"est_delivery_to"?: string | null,"fulfilment_mode"?: Database["public"]['Enums']["fulfilment_mode"],"id"?: string,"notes"?: string | null,"order_number"?: string,"payment_intent_id"?: string | null,"payment_status"?: Database["public"]['Enums']["payment_status"],"promo_code_id"?: string | null,"refunded_cents"?: number,"shipping_address"?: NonNullable<Json>,"shipping_cents"?: number,"shipping_method"?: Database["public"]['Enums']["shipping_method"],"status"?: Database["public"]['Enums']["order_status"],"subtotal_cents"?: number,"tax_cents"?: number,"total_cents"?: number,"tracking_number"?: string | null,"updated_at"?: string,"user_id"?: string | null
                   }
                   Relationships: [
                     {
@@ -330,13 +330,13 @@ isOneToOne: false
                   ]
                 },"pricing_settings": {
                   Row: {
-                    "domestic_days_max": number | null,"domestic_days_min": number | null,"duty_pct": number | null,"free_shipping_min_cents": number | null,"freight_cents_per_kg": number | null,"fx_inr_per_usd": number | null,"id": number,"margin_pct": number | null,"shipping_flat_cents": number | null,"stale_listing_days": number | null,"updated_at": string,"updated_by": string | null
+                    "domestic_days_max": number | null,"domestic_days_min": number | null,"duty_pct": number | null,"express_days_max": number | null,"express_days_min": number | null,"express_shipping_cents": number | null,"free_shipping_min_cents": number | null,"freight_cents_per_kg": number | null,"fx_inr_per_usd": number | null,"id": number,"margin_pct": number | null,"shipping_flat_cents": number | null,"stale_listing_days": number | null,"updated_at": string,"updated_by": string | null
                   }
                   Insert: {
-                    "domestic_days_max"?: number | null,"domestic_days_min"?: number | null,"duty_pct"?: number | null,"free_shipping_min_cents"?: number | null,"freight_cents_per_kg"?: number | null,"fx_inr_per_usd"?: number | null,"id"?: number,"margin_pct"?: number | null,"shipping_flat_cents"?: number | null,"stale_listing_days"?: number | null,"updated_at"?: string,"updated_by"?: string | null
+                    "domestic_days_max"?: number | null,"domestic_days_min"?: number | null,"duty_pct"?: number | null,"express_days_max"?: number | null,"express_days_min"?: number | null,"express_shipping_cents"?: number | null,"free_shipping_min_cents"?: number | null,"freight_cents_per_kg"?: number | null,"fx_inr_per_usd"?: number | null,"id"?: number,"margin_pct"?: number | null,"shipping_flat_cents"?: number | null,"stale_listing_days"?: number | null,"updated_at"?: string,"updated_by"?: string | null
                   }
                   Update: {
-                    "domestic_days_max"?: number | null,"domestic_days_min"?: number | null,"duty_pct"?: number | null,"free_shipping_min_cents"?: number | null,"freight_cents_per_kg"?: number | null,"fx_inr_per_usd"?: number | null,"id"?: number,"margin_pct"?: number | null,"shipping_flat_cents"?: number | null,"stale_listing_days"?: number | null,"updated_at"?: string,"updated_by"?: string | null
+                    "domestic_days_max"?: number | null,"domestic_days_min"?: number | null,"duty_pct"?: number | null,"express_days_max"?: number | null,"express_days_min"?: number | null,"express_shipping_cents"?: number | null,"free_shipping_min_cents"?: number | null,"freight_cents_per_kg"?: number | null,"fx_inr_per_usd"?: number | null,"id"?: number,"margin_pct"?: number | null,"shipping_flat_cents"?: number | null,"stale_listing_days"?: number | null,"updated_at"?: string,"updated_by"?: string | null
                   }
                   Relationships: [
                     {
@@ -776,13 +776,13 @@ isOneToOne: false
                   ]
                 },"store_orders": {
                   Row: {
-                    "carrier": string | null,"created_at": string | null,"currency": string | null,"customer_status": string | null,"discount_cents": number | null,"email": string | null,"est_delivery_from": string | null,"est_delivery_to": string | null,"id": string | null,"order_number": string | null,"payment_status": Database["public"]['Enums']["payment_status"] | null,"shipping_address": Json | null,"shipping_cents": number | null,"subtotal_cents": number | null,"tax_cents": number | null,"total_cents": number | null,"tracking_number": string | null
+                    "carrier": string | null,"created_at": string | null,"currency": string | null,"customer_status": string | null,"discount_cents": number | null,"email": string | null,"est_delivery_from": string | null,"est_delivery_to": string | null,"id": string | null,"order_number": string | null,"payment_status": Database["public"]['Enums']["payment_status"] | null,"refunded_cents": number | null,"shipping_address": Json | null,"shipping_cents": number | null,"shipping_method": Database["public"]['Enums']["shipping_method"] | null,"subtotal_cents": number | null,"tax_cents": number | null,"total_cents": number | null,"tracking_number": string | null
                   }
                   Insert: {
-                           "carrier"?: string | null,"created_at"?: string | null,"currency"?: string | null,"customer_status"?: never,"discount_cents"?: number | null,"email"?: string | null,"est_delivery_from"?: string | null,"est_delivery_to"?: string | null,"id"?: string | null,"order_number"?: string | null,"payment_status"?: Database["public"]['Enums']["payment_status"] | null,"shipping_address"?: Json | null,"shipping_cents"?: number | null,"subtotal_cents"?: number | null,"tax_cents"?: number | null,"total_cents"?: number | null,"tracking_number"?: string | null
+                           "carrier"?: string | null,"created_at"?: string | null,"currency"?: string | null,"customer_status"?: never,"discount_cents"?: number | null,"email"?: string | null,"est_delivery_from"?: string | null,"est_delivery_to"?: string | null,"id"?: string | null,"order_number"?: string | null,"payment_status"?: Database["public"]['Enums']["payment_status"] | null,"refunded_cents"?: number | null,"shipping_address"?: Json | null,"shipping_cents"?: number | null,"shipping_method"?: Database["public"]['Enums']["shipping_method"] | null,"subtotal_cents"?: number | null,"tax_cents"?: number | null,"total_cents"?: number | null,"tracking_number"?: string | null
                          }
                         Update: {
-                           "carrier"?: string | null,"created_at"?: string | null,"currency"?: string | null,"customer_status"?: never,"discount_cents"?: number | null,"email"?: string | null,"est_delivery_from"?: string | null,"est_delivery_to"?: string | null,"id"?: string | null,"order_number"?: string | null,"payment_status"?: Database["public"]['Enums']["payment_status"] | null,"shipping_address"?: Json | null,"shipping_cents"?: number | null,"subtotal_cents"?: number | null,"tax_cents"?: number | null,"total_cents"?: number | null,"tracking_number"?: string | null
+                           "carrier"?: string | null,"created_at"?: string | null,"currency"?: string | null,"customer_status"?: never,"discount_cents"?: number | null,"email"?: string | null,"est_delivery_from"?: string | null,"est_delivery_to"?: string | null,"id"?: string | null,"order_number"?: string | null,"payment_status"?: Database["public"]['Enums']["payment_status"] | null,"refunded_cents"?: number | null,"shipping_address"?: Json | null,"shipping_cents"?: number | null,"shipping_method"?: Database["public"]['Enums']["shipping_method"] | null,"subtotal_cents"?: number | null,"tax_cents"?: number | null,"total_cents"?: number | null,"tracking_number"?: string | null
                          }
                         Relationships: [
                     
@@ -862,6 +862,12 @@ isOneToOne: false
 "advance_cycle":
 { Args: { "p_cycle": string }; Returns: Database["public"]['Enums']["cycle_status"]
                            },
+"cancel_order":
+{ Args: { "p_amount_cents": number,"p_order": string,"p_reason": string,"p_refund_ref": string }; Returns: undefined
+                           },
+"cancel_refund_cents":
+{ Args: { "p_order": string,"p_reason": string }; Returns: number
+                           },
 "change_delivery_window":
 { Args: { "p_from": string,"p_note"?: string,"p_order": string,"p_to": string }; Returns: undefined
                            },
@@ -894,11 +900,17 @@ isOneToOne: false
 "is_product_visible":
 { Args: { "p_product": string }; Returns: boolean
                            },
+"item_refund_cents":
+{ Args: { "p_item": string }; Returns: number
+                           },
 "mark_pickup":
 { Args: { "p_note"?: string,"p_photo_path"?: string,"p_pickup": string,"p_status": Database["public"]['Enums']["pickup_status"] }; Returns: undefined
                            },
 "record_payout":
 { Args: { "p_method": string,"p_note"?: string,"p_pickups": (string)[],"p_receipt_path"?: string,"p_reference"?: string,"p_vendor": string }; Returns: string
+                           },
+"refund_order_item":
+{ Args: { "p_amount_cents": number,"p_item": string,"p_refund_ref": string }; Returns: undefined
                            },
 "store_home":
 { Args: Record<PropertyKey, never>; Returns: Json
@@ -919,7 +931,7 @@ isOneToOne: false
                            }
           }
           Enums: {
-            "app_role": "customer"|"admin","content_status": "draft"|"approved","cycle_status": "open"|"collecting"|"packed"|"exported"|"arrived"|"fulfilling"|"closed","discount_type": "percentage"|"fixed","fulfilment_mode": "order_first","ops_desk": "us"|"india","order_item_status": "active"|"unavailable"|"refunded","order_status": "pending_payment"|"confirmed"|"collecting"|"packed"|"in_transit"|"arrived"|"shipped"|"delivered"|"cancelled"|"refunded","payment_status": "pending"|"paid"|"failed"|"refunded"|"partially_refunded","pickup_status": "pending"|"picked"|"unavailable","product_status": "draft"|"live"|"paused"|"archived","product_type": "clothing"|"spice","stock_reason": "listed"|"adjusted"|"reserved"|"released"|"picked"|"unavailable","vendor_status": "prospect"|"active"|"paused"
+            "app_role": "customer"|"admin","content_status": "draft"|"approved","cycle_status": "open"|"collecting"|"packed"|"exported"|"arrived"|"fulfilling"|"closed","discount_type": "percentage"|"fixed","fulfilment_mode": "order_first","ops_desk": "us"|"india","order_item_status": "active"|"unavailable"|"refunded","order_status": "pending_payment"|"confirmed"|"collecting"|"packed"|"in_transit"|"arrived"|"shipped"|"delivered"|"cancelled"|"refunded","payment_status": "pending"|"paid"|"failed"|"refunded"|"partially_refunded","pickup_status": "pending"|"picked"|"unavailable","product_status": "draft"|"live"|"paused"|"archived","product_type": "clothing"|"spice","shipping_method": "standard"|"express","stock_reason": "listed"|"adjusted"|"reserved"|"released"|"picked"|"unavailable","vendor_status": "prospect"|"active"|"paused"
           }
           CompositeTypes: {
             [_ in never]: never
@@ -1035,7 +1047,7 @@ export type CompositeTypes<
 export const Constants = {
   "public": {
           Enums: {
-            "app_role": ["customer", "admin"],"content_status": ["draft", "approved"],"cycle_status": ["open", "collecting", "packed", "exported", "arrived", "fulfilling", "closed"],"discount_type": ["percentage", "fixed"],"fulfilment_mode": ["order_first"],"ops_desk": ["us", "india"],"order_item_status": ["active", "unavailable", "refunded"],"order_status": ["pending_payment", "confirmed", "collecting", "packed", "in_transit", "arrived", "shipped", "delivered", "cancelled", "refunded"],"payment_status": ["pending", "paid", "failed", "refunded", "partially_refunded"],"pickup_status": ["pending", "picked", "unavailable"],"product_status": ["draft", "live", "paused", "archived"],"product_type": ["clothing", "spice"],"stock_reason": ["listed", "adjusted", "reserved", "released", "picked", "unavailable"],"vendor_status": ["prospect", "active", "paused"]
+            "app_role": ["customer", "admin"],"content_status": ["draft", "approved"],"cycle_status": ["open", "collecting", "packed", "exported", "arrived", "fulfilling", "closed"],"discount_type": ["percentage", "fixed"],"fulfilment_mode": ["order_first"],"ops_desk": ["us", "india"],"order_item_status": ["active", "unavailable", "refunded"],"order_status": ["pending_payment", "confirmed", "collecting", "packed", "in_transit", "arrived", "shipped", "delivered", "cancelled", "refunded"],"payment_status": ["pending", "paid", "failed", "refunded", "partially_refunded"],"pickup_status": ["pending", "picked", "unavailable"],"product_status": ["draft", "live", "paused", "archived"],"product_type": ["clothing", "spice"],"shipping_method": ["standard", "express"],"stock_reason": ["listed", "adjusted", "reserved", "released", "picked", "unavailable"],"vendor_status": ["prospect", "active", "paused"]
           }
         }
 } as const

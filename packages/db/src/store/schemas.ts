@@ -129,6 +129,8 @@ export const orderSummarySchema = z.object({
   tracking_number: z.string().nullable(),
   carrier: z.string().nullable(),
   created_at: isoDateTime,
+  shipping_method: z.enum(['standard', 'express']),
+  refunded_cents: z.number().int(),
 });
 
 export const orderItemSchema = z.object({

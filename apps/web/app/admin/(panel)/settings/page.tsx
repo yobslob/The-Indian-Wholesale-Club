@@ -8,7 +8,7 @@ const dollars = (cents: number | null) => (cents === null ? '' : (cents / 100).t
 const plain = (value: number | null) => (value === null ? '' : String(value));
 
 /**
- * Settings: the numbers the founder decides (Q-15, Q-16). Empty = not decided;
+ * Settings: the numbers the founder decides (Q-15, D-041, Q-18). Empty = not decided;
  * checkout stays closed until domestic delivery days and shipping are set.
  * Admin accounts are managed in the database + ADMIN_EMAILS (docs/ops.md).
  */
@@ -41,8 +41,8 @@ export default async function SettingsPage(): Promise<React.JSX.Element> {
             className={input}
           />
         </Field>
-        <h2 className="font-medium sm:col-span-2">Shipping charge (Q-16)</h2>
-        <Field label="Flat shipping per order ($)">
+        <h2 className="font-medium sm:col-span-2">Shipping (D-041: standard free, express $8)</h2>
+        <Field label="Standard shipping per order ($, 0 = free)">
           <input
             name="shippingFlat"
             type="number"
@@ -59,6 +59,37 @@ export default async function SettingsPage(): Promise<React.JSX.Element> {
             step="0.01"
             min="0"
             defaultValue={dollars(s.free_shipping_min_cents)}
+            className={input}
+          />
+        </Field>
+        <Field label="Express shipping per order ($)">
+          <input
+            name="expressShipping"
+            type="number"
+            step="0.01"
+            min="0"
+            defaultValue={dollars(s.express_shipping_cents)}
+            className={input}
+          />
+        </Field>
+        <p className="text-ink-muted sm:col-span-2">
+          Express is offered only when both express delivery days are set (Q-18).
+        </p>
+        <Field label="Express: US delivery days after arrival, min">
+          <input
+            name="expressMin"
+            type="number"
+            min="0"
+            defaultValue={plain(s.express_days_min)}
+            className={input}
+          />
+        </Field>
+        <Field label="Express: US delivery days after arrival, max">
+          <input
+            name="expressMax"
+            type="number"
+            min="0"
+            defaultValue={plain(s.express_days_max)}
             className={input}
           />
         </Field>

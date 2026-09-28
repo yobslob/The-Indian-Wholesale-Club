@@ -28,6 +28,7 @@ export const checkoutRequestSchema = z.object({
     .min(1)
     .max(50),
   promoCode: z.string().trim().max(40).nullish(),
+  shippingMethod: z.enum(['standard', 'express']).default('standard'),
 });
 
 export type CheckoutRequest = z.infer<typeof checkoutRequestSchema>;
@@ -38,8 +39,9 @@ export type PriceResult =
 
 /**
  * flows.md §3 steps 1–2: prices the cart from the catalog (never from the
- * browser), applies the promo, shipping (Q-16) and the 8% tax estimate (D-033),
- * and attaches the delivery window shown before payment (D-008). One DB round trip.
+ * browser), applies the promo, the chosen shipping option (D-041) and the 8% tax
+ * estimate (D-033), and attaches the delivery window shown before payment (D-008).
+ * One DB round trip.
  */
 export async function priceCart(
   service: IwcClient,
@@ -79,20 +81,36 @@ export async function priceCart(
   });
 
   const promo = context.promo;
-  const breakdown = quoteCheckout(
-    lines,
-    promo
-      ? {
-          discountType: promo.discount_type,
-          discountValue: promo.discount_value,
-          minOrderCents: promo.min_order_cents,
-        }
-      : null,
-    { flatCents: context.shipping.flat_cents, freeMinCents: context.shipping.free_min_cents },
-  );
-  // TODO(founder): Q-16. Until shipping is decided, checkout stays closed rather than guessing a fee.
-  if (!breakdown) return { ok: false, problem: { kind: 'closed' } };
+  const quotePromo = promo
+    ? {
+        discountType: promo.discount_type,
+        discountValue: promo.discount_value,
+        minOrderCents: promo.min_order_cents,
+      }
+    : null;
+  // D-041: standard is free, express is $8 (both are settings). Express needs its days (Q-18).
+  const shipping = {
+    flatCents: context.shipping.flat_cents,
+    freeMinCents: context.shipping.free_min_cents,
+    expressCents: context.express?.price_cents ?? null,
+  };
+  const standard = quoteCheckout(lines, quotePromo, shipping, 'standard');
+  const express = context.express ? quoteCheckout(lines, quotePromo, shipping, 'express') : null;
+  const method = request.shippingMethod;
+  if (method === 'express' && (!express || !context.express)) {
+    return { ok: false, problem: { kind: 'express_unavailable' } };
+  }
+  const breakdown = method === 'express' ? express : standard;
+  // No price for standard shipping yet: checkout stays closed rather than guessing a fee.
+  if (!breakdown || !standard) return { ok: false, problem: { kind: 'closed' } };
 
+  const expressWindow = context.express
+    ? {
+        est_delivery_from: context.express.est_delivery_from,
+        est_delivery_to: context.express.est_delivery_to,
+        order_by: context.delivery.order_by,
+      }
+    : null;
   const entered = request.promoCode?.trim() ? request.promoCode.trim().toUpperCase() : null;
   return {
     ok: true,
@@ -101,7 +119,15 @@ export async function priceCart(
     quote: {
       lines,
       breakdown,
-      delivery: context.delivery,
+      shippingMethod: method,
+      delivery: method === 'express' && expressWindow ? expressWindow : context.delivery,
+      options: {
+        standard: { shippingCents: standard.shippingCents, delivery: context.delivery },
+        express:
+          express && expressWindow
+            ? { shippingCents: express.shippingCents, delivery: expressWindow }
+            : null,
+      },
       promoCode: promo && breakdown.promoApplied ? promo.code : null,
       promoRejected: entered !== null && !(promo && breakdown.promoApplied),
     },
