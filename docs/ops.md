@@ -53,6 +53,9 @@ Metro drops its cache. The app's web target is not used (customers get the Next.
   `npx supabase link --project-ref <dev project ref>` (once), then `npx supabase db reset --linked`. This drops everything
   in the hosted dev DB and applies `supabase/migrations/`. The CLI output lists which seed files it ran (`--no-seed` skips
   them); the seeds include the dev demo data (placeholders, `dev_preview` on). Never run it against production.
+- **Local admin in one step:** `pnpm dev:admin <email> <password> [us|india]` (`scripts/dev-admin.mjs`, local database only)
+  creates or refreshes the account with the role and the `admin_emails` row. Run it again after every `check.mjs db`
+  (the reset deletes local accounts). The website also needs the email in `ADMIN_EMAILS` in `apps/web/.env.local`.
 - Admin bootstrap (after the person has signed up once): `insert into admin_emails (email) values ('<email>')` and
   `update profiles set role = 'admin', desk = 'us' | 'india' where email = '<email>'`, **and** add the email to the
   `ADMIN_EMAILS` env var. All three are required (INV-7). The app guard enforces role + env since R3 (the old

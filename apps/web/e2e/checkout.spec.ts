@@ -35,8 +35,19 @@ test('a guest buys the demo product and tracks the order', async ({ page }) => {
   // Server-priced summary with a delivery window (D-008) before any payment.
   await expect(page.getByText('Estimated delivery:')).toBeVisible();
 
-  const card = page.frameLocator('iframe[title="Secure payment input frame"]').first();
-  await card.locator('[name="number"]').fill('4242 4242 4242 4242');
+  // Stripe's Payment Element: the visible iframe inside our page (Stripe's own dev-tools
+  // iframe sits outside <main>). Newer Stripe versions list the methods collapsed, so pick
+  // "Card" first when the card fields aren't open yet.
+  const card = page
+    .getByRole('main')
+    .locator('iframe:not([aria-hidden="true"])')
+    .first()
+    .contentFrame();
+  const number = card.locator('[name="number"]');
+  const cardTab = card.getByRole('button', { name: 'Card', exact: true });
+  await expect(number.or(cardTab).first()).toBeVisible({ timeout: 30_000 });
+  if (!(await number.isVisible())) await cardTab.click();
+  await number.fill('4242 4242 4242 4242');
   await card.locator('[name="expiry"]').fill('12 / 34');
   await card.locator('[name="cvc"]').fill('123');
   const postal = card.locator('[name="postalCode"]');
