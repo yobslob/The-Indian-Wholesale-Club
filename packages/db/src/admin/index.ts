@@ -5,4 +5,5 @@
  * (apps/web/app/admin, admin screens in the app). Never from storefront code.
  */
 export * from './catalog';
+export * from './commerce';
 export * from './operations';

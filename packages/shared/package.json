@@ -4,6 +4,7 @@
   "private": true,
   "main": "./src/index.ts",
   "types": "./src/index.ts",
+  "sideEffects": false,
   "scripts": {
     "typecheck": "tsc --noEmit",
     "test": "tsx --test tests/domain.test.ts tests/checkout-calculator.test.ts tests/address-schema.test.ts tests/order-state-machine.test.ts tests/delivery-window.test.ts"

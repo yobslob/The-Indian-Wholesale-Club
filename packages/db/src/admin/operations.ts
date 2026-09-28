@@ -2,16 +2,23 @@ import { DbError, unwrap, type Enum, type Insert, type IwcClient, type Update } 
 
 // ---------------------------------------------------------------- cycles (flows.md §1)
 
-const CYCLE_COLUMNS =
-  'id, code, status, cutoff_at, est_export_on, est_arrival_on, exported_at, arrived_at, closed_at, awb, forwarder, ' +
-  'freight_cents, duty_cents, fx_inr_per_usd, notes, created_at, updated_at';
+const CYCLE_COLUMNS = `id, code, status, cutoff_at, est_export_on, est_arrival_on, exported_at, arrived_at, closed_at, awb, forwarder,
+  freight_cents, duty_cents, fx_inr_per_usd, notes, created_at, updated_at`;
 
 export async function listCycles(client: IwcClient, limit = 20) {
-  return unwrap(await client.from('cycles').select(CYCLE_COLUMNS).order('cutoff_at', { ascending: false }).limit(limit));
+  return unwrap(
+    await client
+      .from('cycles')
+      .select(CYCLE_COLUMNS)
+      .order('cutoff_at', { ascending: false })
+      .limit(limit),
+  );
 }
 
 export async function getOpenCycle(client: IwcClient) {
-  return unwrap(await client.from('cycles').select(CYCLE_COLUMNS).eq('status', 'open').maybeSingle());
+  return unwrap(
+    await client.from('cycles').select(CYCLE_COLUMNS).eq('status', 'open').maybeSingle(),
+  );
 }
 
 /** Dates are always entered by an admin (D-026). The DB allows only one open cycle (INV-5). */
@@ -30,6 +37,16 @@ export async function cutoffCycle(client: IwcClient, cycleId: string): Promise<n
   return count;
 }
 
+/** flows.md §1/§6: collecting → packed → exported → arrived → fulfilling → closed, with its orders. */
+export async function advanceCycle(
+  client: IwcClient,
+  cycleId: string,
+): Promise<Enum<'cycle_status'>> {
+  const status = unwrap(await client.rpc('advance_cycle', { p_cycle: cycleId }));
+  if (status === null) throw new DbError('advance_cycle_empty', 'advance_cycle returned no status');
+  return status;
+}
+
 // ---------------------------------------------------------------- pickups + payouts (flows.md §4, §5)
 
 export async function listPickups(client: IwcClient, cycleId: string) {
@@ -37,10 +54,10 @@ export async function listPickups(client: IwcClient, cycleId: string) {
     await client
       .from('pickups')
       .select(
-        'id, status, quantity, shop_price_paise, picked_at, photo_path, note, payout_id, ' +
-          'vendor:vendors(id, shop_name, phone, whatsapp, town), ' +
-          'variant:product_variants(id, label, sku), ' +
-          'item:order_items(id, product_name, variant_label, order_id)',
+        `id, status, quantity, shop_price_paise, picked_at, photo_path, note, payout_id,
+          vendor:vendors(id, shop_name, phone, whatsapp, town),
+          variant:product_variants(id, label, sku),
+          item:order_items(id, product_name, variant_label, order_id)`,
       )
       .eq('cycle_id', cycleId)
       .order('vendor_id'),
@@ -68,7 +85,9 @@ export async function listPayablePickups(client: IwcClient, vendorId: string) {
   return unwrap(
     await client
       .from('pickups')
-      .select('id, cycle_id, quantity, shop_price_paise, picked_at, item:order_items(product_name, variant_label)')
+      .select(
+        'id, cycle_id, quantity, shop_price_paise, picked_at, item:order_items(product_name, variant_label)',
+      )
       .eq('vendor_id', vendorId)
       .eq('status', 'picked')
       .is('payout_id', null)
@@ -79,7 +98,14 @@ export async function listPayablePickups(client: IwcClient, vendorId: string) {
 /** The amount is computed in SQL from the pickups (never typed in). Returns the payout id. */
 export async function recordPayout(
   client: IwcClient,
-  input: { vendorId: string; pickupIds: string[]; method: string; reference?: string; receiptPath?: string; note?: string },
+  input: {
+    vendorId: string;
+    pickupIds: string[];
+    method: string;
+    reference?: string;
+    receiptPath?: string;
+    note?: string;
+  },
 ): Promise<string> {
   const payoutId = unwrap(
     await client.rpc('record_payout', {
@@ -93,6 +119,21 @@ export async function recordPayout(
   );
   if (payoutId === null) throw new DbError('record_payout_empty', 'record_payout returned no id');
   return payoutId;
+}
+
+/** Every picked, unpaid piece across vendors (Payouts screen), grouped by the caller. */
+export async function listAllPayablePickups(client: IwcClient) {
+  return unwrap(
+    await client
+      .from('pickups')
+      .select(
+        `id, cycle_id, quantity, shop_price_paise, picked_at, vendor:vendors(id, shop_name, payment_method, payment_reference),
+          item:order_items(product_name, variant_label)`,
+      )
+      .eq('status', 'picked')
+      .is('payout_id', null)
+      .order('picked_at'),
+  );
 }
 
 export async function listPayouts(client: IwcClient, vendorId: string) {
@@ -114,12 +155,10 @@ export interface AdminOrderFilter {
 }
 
 export async function listAdminOrders(client: IwcClient, filter: AdminOrderFilter = {}) {
-  let query = client
-    .from('orders')
-    .select(
-      'id, order_number, email, status, payment_status, cycle_id, est_delivery_from, est_delivery_to, total_cents, ' +
-        'tracking_number, carrier, created_at, items:order_items(id, status)',
-    );
+  let query = client.from('orders').select(
+    `id, order_number, email, status, payment_status, cycle_id, est_delivery_from, est_delivery_to, total_cents,
+        tracking_number, carrier, created_at, items:order_items(id, status)`,
+  );
   if (filter.status) query = query.eq('status', filter.status);
   if (filter.cycleId) query = query.eq('cycle_id', filter.cycleId);
   return unwrap(await query.order('created_at', { ascending: false }).limit(filter.limit ?? 100));
@@ -130,8 +169,8 @@ export async function getAdminOrder(client: IwcClient, id: string) {
     await client
       .from('orders')
       .select(
-        '*, items:order_items(*, pickup:pickups(id, status, vendor_id, picked_at, payout_id)), ' +
-          'events:order_events(id, kind, visible_to_customer, message, internal_note, actor, created_at)',
+        `*, items:order_items(*, pickup:pickups(id, status, vendor_id, picked_at, payout_id)),
+          events:order_events(id, kind, visible_to_customer, message, internal_note, actor, created_at)`,
       )
       .eq('id', id)
       .maybeSingle(),
@@ -140,7 +179,13 @@ export async function getAdminOrder(client: IwcClient, id: string) {
 
 export async function addOrderEvent(
   client: IwcClient,
-  input: { orderId: string; kind: string; visibleToCustomer: boolean; message?: string; internalNote?: string },
+  input: {
+    orderId: string;
+    kind: string;
+    visibleToCustomer: boolean;
+    message?: string;
+    internalNote?: string;
+  },
 ) {
   unwrap(
     await client.from('order_events').insert({
@@ -154,9 +199,17 @@ export async function addOrderEvent(
 }
 
 /** US desk: the order leaves in a domestic parcel (flows.md §6.4). */
-export async function markOrderShipped(client: IwcClient, orderId: string, carrier: string, trackingNumber: string) {
+export async function markOrderShipped(
+  client: IwcClient,
+  orderId: string,
+  carrier: string,
+  trackingNumber: string,
+) {
   unwrap(
-    await client.from('orders').update({ status: 'shipped', carrier, tracking_number: trackingNumber }).eq('id', orderId),
+    await client
+      .from('orders')
+      .update({ status: 'shipped', carrier, tracking_number: trackingNumber })
+      .eq('id', orderId),
   );
   await addOrderEvent(client, { orderId, kind: 'shipped', visibleToCustomer: true });
 }
@@ -189,14 +242,18 @@ export async function getPricingSettings(client: IwcClient) {
     await client
       .from('pricing_settings')
       .select(
-        'fx_inr_per_usd, freight_cents_per_kg, duty_pct, margin_pct, domestic_days_min, domestic_days_max, ' +
-          'stale_listing_days, updated_at',
+        `fx_inr_per_usd, freight_cents_per_kg, duty_pct, margin_pct, domestic_days_min, domestic_days_max,
+          shipping_flat_cents, free_shipping_min_cents,
+          stale_listing_days, updated_at`,
       )
       .eq('id', 1)
       .single(),
   );
 }
 
-export async function updatePricingSettings(client: IwcClient, patch: Omit<Update<'pricing_settings'>, 'id'>) {
+export async function updatePricingSettings(
+  client: IwcClient,
+  patch: Omit<Update<'pricing_settings'>, 'id'>,
+) {
   unwrap(await client.from('pricing_settings').update(patch).eq('id', 1));
 }

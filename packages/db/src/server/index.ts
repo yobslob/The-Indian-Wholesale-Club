@@ -7,6 +7,8 @@ import { orderDetailSchema, type OrderDetail } from '../store/schemas';
 
 import type { Json } from '../database.types';
 
+export * from './checkout';
+
 export interface CreateOrderItemInput {
   variantId: string;
   quantity: number;
@@ -56,7 +58,10 @@ export type CreateOrderResult =
  * flows.md §3 step 4. Call ONLY after Stripe verified the payment. On a refusal
  * nothing was written; the caller must refund/cancel the PaymentIntent.
  */
-export async function createOrder(service: IwcClient, input: CreateOrderInput): Promise<CreateOrderResult> {
+export async function createOrder(
+  service: IwcClient,
+  input: CreateOrderInput,
+): Promise<CreateOrderResult> {
   const payload: Json = {
     email: input.email,
     user_id: input.userId,
@@ -93,25 +98,13 @@ export async function lookupGuestOrder(
   orderNumber: string,
   email: string,
 ): Promise<OrderDetail | null> {
-  const data = unwrap(await service.rpc('guest_order_lookup', { p_order_number: orderNumber, p_email: email }));
+  const data = unwrap(
+    await service.rpc('guest_order_lookup', { p_order_number: orderNumber, p_email: email }),
+  );
   return data === null ? null : orderDetailSchema.parse(data);
 }
 
 /** Atomic, limit-checked promo redemption. False = limit reached / expired / inactive. */
 export async function redeemPromo(service: IwcClient, promoCodeId: string): Promise<boolean> {
   return unwrap(await service.rpc('increment_promo_uses', { p_promo: promoCodeId })) === true;
-}
-
-export async function findActivePromo(service: IwcClient, code: string) {
-  const now = new Date().toISOString();
-  return unwrap(
-    await service
-      .from('promo_codes')
-      .select('id, code, discount_type, discount_value, min_order_cents, max_uses, uses_count, valid_from, valid_until')
-      .eq('code', code.trim().toUpperCase())
-      .eq('is_active', true)
-      .or(`valid_from.is.null,valid_from.lte.${now}`)
-      .or(`valid_until.is.null,valid_until.gte.${now}`)
-      .maybeSingle(),
-  );
 }

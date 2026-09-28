@@ -33,7 +33,10 @@ export async function getHome(client: IwcClient): Promise<HomeData> {
 }
 
 /** /states/[region]: null when the region slug does not exist (1 round trip). */
-export async function getRegionPage(client: IwcClient, regionSlug: string): Promise<RegionPage | null> {
+export async function getRegionPage(
+  client: IwcClient,
+  regionSlug: string,
+): Promise<RegionPage | null> {
   const data = unwrap(await client.rpc('store_region_page', { p_region_slug: regionSlug }));
   return data === null ? null : regionPageSchema.parse(data);
 }
@@ -45,7 +48,10 @@ export async function getProductPage(
   productSlug: string,
 ): Promise<ProductPage | null> {
   const data = unwrap(
-    await client.rpc('store_product_page', { p_region_slug: regionSlug, p_product_slug: productSlug }),
+    await client.rpc('store_product_page', {
+      p_region_slug: regionSlug,
+      p_product_slug: productSlug,
+    }),
   );
   return data === null ? null : productPageSchema.parse(data);
 }
@@ -69,32 +75,43 @@ export interface ProductListFilter {
 }
 
 /** /clothing, /spices, /search: product cards (1 round trip). */
-export async function listProducts(client: IwcClient, filter: ProductListFilter = {}): Promise<ProductCard[]> {
+export async function listProducts(
+  client: IwcClient,
+  filter: ProductListFilter = {},
+): Promise<ProductCard[]> {
   let query = client.from('store_products').select(PRODUCT_CARD_COLUMNS);
   if (filter.productType) query = query.eq('product_type', filter.productType);
   if (filter.regionSlug) query = query.eq('region_slug', filter.regionSlug);
   if (filter.categorySlug) query = query.eq('category_slug', filter.categorySlug);
   if (filter.search && filter.search.trim()) {
-    query = query.textSearch('search', filter.search.trim(), { type: 'websearch', config: 'simple' });
+    query = query.textSearch('search', filter.search.trim(), {
+      type: 'websearch',
+      config: 'simple',
+    });
   }
   const data = unwrap(await query.order('name').limit(filter.limit ?? 60));
   return z.array(productCardSchema).parse(data);
 }
 
-const ORDER_SUMMARY_COLUMNS =
-  'id, order_number, email, customer_status, est_delivery_from, est_delivery_to, subtotal_cents, discount_cents, ' +
-  'shipping_cents, tax_cents, total_cents, currency, payment_status, shipping_address, tracking_number, carrier, created_at';
+const ORDER_SUMMARY_COLUMNS = `id, order_number, email, customer_status, est_delivery_from, est_delivery_to, subtotal_cents, discount_cents,
+  shipping_cents, tax_cents, total_cents, currency, payment_status, shipping_address, tracking_number, carrier, created_at`;
 
 /** /account/orders: the signed-in customer's own orders (the view filters by auth.uid()). */
 export async function listMyOrders(client: IwcClient): Promise<OrderSummary[]> {
   const data = unwrap(
-    await client.from('store_orders').select(ORDER_SUMMARY_COLUMNS).order('created_at', { ascending: false }),
+    await client
+      .from('store_orders')
+      .select(ORDER_SUMMARY_COLUMNS)
+      .order('created_at', { ascending: false }),
   );
   return z.array(orderSummarySchema).parse(data);
 }
 
 /** /account/orders/[number]: own order with items + visible events; null if not theirs. */
-export async function getMyOrder(client: IwcClient, orderNumber: string): Promise<OrderDetail | null> {
+export async function getMyOrder(
+  client: IwcClient,
+  orderNumber: string,
+): Promise<OrderDetail | null> {
   const data = unwrap(await client.rpc('store_my_order', { p_order_number: orderNumber }));
   return data === null ? null : orderDetailSchema.parse(data);
 }

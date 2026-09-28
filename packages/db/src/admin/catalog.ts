@@ -2,9 +2,8 @@ import { unwrap, type Enum, type Insert, type IwcClient, type Update } from '../
 
 // ---------------------------------------------------------------- vendors (D-003: admin only)
 
-const VENDOR_COLUMNS =
-  'id, shop_name, owner_name, phone, whatsapp, email, address, town, region_id, payment_method, payment_reference, ' +
-  'licences, status, notes, photo_path, is_placeholder, onboarded_at, created_at, updated_at, region:regions(slug, name)';
+const VENDOR_COLUMNS = `id, shop_name, owner_name, phone, whatsapp, email, address, town, region_id, payment_method, payment_reference,
+  licences, status, notes, photo_path, is_placeholder, onboarded_at, created_at, updated_at, region:regions(slug, name)`;
 
 export interface VendorFilter {
   regionId?: string;
@@ -37,8 +36,8 @@ export async function listRegionsAdmin(client: IwcClient) {
     await client
       .from('regions')
       .select(
-        'id, slug, name, sort_order, is_live, greeting_native, greeting_script, greeting_latin, greeting_meaning, ' +
-          'languages, tagline, story, hero_image_path, accent_color, content_status, updated_at',
+        `id, slug, name, sort_order, is_live, greeting_native, greeting_script, greeting_latin, greeting_meaning,
+          languages, tagline, story, hero_image_path, accent_color, content_status, updated_at`,
       )
       .order('sort_order'),
   );
@@ -73,10 +72,9 @@ export async function updateCategory(client: IwcClient, id: string, patch: Updat
 
 // ---------------------------------------------------------------- products + variants
 
-const PRODUCT_LIST_COLUMNS =
-  'id, slug, name, product_type, status, price_cents, shop_price_paise, is_placeholder, updated_at, ' +
-  'region:regions(slug, name), vendor:vendors(id, shop_name), ' +
-  'variants:product_variants(id, label, qty_listed, qty_reserved, qty_confirmed_at, is_active)';
+const PRODUCT_LIST_COLUMNS = `id, slug, name, product_type, status, price_cents, shop_price_paise, is_placeholder, updated_at,
+  region:regions(slug, name), vendor:vendors(id, shop_name),
+  variants:product_variants(id, label, qty_listed, qty_reserved, qty_confirmed_at, is_active)`;
 
 export interface AdminProductFilter {
   status?: Enum<'product_status'>;
@@ -94,7 +92,10 @@ export async function listAdminProducts(client: IwcClient, filter: AdminProductF
   if (filter.regionId) query = query.eq('region_id', filter.regionId);
   if (filter.vendorId) query = query.eq('vendor_id', filter.vendorId);
   if (filter.search && filter.search.trim()) {
-    query = query.textSearch('search', filter.search.trim(), { type: 'websearch', config: 'simple' });
+    query = query.textSearch('search', filter.search.trim(), {
+      type: 'websearch',
+      config: 'simple',
+    });
   }
   return unwrap(await query.order('updated_at', { ascending: false }).limit(filter.limit ?? 100));
 }
@@ -104,12 +105,12 @@ export async function getAdminProduct(client: IwcClient, id: string) {
     await client
       .from('products')
       .select(
-        'id, slug, name, product_type, region_id, category_id, vendor_id, summary, description, story, craft, attributes, ' +
-          'price_cents, shop_price_paise, origin_town, has_origin_label, status, is_placeholder, published_at, ' +
-          'created_at, updated_at, ' +
-          'variants:product_variants(id, sku, label, options, price_cents, weight_g, qty_listed, qty_reserved, ' +
-          'qty_confirmed_at, is_active, sort_order), ' +
-          'media:product_media(id, variant_id, storage_path, alt_text, sort_order, is_primary)',
+        `id, slug, name, product_type, region_id, category_id, vendor_id, summary, description, story, craft, attributes,
+          price_cents, shop_price_paise, origin_town, has_origin_label, status, is_placeholder, published_at,
+          created_at, updated_at,
+          variants:product_variants(id, sku, label, options, price_cents, weight_g, qty_listed, qty_reserved,
+          qty_confirmed_at, is_active, sort_order),
+          media:product_media(id, variant_id, storage_path, alt_text, sort_order, is_primary)`,
       )
       .eq('id', id)
       .maybeSingle(),
@@ -125,7 +126,11 @@ export async function updateProduct(client: IwcClient, id: string, patch: Update
 }
 
 /** Publishing stamps published_at the first time. The DB refuses live spices (D-032). */
-export async function setProductStatus(client: IwcClient, id: string, status: Enum<'product_status'>) {
+export async function setProductStatus(
+  client: IwcClient,
+  id: string,
+  status: Enum<'product_status'>,
+) {
   const patch: Update<'products'> = { status };
   if (status === 'live') patch.published_at = new Date().toISOString();
   unwrap(await client.from('products').update(patch).eq('id', id));
@@ -137,14 +142,22 @@ export async function createVariant(client: IwcClient, input: Insert<'product_va
 }
 
 /** Everything except quantities (those go through setListedQty / order functions, INV-3/4). */
-export type VariantPatch = Omit<Update<'product_variants'>, 'qty_listed' | 'qty_reserved' | 'id' | 'product_id'>;
+export type VariantPatch = Omit<
+  Update<'product_variants'>,
+  'qty_listed' | 'qty_reserved' | 'id' | 'product_id'
+>;
 
 export async function updateVariant(client: IwcClient, id: string, patch: VariantPatch) {
   unwrap(await client.from('product_variants').update(patch).eq('id', id));
 }
 
 /** Admin stock correction with a ledger note; also records it as re-confirmed with the shop. */
-export async function setListedQty(client: IwcClient, variantId: string, qtyListed: number, note?: string) {
+export async function setListedQty(
+  client: IwcClient,
+  variantId: string,
+  qtyListed: number,
+  note?: string,
+) {
   unwrap(
     await client.rpc('admin_set_listed_qty', {
       p_variant: variantId,

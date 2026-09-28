@@ -40,8 +40,16 @@ export function toDbError(error: PostgrestError): DbError {
   return new DbError(error.code || 'unknown', error.message, error.details || null);
 }
 
-/** Throws a DbError when a Supabase call failed; returns the data otherwise. */
-export function unwrap<T>(result: { data: T; error: PostgrestError | null }): T {
+type QueryResult = { data: unknown; error: PostgrestError | null };
+/** The data type of the success branch of a supabase-js result. */
+type SuccessData<R extends QueryResult> = Extract<R, { error: null }>['data'];
+
+/**
+ * Throws a DbError when a Supabase call failed; returns the data otherwise.
+ * Typed on supabase-js's success/failure union, so a successful list query
+ * returns a non-null array (maybeSingle() and nullable RPCs still include null).
+ */
+export function unwrap<R extends QueryResult>(result: R): SuccessData<R> {
   if (result.error) throw toDbError(result.error);
-  return result.data;
+  return result.data as SuccessData<R>;
 }
