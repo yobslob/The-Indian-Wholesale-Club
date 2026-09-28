@@ -1,3 +1,5 @@
+import { SITE_NAME } from '@/lib/site';
+
 import type { Metadata } from 'next';
 
 /**
@@ -6,7 +8,9 @@ import type { Metadata } from 'next';
  * code only downloads when someone opens /admin.
  */
 export const metadata: Metadata = {
-  title: { default: 'Admin', template: '%s · Admin' },
+  // The plain site name, as on any 404: a customer who is refused /admin gets a page
+  // whose tab title doesn't say "Admin" either (checked by e2e/hidden-admin.spec.ts).
+  title: { absolute: SITE_NAME },
   robots: { index: false, follow: false },
 };
 

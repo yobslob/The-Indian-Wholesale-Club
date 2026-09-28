@@ -43,10 +43,16 @@ response ≤ 100 ms on a local production build · `turbo build --filter=web` �
 A test must **fail when the rule it protects breaks**. Never assert on source-code or SQL text.
 | Layer | Tool | What | Where |
 |---|---|---|---|
-| Unit | `node:test` via `tsx` (D-037) | pure logic: pricing, delivery window, status labels, attribute schemas, token preset | `packages/shared/tests`, `packages/tokens/tests` |
+| Unit | `node:test` via `tsx` (D-037) | pure logic: pricing, delivery window, status labels, attribute schemas, token preset, the web's email/site/rate-limit helpers, the app's bag and checkout request | `packages/shared/tests`, `packages/tokens/tests`, `apps/web/tests`, `apps/app/tests` |
 | DB | plain SQL (`supabase/tests/*.test.sql`), run by `check.mjs db` → `scripts/db-test.mjs` against local Supabase (D-031) | invariants INV-1…INV-9 and the business functions, as anon / customer / admin (`request.jwt.claims`), each file rolled back | `supabase/tests/` |
-| E2E smoke | Playwright | (1) region → product → cart → checkout (Stripe test card) → order page · (2) admin sign-in → list product → publish → visible on the storefront · (3) a customer gets 404 on `/admin`, and page source has no vendor fields | `apps/web/e2e` |
-The old suites (stealth, SQL-text RLS, mocked routes) are deleted in R2/R3/R7. Everything runs through `node scripts/check.mjs`.
+| E2E smoke | Playwright (`check.mjs e2e`, after `build`) | (1) region → product → bag → checkout (Stripe test card) → thank-you → order page after the email check · (2) admin sign-in → new listing → variant → publish → visible on the storefront · (3) signed out, `/admin` → its sign-in page with `noindex`; a signed-in customer gets a plain 404 (no "admin" in page or title); no admin link, robots or sitemap entry; customer pages carry no vendor, cost or cycle fields | `apps/web/e2e` |
+| App bundle | Expo CLI (`check.mjs bundle`) | the app bundles for Android and iOS: every import resolves in Metro and every file compiles with Babel (bugs `tsc` can't see) | `apps/app` |
+
+The E2E run starts its own production server (`next start`, port 3101) and refuses anything but local Supabase and
+Stripe test keys (`apps/web/e2e/env.ts`). Its setup creates two local accounts (`e2e-admin@iwc.test`, an admin for that
+server process only, and `e2e-customer@iwc.test`) and tops up the demo product's stock; teardown archives the products
+it listed. Without Stripe test keys the checkout flow is skipped, not failed. The old suites (stealth, SQL-text RLS,
+mocked routes) are deleted. Everything runs through `node scripts/check.mjs`, and CI runs the same script (§Tooling).
 
 **Claude can verify SQL itself:** its sandbox has plain PostgreSQL 16 but no Docker/npm. `supabase/tests/_stub/supabase_stub.sql`
 emulates the few Supabase pieces the schema needs (roles, `auth.uid()`, storage tables, realtime publication). Apply stub →
@@ -55,9 +61,9 @@ on purpose and confirm the test fails (mutation check). The founder's run on rea
 the evidence of record. Keep SQL PG15-compatible.
 **Claude can type-check and lint too:** the founder's `node_modules/.pnpm` holds real package folders. Since R5 Claude copies
 the web's whole dependency closure (computed from `pnpm-lock.yaml`), rebuilds the pnpm links in its sandbox and runs the
-repo's own `tsc` (web, app, packages) and ESLint (web, app), and compiles the unit tests with `tsc` to run them with
-`node --test`. Not possible there: `next build` (no Linux SWC binary), `tsx` (no Linux esbuild binary) and running the app
-(Expo / a device): the founder's smoke test on a phone is the evidence for the app. The founder's `check.mjs`
+repo's own `tsc` (web, app, packages) and ESLint (web, app), runs the unit tests with its own `tsx`, bundles the app with
+the repo's Expo CLI and loads the Playwright specs (`playwright test --list`). Not possible there: `next build` (no Linux
+SWC binary), so no E2E run, and running the app on a device: the founder's runs are the evidence for those. The founder's `check.mjs`
 stays the evidence of record. After a migration, Claude patches `database.types.ts` by hand to match and the founder's
 `pnpm db:types` regenerates it (the diff should be formatting only).
 **Migrations:** never edit an applied migration. Every new function gets explicit grants (Supabase grants all by default), or `schema.test.sql` fails.
@@ -108,6 +114,14 @@ supabase/migrations  one baseline (R3) + small increments          supabase/seed
 - Errors: structured logger (`lib/logger.ts`, kept). User-facing messages are generic. No silent `.catch(() => {})`.
 - Every commit leaves typecheck + lint + tests green (verified by `check.mjs` at step boundaries).
 
-## Tooling changes (planned, measure first)
-Test runner stays `node:test` + `tsx` (D-037: baseline test step 1.8 s, no new dependency). Remove the duplicate lint and type-check from `next build` once turbo runs them in CI. If
-the baseline shows lint is slow, evaluate Biome as a *proposal* (needs a decision entry). CI runs `check.mjs`-equivalent steps.
+## Tooling (since R7)
+- `node scripts/check.mjs` runs, in this order: typecheck, lint, unit tests, `db` (local reset + SQL tests), build, http
+  (route timings), e2e, bundle. The founder runs it; **CI runs the same script** on every push and pull request to `main`
+  (`.github/workflows/ci.yml`) against a throwaway local Supabase in the runner, so CI needs no database secrets
+  (Stripe test keys are optional repository secrets; without them the checkout flow is skipped).
+- `next build` no longer repeats lint and typecheck (`apps/web/next.config.js`; they ran twice, P7). CI is the gate: never
+  deploy a commit whose CI run isn't green.
+- Deploys are manual (`.github/workflows/deploy.yml`, D-044): migrations to production, the Vercel hook, EAS builds without
+  store submission.
+- Test runner stays `node:test` + `tsx` (D-037: baseline test step 1.8 s, no new dependency). Biome stays a possible
+  *proposal* only if lint time becomes a problem (it needs a decision entry).

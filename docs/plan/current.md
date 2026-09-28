@@ -1,11 +1,11 @@
 # Current status
 
 ## Resume here
-**R6 (app reshape):** the founder's `check.mjs` on `b0a00cd` is all green and the web works. The app did not bundle
-on the founder's machine (Expo SDK 52 + pnpm's strict layout, see the log). The fix (pnpm hoisting, Metro resolver, pinned
-Stripe, missing dependencies) is committed and bundles for Android and iOS in Claude's sandbox. **Waiting on the founder:**
-the clean reinstall and the phone smoke test at the bottom. The hosted dev DB reset is still pending (announced there).
-Next after that: R7 (tests, tooling, CI).
+**R7 (tests, tooling, CI) is committed and Claude-checked** (see the log): Playwright E2E for the three flows, an app
+bundle check, app unit tests, `next build` without the duplicate lint/typecheck, CI running `check.mjs` on a local
+Supabase, and a manual-only deploy workflow (D-044). R6 is done (founder run + emulator smoke test). **Waiting on the
+founder:** the steps at the bottom (the first E2E run on a real server is the open question). The hosted dev DB reset is
+still pending. Next: R8 (hand-off), then the coding plan.
 
 ## Steps
 | Step | Status | Evidence |
@@ -16,8 +16,9 @@ Next after that: R7 (tests, tooling, CI).
 | R3 DB baseline | ✅ done | commit `96b964c`. Applied and tested on real local Supabase (log) |
 | R4 Packages | ✅ done | commit `7d7c525` + fix commit (generated `database.types.ts`, lockfile, `check.mjs --continue`) |
 | R5 Web reshape + speed | ✅ done (founder run 2026-09-28; typecheck fix in the R5 close commit) · hosted dev DB reset still pending | sub-steps below |
-| R6 App reshape | ◐ code committed · founder `check.mjs` green (2026-09-29) · app bundling fix committed, phone smoke test pending | sub-steps below |
-| R7 – R8 | not started | — |
+| R6 App reshape | ✅ done (founder `check.mjs` green + emulator smoke test, 2026-09-29) · app admin mode not yet tried on a device | sub-steps below |
+| R7 Tests, tooling, CI | ◐ committed, Claude-checked · founder `check.mjs` (incl. first E2E run) + first CI run pending | sub-steps below |
+| R8 Hand-off | not started | — |
 
 ## Verification log (facts only. Add a row per run)
 | Date | Commit | Who / where | What | Result |
@@ -44,6 +45,18 @@ Next after that: R7 (tests, tooling, CI).
 | 2026-09-29 | `b0a00cd` | founder, `expo start` | start the app | **bundling failed**: the Stripe config plugin crashed without options (founder added `merchantIdentifier` / `enableGooglePay` in `app.json`), then `query-string` not found from expo-router, `@babel/runtime` and `@expo/metro-runtime` not found; with a trial `.npmrc`, `react` resolved to `@types/react` (the tsconfig `paths` entry, followed by Metro) |
 | 2026-09-29 | app fix | Claude, the repo's Expo CLI 0.22.28 + Metro 0.81.5 with the app's full dependency closure copied from the founder's `node_modules/.pnpm` | `expo export --platform android` and `ios` | the founder's errors reproduced (Stripe plugin, then undeclared modules one after another). After the fix: **Android 1,365 modules, iOS 1,368 modules bundled**; the source map holds one React (18.3.1) and no React 19; app `tsc` + ESLint clean. **Not covered:** `query-string` was a stand-in (it is not in the store yet), Stripe 0.38.6 and `react-dom` 18.3.1 are not in the store (bundled with 0.78.0), CSS is empty (no Linux `lightningcss`), and nothing ran on a device |
 | 2026-09-29 | `fa631f4` (after a clean reinstall) | founder, Android emulator + web | app smoke test, first try | the app **bundled and opened** Home; the web kept working. Home showed "Could not load": `apps/app/.env` pointed Supabase at the example's IP (`192.168.1.10`, not the computer's) and the website API at Metro's port 8081 instead of 3000. Fix: the founder's `.env` (Claude never edits it). The app now logs both addresses and the real load error in the Metro terminal (development only), reports an unreachable server as "No connection", and the example uses `YOUR-LAN-IP` |
+| 2026-09-29 | `5bd6a58` | founder, Android emulator + web, `.env` fixed (addresses logged by the app) | app smoke test | Home and regions load; **three items added, checkout with the Stripe test card succeeded, the order tracks**; the requests show in the web server's log. Founder: "everything is good to go". Admin mode in the app was not reported on |
+| 2026-09-29 | R7 | Claude, `tsc` 5.9.3 + ESLint 8.57.1 + `tsx` 4.21 + Playwright 1.56 (sandbox copy) + the repo's Expo CLI | typecheck web (incl. `e2e/`, `playwright.config.ts`) and app; lint web + app (`--max-warnings 0`); unit tests shared 26, web 10, **app 6 (new)**; `playwright test --list` loads 6 tests in 3 files; `expo export` Android + iOS with `--no-bytecode` as in `check.mjs bundle` (1,365 / 1,368 modules, 104 s cold); `node --check scripts/check.mjs`; workflow YAML parses; CI env snippet dry-run | all pass. Mutation check on the app tests: prices sent to the server, bag line over the limit → both caught. **Not run by Claude:** the E2E flows (no Next.js server in the sandbox), `next build` with the new config, CI on GitHub |
+
+## R7 sub-steps
+| # | Sub-step | Status |
+|---|---|---|
+| 7.1 | Playwright E2E (`apps/web/e2e`): checkout with the Stripe test card, admin list + publish, hidden admin + no operations fields; local-only guards | ✅ committed · never run yet |
+| 7.2 | `check.mjs`: new `e2e` and `bundle` steps; fixed step order (`db` before `build`) | ✅ committed |
+| 7.3 | Admin tab title no longer says "Admin" (a refused customer's 404 looked different from any other 404, D-006); found while writing flow 3 | ✅ committed |
+| 7.4 | `next build` without lint/typecheck (P7); app unit tests (bag, checkout request) | ✅ committed |
+| 7.5 | CI = `check.mjs` on a local Supabase in the runner (B-15); deploy manual-only, no store auto-submit (D-044) | ✅ committed · first CI run after the push |
+| 7.6 | Founder: `check.mjs` with timings vs the baseline (the R7 "done when") | ⏳ |
 
 ## Invariant tests (`data-model.md`)
 INV-1 … INV-9: implemented and passing on Claude's Postgres 16 runs and on real local Supabase, Postgres 15 (see log).
@@ -69,24 +82,24 @@ INV-1 … INV-9: implemented and passing on Claude's Postgres 16 runs and on rea
 | 6.5 | Old shared code deleted (hand-written types, schemas, utils, constants and their 4 tests; `domain.test.ts` covers the replacements) | ✅ committed |
 | 6.6 | Founder: `check.mjs` | ✅ 2026-09-29, all green (log) |
 | 6.7 | App bundling on the founder's machine: `.npmrc` hoisting, Metro resolver (`@/`, one React), tsconfig paths off in Metro, Stripe 0.38.6, `query-string` + `react-dom` declared | ✅ committed · Claude bundled Android + iOS (log) |
-| 6.8 | Founder: clean reinstall + smoke test on a phone | ⏳ |
+| 6.8 | Founder: clean reinstall + smoke test on a phone | ✅ 2026-09-29, Android emulator: browse, bag, checkout, tracking (log) |
 
 **Not verified by anyone yet:** a delivered email (needs a verified sender, Q-9), the admin screens in a browser, and any
 app screen on a device.
 
 ## Waiting on the founder (in this order, from `C:\kod\root`, Docker + local Supabase running)
-1. **Clean reinstall** (the new `.npmrc` changes how pnpm lays out `node_modules`), in PowerShell:
-   `Remove-Item -Recurse -Force node_modules, apps\app\node_modules, apps\web\node_modules, packages\*\node_modules`
-   then `pnpm install` (it also updates `pnpm-lock.yaml`: Stripe 0.38.6, `query-string`, `react-dom` 18.3.1 for the app).
-2. `node scripts/check.mjs`, then tell Claude (the web must stay green with the new layout). Claude commits the lockfile.
-3. **Phone smoke test** (`ops.md` §Running the app: `apps/app/.env` with your computer's LAN IP, the local anon key and the
-   Stripe test key). `pnpm --filter web dev` in one terminal; in another, `cd apps\app` then `npx expo start --clear`, and
-   open it in Expo Go on the phone (not the browser: the app's web target is not used).
-   Home → a region → the demo product → Add to bag → Bag → Checkout (card `4242 4242 4242 4242`) → Thank you → Track this
-   order. Then Profile → Sign in → your orders. Then sign in with the admin account: admin mode should open on Today;
-   check Orders (the new order), Cycles (the open cycle) and "View the store". Tell Claude what breaks (a screenshot helps).
-4. **Announcement (unchanged):** the next step after that is resetting the **hosted dev DB** to the new schema
-   (`ops.md` §Database workflow). It deletes everything in the hosted dev project. Run it only when you're ready.
+1. `pnpm install` (adds Playwright to the web and `tsx` to the app; updates `pnpm-lock.yaml`).
+2. Once: `pnpm --filter web exec playwright install chromium` (downloads the test browser).
+3. Check `apps/web/.env.local` has the local `SUPABASE_SERVICE_ROLE_KEY` and the Stripe **test** keys
+   (`NEXT_PUBLIC_STRIPE_PUBLISHABLE_KEY` = `pk_test_…`, `STRIPE_SECRET_KEY` = `sk_test_…`). The E2E run refuses anything else.
+4. `node scripts/check.mjs` (all 8 steps; e2e and bundle are new, so expect a few minutes more). Tell Claude, and send the
+   last lines of `.checks/latest.json` for any failing step: the E2E flows have never run on a real server, so a
+   selector may need adjusting. Claude records the timings against the baseline.
+5. After Claude commits the updated `pnpm-lock.yaml` (CI installs with `--frozen-lockfile`), `git push`, then watch the first **CI** run under GitHub → Actions. Optional: add `STRIPE_TEST_PUBLISHABLE_KEY` and
+   `STRIPE_TEST_SECRET_KEY` (test keys) as repository secrets so CI runs the checkout flow too. The old
+   `NEXT_PUBLIC_SUPABASE_*` / `NEXT_PUBLIC_APP_URL` secrets can be deleted.
+6. **Announcement (unchanged):** resetting the **hosted dev DB** to the new schema is still pending (`ops.md` §Database
+   workflow). It deletes everything in the hosted dev project. Run it only when you're ready.
 
 ## Known leftovers (tracked, not forgotten)
 - The app's bundle ids are still `com.root.app` (`apps/app/app.json`): they change with the domain (Q-9). Everything else

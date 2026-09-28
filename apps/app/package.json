@@ -8,7 +8,8 @@
     "build:android": "eas build --platform android",
     "build:ios": "eas build --platform ios",
     "lint": "eslint . --ext .ts,.tsx --max-warnings 0",
-    "typecheck": "tsc --noEmit"
+    "typecheck": "tsc --noEmit",
+    "test": "tsx --test tests/checkout-request.test.ts tests/cart.test.ts"
   },
   "dependencies": {
     "@expo/vector-icons": "^14.0.0",
@@ -45,6 +46,7 @@
     "@types/react": "~18.3.0",
     "eslint": "^8.57.1",
     "tailwindcss": "^3.4.17",
+    "tsx": "^4.23.15",
     "typescript": "^5.8.2"
   }
 }

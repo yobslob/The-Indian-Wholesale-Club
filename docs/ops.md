@@ -44,6 +44,10 @@ Metro drops its cache. The app's web target is not used (customers get the Next.
 - **Local DB (Docker Desktop running):** `npx supabase start` once, then `npx supabase db reset` rebuilds it from
   migrations + seeds (`supabase/config.toml` `[db.seed]`: regions, categories, demo). Studio: http://127.0.0.1:54323.
 - **DB tests:** `node scripts/check.mjs db` (= reset + `scripts/db-test.mjs`). It refuses non-local databases.
+- **E2E tests:** `node scripts/check.mjs build e2e`. Once per machine: `pnpm --filter web exec playwright install chromium`.
+  They read `apps/web/.env.local` (local Supabase URL + anon + service-role keys; Stripe **test** keys for the checkout
+  flow) and refuse a non-local database or a live Stripe key. They add two accounts to the local database
+  (`e2e-admin@iwc.test`, `e2e-customer@iwc.test`), test orders, and archived test products; `check.mjs db` resets it.
 - R3 builds the new schema on local Supabase (Docker, D-031). The hosted dev DB is wiped to the new schema in R5, once the web
   code matches (allowed, D-013), and only after Claude has announced it. The founder runs it:
   `npx supabase link --project-ref <dev project ref>` (once), then `npx supabase db reset --linked`. This drops everything
@@ -55,8 +59,13 @@ Metro drops its cache. The app's web target is not used (customers get the Next.
   code accepted either one).
 
 ## Deploy (to be finalised, Q-9)
-`.github/workflows/deploy.yml` (old) pushes migrations, triggers Vercel and runs EAS builds. It gets reviewed in R7. CI runs lint,
-typecheck and tests on every push.
+Manual only (D-044): Actions → **Deploy** → Run workflow, type `deploy`. It pushes new migrations to the production
+Supabase project (never the seeds), triggers the Vercel deploy hook and starts EAS builds (no store submission). Run it
+only on a commit whose CI run is green. Its secrets (`SUPABASE_PROJECT_REF`, `SUPABASE_ACCESS_TOKEN`,
+`SUPABASE_DB_PASSWORD`, `VERCEL_DEPLOY_HOOK_URL`, `EXPO_TOKEN`) belong to production and are set only once it exists.
+**CI** (`ci.yml`) runs `node scripts/check.mjs` on every push and pull request to `main`, on a local Supabase inside the
+runner. Optional secrets: `STRIPE_TEST_PUBLISHABLE_KEY`, `STRIPE_TEST_SECRET_KEY` (test keys only, for the checkout flow).
+The old `NEXT_PUBLIC_SUPABASE_*` / `NEXT_PUBLIC_APP_URL` CI secrets are no longer read (B-15).
 
 ## Git
 GitHub `yobslob/The-Indian_Wholesale-Club`, branch `main` (D-014). Claude commits in `C:\kod\root` and the founder pushes.

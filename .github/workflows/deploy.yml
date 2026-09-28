@@ -1,14 +1,35 @@
 name: Deploy
 
+# Manual only (Actions → Deploy → Run workflow), reviewed in R7:
+# - Production does not exist yet: domain, hosting and store listings wait on Q-9, and the
+#   app's bundle ids are still placeholders (com.root.app).
+# - Run it only on a commit whose CI run is green; `next build` no longer repeats lint and
+#   typecheck (engineering.md P7), CI is the gate.
+# - Mobile builds are uploaded to EAS but never auto-submitted to the stores.
+# The secrets below belong to the PRODUCTION projects (ops.md §Environments), never dev.
+
 on:
-  push:
-    tags:
-      - 'v*'
+  workflow_dispatch:
+    inputs:
+      confirm:
+        description: 'Type "deploy" to push migrations to production and deploy'
+        required: true
 
 jobs:
-  deploy-supabase:
-    name: Deploy Supabase Migrations
+  guard:
+    name: Confirm
     runs-on: ubuntu-latest
+    steps:
+      - name: Require the confirmation word
+        if: ${{ inputs.confirm != 'deploy' }}
+        run: |
+          echo 'Not deploying: the confirmation input was not "deploy".'
+          exit 1
+
+  deploy-supabase:
+    name: Deploy Supabase migrations
+    runs-on: ubuntu-latest
+    needs: guard
     steps:
       - name: Checkout
         uses: actions/checkout@v4
@@ -22,36 +43,39 @@ jobs:
         run: supabase link --project-ref ${{ secrets.SUPABASE_PROJECT_REF }}
         env:
           SUPABASE_ACCESS_TOKEN: ${{ secrets.SUPABASE_ACCESS_TOKEN }}
+          SUPABASE_DB_PASSWORD: ${{ secrets.SUPABASE_DB_PASSWORD }}
 
+      # Applies new migrations only. Seeds (demo data) are never pushed to production.
       - name: Push database migrations
         run: supabase db push
         env:
           SUPABASE_ACCESS_TOKEN: ${{ secrets.SUPABASE_ACCESS_TOKEN }}
-
-      # Edge functions intentionally omitted (D4): all API logic lives in
-      # Next.js API routes; supabase/functions does not exist in this repo.
+          SUPABASE_DB_PASSWORD: ${{ secrets.SUPABASE_DB_PASSWORD }}
 
   deploy-web:
-    name: Deploy Web (Vercel)
+    name: Deploy web (Vercel deploy hook)
     runs-on: ubuntu-latest
     needs: deploy-supabase
     steps:
-      - name: Trigger Vercel Deployment
-        run: |
-          curl -X POST "${{ secrets.VERCEL_DEPLOY_HOOK_URL }}"
+      - name: Trigger Vercel deployment
+        run: curl --fail -X POST "${{ secrets.VERCEL_DEPLOY_HOOK_URL }}"
 
-  deploy-mobile:
-    name: Build & Submit Mobile
+  build-mobile:
+    name: Build mobile apps (EAS, no store submit)
     runs-on: ubuntu-latest
     needs: deploy-supabase
     steps:
       - name: Checkout
         uses: actions/checkout@v4
 
+      - name: Install pnpm (version from package.json "packageManager")
+        uses: pnpm/action-setup@v4
+
       - name: Setup Node.js
         uses: actions/setup-node@v4
         with:
-          node-version: 20
+          node-version: 22
+          cache: pnpm
 
       - name: Setup EAS
         uses: expo/expo-github-action@v8
@@ -59,18 +83,9 @@ jobs:
           eas-version: latest
           token: ${{ secrets.EXPO_TOKEN }}
 
-      - name: Setup pnpm
-        uses: pnpm/action-setup@v4
-        with:
-          version: 9.12.0
-
       - name: Install dependencies
         run: pnpm install --frozen-lockfile
 
-      - name: Build and Submit iOS
-        run: eas build --platform ios --auto-submit --non-interactive
-        working-directory: apps/app
-
-      - name: Build and Submit Android
-        run: eas build --platform android --auto-submit --non-interactive
+      - name: Build iOS and Android
+        run: eas build --platform all --profile production --non-interactive --no-wait
         working-directory: apps/app

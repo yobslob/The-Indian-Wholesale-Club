@@ -8,7 +8,8 @@
     "start": "next start",
     "lint": "eslint . --ext .ts,.tsx --max-warnings 0",
     "typecheck": "next typegen && tsc --noEmit",
-    "test": "tsx --test tests/order-email.test.ts tests/site.test.ts tests/rate-limit.test.ts"
+    "test": "tsx --test tests/order-email.test.ts tests/site.test.ts tests/rate-limit.test.ts",
+    "e2e": "playwright test"
   },
   "dependencies": {
     "@repo/db": "workspace:*",
@@ -25,6 +26,7 @@
     "zustand": "^5.0.3"
   },
   "devDependencies": {
+    "@playwright/test": "^1.55.0",
     "@repo/eslint-config": "workspace:*",
     "@repo/tokens": "workspace:*",
     "@repo/typescript-config": "workspace:*",

@@ -4,13 +4,14 @@ import { useEffect, useState } from 'react';
 import { listMyAddresses } from '@repo/db/account';
 import { formatUsd } from '@repo/shared/domain';
 
-import type { Details } from '@/features/checkout/details-form';
+import type { Details } from '@/features/checkout/request';
 import type { CheckoutOutcome } from '@/features/checkout/use-checkout';
 
 import { Body, Button, ErrorText, Heading, Screen, Title } from '@/components/ui';
 import { useBag } from '@/features/cart/store';
-import { DetailsForm, EMPTY_DETAILS, toCheckoutRequest } from '@/features/checkout/details-form';
+import { DetailsForm } from '@/features/checkout/details-form';
 import { QuoteSummary, ShippingOptions } from '@/features/checkout/quote-summary';
+import { EMPTY_DETAILS, toCheckoutRequest } from '@/features/checkout/request';
 import { useCheckout } from '@/features/checkout/use-checkout';
 import { useSession } from '@/lib/session';
 import { supabase } from '@/lib/supabase';

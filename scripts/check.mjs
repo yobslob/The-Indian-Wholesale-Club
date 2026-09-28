@@ -8,10 +8,14 @@
  * Results are FACTS for docs/plan/current.md — nothing is "verified" without one.
  *
  * Usage (from repo root):
- *   node scripts/check.mjs                 # typecheck, lint, test, build, http, db
+ *   node scripts/check.mjs                 # typecheck, lint, test, db, build, http, e2e, bundle
  *   node scripts/check.mjs test build      # only the named steps
  *   node scripts/check.mjs http --routes=/,/states/kerala
  *   node scripts/check.mjs db              # needs Docker + `npx supabase start` once
+ *   node scripts/check.mjs build e2e       # e2e needs a fresh build + Chromium (docs/ops.md)
+ *
+ * Order matters: `db` resets the local database (migrations + demo seed) before the
+ * build reads it and before `e2e` writes test users, orders and products into it.
  *
  * No dependencies. Works on Windows, macOS, Linux (Node >= 20).
  */
@@ -19,7 +23,7 @@ import { spawn, execSync } from 'node:child_process';
 import { mkdirSync, writeFileSync } from 'node:fs';
 import os from 'node:os';
 
-const ALL_STEPS = ['typecheck', 'lint', 'test', 'build', 'http', 'db'];
+const ALL_STEPS = ['typecheck', 'lint', 'test', 'db', 'build', 'http', 'e2e', 'bundle'];
 const COMMANDS = {
   typecheck: 'pnpm turbo typecheck --force --continue',
   lint: 'pnpm turbo lint --force --continue',
@@ -28,6 +32,12 @@ const COMMANDS = {
   // Local Supabase only: rebuild the DB from migrations + seeds, then run the
   // invariant tests in supabase/tests (each rolls back). Never touches hosted DBs.
   db: 'npx supabase db reset && node scripts/db-test.mjs',
+  // Playwright smoke flows (apps/web/e2e) against the production build on local Supabase.
+  e2e: 'pnpm --filter web e2e',
+  // The app must bundle for both platforms (Metro resolution + Babel on every file). The
+  // output is thrown away; it catches the "works in tsc, fails in Metro" class of bugs.
+  bundle:
+    'pnpm --filter app exec expo export --platform android --platform ios --no-bytecode --output-dir ../../.checks/app-bundle',
 };
 // Routes timed by the `http` step against a production build (`next start`).
 // The product route exists only with the dev demo seed (supabase/seed/demo.sql).
@@ -47,7 +57,13 @@ const args = process.argv.slice(2);
 const routesArg = args.find((a) => a.startsWith('--routes='));
 const routes = routesArg ? routesArg.slice(9).split(',').filter(Boolean) : DEFAULT_ROUTES;
 const steps = args.filter((a) => !a.startsWith('--'));
-const selected = steps.length ? steps : ALL_STEPS;
+const unknown = steps.filter((s) => !ALL_STEPS.includes(s));
+if (unknown.length) {
+  console.error(`Unknown step "${unknown[0]}". Valid: ${ALL_STEPS.join(', ')}`);
+  process.exit(2);
+}
+// Always the canonical order (see the header), whatever order the steps were typed in.
+const selected = steps.length ? ALL_STEPS.filter((s) => steps.includes(s)) : ALL_STEPS;
 const isWin = process.platform === 'win32';
 
 function sh(cmd) {
@@ -98,7 +114,11 @@ async function timeRequest(url) {
   const res = await fetch(url, { redirect: 'manual', cache: 'no-store' });
   const headersMs = performance.now() - t0;
   await res.arrayBuffer();
-  return { status: res.status, headersMs: Math.round(headersMs), totalMs: Math.round(performance.now() - t0) };
+  return {
+    status: res.status,
+    headersMs: Math.round(headersMs),
+    totalMs: Math.round(performance.now() - t0),
+  };
 }
 
 async function httpStep() {
@@ -115,7 +135,10 @@ async function httpStep() {
   let ready = false;
   for (let i = 0; i < 60 && !ready; i++) {
     await new Promise((r) => setTimeout(r, 1000));
-    ready = await fetch(base, { redirect: 'manual' }).then(() => true, () => false);
+    ready = await fetch(base, { redirect: 'manual' }).then(
+      () => true,
+      () => false,
+    );
   }
   const results = [];
   if (ready) {
@@ -160,10 +183,6 @@ const report = {
 };
 
 for (const step of selected) {
-  if (!ALL_STEPS.includes(step)) {
-    console.error(`Unknown step "${step}". Valid: ${ALL_STEPS.join(', ')}`);
-    process.exit(2);
-  }
   process.stdout.write(`▶ ${step} … `);
   report.steps[step] = step === 'http' ? await httpStep() : await run(COMMANDS[step]);
   const r = report.steps[step];
@@ -179,7 +198,9 @@ writeFileSync(`.checks/${report.startedAt.replace(/[:.]/g, '-')}.json`, json);
 if (report.steps.http?.routes) {
   console.log('\nRoute timings (median of 3):');
   for (const r of report.steps.http.routes) {
-    console.log(`  ${r.route.padEnd(24)} ${r.error ? 'ERROR' : `${r.status}  ${r.medianTotalMs} ms`}`);
+    console.log(
+      `  ${r.route.padEnd(24)} ${r.error ? 'ERROR' : `${r.status}  ${r.medianTotalMs} ms`}`,
+    );
   }
 }
 console.log('\nSaved .checks/latest.json — tell Claude it is ready.');

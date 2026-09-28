@@ -1,92 +1,77 @@
 name: CI
 
+# Mirrors the founder's `node scripts/check.mjs` (engineering.md §Testing): typecheck, lint,
+# unit tests, SQL tests, production build, route timings, E2E smoke flows and the app bundle,
+# all against a throwaway LOCAL Supabase inside the runner. It never reads a hosted database
+# (B-15), so it needs no database secrets.
+#
+# Optional repository secrets (Settings → Secrets → Actions), Stripe TEST keys only:
+#   STRIPE_TEST_PUBLISHABLE_KEY (pk_test_…), STRIPE_TEST_SECRET_KEY (sk_test_…)
+# Without them the checkout E2E flow is skipped; everything else still runs.
+
 on:
   pull_request:
-    branches: [main, develop]
+    branches: [main]
   push:
-    branches: [main, develop]
+    branches: [main]
 
 concurrency:
   group: ${{ github.workflow }}-${{ github.ref }}
   cancel-in-progress: true
 
 jobs:
-  lint-typecheck:
-    name: Lint & Typecheck
+  check:
+    name: check.mjs on local Supabase
     runs-on: ubuntu-latest
+    timeout-minutes: 45
     steps:
       - name: Checkout
         uses: actions/checkout@v4
 
-      - name: Install pnpm
+      - name: Install pnpm (version from package.json "packageManager")
         uses: pnpm/action-setup@v4
-        with:
-          version: 9
 
       - name: Setup Node.js
         uses: actions/setup-node@v4
         with:
-          node-version: 20
-          cache: 'pnpm'
+          node-version: 22
+          cache: pnpm
 
       - name: Install dependencies
         run: pnpm install --frozen-lockfile
 
-      - name: Lint
-        run: pnpm turbo lint
+      - name: Start local Supabase (only what the app and tests use)
+        run: npx --yes supabase start -x studio,imgproxy,edge-runtime,logflare,vector,supavisor,postgres-meta
 
-      - name: Typecheck
-        run: pnpm turbo typecheck
-
-  test:
-    name: Test
-    runs-on: ubuntu-latest
-    steps:
-      - name: Checkout
-        uses: actions/checkout@v4
-
-      - name: Install pnpm
-        uses: pnpm/action-setup@v4
-        with:
-          version: 9
-
-      - name: Setup Node.js
-        uses: actions/setup-node@v4
-        with:
-          node-version: 20
-          cache: 'pnpm'
-
-      - name: Install dependencies
-        run: pnpm install --frozen-lockfile
-
-      - name: Test
-        run: pnpm turbo test
-
-  build:
-    name: Build
-    runs-on: ubuntu-latest
-    needs: lint-typecheck
-    steps:
-      - name: Checkout
-        uses: actions/checkout@v4
-
-      - name: Install pnpm
-        uses: pnpm/action-setup@v4
-        with:
-          version: 9
-
-      - name: Setup Node.js
-        uses: actions/setup-node@v4
-        with:
-          node-version: 20
-          cache: 'pnpm'
-
-      - name: Install dependencies
-        run: pnpm install --frozen-lockfile
-
-      - name: Build
-        run: pnpm turbo build
+      - name: Point the website at local Supabase
         env:
-          NEXT_PUBLIC_SUPABASE_URL: ${{ secrets.NEXT_PUBLIC_SUPABASE_URL }}
-          NEXT_PUBLIC_SUPABASE_ANON_KEY: ${{ secrets.NEXT_PUBLIC_SUPABASE_ANON_KEY }}
-          NEXT_PUBLIC_APP_URL: ${{ secrets.NEXT_PUBLIC_APP_URL }}
+          STRIPE_TEST_PUBLISHABLE_KEY: ${{ secrets.STRIPE_TEST_PUBLISHABLE_KEY }}
+          STRIPE_TEST_SECRET_KEY: ${{ secrets.STRIPE_TEST_SECRET_KEY }}
+        run: |
+          eval "$(npx --yes supabase status -o env)"
+          {
+            echo "NEXT_PUBLIC_SUPABASE_URL=$API_URL"
+            echo "NEXT_PUBLIC_SUPABASE_ANON_KEY=$ANON_KEY"
+            echo "SUPABASE_SERVICE_ROLE_KEY=$SERVICE_ROLE_KEY"
+            echo "NEXT_PUBLIC_SITE_URL=http://localhost:3100"
+            echo "ADMIN_EMAILS=ci-admin@iwc.test"
+            case "$STRIPE_TEST_PUBLISHABLE_KEY" in pk_test_*) echo "NEXT_PUBLIC_STRIPE_PUBLISHABLE_KEY=$STRIPE_TEST_PUBLISHABLE_KEY" ;; esac
+            case "$STRIPE_TEST_SECRET_KEY" in sk_test_*) echo "STRIPE_SECRET_KEY=$STRIPE_TEST_SECRET_KEY" ;; esac
+          } > apps/web/.env.local
+
+      - name: Install the Playwright browser
+        run: pnpm --filter web exec playwright install --with-deps chromium
+
+      - name: node scripts/check.mjs (all steps)
+        run: node scripts/check.mjs
+
+      - name: Keep the results
+        if: always()
+        uses: actions/upload-artifact@v4
+        with:
+          name: checks
+          path: |
+            .checks/latest.json
+            .checks/e2e-results/
+          if-no-files-found: ignore
+          retention-days: 14

@@ -73,7 +73,7 @@ Claude's sandboxes are blocked from the npm registry, so Claude can't install pa
 - To verify, the founder runs `node scripts/check.mjs` (or named steps, e.g. `node scripts/check.mjs test`) and tells
   Claude. Claude reads `.checks/latest.json` and records the numbers in `docs/plan/current.md`.
 - Claude *can* run git, `node --check`, dependency-free Node scripts, **SQL on a local Postgres 16** with the Supabase
-  stub, and the repo's own `tsc` + ESLint on the web, the app and the packages, the unit tests (compiled with `tsc`) and an Expo bundle of the app, using the
+  stub, and the repo's own `tsc` + ESLint on the web, the app and the packages, the unit tests (with `tsx`), an Expo bundle of the app and a load check of the Playwright specs, using the
   dependency folders copied from the founder's `node_modules` (`engineering.md` §Testing). Claude cannot run `next build`.
   DB changes and code are checked by Claude before the founder's run.
 

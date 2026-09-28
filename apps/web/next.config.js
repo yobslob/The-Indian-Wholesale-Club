@@ -13,6 +13,10 @@ const devEval = process.env.NODE_ENV === 'production' ? '' : " 'unsafe-eval'";
 /** @type {import('next').NextConfig} */
 const nextConfig = {
   transpilePackages: ['@repo/db', '@repo/shared'],
+  // Lint and typecheck run once, before the build (check.mjs, CI); `next build` repeating
+  // them cost time on every build (engineering.md P7). Never deploy without CI passing.
+  eslint: { ignoreDuringBuilds: true },
+  typescript: { ignoreBuildErrors: true },
   images: {
     formats: ['image/avif', 'image/webp'],
     remotePatterns: [

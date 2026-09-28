@@ -11,7 +11,8 @@ Shops never get logins. The founder and COO enter all shop data (D-018).
 - Admin code is a separate route group, so its JavaScript is only downloaded when someone opens `/admin`. The storefront
   must never import admin code (a lint rule enforces this, `engineering.md`).
 - Every admin page and every server action checks on the server (`apps/web/features/admin/guard.ts`): signed in **and**
-  `profiles.role = 'admin'` **and** email in `ADMIN_EMAILS`. Each page calls the guard itself; a layout check alone is not
+  `profiles.role = 'admin'` **and** email in `ADMIN_EMAILS`. The admin's tab title is the plain site name, so a refused
+  visitor's 404 looks like any other 404. Each page calls the guard itself; a layout check alone is not
   enough in Next.js. Opening `/admin` while signed out → the admin sign-in page `/admin/login` (as the founder asked).
   Signed in as a non-admin → a plain 404, also for server actions. There are no admin API routes (R5 uses server actions).
 - RLS uses the same check (`is_admin()`, INV-7). Even with a stolen UI, the DB refuses.

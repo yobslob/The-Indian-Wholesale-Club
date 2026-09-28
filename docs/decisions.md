@@ -210,3 +210,9 @@ non-admins, INV-7). Anything that needs a secret goes through the website's serv
 checkout and order confirmation (Stripe secret key, D-038) and guest order lookup (service role). A signed-in user's
 access token only links the order to the account. So the app holds no secret, and refunds stay on the web panel. Cost:
 app admin changes reach the website's cached pages within the 5-minute fallback (B-17).
+
+**D-044 · 2026-09-29 · Claude, proposed (R7): deploys are manual, CI is the gate**
+`.github/workflows/deploy.yml` runs only by hand (Actions → Deploy, typing "deploy"), never on a tag push, and builds
+the apps on EAS without submitting them to the stores. Why: production does not exist yet (Q-9), the app's bundle ids
+are placeholders, and since R7 `next build` no longer repeats lint and typecheck, so a deploy must follow a green CI
+run (`ci.yml` runs `check.mjs` against a local Supabase in the runner). Revisit when production is set up.
