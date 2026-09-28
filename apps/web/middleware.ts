@@ -1,45 +1,42 @@
-import { NextResponse } from 'next/server';
+import { createServerClient, type CookieOptions } from '@supabase/ssr';
+import { NextResponse, type NextRequest } from 'next/server';
 
-import { rateLimit, ruleForPath } from '@/lib/rate-limit';
-import { updateSession } from '@/lib/supabase/middleware';
+/**
+ * Narrow middleware (engineering.md PR-4): runs only where a session matters
+ * and just keeps the auth cookies fresh. Storefront pages never pass through it,
+ * so they stay static and cacheable. Access control is NOT done here: every
+ * admin page/action checks on the server (features/admin/guard.ts).
+ */
+export async function middleware(request: NextRequest): Promise<NextResponse> {
+  let response = NextResponse.next({ request });
+  const url = process.env.NEXT_PUBLIC_SUPABASE_URL;
+  const key = process.env.NEXT_PUBLIC_SUPABASE_ANON_KEY;
+  if (!url || !key) return response;
 
-import type { NextRequest } from 'next/server';
+  const supabase = createServerClient(url, key, {
+    cookies: {
+      getAll() {
+        return request.cookies.getAll();
+      },
+      setAll(cookiesToSet: { name: string; value: string; options: CookieOptions }[]) {
+        for (const { name, value } of cookiesToSet) request.cookies.set(name, value);
+        response = NextResponse.next({ request });
+        for (const { name, value, options } of cookiesToSet)
+          response.cookies.set(name, value, options);
+      },
+    },
+  });
 
-export async function middleware(request: NextRequest) {
-  // Rate limiting for sensitive routes (H11)
-  const matched = ruleForPath(request.nextUrl.pathname);
-  if (matched) {
-    const ip =
-      request.headers.get('x-forwarded-for')?.split(',')[0]?.trim() ||
-      request.headers.get('x-real-ip') ||
-      'local';
-    const result = rateLimit(`${ip}:${matched.name}`, matched.rule);
-    if (!result.ok) {
-      return NextResponse.json(
-        { error: 'Too many requests, please try again later' },
-        {
-          status: 429,
-          headers: {
-            'Retry-After': String(result.retryAfterSeconds),
-            'X-RateLimit-Limit': String(matched.rule.limit),
-          },
-        },
-      );
-    }
+  // Refreshes an expired access token. With asymmetric signing keys this is a
+  // local JWT check; with the legacy shared secret it falls back to one Auth call.
+  await supabase.auth.getClaims();
+
+  if (request.nextUrl.pathname.startsWith('/admin')) {
+    response.headers.set('X-Robots-Tag', 'noindex, nofollow');
   }
-
-  return await updateSession(request);
+  return response;
 }
 
 export const config = {
-  matcher: [
-    /*
-     * Match all request paths except for:
-     * - _next/static (static files)
-     * - _next/image (image optimization)
-     * - favicon.ico (favicon)
-     * - public folder assets
-     */
-    '/((?!_next/static|_next/image|favicon.ico|.*\\.(?:svg|png|jpg|jpeg|gif|webp)$).*)',
-  ],
+  matcher: ['/admin/:path*', '/account/:path*', '/checkout/:path*', '/orders/:path*'],
 };

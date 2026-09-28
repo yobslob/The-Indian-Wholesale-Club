@@ -1,6 +1,7 @@
 # Storefront: customer web + customer side of the app
 
-Target structure. Skeletons are built in R5 (web) and R6 (app), and visual design comes in the coding phase (`design.md`).
+The web skeleton exists since R5 (working pages on real data, plain styling); the app follows in R6. Visual design comes in
+the coding phase (`design.md`). The code is the truth for what exists (`apps/web/app/(store)/`).
 
 ## What a customer may see (whitelist, D-003 + D-004 + D-008)
 Anything not on this list stays off customer surfaces: pages, app, emails, API responses, meta tags, page source, and
@@ -16,21 +17,21 @@ JSON sent to the browser.
 details, admin names, the COO, or anything about India-side operations.
 Enforcement: customer code reads only `store_*` (D-017), and INV-1/INV-8 tests (`data-model.md`).
 
-## Web routes (`apps/web/app/(store)/…`)
+## Web routes (`apps/web/app/(store)/…`, built in R5)
 | Route | Purpose | Rendering (see `engineering.md`) |
 |---|---|---|
-| `/` | "Where's home?": India map + list of all 36 regions, delivery-window teaser, how it works | static, revalidated on publish |
-| `/states` | all 36 regions, alphabetical, with no state/UT distinction (D-002) | static |
-| `/states/[region]` | **the core page:** greeting in the region's script, story, accent theme, Clothing · Spices tabs | static per region |
-| `/states/[region]/[product]` | product page: gallery, options, price, availability (live), delivery window, origin line | static + live stock island |
+| `/` | "Where's home?": list of all 36 regions (the India map comes with the design), delivery-window teaser | static, cached `store_home()` |
+| `/states` | all 36 regions, alphabetical, with no state/UT distinction (D-002) | static (same cached read as `/`) |
+| `/states/[region]` | **the core page:** greeting in the region's script, story, accent theme, Clothing · Spices sections | static per region (36 built at build time) |
+| `/states/[region]/[product]` | product page: gallery, options, price, availability (live), save, delivery window, origin line | static on first visit + live stock island |
 | `/clothing`, `/spices` | browse across regions with a region filter | static + client filtering |
 | `/search` | search products and regions | dynamic (no auth) |
-| `/cart` | cart (on-device state) | static shell |
-| `/checkout`, `/checkout/success` | address → delivery window → payment (Stripe) | dynamic |
-| `/orders/lookup`, `/orders/[number]` | guest order tracking with email check (kept from old code) | dynamic |
-| `/account`, `/account/orders`, `/account/addresses`, `/account/saved` | signed-in customer | dynamic |
+| `/cart` | the bag ("Bag" in the UI; on-device state) | static shell |
+| `/checkout`, `/checkout/success` | details → server-priced total + delivery window → payment (Stripe) → order (D-038) | dynamic |
+| `/orders/lookup`, `/orders/[number]` | order tracking. The signed-in owner sees the order directly; anyone else confirms the order email first | dynamic |
+| `/account`, `/account/orders`, `/account/addresses`, `/account/saved` | signed-in customer ("Save for later" on product pages fills `saved`) | dynamic |
 | `/login`, `/signup` | customer auth. **No admin mention anywhere** (D-006) | static |
-| `/about`, `/how-it-works`, `/faq`, `/contact`, `/shipping-returns`, `/privacy`, `/terms` | info pages. Policy text needs founder input (Q-5 and more) | static |
+| `/about`, `/how-it-works`, `/faq`, `/contact`, `/shipping-returns`, `/privacy`, `/terms` | info pages. Text needs founder input (Q-5, Q-9, Q-16); until then they say "being written" | static |
 
 Why `/states` in URLs: it's the founder's own word for the concept. UTs live under it too (D-002). Headings that list all 36
 avoid calling them "states" (e.g. "Pick your home").

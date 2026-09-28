@@ -192,7 +192,7 @@ async function testResend() {
 
 async function run() {
   console.log('====================================================');
-  console.log('ROOT Platform - End-to-End Live Connection Inspector');
+  console.log('IWC - live connection check (Supabase, Stripe, Resend)');
   console.log(`Node.js Version: ${process.version}`);
   console.log('====================================================\n');
 

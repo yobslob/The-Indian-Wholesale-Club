@@ -1,39 +1,22 @@
 import { NextResponse } from 'next/server';
 
-import { processOrderConfirmationEmail } from '@/lib/email/resend';
-import { logger } from '@/lib/logger';
-import { supabaseAdmin } from '@/lib/supabase/admin';
+import { listDueEmails } from '@repo/db/server';
 
-import type { OrderWithFullDetails } from '@repo/shared/types';
+import { deliverOutboxRow } from '@/lib/email/send';
+import { serviceClient } from '@/lib/supabase/service';
 
+/**
+ * POST /api/internal/email-outbox: retries due emails (called by a scheduler
+ * with `Authorization: Bearer $EMAIL_OUTBOX_CRON_SECRET`, docs/ops.md).
+ */
 export async function POST(request: Request): Promise<NextResponse> {
-  if (!process.env.EMAIL_OUTBOX_CRON_SECRET ||
-      request.headers.get('authorization') !== `Bearer ${process.env.EMAIL_OUTBOX_CRON_SECRET}`) {
-    return NextResponse.json({ error: 'Unauthorized' }, { status: 401 });
+  const secret = process.env.EMAIL_OUTBOX_CRON_SECRET;
+  if (!secret || request.headers.get('authorization') !== `Bearer ${secret}`) {
+    return NextResponse.json({ error: 'Not found' }, { status: 404 });
   }
-
-  const { data: entries, error } = await supabaseAdmin
-    .from('email_outbox')
-    .select('id, recipient, payload')
-    .in('status', ['pending', 'processing'])
-    .lte('next_attempt_at', new Date().toISOString())
-    .limit(25);
-  if (error) {
-    logger.error('email.outbox_lookup_failed', { error: error.message });
-    return NextResponse.json({ error: 'Unable to load email outbox' }, { status: 500 });
-  }
-
-  let processed = 0;
-  for (const entry of entries ?? []) {
-    const claimed = await supabaseAdmin.from('email_outbox').update({ status: 'processing' })
-      .eq('id', entry.id).eq('status', 'pending').select('id').maybeSingle();
-    if (!claimed.data) continue;
-    await processOrderConfirmationEmail(
-      entry.id,
-      entry.payload as unknown as OrderWithFullDetails,
-      entry.recipient,
-    );
-    processed++;
-  }
-  return NextResponse.json({ processed });
+  const service = serviceClient();
+  const rows = await listDueEmails(service, 20);
+  const results = { sent: 0, failed: 0, skipped: 0 };
+  for (const row of rows) results[await deliverOutboxRow(service, row)] += 1;
+  return NextResponse.json(results);
 }

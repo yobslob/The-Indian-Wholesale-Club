@@ -1,10 +1,10 @@
 # Current status
 
 ## Resume here
-**R4 is done** (founder run 2026-09-28: all 8 SQL test files pass on real local Supabase; the one red item, an unused
-import left by R2, is fixed). **R5 (web reshape + speed) is in progress**: new routes on `@repo/db/store`, hidden admin,
-performance rules, delete the old web types/queries, reset the hosted dev DB. See the R5 sub-steps below.
-The web/app code still reads the **old** schema on the hosted dev DB until R5/R6.
+**R5 code is committed and Claude-verified** (typecheck, lint, unit tests, SQL tests; see the log). The web is rebuilt on the
+new schema: storefront routes (`storefront.md`), hidden admin, checkout on `create_order`, migration 3. **Waiting on the
+founder:** the steps at the bottom, then the hosted dev DB reset (announced there). The mobile app still reads the old
+schema until R6, so it breaks against a reset hosted DB until then.
 
 ## Steps
 | Step | Status | Evidence |
@@ -14,7 +14,7 @@ The web/app code still reads the **old** schema on the hosted dev DB until R5/R6
 | R2 Remove dead paths | ✅ done | commit `c22656b`. One leftover (unused `Ionicons` import in the app) was caught by the founder's run and fixed in the R4 fix commit |
 | R3 DB baseline | ✅ done | commit `96b964c`. Applied and tested on real local Supabase (log) |
 | R4 Packages | ✅ done | commit `7d7c525` + fix commit (generated `database.types.ts`, lockfile, `check.mjs --continue`) |
-| R5 Web reshape + speed | 🔄 in progress | sub-steps below |
+| R5 Web reshape + speed | ✅ committed · Claude-verified · founder run + hosted reset pending | sub-steps below |
 | R6 – R8 | not started | — |
 
 ## Verification log (facts only. Add a row per run)
@@ -29,6 +29,9 @@ The web/app code still reads the **old** schema on the hosted dev DB until R5/R6
 | 2026-09-28 | R4 | Claude, Node 22 | unit tests: `packages/shared` (compiled with `tsc`), `packages/tokens` | 39/39 + 3/3 pass |
 | 2026-09-28 | `7d7c525` (+ uncommitted generated types, lockfile) | founder, same machine, local Supabase running | `node scripts/check.mjs` (all steps) | typecheck **FAIL** 5.0 s and lint **FAIL** 5.4 s, both from one unused import in `apps/app/app/profile/orders/[id].tsx` (turbo stopped there, so web was not reported) · test OK 2.0 s · build OK 42.8 s · pages (old app vs hosted DB): `/` 420 ms, `/shop` 427 ms, `/search` 440 ms, `/api/search` 411 ms, `/api/health` 230 ms · **db OK 38.8 s: 8/8 SQL test files pass on real Supabase (Postgres 15)** |
 | 2026-09-28 | R4 fix | Claude, `tsc` 5.9.3 | typecheck `packages/db` against the **official** generated `database.types.ts` | 0 errors |
+| 2026-09-28 | R5 | Claude, PostgreSQL 16.13 + stub | **10 SQL test files, 160 assertions** (with and without `demo.sql`), incl. new `checkout.test.sql` (15) and `cycle_advance.test.sql` (16). Mutation check: 12 breaks (`checkout_context`: anon grant, customer grant, base-table variants, max uses ignored, expiry ignored, vendor_id leak, inactive promo; `advance_cycle`: no admin check, close with open orders, events visible, orders not moved, open advances) | all pass. All 12 caught |
+| 2026-09-28 | R5 | Claude, real `tsc` 5.9.3 + ESLint 8.57.1 with the web's full dependency closure copied from the founder's `node_modules/.pnpm` (453 packages, pnpm links rebuilt from `pnpm-lock.yaml`) | typecheck `apps/web`, `packages/db`, `packages/shared`; lint `apps/web` (`--max-warnings 0`), incl. a probe that the import-boundary rule rejects admin imports from storefront files | 0 errors, 0 warnings. The probe fails as intended |
+| 2026-09-28 | R5 | Claude, Node 22 (tests compiled with `tsc`) | unit tests: `packages/shared` (all 5 files), `apps/web/tests` (3 new files), `packages/tokens` | 48/48, 10/10, 3/3 pass. Mutation check: open-redirect guard and HTML escaping broken on purpose → caught |
 
 ## Invariant tests (`data-model.md`)
 INV-1 … INV-9: implemented and passing on Claude's Postgres 16 runs and on real local Supabase, Postgres 15 (see log).
@@ -36,19 +39,36 @@ INV-1 … INV-9: implemented and passing on Claude's Postgres 16 runs and on rea
 ## R5 sub-steps
 | # | Sub-step | Status |
 |---|---|---|
-| 5.0 | Close R4: remove the unused import, `check.mjs` runs turbo with `--continue` (every package reports), commit generated types + lockfile | ✅ this commit |
-| 5.1 | Web on `@repo/db`: server Supabase clients, `features/` layout, storefront routes (`storefront.md`) | next |
-| 5.2 | Hidden admin (`admin.md` access model), lazy admin bundle | — |
-| 5.3 | Cart + checkout on `createOrder`, order pages, guest lookup | — |
-| 5.4 | Performance rules PR-1 … PR-8, import-boundary lint, delete the old web types/queries, rebrand | — |
-| 5.5 | `check.mjs` routes → new routes. Founder: reset the hosted dev DB (announced first), then measure against the baseline | — |
+| 5.0 | Close R4: remove the unused import, `check.mjs` runs turbo with `--continue` (every package reports), commit generated types + lockfile | ✅ `97fadaf` |
+| 5.1 | Web on `@repo/db`: server Supabase clients, `features/` layout, storefront routes (`storefront.md`) | ✅ committed |
+| 5.2 | Hidden admin (`admin.md` access model), its own route group | ✅ committed (gaps listed in `admin.md`) |
+| 5.3 | Checkout on `create_order` (D-038), order pages, guest lookup, account pages | ✅ committed |
+| 5.4 | Performance rules (`engineering.md` says where each lives), import-boundary lint, old web code deleted, web rebrand | ✅ committed |
+| 5.5 | `check.mjs` routes → new routes (✅). Founder run on local Supabase, then the hosted dev DB reset, then measure against the baseline | ⏳ founder |
+
+**Not verified by anyone yet:** `next build` of the new web, page timings, a real Stripe test payment, emails, and the
+admin screens in a browser. These come from the founder's run and a click-through (steps below).
+
+## Waiting on the founder (in this order, from `C:\kod\root`, Docker + local Supabase running)
+1. `pnpm install`: links `@repo/db` into the web, drops the removed web dependencies (framer-motion, lucide-react, clsx,
+   tailwind-merge, class-variance-authority, tailwindcss-animate) and updates `pnpm-lock.yaml`.
+2. `npx supabase db reset`: applies migration 3 (`20260928000003_checkout.sql`) locally, with the seeds.
+3. `pnpm db:types`: regenerates `packages/db/src/database.types.ts` (Claude patched it by hand for migration 3; the diff
+   should be formatting only).
+4. Create `apps/web/.env.local` pointing the web at local Supabase (`ops.md` §Environment variables: URL
+   `http://127.0.0.1:54321` + the local anon and service-role keys from `npx supabase status`). The build now reads the DB,
+   and the hosted DB still has the old schema.
+5. `node scripts/check.mjs`, then tell Claude. Claude commits the regenerated types + lockfile.
+6. Optional click-through with `pnpm --filter web dev`: `/`, a region, the demo product, add to bag, checkout with the
+   Stripe test card `4242 4242 4242 4242`; `/admin` after the admin bootstrap in `ops.md` (once, in the local DB).
+7. **Announcement:** after a green run, the next step is resetting the **hosted dev DB** to the new schema (`ops.md`
+   §Database workflow). It deletes everything in the hosted dev project. Run it only when you're ready; the mobile app
+   does not work against it until R6.
 
 ## Known leftovers (tracked, not forgotten)
-- Brand strings still say "ROOT" → rebrand sweep in R5/R6 (D-009).
-- Old `SHIPPING_RATES` windows still shown by the old app → replaced by cycle windows (D-008) in R5.
-- Old hand-written types (`packages/shared/src/types`) + old query layers (`apps/web/lib/queries`, `apps/app/lib/queries`)
-  → deleted in R5/R6 when the apps switch to `@repo/db`.
-- The old hosted dev DB keeps the old schema and its holes (B-1, B-14) until the R5 reset. The app-side admin guard is already fixed.
+- "ROOT" still appears in the mobile app and the old `packages/shared/src/constants` → R6 (D-009). The web is rebranded.
+- Old hand-written types (`packages/shared/src/types`) + the app's query layer (`apps/app/lib/queries`) → deleted in R6.
+- The old hosted dev DB keeps the old schema and its holes (B-1, B-14) until the reset above.
 - `supabase/config.toml` uses the deprecated `[inbucket]` section (CLI warning, harmless) → fix when touching config.
 - Founder's `apps/web/.env` has unused `RAZORPAY_*` / `TRACKING_PROXY_*` lines (safe to delete. Claude never edits `.env`).
 

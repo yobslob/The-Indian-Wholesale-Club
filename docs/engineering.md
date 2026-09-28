@@ -17,16 +17,20 @@ Baseline numbers come from the founder's first `node scripts/check.mjs` run and 
 | P7 | `next build` re-runs ESLint and the type-check after turbo already ran them (not disabled in `next.config.js`). Cost to be measured | `apps/web/next.config.js` |
 | P8 | (correctness) The rate limiter is an in-memory `Map`: per instance, reset on cold start, ineffective on serverless | `apps/web/lib/rate-limit.ts:14` |
 
-## Performance rules (apply from R5 on)
+## Performance rules (apply from R5 on; where each lives in the web code since R5)
 - **PR-1 Cacheable storefront:** storefront reads use a cookie-less anon client with no `cookies()`. They are cached and tagged, and admin publish
-  calls `revalidateTag`. Only cart, checkout, account and order pages are dynamic.
+  calls `revalidateTag`. Only cart, checkout, account and order pages are dynamic. *Web:* `lib/supabase/store.ts` +
+  `features/catalog/data.ts` (`unstable_cache`, tag `store`, 5-minute fallback). Region pages are built at build time,
+  product pages on first visit. So **`next build` reads the database** (the new schema must be there).
 - **PR-2 One round trip per page:** each storefront page or endpoint gets its data from one `store_*` view or function returning exactly
   what it renders. Checkout allows at most 2.
 - **PR-3 No over-fetching:** explicit column lists, never `select('*')`, no `count: 'exact'` on customer paths.
-- **PR-4 Narrow middleware:** runs only on `/admin`, `/account`, `/checkout`, `/api/admin` and the auth callback. Prefer local JWT
-  verification (`getClaims()` with asymmetric signing keys) over a `getUser()` network call. Confirm SDK support in R5.
+- **PR-4 Narrow middleware:** runs only on `/admin`, `/account`, `/checkout` and `/orders` (`apps/web/middleware.ts`; there
+  are no admin API routes). It uses `getClaims()`: a local JWT check with asymmetric signing keys, one Auth call with the
+  legacy shared secret (local Supabase and old hosted projects use the shared secret). Rate limits run inside the routes.
 - **PR-5 Server-first:** Server Components by default. Client components only for real interaction (add to cart, variant
-  picker, live stock). No animation libraries on the storefront.
+  picker, live stock). No animation libraries on the storefront (framer-motion removed in R5). No web fonts until the
+  design is approved (system fonts).
 - **PR-6 Assets:** `next/image` with explicit `sizes`. Fonts via `next/font`, subset. Script fonts only on their region page.
 - **PR-7 Realtime only where it matters:** product availability, and the admin orders/stock feed.
 - **PR-8 Dependencies cost:** every new dependency is justified in its commit message (size + reason).
@@ -49,17 +53,19 @@ emulates the few Supabase pieces the schema needs (roles, `auth.uid()`, storage 
 migrations → seeds → `_helpers.sql` → each `*.test.sql` with `psql -v ON_ERROR_STOP=1`. After adding a test, break the rule
 on purpose and confirm the test fails (mutation check). The founder's run on real local Supabase (Postgres 15) is still
 the evidence of record. Keep SQL PG15-compatible.
-**Claude can type-check too:** the founder's `node_modules/.pnpm` holds real package folders (TypeScript 5.9.3, supabase-js
-2.117.1, zod, @types/node). Claude copies their type definitions into its sandbox and runs the repo's own `tsc` on
-`packages/*`. Until `pnpm db:types` has been run, Claude type-checks `@repo/db` against an approximate
-`database.types.ts` generated from its local Postgres (not committed; the official file replaces it).
+**Claude can type-check and lint too:** the founder's `node_modules/.pnpm` holds real package folders. Since R5 Claude copies
+the web's whole dependency closure (computed from `pnpm-lock.yaml`), rebuilds the pnpm links in its sandbox and runs the
+repo's own `tsc` (web + packages) and ESLint (web), and compiles the unit tests with `tsc` to run them with `node --test`.
+Not possible there: `next build` (no Linux SWC binary) and `tsx` (no Linux esbuild binary). The founder's `check.mjs`
+stays the evidence of record. After a migration, Claude patches `database.types.ts` by hand to match and the founder's
+`pnpm db:types` regenerates it (the diff should be formatting only).
 **Migrations:** never edit an applied migration. Every new function gets explicit grants (Supabase grants all by default), or `schema.test.sql` fails.
 
-## Layout (target)
+## Layout (web: actual since R5; app: target)
 ```
 apps/web/app/(store)/…     customer routes (storefront.md)       apps/web/app/admin/…   hidden admin (admin.md)
-apps/web/features/<name>/  regions, catalog, cart, checkout, orders, account, admin/<section>
-apps/web/components/ui/    design-system primitives only          apps/web/lib/          infra: supabase, stripe, email, auth, log
+apps/web/features/<name>/  catalog, regions, cart, checkout, orders, account, auth, info, admin (guard, actions, ui)
+apps/web/lib/              infra: env, supabase (store / session / browser / service clients), stripe, email, logger, rate limit
 apps/app/app/(customer)/…  customer tabs                           apps/app/app/(admin)/… admin mode (lazy)
 packages/db       generated DB types (`pnpm db:types`) + typed queries: store/* (customer-safe, zod) · admin/* · server/*
 packages/shared   pure domain logic + zod schemas (no I/O)         packages/tokens  design tokens → Tailwind + NativeWind
@@ -69,7 +75,9 @@ supabase/migrations  one baseline (R3) + small increments          supabase/seed
 ## Code conventions
 - Names come from `glossary.md`. One concept = one word across DB, code, routes.
 - **Import boundaries (lint-enforced):** storefront code and customer app screens can't import `features/admin`,
-  `app/admin` or `@repo/db/admin`. Server-only modules start with `import 'server-only'`.
+  `app/admin` or `@repo/db/admin` (web: `no-restricted-imports` override in `apps/web/.eslintrc.js`). Server-only modules
+  start with `import 'server-only'` (Next.js resolves it; never import such a module from a unit test). A `'use client'`
+  module's exports are client references on the server: shared constants live in plain modules (e.g. `features/cart/limits.ts`).
 - Validate with zod at every boundary (forms, API input, JSON attributes). No `any`. Files ≤ ~250 lines. Split by feature.
 - Money: integers (`*_cents`, `*_paise`). Time: `timestamptz`, ISO strings in JSON.
 - Errors: structured logger (`lib/logger.ts`, kept). User-facing messages are generic. No silent `.catch(() => {})`.

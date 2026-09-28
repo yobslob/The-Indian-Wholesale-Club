@@ -1,17 +1,19 @@
-import { redirect } from 'next/navigation';
-import React from 'react';
+import type { Metadata } from 'next';
 
-import { AdminShell } from '@/components/admin';
-import { getAdminIdentity, requireAdminRedirect } from '@/lib/auth/admin';
+/**
+ * Hidden admin (D-006): never linked from the storefront, not in the sitemap or
+ * robots.txt, and never indexed. This route group is a separate bundle, so its
+ * code only downloads when someone opens /admin.
+ */
+export const metadata: Metadata = {
+  title: { default: 'Admin', template: '%s · Admin' },
+  robots: { index: false, follow: false },
+};
 
-export default async function AdminLayout({
+export default function AdminRootLayout({
   children,
 }: {
   children: React.ReactNode;
-}): Promise<React.JSX.Element> {
-  const identity = await getAdminIdentity();
-  const redirectTo = await requireAdminRedirect('/login?redirect=/admin');
-  if (redirectTo) redirect(redirectTo);
-
-  return <AdminShell userEmail={identity?.email ?? 'admin'}>{children}</AdminShell>;
+}): React.JSX.Element {
+  return <div className="bg-canvas text-ink min-h-screen text-sm">{children}</div>;
 }

@@ -30,7 +30,16 @@ const COMMANDS = {
   db: 'npx supabase db reset && node scripts/db-test.mjs',
 };
 // Routes timed by the `http` step against a production build (`next start`).
-const DEFAULT_ROUTES = ['/', '/shop', '/search?q=a', '/api/search?q=a', '/api/health'];
+// The product route exists only with the dev demo seed (supabase/seed/demo.sql).
+const DEFAULT_ROUTES = [
+  '/',
+  '/states',
+  '/states/kerala',
+  '/states/kerala/demo-kerala-kasavu-saree',
+  '/clothing',
+  '/search?q=saree',
+  '/api/health',
+];
 const PORT = 3100;
 const STEP_TIMEOUT_MS = 15 * 60 * 1000;
 

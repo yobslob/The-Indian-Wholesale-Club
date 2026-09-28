@@ -12,7 +12,8 @@ open ──cutoff──► collecting ──► packed ──► exported ──
 - Exactly one cycle is `open` (INV-5). When a cycle hits its cutoff, the next cycle opens immediately. Its dates are entered by an admin.
 - An admin sets each cycle's `cutoff_at`, estimated export and estimated arrival dates. There are no fixed lead times (D-026), so nothing is
   hard-coded.
-- Status changes are manual admin actions. Each one writes an internal `order_event` for every affected order.
+- Status changes are manual admin actions: `cutoff_cycle()` for open → collecting, then `advance_cycle()` one step at a
+  time. Each writes an internal `order_event` for every affected order.
 
 ## 2. Listing a product (India desk, usually on a phone)
 1. Choose a vendor. The region comes from the vendor.
@@ -24,21 +25,25 @@ open ──cutoff──► collecting ──► packed ──► exported ──
   (N is set in `pricing_settings`) so they can re-check with the shop.
 
 ## 3. Placing an order (customer)
-1. The cart holds variants. At checkout, the server computes totals: subtotal, promo, shipping, tax (flat 8% estimate, D-033).
+1. The cart holds variants. At checkout, the server computes totals from the catalog (never from the browser): subtotal,
+   promo, shipping (a setting, Q-16, D-040) and tax (flat 8% estimate on subtotal − discount + shipping, D-033).
 2. The server computes the **delivery window** from the open cycle's estimated arrival plus domestic delivery days. It is shown before payment
    (D-008).
-3. Payment: a Stripe PaymentIntent (USD). After confirmation, the server verifies amount, currency and status, and only then
-   creates the order (kept from the old code, including `pending_orders` reconciliation by webhook).
-4. In one transaction: create the order and items, **reserve** stock (a conditional update, INV-3), write `stock_movements`, attach
-   the order to the open cycle, store the delivery window, and queue the confirmation email in `email_outbox`.
-5. If the reservation fails (sold out meanwhile), no order is created and the payment is refunded or cancelled. The customer is told the item sold out.
+3. Payment: a Stripe PaymentIntent (USD) for exactly that total. The priced checkout is stored in `pending_orders` with it.
+   After payment the server verifies amount, currency and status with Stripe, then creates the order **from the stored
+   checkout** (D-038). The browser and the Stripe webhook both trigger this; the second finds the existing order.
+4. In one transaction (`create_order`): create the order and items, **reserve** stock (a conditional update, INV-3), write
+   `stock_movements`, attach the order to the open cycle and store the delivery window. Then the server queues the
+   confirmation email in `email_outbox`.
+5. If `create_order` refuses (sold out meanwhile, price changed, no open cycle), no order is created, the payment is refunded
+   in full and recorded in `failed_reconciliations`. The customer is told an item sold out.
 
 ## 4. Pickups (India desk)
 1. At cutoff, the system creates one `pickup` per ordered piece, grouped by vendor into a per-shop checklist.
 2. The COO visits each shop and marks every piece `picked` (optional photo) or `unavailable`.
 3. `picked` → stock moves from reserved to picked, and the shop price is added to that vendor's payable.
 4. `unavailable` → stock is released, the order item becomes `unavailable`, and the customer is refunded for that item and notified
-   (no substitutes, D-030). The customer message never mentions shops (D-003).
+   (no substitutes, D-030; the refund amount rule is Q-17). The customer message never mentions shops (D-003).
 
 ## 5. Payouts (India desk) [D-005]
 - A vendor's payable is the sum of their `picked` pickups not yet covered by a payout.

@@ -6,12 +6,14 @@ Shops never get logins. The founder and COO enter all shop data (D-018).
 ## Access model (D-006)
 **Web**
 - Lives only under `/admin`. `/admin/login` is its own sign-in page. The customer `/login` never mentions admin.
-- Never linked from the storefront, the sitemap or emails. `robots.txt` disallows it and pages send `noindex`.
+- Never linked from the storefront, the sitemap, `robots.txt` or emails (naming it would advertise it, D-039). Pages send
+  `noindex` (response header + page metadata).
 - Admin code is a separate route group, so its JavaScript is only downloaded when someone opens `/admin`. The storefront
   must never import admin code (a lint rule enforces this, `engineering.md`).
-- Every admin page, server action and API route checks on the server: signed in **and** `profiles.role = 'admin'` **and** email in
-  `ADMIN_EMAILS`. Opening `/admin` while signed out → the admin sign-in page (as the founder asked). Signed in as a
-  non-admin → a plain 404. Admin API routes return 404 (not 401/403) to anyone who isn't an admin.
+- Every admin page and every server action checks on the server (`apps/web/features/admin/guard.ts`): signed in **and**
+  `profiles.role = 'admin'` **and** email in `ADMIN_EMAILS`. Each page calls the guard itself; a layout check alone is not
+  enough in Next.js. Opening `/admin` while signed out → the admin sign-in page `/admin/login` (as the founder asked).
+  Signed in as a non-admin → a plain 404, also for server actions. There are no admin API routes (R5 uses server actions).
 - RLS uses the same check (`is_admin()`, INV-7). Even with a stolen UI, the DB refuses.
 
 **App**
@@ -22,7 +24,7 @@ Shops never get logins. The founder and COO enter all shop data (D-018).
 ## Desks (D-007)
 `profiles.desk` picks the default "Today" screen. Both admins can open every section (D-027).
 
-## Sections
+## Sections (web skeleton since R5: working screens on real data, plain styling)
 | Section | Job | Main desk | Web | App |
 |---|---|---|---|---|
 | **Today** | what needs doing now: pickups due, stale listings, payouts due / exports to receive, orders to ship, delay warnings | both | ✓ | ✓ |
@@ -37,6 +39,10 @@ Shops never get logins. The founder and COO enter all shop data (D-018).
 | **Promotions** | promo codes (kept from the old admin) | US | ✓ | — |
 | **Insights** | sales by region/category/vendor, demand signals (searches, saved items) → what to list next | both | ✓ | — |
 | **Settings** | pricing settings, admin list | both | ✓ | — |
+
+**Not in the R5 skeleton yet** (coding phase unless noted): photo upload for products/vendors/receipts, the refund button
+for unavailable items (Q-17), stale-listing and delay warnings on Today, live (Realtime) order/stock feed, packing list +
+commercial invoice export, bulk edits, category editing, app admin mode (R6).
 
 ## Design principles for the admin
 1. **One screen per job.** "Pick up at Shop X" is one checklist, not a table with filters.

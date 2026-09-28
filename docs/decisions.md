@@ -160,3 +160,20 @@ took 1.8 s (`.checks/baseline.json`), and Vitest would add a dependency without 
 with the old tests was their content, not the runner (they asserted on SQL text).
 Status: offered to the founder as "reply only if you disagree"; no objection in the founder's next two messages (2026-09-28).
 
+
+**D-038 · 2026-09-28 · proposed: The order is created from the checkout the server stored, never from the browser**
+`POST /api/checkout` prices the bag from the catalog (`checkout_context()`, one round trip), creates the Stripe
+PaymentIntent for that exact total and stores the priced checkout in `pending_orders`. After payment the browser sends only
+the PaymentIntent id (`POST /api/orders`); the Stripe webhook does the same if the browser never comes back. Whichever
+arrives second finds the existing order (`payment_intent_id` is unique). If `create_order` refuses (sold out meanwhile, price
+changed, no open cycle), the payment is refunded in full and the refusal is recorded in `failed_reconciliations` (flows.md §3.5).
+Why: the old flow re-sent the cart from the browser and trusted it for the webhook fallback.
+
+**D-039 · 2026-09-28 · proposed: `/admin` is not named in robots.txt**
+Listing it there would advertise it, which D-006 forbids. Admin pages send `noindex` instead (response header set by the
+middleware + page metadata). Supersedes the "robots.txt disallows it" line of the R1 `admin.md`.
+
+**D-040 · 2026-09-28 · proposed: Shipping charge is a setting, empty until the founder decides (Q-16)**
+`pricing_settings.shipping_flat_cents` + `free_shipping_min_cents` (migration 3). While the flat charge is empty, checkout
+is closed ("not open right now") instead of guessing a fee (D-012). The dev demo seed sets it to 0 as a placeholder. The
+old code's $5.99 / free over $75 / $12.99 express were generic-store numbers, not IWC decisions, and are gone.

@@ -1,26 +1,17 @@
+import 'server-only';
+
 import Stripe from 'stripe';
 
-const stripeSecretKey = process.env.STRIPE_SECRET_KEY;
+let stripe: Stripe | null = null;
 
-export const stripe: Stripe | null = stripeSecretKey
-  ? new Stripe(stripeSecretKey, {
-      typescript: true,
-    })
-  : null;
-
-export function getStripeServer(): Stripe {
-  if (!stripe) {
-    throw new Error(
-      'STRIPE_SECRET_KEY is not configured. Please add it to your environment variables.',
-    );
-  }
-  return stripe;
+/** Payments need both keys; dev uses Stripe test-mode keys (no fake payment path, R2). */
+export function isStripeConfigured(): boolean {
+  return Boolean(process.env.STRIPE_SECRET_KEY && process.env.NEXT_PUBLIC_STRIPE_PUBLISHABLE_KEY);
 }
 
-export function isStripeConfigured(): boolean {
-  return Boolean(
-    process.env.STRIPE_SECRET_KEY &&
-    process.env.NEXT_PUBLIC_STRIPE_PUBLISHABLE_KEY &&
-    !process.env.NEXT_PUBLIC_STRIPE_PUBLISHABLE_KEY.includes('pk_test_...'),
-  );
+export function stripeServer(): Stripe {
+  const key = process.env.STRIPE_SECRET_KEY;
+  if (!key) throw new Error('Missing environment variable STRIPE_SECRET_KEY');
+  stripe ??= new Stripe(key, { typescript: true });
+  return stripe;
 }
