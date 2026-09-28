@@ -18,6 +18,20 @@
       "bundler": "metro",
       "output": "static"
     },
-    "plugins": ["expo-router", "expo-font", "expo-secure-store", "@stripe/stripe-react-native"]
+    "plugins": [
+      "expo-router",
+      "expo-font",
+      "expo-secure-store",
+      [
+        "@stripe/stripe-react-native",
+        {
+          "merchantIdentifier": "merchant.com.root.app",
+          "enableGooglePay": true
+        }
+      ]
+    ],
+    "experiments": {
+      "tsconfigPaths": false
+    }
   }
 }

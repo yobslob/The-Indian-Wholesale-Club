@@ -33,8 +33,9 @@ the computer's `127.0.0.1`, so both addresses use the computer's LAN IP (`ipconf
 `http://<LAN IP>:54321` with the local anon key, and the website `http://<LAN IP>:3000` (`pnpm --filter web dev`, which
 serves checkout for the app). Phone and computer on the same Wi-Fi; Windows may ask to allow Node.js and Docker on private
 networks. Stripe: the same test publishable key as the web. Then `pnpm --filter app dev` and open it in Expo Go.
-If the Stripe payment sheet doesn't open in Expo Go, run `npx expo install --check` in `apps/app` (Expo Go carries its own
-native Stripe module per SDK; the app's `@stripe/stripe-react-native` version must match it; B-9).
+The app pins `@stripe/stripe-react-native` to the version Expo Go carries for SDK 52 (the JavaScript and Expo Go's native
+module must match; B-9). After changing dependencies or `.npmrc`, start with `npx expo start --clear` (in `apps/app`) so
+Metro drops its cache. The app's web target is not used (customers get the Next.js website); test on a phone.
 
 ## Database workflow (from R3)
 - Schema changes = a new file in `supabase/migrations/`. Never edit an applied migration.

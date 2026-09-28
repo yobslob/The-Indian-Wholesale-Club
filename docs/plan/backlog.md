@@ -15,7 +15,7 @@ recoverable from tag `pre-restructure`), not re-verified.
 | B-6 | Wishlist is localStorage-only, the `wishlists` table is unused | [audit] | ◐ R5: web "Save for later" writes `wishlists` (`/account/saved`). The button doesn't show an already-saved state yet |
 | B-7 | Search has no full-text index | [audit] | ✅ R3 (`products.search` + GIN index). Used from R5 |
 | B-8 | No alerting / dead-letter for server errors beyond logs | [audit] | coding phase |
-| B-9 | Mobile app on Expo SDK 52 (old). `@stripe/stripe-react-native` is `^0.78.0`, which may not be the version Expo Go 52 carries (unverified until the R6 smoke test) | [code] `apps/app/package.json` | coding phase (separate upgrade step); `npx expo install --check` if the payment sheet fails |
+| B-9 | Mobile app on Expo SDK 52 (old). It forces workarounds: pnpm hoisting (`.npmrc`), Stripe pinned to 0.38.6 (Expo Go 52's native module; it was `^0.78.0`), `query-string` declared for expo-router 4.0 | [code] 2026-09-29 `apps/app/package.json`, `.npmrc` | coding phase (separate upgrade step; then drop the workarounds) |
 | B-10 | Mobile `apps/app/lib/queries/catalog.ts` (857 lines) duplicates web queries with a hard-coded fallback catalog | [code] | ✅ R6: deleted; the app reads `@repo/db/store` |
 | B-11 | 996-line hand-written DB types | [code] `packages/shared/src/types/index.ts` | ✅ R4 generated types; R6 deleted the old types, schemas, utils and constants with their tests |
 | B-12 | `apps/web/lib/queries/admin.ts` is 1,022 lines | [code] | ✅ R5: deleted; admin data access is `@repo/db/admin` + `features/admin/actions/*` |

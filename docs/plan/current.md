@@ -1,11 +1,11 @@
 # Current status
 
 ## Resume here
-**R6 (app reshape) is committed and Claude-verified** (typecheck, lint, unit tests; see the log): customer tabs on
-`store_*`, checkout through the website's API with the Stripe payment sheet, order tracking, and admin mode after the
-server confirms the role. R5.6 (D-041 shipping options, D-042 refunds) is committed too. **Waiting on the founder:** the
-steps at the bottom (one `check.mjs` run covers R5.6 + R6, then a smoke test on a phone). The hosted dev DB reset is still
-pending (announced there). Next after that: R7 (tests, tooling, CI).
+**R6 (app reshape):** the founder's `check.mjs` on `b0a00cd` is all green and the web works. The app did not bundle
+on the founder's machine (Expo SDK 52 + pnpm's strict layout, see the log). The fix (pnpm hoisting, Metro resolver, pinned
+Stripe, missing dependencies) is committed and bundles for Android and iOS in Claude's sandbox. **Waiting on the founder:**
+the clean reinstall and the phone smoke test at the bottom. The hosted dev DB reset is still pending (announced there).
+Next after that: R7 (tests, tooling, CI).
 
 ## Steps
 | Step | Status | Evidence |
@@ -16,7 +16,7 @@ pending (announced there). Next after that: R7 (tests, tooling, CI).
 | R3 DB baseline | ✅ done | commit `96b964c`. Applied and tested on real local Supabase (log) |
 | R4 Packages | ✅ done | commit `7d7c525` + fix commit (generated `database.types.ts`, lockfile, `check.mjs --continue`) |
 | R5 Web reshape + speed | ✅ done (founder run 2026-09-28; typecheck fix in the R5 close commit) · hosted dev DB reset still pending | sub-steps below |
-| R6 App reshape | ◐ code committed, Claude-verified · founder `check.mjs` + phone smoke test pending | sub-steps below |
+| R6 App reshape | ◐ code committed · founder `check.mjs` green (2026-09-29) · app bundling fix committed, phone smoke test pending | sub-steps below |
 | R7 – R8 | not started | — |
 
 ## Verification log (facts only. Add a row per run)
@@ -40,6 +40,9 @@ pending (announced there). Next after that: R7 (tests, tooling, CI).
 | 2026-09-28 | R5.6 | Claude, PostgreSQL 16.13 + stub | **11 SQL test files, 187 assertions** (with and without `demo.sql`), incl. new `shipping_refunds.test.sql` (26). Mutation check: 10 breaks (no tax share, no last-piece rule, customer cancel refunds tax, no stock release, cancel after cutoff, refund without admin, amounts readable by customers, express without days, express window from standard days, guest lookup drifting from `store_orders`) | all pass. All 10 caught |
 | 2026-09-28 | R5.6 | Claude, `tsc` 5.9.3 + ESLint 8.57.1 + Node 22 | typecheck web/db/shared, lint web, unit tests (shared `domain.test.ts` 26, web 10) | 0 errors, 0 warnings, all pass |
 | 2026-09-28 | R6 | Claude, `tsc` 5.9.3 + ESLint 8.57.1 (the app's dependency closure copied from the founder's `node_modules/.pnpm`) + Node 22 | typecheck app, web, db, shared; lint app + web (`--max-warnings 0`), incl. a probe that app customer files can't import admin code or `@repo/db/admin`; unit tests (shared 26, web 10) | 0 errors, 0 warnings, all pass. The probe fails as intended (2 errors). **Not run by Claude:** the app itself (no Expo / device) |
+| 2026-09-29 | `b0a00cd` (+ founder's `pnpm install`, migration 4 applied) | founder, same machine, local Supabase | `node scripts/check.mjs` (all steps) | **all OK**: typecheck 19.2 s · lint 43.5 s · test 2.3 s · build 52.7 s · http 3.8 s · db 43.5 s · pages (median of 3): `/` 8 ms, `/states` 16 ms, `/states/kerala` 17 ms, product page 15 ms, `/clothing` 15 ms, `/search?q=saree` 58 ms, `/api/health` 30 ms. Founder: "Web is working perfectly fine" |
+| 2026-09-29 | `b0a00cd` | founder, `expo start` | start the app | **bundling failed**: the Stripe config plugin crashed without options (founder added `merchantIdentifier` / `enableGooglePay` in `app.json`), then `query-string` not found from expo-router, `@babel/runtime` and `@expo/metro-runtime` not found; with a trial `.npmrc`, `react` resolved to `@types/react` (the tsconfig `paths` entry, followed by Metro) |
+| 2026-09-29 | app fix | Claude, the repo's Expo CLI 0.22.28 + Metro 0.81.5 with the app's full dependency closure copied from the founder's `node_modules/.pnpm` | `expo export --platform android` and `ios` | the founder's errors reproduced (Stripe plugin, then undeclared modules one after another). After the fix: **Android 1,365 modules, iOS 1,368 modules bundled**; the source map holds one React (18.3.1) and no React 19; app `tsc` + ESLint clean. **Not covered:** `query-string` was a stand-in (it is not in the store yet), Stripe 0.38.6 and `react-dom` 18.3.1 are not in the store (bundled with 0.78.0), CSS is empty (no Linux `lightningcss`), and nothing ran on a device |
 
 ## Invariant tests (`data-model.md`)
 INV-1 … INV-9: implemented and passing on Claude's Postgres 16 runs and on real local Supabase, Postgres 15 (see log).
@@ -63,27 +66,25 @@ INV-1 … INV-9: implemented and passing on Claude's Postgres 16 runs and on rea
 | 6.3 | Sign-in, checkout on the website's API with the payment sheet (D-038), order + guest lookup (new `POST /api/orders/lookup`), addresses. The checkout HTTP types moved to `packages/shared` | ✅ committed |
 | 6.4 | Admin mode after `is_admin()`: Today, Orders, Cycles, Payouts, Listings, Vendors, "View the store" (`admin.md`) | ✅ committed |
 | 6.5 | Old shared code deleted (hand-written types, schemas, utils, constants and their 4 tests; `domain.test.ts` covers the replacements) | ✅ committed |
-| 6.6 | Founder: `check.mjs` + smoke test on a phone | ⏳ |
+| 6.6 | Founder: `check.mjs` | ✅ 2026-09-29, all green (log) |
+| 6.7 | App bundling on the founder's machine: `.npmrc` hoisting, Metro resolver (`@/`, one React), tsconfig paths off in Metro, Stripe 0.38.6, `query-string` + `react-dom` declared | ✅ committed · Claude bundled Android + iOS (log) |
+| 6.8 | Founder: clean reinstall + smoke test on a phone | ⏳ |
 
 **Not verified by anyone yet:** a delivered email (needs a verified sender, Q-9), the admin screens in a browser, and any
 app screen on a device.
 
 ## Waiting on the founder (in this order, from `C:\kod\root`, Docker + local Supabase running)
-1. `pnpm install`: the app now depends on `@repo/db` and `@repo/tokens`, and `@repo/shared` exports only `./domain`.
-   Updates `pnpm-lock.yaml`.
-2. `npx supabase db reset`: applies migration 4 (`20260928000004_shipping_refunds.sql`) locally, with the seeds.
-3. `pnpm db:types`: regenerates `packages/db/src/database.types.ts` (Claude patched it by hand for migration 4; the diff
-   should be empty or formatting only).
-4. `node scripts/check.mjs`, then tell Claude. Claude commits the regenerated types + lockfile.
-5. Web click-through (`pnpm --filter web dev`): checkout shows Standard (free) and Express ($8; the demo seed sets
-   placeholder express days until Q-18 is answered); an admin order page shows the cancel buttons with their amounts.
-6. **Phone smoke test** (`ops.md` §Running the app: `apps/app/.env` with your computer's LAN IP, the local anon key and the
-   Stripe test key; `pnpm --filter web dev` and `pnpm --filter app dev`, then Expo Go):
+1. **Clean reinstall** (the new `.npmrc` changes how pnpm lays out `node_modules`), in PowerShell:
+   `Remove-Item -Recurse -Force node_modules, apps\app\node_modules, apps\web\node_modules, packages\*\node_modules`
+   then `pnpm install` (it also updates `pnpm-lock.yaml`: Stripe 0.38.6, `query-string`, `react-dom` 18.3.1 for the app).
+2. `node scripts/check.mjs`, then tell Claude (the web must stay green with the new layout). Claude commits the lockfile.
+3. **Phone smoke test** (`ops.md` §Running the app: `apps/app/.env` with your computer's LAN IP, the local anon key and the
+   Stripe test key). `pnpm --filter web dev` in one terminal; in another, `cd apps\app` then `npx expo start --clear`, and
+   open it in Expo Go on the phone (not the browser: the app's web target is not used).
    Home → a region → the demo product → Add to bag → Bag → Checkout (card `4242 4242 4242 4242`) → Thank you → Track this
    order. Then Profile → Sign in → your orders. Then sign in with the admin account: admin mode should open on Today;
    check Orders (the new order), Cycles (the open cycle) and "View the store". Tell Claude what breaks (a screenshot helps).
-   If the payment sheet does not open, run `npx expo install --check` in `apps/app` (B-9).
-7. **Announcement (unchanged):** after a green run, the next step is resetting the **hosted dev DB** to the new schema
+4. **Announcement (unchanged):** the next step after that is resetting the **hosted dev DB** to the new schema
    (`ops.md` §Database workflow). It deletes everything in the hosted dev project. Run it only when you're ready.
 
 ## Known leftovers (tracked, not forgotten)
