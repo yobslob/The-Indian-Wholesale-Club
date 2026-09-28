@@ -15,10 +15,5 @@ Every step ends with a commit and a founder-run `node scripts/check.mjs` (D-021)
 | **R7** Tests, tooling, CI | M | Playwright smoke (3 flows, `engineering.md`), unit tests stay on `node:test` (D-037), drop duplicate lint/typecheck from `next build`, CI mirrors `check.mjs`, review `deploy.yml` | full `check.mjs` green · build/test times vs baseline recorded |
 | **R8** Hand-off | S | docs match code (every route and table checked), `current.md` → "restructure done" | founder sign-off, then write the **coding plan** |
 
-## Coding phase (planned after R8, order to be agreed)
-1. Design mockups (Home, Region, Product, admin Listing) → founder review → tokens finalised.
-2. Region pages + content approval flow (greetings, stories).
-3. Field listing flow on phone (camera, drafts, qty confirmation).
-4. Cycles: cutoff, pickups checklist, payouts, export docs, arrival, US packing & shipping.
-5. Delivery windows + delay notices (D-008). Customer emails.
-6. Insights. Later ideas only with founder approval (`product.md` §Later ideas).
+## Coding phase
+Drafted in `coding-plan.md` (C1–C8), waiting for the founder's review of the order and the questions it depends on.

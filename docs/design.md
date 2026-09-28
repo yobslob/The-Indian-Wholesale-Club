@@ -19,7 +19,8 @@
 ## Visual system (principles)
 1. **Neutral, warm base with one brand colour.** Content and photos carry the colour.
 2. **Per-region accent:** each region has `accent_color`, applied through one CSS variable (`--region-accent`) on its pages.
-   It must meet WCAG AA contrast against the base (checked in a test when tokens exist).
+   It must meet WCAG AA contrast against the base. **Not checked yet:** the admin form only checks the hex format; a
+   contrast check comes with the design (coding phase).
 3. **Scripts:** greetings render in the region's own script (Devanagari, Bengali, Gujarati, Gurmukhi, Odia, Tamil,
    Telugu, Kannada, Malayalam, Meetei Mayek, Ol Chiki, Latin for several north-eastern languages…). Use Noto Sans for
    the specific script, **subset and loaded only on that region's page** (speed, D-011).
@@ -42,8 +43,8 @@ roles, never raw hex. Values are **placeholders** (the pre-restructure UI's own 
 | IWC brand | `brand` | buttons, logo |
 | region accent (fallback) | `region` | overridden per region by `regions.accent_color` |
 | status | `positive`, `caution`, `danger` | alerts, badges |
-Also `rounded-sm/md/lg` and `duration-fast/base/slow`. The names avoid the legacy theme's keys (`primary`, `accent`,
-`success`, …) until R5/R6 delete it. A test enforces this. Type scale, spacing and shadows are added with the mockups.
+Also `rounded-sm/md/lg` and `duration-fast/base/slow`. The names avoid the old theme's keys (`primary`, `accent`,
+`success`, …); that theme was deleted in R5/R6 and a test (`packages/tokens/tests`) keeps the names from coming back. Type scale, spacing and shadows are added with the mockups.
 
 ## Accessibility (non-negotiable)
 WCAG 2.2 AA: contrast, focus states, keyboard navigation, alt text on every product image (entered at listing),

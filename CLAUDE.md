@@ -34,8 +34,8 @@ This file is the only one to read at the start of every session. Everything else
 - **No claim without evidence.** "Done", "works", "fast" and "fixed" need a `.checks/latest.json` result or a command you actually
   ran, recorded in `docs/plan/current.md` with the date and commit. Otherwise write "unverified".
 - **Don't copy code into docs** (column lists, props, env values). Link the file path instead, because copies go stale.
-- **Docs describe the target, code describes the present.** During the restructure they differ. `docs/plan/current.md` says
-  which steps have landed.
+- **Docs describe the target, code describes the present.** Where they differ, the doc says so ("Target", "Today", "Not
+  built yet"), and `docs/plan/current.md` says what has landed. `node scripts/check.mjs docs` checks the mechanical part.
 
 ## Where each kind of truth lives
 | Fact | Single source |
@@ -47,6 +47,7 @@ This file is the only one to read at the start of every session. Everything else
 | DB schema (actual) | `supabase/migrations/` (generated types in `packages/db` after R4) |
 | Routes (actual) | `apps/web/app/`, `apps/app/app/` |
 | Status, next step, verification evidence | `docs/plan/current.md` |
+| What gets built next (phases C1–C8) | `docs/plan/coding-plan.md` |
 
 ## Before touching X, read Y
 | Task | Read |
@@ -86,5 +87,6 @@ Claude's sandboxes are blocked from the npm registry, so Claude can't install pa
 
 ## Conventions (details in `docs/engineering.md`)
 - Glossary terms everywhere: DB = code = folders = routes. An Indian state/UT is a `region` in code, and "state" or "home" in UI copy. [D-016]
-- Customer-side reads use only `store_*` views/functions. Base tables holding vendor or cost data are admin-only. [D-017]
+- Customer-side reads use only `store_*` views/functions (plus the customer's own rows under RLS). Base tables holding vendor or
+  cost data are admin-only. [D-017]
 - Storefront code must never import from admin code. Validate with zod at every boundary. No `any`. Keep files under ~250 lines.

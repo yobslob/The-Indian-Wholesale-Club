@@ -1,11 +1,11 @@
 # Current status
 
 ## Resume here
-**R7 (tests, tooling, CI) is committed and Claude-checked** (see the log): Playwright E2E for the three flows, an app
-bundle check, app unit tests, `next build` without the duplicate lint/typecheck, CI running `check.mjs` on a local
-Supabase, and a manual-only deploy workflow (D-044). R6 is done (founder run + emulator smoke test). **Waiting on the
-founder:** the steps at the bottom (the first E2E run on a real server is the open question). The hosted dev DB reset is
-still pending. Next: R8 (hand-off), then the coding plan.
+**The restructure is done, pending the founder's sign-off (R8).** R0–R7 are verified (founder `check.mjs` all green incl.
+E2E, first CI run green); R8 audited the docs against the code (`scripts/docs-audit.mjs`, now the first `check.mjs`
+step) and corrected every mismatch found. **Next:** the founder reviews `plan/coding-plan.md` (the proposed phases C1–C8
+and the questions each waits on), resets the hosted dev DB, and answers Q-20 first. Then coding starts with the phase the
+founder picks.
 
 ## Steps
 | Step | Status | Evidence |
@@ -17,8 +17,8 @@ still pending. Next: R8 (hand-off), then the coding plan.
 | R4 Packages | ✅ done | commit `7d7c525` + fix commit (generated `database.types.ts`, lockfile, `check.mjs --continue`) |
 | R5 Web reshape + speed | ✅ done (founder run 2026-09-28; typecheck fix in the R5 close commit) · hosted dev DB reset still pending | sub-steps below |
 | R6 App reshape | ✅ done (founder `check.mjs` green + emulator smoke test, 2026-09-29) · app admin mode not yet tried on a device | sub-steps below |
-| R7 Tests, tooling, CI | ◐ committed, Claude-checked · founder `check.mjs` (incl. first E2E run) + first CI run pending | sub-steps below |
-| R8 Hand-off | not started | — |
+| R7 Tests, tooling, CI | ✅ done (founder `check.mjs` all green incl. E2E 6/6, first CI run green, 2026-09-29) | sub-steps below |
+| R8 Hand-off | ◐ docs audited and corrected, coding plan drafted · **founder sign-off pending** | sub-steps below |
 
 ## Verification log (facts only. Add a row per run)
 | Date | Commit | Who / where | What | Result |
@@ -51,6 +51,9 @@ still pending. Next: R8 (hand-off), then the coding plan.
 | 2026-09-29 | R7 fix | Claude | checkout test clicks Stripe's "Card" option when the card fields are closed and finds the payment iframe inside the page (not by its title); `pnpm dev:admin` for a local admin account | tsc + ESLint clean, `playwright test --list` 6 tests. Not re-run on a server yet |
 | 2026-09-29 | `d8447a0` | founder | `pnpm --filter web e2e` + admin sign-in on web and app | admin mode works on the website and in the app (founder). E2E: the card is now filled and paid, but the page said "We could not confirm this payment": **a real bug the E2E flow found.** `finalize.ts` demanded a live-mode payment in every production build, so `next start` (a production build) with Stripe test keys refused every payment, website and app alike (manual tests ran on `next dev`, where the check was off). Also the Stripe webhook path |
 | 2026-09-29 | fix | Claude | the payment's mode must match the server's Stripe key (live key ↔ live payment, test key ↔ test payment), in a pure `features/checkout/payment-check.ts` with 4 unit tests | web unit tests 14/14, tsc + ESLint clean. E2E re-run pending |
+| 2026-09-29 | `f607284` (clean tree) | founder, same machine, local Supabase | `node scripts/check.mjs` (all 8 steps, `.checks/latest.json`) | **all OK**: typecheck 10.2 s · lint 21.0 s · test 1.8 s · db 57.0 s · **build 39.4 s** (baseline 45.8 s; 51.7 s at R5 with the duplicate lint/typecheck) · http 2.3 s: `/` 13 ms, `/states` 15, `/states/kerala` 15, product 15, `/clothing` 15, `/search` 41, `/api/health` 30 (baseline `/` 428 ms) · **e2e 24.4 s, 6/6** · bundle 43.4 s. Founder: admin works on website and app |
+| 2026-09-29 | `f607284` | GitHub Actions | first CI run (`ci.yml`: `check.mjs` on a local Supabase in the runner) | **passed on the first attempt, 5 min 49 s** (founder) |
+| 2026-09-29 | R8 | Claude: new `scripts/docs-audit.mjs` (dependency-free) + an independent read-through by a separate agent that had not written the docs | docs vs code: paths, decision/question ids, 25 web pages, app screens, 55 schema objects, 21 env vars; then behaviour claims | the script found 2 real mismatches (a stale guard path in INV-7, an undocumented visitor function) plus stale step references; mutation check: a fake page, env var, path and decision id → all 4 caught. The read-through found 19 claims that were false or overstated (e.g. "the next cycle opens immediately at cutoff", only the confirmation email exists, the app can't add products, no arrival check-off, Insights is sales-by-region only); each was checked in the code and the docs now say what exists and what is target. Two became backlog items (B-19 cutoff, B-20 emails) and one a question (Q-20) |
 
 ## R7 sub-steps
 | # | Sub-step | Status |
@@ -60,7 +63,15 @@ still pending. Next: R8 (hand-off), then the coding plan.
 | 7.3 | Admin tab title no longer says "Admin" (a refused customer's 404 looked different from any other 404, D-006); found while writing flow 3 | ✅ committed |
 | 7.4 | `next build` without lint/typecheck (P7); app unit tests (bag, checkout request) | ✅ committed |
 | 7.5 | CI = `check.mjs` on a local Supabase in the runner (B-15); deploy manual-only, no store auto-submit (D-044) | ✅ committed · first CI run after the push |
-| 7.6 | Founder: `check.mjs` with timings vs the baseline (the R7 "done when") | ◐ 2026-09-29: 7 of 8 steps green, timings logged; e2e 5/6 (checkout selector, fixed) · re-run pending |
+| 7.6 | Founder: `check.mjs` with timings vs the baseline (the R7 "done when") | ✅ 2026-09-29, all 8 steps green, timings vs baseline logged; CI green |
+
+## R8 sub-steps
+| # | Sub-step | Status |
+|---|---|---|
+| 8.1 | Log R7 (founder run all green, first CI run green) | ✅ |
+| 8.2 | Docs audit script (`check.mjs docs`) + independent read-through; every mismatch fixed in the docs, gaps logged (B-19, B-20, Q-20) | ✅ committed |
+| 8.3 | Coding plan draft (`plan/coding-plan.md`) | ✅ committed · founder review pending |
+| 8.4 | Founder sign-off on the restructure | ⏳ |
 
 ## Invariant tests (`data-model.md`)
 INV-1 … INV-9: implemented and passing on Claude's Postgres 16 runs and on real local Supabase, Postgres 15 (see log).
@@ -91,19 +102,13 @@ INV-1 … INV-9: implemented and passing on Claude's Postgres 16 runs and on rea
 **Not verified by anyone yet:** a delivered email (needs a verified sender, Q-9), the admin screens in a browser, and any
 app screen on a device.
 
-## Waiting on the founder (in this order, from `C:\kod\root`, Docker + local Supabase running)
-1. `pnpm install` (adds Playwright to the web and `tsx` to the app; updates `pnpm-lock.yaml`).
-2. Once: `pnpm --filter web exec playwright install chromium` (downloads the test browser).
-3. Check `apps/web/.env.local` has the local `SUPABASE_SERVICE_ROLE_KEY` and the Stripe **test** keys
-   (`NEXT_PUBLIC_STRIPE_PUBLISHABLE_KEY` = `pk_test_…`, `STRIPE_SECRET_KEY` = `sk_test_…`). The E2E run refuses anything else.
-4. `node scripts/check.mjs` (all 8 steps; e2e and bundle are new, so expect a few minutes more). Tell Claude, and send the
-   last lines of `.checks/latest.json` for any failing step: the E2E flows have never run on a real server, so a
-   selector may need adjusting. Claude records the timings against the baseline.
-5. After Claude commits the updated `pnpm-lock.yaml` (CI installs with `--frozen-lockfile`), `git push`, then watch the first **CI** run under GitHub → Actions. Optional: add `STRIPE_TEST_PUBLISHABLE_KEY` and
-   `STRIPE_TEST_SECRET_KEY` (test keys) as repository secrets so CI runs the checkout flow too. The old
-   `NEXT_PUBLIC_SUPABASE_*` / `NEXT_PUBLIC_APP_URL` secrets can be deleted.
-6. **Announcement (unchanged):** resetting the **hosted dev DB** to the new schema is still pending (`ops.md` §Database
-   workflow). It deletes everything in the hosted dev project. Run it only when you're ready.
+## Waiting on the founder
+1. `node scripts/check.mjs` once more (it now starts with the `docs` step), then `git push`.
+2. Read `plan/coding-plan.md`: agree or change the phase order, and sign off the restructure (R8).
+3. Reset the **hosted dev DB** to the new schema when ready (`ops.md` §Database workflow). It deletes everything in the
+   hosted dev project. Nothing uses the old schema any more.
+4. Answer, in this order of impact: **Q-20** (cycle cutoff), **Q-9** (domain + support email), **Q-15** (pricing settings,
+   delivery days), **Q-18** (express days), then Q-3, Q-5, Q-10, Q-19 before launch.
 
 ## Known leftovers (tracked, not forgotten)
 - The app's bundle ids are still `com.root.app` (`apps/app/app.json`): they change with the domain (Q-9). Everything else

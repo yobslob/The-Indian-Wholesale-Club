@@ -8,7 +8,7 @@
  * Results are FACTS for docs/plan/current.md — nothing is "verified" without one.
  *
  * Usage (from repo root):
- *   node scripts/check.mjs                 # typecheck, lint, test, db, build, http, e2e, bundle
+ *   node scripts/check.mjs                 # docs, typecheck, lint, test, db, build, http, e2e, bundle
  *   node scripts/check.mjs test build      # only the named steps
  *   node scripts/check.mjs http --routes=/,/states/kerala
  *   node scripts/check.mjs db              # needs Docker + `npx supabase start` once
@@ -23,8 +23,10 @@ import { spawn, execSync } from 'node:child_process';
 import { mkdirSync, writeFileSync } from 'node:fs';
 import os from 'node:os';
 
-const ALL_STEPS = ['typecheck', 'lint', 'test', 'db', 'build', 'http', 'e2e', 'bundle'];
+const ALL_STEPS = ['docs', 'typecheck', 'lint', 'test', 'db', 'build', 'http', 'e2e', 'bundle'];
 const COMMANDS = {
+  // Do the docs still match the code (paths, decisions, routes, schema, env vars)? A few seconds.
+  docs: 'node scripts/docs-audit.mjs',
   typecheck: 'pnpm turbo typecheck --force --continue',
   lint: 'pnpm turbo lint --force --continue',
   test: 'pnpm turbo test --force --continue',

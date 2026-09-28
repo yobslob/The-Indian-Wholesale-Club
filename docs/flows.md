@@ -9,11 +9,13 @@ open ──cutoff──► collecting ──► packed ──► exported ──
  (orders join)   (COO picks up  (COO packs  (in transit   (founder    (founder ships
                   from vendors)  the export)  to the US)    receives)   each order)
 ```
-- Exactly one cycle is `open` (INV-5). When a cycle hits its cutoff, the next cycle opens immediately. Its dates are entered by an admin.
+- Exactly one cycle is `open` (INV-5). Target: when a cycle hits its cutoff, the next cycle opens immediately. Its dates are entered by an admin.
+  **Today** nothing happens on its own at `cutoff_at`: orders still join the open cycle until an admin runs the cutoff,
+  the store keeps showing the past "order by" date, and an admin creates the next cycle by hand (B-19, Q-20).
 - An admin sets each cycle's `cutoff_at`, estimated export and estimated arrival dates. There are no fixed lead times (D-026), so nothing is
   hard-coded.
 - Status changes are manual admin actions: `cutoff_cycle()` for open → collecting, then `advance_cycle()` one step at a
-  time. Each writes an internal `order_event` for every affected order.
+  time. `cutoff_cycle()` writes a customer-visible `preparing` event per order; `advance_cycle()` writes internal ones.
 
 ## 2. Listing a product (India desk, usually on a phone)
 1. Choose a vendor. The region comes from the vendor.
@@ -44,7 +46,8 @@ open ──cutoff──► collecting ──► packed ──► exported ──
 1. At cutoff, the system creates one `pickup` per ordered piece, grouped by vendor into a per-shop checklist.
 2. The COO visits each shop and marks every piece `picked` (optional photo) or `unavailable`.
 3. `picked` → stock moves from reserved to picked, and the shop price is added to that vendor's payable.
-4. `unavailable` → stock is released, the order item becomes `unavailable`, and the customer is refunded for that item and notified
+4. `unavailable` → the piece is written off (the shop no longer has it: `qty_listed` and the reservation both drop, ledger reason
+   `unavailable`), the order item becomes `unavailable`, and the customer is refunded for that item and notified
    (no substitutes, D-030). The admin refunds it from the order page: the item's price after its share of any discount +
    its share of the tax; the last piece of an order refunds everything left (D-042). The customer message never mentions shops (D-003).
 
@@ -80,7 +83,8 @@ notice with the new estimate and the option to **cancel for a full refund**. The
 | `shipped` | **Shipped** + carrier tracking link |
 | `delivered` | **Delivered** |
 | `cancelled` / `refunded` / partly refunded | **Cancelled** / **Refunded** (with amounts) |
-Every customer-visible change sends an email through `email_outbox`. Estimated delivery dates are always shown.
+Target: every customer-visible change sends an email through `email_outbox`. **Today** only the order confirmation is sent
+(B-20). Estimated delivery dates are always shown.
 
 ## 9. Stock numbers
 - `available = qty_listed − qty_reserved`. This is what the storefront shows, updated live via Supabase Realtime (D-010).

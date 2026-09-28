@@ -3,7 +3,7 @@
 ## Environments
 | Env | Web | DB | Notes |
 |---|---|---|---|
-| dev | `pnpm dev` on the founder's machine | **local Supabase** (Docker) via `apps/web/.env.local`; the hosted dev project gets the new schema in R5 (D-013) | `next build` reads the DB since R5 (static pages), so the DB it points at must have the new schema |
+| dev | `pnpm dev` on the founder's machine | **local Supabase** (Docker) via `apps/web/.env.local`; the hosted dev project still has the old schema until the founder resets it (below, D-013) | `next build` reads the DB since R5 (static pages), so the DB it points at must have the new schema |
 | prod | not set up yet. Vercel is the likely host, US region (Q-9) | a separate Supabase project in a US region | hosted in the US (D-003) |
 
 ## Environment variables
@@ -13,7 +13,7 @@ Reading `process.env.X` for a variable not listed here = add it here in the same
 |---|---|---|
 | `NEXT_PUBLIC_SUPABASE_URL`, `NEXT_PUBLIC_SUPABASE_ANON_KEY` | web | Supabase client (public) |
 | `SUPABASE_SERVICE_ROLE_KEY` | web server only | service client for webhooks/jobs. Never in client code |
-| `SUPABASE_TEST_DB_URL` | `scripts/db-test.mjs` | optional; defaults to local Supabase. Non-local hosts are refused |
+| `SUPABASE_TEST_DB_URL` | `scripts/db-test.mjs` | optional; defaults to local Supabase. Non-local hosts are refused unless `--allow-remote` is passed (never do that against production) |
 | `NEXT_PUBLIC_STRIPE_PUBLISHABLE_KEY`, `STRIPE_SECRET_KEY`, `STRIPE_WEBHOOK_SECRET` | web | payments (test-mode keys in dev) |
 | `RESEND_API_KEY`, `RESEND_FROM_EMAIL`, `EMAIL_OUTBOX_CRON_SECRET` | web | email + outbox job (`POST /api/internal/email-outbox` with `Authorization: Bearer <secret>`; without email keys, emails wait in the outbox). The sender's domain must be verified in Resend (Q-9). For local tests before that, Resend accepts `onboarding@resend.dev` as the sender, delivering only to the Resend account's own address |
 | `ADMIN_EMAILS` | web server | admin email allowlist (D-006, INV-7) |
@@ -43,13 +43,13 @@ Metro drops its cache. The app's web target is not used (customers get the Next.
   UTF-8), then commit it. Never edit that file by hand.
 - **Local DB (Docker Desktop running):** `npx supabase start` once, then `npx supabase db reset` rebuilds it from
   migrations + seeds (`supabase/config.toml` `[db.seed]`: regions, categories, demo). Studio: http://127.0.0.1:54323.
-- **DB tests:** `node scripts/check.mjs db` (= reset + `scripts/db-test.mjs`). It refuses non-local databases.
+- **DB tests:** `node scripts/check.mjs db` (= reset + `scripts/db-test.mjs`). It refuses non-local databases (the reset only ever touches local Supabase).
 - **E2E tests:** `node scripts/check.mjs build e2e`. Once per machine: `pnpm --filter web exec playwright install chromium`.
   They read `apps/web/.env.local` (local Supabase URL + anon + service-role keys; Stripe **test** keys for the checkout
   flow) and refuse a non-local database or a live Stripe key. They add two accounts to the local database
   (`e2e-admin@iwc.test`, `e2e-customer@iwc.test`), test orders, and archived test products; `check.mjs db` resets it.
-- R3 builds the new schema on local Supabase (Docker, D-031). The hosted dev DB is wiped to the new schema in R5, once the web
-  code matches (allowed, D-013), and only after Claude has announced it. The founder runs it:
+- **Hosted dev DB reset (announced, not done yet):** the new schema was built on local Supabase (Docker, D-031); the hosted
+  dev DB still has the old one. Resetting it is allowed (D-013) and the code matches it since R5/R6. The founder runs it:
   `npx supabase link --project-ref <dev project ref>` (once), then `npx supabase db reset --linked`. This drops everything
   in the hosted dev DB and applies `supabase/migrations/`. The CLI output lists which seed files it ran (`--no-seed` skips
   them); the seeds include the dev demo data (placeholders, `dev_preview` on). Never run it against production.

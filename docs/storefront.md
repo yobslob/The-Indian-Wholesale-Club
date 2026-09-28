@@ -15,7 +15,7 @@ JSON sent to the browser.
 
 **Never shown:** vendor or shop anything, the shop's town, shop price or cost, cycle codes, pickups, payouts, export or AWB
 details, admin names, the COO, or anything about India-side operations.
-Enforcement: customer code reads only `store_*` (D-017), and INV-1/INV-8 tests (`data-model.md`).
+Enforcement: customer code reads catalog and order data only through `store_*` (D-017), and INV-1/INV-8 tests (`data-model.md`).
 
 ## Web routes (`apps/web/app/(store)/…`, built in R5)
 | Route | Purpose | Rendering (see `engineering.md`) |
@@ -30,7 +30,7 @@ Enforcement: customer code reads only `store_*` (D-017), and INV-1/INV-8 tests (
 | `/checkout`, `/checkout/success` | details → server-priced total + Standard (free) / Express ($8) with each delivery window (D-041) → payment (Stripe) → order (D-038) | dynamic |
 | `/orders/lookup`, `/orders/[number]` | order tracking. The signed-in owner sees the order directly; anyone else confirms the order email first | dynamic |
 | `/account`, `/account/orders`, `/account/addresses`, `/account/saved` | signed-in customer ("Save for later" on product pages fills `saved`) | dynamic |
-| `/login`, `/signup` | customer auth. **No admin mention anywhere** (D-006) | static |
+| `/login`, `/signup` | customer auth. **No admin mention anywhere** (D-006) | dynamic (reads `?next=`), no DB call |
 | `/about`, `/how-it-works`, `/faq`, `/contact`, `/shipping-returns`, `/privacy`, `/terms` | info pages. Text needs founder input (Q-5, Q-9); until then they say "being written" | static |
 
 Why `/states` in URLs: it's the founder's own word for the concept. UTs live under it too (D-002). Headings that list all 36
@@ -44,7 +44,7 @@ Framer Motion page transitions (speed, `engineering.md`).
 1. Greeting in the region's own script, large, with its Latin transliteration and meaning beneath.
 2. Tagline and a short story: why this place feels like home.
 3. The accent colour re-themes the page (one CSS variable from `regions.accent_color`).
-4. Tabs: **Clothing · Spices**, each a grid of product cards (photo, name, price, availability).
+4. Sections **Clothing · Spices** (with jump links at the top), each a grid of product cards (photo, name, price, availability).
 5. Regions with no live products show "Coming soon" (`regions.is_live = false`). Anything more, like a notify-me feature, needs founder approval.
 
 ## The product page
@@ -66,4 +66,5 @@ Signing in with an admin account switches the app to admin mode (`admin.md`). No
 
 ## Emails (customer)
 Order confirmed (with delivery window) · preparing (optional) · shipped (tracking) · delivered · item unavailable + refund ·
-delay notice with cancel option (D-008). All go through `email_outbox` and follow the same whitelist.
+delay notice with cancel option (D-008). All go through `email_outbox` and follow the same whitelist. **Built so far:** order
+confirmed only (B-20).

@@ -19,7 +19,7 @@ Baseline numbers come from the founder's first `node scripts/check.mjs` run and 
 
 ## Performance rules (apply from R5 on; where each lives in the web code since R5)
 - **PR-1 Cacheable storefront:** storefront reads use a cookie-less anon client with no `cookies()`. They are cached and tagged, and admin publish
-  calls `revalidateTag`. Only cart, checkout, account and order pages are dynamic. *Web:* `lib/supabase/store.ts` +
+  calls `revalidateTag`. Only cart, checkout, account, order, search, login and signup pages are dynamic. *Web:* `lib/supabase/store.ts` +
   `features/catalog/data.ts` (`unstable_cache`, tag `store`, 5-minute fallback). Region pages are built at build time,
   product pages on first visit. So **`next build` reads the database** (the new schema must be there).
 - **PR-2 One round trip per page:** each storefront page or endpoint gets its data from one `store_*` view or function returning exactly
@@ -115,7 +115,8 @@ supabase/migrations  one baseline (R3) + small increments          supabase/seed
 - Every commit leaves typecheck + lint + tests green (verified by `check.mjs` at step boundaries).
 
 ## Tooling (since R7)
-- `node scripts/check.mjs` runs, in this order: typecheck, lint, unit tests, `db` (local reset + SQL tests), build, http
+- `node scripts/check.mjs` runs, in this order: docs (`scripts/docs-audit.mjs`: paths, decision ids, routes, schema, env
+  vars in the docs still match the code), typecheck, lint, unit tests, `db` (local reset + SQL tests), build, http
   (route timings), e2e, bundle. The founder runs it; **CI runs the same script** on every push and pull request to `main`
   (`.github/workflows/ci.yml`) against a throwaway local Supabase in the runner, so CI needs no database secrets
   (Stripe test keys are optional repository secrets; without them the checkout flow is skipped).

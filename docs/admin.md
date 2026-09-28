@@ -30,23 +30,24 @@ Shops never get logins. The founder and COO enter all shop data (D-018).
   changes (stock after a pickup, a confirmed quantity) within the 5-minute cache fallback (`engineering.md` PR-1).
 
 ## Desks (D-007)
-`profiles.desk` picks the default "Today" screen. Both admins can open every section (D-027).
+`profiles.desk` is meant to pick the default "Today" screen. **Not used yet:** both admins get the same Today. Both admins
+can open every section (D-027).
 
 ## Sections (web skeleton since R5: working screens on real data, plain styling)
 | Section | Job | Main desk | Web | App |
 |---|---|---|---|---|
 | **Today** | what needs doing now: pickups due, stale listings, payouts due / exports to receive, orders to ship, delay warnings | both | ✓ | ✓ |
 | **Vendors** | onboard a shop in about a minute (name, owner, phone/WhatsApp, region, payment method, licences, photo), history | India | ✓ | ✓ |
-| **Listings** | add products with the camera (`flows.md` §2), confirm quantities, drafts → live | India | ✓ | ✓ (add, confirm qty) |
-| **Cycles** | current cycle timeline and dates, cutoff, per-shop pickup checklists, packing list + commercial invoice export, export/arrival | both | ✓ | ✓ (pickups, arrival check-off) |
+| **Listings** | add products with the camera (`flows.md` §2), confirm quantities, drafts → live | India | ✓ | ✓ (confirm qty; adding is web-only until the camera flow) |
+| **Cycles** | current cycle timeline and dates, cutoff, per-shop pickup checklists, packing list + commercial invoice export, export/arrival | both | ✓ (no export/arrival fields or documents yet) | ✓ (pickups, cutoff, next step) |
 | **Payouts** | payable per vendor, record payouts | India | ✓ | ✓ |
 | **Orders** | all orders, detail + internal timeline, pack & ship (tracking no.), refunds, delay notices | US | ✓ | ✓ (pack & ship) |
-| **Regions** | edit and approve region content (greeting, story, accent, image, `is_live`) | both | ✓ | — |
+| **Regions** | edit and approve region content (greeting, story, accent, image, `is_live`) | both | ✓ (no image or script field yet) | — |
 | **Catalog** | products, categories, prices, bulk edits | both | ✓ | — |
 | **Customers** | customer list, orders per customer | US | ✓ | — |
 | **Promotions** | promo codes (kept from the old admin) | US | ✓ | — |
-| **Insights** | sales by region/category/vendor, demand signals (searches, saved items) → what to list next | both | ✓ | — |
-| **Settings** | pricing settings, admin list | both | ✓ | — |
+| **Insights** | sales by region/category/vendor, demand signals (searches, saved items) → what to list next | both | ✓ (sales by region only so far) | — |
+| **Settings** | pricing settings (admins are managed in the DB + `ADMIN_EMAILS`, `ops.md`) | both | ✓ | — |
 
 The order page refunds unavailable pieces and cancels orders before cutoff, with the amounts from the D-042 rules shown on
 the buttons (Stripe first, then the database). **Web only:** refunds need the Stripe secret key, which lives on the server;
@@ -59,7 +60,7 @@ Cycles (list → one cycle: cut off, move to the next status, per-shop pickup ch
 variant's quantity with the shop) · Vendors (list, add a shop). Creating cycles, adding products, publishing and editing stay
 on the web panel until the camera flow (coding phase).
 
-**Not in the R5 skeleton yet** (coding phase unless noted): photo upload for products/vendors/receipts, customer emails for
+**Not built yet** (coding phase): photo upload for products/vendors/receipts, customer emails for
 refunds and cancellations, stale-listing and delay warnings on Today, live (Realtime) order/stock feed, packing list +
 commercial invoice export, bulk edits, category editing. In the app: camera product listing, cycle creation, refunds.
 
@@ -72,6 +73,6 @@ commercial invoice export, bulk edits, category editing. In the app: camera prod
 5. **No dead ends:** every warning on "Today" links to the screen that fixes it.
 
 ## Kept from the old admin (moved, adapted)
-The order list/detail with status changes, the promo code manager, the inline stock adjuster (now it writes `stock_movements`) and the
-dashboard SQL aggregate pattern (`admin_dashboard_stats()`).
+The order list/detail with status changes, the promo code manager and the inline stock adjuster (now it writes `stock_movements`).
+Today's counts are plain queries now (`getTodaySummary` in `packages/db/src/admin/commerce.ts`).
 **Removed:** Logistics / "stealth" simulator, the stealth preview card, and fabricated analytics.

@@ -2,7 +2,7 @@
 
 > **Status:** implemented in `supabase/migrations/` (R3 baseline, D-020; R4 store page functions; R5 checkout + cycle steps;
 > migration 4: shipping options + refunds, D-041/D-042).
-> Built and tested on local Supabase first (D-031). The web app uses it since R5; the mobile app switches in R6.
+> Built and tested on local Supabase first (D-031). The web app uses it since R5, the mobile app since R6.
 > See `plan/current.md`. This doc lists tables, purpose, visibility and invariants. Column types and constraints live in the
 > migration, so read it for details and don't copy them here.
 
@@ -14,8 +14,10 @@
 | **admin** | founder + COO | RLS `is_admin()`: `profiles.role = 'admin'` **and** email in `admin_emails` (D-006) |
 | **service** | server code only (webhooks, jobs, order creation) | service-role key, never shipped to clients |
 
-Customer-facing code (storefront, customer screens in the app) may query **only** `store_*` objects. Base tables are
-never queried directly from customer code.
+Customer-facing code (storefront, customer screens in the app) reads catalog and order data **only** through `store_*`
+objects. The only base tables it touches are the customer's own rows under owner RLS (`profiles`, `addresses`,
+`wishlists`) and the public `variant_availability` mirror (live stock, visible products only). Tables with vendor, cost or
+operations data are never queried from customer code.
 
 ## Tables
 `*` = admin-only column (never in a `store_*` view).
@@ -59,12 +61,14 @@ same shape for guests and is **service-only** (the server route rate-limits it).
 one round trip: the variants as customers can buy them (through `store_*`), the promo if usable now, the shipping settings
 and the next window (D-038).
 They run with the owner's rights and expose only whitelisted columns (`storefront.md`). `store_orders.customer_status`
-collapses internal statuses into what customers see (`flows.md` §8).
+collapses internal statuses into what customers see (`flows.md` §8). Two small helpers are callable by visitors:
+`dev_preview()` (is the dev preview on) and `is_product_visible(product)` (the one "may a customer see this product"
+rule, used by the `variant_availability` read policy so the live stock feed never reveals hidden products).
 
 ## Business functions (the only way to do these things)
 | Function | Who | Does (flows.md) |
 |---|---|---|
-| `create_order(jsonb)` | service (server, after Stripe verification) | §3: checks prices + subtotal, reserves stock atomically, attaches the open cycle, stores the window. Raises `no_open_cycle`, `delivery_window_unconfigured`, `variant_unavailable`, `price_mismatch`, `insufficient_stock`, `subtotal_mismatch` |
+| `create_order(jsonb)` | service (server, after Stripe verification) | §3: checks prices + subtotal, reserves stock atomically, attaches the open cycle, stores the window. Raises `no_open_cycle`, `delivery_window_unconfigured`, `variant_unavailable`, `price_mismatch`, `insufficient_stock`, `subtotal_mismatch`, `express_unavailable`, `order_has_no_items` |
 | `cutoff_cycle(cycle)` | admin | §4.1: closes the cycle, creates one pickup per piece |
 | `advance_cycle(cycle)` | admin | §1/§6: collecting → packed → exported → arrived → fulfilling → closed, moving its orders with it and writing internal events. Refuses `open` (use cutoff) and closing while an order is unfinished |
 | `mark_pickup(pickup, status, photo, note)` | admin | §4.2–4: picked / unavailable (+ D-030 refund flag + customer event) |
@@ -92,7 +96,7 @@ breaking it and watching the test fail ("mutation check", `current.md`).
 | INV-4 | every stock change writes one `stock_movements` row. The ledger sums to current stock | trigger | `stock.test.sql` |
 | INV-5 | at most one `open` cycle | partial unique index | `cycles.test.sql` (+ `cycle_advance.test.sql` for the later steps) |
 | INV-6 | a promised delivery window changes only via `change_delivery_window`, which adds a customer-visible event | guard trigger + function | `orders_window.test.sql` |
-| INV-7 | admin = role `admin` **and** allowlisted email, in the DB (`is_admin()`) and in the app (`apps/web/lib/auth/admin.ts`) | function + server guard | `rls_admin.test.sql` |
+| INV-7 | admin = role `admin` **and** allowlisted email, in the DB (`is_admin()`) and in the website (`apps/web/features/admin/guard.ts`) | function + server guard | `rls_admin.test.sql` |
 | INV-8 | draft region text and placeholder products never appear in `store_*` output (unless `dev_preview`) | view filters | `rls_visibility.test.sql`, `checkout.test.sql` (not buyable either) |
 | INV-9 | money columns are integers (`*_cents` USD, `*_paise` INR) | column types | `schema.test.sql` |
 
@@ -102,4 +106,5 @@ breaking it and watching the test fail ("mutation check", `current.md`).
   and Ladakh/Manipur have only a Latin form. **The founder fills and approves them.** Taglines, stories, images and accent colours are empty on purpose.
 - `categories.sql`: 7 clothing + 3 spice categories, **proposed** for founder review.
 - `demo.sql`: **dev only.** `is_placeholder = true`, 4 clothing products in Kerala/Rajasthan/Punjab, one open cycle,
-  placeholder delivery days (3–7) and shipping charge (0), `dev_preview = true`. Never run against production.
+  placeholder domestic delivery days (3–7) and express days (1–2), `dev_preview = true`. (The $0 standard / $8 express
+  prices are real settings from migration 4, D-041.) Never run against production.
