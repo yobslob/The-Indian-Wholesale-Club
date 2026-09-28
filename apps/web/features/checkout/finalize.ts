@@ -17,6 +17,8 @@ import { deliverOutboxRow } from '@/lib/email/send';
 import { errorMessage, logger } from '@/lib/logger';
 import { stripeServer } from '@/lib/stripe';
 
+import { paymentMatchesCheckout } from './payment-check';
+
 /** What the checkout route stored with the PaymentIntent (pending_orders.checkout_payload). */
 export const pendingCheckoutSchema = z.object({
   email: z.string().email(),
@@ -87,11 +89,7 @@ export async function finalizeOrder(
   const intent = await stripe.paymentIntents.retrieve(paymentIntentId);
   if (intent.status !== 'succeeded')
     return { ok: false, reason: 'payment_not_complete', detail: intent.status };
-  const mismatch =
-    intent.amount !== input.totalCents ||
-    intent.currency.toLowerCase() !== 'usd' ||
-    (process.env.NODE_ENV === 'production' && !intent.livemode);
-  if (mismatch) {
+  if (!paymentMatchesCheckout(intent, input.totalCents, process.env.STRIPE_SECRET_KEY ?? '')) {
     await recordFailedReconciliation(service, {
       paymentIntentId,
       stripeEventId,
