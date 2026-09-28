@@ -6,6 +6,9 @@ import { supabase } from './supabase';
  */
 export const API_BASE_URL = process.env.EXPO_PUBLIC_API_URL ?? 'http://localhost:3000';
 
+// Development only. The website's server (`pnpm --filter web dev`, port 3000), not Metro (8081).
+if (__DEV__) console.log(`[iwc] Website API: ${API_BASE_URL}`);
+
 export type ApiResult<T> = { ok: true; data: T } | { ok: false; status: number; error: string };
 
 /** POST JSON; sends the signed-in user's access token so the server can link the order to the account. */

@@ -9,6 +9,9 @@ const anonKey = process.env.EXPO_PUBLIC_SUPABASE_ANON_KEY;
 /** True when both EXPO_PUBLIC_SUPABASE_URL and EXPO_PUBLIC_SUPABASE_ANON_KEY are set (apps/app/.env). */
 export const isSupabaseConfigured = Boolean(url && anonKey);
 
+// Development only: the address in use shows in the Metro terminal (a phone or emulator can't reach 127.0.0.1).
+if (__DEV__) console.log(`[iwc] Supabase: ${url ?? '(EXPO_PUBLIC_SUPABASE_URL not set)'}`);
+
 /** Sessions live in the device keychain / keystore. */
 const secureStorage = {
   getItem: (key: string) => SecureStore.getItemAsync(key),

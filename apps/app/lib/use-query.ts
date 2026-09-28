@@ -9,6 +9,11 @@ export interface QueryState<T> {
   reload: () => void;
 }
 
+/** supabase-js reports an unreachable server as an error result, which unwrap() turns into a DbError. */
+function isNetworkFailure(err: DbError): boolean {
+  return /network request failed|failed to fetch|fetch failed/i.test(err.message);
+}
+
 /** Loads data for a screen; `key` changes reload it. Errors become a plain message (no internals). */
 export function useQuery<T>(key: string, load: () => Promise<T>): QueryState<T> {
   const [data, setData] = useState<T | undefined>(undefined);
@@ -29,9 +34,11 @@ export function useQuery<T>(key: string, load: () => Promise<T>): QueryState<T> 
         setError(null);
       })
       .catch((err: unknown) => {
+        // Development only: the real reason goes to the Metro terminal.
+        if (__DEV__) console.warn(`[load ${key}]`, err);
         if (!active) return;
         setError(
-          err instanceof DbError
+          err instanceof DbError && !isNetworkFailure(err)
             ? 'Could not load. Pull to try again.'
             : 'No connection. Pull to try again.',
         );
