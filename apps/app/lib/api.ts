@@ -1,52 +1,15 @@
 import { supabase } from './supabase';
 
 /**
- * Web API base URL for the mobile app.
- *
- * EXPO_PUBLIC_API_URL overrides the target (e.g. a LAN IP for a physical
- * device); development falls back to the local Next.js dev server.
+ * The web server's API (checkout, order confirmation, guest order lookup).
+ * On a phone use the computer's LAN address, e.g. http://192.168.1.10:3000 (apps/app/.env).
  */
 export const API_BASE_URL = process.env.EXPO_PUBLIC_API_URL ?? 'http://localhost:3000';
 
-export interface ApiResponse<T> {
-  ok: boolean;
-  status: number;
-  data: T | null;
-  error: string | null;
-}
+export type ApiResult<T> = { ok: true; data: T } | { ok: false; status: number; error: string };
 
-export async function apiGet<T = Record<string, unknown>>(path: string): Promise<ApiResponse<T>> {
-  try {
-    const {
-      data: { session },
-    } = await supabase.auth.getSession();
-    const res = await fetch(`${API_BASE_URL}${path}`, {
-      headers: session?.access_token
-        ? { Authorization: `Bearer ${session.access_token}` }
-        : undefined,
-    });
-
-    const data = (await res.json().catch(() => null)) as T | null;
-    return {
-      ok: res.ok,
-      status: res.status,
-      data,
-      error: res.ok ? null : ((data as { error?: string } | null)?.error ?? 'Request failed'),
-    };
-  } catch (err) {
-    return {
-      ok: false,
-      status: 0,
-      data: null,
-      error: err instanceof Error ? err.message : 'Network request failed',
-    };
-  }
-}
-
-export async function apiPost<T = Record<string, unknown>>(
-  path: string,
-  body: unknown,
-): Promise<ApiResponse<T>> {
+/** POST JSON; sends the signed-in user's access token so the server can link the order to the account. */
+export async function apiPost<T>(path: string, body: unknown): Promise<ApiResult<T>> {
   try {
     const {
       data: { session },
@@ -55,24 +18,18 @@ export async function apiPost<T = Record<string, unknown>>(
       method: 'POST',
       headers: {
         'Content-Type': 'application/json',
-        ...(session?.access_token ? { Authorization: `Bearer ${session.access_token}` } : {}),
+        ...(session ? { Authorization: `Bearer ${session.access_token}` } : {}),
       },
       body: JSON.stringify(body),
     });
-
-    const data = (await res.json().catch(() => null)) as T | null;
-    return {
-      ok: res.ok,
-      status: res.status,
-      data,
-      error: res.ok ? null : ((data as { error?: string } | null)?.error ?? 'Request failed'),
-    };
-  } catch (err) {
+    const json = (await res.json().catch(() => null)) as (T & { error?: string }) | null;
+    if (res.ok && json) return { ok: true, data: json };
     return {
       ok: false,
-      status: 0,
-      data: null,
-      error: err instanceof Error ? err.message : 'Network request failed',
+      status: res.status,
+      error: json?.error ?? 'Something went wrong. Please try again.',
     };
+  } catch {
+    return { ok: false, status: 0, error: 'No connection. Please try again.' };
   }
 }

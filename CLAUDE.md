@@ -60,11 +60,11 @@ This file is the only one to read at the start of every session. Everything else
 | env vars, deploy, DB reset, legal/compliance | `docs/ops.md` |
 
 ## Repo map
-`apps/web` Next.js storefront (`app/(store)`) + hidden admin (`app/admin`), code by feature in `features/` · `apps/app` Expo app (customer; admin mode from R6) ·
+`apps/web` Next.js storefront (`app/(store)`) + hidden admin (`app/admin`), code by feature in `features/` · `apps/app` Expo app (customer tabs + admin mode after `is_admin()`, code by feature in `features/`; checkout via the web's API) ·
 `packages/shared` pure domain logic (`src/domain`) · `packages/db` typed DB access (`store`/`account`/`admin`/`server`) ·
 `packages/tokens` design tokens · `packages/*-config` tooling presets · `supabase/` migrations + seed + SQL tests ·
 `scripts/` dev scripts (`check.mjs` = verification) · `docs/` everything above.
-The target layout is in `docs/engineering.md` §Layout.
+The layout (web and app) is in `docs/engineering.md` §Layout.
 
 ## How verification works (Claude cannot install npm packages)
 Claude's sandboxes are blocked from the npm registry, so Claude can't install packages or run `next build`. Therefore:
@@ -73,7 +73,7 @@ Claude's sandboxes are blocked from the npm registry, so Claude can't install pa
 - To verify, the founder runs `node scripts/check.mjs` (or named steps, e.g. `node scripts/check.mjs test`) and tells
   Claude. Claude reads `.checks/latest.json` and records the numbers in `docs/plan/current.md`.
 - Claude *can* run git, `node --check`, dependency-free Node scripts, **SQL on a local Postgres 16** with the Supabase
-  stub, and the repo's own `tsc` + ESLint on the web and packages, plus the unit tests (compiled with `tsc`), using the
+  stub, and the repo's own `tsc` + ESLint on the web, the app and the packages, plus the unit tests (compiled with `tsc`), using the
   dependency folders copied from the founder's `node_modules` (`engineering.md` §Testing). Claude cannot run `next build`.
   DB changes and code are checked by Claude before the founder's run.
 

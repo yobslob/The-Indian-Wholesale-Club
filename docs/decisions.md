@@ -202,3 +202,11 @@ collected; late problems go through the unavailable-piece path). For now an admi
 a self-service cancel button is a coding-phase item. **Compliance check before launch (Q-19):** in most US states,
 sales tax collected on a sale that is cancelled has to go back to the customer or to the state; confirm with an
 accountant that keeping it is allowed.
+
+**D-043 · 2026-09-28 · Claude, proposed (R6): what the app does itself and what goes through the website's server**
+The app talks to the database directly (the user's own session, under RLS) for everything the database can decide on
+its own: catalog reads (`store_*`, D-017), the account's own rows, and admin mode (`@repo/db/admin`, refused by RLS for
+non-admins, INV-7). Anything that needs a secret goes through the website's server, the same routes the website uses:
+checkout and order confirmation (Stripe secret key, D-038) and guest order lookup (service role). A signed-in user's
+access token only links the order to the account. So the app holds no secret, and refunds stay on the web panel. Cost:
+app admin changes reach the website's cached pages within the 5-minute fallback (B-17).

@@ -5,8 +5,8 @@ import { savePendingCheckout } from '@repo/db/server';
 import { checkoutRequestSchema, priceCart } from '@/features/checkout/pricing';
 import { errorMessage, logger } from '@/lib/logger';
 import { limitRequest } from '@/lib/rate-limit';
+import { requestUser } from '@/lib/request-user';
 import { isStripeConfigured, stripeServer } from '@/lib/stripe';
-import { currentUser, sessionClient } from '@/lib/supabase/server';
 import { serviceClient } from '@/lib/supabase/service';
 
 import type { PendingCheckout } from '@/features/checkout/finalize';
@@ -53,14 +53,15 @@ export async function POST(
       );
     }
     const { quote } = priced;
-    const user = await currentUser(await sessionClient());
+    // Website: session cookies. App: Bearer token. Only links the order to the account.
+    const user = await requestUser(request);
 
     const intent = await stripeServer().paymentIntents.create({
       amount: quote.breakdown.totalCents,
       currency: 'usd',
       automatic_payment_methods: { enabled: true },
       receipt_email: parsed.data.email,
-      metadata: { source: 'iwc-web' },
+      metadata: { source: 'iwc' },
     });
 
     const pending: PendingCheckout = {

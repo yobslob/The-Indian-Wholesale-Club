@@ -1,10 +1,11 @@
 # Current status
 
 ## Resume here
-**R5 code is committed and Claude-verified** (typecheck, lint, unit tests, SQL tests; see the log). The web is rebuilt on the
-new schema: storefront routes (`storefront.md`), hidden admin, checkout on `create_order`, migration 3. **Waiting on the
-founder:** the steps at the bottom, then the hosted dev DB reset (announced there). The mobile app still reads the old
-schema until R6, so it breaks against a reset hosted DB until then.
+**R6 (app reshape) is committed and Claude-verified** (typecheck, lint, unit tests; see the log): customer tabs on
+`store_*`, checkout through the website's API with the Stripe payment sheet, order tracking, and admin mode after the
+server confirms the role. R5.6 (D-041 shipping options, D-042 refunds) is committed too. **Waiting on the founder:** the
+steps at the bottom (one `check.mjs` run covers R5.6 + R6, then a smoke test on a phone). The hosted dev DB reset is still
+pending (announced there). Next after that: R7 (tests, tooling, CI).
 
 ## Steps
 | Step | Status | Evidence |
@@ -15,7 +16,8 @@ schema until R6, so it breaks against a reset hosted DB until then.
 | R3 DB baseline | ✅ done | commit `96b964c`. Applied and tested on real local Supabase (log) |
 | R4 Packages | ✅ done | commit `7d7c525` + fix commit (generated `database.types.ts`, lockfile, `check.mjs --continue`) |
 | R5 Web reshape + speed | ✅ done (founder run 2026-09-28; typecheck fix in the R5 close commit) · hosted dev DB reset still pending | sub-steps below |
-| R6 – R8 | not started | — |
+| R6 App reshape | ◐ code committed, Claude-verified · founder `check.mjs` + phone smoke test pending | sub-steps below |
+| R7 – R8 | not started | — |
 
 ## Verification log (facts only. Add a row per run)
 | Date | Commit | Who / where | What | Result |
@@ -37,6 +39,7 @@ schema until R6, so it breaks against a reset hosted DB until then.
 | 2026-09-28 | R5 close | Claude | `pnpm db:types` output vs Claude's hand patch for migration 3 (both formatted the same way) | identical |
 | 2026-09-28 | R5.6 | Claude, PostgreSQL 16.13 + stub | **11 SQL test files, 187 assertions** (with and without `demo.sql`), incl. new `shipping_refunds.test.sql` (26). Mutation check: 10 breaks (no tax share, no last-piece rule, customer cancel refunds tax, no stock release, cancel after cutoff, refund without admin, amounts readable by customers, express without days, express window from standard days, guest lookup drifting from `store_orders`) | all pass. All 10 caught |
 | 2026-09-28 | R5.6 | Claude, `tsc` 5.9.3 + ESLint 8.57.1 + Node 22 | typecheck web/db/shared, lint web, unit tests (shared `domain.test.ts` 26, web 10) | 0 errors, 0 warnings, all pass |
+| 2026-09-28 | R6 | Claude, `tsc` 5.9.3 + ESLint 8.57.1 (the app's dependency closure copied from the founder's `node_modules/.pnpm`) + Node 22 | typecheck app, web, db, shared; lint app + web (`--max-warnings 0`), incl. a probe that app customer files can't import admin code or `@repo/db/admin`; unit tests (shared 26, web 10) | 0 errors, 0 warnings, all pass. The probe fails as intended (2 errors). **Not run by Claude:** the app itself (no Expo / device) |
 
 ## Invariant tests (`data-model.md`)
 INV-1 … INV-9: implemented and passing on Claude's Postgres 16 runs and on real local Supabase, Postgres 15 (see log).
@@ -52,27 +55,41 @@ INV-1 … INV-9: implemented and passing on Claude's Postgres 16 runs and on rea
 | 5.5 | `check.mjs` routes → new routes (✅). Founder run on local Supabase (✅, log). Hosted dev DB reset | ⏳ founder, when ready |
 | 5.6 | Founder answers (D-041 shipping options, D-042 refunds): migration 4, checkout shipping picker, admin refund + cancel, Settings | ✅ committed · Claude-verified (log) · founder run pending |
 
-**Not verified by anyone yet:** a delivered email (needs a verified sender, Q-9) and the admin screens in a browser.
+## R6 sub-steps
+| # | Sub-step | Status |
+|---|---|---|
+| 6.1 | App config: rebrand (name, slug, scheme `iwc`; bundle ids wait for the domain, Q-9), `@repo/db` + `@repo/tokens`, Metro resolver for package exports, NativeWind on the tokens, import-boundary lint | ✅ committed |
+| 6.2 | Customer tabs, region and product screens on `store_*` (old screens, query layer and stores deleted) | ✅ committed |
+| 6.3 | Sign-in, checkout on the website's API with the payment sheet (D-038), order + guest lookup (new `POST /api/orders/lookup`), addresses. The checkout HTTP types moved to `packages/shared` | ✅ committed |
+| 6.4 | Admin mode after `is_admin()`: Today, Orders, Cycles, Payouts, Listings, Vendors, "View the store" (`admin.md`) | ✅ committed |
+| 6.5 | Old shared code deleted (hand-written types, schemas, utils, constants and their 4 tests; `domain.test.ts` covers the replacements) | ✅ committed |
+| 6.6 | Founder: `check.mjs` + smoke test on a phone | ⏳ |
+
+**Not verified by anyone yet:** a delivered email (needs a verified sender, Q-9), the admin screens in a browser, and any
+app screen on a device.
 
 ## Waiting on the founder (in this order, from `C:\kod\root`, Docker + local Supabase running)
-1. `pnpm install`: links `@repo/db` into the web, drops the removed web dependencies (framer-motion, lucide-react, clsx,
-   tailwind-merge, class-variance-authority, tailwindcss-animate) and updates `pnpm-lock.yaml`.
-2. `npx supabase db reset`: applies migration 3 (`20260928000003_checkout.sql`) locally, with the seeds.
-3. `pnpm db:types`: regenerates `packages/db/src/database.types.ts` (Claude patched it by hand for migration 3; the diff
-   should be formatting only).
-4. Create `apps/web/.env.local` pointing the web at local Supabase (`ops.md` §Environment variables: URL
-   `http://127.0.0.1:54321` + the local anon and service-role keys from `npx supabase status`). The build now reads the DB,
-   and the hosted DB still has the old schema.
-5. `node scripts/check.mjs`, then tell Claude. Claude commits the regenerated types + lockfile.
-6. Optional click-through with `pnpm --filter web dev`: `/`, a region, the demo product, add to bag, checkout with the
-   Stripe test card `4242 4242 4242 4242`; `/admin` after the admin bootstrap in `ops.md` (once, in the local DB).
-7. **Announcement:** after a green run, the next step is resetting the **hosted dev DB** to the new schema (`ops.md`
-   §Database workflow). It deletes everything in the hosted dev project. Run it only when you're ready; the mobile app
-   does not work against it until R6.
+1. `pnpm install`: the app now depends on `@repo/db` and `@repo/tokens`, and `@repo/shared` exports only `./domain`.
+   Updates `pnpm-lock.yaml`.
+2. `npx supabase db reset`: applies migration 4 (`20260928000004_shipping_refunds.sql`) locally, with the seeds.
+3. `pnpm db:types`: regenerates `packages/db/src/database.types.ts` (Claude patched it by hand for migration 4; the diff
+   should be empty or formatting only).
+4. `node scripts/check.mjs`, then tell Claude. Claude commits the regenerated types + lockfile.
+5. Web click-through (`pnpm --filter web dev`): checkout shows Standard (free) and Express ($8; the demo seed sets
+   placeholder express days until Q-18 is answered); an admin order page shows the cancel buttons with their amounts.
+6. **Phone smoke test** (`ops.md` §Running the app: `apps/app/.env` with your computer's LAN IP, the local anon key and the
+   Stripe test key; `pnpm --filter web dev` and `pnpm --filter app dev`, then Expo Go):
+   Home → a region → the demo product → Add to bag → Bag → Checkout (card `4242 4242 4242 4242`) → Thank you → Track this
+   order. Then Profile → Sign in → your orders. Then sign in with the admin account: admin mode should open on Today;
+   check Orders (the new order), Cycles (the open cycle) and "View the store". Tell Claude what breaks (a screenshot helps).
+   If the payment sheet does not open, run `npx expo install --check` in `apps/app` (B-9).
+7. **Announcement (unchanged):** after a green run, the next step is resetting the **hosted dev DB** to the new schema
+   (`ops.md` §Database workflow). It deletes everything in the hosted dev project. Run it only when you're ready.
 
 ## Known leftovers (tracked, not forgotten)
-- "ROOT" still appears in the mobile app and the old `packages/shared/src/constants` → R6 (D-009). The web is rebranded.
-- Old hand-written types (`packages/shared/src/types`) + the app's query layer (`apps/app/lib/queries`) → deleted in R6.
+- The app's bundle ids are still `com.root.app` (`apps/app/app.json`): they change with the domain (Q-9). Everything else
+  is rebranded (D-009).
+- Still open from R5.6: express days (Q-18) and the accountant check on keeping tax (Q-19).
 - The old hosted dev DB keeps the old schema and its holes (B-1, B-14) until the reset above.
 - `supabase/config.toml` uses the deprecated `[inbucket]` section (CLI warning, harmless) → fix when touching config.
 - Founder's `apps/web/.env` has unused `RAZORPAY_*` / `TRACKING_PROXY_*` lines (safe to delete. Claude never edits `.env`).

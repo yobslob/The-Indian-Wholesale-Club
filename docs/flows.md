@@ -32,7 +32,8 @@ open ──cutoff──► collecting ──► packed ──► exported ──
    option (standard or express days). It is shown before payment (D-008). Express is offered only when its days are set (Q-18).
 3. Payment: a Stripe PaymentIntent (USD) for exactly that total. The priced checkout is stored in `pending_orders` with it.
    After payment the server verifies amount, currency and status with Stripe, then creates the order **from the stored
-   checkout** (D-038). The browser and the Stripe webhook both trigger this; the second finds the existing order.
+   checkout** (D-038). The customer's device (website or app, D-043) and the Stripe webhook both trigger this; the
+   second finds the existing order. The website pays with Stripe's Payment Element, the app with Stripe's payment sheet.
 4. In one transaction (`create_order`): create the order and items, **reserve** stock (a conditional update, INV-3), write
    `stock_movements`, attach the order to the open cycle and store the delivery window. Then the server queues the
    confirmation email in `email_outbox`.

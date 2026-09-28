@@ -1,37 +1,23 @@
 {
   "expo": {
-    "name": "ROOT",
-    "slug": "root-app",
+    "name": "The Indian Wholesale Club",
+    "slug": "iwc",
     "version": "1.0.0",
     "orientation": "portrait",
-    "icon": "./assets/icon.png",
-    "scheme": "root",
-    "userInterfaceStyle": "automatic",
-    "splash": {
-      "image": "./assets/splash.png",
-      "resizeMode": "contain",
-      "backgroundColor": "#171717"
-    },
+    "scheme": "iwc",
+    "userInterfaceStyle": "light",
     "assetBundlePatterns": ["**/*"],
     "ios": {
       "supportsTablet": true,
       "bundleIdentifier": "com.root.app"
     },
     "android": {
-      "adaptiveIcon": {
-        "foregroundImage": "./assets/adaptive-icon.png",
-        "backgroundColor": "#171717"
-      },
       "package": "com.root.app"
     },
     "web": {
       "bundler": "metro",
-      "output": "static",
-      "favicon": "./assets/favicon.png"
+      "output": "static"
     },
-    "plugins": ["expo-router", "expo-font", "expo-secure-store", "@stripe/stripe-react-native"],
-    "experiments": {
-      "typedRoutes": true
-    }
+    "plugins": ["expo-router", "expo-font", "expo-secure-store", "@stripe/stripe-react-native"]
   }
 }

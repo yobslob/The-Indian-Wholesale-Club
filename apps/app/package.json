@@ -8,13 +8,14 @@
     "build:android": "eas build --platform android",
     "build:ios": "eas build --platform ios",
     "lint": "eslint . --ext .ts,.tsx --max-warnings 0",
-    "typecheck": "tsc --noEmit",
-    "test": "tsx --test tests/wishlist.test.ts"
+    "typecheck": "tsc --noEmit"
   },
   "dependencies": {
     "@expo/vector-icons": "^14.0.0",
     "@react-navigation/native": "^7.0.0",
+    "@repo/db": "workspace:*",
     "@repo/shared": "workspace:*",
+    "@repo/tokens": "workspace:*",
     "@stripe/stripe-react-native": "^0.78.0",
     "@supabase/supabase-js": "^2.49.1",
     "expo": "~52.0.0",
@@ -37,7 +38,6 @@
   "devDependencies": {
     "@babel/core": "^7.25.0",
     "@repo/eslint-config": "workspace:*",
-    "@repo/tokens": "workspace:*",
     "@repo/typescript-config": "workspace:*",
     "@types/node": "^22.13.0",
     "@types/react": "~18.3.0",

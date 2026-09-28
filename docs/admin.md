@@ -16,10 +16,17 @@ Shops never get logins. The founder and COO enter all shop data (D-018).
   Signed in as a non-admin → a plain 404, also for server actions. There are no admin API routes (R5 uses server actions).
 - RLS uses the same check (`is_admin()`, INV-7). Even with a stolen UI, the DB refuses.
 
-**App**
-- One app for everyone and one sign-in screen. After sign-in, the app asks the server for the user's role.
-- Only if the server says `admin` does it lazily load the admin navigator in place of the customer tabs.
-- Admin screens are bundled in the app binary (mobile apps can't hide code), so all protection is server-side, as on the web.
+**App** (built in R6: `apps/app/app/admin/`)
+- One app for everyone and one sign-in screen. After sign-in, the app asks the database `is_admin()` (role **and** email
+  in `admin_emails`, `apps/app/lib/session.tsx`). The phone never decides this itself.
+- Only if the server says yes does it mount the admin navigator (Today · Orders · Cycles · Payouts · Listings · Vendors) in
+  place of the customer tabs; anyone else opening `/admin` is sent to the store. The admin's Today screen has "View the
+  store"; the Profile tab then shows "Back to admin", rendered only for that server-confirmed admin.
+- Admin screens are bundled in the app binary (mobile apps can't hide code), so all protection is server-side, as on the web (D-043):
+  every admin read and write goes through `@repo/db/admin` with the user's own session, and RLS refuses non-admins (INV-7).
+  The customer screens can't import admin code (lint rule in `apps/app/.eslintrc.js`).
+- The app admin writes straight to the database, so it cannot refresh the website's cache: storefront pages pick up app
+  changes (stock after a pickup, a confirmed quantity) within the 5-minute cache fallback (`engineering.md` PR-1).
 
 ## Desks (D-007)
 `profiles.desk` picks the default "Today" screen. Both admins can open every section (D-027).
@@ -41,11 +48,19 @@ Shops never get logins. The founder and COO enter all shop data (D-018).
 | **Settings** | pricing settings, admin list | both | ✓ | — |
 
 The order page refunds unavailable pieces and cancels orders before cutoff, with the amounts from the D-042 rules shown on
-the buttons (Stripe first, then the database).
+the buttons (Stripe first, then the database). **Web only:** refunds need the Stripe secret key, which lives on the server;
+the app's order list marks unavailable pieces "to refund on the web panel".
+
+**App admin mode (R6), what each screen does:** Today (the same counts as the web, each opening its screen) · Orders (filter
+by status → detail: items with pickup state, internal timeline, mark shipped with carrier + tracking, mark delivered) ·
+Cycles (list → one cycle: cut off, move to the next status, per-shop pickup checklist with Picked / Unavailable) · Payouts
+(what each shop is owed, record a payout; the amount is computed in SQL) · Listings (draft / live / paused, confirm each
+variant's quantity with the shop) · Vendors (list, add a shop). Creating cycles, adding products, publishing and editing stay
+on the web panel until the camera flow (coding phase).
 
 **Not in the R5 skeleton yet** (coding phase unless noted): photo upload for products/vendors/receipts, customer emails for
 refunds and cancellations, stale-listing and delay warnings on Today, live (Realtime) order/stock feed, packing list +
-commercial invoice export, bulk edits, category editing, app admin mode (R6).
+commercial invoice export, bulk edits, category editing. In the app: camera product listing, cycle creation, refunds.
 
 ## Design principles for the admin
 1. **One screen per job.** "Pick up at Shop X" is one checklist, not a table with filters.

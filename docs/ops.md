@@ -28,6 +28,14 @@ No longer read by any code (safe to delete from your own `.env` files): `CARRIER
 with `NEXT_PUBLIC_SUPABASE_URL=http://127.0.0.1:54321` and the local `anon key` / `service_role key` printed by
 `npx supabase status`. Delete the file to go back to the hosted project.
 
+**Running the app (dev, since R6):** copy `apps/app/.env.example` to `apps/app/.env` (never committed). A phone can't reach
+the computer's `127.0.0.1`, so both addresses use the computer's LAN IP (`ipconfig` → IPv4 address): Supabase
+`http://<LAN IP>:54321` with the local anon key, and the website `http://<LAN IP>:3000` (`pnpm --filter web dev`, which
+serves checkout for the app). Phone and computer on the same Wi-Fi; Windows may ask to allow Node.js and Docker on private
+networks. Stripe: the same test publishable key as the web. Then `pnpm --filter app dev` and open it in Expo Go.
+If the Stripe payment sheet doesn't open in Expo Go, run `npx expo install --check` in `apps/app` (Expo Go carries its own
+native Stripe module per SDK; the app's `@stripe/stripe-react-native` version must match it; B-9).
+
 ## Database workflow (from R3)
 - Schema changes = a new file in `supabase/migrations/`. Never edit an applied migration.
 - After every schema change: `npx supabase db reset`, then **`pnpm db:types`** (writes `packages/db/src/database.types.ts`,
