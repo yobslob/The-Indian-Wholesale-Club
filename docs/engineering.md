@@ -29,7 +29,8 @@ Baseline numbers come from the founder's first `node scripts/check.mjs` run and 
   are no admin API routes). It uses `getClaims()`: a local JWT check with asymmetric signing keys, one Auth call with the
   legacy shared secret (local Supabase and old hosted projects use the shared secret). Rate limits run inside the routes.
 - **PR-5 Server-first:** Server Components by default. Client components only for real interaction (add to cart, variant
-  picker, live stock). No animation libraries on the storefront (framer-motion removed in R5). No web fonts until the
+  picker, live stock). No animation libraries on the storefront (framer-motion removed in R5) except Lenis smooth scrolling,
+  which the founder asked for (D-049, `design.md` §Direction: one small client module, off for reduced motion). No web fonts until the
   design is approved (system fonts).
 - **PR-6 Assets:** `next/image` with explicit `sizes`. Fonts via `next/font`, subset. Script fonts only on their region page.
 - **PR-7 Realtime only where it matters:** product availability, and the admin orders/stock feed.
@@ -54,12 +55,15 @@ server process only, and `e2e-customer@iwc.test`) and tops up the demo product's
 it listed. Without Stripe test keys the checkout flow is skipped, not failed. The old suites (stealth, SQL-text RLS,
 mocked routes) are deleted. Everything runs through `node scripts/check.mjs`, and CI runs the same script (§Tooling).
 
-**Claude can verify SQL itself:** its sandbox has plain PostgreSQL 16 but no Docker/npm. `supabase/tests/_stub/supabase_stub.sql`
+**Claude Code on the founder's machine** runs all of this directly: `node scripts/check.mjs` is the one command.
+The two paragraphs below describe how a **cloud-sandbox session** (no npm, no Docker) verified work before that.
+
+**Cloud sandbox, SQL:** its sandbox has plain PostgreSQL 16 but no Docker/npm. `supabase/tests/_stub/supabase_stub.sql`
 emulates the few Supabase pieces the schema needs (roles, `auth.uid()`, storage tables, realtime publication). Apply stub →
 migrations → seeds → `_helpers.sql` → each `*.test.sql` with `psql -v ON_ERROR_STOP=1`. After adding a test, break the rule
 on purpose and confirm the test fails (mutation check). The founder's run on real local Supabase (Postgres 15) is still
 the evidence of record. Keep SQL PG15-compatible.
-**Claude can type-check and lint too:** the founder's `node_modules/.pnpm` holds real package folders. Since R5 Claude copies
+**Cloud sandbox, TypeScript and lint:** the founder's `node_modules/.pnpm` holds real package folders. Since R5 Claude copies
 the web's whole dependency closure (computed from `pnpm-lock.yaml`), rebuilds the pnpm links in its sandbox and runs the
 repo's own `tsc` (web, app, packages) and ESLint (web, app), runs the unit tests with its own `tsx`, bundles the app with
 the repo's Expo CLI and loads the Playwright specs (`playwright test --list`). Not possible there: `next build` (no Linux

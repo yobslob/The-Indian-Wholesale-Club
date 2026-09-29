@@ -31,7 +31,7 @@ export default async function AdminProductPage({
     getPricingSettings(client),
   ]);
   if (!product) notFound();
-  // Suggestion only (flows.md §2 step 4); null until every pricing setting and a weight exist (Q-15).
+  // Suggestion only (flows.md §2 step 4); null until every pricing setting and a weight exist (D-047).
   const weightG = product.variants.find((v) => v.weight_g !== null)?.weight_g ?? null;
   const suggestion =
     product.shop_price_paise === null
@@ -117,7 +117,7 @@ export default async function AdminProductPage({
           <p className="text-ink-muted">
             {suggestion
               ? `Suggested price ${formatUsd(suggestion.suggestedPriceCents)} (landed cost ${formatUsd(suggestion.landedCents)})`
-              : 'No suggested price: needs the shop price, a variant weight and every pricing setting (Q-15).'}
+              : 'No suggested price: needs the shop price, a variant weight and every pricing setting (D-047).'}
           </p>
         </div>
         <Field label="Summary">

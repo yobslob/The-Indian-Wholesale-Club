@@ -1,8 +1,27 @@
 # Design: brand, voice, visual system
 
-> **Status:** direction only. No palette, fonts or layouts are final. Claude will propose mockups of Home, the Region
-> page, the Product page and admin Listing for founder review **before** building them (coding phase). Until then, don't invent
-> hex values or fonts in code. Use tokens from `packages/tokens` (created in R4 with neutral placeholder values).
+> **Status:** the founder set the direction on 2026-09-29 (D-049, §Direction below). No palette, fonts or layouts are
+> final yet: Claude proposes mockups of Home, the Region page, the Product page and admin Listing that follow the
+> direction, for founder review **before** building them (coding plan C1). Until then, don't invent hex values or fonts in
+> code. Use tokens from `packages/tokens` (created in R4 with neutral placeholder values).
+
+## Direction (founder, D-049)
+The storefront reads like a **premium editorial magazine / contemporary gallery wall** built from large photographs:
+- **Layout:** asymmetric, image-led compositions. Large photographs at varying vertical positions, varied widths,
+  offsets and overlaps; images may break the grid and extend between sections; floating compositions.
+- **Density (the founder's 4th prompt refines the first three):** no large empty gaps. Bigger images, sections that fill
+  more of the viewport, elements closer together, clean alignment, consistent breathing room. Immersive, not sparse.
+- **Motion:** Lenis smooth scrolling; subtle vertical (and some horizontal) parallax tied to scroll velocity; images
+  reveal as they enter the viewport through gentle clipping, slow scale and opacity transitions.
+- **Typography:** minimal, clean, luxury-magazine; photographs carry the page.
+**Guard rails (proposed with D-049):** motion is progressive enhancement. Lenis and the scroll effects load as one small
+client module after the page is interactive; with `prefers-reduced-motion` they are off entirely (native scroll, no
+parallax, images simply visible); keyboard, find-in-page, anchor links and screen readers keep working; content is fully
+readable with JavaScript off. The speed budgets still hold (`engineering.md`: first-load JS ≤ 150 KB, cached pages
+≤ 100 ms), and images use `next/image` with explicit sizes so the large photos don't slow the first paint. On mobile
+the effects are lighter. The app follows the same look with native motion (Reanimated), not Lenis.
+**Photography dependency:** the direction lives on photographs. Until real product and region photos exist (listing, C3;
+region images, C2), mockups and dev pages use clearly marked placeholders, never stock photos presented as products.
 
 ## Brand [D-009]
 - Name: **The Indian Wholesale Club**. Short form **IWC**. Logo: not designed yet.
@@ -28,7 +47,8 @@
    The map must be a static SVG (no map library) and lightweight.
 5. **Photography:** real product photos taken at listing time, consistent aspect ratio (decided with the mockups). No
    stock photos presented as products.
-6. **Motion:** CSS only in the storefront (no animation libraries, D-011). Respect `prefers-reduced-motion`.
+6. **Motion:** as §Direction (D-049): Lenis smooth scroll + reveal/parallax, the only motion library allowed on the
+   storefront (no framer-motion), off for `prefers-reduced-motion`. Everything else CSS.
 7. **Light and dark:** tokens support both. Dark mode on customer pages is optional and decided at mockup time.
 
 ## Tokens (`packages/tokens`, created in R4)

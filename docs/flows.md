@@ -11,7 +11,7 @@ open ──cutoff──► collecting ──► packed ──► exported ──
 ```
 - Exactly one cycle is `open` (INV-5). Target: when a cycle hits its cutoff, the next cycle opens immediately. Its dates are entered by an admin.
   **Today** nothing happens on its own at `cutoff_at`: orders still join the open cycle until an admin runs the cutoff,
-  the store keeps showing the past "order by" date, and an admin creates the next cycle by hand (B-19, Q-20).
+  the store keeps showing the past "order by" date, and an admin creates the next cycle by hand (B-19; the fix is decided in D-045 and built in C4).
 - An admin sets each cycle's `cutoff_at`, estimated export and estimated arrival dates. There are no fixed lead times (D-026), so nothing is
   hard-coded.
 - Status changes are manual admin actions: `cutoff_cycle()` for open → collecting, then `advance_cycle()` one step at a

@@ -1,6 +1,6 @@
 /**
  * Suggested USD price from a shop price in INR (flows.md §2, step 4).
- * Every input comes from pricing_settings, set by the founder (Q-15). When any
+ * Every input comes from pricing_settings, set by the founder (D-047). When any
  * needed value is missing this returns null: nothing is ever defaulted or guessed.
  * The admin always sets the final price; this is only a suggestion.
  */

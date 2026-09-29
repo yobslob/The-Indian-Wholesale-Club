@@ -68,3 +68,6 @@ coverage/
 
 # Verification results (scripts/check.mjs)
 .checks/
+
+# Claude Code: personal overrides stay local (.claude/settings.json is shared)
+.claude/settings.local.json

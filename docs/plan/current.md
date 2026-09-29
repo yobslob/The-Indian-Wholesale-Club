@@ -1,11 +1,12 @@
 # Current status
 
 ## Resume here
-**The restructure is done, pending the founder's sign-off (R8).** R0–R7 are verified (founder `check.mjs` all green incl.
-E2E, first CI run green); R8 audited the docs against the code (`scripts/docs-audit.mjs`, now the first `check.mjs`
-step) and corrected every mismatch found. **Next:** the founder reviews `plan/coding-plan.md` (the proposed phases C1–C8
-and the questions each waits on), resets the hosted dev DB, and answers Q-20 first. Then coding starts with the phase the
-founder picks.
+**The restructure is done (R0–R8).** The founder ran the final checks, pushed, reset the hosted dev DB, reviewed the coding
+plan and answered its questions (2026-09-29; taken as the R8 sign-off). Work continues in **Claude Code** on the
+founder's machine (CLAUDE.md §How work and verification run). **Next: coding plan C1 (design)**, following the founder's
+direction (D-049, `design.md` §Direction): propose 2–3 mockup directions of Home, Region, Product and admin Listing for the
+founder to pick, before building. Open questions: Q-18 (express 15–18 days: from the order or from arrival?), and before
+launch Q-3, Q-5, Q-9, Q-10, Q-19.
 
 ## Steps
 | Step | Status | Evidence |
@@ -18,7 +19,7 @@ founder picks.
 | R5 Web reshape + speed | ✅ done (founder run 2026-09-28; typecheck fix in the R5 close commit) · hosted dev DB reset still pending | sub-steps below |
 | R6 App reshape | ✅ done (founder `check.mjs` green + emulator smoke test, 2026-09-29) · app admin mode not yet tried on a device | sub-steps below |
 | R7 Tests, tooling, CI | ✅ done (founder `check.mjs` all green incl. E2E 6/6, first CI run green, 2026-09-29) | sub-steps below |
-| R8 Hand-off | ◐ docs audited and corrected, coding plan drafted · **founder sign-off pending** | sub-steps below |
+| R8 Hand-off | ✅ done (docs audited, coding plan reviewed and answered by the founder, 2026-09-29) | sub-steps below |
 
 ## Verification log (facts only. Add a row per run)
 | Date | Commit | Who / where | What | Result |
@@ -54,6 +55,7 @@ founder picks.
 | 2026-09-29 | `f607284` (clean tree) | founder, same machine, local Supabase | `node scripts/check.mjs` (all 8 steps, `.checks/latest.json`) | **all OK**: typecheck 10.2 s · lint 21.0 s · test 1.8 s · db 57.0 s · **build 39.4 s** (baseline 45.8 s; 51.7 s at R5 with the duplicate lint/typecheck) · http 2.3 s: `/` 13 ms, `/states` 15, `/states/kerala` 15, product 15, `/clothing` 15, `/search` 41, `/api/health` 30 (baseline `/` 428 ms) · **e2e 24.4 s, 6/6** · bundle 43.4 s. Founder: admin works on website and app |
 | 2026-09-29 | `f607284` | GitHub Actions | first CI run (`ci.yml`: `check.mjs` on a local Supabase in the runner) | **passed on the first attempt, 5 min 49 s** (founder) |
 | 2026-09-29 | R8 | Claude: new `scripts/docs-audit.mjs` (dependency-free) + an independent read-through by a separate agent that had not written the docs | docs vs code: paths, decision/question ids, 25 web pages, app screens, 55 schema objects, 21 env vars; then behaviour claims | the script found 2 real mismatches (a stale guard path in INV-7, an undocumented visitor function) plus stale step references; mutation check: a fake page, env var, path and decision id → all 4 caught. The read-through found 19 claims that were false or overstated (e.g. "the next cycle opens immediately at cutoff", only the confirmation email exists, the app can't add products, no arrival check-off, Insights is sales-by-region only); each was checked in the code and the docs now say what exists and what is target. Two became backlog items (B-19 cutoff, B-20 emails) and one a question (Q-20) |
+| 2026-09-29 | `871f6c9` | founder | `node scripts/check.mjs` (with the new `docs` step), `git push`, **hosted dev DB reset** to the new schema | all OK (founder: "everything is OK and running"); hosted dev DB now on the new schema |
 
 ## R7 sub-steps
 | # | Sub-step | Status |
@@ -71,7 +73,8 @@ founder picks.
 | 8.1 | Log R7 (founder run all green, first CI run green) | ✅ |
 | 8.2 | Docs audit script (`check.mjs docs`) + independent read-through; every mismatch fixed in the docs, gaps logged (B-19, B-20, Q-20) | ✅ committed |
 | 8.3 | Coding plan draft (`plan/coding-plan.md`) | ✅ committed · founder review pending |
-| 8.4 | Founder sign-off on the restructure | ⏳ |
+| 8.4 | Founder sign-off on the restructure | ✅ 2026-09-29: checks green, pushed, hosted dev DB reset, plan reviewed with answers (D-045 – D-049) |
+| 8.5 | Repo ready for Claude Code: CLAUDE.md for local work, `.claude/settings.json` permissions, `/check` and `/record-answer` skills | ✅ committed |
 
 ## Invariant tests (`data-model.md`)
 INV-1 … INV-9: implemented and passing on Claude's Postgres 16 runs and on real local Supabase, Postgres 15 (see log).
@@ -103,12 +106,9 @@ INV-1 … INV-9: implemented and passing on Claude's Postgres 16 runs and on rea
 app screen on a device.
 
 ## Waiting on the founder
-1. `node scripts/check.mjs` once more (it now starts with the `docs` step), then `git push`.
-2. Read `plan/coding-plan.md`: agree or change the phase order, and sign off the restructure (R8).
-3. Reset the **hosted dev DB** to the new schema when ready (`ops.md` §Database workflow). It deletes everything in the
-   hosted dev project. Nothing uses the old schema any more.
-4. Answer, in this order of impact: **Q-20** (cycle cutoff), **Q-9** (domain + support email), **Q-15** (pricing settings,
-   delivery days), **Q-18** (express days), then Q-3, Q-5, Q-10, Q-19 before launch.
+1. Q-18: express delivery "15–18 days" (D-048), counted from the order date or from the export's arrival in the US?
+2. C1: pick one of the mockup directions Claude proposes (D-049).
+3. Before launch: Q-3 (US carrier), Q-5 (returns policy), Q-9 (domain, D-046), Q-10 (spices compliance), Q-19 (sales tax).
 
 ## Known leftovers (tracked, not forgotten)
 - The app's bundle ids are still `com.root.app` (`apps/app/app.json`): they change with the domain (Q-9). Everything else
@@ -119,8 +119,9 @@ app screen on a device.
 - Founder's `apps/web/.env` has unused `RAZORPAY_*` / `TRACKING_PROXY_*` lines (safe to delete. Claude never edits `.env`).
 
 ## Session notes (environment facts, re-check each session)
-- Claude's sandboxes get **403 from the npm registry**, and GitHub is unreachable from the VM. The cloud sandbox has
-  PostgreSQL 16 for SQL checks, and type definitions can be copied from the founder's `node_modules/.pnpm` (real folders;
-  the symlinks under `apps/*/node_modules` are not readable from the VM).
-- Deleting files in `C:\kod\root` needs the founder's permission **per session** (git needs it too).
-- The repo sets `core.fileMode=false`. `.gitattributes` normalises line endings to LF.
+- **From 2026-09-29 the founder works with Claude Code** in `C:\kod\root` (CLAUDE.md §How work and verification run).
+  Claude runs `check.mjs` itself; `.claude/settings.json` holds the command permissions.
+- The repo sets `core.fileMode=false`. `.gitattributes` normalises line endings to LF. `.npmrc` hoists packages (Expo SDK 52).
+- Cloud-sandbox sessions (before 2026-09-29) had no npm registry and no GitHub access; they copied type definitions and
+  the app's dependencies from the founder's `node_modules/.pnpm`, and needed the founder's permission per session to delete
+  files in `C:\kod\root`.

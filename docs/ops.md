@@ -3,7 +3,7 @@
 ## Environments
 | Env | Web | DB | Notes |
 |---|---|---|---|
-| dev | `pnpm dev` on the founder's machine | **local Supabase** (Docker) via `apps/web/.env.local`; the hosted dev project still has the old schema until the founder resets it (below, D-013) | `next build` reads the DB since R5 (static pages), so the DB it points at must have the new schema |
+| dev | `pnpm dev` on the founder's machine | **local Supabase** (Docker) via `apps/web/.env.local`; the hosted dev project has the same schema since 2026-09-29 (D-013) | `next build` reads the DB since R5 (static pages), so the DB it points at must have the new schema |
 | prod | not set up yet. Vercel is the likely host, US region (Q-9) | a separate Supabase project in a US region | hosted in the US (D-003) |
 
 ## Environment variables
@@ -48,8 +48,8 @@ Metro drops its cache. The app's web target is not used (customers get the Next.
   They read `apps/web/.env.local` (local Supabase URL + anon + service-role keys; Stripe **test** keys for the checkout
   flow) and refuse a non-local database or a live Stripe key. They add two accounts to the local database
   (`e2e-admin@iwc.test`, `e2e-customer@iwc.test`), test orders, and archived test products; `check.mjs db` resets it.
-- **Hosted dev DB reset (announced, not done yet):** the new schema was built on local Supabase (Docker, D-031); the hosted
-  dev DB still has the old one. Resetting it is allowed (D-013) and the code matches it since R5/R6. The founder runs it:
+- **Hosted dev DB reset (done 2026-09-29 by the founder):** the hosted dev project now has the new schema and the seeds.
+  To reset it again (allowed for dev, D-013; the founder runs it, Claude never does):
   `npx supabase link --project-ref <dev project ref>` (once), then `npx supabase db reset --linked`. This drops everything
   in the hosted dev DB and applies `supabase/migrations/`. The CLI output lists which seed files it ran (`--no-seed` skips
   them); the seeds include the dev demo data (placeholders, `dev_preview` on). Never run it against production.

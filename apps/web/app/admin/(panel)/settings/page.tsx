@@ -8,7 +8,7 @@ const dollars = (cents: number | null) => (cents === null ? '' : (cents / 100).t
 const plain = (value: number | null) => (value === null ? '' : String(value));
 
 /**
- * Settings: the numbers the founder decides (Q-15, D-041, Q-18). Empty = not decided;
+ * Settings: the numbers the founder decides (D-047, D-041, Q-18). Empty = not decided;
  * checkout stays closed until domestic delivery days and shipping are set.
  * Admin accounts are managed in the database + ADMIN_EMAILS (docs/ops.md).
  */
@@ -93,7 +93,7 @@ export default async function SettingsPage(): Promise<React.JSX.Element> {
             className={input}
           />
         </Field>
-        <h2 className="font-medium sm:col-span-2">Price suggestions (Q-15, admin only)</h2>
+        <h2 className="font-medium sm:col-span-2">Price suggestions (D-047, admin only)</h2>
         <Field label="FX: rupees per US dollar">
           <input
             name="fx"

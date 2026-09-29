@@ -9,7 +9,7 @@ import { STORE_TAG } from '@/features/catalog/data';
 
 import { requireAdminAction } from '../guard';
 
-/** Empty input = not decided yet = NULL (Q-15, Q-18). Never a default. */
+/** Empty input = not decided yet = NULL (D-047, Q-18). Never a default. */
 const optionalNumber = (schema: z.ZodNumber) =>
   z
     .string()

@@ -90,7 +90,7 @@ export async function changeDeliveryWindow(
 
 // ---------------------------------------------------------------- settings
 
-/** All values start NULL until the founder sets them (Q-15). Never default them in code. */
+/** All values start NULL until the founder sets them (D-047). Never default them in code. */
 export async function getPricingSettings(client: IwcClient) {
   return unwrap(
     await client

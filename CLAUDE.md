@@ -64,19 +64,22 @@ This file is the only one to read at the start of every session. Everything else
 `apps/web` Next.js storefront (`app/(store)`) + hidden admin (`app/admin`), code by feature in `features/` · `apps/app` Expo app (customer tabs + admin mode after `is_admin()`, code by feature in `features/`; checkout via the web's API) ·
 `packages/shared` pure domain logic (`src/domain`) · `packages/db` typed DB access (`store`/`account`/`admin`/`server`) ·
 `packages/tokens` design tokens · `packages/*-config` tooling presets · `supabase/` migrations + seed + SQL tests ·
-`scripts/` dev scripts (`check.mjs` = verification) · `docs/` everything above.
+`scripts/` dev scripts (`check.mjs` = verification) · `docs/` everything above · `.claude/` Claude Code settings + project skills.
 The layout (web and app) is in `docs/engineering.md` §Layout.
 
-## How verification works (Claude cannot install npm packages)
-Claude's sandboxes are blocked from the npm registry, so Claude can't install packages or run `next build`. Therefore:
-- Claude edits and commits in the founder's working copy (`C:\kod\root`) through the device bridge. The founder pushes to
-  GitHub (`yobslob/The-Indian_Wholesale-Club`, branch `main`).
-- To verify, the founder runs `node scripts/check.mjs` (or named steps, e.g. `node scripts/check.mjs test`) and tells
-  Claude. Claude reads `.checks/latest.json` and records the numbers in `docs/plan/current.md`.
-- Claude *can* run git, `node --check`, dependency-free Node scripts, **SQL on a local Postgres 16** with the Supabase
-  stub, and the repo's own `tsc` + ESLint on the web, the app and the packages, the unit tests (with `tsx`), an Expo bundle of the app and a load check of the Playwright specs, using the
-  dependency folders copied from the founder's `node_modules` (`engineering.md` §Testing). Claude cannot run `next build`.
-  DB changes and code are checked by Claude before the founder's run.
+## How work and verification run
+**Claude Code on the founder's machine (the normal setup since 2026-09-29):** the repo is `C:\kod\root` (Windows 11,
+Docker Desktop for local Supabase, pnpm 9). Claude edits, runs and commits here directly.
+- Verify with `node scripts/check.mjs` (all steps, ~5 min) or named steps (`node scripts/check.mjs docs typecheck lint
+  test`). It writes `.checks/latest.json`; record the numbers in `docs/plan/current.md`. "Done" needs a green run.
+- Local Supabase must be running (`npx supabase start`); the `db` step resets the **local** database (and deletes local
+  accounts: `pnpm dev:admin <email> <password>` recreates an admin).
+- Allowed and denied commands are in `.claude/settings.json`. **Never:** edit `.env` files (the founder edits them; reading
+  one asks first, because they hold keys), reset or push to a hosted database (`supabase db reset --linked`, `db push`), run the Deploy workflow, force-push.
+  Ask before `git push` (CI runs `check.mjs` on every push to `main`).
+- Project skills: `/check` (run and log a verification) and `/record-answer` (file a founder answer as a decision).
+**Claude in a cloud sandbox (earlier sessions):** no npm registry, no `next build`; it worked in this folder through a
+device bridge and the founder ran `check.mjs` (`engineering.md` §Testing).
 
 ## Session ritual
 1. Read this file, then the "Resume here" section of `docs/plan/current.md`.

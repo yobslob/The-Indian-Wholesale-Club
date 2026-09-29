@@ -20,7 +20,7 @@ import {
 
 const settings = { fxInrPerUsd: 80, freightCentsPerKg: 1000, dutyPct: 10, marginPct: 50 };
 
-describe('suggestPrice (flows.md §2, Q-15)', () => {
+describe('suggestPrice (flows.md §2, D-047)', () => {
   it('computes goods, freight, duty, landed and suggested price in cents', () => {
     // ₹2,000 = 200000 paise → $25.00; 500 g at $10/kg → $5.00; 10% duty on goods → $2.50
     const result = suggestPrice({ shopPricePaise: 200000, weightG: 500 }, settings);

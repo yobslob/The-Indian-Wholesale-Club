@@ -216,3 +216,56 @@ app admin changes reach the website's cached pages within the 5-minute fallback 
 the apps on EAS without submitting them to the stores. Why: production does not exist yet (Q-9), the app's bundle ids
 are placeholders, and since R7 `next build` no longer repeats lint and typecheck, so a deploy must follow a green CI
 run (`ci.yml` runs `check.mjs` against a local Supabase in the runner). Revisit when production is set up.
+
+**D-045 · 2026-09-29 · founder (was Q-20): Cycles close and open on their own; the admin mirrors what happened physically**
+Founder, verbatim: "automatically closes and next cycle starts, but the admin should have power to operate online exactly
+what he has done physically(such as in cycle 5, 6 items are packed, now cycle 5 is closed and cycle 6 is started, but if
+the founder has squeezed 3 more items in cycle 5, we can actually show it as a fast shipping offer to the customer after
+confirmation that the item is sent or not)"
+*Interpretation (proposed, confirm when C4 starts):*
+- At `cutoff_at` the open cycle closes to new orders by itself and the next cycle opens by itself, its dates carried
+  forward from the last one (the export rhythm is 20–23 days, D-005); an admin can correct the dates (D-026).
+- The admin can move ordered pieces between cycles to match reality: a piece packed into cycle 5 after its cutoff is moved
+  from cycle 6 to cycle 5, and the order's delivery window moves earlier through the normal window change (INV-6, D-008).
+- The customer is told of the earlier delivery as a "fast shipping" upgrade only after the admin confirms the piece was
+  actually sent with that export. Whether that offer is free or paid is not decided.
+Supersedes the "Today" gap B-19 once built (C4).
+
+**D-046 · 2026-09-29 · founder (was Q-9, in part): Vercel until launch; domain and support email at the very end**
+Founder, verbatim: "I will be running all of this on vercel till the point it goes live, at last when everything is ready
+to go live I will buy domain and support mail. we can hold this till last."
+So: the site runs on Vercel preview/production URLs until launch; customer emails are built and tested with Resend's
+test sender (`ops.md`) and switch to the real domain at launch (C8). Q-9 stays open for the domain itself.
+
+**D-047 · 2026-09-29 · founder (was Q-15): Estimates for the pricing settings until the founder's own research**
+Founder, verbatim: "For now take an estimate because I will have to research on everything including the taxes so I will
+be updating this before it goes live."
+So Claude may fill the pricing settings (FX, freight per kg, duty %, margin %, US delivery days, stale-listing days) with
+researched estimates, each **labelled as an estimate with its source and date**, in dev only. The founder replaces them
+before launch; a launch check refuses to go live while any value is still marked as an estimate (C6, C8).
+
+**D-048 · 2026-09-29 · founder (was Q-18): Express delivery takes 15–18 days**
+Founder, verbatim: "15-18 days". *Open (Q-18, narrowed):* counted from the order date, or from the export's arrival in
+the US (how express days work today)? Express stays off until confirmed.
+
+**D-049 · 2026-09-29 · founder: Design direction for the storefront**
+The founder's four prompts, verbatim:
+1. "Asymmetric editorial composition with large photographs placed at varying vertical positions. Generous whitespace
+   with overlapping image edges and strong visual rhythm. Lenis smooth scrolling with subtle image parallax and slow
+   scale transitions. Images gently shift and reveal as they enter the viewport. Minimal typography with a premium luxury
+   magazine aesthetic."
+2. "Experimental image layout with photographs breaking the traditional grid and extending between sections. Varied
+   image widths, offsets, overlaps, and floating compositions. Lenis smooth scrolling with subtle horizontal and vertical
+   movement tied to scroll velocity. Soft image scaling and opacity transitions as elements enter the viewport. Clean
+   typography and a highly polished interactive feel."
+3. "Oversized artwork photography arranged like a contemporary gallery wall. Uneven spacing, offset images, floating
+   compositions, and intentional negative space. Lenis smooth scrolling with gentle vertical parallax and
+   velocity-based movement. Images reveal through subtle clipping and scale transitions. Minimal typography with a
+   sophisticated art-direction aesthetic."
+4. "Reduce excessive whitespace and bring visual elements closer together. Increase image sizes and allow sections to
+   occupy more of the viewport. Maintain clean alignment while creating a denser, more immersive composition. Keep
+   consistent breathing room without large empty gaps. Preserve the premium editorial aesthetic."
+Supersedes, for the storefront's scrolling only, the "no animation libraries" line of PR-5 and design.md: Lenis is allowed
+because the founder named it. *Proposed guard rails (design.md §Direction):* Lenis and the scroll effects load as one small
+client module after the page is interactive, are switched off entirely for `prefers-reduced-motion`, never block
+keyboard or screen-reader scrolling, and the speed budgets still hold (`check.mjs http`, first-load JS ≤ 150 KB).
