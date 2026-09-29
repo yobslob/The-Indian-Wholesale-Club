@@ -4,35 +4,37 @@
 <meta charset="utf-8">
 <meta name="viewport" content="width=device-width, initial-scale=1">
 <meta name="robots" content="noindex">
-<title>IWC mockup A · Gallery wall (v2)</title>
+<title>IWC mockup A · v3</title>
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-<!-- Founder's fonts (2026-09-30): Georgia (system) for headings, Poppins for text, Montserrat for UI, Inter for the footer only. -->
+<!-- Founder's fonts (D-050, D-051): Helvetica Neue (system, licensed) for the hero and section headings, Georgia (system)
+     for the logo and product title, Poppins for text, Montserrat for UI, Inter for the footer only. -->
 <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Poppins:wght@400;500;600&family=Montserrat:wght@500;600;700&family=Inter:wght@400;500&display=swap">
 <!-- Script font subset to the one greeting, loaded only on the region page in the real build (design.md §3). -->
 <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Noto+Sans+Malayalam:wght@300;400&display=swap&text=%E0%B4%A8%E0%B4%AE%E0%B4%B8%E0%B5%8D%E0%B4%95%E0%B4%BE%E0%B4%B0%E0%B4%82">
 <link rel="stylesheet" href="shared/mockup.css">
 <style>
-/* Direction A · Gallery wall, v2 (founder feedback 2026-09-30): the hero keeps its format; everything below it sits on a
-   symmetric full-width grid (the founder's reference: 4 equal columns, rounded photos, name + price + "Add"). */
+/* Direction A v3 (founder feedback 2026-09-30, D-050 + D-051): the hero keeps its format; everything below it sits on a
+   symmetric full-width grid. */
 :root {
   --canvas: #F4EFE6; --surface: #EBE4D8; --paper: #FBF8F3; --ink: #1E1B16; --muted: #665E53; --line: #D9D0C1;
   --brand: #7A2E23; --on-brand: #FFFFFF; --caution: #8A5A00; --region-accent: #7A2E23; --land: #E0D6C4;
-  --font-display: Georgia, 'Times New Roman', serif; --font-body: 'Poppins', system-ui, sans-serif;
-  --font-ui: 'Montserrat', system-ui, sans-serif; --font-foot: 'Inter', system-ui, sans-serif;
+  --font-hero: 'Helvetica Neue', Helvetica, Arial, sans-serif; --font-display: Georgia, 'Times New Roman', serif;
+  --font-body: 'Poppins', system-ui, sans-serif; --font-ui: 'Montserrat', system-ui, sans-serif; --font-foot: 'Inter', system-ui, sans-serif;
   --gut: clamp(16px, 2vw, 32px); --gap: clamp(12px, 1.4vw, 20px); --r: 22px;
 }
 body { font-size: 16px; line-height: 1.65; }
 .wrap { padding-inline: var(--gut); }
 .grid { display: grid; grid-template-columns: repeat(12, minmax(0, 1fr)); column-gap: var(--gap); }
 .label { font: 600 11px/1.3 var(--font-ui); letter-spacing: .16em; text-transform: uppercase; color: var(--muted); }
-.display { font: 400 clamp(64px, 9.5vw, 164px)/.9 var(--font-display); letter-spacing: -.03em; margin: 0; }
-.display em { color: var(--region-accent); }
-.h2 { font: 400 clamp(28px, 2.4vw, 40px)/1.1 var(--font-display); margin: 0; letter-spacing: -.01em; }
-.pill { display: inline-flex; align-items: center; gap: 8px; min-height: 44px; padding: 0 20px; border-radius: 999px; background: var(--paper);
-  border: 1px solid var(--line); font: 500 14px/1 var(--font-ui); text-decoration: none; color: var(--ink); cursor: pointer; white-space: nowrap; }
+.display { font: 500 clamp(64px, 9.5vw, 164px)/.92 var(--font-hero); letter-spacing: -.045em; margin: 0; }
+.display em { font-style: normal; color: var(--region-accent); }
+.h2 { font: 500 clamp(26px, 2.2vw, 38px)/1.1 var(--font-hero); margin: 0; letter-spacing: -.025em; }
+.sub { font-size: 14px; color: var(--muted); margin: 6px 0 0; }
+.pill { display: inline-flex; align-items: center; justify-content: center; gap: 8px; min-height: 44px; padding: 0 20px; border-radius: 999px;
+  background: var(--paper); border: 1px solid var(--line); font: 500 14px/1 var(--font-ui); text-decoration: none; color: var(--ink); cursor: pointer; white-space: nowrap; }
 .pill:hover { border-color: var(--ink); }
-.pill.dark { background: var(--ink); color: var(--paper); border-color: var(--ink); }
+.pill.on { background: var(--ink); color: var(--paper); border-color: var(--ink); }
 .ph { border-radius: var(--r); }
 .ph::after { left: 12px; bottom: 12px; border-radius: 999px; padding: 5px 10px; font-family: var(--font-ui); }
 
@@ -43,10 +45,11 @@ body { font-size: 16px; line-height: 1.65; }
 .nav a { text-decoration: none; padding: 12px 0; }
 .nav a:hover { text-decoration: underline; text-underline-offset: 5px; }
 
-/* ===== HERO (format kept from v1) ===== */
+/* ===== HERO (format kept; Helvetica Neue throughout, D-051) ===== */
 .hero { padding-top: clamp(16px, 4vw, 56px); padding-bottom: clamp(40px, 6vw, 96px); align-items: start; }
-.hero-text { grid-column: 1 / span 6; padding-top: clamp(0px, 6vw, 96px); position: relative; z-index: 2; }
-.lede { font-size: 18px; max-width: 34ch; margin: 28px 0 14px; }
+.hero-text { grid-column: 1 / span 6; padding-top: clamp(0px, 6vw, 96px); position: relative; z-index: 2; font-family: var(--font-hero); }
+.hero-text .label { font-family: var(--font-hero); font-weight: 500; }
+.lede { font-size: 19px; max-width: 34ch; margin: 28px 0 14px; letter-spacing: -.005em; }
 .delivery { font-size: 14px; margin: 0; }
 .hero-wall { grid-column: 7 / span 6; position: relative; min-height: clamp(420px, 56vw, 900px); }
 .hero-wall figure { margin: 0; position: absolute; }
@@ -55,25 +58,34 @@ body { font-size: 16px; line-height: 1.65; }
 .hw3 { width: 30%; right: 12%; bottom: 0; z-index: 2; }
 
 /* ===== Symmetric sections below the hero ===== */
-.sec { padding-block: clamp(32px, 4vw, 64px); }
-.sec-head { display: flex; justify-content: space-between; align-items: center; gap: 16px; margin-bottom: clamp(18px, 2vw, 28px); flex-wrap: wrap; }
-.sec-head .sub { font-size: 14px; color: var(--muted); margin: 6px 0 0; }
+.sec { padding-block: clamp(28px, 3.4vw, 56px); }
+.sec-head { display: flex; justify-content: space-between; align-items: flex-end; gap: 16px; margin-bottom: clamp(18px, 2vw, 28px); flex-wrap: wrap; }
 
 /* Product grid (the founder's reference) */
 .pgrid { display: grid; grid-template-columns: repeat(4, minmax(0, 1fr)); gap: clamp(28px, 3vw, 44px) var(--gap); }
-.pcard { position: relative; }
+.pgrid.sm { grid-template-columns: repeat(5, minmax(0, 1fr)); gap: 28px var(--gap); }
+.pcard { position: relative; min-width: 0; }
 .pimg { display: block; position: relative; overflow: hidden; border-radius: var(--r); }
 .pimg .ph::after { bottom: auto; top: 12px; left: auto; right: 12px; max-width: 60%; }
 .pimg .ph { --ar: 3 / 4; transition: transform 1s cubic-bezier(.19, 1, .22, 1); }
 html.motion .pcard:hover .ph.is-in, html.reduced .pcard:hover .ph { transform: scale(1.025); }
 .badge { position: absolute; top: 14px; left: 14px; z-index: 2; background: var(--paper); border-radius: 999px; padding: 6px 12px; font: 500 12px/1 var(--font-ui); }
+.badge.rank { font: 600 12px/1 var(--font-hero); letter-spacing: .02em; }
+.badge.low { background: var(--brand); color: var(--on-brand); }
 .dots { position: absolute; left: 50%; bottom: 14px; transform: translateX(-50%); display: flex; gap: 5px; z-index: 2; }
 .dots i { width: 6px; height: 6px; border-radius: 50%; background: rgba(255, 255, 255, .6); }
 .dots i.on { background: #fff; }
 .pmeta { display: flex; justify-content: space-between; align-items: center; gap: 12px; padding: 14px 6px 0 14px; }
 .pname { font: 600 15px/1.3 var(--font-ui); text-decoration: none; display: block; }
 .pprice { font-size: 14px; color: var(--muted); }
-.add { flex: none; min-height: 40px; padding: 0 16px; font-size: 14px; background: var(--paper); box-shadow: 0 1px 2px rgba(30, 27, 22, .08); }
+.add { flex: none; min-height: 40px; padding: 0 16px; font-size: 14px; box-shadow: 0 1px 2px rgba(30, 27, 22, .08); }
+/* Smaller cards (PDP grids, the curated card) */
+.sm .pimg, .sm .ph { border-radius: 18px; }
+.sm .pmeta { padding: 10px 2px 0 8px; gap: 8px; }
+.sm .pname { font-size: 13.5px; }
+.sm .pprice { font-size: 13px; }
+.sm .add { min-height: 36px; padding: 0 12px; font-size: 13px; }
+.sm .ph::after { font-size: 9px; }
 
 /* Pick your home: map | open now + all names, two equal panels */
 .pick { display: grid; grid-template-columns: 1fr 1fr; gap: var(--gap); align-items: stretch; }
@@ -101,8 +113,6 @@ html.motion .pcard:hover .ph.is-in, html.reduced .pcard:hover .ph { transform: s
 .search input { all: unset; flex: 1; font: 400 15px/1 var(--font-body); min-height: 46px; }
 .search svg { width: 18px; height: 18px; flex: none; }
 .side h3 { margin: 0 0 12px; display: flex; justify-content: space-between; }
-
-/* Stamps: the regions open now, each a postage stamp from home */
 .stamps { display: grid; grid-template-columns: repeat(3, minmax(0, 1fr)); gap: var(--gap); }
 .stamp { position: relative; display: block; text-decoration: none; padding: 9px; transition: transform .35s cubic-bezier(.19, 1, .22, 1);
   background: radial-gradient(circle at 50% 50%, transparent 3.6px, var(--paper) 4.2px) -6px -6px / 12px 12px;
@@ -121,54 +131,89 @@ html.motion .pcard:hover .ph.is-in, html.reduced .pcard:hover .ph { transform: s
 .soon-list li { break-inside: avoid; }
 .soon-list a { display: block; padding: 5px 0; font-size: 13.5px; line-height: 1.35; color: var(--muted); text-decoration: none; }
 .soon-list a:hover, .soon-list a.on { color: var(--ink); text-decoration: underline; text-underline-offset: 3px; }
-.soon-list li[hidden] { display: none; }
 .empty { font-size: 14px; color: var(--muted); margin: 0; }
 
 /* Region page */
-.rhero { padding-top: clamp(8px, 2vw, 32px); align-items: start; position: relative; }
-.rhero-text { grid-column: 1 / span 6; padding-top: clamp(16px, 5vw, 80px); z-index: 2; position: relative; }
+.rhero { padding-top: clamp(8px, 2vw, 32px); align-items: start; position: relative; padding-bottom: clamp(60px, 7vw, 120px); }
+.rhero-text { grid-column: 1 / span 6; padding-top: clamp(16px, 5vw, 80px); z-index: 2; position: relative; font-family: var(--font-hero); }
 .crumb { font: 500 13px/1.4 var(--font-ui); color: var(--muted); margin: 0 0 28px; }
-.greet { font: 300 clamp(56px, 8vw, 128px)/1.15 'Noto Sans Malayalam', var(--font-display); color: var(--region-accent); margin: 0; display: inline-block; }
+.greet { font: 300 clamp(56px, 8vw, 128px)/1.15 'Noto Sans Malayalam', var(--font-hero); color: var(--region-accent); margin: 0; display: inline-block; }
 .greet-latin { margin: 6px 0 32px; font-size: 15px; color: var(--muted); }
-.greet-latin em { font: italic 20px var(--font-display); color: var(--ink); }
+.greet-latin em { font-style: normal; color: var(--ink); }
 .rhero .tbd { max-width: 44ch; margin-top: 28px; }
 .rhero-main { grid-column: 7 / span 6; margin: 0; }
 .rhero-main .ph { --ar: 5 / 6; }
-.rhero-float { position: absolute; width: clamp(150px, 18vw, 280px); left: 38%; bottom: clamp(-100px, -6vw, -40px); margin: 0; z-index: 3; }
-.two { display: grid; grid-template-columns: 1fr 1fr; gap: var(--gap); padding-top: clamp(96px, 9vw, 150px); }
-.two .panel h2 { margin-bottom: 14px; }
-.facts { display: grid; grid-template-columns: auto 1fr; gap: 10px 24px; margin: 0; font-size: 15px; }
-.facts dt { font: 600 11px/2 var(--font-ui); letter-spacing: .14em; text-transform: uppercase; color: var(--muted); }
-.facts dd { margin: 0; }
-.jump { position: sticky; top: 0; z-index: 5; background: color-mix(in srgb, var(--canvas) 92%, transparent); backdrop-filter: blur(8px); }
-.jump .wrap { display: flex; gap: 10px; padding-block: 12px; }
-.jump .pill span { color: var(--muted); }
-.soon-panel { display: flex; justify-content: space-between; align-items: center; gap: 16px; flex-wrap: wrap; }
-.soon-panel p { margin: 0; font: 400 clamp(22px, 2vw, 30px)/1.3 var(--font-display); }
+.rhero-float { position: absolute; width: clamp(150px, 18vw, 280px); left: 38%; bottom: 0; margin: 0; z-index: 3; }
+.filters { position: sticky; top: 0; z-index: 5; background: color-mix(in srgb, var(--canvas) 92%, transparent); backdrop-filter: blur(8px); }
+.filters .wrap { display: flex; gap: 10px; padding-block: 12px; }
+.filters .pill span { opacity: .6; }
 
-/* Product page: two equal halves */
-.pdp { display: grid; grid-template-columns: 1fr 1fr; gap: var(--gap); align-items: start; padding-block: 12px clamp(32px, 4vw, 64px); }
-.gallery { display: grid; grid-template-columns: 1fr 1fr; gap: var(--gap); }
-.gallery .ph { --ar: 3 / 4; }
+/* Album: photos drift sideways by themselves; not interactive (D-051). Off for reduced motion. */
+.album { overflow: hidden; padding-block: 8px; pointer-events: none; user-select: none; }
+.album-track { display: flex; gap: var(--gap); width: max-content; animation: album 70s linear infinite; }
+.album-track .ph { height: clamp(240px, 26vw, 400px); width: auto; flex: none; }
+.album-track .ph::after { content: 'Placeholder · region album photo'; }
+@keyframes album { to { transform: translateX(calc(-50% - var(--gap) / 2)); } }
+html.reduced .album-track, .album.paused .album-track { animation-play-state: paused; }
+@media (prefers-reduced-motion: reduce) { .album-track { animation: none; } }
+
+/* Curated for you: one card, intro + four pieces on the same five-column grid */
+.curated { display: grid; grid-template-columns: repeat(5, minmax(0, 1fr)); gap: var(--gap); align-items: stretch; }
+.cur-intro { display: flex; flex-direction: column; justify-content: space-between; gap: 20px; padding: 6px 4px; }
+.cur-intro .h2 { margin: 10px 0 8px; }
+.cur-intro .pill { align-self: flex-start; }
+
+/* Product page: one full-length photo (never taller than the screen) + three stacked beside it | the buying panel */
+.pdp { display: grid; grid-template-columns: auto minmax(0, 1fr); gap: var(--gap); align-items: start; padding-block: 12px clamp(28px, 3vw, 48px); }
+.gal { display: flex; gap: var(--gap); height: min(calc(100svh - 110px), 900px); min-height: 480px; }
+.gal-main { height: 100%; width: auto; aspect-ratio: 3 / 4; }
+.gal-main .ph { height: 100%; width: 100%; --ar: 3 / 4; }
+.gal-thumbs { display: flex; flex-direction: column; gap: var(--gap); height: 100%; }
+.gal-thumbs button { all: unset; cursor: pointer; height: calc((100% - 2 * var(--gap)) / 3); aspect-ratio: 3 / 4; border-radius: 16px; outline-offset: 2px; }
+.gal-thumbs button:focus-visible { outline: 2px solid var(--brand); }
+.gal-thumbs .ph { height: 100%; width: 100%; border-radius: 16px; }
+.gal-thumbs .ph::after { content: none; }
 .buy { position: sticky; top: 20px; background: var(--surface); border-radius: var(--r); padding: clamp(22px, 2.6vw, 44px); }
-.buy h1 { font: 400 clamp(40px, 4vw, 68px)/1 var(--font-display); margin: 10px 0 12px; letter-spacing: -.02em; }
+.title-row { display: flex; justify-content: space-between; align-items: flex-start; gap: 16px; margin: 10px 0 12px; }
+.buy h1 { font: 400 clamp(38px, 3.6vw, 64px)/1 var(--font-display); margin: 0; letter-spacing: -.02em; }
+.heart { all: unset; cursor: pointer; flex: none; width: 48px; height: 48px; border-radius: 50%; background: var(--paper); border: 1px solid var(--line); display: grid; place-items: center; }
+.heart svg { width: 22px; height: 22px; fill: none; stroke: var(--ink); stroke-width: 1.8; transition: fill .2s, stroke .2s; }
+.heart[aria-pressed='true'] svg { fill: var(--brand); stroke: var(--brand); }
+.heart:focus-visible { outline: 2px solid var(--brand); outline-offset: 3px; }
 .price { font: 600 22px/1 var(--font-ui); margin: 0 0 18px; }
 .opts { display: flex; gap: 8px; margin: 8px 0 18px; flex-wrap: wrap; }
-.opts .pill.on { border-color: var(--ink); background: var(--paper); box-shadow: inset 0 0 0 1px var(--ink); }
+.opts .pill.sel { box-shadow: inset 0 0 0 1px var(--ink); border-color: var(--ink); }
 .avail { display: inline-flex; align-items: center; gap: 8px; font-size: 14px; margin: 0 0 14px; }
 .avail::before { content: ''; width: 8px; height: 8px; border-radius: 50%; background: var(--region-accent); }
 .deliv { background: var(--paper); border-radius: 16px; padding: 14px 16px; font-size: 14px; }
 .deliv b { font-family: var(--font-ui); }
-.cta { display: grid; grid-template-columns: 1fr auto; gap: 10px; margin-top: 18px; }
-.cta .pill { justify-content: center; min-height: 54px; font-size: 15px; }
-.cta .pill.dark { background: var(--brand); border-color: var(--brand); color: var(--on-brand); }
-.buy details { border-top: 1px solid var(--line); padding: 14px 0; }
-.buy details:first-of-type { margin-top: 22px; }
-.buy summary { cursor: pointer; font: 600 14px/1.4 var(--font-ui); min-height: 24px; }
-.buy dl { display: grid; grid-template-columns: auto 1fr; gap: 6px 16px; font-size: 14px; margin: 12px 0 0; }
-.buy dt { color: var(--muted); }
-.buy dd { margin: 0; }
+.cart { width: 100%; box-sizing: border-box; min-height: 56px; margin-top: 16px; font-size: 15px; background: var(--brand); border-color: var(--brand); color: var(--on-brand); }
+.cart:hover { border-color: var(--ink); }
+.acc { border-top: 1px solid var(--line); }
+.acc:first-of-type { margin-top: 22px; }
+.acc > button { all: unset; box-sizing: border-box; cursor: pointer; width: 100%; min-height: 52px; display: flex; justify-content: space-between; align-items: center; font: 600 14px/1.4 var(--font-ui); }
+.acc > button:focus-visible { outline: 2px solid var(--brand); outline-offset: 2px; }
+.pm { width: 30px; height: 30px; border-radius: 50%; border: 1px solid var(--line); background: var(--paper); display: grid; place-items: center; font: 500 18px/1 var(--font-ui); }
+.acc-body { padding: 0 0 16px; font-size: 14px; }
+.acc-body dl { display: grid; grid-template-columns: auto 1fr; gap: 6px 16px; margin: 12px 0 0; }
+.acc-body dt { color: var(--muted); }
+.acc-body dd { margin: 0; }
+.size-table { width: 100%; border-collapse: collapse; margin-top: 10px; font-size: 13px; }
+.size-table th, .size-table td { text-align: left; padding: 7px 8px; border-bottom: 1px solid var(--line); }
+.size-table th { font: 600 11px/1.3 var(--font-ui); letter-spacing: .08em; text-transform: uppercase; color: var(--muted); }
 .origin { margin: 18px 0 0; padding-top: 16px; border-top: 1px solid var(--line); font: italic 400 19px/1.4 var(--font-display); }
+
+/* Reviews: summary + three reviews on four equal columns */
+.reviews { display: grid; grid-template-columns: repeat(4, minmax(0, 1fr)); gap: var(--gap); }
+.rv-score { font: 500 64px/1 var(--font-hero); letter-spacing: -.04em; margin: 0; }
+.stars { color: var(--brand); letter-spacing: 2px; font-size: 16px; margin: 6px 0; }
+.bars { display: grid; gap: 6px; margin-top: 18px; font: 500 12px/1 var(--font-ui); }
+.bars div { display: grid; grid-template-columns: 14px 1fr 28px; gap: 8px; align-items: center; }
+.bars i { height: 6px; border-radius: 999px; background: var(--line); overflow: hidden; }
+.bars i b { display: block; height: 100%; background: var(--ink); }
+.review { background: var(--paper); border: 1px solid var(--line); display: flex; flex-direction: column; gap: 10px; }
+.review footer { margin-top: auto; font: 500 12px/1.4 var(--font-ui); color: var(--muted); display: flex; justify-content: space-between; gap: 8px; }
+.verified { color: var(--region-accent); }
 
 /* Admin keeps its plain look, in the founder's fonts */
 .admhead { display: flex; justify-content: space-between; padding: 12px 16px; border-bottom: 1px solid var(--line); background: var(--surface); font: 500 13px/1.4 var(--font-ui); }
@@ -185,18 +230,26 @@ html.motion .pcard:hover .ph.is-in, html.reduced .pcard:hover .ph { transform: s
 .foot-base { display: flex; justify-content: space-between; gap: 12px; flex-wrap: wrap; border-top: 1px solid #3A332D; margin-top: 36px; padding-top: 18px; font-size: 12px; color: #A89F92; }
 .foot-base a { color: #D8D0C4; text-decoration: underline; }
 
-@media (max-width: 1024px) {
-  .pgrid { grid-template-columns: repeat(2, minmax(0, 1fr)); }
-  .pick, .two, .pdp { grid-template-columns: 1fr; }
+@media (max-width: 1100px) {
+  .pgrid, .curated { grid-template-columns: repeat(2, minmax(0, 1fr)); }
+  .pgrid.sm { grid-template-columns: repeat(3, minmax(0, 1fr)); }
+  .cur-intro { grid-column: 1 / -1; }
+  .pick, .pdp { grid-template-columns: 1fr; }
+  .gal { height: auto; min-height: 0; }
+  .gal-main { flex: 3; height: auto; } .gal-thumbs { flex: 1; height: auto; }
+  .gal-thumbs button { height: auto; }
   .buy { position: static; }
+  .reviews { grid-template-columns: 1fr 1fr; }
 }
 @media (max-width: 820px) {
   .hero-text, .hero-wall, .rhero-text, .rhero-main { grid-column: 1 / -1; }
   .hero-wall { min-height: 120vw; margin-top: 40px; }
   .rhero-main { margin-top: 32px; }
-  .rhero-float { left: auto; right: var(--gut); width: 40vw; bottom: -60px; }
+  .rhero-float { left: auto; right: var(--gut); width: 40vw; bottom: 20px; }
   .soon-list { columns: 2; }
   .foot-grid { grid-template-columns: 1fr 1fr; row-gap: 32px; }
+  .pgrid.sm { grid-template-columns: repeat(2, minmax(0, 1fr)); }
+  .reviews { grid-template-columns: 1fr; }
 }
 @media (max-width: 480px) {
   .pmeta { flex-direction: column; align-items: flex-start; padding-left: 4px; }
@@ -208,7 +261,7 @@ html.motion .pcard:hover .ph.is-in, html.reduced .pcard:hover .ph { transform: s
 </head>
 <body>
 <div class="mock-banner">
-  <span><b>IWC mockup · Direction A v2</b> · not the real site. Photos, sample names, prices, dates and counts are placeholders; greetings are drafts (D-019).</span>
+  <span><b>IWC mockup · Direction A v3</b> · not the real site. Photos, sample names, prices, dates, counts and reviews are placeholders; greetings are drafts (D-019).</span>
   <a href="index.html">Overview</a>
 </div>
 
@@ -220,6 +273,7 @@ html.motion .pcard:hover .ph.is-in, html.reduced .pcard:hover .ph { transform: s
     <text font-family="Montserrat, sans-serif" font-weight="600" font-size="8.2" letter-spacing="1.2" fill="currentColor"><textPath href="#pm-ring">ARRIVES NOV 3 – NOV 10 · ORDER BY OCT 6 ·</textPath></text>
     <text x="50" y="54" text-anchor="middle" font-family="Georgia, serif" font-style="italic" font-size="13" fill="currentColor">IWC</text>
   </symbol>
+  <symbol id="heart" viewBox="0 0 24 24"><path d="M12 20.5s-7.5-4.6-9.3-9.2C1.4 8 3.4 4.5 6.9 4.5c2 0 3.5 1.1 5.1 3 1.6-1.9 3.1-3 5.1-3 3.5 0 5.5 3.5 4.2 6.8-1.8 4.6-9.3 9.2-9.3 9.2Z"/></symbol>
 </defs></svg>
 
 <!-- =============================== HOME =============================== -->
@@ -232,7 +286,7 @@ html.motion .pcard:hover .ph.is-in, html.reduced .pcard:hover .ph { transform: s
   <section class="wrap grid hero">
     <div class="hero-text">
       <p class="label">Clothing and spices from home</p>
-      <h1 class="display">Where’s<br><em>home?</em></h1>
+      <h1 class="display" data-headline></h1>
       <p class="lede">Pick your state and find the clothing and spices you grew up with, delivered to your door in the US.</p>
       <p class="delivery">Estimated delivery <strong class="sample">Nov 3 – Nov 10</strong> <span style="color:var(--muted)">if you order by <span class="sample">Oct 6</span></span></p>
     </div>
@@ -287,34 +341,31 @@ html.motion .pcard:hover .ph.is-in, html.reduced .pcard:hover .ph { transform: s
       <p class="greet draft" lang="ml">നമസ്കാരം</p>
       <p class="greet-latin">Namaskaram · <em>A respectful greeting</em></p>
       <h1 class="display">Kerala</h1>
-      <span class="tbd">Tagline · the founder writes it (C2, D-019)</span>
+      <span class="tbd">Tagline and a short story · the founder writes them (C2, D-019)</span>
     </div>
     <figure class="rhero-main" data-speed="0.05"><div class="ph ph--land-kerala" data-reveal data-label="Kerala, region image"></div></figure>
     <figure class="rhero-float" data-speed="0.18"><div class="ph ph--mundu" data-reveal data-label="Mundu, detail"></div></figure>
   </section>
 
-  <section class="wrap two">
-    <div class="panel"><h2 class="h2">Story</h2><span class="tbd">A short story: why this place feels like home. Written or approved by the founder (C2, D-019). Nothing cultural is invented for the mockup.</span></div>
-    <div class="panel"><h2 class="h2">At a glance</h2>
-      <dl class="facts">
-        <dt>Language</dt><dd>Malayalam</dd>
-        <dt>Greeting</dt><dd>Namaskaram <span class="sample">(draft)</span></dd>
-        <dt>Open now</dt><dd>Clothing · <span style="color:var(--muted)">Spices coming soon</span></dd>
-        <dt>Delivery</dt><dd><span class="sample">Nov 3 – Nov 10</span> if you order by <span class="sample">Oct 6</span></dd>
-        <dt>Origin</dt><dd>Made in India · Imported</dd>
-      </dl>
-    </div>
-  </section>
+  <nav class="filters" aria-label="Show"><div class="wrap"><span class="pill on">All</span><span class="pill">Clothing <span>16</span></span><span class="pill">Spices <span>soon</span></span></div></nav>
 
-  <nav class="jump" aria-label="Sections"><div class="wrap"><a class="pill" href="#a-clothing">Clothing <span>8</span></a><a class="pill" href="#a-spices">Spices</a></div></nav>
-
-  <section class="wrap sec" id="a-clothing" aria-labelledby="a-clothing-h">
-    <div class="sec-head"><h2 class="h2" id="a-clothing-h">Clothing</h2><span class="pill">Newest first</span></div>
-    <div class="pgrid" data-fill="kerala"></div>
+  <section class="wrap sec" aria-labelledby="r-new">
+    <div class="sec-head"><div><h2 class="h2" id="r-new">New arrivals</h2><p class="sub">Newest pieces from Kerala.</p></div><a class="pill" href="#region">See all</a></div>
+    <div class="pgrid" data-fill="r-new"></div>
   </section>
-  <section class="wrap sec" id="a-spices" aria-labelledby="a-spices-h">
-    <div class="sec-head"><h2 class="h2" id="a-spices-h">Spices</h2></div>
-    <div class="panel soon-panel"><p>Spices from Kerala are coming soon.</p><a class="pill" href="#home">Browse other homes</a></div>
+  <section class="wrap sec" aria-labelledby="r-top">
+    <div class="sec-head"><div><h2 class="h2" id="r-top">Most wanted</h2><p class="sub"><span class="sample">Most ordered from Kerala in the last 30 days.</span></p></div><a class="pill" href="#region">See all</a></div>
+    <div class="pgrid" data-fill="r-top"></div>
+  </section>
+  <section class="sec" aria-label="Kerala in pictures">
+    <div class="album" data-album aria-hidden="true"><div class="album-track" data-fill="album"></div></div>
+  </section>
+  <section class="wrap sec" aria-labelledby="r-cur">
+    <div class="panel curated sm" data-fill="r-cur"></div>
+  </section>
+  <section class="wrap sec" aria-labelledby="r-low">
+    <div class="sec-head"><div><h2 class="h2" id="r-low">Leaving soon</h2><p class="sub">Only a few pieces left of these.</p></div><a class="pill" href="#region">See all</a></div>
+    <div class="pgrid" data-fill="r-low"></div>
   </section>
   <footer class="foot" data-fill="foot"></footer>
 </main>
@@ -327,35 +378,66 @@ html.motion .pcard:hover .ph.is-in, html.reduced .pcard:hover .ph { transform: s
   </header>
 
   <section class="wrap pdp">
-    <div class="gallery">
-      <div class="ph ph--kasavu" data-reveal data-label="Full length, worn"></div>
-      <div class="ph ph--portrait" data-reveal data-label="Draped, side"></div>
-      <div class="ph ph--mundu" data-reveal data-label="Border, detail"></div>
-      <div class="ph ph--kasavu" data-reveal data-label="Folded"></div>
+    <div class="gal" aria-label="Photos">
+      <div class="gal-main" data-gal-main><div class="ph ph--kasavu" data-label="Full length, worn"></div></div>
+      <div class="gal-thumbs">
+        <button type="button" aria-label="Show photo: draped, side" data-ph="ph--portrait" data-lb="Draped, side"><div class="ph ph--portrait"></div></button>
+        <button type="button" aria-label="Show photo: border, detail" data-ph="ph--mundu" data-lb="Border, detail"><div class="ph ph--mundu"></div></button>
+        <button type="button" aria-label="Show photo: folded" data-ph="ph--kasavu" data-lb="Folded"><div class="ph ph--kasavu"></div></button>
+      </div>
     </div>
     <aside class="buy" aria-label="Buy">
       <p class="crumb" style="margin:0"><a href="#region">Kerala</a> &nbsp;·&nbsp; Clothing &nbsp;·&nbsp; Sarees</p>
-      <h1>Kasavu saree</h1>
+      <div class="title-row"><h1>Kasavu saree</h1>
+        <button class="heart" type="button" aria-pressed="false" aria-label="Save for later" data-heart><svg aria-hidden="true"><use href="#heart"/></svg></button></div>
       <p class="price sample">$99</p>
       <span class="tbd">Summary · one line from the listing</span>
       <p class="label" style="margin:22px 0 0">Size</p>
-      <div class="opts"><span class="pill on">Free size</span></div>
+      <div class="opts"><span class="pill sel">Free size</span></div>
       <p class="avail"><span><span class="sample">3</span> available</span></p>
       <div class="deliv">Estimated delivery <b class="sample">Nov 3 – Nov 10</b> if you order by <span class="sample">Oct 6</span>.<br>
         <span style="color:var(--muted)">Dates come from the current order cycle, never a fixed promise.</span></div>
-      <div class="cta"><a class="pill dark" href="#product">Add to bag</a><a class="pill" href="#product" aria-label="Save for later">♡ Save</a></div>
-      <details open><summary>Details</summary>
-        <span class="tbd" style="margin-top:10px">Description · from the listing</span>
-        <dl><dt>Craft</dt><dd>Kasavu</dd><dt>Fabric</dt><dd class="sample">from the listing</dd><dt>Care</dt><dd class="sample">from the listing</dd></dl>
-      </details>
-      <details><summary>Size and fit</summary><span class="tbd" style="margin-top:10px">Size notes · from the listing</span></details>
+      <a class="pill cart" href="#product">Add to bag</a>
+      <div class="acc">
+        <button type="button" aria-expanded="true" aria-controls="acc-details">Details <span class="pm" aria-hidden="true">−</span></button>
+        <div class="acc-body" id="acc-details">
+          <span class="tbd">Description · from the listing</span>
+          <dl><dt>Craft</dt><dd>Kasavu</dd><dt>Fabric</dt><dd class="sample">from the listing</dd><dt>Care</dt><dd class="sample">from the listing</dd></dl>
+        </div>
+      </div>
+      <div class="acc">
+        <button type="button" aria-expanded="false" aria-controls="acc-size">Size chart <span class="pm" aria-hidden="true">+</span></button>
+        <div class="acc-body" id="acc-size" hidden>
+          <table class="size-table"><thead><tr><th>Size</th><th>Length</th><th>Width</th></tr></thead>
+            <tbody><tr><td>Free size</td><td class="sample">from the listing</td><td class="sample">from the listing</td></tr></tbody></table>
+        </div>
+      </div>
       <p class="origin">Made in India · from Kerala · Imported</p>
     </aside>
   </section>
 
-  <section class="wrap sec" aria-labelledby="a-more">
-    <div class="sec-head"><h2 class="h2" id="a-more">More from Kerala</h2><a class="pill" href="#region">See all</a></div>
-    <div class="pgrid" data-fill="more"></div>
+  <section class="wrap sec" aria-labelledby="p-rev">
+    <div class="sec-head"><h2 class="h2" id="p-rev">Reviews</h2><a class="pill" href="#product">Write a review</a></div>
+    <div class="reviews">
+      <div class="panel">
+        <p class="rv-score sample">4.8</p>
+        <p class="stars" aria-label="4.8 out of 5">★★★★★</p>
+        <p class="sub" style="margin:0"><span class="sample">Based on 24 reviews</span> from verified buyers</p>
+        <div class="bars" aria-hidden="true">
+          <div>5<i><b style="width:84%"></b></i>20</div><div>4<i><b style="width:12%"></b></i>3</div><div>3<i><b style="width:4%"></b></i>1</div>
+          <div>2<i><b style="width:0"></b></i>0</div><div>1<i><b style="width:0"></b></i>0</div>
+        </div>
+      </div>
+      <div data-fill="reviews" style="display:contents"></div>
+    </div>
+  </section>
+
+  <section class="wrap sec" aria-labelledby="p-sim">
+    <div class="sec-head"><h2 class="h2" id="p-sim">Similar items</h2><a class="pill" href="#region">See all</a></div>
+    <div class="pgrid sm" data-fill="p-sim"></div>
+  </section>
+  <section class="wrap sec" aria-labelledby="p-cur">
+    <div class="panel curated sm" data-fill="p-cur"></div>
   </section>
   <footer class="foot" data-fill="foot"></footer>
 </main>
@@ -367,29 +449,106 @@ html.motion .pcard:hover .ph.is-in, html.reduced .pcard:hover .ph { transform: s
 </main>
 
 <nav class="mock-switch" aria-label="Mockup screens">
-  <a href="#home">Home</a><a href="#region">Region</a><a href="#product">Product</a><a href="#admin">Admin listing</a><button type="button" data-toggle-motion>Motion</button>
+  <a href="#home">Home</a><a href="#region">Region</a><a href="#product">Product</a><a href="#admin">Admin listing</a>
+  <button type="button" data-headline-step title="Show the next headline option">Headline <span data-headline-n>1</span>/10 ›</button>
+  <button type="button" data-toggle-motion>Motion</button>
 </nav>
 
 <script src="https://unpkg.com/lenis@1.1.20/dist/lenis.min.js"></script>
 <script src="shared/data.js"></script>
 <script src="shared/india-map.js"></script>
 <script>
+  // ---- Hero headline: 10 options for the founder (D-051), drafts until one is chosen. <em> marks the accent word.
+  const HEADLINES = [
+    'Not everything from <em>home</em> fits in a suitcase.',
+    '<em>Home,</em> 36 ways.',
+    'Your corner of India, <em>delivered.</em>',
+    'Wear <em>home.</em> Taste <em>home.</em>',
+    'Made back <em>home.</em> Delivered here.',
+    'The threads and tastes of <em>home.</em>',
+    'Somewhere in India is <em>home.</em>',
+    'Miss <em>home?</em> Start here.',
+    'Closer to <em>home.</em>',
+    'From <em>home,</em> to your door.',
+  ];
+  let hIndex = 0;
+  try { hIndex = Math.min(9, Math.max(0, +localStorage.getItem('iwc-mock-headline') || 0)); } catch (e) {}
+  function setHeadline(i) {
+    const h = document.querySelector('[data-headline]');
+    h.innerHTML = HEADLINES[i];
+    const len = h.textContent.length; // longer lines get a smaller size so the hero keeps its shape
+    h.style.fontSize = len <= 16 ? '' : len <= 28 ? 'clamp(52px, 7vw, 124px)' : 'clamp(44px, 5.4vw, 96px)';
+    document.querySelector('[data-headline-n]').textContent = i + 1;
+    try { localStorage.setItem('iwc-mock-headline', i); } catch (e) {}
+  }
+  setHeadline(hIndex);
+  document.querySelector('[data-headline-step]').addEventListener('click', () => setHeadline((hIndex = (hIndex + 1) % 10)));
+
   // Sample accents (not final): set per region in the admin (C2), AA-checked in index.html.
   const ACC = { kerala: '#2F5B3F', rajasthan: '#9A3B1F', punjab: '#7A5200' };
   const bySlug = Object.fromEntries(IWC.regions.map((r) => [r.slug, r]));
   const name = (slug) => bySlug[slug].name;
 
-  const card = (p, i) => `<article class="pcard">
-    <a class="pimg" href="#product">${IWC.ph(p.ph, p.label)}
-      ${i === 0 ? '<span class="badge sample">New in</span>' : ''}<span class="dots" aria-hidden="true"><i class="on"></i><i></i></span></a>
+  // opts.badge: 'new' | 'rank' | 'low'
+  const card = (p, i = 0, opts = {}) => {
+    const badge = opts.badge === 'new' ? '<span class="badge sample">New in</span>'
+      : opts.badge === 'rank' ? `<span class="badge rank">0${i + 1}</span>`
+      : opts.badge === 'low' ? `<span class="badge low"><span class="sample">${p.avail}</span> left</span>` : '';
+    return `<article class="pcard">
+    <a class="pimg" href="#product">${IWC.ph(p.ph, p.label)}${badge}<span class="dots" aria-hidden="true"><i class="on"></i><i></i></span></a>
     <div class="pmeta"><div><a class="pname" href="#product">${p.name}</a>
       <span class="pprice"><span class="sample">${p.price}</span> · ${name(p.region)}</span></div>
       <button class="pill add" type="button">＋ Add</button></div></article>`;
-  const kerala = IWC.products.filter((p) => p.region === 'kerala');
-  const pick = (n) => IWC.products.find((p) => p.name === n);
-  IWC.fill('new', [pick('Kasavu saree'), pick('Bandhani dupatta'), pick('Phulkari dupatta'), pick('Mundu')].map(card).join(''));
-  IWC.fill('kerala', kerala.map(card).join(''));
-  IWC.fill('more', kerala.slice(1, 5).map((p) => card(p, 1)).join(''));
+  };
+  const K = IWC.products.filter((p) => p.region === 'kerala');
+  const pickN = (n) => IWC.products.find((p) => p.name === n);
+  const of = (idx) => idx.map((i) => K[i]);
+  const curated = (items, id) => `<div class="cur-intro"><div><p class="label">Curated for you</p>
+      <h2 class="h2" id="${id}">Picked for you</h2><p class="sub">From Kerala, chosen around what you’ve saved and looked at.</p></div>
+      <a class="pill" href="#region">See all</a></div>${items.map((p) => card(p)).join('')}`;
+
+  IWC.fill('new', [pickN('Kasavu saree'), pickN('Bandhani dupatta'), pickN('Phulkari dupatta'), pickN('Mundu')].map((p, i) => card(p, i, { badge: i === 0 ? 'new' : '' })).join(''));
+  IWC.fill('r-new', of([13, 15, 12, 14]).map((p, i) => card(p, i, { badge: 'new' })).join(''));
+  IWC.fill('r-top', of([0, 1, 2, 3]).map((p, i) => card(p, i, { badge: 'rank' })).join(''));
+  IWC.fill('r-cur', curated(of([5, 7, 6, 9]), 'r-cur'));
+  IWC.fill('r-low', of([8, 4, 10, 11]).map((p, i) => card(p, i, { badge: 'low' })).join(''));
+  IWC.fill('p-sim', of([7, 5, 13, 8, 2]).map((p) => card(p)).join(''));
+  IWC.fill('p-cur', curated(of([6, 9, 3, 12]), 'p-cur'));
+
+  // Album: region photos, repeated once so the loop is seamless.
+  const shots = [['ph--land-kerala', '4/3'], ['ph--kasavu', '3/4'], ['ph--market', '1/1'], ['ph--portrait', '3/4'], ['ph--land-kerala', '16/10'], ['ph--mundu', '4/5'], ['ph--spice', '4/3'], ['ph--kasavu', '1/1']];
+  const albumHtml = shots.map(([c, ar]) => `<div class="ph ${c}" style="--ar:${ar}"></div>`).join('');
+  IWC.fill('album', albumHtml + albumHtml);
+  // Pause the album while it is off screen (saves battery); it never reacts to the pointer.
+  const album = document.querySelector('[data-album]');
+  new IntersectionObserver(([e]) => album.classList.toggle('paused', !e.isIntersecting)).observe(album);
+
+  // Reviews: SAMPLE cards only. Real reviews come from verified buyers (Q-23); none are invented.
+  IWC.fill('reviews', [1, 2, 3].map((n) => `<article class="panel review">
+    <p class="stars" aria-label="5 out of 5">★★★★★</p>
+    <span class="tbd">Sample review ${n} · a verified buyer’s own words appear here</span>
+    <footer><span><span class="verified">✓ Verified buyer</span> · <span class="sample">Name</span></span><span class="sample">Oct ${n + 2}</span></footer></article>`).join(''));
+
+  // ---- Product page: thumbnails swap the main photo; the heart saves; +/− sections open and close.
+  const mainPh = document.querySelector('[data-gal-main] .ph');
+  document.querySelectorAll('.gal-thumbs button').forEach((b) => b.addEventListener('click', () => {
+    const [cls, lb] = [b.dataset.ph, b.dataset.lb];
+    b.dataset.ph = mainPh.classList[1]; b.dataset.lb = mainPh.dataset.label;
+    b.querySelector('.ph').className = 'ph ' + b.dataset.ph;
+    b.setAttribute('aria-label', 'Show photo: ' + b.dataset.lb.toLowerCase());
+    mainPh.className = 'ph ' + cls; mainPh.dataset.label = lb;
+  }));
+  const heart = document.querySelector('[data-heart]');
+  heart.addEventListener('click', () => {
+    const on = heart.getAttribute('aria-pressed') !== 'true';
+    heart.setAttribute('aria-pressed', on); heart.setAttribute('aria-label', on ? 'Saved' : 'Save for later');
+  });
+  document.querySelectorAll('.acc > button').forEach((b) => b.addEventListener('click', () => {
+    const open = b.getAttribute('aria-expanded') !== 'true';
+    b.setAttribute('aria-expanded', open);
+    document.getElementById(b.getAttribute('aria-controls')).hidden = !open;
+    b.querySelector('.pm').textContent = open ? '−' : '+';
+  }));
 
   // ---- Pick your home: map + stamps + names
   const live = IWC.regions.filter((r) => r.live);
@@ -427,6 +586,7 @@ html.motion .pcard:hover .ph.is-in, html.reduced .pcard:hover .ph { transform: s
     tip.innerHTML = `${r.name}<small>${r.live ? 'Open now · click to enter' : 'Coming soon'}</small>`;
     tip.style.left = x + 'px'; tip.style.top = y + 'px'; tip.hidden = false;
   }
+  // On the map itself the reaction is immediate.
   svg.addEventListener('pointermove', (e) => {
     const slug = e.target.dataset && e.target.dataset.slug;
     if (!slug) { highlight(null); tip.hidden = true; return; }
@@ -436,7 +596,10 @@ html.motion .pcard:hover .ph.is-in, html.reduced .pcard:hover .ph { transform: s
   });
   svg.addEventListener('pointerleave', () => { highlight(null); tip.hidden = true; });
   svg.addEventListener('click', (e) => { const s = e.target.dataset && e.target.dataset.slug; if (s && bySlug[s].live) location.hash = 'region'; });
-  // Names and stamps light up their region on the map (and show the same caption).
+  // Names and stamps light up their region only after the pointer rests on them for 700 ms (D-051);
+  // keyboard focus reacts at once.
+  const HOLD_MS = 700;
+  let holdTimer = 0;
   document.querySelectorAll('#pick .side [data-slug]').forEach((el) => {
     const on = () => {
       highlight(el.dataset.slug);
@@ -444,8 +607,9 @@ html.motion .pcard:hover .ph.is-in, html.reduced .pcard:hover .ph { transform: s
       const box = panel.getBoundingClientRect();
       showTip(el.dataset.slug, shape.left + shape.width / 2 - box.left, shape.top + shape.height / 2 - box.top);
     };
-    const off = () => { highlight(null); tip.hidden = true; };
-    el.addEventListener('pointerenter', on); el.addEventListener('pointerleave', off);
+    const off = () => { clearTimeout(holdTimer); highlight(null); tip.hidden = true; };
+    el.addEventListener('pointerenter', () => { clearTimeout(holdTimer); holdTimer = setTimeout(on, HOLD_MS); });
+    el.addEventListener('pointerleave', off);
     el.addEventListener('focus', on); el.addEventListener('blur', off);
   });
   // Search filters the names and stamps and fades the rest of the map.

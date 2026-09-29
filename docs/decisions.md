@@ -290,3 +290,34 @@ Supersedes D-049's asymmetric/overlapping layout rules below the hero; D-049's m
 names, section titles, the product title and origin line; Montserrat "where necessary" = navigation, buttons, labels,
 product names on cards; product photos 3 : 4 portrait as in the reference; the attached map = the look and the official
 boundaries for Home's map, drawn from DataMeet's open data rather than traced from the (copyrighted) image (Q-21).
+
+**D-051 · 2026-09-30 · founder: Mockup v3 - map hover delay, headline options, Helvetica Neue, region and product page sections**
+Founder, verbatim, reviewing mockup A v2: "Okay The map section is perfect, its just that when someone hovers over the
+states names the map reacts by darkening the actual state in the map, I want this when the user holds the mouse over that
+name for at least 700ms, and remove where's home instead send me 10 variations
+Also use Helvetica Neue in hero section and the lower headings
+When a region is opened I need New arrivals, Most wanted, then an album of photos automatically getting scrolled
+horizontally and the user can't interact with this section, then curated for you(I need this in a card) and finally
+leaving soon for almost out of stock items.
+Then let's come to product description page, It lacks reviews, One full length Image not bigger than screen and then
+three stacked images beside it. for save I want a heart button besides the name, and just add to cart button on bottom
+where it is right now. Instead of dropdowns on details and size use the plus and minus button also name it size chart.
+under the product show the same Similar items grid and curated for you. In the pdp the lower grids cards should be a
+little smaller to be minimilistic"
+What it means for the build (mockup `design/mockups/a-gallery.html` v3):
+- Home: the "Pick your home" section is approved as built. A state name (or stamp) highlights its state on the map only
+  after the pointer rests on it for **700 ms**; hovering the map itself stays immediate. "Where's home?" is replaced by
+  one of 10 headline options (drafts, the founder picks one).
+- **Helvetica Neue** for the hero (headline and hero text) and the section headings below it. Supersedes D-050's Georgia
+  for those places; Georgia stays for the logo, the product title, the origin line and stamp captions.
+- Region page, below the hero: **New arrivals → Most wanted → a photo album that scrolls sideways by itself and cannot be
+  interacted with → Curated for you (in a card) → Leaving soon** (almost out of stock).
+- Product page: **reviews**; one full-length photo no taller than the screen with **three stacked photos** beside it; a
+  **heart** button beside the name to save; the Add to bag button stays where it is; Details and **Size chart** open and
+  close with **+ / −** buttons; below the product, **Similar items** and **Curated for you**, with smaller cards (five
+  columns).
+- Reviews move from "later ideas" (F-6) into the product; how they work is Q-23.
+*Interpretation (proposed, confirm when C1 step 2 starts):* "hero section" = all hero text (label, headline, intro,
+delivery line); keyboard focus on a name highlights at once (no delay); the Clothing / Spices choice stays as filter
+pills above the region sections; the region's tagline and story stay in the hero. The data behind Most wanted, Curated
+for you and Leaving soon is Q-22; Helvetica Neue's web licence is Q-24; the album's accessibility is Q-25.

@@ -11,8 +11,9 @@
 ## Direction (founder, D-049; layout below the hero and fonts changed by D-050)
 **D-050 (2026-09-30):** Direction A. The hero keeps A's asymmetric, image-led format and motion; **everything below the
 hero sits on a symmetric grid** (four equal columns of 3 : 4 rounded product photos with name, price and "Add", equal
-two-panel rows), full width with small side gutters. **Fonts:** Georgia for headings, Poppins for paragraphs, Montserrat
-for interface text (navigation, buttons, labels, product names on cards), Inter for the footer only. No dark mode.
+two-panel rows), full width with small side gutters. **Fonts:** Helvetica Neue for the hero and the section headings
+(D-051; web licence Q-24), Georgia for the logo, product title and origin line, Poppins for paragraphs, Montserrat for
+interface text (navigation, buttons, labels, product names on cards), Inter for the footer only. No dark mode.
 The D-049 bullets below still apply to the hero and to motion; their asymmetric layout rules no longer apply below it.
 The storefront reads like a **premium editorial magazine / contemporary gallery wall** built from large photographs:
 - **Layout:** asymmetric, image-led compositions. Large photographs at varying vertical positions, varied widths,

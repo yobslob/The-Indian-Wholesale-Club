@@ -1,13 +1,13 @@
 # Current status
 
 ## Resume here
-**Coding plan C1 (design): the founder chose Direction A (2026-09-30, D-050) and the mockup is reworked to the feedback.**
-`design/mockups/a-gallery.html` (overview in `index.html`): A's hero kept, everything below it on a symmetric full-width grid
-(the founder's reference: four columns of rounded 3 : 4 photos with name, price, "Add"), new "Just listed" and "Pick your
-home" (the India map from DataMeet's open boundaries + postage-stamp regions + searchable names), fonts Georgia / Poppins /
-Montserrat / Inter (footer), no dark mode. B and C deleted. **Next: the founder reviews v2** (and answers Q-21 map source,
-Georgia on Android, 3 : 4 photos, the stamps idea, listed in `index.html`); then C1 step 2: final tokens + fonts in
-`packages/tokens`, and the storefront built on it. Open questions: Q-18, Q-21, and before launch Q-3, Q-5, Q-9, Q-10, Q-19.
+**Coding plan C1 (design): mockup A v3 is ready for the founder (2026-09-30, D-051).** `design/mockups/a-gallery.html`
+(overview in `index.html`): 10 headline options replace "Where's home?" (switch them in the mockup bar), Helvetica Neue in
+the hero and section headings, a 700 ms hover delay on state names, the region page's New arrivals → Most wanted → album →
+Curated for you → Leaving soon, and the new product page (full-length photo + three stacked, heart, + / − Details and Size
+chart, reviews, Similar items, Curated for you). **Next: the founder picks a headline and answers Q-21 – Q-25** (map
+source, what drives the region lists, reviews rules, Helvetica Neue licence, album pause); then C1 step 2: tokens + fonts
+in `packages/tokens` and the storefront built on it. Also open: Q-18, and before launch Q-3, Q-5, Q-9, Q-10, Q-19.
 
 ## Steps
 | Step | Status | Evidence |
@@ -59,12 +59,14 @@ Georgia on Android, 3 : 4 photos, the stamps idea, listed in `index.html`); then
 | 2026-09-29 | `871f6c9` | founder | `node scripts/check.mjs` (with the new `docs` step), `git push`, **hosted dev DB reset** to the new schema | all OK (founder: "everything is OK and running"); hosted dev DB now on the new schema |
 | 2026-09-29 | C1 mockups | Claude, the repo's Playwright 1.63 (Chromium) against a local static server and `file://` | full-page screenshots of the 3 directions × 4 screens at 1440 px and 390 px (reduced motion); motion on: wheel-scroll each Home, check console errors, Lenis active, reveals, parallax, C's sideways track, screen switching; WCAG contrast of every proposed colour | no console errors; no horizontal overflow at either width (after fixes: admin tables scroll on phones); Lenis + reveals + parallax run, C's track moves with scroll; every text colour and sample accent ≥ 5.05 : 1 (AA needs 4.5). `check.mjs docs lint` OK (0.6 s, 76.2 s). **Not checked:** real browsers other than Chromium, a real phone, screen readers |
 | 2026-09-30 | C1 mockup v2 | Claude, the repo's Playwright 1.63 (Chromium) against a local static server | full-page screenshots of Home at 390 / 1440 / 1920 px, Region and Product at 1440; Home interactions (map hover tooltip, list → map highlight, search filter + empty state, click an open state); computed fonts per element; generated map checked visually (J&K incl. Gilgit-Baltistan, Ladakh incl. Aksai Chin, 36 regions matched to the storefront slugs); contrast of every text colour pair; `check.mjs docs` | no horizontal overflow, no console errors, every interaction works, fonts: headings Georgia, text Poppins, UI Montserrat, footer Inter; map 36/36 regions, 27 KB gzipped; lowest text contrast 5.05 : 1; docs OK. **Not checked:** browsers other than Chromium, a real phone, Android's Georgia fallback, screen readers |
+| 2026-09-30 | C1 mockup v3 | Claude, the repo's Playwright 1.63 (Chromium) against the local `mockups` server | full-page screenshots of Home, Region and Product at 1440 px; hero with the longest and shortest headline; name hover highlight at 400 ms vs 850 ms, a quick pass-over, map hover; headline stepper; album moving and not pointer-reactive; product gallery height vs a 900 px screen; thumbnail swap, heart, + / − sections; computed fonts | no horizontal overflow, no console errors; name highlight off at 400 ms, on at 850 ms, never on a quick pass; map hover immediate; album moves and ignores the pointer; gallery 790 px on a 900 px screen; all controls work; hero and section headings resolve to the Helvetica Neue stack (Arial on this Windows machine), logo Georgia, footer Inter; `check.mjs docs` OK. **Not checked:** real Helvetica Neue (no Apple device), a real phone, screen readers |
 
 ## C1 sub-steps (design)
 | # | Sub-step | Status |
 |---|---|---|
 | 1.1 | Three mockup directions (Home, Region, Product, admin Listing) with proposed palettes, contrast checks and motion (`design/mockups/`) | ✅ founder picked A with changes (D-050) |
-| 1.1b | A v2 to the founder's feedback: symmetric grid below the hero, full width, new Just listed + Pick your home (DataMeet map, stamps, search), fonts, B/C deleted | ✅ committed · founder review pending |
+| 1.1b | A v2 to the founder's feedback: symmetric grid below the hero, full width, new Just listed + Pick your home (DataMeet map, stamps, search), fonts, B/C deleted | ✅ map section approved (D-051) |
+| 1.1c | A v3 (D-051): headline options, Helvetica Neue, 700 ms name hover, region sections, new product page with reviews | ✅ committed · founder review pending |
 | 1.2 | Founder's pick filed (`/record-answer`), final tokens in `packages/tokens`, script fonts per region, accent contrast check in the admin form | ⏳ after the pick |
 | 1.3 | Storefront (web) on the chosen direction: layout, Lenis + reveal/parallax module, `next/image`; then the app with Reanimated | ⏳ |
 | 1.4 | E2E: reduced motion + keyboard; `check.mjs` speed budgets | ⏳ |
@@ -119,8 +121,8 @@ app screen on a device.
 
 ## Waiting on the founder
 1. Q-18: express delivery "15–18 days" (D-048), counted from the order date or from the export's arrival in the US?
-2. C1: review mockup A v2 (`design/mockups/index.html`) and its open points: Q-21 (DataMeet map + credit), Georgia on
-   Android, 3 : 4 product photos, the stamps idea.
+2. C1: review mockup A v3 (`design/mockups/index.html`): pick a headline; answer Q-21 (map source), Q-22 (region lists),
+   Q-23 (reviews), Q-24 (Helvetica Neue licence), Q-25 (album pause); 3 : 4 photos; Georgia on Android.
 3. Before launch: Q-3 (US carrier), Q-5 (returns policy), Q-9 (domain, D-046), Q-10 (spices compliance), Q-19 (sales tax).
 
 ## Known leftovers (tracked, not forgotten)

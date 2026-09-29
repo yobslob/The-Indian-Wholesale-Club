@@ -37,4 +37,4 @@ recoverable from tag `pre-restructure`), not re-verified.
 | F-3 | Offline drafts for field listing on weak networks | coding phase |
 | F-4 | Returns / exchanges flow | Q-5 |
 | F-5 | Faster-delivery option (US stock or express) | founder decision (D-024) |
-| F-6 | "Ask for it from home" requests, notify-me, gift boxes, reviews | founder approval |
+| F-6 | "Ask for it from home" requests, notify-me, gift boxes (reviews: founder asked for them, D-051; rules Q-23) | founder approval |

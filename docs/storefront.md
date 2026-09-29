@@ -46,10 +46,16 @@ Framer Motion page transitions (speed, `engineering.md`).
 3. The accent colour re-themes the page (one CSS variable from `regions.accent_color`).
 4. Sections **Clothing · Spices** (with jump links at the top), each a grid of product cards (photo, name, price, availability).
 5. Regions with no live products show "Coming soon" (`regions.is_live = false`). Anything more, like a notify-me feature, needs founder approval.
+**Target (D-051, not built yet):** below the hero (greeting, tagline, story, image): Clothing / Spices filter pills, then
+**New arrivals → Most wanted → a photo album that scrolls sideways by itself (not interactive) → Curated for you (a card)
+→ Leaving soon** (almost out of stock). What decides each list is Q-22; the album's pause question is Q-25.
 
 ## The product page
 Gallery → name, price → variant picker → availability (live) → **delivery window** → add to cart → details: description,
 craft, attributes, care or storage → origin line: "Made in India · from <Region> · Imported".
+**Target (D-051, not built yet):** one full-length photo no taller than the screen with three stacked photos beside it; a
+heart beside the name saves the product; Details and Size chart open and close with + / −; then Reviews (Q-23), Similar
+items and Curated for you, with smaller cards (five columns).
 
 ## Mobile app (customer side, `apps/app`, built in R6)
 Tabs: **Home** (list now, map with the design) · **Explore** (regions, clothing, spices, search) · **Bag** · **Saved** ·
