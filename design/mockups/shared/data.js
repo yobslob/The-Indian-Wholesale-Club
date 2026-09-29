@@ -60,6 +60,9 @@ IWC.products = [
   { region: 'kerala', name: 'Sample: set mundu', price: '$—', avail: 2, ph: 'ph--kasavu', label: 'Set mundu, draped', sample: true },
   { region: 'kerala', name: 'Sample: cotton kurta', price: '$—', avail: 4, ph: 'ph--portrait', label: 'Kurta, worn', sample: true },
   { region: 'kerala', name: 'Sample: kasavu dupatta', price: '$—', avail: 1, ph: 'ph--mundu', label: 'Dupatta, detail', sample: true },
+  { region: 'kerala', name: 'Sample: silk saree', price: '$—', avail: 2, ph: 'ph--portrait', label: 'Saree, worn', sample: true },
+  { region: 'kerala', name: 'Sample: cotton shirt', price: '$—', avail: 6, ph: 'ph--mundu', label: 'Shirt, folded', sample: true },
+  { region: 'kerala', name: 'Sample: kasavu set', price: '$—', avail: 3, ph: 'ph--kasavu', label: 'Set, worn', sample: true },
   { region: 'rajasthan', name: 'Bandhani dupatta', price: '$49', avail: 4, ph: 'ph--bandhani', label: 'Bandhani dupatta, detail' },
   { region: 'punjab', name: 'Phulkari dupatta', price: '$59', avail: 2, ph: 'ph--phulkari', label: 'Phulkari dupatta, detail' },
 ];

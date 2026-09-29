@@ -4,178 +4,229 @@
 <meta charset="utf-8">
 <meta name="viewport" content="width=device-width, initial-scale=1">
 <meta name="robots" content="noindex">
-<title>IWC mockup A · Gallery wall</title>
+<title>IWC mockup A · Gallery wall (v2)</title>
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Cormorant+Garamond:ital,wght@0,300;0,400;0,500;1,300;1,400&family=Manrope:wght@400;500;600&display=swap">
+<!-- Founder's fonts (2026-09-30): Georgia (system) for headings, Poppins for text, Montserrat for UI, Inter for the footer only. -->
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Poppins:wght@400;500;600&family=Montserrat:wght@500;600;700&family=Inter:wght@400;500&display=swap">
 <!-- Script font subset to the one greeting, loaded only on the region page in the real build (design.md §3). -->
 <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Noto+Sans+Malayalam:wght@300;400&display=swap&text=%E0%B4%A8%E0%B4%AE%E0%B4%B8%E0%B5%8D%E0%B4%95%E0%B4%BE%E0%B4%B0%E0%B4%82">
 <link rel="stylesheet" href="shared/mockup.css">
 <style>
-/* Direction A · Gallery wall. Proposed tokens (contrast in index.html). */
+/* Direction A · Gallery wall, v2 (founder feedback 2026-09-30): the hero keeps its format; everything below it sits on a
+   symmetric full-width grid (the founder's reference: 4 equal columns, rounded photos, name + price + "Add"). */
 :root {
-  --canvas: #F4EFE6; --surface: #EBE4D8; --ink: #1E1B16; --muted: #665E53; --line: #D9D0C1;
-  --brand: #7A2E23; --on-brand: #FFFFFF; --caution: #8A5A00; --region-accent: #7A2E23;
-  --font-body: 'Manrope', system-ui, sans-serif; --font-display: 'Cormorant Garamond', Georgia, serif;
-  --gut: clamp(16px, 3vw, 40px);
+  --canvas: #F4EFE6; --surface: #EBE4D8; --paper: #FBF8F3; --ink: #1E1B16; --muted: #665E53; --line: #D9D0C1;
+  --brand: #7A2E23; --on-brand: #FFFFFF; --caution: #8A5A00; --region-accent: #7A2E23; --land: #E0D6C4;
+  --font-display: Georgia, 'Times New Roman', serif; --font-body: 'Poppins', system-ui, sans-serif;
+  --font-ui: 'Montserrat', system-ui, sans-serif; --font-foot: 'Inter', system-ui, sans-serif;
+  --gut: clamp(16px, 2vw, 32px); --gap: clamp(12px, 1.4vw, 20px); --r: 22px;
 }
-body { font-size: 16px; line-height: 1.6; }
-.wrap { max-width: 1480px; margin: 0 auto; padding: 0 var(--gut); }
-.grid { display: grid; grid-template-columns: repeat(12, minmax(0, 1fr)); column-gap: var(--gut); }
-.label { font: 600 11px/1.3 var(--font-body); letter-spacing: .16em; text-transform: uppercase; color: var(--muted); }
-.display { font: 300 clamp(64px, 10vw, 168px)/.86 var(--font-display); letter-spacing: -.02em; margin: 0; }
-.display em { font-style: italic; color: var(--region-accent); }
-.h2 { font: 300 clamp(40px, 5.2vw, 80px)/.95 var(--font-display); margin: 0; letter-spacing: -.01em; }
+body { font-size: 16px; line-height: 1.65; }
+.wrap { padding-inline: var(--gut); }
+.grid { display: grid; grid-template-columns: repeat(12, minmax(0, 1fr)); column-gap: var(--gap); }
+.label { font: 600 11px/1.3 var(--font-ui); letter-spacing: .16em; text-transform: uppercase; color: var(--muted); }
+.display { font: 400 clamp(64px, 9.5vw, 164px)/.9 var(--font-display); letter-spacing: -.03em; margin: 0; }
+.display em { color: var(--region-accent); }
+.h2 { font: 400 clamp(28px, 2.4vw, 40px)/1.1 var(--font-display); margin: 0; letter-spacing: -.01em; }
+.pill { display: inline-flex; align-items: center; gap: 8px; min-height: 44px; padding: 0 20px; border-radius: 999px; background: var(--paper);
+  border: 1px solid var(--line); font: 500 14px/1 var(--font-ui); text-decoration: none; color: var(--ink); cursor: pointer; white-space: nowrap; }
+.pill:hover { border-color: var(--ink); }
+.pill.dark { background: var(--ink); color: var(--paper); border-color: var(--ink); }
+.ph { border-radius: var(--r); }
+.ph::after { left: 12px; bottom: 12px; border-radius: 999px; padding: 5px 10px; font-family: var(--font-ui); }
 
 /* Header */
-.head { display: flex; justify-content: space-between; align-items: baseline; padding: 22px var(--gut); gap: 16px; flex-wrap: wrap; }
-.logo { font: 500 21px/1 var(--font-display); letter-spacing: .02em; text-decoration: none; }
-.nav { display: flex; gap: clamp(14px, 2.4vw, 32px); font-size: 13px; letter-spacing: .04em; }
-.nav a { text-decoration: none; padding: 10px 0; }
-.nav a:hover { text-decoration: underline; text-underline-offset: 4px; }
+.head { display: flex; justify-content: space-between; align-items: center; padding: 20px var(--gut); gap: 16px; flex-wrap: wrap; }
+.logo { font: 400 22px/1 var(--font-display); text-decoration: none; }
+.nav { display: flex; gap: clamp(14px, 2.2vw, 32px); font: 500 13px/1 var(--font-ui); letter-spacing: .03em; }
+.nav a { text-decoration: none; padding: 12px 0; }
+.nav a:hover { text-decoration: underline; text-underline-offset: 5px; }
 
-/* Home hero: text + floating gallery-wall trio */
-.hero { padding-top: clamp(24px, 5vw, 64px); padding-bottom: clamp(48px, 8vw, 120px); align-items: start; }
+/* ===== HERO (format kept from v1) ===== */
+.hero { padding-top: clamp(16px, 4vw, 56px); padding-bottom: clamp(40px, 6vw, 96px); align-items: start; }
 .hero-text { grid-column: 1 / span 6; padding-top: clamp(0px, 6vw, 96px); position: relative; z-index: 2; }
 .lede { font-size: 18px; max-width: 34ch; margin: 28px 0 14px; }
 .delivery { font-size: 14px; margin: 0; }
-.hero-wall { grid-column: 7 / span 6; position: relative; min-height: clamp(420px, 62vw, 860px); }
+.hero-wall { grid-column: 7 / span 6; position: relative; min-height: clamp(420px, 56vw, 900px); }
 .hero-wall figure { margin: 0; position: absolute; }
 .hw1 { width: 58%; right: 0; top: 0; }
-.hw2 { width: 46%; left: 0; top: 34%; z-index: 1; box-shadow: 0 30px 60px -30px rgba(30, 27, 22, .45); }
+.hw2 { width: 46%; left: 0; top: 34%; z-index: 1; filter: drop-shadow(0 30px 40px rgba(30, 27, 22, .3)); }
 .hw3 { width: 30%; right: 12%; bottom: 0; z-index: 2; }
 
-/* Available now: exhibits at uneven heights, overlapping */
-.live { padding-bottom: clamp(40px, 7vw, 110px); }
-.live-head { grid-column: 1 / -1; display: flex; justify-content: space-between; align-items: end; margin-bottom: 32px; }
-.exhibit { display: block; text-decoration: none; position: relative; }
-.exhibit figure { margin: 0; }
-.exhibit .cap { display: flex; justify-content: space-between; gap: 12px; padding-top: 14px; border-top: 1px solid var(--line); margin-top: 14px; }
-.exhibit .name { font: 400 clamp(28px, 3vw, 42px)/1 var(--font-display); }
-.exhibit:hover .name { font-style: italic; }
-.ex1 { grid-column: 1 / span 6; }
-.ex2 { grid-column: 8 / span 5; margin-top: clamp(80px, 14vw, 220px); }
-.ex3 { grid-column: 3 / span 5; margin-top: clamp(-160px, -8vw, -60px); }
+/* ===== Symmetric sections below the hero ===== */
+.sec { padding-block: clamp(32px, 4vw, 64px); }
+.sec-head { display: flex; justify-content: space-between; align-items: center; gap: 16px; margin-bottom: clamp(18px, 2vw, 28px); flex-wrap: wrap; }
+.sec-head .sub { font-size: 14px; color: var(--muted); margin: 6px 0 0; }
 
-/* Index of all 36 + map */
-.index { padding: clamp(48px, 7vw, 110px) 0; background: var(--surface); }
-.index .map { grid-column: 1 / span 5; position: sticky; top: 24px; align-self: start; color: var(--muted); }
-.index .list { grid-column: 7 / span 6; }
-.index ol { list-style: none; margin: 32px 0 0; padding: 0; columns: 2; column-gap: var(--gut); }
-.index li { break-inside: avoid; display: flex; justify-content: space-between; gap: 8px; padding: 9px 0; border-bottom: 1px solid var(--line); font-size: 15px; }
-.index li a { text-decoration: none; }
-.index li .tag { font-size: 11px; color: var(--muted); white-space: nowrap; }
-.index li.is-live a { font-weight: 600; }
-.index li.is-live .tag { color: var(--brand); font-weight: 600; }
+/* Product grid (the founder's reference) */
+.pgrid { display: grid; grid-template-columns: repeat(4, minmax(0, 1fr)); gap: clamp(28px, 3vw, 44px) var(--gap); }
+.pcard { position: relative; }
+.pimg { display: block; position: relative; overflow: hidden; border-radius: var(--r); }
+.pimg .ph::after { bottom: auto; top: 12px; left: auto; right: 12px; max-width: 60%; }
+.pimg .ph { --ar: 3 / 4; transition: transform 1s cubic-bezier(.19, 1, .22, 1); }
+html.motion .pcard:hover .ph.is-in, html.reduced .pcard:hover .ph { transform: scale(1.025); }
+.badge { position: absolute; top: 14px; left: 14px; z-index: 2; background: var(--paper); border-radius: 999px; padding: 6px 12px; font: 500 12px/1 var(--font-ui); }
+.dots { position: absolute; left: 50%; bottom: 14px; transform: translateX(-50%); display: flex; gap: 5px; z-index: 2; }
+.dots i { width: 6px; height: 6px; border-radius: 50%; background: rgba(255, 255, 255, .6); }
+.dots i.on { background: #fff; }
+.pmeta { display: flex; justify-content: space-between; align-items: center; gap: 12px; padding: 14px 6px 0 14px; }
+.pname { font: 600 15px/1.3 var(--font-ui); text-decoration: none; display: block; }
+.pprice { font-size: 14px; color: var(--muted); }
+.add { flex: none; min-height: 40px; padding: 0 16px; font-size: 14px; background: var(--paper); box-shadow: 0 1px 2px rgba(30, 27, 22, .08); }
 
-/* Drifting strip of pieces */
-.strip { padding: clamp(56px, 8vw, 120px) 0; overflow: hidden; }
-.strip-row { display: flex; gap: var(--gut); align-items: flex-start; padding-left: var(--gut); margin-top: 36px; }
-.strip-row .card { flex: 0 0 clamp(200px, 22vw, 320px); }
-.strip-row .card:nth-child(2n) { margin-top: 90px; }
-.strip-row .card:nth-child(3n) { flex-basis: clamp(240px, 28vw, 400px); }
+/* Pick your home: map | open now + all names, two equal panels */
+.pick { display: grid; grid-template-columns: 1fr 1fr; gap: var(--gap); align-items: stretch; }
+.panel { background: var(--surface); border-radius: var(--r); padding: clamp(18px, 2vw, 32px); position: relative; min-width: 0; }
+.map-panel { display: flex; flex-direction: column; }
+.map { width: 100%; height: auto; max-height: 820px; flex: 1; display: block; }
+.map path { fill: var(--land); stroke: var(--paper); stroke-width: 1.3; vector-effect: non-scaling-stroke; transition: fill .25s ease, opacity .25s ease; }
+.map path.live { fill: var(--acc); cursor: pointer; }
+.map .dot { fill: var(--land); stroke: var(--muted); stroke-width: 1; vector-effect: non-scaling-stroke; }
+.map .dot.live { fill: var(--acc); stroke: var(--paper); cursor: pointer; }
+.map path.on, .map .dot.on { fill: var(--ink); }
+.map path.live.on, .map .dot.live.on { fill: color-mix(in srgb, var(--acc) 72%, #000); }
+.map.searching path:not(.match), .map.searching .dot:not(.match) { opacity: .35; }
+.map-foot { display: flex; justify-content: space-between; gap: 12px; flex-wrap: wrap; font: 500 12px/1.4 var(--font-ui); color: var(--muted); margin-top: 12px; }
+.key { display: flex; gap: 16px; }
+.key span { display: inline-flex; align-items: center; gap: 6px; }
+.key i { width: 10px; height: 10px; border-radius: 50%; background: var(--land); border: 1px solid var(--muted); }
+.key i.live { background: var(--brand); border-color: var(--brand); }
+.tip { position: absolute; z-index: 5; pointer-events: none; background: var(--ink); color: var(--paper); border-radius: 12px; padding: 8px 12px;
+  font: 500 13px/1.35 var(--font-ui); transform: translate(-50%, calc(-100% - 14px)); white-space: nowrap; }
+.tip small { display: block; font-weight: 500; opacity: .75; font-size: 11px; letter-spacing: .06em; text-transform: uppercase; }
+.side { display: flex; flex-direction: column; gap: clamp(18px, 2vw, 26px); }
+.search { display: flex; align-items: center; gap: 10px; background: var(--paper); border: 1px solid var(--line); border-radius: 999px; padding: 0 18px; min-height: 48px; }
+.search:focus-within { border-color: var(--ink); }
+.search input { all: unset; flex: 1; font: 400 15px/1 var(--font-body); min-height: 46px; }
+.search svg { width: 18px; height: 18px; flex: none; }
+.side h3 { margin: 0 0 12px; display: flex; justify-content: space-between; }
 
-/* Product card (museum label) */
-.card { display: block; text-decoration: none; }
-.card figure { margin: 0; overflow: hidden; }
-.card .ph { transition: transform .9s cubic-bezier(.19, 1, .22, 1); }
-.card:hover .ph.is-in, html.reduced .card:hover .ph { transform: scale(1.03); }
-.card .row { display: flex; justify-content: space-between; gap: 12px; margin-top: 12px; }
-.card .row .sample { white-space: nowrap; }
-.card .nm { font: 400 22px/1.15 var(--font-display); }
-.card .avail { font-size: 12px; color: var(--muted); }
+/* Stamps: the regions open now, each a postage stamp from home */
+.stamps { display: grid; grid-template-columns: repeat(3, minmax(0, 1fr)); gap: var(--gap); }
+.stamp { position: relative; display: block; text-decoration: none; padding: 9px; transition: transform .35s cubic-bezier(.19, 1, .22, 1);
+  background: radial-gradient(circle at 50% 50%, transparent 3.6px, var(--paper) 4.2px) -6px -6px / 12px 12px;
+  filter: drop-shadow(0 6px 10px rgba(30, 27, 22, .12)); }
+.stamp:hover, .stamp.on { transform: translateY(-4px) rotate(-1.2deg); }
+.stamp-face { display: block; background: var(--paper); outline: 1px solid var(--line); outline-offset: -1px; }
+.stamp .ph { --ar: 4 / 5; border-radius: 0; }
+.stamp .ph::after { content: none; }
+.stamp-cap { display: flex; justify-content: space-between; align-items: baseline; gap: 6px; padding: 8px 4px 2px; }
+.stamp-cap em { font: italic 400 clamp(15px, 1.3vw, 19px)/1.1 var(--font-display); }
+.stamp-cap b { font: 700 9px/1 var(--font-ui); letter-spacing: .14em; text-transform: uppercase; color: var(--acc); }
+.postmark { position: absolute; width: 46%; top: -8%; right: -12%; color: var(--brand); opacity: .75; transform: rotate(-14deg); pointer-events: none; mix-blend-mode: multiply; }
+.stamp:nth-child(2) .postmark { transform: rotate(9deg); top: 30%; }
+.stamp:nth-child(3) .postmark { transform: rotate(-4deg); top: 2%; }
+.soon-list { list-style: none; margin: 0; padding: 0; columns: 3; column-gap: var(--gap); }
+.soon-list li { break-inside: avoid; }
+.soon-list a { display: block; padding: 5px 0; font-size: 13.5px; line-height: 1.35; color: var(--muted); text-decoration: none; }
+.soon-list a:hover, .soon-list a.on { color: var(--ink); text-decoration: underline; text-underline-offset: 3px; }
+.soon-list li[hidden] { display: none; }
+.empty { font-size: 14px; color: var(--muted); margin: 0; }
 
 /* Region page */
-.rhero { padding-top: clamp(16px, 3vw, 40px); padding-bottom: 0; align-items: start; position: relative; }
+.rhero { padding-top: clamp(8px, 2vw, 32px); align-items: start; position: relative; }
 .rhero-text { grid-column: 1 / span 6; padding-top: clamp(16px, 5vw, 80px); z-index: 2; position: relative; }
-.crumb { font-size: 13px; color: var(--muted); margin: 0 0 28px; }
+.crumb { font: 500 13px/1.4 var(--font-ui); color: var(--muted); margin: 0 0 28px; }
 .greet { font: 300 clamp(56px, 8vw, 128px)/1.15 'Noto Sans Malayalam', var(--font-display); color: var(--region-accent); margin: 0; display: inline-block; }
-.greet-latin { margin: 6px 0 36px; font-size: 15px; color: var(--muted); }
-.greet-latin em { font-family: var(--font-display); font-size: 19px; color: var(--ink); }
+.greet-latin { margin: 6px 0 32px; font-size: 15px; color: var(--muted); }
+.greet-latin em { font: italic 20px var(--font-display); color: var(--ink); }
 .rhero .tbd { max-width: 44ch; margin-top: 28px; }
-.rhero-main { grid-column: 7 / span 6; margin: 0 calc(var(--gut) * -1) 0 0; }
-.rhero-float { position: absolute; width: clamp(160px, 22vw, 330px); left: 36%; bottom: clamp(-200px, -12vw, -80px); margin: 0; z-index: 3; }
-.story { padding-top: clamp(140px, 16vw, 260px); padding-bottom: 40px; }
-.story .label { grid-column: 1 / span 3; }
-.story .tbd { grid-column: 4 / span 6; }
-.jump { position: sticky; top: 0; z-index: 5; background: color-mix(in srgb, var(--canvas) 92%, transparent); backdrop-filter: blur(6px); border-bottom: 1px solid var(--line); }
-.jump .wrap { display: flex; gap: 28px; }
-.jump a { padding: 14px 0; text-decoration: none; font-size: 14px; letter-spacing: .06em; }
-.jump a:hover { color: var(--region-accent); }
-.wall { padding-block: clamp(40px, 6vw, 90px); }
-.wall .h2 { grid-column: 1 / -1; margin-bottom: 40px; }
-.wall .card:nth-of-type(1) { grid-column: 1 / span 5; }
-.wall .card:nth-of-type(2) { grid-column: 7 / span 4; margin-top: 120px; }
-.wall .card:nth-of-type(3) { grid-column: 2 / span 3; margin-top: 60px; }
-.wall .card:nth-of-type(4) { grid-column: 6 / span 4; margin-top: -40px; }
-.wall .card:nth-of-type(5) { grid-column: 10 / span 3; margin-top: 140px; }
-.soon { grid-column: 1 / span 6; font: 300 28px/1.3 var(--font-display); color: var(--muted); margin: 0; }
+.rhero-main { grid-column: 7 / span 6; margin: 0; }
+.rhero-main .ph { --ar: 5 / 6; }
+.rhero-float { position: absolute; width: clamp(150px, 18vw, 280px); left: 38%; bottom: clamp(-100px, -6vw, -40px); margin: 0; z-index: 3; }
+.two { display: grid; grid-template-columns: 1fr 1fr; gap: var(--gap); padding-top: clamp(96px, 9vw, 150px); }
+.two .panel h2 { margin-bottom: 14px; }
+.facts { display: grid; grid-template-columns: auto 1fr; gap: 10px 24px; margin: 0; font-size: 15px; }
+.facts dt { font: 600 11px/2 var(--font-ui); letter-spacing: .14em; text-transform: uppercase; color: var(--muted); }
+.facts dd { margin: 0; }
+.jump { position: sticky; top: 0; z-index: 5; background: color-mix(in srgb, var(--canvas) 92%, transparent); backdrop-filter: blur(8px); }
+.jump .wrap { display: flex; gap: 10px; padding-block: 12px; }
+.jump .pill span { color: var(--muted); }
+.soon-panel { display: flex; justify-content: space-between; align-items: center; gap: 16px; flex-wrap: wrap; }
+.soon-panel p { margin: 0; font: 400 clamp(22px, 2vw, 30px)/1.3 var(--font-display); }
 
-/* Product page */
-.pdp { padding-top: 16px; padding-bottom: clamp(48px, 8vw, 120px); align-items: start; }
-.gallery { grid-column: 1 / span 7; display: grid; grid-template-columns: repeat(7, minmax(0, 1fr)); column-gap: var(--gut); row-gap: 0; }
-.gallery figure { margin: 0; }
-.g1 { grid-column: 1 / -1; }
-.g2 { grid-column: 3 / -1; margin-top: -90px; position: relative; z-index: 1; }
-.g3 { grid-column: 1 / span 4; margin-top: 40px; }
-.g4 { grid-column: 4 / -1; margin-top: -60px; }
-.buy { grid-column: 9 / span 4; position: sticky; top: 24px; }
-.buy h1 { font: 300 clamp(44px, 4.6vw, 72px)/.95 var(--font-display); margin: 8px 0 14px; }
-.price { font: 400 26px/1 var(--font-display); margin: 0 0 20px; }
-.opt { display: flex; gap: 8px; margin: 8px 0 18px; }
-.opt span { min-height: 44px; min-width: 44px; padding: 0 16px; display: grid; place-items: center; border: 1px solid var(--line); font-size: 14px; }
-.opt .on { border-color: var(--ink); }
-.btn { min-height: 52px; display: grid; place-items: center; background: var(--brand); color: var(--on-brand); font-weight: 600; letter-spacing: .04em; text-decoration: none; margin-top: 18px; }
-.save { display: inline-block; margin-top: 12px; font-size: 14px; padding: 10px 0; }
+/* Product page: two equal halves */
+.pdp { display: grid; grid-template-columns: 1fr 1fr; gap: var(--gap); align-items: start; padding-block: 12px clamp(32px, 4vw, 64px); }
+.gallery { display: grid; grid-template-columns: 1fr 1fr; gap: var(--gap); }
+.gallery .ph { --ar: 3 / 4; }
+.buy { position: sticky; top: 20px; background: var(--surface); border-radius: var(--r); padding: clamp(22px, 2.6vw, 44px); }
+.buy h1 { font: 400 clamp(40px, 4vw, 68px)/1 var(--font-display); margin: 10px 0 12px; letter-spacing: -.02em; }
+.price { font: 600 22px/1 var(--font-ui); margin: 0 0 18px; }
+.opts { display: flex; gap: 8px; margin: 8px 0 18px; flex-wrap: wrap; }
+.opts .pill.on { border-color: var(--ink); background: var(--paper); box-shadow: inset 0 0 0 1px var(--ink); }
+.avail { display: inline-flex; align-items: center; gap: 8px; font-size: 14px; margin: 0 0 14px; }
+.avail::before { content: ''; width: 8px; height: 8px; border-radius: 50%; background: var(--region-accent); }
+.deliv { background: var(--paper); border-radius: 16px; padding: 14px 16px; font-size: 14px; }
+.deliv b { font-family: var(--font-ui); }
+.cta { display: grid; grid-template-columns: 1fr auto; gap: 10px; margin-top: 18px; }
+.cta .pill { justify-content: center; min-height: 54px; font-size: 15px; }
+.cta .pill.dark { background: var(--brand); border-color: var(--brand); color: var(--on-brand); }
 .buy details { border-top: 1px solid var(--line); padding: 14px 0; }
-.buy details:last-of-type { border-bottom: 1px solid var(--line); }
-.buy summary { cursor: pointer; font-weight: 600; font-size: 14px; min-height: 24px; }
+.buy details:first-of-type { margin-top: 22px; }
+.buy summary { cursor: pointer; font: 600 14px/1.4 var(--font-ui); min-height: 24px; }
 .buy dl { display: grid; grid-template-columns: auto 1fr; gap: 6px 16px; font-size: 14px; margin: 12px 0 0; }
 .buy dt { color: var(--muted); }
 .buy dd { margin: 0; }
-.origin { margin-top: 20px; font: 400 italic 19px/1.4 var(--font-display); }
-.more { padding-bottom: 120px; }
-.more .h2 { grid-column: 1 / -1; margin-bottom: 36px; font-size: clamp(32px, 4vw, 56px); }
-.more .card { grid-column: span 4; }
-.more .card:nth-of-type(2) { margin-top: 70px; }
+.origin { margin: 18px 0 0; padding-top: 16px; border-top: 1px solid var(--line); font: italic 400 19px/1.4 var(--font-display); }
 
-/* Admin header */
-.admhead { display: flex; justify-content: space-between; padding: 12px 16px; border-bottom: 1px solid var(--line); background: var(--surface); font-size: 13px; }
+/* Admin keeps its plain look, in the founder's fonts */
+.admhead { display: flex; justify-content: space-between; padding: 12px 16px; border-bottom: 1px solid var(--line); background: var(--surface); font: 500 13px/1.4 var(--font-ui); }
+.adm h2, .adm-field > span, .adm-btn, .adm-tabs, .adm-bar, .adm-table th, .adm-pill { font-family: var(--font-ui); }
 
-/* Footer */
-.foot { border-top: 1px solid var(--line); padding: 40px 0 110px; font-size: 13px; }
-.foot .wrap { display: flex; flex-wrap: wrap; gap: 12px 28px; justify-content: space-between; }
-.foot nav { display: flex; flex-wrap: wrap; gap: 8px 22px; }
+/* Footer: Inter only here */
+.foot { font-family: var(--font-foot); font-size: 14px; margin-top: clamp(24px, 3vw, 48px); background: var(--ink); color: #D8D0C4; padding: clamp(40px, 4vw, 64px) var(--gut) 110px; }
+.foot a { color: #F4EFE6; text-decoration: none; }
+.foot a:hover { text-decoration: underline; }
+.foot-grid { display: grid; grid-template-columns: repeat(4, minmax(0, 1fr)); gap: var(--gap); }
+.foot h4 { margin: 0 0 14px; font: 500 12px/1 var(--font-foot); letter-spacing: .08em; text-transform: uppercase; color: #A89F92; }
+.foot ul { list-style: none; margin: 0; padding: 0; display: grid; gap: 8px; }
+.foot .brand { font-size: 18px; color: #F4EFE6; margin: 0 0 10px; }
+.foot-base { display: flex; justify-content: space-between; gap: 12px; flex-wrap: wrap; border-top: 1px solid #3A332D; margin-top: 36px; padding-top: 18px; font-size: 12px; color: #A89F92; }
+.foot-base a { color: #D8D0C4; text-decoration: underline; }
 
+@media (max-width: 1024px) {
+  .pgrid { grid-template-columns: repeat(2, minmax(0, 1fr)); }
+  .pick, .two, .pdp { grid-template-columns: 1fr; }
+  .buy { position: static; }
+}
 @media (max-width: 820px) {
-  .hero-text, .hero-wall, .rhero-text, .rhero-main, .index .map, .index .list, .gallery, .buy { grid-column: 1 / -1; }
-  .hero-wall { min-height: 130vw; margin-top: 40px; }
-  .ex1, .ex2, .ex3 { grid-column: 1 / -1; margin-top: 40px; }
-  .ex2 { grid-column: 4 / -1; } .ex3 { grid-column: 1 / span 10; }
-  .index .map { position: static; margin-bottom: 32px; }
-  .index ol { columns: 1; }
-  .rhero-main { margin: 32px calc(var(--gut) * -1) 0; }
-  .rhero-float { left: auto; right: var(--gut); width: 44vw; bottom: -90px; }
-  .story .label, .story .tbd { grid-column: 1 / -1; }
-  .wall .card:nth-of-type(n) { grid-column: span 6; margin-top: 0; }
-  .wall .card:nth-of-type(1) { grid-column: 1 / -1; }
-  .wall .card:nth-of-type(odd):not(:first-of-type) { margin-top: 48px; }
-  .buy { position: static; margin-top: 40px; }
-  .more .card { grid-column: span 6; }
+  .hero-text, .hero-wall, .rhero-text, .rhero-main { grid-column: 1 / -1; }
+  .hero-wall { min-height: 120vw; margin-top: 40px; }
+  .rhero-main { margin-top: 32px; }
+  .rhero-float { left: auto; right: var(--gut); width: 40vw; bottom: -60px; }
+  .soon-list { columns: 2; }
+  .foot-grid { grid-template-columns: 1fr 1fr; row-gap: 32px; }
+}
+@media (max-width: 480px) {
+  .pmeta { flex-direction: column; align-items: flex-start; padding-left: 4px; }
+  .stamps { gap: 8px; }
+  .stamp { padding: 7px; }
+  .stamp-cap b { display: none; }
 }
 </style>
 </head>
 <body>
 <div class="mock-banner">
-  <span><b>IWC mockup · Direction A: Gallery wall</b> · not the real site. Photos, sample names, prices, dates and counts are placeholders; greetings are drafts (D-019).</span>
-  <a href="index.html">All directions</a>
+  <span><b>IWC mockup · Direction A v2</b> · not the real site. Photos, sample names, prices, dates and counts are placeholders; greetings are drafts (D-019).</span>
+  <a href="index.html">Overview</a>
 </div>
+
+<svg width="0" height="0" style="position:absolute" aria-hidden="true"><defs>
+  <path id="pm-ring" d="M50 50 m-35 0 a35 35 0 1 1 70 0 a35 35 0 1 1 -70 0"/>
+  <symbol id="postmark" viewBox="0 0 100 100">
+    <circle cx="50" cy="50" r="47" fill="none" stroke="currentColor" stroke-width="1.6"/>
+    <circle cx="50" cy="50" r="25" fill="none" stroke="currentColor" stroke-width="1"/>
+    <text font-family="Montserrat, sans-serif" font-weight="600" font-size="8.2" letter-spacing="1.2" fill="currentColor"><textPath href="#pm-ring">ARRIVES NOV 3 – NOV 10 · ORDER BY OCT 6 ·</textPath></text>
+    <text x="50" y="54" text-anchor="middle" font-family="Georgia, serif" font-style="italic" font-size="13" fill="currentColor">IWC</text>
+  </symbol>
+</defs></svg>
 
 <!-- =============================== HOME =============================== -->
 <main id="home" data-screen>
   <header class="head">
     <a class="logo" href="#home">The Indian Wholesale Club</a>
-    <nav class="nav" aria-label="Main"><a href="#home">States</a><a href="#region">Clothing</a><a href="#region">Spices</a><a href="#home">Search</a><a href="#home">Bag (0)</a></nav>
+    <nav class="nav" aria-label="Main"><a href="#pick">States</a><a href="#region">Clothing</a><a href="#region">Spices</a><a href="#home">Search</a><a href="#home">Bag (0)</a></nav>
   </header>
 
   <section class="wrap grid hero">
@@ -192,30 +243,35 @@ body { font-size: 16px; line-height: 1.6; }
     </div>
   </section>
 
-  <section class="wrap grid live" aria-labelledby="a-live">
-    <div class="live-head"><h2 class="h2" id="a-live">Available now</h2><span class="label">3 of 36</span></div>
-    <div data-fill="exhibits" style="display:contents"></div>
+  <section class="wrap sec" aria-labelledby="h-new">
+    <div class="sec-head"><h2 class="h2" id="h-new">Just listed</h2><a class="pill" href="#region">See everything</a></div>
+    <div class="pgrid" data-fill="new"></div>
   </section>
 
-  <section class="index" aria-labelledby="a-index">
-    <div class="wrap grid">
-      <div class="map"><div class="map-ph" role="img" aria-label="Placeholder for the India map"><span><strong>India map</strong><small>Static SVG on India’s official boundaries, source to confirm (Q-21). Not drawn in this mockup. Live regions filled with their accent; hovering a name highlights it.</small></span></div></div>
-      <div class="list">
-        <h2 class="h2" id="a-index">Pick your home</h2>
-        <ol data-fill="index"></ol>
+  <section class="wrap sec" id="pick" aria-labelledby="h-pick">
+    <div class="sec-head">
+      <div><h2 class="h2" id="h-pick">Pick your home</h2><p class="sub">All 28 states and 8 union territories. Find yours on the map or by name.</p></div>
+    </div>
+    <div class="pick">
+      <div class="panel map-panel">
+        <div data-fill="map" style="display:contents"></div>
+        <div class="tip" hidden></div>
+        <div class="map-foot">
+          <div class="key"><span><i class="live"></i>Open now</span><span><i></i>Coming soon</span></div>
+          <span>Map: <a href="https://github.com/datameet/maps" style="color:inherit">DataMeet India</a>, CC BY 4.0</span>
+        </div>
+      </div>
+      <div class="panel side">
+        <label class="search"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" aria-hidden="true"><circle cx="11" cy="11" r="7"/><path d="m20 20-3.5-3.5"/></svg>
+          <span class="sr-only">Find your state</span><input type="search" placeholder="Find your state" autocomplete="off" data-search></label>
+        <div><h3 class="label"><span>Open now</span><span data-count="live"></span></h3><div class="stamps" data-fill="stamps"></div></div>
+        <div><h3 class="label"><span>Coming soon</span><span data-count="soon"></span></h3><ul class="soon-list" data-fill="soon"></ul>
+          <p class="empty" data-empty hidden>No state or union territory by that name.</p></div>
       </div>
     </div>
   </section>
 
-  <section class="strip" aria-labelledby="a-strip">
-    <div class="wrap"><h2 class="h2" id="a-strip">Pieces from home</h2></div>
-    <div class="strip-row" data-drift="0.9" data-fill="strip"></div>
-  </section>
-
-  <footer class="foot"><div class="wrap">
-    <nav aria-label="Information"><a href="#home">About</a><a href="#home">How it works</a><a href="#home">FAQ</a><a href="#home">Contact</a><a href="#home">Shipping &amp; returns</a><a href="#home">Privacy</a><a href="#home">Terms</a></nav>
-    <span>The Indian Wholesale Club</span>
-  </div></footer>
+  <footer class="foot" data-fill="foot"></footer>
 </main>
 
 <!-- =============================== REGION =============================== -->
@@ -233,26 +289,34 @@ body { font-size: 16px; line-height: 1.6; }
       <h1 class="display">Kerala</h1>
       <span class="tbd">Tagline · the founder writes it (C2, D-019)</span>
     </div>
-    <figure class="rhero-main" data-speed="0.06"><div class="ph ph--land-kerala" data-reveal data-label="Kerala, region image" style="--ar:4/5"></div></figure>
-    <figure class="rhero-float" data-speed="0.22"><div class="ph ph--mundu" data-reveal data-label="Mundu, detail"></div></figure>
+    <figure class="rhero-main" data-speed="0.05"><div class="ph ph--land-kerala" data-reveal data-label="Kerala, region image"></div></figure>
+    <figure class="rhero-float" data-speed="0.18"><div class="ph ph--mundu" data-reveal data-label="Mundu, detail"></div></figure>
   </section>
 
-  <section class="wrap grid story">
-    <p class="label">Story</p>
-    <span class="tbd">A short story: why this place feels like home. Written or approved by the founder (C2, D-019). Nothing cultural is invented for the mockup.</span>
+  <section class="wrap two">
+    <div class="panel"><h2 class="h2">Story</h2><span class="tbd">A short story: why this place feels like home. Written or approved by the founder (C2, D-019). Nothing cultural is invented for the mockup.</span></div>
+    <div class="panel"><h2 class="h2">At a glance</h2>
+      <dl class="facts">
+        <dt>Language</dt><dd>Malayalam</dd>
+        <dt>Greeting</dt><dd>Namaskaram <span class="sample">(draft)</span></dd>
+        <dt>Open now</dt><dd>Clothing · <span style="color:var(--muted)">Spices coming soon</span></dd>
+        <dt>Delivery</dt><dd><span class="sample">Nov 3 – Nov 10</span> if you order by <span class="sample">Oct 6</span></dd>
+        <dt>Origin</dt><dd>Made in India · Imported</dd>
+      </dl>
+    </div>
   </section>
 
-  <nav class="jump" aria-label="Sections"><div class="wrap"><a href="#a-clothing">Clothing</a><a href="#a-spices">Spices</a></div></nav>
+  <nav class="jump" aria-label="Sections"><div class="wrap"><a class="pill" href="#a-clothing">Clothing <span>8</span></a><a class="pill" href="#a-spices">Spices</a></div></nav>
 
-  <section class="wrap grid wall" id="a-clothing" aria-labelledby="a-clothing-h">
-    <h2 class="h2" id="a-clothing-h">Clothing</h2>
-    <div data-fill="wall" style="display:contents"></div>
+  <section class="wrap sec" id="a-clothing" aria-labelledby="a-clothing-h">
+    <div class="sec-head"><h2 class="h2" id="a-clothing-h">Clothing</h2><span class="pill">Newest first</span></div>
+    <div class="pgrid" data-fill="kerala"></div>
   </section>
-  <section class="wrap grid wall" id="a-spices" aria-labelledby="a-spices-h">
-    <h2 class="h2" id="a-spices-h">Spices</h2>
-    <p class="soon">Coming soon.</p>
+  <section class="wrap sec" id="a-spices" aria-labelledby="a-spices-h">
+    <div class="sec-head"><h2 class="h2" id="a-spices-h">Spices</h2></div>
+    <div class="panel soon-panel"><p>Spices from Kerala are coming soon.</p><a class="pill" href="#home">Browse other homes</a></div>
   </section>
-  <footer class="foot"><div class="wrap"><span>The Indian Wholesale Club</span></div></footer>
+  <footer class="foot" data-fill="foot"></footer>
 </main>
 
 <!-- =============================== PRODUCT =============================== -->
@@ -262,12 +326,12 @@ body { font-size: 16px; line-height: 1.6; }
     <nav class="nav" aria-label="Main"><a href="#home">States</a><a href="#region">Clothing</a><a href="#region">Spices</a><a href="#home">Search</a><a href="#home">Bag (0)</a></nav>
   </header>
 
-  <section class="wrap grid pdp">
+  <section class="wrap pdp">
     <div class="gallery">
-      <figure class="g1"><div class="ph ph--kasavu" data-reveal data-label="Kasavu saree, full length, worn"></div></figure>
-      <figure class="g2" data-speed="0.08"><div class="ph ph--portrait" data-reveal data-label="Draped, side" style="--ar:4/5"></div></figure>
-      <figure class="g3"><div class="ph ph--mundu" data-reveal data-label="Border, detail" style="--ar:1/1"></div></figure>
-      <figure class="g4" data-speed="0.12"><div class="ph ph--kasavu" data-reveal data-label="Folded" style="--ar:4/5"></div></figure>
+      <div class="ph ph--kasavu" data-reveal data-label="Full length, worn"></div>
+      <div class="ph ph--portrait" data-reveal data-label="Draped, side"></div>
+      <div class="ph ph--mundu" data-reveal data-label="Border, detail"></div>
+      <div class="ph ph--kasavu" data-reveal data-label="Folded"></div>
     </div>
     <aside class="buy" aria-label="Buy">
       <p class="crumb" style="margin:0"><a href="#region">Kerala</a> &nbsp;·&nbsp; Clothing &nbsp;·&nbsp; Sarees</p>
@@ -275,24 +339,25 @@ body { font-size: 16px; line-height: 1.6; }
       <p class="price sample">$99</p>
       <span class="tbd">Summary · one line from the listing</span>
       <p class="label" style="margin:22px 0 0">Size</p>
-      <div class="opt"><span class="on">Free size</span></div>
-      <p style="margin:0;font-size:14px"><span class="sample">3</span> available</p>
-      <p style="margin:8px 0 0;font-size:14px">Estimated delivery <strong class="sample">Nov 3 – Nov 10</strong> <span style="color:var(--muted)">if you order by <span class="sample">Oct 6</span></span></p>
-      <a class="btn" href="#product">Add to bag</a>
-      <a class="save" href="#product">Save for later</a>
+      <div class="opts"><span class="pill on">Free size</span></div>
+      <p class="avail"><span><span class="sample">3</span> available</span></p>
+      <div class="deliv">Estimated delivery <b class="sample">Nov 3 – Nov 10</b> if you order by <span class="sample">Oct 6</span>.<br>
+        <span style="color:var(--muted)">Dates come from the current order cycle, never a fixed promise.</span></div>
+      <div class="cta"><a class="pill dark" href="#product">Add to bag</a><a class="pill" href="#product" aria-label="Save for later">♡ Save</a></div>
       <details open><summary>Details</summary>
         <span class="tbd" style="margin-top:10px">Description · from the listing</span>
         <dl><dt>Craft</dt><dd>Kasavu</dd><dt>Fabric</dt><dd class="sample">from the listing</dd><dt>Care</dt><dd class="sample">from the listing</dd></dl>
       </details>
-      <details><summary>Delivery</summary><p style="font-size:14px">Ships with the next delivery window shown above. Dates come from the current order cycle, never a fixed promise (D-008).</p></details>
+      <details><summary>Size and fit</summary><span class="tbd" style="margin-top:10px">Size notes · from the listing</span></details>
       <p class="origin">Made in India · from Kerala · Imported</p>
     </aside>
   </section>
 
-  <section class="wrap grid more" aria-labelledby="a-more">
-    <h2 class="h2" id="a-more">More from Kerala</h2>
-    <div data-fill="more" style="display:contents"></div>
+  <section class="wrap sec" aria-labelledby="a-more">
+    <div class="sec-head"><h2 class="h2" id="a-more">More from Kerala</h2><a class="pill" href="#region">See all</a></div>
+    <div class="pgrid" data-fill="more"></div>
   </section>
+  <footer class="foot" data-fill="foot"></footer>
 </main>
 
 <!-- =============================== ADMIN =============================== -->
@@ -307,21 +372,103 @@ body { font-size: 16px; line-height: 1.6; }
 
 <script src="https://unpkg.com/lenis@1.1.20/dist/lenis.min.js"></script>
 <script src="shared/data.js"></script>
+<script src="shared/india-map.js"></script>
 <script>
-  const card = (p, speed) => `<a class="card" href="#product"${speed ? ` data-speed="${speed}"` : ''}>
-    <figure>${IWC.ph(p.ph, p.label)}</figure>
-    <div class="row"><span class="nm">${p.name}</span><span class="sample">${p.price}</span></div>
-    <span class="avail"><span class="sample">${p.avail}</span> available</span></a>`;
-  const live = IWC.regions.filter((r) => r.live);
-  IWC.fill('exhibits', live.map((r, i) => `<a class="exhibit ex${i + 1}" href="#region"${i === 1 ? ' data-speed="0.1"' : ''}>
-    <figure>${IWC.ph(IWC.regionPhoto[r.slug], r.name + ', region image', '', i === 0 ? '4/5' : '3/4')}</figure>
-    <div class="cap"><span class="name">${r.name}</span><span class="label">Clothing · Spices</span></div></a>`).join(''));
-  IWC.fill('index', IWC.regions.map((r) => `<li class="${r.live ? 'is-live' : ''}"><a href="${r.live ? '#region' : '#home'}">${r.name}</a>
-    <span class="tag">${r.live ? 'Available now' : 'Coming soon'}</span></li>`).join(''));
-  IWC.fill('strip', IWC.products.map((p) => card(p)).join(''));
+  // Sample accents (not final): set per region in the admin (C2), AA-checked in index.html.
+  const ACC = { kerala: '#2F5B3F', rajasthan: '#9A3B1F', punjab: '#7A5200' };
+  const bySlug = Object.fromEntries(IWC.regions.map((r) => [r.slug, r]));
+  const name = (slug) => bySlug[slug].name;
+
+  const card = (p, i) => `<article class="pcard">
+    <a class="pimg" href="#product">${IWC.ph(p.ph, p.label)}
+      ${i === 0 ? '<span class="badge sample">New in</span>' : ''}<span class="dots" aria-hidden="true"><i class="on"></i><i></i></span></a>
+    <div class="pmeta"><div><a class="pname" href="#product">${p.name}</a>
+      <span class="pprice"><span class="sample">${p.price}</span> · ${name(p.region)}</span></div>
+      <button class="pill add" type="button">＋ Add</button></div></article>`;
   const kerala = IWC.products.filter((p) => p.region === 'kerala');
-  IWC.fill('wall', kerala.map((p, i) => card(p, [0, 0.08, 0.04, 0.12, 0.06][i])).join(''));
-  IWC.fill('more', kerala.slice(1, 4).map((p) => card(p)).join(''));
+  const pick = (n) => IWC.products.find((p) => p.name === n);
+  IWC.fill('new', [pick('Kasavu saree'), pick('Bandhani dupatta'), pick('Phulkari dupatta'), pick('Mundu')].map(card).join(''));
+  IWC.fill('kerala', kerala.map(card).join(''));
+  IWC.fill('more', kerala.slice(1, 5).map((p) => card(p, 1)).join(''));
+
+  // ---- Pick your home: map + stamps + names
+  const live = IWC.regions.filter((r) => r.live);
+  const soon = IWC.regions.filter((r) => !r.live);
+  IWC.fill('stamps', live.map((r) => `<a class="stamp" href="#region" data-slug="${r.slug}" data-name="${r.name}" style="--acc:${ACC[r.slug]}">
+    <span class="stamp-face">${IWC.ph(IWC.regionPhoto[r.slug], r.name)}<span class="stamp-cap"><em>${r.name}</em><b>Open</b></span></span>
+    <svg class="postmark" viewBox="0 0 100 100" aria-hidden="true"><use href="#postmark"/></svg></a>`).join(''));
+  IWC.fill('soon', soon.map((r) => `<li data-name="${r.name}"><a href="#pick" data-slug="${r.slug}">${r.name}</a></li>`).join(''));
+  document.querySelector('[data-count="live"]').textContent = live.length;
+  document.querySelector('[data-count="soon"]').textContent = soon.length;
+
+  const M = IWC.indiaMap;
+  const TINY = ['chandigarh', 'delhi', 'goa', 'puducherry', 'lakshadweep', 'dadra-and-nagar-haveli-and-daman-and-diu'];
+  const attrs = (slug) => {
+    const r = bySlug[slug];
+    return `data-slug="${slug}" class="${r.live ? 'live' : ''}"${r.live ? ` style="--acc:${ACC[slug]}"` : ''}`;
+  };
+  IWC.fill('map', `<svg class="map" viewBox="${M.viewBox}" aria-hidden="true">
+    ${Object.entries(M.paths).map(([slug, d]) => `<path d="${d}" ${attrs(slug)}/>`).join('')}
+    ${TINY.map((slug) => { const [x, y] = M.centers[slug]; return `<circle cx="${x}" cy="${y}" r="8" ${attrs(slug).replace('class="', 'class="dot ')}/>`; }).join('')}
+  </svg>`);
+
+  const panel = document.querySelector('.map-panel');
+  const svg = panel.querySelector('.map');
+  const tip = panel.querySelector('.tip');
+  const marked = (slug) => document.querySelectorAll(`#pick [data-slug="${slug}"]`);
+  let current = null;
+  function highlight(slug) {
+    if (current) marked(current).forEach((el) => el.classList.remove('on'));
+    current = slug;
+    if (slug) marked(slug).forEach((el) => el.classList.add('on'));
+  }
+  function showTip(slug, x, y) {
+    const r = bySlug[slug];
+    tip.innerHTML = `${r.name}<small>${r.live ? 'Open now · click to enter' : 'Coming soon'}</small>`;
+    tip.style.left = x + 'px'; tip.style.top = y + 'px'; tip.hidden = false;
+  }
+  svg.addEventListener('pointermove', (e) => {
+    const slug = e.target.dataset && e.target.dataset.slug;
+    if (!slug) { highlight(null); tip.hidden = true; return; }
+    highlight(slug);
+    const box = panel.getBoundingClientRect();
+    showTip(slug, e.clientX - box.left, e.clientY - box.top);
+  });
+  svg.addEventListener('pointerleave', () => { highlight(null); tip.hidden = true; });
+  svg.addEventListener('click', (e) => { const s = e.target.dataset && e.target.dataset.slug; if (s && bySlug[s].live) location.hash = 'region'; });
+  // Names and stamps light up their region on the map (and show the same caption).
+  document.querySelectorAll('#pick .side [data-slug]').forEach((el) => {
+    const on = () => {
+      highlight(el.dataset.slug);
+      const shape = svg.querySelector(`[data-slug="${el.dataset.slug}"]`).getBoundingClientRect();
+      const box = panel.getBoundingClientRect();
+      showTip(el.dataset.slug, shape.left + shape.width / 2 - box.left, shape.top + shape.height / 2 - box.top);
+    };
+    const off = () => { highlight(null); tip.hidden = true; };
+    el.addEventListener('pointerenter', on); el.addEventListener('pointerleave', off);
+    el.addEventListener('focus', on); el.addEventListener('blur', off);
+  });
+  // Search filters the names and stamps and fades the rest of the map.
+  document.querySelector('[data-search]').addEventListener('input', (e) => {
+    const q = e.target.value.trim().toLowerCase();
+    let shown = 0;
+    document.querySelectorAll('#pick .soon-list li, #pick .stamp').forEach((el) => {
+      const hit = !q || el.dataset.name.toLowerCase().includes(q);
+      el.hidden = !hit; shown += hit;
+    });
+    svg.classList.toggle('searching', !!q);
+    svg.querySelectorAll('[data-slug]').forEach((el) => el.classList.toggle('match', !!q && name(el.dataset.slug).toLowerCase().includes(q)));
+    document.querySelector('[data-empty]').hidden = shown > 0;
+  });
+
+  // ---- Footer (Inter only here)
+  IWC.fill('foot', `<div class="foot-grid">
+    <div><p class="brand">The Indian Wholesale Club</p><p style="margin:0;max-width:30ch">Clothing and spices from all of India, delivered in the US.</p></div>
+    <div><h4>Shop</h4><ul><li><a href="#home">States</a></li><li><a href="#region">Clothing</a></li><li><a href="#region">Spices</a></li><li><a href="#home">Search</a></li></ul></div>
+    <div><h4>Help</h4><ul><li><a href="#home">How it works</a></li><li><a href="#home">Track an order</a></li><li><a href="#home">Shipping &amp; returns</a></li><li><a href="#home">FAQ</a></li><li><a href="#home">Contact</a></li></ul></div>
+    <div><h4>About</h4><ul><li><a href="#home">About us</a></li><li><a href="#home">Privacy</a></li><li><a href="#home">Terms</a></li></ul></div>
+  </div>
+  <div class="foot-base"><span>© 2026 The Indian Wholesale Club</span><span>Map data: <a href="https://github.com/datameet/maps">DataMeet India</a>, CC BY 4.0</span></div>`);
 </script>
 <script src="shared/admin.js"></script>
 <script src="shared/mockup.js"></script>

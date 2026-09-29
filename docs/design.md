@@ -4,11 +4,16 @@
 > final yet: Claude proposes mockups of Home, the Region page, the Product page and admin Listing that follow the
 > direction, for founder review **before** building them (coding plan C1). Until then, don't invent hex values or fonts in
 > code. Use tokens from `packages/tokens` (created in R4 with neutral placeholder values).
-> **Mockups ready (2026-09-29):** three directions (A gallery wall, B magazine spread, C immersive/dark) as local HTML in
-> `design/mockups/index.html`, with proposed palettes, contrast checks and the founder's open choices. Proposals only,
-> nothing decided until the founder picks.
+> **Direction chosen (2026-09-30, D-050):** A, reworked: the hero keeps its format, everything below it is a symmetric
+> full-width grid, no dark mode, fonts below. Mockup: `design/mockups/index.html` (palette with contrast, the map source,
+> the founder's remaining choices). Tokens go into `packages/tokens` in C1 step 2.
 
-## Direction (founder, D-049)
+## Direction (founder, D-049; layout below the hero and fonts changed by D-050)
+**D-050 (2026-09-30):** Direction A. The hero keeps A's asymmetric, image-led format and motion; **everything below the
+hero sits on a symmetric grid** (four equal columns of 3 : 4 rounded product photos with name, price and "Add", equal
+two-panel rows), full width with small side gutters. **Fonts:** Georgia for headings, Poppins for paragraphs, Montserrat
+for interface text (navigation, buttons, labels, product names on cards), Inter for the footer only. No dark mode.
+The D-049 bullets below still apply to the hero and to motion; their asymmetric layout rules no longer apply below it.
 The storefront reads like a **premium editorial magazine / contemporary gallery wall** built from large photographs:
 - **Layout:** asymmetric, image-led compositions. Large photographs at varying vertical positions, varied widths,
   offsets and overlaps; images may break the grid and extend between sections; floating compositions.
@@ -47,12 +52,13 @@ region images, C2), mockups and dev pages use clearly marked placeholders, never
    Telugu, Kannada, Malayalam, Meetei Mayek, Ol Chiki, Latin for several north-eastern languages…). Use Noto Sans for
    the specific script, **subset and loaded only on that region's page** (speed, D-011).
 4. **India map:** use a map consistent with **India's official boundaries**. This audience will notice immediately.
-   The map must be a static SVG (no map library) and lightweight.
+   The map must be a static SVG (no map library) and lightweight. The mockup draws it from DataMeet's state boundaries
+   (CC BY 4.0, credit shown), about 27 KB gzipped; the source is confirmed with Q-21.
 5. **Photography:** real product photos taken at listing time, consistent aspect ratio (decided with the mockups). No
    stock photos presented as products.
 6. **Motion:** as §Direction (D-049): Lenis smooth scroll + reveal/parallax, the only motion library allowed on the
    storefront (no framer-motion), off for `prefers-reduced-motion`. Everything else CSS.
-7. **Light and dark:** tokens support both. Dark mode on customer pages is optional and decided at mockup time.
+7. **Light only:** no dark mode on customer pages (D-050).
 
 ## Tokens (`packages/tokens`, created in R4)
 One source for web (Tailwind preset) and app (NativeWind): `packages/tokens/tokens.js` → `preset.js`. Components use

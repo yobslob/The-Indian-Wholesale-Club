@@ -19,6 +19,7 @@ decision, and a phase waits for its answers.
 - Pricing settings: researched **estimates**, labelled, until the founder's own numbers (D-047, C6).
 - Express: 15–18 days (D-048). Still open: from the order or from arrival (Q-18).
 - Storefront design direction: editorial, image-led, Lenis smooth scrolling (D-049, `design.md` §Direction).
+- Direction A chosen (2026-09-30, D-050): A's hero, a symmetric grid below it, Georgia / Poppins / Montserrat / Inter, no dark mode.
 
 ## Phases
 | # | Phase | Size | What it delivers | Waits on | Done when |

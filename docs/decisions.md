@@ -248,7 +248,7 @@ before launch; a launch check refuses to go live while any value is still marked
 Founder, verbatim: "15-18 days". *Open (Q-18, narrowed):* counted from the order date, or from the export's arrival in
 the US (how express days work today)? Express stays off until confirmed.
 
-**D-049 · 2026-09-29 · founder: Design direction for the storefront**
+**D-049 · 2026-09-29 · founder: Design direction for the storefront** · PARTLY SUPERSEDED by D-050 (layout below the hero, fonts, no dark mode)
 The founder's four prompts, verbatim:
 1. "Asymmetric editorial composition with large photographs placed at varying vertical positions. Generous whitespace
    with overlapping image edges and strong visual rhythm. Lenis smooth scrolling with subtle image parallax and slow
@@ -269,3 +269,24 @@ Supersedes, for the storefront's scrolling only, the "no animation libraries" li
 because the founder named it. *Proposed guard rails (design.md §Direction):* Lenis and the scroll effects load as one small
 client module after the page is interactive, are switched off entirely for `prefers-reduced-motion`, never block
 keyboard or screen-reader scrolling, and the speed budgets still hold (`check.mjs http`, first-load JS ≤ 150 KB).
+
+**D-050 · 2026-09-30 · founder: Direction A chosen, symmetric grid below the hero, fonts**
+Founder, verbatim, reviewing the three C1 mockups: "Direction C is absolute trash, no dark mode, B is very mid, A is workable
+upon keep the hero section format as is, make everything below it symmetrical (grid wise).  I have attached a photo for the
+grid below it. I did not like the available now and pick your home, these are just too big, now I am not asking for very
+small but I am saying I didnt even like the design, build it from scratch and think of something creative something that
+would look creative, minimilistic, elegant, out of the AI slop box. Also very concerning thing is the very big whitespaces
+left on either sides of the screen. Fonts currently very trash very very bad ai looking fonts, use poppins for paragraphs,
+must use georgia family according to the placements,montserrat wherever necassery and Inter only for the footer"
+The attached grid: four equal columns of rounded portrait photos, each with name, price and an "Add" button, a section
+title on the left and a "Discover More" pill on the right. The founder also attached a political map of India's states
+and union territories.
+What it means for the build: Direction A (`design/mockups/a-gallery.html`); B and C are dropped. **No dark mode** on
+customer pages (answers `design.md` §7). The hero keeps A's asymmetric format with Lenis/reveal/parallax (D-049);
+**everything below it sits on a symmetric grid**, full width with small side gutters (no centred max-width column).
+**Fonts:** Georgia for headings, Poppins for paragraphs, Montserrat for interface text, Inter for the footer only.
+Supersedes D-049's asymmetric/overlapping layout rules below the hero; D-049's motion rules and guard rails stay.
+*Interpretation (proposed, confirm when C1 step 2 starts):* "Georgia according to the placements" = headings, region
+names, section titles, the product title and origin line; Montserrat "where necessary" = navigation, buttons, labels,
+product names on cards; product photos 3 : 4 portrait as in the reference; the attached map = the look and the official
+boundaries for Home's map, drawn from DataMeet's open data rather than traced from the (copyrighted) image (Q-21).
