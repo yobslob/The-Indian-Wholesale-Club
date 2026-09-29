@@ -16,4 +16,4 @@ Every step ends with a commit and a founder-run `node scripts/check.mjs` (D-021)
 | **R8** Hand-off | S | docs match code (every route and table checked), `current.md` → "restructure done" | founder sign-off, then write the **coding plan** |
 
 ## Coding phase
-Drafted in `coding-plan.md` (C1–C8), waiting for the founder's review of the order and the questions it depends on.
+The restructure is done (2026-09-29). What comes next is `coding-plan.md` (C1–C8), with founder answers D-045–D-049 folded in; C1 (design) is first.
