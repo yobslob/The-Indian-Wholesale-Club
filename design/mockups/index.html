@@ -1,0 +1,146 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<meta name="robots" content="noindex">
+<title>IWC design mockups</title>
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Cormorant+Garamond:ital,wght@0,300;1,300&family=Instrument+Serif:ital@0;1&family=Bodoni+Moda:ital,opsz,wght@1,6..96,400&display=swap&text=Where%E2%80%99shome%3F%20">
+
+<style>
+:root { --bg: #FAFAF9; --fg: #1C1917; --muted: #57534E; --line: #E7E5E4; --card: #FFFFFF; }
+* { box-sizing: border-box; }
+body { margin: 0; background: var(--bg); color: var(--fg); font: 15px/1.6 system-ui, -apple-system, 'Segoe UI', sans-serif; }
+main { max-width: 1120px; margin: 0 auto; padding: 40px 16px 80px; }
+h1 { font-size: 30px; margin: 0 0 6px; }
+h2 { font-size: 20px; margin: 40px 0 12px; }
+h3 { font-size: 17px; margin: 0; }
+p, li { max-width: 75ch; }
+.muted { color: var(--muted); }
+.dirs { display: grid; grid-template-columns: repeat(auto-fit, minmax(300px, 1fr)); gap: 16px; }
+.dir { background: var(--card); border: 1px solid var(--line); border-radius: 10px; overflow: hidden; display: flex; flex-direction: column; }
+.dir .hero { padding: 22px 18px; min-height: 150px; display: flex; flex-direction: column; justify-content: flex-end; }
+.dir .body { padding: 16px 18px 18px; display: flex; flex-direction: column; gap: 10px; flex: 1; }
+.dir .open { display: inline-block; margin-top: auto; font-weight: 600; padding: 10px 14px; border: 1px solid var(--fg); border-radius: 6px; text-decoration: none; color: var(--fg); text-align: center; }
+.sw { display: flex; flex-wrap: wrap; gap: 6px; }
+.sw span { display: inline-flex; align-items: center; gap: 6px; font: 12px/1 ui-monospace, Consolas, monospace; border: 1px solid var(--line); border-radius: 4px; padding: 4px 6px 4px 4px; }
+.sw i { width: 16px; height: 16px; border-radius: 3px; border: 1px solid rgba(0, 0, 0, .15); }
+table { border-collapse: collapse; width: 100%; font-size: 13px; background: var(--card); }
+th, td { text-align: left; padding: 7px 10px; border-bottom: 1px solid var(--line); vertical-align: top; }
+th { font-weight: 600; color: var(--muted); }
+td.n { font-variant-numeric: tabular-nums; }
+.scroll { overflow-x: auto; border: 1px solid var(--line); border-radius: 8px; }
+.pass { color: #166534; font-weight: 600; }
+ol.q li, ul li { margin-bottom: 6px; }
+code { font: 13px ui-monospace, Consolas, monospace; background: #F0EFED; padding: 1px 4px; border-radius: 3px; }
+</style>
+</head>
+<body>
+<main>
+  <h1>IWC design mockups · coding plan C1</h1>
+  <p class="muted">Three directions that follow the founder’s design brief (D-049, <code>docs/design.md</code> §Direction), each showing Home,
+    a Region page (Kerala), a Product page and the admin Listing screen. <b>Pick one (or say what to mix)</b> and the chosen
+    tokens go into <code>packages/tokens</code>; nothing is built into the apps before that.</p>
+
+  <h2>The three directions</h2>
+  <div class="dirs">
+    <article class="dir">
+      <div class="hero" style="background:#F4EFE6;color:#1E1B16">
+        <div style="font:300 44px/1 'Cormorant Garamond',Georgia,serif">Where’s <i style="color:#7A2E23">home?</i></div>
+      </div>
+      <div class="body">
+        <h3>A · Gallery wall</h3>
+        <p>Warm ivory, a light refined serif, and oversized photos floating at uneven heights, like a quiet gallery. The calmest and most “luxury” of the three.</p>
+        <div class="sw"><span><i style="background:#F4EFE6"></i>#F4EFE6 canvas</span><span><i style="background:#1E1B16"></i>#1E1B16 ink</span><span><i style="background:#7A2E23"></i>#7A2E23 brand</span></div>
+        <p class="muted" style="margin:0">Type: Cormorant Garamond (headings) + Manrope (text).</p>
+        <a class="open" href="a-gallery.html">Open direction A</a>
+      </div>
+    </article>
+    <article class="dir">
+      <div class="hero" style="background:#FAF8F4;color:#141414;border-bottom:1px solid #141414">
+        <div style="font:400 44px/1 'Instrument Serif',Georgia,serif">Where’s <i style="color:#B0341E">home?</i></div>
+      </div>
+      <div class="body">
+        <h3>B · Magazine spread</h3>
+        <p>A masthead, numbered spreads, photos that cross section edges, a sideways-scrolling row of pieces and a “contents” list of all 36. The most editorial of the three.</p>
+        <div class="sw"><span><i style="background:#FAF8F4"></i>#FAF8F4 canvas</span><span><i style="background:#141414"></i>#141414 ink</span><span><i style="background:#B0341E"></i>#B0341E brand</span></div>
+        <p class="muted" style="margin:0">Type: Instrument Serif (headings) + Inter Tight (text).</p>
+        <a class="open" href="b-magazine.html">Open direction B</a>
+      </div>
+    </article>
+    <article class="dir">
+      <div class="hero" style="background:#14110F;color:#F2EBE0">
+        <div style="font:italic 400 44px/1 'Bodoni Moda',Didot,serif">Where’s home?</div>
+      </div>
+      <div class="body">
+        <h3>C · Immersive (dark)</h3>
+        <p>A deep dark base, full-bleed photos, region panels that stack as you scroll, and a row of pieces that moves sideways as you scroll down. Region accents glow. The most dramatic of the three.</p>
+        <div class="sw"><span><i style="background:#14110F"></i>#14110F canvas</span><span><i style="background:#F2EBE0"></i>#F2EBE0 ink</span><span><i style="background:#E6A23C"></i>#E6A23C brand</span></div>
+        <p class="muted" style="margin:0">Type: Bodoni Moda (headings) + DM Sans (text).</p>
+        <a class="open" href="c-immersive.html">Open direction C</a>
+      </div>
+    </article>
+  </div>
+
+  <h2>How to look at them</h2>
+  <ul>
+    <li>Open a direction and use the floating bar at the bottom to switch between <b>Home · Region · Product · Admin listing</b>.
+      <b>Motion: on/off</b> previews what visitors with “reduce motion” turned on see (no smooth scroll, no parallax, images simply visible).</li>
+    <li>Try it at phone width too (narrow the window). Keyboard: Tab moves through links; the jump links on the region page scroll to Clothing / Spices.</li>
+    <li>They need an internet connection (Google Fonts and Lenis load from a CDN). Double-clicking the files works; so does <code>python -m http.server 4321 --directory design/mockups</code>.</li>
+    <li><b>Everything marked is a placeholder:</b> photos are drawn patterns labelled “Placeholder” (no stock photos); prices, dates and counts with a dotted
+      underline are samples; dashed “To be written” boxes are the founder’s text (C2); greetings are the seeded drafts (D-019). The India map is a labelled box (see Q-21 below).</li>
+  </ul>
+
+  <h2>Contrast check (WCAG 2.2 AA needs 4.5 : 1 for text)</h2>
+  <p class="muted">Computed with the WCAG relative-luminance formula. The region accents are <b>samples</b> for Kerala, Punjab and Rajasthan, not decisions:
+    real values are set per region in the admin (C2), and the admin form gets this same check.</p>
+  <div class="scroll"><table>
+    <thead><tr><th>Direction</th><th>Colour</th><th>Hex</th><th>On canvas</th><th>On surface</th><th>Canvas text on it</th></tr></thead>
+    <tbody>
+      <tr><td rowspan="6">A</td><td>ink</td><td>#1E1B16</td><td class="n pass">14.99</td><td class="n pass">13.58</td><td></td></tr>
+      <tr><td>muted text</td><td>#665E53</td><td class="n pass">5.57</td><td class="n pass">5.05</td><td></td></tr>
+      <tr><td>brand</td><td>#7A2E23</td><td class="n pass">8.18</td><td class="n pass">7.41</td><td class="n pass">white 9.36</td></tr>
+      <tr><td>accent · Kerala</td><td>#2F5B3F</td><td class="n pass">6.82</td><td class="n pass">6.18</td><td class="n pass">6.82</td></tr>
+      <tr><td>accent · Rajasthan</td><td>#9A3B1F</td><td class="n pass">6.07</td><td class="n pass">5.50</td><td class="n pass">6.07</td></tr>
+      <tr><td>accent · Punjab</td><td>#7A5200</td><td class="n pass">6.04</td><td class="n pass">5.48</td><td class="n pass">6.04</td></tr>
+      <tr><td rowspan="6">B</td><td>ink</td><td>#141414</td><td class="n pass">17.37</td><td class="n pass">15.64</td><td></td></tr>
+      <tr><td>muted text</td><td>#5E5A54</td><td class="n pass">6.46</td><td class="n pass">5.81</td><td></td></tr>
+      <tr><td>brand</td><td>#B0341E</td><td class="n pass">5.90</td><td class="n pass">5.31</td><td class="n pass">white 6.26</td></tr>
+      <tr><td>accent · Kerala</td><td>#1F6B4E</td><td class="n pass">6.05</td><td class="n pass">5.45</td><td class="n pass">6.05</td></tr>
+      <tr><td>accent · Rajasthan</td><td>#A83A1A</td><td class="n pass">6.03</td><td class="n pass">5.43</td><td class="n pass">6.03</td></tr>
+      <tr><td>accent · Punjab</td><td>#855A00</td><td class="n pass">5.72</td><td class="n pass">5.15</td><td class="n pass">5.72</td></tr>
+      <tr><td rowspan="6">C</td><td>ink</td><td>#F2EBE0</td><td class="n pass">15.88</td><td class="n pass">14.44</td><td></td></tr>
+      <tr><td>muted text</td><td>#A89F92</td><td class="n pass">7.20</td><td class="n pass">6.55</td><td></td></tr>
+      <tr><td>brand</td><td>#E6A23C</td><td class="n pass">8.59</td><td class="n pass">7.81</td><td class="n pass">8.59</td></tr>
+      <tr><td>accent · Kerala</td><td>#86C09A</td><td class="n pass">8.97</td><td class="n pass">8.16</td><td class="n pass">8.97</td></tr>
+      <tr><td>accent · Rajasthan</td><td>#EE9068</td><td class="n pass">7.90</td><td class="n pass">7.18</td><td class="n pass">7.90</td></tr>
+      <tr><td>accent · Punjab</td><td>#E8BC52</td><td class="n pass">10.52</td><td class="n pass">9.56</td><td class="n pass">10.52</td></tr>
+    </tbody>
+  </table></div>
+
+  <h2>Shared by all three</h2>
+  <ul>
+    <li><b>Motion</b> (the D-049 guard rails): Lenis smooth scroll (about 4 KB gzipped), reveal by clipping + slow scale + fade, parallax and a slight sideways drift
+      from scroll speed, all lighter on phones and <b>off</b> with “reduce motion”. Content is readable with JavaScript off. In the real build this is one small
+      client module loaded after the page is interactive; fonts are self-hosted with <code>next/font</code>, not loaded from Google.</li>
+    <li><b>Script greetings:</b> the Malayalam greeting uses Noto Sans Malayalam, subset to just that word and loaded only on the Kerala page (<code>design.md</code> §3).
+      That is also why Home shows region <i>names</i> and not greetings: 36 greetings would load many script fonts on the first page.</li>
+    <li><b>Product photos: 4 : 5 portrait</b> is proposed for every product card and the first gallery photo (clothing is photographed standing or draped).
+      Gallery and editorial images vary.</li>
+    <li><b>Admin Listing</b> is the same plain, dense screen in all three; only the tokens change. Items tagged “target” (camera photos, suggested price,
+      quantity re-checks) are coding-phase work (C3, C6).</li>
+  </ul>
+
+  <h2>What the founder decides</h2>
+  <ol class="q">
+    <li><b>Which direction:</b> A, B or C, or a mix (say which parts, e.g. “B’s region page with A’s colours”).</li>
+    <li><b>Dark mode on customer pages</b> (<code>design.md</code> §7): choosing C makes the store dark. Choosing A or B keeps it light.
+      Offering both would need <b>two accent colours per region</b> (one for light, one for dark), because an accent that reads on ivory is too dark on black.</li>
+    <li><b>Type pairing:</b> keep the direction’s pair, or swap (all six fonts are free, open licence).</li>
+    <li><b>Product photo shape:</b> 4 : 5 portrait as proposed, or another ratio. The COO will shoot every product this way (C3).</li>
+    <li><b>The India map source (Q-21):</b> the map must follow India’s official boundaries. Which source should the SVG be traced from?</li>
+  </ol>
+</main>
+</body>
+</html>

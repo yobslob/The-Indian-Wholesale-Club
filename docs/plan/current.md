@@ -1,12 +1,13 @@
 # Current status
 
 ## Resume here
-**The restructure is done (R0–R8).** The founder ran the final checks, pushed, reset the hosted dev DB, reviewed the coding
-plan and answered its questions (2026-09-29; taken as the R8 sign-off). Work continues in **Claude Code** on the
-founder's machine (CLAUDE.md §How work and verification run). **Next: coding plan C1 (design)**, following the founder's
-direction (D-049, `design.md` §Direction): propose 2–3 mockup directions of Home, Region, Product and admin Listing for the
-founder to pick, before building. Open questions: Q-18 (express 15–18 days: from the order or from arrival?), and before
-launch Q-3, Q-5, Q-9, Q-10, Q-19.
+**Coding plan C1 (design), step 1 done: mockups ready for the founder's pick.** Three directions following D-049 (A gallery
+wall, B magazine spread, C immersive/dark), each with Home, Region (Kerala), Product and admin Listing, are local HTML in
+`design/mockups/` (start at `index.html`; `.claude/launch.json` → `mockups` serves them). **Next: the founder picks a
+direction (and answers the choices listed in `index.html`: dark mode, type pairing, photo ratio, Q-21 map source)**, then
+file the pick with `/record-answer`, set the final tokens in `packages/tokens` and build the storefront on it (C1 step 2).
+Open questions: Q-18 (express 15–18 days: from the order or from arrival?), Q-21 (India map source), and before launch
+Q-3, Q-5, Q-9, Q-10, Q-19.
 
 ## Steps
 | Step | Status | Evidence |
@@ -56,6 +57,15 @@ launch Q-3, Q-5, Q-9, Q-10, Q-19.
 | 2026-09-29 | `f607284` | GitHub Actions | first CI run (`ci.yml`: `check.mjs` on a local Supabase in the runner) | **passed on the first attempt, 5 min 49 s** (founder) |
 | 2026-09-29 | R8 | Claude: new `scripts/docs-audit.mjs` (dependency-free) + an independent read-through by a separate agent that had not written the docs | docs vs code: paths, decision/question ids, 25 web pages, app screens, 55 schema objects, 21 env vars; then behaviour claims | the script found 2 real mismatches (a stale guard path in INV-7, an undocumented visitor function) plus stale step references; mutation check: a fake page, env var, path and decision id → all 4 caught. The read-through found 19 claims that were false or overstated (e.g. "the next cycle opens immediately at cutoff", only the confirmation email exists, the app can't add products, no arrival check-off, Insights is sales-by-region only); each was checked in the code and the docs now say what exists and what is target. Two became backlog items (B-19 cutoff, B-20 emails) and one a question (Q-20) |
 | 2026-09-29 | `871f6c9` | founder | `node scripts/check.mjs` (with the new `docs` step), `git push`, **hosted dev DB reset** to the new schema | all OK (founder: "everything is OK and running"); hosted dev DB now on the new schema |
+| 2026-09-29 | C1 mockups | Claude, the repo's Playwright 1.63 (Chromium) against a local static server and `file://` | full-page screenshots of the 3 directions × 4 screens at 1440 px and 390 px (reduced motion); motion on: wheel-scroll each Home, check console errors, Lenis active, reveals, parallax, C's sideways track, screen switching; WCAG contrast of every proposed colour | no console errors; no horizontal overflow at either width (after fixes: admin tables scroll on phones); Lenis + reveals + parallax run, C's track moves with scroll; every text colour and sample accent ≥ 5.05 : 1 (AA needs 4.5). `check.mjs docs lint` OK (0.6 s, 76.2 s). **Not checked:** real browsers other than Chromium, a real phone, screen readers |
+
+## C1 sub-steps (design)
+| # | Sub-step | Status |
+|---|---|---|
+| 1.1 | Three mockup directions (Home, Region, Product, admin Listing) with proposed palettes, contrast checks and motion (`design/mockups/`) | ✅ committed · waiting on the founder's pick |
+| 1.2 | Founder's pick filed (`/record-answer`), final tokens in `packages/tokens`, script fonts per region, accent contrast check in the admin form | ⏳ after the pick |
+| 1.3 | Storefront (web) on the chosen direction: layout, Lenis + reveal/parallax module, `next/image`; then the app with Reanimated | ⏳ |
+| 1.4 | E2E: reduced motion + keyboard; `check.mjs` speed budgets | ⏳ |
 
 ## R7 sub-steps
 | # | Sub-step | Status |
@@ -107,7 +117,8 @@ app screen on a device.
 
 ## Waiting on the founder
 1. Q-18: express delivery "15–18 days" (D-048), counted from the order date or from the export's arrival in the US?
-2. C1: pick one of the mockup directions Claude proposes (D-049).
+2. C1: pick one of the mockup directions in `design/mockups/index.html` (D-049), plus the choices listed there (dark mode,
+   type pairing, product photo ratio) and Q-21 (India map source).
 3. Before launch: Q-3 (US carrier), Q-5 (returns policy), Q-9 (domain, D-046), Q-10 (spices compliance), Q-19 (sales tax).
 
 ## Known leftovers (tracked, not forgotten)

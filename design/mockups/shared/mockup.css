@@ -1,0 +1,146 @@
+/*
+ * Shared mockup styles (C1): the mockup chrome, placeholder photos, draft markers, the
+ * reveal/parallax base and the admin Listing screen. Each direction sets the tokens:
+ * --canvas --surface --ink --muted --line --brand --on-brand --region-accent --font-body.
+ */
+*,
+*::before,
+*::after { box-sizing: border-box; }
+html { -webkit-text-size-adjust: 100%; }
+body { margin: 0; background: var(--canvas); color: var(--ink); font-family: var(--font-body); }
+img, svg { display: block; max-width: 100%; }
+a { color: inherit; }
+[hidden] { display: none !important; }
+:focus-visible { outline: 2px solid var(--region-accent, var(--brand)); outline-offset: 3px; }
+.sr-only { position: absolute; width: 1px; height: 1px; overflow: hidden; clip: rect(0 0 0 0); white-space: nowrap; }
+
+/* ---------- Lenis (its recommended base CSS) ---------- */
+html.lenis, html.lenis body { height: auto; }
+.lenis.lenis-smooth { scroll-behavior: auto !important; }
+.lenis.lenis-stopped { overflow: hidden; }
+
+/* ---------- Mockup chrome (not part of any design) ---------- */
+.mock-banner {
+  font: 500 12px/1.4 system-ui, sans-serif; background: #111; color: #f5f5f5; padding: 6px 16px;
+  display: flex; gap: 12px; flex-wrap: wrap; justify-content: space-between; align-items: center;
+}
+.mock-banner a { color: #f5f5f5; }
+.mock-switch {
+  position: fixed; z-index: 100; left: 50%; bottom: 14px; transform: translateX(-50%);
+  display: flex; gap: 2px; padding: 4px; border-radius: 999px; background: rgba(17, 17, 17, .92);
+  font: 500 12px/1 system-ui, sans-serif; max-width: calc(100vw - 16px); overflow-x: auto;
+}
+.mock-switch a, .mock-switch button {
+  all: unset; cursor: pointer; color: #ddd; padding: 10px 12px; border-radius: 999px; white-space: nowrap;
+}
+.mock-switch a[aria-current='page'] { background: #f5f5f5; color: #111; }
+.mock-switch button { border-left: 1px solid #444; border-radius: 0 999px 999px 0; }
+.mock-switch :focus-visible { outline: 2px solid #fff; outline-offset: -2px; }
+
+/* Placeholder text the founder writes later (tagline, story, descriptions). */
+.tbd {
+  display: block; border: 1px dashed currentColor; opacity: .75; padding: .6em .8em;
+  font: 500 12px/1.5 system-ui, sans-serif; letter-spacing: .02em;
+}
+.tbd::before { content: 'TO BE WRITTEN · '; font-weight: 700; }
+/* Draft region text (D-019): hidden on the real storefront until approved. */
+.draft { position: relative; }
+.draft::after {
+  content: 'draft'; position: absolute; top: 0; right: -.2em; transform: translate(100%, 0);
+  font: 700 9px/1 system-ui, sans-serif; text-transform: uppercase; letter-spacing: .08em;
+  padding: 3px 4px; border: 1px solid currentColor; opacity: .6;
+}
+/* Dates, prices and counts that come from real data. */
+.sample { text-decoration: underline dotted; text-underline-offset: 3px; }
+
+/* ---------- Placeholder photos (never stock photos, design.md §Direction) ---------- */
+.ph { position: relative; overflow: hidden; aspect-ratio: var(--ar, 4 / 5); background: #bbb; width: 100%; }
+.ph::after {
+  content: 'Placeholder · ' attr(data-label); position: absolute; left: 8px; bottom: 8px;
+  max-width: calc(100% - 16px); padding: 4px 6px; background: rgba(0, 0, 0, .6); color: #fff;
+  font: 600 10px/1.3 system-ui, sans-serif; letter-spacing: .05em; text-transform: uppercase;
+}
+.ph--kasavu {
+  background:
+    repeating-linear-gradient(90deg, rgba(0, 0, 0, .025) 0 1px, transparent 1px 3px),
+    linear-gradient(#efe8d8 0 68%, #c9a24a 68% 73%, #efe8d8 73% 76%, #c9a24a 76% 78%, #efe8d8 78%);
+}
+.ph--mundu {
+  background:
+    repeating-linear-gradient(0deg, rgba(0, 0, 0, .03) 0 1px, transparent 1px 3px),
+    linear-gradient(90deg, #f3eee2 0 84%, #caa650 84% 88%, #f3eee2 88%);
+}
+.ph--bandhani {
+  background: radial-gradient(circle, #f2d7a0 0 2px, transparent 3px) 0 0 / 14px 14px,
+    radial-gradient(circle, #f2d7a0 0 2px, transparent 3px) 7px 7px / 14px 14px, #9f231b;
+}
+.ph--phulkari { background: repeating-conic-gradient(from 45deg, #e8a33a 0 25%, #c9482a 0 50%) 0 0 / 30px 30px; }
+.ph--portrait { background: linear-gradient(160deg, #ddd3c3, #9b8c78); }
+.ph--spice { background: radial-gradient(circle at 30% 35%, #c96d2c, #7a3517 55%, #3f1b0c); }
+.ph--land-kerala { background: linear-gradient(175deg, #c9ddc8 0 18%, #6f9c78 40%, #2f5b3f 70%, #1c3827); }
+.ph--land-raj { background: linear-gradient(180deg, #f4d3a4 0 22%, #dc9555 55%, #9a3b1f); }
+.ph--land-punjab { background: linear-gradient(180deg, #f7ecc0 0 25%, #e2bb3e 55%, #6f8a36); }
+.ph--market { background: linear-gradient(135deg, #5a3a2a, #b1683a 50%, #e1b36a); }
+
+/* India map placeholder: the real one is a static SVG on India's official boundaries (Q-21). */
+.map-ph {
+  aspect-ratio: 5 / 6; width: 100%; border: 1px dashed currentColor; display: grid; place-items: center;
+  text-align: center; padding: 24px; opacity: .8;
+  background: repeating-linear-gradient(45deg, transparent 0 14px, rgba(127, 127, 127, .08) 14px 15px);
+}
+.map-ph strong { display: block; font: 600 13px/1.3 system-ui, sans-serif; letter-spacing: .08em; text-transform: uppercase; }
+.map-ph small { display: block; max-width: 30ch; margin: 8px auto 0; font: 12px/1.5 system-ui, sans-serif; }
+
+/* ---------- Motion base (html.motion only when motion is allowed, see mockup.js) ---------- */
+html.motion [data-reveal] {
+  clip-path: inset(14% 0 14% 0); opacity: 0; transform: scale(1.08);
+  transition: clip-path 1.3s cubic-bezier(.19, 1, .22, 1), opacity 1s ease, transform 1.8s cubic-bezier(.19, 1, .22, 1);
+}
+html.motion [data-reveal].is-in { clip-path: inset(0); opacity: 1; transform: none; }
+html.motion [data-speed], html.motion [data-drift] { will-change: transform; }
+
+/* ---------- Admin Listing (plain, dense, same tokens, no brand decoration) ---------- */
+.adm { padding: 24px 16px 96px; display: grid; gap: 32px; justify-content: center;
+  grid-template-columns: minmax(0, 390px); font-size: 14px; line-height: 1.4; }
+@media (min-width: 1000px) { .adm { grid-template-columns: 390px minmax(0, 620px); align-items: start; } }
+.adm h2 { font-size: 13px; font-weight: 600; margin: 0 0 8px; text-transform: uppercase; letter-spacing: .06em; color: var(--muted); }
+.adm-note { font: 12px/1.4 system-ui, sans-serif; color: var(--muted); margin: 0 0 8px; }
+.adm-phone { border: 1px solid var(--line); background: var(--canvas); border-radius: 20px; overflow: hidden; }
+.adm-bar { display: flex; align-items: center; justify-content: space-between; padding: 12px 14px;
+  border-bottom: 1px solid var(--line); background: var(--surface); }
+.adm-bar strong { font-size: 16px; }
+.adm-tabs { display: flex; gap: 4px; padding: 8px 14px; border-bottom: 1px solid var(--line); }
+.adm-tabs span { padding: 8px 10px; border-radius: 6px; min-height: 36px; }
+.adm-tabs .on { background: var(--ink); color: var(--canvas); }
+.adm-form { padding: 14px; display: grid; gap: 14px; }
+.adm-field { display: grid; gap: 4px; }
+.adm-field > span { font-size: 12px; font-weight: 600; color: var(--muted); }
+.adm-input { min-height: 44px; border: 1px solid var(--line); border-radius: 6px; background: var(--canvas);
+  color: var(--ink); padding: 10px; font: inherit; width: 100%; }
+.adm-row { display: grid; grid-template-columns: 1fr 1fr; gap: 10px; }
+.adm-seg { display: grid; grid-template-columns: 1fr 1fr; border: 1px solid var(--line); border-radius: 6px; overflow: hidden; }
+.adm-seg span { min-height: 44px; display: grid; place-items: center; text-align: center; padding: 4px; }
+.adm-seg .on { background: var(--ink); color: var(--canvas); font-weight: 600; }
+.adm-photos { display: grid; grid-template-columns: repeat(4, 1fr); gap: 6px; }
+.adm-photos .ph::after { content: none; }
+.adm-cam { aspect-ratio: 4 / 5; border: 1px dashed var(--muted); border-radius: 6px; display: grid; place-items: center;
+  font-size: 12px; font-weight: 600; text-align: center; min-height: 44px; }
+.adm-var { display: grid; grid-template-columns: 1fr auto; gap: 8px; align-items: center; padding: 8px 0; border-top: 1px solid var(--line); }
+.adm-step { display: flex; align-items: center; border: 1px solid var(--line); border-radius: 6px; }
+.adm-step b { width: 44px; height: 44px; display: grid; place-items: center; font-weight: 500; }
+.adm-step output { width: 32px; text-align: center; font-weight: 600; }
+.adm-suggest { background: var(--surface); border-radius: 6px; padding: 10px; font-size: 13px; }
+.adm-save { position: sticky; bottom: 0; display: grid; grid-template-columns: 1fr 1fr; gap: 8px;
+  padding: 10px 14px; border-top: 1px solid var(--line); background: var(--canvas); }
+.adm-btn { min-height: 44px; border-radius: 6px; border: 1px solid var(--line); display: grid; place-items: center; font-weight: 600; }
+.adm-btn.primary { background: var(--ink); color: var(--canvas); border-color: var(--ink); }
+.adm-scroll { overflow-x: auto; }
+.adm-table { width: 100%; border-collapse: collapse; font-size: 13px; }
+.adm-table th { text-align: left; font-size: 12px; color: var(--muted); font-weight: 600; padding: 6px 8px; border-bottom: 1px solid var(--line); }
+.adm-table td { padding: 8px; border-bottom: 1px solid var(--line); vertical-align: middle; }
+.adm-table .num { text-align: right; font-variant-numeric: tabular-nums; }
+.adm-thumb { width: 36px; }
+.adm-pill { font-size: 11px; font-weight: 600; padding: 2px 6px; border-radius: 4px; border: 1px solid var(--line); white-space: nowrap; }
+.adm-pill.warn { border-color: currentColor; color: var(--caution, #8a5a00); }
+.adm-target { font: 600 10px/1 system-ui, sans-serif; text-transform: uppercase; letter-spacing: .06em;
+  border: 1px solid var(--muted); color: var(--muted); padding: 3px 5px; border-radius: 3px; margin-left: 6px; vertical-align: middle; }

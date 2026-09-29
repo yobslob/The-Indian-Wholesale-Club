@@ -4,6 +4,9 @@
 > final yet: Claude proposes mockups of Home, the Region page, the Product page and admin Listing that follow the
 > direction, for founder review **before** building them (coding plan C1). Until then, don't invent hex values or fonts in
 > code. Use tokens from `packages/tokens` (created in R4 with neutral placeholder values).
+> **Mockups ready (2026-09-29):** three directions (A gallery wall, B magazine spread, C immersive/dark) as local HTML in
+> `design/mockups/index.html`, with proposed palettes, contrast checks and the founder's open choices. Proposals only,
+> nothing decided until the founder picks.
 
 ## Direction (founder, D-049)
 The storefront reads like a **premium editorial magazine / contemporary gallery wall** built from large photographs:
