@@ -12,8 +12,12 @@
 **D-050 (2026-09-30):** Direction A. The hero keeps A's asymmetric, image-led format and motion; **everything below the
 hero sits on a symmetric grid** (four equal columns of 3 : 4 rounded product photos with name, price and "Add", equal
 two-panel rows), full width with small side gutters. **Fonts:** Helvetica Neue for the hero and the section headings
-(D-051; web licence Q-24), Georgia for the logo, product title and origin line, Poppins for paragraphs, Montserrat for
-interface text (navigation, buttons, labels, product names on cards), Inter for the footer only. No dark mode.
+(D-051; TeX Gyre Heros where it is not installed, D-052), Georgia for the logo, product title and origin line (Gelasio
+where it is not installed), Poppins for paragraphs, Montserrat for interface text (navigation, buttons, labels, product
+names on cards), Inter for the footer only. No dark mode.
+**Home hero (D-052):** the founder's photo fades into its own white wall; "The Indian Wholesale Club" stands on the wall,
+one word per line, right-aligned; scrolling fades the words out while the header logo fades in. Headline: "Miss local
+Market? Start here." The earlier hero is archived in `design/mockups/archive/a-gallery-v3.html`.
 The D-049 bullets below still apply to the hero and to motion; their asymmetric layout rules no longer apply below it.
 The storefront reads like a **premium editorial magazine / contemporary gallery wall** built from large photographs:
 - **Layout:** asymmetric, image-led compositions. Large photographs at varying vertical positions, varied widths,
@@ -53,8 +57,8 @@ region images, C2), mockups and dev pages use clearly marked placeholders, never
    Telugu, Kannada, Malayalam, Meetei Mayek, Ol Chiki, Latin for several north-eastern languages…). Use Noto Sans for
    the specific script, **subset and loaded only on that region's page** (speed, D-011).
 4. **India map:** use a map consistent with **India's official boundaries**. This audience will notice immediately.
-   The map must be a static SVG (no map library) and lightweight. The mockup draws it from DataMeet's state boundaries
-   (CC BY 4.0, credit shown), about 27 KB gzipped; the source is confirmed with Q-21.
+   The map must be a static SVG (no map library) and lightweight. Source: DataMeet's state boundaries (CC BY 4.0, credit shown
+   under the map and in the footer), about 27 KB gzipped (approved, D-052).
 5. **Photography:** real product photos taken at listing time, consistent aspect ratio (decided with the mockups). No
    stock photos presented as products.
 6. **Motion:** as §Direction (D-049): Lenis smooth scroll + reveal/parallax, the only motion library allowed on the
@@ -79,6 +83,8 @@ Also `rounded-sm/md/lg` and `duration-fast/base/slow`. The names avoid the old t
 ## Accessibility (non-negotiable)
 WCAG 2.2 AA: contrast, focus states, keyboard navigation, alt text on every product image (entered at listing),
 touch targets ≥ 44 px (both admin and customer, since admins work on phones).
+**Accepted exception (founder, D-052):** the region album moves by itself with no pause control (WCAG 2.2.2); it stops
+for "reduce motion" and when off screen.
 
 ## Admin look
 Plain, dense and fast. The same tokens, no brand decoration. Phone layouts for field jobs (`admin.md`).

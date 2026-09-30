@@ -20,7 +20,7 @@ Enforcement: customer code reads catalog and order data only through `store_*` (
 ## Web routes (`apps/web/app/(store)/…`, built in R5)
 | Route | Purpose | Rendering (see `engineering.md`) |
 |---|---|---|
-| `/` | "Where's home?": list of all 36 regions (the India map comes with the design), delivery-window teaser | static, cached `store_home()` |
+| `/` | today: "Where's home?" and the list of all 36 regions with a delivery-window teaser. **Target (D-050 – D-052):** the photo hero with the stacked brand name and "Miss local Market? Start here.", Just listed, Pick your home (India map + stamps + names) | static, cached `store_home()` |
 | `/states` | all 36 regions, alphabetical, with no state/UT distinction (D-002) | static (same cached read as `/`) |
 | `/states/[region]` | **the core page:** greeting in the region's script, story, accent theme, Clothing · Spices sections | static per region (36 built at build time) |
 | `/states/[region]/[product]` | product page: gallery, options, price, availability (live), save, delivery window, origin line | static on first visit + live stock island |
@@ -48,7 +48,7 @@ Framer Motion page transitions (speed, `engineering.md`).
 5. Regions with no live products show "Coming soon" (`regions.is_live = false`). Anything more, like a notify-me feature, needs founder approval.
 **Target (D-051, not built yet):** below the hero (greeting, tagline, story, image): Clothing / Spices filter pills, then
 **New arrivals → Most wanted → a photo album that scrolls sideways by itself (not interactive) → Curated for you (a card)
-→ Leaving soon** (almost out of stock). What decides each list is Q-22; the album's pause question is Q-25.
+→ Leaving soon** (almost out of stock). What decides each list is Q-22; the album has no pause control (founder, D-052).
 
 ## The product page
 Gallery → name, price → variant picker → availability (live) → **delivery window** → add to cart → details: description,

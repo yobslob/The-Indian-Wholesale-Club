@@ -30,9 +30,9 @@ Baseline numbers come from the founder's first `node scripts/check.mjs` run and 
   legacy shared secret (local Supabase and old hosted projects use the shared secret). Rate limits run inside the routes.
 - **PR-5 Server-first:** Server Components by default. Client components only for real interaction (add to cart, variant
   picker, live stock). No animation libraries on the storefront (framer-motion removed in R5) except Lenis smooth scrolling,
-  which the founder asked for (D-049, `design.md` §Direction: one small client module, off for reduced motion). Fonts (D-050, D-051):
-  Helvetica Neue (licence Q-24) and Georgia as system fonts, Poppins, Montserrat and Inter (footer only) as web fonts via
-  `next/font`, self-hosted and subset.
+  which the founder asked for (D-049, `design.md` §Direction: one small client module, off for reduced motion). Fonts (D-050 – D-052):
+  Helvetica Neue and Georgia as system fonts with self-hosted fallbacks (TeX Gyre Heros, Gelasio) that load only where the
+  system font is missing; Poppins, Montserrat and Inter (footer only) via `next/font`, self-hosted and subset.
 - **PR-6 Assets:** `next/image` with explicit `sizes`. Fonts via `next/font`, subset. Script fonts only on their region page.
 - **PR-7 Realtime only where it matters:** product availability, and the admin orders/stock feed.
 - **PR-8 Dependencies cost:** every new dependency is justified in its commit message (size + reason).

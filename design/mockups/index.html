@@ -29,34 +29,29 @@ li { margin-bottom: 6px; }
 </head>
 <body>
 <main>
-  <h1>IWC design mockup · Direction A v3</h1>
+  <h1>IWC design mockup · Direction A v4</h1>
   <p class="muted">Coding plan C1. The founder picked Direction A on 2026-09-30 (D-050) and asked for changes: A’s hero kept as it is,
     everything below it rebuilt on a symmetric full-width grid (the founder’s reference: four equal columns, rounded photos, name, price and “Add”),
     new “Just listed” and “Pick your home” sections, no big side margins, and the founder’s fonts. Directions B and C were dropped (still in git history).
     <b>v3 (D-051):</b> 10 headline options instead of “Where’s home?”, Helvetica Neue in the hero and section headings, a 700 ms hover
-    delay on the state names, the new region sections and the new product page.</p>
+    delay on the state names, the new region sections and the new product page.
+    <b>v4 (D-052):</b> a new photo hero (the founder’s photo, the brand name stacked on its wall, fading into the header logo as you scroll),
+    headline “Miss local Market? Start here.”, the album as a moving mosaic, and free look-alike fonts where Helvetica Neue or Georgia are missing.
+    The v3 hero is kept in <a href="archive/a-gallery-v3.html">archive/a-gallery-v3.html</a>.</p>
   <a class="open" href="a-gallery.html">Open the mockup</a>
 
   <h2>What to look at</h2>
   <ul>
-    <li>Use the floating bar at the bottom to switch between <b>Home · Region · Product · Admin listing</b>. <b>Headline n/10</b> cycles through the
-      ten headline options in the hero (it remembers your pick). <b>Motion: on/off</b> shows what visitors with “reduce motion” see.</li>
-    <li><b>Home:</b> the hero → <b>Just listed</b> → <b>Pick your home</b>. Resting the pointer on a state’s name (or stamp) for 700 ms darkens that state
+    <li>Use the floating bar at the bottom to switch between <b>Home · Region · Product · Admin listing</b>. <b>Motion: on/off</b> shows what visitors with “reduce motion” see.</li>
+    <li><b>Home:</b> the photo hero (scroll slowly: the brand name fades out word by word as the logo fades in at the top left) → <b>Just listed</b> → <b>Pick your home</b>. Resting the pointer on a state’s name (or stamp) for 700 ms darkens that state
       on the map; hovering the map itself reacts at once.</li>
-    <li><b>Region:</b> the hero → filter pills → <b>New arrivals</b> → <b>Most wanted</b> → the <b>album</b> (moves by itself, cannot be touched)
+    <li><b>Region:</b> the hero → filter pills → <b>New arrivals</b> → <b>Most wanted</b> → the <b>album</b> (a mosaic that moves by itself, cannot be touched)
       → <b>Curated for you</b> (one card) → <b>Leaving soon</b>.</li>
     <li><b>Product:</b> one full-length photo (never taller than the screen) with three stacked beside it (click one to swap), the heart beside
       the name, Add to bag, <b>Details</b> and <b>Size chart</b> with + / −, then <b>Reviews</b>, <b>Similar items</b> and <b>Curated for you</b> in smaller cards.</li>
     <li>Everything marked is a placeholder: photos are drawn patterns labelled “Placeholder”, dotted-underlined prices, dates, counts and ratings
       are samples, dashed “To be written” boxes are text still to come (the founder’s copy, the listing, real reviews), and greetings are the seeded drafts (D-019).</li>
   </ul>
-
-  <h2>The ten headline options</h2>
-  <ol>
-    <li>Not everything from home fits in a suitcase.</li><li>Home, 36 ways.</li><li>Your corner of India, delivered.</li>
-    <li>Wear home. Taste home.</li><li>Made back home. Delivered here.</li><li>The threads and tastes of home.</li>
-    <li>Somewhere in India is home.</li><li>Miss home? Start here.</li><li>Closer to home.</li><li>From home, to your door.</li>
-  </ol>
 
   <h2>Fonts (the founder’s choice)</h2>
   <div class="scroll"><table>
@@ -69,9 +64,9 @@ li { margin-bottom: 6px; }
       <tr><td style="font-family:Inter">Inter</td><td>The footer only</td></tr>
     </tbody>
   </table></div>
-  <p class="muted"><b>Helvetica Neue is not on Windows or Android.</b> On a Windows machine the mockup shows Arial in its place; open it on a Mac or
-    iPhone to see the real font. Shipping it everywhere needs a paid web licence, or a free look-alike (Q-24). Georgia is missing on Android too
-    (the phone’s serif is used there).</p>
+  <p class="muted"><b>Fallbacks (D-052):</b> Helvetica Neue is built into Apple devices only; elsewhere (including this Windows machine) the page
+    uses <b>TeX Gyre Heros</b>, a free Helvetica look-alike. Georgia is missing on Android; there the page uses <b>Gelasio</b>. Each fallback downloads
+    only where it is needed.</p>
 
   <h2>Colours and contrast (WCAG 2.2 AA needs 4.5 : 1 for text)</h2>
   <div class="scroll"><table>
@@ -96,13 +91,10 @@ li { margin-bottom: 6px; }
 
   <h2>Still for the founder</h2>
   <ol>
-    <li><b>Headline:</b> which of the ten (or a mix)?</li>
     <li><b>Q-22:</b> what decides Most wanted (proposed: most ordered in 30 days), Curated for you (proposed: admin picks per region, personalised later)
       and Leaving soon (proposed: 2 or fewer left)?</li>
-    <li><b>Q-23:</b> reviews: verified buyers only, checked by an admin before showing, stars and text (and photos?)</li>
-    <li><b>Q-24:</b> buy a Helvetica Neue web licence, or use a free look-alike on Windows and Android?</li>
-    <li><b>Q-25:</b> the album has no controls; accessibility rules (WCAG 2.2.2) ask for a way to pause moving content. Add a tiny pause button?</li>
-    <li><b>Q-21:</b> ship the DataMeet map with its credit line? · <b>Photo shape</b> 3 : 4 · <b>Georgia on Android</b> (phone serif, or Gelasio)?</li>
+    <li><b>Q-23:</b> reviews (an admin checks each one first): verified buyers only? Stars and text, photos too?</li>
+    <li><b>Q-26:</b> the hero photo: who took it, and can IWC use it on the live site?</li>
   </ol>
 </main>
 </body>

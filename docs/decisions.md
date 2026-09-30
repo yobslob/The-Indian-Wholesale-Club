@@ -321,3 +321,34 @@ What it means for the build (mockup `design/mockups/a-gallery.html` v3):
 delivery line); keyboard focus on a name highlights at once (no delay); the Clothing / Spices choice stays as filter
 pills above the region sections; the region's tagline and story stay in the hero. The data behind Most wanted, Curated
 for you and Leaving soon is Q-22; Helvetica Neue's web licence is Q-24; the album's accessibility is Q-25.
+
+**D-052 · 2026-09-30 · founder (was Q-21, Q-24, Q-25; part of Q-23): Headline, photo hero, fonts fallback, album, reviews check**
+Founder, verbatim, reviewing mockup A v3: "headline: Miss local Market?
+Start here.
+Checked by an admin before they appear
+use a free look alike of helvetica
+no pause button and I want you to play with the grid of the album, be creative
+Yes it is OK and whatever is the fallback do it.
+Now I feel like the hero section feels very very dull and feels like a presentation. I want you to be very creative with
+it and I have sent you a picture we can put this in the background, and put The Indian Wholesale Club vertically word by
+word but right aligned in the white space. big text. when the user scrolls down I need an animation of the brand name text
+disappearing fading out and at the same time the logo text appearing fading in. Don't delete the current hero section code
+btw, save it into archive if nothing works then we will put the current hero section again."
+The founder attached a black-and-white photo (a woman in a white embroidered suit and dupatta on a wooden bench, a white
+wall to the right) for the hero background.
+What it means for the build (mockup `design/mockups/a-gallery.html` v4):
+- **Headline:** "Miss local Market? Start here." (shown as written). Replaces D-051's ten options.
+- **Hero:** the founder's photo on the left, fading into its own white wall (measured #FBF7F4) that runs to the right edge;
+  "The Indian Wholesale Club" stacked one word per line, big, right-aligned on that wall; headline, intro and delivery
+  line below it. **Scrolling fades the brand words out while the header logo fades in** (the logo starts hidden). The v3
+  hero is kept in `design/mockups/archive/a-gallery-v3.html`.
+- **Fonts:** Helvetica Neue where installed, otherwise the free look-alike **TeX Gyre Heros** (GUST Font License) (was
+  Q-24). Georgia where installed, otherwise **Gelasio** (open licence). Each fallback downloads only on devices that need it.
+- **Album:** no pause control (was Q-25). This is the founder's accepted exception to WCAG 2.2.2 (`design.md`
+  §Accessibility); it still stops for "reduce motion" and when off screen. The album becomes a mosaic of mixed photo shapes.
+- **Map:** DataMeet India's state boundaries with the visible CC BY 4.0 credit are approved (was Q-21).
+- **Reviews:** an admin checks each review before it appears (part of Q-23; the rest stays open).
+*Interpretation (proposed, confirm when C1 step 2 starts):* "Yes it is OK" also confirms 3 : 4 product photos; the hero
+photo is used only after its rights are cleared (Q-26); the words fade one after another (The → Indian → Wholesale →
+Club) and drift up slightly, the drift off for "reduce motion"; on phones the brand name sits under the photo, over its
+faded lower edge.
