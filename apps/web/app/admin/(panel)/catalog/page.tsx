@@ -4,31 +4,35 @@ import { listAdminProducts } from '@repo/db/admin';
 import { formatUsd } from '@repo/shared/domain';
 
 import { requireAdminPage } from '@/features/admin/guard';
-import { Cell, PageTitle, rupees, Table } from '@/features/admin/ui';
+import { listingTabs } from '@/features/admin/listing-tabs';
+import { Cell, input, linkButton, PageTitle, rupees, Table, Tabs } from '@/features/admin/ui';
 
-type SearchParams = Promise<{ q?: string }>;
+type SearchParams = Promise<{ q?: string; status?: string }>;
 
-/** Catalog: every product with admin-only fields (shop, shop price, stock). */
+const STATUSES = ['draft', 'live', 'paused', 'archived'] as const;
+type Status = (typeof STATUSES)[number];
+const isStatus = (s: string | undefined): s is Status => STATUSES.includes(s as Status);
+
+/** Catalog: every product with admin-only fields (shop, shop price, stock), optionally one status (the tabs). */
 export default async function CatalogPage({
   searchParams,
 }: {
   searchParams: SearchParams;
 }): Promise<React.JSX.Element> {
   const { client } = await requireAdminPage();
-  const q = (await searchParams).q?.trim().slice(0, 100) ?? '';
-  const products = await listAdminProducts(client, { search: q || undefined, limit: 200 });
+  const params = await searchParams;
+  const q = params.q?.trim().slice(0, 100) ?? '';
+  const status = isStatus(params.status) ? params.status : undefined;
+  const products = await listAdminProducts(client, { search: q || undefined, status, limit: 200 });
 
   return (
     <div className="space-y-4">
       <PageTitle>Catalog</PageTitle>
+      <Tabs items={listingTabs()} current={status ?? 'all'} />
       <form className="flex gap-2">
-        <input
-          name="q"
-          defaultValue={q}
-          placeholder="Search products"
-          className="border-line min-h-11 flex-1 rounded-sm border px-2"
-        />
-        <button type="submit" className="min-h-11 underline">
+        {status ? <input type="hidden" name="status" value={status} /> : null}
+        <input name="q" defaultValue={q} placeholder="Search products" className={`${input} flex-1`} />
+        <button type="submit" className={linkButton}>
           Search
         </button>
       </form>

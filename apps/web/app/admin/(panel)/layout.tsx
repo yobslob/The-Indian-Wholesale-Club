@@ -28,9 +28,10 @@ export default async function AdminPanelLayout({
   const { user } = await requireAdminPage();
   return (
     <div className="md:flex">
-      <nav className="border-line flex flex-wrap gap-x-4 gap-y-1 border-b p-4 md:w-48 md:flex-col md:border-b-0 md:border-r">
+      {/* Phones: one scrolling row, so the job starts at the top of the screen (the mockup's admin screen). */}
+      <nav className="border-line font-ui flex items-center gap-x-4 gap-y-1 overflow-x-auto whitespace-nowrap border-b px-4 py-2 text-[15px] md:w-48 md:shrink-0 md:flex-col md:items-start md:overflow-visible md:border-b-0 md:border-r md:p-4">
         {SECTIONS.map(([href, label]) => (
-          <Link key={href} href={href} className="min-h-8 hover:underline">
+          <Link key={href} href={href} className="flex min-h-11 items-center hover:underline md:min-h-8">
             {label}
           </Link>
         ))}

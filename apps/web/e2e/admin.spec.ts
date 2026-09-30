@@ -23,7 +23,13 @@ test('an admin lists a product and publishes it to the store', async ({ page }) 
   await shop.selectOption({
     label: await shop.locator('option', { hasText: 'Kerala' }).first().innerText(),
   });
-  await page.locator('select[name="productType"]').selectOption('clothing');
+  // Type is a Clothing / Spice toggle: Spice swaps the clothing fields for the spice ones, Clothing brings them back.
+  await page.getByText('Spice', { exact: true }).click();
+  await expect(page.locator('input[name="ingredients"]')).toBeVisible();
+  await expect(page.locator('input[name="fibre"]')).toBeHidden();
+  await page.getByText('Clothing', { exact: true }).click();
+  await expect(page.getByRole('radio', { name: 'Clothing' })).toBeChecked();
+  await expect(page.locator('input[name="ingredients"]')).toBeHidden();
   const category = page.locator('select[name="categoryId"]');
   await category.selectOption({
     label: await category
@@ -36,7 +42,7 @@ test('an admin lists a product and publishes it to the store', async ({ page }) 
   await page.locator('input[name="price"]').fill('49.00');
   await page.locator('input[name="fibre"]').fill('100% cotton');
   await page.locator('input[name="care"]').fill('Hand wash cold');
-  await page.getByRole('button', { name: 'Create draft' }).click();
+  await page.getByRole('button', { name: 'Save draft' }).click();
   await expect(page).toHaveURL(/\/admin\/catalog\/[0-9a-f-]{36}$/);
 
   await page.locator('input[name="label"]').fill('One size');

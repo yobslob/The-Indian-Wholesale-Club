@@ -91,3 +91,7 @@ for "reduce motion" and when off screen.
 
 ## Admin look
 Plain, dense and fast. The same tokens, no brand decoration. Phone layouts for field jobs (`admin.md`).
+Since C1 the web admin follows the approved mockup's admin screen (D-050; `apps/web/features/admin/ui.tsx`): Helvetica
+Neue page titles, Montserrat labels and controls, paper fields, ink primary buttons, small uppercase section labels,
+view tabs (Listings: New / Drafts / Live / Paused / All), one scrolling nav row on phones. The Listings form picks the
+type with a Clothing / Spice toggle that shows only that type's fields (CSS, no client code).
