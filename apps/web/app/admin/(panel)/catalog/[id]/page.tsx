@@ -12,13 +12,14 @@ import {
   updateProductAction,
 } from '@/features/admin/actions/catalog';
 import { requireAdminPage } from '@/features/admin/guard';
+import { ProductPhotos } from '@/features/admin/product-photos';
 import { button, Cell, Field, input, PageTitle, Table, utc } from '@/features/admin/ui';
 
 type Params = Promise<{ id: string }>;
 
 const money = (cents: number) => (cents / 100).toFixed(2);
 
-/** Product editor: fields, publish state, variants and stock (flows.md §2, §9). */
+/** Product editor: fields, publish state, photos, variants and stock (flows.md §2, §9). */
 export default async function AdminProductPage({
   params,
 }: {
@@ -88,6 +89,8 @@ export default async function AdminProductPage({
           Spices cannot be published until the compliance question is answered (D-032, Q-10).
         </p>
       ) : null}
+
+      <ProductPhotos productId={product.id} media={product.media} />
 
       <form
         action={updateProductAction.bind(null, product.id)}

@@ -401,3 +401,13 @@ What it means for the build:
 *Interpretation (proposed, confirm when reviews are built):* "everyone" = signed-in customers (a review needs an
 account); a verified buyer has a delivered order containing that product; the first Punjab photo is its main image and
 the second waits for the region album (C2).
+
+**D-057 · 2026-09-30 · founder (was Q-27): Rights to the supplied photos; the kasavu product photos**
+Founder, verbatim: "yes I have all the license and permissions, Also I put the kasavu main, full front, full back and
+material closeup photos in the assets of design folder. Because I didn't know the process of logging into the admin I
+will do it in next iteration, upload these four images in the kasavu product. then work on the next steps"
+What it means for the build: IWC holds the licences for the region photos (closes Q-27) and for the four kasavu saree
+photos (`design/mockups/assets/Kasavu_main.jpg`, `kasavu_front_full.png`, `kasavu_back_full.png`,
+`kasavu_closeup.png`). They go on the (demo) kasavu saree through the admin product page, which gains photo upload now;
+the founder signs in to the admin next time (`docs/ops.md` bootstrap).
+*Interpretation (proposed):* the main photo is the product's main (cover) photo, in the order main, front, back, close-up.

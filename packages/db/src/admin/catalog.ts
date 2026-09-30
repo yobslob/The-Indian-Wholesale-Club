@@ -199,3 +199,16 @@ export async function addProductMedia(client: IwcClient, input: Insert<'product_
 export async function deleteProductMedia(client: IwcClient, id: string) {
   unwrap(await client.from('product_media').delete().eq('id', id));
 }
+
+/** One photo row (to find its file before removing it). */
+export async function getProductMedia(client: IwcClient, id: string) {
+  return unwrap(
+    await client.from('product_media').select('id, product_id, storage_path, is_primary').eq('id', id).maybeSingle(),
+  );
+}
+
+/** Makes one photo the product's main photo (the database allows one per product, so the old one goes first). */
+export async function setPrimaryProductMedia(client: IwcClient, productId: string, mediaId: string) {
+  unwrap(await client.from('product_media').update({ is_primary: false }).eq('product_id', productId).eq('is_primary', true));
+  unwrap(await client.from('product_media').update({ is_primary: true }).eq('id', mediaId).eq('product_id', productId));
+}

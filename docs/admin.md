@@ -43,7 +43,7 @@ can open every section (D-027).
 | **Payouts** | payable per vendor, record payouts | India | ✓ | ✓ |
 | **Orders** | all orders, detail + internal timeline, pack & ship (tracking no.), refunds, delay notices | US | ✓ | ✓ (pack & ship) |
 | **Regions** | edit and approve region content (greeting, story, accent, image, `is_live`); the main photo uploads to `product-media/regions/<slug>/`; an accent below WCAG AA on the page backgrounds is refused | both | ✓ (no script field yet) | — |
-| **Catalog** | products, categories, prices, bulk edits; "Curated for you" picks per product (D-056) | both | ✓ | — |
+| **Catalog** | products, categories, prices, bulk edits; "Curated for you" picks per product (D-056); product photos (upload with alt text, main photo, remove) to `product-media/products/<id>/` | both | ✓ | — |
 | **Reviews** | approve or reject customer reviews before they appear (D-052, D-056); "verified buyer" is set by the database | both | ✓ | — |
 | **Customers** | customer list, orders per customer | US | ✓ | — |
 | **Promotions** | promo codes (kept from the old admin) | US | ✓ | — |
@@ -61,7 +61,7 @@ Cycles (list → one cycle: cut off, move to the next status, per-shop pickup ch
 variant's quantity with the shop) · Vendors (list, add a shop). Creating cycles, adding products, publishing and editing stay
 on the web panel until the camera flow (coding phase).
 
-**Not built yet** (coding phase): photo upload for products/vendors/receipts, customer emails for
+**Not built yet** (coding phase): photo upload for vendors/receipts (products: web admin since C1; the phone camera flow is C3), customer emails for
 refunds and cancellations, stale-listing and delay warnings on Today, live (Realtime) order/stock feed, packing list +
 commercial invoice export, bulk edits, category editing. In the app: camera product listing, cycle creation, refunds.
 
