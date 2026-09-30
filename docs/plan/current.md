@@ -1,7 +1,7 @@
 # Current status
 
 ## Resume here
-**Coding plan C1 (design): mockup A v4 is ready for the founder (2026-09-30, D-052).** `design/mockups/a-gallery.html`
+**Coding plan C1 (design): mockup A v5 is ready for the founder (2026-09-30, D-052, D-053; v5 = the photo fills the hero, only the brand name and heading on it).** `design/mockups/a-gallery.html`
 (overview in `index.html`): the new photo hero (founder's photo fading into its wall, the brand name stacked word by word,
 fading out into the header logo on scroll; the v3 hero is in `design/mockups/archive/a-gallery-v3.html`), headline "Miss
 local Market? Start here.", the album as a moving mosaic, TeX Gyre Heros / Gelasio as fallbacks for Helvetica Neue /
@@ -61,6 +61,7 @@ built on it. Also open: Q-18, and before launch Q-3, Q-5, Q-9, Q-10, Q-19.
 | 2026-09-30 | C1 mockup v2 | Claude, the repo's Playwright 1.63 (Chromium) against a local static server | full-page screenshots of Home at 390 / 1440 / 1920 px, Region and Product at 1440; Home interactions (map hover tooltip, list → map highlight, search filter + empty state, click an open state); computed fonts per element; generated map checked visually (J&K incl. Gilgit-Baltistan, Ladakh incl. Aksai Chin, 36 regions matched to the storefront slugs); contrast of every text colour pair; `check.mjs docs` | no horizontal overflow, no console errors, every interaction works, fonts: headings Georgia, text Poppins, UI Montserrat, footer Inter; map 36/36 regions, 27 KB gzipped; lowest text contrast 5.05 : 1; docs OK. **Not checked:** browsers other than Chromium, a real phone, Android's Georgia fallback, screen readers |
 | 2026-09-30 | C1 mockup v3 | Claude, the repo's Playwright 1.63 (Chromium) against the local `mockups` server | full-page screenshots of Home, Region and Product at 1440 px; hero with the longest and shortest headline; name hover highlight at 400 ms vs 850 ms, a quick pass-over, map hover; headline stepper; album moving and not pointer-reactive; product gallery height vs a 900 px screen; thumbnail swap, heart, + / − sections; computed fonts | no horizontal overflow, no console errors; name highlight off at 400 ms, on at 850 ms, never on a quick pass; map hover immediate; album moves and ignores the pointer; gallery 790 px on a 900 px screen; all controls work; hero and section headings resolve to the Helvetica Neue stack (Arial on this Windows machine), logo Georgia, footer Inter; `check.mjs docs` OK. **Not checked:** real Helvetica Neue (no Apple device), a real phone, screen readers |
 | 2026-09-30 | C1 mockup v4 | Claude, the repo's Playwright 1.63 (Chromium) against the local `mockups` server | hero at 1440 × 900 and 390 × 844, at the top and after two wheel scrolls (word and logo opacity read from the page); album mosaic screenshot + movement; full-page Home (390) and Region (1440); computed hero font stack | no console errors, no horizontal overflow; at 250 px scrolled the words read 0 / 0.06 / 0.30 / 0.55 and the logo 0.55, at 600 px all words 0 and the logo 1 (the fade runs word by word); on phones the brand name sits under the photo; the album moves; the hero font stack resolves to TeX Gyre Heros on this Windows machine. **Not checked:** real Helvetica Neue, Gelasio on Android, a real phone, screen readers |
+| 2026-09-30 | C1 mockup v5 | Claude, Playwright 1.63 (Chromium), local `mockups` server | hero at 1440 × 900, 1920 × 1080 and 390 × 844, top and after two scrolls | no console errors; the name and heading sit on the photo's white wall at 1440 and 1920 (dark via the difference blend); on phones light text over a soft bottom fade; the word-by-word fade into the logo unchanged (0 / 0.06 / 0.30 / 0.55 at 250 px, all 0 and logo 1 at 600 px); the 736 px photo is visibly soft at 1920 (Q-26) |
 
 ## C1 sub-steps (design)
 | # | Sub-step | Status |
@@ -68,7 +69,8 @@ built on it. Also open: Q-18, and before launch Q-3, Q-5, Q-9, Q-10, Q-19.
 | 1.1 | Three mockup directions (Home, Region, Product, admin Listing) with proposed palettes, contrast checks and motion (`design/mockups/`) | ✅ founder picked A with changes (D-050) |
 | 1.1b | A v2 to the founder's feedback: symmetric grid below the hero, full width, new Just listed + Pick your home (DataMeet map, stamps, search), fonts, B/C deleted | ✅ map section approved (D-051) |
 | 1.1c | A v3 (D-051): headline options, Helvetica Neue, 700 ms name hover, region sections, new product page with reviews | ✅ reviewed (D-052) |
-| 1.1d | A v4 (D-052): photo hero with the stacked brand name → header logo on scroll, chosen headline, album mosaic, font fallbacks; v3 hero archived | ✅ committed · founder review pending |
+| 1.1d | A v4 (D-052): photo hero with the stacked brand name → header logo on scroll, chosen headline, album mosaic, font fallbacks; v3 hero archived | ✅ reviewed (D-053) |
+| 1.1e | A v5 (D-053): the photo fills the hero; only the name and heading on it | ✅ committed · founder review pending |
 | 1.2 | Founder's pick filed (`/record-answer`), final tokens in `packages/tokens`, script fonts per region, accent contrast check in the admin form | ⏳ after the pick |
 | 1.3 | Storefront (web) on the chosen direction: layout, Lenis + reveal/parallax module, `next/image`; then the app with Reanimated | ⏳ |
 | 1.4 | E2E: reduced motion + keyboard; `check.mjs` speed budgets | ⏳ |

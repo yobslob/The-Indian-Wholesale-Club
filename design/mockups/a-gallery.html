@@ -4,7 +4,7 @@
 <meta charset="utf-8">
 <meta name="viewport" content="width=device-width, initial-scale=1">
 <meta name="robots" content="noindex">
-<title>IWC mockup A · v4</title>
+<title>IWC mockup A · v5</title>
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
 <!-- Founder's fonts (D-050 – D-052): Helvetica Neue for the hero and section headings (TeX Gyre Heros, a free look-alike,
@@ -50,26 +50,20 @@ body { font-size: 16px; line-height: 1.65; }
 .nav a { text-decoration: none; padding: 12px 0; }
 .nav a:hover { text-decoration: underline; text-underline-offset: 5px; }
 
-/* ===== HERO v4 (D-052): the photo on the left fades into its own wall; the brand name stands on that wall, one word per
-   line, right-aligned. Scrolling fades the words out (one after another) while the header logo fades in. */
+/* ===== HERO v5 (D-052, D-053): the founder's photo fills the hero; only the brand name (one word per line,
+   right-aligned) and the heading sit on it. Both use a difference blend, so they read dark on the white wall and light on
+   the dark door and bench. Scrolling fades the brand words out (one after another) while the header logo fades in. */
 .head--home { position: sticky; top: 0; z-index: 40; background: var(--wall); transition: box-shadow .3s; }
 .head--home.scrolled { box-shadow: 0 1px 0 var(--line); }
-.hero2 { position: relative; height: calc(100svh - 76px); min-height: 600px; max-height: 1040px; background: var(--wall); overflow: hidden; }
-.hero2-photo { position: absolute; left: 0; top: 0; bottom: 0; height: 100%; aspect-ratio: 736 / 920; margin: 0;
-  -webkit-mask-image: linear-gradient(to right, #000 70%, transparent 99%); mask-image: linear-gradient(to right, #000 70%, transparent 99%); }
-.hero2-photo img { width: 100%; height: 100%; object-fit: cover; display: block; }
+.hero2 { position: relative; height: calc(100svh - 76px); min-height: 600px; max-height: 1040px; background: #1E1B16; overflow: hidden; isolation: isolate; }
+.hero2-photo { position: absolute; inset: 0; margin: 0; }
+.hero2-photo img { width: 100%; height: 100%; object-fit: cover; object-position: 50% 30%; display: block; }
 .hero2-photo figcaption { position: absolute; left: 12px; bottom: 12px; background: rgba(0, 0, 0, .6); color: #fff; border-radius: 999px; padding: 5px 10px;
   font: 600 10px/1.3 var(--font-ui); letter-spacing: .05em; text-transform: uppercase; }
-.brandstack { position: absolute; right: var(--gut); top: clamp(8px, 2.6vh, 36px); margin: 0; text-align: right; color: #fff; mix-blend-mode: difference;
-  font: 500 min(10vw, 13vh)/.86 var(--font-hero); letter-spacing: -.055em; pointer-events: none; }
+.hero2-words { position: absolute; right: var(--gut); top: clamp(8px, 2.6vh, 36px); text-align: right; color: #fff; mix-blend-mode: difference; }
+.brandstack { margin: 0; font: 500 min(10vw, 13vh)/.86 var(--font-hero); letter-spacing: -.055em; pointer-events: none; }
 .brandstack span { display: block; will-change: opacity, transform; }
-.hero2-copy { position: absolute; right: var(--gut); bottom: clamp(24px, 5vh, 56px); text-align: right; max-width: 520px; font-family: var(--font-hero); }
-.hero2-copy .label { font-family: var(--font-hero); font-weight: 500; margin: 0; }
-.hero2-copy h1 { font: 500 clamp(34px, 3.3vw, 52px)/1.02 var(--font-hero); letter-spacing: -.035em; margin: 10px 0 14px; }
-.hero2-copy h1 em { font-style: normal; color: var(--brand); }
-.hero2-copy .lede { font-size: 17px; margin: 0 0 10px auto; max-width: 36ch; }
-.hero2-copy .delivery { font-size: 14px; margin: 0; }
-.logo[data-logo] { transition: none; }
+.hero2-words h1 { font: 500 clamp(30px, min(3.2vw, 5vh), 52px)/1.02 var(--font-hero); letter-spacing: -.035em; margin: clamp(20px, 4vh, 44px) 0 0; }
 
 /* ===== Symmetric sections below the hero ===== */
 .sec { padding-block: clamp(28px, 3.4vw, 56px); }
@@ -266,11 +260,12 @@ html.reduced .album-track, .album.paused .album-track { animation-play-state: pa
 }
 @media (max-width: 820px) {
   .rhero-text, .rhero-main { grid-column: 1 / -1; }
-  .hero2 { height: auto; min-height: 0; max-height: none; overflow: visible; padding-bottom: 28px; }
-  .hero2-photo { position: relative; width: 100%; height: auto; -webkit-mask-image: linear-gradient(to bottom, #000 80%, transparent); mask-image: linear-gradient(to bottom, #000 80%, transparent); }
-  .brandstack { position: relative; right: auto; top: auto; margin: -24vw var(--gut) 0 0; font-size: 15.5vw; z-index: 1; }
-  .hero2-copy { position: static; text-align: left; padding: 8px var(--gut) 0; max-width: none; }
-  .hero2-copy .lede { margin-left: 0; }
+  .hero2 { height: calc(100svh - 130px); min-height: 520px; }
+  .hero2-photo img { object-position: 62% 30%; }
+  .hero2::after { content: ''; position: absolute; inset: 45% 0 0; background: linear-gradient(to bottom, transparent, rgba(20, 17, 15, .82)); pointer-events: none; }
+  .hero2-words { top: auto; bottom: 28px; z-index: 1; mix-blend-mode: normal; color: var(--canvas); }
+  .brandstack { font-size: 15vw; }
+  .hero2-words h1 { font-size: 30px; margin-top: 18px; }
   .rhero-main { margin-top: 32px; }
   .rhero-float { left: auto; right: var(--gut); width: 40vw; bottom: 20px; }
   .soon-list { columns: 2; }
@@ -288,7 +283,7 @@ html.reduced .album-track, .album.paused .album-track { animation-play-state: pa
 </head>
 <body>
 <div class="mock-banner">
-  <span><b>IWC mockup · Direction A v4</b> · not the real site. Photos, sample names, prices, dates, counts and reviews are placeholders; greetings are drafts (D-019).</span>
+  <span><b>IWC mockup · Direction A v5</b> · not the real site. Photos, sample names, prices, dates, counts and reviews are placeholders; greetings are drafts (D-019).</span>
   <a href="index.html">Overview</a>
 </div>
 
@@ -315,12 +310,9 @@ html.reduced .album-track, .album.paused .album-track { animation-play-state: pa
       <img src="assets/hero-mood.jpg" alt="A woman in a white embroidered suit and dupatta sits on a wooden bench, her chin resting on her hand.">
       <figcaption>Founder’s mood photo · rights to confirm</figcaption>
     </figure>
-    <p class="brandstack" aria-hidden="true"><span data-word>The</span><span data-word>Indian</span><span data-word>Wholesale</span><span data-word>Club</span></p>
-    <div class="hero2-copy">
-      <p class="label">Clothing and spices from home</p>
-      <h1>Miss local <em>Market?</em><br>Start here.</h1>
-      <p class="lede">Pick your state and find the clothing and spices you grew up with, delivered to your door in the US.</p>
-      <p class="delivery">Estimated delivery <strong class="sample">Nov 3 – Nov 10</strong> <span style="color:var(--muted)">if you order by <span class="sample">Oct 6</span></span></p>
+    <div class="hero2-words">
+      <p class="brandstack" aria-hidden="true"><span data-word>The</span><span data-word>Indian</span><span data-word>Wholesale</span><span data-word>Club</span></p>
+      <h1>Miss local Market?<br>Start here.</h1>
     </div>
   </section>
 

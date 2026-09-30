@@ -352,3 +352,14 @@ What it means for the build (mockup `design/mockups/a-gallery.html` v4):
 photo is used only after its rights are cleared (Q-26); the words fade one after another (The → Indian → Wholesale →
 Club) and drift up slightly, the drift off for "reduce motion"; on phones the brand name sits under the photo, over its
 faded lower edge.
+
+**D-053 · 2026-09-30 · founder: Hero photo as the full background, only the name and the heading**
+Founder, verbatim: "put the photo as background for the hero section instead of left side, also remove the
+subdescription and delivery info just the name and the heading"
+What it means for the build: the founder's photo fills the whole hero (cropped to the screen, the face kept in view); the
+hero shows only "The Indian Wholesale Club" (stacked, right-aligned, on the white wall of the photo) and the heading
+"Miss local Market? Start here." directly under it. No label, intro or delivery line in the hero. Supersedes those parts
+of D-052; the scroll fade into the header logo stays.
+*Interpretation (proposed):* the delivery window stays visible elsewhere on Home and on every product page (D-008); on
+phones, where the photo leaves too little clear wall, a soft dark fade at the bottom carries light text. The photo needs a
+high-resolution original for large screens (the file sent is 736 px wide), part of Q-26.

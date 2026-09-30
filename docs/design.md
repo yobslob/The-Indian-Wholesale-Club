@@ -15,9 +15,9 @@ two-panel rows), full width with small side gutters. **Fonts:** Helvetica Neue f
 (D-051; TeX Gyre Heros where it is not installed, D-052), Georgia for the logo, product title and origin line (Gelasio
 where it is not installed), Poppins for paragraphs, Montserrat for interface text (navigation, buttons, labels, product
 names on cards), Inter for the footer only. No dark mode.
-**Home hero (D-052):** the founder's photo fades into its own white wall; "The Indian Wholesale Club" stands on the wall,
-one word per line, right-aligned; scrolling fades the words out while the header logo fades in. Headline: "Miss local
-Market? Start here." The earlier hero is archived in `design/mockups/archive/a-gallery-v3.html`.
+**Home hero (D-052, D-053):** the founder's photo fills the hero; "The Indian Wholesale Club" stands on its white wall,
+one word per line, right-aligned, with the heading "Miss local Market? Start here." under it and nothing else; scrolling
+fades the words out while the header logo fades in. The earlier hero is archived in `design/mockups/archive/a-gallery-v3.html`.
 The D-049 bullets below still apply to the hero and to motion; their asymmetric layout rules no longer apply below it.
 The storefront reads like a **premium editorial magazine / contemporary gallery wall** built from large photographs:
 - **Layout:** asymmetric, image-led compositions. Large photographs at varying vertical positions, varied widths,
