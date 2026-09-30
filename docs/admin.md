@@ -42,7 +42,7 @@ can open every section (D-027).
 | **Cycles** | current cycle timeline and dates, cutoff, per-shop pickup checklists, packing list + commercial invoice export, export/arrival | both | ✓ (no export/arrival fields or documents yet) | ✓ (pickups, cutoff, next step) |
 | **Payouts** | payable per vendor, record payouts | India | ✓ | ✓ |
 | **Orders** | all orders, detail + internal timeline, pack & ship (tracking no.), refunds, delay notices | US | ✓ | ✓ (pack & ship) |
-| **Regions** | edit and approve region content (greeting, story, accent, image, `is_live`) | both | ✓ (no image or script field yet) | — |
+| **Regions** | edit and approve region content (greeting, story, accent, image, `is_live`); the main photo uploads to `product-media/regions/<slug>/`; an accent below WCAG AA on the page backgrounds is refused | both | ✓ (no script field yet) | — |
 | **Catalog** | products, categories, prices, bulk edits | both | ✓ | — |
 | **Customers** | customer list, orders per customer | US | ✓ | — |
 | **Promotions** | promo codes (kept from the old admin) | US | ✓ | — |

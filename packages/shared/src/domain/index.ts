@@ -1,6 +1,7 @@
 export * from './address';
 export * from './attributes';
 export * from './checkout';
+export * from './contrast';
 export type * from './checkout-api';
 export * from './cycles';
 export * from './delivery';

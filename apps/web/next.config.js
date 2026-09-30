@@ -17,6 +17,8 @@ const nextConfig = {
   // them cost time on every build (engineering.md P7). Never deploy without CI passing.
   eslint: { ignoreDuringBuilds: true },
   typescript: { ignoreBuildErrors: true },
+  // Admin photo uploads (region photos, up to 8 MB) go through server actions; the default limit is 1 MB.
+  experimental: { serverActions: { bodySizeLimit: '10mb' } },
   images: {
     formats: ['image/avif', 'image/webp'],
     remotePatterns: [

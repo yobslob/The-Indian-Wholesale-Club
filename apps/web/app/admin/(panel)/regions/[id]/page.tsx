@@ -1,14 +1,20 @@
+import Image from 'next/image';
 import { notFound } from 'next/navigation';
 
-import { listRegionsAdmin } from '@repo/db/admin';
+import { getRegionAdmin } from '@repo/db/admin';
 
-import { approveRegionAction, updateRegionAction } from '@/features/admin/actions/catalog';
+import {
+  approveRegionAction,
+  updateRegionAction,
+  uploadRegionImageAction,
+} from '@/features/admin/actions/regions';
 import { requireAdminPage } from '@/features/admin/guard';
 import { button, Field, input, PageTitle } from '@/features/admin/ui';
+import { mediaUrl } from '@/lib/site';
 
 type Params = Promise<{ id: string }>;
 
-/** Edit a region's customer-facing content. Saving marks it draft again until approved (D-019). */
+/** Edit a region's customer-facing content. Saving text marks it draft again until approved (D-019). */
 export default async function RegionEditPage({
   params,
 }: {
@@ -16,7 +22,7 @@ export default async function RegionEditPage({
 }): Promise<React.JSX.Element> {
   const { client } = await requireAdminPage();
   const { id } = await params;
-  const region = (await listRegionsAdmin(client)).find((r) => r.id === id);
+  const region = await getRegionAdmin(client, id);
   if (!region) notFound();
 
   return (
@@ -26,27 +32,36 @@ export default async function RegionEditPage({
         Content: <strong>{region.content_status}</strong>
         {region.greeting_script ? ` · script ${region.greeting_script}` : ''}
       </p>
+
+      <section className="border-line max-w-2xl space-y-3 rounded-md border p-3">
+        <h2 className="font-medium">Main photo</h2>
+        <p className="text-ink-muted text-sm">
+          Shown on the region page and on its stamp on the home page. JPEG, PNG, WebP or AVIF, up to 8 MB; portrait works best.
+        </p>
+        {region.hero_image_path ? (
+          <div className="bg-surface relative aspect-[4/5] w-40 overflow-hidden rounded-md">
+            <Image src={mediaUrl(region.hero_image_path)} alt={`${region.name}: current photo`} fill sizes="160px" className="object-cover" />
+          </div>
+        ) : (
+          <p className="text-sm">No photo yet.</p>
+        )}
+        <form action={uploadRegionImageAction.bind(null, region.id)} className="flex flex-wrap items-center gap-3">
+          <input type="file" name="image" accept="image/jpeg,image/png,image/webp,image/avif" required aria-label="Photo file" />
+          <button type="submit" className={button}>
+            {region.hero_image_path ? 'Replace photo' : 'Upload photo'}
+          </button>
+        </form>
+      </section>
+
       <form action={updateRegionAction.bind(null, region.id)} className="grid max-w-2xl gap-3">
         <Field label="Greeting (native script)">
-          <input
-            name="greetingNative"
-            defaultValue={region.greeting_native ?? ''}
-            className={input}
-          />
+          <input name="greetingNative" defaultValue={region.greeting_native ?? ''} className={input} />
         </Field>
         <Field label="Greeting (Latin letters)">
-          <input
-            name="greetingLatin"
-            defaultValue={region.greeting_latin ?? ''}
-            className={input}
-          />
+          <input name="greetingLatin" defaultValue={region.greeting_latin ?? ''} className={input} />
         </Field>
         <Field label="Meaning">
-          <input
-            name="greetingMeaning"
-            defaultValue={region.greeting_meaning ?? ''}
-            className={input}
-          />
+          <input name="greetingMeaning" defaultValue={region.greeting_meaning ?? ''} className={input} />
         </Field>
         <Field label="Tagline">
           <input name="tagline" defaultValue={region.tagline ?? ''} className={input} />
@@ -54,7 +69,7 @@ export default async function RegionEditPage({
         <Field label="Story">
           <textarea name="story" rows={6} defaultValue={region.story ?? ''} className={input} />
         </Field>
-        <Field label="Accent colour (#RRGGBB)">
+        <Field label="Accent colour (#RRGGBB, dark enough for text: at least 4.5 : 1 on the page backgrounds)">
           <input name="accentColor" defaultValue={region.accent_color ?? ''} className={input} />
         </Field>
         <label className="flex items-center gap-2">

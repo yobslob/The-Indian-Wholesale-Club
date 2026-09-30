@@ -43,6 +43,20 @@ export async function listRegionsAdmin(client: IwcClient) {
   );
 }
 
+/** One region for its admin edit page; null when the id does not exist. */
+export async function getRegionAdmin(client: IwcClient, id: string) {
+  return unwrap(
+    await client
+      .from('regions')
+      .select(
+        `id, slug, name, sort_order, is_live, greeting_native, greeting_script, greeting_latin, greeting_meaning,
+          languages, tagline, story, hero_image_path, accent_color, content_status, updated_at`,
+      )
+      .eq('id', id)
+      .maybeSingle(),
+  );
+}
+
 export async function updateRegion(client: IwcClient, id: string, patch: Update<'regions'>) {
   unwrap(await client.from('regions').update(patch).eq('id', id));
 }

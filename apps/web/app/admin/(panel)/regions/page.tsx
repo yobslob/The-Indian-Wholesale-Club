@@ -2,7 +2,7 @@ import Link from 'next/link';
 
 import { listRegionsAdmin } from '@repo/db/admin';
 
-import { approveRegionAction } from '@/features/admin/actions/catalog';
+import { approveRegionAction } from '@/features/admin/actions/regions';
 import { requireAdminPage } from '@/features/admin/guard';
 import { button, Cell, PageTitle, Table } from '@/features/admin/ui';
 

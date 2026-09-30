@@ -6,6 +6,7 @@ import {
   CUSTOMER_STATUS_LABEL,
   attributesSchemaFor,
   clothingAttributesSchema,
+  contrastRatio,
   formatDeliveryWindow,
   formatUsd,
   isWindowAtRisk,
@@ -16,6 +17,7 @@ import {
   spiceAttributesSchema,
   suggestPrice,
   timelineIndex,
+  worstContrast,
 } from '../src/domain';
 
 const settings = { fxInrPerUsd: 80, freightCentsPerKg: 1000, dutyPct: 10, marginPct: 50 };
@@ -278,5 +280,25 @@ describe('cycle flow (flows.md §1)', () => {
     assert.equal(nextCycleStatus('open'), 'collecting');
     assert.equal(nextCycleStatus('fulfilling'), 'closed');
     assert.equal(nextCycleStatus('closed'), null);
+  });
+});
+
+describe('contrast (design.md §Accessibility, region accents in the admin form)', () => {
+  it('matches the WCAG reference values', () => {
+    assert.equal(contrastRatio('#000000', '#FFFFFF').toFixed(1), '21.0');
+    assert.equal(contrastRatio('#777777', '#FFFFFF').toFixed(2), '4.48');
+    assert.equal(contrastRatio('#FFFFFF', '#000000'), contrastRatio('#000000', '#FFFFFF'));
+  });
+
+  it('accepts an accent only when it meets AA on every background', () => {
+    const backgrounds = ['#F4EFE6', '#EBE4D8', '#FBF8F3']; // canvas, surface, paper
+    assert.equal(worstContrast('#2F5B3F', backgrounds).passes, true);
+    const pale = worstContrast('#C9A24A', backgrounds); // kasavu gold: too light for text
+    assert.equal(pale.passes, false);
+    assert.ok(pale.ratio < 4.5);
+  });
+
+  it('refuses anything that is not #RRGGBB', () => {
+    assert.throws(() => contrastRatio('red', '#FFFFFF'));
   });
 });

@@ -5,7 +5,6 @@ import { redirect } from 'next/navigation';
 import { z } from 'zod';
 
 import {
-  approveRegionContent,
   createProduct,
   createVariant,
   createVendor,
@@ -13,7 +12,6 @@ import {
   setListedQty,
   setProductStatus,
   updateProduct,
-  updateRegion,
 } from '@repo/db/admin';
 import { clothingAttributesSchema, spiceAttributesSchema } from '@repo/shared/domain';
 
@@ -226,45 +224,4 @@ export async function setQtyAction(
   await setListedQty(client, id.parse(variantId), input.qty, input.note ?? undefined);
   revalidateTag(STORE_TAG);
   revalidatePath(`/admin/catalog/${productId}`);
-}
-
-// ---------------------------------------------------------------- regions (D-019: text shows only once approved)
-
-export async function updateRegionAction(regionId: string, form: FormData): Promise<void> {
-  const { client } = await requireAdminAction();
-  const input = z
-    .object({
-      greetingNative: optional(80),
-      greetingLatin: optional(80),
-      greetingMeaning: optional(120),
-      tagline: optional(200),
-      story: optional(4000),
-      accentColor: z
-        .string()
-        .trim()
-        .regex(/^(#[0-9A-Fa-f]{6})?$/, 'accent colour must look like #1A2B3C')
-        .transform((v) => v || null),
-      isLive: z.literal('on').optional(),
-    })
-    .parse(Object.fromEntries(form));
-  await updateRegion(client, id.parse(regionId), {
-    greeting_native: input.greetingNative,
-    greeting_latin: input.greetingLatin,
-    greeting_meaning: input.greetingMeaning,
-    tagline: input.tagline,
-    story: input.story,
-    accent_color: input.accentColor,
-    is_live: input.isLive === 'on',
-    // Any edit needs a fresh approval before customers see it (D-019).
-    content_status: 'draft',
-  });
-  revalidateTag(STORE_TAG);
-  revalidatePath('/admin/regions');
-}
-
-export async function approveRegionAction(regionId: string): Promise<void> {
-  const { client } = await requireAdminAction();
-  await approveRegionContent(client, id.parse(regionId));
-  revalidateTag(STORE_TAG);
-  revalidatePath('/admin/regions');
 }
