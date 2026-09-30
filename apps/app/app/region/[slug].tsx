@@ -48,7 +48,7 @@ function Section({
 /**
  * The core page (storefront.md §The region page, design.md §Direction). One store_region_page() call: the
  * greeting in its own script (the phone's system fonts cover every Indian script), New arrivals, Curated for you,
- * Leaving soon (D-056), then every piece under Clothing / Spices. Most wanted waits on Q-22.
+ * Leaving soon (D-056), then every piece under Clothing / Spices. Most wanted (D-058) comes next.
  */
 export default function RegionScreen(): React.JSX.Element {
   const { slug } = useLocalSearchParams<{ slug: string }>();

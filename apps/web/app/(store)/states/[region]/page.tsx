@@ -67,7 +67,7 @@ function Section({
 /**
  * The core page (storefront.md §The region page, design.md §Direction). One cached store_region_page()
  * call: New arrivals, Curated for you and Leaving soon (D-056), then every piece under Clothing / Spices.
- * Still waiting: Most wanted (Q-22) and the photo album (more region photos, C2).
+ * Still to come: Most wanted (D-058) and the photo album (more region photos, C2).
  */
 export default async function RegionPage({ params }: { params: Params }): Promise<React.JSX.Element> {
   const page = await getRegionPageCached((await params).region);

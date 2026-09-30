@@ -411,3 +411,13 @@ photos (`design/mockups/assets/Kasavu_main.jpg`, `kasavu_front_full.png`, `kasav
 `kasavu_closeup.png`). They go on the (demo) kasavu saree through the admin product page, which gains photo upload now;
 the founder signs in to the admin next time (`docs/ops.md` bootstrap).
 *Interpretation (proposed):* the main photo is the product's main (cover) photo, in the order main, front, back, close-up.
+
+**D-058 · 2026-09-30 · founder (was Q-22): Most wanted = most pieces ordered in the last 30 days**
+Founder, verbatim: "Most wanted = your assumption was correct."
+The assumption was the one proposed in Q-22: **most pieces ordered in the last 30 days**.
+What it means for the build: the region page gets **Most wanted** between New arrivals and the album (D-051): that
+region's live pieces ranked by how many pieces customers ordered in the last 30 days. It is computed from orders in the
+database, never typed in or invented (D-012), and it is a count only: no numbers or sales figures are shown to customers.
+*Interpretation (proposed, confirm when the section is reviewed):* only paid orders count, and cancelled or refunded
+lines do not; a piece needs at least one order in the window to appear (no orders → the section is hidden); ties go to
+the newer listing; at most 4 pieces, like New arrivals; sold-out pieces are left out (they cannot be bought).

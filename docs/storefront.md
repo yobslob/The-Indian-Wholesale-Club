@@ -50,7 +50,7 @@ Framer Motion page transitions (speed, `engineering.md`).
 5. Regions with no live products show "Coming soon" (`regions.is_live = false`). Anything more, like a notify-me feature, needs founder approval.
 **Target (D-051, not built yet):** below the hero (greeting, tagline, story, image): Clothing / Spices filter pills, then
 **New arrivals → Most wanted → a photo album that scrolls sideways by itself (not interactive) → Curated for you (a card)
-→ Leaving soon** (almost out of stock). Curated for you = admin picks per region, Leaving soon = 1–2 left (D-056); Most wanted waits on Q-22; the album has no pause control (founder, D-052).
+→ Leaving soon** (almost out of stock). Curated for you = admin picks per region, Leaving soon = 1–2 left (D-056); Most wanted = most pieces ordered in the last 30 days (D-058); the album has no pause control (founder, D-052).
 
 ## The product page
 Gallery → name, price → variant picker → availability (live) → **delivery window** → add to cart → details: description,

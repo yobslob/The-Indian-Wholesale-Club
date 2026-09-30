@@ -4,7 +4,7 @@
 **Coding plan C1 (design): the mockup is approved (2026-09-30, D-055); the website (1.3) and the app's Home, Region
 and Product (1.4) are built on it.** Next: the founder tries the app on a phone; then the last C1 row (E2E for reduced
 motion + keyboard is done for the web; `check.mjs` speed budgets). Parts of the mockup that need
-answers or new data wait: Most wanted (Q-22) and the region album (C2). **Done (D-056):** region photos through the admin, Curated for you, Leaving soon, reviews. Open questions: Q-18, Q-22, and before launch Q-3, Q-5, Q-9, Q-10, Q-19.
+answers or new data wait: the region album (C2). Most wanted is answered (D-058). **Done (D-056):** region photos through the admin, Curated for you, Leaving soon, reviews. Open questions: Q-18, and before launch Q-3, Q-5, Q-9, Q-10, Q-19.
 
 ## Steps
 | Step | Status | Evidence |
@@ -72,6 +72,7 @@ answers or new data wait: Most wanted (Q-22) and the region album (C2). **Done (
 | 2026-09-30 | C1 1.3h | Claude, founder's machine | `/states`, `/clothing`, `/search?q=saree`, `/cart`, `/login`, `/orders/lookup`, `/about`, `/account` (→ sign-in) at 1440 px; full `check.mjs` | all 200, no console errors, no horizontal overflow; full run all green: docs, typecheck, lint, test, db, build, http (`/` 16 ms, `/states` 21, region 8, product 17, `/clothing` 16, `/search` 65, health 30), **e2e 6/6**, bundle |
 | 2026-09-30 | C1 1.3i | Claude, founder's machine | `check.mjs typecheck lint build e2e`; first-load JS per route | first e2e run 10/11: the new keyboard test found that searching did not hide the three open-now stamps (their CSS `display` beat the `hidden` attribute), fixed; re-run **e2e 11/11** (flows 1-3 + 5 motion/keyboard tests); no route over 150 kB (largest: product page 117 kB), Lenis stays out of first load |
 | 2026-09-30 | C1 1.4 | Claude, founder's machine: the app's web preview (`expo start --web`, local Supabase) + Playwright (Chromium) at 390 × 844; `check.mjs docs typecheck lint test build http e2e bundle` (no `db`: no migration, and a reset would delete the founder's local admin account and photos) | Home, `/region/kerala`, the kasavu product page, each scrolled through | the preview first failed to bundle (Stripe's native module on web: `lib/stripe.ts` beat `stripe.web.tsx`, fixed by matching extensions), then crashed rendering (SecureStore has no web version, fixed with a web stand-in), and the hero and display fonts were missing on web (`platformSelect` gives no CSS there, fixed in `tailwind.config.js`). After the fixes all three screens render in the approved look: photo hero with the stacked name, Just listed, the map with Kerala, Punjab and Rajasthan, stamps, names; Malayalam greeting, region photo, New arrivals, Curated card, Clothing, Spices; photo + 3 thumbnails, heart, delivery note, add to bag, Size chart, origin line, reviews, Curated. Checks: first run typecheck + lint **FAIL** (`window` in the web stand-in, import order), fixed; then typecheck 9.8 s, lint 14.5 s, test 1.9 s, build 52.9 s, http (`/` 17 ms, region 13, product 17, `/search` 74), **e2e 11/11**, bundle 18.7 s OK; docs FAIL (the audit counted NativeWind's own `NATIVEWIND_OS` as our env var), fixed in the audit. **Not checked:** a real phone (native fonts, Reanimated motion, the map's taps, Stripe), reduced motion on a device, screen readers |
+| 2026-09-30 | `e204a2a` | founder, phone | the redesigned app on a phone; checkout of the last two pieces of a product | founder: "Everything is working smoothly on phone." After buying the last two pieces the product showed out of stock when the founder went back to it. Not reported on: reduced motion, screen readers |
 
 ## C1 sub-steps (design)
 | # | Sub-step | Status |
@@ -93,7 +94,7 @@ answers or new data wait: Most wanted (Q-22) and the region album (C2). **Done (
 | 1.3g | Admin product photos (upload with required alt text, main photo, remove; web admin, the camera flow stays C3); the founder's four kasavu photos on the demo kasavu saree (D-057); `pnpm dev:photos` restores region + kasavu photos after a local reset | ✅ committed · on the hosted dev DB the founder uploads them through the admin |
 | 1.3h | The other pages in the design: titles, inputs, selects and buttons of bag, checkout, sign-in/up, account, addresses, orders, lookup, search and info pages; `/states` reuses Pick your home; Clothing/Spices filter by state with pills | ✅ committed |
 | 1.3i | Motion: Lenis (new dependency, ~4 kB gzipped, loaded after the page is interactive), reveal of cards below the fold, gentle parallax on the region photo; off for reduced motion. A skip link; the hidden Home logo shows on keyboard focus. E2E flow 4 (motion + keyboard, 5 tests) | ✅ committed · found and fixed: search did not hide the open-now stamps |
-| 1.4 | The app (Expo) in the same look, native motion (Reanimated): fonts (`lib/fonts.ts`, one class per weight; Helvetica Neue / Georgia on iOS, TeX Gyre Heros / Gelasio on Android), restyled shared parts (`components/ui.tsx`, a Back control on pushed screens), Home (photo hero, word fade into the logo bar on scroll, Just listed, Pick your home with the shared India map in `react-native-svg`), Region (greeting, New arrivals, Curated card, Leaving soon, Clothing, Spices), Product (photo + thumbnails, heart, add to bag, + / − Details and Size chart, origin line, reviews, Similar items, Curated). A web preview for checking screens (`app-web`) | ✅ committed · **not run on a phone yet** (founder); Most wanted waits on Q-22 |
+| 1.4 | The app (Expo) in the same look, native motion (Reanimated): fonts (`lib/fonts.ts`, one class per weight; Helvetica Neue / Georgia on iOS, TeX Gyre Heros / Gelasio on Android), restyled shared parts (`components/ui.tsx`, a Back control on pushed screens), Home (photo hero, word fade into the logo bar on scroll, Just listed, Pick your home with the shared India map in `react-native-svg`), Region (greeting, New arrivals, Curated card, Leaving soon, Clothing, Spices), Product (photo + thumbnails, heart, add to bag, + / − Details and Size chart, origin line, reviews, Similar items, Curated). A web preview for checking screens (`app-web`) | ✅ committed · founder: works on a phone (log) |
 | 1.4 | E2E: reduced motion + keyboard; `check.mjs` speed budgets | ⏳ |
 
 ## R7 sub-steps
@@ -141,13 +142,11 @@ INV-1 … INV-9: implemented and passing on Claude's Postgres 16 runs and on rea
 | 6.7 | App bundling on the founder's machine: `.npmrc` hoisting, Metro resolver (`@/`, one React), tsconfig paths off in Metro, Stripe 0.38.6, `query-string` + `react-dom` declared | ✅ committed · Claude bundled Android + iOS (log) |
 | 6.8 | Founder: clean reinstall + smoke test on a phone | ✅ 2026-09-29, Android emulator: browse, bag, checkout, tracking (log) |
 
-**Not verified by anyone yet:** a delivered email (needs a verified sender, Q-9), the admin screens in a browser, and any
-app screen on a device.
+**Not verified by anyone yet:** a delivered email (needs a verified sender, Q-9).
 
 ## Waiting on the founder
 1. Q-18: express delivery "15–18 days" (D-048), counted from the order date or from the export's arrival in the US?
-2. Q-22 (what decides Most wanted) before that section is built.
-3. Before launch: Q-3 (US carrier), Q-5 (returns policy), Q-9 (domain, D-046), Q-10 (spices compliance), Q-19 (sales tax).
+2. Before launch: Q-3 (US carrier), Q-5 (returns policy), Q-9 (domain, D-046), Q-10 (spices compliance), Q-19 (sales tax).
 
 ## Known leftovers (tracked, not forgotten)
 - The app's bundle ids are still `com.root.app` (`apps/app/app.json`): they change with the domain (Q-9). Everything else
