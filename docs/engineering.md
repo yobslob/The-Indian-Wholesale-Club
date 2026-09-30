@@ -81,11 +81,12 @@ apps/web/features/<name>/  shell (header, footer), home, catalog, regions (incl.
 apps/web/lib/              infra: env, supabase (store / session / browser / service clients), stripe, email, logger, rate limit
 apps/app/app/(customer)/…  customer tabs; region/, product/, checkout, order/, auth/, addresses (storefront.md)
 apps/app/app/admin/…       admin mode, mounted only after is_admin() (admin.md)
-apps/app/features/<name>/  catalog, cart, checkout, orders, auth, admin      apps/app/lib/  supabase, api, session, use-query
+apps/app/features/<name>/  home, regions, catalog, reviews, cart, checkout, orders, auth, admin
+apps/app/lib/              supabase, api, session, use-query, fonts, stripe (+ web stand-ins)
 packages/db       generated DB types (`pnpm db:types`) + typed queries: store/* (customer-safe, zod) · admin/* · server/*
 packages/shared   pure domain logic + zod schemas (no I/O)         packages/tokens  design tokens → Tailwind + NativeWind
 supabase/migrations  one baseline (R3) + small increments          supabase/seed/  regions, categories, demo (dev only)
-scripts/build-india-map.mjs  regenerates apps/web/features/regions/india-map.json from DataMeet's boundaries (D-052)
+scripts/build-india-map.mjs  regenerates packages/shared/src/india-map/india-map.json (web + app) from DataMeet's boundaries (D-052)
 ```
 
 ## App specifics (since R6)
@@ -108,6 +109,17 @@ scripts/build-india-map.mjs  regenerates apps/web/features/regions/india-map.jso
   resolves and compiles, not how screens look.
 - Screens load data with `lib/use-query.ts` (one `@repo/db` call per screen, pull to refresh) and never show raw errors to
   customers; admin screens show the SQL refusal code (`features/admin/use-action.ts`).
+- **Look and motion (C1 1.4):** the same tokens and font roles as the website (`tailwind.config.js`, `lib/fonts.ts`). A
+  native font file is one weight, so weights are classes (`font-ui-semibold`). iOS uses its built-in Helvetica Neue and
+  Georgia; Android loads TeX Gyre Heros (`assets/fonts`) and Gelasio. The splash screen stays until the fonts are loaded.
+  Motion is Reanimated (Home hero word fade on scroll, cards fading in), off when the phone asks for reduced motion.
+  The India map is shared with the website (`@repo/shared/india-map`) and drawn with `react-native-svg`.
+- **Web preview** (`.claude/launch.json` `app-web`, port 8081): lets Claude check screens in a browser. It is not a
+  product. `lib/stripe.web.tsx` and `lib/auth-storage.web.ts` stand in for Stripe and the keychain there (payment works only
+  on phones). The preview reads local Supabase (`127.0.0.1`) instead of the phone's LAN address in `.env`. Two traps:
+  a platform file must share its sibling's extension (`stripe.tsx` + `stripe.web.tsx`), because Metro tries every
+  platform variant of one extension before the next extension; and `nativewind/theme`'s `platformSelect` gives no CSS on
+  web, so `tailwind.config.js` gives the web a plain font stack.
 
 ## Code conventions
 - Names come from `glossary.md`. One concept = one word across DB, code, routes.

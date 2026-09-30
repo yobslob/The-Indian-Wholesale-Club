@@ -2,18 +2,15 @@ import Image from 'next/image';
 import Link from 'next/link';
 
 import { formatDeliveryWindow } from '@repo/shared/domain';
+import { INDIA_MAP as MAP, TINY_REGIONS as TINY } from '@repo/shared/india-map';
 
 import { mediaUrl } from '@/lib/site';
 
-import map from './india-map.json';
 import { PickHomeInteractive } from './pick-home-interactive';
 import styles from './pick-home.module.css';
 
 import type { DeliveryWindow, RegionCard } from '@repo/db/store';
 
-/** Regions too small to point at on the map get a marker dot as well. */
-const TINY = ['chandigarh', 'delhi', 'goa', 'puducherry', 'lakshadweep', 'dadra-and-nagar-haveli-and-daman-and-diu'];
-const MAP: { viewBox: string; paths: Record<string, string>; centers: Record<string, number[]> } = map;
 
 const accent = (r: RegionCard): React.CSSProperties =>
   ({ '--acc': r.accent_color ?? 'var(--brand)' }) as React.CSSProperties;

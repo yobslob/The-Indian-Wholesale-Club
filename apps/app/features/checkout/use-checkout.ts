@@ -1,4 +1,3 @@
-import { PaymentSheetError, useStripe } from '@stripe/stripe-react-native';
 import { useState } from 'react';
 
 import type {
@@ -10,6 +9,7 @@ import type {
 
 import { apiPost } from '@/lib/api';
 import { SITE_NAME } from '@/lib/site';
+import { PaymentSheetError, useStripe } from '@/lib/stripe';
 
 /** Where Stripe returns after a bank redirect (app.json scheme). */
 const STRIPE_RETURN_URL = 'iwc://stripe-redirect';

@@ -1,5 +1,6 @@
 import { createClient } from '@supabase/supabase-js';
-import * as SecureStore from 'expo-secure-store';
+
+import { authStorage } from './auth-storage';
 
 import type { Database, IwcClient } from '@repo/db';
 
@@ -12,13 +13,6 @@ export const isSupabaseConfigured = Boolean(url && anonKey);
 // Development only: the address in use shows in the Metro terminal (a phone or emulator can't reach 127.0.0.1).
 if (__DEV__) console.log(`[iwc] Supabase: ${url ?? '(EXPO_PUBLIC_SUPABASE_URL not set)'}`);
 
-/** Sessions live in the device keychain / keystore. */
-const secureStorage = {
-  getItem: (key: string) => SecureStore.getItemAsync(key),
-  setItem: (key: string, value: string) => SecureStore.setItemAsync(key, value),
-  removeItem: (key: string) => SecureStore.deleteItemAsync(key),
-};
-
 /**
  * One client for the whole app, signed in or not. Customer screens read only
  * store_* data through @repo/db/store (D-017); admin screens use the same
@@ -29,7 +23,7 @@ export const supabase: IwcClient = createClient<Database>(
   anonKey ?? 'missing-anon-key',
   {
     auth: {
-      storage: secureStorage,
+      storage: authStorage,
       autoRefreshToken: true,
       persistSession: true,
       detectSessionInUrl: false,
@@ -41,4 +35,10 @@ export const supabase: IwcClient = createClient<Database>(
 export function mediaUrl(storagePath: string): string {
   const clean = storagePath.replace(/^\/+/, '').split('/').map(encodeURIComponent).join('/');
   return `${url ?? ''}/storage/v1/object/public/product-media/${clean}`;
+}
+
+/** Public URL of a review photo (review-media; only approved reviews' photos are ever shown, D-056). */
+export function reviewPhotoUrl(storagePath: string): string {
+  const clean = storagePath.replace(/^\/+/, '').split('/').map(encodeURIComponent).join('/');
+  return `${url ?? ''}/storage/v1/object/public/review-media/${clean}`;
 }

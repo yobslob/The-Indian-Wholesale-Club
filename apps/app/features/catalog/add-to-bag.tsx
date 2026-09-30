@@ -15,12 +15,15 @@ import { MAX_QTY_PER_LINE, useBag } from '@/features/cart/store';
 export function AddToBag({
   product,
   variants,
+  delivery,
 }: {
   product: Pick<
     Product,
     'id' | 'name' | 'slug' | 'region_slug' | 'region_name' | 'primary_image_path'
   >;
   variants: Variant[];
+  /** Shown just above the button (the delivery window, D-008). */
+  delivery?: React.ReactNode;
 }): React.JSX.Element {
   const router = useRouter();
   const initial = useMemo(
@@ -43,7 +46,7 @@ export function AddToBag({
 
   return (
     <View className="gap-3">
-      <Text className="text-ink text-xl">{formatUsd(variant.price_cents)}</Text>
+      <Text className="font-ui-semibold text-ink text-[22px]">{formatUsd(variant.price_cents)}</Text>
       {variants.length > 1 ? (
         <View className="flex-row flex-wrap gap-2">
           {variants.map((v) => {
@@ -57,9 +60,9 @@ export function AddToBag({
                   setAdded(false);
                 }}
                 accessibilityState={{ selected }}
-                className={`min-h-11 justify-center rounded-sm border px-3 ${selected ? 'border-ink bg-ink' : 'border-line'}`}
+                className={`bg-paper min-h-11 justify-center rounded-pill border px-4 ${selected ? 'border-ink border-2' : 'border-line'}`}
               >
-                <Text className={selected ? 'text-canvas text-sm' : 'text-ink text-sm'}>
+                <Text className="font-ui text-ink text-sm">
                   {v.label}
                 </Text>
               </Pressable>
@@ -67,24 +70,28 @@ export function AddToBag({
           })}
         </View>
       ) : null}
-      <Text className={soldOut ? 'text-caution text-sm' : 'text-ink-muted text-sm'}>
-        {soldOut ? 'Sold out' : left <= 3 ? `Only ${left} left` : 'In stock'}
-      </Text>
+      <View className="flex-row items-center gap-2">
+        <View className={`h-2 w-2 rounded-full ${soldOut ? 'bg-caution' : 'bg-region'}`} />
+        <Text className={`font-body text-sm ${soldOut ? 'text-caution' : 'text-ink'}`}>
+          {soldOut ? 'Sold out' : left <= 3 ? `Only ${left} left` : 'In stock'}
+        </Text>
+      </View>
+      {delivery ? <View className="bg-paper rounded-md px-4 py-3">{delivery}</View> : null}
       <View className="flex-row items-center gap-3">
         <Pressable
           onPress={() => setQuantity((q) => Math.max(1, q - 1))}
-          className="border-line min-h-11 min-w-11 items-center justify-center rounded-sm border"
+          className="border-line bg-paper min-h-11 min-w-11 items-center justify-center rounded-full border"
           accessibilityLabel="One less"
         >
-          <Text className="text-ink">−</Text>
+          <Text className="font-ui text-ink text-lg">−</Text>
         </Pressable>
-        <Text className="text-ink w-6 text-center">{quantity}</Text>
+        <Text className="font-ui text-ink w-6 text-center">{quantity}</Text>
         <Pressable
           onPress={() => setQuantity((q) => Math.min(maxQty, q + 1))}
-          className="border-line min-h-11 min-w-11 items-center justify-center rounded-sm border"
+          className="border-line bg-paper min-h-11 min-w-11 items-center justify-center rounded-full border"
           accessibilityLabel="One more"
         >
-          <Text className="text-ink">+</Text>
+          <Text className="font-ui text-ink text-lg">+</Text>
         </Pressable>
         <View className="flex-1">
           <Button

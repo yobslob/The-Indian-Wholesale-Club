@@ -10,7 +10,8 @@
     "test": "tsx --test tests/domain.test.ts"
   },
   "exports": {
-    "./domain": "./src/domain/index.ts"
+    "./domain": "./src/domain/index.ts",
+    "./india-map": "./src/india-map/index.ts"
   },
   "devDependencies": {
     "@repo/typescript-config": "workspace:*",

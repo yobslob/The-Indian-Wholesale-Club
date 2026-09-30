@@ -1,3 +1,5 @@
+import { Ionicons } from '@expo/vector-icons';
+import { useRouter } from 'expo-router';
 import {
   ActivityIndicator,
   Pressable,
@@ -13,7 +15,10 @@ import tokens from '@repo/tokens';
 
 import type { TextInputProps } from 'react-native';
 
-/** Plain building blocks on the design tokens (design.md); real design comes with the mockups. */
+/**
+ * Building blocks in the approved design (design.md §Direction, D-050 – D-055): Helvetica Neue titles, Poppins
+ * text, Montserrat for controls, pill buttons, rounded paper inputs and surface cards, on the shared tokens.
+ */
 
 export function Screen({
   children,
@@ -24,17 +29,28 @@ export function Screen({
   refreshing?: boolean;
   onRefresh?: () => void;
 }): React.JSX.Element {
+  const router = useRouter();
   return (
     <SafeAreaView className="bg-canvas flex-1" edges={['top']}>
       <ScrollView
-        contentContainerClassName="gap-4 p-4 pb-12"
+        contentContainerClassName="gap-5 px-4 pb-16 pt-4"
         keyboardShouldPersistTaps="handled"
         refreshControl={
-          onRefresh ? (
-            <RefreshControl refreshing={refreshing ?? false} onRefresh={onRefresh} />
-          ) : undefined
+          onRefresh ? <RefreshControl refreshing={refreshing ?? false} onRefresh={onRefresh} /> : undefined
         }
       >
+        {/* The stack has no header bar (app/_layout.tsx), so a pushed screen shows its own way back. */}
+        {router.canGoBack() ? (
+          <Pressable
+            onPress={() => router.back()}
+            accessibilityRole="button"
+            accessibilityLabel="Back"
+            className="-mb-2 -ml-1 min-h-11 flex-row items-center gap-1 self-start pr-3"
+          >
+            <Ionicons name="chevron-back" size={20} color={tokens.colors.ink} />
+            <Text className="font-ui text-ink text-sm">Back</Text>
+          </Pressable>
+        ) : null}
         {children}
       </ScrollView>
     </SafeAreaView>
@@ -42,33 +58,42 @@ export function Screen({
 }
 
 export function Title({ children }: { children: React.ReactNode }): React.JSX.Element {
-  return <Text className="text-ink text-2xl font-semibold">{children}</Text>;
+  return (
+    <Text accessibilityRole="header" className="font-hero text-ink text-[34px] leading-[38px] tracking-[-1px]">
+      {children}
+    </Text>
+  );
 }
 
 export function Heading({ children }: { children: React.ReactNode }): React.JSX.Element {
-  return <Text className="text-ink text-lg font-medium">{children}</Text>;
+  return (
+    <Text accessibilityRole="header" className="font-hero text-ink text-[24px] leading-[28px] tracking-[-0.5px]">
+      {children}
+    </Text>
+  );
 }
 
-export function Body({
-  children,
-  muted,
-}: {
-  children: React.ReactNode;
-  muted?: boolean;
-}): React.JSX.Element {
+/** Small uppercase label above a group (e.g. "OPEN NOW"). */
+export function Label({ children }: { children: React.ReactNode }): React.JSX.Element {
+  return <Text className="font-ui-semibold text-ink-muted text-[11px] uppercase tracking-[1.8px]">{children}</Text>;
+}
+
+export function Body({ children, muted }: { children: React.ReactNode; muted?: boolean }): React.JSX.Element {
   return (
-    <Text className={muted ? 'text-ink-muted text-sm' : 'text-ink text-base'}>{children}</Text>
+    <Text className={muted ? 'font-body text-ink-muted text-sm leading-5' : 'font-body text-ink text-[15px] leading-6'}>
+      {children}
+    </Text>
   );
 }
 
 export function ErrorText({ children }: { children: React.ReactNode }): React.JSX.Element {
-  return <Text className="text-danger text-sm">{children}</Text>;
+  return <Text className="font-body text-danger text-sm">{children}</Text>;
 }
 
 export function Loading(): React.JSX.Element {
   return (
     <View className="items-center p-8">
-      <ActivityIndicator />
+      <ActivityIndicator color={tokens.colors.ink} />
     </View>
   );
 }
@@ -83,38 +108,36 @@ export function Button({
   label: string;
   onPress: () => void;
   disabled?: boolean;
-  kind?: 'primary' | 'link';
+  kind?: 'primary' | 'secondary' | 'link';
 }): React.JSX.Element {
   if (kind === 'link') {
     return (
-      <Pressable
-        onPress={onPress}
-        disabled={disabled}
-        accessibilityRole="button"
-        className="min-h-11 justify-center"
-      >
-        <Text className="text-ink text-sm underline">{label}</Text>
+      <Pressable onPress={onPress} disabled={disabled} accessibilityRole="button" className="min-h-11 justify-center">
+        <Text className="font-ui text-ink text-sm underline">{label}</Text>
       </Pressable>
     );
   }
+  const primary = kind === 'primary';
   return (
     <Pressable
       onPress={onPress}
       disabled={disabled}
       accessibilityRole="button"
-      className={`bg-brand min-h-11 items-center justify-center rounded-sm px-4 ${disabled ? 'opacity-50' : ''}`}
+      className={`min-h-[52px] items-center justify-center rounded-pill px-6 ${
+        primary ? 'bg-brand' : 'border-line bg-paper border'
+      } ${disabled ? 'opacity-50' : ''}`}
     >
-      <Text className="text-canvas text-sm font-medium">{label}</Text>
+      <Text className={`font-ui text-[15px] ${primary ? 'text-on-brand' : 'text-ink'}`}>{label}</Text>
     </Pressable>
   );
 }
 
 export function Field({ label, ...input }: { label: string } & TextInputProps): React.JSX.Element {
   return (
-    <View className="gap-1">
-      <Text className="text-ink text-sm">{label}</Text>
+    <View className="gap-1.5">
+      <Text className="font-ui text-ink text-[13px]">{label}</Text>
       <TextInput
-        className="border-line bg-canvas text-ink min-h-11 rounded-sm border px-3"
+        className="border-line bg-paper text-ink font-body min-h-12 rounded-md border px-3.5 text-[15px]"
         placeholderTextColor={tokens.colors['ink-muted']}
         {...input}
       />
@@ -123,14 +146,14 @@ export function Field({ label, ...input }: { label: string } & TextInputProps): 
 }
 
 export function Card({ children }: { children: React.ReactNode }): React.JSX.Element {
-  return <View className="border-line gap-1 rounded-md border p-3">{children}</View>;
+  return <View className="bg-surface gap-1.5 rounded-lg p-4">{children}</View>;
 }
 
 export function Row({ label, value }: { label: string; value: string }): React.JSX.Element {
   return (
     <View className="flex-row justify-between gap-3">
-      <Text className="text-ink-muted flex-1 text-sm">{label}</Text>
-      <Text className="text-ink text-sm">{value}</Text>
+      <Text className="font-body text-ink-muted flex-1 text-sm">{label}</Text>
+      <Text className="font-body text-ink text-sm">{value}</Text>
     </View>
   );
 }

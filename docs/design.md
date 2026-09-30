@@ -79,7 +79,8 @@ unit test `packages/tokens/tests` fails if a text colour drops below WCAG AA on 
 | map regions not open yet | `land` | the India map |
 | status | `positive`, `caution`, `danger` | alerts, badges |
 Also `rounded-sm/md/lg/pill`, `duration-fast/base/slow` and the font roles `font-hero`, `font-display`, `font-body`,
-`font-ui`, `font-foot` (§Direction; the web maps them to its self-hosted fonts in `apps/web/app/fonts.ts`). The names
+`font-ui`, `font-foot` (§Direction; the web maps them to its self-hosted fonts in `apps/web/app/fonts.ts`, the app to
+the fonts it loads in `apps/app/lib/fonts.ts`, with one class per weight). The names
 avoid the old theme's keys (`primary`, `accent`, `success`, …); a test keeps them from coming back.
 
 ## Accessibility (non-negotiable)

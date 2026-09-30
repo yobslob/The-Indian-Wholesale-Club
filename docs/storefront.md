@@ -1,7 +1,8 @@
 # Storefront: customer web + customer side of the app
 
-The web skeleton exists since R5 and the app skeleton since R6 (working screens on real data, plain styling). Visual design
-comes in the coding phase (`design.md`). The code is the truth for what exists (`apps/web/app/(store)/`, `apps/app/app/`).
+The web exists since R5 and the app since R6. Both carry the approved design since C1 (`design.md`): the web all pages,
+the app Home, Region and Product (other app screens use the restyled shared parts). The code is the truth for what
+exists (`apps/web/app/(store)/`, `apps/app/app/`).
 
 ## What a customer may see (whitelist, D-003 + D-004 + D-008)
 Anything not on this list stays off customer surfaces: pages, app, emails, API responses, meta tags, page source, and
@@ -59,13 +60,14 @@ heart beside the name saves the product; Details and Size chart open and close w
 items and Curated for you, with smaller cards (five columns).
 
 ## Mobile app (customer side, `apps/app`, built in R6)
-Tabs: **Home** (list now, map with the design) · **Explore** (regions, clothing, spices, search) · **Bag** · **Saved** ·
+Tabs: **Home** (photo hero whose brand name fades on scroll, Just listed, Pick your home: the tappable map, search, stamps
+and names, as on the web) · **Explore** (regions, clothing, spices, search) · **Bag** · **Saved** ·
 **Profile** (orders, addresses, sign-in, track an order). The screens mirror the web pages above, read the same `store_*`
 data through `@repo/db/store` (one call per screen, D-017) and share the tokens (`design.md`).
 | Screen | File (`apps/app/app/…`) | Data |
 |---|---|---|
 | Home, Explore, Bag, Saved, Profile | `(customer)/…` | `store_home()`, `listProducts`, on-device bag, `wishlists` (signed in), own orders |
-| Region, product | `region/[slug]`, `product/[region]/[slug]` | `store_region_page()`, `store_product_page()` + live availability |
+| Region, product | `region/[slug]`, `product/[region]/[slug]` (same sections as the web pages above; on the product page one photo with three thumbnails, and "Write a review" opens the website) | `store_region_page()`, `store_product_page()` + live availability |
 | Checkout | `checkout` | the website's server API: `POST /api/checkout` (server-priced quote + Standard / Express, D-041) → Stripe PaymentSheet → `POST /api/orders` (D-038). The phone never sends prices |
 | Order | `order/[number]` (signed-in owner, `store_my_order`) · `order/lookup` (number + checkout email via `POST /api/orders/lookup`, rate-limited, one answer for any mismatch) | |
 | Addresses, sign-in | `addresses`, `auth/login`, `auth/signup` | own `addresses` rows · Supabase Auth (email + password, as on the web) |

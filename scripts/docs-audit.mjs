@@ -178,7 +178,8 @@ for (const [file, text] of Object.entries(code)) {
   for (const [, name] of text.matchAll(/process\.env\.([A-Z][A-Z0-9_]+)/g))
     if (!envVars.has(name)) envVars.set(name, file);
 }
-const PLATFORM = new Set(['NODE_ENV', 'CI', 'PORT', 'NAME']); // NAME: a comment's placeholder
+// Set by the platform or a tool, never by us. NAME: a comment's placeholder; NATIVEWIND_OS: NativeWind's Metro plugin.
+const PLATFORM = new Set(['NODE_ENV', 'CI', 'PORT', 'NAME', 'NATIVEWIND_OS']);
 for (const [name, file] of envVars) {
   if (!PLATFORM.has(name) && !ops.includes(name))
     problems.push(`docs/ops.md: ${name} (read in ${file}) is not listed`);

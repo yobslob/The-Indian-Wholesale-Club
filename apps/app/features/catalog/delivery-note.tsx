@@ -17,13 +17,13 @@ const orderBy = new Intl.DateTimeFormat('en-US', {
 export function DeliveryNote({ delivery }: { delivery: DeliveryWindow | null }): React.JSX.Element {
   if (!delivery) {
     return (
-      <Text className="text-ink-muted text-sm">
+      <Text className="font-body text-ink-muted text-sm">
         The next delivery window has not been announced yet.
       </Text>
     );
   }
   return (
-    <Text className="text-ink text-sm">
+    <Text className="font-body text-ink text-sm leading-5">
       Estimated delivery{' '}
       {formatDeliveryWindow(delivery.est_delivery_from, delivery.est_delivery_to)}
       <Text className="text-ink-muted">
