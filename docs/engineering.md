@@ -40,6 +40,11 @@ Baseline numbers come from the founder's first `node scripts/check.mjs` run and 
 **Budgets (targets. Verified only by `check.mjs` numbers, never by assumption):**
 DB round trips per page: storefront ≤ 1, checkout ≤ 2 · storefront first-load JS ≤ 150 KB gzip · cached storefront
 response ≤ 100 ms on a local production build · `turbo build --filter=web` ≤ 2 min clean · typecheck + lint ≤ 60 s · unit tests ≤ 15 s.
+**Enforced since C1:** the `http` step fails when a cached storefront page's median is over 100 ms (search and
+`/api/health` read the DB per request and are exempt) or when any page's first-load JS is over 150 KB gzip, measured
+from the script tags the page actually loads (`nomodule` polyfills skipped; lazily imported code not counted), so it
+matches Next's own build table. The step times (build, typecheck, lint, tests) are recorded, not enforced: CI runners
+are slower than the founder's machine and would fail at random.
 
 ## Testing strategy (replaces the old suites)
 A test must **fail when the rule it protects breaks**. Never assert on source-code or SQL text.

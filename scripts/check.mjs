@@ -22,6 +22,7 @@
 import { spawn, execSync } from 'node:child_process';
 import { mkdirSync, writeFileSync } from 'node:fs';
 import os from 'node:os';
+import { gzipSync } from 'node:zlib';
 
 const ALL_STEPS = ['docs', 'typecheck', 'lint', 'test', 'db', 'build', 'http', 'e2e', 'bundle'];
 const COMMANDS = {
@@ -52,6 +53,12 @@ const DEFAULT_ROUTES = [
   '/search?q=saree',
   '/api/health',
 ];
+// Speed budgets the `http` step enforces (engineering.md §Performance, D-011): a cached storefront page answers in
+// ≤ 100 ms on a local production build, and no storefront page loads more than 150 KB of gzipped JS up front.
+// Search reads the DB on every request and /api/health is not a page, so neither has the time budget.
+const BUDGET_MS = 100;
+const BUDGET_JS_KB = 150;
+const UNCACHED = /^\/(search|api)(\/|\?|$)/;
 const PORT = 3100;
 const STEP_TIMEOUT_MS = 15 * 60 * 1000;
 
@@ -123,6 +130,24 @@ async function timeRequest(url) {
   };
 }
 
+// First-load JS of an HTML page: every same-origin script tag the page loads (what a visitor downloads before the
+// page is interactive; code split out with dynamic import() loads later and is not counted), gzipped like the wire.
+// `nomodule` scripts (Next's polyfills, ~39 KB) are skipped: browsers that run modules never download them.
+const chunkKb = new Map();
+async function firstLoadJsKb(base, html) {
+  const tags = [...html.matchAll(/<script[^>]*\ssrc="([^"]+)"[^>]*>/g)].filter((m) => !/\snomodule\b/i.test(m[0]));
+  const srcs = [...new Set(tags.map((m) => m[1].replace(/&amp;/g, '&')))].filter((src) => src.startsWith('/'));
+  let total = 0;
+  for (const src of srcs) {
+    if (!chunkKb.has(src)) {
+      const body = Buffer.from(await (await fetch(base + src)).arrayBuffer());
+      chunkKb.set(src, gzipSync(body).length / 1024);
+    }
+    total += chunkKb.get(src);
+  }
+  return Math.round(total);
+}
+
 async function httpStep() {
   const started = Date.now();
   const server = spawn(`pnpm --filter web exec next start -p ${PORT}`, {
@@ -150,7 +175,13 @@ async function httpStep() {
         const samples = [];
         for (let i = 0; i < 3; i++) samples.push(await timeRequest(base + route));
         const sorted = samples.map((s) => s.totalMs).sort((a, b) => a - b);
-        results.push({ route, status: samples[0].status, medianTotalMs: sorted[1], samples });
+        const page = await fetch(base + route, { redirect: 'manual' });
+        const html = (page.headers.get('content-type') ?? '').includes('text/html') ? await page.text() : null;
+        const firstLoadJs = html ? await firstLoadJsKb(base, html) : undefined;
+        const over = [];
+        if (!UNCACHED.test(route) && sorted[1] > BUDGET_MS) over.push(`${sorted[1]} ms > ${BUDGET_MS} ms`);
+        if (firstLoadJs !== undefined && firstLoadJs > BUDGET_JS_KB) over.push(`${firstLoadJs} KB JS > ${BUDGET_JS_KB} KB`);
+        results.push({ route, status: samples[0].status, medianTotalMs: sorted[1], firstLoadJsKb: firstLoadJs, overBudget: over, samples });
       } catch (e) {
         results.push({ route, error: String(e) });
       }
@@ -158,10 +189,10 @@ async function httpStep() {
   }
   killTree(server.pid);
   return {
-    ok: ready && results.every((r) => !r.error && r.status < 500),
+    ok: ready && results.every((r) => !r.error && r.status < 500 && r.overBudget.length === 0),
     durationMs: Date.now() - started,
     serverReady: ready,
-    note: 'medianTotalMs of 3 requests after 1 warm-up, production build, local machine',
+    note: `medianTotalMs of 3 requests after 1 warm-up, production build, local machine; budgets: cached pages ≤ ${BUDGET_MS} ms, first-load JS ≤ ${BUDGET_JS_KB} KB gzip`,
     routes: results,
     serverLogTail: ready ? undefined : log.split(/\r?\n/).slice(-40).join('\n'),
   };
@@ -198,11 +229,11 @@ writeFileSync('.checks/latest.json', json);
 writeFileSync(`.checks/${report.startedAt.replace(/[:.]/g, '-')}.json`, json);
 
 if (report.steps.http?.routes) {
-  console.log('\nRoute timings (median of 3):');
+  console.log(`\nRoute timings (median of 3; budgets ${BUDGET_MS} ms for cached pages, ${BUDGET_JS_KB} KB first-load JS):`);
   for (const r of report.steps.http.routes) {
-    console.log(
-      `  ${r.route.padEnd(24)} ${r.error ? 'ERROR' : `${r.status}  ${r.medianTotalMs} ms`}`,
-    );
+    const js = r.firstLoadJsKb === undefined ? '' : `  ${r.firstLoadJsKb} KB JS`;
+    const over = r.overBudget?.length ? `  OVER BUDGET: ${r.overBudget.join(', ')}` : '';
+    console.log(`  ${r.route.padEnd(24)} ${r.error ? 'ERROR' : `${r.status}  ${r.medianTotalMs} ms${js}${over}`}`);
   }
 }
 console.log('\nSaved .checks/latest.json — tell Claude it is ready.');
