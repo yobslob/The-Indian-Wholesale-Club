@@ -1,5 +1,6 @@
 import { SITE_NAME } from '@/lib/site';
 
+import { fontVariables } from './fonts';
 import './globals.css';
 
 import type { Metadata, Viewport } from 'next';
@@ -15,11 +16,11 @@ export const metadata: Metadata = {
 
 export const viewport: Viewport = { width: 'device-width', initialScale: 1 };
 
-/** No web fonts until the design is approved (design.md); system fonts are the fastest (D-011). */
+/** Fonts: the founder's set (design.md §Direction), self-hosted with next/font (app/fonts.ts). */
 export default function RootLayout({ children }: { children: React.ReactNode }): React.JSX.Element {
   return (
-    <html lang="en">
-      <body className="bg-canvas text-ink min-h-screen font-sans antialiased">{children}</body>
+    <html lang="en" className={fontVariables}>
+      <body className="bg-canvas text-ink font-body min-h-screen antialiased">{children}</body>
     </html>
   );
 }

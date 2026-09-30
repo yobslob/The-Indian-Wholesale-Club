@@ -61,6 +61,7 @@ Open questions: Q-18, Q-22, Q-23, and before launch Q-3, Q-5, Q-9, Q-10, Q-19.
 | 2026-09-30 | C1 mockup v5 | Claude, Playwright 1.63 (Chromium), local `mockups` server | hero at 1440 × 900, 1920 × 1080 and 390 × 844, top and after two scrolls | no console errors; the name and heading sit on the photo's white wall at 1440 and 1920 (dark via the difference blend); on phones light text over a soft bottom fade; the word-by-word fade into the logo unchanged (0 / 0.06 / 0.30 / 0.55 at 250 px, all 0 and logo 1 at 600 px); the 736 px photo is visibly soft at 1920 (Q-26) |
 | 2026-09-30 | C1 mockup v6 | Claude, Playwright 1.63 (Chromium), local `mockups` server | hero at 1440 × 900, 1920 × 1080 and 390 × 844, top and scrolled; nav state after the photo | no console errors; the photo starts at the top edge (hero top 0 px, height = screen) with the nav on it; nav readable over the door and the disc; name and heading on the wall; after the photo the nav is solid rgb(244, 239, 230); word fade unchanged. The 1117 px photo is slightly soft at 1920 (Q-26) |
 | 2026-09-30 | C1 mockup v7 | Claude, Playwright 1.63 (Chromium), local `mockups` server | hero at 1440 × 900 and 390 × 844, top and scrolled | no console errors; crop from 30 % shows both hands; label under the brand name in the hero font; word fade unchanged |
+| 2026-09-30 | C1 1.2 | Claude, founder's machine | `node scripts/check.mjs typecheck lint test`; tokens contrast test with the old green `#15803D` put back on purpose | typecheck OK 19.5 s · lint OK 45.4 s · test OK 2.4 s; the mutation fails the test ("positive on canvas: 4.38") |
 
 ## C1 sub-steps (design)
 | # | Sub-step | Status |
@@ -72,7 +73,7 @@ Open questions: Q-18, Q-22, Q-23, and before launch Q-3, Q-5, Q-9, Q-10, Q-19.
 | 1.1e | A v5 (D-053): the photo fills the hero; only the name and heading on it | ✅ reviewed (D-054) |
 | 1.1f | A v6 (D-054): the wider photo edge to edge, behind the nav bar; nav white on a top fade, solid after the photo | ✅ reviewed (D-055) |
 | 1.1g | A v7 (D-055): lower crop, label instead of the heading; **mockup approved** | ✅ committed |
-| 1.2 | Founder's pick filed (`/record-answer`), final tokens in `packages/tokens`, script fonts per region, accent contrast check in the admin form | ⏳ after the pick |
+| 1.2 | Final tokens + font roles in `packages/tokens` (AA contrast test), web fonts self-hosted (`apps/web/app/fonts.ts`: Poppins, Montserrat, Inter; TeX Gyre Heros + Gelasio fallbacks, not preloaded) | ✅ committed · script fonts per region and the admin accent contrast check come with the region page |
 | 1.3 | Storefront (web) on the chosen direction: layout, Lenis + reveal/parallax module, `next/image`; then the app with Reanimated | ⏳ |
 | 1.4 | E2E: reduced motion + keyboard; `check.mjs` speed budgets | ⏳ |
 

@@ -1,9 +1,7 @@
 # Design: brand, voice, visual system
 
-> **Status:** the founder set the direction on 2026-09-29 (D-049, §Direction below). No palette, fonts or layouts are
-> final yet: Claude proposes mockups of Home, the Region page, the Product page and admin Listing that follow the
-> direction, for founder review **before** building them (coding plan C1). Until then, don't invent hex values or fonts in
-> code. Use tokens from `packages/tokens` (created in R4 with neutral placeholder values).
+> **Status:** direction set on 2026-09-29 (D-049); the mockup was approved on 2026-09-30 (D-055) and its tokens and fonts
+> are in `packages/tokens` and `apps/web/app/fonts.ts`. Code uses the token roles, never raw hex.
 > **Direction chosen (2026-09-30, D-050):** A, reworked: the hero keeps its format, everything below it is a symmetric
 > full-width grid, no dark mode, fonts below. Mockup: `design/mockups/index.html` (palette with contrast, the map source,
 > the founder's remaining choices). Tokens go into `packages/tokens` in C1 step 2.
@@ -65,20 +63,24 @@ region images, C2), mockups and dev pages use clearly marked placeholders, never
    storefront (no framer-motion), off for `prefers-reduced-motion`. Everything else CSS.
 7. **Light only:** no dark mode on customer pages (D-050).
 
-## Tokens (`packages/tokens`, created in R4)
+## Tokens (`packages/tokens`)
 One source for web (Tailwind preset) and app (NativeWind): `packages/tokens/tokens.js` → `preset.js`. Components use
-roles, never raw hex. Values are **placeholders** (the pre-restructure UI's own colours) until the mockups are approved.
+roles, never raw hex. **Final values since C1 (2026-09-30)**, taken from the approved mockup (D-050 – D-055); the
+unit test `packages/tokens/tests` fails if a text colour drops below WCAG AA on a page background.
 | Role | Tailwind name | Use |
 |---|---|---|
 | page background | `canvas` | `bg-canvas` |
-| cards, panels | `surface` | `bg-surface` |
+| panels, cards | `surface` | `bg-surface` |
+| pills, inputs, lightest layer | `paper` | `bg-paper` |
 | main / secondary text | `ink`, `ink-muted` | `text-ink`, `text-ink-muted` |
 | borders | `line` | `border-line` |
-| IWC brand | `brand` | buttons, logo |
+| IWC brand + text on it | `brand`, `on-brand` | primary buttons |
 | region accent (fallback) | `region` | overridden per region by `regions.accent_color` |
+| map regions not open yet | `land` | the India map |
 | status | `positive`, `caution`, `danger` | alerts, badges |
-Also `rounded-sm/md/lg` and `duration-fast/base/slow`. The names avoid the old theme's keys (`primary`, `accent`,
-`success`, …); that theme was deleted in R5/R6 and a test (`packages/tokens/tests`) keeps the names from coming back. Type scale, spacing and shadows are added with the mockups.
+Also `rounded-sm/md/lg/pill`, `duration-fast/base/slow` and the font roles `font-hero`, `font-display`, `font-body`,
+`font-ui`, `font-foot` (§Direction; the web maps them to its self-hosted fonts in `apps/web/app/fonts.ts`). The names
+avoid the old theme's keys (`primary`, `accent`, `success`, …); a test keeps them from coming back.
 
 ## Accessibility (non-negotiable)
 WCAG 2.2 AA: contrast, focus states, keyboard navigation, alt text on every product image (entered at listing),
