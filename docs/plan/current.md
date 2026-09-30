@@ -3,8 +3,8 @@
 ## Resume here
 **Coding plan C1 (design): the mockup is approved (2026-09-30, D-055); C1 step 2 has started** (tokens + fonts in
 `packages/tokens`, then the storefront built on `design/mockups/a-gallery.html` v7). Parts of the mockup that need
-answers or new data wait: Most wanted / Curated for you / Leaving soon (Q-22), reviews (Q-23), region album photos (C2).
-Open questions: Q-18, Q-22, Q-23, and before launch Q-3, Q-5, Q-9, Q-10, Q-19.
+answers or new data wait: Most wanted (Q-22) and the region album (C2). **In progress (D-056):** region photos through the admin,
+Curated for you, Leaving soon, reviews. Open questions: Q-18, Q-22, Q-27, and before launch Q-3, Q-5, Q-9, Q-10, Q-19.
 
 ## Steps
 | Step | Status | Evidence |
@@ -79,7 +79,7 @@ Open questions: Q-18, Q-22, Q-23, and before launch Q-3, Q-5, Q-9, Q-10, Q-19.
 | 1.2 | Final tokens + font roles in `packages/tokens` (AA contrast test), web fonts self-hosted (`apps/web/app/fonts.ts`: Poppins, Montserrat, Inter; TeX Gyre Heros + Gelasio fallbacks, not preloaded) | ✅ committed · script fonts per region and the admin accent contrast check come with the region page |
 | 1.3a | Migration 5 (`20260930021816_store_pages_v2.sql`): Just listed on Home, newest-first region cards with quick add, Similar items on the product page, one card helper; SQL tests (`store_pages_v2.test.sql`); `@repo/db` schemas | ✅ committed · the hosted dev DB gets it with the next deploy (founder) |
 | 1.3b | Web shell (header on the Home photo via CSS `:has()`, Inter footer with the map credit), Home (photo hero with the scroll fade, Just listed, Pick your home: server-rendered map + stamps + names, one client island for hover/search), the reference product card with quick add, Region page (script greeting fonts, New arrivals, Clothing, Spices) | ✅ committed · Most wanted / Curated / Leaving soon wait on Q-22, the album on region photos (C2) |
-| 1.3c | Product page (one full-length photo + three stacked, heart save, add to bag with the delivery note, + / − Details and Size chart from real listing data, Similar items in small cards); header-aware scrolling (`scroll-padding-top`); the Supabase browser client loads after the page (live availability) or on submit (sign-in), bringing the product page from 184 to 117 kB and sign-in/up from 175 to 107 kB first-load JS | ✅ committed · Reviews wait on Q-23, Curated for you on Q-22 |
+| 1.3c | Product page (one full-length photo + three stacked, heart save, add to bag with the delivery note, + / − Details and Size chart from real listing data, Similar items in small cards); header-aware scrolling (`scroll-padding-top`); the Supabase browser client loads after the page (live availability) or on submit (sign-in), bringing the product page from 184 to 117 kB and sign-in/up from 175 to 107 kB first-load JS | ✅ committed |
 | 1.3 | The other pages (states, clothing/spices, search, bag, checkout, account, orders, info), Lenis + reveal module, reduced-motion + keyboard E2E; then the app with Reanimated | ⏳ next |
 | 1.4 | E2E: reduced motion + keyboard; `check.mjs` speed budgets | ⏳ |
 
@@ -133,7 +133,7 @@ app screen on a device.
 
 ## Waiting on the founder
 1. Q-18: express delivery "15–18 days" (D-048), counted from the order date or from the export's arrival in the US?
-2. Q-22 (what decides the region lists) and Q-23 (the rest of the reviews rules) before those sections are built.
+2. Q-22 (what decides Most wanted) before that section is built; Q-27 (rights to the region photos) before launch.
 3. Before launch: Q-3 (US carrier), Q-5 (returns policy), Q-9 (domain, D-046), Q-10 (spices compliance), Q-19 (sales tax).
 
 ## Known leftovers (tracked, not forgotten)

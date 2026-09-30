@@ -387,3 +387,17 @@ before) sits under the stacked brand name, which becomes the page's main heading
 holds the rights to use it (closes Q-26). The mockup (`design/mockups/a-gallery.html` v7) is approved: C1 step 2 (tokens,
 fonts and the storefront built on it) starts.
 *Note:* the image file is 1117 px wide; a larger export (about 2400 px) will look sharper on big screens.
+
+**D-056 · 2026-09-30 · founder (part of Q-22, was Q-23): Curated for you, Leaving soon, reviews; region photos**
+Founder, verbatim: "Your assumption for curated for you and leaving soon was correct, verified buyers can upload photos and
+rest of them only text and ratings. I have addded images for kerala, punjab and rajasthan in design/mocukps/assets(I
+didn't know where else to add them) Now start the next phase"
+What it means for the build:
+- **Curated for you** = pieces an admin picks per region (personalised from saves and views later). **Leaving soon** =
+  live pieces with 1–2 left (the "2" is a setting). **Most wanted** stays open (Q-22, narrowed).
+- **Reviews:** a rating and text for everyone who reviews; **photos only from verified buyers**; an admin checks each
+  review before it appears (D-052).
+- Region photos for Kerala, Punjab (two) and Rajasthan were supplied; they go in through the admin Regions page.
+*Interpretation (proposed, confirm when reviews are built):* "everyone" = signed-in customers (a review needs an
+account); a verified buyer has a delivered order containing that product; the first Punjab photo is its main image and
+the second waits for the region album (C2).

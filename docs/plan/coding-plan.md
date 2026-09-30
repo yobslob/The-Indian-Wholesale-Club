@@ -39,5 +39,5 @@ launch work (C8) is last, but its questions (Q-5, Q-10, Q-19) should be answered
 there is a gap.
 
 ## Not in this plan (founder approval needed first, `product.md` §Later ideas)
-"Ask for it from home" requests, notify-me, gift boxes (F-6; reviews are now wanted, D-051, phase to be set once Q-23 is answered); returns/exchanges flow (F-4, Q-5); a faster US-stock
+"Ask for it from home" requests, notify-me, gift boxes (F-6; reviews are wanted, D-051, rules D-056, built with the product page in C1); returns/exchanges flow (F-4, Q-5); a faster US-stock
 option (F-5); Stripe Tax instead of the 8 % estimate (F-2).
