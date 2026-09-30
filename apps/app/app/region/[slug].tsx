@@ -47,8 +47,8 @@ function Section({
 
 /**
  * The core page (storefront.md §The region page, design.md §Direction). One store_region_page() call: the
- * greeting in its own script (the phone's system fonts cover every Indian script), New arrivals, Curated for you,
- * Leaving soon (D-056), then every piece under Clothing / Spices. Most wanted (D-058) comes next.
+ * greeting in its own script (the phone's system fonts cover every Indian script), New arrivals, Most wanted
+ * (D-058), Curated for you, Leaving soon (D-056), then every piece under Clothing / Spices.
  */
 export default function RegionScreen(): React.JSX.Element {
   const { slug } = useLocalSearchParams<{ slug: string }>();
@@ -98,6 +98,11 @@ export default function RegionScreen(): React.JSX.Element {
           ) : (
             <>
               <Section title="New arrivals" sub={`Newest pieces from ${data.region.name}.`} products={products.slice(0, 4)} />
+              <Section
+                title="Most wanted"
+                sub={`Most ordered from ${data.region.name} in the last 30 days.`}
+                products={data.most_wanted}
+              />
               {data.curated.length > 0 ? (
                 <View className="bg-surface gap-4 rounded-lg p-4">
                   <View className="gap-1">

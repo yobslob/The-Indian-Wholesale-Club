@@ -66,13 +66,13 @@ function Section({
 
 /**
  * The core page (storefront.md §The region page, design.md §Direction). One cached store_region_page()
- * call: New arrivals, Curated for you and Leaving soon (D-056), then every piece under Clothing / Spices.
- * Still to come: Most wanted (D-058) and the photo album (more region photos, C2).
+ * call: New arrivals, Most wanted (D-058), Curated for you and Leaving soon (D-056), then every piece under
+ * Clothing / Spices. Still to come: the photo album (more region photos, C2).
  */
 export default async function RegionPage({ params }: { params: Params }): Promise<React.JSX.Element> {
   const page = await getRegionPageCached((await params).region);
   if (!page) notFound();
-  const { region, products, curated, leaving_soon: leavingSoon } = page;
+  const { region, products, most_wanted: mostWanted, curated, leaving_soon: leavingSoon } = page;
   const clothing = products.filter((p) => p.product_type === 'clothing');
   const spices = products.filter((p) => p.product_type === 'spice');
   const newest = products.slice(0, 4); // store_region_page returns newest first
@@ -135,6 +135,15 @@ export default async function RegionPage({ params }: { params: Params }): Promis
             </a>
           </nav>
           <Section id="new-arrivals" title="New arrivals" sub={`Newest pieces from ${region.name}.`} products={newest} empty="New pieces are on their way." />
+          {mostWanted.length > 0 ? (
+            <Section
+              id="most-wanted"
+              title="Most wanted"
+              sub={`Most ordered from ${region.name} in the last 30 days.`}
+              products={mostWanted}
+              empty=""
+            />
+          ) : null}
           <CuratedCard id="curated" products={curated} regionName={region.name} />
           {leavingSoon.length > 0 ? (
             <Section

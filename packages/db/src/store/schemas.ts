@@ -105,6 +105,8 @@ export const regionPageSchema = z.object({
   region: regionSchema,
   /** Every live product, newest first (New arrivals are the first four). */
   products: z.array(regionProductCardSchema),
+  /** Most wanted: up to four in-stock pieces ordered most in the last 30 days (D-058). Ranking only, no counts. */
+  most_wanted: z.array(regionProductCardSchema),
   /** Curated for you: up to four admin picks in the region (D-056). */
   curated: z.array(regionProductCardSchema),
   /** Leaving soon: up to four live pieces with 1 to leaving_soon_max left, fewest first (D-056). */
