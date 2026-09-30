@@ -20,7 +20,7 @@ Enforcement: customer code reads catalog and order data only through `store_*` (
 ## Web routes (`apps/web/app/(store)/…`, built in R5)
 | Route | Purpose | Rendering (see `engineering.md`) |
 |---|---|---|
-| `/` | today: "Where's home?" and the list of all 36 regions with a delivery-window teaser. **Target (D-050 – D-053):** the full-photo hero with only the stacked brand name and "Miss local Market? Start here.", Just listed, Pick your home (India map + stamps + names) | static, cached `store_home()` |
+| `/` | today: "Where's home?" and the list of all 36 regions with a delivery-window teaser. **Target (D-050 – D-054):** the full-screen photo hero (behind the nav bar too) with only the stacked brand name and "Miss local Market? Start here.", Just listed, Pick your home (India map + stamps + names) | static, cached `store_home()` |
 | `/states` | all 36 regions, alphabetical, with no state/UT distinction (D-002) | static (same cached read as `/`) |
 | `/states/[region]` | **the core page:** greeting in the region's script, story, accent theme, Clothing · Spices sections | static per region (36 built at build time) |
 | `/states/[region]/[product]` | product page: gallery, options, price, availability (live), save, delivery window, origin line | static on first visit + live stock island |

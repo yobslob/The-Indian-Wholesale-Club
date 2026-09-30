@@ -363,3 +363,16 @@ of D-052; the scroll fade into the header logo stays.
 *Interpretation (proposed):* the delivery window stays visible elsewhere on Home and on every product page (D-008); on
 phones, where the photo leaves too little clear wall, a soft dark fade at the bottom carries light text. The photo needs a
 high-resolution original for large screens (the file sent is 736 px wide), part of Q-26.
+
+**D-054 · 2026-09-30 · founder: Wider hero photo, behind the nav bar too, no white space**
+Founder, verbatim: "that was too much zoomed in, here I generated a new image with bigger background now carefully crop it
+such that the photo is the background of hero section and nav bar as well. I don't want any whitespaces."
+The founder attached a wider version of the hero photo (1117 × 1409 px, the background extended by image generation).
+What it means for the build: the hero fills the first screen edge to edge and the nav bar sits on the photo (no band
+above it, no side margins). Crop: the photo covers the screen from about 21 % down, so the wall disc, her head and the
+clean wall on the right are all in view; the brand name and heading stand on that wall. Supersedes D-053's layout under
+a separate header band.
+*Interpretation (proposed):* over the photo the nav bar is white on a soft dark fade at the top (readable over both the
+door and the disc); it turns solid ivory with dark text once the photo has scrolled past. On phones the crop shifts right
+to keep her and the disc in view. The extended image is derived from the original photo, so Q-26 (rights, and a
+high-resolution original) still applies.
