@@ -121,3 +121,5 @@ export async function listSavedProducts(client: IwcClient): Promise<ProductCard[
   const data = unwrap(await client.from('store_products').select(SAVED_CARD_COLUMNS).in('id', ids));
   return z.array(productCardSchema).parse(data);
 }
+
+export * from './reviews';

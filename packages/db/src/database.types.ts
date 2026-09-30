@@ -497,6 +497,68 @@ isOneToOne: false
                   Relationships: [
                     
                   ]
+                },"review_photos": {
+                  Row: {
+                    "created_at": string,"id": string,"review_id": string,"sort_order": number,"storage_path": string
+                  }
+                  Insert: {
+                    "created_at"?: string,"id"?: string,"review_id": string,"sort_order"?: number,"storage_path": string
+                  }
+                  Update: {
+                    "created_at"?: string,"id"?: string,"review_id"?: string,"sort_order"?: number,"storage_path"?: string
+                  }
+                  Relationships: [
+                    {
+      foreignKeyName: "review_photos_review_id_fkey"
+      columns: ["review_id"]
+isOneToOne: false
+      referencedRelation: "reviews"
+      referencedColumns: ["id"]
+    },{
+      foreignKeyName: "review_photos_review_id_fkey"
+      columns: ["review_id"]
+isOneToOne: false
+      referencedRelation: "store_reviews"
+      referencedColumns: ["id"]
+    }
+                  ]
+                },"reviews": {
+                  Row: {
+                    "body": string,"created_at": string,"display_name": string,"id": string,"is_verified_buyer": boolean,"moderated_at": string | null,"moderated_by": string | null,"product_id": string,"rating": number,"status": Database["public"]['Enums']["review_status"],"updated_at": string,"user_id": string
+                  }
+                  Insert: {
+                    "body": string,"created_at"?: string,"display_name": string,"id"?: string,"is_verified_buyer"?: boolean,"moderated_at"?: string | null,"moderated_by"?: string | null,"product_id": string,"rating": number,"status"?: Database["public"]['Enums']["review_status"],"updated_at"?: string,"user_id": string
+                  }
+                  Update: {
+                    "body"?: string,"created_at"?: string,"display_name"?: string,"id"?: string,"is_verified_buyer"?: boolean,"moderated_at"?: string | null,"moderated_by"?: string | null,"product_id"?: string,"rating"?: number,"status"?: Database["public"]['Enums']["review_status"],"updated_at"?: string,"user_id"?: string
+                  }
+                  Relationships: [
+                    {
+      foreignKeyName: "reviews_moderated_by_fkey"
+      columns: ["moderated_by"]
+isOneToOne: false
+      referencedRelation: "profiles"
+      referencedColumns: ["id"]
+    },{
+      foreignKeyName: "reviews_product_id_fkey"
+      columns: ["product_id"]
+isOneToOne: false
+      referencedRelation: "products"
+      referencedColumns: ["id"]
+    },{
+      foreignKeyName: "reviews_product_id_fkey"
+      columns: ["product_id"]
+isOneToOne: false
+      referencedRelation: "store_products"
+      referencedColumns: ["id"]
+    },{
+      foreignKeyName: "reviews_user_id_fkey"
+      columns: ["user_id"]
+isOneToOne: false
+      referencedRelation: "profiles"
+      referencedColumns: ["id"]
+    }
+                  ]
                 },"stock_movements": {
                   Row: {
                     "actor": string | null,"created_at": string,"delta_listed": number,"delta_reserved": number,"id": number,"note": string | null,"reason": Database["public"]['Enums']["stock_reason"],"ref_id": string | null,"ref_type": string | null,"variant_id": string
@@ -831,6 +893,50 @@ isOneToOne: false
                         Relationships: [
                     
                   ]
+                },"store_review_photos": {
+                  Row: {
+                    "id": string | null,"review_id": string | null,"sort_order": number | null,"storage_path": string | null
+                  }
+                  Relationships: [
+                    {
+      foreignKeyName: "review_photos_review_id_fkey"
+      columns: ["review_id"]
+isOneToOne: false
+      referencedRelation: "reviews"
+      referencedColumns: ["id"]
+    },{
+      foreignKeyName: "review_photos_review_id_fkey"
+      columns: ["review_id"]
+isOneToOne: false
+      referencedRelation: "store_reviews"
+      referencedColumns: ["id"]
+    }
+                  ]
+                },"store_reviews": {
+                  Row: {
+                    "body": string | null,"created_at": string | null,"display_name": string | null,"id": string | null,"is_verified_buyer": boolean | null,"product_id": string | null,"rating": number | null
+                  }
+                  Insert: {
+                           "body"?: string | null,"created_at"?: string | null,"display_name"?: string | null,"id"?: string | null,"is_verified_buyer"?: boolean | null,"product_id"?: string | null,"rating"?: number | null
+                         }
+                        Update: {
+                           "body"?: string | null,"created_at"?: string | null,"display_name"?: string | null,"id"?: string | null,"is_verified_buyer"?: boolean | null,"product_id"?: string | null,"rating"?: number | null
+                         }
+                        Relationships: [
+                    {
+      foreignKeyName: "reviews_product_id_fkey"
+      columns: ["product_id"]
+isOneToOne: false
+      referencedRelation: "products"
+      referencedColumns: ["id"]
+    },{
+      foreignKeyName: "reviews_product_id_fkey"
+      columns: ["product_id"]
+isOneToOne: false
+      referencedRelation: "store_products"
+      referencedColumns: ["id"]
+    }
+                  ]
                 },"store_variants": {
                   Row: {
                     "available": number | null,"id": string | null,"label": string | null,"options": Json | null,"price_cents": number | null,"product_id": string | null,"sort_order": number | null
@@ -853,7 +959,10 @@ isOneToOne: false
                 }
           }
           Functions: {
-            "_leaving_soon_max":
+            "_is_verified_buyer":
+{ Args: { "p_product": string,"p_user": string }; Returns: boolean
+                           },
+"_leaving_soon_max":
 { Args: Record<PropertyKey, never>; Returns: number
                            },
 "_set_stock_context":
@@ -918,6 +1027,9 @@ isOneToOne: false
 "refund_order_item":
 { Args: { "p_amount_cents": number,"p_item": string,"p_refund_ref": string }; Returns: undefined
                            },
+"review_eligibility":
+{ Args: { "p_product": string }; Returns: Json
+                           },
 "store_home":
 { Args: Record<PropertyKey, never>; Returns: Json
                            },
@@ -937,7 +1049,7 @@ isOneToOne: false
                            }
           }
           Enums: {
-            "app_role": "customer"|"admin","content_status": "draft"|"approved","cycle_status": "open"|"collecting"|"packed"|"exported"|"arrived"|"fulfilling"|"closed","discount_type": "percentage"|"fixed","fulfilment_mode": "order_first","ops_desk": "us"|"india","order_item_status": "active"|"unavailable"|"refunded","order_status": "pending_payment"|"confirmed"|"collecting"|"packed"|"in_transit"|"arrived"|"shipped"|"delivered"|"cancelled"|"refunded","payment_status": "pending"|"paid"|"failed"|"refunded"|"partially_refunded","pickup_status": "pending"|"picked"|"unavailable","product_status": "draft"|"live"|"paused"|"archived","product_type": "clothing"|"spice","shipping_method": "standard"|"express","stock_reason": "listed"|"adjusted"|"reserved"|"released"|"picked"|"unavailable","vendor_status": "prospect"|"active"|"paused"
+            "app_role": "customer"|"admin","content_status": "draft"|"approved","cycle_status": "open"|"collecting"|"packed"|"exported"|"arrived"|"fulfilling"|"closed","discount_type": "percentage"|"fixed","fulfilment_mode": "order_first","ops_desk": "us"|"india","order_item_status": "active"|"unavailable"|"refunded","order_status": "pending_payment"|"confirmed"|"collecting"|"packed"|"in_transit"|"arrived"|"shipped"|"delivered"|"cancelled"|"refunded","payment_status": "pending"|"paid"|"failed"|"refunded"|"partially_refunded","pickup_status": "pending"|"picked"|"unavailable","product_status": "draft"|"live"|"paused"|"archived","product_type": "clothing"|"spice","review_status": "pending"|"approved"|"rejected","shipping_method": "standard"|"express","stock_reason": "listed"|"adjusted"|"reserved"|"released"|"picked"|"unavailable","vendor_status": "prospect"|"active"|"paused"
           }
           CompositeTypes: {
             [_ in never]: never
@@ -1053,7 +1165,7 @@ export type CompositeTypes<
 export const Constants = {
   "public": {
           Enums: {
-            "app_role": ["customer", "admin"],"content_status": ["draft", "approved"],"cycle_status": ["open", "collecting", "packed", "exported", "arrived", "fulfilling", "closed"],"discount_type": ["percentage", "fixed"],"fulfilment_mode": ["order_first"],"ops_desk": ["us", "india"],"order_item_status": ["active", "unavailable", "refunded"],"order_status": ["pending_payment", "confirmed", "collecting", "packed", "in_transit", "arrived", "shipped", "delivered", "cancelled", "refunded"],"payment_status": ["pending", "paid", "failed", "refunded", "partially_refunded"],"pickup_status": ["pending", "picked", "unavailable"],"product_status": ["draft", "live", "paused", "archived"],"product_type": ["clothing", "spice"],"shipping_method": ["standard", "express"],"stock_reason": ["listed", "adjusted", "reserved", "released", "picked", "unavailable"],"vendor_status": ["prospect", "active", "paused"]
+            "app_role": ["customer", "admin"],"content_status": ["draft", "approved"],"cycle_status": ["open", "collecting", "packed", "exported", "arrived", "fulfilling", "closed"],"discount_type": ["percentage", "fixed"],"fulfilment_mode": ["order_first"],"ops_desk": ["us", "india"],"order_item_status": ["active", "unavailable", "refunded"],"order_status": ["pending_payment", "confirmed", "collecting", "packed", "in_transit", "arrived", "shipped", "delivered", "cancelled", "refunded"],"payment_status": ["pending", "paid", "failed", "refunded", "partially_refunded"],"pickup_status": ["pending", "picked", "unavailable"],"product_status": ["draft", "live", "paused", "archived"],"product_type": ["clothing", "spice"],"review_status": ["pending", "approved", "rejected"],"shipping_method": ["standard", "express"],"stock_reason": ["listed", "adjusted", "reserved", "released", "picked", "unavailable"],"vendor_status": ["prospect", "active", "paused"]
           }
         }
 } as const

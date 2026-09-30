@@ -22,24 +22,31 @@ export const STORE_REVALIDATE_SECONDS = 300;
 
 const options = { tags: [STORE_TAG], revalidate: STORE_REVALIDATE_SECONDS };
 
-export const getHomeCached = unstable_cache(() => getHome(storeClient()), ['store-home'], options);
+/**
+ * Part of every cache key. Bump it whenever a store_* result changes shape (a migration adds a field): cached
+ * entries outlive deployments (Vercel's data cache, .next/cache locally), and an old entry would reach a page
+ * that expects the new field. Last change: reviews on the product page (migration 7).
+ */
+const SHAPE = 'v7';
+
+export const getHomeCached = unstable_cache(() => getHome(storeClient()), ['store-home', SHAPE], options);
 
 export const getRegionPageCached = unstable_cache(
   (regionSlug: string) => getRegionPage(storeClient(), regionSlug),
-  ['store-region-page'],
+  ['store-region-page', SHAPE],
   options,
 );
 
 export const getProductPageCached = unstable_cache(
   (regionSlug: string, productSlug: string) =>
     getProductPage(storeClient(), regionSlug, productSlug),
-  ['store-product-page'],
+  ['store-product-page', SHAPE],
   options,
 );
 
 export const listProductsCached = unstable_cache(
   (filter: ProductListFilter) => listProducts(storeClient(), filter),
-  ['store-products'],
+  ['store-products', SHAPE],
   options,
 );
 

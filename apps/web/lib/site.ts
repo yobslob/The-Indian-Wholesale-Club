@@ -13,11 +13,21 @@ export const INFO_LINKS = [
   { href: '/terms', label: 'Terms' },
 ] as const;
 
-/** Public URL of a product/region photo in the public `product-media` bucket. */
-export function mediaUrl(storagePath: string): string {
+/** Public URL of a file in a public storage bucket. */
+function publicUrl(bucket: string, storagePath: string): string {
   const base = process.env.NEXT_PUBLIC_SUPABASE_URL ?? '';
   const clean = storagePath.replace(/^\/+/, '').split('/').map(encodeURIComponent).join('/');
-  return `${base}/storage/v1/object/public/product-media/${clean}`;
+  return `${base}/storage/v1/object/public/${bucket}/${clean}`;
+}
+
+/** Public URL of a product/region photo in the public `product-media` bucket. */
+export function mediaUrl(storagePath: string): string {
+  return publicUrl('product-media', storagePath);
+}
+
+/** Public URL of a review photo (`review-media`; only approved reviews' photos are ever linked, D-056). */
+export function reviewPhotoUrl(storagePath: string): string {
+  return publicUrl('review-media', storagePath);
 }
 
 /**

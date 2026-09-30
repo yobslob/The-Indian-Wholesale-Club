@@ -51,7 +51,7 @@ select tests.assert(
    where n.nspname = 'public' and has_function_privilege('authenticated', p.oid, 'execute'))
   = array['admin_set_listed_qty', 'advance_cycle', 'cancel_order', 'cancel_refund_cents', 'change_delivery_window',
           'cutoff_cycle', 'dev_preview', 'is_admin', 'is_product_visible', 'item_refund_cents', 'mark_pickup',
-          'record_payout', 'refund_order_item', 'store_home', 'store_my_order', 'store_next_delivery',
+          'record_payout', 'refund_order_item', 'review_eligibility', 'store_home', 'store_my_order', 'store_next_delivery',
           'store_product_page', 'store_region_page'],
   'signed-in users can execute only store + admin-checked functions (never create_order)');
 

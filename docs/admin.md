@@ -44,6 +44,7 @@ can open every section (D-027).
 | **Orders** | all orders, detail + internal timeline, pack & ship (tracking no.), refunds, delay notices | US | ✓ | ✓ (pack & ship) |
 | **Regions** | edit and approve region content (greeting, story, accent, image, `is_live`); the main photo uploads to `product-media/regions/<slug>/`; an accent below WCAG AA on the page backgrounds is refused | both | ✓ (no script field yet) | — |
 | **Catalog** | products, categories, prices, bulk edits; "Curated for you" picks per product (D-056) | both | ✓ | — |
+| **Reviews** | approve or reject customer reviews before they appear (D-052, D-056); "verified buyer" is set by the database | both | ✓ | — |
 | **Customers** | customer list, orders per customer | US | ✓ | — |
 | **Promotions** | promo codes (kept from the old admin) | US | ✓ | — |
 | **Insights** | sales by region/category/vendor, demand signals (searches, saved items) → what to list next | both | ✓ (sales by region only so far) | — |

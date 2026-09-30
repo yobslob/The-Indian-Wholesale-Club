@@ -63,7 +63,14 @@ anon or customers), which adds `available` and `quick_add` (the variant, only wh
 in stock, so a card's "Add" needs no choice). Migration 6 (D-056): `products.is_curated` (an admin's pick) and
 `pricing_settings.leaving_soon_max` (default 2); `store_region_page()` adds `curated` (up to four picks) and `leaving_soon`
 (up to four live pieces with 1 to `leaving_soon_max` left, read by the internal `_leaving_soon_max()`), and
-`store_product_page()` adds `curated` (the region's other picks). `guest_order_lookup(number, email)` returns the
+`store_product_page()` adds `curated` (the region's other picks). Migration 7 (reviews, D-051, D-056): `reviews`
+(rating 1–5, text, display name, one per customer per product; a trigger makes every new review `pending` and sets
+`is_verified_buyer` from `_is_verified_buyer(user, product)`: a delivered order on their account with the product) and
+`review_photos` (verified reviews only, at most four); customers insert and read their own, admins approve or reject;
+`review_eligibility(product)` tells the form whether photos are allowed. The store reads `store_reviews` and
+`store_review_photos` (approved reviews of visible products, no user id); `store_product_page()` adds `reviews`
+(count, average, per-star counts, the six newest with photos). Photos live in the public `review-media` bucket under
+the customer's own folder. `guest_order_lookup(number, email)` returns the
 same shape for guests and is **service-only** (the server route rate-limits it). A test keeps its fields identical to the views'.
 `checkout_context(variant_ids, promo_code)` (migration 3, **service-only**) returns what the server needs to price a bag in
 one round trip: the variants as customers can buy them (through `store_*`), the promo if usable now, the shipping settings

@@ -8,4 +8,5 @@ export * from './catalog';
 export * from './commerce';
 export * from './operations';
 export * from './refunds';
+export * from './reviews';
 export * from './supply';

@@ -12,6 +12,7 @@ const SECTIONS = [
   ['/admin/vendors', 'Vendors'],
   ['/admin/listings', 'Listings'],
   ['/admin/catalog', 'Catalog'],
+  ['/admin/reviews', 'Reviews'],
   ['/admin/regions', 'Regions'],
   ['/admin/customers', 'Customers'],
   ['/admin/promotions', 'Promotions'],

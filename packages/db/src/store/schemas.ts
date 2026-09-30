@@ -111,6 +111,25 @@ export const regionPageSchema = z.object({
   leaving_soon: z.array(regionProductCardSchema),
 });
 
+/** Approved reviews only (store_reviews): never who wrote them beyond the chosen display name (INV-1). */
+export const reviewSchema = z.object({
+  id: z.string().uuid(),
+  rating: z.number().int().min(1).max(5),
+  body: z.string(),
+  display_name: z.string(),
+  is_verified_buyer: z.boolean(),
+  created_at: isoDateTime,
+  photos: z.array(z.string()),
+});
+
+export const reviewsSummarySchema = z.object({
+  count: z.number().int(),
+  average: z.number().nullable(),
+  histogram: z.record(z.enum(['1', '2', '3', '4', '5']), z.number().int()),
+  /** The six newest approved reviews. */
+  items: z.array(reviewSchema),
+});
+
 export const productPageSchema = z.object({
   product: productSchema,
   variants: z.array(variantSchema),
@@ -119,6 +138,8 @@ export const productPageSchema = z.object({
   similar: z.array(regionProductCardSchema),
   /** The region's other admin picks (Curated for you, D-056). */
   curated: z.array(regionProductCardSchema),
+  /** Approved reviews: summary over all of them and the six newest (D-051, D-056). */
+  reviews: reviewsSummarySchema,
   delivery: deliveryWindowSchema.nullable(),
 });
 
@@ -187,6 +208,8 @@ export type Region = z.infer<typeof regionSchema>;
 export type ProductCard = z.infer<typeof productCardSchema>;
 export type RegionProductCard = z.infer<typeof regionProductCardSchema>;
 export type QuickAdd = z.infer<typeof quickAddSchema>;
+export type Review = z.infer<typeof reviewSchema>;
+export type ReviewsSummary = z.infer<typeof reviewsSummarySchema>;
 export type Product = z.infer<typeof productSchema>;
 export type Variant = z.infer<typeof variantSchema>;
 export type Media = z.infer<typeof mediaSchema>;
