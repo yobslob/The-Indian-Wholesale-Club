@@ -18,10 +18,12 @@ interface Props {
     'id' | 'name' | 'slug' | 'region_slug' | 'region_name' | 'primary_image_path'
   >;
   variants: Variant[];
+  /** Shown just above the button (the delivery window, D-008). */
+  delivery?: React.ReactNode;
 }
 
 /** Variant picker + live availability + add to bag (the only client island on the product page). */
-export function AddToCart({ product, variants }: Props): React.JSX.Element {
+export function AddToCart({ product, variants, delivery }: Props): React.JSX.Element {
   const initial = useMemo(
     () => Object.fromEntries(variants.map((v) => [v.id, v.available])),
     [variants],
@@ -43,11 +45,11 @@ export function AddToCart({ product, variants }: Props): React.JSX.Element {
 
   return (
     <div className="space-y-4">
-      <p className="text-ink text-xl">{formatUsd(variant.price_cents)}</p>
+      <p className="font-ui text-[22px] font-semibold leading-none">{formatUsd(variant.price_cents)}</p>
 
       {variants.length > 1 ? (
         <fieldset>
-          <legend className="text-ink mb-2 text-sm font-medium">Option</legend>
+          <legend className="font-ui text-ink-muted mb-2 text-[11px] font-semibold uppercase tracking-[0.16em]">Option</legend>
           <div className="flex flex-wrap gap-2">
             {variants.map((v) => (
               <button
@@ -59,8 +61,8 @@ export function AddToCart({ product, variants }: Props): React.JSX.Element {
                   setAdded(false);
                 }}
                 aria-pressed={v.id === variantId}
-                className={`min-h-11 rounded-sm border px-3 text-sm ${
-                  v.id === variantId ? 'border-ink bg-ink text-canvas' : 'border-line text-ink'
+                className={`font-ui bg-paper min-h-11 rounded-pill border px-4 text-sm font-medium ${
+                  v.id === variantId ? 'border-ink shadow-[inset_0_0_0_1px_theme(colors.ink)]' : 'border-line'
                 } ${(available[v.id] ?? 0) <= 0 ? 'line-through opacity-60' : ''}`}
               >
                 {v.label}
@@ -70,9 +72,12 @@ export function AddToCart({ product, variants }: Props): React.JSX.Element {
         </fieldset>
       ) : null}
 
-      <p className={`text-sm ${soldOut ? 'text-caution' : 'text-ink-muted'}`} aria-live="polite">
+      <p className={`flex items-center gap-2 text-sm ${soldOut ? 'text-caution' : ''}`} aria-live="polite">
+        <span aria-hidden="true" className={`size-2 rounded-full ${soldOut ? 'bg-caution' : 'bg-region'}`} />
         {soldOut ? 'Sold out' : left <= 3 ? `Only ${left} left` : 'In stock'}
       </p>
+
+      {delivery ? <div className="bg-paper rounded-md px-4 py-3.5">{delivery}</div> : null}
 
       <div className="flex items-center gap-3">
         <label className="text-ink text-sm">
@@ -81,7 +86,7 @@ export function AddToCart({ product, variants }: Props): React.JSX.Element {
             value={quantity}
             onChange={(e) => setQuantity(Number(e.target.value))}
             disabled={soldOut}
-            className="border-line bg-canvas min-h-11 rounded-sm border px-2"
+            className="border-line bg-paper font-ui min-h-12 rounded-pill border px-3"
           >
             {Array.from({ length: maxQty }, (_, i) => i + 1).map((n) => (
               <option key={n} value={n}>
@@ -110,7 +115,7 @@ export function AddToCart({ product, variants }: Props): React.JSX.Element {
             );
             setAdded(true);
           }}
-          className="bg-brand text-canvas min-h-11 flex-1 rounded-sm px-4 text-sm font-medium disabled:opacity-50"
+          className="bg-brand text-on-brand font-ui min-h-14 flex-1 rounded-pill px-5 text-[15px] font-medium disabled:opacity-50"
         >
           Add to bag
         </button>

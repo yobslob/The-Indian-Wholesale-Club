@@ -5,7 +5,10 @@ import { SaveButton } from '@/features/account/save-button';
 import { AddToCart } from '@/features/catalog/add-to-cart';
 import { getProductPageCached } from '@/features/catalog/data';
 import { DeliveryNote } from '@/features/catalog/delivery-note';
-import { ProductDetails, ProductGallery } from '@/features/catalog/product-details';
+import { Disclosure } from '@/features/catalog/disclosure';
+import { ProductCard, ProductGrid } from '@/features/catalog/product-card';
+import { hasDetails, ProductDetails, sizeChart } from '@/features/catalog/product-details';
+import { ProductGallery } from '@/features/catalog/product-gallery';
 
 import type { Metadata } from 'next';
 
@@ -23,42 +26,72 @@ export async function generateMetadata({ params }: { params: Params }): Promise<
 }
 
 /**
- * storefront.md §The product page. One cached store_product_page() call; the
- * add-to-bag island refreshes availability live (PR-7).
+ * storefront.md §The product page, design.md §Direction (D-051): the photos | the buying panel, then
+ * Similar items in smaller cards. One cached store_product_page() call; the add-to-bag island refreshes
+ * availability live (PR-7). Reviews (Q-23) and Curated for you (Q-22) are not built yet.
  */
-export default async function ProductPage({
-  params,
-}: {
-  params: Params;
-}): Promise<React.JSX.Element> {
+export default async function ProductPage({ params }: { params: Params }): Promise<React.JSX.Element> {
   const { region, product: productSlug } = await params;
   const page = await getProductPageCached(region, productSlug);
   if (!page) notFound();
-  const { product, variants, media, delivery } = page;
+  const { product, variants, media, similar, delivery } = page;
+  const chart = sizeChart(product, variants);
 
   return (
-    <div className="grid gap-8 md:grid-cols-2">
-      <ProductGallery media={media} name={product.name} />
-      <div className="space-y-6">
-        <div className="space-y-1">
-          <Link
-            href={`/states/${product.region_slug}`}
-            className="text-ink-muted text-sm hover:underline"
-          >
-            {product.region_name}
-          </Link>
-          <h1 className="text-ink text-2xl font-semibold">{product.name}</h1>
-          {product.summary ? <p className="text-ink-muted">{product.summary}</p> : null}
-        </div>
-        {variants.length > 0 ? (
-          <AddToCart product={product} variants={variants} />
-        ) : (
-          <p className="text-ink-muted text-sm">Not available right now.</p>
-        )}
-        <SaveButton productId={product.id} />
-        <DeliveryNote delivery={delivery} />
-        <ProductDetails product={product} />
+    <>
+      <div className="grid items-start gap-[var(--gap)] md:grid-cols-[auto_minmax(0,1fr)]">
+        <ProductGallery media={media} name={product.name} />
+        <aside aria-label="Buy" className="bg-surface rounded-lg p-[clamp(22px,2.6vw,44px)] md:sticky md:top-24">
+          <p className="font-ui text-ink-muted text-[13px] font-medium">
+            <Link href={`/states/${product.region_slug}`} className="underline">
+              {product.region_name}
+            </Link>
+            &nbsp;·&nbsp; {product.product_type === 'clothing' ? 'Clothing' : 'Spices'} &nbsp;·&nbsp; {product.category_name}
+          </p>
+          <div className="my-3 flex items-start justify-between gap-4">
+            <h1 className="font-display text-[clamp(38px,3.6vw,64px)] leading-none tracking-[-0.02em]">{product.name}</h1>
+            <SaveButton productId={product.id} />
+          </div>
+          {product.summary ? <p className="text-ink-muted mb-5">{product.summary}</p> : null}
+          {variants.length > 0 ? (
+            <AddToCart product={product} variants={variants} delivery={<DeliveryNote delivery={delivery} />} />
+          ) : (
+            <p className="text-ink-muted text-sm">Not available right now.</p>
+          )}
+          <div className="mt-6">
+            {hasDetails(product) ? (
+              <Disclosure title="Details" defaultOpen>
+                <ProductDetails product={product} />
+              </Disclosure>
+            ) : null}
+            {chart ? <Disclosure title="Size chart">{chart}</Disclosure> : null}
+          </div>
+          <p className="border-line font-display mt-4 border-t pt-4 text-[19px] italic">
+            Made in India · from {product.region_name} · Imported
+          </p>
+        </aside>
       </div>
-    </div>
+
+      {similar.length > 0 ? (
+        <section aria-labelledby="similar" className="py-[clamp(28px,3.4vw,56px)]">
+          <div className="mb-[clamp(18px,2vw,28px)] flex flex-wrap items-end justify-between gap-4">
+            <h2 id="similar" className="font-hero text-[clamp(26px,2.2vw,38px)] font-medium leading-tight tracking-[-0.025em]">
+              Similar items
+            </h2>
+            <Link
+              href={`/states/${product.region_slug}`}
+              className="font-ui border-line bg-paper hover:border-ink inline-flex min-h-11 items-center rounded-pill border px-5 text-sm font-medium"
+            >
+              See all
+            </Link>
+          </div>
+          <ProductGrid size="sm">
+            {similar.map((p) => (
+              <ProductCard key={p.id} product={p} size="sm" />
+            ))}
+          </ProductGrid>
+        </section>
+      ) : null}
+    </>
   );
 }

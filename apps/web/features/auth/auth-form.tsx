@@ -5,7 +5,6 @@ import { useRouter } from 'next/navigation';
 import { useState } from 'react';
 
 import { safeNextPath } from '@/lib/site';
-import { browserClient } from '@/lib/supabase/browser';
 
 const input = 'min-h-11 w-full rounded-sm border border-line bg-canvas px-3';
 
@@ -36,6 +35,8 @@ export function AuthForm({
     setError(null);
     const email = String(form.get('email') ?? '').trim();
     const password = String(form.get('password') ?? '');
+    // Loaded on submit, not with the page (~66 kB gzipped, engineering.md §Budgets).
+    const { browserClient } = await import('@/lib/supabase/browser');
     const supabase = browserClient();
     if (mode === 'login') {
       const { error: authError } = await supabase.auth.signInWithPassword({ email, password });
