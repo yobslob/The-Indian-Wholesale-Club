@@ -21,24 +21,23 @@ export function RegionFilter({
 }): React.JSX.Element {
   const [region, setRegion] = useState('');
   const shown = region ? items.filter((i) => i.regionSlug === region) : items;
+  const pill = (on: boolean): string =>
+    `font-ui inline-flex min-h-11 items-center gap-2 rounded-pill border px-5 text-sm font-medium ${
+      on ? 'border-ink bg-ink text-paper' : 'border-line bg-paper hover:border-ink'
+    }`;
   return (
-    <div className="space-y-4">
-      <label className="text-ink block text-sm">
-        State{' '}
-        <select
-          value={region}
-          onChange={(e) => setRegion(e.target.value)}
-          className="border-line bg-canvas min-h-11 rounded-sm border px-2"
-        >
-          <option value="">All ({items.length})</option>
-          {regions.map((r) => (
-            <option key={r.slug} value={r.slug}>
-              {r.name}
-            </option>
-          ))}
-        </select>
-      </label>
-      <div className="grid grid-cols-2 gap-4 sm:grid-cols-3 lg:grid-cols-4">
+    <div className="space-y-6">
+      <div role="group" aria-label="Filter by state" className="flex flex-wrap gap-2.5">
+        <button type="button" aria-pressed={region === ''} onClick={() => setRegion('')} className={pill(region === '')}>
+          All <span className="opacity-60">{items.length}</span>
+        </button>
+        {regions.map((r) => (
+          <button key={r.slug} type="button" aria-pressed={region === r.slug} onClick={() => setRegion(r.slug)} className={pill(region === r.slug)}>
+            {r.name} <span className="opacity-60">{items.filter((i) => i.regionSlug === r.slug).length}</span>
+          </button>
+        ))}
+      </div>
+      <div className="grid grid-cols-2 gap-x-[var(--gap)] gap-y-[clamp(28px,3vw,44px)] xl:grid-cols-4">
         {shown.map((i) => (
           <div key={i.key}>{i.node}</div>
         ))}

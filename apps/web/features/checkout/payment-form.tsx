@@ -72,7 +72,7 @@ export function PaymentForm({
         type="button"
         onClick={() => void pay()}
         disabled={!elements || busy}
-        className="bg-brand text-canvas min-h-11 w-full rounded-sm px-4 text-sm font-medium disabled:opacity-50"
+        className="bg-brand text-on-brand font-ui min-h-14 w-full rounded-pill px-6 text-[15px] font-medium disabled:opacity-50"
       >
         {busy ? 'Paying…' : `Pay ${totalLabel}`}
       </button>

@@ -47,7 +47,7 @@ export function ShippingPicker({
       {options.map((o) => (
         <label
           key={o.method}
-          className="border-line flex min-h-11 items-center gap-3 rounded-sm border px-3"
+          className="border-line bg-paper flex min-h-12 items-center gap-3 rounded-md border px-3.5"
         >
           <input
             type="radio"

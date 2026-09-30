@@ -6,7 +6,7 @@ import { useState } from 'react';
 
 import { safeNextPath } from '@/lib/site';
 
-const input = 'min-h-11 w-full rounded-sm border border-line bg-canvas px-3';
+const input = 'min-h-12 w-full rounded-md border border-line bg-paper px-3.5 text-[15px] outline-none focus:border-ink';
 
 /**
  * Email + password sign-in / sign-up (Supabase Auth). Used by the customer
@@ -77,16 +77,16 @@ export function AuthForm({
       className="grid max-w-sm gap-4"
     >
       {mode === 'signup' ? (
-        <label className="text-ink block text-sm">
+        <label className="font-ui text-ink block text-[13px] font-medium">
           Full name
           <input name="fullName" required autoComplete="name" className={input} />
         </label>
       ) : null}
-      <label className="text-ink block text-sm">
+      <label className="font-ui text-ink block text-[13px] font-medium">
         Email
         <input name="email" type="email" required autoComplete="email" className={input} />
       </label>
-      <label className="text-ink block text-sm">
+      <label className="font-ui text-ink block text-[13px] font-medium">
         Password
         <input
           name="password"
@@ -110,7 +110,7 @@ export function AuthForm({
       <button
         type="submit"
         disabled={busy}
-        className="bg-brand text-canvas min-h-11 rounded-sm px-4 text-sm font-medium disabled:opacity-50"
+        className="bg-brand text-on-brand font-ui min-h-12 rounded-pill px-6 text-[15px] font-medium disabled:opacity-50"
       >
         {mode === 'login' ? 'Sign in' : 'Create account'}
       </button>

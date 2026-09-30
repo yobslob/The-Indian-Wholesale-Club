@@ -12,7 +12,7 @@ export function OrderSummary({ quote }: { quote: CheckoutQuote }): React.JSX.Ele
     </div>
   );
   return (
-    <div className="border-line space-y-3 rounded-md border p-4 text-sm">
+    <div className="border-line space-y-3 rounded-lg border p-5 text-sm">
       <ul className="space-y-1">
         {quote.lines.map((l) => (
           <li key={l.variantId} className="flex justify-between gap-4">

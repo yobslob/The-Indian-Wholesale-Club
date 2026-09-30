@@ -10,12 +10,12 @@ export function RegionCard({ region }: { region: RegionCardData }): React.JSX.El
   return (
     <Link
       href={`/states/${region.slug}`}
-      className="border-line bg-canvas hover:border-ink block rounded-md border p-4"
+      className="border-line bg-paper hover:border-ink block rounded-lg border p-5"
       style={
         region.accent_color ? { borderTopColor: region.accent_color, borderTopWidth: 4 } : undefined
       }
     >
-      <p className="text-ink font-medium">{region.name}</p>
+      <p className="font-display text-ink text-xl">{region.name}</p>
       {region.greeting_native ? (
         <p
           className="text-ink-muted mt-1 text-sm"
@@ -32,7 +32,7 @@ export function RegionCard({ region }: { region: RegionCardData }): React.JSX.El
 
 export function RegionGrid({ regions }: { regions: RegionCardData[] }): React.JSX.Element {
   return (
-    <div className="grid grid-cols-2 gap-3 sm:grid-cols-3 lg:grid-cols-4">
+    <div className="grid grid-cols-2 gap-[var(--gap)] sm:grid-cols-3 lg:grid-cols-4">
       {regions.map((region) => (
         <RegionCard key={region.slug} region={region} />
       ))}

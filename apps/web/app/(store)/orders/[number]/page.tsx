@@ -26,7 +26,7 @@ export default async function OrderPage({
 
   return (
     <div className="space-y-6">
-      <h1 className="text-ink text-2xl font-semibold">Your order</h1>
+      <h1 className="font-hero text-ink text-[clamp(32px,3vw,52px)] font-medium leading-tight tracking-[-0.03em]">Your order</h1>
       {order ? <OrderView order={order} /> : <LookupForm defaultNumber={orderNumber} />}
     </div>
   );

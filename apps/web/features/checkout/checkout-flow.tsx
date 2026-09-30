@@ -19,7 +19,7 @@ import type {
   FinalizeResponse,
 } from './types';
 
-const input = 'min-h-11 w-full rounded-sm border border-line bg-canvas px-3';
+const input = 'min-h-12 w-full rounded-md border border-line bg-paper px-3.5 text-[15px] outline-none focus:border-ink';
 
 function Field(props: {
   name: string;
@@ -30,7 +30,7 @@ function Field(props: {
   defaultValue?: string | null;
 }) {
   return (
-    <label className="text-ink block text-sm">
+    <label className="font-ui text-ink block text-[13px] font-medium">
       {props.label}
       <input
         name={props.name}
@@ -138,7 +138,7 @@ export function CheckoutFlow(): React.JSX.Element {
       <div className="grid gap-8 md:grid-cols-2">
         <OrderSummary quote={started.quote} />
         <div className="space-y-4">
-          <h2 className="text-ink text-lg font-medium">Payment</h2>
+          <h2 className="font-hero text-ink text-[clamp(22px,1.8vw,30px)] font-medium tracking-[-0.02em]">Payment</h2>
           {error ? (
             <p className="text-danger text-sm" role="alert">
               {error}
@@ -207,7 +207,7 @@ export function CheckoutFlow(): React.JSX.Element {
           required
           defaultValue={request?.address.city}
         />
-        <label className="text-ink block text-sm">
+        <label className="font-ui text-ink block text-[13px] font-medium">
           State
           <select
             name="state"
@@ -243,7 +243,7 @@ export function CheckoutFlow(): React.JSX.Element {
           defaultValue={request?.address.phone}
         />
       </div>
-      <label className="text-ink block text-sm">
+      <label className="font-ui text-ink block text-[13px] font-medium">
         Promo code (optional)
         <input
           name="promoCode"
@@ -259,7 +259,7 @@ export function CheckoutFlow(): React.JSX.Element {
       <button
         type="submit"
         disabled={busy}
-        className="bg-brand text-canvas min-h-11 rounded-sm px-4 text-sm font-medium disabled:opacity-50"
+        className="bg-brand text-on-brand font-ui min-h-12 rounded-pill px-6 text-[15px] font-medium disabled:opacity-50"
       >
         {busy ? 'Checking your bag…' : 'Continue to payment'}
       </button>

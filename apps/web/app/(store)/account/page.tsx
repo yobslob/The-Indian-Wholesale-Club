@@ -15,7 +15,7 @@ export default async function AccountPage(): Promise<React.JSX.Element> {
 
   return (
     <div className="space-y-8">
-      <h1 className="text-ink text-2xl font-semibold">Your account</h1>
+      <h1 className="font-hero text-ink text-[clamp(32px,3vw,52px)] font-medium leading-tight tracking-[-0.03em]">Your account</h1>
       <nav className="flex flex-wrap gap-4 text-sm">
         <Link href="/account/orders" className="underline">
           Orders
@@ -29,24 +29,24 @@ export default async function AccountPage(): Promise<React.JSX.Element> {
       </nav>
       <form action={updateProfileAction} className="grid max-w-sm gap-4">
         <p className="text-ink-muted text-sm">{profile?.email ?? user.email}</p>
-        <label className="text-ink block text-sm">
+        <label className="font-ui text-ink block text-[13px] font-medium">
           Full name
           <input
             name="fullName"
             defaultValue={profile?.full_name ?? ''}
-            className="border-line bg-canvas min-h-11 w-full rounded-sm border px-3"
+            className="border-line bg-paper focus:border-ink min-h-12 w-full rounded-md border px-3.5 text-[15px] outline-none"
           />
         </label>
-        <label className="text-ink block text-sm">
+        <label className="font-ui text-ink block text-[13px] font-medium">
           Phone
           <input
             name="phone"
             type="tel"
             defaultValue={profile?.phone ?? ''}
-            className="border-line bg-canvas min-h-11 w-full rounded-sm border px-3"
+            className="border-line bg-paper focus:border-ink min-h-12 w-full rounded-md border px-3.5 text-[15px] outline-none"
           />
         </label>
-        <button type="submit" className="bg-brand text-canvas min-h-11 rounded-sm px-4 text-sm">
+        <button type="submit" className="bg-brand text-on-brand font-ui min-h-12 rounded-pill px-6 text-[15px] font-medium">
           Save
         </button>
       </form>

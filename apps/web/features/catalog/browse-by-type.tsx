@@ -19,7 +19,7 @@ export async function BrowseByType({
 
   return (
     <div className="space-y-6">
-      <h1 className="text-ink text-2xl font-semibold">{title}</h1>
+      <h1 className="font-hero text-ink text-[clamp(32px,3vw,52px)] font-medium leading-tight tracking-[-0.03em]">{title}</h1>
       {products.length === 0 ? (
         <p className="text-ink-muted">{emptyText}</p>
       ) : (

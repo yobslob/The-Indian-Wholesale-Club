@@ -48,7 +48,7 @@ export function CartView(): React.JSX.Element {
               <select
                 value={line.quantity}
                 onChange={(e) => setQuantity(line.variantId, Number(e.target.value))}
-                className="border-line bg-canvas min-h-11 rounded-sm border px-2"
+                className="border-line bg-paper font-ui min-h-11 rounded-pill border px-3"
               >
                 {Array.from({ length: MAX_QTY_PER_LINE }, (_, i) => i + 1).map((n) => (
                   <option key={n} value={n}>
@@ -79,7 +79,7 @@ export function CartView(): React.JSX.Element {
         </p>
         <Link
           href="/checkout"
-          className="bg-brand text-canvas min-h-11 rounded-sm px-6 py-3 text-sm font-medium"
+          className="bg-brand text-on-brand font-ui inline-flex min-h-12 items-center rounded-pill px-6 text-[15px] font-medium"
         >
           Checkout
         </Link>

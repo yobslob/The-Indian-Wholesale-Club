@@ -16,7 +16,7 @@ export default async function AccountOrdersPage(): Promise<React.JSX.Element> {
   const orders = await listMyOrders(client);
   return (
     <div className="space-y-6">
-      <h1 className="text-ink text-2xl font-semibold">Your orders</h1>
+      <h1 className="font-hero text-ink text-[clamp(32px,3vw,52px)] font-medium leading-tight tracking-[-0.03em]">Your orders</h1>
       {orders.length === 0 ? (
         <p className="text-ink-muted">No orders yet.</p>
       ) : (

@@ -22,7 +22,8 @@ export default async function SearchPage({
 
   return (
     <div className="space-y-8">
-      <form action="/search" className="flex gap-2" role="search">
+      <h1 className="font-hero text-ink text-[clamp(32px,3vw,52px)] font-medium leading-tight tracking-[-0.03em]">Search</h1>
+      <form action="/search" className="flex max-w-3xl gap-2" role="search">
         <label htmlFor="q" className="sr-only">
           Search
         </label>
@@ -31,9 +32,9 @@ export default async function SearchPage({
           name="q"
           defaultValue={q}
           placeholder="Search a state, a saree, a spice…"
-          className="border-line bg-canvas min-h-11 flex-1 rounded-sm border px-3"
+          className="border-line bg-paper focus:border-ink min-h-12 flex-1 rounded-pill border px-4 text-[15px] outline-none"
         />
-        <button type="submit" className="bg-brand text-canvas min-h-11 rounded-sm px-4 text-sm">
+        <button type="submit" className="bg-brand text-on-brand font-ui min-h-12 rounded-pill px-6 text-[15px] font-medium">
           Search
         </button>
       </form>
@@ -42,12 +43,12 @@ export default async function SearchPage({
         <>
           {regions.length > 0 ? (
             <section className="space-y-3">
-              <h2 className="text-ink text-lg font-medium">States</h2>
+              <h2 className="font-hero text-ink text-[clamp(22px,1.8vw,30px)] font-medium tracking-[-0.02em]">States</h2>
               <RegionGrid regions={regions} />
             </section>
           ) : null}
           <section className="space-y-3">
-            <h2 className="text-ink text-lg font-medium">Products</h2>
+            <h2 className="font-hero text-ink text-[clamp(22px,1.8vw,30px)] font-medium tracking-[-0.02em]">Products</h2>
             {products.length === 0 ? (
               <p className="text-ink-muted text-sm">No products match “{q}”.</p>
             ) : (

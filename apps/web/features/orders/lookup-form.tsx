@@ -13,24 +13,24 @@ export function LookupForm({ defaultNumber }: { defaultNumber?: string }): React
   if (state.order) return <OrderView order={state.order} />;
   return (
     <form action={action} className="grid max-w-md gap-4">
-      <label className="text-ink block text-sm">
+      <label className="font-ui text-ink block text-[13px] font-medium">
         Order number
         <input
           name="orderNumber"
           required
           defaultValue={defaultNumber}
           placeholder="IWC-260928-…"
-          className="border-line bg-canvas min-h-11 w-full rounded-sm border px-3"
+          className="border-line bg-paper focus:border-ink min-h-12 w-full rounded-md border px-3.5 text-[15px] outline-none"
         />
       </label>
-      <label className="text-ink block text-sm">
+      <label className="font-ui text-ink block text-[13px] font-medium">
         Email used for the order
         <input
           name="email"
           type="email"
           required
           autoComplete="email"
-          className="border-line bg-canvas min-h-11 w-full rounded-sm border px-3"
+          className="border-line bg-paper focus:border-ink min-h-12 w-full rounded-md border px-3.5 text-[15px] outline-none"
         />
       </label>
       {state.error ? (
@@ -41,7 +41,7 @@ export function LookupForm({ defaultNumber }: { defaultNumber?: string }): React
       <button
         type="submit"
         disabled={pending}
-        className="bg-brand text-canvas min-h-11 rounded-sm px-4 text-sm font-medium disabled:opacity-50"
+        className="bg-brand text-on-brand font-ui min-h-12 rounded-pill px-6 text-[15px] font-medium disabled:opacity-50"
       >
         {pending ? 'Looking…' : 'Find my order'}
       </button>

@@ -39,7 +39,7 @@ export function CheckoutSuccess({
   }
   return (
     <div className="max-w-xl space-y-4">
-      <h1 className="text-ink text-2xl font-semibold">Thank you!</h1>
+      <h1 className="font-hero text-ink text-[clamp(32px,3vw,52px)] font-medium leading-tight tracking-[-0.03em]">Thank you!</h1>
       <p className="text-ink">
         Your order number is <strong>{number}</strong>. We have emailed your confirmation with the
         estimated delivery window.

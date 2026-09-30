@@ -14,7 +14,7 @@ export default async function LoginPage({
   const { next } = await searchParams;
   return (
     <div className="space-y-6">
-      <h1 className="text-ink text-2xl font-semibold">Sign in</h1>
+      <h1 className="font-hero text-ink text-[clamp(32px,3vw,52px)] font-medium leading-tight tracking-[-0.03em]">Sign in</h1>
       <AuthForm mode="login" next={next ?? null} />
     </div>
   );
