@@ -1,45 +1,52 @@
 import Link from 'next/link';
 
 import { getHomeCached } from '@/features/catalog/data';
-import { DeliveryNote } from '@/features/catalog/delivery-note';
-import { RegionGrid } from '@/features/regions/region-card';
+import { ProductCard, ProductGrid } from '@/features/catalog/product-card';
+import { HomeHero } from '@/features/home/home-hero';
+import { PickHome } from '@/features/regions/pick-home';
 
 /**
- * "Where's home?" (storefront.md): all 36 regions + the next delivery window.
- * One cached store_home() call (PR-1, PR-2). The India map comes with the
- * design mockups (design.md §Visual system 4).
+ * Home (storefront.md, design.md §Direction, D-050 – D-055): the photo hero, Just listed, Pick your home.
+ * One cached store_home() call (PR-1, PR-2). Runs edge to edge (data-bleed); sections keep the gutter.
  */
 export default async function HomePage(): Promise<React.JSX.Element> {
   const home = await getHomeCached();
-  const live = home.regions.filter((r) => r.is_live);
 
   return (
-    <div className="space-y-10">
-      <section className="space-y-3">
-        <h1 className="text-ink text-3xl font-semibold">Where&apos;s home?</h1>
-        <p className="text-ink-muted max-w-2xl">
-          {/* TODO(founder): approve the home copy (design.md voice, D-019). */}
-          Pick your state and find the clothing and spices you grew up with, delivered to your door
-          in the US.
-        </p>
-        <DeliveryNote delivery={home.delivery} />
-      </section>
+    <div data-bleed>
+      <HomeHero />
 
-      {live.length > 0 ? (
-        <section className="space-y-3">
-          <h2 className="text-ink text-lg font-medium">Available now</h2>
-          <RegionGrid regions={live} />
+      {home.just_listed.length > 0 ? (
+        <section aria-labelledby="just-listed" className="px-[var(--gut)] py-[clamp(28px,3.4vw,56px)]">
+          <div className="mb-[clamp(18px,2vw,28px)] flex flex-wrap items-end justify-between gap-4">
+            <h2 id="just-listed" className="font-hero text-[clamp(26px,2.2vw,38px)] font-medium leading-tight tracking-[-0.025em]">
+              Just listed
+            </h2>
+            <Link
+              href="/clothing"
+              className="font-ui border-line bg-paper hover:border-ink inline-flex min-h-11 items-center rounded-pill border px-5 text-sm font-medium"
+            >
+              See everything
+            </Link>
+          </div>
+          <ProductGrid>
+            {home.just_listed.map((product) => (
+              <ProductCard key={product.id} product={product} />
+            ))}
+          </ProductGrid>
         </section>
       ) : null}
 
-      <section className="space-y-3">
-        <div className="flex items-baseline justify-between">
-          <h2 className="text-ink text-lg font-medium">All of India</h2>
-          <Link href="/states" className="text-sm underline">
-            A–Z list
-          </Link>
+      <section id="pick" aria-labelledby="pick-home" className="px-[var(--gut)] py-[clamp(28px,3.4vw,56px)]">
+        <div className="mb-[clamp(18px,2vw,28px)]">
+          <h2 id="pick-home" className="font-hero text-[clamp(26px,2.2vw,38px)] font-medium leading-tight tracking-[-0.025em]">
+            Pick your home
+          </h2>
+          <p className="text-ink-muted mt-1.5 text-sm">
+            All 28 states and 8 union territories. Find yours on the map or by name.
+          </p>
         </div>
-        <RegionGrid regions={home.regions} />
+        <PickHome regions={home.regions} delivery={home.delivery} />
       </section>
     </div>
   );

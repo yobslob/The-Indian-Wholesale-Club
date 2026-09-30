@@ -76,7 +76,8 @@ stays the evidence of record. After a migration, Claude patches `database.types.
 ## Layout (web: actual since R5; app: actual since R6)
 ```
 apps/web/app/(store)/…     customer routes (storefront.md)       apps/web/app/admin/…   hidden admin (admin.md)
-apps/web/features/<name>/  catalog, regions, cart, checkout, orders, account, auth, info, admin (guard, actions, ui)
+apps/web/features/<name>/  shell (header, footer), home, catalog, regions (incl. the India map), cart, checkout,
+                           orders, account, auth, info, admin (guard, actions, ui)
 apps/web/lib/              infra: env, supabase (store / session / browser / service clients), stripe, email, logger, rate limit
 apps/app/app/(customer)/…  customer tabs; region/, product/, checkout, order/, auth/, addresses (storefront.md)
 apps/app/app/admin/…       admin mode, mounted only after is_admin() (admin.md)
@@ -84,6 +85,7 @@ apps/app/features/<name>/  catalog, cart, checkout, orders, auth, admin      app
 packages/db       generated DB types (`pnpm db:types`) + typed queries: store/* (customer-safe, zod) · admin/* · server/*
 packages/shared   pure domain logic + zod schemas (no I/O)         packages/tokens  design tokens → Tailwind + NativeWind
 supabase/migrations  one baseline (R3) + small increments          supabase/seed/  regions, categories, demo (dev only)
+scripts/build-india-map.mjs  regenerates apps/web/features/regions/india-map.json from DataMeet's boundaries (D-052)
 ```
 
 ## App specifics (since R6)

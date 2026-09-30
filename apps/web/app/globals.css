@@ -4,6 +4,18 @@
 
 /* Colours come from packages/tokens (design.md). Region pages override --region-accent. */
 @layer base {
+  :root {
+    --gut: clamp(16px, 2vw, 32px); /* page side gutter: full width, small margins (D-050) */
+    --gap: clamp(12px, 1.4vw, 20px); /* grid gap */
+    /* Token colours for CSS modules (still one source: packages/tokens). */
+    --ink: theme('colors.ink');
+    --muted: theme('colors.ink-muted');
+    --paper: theme('colors.paper');
+    --line: theme('colors.line');
+    --brand: theme('colors.brand');
+    --land: theme('colors.land');
+  }
+
   :focus-visible {
     outline: 2px solid currentColor;
     outline-offset: 2px;
@@ -14,5 +26,62 @@
       animation: none !important;
       transition: none !important;
     }
+  }
+}
+
+/*
+ * Store shell (features/shell). Pages get the side gutter; a page whose first element carries
+ * data-bleed (Home) runs edge to edge. On Home the header sits on the hero photo (D-054): white on a
+ * soft dark fade, the logo hidden until the page scrolls (--hero-p, set by features/home/hero-scroll.tsx),
+ * and solid again once the photo has scrolled past (html[data-hero-passed]). Pure CSS from the server
+ * render, so nothing jumps when the page hydrates.
+ */
+@layer components {
+  .store-main {
+    min-height: 70vh;
+    padding: 2rem var(--gut) 3rem;
+  }
+  .store-main:has(> [data-bleed]) {
+    padding: 0;
+  }
+
+  .site-header {
+    position: sticky;
+    top: 0;
+    z-index: 40;
+    background-color: theme('colors.canvas');
+    color: theme('colors.ink');
+    box-shadow: 0 1px 0 theme('colors.line');
+    transition:
+      background-color 0.35s,
+      color 0.35s,
+      box-shadow 0.35s;
+  }
+  body:has([data-home-hero]) .site-header {
+    position: fixed;
+    inset: 0 0 auto;
+    background-color: transparent;
+    color: #fff;
+    box-shadow: none;
+  }
+  body:has([data-home-hero]) .site-header::before {
+    content: '';
+    position: absolute;
+    inset: 0 0 -48px;
+    z-index: -1;
+    pointer-events: none;
+    background: linear-gradient(to bottom, rgb(20 17 15 / 0.6), rgb(20 17 15 / 0));
+    transition: opacity 0.35s;
+  }
+  body:has([data-home-hero]) .site-logo {
+    opacity: var(--hero-p, 0);
+  }
+  html[data-hero-passed] body:has([data-home-hero]) .site-header {
+    background-color: theme('colors.canvas');
+    color: theme('colors.ink');
+    box-shadow: 0 1px 0 theme('colors.line');
+  }
+  html[data-hero-passed] body:has([data-home-hero]) .site-header::before {
+    opacity: 0;
   }
 }
