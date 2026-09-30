@@ -376,3 +376,14 @@ a separate header band.
 door and the disc); it turns solid ivory with dark text once the photo has scrolled past. On phones the crop shifts right
 to keep her and the disc in view. The extended image is derived from the original photo, so Q-26 (rights, and a
 high-resolution original) still applies.
+
+**D-055 · 2026-09-30 · founder (was Q-26): Hero crop and label; the hero image is AI-generated and IWC has the rights; C1 build starts**
+Founder, verbatim: "Instead of starting from 21%, start from a bit more lower so her hand is visible. remove the heading
+from there Instead put "Clothing and spices from home" in the same font as it was before getting removed.
+Rest is good you can now start the next phase. Also, this is an AI generated image and we do have the rights"
+What it means for the build: the hero photo is cropped from 30 % down (her hands in view); the heading "Miss local Market?
+Start here." is removed from the hero and the label "Clothing and spices from home" (Helvetica Neue, small caps style as
+before) sits under the stacked brand name, which becomes the page's main heading. The hero image is AI-generated and IWC
+holds the rights to use it (closes Q-26). The mockup (`design/mockups/a-gallery.html` v7) is approved: C1 step 2 (tokens,
+fonts and the storefront built on it) starts.
+*Note:* the image file is 1117 px wide; a larger export (about 2400 px) will look sharper on big screens.

@@ -2,7 +2,7 @@
 
 If work depends on one of these: ask the founder, or build it so every answer still works and say so.
 When one is answered, move it to `decisions.md` as a new D-entry and delete it here.
-Q-1, Q-2, Q-4, Q-6, Q-7, Q-8, Q-11 – Q-14 were answered on 2026-09-28 (D-023 – D-036), Q-16 and Q-17 too (D-041, D-042), Q-15 and Q-20 on 2026-09-29 (D-047, D-045), Q-21, Q-24 and Q-25 on 2026-09-30 (D-052). The ones below are facts the
+Q-1, Q-2, Q-4, Q-6, Q-7, Q-8, Q-11 – Q-14 were answered on 2026-09-28 (D-023 – D-036), Q-16 and Q-17 too (D-041, D-042), Q-15 and Q-20 on 2026-09-29 (D-047, D-045), Q-21, Q-24 and Q-25 on 2026-09-30 (D-052), Q-26 the same day (D-055). The ones below are facts the
 founder doesn't know yet. **None blocks the restructure (R2–R8). All must be answered before launch.**
 
 | ID | Question | Why it matters | Rule until answered |
@@ -15,4 +15,3 @@ founder doesn't know yet. **None blocks the restructure (R2–R8). All must be a
 | Q-19 | Before launch, with an accountant: may IWC keep the sales tax on an order the customer cancels (D-042), or must it be refunded or paid to the state? | tax compliance in each state | the rule is built as the founder said; the check is on the launch list |
 | Q-22 | What decides the region sections (D-051)? Proposed: **Most wanted** = most pieces ordered in the last 30 days; **Curated for you** = pieces an admin picks per region (later personalised from saves and views); **Leaving soon** = pieces with ≤ 2 left (a setting). | no invented rankings or fake scarcity (D-012, `design.md` voice) | the mockup shows these rules as labelled samples; nothing is built until confirmed |
 | Q-23 | Reviews (D-051; an admin checks each one before it appears, D-052): only verified buyers after delivery? Stars only, or text and photos too? | trust; no fake reviews | the mockup shows labelled sample cards only; no reviews are collected or shown until answered |
-| Q-26 | The hero photo the founder sent (D-052 – D-054; the wider version was extended by image generation): who took the original, does IWC have the rights to use it (and the extended version) on the live site, or will IWC shoot its own? Is there a high-resolution version (the current file is 1117 px wide; large screens need about 2400 px)? | copyright; the photo is the first thing every visitor sees | the mockup labels it "Founder's mood photo · rights to confirm"; it ships only once the rights are clear |

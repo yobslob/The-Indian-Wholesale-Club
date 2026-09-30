@@ -1,13 +1,10 @@
 # Current status
 
 ## Resume here
-**Coding plan C1 (design): mockup A v6 is ready for the founder (2026-09-30, D-052 – D-054; v6 = the founder's wider photo fills the first screen, behind the nav bar too, with only the brand name and heading on it).** `design/mockups/a-gallery.html`
-(overview in `index.html`): the new photo hero (founder's photo fading into its wall, the brand name stacked word by word,
-fading out into the header logo on scroll; the v3 hero is in `design/mockups/archive/a-gallery-v3.html`), headline "Miss
-local Market? Start here.", the album as a moving mosaic, TeX Gyre Heros / Gelasio as fallbacks for Helvetica Neue /
-Georgia. Q-21, Q-24, Q-25 answered. **Next: the founder reviews v4 and answers Q-22 (region lists), Q-23 (the rest of
-the reviews rules), Q-26 (hero photo rights)**; then C1 step 2: tokens + fonts in `packages/tokens` and the storefront
-built on it. Also open: Q-18, and before launch Q-3, Q-5, Q-9, Q-10, Q-19.
+**Coding plan C1 (design): the mockup is approved (2026-09-30, D-055); C1 step 2 has started** (tokens + fonts in
+`packages/tokens`, then the storefront built on `design/mockups/a-gallery.html` v7). Parts of the mockup that need
+answers or new data wait: Most wanted / Curated for you / Leaving soon (Q-22), reviews (Q-23), region album photos (C2).
+Open questions: Q-18, Q-22, Q-23, and before launch Q-3, Q-5, Q-9, Q-10, Q-19.
 
 ## Steps
 | Step | Status | Evidence |
@@ -63,6 +60,7 @@ built on it. Also open: Q-18, and before launch Q-3, Q-5, Q-9, Q-10, Q-19.
 | 2026-09-30 | C1 mockup v4 | Claude, the repo's Playwright 1.63 (Chromium) against the local `mockups` server | hero at 1440 × 900 and 390 × 844, at the top and after two wheel scrolls (word and logo opacity read from the page); album mosaic screenshot + movement; full-page Home (390) and Region (1440); computed hero font stack | no console errors, no horizontal overflow; at 250 px scrolled the words read 0 / 0.06 / 0.30 / 0.55 and the logo 0.55, at 600 px all words 0 and the logo 1 (the fade runs word by word); on phones the brand name sits under the photo; the album moves; the hero font stack resolves to TeX Gyre Heros on this Windows machine. **Not checked:** real Helvetica Neue, Gelasio on Android, a real phone, screen readers |
 | 2026-09-30 | C1 mockup v5 | Claude, Playwright 1.63 (Chromium), local `mockups` server | hero at 1440 × 900, 1920 × 1080 and 390 × 844, top and after two scrolls | no console errors; the name and heading sit on the photo's white wall at 1440 and 1920 (dark via the difference blend); on phones light text over a soft bottom fade; the word-by-word fade into the logo unchanged (0 / 0.06 / 0.30 / 0.55 at 250 px, all 0 and logo 1 at 600 px); the 736 px photo is visibly soft at 1920 (Q-26) |
 | 2026-09-30 | C1 mockup v6 | Claude, Playwright 1.63 (Chromium), local `mockups` server | hero at 1440 × 900, 1920 × 1080 and 390 × 844, top and scrolled; nav state after the photo | no console errors; the photo starts at the top edge (hero top 0 px, height = screen) with the nav on it; nav readable over the door and the disc; name and heading on the wall; after the photo the nav is solid rgb(244, 239, 230); word fade unchanged. The 1117 px photo is slightly soft at 1920 (Q-26) |
+| 2026-09-30 | C1 mockup v7 | Claude, Playwright 1.63 (Chromium), local `mockups` server | hero at 1440 × 900 and 390 × 844, top and scrolled | no console errors; crop from 30 % shows both hands; label under the brand name in the hero font; word fade unchanged |
 
 ## C1 sub-steps (design)
 | # | Sub-step | Status |
@@ -72,7 +70,8 @@ built on it. Also open: Q-18, and before launch Q-3, Q-5, Q-9, Q-10, Q-19.
 | 1.1c | A v3 (D-051): headline options, Helvetica Neue, 700 ms name hover, region sections, new product page with reviews | ✅ reviewed (D-052) |
 | 1.1d | A v4 (D-052): photo hero with the stacked brand name → header logo on scroll, chosen headline, album mosaic, font fallbacks; v3 hero archived | ✅ reviewed (D-053) |
 | 1.1e | A v5 (D-053): the photo fills the hero; only the name and heading on it | ✅ reviewed (D-054) |
-| 1.1f | A v6 (D-054): the wider photo edge to edge, behind the nav bar; nav white on a top fade, solid after the photo | ✅ committed · founder review pending |
+| 1.1f | A v6 (D-054): the wider photo edge to edge, behind the nav bar; nav white on a top fade, solid after the photo | ✅ reviewed (D-055) |
+| 1.1g | A v7 (D-055): lower crop, label instead of the heading; **mockup approved** | ✅ committed |
 | 1.2 | Founder's pick filed (`/record-answer`), final tokens in `packages/tokens`, script fonts per region, accent contrast check in the admin form | ⏳ after the pick |
 | 1.3 | Storefront (web) on the chosen direction: layout, Lenis + reveal/parallax module, `next/image`; then the app with Reanimated | ⏳ |
 | 1.4 | E2E: reduced motion + keyboard; `check.mjs` speed budgets | ⏳ |
@@ -127,8 +126,7 @@ app screen on a device.
 
 ## Waiting on the founder
 1. Q-18: express delivery "15–18 days" (D-048), counted from the order date or from the export's arrival in the US?
-2. C1: review mockup A v4 (`design/mockups/index.html`); answer Q-22 (region lists), Q-23 (the rest of the reviews rules),
-   Q-26 (hero photo rights).
+2. Q-22 (what decides the region lists) and Q-23 (the rest of the reviews rules) before those sections are built.
 3. Before launch: Q-3 (US carrier), Q-5 (returns policy), Q-9 (domain, D-046), Q-10 (spices compliance), Q-19 (sales tax).
 
 ## Known leftovers (tracked, not forgotten)
