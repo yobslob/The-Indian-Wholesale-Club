@@ -103,7 +103,12 @@ export const homeSchema = z.object({
 
 export const regionPageSchema = z.object({
   region: regionSchema,
+  /** Every live product, newest first (New arrivals are the first four). */
   products: z.array(regionProductCardSchema),
+  /** Curated for you: up to four admin picks in the region (D-056). */
+  curated: z.array(regionProductCardSchema),
+  /** Leaving soon: up to four live pieces with 1 to leaving_soon_max left, fewest first (D-056). */
+  leaving_soon: z.array(regionProductCardSchema),
 });
 
 export const productPageSchema = z.object({
@@ -112,6 +117,8 @@ export const productPageSchema = z.object({
   media: z.array(mediaSchema),
   /** Up to five other live products in the same category, own region first. */
   similar: z.array(regionProductCardSchema),
+  /** The region's other admin picks (Curated for you, D-056). */
+  curated: z.array(regionProductCardSchema),
   delivery: deliveryWindowSchema.nullable(),
 });
 

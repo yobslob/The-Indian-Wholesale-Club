@@ -14,7 +14,8 @@
     "format": "prettier --write \"**/*.{ts,tsx,js,jsx,json,md,css}\"",
     "format:check": "prettier --check \"**/*.{ts,tsx,js,jsx,json,md,css}\"",
     "prepare": "husky",
-    "dev:admin": "node scripts/dev-admin.mjs"
+    "dev:admin": "node scripts/dev-admin.mjs",
+    "dev:region-photos": "node scripts/dev-region-photos.mjs"
   },
   "devDependencies": {
     "@repo/eslint-config": "workspace:*",

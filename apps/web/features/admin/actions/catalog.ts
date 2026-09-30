@@ -160,6 +160,14 @@ export async function updateProductAction(productId: string, form: FormData): Pr
   revalidatePath(`/admin/catalog/${productId}`);
 }
 
+/** Curated for you (D-056): an admin's pick shows on its region page and the region's product pages. */
+export async function setProductCuratedAction(productId: string, curated: boolean): Promise<void> {
+  const { client } = await requireAdminAction();
+  await updateProduct(client, id.parse(productId), { is_curated: z.boolean().parse(curated) });
+  revalidateTag(STORE_TAG);
+  revalidatePath(`/admin/catalog/${productId}`);
+}
+
 /** Publishing makes it visible in the store. The database refuses live spices (D-032). */
 export async function setProductStatusAction(
   productId: string,

@@ -120,7 +120,7 @@ export async function getAdminProduct(client: IwcClient, id: string) {
       .from('products')
       .select(
         `id, slug, name, product_type, region_id, category_id, vendor_id, summary, description, story, craft, attributes,
-          price_cents, shop_price_paise, origin_town, has_origin_label, status, is_placeholder, published_at,
+          price_cents, shop_price_paise, origin_town, has_origin_label, status, is_placeholder, published_at, is_curated,
           created_at, updated_at,
           variants:product_variants(id, sku, label, options, price_cents, weight_g, qty_listed, qty_reserved,
           qty_confirmed_at, is_active, sort_order),

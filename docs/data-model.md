@@ -60,7 +60,10 @@ one-round-trip page reads (PR-2, migration 2) that read **only** the views: `sto
 `published_at`, and `store_product_page()` adds `similar` (up to five other live products in the same category, own
 region first). All product cards come from the internal helper `_store_product_card(product_id)` (not callable by
 anon or customers), which adds `available` and `quick_add` (the variant, only when a product has exactly one and it is
-in stock, so a card's "Add" needs no choice). `guest_order_lookup(number, email)` returns the
+in stock, so a card's "Add" needs no choice). Migration 6 (D-056): `products.is_curated` (an admin's pick) and
+`pricing_settings.leaving_soon_max` (default 2); `store_region_page()` adds `curated` (up to four picks) and `leaving_soon`
+(up to four live pieces with 1 to `leaving_soon_max` left, read by the internal `_leaving_soon_max()`), and
+`store_product_page()` adds `curated` (the region's other picks). `guest_order_lookup(number, email)` returns the
 same shape for guests and is **service-only** (the server route rate-limits it). A test keeps its fields identical to the views'.
 `checkout_context(variant_ids, promo_code)` (migration 3, **service-only**) returns what the server needs to price a bag in
 one round trip: the variants as customers can buy them (through `store_*`), the promo if usable now, the shipping settings

@@ -143,6 +143,17 @@ export default async function SettingsPage(): Promise<React.JSX.Element> {
             className={input}
           />
         </Field>
+        <Field label="Leaving soon lists pieces with at most this many left (D-056)">
+          <input
+            name="leavingSoonMax"
+            type="number"
+            min="1"
+            max="20"
+            required
+            defaultValue={s.leaving_soon_max}
+            className={input}
+          />
+        </Field>
         <div className="sm:col-span-2">
           <button type="submit" className={button}>
             Save settings

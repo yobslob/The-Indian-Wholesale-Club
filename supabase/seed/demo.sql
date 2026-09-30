@@ -49,6 +49,9 @@ values
   ('00000000-0000-4000-8000-000000000203', 'DEMO-RAJ-DUP-1', 'Red', '{"colour": "Red"}', 4),
   ('00000000-0000-4000-8000-000000000204', 'DEMO-PUN-DUP-1', 'Orange', '{"colour": "Orange"}', 2);
 
+-- DEV: one Curated for you pick (D-056) so the section shows locally.
+update public.products set is_curated = true where id = '00000000-0000-4000-8000-000000000202';
+
 -- DEV PLACEHOLDER open cycle (dates relative to "now").
 insert into public.cycles (code, status, cutoff_at, est_export_on, est_arrival_on)
 values ('DEV-OPEN', 'open', now() + interval '7 days', current_date + 10, current_date + 30);

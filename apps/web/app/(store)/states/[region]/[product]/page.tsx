@@ -3,6 +3,7 @@ import { notFound } from 'next/navigation';
 
 import { SaveButton } from '@/features/account/save-button';
 import { AddToCart } from '@/features/catalog/add-to-cart';
+import { CuratedCard } from '@/features/catalog/curated-card';
 import { getProductPageCached } from '@/features/catalog/data';
 import { DeliveryNote } from '@/features/catalog/delivery-note';
 import { Disclosure } from '@/features/catalog/disclosure';
@@ -27,14 +28,14 @@ export async function generateMetadata({ params }: { params: Params }): Promise<
 
 /**
  * storefront.md §The product page, design.md §Direction (D-051): the photos | the buying panel, then
- * Similar items in smaller cards. One cached store_product_page() call; the add-to-bag island refreshes
- * availability live (PR-7). Reviews (Q-23) and Curated for you (Q-22) are not built yet.
+ * Similar items in smaller cards and Curated for you (D-056). One cached store_product_page() call; the
+ * add-to-bag island refreshes availability live (PR-7).
  */
 export default async function ProductPage({ params }: { params: Params }): Promise<React.JSX.Element> {
   const { region, product: productSlug } = await params;
   const page = await getProductPageCached(region, productSlug);
   if (!page) notFound();
-  const { product, variants, media, similar, delivery } = page;
+  const { product, variants, media, similar, curated, delivery } = page;
   const chart = sizeChart(product, variants);
 
   return (
@@ -92,6 +93,7 @@ export default async function ProductPage({ params }: { params: Params }): Promi
           </ProductGrid>
         </section>
       ) : null}
+      <CuratedCard id="curated" products={curated} regionName={product.region_name} />
     </>
   );
 }

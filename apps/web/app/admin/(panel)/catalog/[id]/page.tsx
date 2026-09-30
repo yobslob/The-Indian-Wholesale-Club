@@ -8,6 +8,7 @@ import {
   addVariantAction,
   setProductStatusAction,
   setQtyAction,
+  setProductCuratedAction,
   updateProductAction,
 } from '@/features/admin/actions/catalog';
 import { requireAdminPage } from '@/features/admin/guard';
@@ -74,6 +75,14 @@ export default async function AdminProductPage({
             </form>
           ))}
       </div>
+      <form action={setProductCuratedAction.bind(null, product.id, !product.is_curated)} className="flex items-center gap-3">
+        <span>
+          Curated for you: <strong>{product.is_curated ? 'yes' : 'no'}</strong> (shown on its region page)
+        </span>
+        <button type="submit" className="min-h-11 underline">
+          {product.is_curated ? 'Remove from Curated for you' : 'Add to Curated for you'}
+        </button>
+      </form>
       {product.product_type === 'spice' ? (
         <p className="text-caution">
           Spices cannot be published until the compliance question is answered (D-032, Q-10).

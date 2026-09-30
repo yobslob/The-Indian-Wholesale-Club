@@ -2,6 +2,7 @@ import Image from 'next/image';
 import Link from 'next/link';
 import { notFound } from 'next/navigation';
 
+import { CuratedCard } from '@/features/catalog/curated-card';
 import { getHomeCached, getRegionPageCached } from '@/features/catalog/data';
 import { ProductCard, ProductGrid } from '@/features/catalog/product-card';
 import { scriptFontClass } from '@/features/regions/script-fonts';
@@ -33,12 +34,14 @@ function Section({
   sub,
   products,
   empty,
+  badge,
 }: {
   id: string;
   title: string;
   sub?: string;
   products: RegionProductCard[];
   empty: string;
+  badge?: (p: RegionProductCard) => React.ReactNode;
 }): React.JSX.Element {
   return (
     <section id={id} aria-labelledby={`${id}-h`} className="scroll-mt-20 py-[clamp(28px,3.4vw,56px)]">
@@ -53,7 +56,7 @@ function Section({
       ) : (
         <ProductGrid>
           {products.map((p) => (
-            <ProductCard key={p.id} product={p} />
+            <ProductCard key={p.id} product={p} badge={badge?.(p)} />
           ))}
         </ProductGrid>
       )}
@@ -63,13 +66,13 @@ function Section({
 
 /**
  * The core page (storefront.md §The region page, design.md §Direction). One cached store_region_page()
- * call. Target sections still waiting: Most wanted, Curated for you, Leaving soon (Q-22) and the photo
- * album (region photos, C2); until then every piece is listed under Clothing / Spices.
+ * call: New arrivals, Curated for you and Leaving soon (D-056), then every piece under Clothing / Spices.
+ * Still waiting: Most wanted (Q-22) and the photo album (more region photos, C2).
  */
 export default async function RegionPage({ params }: { params: Params }): Promise<React.JSX.Element> {
   const page = await getRegionPageCached((await params).region);
   if (!page) notFound();
-  const { region, products } = page;
+  const { region, products, curated, leaving_soon: leavingSoon } = page;
   const clothing = products.filter((p) => p.product_type === 'clothing');
   const spices = products.filter((p) => p.product_type === 'spice');
   const newest = products.slice(0, 4); // store_region_page returns newest first
@@ -130,6 +133,17 @@ export default async function RegionPage({ params }: { params: Params }): Promis
             </a>
           </nav>
           <Section id="new-arrivals" title="New arrivals" sub={`Newest pieces from ${region.name}.`} products={newest} empty="New pieces are on their way." />
+          <CuratedCard id="curated" products={curated} regionName={region.name} />
+          {leavingSoon.length > 0 ? (
+            <Section
+              id="leaving-soon"
+              title="Leaving soon"
+              sub="Only a few pieces left of these."
+              products={leavingSoon}
+              empty=""
+              badge={(p) => `${p.available} left`}
+            />
+          ) : null}
           <Section id="clothing" title="Clothing" products={clothing} empty={`Clothing from ${region.name} is coming soon.`} />
           <Section id="spices" title="Spices" products={spices} empty={`Spices from ${region.name} are coming soon.`} />
         </>

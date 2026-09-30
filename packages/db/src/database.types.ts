@@ -330,13 +330,13 @@ isOneToOne: false
                   ]
                 },"pricing_settings": {
                   Row: {
-                    "domestic_days_max": number | null,"domestic_days_min": number | null,"duty_pct": number | null,"express_days_max": number | null,"express_days_min": number | null,"express_shipping_cents": number | null,"free_shipping_min_cents": number | null,"freight_cents_per_kg": number | null,"fx_inr_per_usd": number | null,"id": number,"margin_pct": number | null,"shipping_flat_cents": number | null,"stale_listing_days": number | null,"updated_at": string,"updated_by": string | null
+                    "domestic_days_max": number | null,"domestic_days_min": number | null,"duty_pct": number | null,"express_days_max": number | null,"express_days_min": number | null,"express_shipping_cents": number | null,"free_shipping_min_cents": number | null,"freight_cents_per_kg": number | null,"fx_inr_per_usd": number | null,"id": number,"leaving_soon_max": number,"margin_pct": number | null,"shipping_flat_cents": number | null,"stale_listing_days": number | null,"updated_at": string,"updated_by": string | null
                   }
                   Insert: {
-                    "domestic_days_max"?: number | null,"domestic_days_min"?: number | null,"duty_pct"?: number | null,"express_days_max"?: number | null,"express_days_min"?: number | null,"express_shipping_cents"?: number | null,"free_shipping_min_cents"?: number | null,"freight_cents_per_kg"?: number | null,"fx_inr_per_usd"?: number | null,"id"?: number,"margin_pct"?: number | null,"shipping_flat_cents"?: number | null,"stale_listing_days"?: number | null,"updated_at"?: string,"updated_by"?: string | null
+                    "domestic_days_max"?: number | null,"domestic_days_min"?: number | null,"duty_pct"?: number | null,"express_days_max"?: number | null,"express_days_min"?: number | null,"express_shipping_cents"?: number | null,"free_shipping_min_cents"?: number | null,"freight_cents_per_kg"?: number | null,"fx_inr_per_usd"?: number | null,"id"?: number,"leaving_soon_max"?: number,"margin_pct"?: number | null,"shipping_flat_cents"?: number | null,"stale_listing_days"?: number | null,"updated_at"?: string,"updated_by"?: string | null
                   }
                   Update: {
-                    "domestic_days_max"?: number | null,"domestic_days_min"?: number | null,"duty_pct"?: number | null,"express_days_max"?: number | null,"express_days_min"?: number | null,"express_shipping_cents"?: number | null,"free_shipping_min_cents"?: number | null,"freight_cents_per_kg"?: number | null,"fx_inr_per_usd"?: number | null,"id"?: number,"margin_pct"?: number | null,"shipping_flat_cents"?: number | null,"stale_listing_days"?: number | null,"updated_at"?: string,"updated_by"?: string | null
+                    "domestic_days_max"?: number | null,"domestic_days_min"?: number | null,"duty_pct"?: number | null,"express_days_max"?: number | null,"express_days_min"?: number | null,"express_shipping_cents"?: number | null,"free_shipping_min_cents"?: number | null,"freight_cents_per_kg"?: number | null,"fx_inr_per_usd"?: number | null,"id"?: number,"leaving_soon_max"?: number,"margin_pct"?: number | null,"shipping_flat_cents"?: number | null,"stale_listing_days"?: number | null,"updated_at"?: string,"updated_by"?: string | null
                   }
                   Relationships: [
                     {
@@ -411,13 +411,13 @@ isOneToOne: false
                   ]
                 },"products": {
                   Row: {
-                    "attributes": NonNullable<Json>,"category_id": string,"craft": string | null,"created_at": string,"created_by": string | null,"description": string | null,"has_origin_label": boolean,"id": string,"is_placeholder": boolean,"name": string,"origin_town": string | null,"price_cents": number,"product_type": Database["public"]['Enums']["product_type"],"published_at": string | null,"region_id": string,"search": unknown,"shop_price_paise": number | null,"slug": string,"status": Database["public"]['Enums']["product_status"],"story": string | null,"summary": string | null,"updated_at": string,"vendor_id": string
+                    "attributes": NonNullable<Json>,"category_id": string,"craft": string | null,"created_at": string,"created_by": string | null,"description": string | null,"has_origin_label": boolean,"id": string,"is_curated": boolean,"is_placeholder": boolean,"name": string,"origin_town": string | null,"price_cents": number,"product_type": Database["public"]['Enums']["product_type"],"published_at": string | null,"region_id": string,"search": unknown,"shop_price_paise": number | null,"slug": string,"status": Database["public"]['Enums']["product_status"],"story": string | null,"summary": string | null,"updated_at": string,"vendor_id": string
                   }
                   Insert: {
-                    "attributes"?: NonNullable<Json>,"category_id": string,"craft"?: string | null,"created_at"?: string,"created_by"?: string | null,"description"?: string | null,"has_origin_label"?: boolean,"id"?: string,"is_placeholder"?: boolean,"name": string,"origin_town"?: string | null,"price_cents": number,"product_type": Database["public"]['Enums']["product_type"],"published_at"?: string | null,"region_id": string,"search"?: never,"shop_price_paise"?: number | null,"slug": string,"status"?: Database["public"]['Enums']["product_status"],"story"?: string | null,"summary"?: string | null,"updated_at"?: string,"vendor_id": string
+                    "attributes"?: NonNullable<Json>,"category_id": string,"craft"?: string | null,"created_at"?: string,"created_by"?: string | null,"description"?: string | null,"has_origin_label"?: boolean,"id"?: string,"is_curated"?: boolean,"is_placeholder"?: boolean,"name": string,"origin_town"?: string | null,"price_cents": number,"product_type": Database["public"]['Enums']["product_type"],"published_at"?: string | null,"region_id": string,"search"?: never,"shop_price_paise"?: number | null,"slug": string,"status"?: Database["public"]['Enums']["product_status"],"story"?: string | null,"summary"?: string | null,"updated_at"?: string,"vendor_id": string
                   }
                   Update: {
-                    "attributes"?: NonNullable<Json>,"category_id"?: string,"craft"?: string | null,"created_at"?: string,"created_by"?: string | null,"description"?: string | null,"has_origin_label"?: boolean,"id"?: string,"is_placeholder"?: boolean,"name"?: string,"origin_town"?: string | null,"price_cents"?: number,"product_type"?: Database["public"]['Enums']["product_type"],"published_at"?: string | null,"region_id"?: string,"search"?: never,"shop_price_paise"?: number | null,"slug"?: string,"status"?: Database["public"]['Enums']["product_status"],"story"?: string | null,"summary"?: string | null,"updated_at"?: string,"vendor_id"?: string
+                    "attributes"?: NonNullable<Json>,"category_id"?: string,"craft"?: string | null,"created_at"?: string,"created_by"?: string | null,"description"?: string | null,"has_origin_label"?: boolean,"id"?: string,"is_curated"?: boolean,"is_placeholder"?: boolean,"name"?: string,"origin_town"?: string | null,"price_cents"?: number,"product_type"?: Database["public"]['Enums']["product_type"],"published_at"?: string | null,"region_id"?: string,"search"?: never,"shop_price_paise"?: number | null,"slug"?: string,"status"?: Database["public"]['Enums']["product_status"],"story"?: string | null,"summary"?: string | null,"updated_at"?: string,"vendor_id"?: string
                   }
                   Relationships: [
                     {
@@ -789,7 +789,7 @@ isOneToOne: false
                   ]
                 },"store_products": {
                   Row: {
-                    "attributes": Json | null,"category_id": string | null,"category_name": string | null,"category_slug": string | null,"craft": string | null,"description": string | null,"id": string | null,"name": string | null,"price_cents": number | null,"primary_image_path": string | null,"product_type": Database["public"]['Enums']["product_type"] | null,"published_at": string | null,"region_id": string | null,"region_name": string | null,"region_slug": string | null,"search": unknown,"slug": string | null,"story": string | null,"summary": string | null
+                    "attributes": Json | null,"category_id": string | null,"category_name": string | null,"category_slug": string | null,"craft": string | null,"description": string | null,"id": string | null,"is_curated": boolean | null,"name": string | null,"price_cents": number | null,"primary_image_path": string | null,"product_type": Database["public"]['Enums']["product_type"] | null,"published_at": string | null,"region_id": string | null,"region_name": string | null,"region_slug": string | null,"search": unknown,"slug": string | null,"story": string | null,"summary": string | null
                   }
                   Relationships: [
                     {
@@ -853,7 +853,10 @@ isOneToOne: false
                 }
           }
           Functions: {
-            "_set_stock_context":
+            "_leaving_soon_max":
+{ Args: Record<PropertyKey, never>; Returns: number
+                           },
+"_set_stock_context":
 { Args: { "p_note": string,"p_reason": Database["public"]['Enums']["stock_reason"],"p_ref_id": string,"p_ref_type": string }; Returns: undefined
                            },
 "_store_product_card":

@@ -31,7 +31,7 @@ export function ProductCard({
     <article className="relative min-w-0">
       <Link
         href={href}
-        className={`bg-surface group relative block aspect-[3/4] overflow-hidden ${small ? 'rounded-[18px]' : 'rounded-lg'}`}
+        className={`bg-land group relative block aspect-[3/4] overflow-hidden ${small ? 'rounded-[18px]' : 'rounded-lg'}`}
       >
         {product.primary_image_path ? (
           <Image
