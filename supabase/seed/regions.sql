@@ -4,7 +4,7 @@
 -- (content_status = 'draft', D-019): hidden on the storefront until the founder
 -- approves them in the admin. Where Claude was not confident, the greeting is
 -- left NULL for the founder to fill in. Taglines, stories, images and accent
--- colours are intentionally empty (design + founder content, design.md).
+-- colours start empty; the six launch regions get drafted taglines and stories at the end (D-059).
 -- =============================================================================
 
 insert into public.regions
@@ -46,3 +46,28 @@ values
   ('uttar-pradesh', 'Uttar Pradesh', 34, 'नमस्ते', 'Deva', 'Namaste', 'A respectful greeting', '{Hindi}'),
   ('uttarakhand', 'Uttarakhand', 35, 'नमस्ते', 'Deva', 'Namaste', 'A respectful greeting', '{Hindi}'),
   ('west-bengal', 'West Bengal', 36, 'নমস্কার', 'Beng', 'Nomoshkar', 'A respectful greeting', '{Bengali}');
+
+-- The six launch regions (D-059): taglines and stories are DRAFTS written by Claude in the founder's voice rule
+-- (design.md §Voice). content_status stays 'draft' (D-019): the storefront shows them only after approval.
+update public.regions r set tagline = t.tagline, story = t.story
+from (values
+  ('delhi',
+   $$Baggy jeans, wedding lehengas and a proper box of Old Delhi namkeen.$$,
+   $$Delhi never had one craft. It had markets. Chandni Chowk for the wedding, Lajpat Nagar for the suit, Janpath for the jhola your mother still doesn't get, and a box of dal biji that never survived the ride home. This page is that whole day out, without the parking.$$),
+  ('punjab',
+   $$Phulkari, juttis that pinch for a week, and pinni by the dozen.$$,
+   $$Every Punjabi home has a trunk with a phulkari nobody is allowed to wear. We can't send you that one. We can send the Patiala suit, a Muktsari jutti, a Ludhiana sweater for winters colder than anyone warned you about, and enough Amritsari papad and wadiyan to make the kitchen smell right again.$$),
+  ('rajasthan',
+   $$Bandhej, leheriya, and a packet of Bikaneri bhujia that won't see the weekend.$$,
+   $$Rajasthan dresses like the desert owed it colour. Leheriya for Teej, bandhej for every wedding, and a safa, because there are over a thousand ways to tie one and your uncle knows the right one. In the pantry it's ker sangri, a garlic chutney that starts arguments, and bhujia. Always bhujia.$$),
+  ('assam',
+   $$Mekhela chador, a real gamosa, and tea that actually tastes like tea.$$,
+   $$Every supermarket here sells something called Assam tea. You've tried it. You know. So this page has the real tea, Joha rice that fills the house before it's even done, a bhut jolokia pickle you open with respect, and mekhela chador for Bihu, woven the old way, never printed.$$),
+  ('maharashtra',
+   $$Paithani for the wedding, nauvari for Gudi Padwa, bakarwadi for right now.$$,
+   $$Maharashtra saves its best clothes for occasions and finishes the Diwali faral before Diwali. So here's the Paithani with the peacock on the pallu, a ready-to-wear nauvari for when nobody's around to drape it for you, Kolhapuris, and a pantry of Pune chivda, shenga chutney and Lonavala chikki.$$),
+  ('kerala',
+   $$Kasavu for Onam, banana chips in coconut oil, and pickle packed like it's crossing an ocean.$$,
+   $$Onam abroad is one kasavu saree ironed very carefully and a sadhya missing half its dishes. We can fix some of that. Kasavu and set-mundu for the family, a pattu pavada for the little one, Nendran chips, sharkara varatti, Kozhikode halwa, chammanthi podi and proper Malabar pepper.$$)
+) as t (slug, tagline, story)
+where r.slug = t.slug;

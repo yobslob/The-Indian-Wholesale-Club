@@ -71,3 +71,6 @@ coverage/
 
 # Claude Code: personal overrides stay local (.claude/settings.json is shared)
 .claude/settings.local.json
+
+# Catalogue photos: large files that stay on the founder's machine (catalogue/README.md)
+catalogue/photos/

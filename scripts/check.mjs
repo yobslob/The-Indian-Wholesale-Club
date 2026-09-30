@@ -27,7 +27,8 @@ import { gzipSync } from 'node:zlib';
 const ALL_STEPS = ['docs', 'typecheck', 'lint', 'test', 'db', 'build', 'http', 'e2e', 'bundle'];
 const COMMANDS = {
   // Do the docs still match the code (paths, decisions, routes, schema, env vars)? A few seconds.
-  docs: 'node scripts/docs-audit.mjs',
+  // …and is the generated catalogue seed in step with catalogue/data (D-059)?
+  docs: 'node scripts/docs-audit.mjs && node scripts/build-catalogue.mjs --check',
   typecheck: 'pnpm turbo typecheck --force --continue',
   lint: 'pnpm turbo lint --force --continue',
   test: 'pnpm turbo test --force --continue',

@@ -421,3 +421,21 @@ database, never typed in or invented (D-012), and it is a count only: no numbers
 *Interpretation (proposed, confirm when the section is reviewed):* only paid orders count, and cancelled or refunded
 lines do not; a piece needs at least one order in the window to appear (no orders → the section is hidden); ties go to
 the newer listing; at most 4 pieces, like New arrivals; sold-out pieces are left out (they cannot be bought).
+
+**D-059 · 2026-10-01 · founder: The six launch regions, the voice for drafted copy, the catalogue**
+Founder, verbatim: "1. Delhi, Punjab, Rajasthan, Assam, Maharashtra and Kerala
+2. You should draft them but with these instructions strictly(Not a single word should give away the AI tone or AI slop, be human, be relateable, be creative, be out of the box, be frank, be natural)
+3. Make a folder or tell me how do I upload for all this inventory and regions.
+
+You will find the inventory to upload in docs/iwc-live-regions-catalogue.md, update all this data written in these specific states and have all the variations of each product, let the inventory fill, don't hold back. Have different colors in all the clothing. btw I ran git push, so now finally proceed to next steps."
+What it means for the build:
+- **Launch regions:** Delhi, Punjab, Rajasthan, Assam, Maharashtra, Kerala go live first (C2).
+- **Drafted copy** (region taglines and stories, product lines) follows the founder's rule above, added to `design.md`
+  §Voice. It stays `draft` until the founder approves it (D-019).
+- **Catalogue:** every item in `docs/iwc-live-regions-catalogue.md` becomes a listing for its region, with its
+  variations; clothing comes in several colours. Photos go in one folder per product (`catalogue/README.md`).
+*Interpretation (proposed, confirm when the catalogue is reviewed):* the catalogue has no prices, pieces, sizes or
+shops, so those are **dev placeholders** (`is_placeholder = true`, D-012) until real shops are signed up; pantry items
+are drafts because spices cannot go live yet (D-032, a database rule); gold and silver jewellery is left out (the
+catalogue's appendix makes it a separate founder decision); product names leave out shop and brand names (D-003);
+entries that are markets or industries rather than products are left out and listed in `catalogue/README.md`.

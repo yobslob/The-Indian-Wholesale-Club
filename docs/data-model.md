@@ -118,8 +118,13 @@ breaking it and watching the test fail ("mutation check", `current.md`).
 ## Seed (`supabase/seed/`, applied by `supabase db reset`, local only)
 - `regions.sql`: all 36 regions. Names and slugs are factual. Greetings are Claude drafts (`content_status = 'draft'`, D-019).
   Six regions have no greeting yet (Andaman & Nicobar, Arunachal Pradesh, Goa, Jammu & Kashmir, Lakshadweep, Nagaland)
-  and Ladakh/Manipur have only a Latin form. **The founder fills and approves them.** Taglines, stories, images and accent colours are empty on purpose.
-- `categories.sql`: 7 clothing + 3 spice categories, **proposed** for founder review.
+  and Ladakh/Manipur have only a Latin form. **The founder fills and approves them.** The six launch regions (D-059) have
+  drafted taglines and stories (still `draft`); images and accent colours are empty on purpose.
+- `categories.sql`: 16 clothing + 9 pantry (`spice`) categories, **proposed** for founder review.
 - `demo.sql`: **dev only.** `is_placeholder = true`, 4 clothing products in Kerala/Rajasthan/Punjab, one open cycle,
   placeholder domestic delivery days (3–7) and express days (1–2), `dev_preview = true`. (The $0 standard / $8 express
   prices are real settings from migration 4, D-041.) Never run against production.
+- `catalogue.sql`: **dev only, generated** from `catalogue/data/` by `scripts/build-catalogue.mjs` (D-059,
+  `catalogue/README.md`). The launch regions' items as listings: clothing live with colour × size variants, pantry as
+  drafts (D-032); prices, pieces and the per-region placeholder shop are placeholders (`is_placeholder = true`). Product
+  ids are `md5('iwc-catalogue:' || slug)`, so `pnpm catalogue:apply` can reload it into a running local DB without a reset.

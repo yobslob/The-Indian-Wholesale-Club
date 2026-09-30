@@ -45,6 +45,10 @@ region images, C2), mockups and dev pages use clearly marked placeholders, never
 - IWC speaks as the seller ("we"), and never about shops or India-side operations (D-003).
 - Cultural facts in copy (festival names, greetings, craft history) must be accurate. Claude-written text is `draft`
   until the founder approves it (D-019).
+- **The founder's rule for drafted copy (D-059):** "Not a single word should give away the AI tone or AI slop, be human,
+  be relateable, be creative, be out of the box, be frank, be natural." In practice: short sentences, plain words, a
+  joke where a person would make one; no "vibrant", "rich heritage", "timeless", "curated with love", no stacked
+  adjectives, no "whether you're…", no em-dash asides. Read it aloud; if it sounds like an ad, rewrite it.
 
 ## Visual system (principles)
 1. **Neutral, warm base with one brand colour.** Content and photos carry the colour.
