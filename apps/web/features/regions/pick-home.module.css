@@ -103,6 +103,10 @@
   filter: drop-shadow(0 6px 10px rgb(30 27 22 / 0.12));
   transition: transform 0.35s cubic-bezier(0.19, 1, 0.22, 1);
 }
+/* Search hides stamps with the hidden attribute; .stamp's own display must not override it. */
+.stamp[hidden] {
+  display: none;
+}
 .stamp:hover,
 .stamp[data-on] {
   transform: translateY(-4px) rotate(-1.2deg);

@@ -18,6 +18,12 @@ const NAV = [
 export function SiteHeader(): React.JSX.Element {
   return (
     <header className="site-header">
+      <a
+        href="#main"
+        className="font-ui bg-ink text-paper sr-only rounded-pill px-4 py-2 text-sm focus:not-sr-only focus:absolute focus:left-[var(--gut)] focus:top-3 focus:z-50"
+      >
+        Skip to content
+      </a>
       <nav
         aria-label="Main"
         className="font-ui flex flex-wrap items-center gap-x-[clamp(14px,2.2vw,32px)] gap-y-1 px-[var(--gut)] py-4 text-[13px] font-medium tracking-[0.03em]"

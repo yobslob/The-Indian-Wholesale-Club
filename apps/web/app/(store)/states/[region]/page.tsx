@@ -110,7 +110,9 @@ export default async function RegionPage({ params }: { params: Params }): Promis
         </div>
         <div className="bg-region relative aspect-[5/6] overflow-hidden rounded-lg">
           {region.hero_image_path ? (
-            <Image src={mediaUrl(region.hero_image_path)} alt="" fill priority sizes="(min-width: 768px) 50vw, 100vw" className="object-cover" />
+            <div data-speed="0.06" className="absolute -inset-y-[6%] inset-x-0">
+              <Image src={mediaUrl(region.hero_image_path)} alt="" fill priority sizes="(min-width: 768px) 50vw, 100vw" className="object-cover" />
+            </div>
           ) : null}
         </div>
       </section>

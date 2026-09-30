@@ -25,7 +25,7 @@ The storefront reads like a **premium editorial magazine / contemporary gallery 
 - **Motion:** Lenis smooth scrolling; subtle vertical (and some horizontal) parallax tied to scroll velocity; images
   reveal as they enter the viewport through gentle clipping, slow scale and opacity transitions.
 - **Typography:** minimal, clean, luxury-magazine; photographs carry the page.
-**Guard rails (proposed with D-049):** motion is progressive enhancement. Lenis and the scroll effects load as one small
+**Guard rails (built in C1: `apps/web/features/shell/motion.tsx`, tested in `e2e/motion-keyboard.spec.ts`):** motion is progressive enhancement. Lenis and the scroll effects load as one small
 client module after the page is interactive; with `prefers-reduced-motion` they are off entirely (native scroll, no
 parallax, images simply visible); keyboard, find-in-page, anchor links and screen readers keep working; content is fully
 readable with JavaScript off. The speed budgets still hold (`engineering.md`: first-load JS ≤ 150 KB, cached pages

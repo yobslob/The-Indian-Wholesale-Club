@@ -34,6 +34,34 @@
   }
 }
 
+/* Motion (features/shell/motion.tsx, D-049): Lenis's base rules, and the reveal of images that were below the fold. */
+@layer base {
+  html.lenis,
+  html.lenis body {
+    height: auto;
+  }
+  .lenis.lenis-smooth {
+    scroll-behavior: auto !important;
+  }
+  .lenis.lenis-stopped {
+    overflow: hidden;
+  }
+  [data-reveal] {
+    transition:
+      clip-path 1.3s cubic-bezier(0.19, 1, 0.22, 1),
+      opacity 1s ease,
+      transform 1.8s cubic-bezier(0.19, 1, 0.22, 1);
+  }
+  [data-reveal='pending'] {
+    clip-path: inset(12% 0 12% 0);
+    opacity: 0;
+    transform: scale(1.06);
+  }
+  [data-speed] {
+    will-change: transform;
+  }
+}
+
 /*
  * Store shell (features/shell). Pages get the side gutter; a page whose first element carries
  * data-bleed (Home) runs edge to edge. On Home the header sits on the hero photo (D-054): white on a
@@ -80,6 +108,10 @@
   }
   body:has([data-home-hero]) .site-logo {
     opacity: var(--hero-p, 0);
+  }
+  /* Keyboard users always see the logo they tab to. */
+  body:has([data-home-hero]) .site-logo:focus-visible {
+    opacity: 1;
   }
   html[data-hero-passed] body:has([data-home-hero]) .site-header {
     background-color: theme('colors.canvas');

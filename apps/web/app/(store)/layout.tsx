@@ -1,9 +1,10 @@
+import { Motion } from '@/features/shell/motion';
 import { SiteFooter } from '@/features/shell/site-footer';
 import { SiteHeader } from '@/features/shell/site-header';
 
 /**
  * Storefront shell: server-rendered, no session reads (pages stay static, PR-1).
- * The only client island here is the bag count. No admin link anywhere (D-006).
+ * Client islands here: the bag count and the motion layer (Lenis, reveal, parallax; off for reduced motion). No admin link anywhere (D-006).
  */
 export default function StoreLayout({
   children,
@@ -17,6 +18,7 @@ export default function StoreLayout({
         {children}
       </main>
       <SiteFooter />
+      <Motion />
     </>
   );
 }

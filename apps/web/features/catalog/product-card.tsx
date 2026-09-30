@@ -32,6 +32,7 @@ export function ProductCard({
       <Link
         href={href}
         className={`bg-land group relative block aspect-[3/4] overflow-hidden ${small ? 'rounded-[18px]' : 'rounded-lg'}`}
+        data-reveal
       >
         {product.primary_image_path ? (
           <Image
