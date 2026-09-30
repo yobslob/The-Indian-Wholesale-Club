@@ -49,9 +49,19 @@ export const productCardSchema = z.object({
   primary_image_path: z.string().nullable(),
 });
 
+/** Set only when the product has exactly one variant and it is in stock: a card's "Add" puts it in the bag. */
+export const quickAddSchema = z.object({
+  variant_id: z.string().uuid(),
+  label: z.string(),
+  price_cents: z.number().int(),
+});
+
+/** Product card with availability, as store_home / store_region_page / store_product_page return it (C1). */
 export const regionProductCardSchema = productCardSchema.extend({
   craft: z.string().nullable(),
   available: z.number().int(),
+  published_at: isoDateTime.nullable(),
+  quick_add: quickAddSchema.nullable(),
 });
 
 export const productSchema = productCardSchema.extend({
@@ -86,6 +96,8 @@ export const mediaSchema = z.object({
 
 export const homeSchema = z.object({
   regions: z.array(regionCardSchema),
+  /** The four newest live products (Just listed). */
+  just_listed: z.array(regionProductCardSchema),
   delivery: deliveryWindowSchema.nullable(),
 });
 
@@ -98,6 +110,8 @@ export const productPageSchema = z.object({
   product: productSchema,
   variants: z.array(variantSchema),
   media: z.array(mediaSchema),
+  /** Up to five other live products in the same category, own region first. */
+  similar: z.array(regionProductCardSchema),
   delivery: deliveryWindowSchema.nullable(),
 });
 
@@ -165,6 +179,7 @@ export type RegionCard = z.infer<typeof regionCardSchema>;
 export type Region = z.infer<typeof regionSchema>;
 export type ProductCard = z.infer<typeof productCardSchema>;
 export type RegionProductCard = z.infer<typeof regionProductCardSchema>;
+export type QuickAdd = z.infer<typeof quickAddSchema>;
 export type Product = z.infer<typeof productSchema>;
 export type Variant = z.infer<typeof variantSchema>;
 export type Media = z.infer<typeof mediaSchema>;

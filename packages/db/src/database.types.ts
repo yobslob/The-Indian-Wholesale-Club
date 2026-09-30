@@ -856,6 +856,9 @@ isOneToOne: false
             "_set_stock_context":
 { Args: { "p_note": string,"p_reason": Database["public"]['Enums']["stock_reason"],"p_ref_id": string,"p_ref_type": string }; Returns: undefined
                            },
+"_store_product_card":
+{ Args: { "p_product_id": string }; Returns: Json
+                           },
 "admin_set_listed_qty":
 { Args: { "p_note"?: string,"p_qty_listed": number,"p_variant": string }; Returns: undefined
                            },

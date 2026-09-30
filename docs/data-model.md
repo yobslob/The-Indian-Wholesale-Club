@@ -55,7 +55,12 @@ feature), `product_images` (→ `product_media`), the `size_enum` type (→ `opt
 Views: `store_regions`, `store_categories`, `store_products`, `store_variants`, `store_media`, `store_orders`,
 `store_order_items`, `store_order_events`. Functions: `store_next_delivery()` ("order by" + next window, D-035), and
 one-round-trip page reads (PR-2, migration 2) that read **only** the views: `store_home()`, `store_region_page(slug)`,
-`store_product_page(region, slug)`, `store_my_order(number)` (signed-in). `guest_order_lookup(number, email)` returns the
+`store_product_page(region, slug)`, `store_my_order(number)` (signed-in). Since C1 (migration 5, the approved design):
+`store_home()` adds `just_listed` (the four newest live products), region-page cards come newest first with
+`published_at`, and `store_product_page()` adds `similar` (up to five other live products in the same category, own
+region first). All product cards come from the internal helper `_store_product_card(product_id)` (not callable by
+anon or customers), which adds `available` and `quick_add` (the variant, only when a product has exactly one and it is
+in stock, so a card's "Add" needs no choice). `guest_order_lookup(number, email)` returns the
 same shape for guests and is **service-only** (the server route rate-limits it). A test keeps its fields identical to the views'.
 `checkout_context(variant_ids, promo_code)` (migration 3, **service-only**) returns what the server needs to price a bag in
 one round trip: the variants as customers can buy them (through `store_*`), the promo if usable now, the shipping settings

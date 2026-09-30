@@ -62,6 +62,7 @@ Open questions: Q-18, Q-22, Q-23, and before launch Q-3, Q-5, Q-9, Q-10, Q-19.
 | 2026-09-30 | C1 mockup v6 | Claude, Playwright 1.63 (Chromium), local `mockups` server | hero at 1440 × 900, 1920 × 1080 and 390 × 844, top and scrolled; nav state after the photo | no console errors; the photo starts at the top edge (hero top 0 px, height = screen) with the nav on it; nav readable over the door and the disc; name and heading on the wall; after the photo the nav is solid rgb(244, 239, 230); word fade unchanged. The 1117 px photo is slightly soft at 1920 (Q-26) |
 | 2026-09-30 | C1 mockup v7 | Claude, Playwright 1.63 (Chromium), local `mockups` server | hero at 1440 × 900 and 390 × 844, top and scrolled | no console errors; crop from 30 % shows both hands; label under the brand name in the hero font; word fade unchanged |
 | 2026-09-30 | C1 1.2 | Claude, founder's machine | `node scripts/check.mjs typecheck lint test`; tokens contrast test with the old green `#15803D` put back on purpose | typecheck OK 19.5 s · lint OK 45.4 s · test OK 2.4 s; the mutation fails the test ("positive on canvas: 4.38") |
+| 2026-09-30 | C1 1.3a | Claude, founder's machine, local Supabase | `node scripts/check.mjs db` (reset + all SQL tests), then three mutations of the new migration (similar items include the product itself; quick add for a sold-out variant; just listed picked by name), `typecheck`, `test`, `docs`, `lint` | **12/12 SQL test files pass** (new `store_pages_v2.test.sql`, 13 assertions); each mutation fails its test (the third only after adding an older fifth product to the fixture); typecheck, tests, docs, lint OK |
 
 ## C1 sub-steps (design)
 | # | Sub-step | Status |
@@ -74,7 +75,8 @@ Open questions: Q-18, Q-22, Q-23, and before launch Q-3, Q-5, Q-9, Q-10, Q-19.
 | 1.1f | A v6 (D-054): the wider photo edge to edge, behind the nav bar; nav white on a top fade, solid after the photo | ✅ reviewed (D-055) |
 | 1.1g | A v7 (D-055): lower crop, label instead of the heading; **mockup approved** | ✅ committed |
 | 1.2 | Final tokens + font roles in `packages/tokens` (AA contrast test), web fonts self-hosted (`apps/web/app/fonts.ts`: Poppins, Montserrat, Inter; TeX Gyre Heros + Gelasio fallbacks, not preloaded) | ✅ committed · script fonts per region and the admin accent contrast check come with the region page |
-| 1.3 | Storefront (web) on the chosen direction: layout, Lenis + reveal/parallax module, `next/image`; then the app with Reanimated | ⏳ |
+| 1.3a | Migration 5 (`20260930021816_store_pages_v2.sql`): Just listed on Home, newest-first region cards with quick add, Similar items on the product page, one card helper; SQL tests (`store_pages_v2.test.sql`); `@repo/db` schemas | ✅ committed · the hosted dev DB gets it with the next deploy (founder) |
+| 1.3 | Storefront (web) on the approved mockup: Home, Region, Product, then the other pages; Lenis + reveal module, `next/image`; then the app with Reanimated | ⏳ in progress |
 | 1.4 | E2E: reduced motion + keyboard; `check.mjs` speed budgets | ⏳ |
 
 ## R7 sub-steps
