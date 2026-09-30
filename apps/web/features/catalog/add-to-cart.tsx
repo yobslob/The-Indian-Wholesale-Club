@@ -3,7 +3,7 @@
 import Link from 'next/link';
 import { useMemo, useState } from 'react';
 
-import { formatUsd } from '@repo/shared/domain';
+import { choose, formatUsd, isAvailable, optionAxes, selectionOf } from '@repo/shared/domain';
 
 import { MAX_QTY_PER_LINE } from '@/features/cart/limits';
 import { useCart } from '@/features/cart/store';
@@ -22,7 +22,16 @@ interface Props {
   delivery?: React.ReactNode;
 }
 
-/** Variant picker + live availability + add to bag (the only client island on the product page). */
+const pillClass = (selected: boolean, out: boolean): string =>
+  `font-ui bg-paper min-h-11 rounded-pill border px-4 text-sm font-medium ${
+    selected ? 'border-ink shadow-[inset_0_0_0_1px_theme(colors.ink)]' : 'border-line'
+  } ${out ? 'line-through opacity-60' : ''}`;
+const legendClass = 'font-ui text-ink-muted mb-2 text-[11px] font-semibold uppercase tracking-[0.16em]';
+
+/**
+ * Variant picker + live availability + add to bag (the only client island on the product page). Colour and size
+ * get a row each when the variants carry them (`optionAxes`); otherwise one button per variant.
+ */
 export function AddToCart({ product, variants, delivery }: Props): React.JSX.Element {
   const initial = useMemo(
     () => Object.fromEntries(variants.map((v) => [v.id, v.available])),
@@ -36,8 +45,16 @@ export function AddToCart({ product, variants, delivery }: Props): React.JSX.Ele
   const [quantity, setQuantity] = useState(1);
   const [added, setAdded] = useState(false);
 
+  const axes = useMemo(() => optionAxes(variants), [variants]);
   const variant = variants.find((v) => v.id === variantId);
   if (!variant) return <p className="text-ink-muted text-sm">Not available right now.</p>;
+  const inStock = (v: Variant): boolean => (available[v.id] ?? 0) > 0;
+  const selection = selectionOf(variant, axes);
+  const select = (id: string): void => {
+    setVariantId(id);
+    setQuantity(1);
+    setAdded(false);
+  };
 
   const left = available[variant.id] ?? 0;
   const soldOut = left <= 0;
@@ -47,23 +64,45 @@ export function AddToCart({ product, variants, delivery }: Props): React.JSX.Ele
     <div className="space-y-4">
       <p className="font-ui text-[22px] font-semibold leading-none">{formatUsd(variant.price_cents)}</p>
 
-      {variants.length > 1 ? (
+      {axes.length > 0
+        ? axes.map((axis) => (
+            <fieldset key={axis.key}>
+              <legend className={legendClass}>
+                {axis.label}: <span className="text-ink normal-case tracking-normal">{selection[axis.key]}</span>
+              </legend>
+              <div className="flex flex-wrap gap-2">
+                {axis.values.map((value) => (
+                  <button
+                    key={value}
+                    type="button"
+                    onClick={() => {
+                      const next = choose(variants, axes, selection, axis.key, value, inStock);
+                      if (next) select(next.id);
+                    }}
+                    aria-pressed={selection[axis.key] === value}
+                    className={pillClass(
+                      selection[axis.key] === value,
+                      !isAvailable(variants, axes, selection, axis.key, value, inStock),
+                    )}
+                  >
+                    {value}
+                  </button>
+                ))}
+              </div>
+            </fieldset>
+          ))
+        : null}
+      {axes.length === 0 && variants.length > 1 ? (
         <fieldset>
-          <legend className="font-ui text-ink-muted mb-2 text-[11px] font-semibold uppercase tracking-[0.16em]">Option</legend>
+          <legend className={legendClass}>Option</legend>
           <div className="flex flex-wrap gap-2">
             {variants.map((v) => (
               <button
                 key={v.id}
                 type="button"
-                onClick={() => {
-                  setVariantId(v.id);
-                  setQuantity(1);
-                  setAdded(false);
-                }}
+                onClick={() => select(v.id)}
                 aria-pressed={v.id === variantId}
-                className={`font-ui bg-paper min-h-11 rounded-pill border px-4 text-sm font-medium ${
-                  v.id === variantId ? 'border-ink shadow-[inset_0_0_0_1px_theme(colors.ink)]' : 'border-line'
-                } ${(available[v.id] ?? 0) <= 0 ? 'line-through opacity-60' : ''}`}
+                className={pillClass(v.id === variantId, !inStock(v))}
               >
                 {v.label}
               </button>

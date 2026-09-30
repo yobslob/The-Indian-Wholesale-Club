@@ -56,7 +56,8 @@ export function sizeRows(product: Product, variants: Variant[]): [string, string
   if (product.product_type !== 'clothing') return [];
   const attrs = clothingAttributesSchema.safeParse(product.attributes);
   const length = attrs.success && attrs.data.length_m !== undefined ? `${attrs.data.length_m} m` : '';
-  const sizes = variants.map((v) => (typeof v.options.size === 'string' ? v.options.size : null)).filter((s): s is string => s !== null);
+  // Each size once, even when it comes in several colours.
+  const sizes = [...new Set(variants.map((v) => (typeof v.options.size === 'string' ? v.options.size : null)).filter((s): s is string => s !== null))];
   if (sizes.length === 0 && !length) return [];
   return (sizes.length > 0 ? sizes : ['One size']).map((size) => [size, length]);
 }

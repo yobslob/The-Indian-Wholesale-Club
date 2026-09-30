@@ -2,7 +2,7 @@ import { useRouter } from 'expo-router';
 import { useMemo, useState } from 'react';
 import { Pressable, Text, View } from 'react-native';
 
-import { formatUsd } from '@repo/shared/domain';
+import { choose, formatUsd, isAvailable, optionAxes, selectionOf } from '@repo/shared/domain';
 
 import { useLiveAvailability } from './use-live-availability';
 
@@ -11,7 +11,34 @@ import type { Product, Variant } from '@repo/db/store';
 import { Button } from '@/components/ui';
 import { MAX_QTY_PER_LINE, useBag } from '@/features/cart/store';
 
-/** Variant picker + live availability + add to bag. */
+function Choice({
+  label,
+  selected,
+  out,
+  onPress,
+}: {
+  label: string;
+  selected: boolean;
+  out: boolean;
+  onPress: () => void;
+}): React.JSX.Element {
+  return (
+    <Pressable
+      onPress={onPress}
+      accessibilityRole="button"
+      accessibilityState={{ selected }}
+      accessibilityHint={out ? 'Sold out' : undefined}
+      className={`bg-paper min-h-11 justify-center rounded-pill border px-4 ${selected ? 'border-ink border-2' : 'border-line'} ${out ? 'opacity-50' : ''}`}
+    >
+      <Text className={`font-ui text-ink text-sm ${out ? 'line-through' : ''}`}>{label}</Text>
+    </Pressable>
+  );
+}
+
+/**
+ * Variant picker + live availability + add to bag. Colour and size get a row each when the variants carry them
+ * (`optionAxes`, shared with the website); otherwise one button per variant.
+ */
 export function AddToBag({
   product,
   variants,
@@ -38,8 +65,16 @@ export function AddToBag({
   const [quantity, setQuantity] = useState(1);
   const [added, setAdded] = useState(false);
 
+  const axes = useMemo(() => optionAxes(variants), [variants]);
   const variant = variants.find((v) => v.id === variantId);
   if (!variant) return <Text className="text-ink-muted text-sm">Not available right now.</Text>;
+  const inStock = (v: Variant): boolean => (available[v.id] ?? 0) > 0;
+  const selection = selectionOf(variant, axes);
+  const select = (id: string): void => {
+    setVariantId(id);
+    setQuantity(1);
+    setAdded(false);
+  };
   const left = available[variant.id] ?? 0;
   const soldOut = left <= 0;
   const maxQty = Math.max(1, Math.min(left, MAX_QTY_PER_LINE));
@@ -47,27 +82,32 @@ export function AddToBag({
   return (
     <View className="gap-3">
       <Text className="font-ui-semibold text-ink text-[22px]">{formatUsd(variant.price_cents)}</Text>
-      {variants.length > 1 ? (
-        <View className="flex-row flex-wrap gap-2">
-          {variants.map((v) => {
-            const selected = v.id === variantId;
-            return (
-              <Pressable
-                key={v.id}
+      {axes.map((axis) => (
+        <View key={axis.key} className="gap-2">
+          <Text className="font-ui-semibold text-ink-muted text-[11px] uppercase tracking-[1.8px]">
+            {axis.label}: <Text className="font-ui text-ink normal-case tracking-normal">{selection[axis.key]}</Text>
+          </Text>
+          <View className="flex-row flex-wrap gap-2">
+            {axis.values.map((value) => (
+              <Choice
+                key={value}
+                label={value}
+                selected={selection[axis.key] === value}
+                out={!isAvailable(variants, axes, selection, axis.key, value, inStock)}
                 onPress={() => {
-                  setVariantId(v.id);
-                  setQuantity(1);
-                  setAdded(false);
+                  const next = choose(variants, axes, selection, axis.key, value, inStock);
+                  if (next) select(next.id);
                 }}
-                accessibilityState={{ selected }}
-                className={`bg-paper min-h-11 justify-center rounded-pill border px-4 ${selected ? 'border-ink border-2' : 'border-line'}`}
-              >
-                <Text className="font-ui text-ink text-sm">
-                  {v.label}
-                </Text>
-              </Pressable>
-            );
-          })}
+              />
+            ))}
+          </View>
+        </View>
+      ))}
+      {axes.length === 0 && variants.length > 1 ? (
+        <View className="flex-row flex-wrap gap-2">
+          {variants.map((v) => (
+            <Choice key={v.id} label={v.label} selected={v.id === variantId} out={!inStock(v)} onPress={() => select(v.id)} />
+          ))}
         </View>
       ) : null}
       <View className="flex-row items-center gap-2">

@@ -5,14 +5,19 @@ import {
   CUSTOMER_STATUSES,
   CUSTOMER_STATUS_LABEL,
   attributesSchemaFor,
+  choose,
   clothingAttributesSchema,
   contrastRatio,
+  findVariant,
   formatDeliveryWindow,
   formatUsd,
+  isAvailable,
   isWindowAtRisk,
   nextCycleStatus,
+  optionAxes,
   orderEventLabel,
   quoteCheckout,
+  selectionOf,
   shippingAddressSchema,
   spiceAttributesSchema,
   suggestPrice,
@@ -300,5 +305,43 @@ describe('contrast (design.md §Accessibility, region accents in the admin form)
 
   it('refuses anything that is not #RRGGBB', () => {
     assert.throws(() => contrastRatio('red', '#FFFFFF'));
+  });
+});
+
+describe('variant options (product page colour and size pickers)', () => {
+  const v = (colour: string, size: string, stock = 5) => ({ id: `${colour}-${size}`, options: { colour, size }, stock });
+  const grid = [v('Maroon', 'S'), v('Maroon', 'M', 0), v('Green', 'S', 0), v('Green', 'M')];
+  const inStock = (x: { stock: number }) => x.stock > 0;
+
+  it('shows an axis only when variants differ on it', () => {
+    assert.deepEqual(
+      optionAxes(grid).map((a) => [a.key, a.values]),
+      [['colour', ['Maroon', 'Green']], ['size', ['S', 'M']]],
+    );
+    const sarees = [v('Red', 'Free size'), v('Green', 'Free size')];
+    assert.deepEqual(optionAxes(sarees).map((a) => a.key), ['colour']);
+  });
+
+  it('gives no axes when they cannot tell every variant apart (fallback to one button per variant)', () => {
+    assert.deepEqual(optionAxes([{ options: {} }, { options: {} }]), []);
+    assert.deepEqual(optionAxes([v('Red', 'S'), v('Red', 'S')]), []);
+  });
+
+  it('keeps the other choice when the combination exists, else moves to a variant in stock', () => {
+    const axes = optionAxes(grid);
+    assert.equal(choose(grid, axes, { colour: 'Maroon', size: 'S' }, 'colour', 'Green', inStock)?.id, 'Green-S');
+    const onlyGreen = [v('Maroon', 'S'), v('Green', 'M'), v('Green', 'L')];
+    const axes2 = optionAxes(onlyGreen);
+    assert.equal(choose(onlyGreen, axes2, { colour: 'Maroon', size: 'S' }, 'colour', 'Green', inStock)?.id, 'Green-M');
+  });
+
+  it('marks a value unavailable when that combination is sold out', () => {
+    const axes = optionAxes(grid);
+    assert.equal(isAvailable(grid, axes, { colour: 'Maroon', size: 'S' }, 'size', 'M', inStock), false);
+    assert.equal(isAvailable(grid, axes, { colour: 'Maroon', size: 'S' }, 'colour', 'Green', inStock), false);
+    assert.equal(isAvailable(grid, axes, { colour: 'Green', size: 'M' }, 'colour', 'Maroon', inStock), false);
+    assert.equal(isAvailable(grid, axes, { colour: 'Maroon', size: 'S' }, 'size', 'S', inStock), true);
+    assert.deepEqual(selectionOf(grid[3]!, axes), { colour: 'Green', size: 'M' });
+    assert.equal(findVariant(grid, axes, { colour: 'Green', size: 'S' })?.id, 'Green-S');
   });
 });
