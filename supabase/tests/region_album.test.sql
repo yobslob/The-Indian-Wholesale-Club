@@ -9,7 +9,8 @@ insert into public.region_photos (region_id, storage_path, alt_text, sort_order)
   (tests.id('region'), 'regions/test-region/album/b.jpg', 'Second photo', 2),
   (tests.id('region'), 'regions/test-region/album/a.jpg', 'First photo', 1),
   (tests.id('region'), 'regions/test-region/album/c.jpg', 'Third photo', 3);
-select tests.assert((select count(*) from public.region_photos) = 3, 'an admin adds album photos');
+select tests.assert((select count(*) from public.region_photos where region_id = tests.id('region')) = 3,
+  'an admin adds album photos');
 select tests.assert_fails(
   format('insert into public.region_photos (region_id, storage_path, alt_text) values (%L, %L, %L)',
          tests.id('region'), 'products/x/y.jpg', 'Wrong folder'),

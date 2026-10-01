@@ -16,6 +16,19 @@ import { mediaUrl } from '@/lib/site';
 
 type Params = Promise<{ id: string }>;
 
+const SCRIPT_LABELS: Record<string, string> = {
+  Deva: 'Devanagari (Hindi, Marathi, Rajasthani…)',
+  Beng: 'Bengali–Assamese',
+  Guru: 'Gurmukhi (Punjabi)',
+  Gujr: 'Gujarati',
+  Orya: 'Odia',
+  Taml: 'Tamil',
+  Telu: 'Telugu',
+  Knda: 'Kannada',
+  Mlym: 'Malayalam',
+  Latn: 'Latin letters only',
+};
+
 /** Edit a region's customer-facing content. Saving text marks it draft again until approved (D-019). */
 export default async function RegionEditPage({
   params,
@@ -94,6 +107,16 @@ export default async function RegionEditPage({
       <form action={updateRegionAction.bind(null, region.id)} className="grid max-w-2xl gap-3">
         <Field label="Greeting (native script)">
           <input name="greetingNative" defaultValue={region.greeting_native ?? ''} className={input} />
+        </Field>
+        <Field label="Script of the greeting (sets its font on the region page)">
+          <select name="greetingScript" defaultValue={region.greeting_script ?? ''} className={input}>
+            <option value="">None</option>
+            {Object.entries(SCRIPT_LABELS).map(([code, label]) => (
+              <option key={code} value={code}>
+                {label}
+              </option>
+            ))}
+          </select>
         </Field>
         <Field label="Greeting (Latin letters)">
           <input name="greetingLatin" defaultValue={region.greeting_latin ?? ''} className={input} />

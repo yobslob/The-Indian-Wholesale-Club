@@ -18,6 +18,9 @@ import { STORE_TAG } from '@/features/catalog/data';
 import { requireAdminAction } from '../guard';
 
 const id = z.string().uuid();
+
+/** The greeting scripts the admin can pick (ISO 15924): the ones the store has a font for, plus Latin. */
+const GREETING_SCRIPTS = ['Deva', 'Beng', 'Guru', 'Gujr', 'Orya', 'Taml', 'Telu', 'Knda', 'Mlym', 'Latn'] as const;
 const optional = (max: number) =>
   z
     .string()
@@ -50,6 +53,10 @@ export async function updateRegionAction(regionId: string, form: FormData): Prom
   const input = z
     .object({
       greetingNative: optional(80),
+      // ISO 15924, one of the scripts the store has a greeting font for (features/regions/script-fonts.ts).
+      greetingScript: z
+        .enum(['', ...GREETING_SCRIPTS])
+        .transform((v) => v || null),
       greetingLatin: optional(80),
       greetingMeaning: optional(120),
       tagline: optional(200),
@@ -60,6 +67,7 @@ export async function updateRegionAction(regionId: string, form: FormData): Prom
     .parse(Object.fromEntries(form));
   await updateRegion(client, id.parse(regionId), {
     greeting_native: input.greetingNative,
+    greeting_script: input.greetingScript,
     greeting_latin: input.greetingLatin,
     greeting_meaning: input.greetingMeaning,
     tagline: input.tagline,

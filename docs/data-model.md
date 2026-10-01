@@ -73,7 +73,9 @@ in stock, so a card's "Add" needs no choice). Migration 6 (D-056): `products.is_
 the customer's own folder. Migration 8 (D-058): `store_region_page()` adds `most_wanted` (up to four in-stock live pieces ranked by pieces ordered in the last 30 days: paid orders that are not cancelled or refunded, active lines only; ties to the newer listing). Only the ranking leaves the function, never the counts (D-003); `order_items_product_idx` serves the count. Migration 9 (D-062): the lists rows show grow to 12 (Just listed, Most
 wanted, Curated for you, Leaving soon, Similar items). Migration 10 (D-051): `region_photos` (the region album: path
 under `regions/<slug>/album/`, required alt text, order; admin-only under RLS), and `store_region_page()` adds `album`
-(path and alt text only, in order). `guest_order_lookup(number, email)` returns the
+(path and alt text only, in order). Migration 11 (D-019): a trigger sends approved region text back to `draft` when
+any of the greeting, its script, the tagline or the story changes (approval and photo, accent or `is_live` changes
+leave it alone). `guest_order_lookup(number, email)` returns the
 same shape for guests and is **service-only** (the server route rate-limits it). A test keeps its fields identical to the views'.
 `checkout_context(variant_ids, promo_code)` (migration 3, **service-only**) returns what the server needs to price a bag in
 one round trip: the variants as customers can buy them (through `store_*`), the promo if usable now, the shipping settings
@@ -115,7 +117,7 @@ breaking it and watching the test fail ("mutation check", `current.md`).
 | INV-5 | at most one `open` cycle | partial unique index | `cycles.test.sql` (+ `cycle_advance.test.sql` for the later steps) |
 | INV-6 | a promised delivery window changes only via `change_delivery_window`, which adds a customer-visible event | guard trigger + function | `orders_window.test.sql` |
 | INV-7 | admin = role `admin` **and** allowlisted email, in the DB (`is_admin()`) and in the website (`apps/web/features/admin/guard.ts`) | function + server guard | `rls_admin.test.sql` |
-| INV-8 | draft region text and placeholder products never appear in `store_*` output (unless `dev_preview`) | view filters | `rls_visibility.test.sql`, `checkout.test.sql` (not buyable either) |
+| INV-8 | draft region text and placeholder products never appear in `store_*` output (unless `dev_preview`) | view filters; a trigger re-drafts edited text | `rls_visibility.test.sql`, `region_content.test.sql`, `checkout.test.sql` (not buyable either) |
 | INV-9 | money columns are integers (`*_cents` USD, `*_paise` INR) | column types | `schema.test.sql` |
 
 ## Seed (`supabase/seed/`, applied by `supabase db reset`, local only)
