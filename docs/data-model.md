@@ -75,7 +75,10 @@ wanted, Curated for you, Leaving soon, Similar items). Migration 10 (D-051): `re
 under `regions/<slug>/album/`, required alt text, order; admin-only under RLS), and `store_region_page()` adds `album`
 (path and alt text only, in order). Migration 11 (D-019): a trigger sends approved region text back to `draft` when
 any of the greeting, its script, the tagline or the story changes (approval and photo, accent or `is_live` changes
-leave it alone). `guest_order_lookup(number, email)` returns the
+leave it alone). Migration 12 (C3, flows.md §2): `admin_create_listing(jsonb)`
+creates a draft product (region from its shop) and its variants in one transaction, quantities stamped as confirmed;
+`admin_stale_variants()` lists live variants not re-confirmed within `pricing_settings.stale_listing_days` (nothing
+while that is unset, D-047). Both refuse non-admins and run as the caller. `guest_order_lookup(number, email)` returns the
 same shape for guests and is **service-only** (the server route rate-limits it). A test keeps its fields identical to the views'.
 `checkout_context(variant_ids, promo_code)` (migration 3, **service-only**) returns what the server needs to price a bag in
 one round trip: the variants as customers can buy them (through `store_*`), the promo if usable now, the shipping settings

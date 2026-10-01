@@ -13,6 +13,8 @@ import {
   formatUsd,
   isAvailable,
   isWindowAtRisk,
+  listingInputSchema,
+  listingSlug,
   nextCycleStatus,
   optionAxes,
   orderEventLabel,
@@ -22,6 +24,7 @@ import {
   spiceAttributesSchema,
   suggestPrice,
   timelineIndex,
+  variantLabel,
   worstContrast,
 } from '../src/domain';
 
@@ -343,5 +346,49 @@ describe('variant options (product page colour and size pickers)', () => {
     assert.equal(isAvailable(grid, axes, { colour: 'Maroon', size: 'S' }, 'size', 'S', inStock), true);
     assert.deepEqual(selectionOf(grid[3]!, axes), { colour: 'Green', size: 'M' });
     assert.equal(findVariant(grid, axes, { colour: 'Green', size: 'S' })?.id, 'Green-S');
+  });
+});
+
+describe('a new listing (flows.md §2, C3)', () => {
+  const base = {
+    vendor_id: '00000000-0000-4000-8000-000000000101',
+    category_id: '00000000-0000-4000-8000-000000000201',
+    name: 'Field kurta',
+    slug: 'field-kurta-a1b2',
+    price_cents: 4900,
+    variants: [{ label: 'Red · M', options: { colour: 'Red', size: 'M' }, qty: 3 }],
+  };
+
+  it('labels a variant from its colour and size', () => {
+    assert.equal(variantLabel({ colour: 'Red', size: 'M' }), 'Red · M');
+    assert.equal(variantLabel({ size: ' M ' }), 'M');
+    assert.equal(variantLabel({}), 'One size');
+  });
+
+  it('makes a URL slug with a suffix so listings with one name never clash', () => {
+    assert.equal(listingSlug('Kasavu Saree (Onam) – gold', 'A1B2'), 'kasavu-saree-onam-gold-a1b2');
+    assert.equal(listingSlug('बंधनी', 'x9'), 'listing-x9');
+  });
+
+  it('needs fibre content and care for clothing (US textile labelling), the shape of each type', () => {
+    assert.equal(listingInputSchema.safeParse({ ...base, product_type: 'clothing', attributes: {} }).success, false);
+    assert.equal(
+      listingInputSchema.safeParse({ ...base, product_type: 'clothing', attributes: { fibre_content: '100% cotton', care: 'Hand wash' } })
+        .success,
+      true,
+    );
+    assert.equal(
+      listingInputSchema.safeParse({ ...base, product_type: 'spice', attributes: { fibre_content: 'x', care: 'y' } }).success,
+      false,
+    );
+  });
+
+  it('refuses money that is not whole cents and unknown variant options', () => {
+    const clothing = { ...base, product_type: 'clothing', attributes: { fibre_content: 'Silk', care: 'Dry clean' } };
+    assert.equal(listingInputSchema.safeParse({ ...clothing, price_cents: 49.5 }).success, false);
+    assert.equal(
+      listingInputSchema.safeParse({ ...clothing, variants: [{ label: 'X', options: { shop: 'secret' }, qty: 1 }] }).success,
+      false,
+    );
   });
 });

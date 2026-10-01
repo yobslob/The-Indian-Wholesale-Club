@@ -996,8 +996,16 @@ isOneToOne: false
 "_store_product_card":
 { Args: { "p_product_id": string }; Returns: Json
                            },
+"admin_create_listing":
+{ Args: { "p_listing": Json }; Returns: string
+                           },
 "admin_set_listed_qty":
 { Args: { "p_note"?: string,"p_qty_listed": number,"p_variant": string }; Returns: undefined
+                           },
+"admin_stale_variants":
+{ Args: Record<PropertyKey, never>; Returns: {
+              "label": string,"product_id": string,"product_name": string,"qty_confirmed_at": string,"qty_listed": number,"shop_name": string,"variant_id": string
+            }[]
                            },
 "advance_cycle":
 { Args: { "p_cycle": string }; Returns: Database["public"]['Enums']["cycle_status"]

@@ -17,7 +17,7 @@ export default function SavedScreen(): React.JSX.Element {
   );
 
   return (
-    <Screen refreshing={loading} onRefresh={reload}>
+    <Screen back={false} refreshing={loading} onRefresh={reload}>
       <Title>Saved</Title>
       {!session ? (
         <>

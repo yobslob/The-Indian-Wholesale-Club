@@ -23,6 +23,13 @@
       "expo-font",
       "expo-secure-store",
       [
+        "expo-image-picker",
+        {
+          "cameraPermission": "The camera photographs pieces for a new listing (admins only).",
+          "photosPermission": "Photos you pick are added to a listing (admins only)."
+        }
+      ],
+      [
         "@stripe/stripe-react-native",
         {
           "merchantIdentifier": "merchant.com.root.app",

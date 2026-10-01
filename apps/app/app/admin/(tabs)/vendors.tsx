@@ -18,7 +18,7 @@ export default function AdminVendorsScreen(): React.JSX.Element {
   });
 
   return (
-    <Screen refreshing={loading} onRefresh={reload}>
+    <Screen back={false} refreshing={loading} onRefresh={reload}>
       <Title>Vendors</Title>
       {error ? <ErrorText>{error}</ErrorText> : null}
       {!data && loading ? <Loading /> : null}

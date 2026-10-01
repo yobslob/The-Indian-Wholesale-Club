@@ -1,12 +1,12 @@
 import Link from 'next/link';
 
-import { listAdminProducts, listCategories, listVendors } from '@repo/db/admin';
+import { getPricingSettings, listAdminProducts, listCategories, listStaleVariants, listVendors } from '@repo/db/admin';
 import { formatUsd } from '@repo/shared/domain';
 
 import { createProductAction } from '@/features/admin/actions/catalog';
 import { requireAdminPage } from '@/features/admin/guard';
 import { listingTabs } from '@/features/admin/listing-tabs';
-import { button, Cell, Field, input, PageTitle, SectionTitle, Table, Tabs } from '@/features/admin/ui';
+import { button, Cell, Field, input, PageTitle, SectionTitle, Table, Tabs, utc } from '@/features/admin/ui';
 
 const typeOption =
   'font-ui flex min-h-12 flex-col items-center justify-center rounded-md px-3 text-center text-[15px] text-ink ' +
@@ -20,10 +20,12 @@ const typeOption =
  */
 export default async function ListingsPage(): Promise<React.JSX.Element> {
   const { client } = await requireAdminPage();
-  const [drafts, vendors, categories] = await Promise.all([
+  const [drafts, vendors, categories, stale, settings] = await Promise.all([
     listAdminProducts(client, { status: 'draft' }),
     listVendors(client, { status: 'active' }),
     listCategories(client),
+    listStaleVariants(client),
+    getPricingSettings(client),
   ]);
 
   return (
@@ -149,6 +151,37 @@ export default async function ListingsPage(): Promise<React.JSX.Element> {
                 <Cell>{p.vendor?.shop_name}</Cell>
                 <Cell>{formatUsd(p.price_cents)}</Cell>
                 <Cell>{p.variants.reduce((n, v) => n + v.qty_listed, 0)}</Cell>
+              </tr>
+            ))}
+          </Table>
+        )}
+      </section>
+
+      <section className="space-y-3" aria-labelledby="recheck">
+        <SectionTitle id="recheck">Quantities to re-check with the shop ({stale.length})</SectionTitle>
+        {settings.stale_listing_days === null ? (
+          <p className="text-ink-muted">
+            Set how many days a quantity stays fresh (&quot;stale after&quot;) in{' '}
+            <Link href="/admin/settings" className="underline">
+              Settings
+            </Link>{' '}
+            to see this list.
+          </p>
+        ) : stale.length === 0 ? (
+          <p className="text-ink-muted">Every live quantity was confirmed in the last {settings.stale_listing_days} days.</p>
+        ) : (
+          <Table head={['Product', 'Variant', 'Shop', 'Pieces', 'Confirmed']}>
+            {stale.map((v) => (
+              <tr key={v.variant_id}>
+                <Cell>
+                  <Link href={`/admin/catalog/${v.product_id}`} className="underline">
+                    {v.product_name}
+                  </Link>
+                </Cell>
+                <Cell>{v.label}</Cell>
+                <Cell>{v.shop_name}</Cell>
+                <Cell>{v.qty_listed}</Cell>
+                <Cell>{v.qty_confirmed_at ? utc(v.qty_confirmed_at) : 'never'}</Cell>
               </tr>
             ))}
           </Table>

@@ -12,7 +12,7 @@ export default function BagScreen(): React.JSX.Element {
   const { lines, setQuantity } = useBag();
 
   return (
-    <Screen>
+    <Screen back={false}>
       <Title>Your bag</Title>
       {lines.length === 0 ? (
         <Body muted>Your bag is empty. Find something from home in Explore.</Body>

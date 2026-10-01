@@ -54,6 +54,8 @@ export interface TodaySummary {
   pendingPickups: number;
   unpaidPickedPickups: number;
   draftProducts: number;
+  /** Live variants to re-check with the shop; null until the founder sets the number of days (D-047). */
+  staleVariants: number | null;
 }
 
 async function countRows(
@@ -65,7 +67,7 @@ async function countRows(
 }
 
 export async function getTodaySummary(client: IwcClient): Promise<TodaySummary> {
-  const [orders, pendingPickups, unpaidPickedPickups, draftProducts] = await Promise.all([
+  const [orders, pendingPickups, unpaidPickedPickups, draftProducts, staleDays, stale] = await Promise.all([
     client.from('orders').select('status').in('status', OPEN_ORDER_STATUSES).limit(5000),
     countRows(
       client.from('pickups').select('id', { count: 'exact', head: true }).eq('status', 'pending'),
@@ -80,11 +82,14 @@ export async function getTodaySummary(client: IwcClient): Promise<TodaySummary> 
     countRows(
       client.from('products').select('id', { count: 'exact', head: true }).eq('status', 'draft'),
     ),
+    client.from('pricing_settings').select('stale_listing_days').eq('id', 1).single(),
+    client.rpc('admin_stale_variants'),
   ]);
   const ordersByStatus: TodaySummary['ordersByStatus'] = {};
   for (const row of unwrap(orders))
     ordersByStatus[row.status] = (ordersByStatus[row.status] ?? 0) + 1;
-  return { ordersByStatus, pendingPickups, unpaidPickedPickups, draftProducts };
+  const staleVariants = unwrap(staleDays).stale_listing_days === null ? null : unwrap(stale).length;
+  return { ordersByStatus, pendingPickups, unpaidPickedPickups, draftProducts, staleVariants };
 }
 
 // ---------------------------------------------------------------- Insights (real numbers only, no fabricated analytics)

@@ -36,11 +36,14 @@ export default function TodayScreen(): React.JSX.Element {
           { pathname: '/admin/orders', params: { status: 'arrived' } },
         ],
         ['Draft listings to review', data.summary.draftProducts, '/admin/listings'],
+        ...(data.summary.staleVariants === null
+          ? []
+          : ([['Quantities to re-check with the shops', data.summary.staleVariants, '/admin/listings']] as [string, number, Href][])),
       ]
     : [];
 
   return (
-    <Screen refreshing={loading} onRefresh={reload}>
+    <Screen back={false} refreshing={loading} onRefresh={reload}>
       <Title>Today</Title>
       {error ? <ErrorText>{error}</ErrorText> : null}
       {!data && loading ? <Loading /> : null}

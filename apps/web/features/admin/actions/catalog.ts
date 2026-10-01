@@ -5,15 +5,14 @@ import { redirect } from 'next/navigation';
 import { z } from 'zod';
 
 import {
-  createProduct,
+  createListing,
   createVariant,
   createVendor,
-  getVendor,
   setListedQty,
   setProductStatus,
   updateProduct,
 } from '@repo/db/admin';
-import { clothingAttributesSchema, spiceAttributesSchema } from '@repo/shared/domain';
+import { clothingAttributesSchema, spiceAttributesSchema, type ListingInput } from '@repo/shared/domain';
 
 import { STORE_TAG } from '@/features/catalog/data';
 
@@ -88,7 +87,7 @@ export async function createVendorAction(form: FormData): Promise<void> {
 
 /** Draft listing: the region comes from the vendor; attributes are validated per type (D-003). */
 export async function createProductAction(form: FormData): Promise<void> {
-  const { client, user } = await requireAdminAction();
+  const { client } = await requireAdminAction();
   const base = z
     .object({
       vendorId: id,
@@ -115,23 +114,21 @@ export async function createProductAction(form: FormData): Promise<void> {
             .filter(Boolean),
           shelf_life_days: Number(field(form, 'shelfLifeDays')),
         });
-  const vendor = await getVendor(client, base.vendorId);
-  if (!vendor) throw new Error('Vendor not found');
-  const created = await createProduct(client, {
-    vendor_id: vendor.id,
-    region_id: vendor.region_id,
+  // One path for every new listing, web or phone: product + variants in one transaction (admin_create_listing).
+  // Here the variants are added afterwards on the draft's page.
+  const createdId = await createListing(client, {
+    vendor_id: base.vendorId,
     category_id: base.categoryId,
     product_type: base.productType,
     name: base.name,
     slug: base.slug,
+    summary: base.summary ?? undefined,
     price_cents: base.price,
-    shop_price_paise: base.shopPrice,
-    summary: base.summary,
+    shop_price_paise: base.shopPrice ?? undefined,
     attributes,
-    status: 'draft',
-    created_by: user.id,
-  });
-  redirect(`/admin/catalog/${created.id}`);
+    variants: [],
+  } as ListingInput);
+  redirect(`/admin/catalog/${createdId}`);
 }
 
 export async function updateProductAction(productId: string, form: FormData): Promise<void> {

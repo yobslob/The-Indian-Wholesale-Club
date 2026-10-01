@@ -34,7 +34,7 @@ export default function AdminPayoutsScreen(): React.JSX.Element {
   });
 
   return (
-    <Screen refreshing={loading} onRefresh={reload}>
+    <Screen back={false} refreshing={loading} onRefresh={reload}>
       <Title>Payouts</Title>
       {error ? <ErrorText>{error}</ErrorText> : null}
       {!data && loading ? <Loading /> : null}

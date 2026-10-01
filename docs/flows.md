@@ -25,6 +25,10 @@ open ──cutoff──► collecting ──► packed ──► exported ──
 5. Save as `draft`. An admin reviews it and sets it `live`. Spices stay unpublished until Q-10 is answered (D-032).
 - `qty_confirmed_at` records when the shop last confirmed quantities. The admin sees listings not confirmed within N days
   (N is set in `pricing_settings`) so they can re-check with the shop.
+- **Built (C3):** steps 1–5 on a phone (app admin → Listings → New listing: camera or photo library, photos shrunk to
+  2,400 px and uploaded after the draft is saved, failed photos can be sent again) and on the web; both go through
+  `admin_create_listing` (one transaction) and the shared `listingInputSchema`. Publishing a clothing draft works in
+  the app and on the web. The re-check list is on Today and Listings (web) and Today (app). Offline drafts: later (F-3).
 
 ## 3. Placing an order (customer)
 1. The cart holds variants. At checkout, the server computes totals from the catalog (never from the browser): subtotal,

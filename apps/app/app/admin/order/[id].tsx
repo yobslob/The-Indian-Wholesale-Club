@@ -41,7 +41,7 @@ export default function AdminOrderScreen(): React.JSX.Element {
 
   if (!order) {
     return (
-      <Screen refreshing={loading} onRefresh={reload}>
+      <Screen refreshing={loading} onRefresh={reload} back={false}>
         {error ? <ErrorText>{error}</ErrorText> : null}
         {loading ? <Loading /> : <Body muted>Order not found.</Body>}
       </Screen>
@@ -60,7 +60,7 @@ export default function AdminOrderScreen(): React.JSX.Element {
   }
 
   return (
-    <Screen refreshing={loading} onRefresh={reload}>
+    <Screen refreshing={loading} onRefresh={reload} back={false}>
       <Title>{order.order_number}</Title>
       <Card>
         <Row label="Status" value={order.status} />

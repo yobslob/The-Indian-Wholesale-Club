@@ -17,7 +17,7 @@ export default function AdminCyclesScreen(): React.JSX.Element {
   const { data, error, loading, reload } = useQuery('admin:cycles', () => listCycles(supabase, 30));
 
   return (
-    <Screen refreshing={loading} onRefresh={reload}>
+    <Screen back={false} refreshing={loading} onRefresh={reload}>
       <Title>Cycles</Title>
       {error ? <ErrorText>{error}</ErrorText> : null}
       {!data && loading ? <Loading /> : null}

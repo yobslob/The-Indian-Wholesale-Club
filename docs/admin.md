@@ -38,7 +38,7 @@ can open every section (D-027).
 |---|---|---|---|---|
 | **Today** | what needs doing now: pickups due, stale listings, payouts due / exports to receive, orders to ship, delay warnings | both | ✓ | ✓ |
 | **Vendors** | onboard a shop in about a minute (name, owner, phone/WhatsApp, region, payment method, licences, photo), history | India | ✓ | ✓ |
-| **Listings** | add products with the camera (`flows.md` §2), confirm quantities, drafts → live | India | ✓ | ✓ (confirm qty; adding is web-only until the camera flow) |
+| **Listings** | add products with the camera (`flows.md` §2), confirm quantities, drafts → live | India | ✓ (incl. the re-check list) | ✓ (new listing with the camera, publish, confirm qty) |
 | **Cycles** | current cycle timeline and dates, cutoff, per-shop pickup checklists, packing list + commercial invoice export, export/arrival | both | ✓ (no export/arrival fields or documents yet) | ✓ (pickups, cutoff, next step) |
 | **Payouts** | payable per vendor, record payouts | India | ✓ | ✓ |
 | **Orders** | all orders, detail + internal timeline, pack & ship (tracking no.), refunds, delay notices | US | ✓ | ✓ (pack & ship) |
@@ -58,12 +58,12 @@ the app's order list marks unavailable pieces "to refund on the web panel".
 by status → detail: items with pickup state, internal timeline, mark shipped with carrier + tracking, mark delivered) ·
 Cycles (list → one cycle: cut off, move to the next status, per-shop pickup checklist with Picked / Unavailable) · Payouts
 (what each shop is owed, record a payout; the amount is computed in SQL) · Listings (draft / live / paused, confirm each
-variant's quantity with the shop) · Vendors (list, add a shop). Creating cycles, adding products, publishing and editing stay
-on the web panel until the camera flow (coding phase).
+variant's quantity with the shop) · Vendors (list, add a shop). Adding a product with the camera and publishing it work in the app since C3; creating cycles and editing a
+listing's text stay on the web panel.
 
-**Not built yet** (coding phase): photo upload for vendors/receipts (products: web admin since C1; the phone camera flow is C3), customer emails for
-refunds and cancellations, stale-listing and delay warnings on Today, live (Realtime) order/stock feed, packing list +
-commercial invoice export, bulk edits, category editing. In the app: camera product listing, cycle creation, refunds.
+**Not built yet** (coding phase): photo upload for vendors/receipts (products: web admin since C1, the phone camera since C3), customer emails for
+refunds and cancellations, delay warnings on Today, live (Realtime) order/stock feed, packing list +
+commercial invoice export, bulk edits, category editing. In the app: cycle creation, refunds, editing a listing's text.
 
 ## Design principles for the admin
 1. **One screen per job.** "Pick up at Shop X" is one checklist, not a table with filters.

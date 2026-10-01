@@ -124,6 +124,9 @@ scripts/build-india-map.mjs  regenerates packages/shared/src/india-map/india-map
   `expo-image` (downsampled to the size shown with a sharp filter, cached in memory and on disk); product lists are
   horizontal `FlatList` rows and the Browse grid is a virtualized `FlatList`, so only the cards near the screen exist.
   No entry animation on cards: dozens animating at once made scrolling stutter.
+  The admin's camera flow (C3) uses `expo-image-picker` (camera and photo library) and `expo-image-manipulator`
+  (shrinks to 2,400 px JPEG before upload); uploads are labelled by their real format, since the manipulator's web
+  version returns PNG.
 - **Web preview** (`.claude/launch.json` `app-web`, port 8081): lets Claude check screens in a browser. It is not a
   product. `lib/stripe.web.tsx` and `lib/auth-storage.web.ts` stand in for Stripe and the keychain there (payment works only
   on phones). The preview reads local Supabase (`127.0.0.1`) instead of the phone's LAN address in `.env`. Two traps:

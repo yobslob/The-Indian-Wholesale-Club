@@ -1,3 +1,5 @@
+import { listingInputSchema, type ListingInput } from '@repo/shared/domain';
+
 import { unwrap, type Enum, type Insert, type IwcClient, type Update } from '../client';
 
 // ---------------------------------------------------------------- vendors (D-003: admin only)
@@ -162,6 +164,22 @@ export async function getAdminProduct(client: IwcClient, id: string) {
       .eq('id', id)
       .maybeSingle(),
   );
+}
+
+/**
+ * A new listing (flows.md §2, C3): the draft product and its variants in one database transaction
+ * (admin_create_listing), checked against the shared schema first. Returns the product id; photos go on after.
+ */
+export async function createListing(client: IwcClient, input: ListingInput): Promise<string> {
+  const listing = listingInputSchema.parse(input);
+  const id = unwrap(await client.rpc('admin_create_listing', { p_listing: listing }));
+  if (typeof id !== 'string') throw new Error('the listing was not created');
+  return id;
+}
+
+/** Live variants whose quantity is due a re-check with the shop (pricing_settings.stale_listing_days). */
+export async function listStaleVariants(client: IwcClient) {
+  return unwrap(await client.rpc('admin_stale_variants'));
 }
 
 export async function createProduct(client: IwcClient, input: Insert<'products'>) {

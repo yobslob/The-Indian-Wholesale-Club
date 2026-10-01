@@ -32,7 +32,7 @@ export default function AdminOrdersScreen(): React.JSX.Element {
   );
 
   return (
-    <Screen refreshing={loading} onRefresh={reload}>
+    <Screen back={false} refreshing={loading} onRefresh={reload}>
       <Title>Orders</Title>
       <ScrollView
         horizontal

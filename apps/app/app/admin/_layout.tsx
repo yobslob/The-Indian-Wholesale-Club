@@ -26,6 +26,7 @@ export default function AdminLayout(): React.JSX.Element {
       <Stack.Screen name="(tabs)" options={{ headerShown: false }} />
       <Stack.Screen name="order/[id]" options={{ title: 'Order' }} />
       <Stack.Screen name="cycle/[id]" options={{ title: 'Cycle' }} />
+      <Stack.Screen name="listing/new" options={{ title: 'New listing' }} />
     </Stack>
   );
 }

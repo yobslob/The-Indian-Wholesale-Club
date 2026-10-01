@@ -31,7 +31,7 @@ export default function AdminCycleScreen(): React.JSX.Element {
   const cycle = data?.cycle;
   if (!cycle) {
     return (
-      <Screen refreshing={loading} onRefresh={reload}>
+      <Screen refreshing={loading} onRefresh={reload} back={false}>
         {error ? <ErrorText>{error}</ErrorText> : null}
         {loading ? <Loading /> : <Body muted>Cycle not found.</Body>}
       </Screen>
@@ -53,7 +53,7 @@ export default function AdminCycleScreen(): React.JSX.Element {
   const cycleId = cycle.id;
 
   return (
-    <Screen refreshing={loading} onRefresh={reload}>
+    <Screen refreshing={loading} onRefresh={reload} back={false}>
       <Title>Cycle {cycle.code}</Title>
       <Body muted>
         {cycle.status} · cutoff {utc(cycle.cutoff_at)} · est. export {cycle.est_export_on ?? '—'} ·

@@ -21,7 +21,7 @@ export default function ProfileScreen(): React.JSX.Element {
 
   if (!session) {
     return (
-      <Screen>
+      <Screen back={false}>
         <Title>Profile</Title>
         <Body muted>Sign in to see your orders and saved pieces.</Body>
         <Button label="Sign in" onPress={() => router.push('/auth/login')} />
@@ -32,7 +32,7 @@ export default function ProfileScreen(): React.JSX.Element {
   }
 
   return (
-    <Screen refreshing={loading} onRefresh={reload}>
+    <Screen back={false} refreshing={loading} onRefresh={reload}>
       <Title>Profile</Title>
       <Body muted>{session.user.email ?? ''}</Body>
       <Heading>Your orders</Heading>

@@ -12,7 +12,7 @@ export default async function TodayPage(): Promise<React.JSX.Element> {
   const count = (status: keyof typeof summary.ordersByStatus) =>
     summary.ordersByStatus[status] ?? 0;
 
-  const items: [string, number, string][] = [
+  const items: [string, number | string, string][] = [
     ['Orders confirmed in the open cycle', count('confirmed'), '/admin/orders?status=confirmed'],
     ['Pickups still pending', summary.pendingPickups, '/admin/cycles'],
     ['Picked pieces not yet paid to shops', summary.unpaidPickedPickups, '/admin/payouts'],
@@ -22,6 +22,9 @@ export default async function TodayPage(): Promise<React.JSX.Element> {
       '/admin/orders?status=arrived',
     ],
     ['Draft listings to review', summary.draftProducts, '/admin/listings'],
+    summary.staleVariants === null
+      ? ['Quantities to re-check with the shops: set "stale after" days in Settings', '—', '/admin/settings']
+      : ['Quantities to re-check with the shops', summary.staleVariants, '/admin/listings#recheck'],
   ];
 
   return (

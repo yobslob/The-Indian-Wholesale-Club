@@ -24,10 +24,13 @@ export function Screen({
   children,
   refreshing,
   onRefresh,
+  back = true,
 }: {
   children: React.ReactNode;
   refreshing?: boolean;
   onRefresh?: () => void;
+  /** A Back control on pushed screens; off where a stack header already has one (admin screens). */
+  back?: boolean;
 }): React.JSX.Element {
   const router = useRouter();
   return (
@@ -40,7 +43,7 @@ export function Screen({
         }
       >
         {/* The stack has no header bar (app/_layout.tsx), so a pushed screen shows its own way back. */}
-        {router.canGoBack() ? (
+        {back && router.canGoBack() ? (
           <Pressable
             onPress={() => router.back()}
             accessibilityRole="button"
