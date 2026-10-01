@@ -54,7 +54,7 @@ database without a reset (same listings, photos and pieces kept). Commit the dat
 | Item | Why |
 |---|---|
 | Oxidised silver jewellery (Delhi), silver payal (Punjab), Rajputi jewellery set, Assamese gohona (gamkharu, jonbiri, dholbiri and the rest), Kerala temple jewellery and vadamalar jhumkas, Kolhapuri saaj, nath | Gold and silver jewellery is a separate product type and a founder decision (catalogue appendix) |
-| MDH masalas, and shop names in product names (Chitale, Laxmi Narayan, Maganlal, Kayani, Kanwarji, Chaina Ram, Ghantewala, LMB, Gore Bandhu, Budhani) | The store never names shops (D-003). The products themselves are in, under their own names (Puneri bakarwadi, Pune poha chivda…). Whether to sell named brands is Q-29 |
+| MDH masalas, and shop names in product names (Chitale, Laxmi Narayan, Maganlal, Kayani, Kanwarji, Chaina Ram, Ghantewala, LMB, Gore Bandhu, Budhani) | The store never names shops (D-003). The products themselves are in, under their own names (Puneri bakarwadi, Pune poha chivda…). No brand names (D-061) |
 | Pashmina and Kashmiri shawls (Delhi), Kashmiri aari-work suits (Punjab) | Made in Kashmir: they belong on Jammu and Kashmir's page, not Delhi's or Punjab's (D-004) |
 | Kolhapuri chappals under Delhi | Made in Maharashtra; they are on Maharashtra's page |
 | Khari Baoli dry fruits (Delhi) | Almonds, dates and figs are traded in Delhi, not grown there (D-004) |
@@ -63,5 +63,4 @@ database without a reset (same listings, photos and pieces kept). Commit the dat
 | Ichalkaranji, Bhiwandi, Malegaon textiles | Towns and industries, not products |
 
 Items loved in one state but woven in another (Lucknowi chikan under Delhi; Ilkal, Narayanpet and khun under
-Maharashtra) are in, and their description says where they are made. How the product page's origin line should read
-for them is Q-28.
+Maharashtra) are in, and their description says where they are made. They stay on that state's page (D-060).

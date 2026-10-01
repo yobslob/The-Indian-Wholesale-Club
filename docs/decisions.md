@@ -439,3 +439,24 @@ shops, so those are **dev placeholders** (`is_placeholder = true`, D-012) until 
 are drafts because spices cannot go live yet (D-032, a database rule); gold and silver jewellery is left out (the
 catalogue's appendix makes it a separate founder decision); product names leave out shop and brand names (D-003);
 entries that are markets or industries rather than products are left out and listed in `catalogue/README.md`.
+
+**D-060 · 2026-10-01 · founder (was Q-28): Items loved in one state but made in another stay on that state's page**
+Founder, verbatim: "Q28,29 are correctly assumed go with your assumed answer"
+The assumption was: such items (Lucknowi chikan on Delhi's page; Ilkal, Narayanpet and khun sarees on Maharashtra's)
+are listed under the state whose people miss them, and **their description names the real making place** ("Woven in
+Karnataka, …"), so origin stays honest (D-004).
+
+**D-061 · 2026-10-01 · founder (was Q-29): No brand names**
+Founder, verbatim: (the same answer as D-060) "Q28,29 are correctly assumed go with your assumed answer"
+The assumption was: products are listed under their own names (Puneri bakarwadi, Pune poha chivda), never with a
+brand or maker's name (MDH, Chitale, Maganlal…), which the store treats like shop names (D-003).
+
+**D-062 · 2026-10-01 · founder: Horizontal rows everywhere, "See all" opens the full list**
+Founder, verbatim: "3. I want scrollable horizontal grids everywhere until the user deliberately clicks see all, then take him to the page where all the clothes cards are of that category."
+What it means for the build: every product list on Home, the region page and the product page is a row that scrolls
+sideways (web and app). A row with more behind it has **See all**, which opens the full list of that category:
+`/clothing?state=<region>&category=<category>` on the web and the Browse screen in the app. Region pages show one row
+per clothing category. The lists that rows show grow from 4 to up to 12 pieces (Just listed, Most wanted, Curated for
+you, Leaving soon, Similar items); this replaces "at most four" in D-058's interpretation.
+*Interpretation (proposed):* Most wanted, Curated for you and Leaving soon show their whole list in the row, so they
+have no See all; See all pages show 24 cards at a time with "Show more".
