@@ -101,8 +101,13 @@ export const homeSchema = z.object({
   delivery: deliveryWindowSchema.nullable(),
 });
 
+/** A region album photo (D-051): only the file and what it shows. */
+export const albumPhotoSchema = z.object({ storage_path: z.string(), alt_text: z.string() });
+
 export const regionPageSchema = z.object({
   region: regionSchema,
+  /** The region album, in the admin's order (migration 10). */
+  album: z.array(albumPhotoSchema),
   /** Every live product, newest first (New arrivals are the first four). */
   products: z.array(regionProductCardSchema),
   /** Most wanted: up to four in-stock pieces ordered most in the last 30 days (D-058). Ranking only, no counts. */

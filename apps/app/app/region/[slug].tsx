@@ -7,6 +7,7 @@ import { getRegionPage } from '@repo/db/store';
 import { Body, ErrorText, Heading, Loading, Screen } from '@/components/ui';
 import { CuratedCard } from '@/features/catalog/curated-card';
 import { byCategory, ProductRow } from '@/features/catalog/product-row';
+import { RegionAlbum } from '@/features/regions/region-album';
 import { supabase, mediaUrl } from '@/lib/supabase';
 import { useQuery } from '@/lib/use-query';
 
@@ -15,7 +16,7 @@ const ROW = 12;
 /**
  * The core page (storefront.md §The region page, design.md §Direction). One store_region_page() call: the
  * greeting in its own script (the phone's system fonts cover every Indian script), New arrivals, Most wanted
- * (D-058), Curated for you, Leaving soon (D-056), then one row per clothing category and Spices. Every list is a
+ * (D-058), the album (D-051), Curated for you, Leaving soon (D-056), then one row per clothing category and Spices. Every list is a
  * sideways row with See all where there is more (D-062).
  */
 export default function RegionScreen(): React.JSX.Element {
@@ -82,6 +83,7 @@ export default function RegionScreen(): React.JSX.Element {
                 sub={`Most ordered from ${data.region.name} in the last 30 days.`}
                 products={data.most_wanted}
               />
+              <RegionAlbum photos={data.album} />
               <CuratedCard products={data.curated} regionName={data.region.name} />
               <ProductRow
                 title="Leaving soon"

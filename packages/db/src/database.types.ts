@@ -484,6 +484,31 @@ isOneToOne: false
                   Relationships: [
                     
                   ]
+                },"region_photos": {
+                  Row: {
+                    "alt_text": string,"created_at": string,"id": string,"region_id": string,"sort_order": number,"storage_path": string
+                  }
+                  Insert: {
+                    "alt_text": string,"created_at"?: string,"id"?: string,"region_id": string,"sort_order"?: number,"storage_path": string
+                  }
+                  Update: {
+                    "alt_text"?: string,"created_at"?: string,"id"?: string,"region_id"?: string,"sort_order"?: number,"storage_path"?: string
+                  }
+                  Relationships: [
+                    {
+      foreignKeyName: "region_photos_region_id_fkey"
+      columns: ["region_id"]
+isOneToOne: false
+      referencedRelation: "regions"
+      referencedColumns: ["id"]
+    },{
+      foreignKeyName: "region_photos_region_id_fkey"
+      columns: ["region_id"]
+isOneToOne: false
+      referencedRelation: "store_regions"
+      referencedColumns: ["id"]
+    }
+                  ]
                 },"regions": {
                   Row: {
                     "accent_color": string | null,"content_status": Database["public"]['Enums']["content_status"],"created_at": string,"greeting_latin": string | null,"greeting_meaning": string | null,"greeting_native": string | null,"greeting_script": string | null,"hero_image_path": string | null,"id": string,"is_live": boolean,"languages": (string)[],"name": string,"slug": string,"sort_order": number,"story": string | null,"tagline": string | null,"updated_at": string
@@ -1169,4 +1194,3 @@ export const Constants = {
           }
         }
 } as const
-

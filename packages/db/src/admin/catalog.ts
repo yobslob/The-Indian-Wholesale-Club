@@ -61,6 +61,39 @@ export async function updateRegion(client: IwcClient, id: string, patch: Update<
   unwrap(await client.from('regions').update(patch).eq('id', id));
 }
 
+/** The region album (D-051): its photos in order. */
+export async function listRegionPhotos(client: IwcClient, regionId: string) {
+  return unwrap(
+    await client
+      .from('region_photos')
+      .select('id, storage_path, alt_text, sort_order, created_at')
+      .eq('region_id', regionId)
+      .order('sort_order')
+      .order('created_at'),
+  );
+}
+
+/** Adds a photo at the end of the album. */
+export async function addRegionPhoto(client: IwcClient, regionId: string, storagePath: string, altText: string) {
+  const last = unwrap(
+    await client.from('region_photos').select('sort_order').eq('region_id', regionId).order('sort_order', { ascending: false }).limit(1),
+  );
+  unwrap(
+    await client.from('region_photos').insert({
+      region_id: regionId,
+      storage_path: storagePath,
+      alt_text: altText,
+      sort_order: (last[0]?.sort_order ?? 0) + 1,
+    }),
+  );
+}
+
+/** Removes an album photo and returns its storage path (the caller deletes the file). */
+export async function removeRegionPhoto(client: IwcClient, photoId: string): Promise<string | null> {
+  const rows = unwrap(await client.from('region_photos').delete().eq('id', photoId).select('storage_path'));
+  return rows[0]?.storage_path ?? null;
+}
+
 /** D-019: Claude-drafted region text becomes visible only after the founder approves it. */
 export async function approveRegionContent(client: IwcClient, id: string) {
   unwrap(await client.from('regions').update({ content_status: 'approved' }).eq('id', id));

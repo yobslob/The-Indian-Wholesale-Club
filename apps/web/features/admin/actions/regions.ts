@@ -3,7 +3,13 @@
 import { revalidatePath, revalidateTag } from 'next/cache';
 import { z } from 'zod';
 
-import { approveRegionContent, getRegionAdmin, updateRegion } from '@repo/db/admin';
+import {
+  addRegionPhoto,
+  approveRegionContent,
+  getRegionAdmin,
+  removeRegionPhoto,
+  updateRegion,
+} from '@repo/db/admin';
 import { worstContrast } from '@repo/shared/domain';
 import tokens from '@repo/tokens';
 
@@ -99,4 +105,33 @@ export async function uploadRegionImageAction(regionId: string, form: FormData):
   await updateRegion(client, regionIdOk, { hero_image_path: path });
   revalidateTag(STORE_TAG);
   revalidatePath(`/admin/regions/${regionIdOk}`);
+}
+
+/** A photo for the region album (D-051), with the alt text a screen reader says. Stored under regions/<slug>/album/. */
+export async function uploadAlbumPhotoAction(regionId: string, form: FormData): Promise<void> {
+  const { client } = await requireAdminAction();
+  const regionIdOk = id.parse(regionId);
+  const alt = z.string().trim().min(1, 'describe the photo (alt text)').max(300).parse(form.get('alt'));
+  const file = form.get('image');
+  if (!(file instanceof File) || file.size === 0) throw new Error('choose a photo to upload');
+  const ext = IMAGE_TYPES[file.type];
+  if (!ext) throw new Error('the photo must be a JPEG, PNG, WebP or AVIF image');
+  if (file.size > MAX_IMAGE_BYTES) throw new Error('the photo must be 8 MB or smaller');
+
+  const region = await getRegionAdmin(client, regionIdOk);
+  if (!region) throw new Error('region not found');
+  const path = `regions/${region.slug}/album/${crypto.randomUUID()}.${ext}`;
+  const { error } = await client.storage.from('product-media').upload(path, file, { contentType: file.type });
+  if (error) throw new Error(`upload failed: ${error.message}`);
+  await addRegionPhoto(client, regionIdOk, path, alt);
+  revalidateTag(STORE_TAG);
+  revalidatePath(`/admin/regions/${regionIdOk}`);
+}
+
+export async function removeAlbumPhotoAction(regionId: string, photoId: string): Promise<void> {
+  const { client } = await requireAdminAction();
+  const path = await removeRegionPhoto(client, id.parse(photoId));
+  if (path) await client.storage.from('product-media').remove([path]);
+  revalidateTag(STORE_TAG);
+  revalidatePath(`/admin/regions/${id.parse(regionId)}`);
 }

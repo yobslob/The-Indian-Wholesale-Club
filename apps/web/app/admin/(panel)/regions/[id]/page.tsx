@@ -1,15 +1,17 @@
 import Image from 'next/image';
 import { notFound } from 'next/navigation';
 
-import { getRegionAdmin } from '@repo/db/admin';
+import { getRegionAdmin, listRegionPhotos } from '@repo/db/admin';
 
 import {
   approveRegionAction,
+  removeAlbumPhotoAction,
   updateRegionAction,
+  uploadAlbumPhotoAction,
   uploadRegionImageAction,
 } from '@/features/admin/actions/regions';
 import { requireAdminPage } from '@/features/admin/guard';
-import { button, Field, input, PageTitle } from '@/features/admin/ui';
+import { button, Field, input, linkButton, PageTitle } from '@/features/admin/ui';
 import { mediaUrl } from '@/lib/site';
 
 type Params = Promise<{ id: string }>;
@@ -24,6 +26,7 @@ export default async function RegionEditPage({
   const { id } = await params;
   const region = await getRegionAdmin(client, id);
   if (!region) notFound();
+  const album = await listRegionPhotos(client, region.id);
 
   return (
     <div className="space-y-6">
@@ -49,6 +52,41 @@ export default async function RegionEditPage({
           <input type="file" name="image" accept="image/jpeg,image/png,image/webp,image/avif" required aria-label="Photo file" />
           <button type="submit" className={button}>
             {region.hero_image_path ? 'Replace photo' : 'Upload photo'}
+          </button>
+        </form>
+      </section>
+
+      <section className="border-line max-w-2xl space-y-3 rounded-md border p-3">
+        <h2 className="font-medium">Album ({album.length})</h2>
+        <p className="text-ink-muted text-sm">
+          More photos of {region.name}: the region page shows them as a slow sideways mosaic once there are three or more.
+          Landscape and portrait both work; 1,600 px wide or more looks sharp. Each photo needs a line describing it.
+        </p>
+        {album.length > 0 ? (
+          <ul className="grid grid-cols-3 gap-3 sm:grid-cols-4">
+            {album.map((photo) => (
+              <li key={photo.id} className="space-y-1.5">
+                <div className="bg-surface relative aspect-square overflow-hidden rounded-md">
+                  <Image src={mediaUrl(photo.storage_path)} alt={photo.alt_text} fill sizes="160px" className="object-cover" />
+                </div>
+                <p className="text-ink-muted line-clamp-2 text-xs">{photo.alt_text}</p>
+                <form action={removeAlbumPhotoAction.bind(null, region.id, photo.id)}>
+                  <button type="submit" className={`${linkButton} text-sm`}>
+                    Remove
+                  </button>
+                </form>
+              </li>
+            ))}
+          </ul>
+        ) : null}
+        <form action={uploadAlbumPhotoAction.bind(null, region.id)} className="grid gap-3 sm:grid-cols-[1fr_auto]">
+          <input type="file" name="image" accept="image/jpeg,image/png,image/webp,image/avif" required aria-label="Album photo file" />
+          <span />
+          <Field label="What the photo shows (alt text)">
+            <input name="alt" required maxLength={300} className={input} placeholder="Women dancing Giddha at a village fair" />
+          </Field>
+          <button type="submit" className={`${button} self-end`}>
+            Add to album
           </button>
         </form>
       </section>

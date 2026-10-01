@@ -74,8 +74,15 @@ export function Motion(): null {
       place();
       window.addEventListener('scroll', schedule, { passive: true });
     }
+    // The region album (D-052) moves only while it is on screen: no work and no battery spent off screen.
+    const albums = new IntersectionObserver((entries) =>
+      entries.forEach((e) => e.target.setAttribute('data-album', e.isIntersecting ? 'on' : 'off')),
+    );
+    document.querySelectorAll('[data-album]').forEach((el) => albums.observe(el));
+
     return () => {
       io.disconnect();
+      albums.disconnect();
       window.removeEventListener('scroll', schedule);
       cancelAnimationFrame(frame);
     };

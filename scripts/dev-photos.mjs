@@ -3,7 +3,7 @@
  * scripts/dev-photos.mjs: puts the founder's photos (design/mockups/assets) into the LOCAL database and
  * storage, the same way the admin pages do: region photos (D-056, product-media/regions/<slug>/) and the
  * kasavu saree's four photos on the demo kasavu saree (D-057, product-media/products/<id>/). Then every photo in
- * catalogue/photos (catalogue/README.md, D-059): <region>/_region/ (the first file is the region's main photo) and
+ * catalogue/photos (catalogue/README.md, D-059): <region>/_region/ (the first file is the region's main photo, the rest go into its album) and
  * <region>/<product>/ (in file-name order, the first is the main photo; alt text from alt.txt when there is one).
  *
  *   pnpm dev:photos
@@ -17,6 +17,10 @@ import { existsSync, readdirSync, readFileSync, statSync } from 'node:fs';
 import { createClient } from '@supabase/supabase-js';
 
 const PHOTOS = { kerala: 'kerala.jpg', punjab: 'punjab_1.jpg', rajasthan: 'rajasthan.jpg' };
+// The founder's second Punjab photo waited for the album (D-056).
+const ALBUM = {
+  punjab: [['punjab_2.jpg', 'Two women in embroidered suits and gold jewellery sit on the floor by brass pots, peanuts and popcorn']],
+};
 const KASAVU = 'demo-kerala-kasavu-saree';
 const KASAVU_PHOTOS = [
   ['Kasavu_main.jpg', 'image/jpeg', 'Kasavu saree with its gold border, spread out on the grass, worn seated'],
@@ -46,6 +50,19 @@ if (!key) {
 }
 
 const db = createClient(url, key, { auth: { persistSession: false } });
+
+/** One album photo (migration 10): upload under regions/<slug>/album/ and add or update its row by path. */
+async function addAlbumPhoto(slug, file, body, contentType, alt, sortOrder) {
+  const path = `regions/${slug}/album/${file.toLowerCase()}`;
+  const up = await db.storage.from('product-media').upload(path, body, { contentType, upsert: true });
+  if (up.error) throw new Error(`${slug} album: upload failed: ${up.error.message}`);
+  const { data: region } = await db.from('regions').select('id').eq('slug', slug).single();
+  const { error } = await db
+    .from('region_photos')
+    .upsert({ region_id: region.id, storage_path: path, alt_text: alt, sort_order: sortOrder }, { onConflict: 'storage_path' });
+  if (error) throw new Error(`${slug} album: ${error.message}`);
+}
+
 for (const [slug, file] of Object.entries(PHOTOS)) {
   const path = `regions/${slug}/${file}`;
   const body = readFileSync(`design/mockups/assets/${file}`);
@@ -54,6 +71,12 @@ for (const [slug, file] of Object.entries(PHOTOS)) {
   const { error } = await db.from('regions').update({ hero_image_path: path }).eq('slug', slug);
   if (error) throw new Error(`${slug}: ${error.message}`);
   console.log(`${slug}: ${path}`);
+}
+for (const [slug, photos] of Object.entries(ALBUM)) {
+  for (const [i, [file, alt]] of photos.entries()) {
+    await addAlbumPhoto(slug, file, readFileSync(`design/mockups/assets/${file}`), 'image/jpeg', alt, i + 1);
+  }
+  console.log(`${slug}: ${photos.length} album photo(s)`);
 }
 const { data: product, error: productError } = await db.from('products').select('id').eq('slug', KASAVU).maybeSingle();
 if (productError) throw new Error(productError.message);
@@ -102,7 +125,12 @@ for (const region of existsSync(ROOT) ? readdirSync(ROOT).filter((d) => statSync
     if (up.error) throw new Error(`${region}: upload failed: ${up.error.message}`);
     const { error } = await db.from('regions').update({ hero_image_path: path }).eq('slug', region);
     if (error) throw new Error(`${region}: ${error.message}`);
-    console.log(`${region}: main photo ${file}${regionPhotos.length > 1 ? ` (+${regionPhotos.length - 1} kept for the album)` : ''}`);
+    const alts = altTexts(`${ROOT}/${region}/_region`);
+    for (const [i, extra] of regionPhotos.slice(1).entries()) {
+      const body = readFileSync(`${ROOT}/${region}/_region/${extra}`);
+      await addAlbumPhoto(region, extra, body, typeOf(extra), alts[extra] ?? `${region}, album photo ${i + 1}`, 100 + i);
+    }
+    console.log(`${region}: main photo ${file}${regionPhotos.length > 1 ? `, ${regionPhotos.length - 1} album photo(s)` : ''}`);
   }
   for (const folder of readdirSync(`${ROOT}/${region}`).filter((d) => d !== '_region')) {
     const dir = `${ROOT}/${region}/${folder}`;

@@ -25,9 +25,9 @@ const options = { tags: [STORE_TAG], revalidate: STORE_REVALIDATE_SECONDS };
 /**
  * Part of every cache key. Bump it whenever a store_* result changes shape (a migration adds a field): cached
  * entries outlive deployments (Vercel's data cache, .next/cache locally), and an old entry would reach a page
- * that expects the new field. Last change: rows of up to 12 (migration 9, D-062).
+ * that expects the new field. Last change: the region album (migration 10).
  */
-const SHAPE = 'v9';
+const SHAPE = 'v10';
 
 export const getHomeCached = unstable_cache(() => getHome(storeClient()), ['store-home', SHAPE], options);
 

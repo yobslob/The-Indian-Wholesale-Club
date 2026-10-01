@@ -44,6 +44,48 @@
   }
 }
 
+/*
+ * The region album (features/regions/region-album.tsx, D-051, D-052): a mosaic that drifts sideways by itself. Not
+ * interactive, no pause control (founder's decision); still for reduced motion, paused while off screen
+ * (data-album="off", set by motion.tsx). The track holds the mosaic twice so the loop has no seam.
+ */
+@layer components {
+  .album {
+    --cell: clamp(56px, 6vw, 96px);
+    overflow: hidden;
+    padding-block: 8px;
+    pointer-events: none;
+    user-select: none;
+    -webkit-mask-image: linear-gradient(to right, transparent, #000 5%, #000 95%, transparent);
+    mask-image: linear-gradient(to right, transparent, #000 5%, #000 95%, transparent);
+  }
+  .album-track {
+    display: flex;
+    gap: var(--gap);
+    width: max-content;
+    animation: album var(--album-duration, 110s) linear infinite;
+  }
+  .album[data-album='off'] .album-track {
+    animation-play-state: paused;
+  }
+  .album-mosaic {
+    display: grid;
+    grid-template-rows: repeat(4, var(--cell));
+    grid-auto-columns: var(--cell);
+    gap: var(--gap);
+  }
+  @keyframes album {
+    to {
+      transform: translateX(calc(-50% - var(--gap) / 2));
+    }
+  }
+  @media (prefers-reduced-motion: reduce) {
+    .album-track {
+      animation: none;
+    }
+  }
+}
+
 /* Motion (features/shell/motion.tsx, D-049): Lenis's base rules, and the reveal of images that were below the fold. */
 @layer base {
   html.lenis,

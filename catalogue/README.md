@@ -13,8 +13,8 @@ The six launch regions (Delhi, Punjab, Rajasthan, Assam, Maharashtra, Kerala, D-
    - **Alt text** (what a screen reader says; required for accessibility): an `alt.txt` in the same folder, one line
      per photo: `1-main.jpg: Kasavu saree with its gold border, spread out on the grass`. Photos without a line get
      "<product name>, photo 2 of 4", which is better than nothing but not good.
-   - **A region:** `catalogue/photos/kerala/_region/`. The first photo is the region's main photo; the rest are kept
-     for the region album.
+   - **A region:** `catalogue/photos/kerala/_region/`. The first photo is the region's main photo; the rest go into its album (the
+     sliding mosaic on the region page, shown once there are three). Album photos get alt text from `alt.txt` too.
 3. Load them into your local store: `pnpm dev:photos`. Running it again replaces a product's photos with what's in
    its folder.
 

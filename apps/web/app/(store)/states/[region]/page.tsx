@@ -5,6 +5,7 @@ import { notFound } from 'next/navigation';
 import { CuratedCard } from '@/features/catalog/curated-card';
 import { getHomeCached, getRegionPageCached } from '@/features/catalog/data';
 import { ProductRow } from '@/features/catalog/product-row';
+import { RegionAlbum } from '@/features/regions/region-album';
 import { scriptFontClass } from '@/features/regions/script-fonts';
 import { mediaUrl } from '@/lib/site';
 
@@ -44,13 +45,13 @@ const ROW = 12;
 /**
  * The core page (storefront.md §The region page, design.md §Direction). One cached store_region_page()
  * call. Every list is a row that scrolls sideways with See all where there is more (D-062): New arrivals, Most wanted
- * (D-058), Curated for you and Leaving soon (D-056), then one row per clothing category, then Spices. Still to
- * come: the photo album (more region photos, C2).
+ * (D-058), the album (D-051, once it has three photos), Curated for you and Leaving soon (D-056), then one row per
+ * clothing category, then Spices.
  */
 export default async function RegionPage({ params }: { params: Params }): Promise<React.JSX.Element> {
   const page = await getRegionPageCached((await params).region);
   if (!page) notFound();
-  const { region, products, most_wanted: mostWanted, curated, leaving_soon: leavingSoon } = page;
+  const { region, album, products, most_wanted: mostWanted, curated, leaving_soon: leavingSoon } = page;
   const clothing = products.filter((p) => p.product_type === 'clothing');
   const spices = products.filter((p) => p.product_type === 'spice');
   const categories = byCategory(clothing);
@@ -141,6 +142,7 @@ export default async function RegionPage({ params }: { params: Params }): Promis
             sub={`Most ordered from ${region.name} in the last 30 days.`}
             products={mostWanted}
           />
+          <RegionAlbum photos={album} regionName={region.name} />
           <CuratedCard id="curated" products={curated} regionName={region.name} />
           <ProductRow
             id="leaving-soon"
