@@ -34,6 +34,16 @@
   }
 }
 
+/* Rows of cards that scroll sideways (features/catalog/row-scroller.tsx, D-062): no scrollbar, arrows instead. */
+@layer utilities {
+  .no-scrollbar {
+    scrollbar-width: none;
+  }
+  .no-scrollbar::-webkit-scrollbar {
+    display: none;
+  }
+}
+
 /* Motion (features/shell/motion.tsx, D-049): Lenis's base rules, and the reveal of images that were below the fold. */
 @layer base {
   html.lenis,

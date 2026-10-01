@@ -70,7 +70,8 @@ in stock, so a card's "Add" needs no choice). Migration 6 (D-056): `products.is_
 `review_eligibility(product)` tells the form whether photos are allowed. The store reads `store_reviews` and
 `store_review_photos` (approved reviews of visible products, no user id); `store_product_page()` adds `reviews`
 (count, average, per-star counts, the six newest with photos). Photos live in the public `review-media` bucket under
-the customer's own folder. Migration 8 (D-058): `store_region_page()` adds `most_wanted` (up to four in-stock live pieces ranked by pieces ordered in the last 30 days: paid orders that are not cancelled or refunded, active lines only; ties to the newer listing). Only the ranking leaves the function, never the counts (D-003); `order_items_product_idx` serves the count. `guest_order_lookup(number, email)` returns the
+the customer's own folder. Migration 8 (D-058): `store_region_page()` adds `most_wanted` (up to four in-stock live pieces ranked by pieces ordered in the last 30 days: paid orders that are not cancelled or refunded, active lines only; ties to the newer listing). Only the ranking leaves the function, never the counts (D-003); `order_items_product_idx` serves the count. Migration 9 (D-062): the lists rows show grow to 12 (Just listed, Most
+wanted, Curated for you, Leaving soon, Similar items). `guest_order_lookup(number, email)` returns the
 same shape for guests and is **service-only** (the server route rate-limits it). A test keeps its fields identical to the views'.
 `checkout_context(variant_ids, promo_code)` (migration 3, **service-only**) returns what the server needs to price a bag in
 one round trip: the variants as customers can buy them (through `store_*`), the promo if usable now, the shipping settings

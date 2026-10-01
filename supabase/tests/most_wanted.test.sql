@@ -62,8 +62,8 @@ set local role anon;
 select tests.assert(
   (select array_agg(c ->> 'slug' order by ord) from jsonb_array_elements(
      public.store_region_page('test-region') -> 'most_wanted') with ordinality as x(c, ord))
-  = array['mw-top', 'test-live', 'mw-tie-new', 'mw-tie-mid'],
-  'Most wanted = most pieces ordered in 30 days, ties to the newer listing, at most four (the oldest tie drops out)');
+  = array['mw-top', 'test-live', 'mw-tie-new', 'mw-tie-mid', 'mw-tie-old'],
+  'Most wanted = most pieces ordered in 30 days, ties to the newer listing');
 
 select tests.assert(
   not exists (select 1 from jsonb_array_elements(public.store_region_page('test-region') -> 'most_wanted') c
@@ -83,8 +83,25 @@ set local role anon;
 select tests.assert(
   (select array_agg(c ->> 'slug' order by ord) from jsonb_array_elements(
      public.store_region_page('test-region') -> 'most_wanted') with ordinality as x(c, ord))
-  = array['mw-top', 'mw-tie-old', 'test-live', 'mw-tie-new'],
+  = array['mw-top', 'mw-tie-old', 'test-live', 'mw-tie-new', 'mw-tie-mid'],
   'the count decides before the listing date');
+reset role;
+
+-- The row holds twelve (D-062). Twelve newer pieces ordered once each must not push out an older piece ordered more.
+insert into public.products (slug, name, product_type, region_id, category_id, vendor_id, price_cents, status,
+                             published_at, is_placeholder)
+select 'mw-new-' || i, 'Newer, ordered once ' || i, 'clothing', tests.id('region'), tests.id('cat_clothing'),
+       tests.id('vendor'), 4000, 'live', now() + i * interval '1 hour', false
+from generate_series(1, 12) i;
+insert into public.product_variants (product_id, sku, label, qty_listed)
+select id, upper(slug), 'Free size', 5 from public.products where slug like 'mw-new-%';
+select pg_temp.buy('mw-new-' || i, 1, 'new' || i) from generate_series(1, 12) i;
+set local role anon;
+select tests.assert(
+  jsonb_array_length(public.store_region_page('test-region') -> 'most_wanted') = 12
+  and exists (select 1 from jsonb_array_elements(public.store_region_page('test-region') -> 'most_wanted') c
+              where c ->> 'slug' = 'mw-tie-old'),
+  'at most twelve, and the cut goes by count: the older piece with 3 orders stays, newer single orders drop');
 reset role;
 
 -- No qualifying orders: the list is empty (the page hides the section).

@@ -32,7 +32,7 @@ test.describe('with motion', () => {
   test('smooth scrolling runs, and images below the fold reveal once scrolled to', async ({ page }) => {
     await page.goto('/');
     await expect(page.locator('html')).toHaveClass(/lenis/, { timeout: 15_000 });
-    const firstCard = page.locator('section[aria-labelledby="just-listed"] [data-reveal]').first();
+    const firstCard = page.locator('#just-listed [data-reveal]').first();
     await expect(firstCard).toHaveAttribute('data-reveal', 'pending');
     await firstCard.scrollIntoViewIfNeeded();
     await expect(firstCard).toHaveAttribute('data-reveal', 'in');

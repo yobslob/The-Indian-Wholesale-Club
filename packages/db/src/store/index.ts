@@ -71,6 +71,8 @@ export interface ProductListFilter {
   categorySlug?: string;
   /** Full-text search over name, craft, summary, description. */
   search?: string;
+  /** 'newest' for the See all pages (D-062); name order otherwise. */
+  sort?: 'name' | 'newest';
   limit?: number;
 }
 
@@ -89,7 +91,11 @@ export async function listProducts(
       config: 'simple',
     });
   }
-  const data = unwrap(await query.order('name').limit(filter.limit ?? 60));
+  query =
+    filter.sort === 'newest'
+      ? query.order('published_at', { ascending: false, nullsFirst: false }).order('name')
+      : query.order('name');
+  const data = unwrap(await query.limit(filter.limit ?? 60));
   return z.array(productCardSchema).parse(data);
 }
 

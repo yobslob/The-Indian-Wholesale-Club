@@ -1,4 +1,5 @@
-import { Image, Linking, Text, View } from 'react-native';
+import { Image } from 'expo-image';
+import { Linking, Text, View } from 'react-native';
 
 import type { ReviewsSummary } from '@repo/db/store';
 
@@ -48,9 +49,10 @@ export function ReviewsSection({ reviews, productId }: { reviews: ReviewsSummary
                   {r.photos.map((path) => (
                     <Image
                       key={path}
-                      source={{ uri: reviewPhotoUrl(path) }}
+                      source={reviewPhotoUrl(path)}
                       accessibilityLabel={`Photo from ${r.display_name}`}
-                      className="bg-land h-16 w-16 rounded-md"
+                      style={{ width: 64, height: 64, borderRadius: 10 }}
+                      contentFit="cover"
                     />
                   ))}
                 </View>

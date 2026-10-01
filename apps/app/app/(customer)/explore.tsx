@@ -5,6 +5,7 @@ import { getHome, listProducts } from '@repo/db/store';
 
 import { Body, ErrorText, Field, Loading, Screen, Title } from '@/components/ui';
 import { Grid, ProductCard, RegionCard } from '@/features/catalog/cards';
+import { byCategory, ProductRow } from '@/features/catalog/product-row';
 import { supabase } from '@/lib/supabase';
 import { useQuery } from '@/lib/use-query';
 
@@ -15,7 +16,10 @@ const TABS: { key: Tab; label: string }[] = [
   { key: 'spice', label: 'Spices' },
 ];
 
-/** Explore (storefront.md): states A–Z, clothing, spices, and search. One store_* read per view. */
+/**
+ * Explore (storefront.md): states A–Z, clothing and spices as one sideways row per category with See all (D-062),
+ * and search. One store_* read per view.
+ */
 export default function ExploreScreen(): React.JSX.Element {
   const [tab, setTab] = useState<Tab>('states');
   const [query, setQuery] = useState('');
@@ -42,7 +46,7 @@ export default function ExploreScreen(): React.JSX.Element {
     }
     return {
       regions: [],
-      products: await listProducts(supabase, { productType: tab, limit: 200 }),
+      products: await listProducts(supabase, { productType: tab, sort: 'newest', limit: 500 }),
     };
   });
 
@@ -87,13 +91,18 @@ export default function ExploreScreen(): React.JSX.Element {
       {data?.regions.map((r) => (
         <RegionCard key={r.slug} region={r} />
       ))}
-      {data && data.products.length > 0 ? (
+      {data && data.products.length > 0 && submitted ? (
         <Grid>
           {data.products.map((p) => (
             <ProductCard key={p.id} product={p} />
           ))}
         </Grid>
       ) : null}
+      {data && data.products.length > 0 && !submitted
+        ? byCategory(data.products).map((c) => (
+            <ProductRow key={c.slug} title={c.name} products={c.items.slice(0, 12)} seeAll={{ type: tab === 'spice' ? 'spice' : 'clothing', category: c.slug }} />
+          ))
+        : null}
       {data && !loading && data.regions.length === 0 && data.products.length === 0 ? (
         <Body muted>
           {submitted

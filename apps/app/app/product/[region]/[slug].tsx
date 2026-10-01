@@ -7,13 +7,14 @@ import { saveProduct } from '@repo/db/account';
 import { getProductPage } from '@repo/db/store';
 import tokens from '@repo/tokens';
 
-import { Body, ErrorText, Heading, Label, Loading, Row, Screen } from '@/components/ui';
+import { Body, ErrorText, Loading, Row, Screen } from '@/components/ui';
 import { AddToBag } from '@/features/catalog/add-to-bag';
-import { Grid, ProductCard } from '@/features/catalog/cards';
+import { CuratedCard } from '@/features/catalog/curated-card';
 import { DeliveryNote } from '@/features/catalog/delivery-note';
 import { Disclosure } from '@/features/catalog/disclosure';
 import { Details, hasDetails, sizeRows } from '@/features/catalog/product-details';
 import { ProductGallery } from '@/features/catalog/product-gallery';
+import { ProductRow } from '@/features/catalog/product-row';
 import { ReviewsSection } from '@/features/reviews/reviews-section';
 import { useSession } from '@/lib/session';
 import { supabase } from '@/lib/supabase';
@@ -100,30 +101,12 @@ export default function ProductScreen(): React.JSX.Element {
 
           <ReviewsSection reviews={data.reviews} productId={data.product.id} />
 
-          {data.similar.length > 0 ? (
-            <View className="gap-4 pt-2">
-              <Heading>Similar items</Heading>
-              <Grid>
-                {data.similar.map((p) => (
-                  <ProductCard key={p.id} product={p} />
-                ))}
-              </Grid>
-            </View>
-          ) : null}
-          {data.curated.length > 0 ? (
-            <View className="bg-surface gap-4 rounded-lg p-4">
-              <View className="gap-1">
-                <Label>Curated for you</Label>
-                <Heading>Picked for you</Heading>
-                <Body muted>Chosen by us from {data.product.region_name}.</Body>
-              </View>
-              <Grid>
-                {data.curated.map((p) => (
-                  <ProductCard key={p.id} product={p} />
-                ))}
-              </Grid>
-            </View>
-          ) : null}
+          <ProductRow
+            title="Similar items"
+            products={data.similar}
+            seeAll={{ type: data.product.product_type, category: data.product.category_slug }}
+          />
+          <CuratedCard products={data.curated} regionName={data.product.region_name} />
         </>
       ) : null}
     </Screen>

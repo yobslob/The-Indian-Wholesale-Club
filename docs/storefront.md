@@ -25,7 +25,7 @@ Enforcement: customer code reads catalog and order data only through `store_*` (
 | `/states` | all 36 regions, alphabetical, with no state/UT distinction (D-002) | static (same cached read as `/`) |
 | `/states/[region]` | **the core page:** greeting in the region's script, story, accent theme, Clothing · Spices sections | static per region (36 built at build time) |
 | `/states/[region]/[product]` | product page: gallery, options, price, availability (live), save, delivery window, origin line | static on first visit + live stock island |
-| `/clothing`, `/spices` | browse across regions with a region filter | static + client filtering |
+| `/clothing`, `/spices` | the **See all** page behind every row (D-062): newest first, `?state=` and `?category=` pills, 24 cards then "Show more" (`?show=`) | dynamic render over one cached read, filtered on the server |
 | `/search` | search products and regions | dynamic (no auth) |
 | `/cart` | the bag ("Bag" in the UI; on-device state) | static shell |
 | `/checkout`, `/checkout/success` | details → server-priced total + Standard (free) / Express ($8) with each delivery window (D-041) → payment (Stripe) → order (D-038) | dynamic |
@@ -46,9 +46,11 @@ Framer Motion page transitions (speed, `engineering.md`).
 1. Greeting in the region's own script, large, with its Latin transliteration and meaning beneath.
 2. Tagline and a short story: why this place feels like home.
 3. The accent colour re-themes the page (one CSS variable from `regions.accent_color`).
-4. Sections **Clothing · Spices** (with jump links at the top), each a grid of product cards (photo, name, price, availability).
+4. **Every list is a row that scrolls sideways** (D-062; arrows for a mouse, swipe on a phone). Jump pills at the top
+   (New arrivals, each clothing category with its count, Spices). One row per clothing category, biggest first, up to 12
+   cards, with **See all** → `/clothing?state=<region>&category=<category>`.
 5. Regions with no live products show "Coming soon" (`regions.is_live = false`). Anything more, like a notify-me feature, needs founder approval.
-**Target (D-051; built since C1 except the filter pills and the album, which waits on region photos in C2):** below the hero (greeting, tagline, story, image): Clothing / Spices filter pills, then
+**Target (D-051; built since C1 except the album, which waits on region photos in C2; the lists are rows, D-062):** below the hero (greeting, tagline, story, image): Clothing / Spices filter pills, then
 **New arrivals → Most wanted → a photo album that scrolls sideways by itself (not interactive) → Curated for you (a card)
 → Leaving soon** (almost out of stock). Curated for you = admin picks per region, Leaving soon = 1–2 left (D-056); Most wanted = most pieces ordered in the last 30 days (D-058); the album has no pause control (founder, D-052).
 
@@ -57,7 +59,7 @@ Gallery → name, price → variant picker → availability (live) → **deliver
 craft, attributes, care or storage → origin line: "Made in India · from <Region> · Imported".
 **Target (D-051, not built yet):** one full-length photo no taller than the screen with three stacked photos beside it; a
 heart beside the name saves the product; Details and Size chart open and close with + / −; then Reviews (rating + text; photos only from verified buyers; an admin checks each, D-052, D-056), Similar
-items and Curated for you, with smaller cards (five columns).
+items and Curated for you as rows of smaller cards (D-062; Similar items' See all opens its category).
 
 ## Mobile app (customer side, `apps/app`, built in R6)
 Tabs: **Home** (photo hero whose brand name fades on scroll, Just listed, Pick your home: the tappable map, search, stamps
@@ -71,6 +73,8 @@ data through `@repo/db/store` (one call per screen, D-017) and share the tokens 
 | Checkout | `checkout` | the website's server API: `POST /api/checkout` (server-priced quote + Standard / Express, D-041) → Stripe PaymentSheet → `POST /api/orders` (D-038). The phone never sends prices |
 | Order | `order/[number]` (signed-in owner, `store_my_order`) · `order/lookup` (number + checkout email via `POST /api/orders/lookup`, rate-limited, one answer for any mismatch) | |
 | Addresses, sign-in | `addresses`, `auth/login`, `auth/signup` | own `addresses` rows · Supabase Auth (email + password, as on the web) |
+Every list in the app is a sideways row (a horizontal `FlatList`) with **See all** → the **Browse** screen
+(`app/browse.tsx`: one type, optional region and category, a virtualized two-column grid), as on the web (D-062).
 Signing in with an admin account switches the app to admin mode (`admin.md`). Nothing in the customer UI hints at this (D-006).
 
 ## Emails (customer)

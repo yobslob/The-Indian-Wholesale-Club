@@ -1,7 +1,7 @@
+import { Image } from 'expo-image';
 import { Link } from 'expo-router';
 import { useState } from 'react';
-import { Image, Pressable, Text, View } from 'react-native';
-import Animated, { FadeInDown, ReduceMotion } from 'react-native-reanimated';
+import { Pressable, Text, View } from 'react-native';
 
 import { formatUsd } from '@repo/shared/domain';
 
@@ -9,9 +9,6 @@ import type { ProductCard as ProductCardData, RegionCard as RegionCardData, Regi
 
 import { useBag } from '@/features/cart/store';
 import { mediaUrl } from '@/lib/supabase';
-
-/** Cards ease in as they appear; off when the phone asks for reduced motion (design.md §Direction). */
-export const cardEntering = FadeInDown.duration(600).reduceMotion(ReduceMotion.System);
 
 /** One of the 36 regions (D-002). The greeting shows only once approved (the store view enforces D-019). */
 export function RegionCard({ region }: { region: RegionCardData }): React.JSX.Element {
@@ -81,14 +78,34 @@ function QuickAdd({ product }: { product: CardData }): React.JSX.Element {
   );
 }
 
-/** The founder's reference card (D-050): a rounded 3 : 4 photo, name, price · region and "Add". */
-export function ProductCard({ product, badge }: { product: CardData; badge?: string }): React.JSX.Element {
+/**
+ * The founder's reference card (D-050): a rounded 3 : 4 photo, name, price · region and "Add". `row` is the fixed
+ * width for a sideways row (D-062); otherwise it fills half the screen in a two-column grid. No entry animation:
+ * dozens of cards animating at once made scrolling stutter.
+ */
+export function ProductCard({
+  product,
+  badge,
+  layout = 'grid',
+}: {
+  product: CardData;
+  badge?: string;
+  layout?: 'grid' | 'row' | 'fill';
+}): React.JSX.Element {
+  const width = layout === 'row' ? 'w-[164px]' : layout === 'fill' ? 'flex-1' : 'w-[48%]';
   return (
-    <Animated.View entering={cardEntering} className="w-[48%] gap-2.5">
+    <View className={`${width} gap-2.5`}>
       <Link href={{ pathname: '/product/[region]/[slug]', params: { region: product.region_slug, slug: product.slug } }} asChild>
         <Pressable accessibilityLabel={product.name} className="bg-land aspect-[3/4] overflow-hidden rounded-[18px]">
           {product.primary_image_path ? (
-            <Image source={{ uri: mediaUrl(product.primary_image_path) }} className="h-full w-full" resizeMode="cover" />
+            <Image
+              source={mediaUrl(product.primary_image_path)}
+              style={{ width: '100%', height: '100%' }}
+              contentFit="cover"
+              transition={150}
+              recyclingKey={product.id}
+              accessibilityIgnoresInvertColors
+            />
           ) : (
             <Text className="font-ui text-ink-muted m-auto text-xs">Photo coming soon</Text>
           )}
@@ -112,7 +129,7 @@ export function ProductCard({ product, badge }: { product: CardData; badge?: str
           <QuickAdd product={product} />
         </View>
       </View>
-    </Animated.View>
+    </View>
   );
 }
 

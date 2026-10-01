@@ -21,6 +21,15 @@ values
 insert into public.product_variants (product_id, sku, label, qty_listed)
 select id, upper(slug), 'Free size', case slug when 'test-soldout' then 0 else 3 end
 from public.products where slug in ('test-new', 'test-soldout', 'test-other', 'test-aaa-oldest');
+-- Eight more, in another region and category (so the region page and similar items are untouched), dated
+-- between the others and the oldest: just listed (12) now has to leave the oldest out.
+insert into public.regions (slug, name) values ('test-filler-region', 'Test filler region');
+insert into public.categories (product_type, slug, name) values ('clothing', 'test-filler-clothing', 'Test filler clothing');
+insert into public.products (slug, name, product_type, region_id, category_id, vendor_id, price_cents, status, published_at)
+select 'test-fill-' || i, 'Test filler ' || i, 'clothing', (select id from public.regions where slug = 'test-filler-region'),
+       (select id from public.categories where slug = 'test-filler-clothing'), tests.id('vendor'), 1000, 'live',
+       now() - interval '4 days' - i * interval '1 hour'
+from generate_series(1, 8) i;
 -- The fixture's live product has no publish date; give it one between the others (no date sorts last).
 update public.products set published_at = now() where id = tests.id('p_live');
 select set_config('tests.v_new', (select v.id::text from public.product_variants v
@@ -33,8 +42,9 @@ select tests.assert((public.store_home() -> 'just_listed' -> 0 ->> 'slug') = 'te
   'just listed starts with the newest live product');
 select tests.assert(
   (select array_agg(c ->> 'slug' order by ord) from jsonb_array_elements(public.store_home() -> 'just_listed')
-   with ordinality as x(c, ord)) = array['test-new', 'test-live', 'test-soldout', 'test-other'],
-  'just listed = the four newest live products, newest first (the older fifth is left out)');
+   with ordinality as x(c, ord)) = array['test-new', 'test-live', 'test-soldout', 'test-other', 'test-fill-1',
+     'test-fill-2', 'test-fill-3', 'test-fill-4', 'test-fill-5', 'test-fill-6', 'test-fill-7', 'test-fill-8'],
+  'just listed = the twelve newest live products, newest first (the older thirteenth is left out, D-062)');
 select tests.assert(
   not exists (select 1 from jsonb_array_elements(public.store_home() -> 'just_listed') c
               where c ->> 'slug' in ('test-draft', 'test-placeholder')),

@@ -5,7 +5,7 @@ import { useSafeAreaInsets } from 'react-native-safe-area-context';
 import { getHome } from '@repo/db/store';
 
 import { Body, ErrorText, Heading, Loading } from '@/components/ui';
-import { Grid, ProductCard } from '@/features/catalog/cards';
+import { ProductRow } from '@/features/catalog/product-row';
 import { HomeHero, HomeTopBar } from '@/features/home/home-hero';
 import { PickHome } from '@/features/regions/pick-home';
 import { supabase } from '@/lib/supabase';
@@ -34,16 +34,7 @@ export default function HomeScreen(): React.JSX.Element {
         <View className="gap-6 px-4 pb-16 pt-8">
           {error ? <ErrorText>{error}</ErrorText> : null}
           {!data && loading ? <Loading /> : null}
-          {data && data.just_listed.length > 0 ? (
-            <View className="gap-4">
-              <Heading>Just listed</Heading>
-              <Grid>
-                {data.just_listed.map((p) => (
-                  <ProductCard key={p.id} product={p} />
-                ))}
-              </Grid>
-            </View>
-          ) : null}
+          {data ? <ProductRow title="Just listed" products={data.just_listed} seeAll={{ type: 'clothing' }} /> : null}
           {data ? (
             <View className="gap-4 pt-4">
               <View className="gap-1">

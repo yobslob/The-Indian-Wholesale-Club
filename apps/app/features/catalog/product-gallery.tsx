@@ -1,5 +1,6 @@
+import { Image } from 'expo-image';
 import { useState } from 'react';
-import { Image, Pressable, Text, View } from 'react-native';
+import { Pressable, Text, View } from 'react-native';
 
 import type { Media } from '@repo/db/store';
 
@@ -23,7 +24,7 @@ export function ProductGallery({ media, name }: { media: Media[]; name: string }
   return (
     <View className="gap-2.5">
       <View className="bg-land aspect-[3/4] overflow-hidden rounded-lg">
-        <Image source={{ uri: mediaUrl(main.storage_path) }} accessibilityLabel={main.alt_text || name} className="h-full w-full" resizeMode="cover" />
+        <Image source={mediaUrl(main.storage_path)} accessibilityLabel={main.alt_text || name} style={{ width: '100%', height: '100%' }} contentFit="cover" transition={150} />
       </View>
       {others.length > 0 ? (
         <View className="flex-row gap-2.5">
@@ -35,7 +36,7 @@ export function ProductGallery({ media, name }: { media: Media[]; name: string }
               onPress={() => setMainIndex(media.indexOf(m))}
               className="bg-land aspect-[3/4] flex-1 overflow-hidden rounded-md"
             >
-              <Image source={{ uri: mediaUrl(m.storage_path) }} className="h-full w-full" resizeMode="cover" />
+              <Image source={mediaUrl(m.storage_path)} style={{ width: '100%', height: '100%' }} contentFit="cover" />
             </Pressable>
           ))}
         </View>

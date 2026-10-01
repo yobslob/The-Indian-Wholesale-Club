@@ -4,7 +4,7 @@ import { notFound } from 'next/navigation';
 
 import { CuratedCard } from '@/features/catalog/curated-card';
 import { getHomeCached, getRegionPageCached } from '@/features/catalog/data';
-import { ProductCard, ProductGrid } from '@/features/catalog/product-card';
+import { ProductRow } from '@/features/catalog/product-row';
 import { scriptFontClass } from '@/features/regions/script-fonts';
 import { mediaUrl } from '@/lib/site';
 
@@ -28,46 +28,24 @@ const heading = 'font-hero text-[clamp(26px,2.2vw,38px)] font-medium leading-tig
 const pill =
   'font-ui border-line bg-paper hover:border-ink inline-flex min-h-11 items-center gap-2 rounded-pill border px-5 text-sm font-medium';
 
-function Section({
-  id,
-  title,
-  sub,
-  products,
-  empty,
-  badge,
-}: {
-  id: string;
-  title: string;
-  sub?: string;
-  products: RegionProductCard[];
-  empty: string;
-  badge?: (p: RegionProductCard) => React.ReactNode;
-}): React.JSX.Element {
-  return (
-    <section id={id} aria-labelledby={`${id}-h`} className="scroll-mt-20 py-[clamp(28px,3.4vw,56px)]">
-      <div className="mb-[clamp(18px,2vw,28px)]">
-        <h2 id={`${id}-h`} className={heading}>
-          {title}
-        </h2>
-        {sub ? <p className="text-ink-muted mt-1.5 text-sm">{sub}</p> : null}
-      </div>
-      {products.length === 0 ? (
-        <p className="bg-surface font-display rounded-lg p-[clamp(18px,2vw,32px)] text-[clamp(20px,1.8vw,28px)]">{empty}</p>
-      ) : (
-        <ProductGrid>
-          {products.map((p) => (
-            <ProductCard key={p.id} product={p} badge={badge?.(p)} />
-          ))}
-        </ProductGrid>
-      )}
-    </section>
-  );
+/** Clothing grouped by category, the biggest first: one row each (D-062). */
+function byCategory(products: RegionProductCard[]): { slug: string; name: string; items: RegionProductCard[] }[] {
+  const groups = new Map<string, { slug: string; name: string; items: RegionProductCard[] }>();
+  for (const p of products) {
+    const group = groups.get(p.category_slug) ?? { slug: p.category_slug, name: p.category_name, items: [] };
+    group.items.push(p);
+    groups.set(p.category_slug, group);
+  }
+  return [...groups.values()].sort((a, b) => b.items.length - a.items.length || a.name.localeCompare(b.name, 'en'));
 }
+
+const ROW = 12;
 
 /**
  * The core page (storefront.md §The region page, design.md §Direction). One cached store_region_page()
- * call: New arrivals, Most wanted (D-058), Curated for you and Leaving soon (D-056), then every piece under
- * Clothing / Spices. Still to come: the photo album (more region photos, C2).
+ * call. Every list is a row that scrolls sideways with See all where there is more (D-062): New arrivals, Most wanted
+ * (D-058), Curated for you and Leaving soon (D-056), then one row per clothing category, then Spices. Still to
+ * come: the photo album (more region photos, C2).
  */
 export default async function RegionPage({ params }: { params: Params }): Promise<React.JSX.Element> {
   const page = await getRegionPageCached((await params).region);
@@ -75,7 +53,10 @@ export default async function RegionPage({ params }: { params: Params }): Promis
   const { region, products, most_wanted: mostWanted, curated, leaving_soon: leavingSoon } = page;
   const clothing = products.filter((p) => p.product_type === 'clothing');
   const spices = products.filter((p) => p.product_type === 'spice');
-  const newest = products.slice(0, 4); // store_region_page returns newest first
+  const categories = byCategory(clothing);
+  const newest = products.slice(0, ROW); // store_region_page returns newest first
+  const browse = (type: 'clothing' | 'spices', category?: string): string =>
+    `/${type}?state=${region.slug}${category ? `&category=${category}` : ''}`;
 
   return (
     <div
@@ -123,40 +104,72 @@ export default async function RegionPage({ params }: { params: Params }): Promis
         </p>
       ) : (
         <>
-          <nav aria-label="Sections" className="bg-canvas/90 sticky top-[68px] z-10 -mx-[var(--gut)] flex gap-2.5 px-[var(--gut)] py-3 backdrop-blur">
-            <a href="#new-arrivals" className={pill}>
+          <nav
+            aria-label="Sections"
+            className="no-scrollbar bg-canvas sticky top-[68px] z-10 -mx-[var(--gut)] flex gap-2.5 overflow-x-auto px-[var(--gut)] py-3"
+          >
+            <a href="#new-arrivals" className={`${pill} shrink-0`}>
               New arrivals
             </a>
-            <a href="#clothing" className={pill}>
-              Clothing <span className="text-ink-muted">{clothing.length}</span>
-            </a>
-            <a href="#spices" className={pill}>
+            {categories.map((c) => (
+              <a key={c.slug} href={`#c-${c.slug}`} className={`${pill} shrink-0`}>
+                {c.name} <span className="text-ink-muted">{c.items.length}</span>
+              </a>
+            ))}
+            <a href="#spices" className={`${pill} shrink-0`}>
               Spices <span className="text-ink-muted">{spices.length}</span>
             </a>
           </nav>
-          <Section id="new-arrivals" title="New arrivals" sub={`Newest pieces from ${region.name}.`} products={newest} empty="New pieces are on their way." />
-          {mostWanted.length > 0 ? (
-            <Section
-              id="most-wanted"
-              title="Most wanted"
-              sub={`Most ordered from ${region.name} in the last 30 days.`}
-              products={mostWanted}
-              empty=""
+          {newest.length > 0 ? (
+            <ProductRow
+              id="new-arrivals"
+              title="New arrivals"
+              sub={`Newest pieces from ${region.name}.`}
+              products={newest}
+              href={browse('clothing')}
             />
-          ) : null}
+          ) : (
+            <section id="new-arrivals" className="py-[clamp(24px,3vw,48px)]">
+              <p className="bg-surface font-display rounded-lg p-[clamp(18px,2vw,32px)] text-[clamp(20px,1.8vw,28px)]">
+                New pieces are on their way.
+              </p>
+            </section>
+          )}
+          <ProductRow
+            id="most-wanted"
+            title="Most wanted"
+            sub={`Most ordered from ${region.name} in the last 30 days.`}
+            products={mostWanted}
+          />
           <CuratedCard id="curated" products={curated} regionName={region.name} />
-          {leavingSoon.length > 0 ? (
-            <Section
-              id="leaving-soon"
-              title="Leaving soon"
-              sub="Only a few pieces left of these."
-              products={leavingSoon}
-              empty=""
-              badge={(p) => `${p.available} left`}
+          <ProductRow
+            id="leaving-soon"
+            title="Leaving soon"
+            sub="Only a few pieces left of these."
+            products={leavingSoon}
+            badge={(p) => `${p.available} left`}
+          />
+          {categories.map((c) => (
+            <ProductRow
+              key={c.slug}
+              id={`c-${c.slug}`}
+              title={c.name}
+              products={c.items.slice(0, ROW)}
+              href={browse('clothing', c.slug)}
             />
-          ) : null}
-          <Section id="clothing" title="Clothing" products={clothing} empty={`Clothing from ${region.name} is coming soon.`} />
-          <Section id="spices" title="Spices" products={spices} empty={`Spices from ${region.name} are coming soon.`} />
+          ))}
+          {spices.length > 0 ? (
+            <ProductRow id="spices" title="Spices" products={spices.slice(0, ROW)} href={browse('spices')} />
+          ) : (
+            <section id="spices" aria-labelledby="spices-h" className="scroll-mt-20 py-[clamp(24px,3vw,48px)]">
+              <h2 id="spices-h" className={heading}>
+                Spices
+              </h2>
+              <p className="bg-surface font-display mt-[clamp(16px,1.8vw,24px)] rounded-lg p-[clamp(18px,2vw,32px)] text-[clamp(20px,1.8vw,28px)]">
+                Spices from {region.name} are coming soon.
+              </p>
+            </section>
+          )}
         </>
       )}
     </div>

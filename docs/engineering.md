@@ -40,6 +40,8 @@ Baseline numbers come from the founder's first `node scripts/check.mjs` run and 
 **Budgets (targets. Verified only by `check.mjs` numbers, never by assumption):**
 DB round trips per page: storefront ≤ 1, checkout ≤ 2 · storefront first-load JS ≤ 150 KB gzip · cached storefront
 response ≤ 100 ms on a local production build · `turbo build --filter=web` ≤ 2 min clean · typecheck + lint ≤ 60 s · unit tests ≤ 15 s.
+**Smooth scrolling (C2, measured):** no `backdrop-blur` on anything sticky (it re-blurs the page on every scroll
+frame), the scroll reveal only on the first five cards of a row, and long lists drawn 24 at a time.
 **Enforced since C1:** the `http` step fails when a cached storefront page's median is over 100 ms (search and
 `/api/health` read the DB per request and are exempt) or when any page's first-load JS is over 150 KB gzip, measured
 from the script tags the page actually loads (`nomodule` polyfills skipped; lazily imported code not counted), so it
@@ -52,7 +54,7 @@ A test must **fail when the rule it protects breaks**. Never assert on source-co
 |---|---|---|---|
 | Unit | `node:test` via `tsx` (D-037) | pure logic: pricing, delivery window, status labels, attribute schemas, token preset, the web's email/site/rate-limit helpers, the app's bag and checkout request | `packages/shared/tests`, `packages/tokens/tests`, `apps/web/tests`, `apps/app/tests` |
 | DB | plain SQL (`supabase/tests/*.test.sql`), run by `check.mjs db` → `scripts/db-test.mjs` against local Supabase (D-031) | invariants INV-1…INV-9 and the business functions, as anon / customer / admin (`request.jwt.claims`), each file rolled back | `supabase/tests/` |
-| E2E smoke | Playwright (`check.mjs e2e`, after `build`) | (1) region → product → bag → checkout (Stripe test card) → thank-you → order page after the email check · (2) admin sign-in → new listing → variant → publish → visible on the storefront · (3) signed out, `/admin` → its sign-in page with `noindex`; a signed-in customer gets a plain 404 (no "admin" in page or title); no admin link, robots or sitemap entry; customer pages carry no vendor, cost or cycle fields · (4) motion and keyboard (C1): with reduced motion no Lenis, nothing hidden, no parallax; with motion Lenis runs and a card below the fold reveals when scrolled to; skip link first, the hidden Home logo shows when focused, Pick your home search + focus highlight, product page +/− and heart by keyboard | `apps/web/e2e` |
+| E2E smoke | Playwright (`check.mjs e2e`, after `build`) | (1) region → product → bag → checkout (Stripe test card) → thank-you → order page after the email check · (2) admin sign-in → new listing → variant → publish → visible on the storefront · (3) signed out, `/admin` → its sign-in page with `noindex`; a signed-in customer gets a plain 404 (no "admin" in page or title); no admin link, robots or sitemap entry; customer pages carry no vendor, cost or cycle fields · (4) motion and keyboard (C1): with reduced motion no Lenis, nothing hidden, no parallax; with motion Lenis runs and a card below the fold reveals when scrolled to; skip link first, the hidden Home logo shows when focused, Pick your home search + focus highlight, product page +/− and heart by keyboard · (5) rows (D-062): a row scrolls sideways and its arrow moves it, See all opens that state's category, See all pages draw 24 then 48 | `apps/web/e2e` |
 | App bundle | Expo CLI (`check.mjs bundle`) | the app bundles for Android and iOS: every import resolves in Metro and every file compiles with Babel (bugs `tsc` can't see) | `apps/app` |
 
 The E2E run starts its own production server (`next start`, port 3101) and refuses anything but local Supabase and
@@ -118,7 +120,10 @@ scripts/build-india-map.mjs  regenerates packages/shared/src/india-map/india-map
   native font file is one weight, so weights are classes (`font-ui-semibold`). iOS uses its built-in Helvetica Neue and
   Georgia; Android loads TeX Gyre Heros (`assets/fonts`) and Gelasio. The splash screen stays until the fonts are loaded.
   Motion is Reanimated (Home hero word fade on scroll, cards fading in), off when the phone asks for reduced motion.
-  The India map is shared with the website (`@repo/shared/india-map`) and drawn with `react-native-svg`.
+  The India map is shared with the website (`@repo/shared/india-map`) and drawn with `react-native-svg`. Photos use
+  `expo-image` (downsampled to the size shown with a sharp filter, cached in memory and on disk); product lists are
+  horizontal `FlatList` rows and the Browse grid is a virtualized `FlatList`, so only the cards near the screen exist.
+  No entry animation on cards: dozens animating at once made scrolling stutter.
 - **Web preview** (`.claude/launch.json` `app-web`, port 8081): lets Claude check screens in a browser. It is not a
   product. `lib/stripe.web.tsx` and `lib/auth-storage.web.ts` stand in for Stripe and the keychain there (payment works only
   on phones). The preview reads local Supabase (`127.0.0.1`) instead of the phone's LAN address in `.env`. Two traps:

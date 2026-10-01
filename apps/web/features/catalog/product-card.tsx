@@ -20,10 +20,13 @@ export function ProductCard({
   product,
   size = 'md',
   badge,
+  reveal = true,
 }: {
   product: CardData;
   size?: 'md' | 'sm';
   badge?: React.ReactNode;
+  /** The scroll reveal (D-049). Off for cards that start off to the side in a row: animating dozens made scrolling stutter. */
+  reveal?: boolean;
 }): React.JSX.Element {
   const href = `/states/${product.region_slug}/${product.slug}`;
   const small = size === 'sm';
@@ -32,7 +35,7 @@ export function ProductCard({
       <Link
         href={href}
         className={`bg-land group relative block aspect-[3/4] overflow-hidden ${small ? 'rounded-[18px]' : 'rounded-lg'}`}
-        data-reveal
+        data-reveal={reveal ? '' : undefined}
       >
         {product.primary_image_path ? (
           <Image

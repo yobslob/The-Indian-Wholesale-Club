@@ -1,54 +1,22 @@
+import { Image } from 'expo-image';
 import { Link, useLocalSearchParams } from 'expo-router';
-import { Image, Pressable, Text, View } from 'react-native';
+import { Pressable, Text, View } from 'react-native';
 
 import { getRegionPage } from '@repo/db/store';
 
-import type { RegionProductCard } from '@repo/db/store';
-
-import { Body, ErrorText, Heading, Label, Loading, Screen } from '@/components/ui';
-import { Grid, ProductCard } from '@/features/catalog/cards';
+import { Body, ErrorText, Heading, Loading, Screen } from '@/components/ui';
+import { CuratedCard } from '@/features/catalog/curated-card';
+import { byCategory, ProductRow } from '@/features/catalog/product-row';
 import { supabase, mediaUrl } from '@/lib/supabase';
 import { useQuery } from '@/lib/use-query';
 
-function Section({
-  title,
-  sub,
-  products,
-  empty,
-  badge,
-}: {
-  title: string;
-  sub?: string;
-  products: RegionProductCard[];
-  empty?: string;
-  badge?: (p: RegionProductCard) => string;
-}): React.JSX.Element | null {
-  if (products.length === 0 && !empty) return null;
-  return (
-    <View className="gap-4 pt-2">
-      <View className="gap-1">
-        <Heading>{title}</Heading>
-        {sub ? <Body muted>{sub}</Body> : null}
-      </View>
-      {products.length === 0 ? (
-        <View className="bg-surface rounded-lg p-5">
-          <Text className="font-display text-ink text-xl">{empty}</Text>
-        </View>
-      ) : (
-        <Grid>
-          {products.map((p) => (
-            <ProductCard key={p.id} product={p} badge={badge?.(p)} />
-          ))}
-        </Grid>
-      )}
-    </View>
-  );
-}
+const ROW = 12;
 
 /**
  * The core page (storefront.md §The region page, design.md §Direction). One store_region_page() call: the
  * greeting in its own script (the phone's system fonts cover every Indian script), New arrivals, Most wanted
- * (D-058), Curated for you, Leaving soon (D-056), then every piece under Clothing / Spices.
+ * (D-058), Curated for you, Leaving soon (D-056), then one row per clothing category and Spices. Every list is a
+ * sideways row with See all where there is more (D-062).
  */
 export default function RegionScreen(): React.JSX.Element {
   const { slug } = useLocalSearchParams<{ slug: string }>();
@@ -85,7 +53,13 @@ export default function RegionScreen(): React.JSX.Element {
           </View>
           <View className="bg-brand aspect-[5/6] overflow-hidden rounded-lg" style={accent ? { backgroundColor: accent } : undefined}>
             {data.region.hero_image_path ? (
-              <Image source={{ uri: mediaUrl(data.region.hero_image_path) }} accessibilityIgnoresInvertColors className="h-full w-full" resizeMode="cover" />
+              <Image
+                source={mediaUrl(data.region.hero_image_path)}
+                style={{ width: '100%', height: '100%' }}
+                contentFit="cover"
+                transition={200}
+                accessibilityIgnoresInvertColors
+              />
             ) : null}
           </View>
 
@@ -97,42 +71,46 @@ export default function RegionScreen(): React.JSX.Element {
             </View>
           ) : (
             <>
-              <Section title="New arrivals" sub={`Newest pieces from ${data.region.name}.`} products={products.slice(0, 4)} />
-              <Section
+              <ProductRow
+                title="New arrivals"
+                sub={`Newest pieces from ${data.region.name}.`}
+                products={products.slice(0, ROW)}
+                seeAll={{ type: 'clothing', region: slug }}
+              />
+              <ProductRow
                 title="Most wanted"
                 sub={`Most ordered from ${data.region.name} in the last 30 days.`}
                 products={data.most_wanted}
               />
-              {data.curated.length > 0 ? (
-                <View className="bg-surface gap-4 rounded-lg p-4">
-                  <View className="gap-1">
-                    <Label>Curated for you</Label>
-                    <Heading>Picked for you</Heading>
-                    <Body muted>Chosen by us from {data.region.name}.</Body>
-                  </View>
-                  <Grid>
-                    {data.curated.map((p) => (
-                      <ProductCard key={p.id} product={p} />
-                    ))}
-                  </Grid>
-                </View>
-              ) : null}
-              <Section
+              <CuratedCard products={data.curated} regionName={data.region.name} />
+              <ProductRow
                 title="Leaving soon"
                 sub="Only a few pieces left of these."
                 products={data.leaving_soon}
                 badge={(p) => `${p.available} left`}
               />
-              <Section
-                title="Clothing"
-                products={products.filter((p) => p.product_type === 'clothing')}
-                empty={`Clothing from ${data.region.name} is coming soon.`}
-              />
-              <Section
-                title="Spices"
-                products={products.filter((p) => p.product_type === 'spice')}
-                empty={`Spices from ${data.region.name} are coming soon.`}
-              />
+              {byCategory(products.filter((p) => p.product_type === 'clothing')).map((c) => (
+                <ProductRow
+                  key={c.slug}
+                  title={c.name}
+                  products={c.items.slice(0, ROW)}
+                  seeAll={{ type: 'clothing', region: slug, category: c.slug }}
+                />
+              ))}
+              {products.some((p) => p.product_type === 'spice') ? (
+                <ProductRow
+                  title="Spices"
+                  products={products.filter((p) => p.product_type === 'spice').slice(0, ROW)}
+                  seeAll={{ type: 'spice', region: slug }}
+                />
+              ) : (
+                <View className="gap-4 pt-2">
+                  <Heading>Spices</Heading>
+                  <View className="bg-surface rounded-lg p-5">
+                    <Text className="font-display text-ink text-xl">Spices from {data.region.name} are coming soon.</Text>
+                  </View>
+                </View>
+              )}
             </>
           )}
         </>

@@ -58,8 +58,8 @@ reset role;
 update public.pricing_settings set leaving_soon_max = 3 where id = 1;
 set local role anon;
 select tests.assert(
-  (select count(*) from jsonb_array_elements(public.store_region_page('test-region') -> 'leaving_soon')) = 4,
-  'raising the Leaving soon limit to 3 lets pieces with 3 left in (capped at four cards)');
+  (select count(*) from jsonb_array_elements(public.store_region_page('test-region') -> 'leaving_soon')) = 5,
+  'raising the Leaving soon limit to 3 lets every piece with 1 to 3 left in (five here)');
 reset role;
 
 select tests.assert_fails('update public.pricing_settings set leaving_soon_max = 0 where id = 1', '23514',

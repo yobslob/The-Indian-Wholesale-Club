@@ -7,9 +7,9 @@ import { CuratedCard } from '@/features/catalog/curated-card';
 import { getProductPageCached } from '@/features/catalog/data';
 import { DeliveryNote } from '@/features/catalog/delivery-note';
 import { Disclosure } from '@/features/catalog/disclosure';
-import { ProductCard, ProductGrid } from '@/features/catalog/product-card';
 import { hasDetails, ProductDetails, sizeChart } from '@/features/catalog/product-details';
 import { ProductGallery } from '@/features/catalog/product-gallery';
+import { ProductRow } from '@/features/catalog/product-row';
 import { ReviewsSection } from '@/features/reviews/reviews-section';
 
 import type { Metadata } from 'next';
@@ -77,24 +77,13 @@ export default async function ProductPage({ params }: { params: Params }): Promi
       <ReviewsSection reviews={reviews} productId={product.id} />
 
       {similar.length > 0 ? (
-        <section aria-labelledby="similar" className="py-[clamp(28px,3.4vw,56px)]">
-          <div className="mb-[clamp(18px,2vw,28px)] flex flex-wrap items-end justify-between gap-4">
-            <h2 id="similar" className="font-hero text-[clamp(26px,2.2vw,38px)] font-medium leading-tight tracking-[-0.025em]">
-              Similar items
-            </h2>
-            <Link
-              href={`/states/${product.region_slug}`}
-              className="font-ui border-line bg-paper hover:border-ink inline-flex min-h-11 items-center rounded-pill border px-5 text-sm font-medium"
-            >
-              See all
-            </Link>
-          </div>
-          <ProductGrid size="sm">
-            {similar.map((p) => (
-              <ProductCard key={p.id} product={p} size="sm" />
-            ))}
-          </ProductGrid>
-        </section>
+        <ProductRow
+          id="similar"
+          title="Similar items"
+          products={similar}
+          href={`/clothing?category=${product.category_slug}`}
+          size="sm"
+        />
       ) : null}
       <CuratedCard id="curated" products={curated} regionName={product.region_name} />
     </>

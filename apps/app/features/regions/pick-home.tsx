@@ -1,6 +1,7 @@
+import { Image } from 'expo-image';
 import { Link, useRouter } from 'expo-router';
 import { useMemo, useState } from 'react';
-import { Image, Linking, Pressable, Text, TextInput, View } from 'react-native';
+import { Linking, Pressable, Text, TextInput, View } from 'react-native';
 import Svg, { Circle, Defs, Path, Text as SvgText, TextPath } from 'react-native-svg';
 
 import { formatDeliveryWindow } from '@repo/shared/domain';
@@ -22,7 +23,7 @@ function Stamp({ region, postmark, index }: { region: RegionCard; postmark: stri
         <View className="border-line bg-paper rounded-sm border-2 border-dotted p-1.5">
           <View className="aspect-[4/5] overflow-hidden" style={{ backgroundColor: accentOf(region) }}>
             {region.hero_image_path ? (
-              <Image source={{ uri: mediaUrl(region.hero_image_path) }} className="h-full w-full" resizeMode="cover" />
+              <Image source={mediaUrl(region.hero_image_path)} style={{ width: '100%', height: '100%' }} contentFit="cover" transition={150} />
             ) : null}
           </View>
           <Text numberOfLines={1} className="font-display text-ink mt-1.5 text-[15px]">
