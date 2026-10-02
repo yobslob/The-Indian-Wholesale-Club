@@ -1,16 +1,13 @@
 import { useLocalSearchParams } from 'expo-router';
-import { useState } from 'react';
-import { Text, View } from 'react-native';
+import { Text } from 'react-native';
 
-import { getAdminOrder, markOrderDelivered, markOrderShipped } from '@repo/db/admin';
+import { getAdminOrder } from '@repo/db/admin';
 import { formatUsd, orderEventLabel } from '@repo/shared/domain';
 
 import {
   Body,
-  Button,
   Card,
   ErrorText,
-  Field,
   Heading,
   Loading,
   Row,
@@ -18,6 +15,7 @@ import {
   Title,
 } from '@/components/ui';
 import { utc } from '@/features/admin/format';
+import { ShipPanel } from '@/features/admin/ship-panel';
 import { useAction } from '@/features/admin/use-action';
 import { supabase } from '@/lib/supabase';
 import { useQuery } from '@/lib/use-query';
@@ -36,8 +34,6 @@ export default function AdminOrderScreen(): React.JSX.Element {
     reload,
   } = useQuery(`admin:order:${id}`, () => getAdminOrder(supabase, id));
   const action = useAction(reload);
-  const [carrier, setCarrier] = useState('');
-  const [tracking, setTracking] = useState('');
 
   if (!order) {
     return (
@@ -48,16 +44,8 @@ export default function AdminOrderScreen(): React.JSX.Element {
     );
   }
 
-  const orderId = order.id;
   const address = order.shipping_address as Record<string, string | null>;
   const events = [...order.events].sort((a, b) => a.created_at.localeCompare(b.created_at));
-
-  function ship(): void {
-    const c = carrier.trim();
-    const t = tracking.trim();
-    if (c.length < 2 || t.length < 4) return;
-    void action.run(() => markOrderShipped(supabase, orderId, c, t));
-  }
 
   return (
     <Screen refreshing={loading} onRefresh={reload} back={false}>
@@ -110,27 +98,7 @@ export default function AdminOrderScreen(): React.JSX.Element {
         </Card>
       ))}
 
-      <Heading>Pack &amp; ship</Heading>
-      <Field label="Carrier" value={carrier} onChangeText={setCarrier} />
-      <Field
-        label="Tracking number"
-        value={tracking}
-        onChangeText={setTracking}
-        autoCapitalize="characters"
-      />
-      <View className="gap-2">
-        <Button
-          label="Mark shipped"
-          onPress={ship}
-          disabled={action.busy || !carrier.trim() || !tracking.trim()}
-        />
-        <Button
-          kind="link"
-          label="Mark delivered"
-          disabled={action.busy}
-          onPress={() => void action.run(() => markOrderDelivered(supabase, orderId))}
-        />
-      </View>
+      <ShipPanel order={order} busy={action.busy} run={action.run} />
       {action.error ? <ErrorText>{action.error}</ErrorText> : null}
 
       <Heading>Timeline</Heading>

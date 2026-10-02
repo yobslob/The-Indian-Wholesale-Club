@@ -5,6 +5,7 @@ import {
   formatUsd,
   orderEventLabel,
   timelineIndex,
+  trackingUrl,
 } from '@repo/shared/domain';
 
 import { FasterOffer } from './faster-offer';
@@ -25,6 +26,7 @@ const dateTime = new Intl.DateTimeFormat('en-US', {
 export function OrderView({ order }: { order: OrderDetail }): React.JSX.Element {
   const o = order.order;
   const step = timelineIndex(o.customer_status);
+  const tracking = trackingUrl(o.carrier, o.tracking_number);
   return (
     <div className="space-y-6">
       <div className="space-y-1">
@@ -36,9 +38,16 @@ export function OrderView({ order }: { order: OrderDetail }): React.JSX.Element 
           </p>
         ) : null}
         {o.carrier || o.tracking_number ? (
-          // TODO(founder): Q-3. Carrier tracking links come once the US carrier is chosen.
+          // D-066: a link for USPS, UPS and FedEx; any other carrier shows its number.
           <p className="text-ink text-sm">
-            Tracking: {[o.carrier, o.tracking_number].filter(Boolean).join(' ')}
+            Tracking: {o.carrier}{' '}
+            {tracking ? (
+              <a href={tracking} target="_blank" rel="noreferrer" className="underline">
+                {o.tracking_number}
+              </a>
+            ) : (
+              o.tracking_number
+            )}
           </p>
         ) : null}
       </div>

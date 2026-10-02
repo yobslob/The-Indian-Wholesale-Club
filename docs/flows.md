@@ -73,7 +73,9 @@ open ──cutoff──► collecting ──► packed ──► exported ──
    from `packed` on; the page warns while the AWB or forwarder is missing after export).
 3. `arrived`: the founder marks the export received and checks off each order's picked pieces as they come out of the
    box (`check_off_arrival`, website and app; a tick can be undone).
-4. `fulfilling`: for each order, the founder packs it, enters the carrier and tracking number (the order becomes `shipped`), then `delivered`.
+4. `fulfilling`: for each arrived order, the founder packs it, picks the carrier (USPS, UPS or FedEx give the customer
+   a tracking link, D-066; another carrier is typed) and enters the tracking number: `ship_order()`, the order becomes
+   `shipped` (the admin is warned while a piece is not checked off as arrived). Then `deliver_order()`: `delivered`.
 5. `closed`: all orders in the cycle are delivered, refunded or cancelled.
 
 ## 6b. Moving an order to another cycle (D-045, D-064)

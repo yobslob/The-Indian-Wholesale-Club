@@ -5,7 +5,7 @@
 prices, draft → publish) and it reaches the store; tested end to end in the app's web preview and by E2E flow 2 on the
 web (same database call). C2 is built too. **Waiting on the founder:** the COO's listing on a real phone; approve the
 six region drafts; set the pricing settings (exchange rate, freight, duty, margin, "stale after" days) so the suggested
-price and the re-check list appear; set "days between cutoffs" (D-063). **Next:** C4 4.6, US pack & ship with tracking links (D-066), then the C4 E2E flow.
+price and the re-check list appear; set "days between cutoffs" (D-063). **Next:** C4 4.7, an E2E flow that runs a whole cycle (needs the founder's dev server stopped and the test admin in `ADMIN_EMAILS`).
 
 ## Steps
 | Step | Status | Evidence |
@@ -86,6 +86,7 @@ price and the re-check list appear; set "days between cutoffs" (D-063). **Next:*
 | 2026-10-03 | C4 4.3 | Claude, founder's machine | web unit tests 19/19 (new `faster-decision.test.ts`, 5 cases) · typecheck + lint web and app OK · the new routes on the founder's running dev server: an order without an offer and a wrong email both get 404 "no longer open", a bad payment id 400. Not paid end to end yet | OK (partial) |
 | 2026-10-03 | C4 4.4 | Claude, founder's machine, local Supabase (migration 15) | `db-test.mjs` 21/21 files (new `arrival.test.sql`, 6 assertions) + two mutations (unpicked piece arrives; check-off before arrival): both caught, restored · typecheck + lint web and app OK | OK |
 | 2026-10-03 | C4 4.5 | Claude, founder's machine | web unit tests 23/23 (new `export-documents.test.ts`, 4 cases: grouping, ₹/$ totals, Q-30 fields never guessed, no shop on the invoice, CSV quoting) · typecheck + lint OK · on the founder's dev server, signed out: the CSV route answers 404, the documents page redirects to the admin sign-in. Not viewed signed in (test admin refused by the dev server's `ADMIN_EMAILS`) | OK |
+| 2026-10-03 | C4 4.6 | Claude, founder's machine, local Supabase (migration 16) | `db-test.mjs` 22/22 files (new `ship.test.sql`, 11 assertions) + three mutations (ship before arrival; deliver before shipping; empty tracking): all caught, restored · shared unit tests 39/39 (tracking links) · typecheck + lint web and app OK | OK |
 
 ## C1 sub-steps (design)
 | # | Sub-step | Status |
@@ -139,6 +140,7 @@ price and the re-check list appear; set "days between cutoffs" (D-063). **Next:*
 | 4.3 | The customer's faster-delivery offer (D-064): on the order page (website: Stripe Payment Element loaded only when taken; app: PaymentSheet) through `POST /api/orders/faster` and `/confirm`, and the Stripe webhook; the price always from the database; a payment for a closed offer refunded; the decision unit-tested (`faster-decision.test.ts`) | ✅ committed · **not yet paid end to end with a Stripe test card** (needs a test order moved into an exported cycle; planned for the C4 E2E flow) |
 | 4.4 | Export details on the cycle page (AWB, forwarder, freight and duty paid, exchange rate; a warning while AWB or forwarder is missing after export); migration 15, arrival check-off per picked piece, grouped by order (website and app), shown on the order page too | ✅ committed |
 | 4.5 | Packing list + commercial invoice from the cycle's picked pieces: a printable page (save as PDF from the browser; the admin menu hides when printing) and CSV downloads (admin-only route, 404 for anyone else); built by pure functions with unit tests. The invoice's legal fields stay blank and marked: Q-30 filed | ✅ committed · **founder: Q-30** (with the forwarder or a customs broker) |
+| 4.6 | US pack & ship (D-066): migration 16, `ship_order` (only arrived orders) and `deliver_order` (only shipped ones) replace plain row updates; carrier picked from USPS / UPS / FedEx or typed; tracking links for the customer on the website and in the app (`trackingUrl`, unit-tested); a warning while a piece is not checked off | ✅ committed |
 
 ## R7 sub-steps
 | # | Sub-step | Status |

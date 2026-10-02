@@ -9,15 +9,11 @@ import {
 } from '@repo/db/admin';
 import { formatUsd, orderEventLabel } from '@repo/shared/domain';
 
-import {
-  addNoteAction,
-  changeWindowAction,
-  markDeliveredAction,
-  markShippedAction,
-} from '@/features/admin/actions/orders';
+import { addNoteAction, changeWindowAction } from '@/features/admin/actions/orders';
 import { cancelOrderAction, refundItemAction } from '@/features/admin/actions/refunds';
 import { requireAdminPage } from '@/features/admin/guard';
 import { OrderMoveForm } from '@/features/admin/order-move-form';
+import { ShipForm } from '@/features/admin/ship-form';
 import { button, Cell, Field, input, PageTitle, Table, utc } from '@/features/admin/ui';
 
 type Params = Promise<{ id: string }>;
@@ -107,21 +103,7 @@ export default async function AdminOrderPage({
 
       <div className="grid gap-6 lg:grid-cols-3">
         <OrderMoveForm order={order} cycles={cycles} moves={moves} />
-        <form
-          action={markShippedAction.bind(null, order.id)}
-          className="border-line space-y-2 rounded-md border p-3"
-        >
-          <h2 className="font-medium">Pack &amp; ship</h2>
-          <Field label="Carrier">
-            <input name="carrier" required className={input} />
-          </Field>
-          <Field label="Tracking number">
-            <input name="tracking" required className={input} />
-          </Field>
-          <button type="submit" className={button}>
-            Mark shipped
-          </button>
-        </form>
+        <ShipForm order={order} />
 
         <form
           action={changeWindowAction.bind(null, order.id)}
@@ -161,11 +143,6 @@ export default async function AdminOrderPage({
               </form>
             </div>
           ) : null}
-          <form action={markDeliveredAction.bind(null, order.id)}>
-            <button type="submit" className={button}>
-              Mark delivered
-            </button>
-          </form>
           <form action={addNoteAction.bind(null, order.id)} className="space-y-2">
             <Field label="Internal note (never shown to the customer)">
               <textarea name="note" required rows={3} className={input} />

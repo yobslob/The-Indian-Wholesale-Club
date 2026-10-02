@@ -1117,6 +1117,9 @@ isOneToOne: false
 "cutoff_cycle":
 { Args: { "p_cycle": string }; Returns: number
                            },
+"deliver_order":
+{ Args: { "p_order": string }; Returns: undefined
+                           },
 "dev_preview":
 { Args: Record<PropertyKey, never>; Returns: boolean
                            },
@@ -1155,6 +1158,9 @@ isOneToOne: false
                            },
 "roll_cycles":
 { Args: Record<PropertyKey, never>; Returns: number
+                           },
+"ship_order":
+{ Args: { "p_carrier": string,"p_order": string,"p_tracking": string }; Returns: undefined
                            },
 "store_home":
 { Args: Record<PropertyKey, never>; Returns: Json

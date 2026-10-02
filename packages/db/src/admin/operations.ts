@@ -52,7 +52,7 @@ export async function addOrderEvent(
   );
 }
 
-/** US desk: the order leaves in a domestic parcel (flows.md §6.4). */
+/** US desk: the order leaves in a domestic parcel (flows.md §6.4, D-066). Only once its export has arrived. */
 export async function markOrderShipped(
   client: IwcClient,
   orderId: string,
@@ -60,17 +60,12 @@ export async function markOrderShipped(
   trackingNumber: string,
 ) {
   unwrap(
-    await client
-      .from('orders')
-      .update({ status: 'shipped', carrier, tracking_number: trackingNumber })
-      .eq('id', orderId),
+    await client.rpc('ship_order', { p_order: orderId, p_carrier: carrier, p_tracking: trackingNumber }),
   );
-  await addOrderEvent(client, { orderId, kind: 'shipped', visibleToCustomer: true });
 }
 
 export async function markOrderDelivered(client: IwcClient, orderId: string) {
-  unwrap(await client.from('orders').update({ status: 'delivered' }).eq('id', orderId));
-  await addOrderEvent(client, { orderId, kind: 'delivered', visibleToCustomer: true });
+  unwrap(await client.rpc('deliver_order', { p_order: orderId }));
 }
 
 /** D-008 / INV-6: the only way to move a promised window. Adds a customer-visible event. */

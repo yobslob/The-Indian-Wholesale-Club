@@ -87,7 +87,8 @@ by the functions below), `pricing_settings.fast_offer_cents`, and `store_my_orde
 `offer` (price and window only, from the internal `_order_offer(order)`). Internal helpers: `_window_from(order, cycle)`
 (the window an order would get from a cycle) and `_set_window(...)` (the INV-6 window change with its visible event).
 A trigger on an order becoming `shipped` lapses an open offer and adds the "coming
-sooner" event. Migration 15: `pickups.arrived_at` / `arrived_by` (picked pieces only). `guest_order_lookup(number, email)` returns the
+sooner" event. Migration 15: `pickups.arrived_at` / `arrived_by` (picked pieces only). Migration 16: shipping and delivering go
+through `ship_order()` / `deliver_order()`. `guest_order_lookup(number, email)` returns the
 same shape for guests and is **service-only** (the server route rate-limits it). A test keeps its fields identical to the views'.
 `checkout_context(variant_ids, promo_code)` (migration 3, **service-only**) returns what the server needs to price a bag in
 one round trip: the variants as customers can buy them (through `store_*`), the promo if usable now, the shipping settings
@@ -108,6 +109,8 @@ rule, used by the `variant_availability` read policy so the live stock feed neve
 | `confirm_move_shipped(move)` | admin | §6b: the order left with that export; an earlier move makes the D-064 offer when its price is set. Raises `move_not_pending`, `move_superseded`, `cycle_not_exported` |
 | `accept_fast_offer(move, payment_intent)` | service (after Stripe verification) | §6b: the window moves to the one offered. Raises `offer_not_open` (the server refunds) |
 | `check_off_arrival(pickup, arrived)` | admin | §6.3: a picked piece arrived in the US (or the tick undone), once its cycle has arrived. Raises `pickup_not_picked`, `cycle_not_arrived` |
+| `ship_order(order, carrier, tracking)` | admin | §6.4: an arrived order ships (visible "Shipped" event). Raises `order_not_arrived`, `invalid_tracking` |
+| `deliver_order(order)` | admin | §6.4: a shipped order is delivered (visible event). Raises `order_not_shipped` |
 | `mark_pickup(pickup, status, photo, note)` | admin | §4.2–4: picked / unavailable (+ D-030 refund flag + customer event) |
 | `record_payout(vendor, pickups[], method, …)` | admin | §5: computes the amount from pickups, one payout per pickup |
 | `change_delivery_window(order, from, to, note)` | admin | §7: the only way to move a window (INV-6) |

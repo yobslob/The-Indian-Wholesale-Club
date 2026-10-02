@@ -1,4 +1,4 @@
-import { Text, View } from 'react-native';
+import { Linking, Pressable, Text, View } from 'react-native';
 
 import {
   CUSTOMER_STATUS_LABEL,
@@ -7,6 +7,7 @@ import {
   formatUsd,
   orderEventLabel,
   timelineIndex,
+  trackingUrl,
 } from '@repo/shared/domain';
 
 import { FasterOffer } from './faster-offer';
@@ -32,6 +33,7 @@ export function OrderView({
 }): React.JSX.Element {
   const o = order.order;
   const step = timelineIndex(o.customer_status);
+  const tracking = trackingUrl(o.carrier, o.tracking_number);
   return (
     <>
       <Body muted>Order {o.order_number}</Body>
@@ -42,8 +44,16 @@ export function OrderView({
         </Body>
       ) : null}
       {o.carrier || o.tracking_number ? (
-        // TODO(founder): Q-3. Carrier tracking links come once the US carrier is chosen.
-        <Body>Tracking: {[o.carrier, o.tracking_number].filter(Boolean).join(' ')}</Body>
+        // D-066: a link for USPS, UPS and FedEx; any other carrier shows its number.
+        tracking ? (
+          <Pressable accessibilityRole="link" onPress={() => void Linking.openURL(tracking)} className="min-h-11 justify-center">
+            <Text className="font-body text-ink text-[15px] underline">
+              Track it: {o.carrier} {o.tracking_number}
+            </Text>
+          </Pressable>
+        ) : (
+          <Body>Tracking: {[o.carrier, o.tracking_number].filter(Boolean).join(' ')}</Body>
+        )
       ) : null}
 
       {order.offer ? (

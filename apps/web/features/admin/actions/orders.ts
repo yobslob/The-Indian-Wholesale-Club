@@ -21,16 +21,25 @@ function done(orderId: string): void {
   revalidatePath('/admin/orders');
 }
 
-/** US desk: the order leaves in a domestic parcel (flows.md §6.4). Carrier typed by hand until Q-3. */
+/**
+ * US desk: the order leaves in a domestic parcel (flows.md §6.4). The carrier is picked (USPS, UPS, FedEx get a
+ * tracking link, D-066) or typed as "Other" while Q-3 is open.
+ */
 export async function markShippedAction(orderId: string, form: FormData): Promise<void> {
   const { client } = await requireAdminAction();
   const input = z
     .object({
       carrier: z.string().trim().min(2).max(40),
+      otherCarrier: z.string().trim().max(40),
       tracking: z.string().trim().min(4).max(60),
     })
-    .parse({ carrier: form.get('carrier'), tracking: form.get('tracking') });
-  await markOrderShipped(client, id.parse(orderId), input.carrier, input.tracking);
+    .parse({
+      carrier: form.get('carrier'),
+      otherCarrier: form.get('otherCarrier') ?? '',
+      tracking: form.get('tracking'),
+    });
+  const carrier = input.carrier === 'Other' ? z.string().min(2).parse(input.otherCarrier) : input.carrier;
+  await markOrderShipped(client, id.parse(orderId), carrier, input.tracking);
   done(orderId);
 }
 

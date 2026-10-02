@@ -24,6 +24,7 @@ import {
   spiceAttributesSchema,
   suggestPrice,
   timelineIndex,
+  trackingUrl,
   variantLabel,
   worstContrast,
 } from '../src/domain';
@@ -390,5 +391,20 @@ describe('a new listing (flows.md §2, C3)', () => {
       listingInputSchema.safeParse({ ...clothing, variants: [{ label: 'X', options: { shop: 'secret' }, qty: 1 }] }).success,
       false,
     );
+  });
+});
+
+describe('tracking links (D-066)', () => {
+  it('links USPS, UPS and FedEx, whatever the case or spaces', () => {
+    assert.equal(trackingUrl('USPS', '9400 1000 0000 0000 0000 00'), 'https://tools.usps.com/go/TrackConfirmAction?tLabels=9400100000000000000000');
+    assert.equal(trackingUrl('ups', '1Z999AA10123456784'), 'https://www.ups.com/track?tracknum=1Z999AA10123456784');
+    assert.equal(trackingUrl(' FedEx ', '123456789012'), 'https://www.fedex.com/fedextrack/?trknbr=123456789012');
+  });
+
+  it('gives no link for other carriers or a number that is not one', () => {
+    assert.equal(trackingUrl('DHL', '1234567890'), null);
+    assert.equal(trackingUrl('USPS', 'abc'), null);
+    assert.equal(trackingUrl('USPS', '123"><script>'), null);
+    assert.equal(trackingUrl(null, '1234567890'), null);
   });
 });
