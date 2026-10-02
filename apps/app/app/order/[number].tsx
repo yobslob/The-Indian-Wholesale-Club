@@ -25,7 +25,7 @@ export default function MyOrderScreen(): React.JSX.Element {
     <Screen refreshing={loading} onRefresh={reload}>
       {error ? <ErrorText>{error}</ErrorText> : null}
       {!data && loading ? <Loading /> : null}
-      {data ? <OrderView order={data} /> : null}
+      {data ? <OrderView order={data} onChanged={reload} /> : null}
       {data === null && !loading && !error ? (
         <>
           <Body>We could not find this order in your account.</Body>

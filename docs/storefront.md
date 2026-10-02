@@ -29,7 +29,7 @@ Enforcement: customer code reads catalog and order data only through `store_*` (
 | `/search` | search products and regions | dynamic (no auth) |
 | `/cart` | the bag ("Bag" in the UI; on-device state) | static shell |
 | `/checkout`, `/checkout/success` | details → server-priced total + Standard (free) / Express ($8) with each delivery window (D-041) → payment (Stripe) → order (D-038) | dynamic |
-| `/orders/lookup`, `/orders/[number]` | order tracking. The signed-in owner sees the order directly; anyone else confirms the order email first | dynamic |
+| `/orders/lookup`, `/orders/[number]` | order tracking. The signed-in owner sees the order directly; anyone else confirms the order email first. An open faster-delivery offer (D-064) shows above the timeline: `POST /api/orders/faster` (order number + email) → Stripe Payment Element, loaded only when taken → `POST /api/orders/faster/confirm` | dynamic |
 | `/account`, `/account/orders`, `/account/addresses`, `/account/saved` | signed-in customer ("Save for later" on product pages fills `saved`) | dynamic |
 | `/account/reviews/[productId]` | write a review (D-051, D-056): rating + text; photos only for verified buyers; pending until an admin approves it | dynamic |
 | `/login`, `/signup` | customer auth. **No admin mention anywhere** (D-006) | dynamic (reads `?next=`), no DB call |
@@ -71,7 +71,7 @@ data through `@repo/db/store` (one call per screen, D-017) and share the tokens 
 | Home, Explore, Bag, Saved, Profile | `(customer)/…` | `store_home()`, `listProducts`, on-device bag, `wishlists` (signed in), own orders |
 | Region, product | `region/[slug]`, `product/[region]/[slug]` (same sections as the web pages above; on the product page one photo with three thumbnails, and "Write a review" opens the website) | `store_region_page()`, `store_product_page()` + live availability |
 | Checkout | `checkout` | the website's server API: `POST /api/checkout` (server-priced quote + Standard / Express, D-041) → Stripe PaymentSheet → `POST /api/orders` (D-038). The phone never sends prices |
-| Order | `order/[number]` (signed-in owner, `store_my_order`) · `order/lookup` (number + checkout email via `POST /api/orders/lookup`, rate-limited, one answer for any mismatch) | |
+| Order | `order/[number]` (signed-in owner, `store_my_order`) · `order/lookup` (number + checkout email via `POST /api/orders/lookup`, rate-limited, one answer for any mismatch); the faster-delivery offer (D-064) through the same API as the website, paid with the PaymentSheet | |
 | Addresses, sign-in | `addresses`, `auth/login`, `auth/signup` | own `addresses` rows · Supabase Auth (email + password, as on the web) |
 Every list in the app is a sideways row (a horizontal `FlatList`) with **See all** → the **Browse** screen
 (`app/browse.tsx`: one type, optional region and category, a virtualized two-column grid), as on the web (D-062).

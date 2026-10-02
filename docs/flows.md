@@ -81,8 +81,10 @@ open ──cutoff──► collecting ──► packed ──► exported ──
   "New delivery estimate" (INV-6, D-008). The delay notice with its cancel option is C5.
 - **Earlier** (squeezed into an earlier export): nothing changes for the customer yet. Once that export has left, the
   admin confirms on the cycle page that the order went with it. The customer is then offered the earlier window for
-  the "faster-delivery offer" price in Settings (D-064); while that price is unset, no offer is made. If they pay, the
-  window moves to the offered one. If they don't, the promised window stays, and when the order ships in the US they
+  the "faster-delivery offer" price in Settings (D-064); while that price is unset, no offer is made. They see it on
+  their order page (website and app) and pay there; the server checks the payment with Stripe (browser, app or the
+  webhook, whichever comes first) and the window moves to the offered one. A payment for an offer that closed
+  meanwhile is refunded in full. If they don't, the promised window stays, and when the order ships in the US they
   are told it is coming sooner. Nothing says why (D-003).
 
 ## 7. Delays (D-008)

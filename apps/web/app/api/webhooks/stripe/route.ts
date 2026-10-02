@@ -3,6 +3,7 @@ import { NextResponse } from 'next/server';
 import { claimWebhookEvent, releaseWebhookEvent } from '@repo/db/server';
 
 import { finalizeOrder } from '@/features/checkout/finalize';
+import { FASTER_KIND, finalizeFasterPayment } from '@/features/orders/faster';
 import { errorMessage, logger } from '@/lib/logger';
 import { isStripeConfigured, stripeServer } from '@/lib/stripe';
 import { serviceClient } from '@/lib/supabase/service';
@@ -11,7 +12,8 @@ import type Stripe from 'stripe';
 
 /**
  * Stripe webhook: creates the order if the browser never came back after
- * paying (flows.md §3, pending_orders reconciliation). Idempotent per event.
+ * paying (flows.md §3, pending_orders reconciliation), and finishes a paid
+ * faster-delivery offer the same way (D-064). Idempotent per event.
  */
 export async function POST(request: Request): Promise<NextResponse> {
   const secret = process.env.STRIPE_WEBHOOK_SECRET;
@@ -38,7 +40,10 @@ export async function POST(request: Request): Promise<NextResponse> {
   }
   try {
     const intent = event.data.object as Stripe.PaymentIntent;
-    const result = await finalizeOrder(service, intent.id, 'webhook', event.id);
+    const result =
+      intent.metadata.kind === FASTER_KIND
+        ? await finalizeFasterPayment(service, intent.id)
+        : await finalizeOrder(service, intent.id, 'webhook', event.id);
     if (!result.ok)
       logger.warn('stripe.webhook_not_finalized', {
         paymentIntentId: intent.id,

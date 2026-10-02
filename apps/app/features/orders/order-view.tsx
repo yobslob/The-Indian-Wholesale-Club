@@ -9,6 +9,8 @@ import {
   timelineIndex,
 } from '@repo/shared/domain';
 
+import { FasterOffer } from './faster-offer';
+
 import type { OrderDetail } from '@repo/db/store';
 
 import { Body, Card, Heading, Row, Title } from '@/components/ui';
@@ -20,7 +22,14 @@ const date = new Intl.DateTimeFormat('en-US', { month: 'short', day: 'numeric', 
  * website's order page. OrderDetail holds only customer-safe fields
  * (store_my_order / guest_order_lookup), so nothing internal can show (D-003).
  */
-export function OrderView({ order }: { order: OrderDetail }): React.JSX.Element {
+export function OrderView({
+  order,
+  onChanged,
+}: {
+  order: OrderDetail;
+  /** Reload after the customer takes the faster-delivery offer (D-064). */
+  onChanged?: () => void;
+}): React.JSX.Element {
   const o = order.order;
   const step = timelineIndex(o.customer_status);
   return (
@@ -35,6 +44,10 @@ export function OrderView({ order }: { order: OrderDetail }): React.JSX.Element 
       {o.carrier || o.tracking_number ? (
         // TODO(founder): Q-3. Carrier tracking links come once the US carrier is chosen.
         <Body>Tracking: {[o.carrier, o.tracking_number].filter(Boolean).join(' ')}</Body>
+      ) : null}
+
+      {order.offer ? (
+        <FasterOffer offer={order.offer} orderNumber={o.order_number} email={o.email} onChanged={onChanged} />
       ) : null}
 
       {step >= 0 ? (

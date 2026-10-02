@@ -7,6 +7,8 @@ import {
   timelineIndex,
 } from '@repo/shared/domain';
 
+import { FasterOffer } from './faster-offer';
+
 import type { OrderDetail } from '@repo/db/store';
 
 const dateTime = new Intl.DateTimeFormat('en-US', {
@@ -40,6 +42,8 @@ export function OrderView({ order }: { order: OrderDetail }): React.JSX.Element 
           </p>
         ) : null}
       </div>
+
+      {order.offer ? <FasterOffer offer={order.offer} orderNumber={o.order_number} email={o.email} /> : null}
 
       {step >= 0 ? (
         <ol className="flex flex-wrap gap-2 text-xs">

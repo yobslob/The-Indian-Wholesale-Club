@@ -8,7 +8,7 @@
     "start": "next start",
     "lint": "eslint . --ext .ts,.tsx --max-warnings 0",
     "typecheck": "next typegen && tsc --noEmit",
-    "test": "tsx --test tests/order-email.test.ts tests/site.test.ts tests/rate-limit.test.ts tests/payment-check.test.ts",
+    "test": "tsx --test tests/order-email.test.ts tests/site.test.ts tests/rate-limit.test.ts tests/payment-check.test.ts tests/faster-decision.test.ts",
     "e2e": "playwright test"
   },
   "dependencies": {

@@ -147,3 +147,30 @@ export async function acceptFastOffer(
   if (dbError.code === 'offer_not_open') return { ok: false, reason: 'offer_not_open' };
   throw dbError;
 }
+
+/** The order an order number + its email point to (the same proof as the guest lookup). Null when they don't match. */
+export async function findOrderIdByNumberAndEmail(
+  service: IwcClient,
+  orderNumber: string,
+  email: string,
+): Promise<string | null> {
+  const row = unwrap(
+    await service
+      .from('orders')
+      .select('id')
+      .eq('order_number', orderNumber)
+      .eq('email', email.trim().toLowerCase())
+      .maybeSingle(),
+  );
+  return row?.id ?? null;
+}
+
+export async function getOfferMove(service: IwcClient, moveId: string) {
+  return unwrap(
+    await service
+      .from('order_moves')
+      .select('id, offer_status, offer_cents, payment_intent_id')
+      .eq('id', moveId)
+      .maybeSingle(),
+  );
+}

@@ -18,10 +18,13 @@ export function PaymentForm({
   clientSecret,
   totalLabel,
   onPaid,
+  returnPath = '/checkout/success',
 }: {
   clientSecret: string;
   totalLabel: string;
   onPaid: (paymentIntentId: string, status: string) => void;
+  /** Where a card that needs a redirect (3-D Secure) comes back to, with ?payment_intent=… */
+  returnPath?: string;
 }): React.JSX.Element {
   const mountRef = useRef<HTMLDivElement>(null);
   const [stripe, setStripe] = useState<Stripe | null>(null);
@@ -50,7 +53,7 @@ export function PaymentForm({
     const { error: stripeError, paymentIntent } = await stripe.confirmPayment({
       elements,
       redirect: 'if_required',
-      confirmParams: { return_url: `${window.location.origin}/checkout/success` },
+      confirmParams: { return_url: `${window.location.origin}${returnPath}` },
     });
     if (stripeError) {
       setError(stripeError.message ?? 'Payment failed. Please try again.');
