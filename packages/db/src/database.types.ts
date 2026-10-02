@@ -314,16 +314,22 @@ isOneToOne: false
                   ]
                 },"pickups": {
                   Row: {
-                    "created_at": string,"cycle_id": string,"id": string,"note": string | null,"order_item_id": string,"payout_id": string | null,"photo_path": string | null,"picked_at": string | null,"picked_by": string | null,"quantity": number,"shop_price_paise": number | null,"status": Database["public"]['Enums']["pickup_status"],"updated_at": string,"variant_id": string,"vendor_id": string
+                    "arrived_at": string | null,"arrived_by": string | null,"created_at": string,"cycle_id": string,"id": string,"note": string | null,"order_item_id": string,"payout_id": string | null,"photo_path": string | null,"picked_at": string | null,"picked_by": string | null,"quantity": number,"shop_price_paise": number | null,"status": Database["public"]['Enums']["pickup_status"],"updated_at": string,"variant_id": string,"vendor_id": string
                   }
                   Insert: {
-                    "created_at"?: string,"cycle_id": string,"id"?: string,"note"?: string | null,"order_item_id": string,"payout_id"?: string | null,"photo_path"?: string | null,"picked_at"?: string | null,"picked_by"?: string | null,"quantity": number,"shop_price_paise"?: number | null,"status"?: Database["public"]['Enums']["pickup_status"],"updated_at"?: string,"variant_id": string,"vendor_id": string
+                    "arrived_at"?: string | null,"arrived_by"?: string | null,"created_at"?: string,"cycle_id": string,"id"?: string,"note"?: string | null,"order_item_id": string,"payout_id"?: string | null,"photo_path"?: string | null,"picked_at"?: string | null,"picked_by"?: string | null,"quantity": number,"shop_price_paise"?: number | null,"status"?: Database["public"]['Enums']["pickup_status"],"updated_at"?: string,"variant_id": string,"vendor_id": string
                   }
                   Update: {
-                    "created_at"?: string,"cycle_id"?: string,"id"?: string,"note"?: string | null,"order_item_id"?: string,"payout_id"?: string | null,"photo_path"?: string | null,"picked_at"?: string | null,"picked_by"?: string | null,"quantity"?: number,"shop_price_paise"?: number | null,"status"?: Database["public"]['Enums']["pickup_status"],"updated_at"?: string,"variant_id"?: string,"vendor_id"?: string
+                    "arrived_at"?: string | null,"arrived_by"?: string | null,"created_at"?: string,"cycle_id"?: string,"id"?: string,"note"?: string | null,"order_item_id"?: string,"payout_id"?: string | null,"photo_path"?: string | null,"picked_at"?: string | null,"picked_by"?: string | null,"quantity"?: number,"shop_price_paise"?: number | null,"status"?: Database["public"]['Enums']["pickup_status"],"updated_at"?: string,"variant_id"?: string,"vendor_id"?: string
                   }
                   Relationships: [
                     {
+      foreignKeyName: "pickups_arrived_by_fkey"
+      columns: ["arrived_by"]
+isOneToOne: false
+      referencedRelation: "profiles"
+      referencedColumns: ["id"]
+    },{
       foreignKeyName: "pickups_cycle_id_fkey"
       columns: ["cycle_id"]
 isOneToOne: false
@@ -1093,6 +1099,9 @@ isOneToOne: false
                            },
 "change_delivery_window":
 { Args: { "p_from": string,"p_note"?: string,"p_order": string,"p_to": string }; Returns: undefined
+                           },
+"check_off_arrival":
+{ Args: { "p_arrived"?: boolean,"p_pickup": string }; Returns: undefined
                            },
 "checkout_context":
 { Args: { "p_promo_code"?: string,"p_variant_ids": (string)[] }; Returns: Json

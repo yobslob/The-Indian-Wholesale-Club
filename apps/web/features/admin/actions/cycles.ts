@@ -5,6 +5,7 @@ import { z } from 'zod';
 
 import {
   advanceCycle,
+  checkOffArrival,
   confirmMoveShipped,
   createCycle,
   cutoffCycle,
@@ -88,6 +89,45 @@ export async function advanceCycleAction(cycleId: string): Promise<void> {
 export async function confirmMoveShippedAction(moveId: string, cycleId: string): Promise<void> {
   const { client } = await requireAdminAction();
   await confirmMoveShipped(client, id.parse(moveId));
+  revalidatePath(`/admin/cycles/${cycleId}`);
+}
+
+/** flows.md §6.2: the export's paperwork and costs. Money in cents (USD), FX as rupees per dollar. */
+export async function updateCycleExportAction(cycleId: string, form: FormData): Promise<void> {
+  const { client } = await requireAdminAction();
+  const text = z.string().trim().max(80).transform((v) => v || null);
+  const cents = z
+    .string()
+    .trim()
+    .transform((v) => (v === '' ? null : Math.round(Number(v) * 100)))
+    .pipe(z.number().int().min(0).nullable());
+  const input = z
+    .object({
+      awb: text,
+      forwarder: text,
+      freight: cents,
+      duty: cents,
+      fx: z
+        .string()
+        .trim()
+        .transform((v) => (v === '' ? null : Number(v)))
+        .pipe(z.number().positive().nullable()),
+    })
+    .parse(Object.fromEntries(form));
+  await updateCycle(client, id.parse(cycleId), {
+    awb: input.awb,
+    forwarder: input.forwarder,
+    freight_cents: input.freight,
+    duty_cents: input.duty,
+    fx_inr_per_usd: input.fx,
+  });
+  revalidatePath(`/admin/cycles/${cycleId}`);
+}
+
+/** flows.md §6.3: tick a piece as arrived in the US (or undo it). */
+export async function checkOffArrivalAction(pickupId: string, arrived: boolean, cycleId: string): Promise<void> {
+  const { client } = await requireAdminAction();
+  await checkOffArrival(client, id.parse(pickupId), z.boolean().parse(arrived));
   revalidatePath(`/admin/cycles/${cycleId}`);
 }
 

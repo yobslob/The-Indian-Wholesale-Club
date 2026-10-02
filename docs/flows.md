@@ -67,8 +67,10 @@ open ──cutoff──► collecting ──► packed ──► exported ──
 
 ## 6. Export → arrival → US fulfilment
 1. `packed`: the COO generates the packing list and commercial invoice (CSV/PDF) from the cycle's picked items.
-2. `exported`: AWB and forwarder are recorded.
-3. `arrived`: the founder marks the export received and checks off each order's pieces.
+2. `exported`: AWB and forwarder are recorded, with the freight, duty and exchange rate actually paid (cycle page,
+   from `packed` on; the page warns while the AWB or forwarder is missing after export).
+3. `arrived`: the founder marks the export received and checks off each order's picked pieces as they come out of the
+   box (`check_off_arrival`, website and app; a tick can be undone).
 4. `fulfilling`: for each order, the founder packs it, enters the carrier and tracking number (the order becomes `shipped`), then `delivered`.
 5. `closed`: all orders in the cycle are delivered, refunded or cancelled.
 

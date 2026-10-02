@@ -97,7 +97,9 @@ export default async function AdminOrderPage({
               ) : null}
             </Cell>
             <Cell>
-              {item.pickup ? `${item.pickup.status}${item.pickup.payout_id ? ' · paid' : ''}` : '—'}
+              {item.pickup
+                ? `${item.pickup.status}${item.pickup.payout_id ? ' · paid' : ''}${item.pickup.arrived_at ? ' · arrived' : ''}`
+                : '—'}
             </Cell>
           </tr>
         ))}

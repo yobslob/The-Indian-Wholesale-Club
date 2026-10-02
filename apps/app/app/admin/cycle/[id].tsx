@@ -5,6 +5,7 @@ import { advanceCycle, cutoffCycle, listCycles, listPickups, markPickup } from '
 import { nextCycleStatus } from '@repo/shared/domain';
 
 import { Body, Button, Card, ErrorText, Loading, Screen, Title } from '@/components/ui';
+import { ArrivalList } from '@/features/admin/arrival-list';
 import { rupees, utc } from '@/features/admin/format';
 import { useAction } from '@/features/admin/use-action';
 import { supabase } from '@/lib/supabase';
@@ -73,6 +74,7 @@ export default function AdminCycleScreen(): React.JSX.Element {
         />
       ) : null}
       {action.error ? <ErrorText>{action.error}</ErrorText> : null}
+      <ArrivalList status={cycle.status} pickups={data.pickups} busy={action.busy} run={action.run} />
 
       {[...byVendor.entries()].map(([vendorId, group]) => (
         <Card key={vendorId}>

@@ -5,7 +5,7 @@
 prices, draft → publish) and it reaches the store; tested end to end in the app's web preview and by E2E flow 2 on the
 web (same database call). C2 is built too. **Waiting on the founder:** the COO's listing on a real phone; approve the
 six region drafts; set the pricing settings (exchange rate, freight, duty, margin, "stale after" days) so the suggested
-price and the re-check list appear; set "days between cutoffs" (D-063). **Next:** C4 4.4, export details (AWB, forwarder, freight, duty, FX) and arrival check-off.
+price and the re-check list appear; set "days between cutoffs" (D-063). **Next:** C4 4.5, packing list + commercial invoice export.
 
 ## Steps
 | Step | Status | Evidence |
@@ -84,6 +84,7 @@ price and the re-check list appear; set "days between cutoffs" (D-063). **Next:*
 | 2026-10-03 | C4 4.1 | Claude, founder's machine, local Supabase (migration 13 with `supabase migration up`, no reset; pg_cron installed by the migration) | `db-test.mjs` 19/19 files (new `cycle_roll.test.sql`, 17 assertions) + six mutations (no roll before an order; no skip-ahead; late payment into a packed cycle; no projection; cutoff time not recorded; late order without pickups): all six caught, restored, 19/19 again · `check.mjs docs typecheck lint test` OK. build/e2e not run: the founder's `pnpm dev` was on port 3000 | OK |
 | 2026-10-03 | C4 4.2 | Claude, founder's machine, local Supabase (migration 14 with `supabase migration up`) | `db-test.mjs` 20/20 files (new `order_moves.test.sql`, 28 assertions) + nine mutations (later move keeps the old window; in-transit order can move; pickups duplicated; offer before export; offer without a price; offer accepted twice; "sooner" note after paying; accepted offer still shown; earlier move treated as later): all caught, restored, 20/20 again · `check.mjs docs typecheck lint test` OK. Admin pages not viewed: the founder's dev server refuses the local test admin (not in its `ADMIN_EMAILS`); build/e2e not run (port 3000 busy) | OK |
 | 2026-10-03 | C4 4.3 | Claude, founder's machine | web unit tests 19/19 (new `faster-decision.test.ts`, 5 cases) · typecheck + lint web and app OK · the new routes on the founder's running dev server: an order without an offer and a wrong email both get 404 "no longer open", a bad payment id 400. Not paid end to end yet | OK (partial) |
+| 2026-10-03 | C4 4.4 | Claude, founder's machine, local Supabase (migration 15) | `db-test.mjs` 21/21 files (new `arrival.test.sql`, 6 assertions) + two mutations (unpicked piece arrives; check-off before arrival): both caught, restored · typecheck + lint web and app OK | OK |
 
 ## C1 sub-steps (design)
 | # | Sub-step | Status |
@@ -135,6 +136,7 @@ price and the re-check list appear; set "days between cutoffs" (D-063). **Next:*
 | 4.1 | Migration 13: cycles close at their cutoff and the next opens by itself (`roll_cycles()` every minute with pg_cron, and first in `create_order`); the store and checkout show the cycle an order would join; an admin cutoff opens the next cycle too and records the real closing time; late payments (D-065, refusal `cycle_closed` with its own message); `cycle_days` in Settings; correcting a cycle's dates on its admin page. Closes B-19 | ✅ committed |
 | 4.2 | Migration 14: moving orders between cycles (`move_order`: pieces follow, a later window changes visibly), `confirm_move_shipped` (the D-064 offer at the price in Settings), `accept_fast_offer` (service), the "coming sooner" event when an un-taken early order ships; `offer` in the customer's order data. Web admin: move form and history on the order page, "It left with this export" on the cycle page, the offer price in Settings | ✅ committed · the customer's offer and payment: 4.3 |
 | 4.3 | The customer's faster-delivery offer (D-064): on the order page (website: Stripe Payment Element loaded only when taken; app: PaymentSheet) through `POST /api/orders/faster` and `/confirm`, and the Stripe webhook; the price always from the database; a payment for a closed offer refunded; the decision unit-tested (`faster-decision.test.ts`) | ✅ committed · **not yet paid end to end with a Stripe test card** (needs a test order moved into an exported cycle; planned for the C4 E2E flow) |
+| 4.4 | Export details on the cycle page (AWB, forwarder, freight and duty paid, exchange rate; a warning while AWB or forwarder is missing after export); migration 15, arrival check-off per picked piece, grouped by order (website and app), shown on the order page too | ✅ committed |
 
 ## R7 sub-steps
 | # | Sub-step | Status |

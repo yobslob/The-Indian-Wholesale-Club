@@ -54,10 +54,10 @@ export async function listPickups(client: IwcClient, cycleId: string) {
     await client
       .from('pickups')
       .select(
-        `id, status, quantity, shop_price_paise, picked_at, photo_path, note, payout_id,
+        `id, status, quantity, shop_price_paise, picked_at, arrived_at, photo_path, note, payout_id,
           vendor:vendors(id, shop_name, phone, whatsapp, town),
           variant:product_variants(id, label, sku),
-          item:order_items(id, product_name, variant_label, order_id)`,
+          item:order_items(id, product_name, variant_label, order_id, order:orders(order_number))`,
       )
       .eq('cycle_id', cycleId)
       .order('vendor_id'),
@@ -144,6 +144,11 @@ export async function listPayouts(client: IwcClient, vendorId: string) {
       .eq('vendor_id', vendorId)
       .order('paid_at', { ascending: false }),
   );
+}
+
+/** flows.md §6.3: a picked piece came out of the box in the US (or the tick is undone). */
+export async function checkOffArrival(client: IwcClient, pickupId: string, arrived = true) {
+  unwrap(await client.rpc('check_off_arrival', { p_pickup: pickupId, p_arrived: arrived }));
 }
 
 // ---------------------------------------------------------------- moves between cycles (flows.md §6b, D-045, D-064)

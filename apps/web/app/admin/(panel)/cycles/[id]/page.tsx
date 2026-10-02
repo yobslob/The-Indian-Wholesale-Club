@@ -8,7 +8,9 @@ import {
   cutoffCycleAction,
   markPickupAction,
 } from '@/features/admin/actions/cycles';
+import { ArrivalList } from '@/features/admin/arrival-list';
 import { CycleDatesForm } from '@/features/admin/cycle-dates-form';
+import { CycleExportForm } from '@/features/admin/cycle-export-form';
 import { CycleMoves } from '@/features/admin/cycle-moves';
 import { requireAdminPage } from '@/features/admin/guard';
 import { button, PageTitle, rupees, utc } from '@/features/admin/ui';
@@ -71,6 +73,8 @@ export default async function CyclePage({
         </form>
       ) : null}
       <CycleDatesForm cycle={cycle} />
+      <CycleExportForm cycle={cycle} />
+      <ArrivalList cycle={cycle} pickups={pickups} />
       <CycleMoves cycle={cycle} moves={moves} />
 
       {[...byVendor.entries()].map(([vendorId, group]) => (
