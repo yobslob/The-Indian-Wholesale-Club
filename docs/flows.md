@@ -66,7 +66,9 @@ open ──cutoff──► collecting ──► packed ──► exported ──
 - The COO records a payout (amount ₹, method, reference, optional receipt photo, D-029) linked to the pickups it covers.
 
 ## 6. Export → arrival → US fulfilment
-1. `packed`: the COO generates the packing list and commercial invoice (CSV/PDF) from the cycle's picked items.
+1. `packed`: the COO generates the packing list and commercial invoice from the cycle's picked items (cycle page →
+   Packing list and commercial invoice: print or save as PDF from the browser, or download CSV). The invoice lists the
+   goods; its exporter, consignee, HS codes, declared value and Incoterms stay blank and marked until Q-30 is answered.
 2. `exported`: AWB and forwarder are recorded, with the freight, duty and exchange rate actually paid (cycle page,
    from `packed` on; the page warns while the AWB or forwarder is missing after export).
 3. `arrived`: the founder marks the export received and checks off each order's picked pieces as they come out of the

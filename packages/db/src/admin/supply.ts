@@ -146,6 +146,23 @@ export async function listPayouts(client: IwcClient, vendorId: string) {
   );
 }
 
+/** flows.md §6.1: every picked piece of a cycle, with what the packing list and the commercial invoice need. */
+export async function listCycleExportLines(client: IwcClient, cycleId: string) {
+  return unwrap(
+    await client
+      .from('pickups')
+      .select(
+        `id, quantity, shop_price_paise, vendor:vendors(shop_name),
+          variant:product_variants(sku, label, weight_g, product:products(name, product_type, attributes,
+            region:regions(name), category:categories(name))),
+          item:order_items(order:orders(order_number))`,
+      )
+      .eq('cycle_id', cycleId)
+      .eq('status', 'picked')
+      .order('vendor_id'),
+  );
+}
+
 /** flows.md §6.3: a picked piece came out of the box in the US (or the tick is undone). */
 export async function checkOffArrival(client: IwcClient, pickupId: string, arrived = true) {
   unwrap(await client.rpc('check_off_arrival', { p_pickup: pickupId, p_arrived: arrived }));

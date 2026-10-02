@@ -1,3 +1,4 @@
+import Link from 'next/link';
 import { notFound } from 'next/navigation';
 
 import { listCycleMoves, listCycles, listPickups } from '@repo/db/admin';
@@ -59,6 +60,13 @@ export default async function CyclePage({
         est. arrival {cycle.est_arrival_on}
       </p>
       {cycle.notes ? <p className="text-ink-muted">{cycle.notes}</p> : null}
+      {pickups.some((p) => p.status === 'picked') ? (
+        <p>
+          <Link href={`/admin/cycles/${cycle.id}/documents`} className="underline">
+            Packing list and commercial invoice
+          </Link>
+        </p>
+      ) : null}
       {cycle.status === 'open' ? (
         <form action={cutoffCycleAction.bind(null, cycle.id)}>
           <button type="submit" className={button}>

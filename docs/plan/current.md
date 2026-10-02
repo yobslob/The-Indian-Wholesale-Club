@@ -5,7 +5,7 @@
 prices, draft → publish) and it reaches the store; tested end to end in the app's web preview and by E2E flow 2 on the
 web (same database call). C2 is built too. **Waiting on the founder:** the COO's listing on a real phone; approve the
 six region drafts; set the pricing settings (exchange rate, freight, duty, margin, "stale after" days) so the suggested
-price and the re-check list appear; set "days between cutoffs" (D-063). **Next:** C4 4.5, packing list + commercial invoice export.
+price and the re-check list appear; set "days between cutoffs" (D-063). **Next:** C4 4.6, US pack & ship with tracking links (D-066), then the C4 E2E flow.
 
 ## Steps
 | Step | Status | Evidence |
@@ -85,6 +85,7 @@ price and the re-check list appear; set "days between cutoffs" (D-063). **Next:*
 | 2026-10-03 | C4 4.2 | Claude, founder's machine, local Supabase (migration 14 with `supabase migration up`) | `db-test.mjs` 20/20 files (new `order_moves.test.sql`, 28 assertions) + nine mutations (later move keeps the old window; in-transit order can move; pickups duplicated; offer before export; offer without a price; offer accepted twice; "sooner" note after paying; accepted offer still shown; earlier move treated as later): all caught, restored, 20/20 again · `check.mjs docs typecheck lint test` OK. Admin pages not viewed: the founder's dev server refuses the local test admin (not in its `ADMIN_EMAILS`); build/e2e not run (port 3000 busy) | OK |
 | 2026-10-03 | C4 4.3 | Claude, founder's machine | web unit tests 19/19 (new `faster-decision.test.ts`, 5 cases) · typecheck + lint web and app OK · the new routes on the founder's running dev server: an order without an offer and a wrong email both get 404 "no longer open", a bad payment id 400. Not paid end to end yet | OK (partial) |
 | 2026-10-03 | C4 4.4 | Claude, founder's machine, local Supabase (migration 15) | `db-test.mjs` 21/21 files (new `arrival.test.sql`, 6 assertions) + two mutations (unpicked piece arrives; check-off before arrival): both caught, restored · typecheck + lint web and app OK | OK |
+| 2026-10-03 | C4 4.5 | Claude, founder's machine | web unit tests 23/23 (new `export-documents.test.ts`, 4 cases: grouping, ₹/$ totals, Q-30 fields never guessed, no shop on the invoice, CSV quoting) · typecheck + lint OK · on the founder's dev server, signed out: the CSV route answers 404, the documents page redirects to the admin sign-in. Not viewed signed in (test admin refused by the dev server's `ADMIN_EMAILS`) | OK |
 
 ## C1 sub-steps (design)
 | # | Sub-step | Status |
@@ -137,6 +138,7 @@ price and the re-check list appear; set "days between cutoffs" (D-063). **Next:*
 | 4.2 | Migration 14: moving orders between cycles (`move_order`: pieces follow, a later window changes visibly), `confirm_move_shipped` (the D-064 offer at the price in Settings), `accept_fast_offer` (service), the "coming sooner" event when an un-taken early order ships; `offer` in the customer's order data. Web admin: move form and history on the order page, "It left with this export" on the cycle page, the offer price in Settings | ✅ committed · the customer's offer and payment: 4.3 |
 | 4.3 | The customer's faster-delivery offer (D-064): on the order page (website: Stripe Payment Element loaded only when taken; app: PaymentSheet) through `POST /api/orders/faster` and `/confirm`, and the Stripe webhook; the price always from the database; a payment for a closed offer refunded; the decision unit-tested (`faster-decision.test.ts`) | ✅ committed · **not yet paid end to end with a Stripe test card** (needs a test order moved into an exported cycle; planned for the C4 E2E flow) |
 | 4.4 | Export details on the cycle page (AWB, forwarder, freight and duty paid, exchange rate; a warning while AWB or forwarder is missing after export); migration 15, arrival check-off per picked piece, grouped by order (website and app), shown on the order page too | ✅ committed |
+| 4.5 | Packing list + commercial invoice from the cycle's picked pieces: a printable page (save as PDF from the browser; the admin menu hides when printing) and CSV downloads (admin-only route, 404 for anyone else); built by pure functions with unit tests. The invoice's legal fields stay blank and marked: Q-30 filed | ✅ committed · **founder: Q-30** (with the forwarder or a customs broker) |
 
 ## R7 sub-steps
 | # | Sub-step | Status |
