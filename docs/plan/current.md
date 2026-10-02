@@ -87,6 +87,7 @@ price and the re-check list appear; set "days between cutoffs" (D-063). **Next:*
 | 2026-10-03 | C4 4.4 | Claude, founder's machine, local Supabase (migration 15) | `db-test.mjs` 21/21 files (new `arrival.test.sql`, 6 assertions) + two mutations (unpicked piece arrives; check-off before arrival): both caught, restored · typecheck + lint web and app OK | OK |
 | 2026-10-03 | C4 4.5 | Claude, founder's machine | web unit tests 23/23 (new `export-documents.test.ts`, 4 cases: grouping, ₹/$ totals, Q-30 fields never guessed, no shop on the invoice, CSV quoting) · typecheck + lint OK · on the founder's dev server, signed out: the CSV route answers 404, the documents page redirects to the admin sign-in. Not viewed signed in (test admin refused by the dev server's `ADMIN_EMAILS`) | OK |
 | 2026-10-03 | C4 4.6 | Claude, founder's machine, local Supabase (migration 16) | `db-test.mjs` 22/22 files (new `ship.test.sql`, 11 assertions) + three mutations (ship before arrival; deliver before shipping; empty tracking): all caught, restored · shared unit tests 39/39 (tracking links) · typecheck + lint web and app OK | OK |
+| 2026-10-03 | C4 4.7 | Claude, founder's machine, local Supabase | `db-test.mjs` 23/23 files, 0 failed (new `cycle_lifecycle.test.sql`, 8 assertions) | OK |
 
 ## C1 sub-steps (design)
 | # | Sub-step | Status |
@@ -141,6 +142,7 @@ price and the re-check list appear; set "days between cutoffs" (D-063). **Next:*
 | 4.4 | Export details on the cycle page (AWB, forwarder, freight and duty paid, exchange rate; a warning while AWB or forwarder is missing after export); migration 15, arrival check-off per picked piece, grouped by order (website and app), shown on the order page too | ✅ committed |
 | 4.5 | Packing list + commercial invoice from the cycle's picked pieces: a printable page (save as PDF from the browser; the admin menu hides when printing) and CSV downloads (admin-only route, 404 for anyone else); built by pure functions with unit tests. The invoice's legal fields stay blank and marked: Q-30 filed | ✅ committed · **founder: Q-30** (with the forwarder or a customs broker) |
 | 4.6 | US pack & ship (D-066): migration 16, `ship_order` (only arrived orders) and `deliver_order` (only shipped ones) replace plain row updates; carrier picked from USPS / UPS / FedEx or typed; tracking links for the customer on the website and in the app (`trackingUrl`, unit-tested); a warning while a piece is not checked off | ✅ committed |
+| 4.7 | C4's "done when" in SQL: `cycle_lifecycle.test.sql` runs one cycle from open to closed with the real functions (closes by itself at its cutoff, the next opens, pickups, packed, export details, exported, arrived, check-off, fulfilling, shipped, delivered, closed) and checks what the customer saw | ✅ committed · the same as a browser E2E flow: waits for a free port 3000 and the test admin in `ADMIN_EMAILS` |
 
 ## R7 sub-steps
 | # | Sub-step | Status |
