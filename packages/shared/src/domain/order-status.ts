@@ -47,6 +47,9 @@ export const ORDER_EVENT_LABEL: Record<string, string> = {
   item_unavailable: 'An item is no longer available. It will be refunded.', // D-030
   item_refunded: 'Item refunded',
   delivery_window_changed: 'New delivery estimate', // D-008
+  faster_delivery_offer: 'It can reach you sooner. See the offer above.', // D-064
+  faster_delivery_accepted: 'Faster delivery added. New delivery estimate', // D-064
+  arriving_sooner: 'Good news: it is coming sooner than we said', // D-064
   order_cancelled: 'Order cancelled', // D-042
   shipped: 'Shipped',
   delivered: 'Delivered',

@@ -203,10 +203,18 @@ export const orderEventSchema = z.object({
   created_at: isoDateTime,
 });
 
+/** D-064: an earlier delivery the customer can pay for. Price and window only (D-003). */
+export const orderOfferSchema = z.object({
+  price_cents: z.number().int().positive(),
+  est_delivery_from: z.string(),
+  est_delivery_to: z.string(),
+});
+
 export const orderDetailSchema = z.object({
   order: orderSummarySchema,
   items: z.array(orderItemSchema),
   events: z.array(orderEventSchema),
+  offer: orderOfferSchema.nullable().default(null),
 });
 
 export type DeliveryWindow = z.infer<typeof deliveryWindowSchema>;
@@ -228,3 +236,4 @@ export type OrderSummary = z.infer<typeof orderSummarySchema>;
 export type OrderItem = z.infer<typeof orderItemSchema>;
 export type OrderEvent = z.infer<typeof orderEventSchema>;
 export type OrderDetail = z.infer<typeof orderDetailSchema>;
+export type OrderOffer = z.infer<typeof orderOfferSchema>;

@@ -52,6 +52,7 @@ const order: OrderDetail = {
     },
   ],
   events: [],
+  offer: null,
 };
 
 describe('order confirmation email (storefront.md §Emails)', () => {

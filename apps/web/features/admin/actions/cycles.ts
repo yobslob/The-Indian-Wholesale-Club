@@ -5,6 +5,7 @@ import { z } from 'zod';
 
 import {
   advanceCycle,
+  confirmMoveShipped,
   createCycle,
   cutoffCycle,
   markPickup,
@@ -80,6 +81,13 @@ export async function advanceCycleAction(cycleId: string): Promise<void> {
   const { client } = await requireAdminAction();
   await advanceCycle(client, id.parse(cycleId));
   revalidatePath('/admin/cycles');
+  revalidatePath(`/admin/cycles/${cycleId}`);
+}
+
+/** D-064: the moved order really left with this export; an earlier one gets the faster-delivery offer. */
+export async function confirmMoveShippedAction(moveId: string, cycleId: string): Promise<void> {
+  const { client } = await requireAdminAction();
+  await confirmMoveShipped(client, id.parse(moveId));
   revalidatePath(`/admin/cycles/${cycleId}`);
 }
 

@@ -1,6 +1,12 @@
 import { notFound } from 'next/navigation';
 
-import { cancelRefundCents, getAdminOrder, itemRefundCents } from '@repo/db/admin';
+import {
+  cancelRefundCents,
+  getAdminOrder,
+  itemRefundCents,
+  listCycles,
+  listOrderMoves,
+} from '@repo/db/admin';
 import { formatUsd, orderEventLabel } from '@repo/shared/domain';
 
 import {
@@ -11,6 +17,7 @@ import {
 } from '@/features/admin/actions/orders';
 import { cancelOrderAction, refundItemAction } from '@/features/admin/actions/refunds';
 import { requireAdminPage } from '@/features/admin/guard';
+import { OrderMoveForm } from '@/features/admin/order-move-form';
 import { button, Cell, Field, input, PageTitle, Table, utc } from '@/features/admin/ui';
 
 type Params = Promise<{ id: string }>;
@@ -29,7 +36,7 @@ export default async function AdminOrderPage({
   const address = order.shipping_address as Record<string, string | null>;
   // Refund amounts come from the database rules (D-042), shown before anyone clicks.
   const unavailable = order.items.filter((i) => i.status === 'unavailable');
-  const [itemRefunds, cancelAmounts] = await Promise.all([
+  const [itemRefunds, cancelAmounts, cycles, moves] = await Promise.all([
     Promise.all(unavailable.map(async (i) => [i.id, await itemRefundCents(client, i.id)] as const)),
     order.status === 'confirmed'
       ? Promise.all([
@@ -37,6 +44,8 @@ export default async function AdminOrderPage({
           cancelRefundCents(client, order.id, 'our_fault'),
         ])
       : null,
+    listCycles(client, 12),
+    listOrderMoves(client, order.id),
   ]);
   const refundFor = new Map(itemRefunds);
   const events = [...order.events].sort((a, b) => a.created_at.localeCompare(b.created_at));
@@ -95,6 +104,7 @@ export default async function AdminOrderPage({
       </Table>
 
       <div className="grid gap-6 lg:grid-cols-3">
+        <OrderMoveForm order={order} cycles={cycles} moves={moves} />
         <form
           action={markShippedAction.bind(null, order.id)}
           className="border-line space-y-2 rounded-md border p-3"

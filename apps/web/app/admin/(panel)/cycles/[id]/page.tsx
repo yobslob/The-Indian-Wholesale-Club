@@ -1,6 +1,6 @@
 import { notFound } from 'next/navigation';
 
-import { listCycles, listPickups } from '@repo/db/admin';
+import { listCycleMoves, listCycles, listPickups } from '@repo/db/admin';
 import { nextCycleStatus } from '@repo/shared/domain';
 
 import {
@@ -9,6 +9,7 @@ import {
   markPickupAction,
 } from '@/features/admin/actions/cycles';
 import { CycleDatesForm } from '@/features/admin/cycle-dates-form';
+import { CycleMoves } from '@/features/admin/cycle-moves';
 import { requireAdminPage } from '@/features/admin/guard';
 import { button, PageTitle, rupees, utc } from '@/features/admin/ui';
 
@@ -23,7 +24,11 @@ export default async function CyclePage({
   const { client } = await requireAdminPage();
   const { id } = await params;
   if (!/^[0-9a-f-]{36}$/.test(id)) notFound();
-  const [cycles, pickups] = await Promise.all([listCycles(client, 100), listPickups(client, id)]);
+  const [cycles, pickups, moves] = await Promise.all([
+    listCycles(client, 100),
+    listPickups(client, id),
+    listCycleMoves(client, id),
+  ]);
   const cycle = cycles.find((c) => c.id === id);
   if (!cycle) notFound();
 
@@ -66,6 +71,7 @@ export default async function CyclePage({
         </form>
       ) : null}
       <CycleDatesForm cycle={cycle} />
+      <CycleMoves cycle={cycle} moves={moves} />
 
       {[...byVendor.entries()].map(([vendorId, group]) => (
         <section key={vendorId} className="border-line space-y-2 rounded-md border p-3">

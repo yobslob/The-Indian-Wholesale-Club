@@ -55,6 +55,20 @@ export default async function SettingsPage(): Promise<React.JSX.Element> {
           When a cycle closes at its cutoff, the next one opens with its cutoff, export and arrival moved forward by
           this many days. Correct them on the cycle if needed.
         </p>
+        <Field label="Faster-delivery offer ($, D-064; empty = no offer)">
+          <input
+            name="fastOffer"
+            type="number"
+            step="0.01"
+            min="0.01"
+            defaultValue={dollars(s.fast_offer_cents)}
+            className={input}
+          />
+        </Field>
+        <p className="text-ink-muted self-end text-sm">
+          What a customer pays for the earlier window when their order left with an earlier export. Without it they
+          just hear it came sooner.
+        </p>
         <h2 className="font-medium sm:col-span-2">Shipping (D-041: standard free, express $8)</h2>
         <Field label="Standard shipping per order ($, 0 = free)">
           <input

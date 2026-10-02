@@ -81,7 +81,13 @@ creates a draft product (region from its shop) and its variants in one transacti
 while that is unset, D-047). Both refuse non-admins and run as the caller. Migration 13 (C4, D-045, D-063, D-065):
 `pricing_settings.cycle_days` (days between cutoffs, unset until the founder sets it); `store_next_delivery()` and
 `checkout_context()` show the cycle an order would really join (the open one, or the one about to open in the minute
-between a cutoff and the roll), through the internal `_store_cycle()` and `_next_cycle_dates(cycle)`. `guest_order_lookup(number, email)` returns the
+between a cutoff and the roll), through the internal `_store_cycle()` and `_next_cycle_dates(cycle)`. Migration 14 (C4, D-064): `order_moves` (each
+move of an order to another cycle, its shipped confirmation and the faster-delivery offer; admin read-only, written
+by the functions below), `pricing_settings.fast_offer_cents`, and `store_my_order()` / `guest_order_lookup()` add
+`offer` (price and window only, from the internal `_order_offer(order)`). Internal helpers: `_window_from(order, cycle)`
+(the window an order would get from a cycle) and `_set_window(...)` (the INV-6 window change with its visible event).
+A trigger on an order becoming `shipped` lapses an open offer and adds the "coming
+sooner" event. `guest_order_lookup(number, email)` returns the
 same shape for guests and is **service-only** (the server route rate-limits it). A test keeps its fields identical to the views'.
 `checkout_context(variant_ids, promo_code)` (migration 3, **service-only**) returns what the server needs to price a bag in
 one round trip: the variants as customers can buy them (through `store_*`), the promo if usable now, the shipping settings
@@ -98,6 +104,9 @@ rule, used by the `variant_availability` read policy so the live stock feed neve
 | `cutoff_cycle(cycle)` | admin | §4.1: closes the cycle (the cutoff becomes the real closing time), creates one pickup per piece, opens the next cycle (D-045) |
 | `roll_cycles()` | service, pg_cron every minute | §1: closes the open cycle once its cutoff has passed and opens the next with its dates moved forward by `cycle_days` (else the last gap, D-063). Internal helpers `_cutoff_cycle`, `_open_next_cycle` |
 | `advance_cycle(cycle)` | admin | §1/§6: collecting → packed → exported → arrived → fulfilling → closed, moving its orders with it and writing internal events. Refuses `open` (use cutoff) and closing while an order is unfinished |
+| `move_order(order, cycle, note)` | admin | §6b: the order and its pieces join another cycle; a later one changes the window visibly (INV-6). Raises `order_cannot_move`, `cycle_not_accepting`, `same_cycle` |
+| `confirm_move_shipped(move)` | admin | §6b: the order left with that export; an earlier move makes the D-064 offer when its price is set. Raises `move_not_pending`, `move_superseded`, `cycle_not_exported` |
+| `accept_fast_offer(move, payment_intent)` | service (after Stripe verification) | §6b: the window moves to the one offered. Raises `offer_not_open` (the server refunds) |
 | `mark_pickup(pickup, status, photo, note)` | admin | §4.2–4: picked / unavailable (+ D-030 refund flag + customer event) |
 | `record_payout(vendor, pickups[], method, …)` | admin | §5: computes the amount from pickups, one payout per pickup |
 | `change_delivery_window(order, from, to, note)` | admin | §7: the only way to move a window (INV-6) |

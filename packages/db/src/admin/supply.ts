@@ -145,3 +145,56 @@ export async function listPayouts(client: IwcClient, vendorId: string) {
       .order('paid_at', { ascending: false }),
   );
 }
+
+// ---------------------------------------------------------------- moves between cycles (flows.md §6b, D-045, D-064)
+
+/** Mirrors what happened physically: the whole order joins another cycle. A later cycle changes its window. */
+export async function moveOrder(
+  client: IwcClient,
+  input: { orderId: string; toCycleId: string; note?: string },
+): Promise<string> {
+  const moveId = unwrap(
+    await client.rpc('move_order', {
+      p_order: input.orderId,
+      p_to_cycle: input.toCycleId,
+      ...(input.note ? { p_note: input.note } : {}),
+    }),
+  );
+  if (moveId === null) throw new DbError('move_order_empty', 'move_order returned no id');
+  return moveId;
+}
+
+/** The piece really left with that export. For an earlier move, this makes the D-064 offer (when its price is set). */
+export async function confirmMoveShipped(
+  client: IwcClient,
+  moveId: string,
+): Promise<Enum<'move_offer_status'>> {
+  const status = unwrap(await client.rpc('confirm_move_shipped', { p_move: moveId }));
+  if (status === null) throw new DbError('confirm_move_empty', 'confirm_move_shipped returned no status');
+  return status;
+}
+
+const MOVE_COLUMNS = `id, order_id, earlier, note, moved_at, shipped_confirmed_at, offer_status, offer_cents, offer_from,
+  offer_to, from_cycle:cycles!order_moves_from_cycle_id_fkey(id, code), to_cycle:cycles!order_moves_to_cycle_id_fkey(id, code),
+  order:orders(order_number, cycle_id, status)`;
+
+/** Orders moved into a cycle (its page lists them so the admin can confirm they left with it). */
+export async function listCycleMoves(client: IwcClient, cycleId: string) {
+  return unwrap(
+    await client
+      .from('order_moves')
+      .select(MOVE_COLUMNS)
+      .eq('to_cycle_id', cycleId)
+      .order('moved_at', { ascending: false }),
+  );
+}
+
+export async function listOrderMoves(client: IwcClient, orderId: string) {
+  return unwrap(
+    await client
+      .from('order_moves')
+      .select(MOVE_COLUMNS)
+      .eq('order_id', orderId)
+      .order('moved_at', { ascending: false }),
+  );
+}

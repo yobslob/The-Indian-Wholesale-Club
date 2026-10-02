@@ -72,6 +72,19 @@ open ──cutoff──► collecting ──► packed ──► exported ──
 4. `fulfilling`: for each order, the founder packs it, enters the carrier and tracking number (the order becomes `shipped`), then `delivered`.
 5. `closed`: all orders in the cycle are delivered, refunded or cancelled.
 
+## 6b. Moving an order to another cycle (D-045, D-064)
+- An admin moves an order to the cycle it really travels with (web admin, order page). The whole order moves, all its
+  pieces, since it reaches the customer as one parcel (interpretation, proposed). Only before it leaves India
+  (`confirmed`, `collecting`, `packed`), into a cycle that is open, collecting or packed. Its pieces follow it on the
+  pickup lists (created if it joins a cycle past its cutoff), and its status follows the cycle.
+- **Later** (it missed the export): the promised window changes if the new one ends later, with a customer-visible
+  "New delivery estimate" (INV-6, D-008). The delay notice with its cancel option is C5.
+- **Earlier** (squeezed into an earlier export): nothing changes for the customer yet. Once that export has left, the
+  admin confirms on the cycle page that the order went with it. The customer is then offered the earlier window for
+  the "faster-delivery offer" price in Settings (D-064); while that price is unset, no offer is made. If they pay, the
+  window moves to the offered one. If they don't, the promised window stays, and when the order ships in the US they
+  are told it is coming sooner. Nothing says why (D-003).
+
 ## 7. Delays (D-008)
 If a cycle's estimated arrival moves past an order's `est_delivery_to`, the admin gets a warning. The customer gets a
 notice with the new estimate and the option to **cancel for a full refund**. The customer's choice is recorded as an

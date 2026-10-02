@@ -115,3 +115,35 @@ export async function lookupGuestOrder(
 export async function redeemPromo(service: IwcClient, promoCodeId: string): Promise<boolean> {
   return unwrap(await service.rpc('increment_promo_uses', { p_promo: promoCodeId })) === true;
 }
+
+// ---------------------------------------------------------------- the faster-delivery offer (D-064)
+
+/** The open offer on an order (service role): the move it belongs to and its price. Null when there is none. */
+export async function getOpenOffer(service: IwcClient, orderId: string) {
+  return unwrap(
+    await service
+      .from('order_moves')
+      .select('id, offer_cents, offer_from, offer_to')
+      .eq('order_id', orderId)
+      .eq('offer_status', 'offered')
+      .order('moved_at', { ascending: false })
+      .limit(1)
+      .maybeSingle(),
+  );
+}
+
+/** Call ONLY after Stripe confirmed the payment. Refuses ('offer_not_open') when it lapsed meanwhile: refund then. */
+export async function acceptFastOffer(
+  service: IwcClient,
+  moveId: string,
+  paymentIntentId: string,
+): Promise<{ ok: true } | { ok: false; reason: 'offer_not_open' }> {
+  const { error } = await service.rpc('accept_fast_offer', {
+    p_move: moveId,
+    p_payment_intent: paymentIntentId,
+  });
+  if (!error) return { ok: true };
+  const dbError = toDbError(error);
+  if (dbError.code === 'offer_not_open') return { ok: false, reason: 'offer_not_open' };
+  throw dbError;
+}

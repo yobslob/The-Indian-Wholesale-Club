@@ -8,6 +8,7 @@ import {
   changeDeliveryWindow,
   markOrderDelivered,
   markOrderShipped,
+  moveOrder,
 } from '@repo/db/admin';
 
 import { requireAdminAction } from '../guard';
@@ -65,4 +66,15 @@ export async function addNoteAction(orderId: string, form: FormData): Promise<vo
     internalNote: note,
   });
   done(orderId);
+}
+
+/** flows.md §6b / D-045: the order joins another cycle, as it did physically. A later cycle changes its window. */
+export async function moveOrderAction(orderId: string, form: FormData): Promise<void> {
+  const { client } = await requireAdminAction();
+  const input = z
+    .object({ toCycleId: id, note: z.string().trim().max(500) })
+    .parse({ toCycleId: form.get('toCycleId'), note: form.get('note') ?? '' });
+  await moveOrder(client, { orderId: id.parse(orderId), toCycleId: input.toCycleId, note: input.note || undefined });
+  done(orderId);
+  revalidatePath('/admin/cycles', 'layout');
 }
