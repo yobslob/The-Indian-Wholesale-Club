@@ -41,6 +41,20 @@ export default async function SettingsPage(): Promise<React.JSX.Element> {
             className={input}
           />
         </Field>
+        <Field label="Days between cutoffs (D-063; empty = copy the last gap)">
+          <input
+            name="cycleDays"
+            type="number"
+            min="1"
+            max="90"
+            defaultValue={plain(s.cycle_days)}
+            className={input}
+          />
+        </Field>
+        <p className="text-ink-muted self-end text-sm">
+          When a cycle closes at its cutoff, the next one opens with its cutoff, export and arrival moved forward by
+          this many days. Correct them on the cycle if needed.
+        </p>
         <h2 className="font-medium sm:col-span-2">Shipping (D-041: standard free, express $8)</h2>
         <Field label="Standard shipping per order ($, 0 = free)">
           <input

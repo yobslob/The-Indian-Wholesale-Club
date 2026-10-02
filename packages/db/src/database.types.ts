@@ -93,7 +93,9 @@ isOneToOne: false
                   ]
                 },"cycles": {
                   Row: {
-                    "arrived_at": string | null,"awb": string | null,"closed_at": string | null,"code": string,"created_at": string,"cutoff_at": string,"duty_cents": number | null,"est_arrival_on": string,"est_export_on": string | null,"exported_at": string | null,"forwarder": string | null,"freight_cents": number | null,"fx_inr_per_usd": number | null,"id": string,"notes": string | null,"status": Database["public"]['Enums']["cycle_status"],"updated_at": string
+                    "arrived_at": string | null,"awb": string | null,"closed_at": string | null,"code": string,"created_at": string,"cutoff_at": string,"duty_cents": number | null,"est_arrival_on": string,"est_export_on": string | null,"exported_at": string | null,"forwarder": string | null,"freight_cents": number | null,"fx_inr_per_usd": number | null,"id": string,"notes": string | null,"status": Database["public"]['Enums']["cycle_status"],"updated_at": string,"_next_cycle_dates": {
+              "cutoff_at": string,"est_arrival_on": string,"est_export_on": string
+            } | null
                   }
                   Insert: {
                     "arrived_at"?: string | null,"awb"?: string | null,"closed_at"?: string | null,"code": string,"created_at"?: string,"cutoff_at": string,"duty_cents"?: number | null,"est_arrival_on": string,"est_export_on"?: string | null,"exported_at"?: string | null,"forwarder"?: string | null,"freight_cents"?: number | null,"fx_inr_per_usd"?: number | null,"id"?: string,"notes"?: string | null,"status"?: Database["public"]['Enums']["cycle_status"],"updated_at"?: string
@@ -330,13 +332,13 @@ isOneToOne: false
                   ]
                 },"pricing_settings": {
                   Row: {
-                    "domestic_days_max": number | null,"domestic_days_min": number | null,"duty_pct": number | null,"express_days_max": number | null,"express_days_min": number | null,"express_shipping_cents": number | null,"free_shipping_min_cents": number | null,"freight_cents_per_kg": number | null,"fx_inr_per_usd": number | null,"id": number,"leaving_soon_max": number,"margin_pct": number | null,"shipping_flat_cents": number | null,"stale_listing_days": number | null,"updated_at": string,"updated_by": string | null
+                    "cycle_days": number | null,"domestic_days_max": number | null,"domestic_days_min": number | null,"duty_pct": number | null,"express_days_max": number | null,"express_days_min": number | null,"express_shipping_cents": number | null,"free_shipping_min_cents": number | null,"freight_cents_per_kg": number | null,"fx_inr_per_usd": number | null,"id": number,"leaving_soon_max": number,"margin_pct": number | null,"shipping_flat_cents": number | null,"stale_listing_days": number | null,"updated_at": string,"updated_by": string | null
                   }
                   Insert: {
-                    "domestic_days_max"?: number | null,"domestic_days_min"?: number | null,"duty_pct"?: number | null,"express_days_max"?: number | null,"express_days_min"?: number | null,"express_shipping_cents"?: number | null,"free_shipping_min_cents"?: number | null,"freight_cents_per_kg"?: number | null,"fx_inr_per_usd"?: number | null,"id"?: number,"leaving_soon_max"?: number,"margin_pct"?: number | null,"shipping_flat_cents"?: number | null,"stale_listing_days"?: number | null,"updated_at"?: string,"updated_by"?: string | null
+                    "cycle_days"?: number | null,"domestic_days_max"?: number | null,"domestic_days_min"?: number | null,"duty_pct"?: number | null,"express_days_max"?: number | null,"express_days_min"?: number | null,"express_shipping_cents"?: number | null,"free_shipping_min_cents"?: number | null,"freight_cents_per_kg"?: number | null,"fx_inr_per_usd"?: number | null,"id"?: number,"leaving_soon_max"?: number,"margin_pct"?: number | null,"shipping_flat_cents"?: number | null,"stale_listing_days"?: number | null,"updated_at"?: string,"updated_by"?: string | null
                   }
                   Update: {
-                    "domestic_days_max"?: number | null,"domestic_days_min"?: number | null,"duty_pct"?: number | null,"express_days_max"?: number | null,"express_days_min"?: number | null,"express_shipping_cents"?: number | null,"free_shipping_min_cents"?: number | null,"freight_cents_per_kg"?: number | null,"fx_inr_per_usd"?: number | null,"id"?: number,"leaving_soon_max"?: number,"margin_pct"?: number | null,"shipping_flat_cents"?: number | null,"stale_listing_days"?: number | null,"updated_at"?: string,"updated_by"?: string | null
+                    "cycle_days"?: number | null,"domestic_days_max"?: number | null,"domestic_days_min"?: number | null,"duty_pct"?: number | null,"express_days_max"?: number | null,"express_days_min"?: number | null,"express_shipping_cents"?: number | null,"free_shipping_min_cents"?: number | null,"freight_cents_per_kg"?: number | null,"fx_inr_per_usd"?: number | null,"id"?: number,"leaving_soon_max"?: number,"margin_pct"?: number | null,"shipping_flat_cents"?: number | null,"stale_listing_days"?: number | null,"updated_at"?: string,"updated_by"?: string | null
                   }
                   Relationships: [
                     {
@@ -984,14 +986,30 @@ isOneToOne: false
                 }
           }
           Functions: {
-            "_is_verified_buyer":
+            "_cutoff_cycle":
+{ Args: { "p_cycle": string }; Returns: number
+                           },
+"_is_verified_buyer":
 { Args: { "p_product": string,"p_user": string }; Returns: boolean
                            },
 "_leaving_soon_max":
 { Args: Record<PropertyKey, never>; Returns: number
                            },
+"_next_cycle_dates":
+{ Args: { "p_cycle": Database["public"]['Tables']["cycles"]['Row'] }; Returns: {
+              "cutoff_at": string,"est_arrival_on": string,"est_export_on": string
+            }[]
+                           },
+"_open_next_cycle":
+{ Args: { "p_cycle": string }; Returns: string
+                           },
 "_set_stock_context":
 { Args: { "p_note": string,"p_reason": Database["public"]['Enums']["stock_reason"],"p_ref_id": string,"p_ref_type": string }; Returns: undefined
+                           },
+"_store_cycle":
+{ Args: Record<PropertyKey, never>; Returns: {
+              "cutoff_at": string,"est_arrival_on": string
+            }[]
                            },
 "_store_product_card":
 { Args: { "p_product_id": string }; Returns: Json
@@ -1062,6 +1080,9 @@ isOneToOne: false
                            },
 "review_eligibility":
 { Args: { "p_product": string }; Returns: Json
+                           },
+"roll_cycles":
+{ Args: Record<PropertyKey, never>; Returns: number
                            },
 "store_home":
 { Args: Record<PropertyKey, never>; Returns: Json

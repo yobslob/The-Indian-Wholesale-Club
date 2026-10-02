@@ -35,6 +35,7 @@ export interface CreateOrderInput {
 /** Business reasons create_order can refuse (docs/data-model.md, business functions). */
 export type CreateOrderRefusal =
   | 'no_open_cycle'
+  | 'cycle_closed'
   | 'delivery_window_unconfigured'
   | 'express_unavailable'
   | 'order_has_no_items'
@@ -45,6 +46,7 @@ export type CreateOrderRefusal =
 
 const REFUSALS: ReadonlySet<string> = new Set<CreateOrderRefusal>([
   'no_open_cycle',
+  'cycle_closed',
   'delivery_window_unconfigured',
   'express_unavailable',
   'order_has_no_items',

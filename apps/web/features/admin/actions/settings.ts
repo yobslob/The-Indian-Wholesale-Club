@@ -33,6 +33,7 @@ export async function updatePricingSettingsAction(form: FormData): Promise<void>
       domesticMin: optionalNumber(z.number().int().min(0).max(60)),
       domesticMax: optionalNumber(z.number().int().min(0).max(60)),
       staleDays: optionalNumber(z.number().int().min(1).max(365)),
+      cycleDays: optionalNumber(z.number().int().min(1).max(90)),
       leavingSoonMax: z.coerce.number().int().min(1).max(20),
       shippingFlat: optionalCents,
       freeShippingMin: optionalCents,
@@ -49,6 +50,7 @@ export async function updatePricingSettingsAction(form: FormData): Promise<void>
     domestic_days_min: input.domesticMin,
     domestic_days_max: input.domesticMax,
     stale_listing_days: input.staleDays,
+    cycle_days: input.cycleDays,
     leaving_soon_max: input.leavingSoonMax,
     shipping_flat_cents: input.shippingFlat,
     free_shipping_min_cents: input.freeShippingMin,
@@ -57,7 +59,7 @@ export async function updatePricingSettingsAction(form: FormData): Promise<void>
     express_days_max: input.expressMax,
     updated_by: user.id,
   });
-  revalidateTag(STORE_TAG); // delivery windows use the domestic days (D-008)
+  revalidateTag(STORE_TAG); // delivery windows use the domestic days and the next cycle's dates (D-008, D-063)
   revalidatePath('/admin/settings');
 }
 

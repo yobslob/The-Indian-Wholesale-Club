@@ -98,7 +98,7 @@ export async function getPricingSettings(client: IwcClient) {
       .select(
         `fx_inr_per_usd, freight_cents_per_kg, duty_pct, margin_pct, domestic_days_min, domestic_days_max,
           shipping_flat_cents, free_shipping_min_cents, express_shipping_cents, express_days_min, express_days_max,
-          stale_listing_days, leaving_soon_max, updated_at`,
+          stale_listing_days, leaving_soon_max, cycle_days, updated_at`,
       )
       .eq('id', 1)
       .single(),

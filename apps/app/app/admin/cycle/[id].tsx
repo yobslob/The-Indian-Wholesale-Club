@@ -61,7 +61,7 @@ export default function AdminCycleScreen(): React.JSX.Element {
       </Body>
       {cycle.status === 'open' ? (
         <Button
-          label="Cut off now (closes ordering, creates pickups)"
+          label="Cut off now (closes ordering, creates pickups, opens the next cycle)"
           disabled={action.busy}
           onPress={() => void action.run(() => cutoffCycle(supabase, cycleId))}
         />

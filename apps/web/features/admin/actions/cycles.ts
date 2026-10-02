@@ -3,7 +3,14 @@
 import { revalidatePath, revalidateTag } from 'next/cache';
 import { z } from 'zod';
 
-import { advanceCycle, createCycle, cutoffCycle, markPickup, recordPayout } from '@repo/db/admin';
+import {
+  advanceCycle,
+  createCycle,
+  cutoffCycle,
+  markPickup,
+  recordPayout,
+  updateCycle,
+} from '@repo/db/admin';
 
 import { STORE_TAG } from '@/features/catalog/data';
 
@@ -34,7 +41,33 @@ export async function createCycleAction(form: FormData): Promise<void> {
   revalidatePath('/admin/cycles');
 }
 
-/** flows.md §4.1: close the cycle to orders and create the pickup checklist. */
+/**
+ * D-045 / D-063: an admin corrects a cycle's dates (the cutoff only while it is open). Orders keep the window they
+ * were promised (INV-6); a later arrival goes through the delay flow (flows.md §7).
+ */
+export async function updateCycleDatesAction(cycleId: string, form: FormData): Promise<void> {
+  const { client } = await requireAdminAction();
+  const input = z
+    .object({
+      cutoffAt: z
+        .string()
+        .regex(/^\d{4}-\d{2}-\d{2}T\d{2}:\d{2}$/)
+        .optional(),
+      estExportOn: isoDate.or(z.literal('')),
+      estArrivalOn: isoDate,
+    })
+    .parse(Object.fromEntries(form));
+  await updateCycle(client, id.parse(cycleId), {
+    ...(input.cutoffAt ? { cutoff_at: `${input.cutoffAt}:00Z` } : {}),
+    est_export_on: input.estExportOn || null,
+    est_arrival_on: input.estArrivalOn,
+  });
+  revalidateTag(STORE_TAG);
+  revalidatePath('/admin/cycles');
+  revalidatePath(`/admin/cycles/${cycleId}`);
+}
+
+/** flows.md §4.1: close the cycle to orders, create the pickup checklist and open the next cycle (D-045). */
 export async function cutoffCycleAction(cycleId: string): Promise<void> {
   const { client } = await requireAdminAction();
   await cutoffCycle(client, id.parse(cycleId));

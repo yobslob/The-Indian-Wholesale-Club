@@ -6,7 +6,10 @@ import { createCycleAction } from '@/features/admin/actions/cycles';
 import { requireAdminPage } from '@/features/admin/guard';
 import { button, Cell, Field, input, PageTitle, Table, utc } from '@/features/admin/ui';
 
-/** Cycles (flows.md §1): one open at a time (INV-5); dates always entered by an admin (D-026). */
+/**
+ * Cycles (flows.md §1): one open at a time (INV-5). Each closes at its cutoff and the next opens by itself (D-045,
+ * D-063); an admin opens one here only when none is open (the first, or after a pause).
+ */
 export default async function CyclesPage(): Promise<React.JSX.Element> {
   const { client } = await requireAdminPage();
   const cycles = await listCycles(client, 30);
@@ -32,7 +35,10 @@ export default async function CyclesPage(): Promise<React.JSX.Element> {
       </Table>
 
       {hasOpen ? (
-        <p className="text-ink-muted">A cycle is open. Cut it off before opening the next one.</p>
+        <p className="text-ink-muted">
+          A cycle is open. At its cutoff it closes and the next one opens by itself, with its dates moved forward by
+          the days between cutoffs (Settings). Correct them on the cycle.
+        </p>
       ) : (
         <form
           action={createCycleAction}

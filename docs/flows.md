@@ -9,13 +9,19 @@ open ──cutoff──► collecting ──► packed ──► exported ──
  (orders join)   (COO picks up  (COO packs  (in transit   (founder    (founder ships
                   from vendors)  the export)  to the US)    receives)   each order)
 ```
-- Exactly one cycle is `open` (INV-5). Target: when a cycle hits its cutoff, the next cycle opens immediately. Its dates are entered by an admin.
-  **Today** nothing happens on its own at `cutoff_at`: orders still join the open cycle until an admin runs the cutoff,
-  the store keeps showing the past "order by" date, and an admin creates the next cycle by hand (B-19; the fix is decided in D-045 and built in C4).
-- An admin sets each cycle's `cutoff_at`, estimated export and estimated arrival dates. There are no fixed lead times (D-026), so nothing is
+- Exactly one cycle is `open` (INV-5). **At its cutoff it closes by itself** (pickups created, as an admin cutoff does)
+  **and the next one opens** with its cutoff, estimated export and estimated arrival moved forward by the "days between
+  cutoffs" setting, or by the gap between the last two cutoffs while that is unset (D-045, D-063). `roll_cycles()` does it
+  every minute (pg_cron) and `create_order` does it first, so no order joins a cycle after its cutoff. Between a cutoff
+  and the roll, the store and checkout already show the next cycle's window. An admin can still cut off early (the
+  next cycle opens too) and corrects the new cycle's dates on its page. With neither the setting nor an earlier cycle to
+  copy, no cycle opens and Today says so.
+- A payment priced before a cutoff that completes just after it joins the cycle that just closed, with its pickups,
+  while that cycle is still collecting; after that it is refused and refunded in full (D-065).
+- An admin can correct a cycle's dates (the cutoff only while open). There are no fixed lead times (D-026), so nothing is
   hard-coded.
-- Status changes are manual admin actions: `cutoff_cycle()` for open → collecting, then `advance_cycle()` one step at a
-  time. `cutoff_cycle()` writes a customer-visible `preparing` event per order; `advance_cycle()` writes internal ones.
+- After the cutoff, status changes are admin actions: `advance_cycle()` one step at a time. The cutoff writes a
+  customer-visible `preparing` event per order; `advance_cycle()` writes internal ones.
 
 ## 2. Listing a product (India desk, usually on a phone)
 1. Choose a vendor. The region comes from the vendor.

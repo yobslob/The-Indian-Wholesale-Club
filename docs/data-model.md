@@ -78,7 +78,10 @@ any of the greeting, its script, the tagline or the story changes (approval and 
 leave it alone). Migration 12 (C3, flows.md §2): `admin_create_listing(jsonb)`
 creates a draft product (region from its shop) and its variants in one transaction, quantities stamped as confirmed;
 `admin_stale_variants()` lists live variants not re-confirmed within `pricing_settings.stale_listing_days` (nothing
-while that is unset, D-047). Both refuse non-admins and run as the caller. `guest_order_lookup(number, email)` returns the
+while that is unset, D-047). Both refuse non-admins and run as the caller. Migration 13 (C4, D-045, D-063, D-065):
+`pricing_settings.cycle_days` (days between cutoffs, unset until the founder sets it); `store_next_delivery()` and
+`checkout_context()` show the cycle an order would really join (the open one, or the one about to open in the minute
+between a cutoff and the roll), through the internal `_store_cycle()` and `_next_cycle_dates(cycle)`. `guest_order_lookup(number, email)` returns the
 same shape for guests and is **service-only** (the server route rate-limits it). A test keeps its fields identical to the views'.
 `checkout_context(variant_ids, promo_code)` (migration 3, **service-only**) returns what the server needs to price a bag in
 one round trip: the variants as customers can buy them (through `store_*`), the promo if usable now, the shipping settings
@@ -91,8 +94,9 @@ rule, used by the `variant_availability` read policy so the live stock feed neve
 ## Business functions (the only way to do these things)
 | Function | Who | Does (flows.md) |
 |---|---|---|
-| `create_order(jsonb)` | service (server, after Stripe verification) | §3: checks prices + subtotal, reserves stock atomically, attaches the open cycle, stores the window. Raises `no_open_cycle`, `delivery_window_unconfigured`, `variant_unavailable`, `price_mismatch`, `insufficient_stock`, `subtotal_mismatch`, `express_unavailable`, `order_has_no_items` |
-| `cutoff_cycle(cycle)` | admin | §4.1: closes the cycle, creates one pickup per piece |
+| `create_order(jsonb)` | service (server, after Stripe verification) | §3: rolls a cycle past its cutoff first, checks prices + subtotal, reserves stock atomically, attaches the open cycle (or, D-065, the cycle that closed after the customer was priced, while it is collecting, with its pickups), stores the window. Raises `cycle_closed` (priced for a cycle that is already packed), `no_open_cycle`, `delivery_window_unconfigured`, `variant_unavailable`, `price_mismatch`, `insufficient_stock`, `subtotal_mismatch`, `express_unavailable`, `order_has_no_items` |
+| `cutoff_cycle(cycle)` | admin | §4.1: closes the cycle (the cutoff becomes the real closing time), creates one pickup per piece, opens the next cycle (D-045) |
+| `roll_cycles()` | service, pg_cron every minute | §1: closes the open cycle once its cutoff has passed and opens the next with its dates moved forward by `cycle_days` (else the last gap, D-063). Internal helpers `_cutoff_cycle`, `_open_next_cycle` |
 | `advance_cycle(cycle)` | admin | §1/§6: collecting → packed → exported → arrived → fulfilling → closed, moving its orders with it and writing internal events. Refuses `open` (use cutoff) and closing while an order is unfinished |
 | `mark_pickup(pickup, status, photo, note)` | admin | §4.2–4: picked / unavailable (+ D-030 refund flag + customer event) |
 | `record_payout(vendor, pickups[], method, …)` | admin | §5: computes the amount from pickups, one payout per pickup |

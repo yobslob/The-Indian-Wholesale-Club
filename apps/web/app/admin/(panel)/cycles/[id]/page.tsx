@@ -8,6 +8,7 @@ import {
   cutoffCycleAction,
   markPickupAction,
 } from '@/features/admin/actions/cycles';
+import { CycleDatesForm } from '@/features/admin/cycle-dates-form';
 import { requireAdminPage } from '@/features/admin/guard';
 import { button, PageTitle, rupees, utc } from '@/features/admin/ui';
 
@@ -50,10 +51,11 @@ export default async function CyclePage({
         {cycle.status} · cutoff {utc(cycle.cutoff_at)} · est. export {cycle.est_export_on ?? '—'} ·
         est. arrival {cycle.est_arrival_on}
       </p>
+      {cycle.notes ? <p className="text-ink-muted">{cycle.notes}</p> : null}
       {cycle.status === 'open' ? (
         <form action={cutoffCycleAction.bind(null, cycle.id)}>
           <button type="submit" className={button}>
-            Cut off now (closes ordering, creates pickups)
+            Cut off now (closes ordering, creates pickups, opens the next cycle)
           </button>
         </form>
       ) : next ? (
@@ -63,6 +65,7 @@ export default async function CyclePage({
           </button>
         </form>
       ) : null}
+      <CycleDatesForm cycle={cycle} />
 
       {[...byVendor.entries()].map(([vendorId, group]) => (
         <section key={vendorId} className="border-line space-y-2 rounded-md border p-3">

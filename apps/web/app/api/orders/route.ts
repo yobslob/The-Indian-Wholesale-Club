@@ -38,8 +38,11 @@ export async function POST(
       case 'order_refused':
         return NextResponse.json(
           {
+            // D-065: the order-by time passed and the delivery window shown could no longer be kept.
             error:
-              'Sorry, an item sold out while you were paying. Your payment has been refunded in full.',
+              result.detail === 'cycle_closed'
+                ? 'Sorry, the order-by time passed while you were paying, so we could not keep the delivery date we showed you. Your payment has been refunded in full.'
+                : 'Sorry, an item sold out while you were paying. Your payment has been refunded in full.',
           },
           { status: 409 },
         );
