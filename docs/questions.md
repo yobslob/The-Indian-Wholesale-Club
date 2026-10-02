@@ -7,7 +7,7 @@ founder doesn't know yet. **None blocks the restructure (R2–R8). All must be a
 
 | ID | Question | Why it matters | Rule until answered |
 |---|---|---|---|
-| Q-3 | Which US carrier ships orders to customers (USPS / UPS / other)? | tracking links, label integration (F-1) | admins type the carrier + tracking number by hand |
+| Q-3 | Which US carrier ships orders to customers (USPS / UPS / other)? | label integration (F-1) | admins pick the carrier and type the tracking number; links for USPS, UPS and FedEx (D-066) |
 | Q-5 | What is the returns/exchanges policy (wrong size, damaged)? | policy page, refunds | no returns flow (D-028). The policy page shows `TODO(founder): Q-5` |
 | Q-9 | Domain name and support email (bought at launch, D-046) | emails from the real domain, SEO | Vercel URLs and Resend's test sender until launch (D-046) |
 | Q-10 | Who is the FDA-registered facility for spices, and who makes the English labels? | compliance (`ops.md`) | spices can be drafted, never published (D-032) |

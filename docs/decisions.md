@@ -460,3 +460,41 @@ per clothing category. The lists that rows show grow from 4 to up to 12 pieces (
 you, Leaving soon, Similar items); this replaces "at most four" in D-058's interpretation.
 *Interpretation (proposed):* Most wanted, Curated for you and Leaving soon show their whole list in the row, so they
 have no See all; See all pages show 24 cards at a time with "Show more".
+
+**D-063 · 2026-10-03 · founder: The next cycle's dates come from a "days between cutoffs" setting**
+Asked: "When a cycle closes by itself at its cutoff, how should the next cycle's dates be set?" Founder picked, verbatim:
+"Days setting (Recommended)" (the option read: "A new setting, 'days between cutoffs' (you'd put 20–23, D-005). The next
+cutoff, export and arrival all move forward by that many days. Until it's set, it copies the gap between the last two
+cutoffs.")
+What it means for the build: confirms D-045's interpretation. At `cutoff_at` the open cycle closes to new orders by
+itself (pickups created, as an admin cutoff does) and the next cycle opens with the cutoff, estimated export and
+estimated arrival moved forward by `pricing_settings.cycle_days`; while that is unset, by the gap between the last two
+cutoffs. An admin can correct the new cycle's dates (D-026).
+*Interpretation (proposed):* with neither a setting nor two earlier cycles, no cycle opens by itself and Today says so;
+if the moved-forward cutoff is already in the past (nothing ran for weeks), it moves forward again until it is ahead.
+
+**D-064 · 2026-10-03 · founder: A piece that leaves earlier is first offered as discounted faster delivery**
+Asked: "A piece ordered in cycle 6 gets squeezed into cycle 5's export. After the admin confirms it shipped, what does
+the customer get?" Founder, verbatim: "First we offer them a discounted paid faster shipping offer, If they accept then
+best, If not we'll just notify them at the last moment that yay it arrived faster."
+What it means for the build (refines D-045's "fast shipping offer"): when an admin moves an order into an earlier export
+and confirms it went with it, the customer is offered faster delivery for a discounted price (the earlier window, shown
+before they pay, D-008). If they pay, their delivery window moves to the earlier one. If they don't, the promised window
+stays (INV-6) and, when the order reaches them early, they are told it came sooner.
+*Interpretation (proposed):* the offer price is a setting the founder fills (`pricing_settings.fast_offer_cents`); while
+it is unset no offer is made and only the "it came sooner" note is sent. The offer stays open until the order ships in
+the US. The note never says why it is early (D-003).
+
+**D-065 · 2026-10-03 · founder: A payment that lands seconds after the cutoff still joins that cycle**
+Asked: "A customer sees a delivery window at checkout, but the cutoff passes in the seconds before their payment
+completes. What should happen?" Founder picked, verbatim: "Let it into that cycle (Recommended)" (the option read: "If
+they were priced before the cutoff, the order joins the cycle that just closed, and its pickup is added to the COO's
+list. The window they saw stays true.")
+*Interpretation (proposed):* only while that cycle is still collecting; once it is packed, the order is refused and
+refunded in full like a sold-out item, because the window shown can no longer be kept (D-008).
+
+**D-066 · 2026-10-03 · founder (narrows Q-3): Tracking links for USPS, UPS and FedEx while the carrier is undecided**
+Asked: "Q-3: which carriers will ship US orders to customers?" Founder picked, verbatim: "Not decided yet" (the option
+read: "Keep typing carrier + tracking number by hand; links for USPS, UPS and FedEx anyway").
+What it means for the build: an admin picks USPS, UPS, FedEx or "Other" and types the tracking number; the customer gets
+a tracking link for the three named carriers and the bare number for others. Q-3 stays open for label integration (F-1).
