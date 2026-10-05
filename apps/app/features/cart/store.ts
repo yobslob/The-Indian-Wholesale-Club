@@ -1,11 +1,13 @@
+import AsyncStorage from '@react-native-async-storage/async-storage';
 import { create } from 'zustand';
+import { createJSONStorage, persist } from 'zustand/middleware';
 
 /** Most pieces of one variant per order line (the server checks the same limit). */
 export const MAX_QTY_PER_LINE = 10;
 
 /**
  * The bag, on the device. Prices are only for display: checkout re-prices every
- * line on the server. Kept in memory for now (backlog: keep it across app restarts).
+ * line on the server. Kept on the device across app restarts (B-16), like the website keeps it in the browser.
  */
 export interface BagLine {
   variantId: string;
@@ -27,7 +29,9 @@ interface BagState {
   clear: () => void;
 }
 
-export const useBag = create<BagState>()((set) => ({
+export const useBag = create<BagState>()(
+  persist(
+    (set) => ({
   lines: [],
   add: (line, quantity) =>
     set((state) => {
@@ -57,7 +61,16 @@ export const useBag = create<BagState>()((set) => ({
             ),
     })),
   clear: () => set({ lines: [] }),
-}));
+    }),
+    {
+      name: 'iwc-bag',
+      version: 1,
+      storage: createJSONStorage(() => AsyncStorage),
+      // Only the lines are saved; the functions come from the code.
+      partialize: (state) => ({ lines: state.lines }),
+    },
+  ),
+);
 
 export function bagCount(lines: BagLine[]): number {
   return lines.reduce((n, l) => n + l.quantity, 0);

@@ -17,6 +17,7 @@
     "@expo-google-fonts/montserrat": "^0.4.2",
     "@expo-google-fonts/poppins": "^0.4.1",
     "@expo/vector-icons": "^14.0.0",
+    "@react-native-async-storage/async-storage": "1.23.1",
     "@react-navigation/native": "^7.0.0",
     "@repo/db": "workspace:*",
     "@repo/shared": "workspace:*",

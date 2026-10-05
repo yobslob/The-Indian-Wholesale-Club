@@ -2,10 +2,13 @@ import { useCallback, useState } from 'react';
 
 import { DbError } from '@repo/db';
 
+import { apiPost } from '@/lib/api';
+
 /**
  * Runs one admin write with a busy flag and a readable error. The database
  * decides (RLS + is_admin(), SQL rules); the phone only shows the answer.
- * Admin-only screens, so the SQL error code is shown to help the operator.
+ * Admin-only screens, so the SQL error code is shown to help the operator. After a write, the website refreshes its
+ * store pages (B-17), so customers see the change at once; if that call fails, its 5-minute fallback still does.
  */
 export function useAction(onDone?: () => void) {
   const [busy, setBusy] = useState(false);
@@ -17,6 +20,7 @@ export function useAction(onDone?: () => void) {
       setError(null);
       try {
         await task();
+        void apiPost('/admin/revalidate', {});
         onDone?.();
         return true;
       } catch (err) {

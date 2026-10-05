@@ -63,6 +63,9 @@ actions; those from the app's admin screens and the automatic cutoff wait for th
   in the hosted dev DB and applies `supabase/migrations/`. The CLI output lists which seed files it ran (`--no-seed` skips
   them); the seeds include the dev demo data (placeholders, `dev_preview` on). Never run it against production.
 - **Local admin in one step:** `pnpm dev:admin <email> <password> [us|india]` (`scripts/dev-admin.mjs`, local database only)
+- **Launch check (C8):** `pnpm launch:check` lists what still blocks going live (estimates, settings, placeholder or demo
+  data, unapproved state text, a dev cycle, the timers and Vault settings, stuck emails, open launch questions,
+  TODO(founder) markers on customer pages). Read-only. For production: `pnpm launch:check --url=<db url> --allow-remote`.
 - **Pricing estimates (D-047, C6):** `pnpm dev:estimates` loads Claude's researched estimates (`supabase/seed/estimates.sql`,
   each with its source and date) into the local database without a reset, filling only empty settings; a local reset
   loads them too. For the hosted dev database, run that file in the SQL editor. Never in production (C8 launch check).

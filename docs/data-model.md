@@ -97,7 +97,9 @@ settings hold Claude's researched estimates, with source, link and date; admin-o
 when its value changes (`_pricing_estimate_replaced`); `_load_pricing_estimates()` fills only empty settings (dev seed). Migration 20 (C7): `admin_sales(since)` and
 `admin_demand(since)` (admin only; real numbers computed in SQL); `search_queries` (the words searched and the number of
 matches, no user or address; admin read) written by `store_search(q, offset, limit)`, which the website and app search
-now call. `guest_order_lookup(number, email)` returns the
+now call. Migration 21 (B-3): `rate_limit_hits` (unlogged; keyed-hash caller + rule, one-minute windows) and
+`rate_limit_hit()` (service only). Migration 22 (B-8): `admin_attention()` (counts of recent server errors, payments to
+check and stuck emails, for Today; the tables stay service-only). `guest_order_lookup(number, email)` returns the
 same shape for guests and is **service-only** (the server route rate-limits it). A test keeps its fields identical to the views'.
 `checkout_context(variant_ids, promo_code)` (migration 3, **service-only**) returns what the server needs to price a bag in
 one round trip: the variants as customers can buy them (through `store_*`), the promo if usable now, the shipping settings

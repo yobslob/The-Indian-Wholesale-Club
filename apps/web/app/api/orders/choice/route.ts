@@ -34,7 +34,7 @@ const NOT_OPEN = 'This order can no longer be changed here. Reply to your order 
  * refunded first, then the database records it and re-checks the amount.
  */
 export async function POST(request: Request): Promise<NextResponse<{ ok: true } | { error: string }>> {
-  const limited = limitRequest(request.headers, 'orderLookup');
+  const limited = await limitRequest(request.headers, 'orderLookup');
   if (limited) return limited;
   const parsed = bodySchema.safeParse(await request.json().catch(() => null));
   if (!parsed.success) return NextResponse.json({ error: NOT_OPEN }, { status: 404 });

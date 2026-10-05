@@ -548,6 +548,19 @@ isOneToOne: false
                   Relationships: [
                     
                   ]
+                },"rate_limit_hits": {
+                  Row: {
+                    "hits": number,"key": string,"window_start": string
+                  }
+                  Insert: {
+                    "hits"?: number,"key": string,"window_start": string
+                  }
+                  Update: {
+                    "hits"?: number,"key"?: string,"window_start"?: string
+                  }
+                  Relationships: [
+                    
+                  ]
                 },"region_photos": {
                   Row: {
                     "alt_text": string,"created_at": string,"id": string,"region_id": string,"sort_order": number,"storage_path": string
@@ -1118,6 +1131,9 @@ isOneToOne: false
 "accept_fast_offer":
 { Args: { "p_move": string,"p_payment_intent": string }; Returns: undefined
                            },
+"admin_attention":
+{ Args: Record<PropertyKey, never>; Returns: Json
+                           },
 "admin_create_listing":
 { Args: { "p_listing": Json }; Returns: string
                            },
@@ -1199,6 +1215,9 @@ isOneToOne: false
                            },
 "move_order":
 { Args: { "p_note"?: string,"p_order": string,"p_to_cycle": string }; Returns: string
+                           },
+"rate_limit_hit":
+{ Args: { "p_key": string,"p_limit": number,"p_window_seconds": number }; Returns: Json
                            },
 "record_payout":
 { Args: { "p_method": string,"p_note"?: string,"p_pickups": (string)[],"p_receipt_path"?: string,"p_reference"?: string,"p_vendor": string }; Returns: string

@@ -44,3 +44,20 @@ test('Today shows an order change live, without a reload', async ({ page }) => {
   if (updateError) throw updateError;
   await expect(page.getByText(new RegExp(`${order!.order_number} is now`))).toBeVisible({ timeout: 20_000 });
 });
+
+test('the app admin can refresh the store pages; nobody else can (B-17)', async ({ request }) => {
+  const { createClient } = await import('@supabase/supabase-js');
+  const auth = createClient(process.env.NEXT_PUBLIC_SUPABASE_URL ?? '', process.env.NEXT_PUBLIC_SUPABASE_ANON_KEY ?? '');
+  const token = async (email: string, password: string): Promise<string> => {
+    const { data, error } = await auth.auth.signInWithPassword({ email, password });
+    if (error || !data.session) throw error ?? new Error('no session');
+    return data.session.access_token;
+  };
+
+  expect((await request.post('/admin/revalidate')).status()).toBe(404);
+  const customer = await token(E2E_CUSTOMER.email, E2E_CUSTOMER.password);
+  expect((await request.post('/admin/revalidate', { headers: { authorization: `Bearer ${customer}` } })).status()).toBe(404);
+  const admin = await token(E2E_ADMIN.email, E2E_ADMIN.password);
+  const ok = await request.post('/admin/revalidate', { headers: { authorization: `Bearer ${admin}` } });
+  expect(ok.status()).toBe(200);
+});

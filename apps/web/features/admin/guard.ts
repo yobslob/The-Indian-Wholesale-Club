@@ -3,6 +3,7 @@ import 'server-only';
 import { notFound, redirect } from 'next/navigation';
 
 import { currentUser, sessionClient } from '@/lib/supabase/server';
+import { serviceClient } from '@/lib/supabase/service';
 
 import type { IwcClient } from '@repo/db';
 
@@ -58,4 +59,20 @@ export async function requireAdminAction(): Promise<{
   const access = await adminAccess();
   if (access.state !== 'admin') notFound();
   return access;
+}
+
+/**
+ * The app's admin calling a website API (B-17): `Authorization: Bearer <access token>`, verified with Supabase Auth,
+ * then the same rule as the pages (email in ADMIN_EMAILS and profiles.role = 'admin'). False for anyone else.
+ */
+export async function isAdminBearer(request: Request): Promise<boolean> {
+  const header = request.headers.get('authorization');
+  const token = header?.startsWith('Bearer ') ? header.slice(7).trim() : '';
+  if (!token) return false;
+  const service = serviceClient();
+  const { data, error } = await service.auth.getUser(token);
+  const email = data.user?.email?.toLowerCase();
+  if (error || !data.user || !email || !allowlist().has(email)) return false;
+  const { data: profile } = await service.from('profiles').select('role').eq('id', data.user.id).maybeSingle();
+  return profile?.role === 'admin';
 }

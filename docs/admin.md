@@ -32,7 +32,9 @@ Shops never get logins. The founder and COO enter all shop data (D-018).
 ## Desks (D-007)
 `profiles.desk` orders Today (C7): the admin's own desk's jobs first (India: pickups, payouts, drafts, re-checks; US:
 confirmed orders, orders to ship), the other desk's below. Both admins can open every section (D-027). Today also shows
-new orders and order status changes live (Supabase Realtime on `orders`, PR-7), website and app.
+new orders and order status changes live (Supabase Realtime on `orders`, PR-7), website and app, and a "Needs
+attention" card when there are recent server errors, payments to check or stuck customer emails (B-8). App admin
+writes refresh the website's store pages at once (`POST /admin/revalidate`, B-17).
 
 ## Sections (web skeleton since R5: working screens on real data, plain styling)
 | Section | Job | Main desk | Web | App |

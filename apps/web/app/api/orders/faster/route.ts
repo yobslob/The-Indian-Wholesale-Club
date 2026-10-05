@@ -24,7 +24,7 @@ export async function POST(
 ): Promise<
   NextResponse<{ clientSecret: string; paymentIntentId: string; priceCents: number } | { error: string }>
 > {
-  const limited = limitRequest(request.headers, 'orderLookup');
+  const limited = await limitRequest(request.headers, 'orderLookup');
   if (limited) return limited;
   if (!isStripeConfigured()) {
     return NextResponse.json({ error: 'Payments are not available right now.' }, { status: 503 });

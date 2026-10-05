@@ -28,7 +28,7 @@ const PROBLEM_MESSAGE = {
 export async function POST(
   request: Request,
 ): Promise<NextResponse<CheckoutStartResponse | CheckoutErrorResponse>> {
-  const limited = limitRequest(request.headers, 'checkout');
+  const limited = await limitRequest(request.headers, 'checkout');
   if (limited) return limited;
   if (!isStripeConfigured()) {
     logger.error('checkout.stripe_unconfigured');

@@ -18,7 +18,7 @@ const bodySchema = z.object({ paymentIntentId: z.string().regex(/^pi_[A-Za-z0-9_
 export async function POST(
   request: Request,
 ): Promise<NextResponse<FinalizeResponse | CheckoutErrorResponse>> {
-  const limited = limitRequest(request.headers, 'checkout');
+  const limited = await limitRequest(request.headers, 'checkout');
   if (limited) return limited;
   if (!isStripeConfigured())
     return NextResponse.json({ error: 'Payments are not available right now.' }, { status: 503 });

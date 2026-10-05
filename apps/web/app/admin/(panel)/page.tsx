@@ -1,6 +1,6 @@
 import Link from 'next/link';
 
-import { getMyDesk, getOpenCycle, getTodaySummary } from '@repo/db/admin';
+import { attentionLines, getAttention, getMyDesk, getOpenCycle, getTodaySummary } from '@repo/db/admin';
 
 import { requireAdminPage } from '@/features/admin/guard';
 import { LiveFeed } from '@/features/admin/live-feed';
@@ -12,11 +12,13 @@ import { PageTitle, SectionTitle, utc } from '@/features/admin/ui';
  */
 export default async function TodayPage(): Promise<React.JSX.Element> {
   const { client, user } = await requireAdminPage();
-  const [summary, cycle, desk] = await Promise.all([
+  const [summary, cycle, desk, attention] = await Promise.all([
     getTodaySummary(client),
     getOpenCycle(client),
     getMyDesk(client, user.id),
+    getAttention(client),
   ]);
+  const alerts = attentionLines(attention);
   const count = (status: keyof typeof summary.ordersByStatus) =>
     summary.ordersByStatus[status] ?? 0;
 
@@ -67,6 +69,16 @@ export default async function TodayPage(): Promise<React.JSX.Element> {
           </p>
         )}
       </section>
+      {alerts.length > 0 ? (
+        <section className="border-caution space-y-1 rounded-md border p-4">
+          <h2 className="text-caution font-medium">Needs attention</h2>
+          <ul className="list-disc space-y-1 pl-5 text-sm">
+            {alerts.map((line) => (
+              <li key={line}>{line}</li>
+            ))}
+          </ul>
+        </section>
+      ) : null}
       <LiveFeed />
       {desk ? <SectionTitle>{desk === 'india' ? 'India desk' : 'US desk'}</SectionTitle> : null}
       {list(mine)}

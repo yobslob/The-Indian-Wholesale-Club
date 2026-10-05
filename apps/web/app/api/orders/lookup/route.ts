@@ -28,7 +28,7 @@ const NOT_FOUND = 'We could not find an order with that number and email.';
 export async function POST(
   request: Request,
 ): Promise<NextResponse<OrderDetail | { error: string }>> {
-  const limited = limitRequest(request.headers, 'orderLookup');
+  const limited = await limitRequest(request.headers, 'orderLookup');
   if (limited) return limited;
   const parsed = bodySchema.safeParse(await request.json().catch(() => null));
   if (!parsed.success) return NextResponse.json({ error: NOT_FOUND }, { status: 404 });

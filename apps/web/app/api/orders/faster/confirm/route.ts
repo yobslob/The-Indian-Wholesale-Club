@@ -11,7 +11,7 @@ const bodySchema = z.object({ paymentIntentId: z.string().regex(/^pi_[A-Za-z0-9_
 
 /** POST /api/orders/faster/confirm (D-064): after paying, the new window is set (or the payment refunded). */
 export async function POST(request: Request): Promise<NextResponse<{ ok: true } | { error: string }>> {
-  const limited = limitRequest(request.headers, 'orderLookup');
+  const limited = await limitRequest(request.headers, 'orderLookup');
   if (limited) return limited;
   const parsed = bodySchema.safeParse(await request.json().catch(() => null));
   if (!parsed.success) return NextResponse.json({ error: 'Invalid request.' }, { status: 400 });

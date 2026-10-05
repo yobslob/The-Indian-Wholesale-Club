@@ -1,3 +1,5 @@
+import './storage-stub';
+
 import assert from 'node:assert/strict';
 import { beforeEach, describe, it } from 'node:test';
 
@@ -41,5 +43,17 @@ describe('app bag', () => {
       useBag.getState().lines.map((l) => l.variantId),
       ['v-2'],
     );
+  });
+});
+
+describe('app bag across restarts (B-16)', () => {
+  it('saves the lines on the device as they change', async () => {
+    const { storedValues } = await import('./storage-stub');
+    useBag.getState().clear();
+    useBag.getState().add(saree, 2);
+    await new Promise((r) => setTimeout(r, 10));
+    const saved = JSON.parse(storedValues.get('iwc-bag') ?? '{}') as { state?: { lines?: BagLine[] } };
+    assert.equal(saved.state?.lines?.[0]?.variantId, 'v-saree');
+    assert.equal(saved.state?.lines?.[0]?.quantity, 2);
   });
 });

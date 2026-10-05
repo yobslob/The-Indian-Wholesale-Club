@@ -140,3 +140,22 @@ export async function getDemand(client: IwcClient, since: Date | null): Promise<
   const data = unwrap(await client.rpc('admin_demand', since ? { p_since: since.toISOString() } : {}));
   return demandSchema.parse(data);
 }
+
+const attentionSchema = z.object({ errors_24h: z.number(), payments_to_check: z.number(), emails_stuck: z.number() });
+export type Attention = z.infer<typeof attentionSchema>;
+
+/** B-8: what an admin should look at (server errors in 24 h, payments to check, stuck customer emails). Counts only. */
+export async function getAttention(client: IwcClient): Promise<Attention> {
+  return attentionSchema.parse(unwrap(await client.rpc('admin_attention')));
+}
+
+/** The lines an admin reads for Attention; empty when all is well. */
+export function attentionLines(a: Attention): string[] {
+  return [
+    a.payments_to_check > 0
+      ? `${a.payments_to_check} payment(s) refunded or unmatched: check them in Stripe (failed_reconciliations)`
+      : '',
+    a.emails_stuck > 0 ? `${a.emails_stuck} customer email(s) stuck in the outbox: is email set up (ops.md)?` : '',
+    a.errors_24h > 0 ? `${a.errors_24h} server error(s) in the last 24 hours (admin_error_events, the logs)` : '',
+  ].filter(Boolean);
+}

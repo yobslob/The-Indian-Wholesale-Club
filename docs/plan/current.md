@@ -4,7 +4,7 @@
 **C5 (Customer messages) is built** (2026-10-06): an email for every order update, keep-or-cancel after a delay, self-service cancel. **C4 (Cycles end to end) is built** (2026-10-03). **C3 (Listing from the field) is built** (2026-10-01): an admin lists a product on a phone (camera, variants,
 prices, draft → publish) and it reaches the store; tested end to end in the app's web preview and by E2E flow 2 on the
 web (same database call). C2 is built too. **Waiting on the founder:** the COO's listing on a real phone; approve the
-six region drafts; replace Claude's pricing estimates (labelled in Settings, C6) with your own numbers before launch; set "days between cutoffs" (D-063). **Next:** C8 launch (C7 built 2026-10-06). E2E flow 6 covers the cancel and delay choices; the paid faster-delivery offer is covered by unit + SQL tests only.
+six region drafts; replace Claude's pricing estimates (labelled in Settings, C6) with your own numbers before launch; set "days between cutoffs" (D-063). **Next:** C8's founder part (8.6): answers, policy pages, production. Claude's C8 items are built (2026-10-06). E2E flow 6 covers the cancel and delay choices; the paid faster-delivery offer is covered by unit + SQL tests only.
 
 ## Steps
 | Step | Status | Evidence |
@@ -93,6 +93,7 @@ six region drafts; replace Claude's pricing estimates (labelled in Settings, C6)
 | 2026-10-06 | C6 | Claude, founder's machine, local Supabase (migration 19) | web research 2026-10-06: Trading Economics (USD/INR 96.48 on 2026-10-05; FBIL 95.97 on 2026-09-28), KPMG (2026-02 removal of the 25% India tariff), tariffstool (2026-09-14: 16.5% MFN + 10% on clothing), PIB / C.H. Robinson (Section 301 forced-labour tariff, India 10% from 2026-07-24), bifpl + Freightos (air freight), AIMS360 (margins), USPS Ground Advantage 2–5 business days (domestic days already set by the founder, kept) · `db-test.mjs` 26/26 (new `pricing_estimates.test.sql`) · `pnpm dev:estimates` filled 5 empty settings locally · typecheck + lint web, app, db OK | OK |
 | 2026-10-06 | C4/C5 E2E | Claude, founder's machine (ports 3000 and 8081 free) | `check.mjs docs typecheck lint test build http e2e bundle`: all OK except e2e, 12/13: checkout said "not open": the founder had cut off `DEV-OPEN` with no days between cutoffs, so no cycle opened (D-063, as designed). Claude opened `DEV-OPEN-2` with placeholder dates relative to today (as `seed/demo.sql` does, noted on the cycle) and made E2E setup fail with that explanation instead. New flow 6 (`customer-choices.spec.ts`) + flow 1 on a shared `buy.ts` helper: **e2e 16/16** (55.6 s). The run showed email is not configured in `.env.local` (outbox waits); the after-action send now returns at once in that case | OK |
 | 2026-10-06 | C7 | Claude, founder's machine, local Supabase (migration 20) | `db-test.mjs` 27/27 (new `insights.test.sql`: sales counted like the order rules, by shop with shop cost, by category, a period; search recorded once per first page, normalised, no person; demand lists; admin only). First run caught a real grant gap (admin functions callable by anon; revoke from `public` alone does not remove Supabase's default grants): fixed in the migration and locally · `check.mjs build e2e`: **e2e 18/18** (flow 7: no-result search in Insights; Today live update within a second) · typecheck + lint web, app, db OK. The app's live Today and paged search: typecheck only, not run on a device | OK |
+| 2026-10-06 | C8 (8.1–8.5) | Claude, founder's machine, local Supabase (migrations 21, 22; ports 3000/8081 free) | `db-test.mjs` 29/29 (new `rate_limit.test.sql`, `admin_attention.test.sql`) · app unit tests incl. the persisted bag (3/3 cart) · web 29/29 · `check.mjs typecheck lint test build http e2e bundle` all OK: **e2e 19/19** (new: `/admin/revalidate` 404 for visitors and customers, 200 for an admin token), `/` 15 ms 117 KB · `pnpm launch:check` on the local database: 5 of 16 OK, exit 1 as intended | OK |
 
 ## C1 sub-steps (design)
 | # | Sub-step | Status |
@@ -169,6 +170,16 @@ six region drafts; replace Claude's pricing estimates (labelled in Settings, C6)
 | 7.1 | Migration 20: `admin_sales` (pieces and revenue by state, category, shop with shop cost; active lines of paid, not-cancelled orders; any period; it replaces a 10,000-row sum in the page that also left out partly refunded orders), `admin_demand` (top searches, searches with no results, most saved), `search_queries` written by `store_search` (website + app search; words and match count only). Insights page with 30 / 90 days / all time | ✅ committed |
 | 7.2 | Today: the admin's desk first (D-007), live orders feed (Realtime on `orders`, PR-7) on the website and in the app | ✅ committed |
 | 7.3 | E2E flow 7 (Insights shows a no-result search; Today shows an order change live) | ✅ committed |
+
+## C8 sub-steps (launch readiness)
+| # | Sub-step | Status |
+|---|---|---|
+| 8.1 | `pnpm launch:check` (read-only): 16 checks over the database and the repo; on the local database today 11 still to do (estimates, `cycle_days`, placeholder catalogue, demo data, dev preview, six state texts to approve, the dev cycle, Vault settings, stuck emails, Q-5/Q-9/Q-10/Q-19/Q-30, TODO(founder) on 7 customer pages) | ✅ committed |
+| 8.2 | B-16 the app's bag kept across restarts (AsyncStorage, new dependency at Expo SDK 52's version) | ✅ committed |
+| 8.3 | B-17 app admin writes refresh the website's store pages (`POST /admin/revalidate`, admin bearer only) | ✅ committed |
+| 8.4 | B-3 shared rate limiter (migration 21; keyed-hash IP; in-memory fallback); the website's guest lookup uses it too | ✅ committed |
+| 8.5 | B-8 Today's "Needs attention" (migration 22 `admin_attention`), website and app | ✅ committed |
+| 8.6 | Founder's part: Q-5, Q-9 (domain + email), Q-10, Q-19, Q-30, Q-31; policy and info pages; approve state texts; own pricing numbers; production deploy (D-044); Expo SDK upgrade (B-9) together with a phone test | waiting |
 
 ## R7 sub-steps
 | # | Sub-step | Status |

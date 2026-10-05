@@ -1,7 +1,7 @@
 import assert from 'node:assert/strict';
 import { describe, it } from 'node:test';
 
-import { rateLimit } from '../lib/rate-limit';
+import { rateLimit } from '../lib/rate-limit-memory';
 
 describe('rateLimit (sliding window)', () => {
   const rule = { limit: 2, windowMs: 1000 };

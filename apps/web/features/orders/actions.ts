@@ -6,7 +6,7 @@ import { z } from 'zod';
 import { lookupGuestOrder } from '@repo/db/server';
 
 import { errorMessage, logger } from '@/lib/logger';
-import { rateLimit, RULES } from '@/lib/rate-limit';
+import { limitRequest } from '@/lib/rate-limit';
 import { serviceClient } from '@/lib/supabase/service';
 
 import type { OrderDetail } from '@repo/db/store';
@@ -28,9 +28,8 @@ const lookupSchema = z.object({
  * such order" so it can't be used to probe for orders.
  */
 export async function lookupOrderAction(_prev: LookupState, form: FormData): Promise<LookupState> {
-  const h = await headers();
-  const ip = h.get('x-forwarded-for')?.split(',')[0]?.trim() || h.get('x-real-ip') || 'local';
-  if (!rateLimit(`${ip}:orderLookup`, RULES.orderLookup).ok) {
+  // The same shared limit as the app's lookup (B-3).
+  if (await limitRequest(await headers(), 'orderLookup')) {
     return { order: null, error: 'Too many attempts. Please wait a minute and try again.' };
   }
   const parsed = lookupSchema.safeParse({

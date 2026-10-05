@@ -2,7 +2,7 @@ import { useRouter } from 'expo-router';
 import { Fragment, useEffect, useState } from 'react';
 import { Pressable, Text } from 'react-native';
 
-import { getMyDesk, getOpenCycle, getTodaySummary } from '@repo/db/admin';
+import { attentionLines, getAttention, getMyDesk, getOpenCycle, getTodaySummary } from '@repo/db/admin';
 import { formatUsd } from '@repo/shared/domain';
 
 import type { Href } from 'expo-router';
@@ -22,12 +22,13 @@ export default function TodayScreen(): React.JSX.Element {
   const { session, setViewingStore } = useSession();
   const userId = session?.user.id ?? '';
   const { data, error, loading, reload } = useQuery(`admin:today:${userId}`, async () => {
-    const [summary, cycle, desk] = await Promise.all([
+    const [summary, cycle, desk, attention] = await Promise.all([
       getTodaySummary(supabase),
       getOpenCycle(supabase),
       userId ? getMyDesk(supabase, userId) : Promise.resolve(null),
+      getAttention(supabase),
     ]);
-    return { summary, cycle, desk };
+    return { summary, cycle, desk, alerts: attentionLines(attention) };
   });
   const [live, setLive] = useState<string[]>([]);
 
@@ -98,6 +99,14 @@ export default function TodayScreen(): React.JSX.Element {
             <Button kind="link" label="Cycles" onPress={() => router.push('/admin/cycles')} />
           </Card>
         )
+      ) : null}
+      {data && data.alerts.length > 0 ? (
+        <Card>
+          <Text className="text-caution font-medium">Needs attention</Text>
+          {data.alerts.map((line) => (
+            <Body key={line}>{line}</Body>
+          ))}
+        </Card>
       ) : null}
       {live.length > 0 ? (
         <Card>
