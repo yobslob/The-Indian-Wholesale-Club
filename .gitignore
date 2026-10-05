@@ -74,3 +74,6 @@ coverage/
 
 # Catalogue photos: large files that stay on the founder's machine (catalogue/README.md)
 catalogue/photos/
+
+# Supabase Studio saved queries (local, may hold secrets)
+supabase/snippets/

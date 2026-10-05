@@ -16,6 +16,7 @@ import { SITE_NAME } from '@/lib/site';
 
 import { orderConfirmationHtml, orderConfirmationSubject } from './order-confirmation';
 import { orderUpdateEmail } from './order-update';
+import { isReservedAddress } from './reserved';
 
 import type { IwcClient } from '@repo/db';
 import type { OrderDetail } from '@repo/db/store';
@@ -68,6 +69,10 @@ export async function deliverOutboxRow(
     return 'skipped';
   }
   if (!(await claimEmail(service, row.id))) return 'skipped';
+  if (isReservedAddress(row.recipient)) {
+    await markEmailSent(service, row.id, null); // a test address: nothing can ever arrive there
+    return 'skipped';
+  }
   try {
     const payload = row.payload as { orderNumber?: unknown };
     if (typeof payload.orderNumber !== 'string') throw new Error(`Outbox row without an order (${row.kind})`);

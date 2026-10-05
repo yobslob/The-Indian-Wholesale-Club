@@ -2,6 +2,7 @@ import assert from 'node:assert/strict';
 import { describe, it } from 'node:test';
 
 import { orderUpdateEmail } from '../lib/email/order-update';
+import { isReservedAddress } from '../lib/email/reserved';
 
 import type { OrderDetail } from '@repo/db/store';
 
@@ -100,5 +101,12 @@ describe('order update emails (B-20)', () => {
   it('no email for internal or unknown kinds, or an offer that is gone', () => {
     assert.equal(mail('note'), null);
     assert.equal(mail('faster_delivery_offer'), null);
+  });
+});
+
+describe('reserved test addresses are never sent to', () => {
+  it('skips .test, .example, .invalid and example.com, sends real domains', () => {
+    for (const a of ['e2e-customer@iwc.test', 'a@shop.example', 'x@foo.invalid', 'b@example.com']) assert.equal(isReservedAddress(a), true, a);
+    for (const a of ['asha@gmail.com', 'founder@iwc.in']) assert.equal(isReservedAddress(a), false, a);
   });
 });
