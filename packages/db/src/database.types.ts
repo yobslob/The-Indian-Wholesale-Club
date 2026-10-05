@@ -648,6 +648,19 @@ isOneToOne: false
       referencedColumns: ["id"]
     }
                   ]
+                },"search_queries": {
+                  Row: {
+                    "created_at": string,"id": number,"query": string,"results": number
+                  }
+                  Insert: {
+                    "created_at"?: string,"id"?: never,"query": string,"results": number
+                  }
+                  Update: {
+                    "created_at"?: string,"id"?: never,"query"?: string,"results"?: number
+                  }
+                  Relationships: [
+                    
+                  ]
                 },"stock_movements": {
                   Row: {
                     "actor": string | null,"created_at": string,"delta_listed": number,"delta_reserved": number,"id": number,"note": string | null,"reason": Database["public"]['Enums']["stock_reason"],"ref_id": string | null,"ref_type": string | null,"variant_id": string
@@ -1108,6 +1121,12 @@ isOneToOne: false
 "admin_create_listing":
 { Args: { "p_listing": Json }; Returns: string
                            },
+"admin_demand":
+{ Args: { "p_since"?: string }; Returns: Json
+                           },
+"admin_sales":
+{ Args: { "p_since"?: string }; Returns: Json
+                           },
 "admin_set_listed_qty":
 { Args: { "p_note"?: string,"p_qty_listed": number,"p_variant": string }; Returns: undefined
                            },
@@ -1213,6 +1232,35 @@ isOneToOne: false
 "store_region_page":
 { Args: { "p_region_slug": string }; Returns: Json
                            },
+"store_search":
+{ Args: { "p_limit"?: number,"p_offset"?: number,"p_query": string }; Returns: {
+              "attributes": Json | null,
+"category_id": string | null,
+"category_name": string | null,
+"category_slug": string | null,
+"craft": string | null,
+"description": string | null,
+"id": string | null,
+"is_curated": boolean | null,
+"name": string | null,
+"price_cents": number | null,
+"primary_image_path": string | null,
+"product_type": Database["public"]['Enums']["product_type"] | null,
+"published_at": string | null,
+"region_id": string | null,
+"region_name": string | null,
+"region_slug": string | null,
+"search": unknown,
+"slug": string | null,
+"story": string | null,
+"summary": string | null
+            }[]
+                          SetofOptions: {
+        from: "*"
+        to: "store_products"
+        isOneToOne: false
+        isSetofReturn: true
+      } },
 "store_type_rows":
 { Args: { "p_type": string }; Returns: Json
                            }

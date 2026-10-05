@@ -30,8 +30,9 @@ Shops never get logins. The founder and COO enter all shop data (D-018).
   changes (stock after a pickup, a confirmed quantity) within the 5-minute cache fallback (`engineering.md` PR-1).
 
 ## Desks (D-007)
-`profiles.desk` is meant to pick the default "Today" screen. **Not used yet:** both admins get the same Today. Both admins
-can open every section (D-027).
+`profiles.desk` orders Today (C7): the admin's own desk's jobs first (India: pickups, payouts, drafts, re-checks; US:
+confirmed orders, orders to ship), the other desk's below. Both admins can open every section (D-027). Today also shows
+new orders and order status changes live (Supabase Realtime on `orders`, PR-7), website and app.
 
 ## Sections (web skeleton since R5: working screens on real data, plain styling)
 | Section | Job | Main desk | Web | App |
@@ -47,7 +48,7 @@ can open every section (D-027).
 | **Reviews** | approve or reject customer reviews before they appear (D-052, D-056); "verified buyer" is set by the database | both | ✓ | — |
 | **Customers** | customer list, orders per customer | US | ✓ | — |
 | **Promotions** | promo codes (kept from the old admin) | US | ✓ | — |
-| **Insights** | sales by region/category/vendor, demand signals (searches, saved items) → what to list next | both | ✓ (sales by region only so far) | — |
+| **Insights** | sales by state, category and shop (with what the shops were paid), for 30 days, 90 days or all time; searches that found nothing (what to list next), top searches, most saved pieces. Real numbers only, computed in SQL (`admin_sales`, `admin_demand`) | both | ✓ | — |
 | **Settings** | pricing settings, each estimate labelled with its source and date until the founder saves their own (D-047) (admins are managed in the DB + `ADMIN_EMAILS`, `ops.md`) | both | ✓ | — |
 
 The order page refunds unavailable pieces and cancels orders before cutoff, with the amounts from the D-042 rules shown on

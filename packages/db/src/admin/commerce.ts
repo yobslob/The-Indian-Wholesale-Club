@@ -1,3 +1,5 @@
+import { z } from 'zod';
+
 import { unwrap, type Enum, type Insert, type IwcClient, type Update } from '../client';
 
 // ---------------------------------------------------------------- promo codes (kept from the old admin)
@@ -94,34 +96,47 @@ export async function getTodaySummary(client: IwcClient): Promise<TodaySummary> 
 
 // ---------------------------------------------------------------- Insights (real numbers only, no fabricated analytics)
 
-export interface RegionSales {
-  regionName: string;
-  pieces: number;
-  revenueCents: number;
+const salesLineSchema = z.object({
+  name: z.string(),
+  pieces: z.number(),
+  revenue_cents: z.number(),
+  shop_cost_paise: z.number().optional(),
+});
+const salesSchema = z.object({
+  totals: z.object({ orders: z.number(), pieces: z.number(), revenue_cents: z.number() }),
+  by_region: z.array(salesLineSchema),
+  by_category: z.array(salesLineSchema),
+  by_shop: z.array(salesLineSchema),
+});
+export type Sales = z.infer<typeof salesSchema>;
+
+/**
+ * Pieces and revenue by state, category and shop, computed in SQL (admin_sales): active lines of paid orders that
+ * were not cancelled, placed since `since` (all time when null). Revenue is before tax and shipping.
+ */
+export async function getSales(client: IwcClient, since: Date | null): Promise<Sales> {
+  const data = unwrap(await client.rpc('admin_sales', since ? { p_since: since.toISOString() } : {}));
+  return salesSchema.parse(data);
 }
 
-/** Sales per region from paid order items (active items only). */
-export async function salesByRegion(client: IwcClient): Promise<RegionSales[]> {
-  const rows = unwrap(
-    await client
-      .from('order_items')
-      .select(
-        'region_name, quantity, total_price_cents, status, order:orders!inner(payment_status)',
-      )
-      .eq('status', 'active')
-      .eq('order.payment_status', 'paid')
-      .limit(10000),
-  );
-  const byRegion = new Map<string, RegionSales>();
-  for (const row of rows) {
-    const entry = byRegion.get(row.region_name) ?? {
-      regionName: row.region_name,
-      pieces: 0,
-      revenueCents: 0,
-    };
-    entry.pieces += row.quantity;
-    entry.revenueCents += row.total_price_cents;
-    byRegion.set(row.region_name, entry);
-  }
-  return [...byRegion.values()].sort((a, b) => b.revenueCents - a.revenueCents);
+const demandSchema = z.object({
+  top_searches: z.array(z.object({ query: z.string(), count: z.number(), last_results: z.number() })),
+  empty_searches: z.array(z.object({ query: z.string(), count: z.number() })),
+  most_saved: z.array(
+    z.object({
+      id: z.string(),
+      name: z.string(),
+      region: z.string(),
+      status: z.string(),
+      saves: z.number(),
+      available: z.number(),
+    }),
+  ),
+});
+export type Demand = z.infer<typeof demandSchema>;
+
+/** What customers look for (searches, including ones that found nothing) and save, since `since` (admin_demand). */
+export async function getDemand(client: IwcClient, since: Date | null): Promise<Demand> {
+  const data = unwrap(await client.rpc('admin_demand', since ? { p_since: since.toISOString() } : {}));
+  return demandSchema.parse(data);
 }

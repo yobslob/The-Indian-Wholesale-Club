@@ -4,7 +4,7 @@
 **C5 (Customer messages) is built** (2026-10-06): an email for every order update, keep-or-cancel after a delay, self-service cancel. **C4 (Cycles end to end) is built** (2026-10-03). **C3 (Listing from the field) is built** (2026-10-01): an admin lists a product on a phone (camera, variants,
 prices, draft → publish) and it reaches the store; tested end to end in the app's web preview and by E2E flow 2 on the
 web (same database call). C2 is built too. **Waiting on the founder:** the COO's listing on a real phone; approve the
-six region drafts; replace Claude's pricing estimates (labelled in Settings, C6) with your own numbers before launch; set "days between cutoffs" (D-063). **Next:** C7 insights + live admin (C6 built 2026-10-06). E2E flow 6 covers the cancel and delay choices; the paid faster-delivery offer is covered by unit + SQL tests only.
+six region drafts; replace Claude's pricing estimates (labelled in Settings, C6) with your own numbers before launch; set "days between cutoffs" (D-063). **Next:** C8 launch (C7 built 2026-10-06). E2E flow 6 covers the cancel and delay choices; the paid faster-delivery offer is covered by unit + SQL tests only.
 
 ## Steps
 | Step | Status | Evidence |
@@ -92,6 +92,7 @@ six region drafts; replace Claude's pricing estimates (labelled in Settings, C6)
 | 2026-10-06 | pagination | Claude, founder's machine (port 3000 free; own Metro on 8082 and `next start` on 3005, both stopped after) | `db-test.mjs` 25/25 (new `type_rows.test.sql`; `store_pages_v2` made independent of real listings, it failed on the founder's new phone listing) · app on the founder's Android emulator: Browse shows "279 pieces" and the first page; the app's web preview while scrolling Browse requests offset 0, 24 … 168 in pages of 24; Explore Clothing makes one `store_type_rows` call (9 rows, See all each); search "saree" 24 then 32 after Show more · website `/search?q=saree` 24 cards + Show more, `&show=48` all 32 · `check.mjs typecheck lint test build http bundle` OK (`/` 15 ms 117 KB, `/search` 81 ms) · the region album confirmed drawing on the emulator (Delhi) | OK |
 | 2026-10-06 | C6 | Claude, founder's machine, local Supabase (migration 19) | web research 2026-10-06: Trading Economics (USD/INR 96.48 on 2026-10-05; FBIL 95.97 on 2026-09-28), KPMG (2026-02 removal of the 25% India tariff), tariffstool (2026-09-14: 16.5% MFN + 10% on clothing), PIB / C.H. Robinson (Section 301 forced-labour tariff, India 10% from 2026-07-24), bifpl + Freightos (air freight), AIMS360 (margins), USPS Ground Advantage 2–5 business days (domestic days already set by the founder, kept) · `db-test.mjs` 26/26 (new `pricing_estimates.test.sql`) · `pnpm dev:estimates` filled 5 empty settings locally · typecheck + lint web, app, db OK | OK |
 | 2026-10-06 | C4/C5 E2E | Claude, founder's machine (ports 3000 and 8081 free) | `check.mjs docs typecheck lint test build http e2e bundle`: all OK except e2e, 12/13: checkout said "not open": the founder had cut off `DEV-OPEN` with no days between cutoffs, so no cycle opened (D-063, as designed). Claude opened `DEV-OPEN-2` with placeholder dates relative to today (as `seed/demo.sql` does, noted on the cycle) and made E2E setup fail with that explanation instead. New flow 6 (`customer-choices.spec.ts`) + flow 1 on a shared `buy.ts` helper: **e2e 16/16** (55.6 s). The run showed email is not configured in `.env.local` (outbox waits); the after-action send now returns at once in that case | OK |
+| 2026-10-06 | C7 | Claude, founder's machine, local Supabase (migration 20) | `db-test.mjs` 27/27 (new `insights.test.sql`: sales counted like the order rules, by shop with shop cost, by category, a period; search recorded once per first page, normalised, no person; demand lists; admin only). First run caught a real grant gap (admin functions callable by anon; revoke from `public` alone does not remove Supabase's default grants): fixed in the migration and locally · `check.mjs build e2e`: **e2e 18/18** (flow 7: no-result search in Insights; Today live update within a second) · typecheck + lint web, app, db OK. The app's live Today and paged search: typecheck only, not run on a device | OK |
 
 ## C1 sub-steps (design)
 | # | Sub-step | Status |
@@ -161,6 +162,13 @@ six region drafts; replace Claude's pricing estimates (labelled in Settings, C6)
 | # | Sub-step | Status |
 |---|---|---|
 | 6.1 | Researched estimates, each with source and date (D-047): exchange rate ₹96.48/$ (market, 2026-10-05), freight $6.00/kg (forwarder rates for 45–100 kg + fuel surcharge), duty 22% (MFN ~12–16.5% on clothing + India's 10% Section 301 tier since 2026-07-24), margin 100% (keystone), re-check after 14 days (half a cycle, no outside source). Migration 19 `pricing_estimates` + labels in Settings; saving your own number removes the label; `supabase/seed/estimates.sql` / `pnpm dev:estimates` fill only empty settings; the suggested price says "based on estimates" (web catalog, app listing form) | ✅ committed · founder: replace them with your own numbers before launch (C8 refuses estimates) |
+
+## C7 sub-steps (insights + live admin)
+| # | Sub-step | Status |
+|---|---|---|
+| 7.1 | Migration 20: `admin_sales` (pieces and revenue by state, category, shop with shop cost; active lines of paid, not-cancelled orders; any period; it replaces a 10,000-row sum in the page that also left out partly refunded orders), `admin_demand` (top searches, searches with no results, most saved), `search_queries` written by `store_search` (website + app search; words and match count only). Insights page with 30 / 90 days / all time | ✅ committed |
+| 7.2 | Today: the admin's desk first (D-007), live orders feed (Realtime on `orders`, PR-7) on the website and in the app | ✅ committed |
+| 7.3 | E2E flow 7 (Insights shows a no-result search; Today shows an order change live) | ✅ committed |
 
 ## R7 sub-steps
 | # | Sub-step | Status |

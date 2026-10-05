@@ -94,7 +94,10 @@ delay choices with their refunds, from `_order_actions`, `_delay_open`, `_cancel
 the every-minute timer (pg_net, Vault secrets). Migration 18 (D-067): `store_type_rows(type)`, one row per category
 with its total and its first 12 cards (the app's Explore). Migration 19 (C6, D-047): `pricing_estimates` (which pricing
 settings hold Claude's researched estimates, with source, link and date; admin-only); a trigger drops a setting's row
-when its value changes (`_pricing_estimate_replaced`); `_load_pricing_estimates()` fills only empty settings (dev seed). `guest_order_lookup(number, email)` returns the
+when its value changes (`_pricing_estimate_replaced`); `_load_pricing_estimates()` fills only empty settings (dev seed). Migration 20 (C7): `admin_sales(since)` and
+`admin_demand(since)` (admin only; real numbers computed in SQL); `search_queries` (the words searched and the number of
+matches, no user or address; admin read) written by `store_search(q, offset, limit)`, which the website and app search
+now call. `guest_order_lookup(number, email)` returns the
 same shape for guests and is **service-only** (the server route rate-limits it). A test keeps its fields identical to the views'.
 `checkout_context(variant_ids, promo_code)` (migration 3, **service-only**) returns what the server needs to price a bag in
 one round trip: the variants as customers can buy them (through `store_*`), the promo if usable now, the shipping settings

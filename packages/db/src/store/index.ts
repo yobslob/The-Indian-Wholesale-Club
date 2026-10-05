@@ -105,6 +105,23 @@ export async function listProducts(
   return z.array(productCardSchema).parse(data);
 }
 
+/**
+ * Search (website and app): product cards a page at a time (D-067) through store_search, which also records the words
+ * and the number of matches on the first page, for the admin's Insights (no user, no address).
+ */
+export async function searchProducts(
+  client: IwcClient,
+  query: string,
+  page: { offset?: number; limit?: number } = {},
+): Promise<ProductCard[]> {
+  const data = unwrap(
+    await client
+      .rpc('store_search', { p_query: query, p_offset: page.offset ?? 0, p_limit: page.limit ?? 24 })
+      .select(PRODUCT_CARD_COLUMNS),
+  );
+  return z.array(productCardSchema).parse(data);
+}
+
 /** How many live products match (the "N pieces" over a list that loads page by page). */
 export async function countProducts(
   client: IwcClient,

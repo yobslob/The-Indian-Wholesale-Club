@@ -7,6 +7,7 @@ import {
   getProductPage,
   getRegionPage,
   listProducts,
+  searchProducts as searchStore,
   type ProductListFilter,
 } from '@repo/db/store';
 
@@ -50,7 +51,10 @@ export const listProductsCached = unstable_cache(
   options,
 );
 
-/** Search is per query: not cached (dynamic page, still one round trip). `limit` grows with "Show more". */
+/**
+ * Search is per query: not cached (dynamic page, still one round trip). `limit` grows with "Show more". Through
+ * store_search, which records the words for Insights (C7).
+ */
 export function searchProducts(query: string, limit = 25) {
-  return listProducts(storeClient(), { search: query, limit });
+  return searchStore(storeClient(), query, { limit });
 }

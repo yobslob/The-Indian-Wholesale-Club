@@ -116,3 +116,9 @@ export async function listPricingEstimates(client: IwcClient) {
 
 /** The settings the suggested price is built from (shared/domain suggestPrice). */
 export const PRICE_SUGGESTION_SETTINGS = ['fx_inr_per_usd', 'freight_cents_per_kg', 'duty_pct', 'margin_pct'];
+
+/** D-007: the signed-in admin's desk ('us' or 'india'), which orders their Today. Null when not set. */
+export async function getMyDesk(client: IwcClient, userId: string): Promise<Enum<'ops_desk'> | null> {
+  const row = unwrap(await client.from('profiles').select('desk').eq('id', userId).maybeSingle());
+  return row?.desk ?? null;
+}

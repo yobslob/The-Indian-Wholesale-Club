@@ -1,7 +1,7 @@
 import { useState } from 'react';
 import { Pressable, Text, View } from 'react-native';
 
-import { getHome, getTypeRows, listProducts } from '@repo/db/store';
+import { getHome, getTypeRows, searchProducts } from '@repo/db/store';
 
 import { Body, Button, ErrorText, Field, Loading, Screen, Title } from '@/components/ui';
 import { Grid, ProductCard, RegionCard } from '@/features/catalog/cards';
@@ -36,7 +36,7 @@ export default function ExploreScreen(): React.JSX.Element {
     return { regions: [], rows: await getTypeRows(supabase, tab) };
   });
   const search = usePagedQuery(`explore:search:${submitted}`, (offset, limit) =>
-    submitted ? listProducts(supabase, { search: submitted, offset, limit }) : Promise.resolve([]),
+    submitted ? searchProducts(supabase, submitted, { offset, limit }) : Promise.resolve([]),
   );
   const data = view.data;
   const products = submitted ? (search.items ?? []) : [];
