@@ -9,7 +9,7 @@
     "build:ios": "eas build --platform ios",
     "lint": "eslint . --ext .ts,.tsx --max-warnings 0",
     "typecheck": "tsc --noEmit",
-    "test": "tsx --test tests/checkout-request.test.ts tests/cart.test.ts"
+    "test": "tsx --test tests/checkout-request.test.ts tests/cart.test.ts tests/local-host.test.ts"
   },
   "dependencies": {
     "@expo-google-fonts/gelasio": "^0.4.1",

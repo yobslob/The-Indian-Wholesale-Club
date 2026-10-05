@@ -31,7 +31,9 @@ with `NEXT_PUBLIC_SUPABASE_URL=http://127.0.0.1:54321` and the local `anon key` 
 **Running the app (dev, since R6):** copy `apps/app/.env.example` to `apps/app/.env` (never committed). A phone can't reach
 the computer's `127.0.0.1`, so both addresses use the computer's LAN IP (`ipconfig` → IPv4 address): Supabase
 `http://<LAN IP>:54321` with the local anon key, and the website `http://<LAN IP>:3000` (`pnpm --filter web dev`, which
-serves checkout for the app). Phone and computer on the same Wi-Fi; Windows may ask to allow Node.js and Docker on private
+serves checkout for the app). In development a local address in that file (localhost or a LAN IP) follows the
+computer Metro is served from (`apps/app/lib/local-host.ts`), so a new Wi-Fi network or hotspot needs no edit; the Metro
+terminal prints the addresses in use (`[iwc] Supabase: …`). Phone and computer on the same Wi-Fi; Windows may ask to allow Node.js and Docker on private
 networks. Stripe: the same test publishable key as the web. Then `pnpm --filter app dev` and open it in Expo Go.
 The app pins `@stripe/stripe-react-native` to the version Expo Go carries for SDK 52 (the JavaScript and Expo Go's native
 module must match; B-9). After changing dependencies or `.npmrc`, start with `npx expo start --clear` (in `apps/app`) so

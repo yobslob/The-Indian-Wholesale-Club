@@ -1,10 +1,15 @@
 import { createClient } from '@supabase/supabase-js';
+import Constants from 'expo-constants';
 
 import { authStorage } from './auth-storage';
+import { followMetroHost } from './local-host';
 
 import type { Database, IwcClient } from '@repo/db';
 
-const url = process.env.EXPO_PUBLIC_SUPABASE_URL;
+// Development: a local address follows the computer Metro runs on, so a new Wi-Fi network needs no .env edit.
+const url = __DEV__
+  ? followMetroHost(process.env.EXPO_PUBLIC_SUPABASE_URL, Constants.expoConfig?.hostUri)
+  : process.env.EXPO_PUBLIC_SUPABASE_URL;
 const anonKey = process.env.EXPO_PUBLIC_SUPABASE_ANON_KEY;
 
 /** True when both EXPO_PUBLIC_SUPABASE_URL and EXPO_PUBLIC_SUPABASE_ANON_KEY are set (apps/app/.env). */
