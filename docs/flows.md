@@ -28,6 +28,7 @@ open ──cutoff──► collecting ──► packed ──► exported ──
 2. Take photos, then pick the type and category, then fill the name and details. `attributes` are validated per type.
 3. Add variants with their options and the quantity the shop has (`qty_listed`).
 4. Enter the shop price in ₹. The system suggests a USD price from `pricing_settings` (landed cost + margin), and an admin sets the final `price_cents`.
+   While those settings hold Claude's researched estimates (D-047, C6), the suggestion says "based on estimates".
 5. Save as `draft`. An admin reviews it and sets it `live`. Spices stay unpublished until Q-10 is answered (D-032).
 - `qty_confirmed_at` records when the shop last confirmed quantities. The admin sees listings not confirmed within N days
   (N is set in `pricing_settings`) so they can re-check with the shop.

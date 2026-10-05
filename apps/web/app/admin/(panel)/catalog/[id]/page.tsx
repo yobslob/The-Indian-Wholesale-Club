@@ -1,7 +1,12 @@
 import Link from 'next/link';
 import { notFound } from 'next/navigation';
 
-import { getAdminProduct, getPricingSettings } from '@repo/db/admin';
+import {
+  getAdminProduct,
+  getPricingSettings,
+  listPricingEstimates,
+  PRICE_SUGGESTION_SETTINGS,
+} from '@repo/db/admin';
 import { formatUsd, suggestPrice } from '@repo/shared/domain';
 
 import {
@@ -28,10 +33,12 @@ export default async function AdminProductPage({
   const { client } = await requireAdminPage();
   const { id } = await params;
   if (!/^[0-9a-f-]{36}$/.test(id)) notFound();
-  const [product, settings] = await Promise.all([
+  const [product, settings, estimates] = await Promise.all([
     getAdminProduct(client, id),
     getPricingSettings(client),
+    listPricingEstimates(client),
   ]);
+  const estimated = estimates.some((e) => PRICE_SUGGESTION_SETTINGS.includes(e.setting));
   if (!product) notFound();
   // Suggestion only (flows.md §2 step 4); null until every pricing setting and a weight exist (D-047).
   const weightG = product.variants.find((v) => v.weight_g !== null)?.weight_g ?? null;
@@ -128,7 +135,7 @@ export default async function AdminProductPage({
         <div className="sm:col-span-2">
           <p className="text-ink-muted">
             {suggestion
-              ? `Suggested price ${formatUsd(suggestion.suggestedPriceCents)} (landed cost ${formatUsd(suggestion.landedCents)})`
+              ? `Suggested price ${formatUsd(suggestion.suggestedPriceCents)} (landed cost ${formatUsd(suggestion.landedCents)})${estimated ? ', based on estimates (Settings)' : ''}`
               : 'No suggested price: needs the shop price, a variant weight and every pricing setting (D-047).'}
           </p>
         </div>

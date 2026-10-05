@@ -1,6 +1,12 @@
 import { useRouter } from 'expo-router';
 
-import { getPricingSettings, listCategories, listVendors } from '@repo/db/admin';
+import {
+  getPricingSettings,
+  listCategories,
+  listPricingEstimates,
+  listVendors,
+  PRICE_SUGGESTION_SETTINGS,
+} from '@repo/db/admin';
 
 import { ErrorText, Loading, Screen } from '@/components/ui';
 import { ListingForm } from '@/features/admin/listing-form';
@@ -11,10 +17,11 @@ import { useQuery } from '@/lib/use-query';
 export default function NewListingScreen(): React.JSX.Element {
   const router = useRouter();
   const { data, error, loading } = useQuery('admin:new-listing', async () => {
-    const [vendors, categories, pricing] = await Promise.all([
+    const [vendors, categories, pricing, estimates] = await Promise.all([
       listVendors(supabase, { status: 'active' }),
       listCategories(supabase),
       getPricingSettings(supabase),
+      listPricingEstimates(supabase),
     ]);
     return {
       vendors,
@@ -25,6 +32,7 @@ export default function NewListingScreen(): React.JSX.Element {
         dutyPct: pricing.duty_pct,
         marginPct: pricing.margin_pct,
       },
+      pricingEstimated: estimates.some((e) => PRICE_SUGGESTION_SETTINGS.includes(e.setting)),
     };
   });
 

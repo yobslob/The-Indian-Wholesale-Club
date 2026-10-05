@@ -16,6 +16,7 @@
     "prepare": "husky",
     "dev:admin": "node scripts/dev-admin.mjs",
     "dev:photos": "node scripts/dev-photos.mjs",
+    "dev:estimates": "node scripts/dev-estimates.mjs",
     "catalogue": "node scripts/build-catalogue.mjs",
     "catalogue:apply": "node scripts/build-catalogue.mjs --apply",
     "catalogue:folders": "node scripts/build-catalogue.mjs --folders"

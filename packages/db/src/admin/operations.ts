@@ -106,3 +106,13 @@ export async function updatePricingSettings(
 ) {
   unwrap(await client.from('pricing_settings').update(patch).eq('id', 1));
 }
+
+/** Settings that hold Claude's researched estimates (D-047): source, link and date each. Empty = all the founder's. */
+export async function listPricingEstimates(client: IwcClient) {
+  return unwrap(
+    await client.from('pricing_estimates').select('setting, source, source_url, checked_on').order('setting'),
+  );
+}
+
+/** The settings the suggested price is built from (shared/domain suggestPrice). */
+export const PRICE_SUGGESTION_SETTINGS = ['fx_inr_per_usd', 'freight_cents_per_kg', 'duty_pct', 'margin_pct'];

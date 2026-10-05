@@ -1,6 +1,7 @@
-import { getPricingSettings } from '@repo/db/admin';
+import { getPricingSettings, listPricingEstimates } from '@repo/db/admin';
 
 import { updatePricingSettingsAction } from '@/features/admin/actions/settings';
+import { EstimateNote } from '@/features/admin/estimate-note';
 import { requireAdminPage } from '@/features/admin/guard';
 import { button, Field, input, PageTitle, utc } from '@/features/admin/ui';
 
@@ -14,13 +15,20 @@ const plain = (value: number | null) => (value === null ? '' : String(value));
  */
 export default async function SettingsPage(): Promise<React.JSX.Element> {
   const { client } = await requireAdminPage();
-  const s = await getPricingSettings(client);
+  const [s, estimates] = await Promise.all([getPricingSettings(client), listPricingEstimates(client)]);
   return (
     <div className="space-y-6">
       <PageTitle>Settings</PageTitle>
       <p className="text-ink-muted">
         Last updated {utc(s.updated_at)}. Leave a field empty if it is not decided yet.
       </p>
+      {estimates.length > 0 ? (
+        <p className="text-caution max-w-2xl">
+          {estimates.length} setting{estimates.length === 1 ? ' holds' : 's hold'} Claude&apos;s researched estimates
+          (D-047), each with its source below. Saving your own number removes its label. The site cannot go live while
+          an estimate is left.
+        </p>
+      ) : null}
       <form action={updatePricingSettingsAction} className="grid max-w-2xl gap-3 sm:grid-cols-2">
         <h2 className="font-medium sm:col-span-2">Delivery (shown to customers, D-008)</h2>
         <Field label="US delivery days after arrival: min">
@@ -31,6 +39,7 @@ export default async function SettingsPage(): Promise<React.JSX.Element> {
             defaultValue={plain(s.domestic_days_min)}
             className={input}
           />
+          <EstimateNote estimates={estimates} setting="domestic_days_min" />
         </Field>
         <Field label="US delivery days after arrival: max">
           <input
@@ -40,6 +49,7 @@ export default async function SettingsPage(): Promise<React.JSX.Element> {
             defaultValue={plain(s.domestic_days_max)}
             className={input}
           />
+          <EstimateNote estimates={estimates} setting="domestic_days_max" />
         </Field>
         <Field label="Days between cutoffs (D-063; empty = copy the last gap)">
           <input
@@ -131,6 +141,7 @@ export default async function SettingsPage(): Promise<React.JSX.Element> {
             defaultValue={plain(s.fx_inr_per_usd)}
             className={input}
           />
+          <EstimateNote estimates={estimates} setting="fx_inr_per_usd" />
         </Field>
         <Field label="Freight per kg ($)">
           <input
@@ -141,6 +152,7 @@ export default async function SettingsPage(): Promise<React.JSX.Element> {
             defaultValue={dollars(s.freight_cents_per_kg)}
             className={input}
           />
+          <EstimateNote estimates={estimates} setting="freight_cents_per_kg" />
         </Field>
         <Field label="Duty %">
           <input
@@ -151,6 +163,7 @@ export default async function SettingsPage(): Promise<React.JSX.Element> {
             defaultValue={plain(s.duty_pct)}
             className={input}
           />
+          <EstimateNote estimates={estimates} setting="duty_pct" />
         </Field>
         <Field label="Target margin %">
           <input
@@ -161,6 +174,7 @@ export default async function SettingsPage(): Promise<React.JSX.Element> {
             defaultValue={plain(s.margin_pct)}
             className={input}
           />
+          <EstimateNote estimates={estimates} setting="margin_pct" />
         </Field>
         <Field label="Listing quantity counts as stale after (days)">
           <input
@@ -170,6 +184,7 @@ export default async function SettingsPage(): Promise<React.JSX.Element> {
             defaultValue={plain(s.stale_listing_days)}
             className={input}
           />
+          <EstimateNote estimates={estimates} setting="stale_listing_days" />
         </Field>
         <Field label="Leaving soon lists pieces with at most this many left (D-056)">
           <input

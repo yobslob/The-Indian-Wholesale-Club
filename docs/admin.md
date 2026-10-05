@@ -48,7 +48,7 @@ can open every section (D-027).
 | **Customers** | customer list, orders per customer | US | ✓ | — |
 | **Promotions** | promo codes (kept from the old admin) | US | ✓ | — |
 | **Insights** | sales by region/category/vendor, demand signals (searches, saved items) → what to list next | both | ✓ (sales by region only so far) | — |
-| **Settings** | pricing settings (admins are managed in the DB + `ADMIN_EMAILS`, `ops.md`) | both | ✓ | — |
+| **Settings** | pricing settings, each estimate labelled with its source and date until the founder saves their own (D-047) (admins are managed in the DB + `ADMIN_EMAILS`, `ops.md`) | both | ✓ | — |
 
 The order page refunds unavailable pieces and cancels orders before cutoff, with the amounts from the D-042 rules shown on
 the buttons (Stripe first, then the database). **Web only:** refunds need the Stripe secret key, which lives on the server;

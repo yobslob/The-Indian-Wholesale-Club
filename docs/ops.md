@@ -63,6 +63,9 @@ actions; those from the app's admin screens and the automatic cutoff wait for th
   in the hosted dev DB and applies `supabase/migrations/`. The CLI output lists which seed files it ran (`--no-seed` skips
   them); the seeds include the dev demo data (placeholders, `dev_preview` on). Never run it against production.
 - **Local admin in one step:** `pnpm dev:admin <email> <password> [us|india]` (`scripts/dev-admin.mjs`, local database only)
+- **Pricing estimates (D-047, C6):** `pnpm dev:estimates` loads Claude's researched estimates (`supabase/seed/estimates.sql`,
+  each with its source and date) into the local database without a reset, filling only empty settings; a local reset
+  loads them too. For the hosted dev database, run that file in the SQL editor. Never in production (C8 launch check).
   creates or refreshes the account with the role and the `admin_emails` row. Run it again after every `check.mjs db`
   (the reset deletes local accounts). The website also needs the email in `ADMIN_EMAILS` in `apps/web/.env.local`.
 - Admin bootstrap (after the person has signed up once): `insert into admin_emails (email) values ('<email>')` and

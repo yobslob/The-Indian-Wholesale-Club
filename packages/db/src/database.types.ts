@@ -379,6 +379,19 @@ isOneToOne: false
       referencedColumns: ["id"]
     }
                   ]
+                },"pricing_estimates": {
+                  Row: {
+                    "checked_on": string,"created_at": string,"setting": string,"source": string,"source_url": string | null
+                  }
+                  Insert: {
+                    "checked_on": string,"created_at"?: string,"setting": string,"source": string,"source_url"?: string | null
+                  }
+                  Update: {
+                    "checked_on"?: string,"created_at"?: string,"setting"?: string,"source"?: string,"source_url"?: string | null
+                  }
+                  Relationships: [
+                    
+                  ]
                 },"pricing_settings": {
                   Row: {
                     "cycle_days": number | null,"domestic_days_max": number | null,"domestic_days_min": number | null,"duty_pct": number | null,"express_days_max": number | null,"express_days_min": number | null,"express_shipping_cents": number | null,"fast_offer_cents": number | null,"free_shipping_min_cents": number | null,"freight_cents_per_kg": number | null,"fx_inr_per_usd": number | null,"id": number,"leaving_soon_max": number,"margin_pct": number | null,"shipping_flat_cents": number | null,"stale_listing_days": number | null,"updated_at": string,"updated_by": string | null
@@ -1052,6 +1065,9 @@ isOneToOne: false
                            },
 "_leaving_soon_max":
 { Args: Record<PropertyKey, never>; Returns: number
+                           },
+"_load_pricing_estimates":
+{ Args: { "p_checked_on": string,"p_estimates": Json }; Returns: number
                            },
 "_next_cycle_dates":
 { Args: { "p_cycle": Database["public"]['Tables']["cycles"]['Row'] }; Returns: {

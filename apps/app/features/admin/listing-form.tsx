@@ -17,6 +17,8 @@ export interface ListingFormData {
   vendors: { id: string; shop_name: string; region: { name: string } | null }[];
   categories: { id: string; product_type: 'clothing' | 'spice'; name: string; is_active: boolean }[];
   pricing: { fxInrPerUsd: number | null; freightCentsPerKg: number | null; dutyPct: number | null; marginPct: number | null };
+  /** Some of those settings are still Claude's researched estimates (D-047). */
+  pricingEstimated: boolean;
 }
 
 const chip = (on: boolean): string =>
@@ -217,7 +219,7 @@ export function ListingForm({ data, onDone }: { data: ListingFormData; onDone: (
       <View className="bg-surface rounded-md p-3">
         <Body muted>
           {suggestion
-            ? `Suggested ${formatUsd(suggestion.suggestedPriceCents)} (landed ${formatUsd(suggestion.landedCents)}).`
+            ? `Suggested ${formatUsd(suggestion.suggestedPriceCents)} (landed ${formatUsd(suggestion.landedCents)})${data.pricingEstimated ? ', based on estimates' : ''}.`
             : f.shopPrice && weight
               ? 'Set the exchange rate, freight, duty and margin in Settings to see a suggested price.'
               : 'Add the shop price and the weight to see a suggested price.'}
