@@ -2,6 +2,7 @@ import { NextResponse } from 'next/server';
 import { z } from 'zod';
 
 import { finalizeFasterPayment } from '@/features/orders/faster';
+import { sendDueEmails } from '@/lib/email/send';
 import { errorMessage, logger } from '@/lib/logger';
 import { limitRequest } from '@/lib/rate-limit';
 import { serviceClient } from '@/lib/supabase/service';
@@ -15,8 +16,12 @@ export async function POST(request: Request): Promise<NextResponse<{ ok: true } 
   const parsed = bodySchema.safeParse(await request.json().catch(() => null));
   if (!parsed.success) return NextResponse.json({ error: 'Invalid request.' }, { status: 400 });
   try {
-    const result = await finalizeFasterPayment(serviceClient(), parsed.data.paymentIntentId);
-    if (result.ok) return NextResponse.json({ ok: true });
+    const service = serviceClient();
+    const result = await finalizeFasterPayment(service, parsed.data.paymentIntentId);
+    if (result.ok) {
+      await sendDueEmails(service);
+      return NextResponse.json({ ok: true });
+    }
     switch (result.reason) {
       case 'payment_not_complete':
         return NextResponse.json(

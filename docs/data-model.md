@@ -88,7 +88,10 @@ by the functions below), `pricing_settings.fast_offer_cents`, and `store_my_orde
 (the window an order would get from a cycle) and `_set_window(...)` (the INV-6 window change with its visible event).
 A trigger on an order becoming `shipped` lapses an open offer and adds the "coming
 sooner" event. Migration 15: `pickups.arrived_at` / `arrived_by` (picked pieces only). Migration 16: shipping and delivering go
-through `ship_order()` / `deliver_order()`. `guest_order_lookup(number, email)` returns the
+through `ship_order()` / `deliver_order()`. Migration 17 (C5): a trigger queues an `order_update` email for every
+customer-visible order event (`_queue_order_email`); `store_my_order()` / `guest_order_lookup()` add `actions` (cancel and
+delay choices with their refunds, from `_order_actions`, `_delay_open`, `_cancel_refund_cents`); `_kick_email_outbox()` is
+the every-minute timer (pg_net, Vault secrets). `guest_order_lookup(number, email)` returns the
 same shape for guests and is **service-only** (the server route rate-limits it). A test keeps its fields identical to the views'.
 `checkout_context(variant_ids, promo_code)` (migration 3, **service-only**) returns what the server needs to price a bag in
 one round trip: the variants as customers can buy them (through `store_*`), the promo if usable now, the shipping settings
@@ -111,6 +114,8 @@ rule, used by the `variant_availability` read policy so the live stock feed neve
 | `check_off_arrival(pickup, arrived)` | admin | §6.3: a picked piece arrived in the US (or the tick undone), once its cycle has arrived. Raises `pickup_not_picked`, `cycle_not_arrived` |
 | `ship_order(order, carrier, tracking)` | admin | §6.4: an arrived order ships (visible "Shipped" event). Raises `order_not_arrived`, `invalid_tracking` |
 | `deliver_order(order)` | admin | §6.4: a shipped order is delivered (visible event). Raises `order_not_shipped` |
+| `keep_after_delay(order)` | service (customer through the server), admin | §7: the customer keeps the order after a window change. Raises `no_open_delay` |
+| `cancel_after_delay(order, amount, ref)` | service, admin | §7: full refund after a window change (D-008), stock released for pieces not collected, a note for collected ones (Q-31). Raises `no_open_delay`, `refund_amount_mismatch` |
 | `mark_pickup(pickup, status, photo, note)` | admin | §4.2–4: picked / unavailable (+ D-030 refund flag + customer event) |
 | `record_payout(vendor, pickups[], method, …)` | admin | §5: computes the amount from pickups, one payout per pickup |
 | `change_delivery_window(order, from, to, note)` | admin | §7: the only way to move a window (INV-6) |

@@ -174,3 +174,51 @@ export async function getOfferMove(service: IwcClient, moveId: string) {
       .maybeSingle(),
   );
 }
+
+// ---------------------------------------------------------------- the customer's own choices (D-008, D-042)
+
+/** The order behind a number + email, with what the server needs to refund it. Null when they don't match. */
+export async function getOrderForCustomer(service: IwcClient, orderNumber: string, email: string) {
+  return unwrap(
+    await service
+      .from('orders')
+      .select('id, order_number, payment_intent_id')
+      .eq('order_number', orderNumber)
+      .eq('email', email.trim().toLowerCase())
+      .maybeSingle(),
+  );
+}
+
+/** D-008: the customer keeps the order with its new estimate. */
+export async function keepAfterDelay(service: IwcClient, orderId: string) {
+  unwrap(await service.rpc('keep_after_delay', { p_order: orderId }));
+}
+
+/** D-008 / D-042: after a delay, a full refund. Call after the Stripe refund; the database re-checks the amount. */
+export async function cancelAfterDelay(
+  service: IwcClient,
+  input: { orderId: string; amountCents: number; refundRef: string },
+) {
+  unwrap(
+    await service.rpc('cancel_after_delay', {
+      p_order: input.orderId,
+      p_amount_cents: input.amountCents,
+      p_refund_ref: input.refundRef,
+    }),
+  );
+}
+
+/** D-042: the customer's own cancel before cutoff (everything back except the tax). */
+export async function cancelBeforeCutoff(
+  service: IwcClient,
+  input: { orderId: string; amountCents: number; refundRef: string },
+) {
+  unwrap(
+    await service.rpc('cancel_order', {
+      p_order: input.orderId,
+      p_reason: 'customer_request',
+      p_amount_cents: input.amountCents,
+      p_refund_ref: input.refundRef,
+    }),
+  );
+}

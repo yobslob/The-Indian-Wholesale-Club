@@ -210,11 +210,20 @@ export const orderOfferSchema = z.object({
   est_delivery_to: z.string(),
 });
 
+/** What the customer may do now (D-042 cancel before cutoff, D-008 keep or cancel after a delay), with the refunds. */
+export const orderActionsSchema = z.object({
+  can_cancel: z.boolean(),
+  cancel_refund_cents: z.number().int().nullable(),
+  delay_open: z.boolean(),
+  delay_refund_cents: z.number().int().nullable(),
+});
+
 export const orderDetailSchema = z.object({
   order: orderSummarySchema,
   items: z.array(orderItemSchema),
   events: z.array(orderEventSchema),
   offer: orderOfferSchema.nullable().default(null),
+  actions: orderActionsSchema.nullable().default(null),
 });
 
 export type DeliveryWindow = z.infer<typeof deliveryWindowSchema>;
@@ -237,3 +246,4 @@ export type OrderItem = z.infer<typeof orderItemSchema>;
 export type OrderEvent = z.infer<typeof orderEventSchema>;
 export type OrderDetail = z.infer<typeof orderDetailSchema>;
 export type OrderOffer = z.infer<typeof orderOfferSchema>;
+export type OrderActions = z.infer<typeof orderActionsSchema>;

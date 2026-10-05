@@ -39,6 +39,13 @@ The app pins `@stripe/stripe-react-native` to the version Expo Go carries for SD
 module must match; B-9). After changing dependencies or `.npmrc`, start with `npx expo start --clear` (in `apps/app`) so
 Metro drops its cache. The app's web target is not used (customers get the Next.js website); test on a phone.
 
+**Email timer (C5, migration 17):** pg_cron calls the outbox job every minute through pg_net, but only after two Supabase
+Vault secrets exist in that database (SQL editor, once per database; the values are never committed):
+`select vault.create_secret('<site URL>', 'iwc_site_url');` and `select vault.create_secret('<EMAIL_OUTBOX_CRON_SECRET>',
+'iwc_outbox_secret');`. The site URL is the deployed site for the hosted database, and `http://host.docker.internal:3000`
+for the local one (the database runs in Docker). Without them, emails still go out right after the website's own
+actions; those from the app's admin screens and the automatic cutoff wait for the timer.
+
 ## Database workflow (from R3)
 - Schema changes = a new file in `supabase/migrations/`. Never edit an applied migration.
 - After every schema change: `npx supabase db reset`, then **`pnpm db:types`** (writes `packages/db/src/database.types.ts`,

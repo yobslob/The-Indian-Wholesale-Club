@@ -94,16 +94,22 @@ open ──cutoff──► collecting ──► packed ──► exported ──
   are told it is coming sooner. Nothing says why (D-003).
 
 ## 7. Delays (D-008)
-If a cycle's estimated arrival moves past an order's `est_delivery_to`, the admin gets a warning. The customer gets a
-notice with the new estimate and the option to **cancel for a full refund**. The customer's choice is recorded as an
-`order_event`. The old window is never silently overwritten (INV-6).
+If a cycle's estimated arrival moves past an order's `est_delivery_to`, the admin gets a warning (not built yet: Today
+shows no delay warning). When the window changes (`change_delivery_window`, or a move to a later cycle), the customer
+gets an email with the new estimate, and their order page (website and app) offers **keep my order** or **cancel for a
+full refund** until it ships in the US (`keep_after_delay`, `cancel_after_delay`, through `POST /api/orders/choice`).
+The choice is recorded as an `order_event`. The old window is never silently overwritten (INV-6). Pieces already
+collected for an order cancelled this way stay recorded as collected, with a note for the admin (Q-31).
 
 ## 7b. Cancelling (D-042)
 - Before the cycle's cutoff (order still `confirmed`), an admin can cancel on the customer's request (refund = everything
   except the tax) or because of IWC (refund = everything). Reserved pieces go back to stock (`released` in the ledger).
 - Stripe is refunded first, then `cancel_order()` records it and re-checks the amount. The customer sees "Order cancelled"
   and the refunded amount.
-- After cutoff there is no cancel path yet (coding phase, with the delay flow of §7).
+- **Self-service (C5):** while the order is `confirmed`, the customer's order page (website and app) offers "Cancel my
+  order" with the refund shown first (everything except the tax); `POST /api/orders/choice` refunds Stripe and calls
+  `cancel_order()` as the service role.
+- After cutoff, only a delay (§7) opens a cancel.
 
 ## 8. Order statuses: internal vs what the customer sees [D-003]
 | Internal (`orders.status`) | Customer sees |
@@ -114,8 +120,10 @@ notice with the new estimate and the option to **cancel for a full refund**. The
 | `shipped` | **Shipped** + carrier tracking link |
 | `delivered` | **Delivered** |
 | `cancelled` / `refunded` / partly refunded | **Cancelled** / **Refunded** (with amounts) |
-Target: every customer-visible change sends an email through `email_outbox`. **Today** only the order confirmation is sent
-(B-20). Estimated delivery dates are always shown.
+Every customer-visible change sends an email through `email_outbox` (C5): the confirmation from the checkout server, every
+other visible order event through a database trigger (`order_update` rows). The website sends them right after its own
+actions; a pg_cron job calls the outbox job every minute for the rest (the app's admin actions, the automatic cutoff),
+once the site URL and the job's secret are in Supabase Vault (`ops.md`). Estimated delivery dates are always shown.
 
 ## 9. Stock numbers
 - `available = qty_listed − qty_reserved`. This is what the storefront shows, updated live via Supabase Realtime (D-010).

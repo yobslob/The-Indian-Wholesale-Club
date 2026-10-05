@@ -1035,11 +1035,20 @@ isOneToOne: false
                 }
           }
           Functions: {
-            "_cutoff_cycle":
+            "_cancel_refund_cents":
+{ Args: { "p_order": string,"p_reason": string }; Returns: number
+                           },
+"_cutoff_cycle":
 { Args: { "p_cycle": string }; Returns: number
+                           },
+"_delay_open":
+{ Args: { "p_order": string }; Returns: boolean
                            },
 "_is_verified_buyer":
 { Args: { "p_product": string,"p_user": string }; Returns: boolean
+                           },
+"_kick_email_outbox":
+{ Args: Record<PropertyKey, never>; Returns: undefined
                            },
 "_leaving_soon_max":
 { Args: Record<PropertyKey, never>; Returns: number
@@ -1051,6 +1060,9 @@ isOneToOne: false
                            },
 "_open_next_cycle":
 { Args: { "p_cycle": string }; Returns: string
+                           },
+"_order_actions":
+{ Args: { "p_order": string }; Returns: Json
                            },
 "_order_offer":
 { Args: { "p_order": string }; Returns: Json
@@ -1090,6 +1102,9 @@ isOneToOne: false
                            },
 "advance_cycle":
 { Args: { "p_cycle": string }; Returns: Database["public"]['Enums']["cycle_status"]
+                           },
+"cancel_after_delay":
+{ Args: { "p_amount_cents": number,"p_order": string,"p_refund_ref": string }; Returns: undefined
                            },
 "cancel_order":
 { Args: { "p_amount_cents": number,"p_order": string,"p_reason": string,"p_refund_ref": string }; Returns: undefined
@@ -1140,6 +1155,9 @@ isOneToOne: false
                            },
 "item_refund_cents":
 { Args: { "p_item": string }; Returns: number
+                           },
+"keep_after_delay":
+{ Args: { "p_order": string }; Returns: undefined
                            },
 "mark_pickup":
 { Args: { "p_note"?: string,"p_photo_path"?: string,"p_pickup": string,"p_status": Database["public"]['Enums']["pickup_status"] }; Returns: undefined

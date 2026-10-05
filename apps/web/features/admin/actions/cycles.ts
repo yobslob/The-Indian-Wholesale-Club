@@ -16,6 +16,7 @@ import {
 
 import { STORE_TAG } from '@/features/catalog/data';
 
+import { sendEmailsSoon } from '../emails-soon';
 import { requireAdminAction } from '../guard';
 
 const id = z.string().uuid();
@@ -73,6 +74,7 @@ export async function updateCycleDatesAction(cycleId: string, form: FormData): P
 export async function cutoffCycleAction(cycleId: string): Promise<void> {
   const { client } = await requireAdminAction();
   await cutoffCycle(client, id.parse(cycleId));
+  sendEmailsSoon();
   revalidateTag(STORE_TAG);
   revalidatePath('/admin/cycles');
   revalidatePath(`/admin/cycles/${cycleId}`);
@@ -89,6 +91,7 @@ export async function advanceCycleAction(cycleId: string): Promise<void> {
 export async function confirmMoveShippedAction(moveId: string, cycleId: string): Promise<void> {
   const { client } = await requireAdminAction();
   await confirmMoveShipped(client, id.parse(moveId));
+  sendEmailsSoon();
   revalidatePath(`/admin/cycles/${cycleId}`);
 }
 
@@ -139,6 +142,7 @@ export async function markPickupAction(
 ): Promise<void> {
   const { client } = await requireAdminAction();
   await markPickup(client, id.parse(pickupId), z.enum(['picked', 'unavailable']).parse(status));
+  sendEmailsSoon();
   revalidateTag(STORE_TAG); // stock changed
   revalidatePath(`/admin/cycles/${cycleId}`);
 }

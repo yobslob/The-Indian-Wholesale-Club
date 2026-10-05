@@ -2,15 +2,23 @@ import 'server-only';
 
 import { Resend } from 'resend';
 
-import { claimEmail, lookupGuestOrder, markEmailFailed, markEmailSent } from '@repo/db/server';
+import {
+  claimEmail,
+  listDueEmails,
+  lookupGuestOrder,
+  markEmailFailed,
+  markEmailSent,
+} from '@repo/db/server';
 
-import { supportEmail } from '@/lib/env';
+import { siteUrl, supportEmail } from '@/lib/env';
 import { errorMessage, logger } from '@/lib/logger';
 import { SITE_NAME } from '@/lib/site';
 
 import { orderConfirmationHtml, orderConfirmationSubject } from './order-confirmation';
+import { orderUpdateEmail } from './order-update';
 
 import type { IwcClient } from '@repo/db';
+import type { OrderDetail } from '@repo/db/store';
 
 let resend: Resend | null = null;
 
@@ -30,10 +38,25 @@ export interface OutboxRow {
   attempts: number;
 }
 
+/** Subject and body for a row; null for an update that sends no email (it is marked sent and skipped). */
+function compose(row: OutboxRow, order: OrderDetail): { subject: string; html: string } | null {
+  if (row.kind === 'order_confirmation') {
+    return {
+      subject: orderConfirmationSubject(order, SITE_NAME),
+      html: orderConfirmationHtml(order, SITE_NAME, supportEmail()),
+    };
+  }
+  const kind = (row.payload as { kind?: unknown }).kind;
+  if (row.kind !== 'order_update' || typeof kind !== 'string') throw new Error(`Unsupported outbox row (${row.kind})`);
+  const orderUrl = `${siteUrl()}/orders/${encodeURIComponent(order.order.order_number)}`;
+  return orderUpdateEmail(kind, order, SITE_NAME, orderUrl, supportEmail());
+}
+
 /**
  * Sends one email_outbox row after claiming it (so two runs never send it twice).
  * Unconfigured email (no RESEND_API_KEY / RESEND_FROM_EMAIL) leaves the row
  * pending, so nothing is lost; the outbox job sends it once email is configured.
+ * The order is read fresh when sending, so an update email shows the order as it is now.
  */
 export async function deliverOutboxRow(
   service: IwcClient,
@@ -47,16 +70,19 @@ export async function deliverOutboxRow(
   if (!(await claimEmail(service, row.id))) return 'skipped';
   try {
     const payload = row.payload as { orderNumber?: unknown };
-    if (row.kind !== 'order_confirmation' || typeof payload.orderNumber !== 'string') {
-      throw new Error(`Unsupported outbox row (${row.kind})`);
-    }
+    if (typeof payload.orderNumber !== 'string') throw new Error(`Outbox row without an order (${row.kind})`);
     const order = await lookupGuestOrder(service, payload.orderNumber, row.recipient);
     if (!order) throw new Error('Order not found for outbox row');
+    const email = compose(row, order);
+    if (!email) {
+      await markEmailSent(service, row.id, null);
+      return 'skipped';
+    }
     const result = await mail.client.emails.send({
       from: mail.from,
       to: [row.recipient],
-      subject: orderConfirmationSubject(order, SITE_NAME),
-      html: orderConfirmationHtml(order, SITE_NAME, supportEmail()),
+      subject: email.subject,
+      html: email.html,
     });
     if (result.error) throw new Error(result.error.message);
     await markEmailSent(service, row.id, result.data?.id ?? null);
@@ -65,5 +91,14 @@ export async function deliverOutboxRow(
     logger.error('email.send_failed', { outboxId: row.id, error: errorMessage(error) });
     await markEmailFailed(service, row.id, row.attempts, errorMessage(error));
     return 'failed';
+  }
+}
+
+/** Sends what is due now: after the server itself changed an order, so the customer hears at once. Never throws. */
+export async function sendDueEmails(service: IwcClient, limit = 20): Promise<void> {
+  try {
+    for (const row of await listDueEmails(service, limit)) await deliverOutboxRow(service, row);
+  } catch (error) {
+    logger.error('email.flush_failed', { error: errorMessage(error) });
   }
 }

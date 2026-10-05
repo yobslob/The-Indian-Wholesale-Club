@@ -11,6 +11,7 @@ import {
 } from '@repo/shared/domain';
 
 import { FasterOffer } from './faster-offer';
+import { OrderChoices } from './order-choices';
 
 import type { OrderDetail } from '@repo/db/store';
 
@@ -58,6 +59,15 @@ export function OrderView({
 
       {order.offer ? (
         <FasterOffer offer={order.offer} orderNumber={o.order_number} email={o.email} onChanged={onChanged} />
+      ) : null}
+      {order.actions ? (
+        <OrderChoices
+          actions={order.actions}
+          orderNumber={o.order_number}
+          email={o.email}
+          window={o.est_delivery_from && o.est_delivery_to ? { from: o.est_delivery_from, to: o.est_delivery_to } : null}
+          onChanged={onChanged}
+        />
       ) : null}
 
       {step >= 0 ? (

@@ -1,11 +1,11 @@
 # Current status
 
 ## Resume here
-**C4 (Cycles end to end) is in progress** (2026-10-03): 4.1 done, cycles close and open by themselves. **C3 (Listing from the field) is built** (2026-10-01): an admin lists a product on a phone (camera, variants,
+**C5 (Customer messages) is built** (2026-10-06): an email for every order update, keep-or-cancel after a delay, self-service cancel. **C4 (Cycles end to end) is built** (2026-10-03). **C3 (Listing from the field) is built** (2026-10-01): an admin lists a product on a phone (camera, variants,
 prices, draft → publish) and it reaches the store; tested end to end in the app's web preview and by E2E flow 2 on the
 web (same database call). C2 is built too. **Waiting on the founder:** the COO's listing on a real phone; approve the
 six region drafts; set the pricing settings (exchange rate, freight, duty, margin, "stale after" days) so the suggested
-price and the re-check list appear; set "days between cutoffs" (D-063). **Next:** C4 4.7, an E2E flow that runs a whole cycle (needs the founder's dev server stopped and the test admin in `ADMIN_EMAILS`).
+price and the re-check list appear; set "days between cutoffs" (D-063). **Next:** C6 pricing help (or C7). Still open from C4/C5: a browser E2E flow for a whole cycle, the offer and the cancel (needs port 3000 free and the test admin in `ADMIN_EMAILS`).
 
 ## Steps
 | Step | Status | Evidence |
@@ -88,6 +88,7 @@ price and the re-check list appear; set "days between cutoffs" (D-063). **Next:*
 | 2026-10-03 | C4 4.5 | Claude, founder's machine | web unit tests 23/23 (new `export-documents.test.ts`, 4 cases: grouping, ₹/$ totals, Q-30 fields never guessed, no shop on the invoice, CSV quoting) · typecheck + lint OK · on the founder's dev server, signed out: the CSV route answers 404, the documents page redirects to the admin sign-in. Not viewed signed in (test admin refused by the dev server's `ADMIN_EMAILS`) | OK |
 | 2026-10-03 | C4 4.6 | Claude, founder's machine, local Supabase (migration 16) | `db-test.mjs` 22/22 files (new `ship.test.sql`, 11 assertions) + three mutations (ship before arrival; deliver before shipping; empty tracking): all caught, restored · shared unit tests 39/39 (tracking links) · typecheck + lint web and app OK | OK |
 | 2026-10-03 | C4 4.7 | Claude, founder's machine, local Supabase | `db-test.mjs` 23/23 files, 0 failed (new `cycle_lifecycle.test.sql`, 8 assertions) | OK |
+| 2026-10-06 | C5 | Claude, founder's machine, local Supabase (migration 17) | `db-test.mjs` 24/24 files (new `customer_messages.test.sql`, 17 assertions) + five mutations (change of mind refunds the tax; keeping doesn't settle the delay; a collected piece released; cancel offered after cutoff; no email queued): all caught, restored · web unit tests 29/29 (new `order-update.test.ts`), app 9/9 (new `local-host.test.ts`) · typecheck + lint web and app OK. Not run: real email sending (Resend keys and the Vault secrets are the founder's), the cancel route against Stripe, build/e2e (port 3000 busy) | OK (partial) |
 
 ## C1 sub-steps (design)
 | # | Sub-step | Status |
@@ -143,6 +144,14 @@ price and the re-check list appear; set "days between cutoffs" (D-063). **Next:*
 | 4.5 | Packing list + commercial invoice from the cycle's picked pieces: a printable page (save as PDF from the browser; the admin menu hides when printing) and CSV downloads (admin-only route, 404 for anyone else); built by pure functions with unit tests. The invoice's legal fields stay blank and marked: Q-30 filed | ✅ committed · **founder: Q-30** (with the forwarder or a customs broker) |
 | 4.6 | US pack & ship (D-066): migration 16, `ship_order` (only arrived orders) and `deliver_order` (only shipped ones) replace plain row updates; carrier picked from USPS / UPS / FedEx or typed; tracking links for the customer on the website and in the app (`trackingUrl`, unit-tested); a warning while a piece is not checked off | ✅ committed |
 | 4.7 | C4's "done when" in SQL: `cycle_lifecycle.test.sql` runs one cycle from open to closed with the real functions (closes by itself at its cutoff, the next opens, pickups, packed, export details, exported, arrived, check-off, fulfilling, shipped, delivered, closed) and checks what the customer saw | ✅ committed · the same as a browser E2E flow: waits for a free port 3000 and the test admin in `ADMIN_EMAILS` |
+
+## C5 sub-steps (customer messages)
+| # | Sub-step | Status |
+|---|---|---|
+| 5.0 | The app on a new Wi-Fi network: in development, local Supabase and website addresses follow the computer Metro runs on (`lib/local-host.ts`, unit-tested), so "Network request failed" after a network change needs no `.env` edit | ✅ committed · founder: reload the app on the phone |
+| 5.1 | Migration 17: an email for every customer-visible order update (trigger → `email_outbox` `order_update`), the copy for each (unit-tested: escaped, nothing operational, D-003); the website sends right after its own admin actions (`after()`), and a pg_cron + pg_net timer every minute once the Vault holds the site URL and the outbox secret | ✅ committed · founder: the two Vault secrets (ops.md) |
+| 5.2 | Delays (D-008): after a window change the order page (website + app) offers keep or cancel for a full refund; `keep_after_delay`, `cancel_after_delay` (stock back for pieces not collected; collected ones flagged, Q-31) | ✅ committed |
+| 5.3 | Self-service cancel before cutoff (D-042): "Cancel my order" with the refund shown first (all but the tax), `POST /api/orders/choice` (number + email), Stripe first then `cancel_order` | ✅ committed |
 
 ## R7 sub-steps
 | # | Sub-step | Status |

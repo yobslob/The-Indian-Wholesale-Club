@@ -27,7 +27,7 @@ recoverable from tag `pre-restructure`), not re-verified.
 | B-17 | App admin writes go straight to the DB, so they can't refresh the website's cache; the storefront shows them within the 5-minute fallback | [code] 2026-09-28 (`admin.md` §Access model) | coding phase (e.g. a DB webhook that revalidates) |
 | B-18 | The app's "Save" button doesn't show an already-saved state (same as the web, B-6) | [code] 2026-09-28 | coding phase |
 | B-19 | Nothing happens at a cycle's `cutoff_at`: orders keep joining the open cycle until an admin runs the cutoff, and the store keeps showing the past "order by" date | [code] 2026-09-29 (R8 audit), `create_order`, `store_next_delivery` | ✅ C4 4.1 (migration 13, D-045, D-063; `cycle_roll.test.sql`) |
-| B-20 | Only the order-confirmation email exists; shipped, delivered, item-unavailable/refund, cancellation and delay emails are not built | [code] 2026-09-29 (R8 audit), `packages/db/src/server/checkout.ts` `EmailKind` | coding phase |
+| B-20 | Only the order-confirmation email exists; shipped, delivered, item-unavailable/refund, cancellation and delay emails are not built | [code] 2026-09-29 (R8 audit), `packages/db/src/server/checkout.ts` `EmailKind` | ✅ C5 5.1 (migration 17, `customer_messages.test.sql`, `order-update.test.ts`) |
 
 ## Deferred features (need a question answered or founder approval)
 | ID | Item | Blocked by |

@@ -11,12 +11,14 @@ import {
   moveOrder,
 } from '@repo/db/admin';
 
+import { sendEmailsSoon } from '../emails-soon';
 import { requireAdminAction } from '../guard';
 
 const id = z.string().uuid();
 const isoDate = z.string().regex(/^\d{4}-\d{2}-\d{2}$/);
 
 function done(orderId: string): void {
+  sendEmailsSoon();
   revalidatePath(`/admin/orders/${orderId}`);
   revalidatePath('/admin/orders');
 }

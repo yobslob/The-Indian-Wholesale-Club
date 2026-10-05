@@ -15,6 +15,7 @@ import {
 import { STORE_TAG } from '@/features/catalog/data';
 import { stripeServer } from '@/lib/stripe';
 
+import { sendEmailsSoon } from '../emails-soon';
 import { requireAdminAction } from '../guard';
 
 const id = z.string().uuid();
@@ -27,6 +28,7 @@ async function paymentIntentOf(orderId: string): Promise<string> {
 }
 
 function done(orderId: string): void {
+  sendEmailsSoon();
   revalidatePath(`/admin/orders/${orderId}`);
   revalidatePath('/admin/orders');
 }
