@@ -50,7 +50,7 @@ export const listProductsCached = unstable_cache(
   options,
 );
 
-/** Search is per query: not cached (dynamic page, still one round trip). */
-export function searchProducts(query: string) {
-  return listProducts(storeClient(), { search: query, limit: 40 });
+/** Search is per query: not cached (dynamic page, still one round trip). `limit` grows with "Show more". */
+export function searchProducts(query: string, limit = 25) {
+  return listProducts(storeClient(), { search: query, limit });
 }

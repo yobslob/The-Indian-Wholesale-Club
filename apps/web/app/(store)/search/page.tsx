@@ -1,3 +1,5 @@
+import Link from 'next/link';
+
 import { getHomeCached, searchProducts } from '@/features/catalog/data';
 import { ProductCard, ProductGrid } from '@/features/catalog/product-card';
 import { RegionGrid } from '@/features/regions/region-card';
@@ -6,17 +8,27 @@ import type { Metadata } from 'next';
 
 export const metadata: Metadata = { title: 'Search' };
 
-type SearchParams = Promise<{ q?: string | string[] }>;
+type SearchParams = Promise<{ q?: string | string[]; show?: string | string[] }>;
 
-/** Products (full-text, one round trip) and regions (from the cached home data). No session. */
+const PAGE = 24;
+
+/**
+ * Products (full-text, one round trip) and regions (from the cached home data). No session. Results come 24 at a
+ * time with "Show more" (?show=), so a broad search never puts hundreds of photos on one page.
+ */
 export default async function SearchPage({
   searchParams,
 }: {
   searchParams: SearchParams;
 }): Promise<React.JSX.Element> {
-  const raw = (await searchParams).q;
+  const params = await searchParams;
+  const raw = params.q;
   const q = (Array.isArray(raw) ? raw[0] : raw)?.trim().slice(0, 100) ?? '';
-  const [home, products] = q ? await Promise.all([getHomeCached(), searchProducts(q)]) : [null, []];
+  const showRaw = Number(Array.isArray(params.show) ? params.show[0] : params.show);
+  const show = Math.min(Math.max(Number.isInteger(showRaw) ? showRaw : PAGE, PAGE), 480);
+  // One more than shown tells whether "Show more" has anything behind it.
+  const [home, found] = q ? await Promise.all([getHomeCached(), searchProducts(q, show + 1)]) : [null, []];
+  const products = found.slice(0, show);
   const needle = q.toLowerCase();
   const regions = home ? home.regions.filter((r) => r.name.toLowerCase().includes(needle)) : [];
 
@@ -58,6 +70,15 @@ export default async function SearchPage({
                 ))}
               </ProductGrid>
             )}
+            {found.length > show ? (
+              <Link
+                href={`/search?${new URLSearchParams({ q, show: String(show + PAGE) }).toString()}`}
+                scroll={false}
+                className="border-line bg-paper hover:border-ink font-ui inline-flex min-h-12 items-center rounded-pill border px-6 text-[15px]"
+              >
+                Show more
+              </Link>
+            ) : null}
           </section>
         </>
       ) : null}

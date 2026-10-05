@@ -1,12 +1,13 @@
 import { useState } from 'react';
 import { Pressable, Text, View } from 'react-native';
 
-import { getHome, listProducts } from '@repo/db/store';
+import { getHome, getTypeRows, listProducts } from '@repo/db/store';
 
-import { Body, ErrorText, Field, Loading, Screen, Title } from '@/components/ui';
+import { Body, Button, ErrorText, Field, Loading, Screen, Title } from '@/components/ui';
 import { Grid, ProductCard, RegionCard } from '@/features/catalog/cards';
-import { byCategory, ProductRow } from '@/features/catalog/product-row';
+import { ProductRow } from '@/features/catalog/product-row';
 import { supabase } from '@/lib/supabase';
+import { usePagedQuery } from '@/lib/use-paged-query';
 import { useQuery } from '@/lib/use-query';
 
 type Tab = 'states' | 'clothing' | 'spice';
@@ -18,37 +19,32 @@ const TABS: { key: Tab; label: string }[] = [
 
 /**
  * Explore (storefront.md): states A–Z, clothing and spices as one sideways row per category with See all (D-062),
- * and search. One store_* read per view.
+ * and search. A tab reads only each category's first 12 cards (store_type_rows); search results come 24 at a time
+ * with "Show more", so no view downloads the whole catalogue.
  */
 export default function ExploreScreen(): React.JSX.Element {
   const [tab, setTab] = useState<Tab>('states');
   const [query, setQuery] = useState('');
   const [submitted, setSubmitted] = useState('');
-  const key = submitted ? `search:${submitted}` : tab;
-  const { data, error, loading, reload } = useQuery(key, async () => {
-    if (submitted) {
-      const [home, products] = await Promise.all([
-        getHome(supabase),
-        listProducts(supabase, { search: submitted, limit: 40 }),
-      ]);
-      const needle = submitted.toLowerCase();
-      return {
-        regions: home.regions.filter((r) => r.name.toLowerCase().includes(needle)),
-        products,
-      };
-    }
-    if (tab === 'states') {
+  const view = useQuery(submitted ? `explore:search-states:${submitted}` : `explore:${tab}`, async () => {
+    if (submitted || tab === 'states') {
       const home = await getHome(supabase);
-      return {
-        regions: [...home.regions].sort((a, b) => a.name.localeCompare(b.name, 'en')),
-        products: [],
-      };
+      const needle = submitted.toLowerCase();
+      const regions = submitted ? home.regions.filter((r) => r.name.toLowerCase().includes(needle)) : home.regions;
+      return { regions: [...regions].sort((a, b) => a.name.localeCompare(b.name, 'en')), rows: [] };
     }
-    return {
-      regions: [],
-      products: await listProducts(supabase, { productType: tab, sort: 'newest', limit: 500 }),
-    };
+    return { regions: [], rows: await getTypeRows(supabase, tab) };
   });
+  const search = usePagedQuery(`explore:search:${submitted}`, (offset, limit) =>
+    submitted ? listProducts(supabase, { search: submitted, offset, limit }) : Promise.resolve([]),
+  );
+  const data = view.data;
+  const products = submitted ? (search.items ?? []) : [];
+  const loading = view.loading || (Boolean(submitted) && search.loading);
+  const reload = (): void => {
+    view.reload();
+    search.reload();
+  };
 
   return (
     <Screen back={false} refreshing={loading} onRefresh={reload}>
@@ -69,9 +65,7 @@ export default function ExploreScreen(): React.JSX.Element {
               onPress={() => setTab(t.key)}
               className={`min-h-11 justify-center rounded-sm border px-3 ${tab === t.key ? 'border-ink bg-ink' : 'border-line'}`}
             >
-              <Text className={tab === t.key ? 'text-canvas text-sm' : 'text-ink text-sm'}>
-                {t.label}
-              </Text>
+              <Text className={tab === t.key ? 'text-canvas text-sm' : 'text-ink text-sm'}>{t.label}</Text>
             </Pressable>
           ))}
         </View>
@@ -86,24 +80,37 @@ export default function ExploreScreen(): React.JSX.Element {
           <Text className="text-ink text-sm underline">Clear search</Text>
         </Pressable>
       )}
-      {error ? <ErrorText>{error}</ErrorText> : null}
+      {view.error ?? search.error ? <ErrorText>{view.error ?? search.error}</ErrorText> : null}
       {!data && loading ? <Loading /> : null}
       {data?.regions.map((r) => (
         <RegionCard key={r.slug} region={r} />
       ))}
-      {data && data.products.length > 0 && submitted ? (
+      {products.length > 0 ? (
         <Grid>
-          {data.products.map((p) => (
+          {products.map((p) => (
             <ProductCard key={p.id} product={p} />
           ))}
         </Grid>
       ) : null}
-      {data && data.products.length > 0 && !submitted
-        ? byCategory(data.products).map((c) => (
-            <ProductRow key={c.slug} title={c.name} products={c.items.slice(0, 12)} seeAll={{ type: tab === 'spice' ? 'spice' : 'clothing', category: c.slug }} />
+      {submitted && search.hasMore ? (
+        <Button
+          kind="secondary"
+          label={search.loadingMore ? 'Loading…' : 'Show more'}
+          disabled={search.loadingMore}
+          onPress={search.loadMore}
+        />
+      ) : null}
+      {!submitted
+        ? data?.rows.map((row) => (
+            <ProductRow
+              key={row.slug}
+              title={row.name}
+              products={row.products}
+              seeAll={row.count > row.products.length ? { type: tab === 'spice' ? 'spice' : 'clothing', category: row.slug } : undefined}
+            />
           ))
         : null}
-      {data && !loading && data.regions.length === 0 && data.products.length === 0 ? (
+      {data && !loading && data.regions.length === 0 && data.rows.length === 0 && products.length === 0 ? (
         <Body muted>
           {submitted
             ? `Nothing matches “${submitted}”.`

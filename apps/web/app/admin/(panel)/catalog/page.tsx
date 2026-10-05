@@ -7,13 +7,18 @@ import { requireAdminPage } from '@/features/admin/guard';
 import { listingTabs } from '@/features/admin/listing-tabs';
 import { Cell, input, linkButton, PageTitle, rupees, Table, Tabs } from '@/features/admin/ui';
 
-type SearchParams = Promise<{ q?: string; status?: string }>;
+type SearchParams = Promise<{ q?: string; status?: string; page?: string }>;
+
+const PAGE = 50;
 
 const STATUSES = ['draft', 'live', 'paused', 'archived'] as const;
 type Status = (typeof STATUSES)[number];
 const isStatus = (s: string | undefined): s is Status => STATUSES.includes(s as Status);
 
-/** Catalog: every product with admin-only fields (shop, shop price, stock), optionally one status (the tabs). */
+/**
+ * Catalog: every product with admin-only fields (shop, shop price, stock), optionally one status (the tabs), 50 to a
+ * page with Previous / Next, so a catalogue of hundreds is never one long page and nothing is cut off.
+ */
 export default async function CatalogPage({
   searchParams,
 }: {
@@ -23,7 +28,19 @@ export default async function CatalogPage({
   const params = await searchParams;
   const q = params.q?.trim().slice(0, 100) ?? '';
   const status = isStatus(params.status) ? params.status : undefined;
-  const products = await listAdminProducts(client, { search: q || undefined, status, limit: 200 });
+  const page = Math.min(Math.max(Number.parseInt(params.page ?? '1', 10) || 1, 1), 1000);
+  // One more than a page tells whether a next page exists.
+  const rows = await listAdminProducts(client, {
+    search: q || undefined,
+    status,
+    offset: (page - 1) * PAGE,
+    limit: PAGE + 1,
+  });
+  const products = rows.slice(0, PAGE);
+  const pageHref = (n: number): string => {
+    const query = new URLSearchParams({ ...(q ? { q } : {}), ...(status ? { status } : {}), ...(n > 1 ? { page: String(n) } : {}) });
+    return query.size ? `/admin/catalog?${query.toString()}` : '/admin/catalog';
+  };
 
   return (
     <div className="space-y-4">
@@ -69,6 +86,19 @@ export default async function CatalogPage({
           </tr>
         ))}
       </Table>
+      <nav aria-label="Pages" className="flex items-center gap-4">
+        {page > 1 ? (
+          <Link href={pageHref(page - 1)} className={linkButton}>
+            ← Previous
+          </Link>
+        ) : null}
+        <span className="text-ink-muted text-sm">Page {page}</span>
+        {rows.length > PAGE ? (
+          <Link href={pageHref(page + 1)} className={linkButton}>
+            Next →
+          </Link>
+        ) : null}
+      </nav>
     </div>
   );
 }

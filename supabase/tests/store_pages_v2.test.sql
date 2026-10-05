@@ -30,6 +30,10 @@ select 'test-fill-' || i, 'Test filler ' || i, 'clothing', (select id from publi
        (select id from public.categories where slug = 'test-filler-clothing'), tests.id('vendor'), 1000, 'live',
        now() - interval '4 days' - i * interval '1 hour'
 from generate_series(1, 8) i;
+-- Real listings in the local database (a founder's phone listing, the catalogue) must not crowd the test's dates:
+-- every non-test product moves ten years back (rolled back with the rest).
+update public.products set published_at = published_at - interval '10 years'
+ where slug not like 'test-%' and published_at is not null;
 -- The fixture's live product has no publish date; give it one between the others (no date sorts last).
 update public.products set published_at = now() where id = tests.id('p_live');
 select set_config('tests.v_new', (select v.id::text from public.product_variants v

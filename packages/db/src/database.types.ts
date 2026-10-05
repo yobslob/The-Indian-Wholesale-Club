@@ -1196,6 +1196,9 @@ isOneToOne: false
                            },
 "store_region_page":
 { Args: { "p_region_slug": string }; Returns: Json
+                           },
+"store_type_rows":
+{ Args: { "p_type": string }; Returns: Json
                            }
           }
           Enums: {

@@ -1,13 +1,14 @@
 import { useLocalSearchParams, useRouter } from 'expo-router';
-import { FlatList, Pressable, Text, View } from 'react-native';
+import { ActivityIndicator, FlatList, Pressable, Text, View } from 'react-native';
 import { SafeAreaView } from 'react-native-safe-area-context';
 
-import { listProducts } from '@repo/db/store';
+import { countProducts, listProducts } from '@repo/db/store';
 import tokens from '@repo/tokens';
 
 import { Body, ErrorText, Loading, Title } from '@/components/ui';
 import { ProductCard } from '@/features/catalog/cards';
 import { supabase } from '@/lib/supabase';
+import { usePagedQuery } from '@/lib/use-paged-query';
 import { useQuery } from '@/lib/use-query';
 
 const slugOrNothing = (v: unknown): string | undefined =>
@@ -15,7 +16,8 @@ const slugOrNothing = (v: unknown): string | undefined =>
 
 /**
  * Browse: the "See all" screen behind every row (D-062). Every live product of one type, newest first, narrowed by
- * region and category. A virtualized two-column grid, so a long list never renders at once.
+ * region and category. Loaded 24 at a time as the list nears its end, in a virtualized two-column grid, so a long
+ * list is never downloaded or drawn at once.
  */
 export default function BrowseScreen(): React.JSX.Element {
   const router = useRouter();
@@ -23,9 +25,12 @@ export default function BrowseScreen(): React.JSX.Element {
   const type = params.type === 'spice' ? 'spice' : 'clothing';
   const region = slugOrNothing(params.region);
   const category = slugOrNothing(params.category);
-  const { data, error, loading, reload } = useQuery(`browse:${type}:${region ?? ''}:${category ?? ''}`, () =>
-    listProducts(supabase, { productType: type, regionSlug: region, categorySlug: category, sort: 'newest', limit: 500 }),
+  const filter = { productType: type, regionSlug: region, categorySlug: category } as const;
+  const key = `browse:${type}:${region ?? ''}:${category ?? ''}`;
+  const { items: data, error, loading, loadingMore, loadMore, reload } = usePagedQuery(key, (offset, limit) =>
+    listProducts(supabase, { ...filter, sort: 'newest', offset, limit }),
   );
+  const total = useQuery(`${key}:count`, () => countProducts(supabase, filter)).data;
   const first = data?.[0];
   const title = (category && first?.category_name) || (type === 'clothing' ? 'Clothing' : 'Spices');
 
@@ -42,6 +47,9 @@ export default function BrowseScreen(): React.JSX.Element {
         onRefresh={reload}
         initialNumToRender={6}
         windowSize={7}
+        onEndReached={loadMore}
+        onEndReachedThreshold={0.6}
+        ListFooterComponent={loadingMore ? <ActivityIndicator color={tokens.colors.ink} /> : null}
         ListHeaderComponent={
           <View className="gap-2">
             <Pressable
@@ -54,7 +62,7 @@ export default function BrowseScreen(): React.JSX.Element {
             </Pressable>
             <Title>{title}</Title>
             {region && first ? <Body muted>From {first.region_name}</Body> : null}
-            {data ? <Body muted>{`${data.length} ${data.length === 1 ? 'piece' : 'pieces'}`}</Body> : null}
+            {total !== undefined ? <Body muted>{`${total} ${total === 1 ? 'piece' : 'pieces'}`}</Body> : null}
             {error ? <ErrorText>{error}</ErrorText> : null}
             {!data && loading ? <Loading /> : null}
           </View>

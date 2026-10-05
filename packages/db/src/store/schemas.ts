@@ -231,6 +231,15 @@ export type RegionCard = z.infer<typeof regionCardSchema>;
 export type Region = z.infer<typeof regionSchema>;
 export type ProductCard = z.infer<typeof productCardSchema>;
 export type RegionProductCard = z.infer<typeof regionProductCardSchema>;
+
+/** store_type_rows(): one row per category, its total and its first 12 cards (D-062). */
+export const typeRowSchema = z.object({
+  slug: z.string(),
+  name: z.string(),
+  count: z.number().int(),
+  products: z.array(regionProductCardSchema),
+});
+export type TypeRow = z.infer<typeof typeRowSchema>;
 export type QuickAdd = z.infer<typeof quickAddSchema>;
 export type Review = z.infer<typeof reviewSchema>;
 export type ReviewsSummary = z.infer<typeof reviewsSummarySchema>;

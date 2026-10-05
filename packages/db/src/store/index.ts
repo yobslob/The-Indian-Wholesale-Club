@@ -5,7 +5,7 @@
  */
 import { z } from 'zod';
 
-import { unwrap, type IwcClient } from '../client';
+import { toDbError, unwrap, type IwcClient } from '../client';
 
 import {
   deliveryWindowSchema,
@@ -22,6 +22,8 @@ import {
   type ProductCard,
   type ProductPage,
   type RegionPage,
+  type TypeRow,
+  typeRowSchema,
 } from './schemas';
 
 export * from './schemas';
@@ -74,6 +76,8 @@ export interface ProductListFilter {
   /** 'newest' for the See all pages (D-062); name order otherwise. */
   sort?: 'name' | 'newest';
   limit?: number;
+  /** Skip this many (pages of a long list: See all, search). */
+  offset?: number;
 }
 
 /** /clothing, /spices, /search: product cards (1 round trip). */
@@ -93,10 +97,32 @@ export async function listProducts(
   }
   query =
     filter.sort === 'newest'
-      ? query.order('published_at', { ascending: false, nullsFirst: false }).order('name')
-      : query.order('name');
-  const data = unwrap(await query.limit(filter.limit ?? 60));
+      ? query.order('published_at', { ascending: false, nullsFirst: false }).order('name').order('id')
+      : query.order('name').order('id'); // id last: pages never repeat or skip a product
+  const limit = filter.limit ?? 60;
+  const offset = filter.offset ?? 0;
+  const data = unwrap(await query.range(offset, offset + limit - 1));
   return z.array(productCardSchema).parse(data);
+}
+
+/** How many live products match (the "N pieces" over a list that loads page by page). */
+export async function countProducts(
+  client: IwcClient,
+  filter: Pick<ProductListFilter, 'productType' | 'regionSlug' | 'categorySlug'> = {},
+): Promise<number> {
+  let query = client.from('store_products').select('id', { count: 'exact', head: true });
+  if (filter.productType) query = query.eq('product_type', filter.productType);
+  if (filter.regionSlug) query = query.eq('region_slug', filter.regionSlug);
+  if (filter.categorySlug) query = query.eq('category_slug', filter.categorySlug);
+  const { count, error } = await query;
+  if (error) throw toDbError(error);
+  return count ?? 0;
+}
+
+/** Explore: one row per category of a type, each with its total and first 12 cards (1 round trip, D-062). */
+export async function getTypeRows(client: IwcClient, productType: 'clothing' | 'spice'): Promise<TypeRow[]> {
+  const data = unwrap(await client.rpc('store_type_rows', { p_type: productType }));
+  return z.array(typeRowSchema).parse(data);
 }
 
 const ORDER_SUMMARY_COLUMNS = `id, order_number, email, customer_status, est_delivery_from, est_delivery_to, subtotal_cents, discount_cents,

@@ -498,3 +498,11 @@ Asked: "Q-3: which carriers will ship US orders to customers?" Founder picked, v
 read: "Keep typing carrier + tracking number by hand; links for USPS, UPS and FedEx anyway").
 What it means for the build: an admin picks USPS, UPS, FedEx or "Other" and types the tracking number; the customer gets
 a tracking link for the three named carriers and the bare number for others. Q-3 stays open for label integration (F-1).
+
+**D-067 · 2026-10-06 · founder: Long lists load a page at a time**
+Founder, verbatim: "Pagination should be done(wherever needed) everywhere where there are a lot of tons of images which
+slows the interface."
+What it means for the build: no screen downloads or draws a long list of photos at once. Lists of products show 24 at a
+time and load more on request or as you scroll: See all (website: "Show more"; app: the next 24 near the end), search
+(website and app: "Show more"). Rows show at most 12 (D-062); the app's Explore reads only those 12 per category
+(`store_type_rows`). Admin lists: the website's Catalog has pages of 50; the app's Listings shows 50 with "Show more".

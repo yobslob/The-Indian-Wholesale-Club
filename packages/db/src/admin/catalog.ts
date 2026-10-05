@@ -132,6 +132,8 @@ export interface AdminProductFilter {
   vendorId?: string;
   search?: string;
   limit?: number;
+  /** Skip this many (the next page). */
+  offset?: number;
 }
 
 export async function listAdminProducts(client: IwcClient, filter: AdminProductFilter = {}) {
@@ -146,7 +148,15 @@ export async function listAdminProducts(client: IwcClient, filter: AdminProductF
       config: 'simple',
     });
   }
-  return unwrap(await query.order('updated_at', { ascending: false }).limit(filter.limit ?? 100));
+  const limit = filter.limit ?? 100;
+  const offset = filter.offset ?? 0;
+  // id breaks ties so pages never repeat or skip a product
+  return unwrap(
+    await query
+      .order('updated_at', { ascending: false })
+      .order('id')
+      .range(offset, offset + limit - 1),
+  );
 }
 
 export async function getAdminProduct(client: IwcClient, id: string) {

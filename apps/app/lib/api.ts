@@ -1,6 +1,5 @@
-import Constants from 'expo-constants';
-
 import { followMetroHost } from './local-host';
+import { metroHostUri } from './metro-host';
 import { supabase } from './supabase';
 
 /**
@@ -10,7 +9,7 @@ import { supabase } from './supabase';
 const configured = process.env.EXPO_PUBLIC_API_URL ?? 'http://localhost:3000';
 // Development: a local address follows the computer Metro runs on (lib/local-host.ts).
 export const API_BASE_URL =
-  (__DEV__ ? followMetroHost(configured, Constants.expoConfig?.hostUri) : configured) ?? configured;
+  (__DEV__ ? followMetroHost(configured, metroHostUri()) : configured) ?? configured;
 
 // Development only. The website's server (`pnpm --filter web dev`, port 3000), not Metro (8081).
 if (__DEV__) console.log(`[iwc] Website API: ${API_BASE_URL}`);

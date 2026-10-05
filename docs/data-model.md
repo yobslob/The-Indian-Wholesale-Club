@@ -91,7 +91,8 @@ sooner" event. Migration 15: `pickups.arrived_at` / `arrived_by` (picked pieces 
 through `ship_order()` / `deliver_order()`. Migration 17 (C5): a trigger queues an `order_update` email for every
 customer-visible order event (`_queue_order_email`); `store_my_order()` / `guest_order_lookup()` add `actions` (cancel and
 delay choices with their refunds, from `_order_actions`, `_delay_open`, `_cancel_refund_cents`); `_kick_email_outbox()` is
-the every-minute timer (pg_net, Vault secrets). `guest_order_lookup(number, email)` returns the
+the every-minute timer (pg_net, Vault secrets). Migration 18 (D-067): `store_type_rows(type)`, one row per category
+with its total and its first 12 cards (the app's Explore). `guest_order_lookup(number, email)` returns the
 same shape for guests and is **service-only** (the server route rate-limits it). A test keeps its fields identical to the views'.
 `checkout_context(variant_ids, promo_code)` (migration 3, **service-only**) returns what the server needs to price a bag in
 one round trip: the variants as customers can buy them (through `store_*`), the promo if usable now, the shipping settings

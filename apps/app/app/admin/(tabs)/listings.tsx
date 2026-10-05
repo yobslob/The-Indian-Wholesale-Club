@@ -12,7 +12,7 @@ import { rupees } from '@/features/admin/format';
 import { QtyConfirm } from '@/features/admin/qty-confirm';
 import { useAction } from '@/features/admin/use-action';
 import { supabase } from '@/lib/supabase';
-import { useQuery } from '@/lib/use-query';
+import { usePagedQuery } from '@/lib/use-paged-query';
 
 const STATUSES: Enum<'product_status'>[] = ['draft', 'live', 'paused'];
 
@@ -23,8 +23,11 @@ const STATUSES: Enum<'product_status'>[] = ['draft', 'live', 'paused'];
 export default function AdminListingsScreen(): React.JSX.Element {
   const [status, setStatus] = useState<Enum<'product_status'>>('draft');
   const router = useRouter();
-  const { data, error, loading, reload } = useQuery(`admin:listings:${status}`, () =>
-    listAdminProducts(supabase, { status, limit: 50 }),
+  // 50 at a time with "Show more": hundreds of drafts never load at once.
+  const { items: data, error, loading, loadingMore, hasMore, loadMore, reload } = usePagedQuery(
+    `admin:listings:${status}`,
+    (offset, limit) => listAdminProducts(supabase, { status, offset, limit }),
+    50,
   );
   const publish = useAction(reload);
 
@@ -87,6 +90,9 @@ export default function AdminListingsScreen(): React.JSX.Element {
             ))}
         </Card>
       ))}
+      {hasMore ? (
+        <Button kind="secondary" label={loadingMore ? 'Loading…' : 'Show more'} disabled={loadingMore} onPress={loadMore} />
+      ) : null}
     </Screen>
   );
 }
