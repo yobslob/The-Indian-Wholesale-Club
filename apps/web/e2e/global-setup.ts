@@ -42,6 +42,14 @@ export default async function globalSetup(): Promise<void> {
     .eq('id', adminId);
   if (roleError) throw roleError;
 
+  // Checkout needs an open cycle (D-045). A fresh database has the seed's; a local one that ran a whole cycle by hand
+  // may not (with no "days between cutoffs" set, none opens by itself, D-063).
+  const { data: open, error: openError } = await service.from('cycles').select('id').eq('status', 'open').maybeSingle();
+  if (openError) throw openError;
+  if (!open) {
+    throw new Error('No open cycle, so checkout is closed: open one in the admin (Cycles) or run `npx supabase db reset`.');
+  }
+
   const { data: variants, error: variantError } = await service
     .from('product_variants')
     .select('id, qty_reserved, product:products!inner(slug)')

@@ -96,6 +96,7 @@ export async function deliverOutboxRow(
 
 /** Sends what is due now: after the server itself changed an order, so the customer hears at once. Never throws. */
 export async function sendDueEmails(service: IwcClient, limit = 20): Promise<void> {
+  if (!mailer()) return; // email not configured: everything waits in the outbox, nothing to log per row
   try {
     for (const row of await listDueEmails(service, limit)) await deliverOutboxRow(service, row);
   } catch (error) {
