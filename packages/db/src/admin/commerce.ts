@@ -58,6 +58,8 @@ export interface TodaySummary {
   draftProducts: number;
   /** Live variants to re-check with the shop; null until the founder sets the number of days (D-047). */
   staleVariants: number | null;
+  /** D-070: express orders still in India (to pick up and send by courier). */
+  expressToSend: number;
 }
 
 async function countRows(
@@ -69,7 +71,7 @@ async function countRows(
 }
 
 export async function getTodaySummary(client: IwcClient): Promise<TodaySummary> {
-  const [orders, pendingPickups, unpaidPickedPickups, draftProducts, staleDays, stale] = await Promise.all([
+  const [orders, pendingPickups, unpaidPickedPickups, draftProducts, staleDays, stale, expressToSend] = await Promise.all([
     client.from('orders').select('status').in('status', OPEN_ORDER_STATUSES).limit(5000),
     countRows(
       client.from('pickups').select('id', { count: 'exact', head: true }).eq('status', 'pending'),
@@ -86,12 +88,20 @@ export async function getTodaySummary(client: IwcClient): Promise<TodaySummary> 
     ),
     client.from('pricing_settings').select('stale_listing_days').eq('id', 1).single(),
     client.rpc('admin_stale_variants'),
+    countRows(
+      client
+        .from('orders')
+        .select('id', { count: 'exact', head: true })
+        .eq('shipping_method', 'express')
+        .is('cycle_id', null)
+        .in('status', ['confirmed', 'collecting']),
+    ),
   ]);
   const ordersByStatus: TodaySummary['ordersByStatus'] = {};
   for (const row of unwrap(orders))
     ordersByStatus[row.status] = (ordersByStatus[row.status] ?? 0) + 1;
   const staleVariants = unwrap(staleDays).stale_listing_days === null ? null : unwrap(stale).length;
-  return { ordersByStatus, pendingPickups, unpaidPickedPickups, draftProducts, staleVariants };
+  return { ordersByStatus, pendingPickups, unpaidPickedPickups, draftProducts, staleVariants, expressToSend };
 }
 
 // ---------------------------------------------------------------- Insights (real numbers only, no fabricated analytics)

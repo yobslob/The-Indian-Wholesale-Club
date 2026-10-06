@@ -26,6 +26,7 @@ export default async function TodayPage(): Promise<React.JSX.Element> {
   const items: [string, number | string, string, 'us' | 'india'][] = [
     ['Orders confirmed in the open cycle', count('confirmed'), '/admin/orders?status=confirmed', 'us'],
     ['Pickups still pending', summary.pendingPickups, '/admin/cycles', 'india'],
+    ['Express orders to pick up and send by courier (D-070)', summary.expressToSend, '/admin/orders?express=1', 'india'],
     ['Picked pieces not yet paid to shops', summary.unpaidPickedPickups, '/admin/payouts', 'india'],
     ['Orders arrived in the US, to pack and ship', count('arrived'), '/admin/orders?status=arrived', 'us'],
     ['Draft listings to review', summary.draftProducts, '/admin/listings', 'india'],

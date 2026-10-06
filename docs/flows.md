@@ -39,10 +39,12 @@ open ──cutoff──► collecting ──► packed ──► exported ──
 
 ## 3. Placing an order (customer)
 1. The cart holds variants. At checkout, the server computes totals from the catalog (never from the browser): subtotal,
-   promo, shipping (Standard free or Express $8, both settings, D-041) and tax (flat 8% estimate on subtotal − discount +
-   shipping, D-033).
-2. The server computes the **delivery window** from the open cycle's estimated arrival plus the US delivery days of the chosen
-   option (standard or express days). It is shown before payment (D-008). Express is offered only when its days are set (Q-18).
+   promo, shipping (Standard free with the next export, D-041; Express by courier from Mumbai to the door, priced per
+   order + per piece, D-070) and sales tax by the delivery state (D-073: only where IWC is registered, New Jersey, and
+   only on taxed classes; clothing and food are exempt there, so most orders carry none).
+2. The server computes the **delivery window**: standard = the open cycle's estimated arrival + the US delivery days;
+   express = today + 15 to 18 days (D-048, D-070). It is shown before payment (D-008). An express order has no cycle: its
+   pieces go on a pickup list at once and it is sent by courier from India once picked (`ship_order`).
 3. Payment: a Stripe PaymentIntent (USD) for exactly that total. The priced checkout is stored in `pending_orders` with it.
    After payment the server verifies amount, currency and status with Stripe, then creates the order **from the stored
    checkout** (D-038). The customer's device (website or app, D-043) and the Stripe webhook both trigger this; the

@@ -5,6 +5,8 @@ import { unwrap, type Enum, type IwcClient, type Update } from '../client';
 export interface AdminOrderFilter {
   status?: Enum<'order_status'>;
   cycleId?: string;
+  /** D-070: express orders still in India (no cycle, not yet sent by courier). */
+  expressToSend?: boolean;
   limit?: number;
 }
 
@@ -15,6 +17,9 @@ export async function listAdminOrders(client: IwcClient, filter: AdminOrderFilte
   );
   if (filter.status) query = query.eq('status', filter.status);
   if (filter.cycleId) query = query.eq('cycle_id', filter.cycleId);
+  if (filter.expressToSend) {
+    query = query.eq('shipping_method', 'express').is('cycle_id', null).in('status', ['confirmed', 'collecting']);
+  }
   return unwrap(await query.order('created_at', { ascending: false }).limit(filter.limit ?? 100));
 }
 

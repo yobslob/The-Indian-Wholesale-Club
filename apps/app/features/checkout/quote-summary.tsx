@@ -30,7 +30,7 @@ export function QuoteSummary({ quote }: { quote: CheckoutQuote }): React.JSX.Ele
         label={quote.shippingMethod === 'express' ? 'Express shipping' : 'Shipping'}
         value={b.shippingCents === 0 ? 'Free' : formatUsd(b.shippingCents)}
       />
-      <Row label="Estimated tax" value={formatUsd(b.taxCents)} />
+      <Row label="Sales tax" value={formatUsd(b.taxCents)} />
       <View className="border-line my-1 border-t" />
       <Row label="Total" value={formatUsd(b.totalCents)} />
       {quote.promoRejected ? (
@@ -63,7 +63,7 @@ export function ShippingOptions({
   if (!express) return null;
   const options = [
     { method: 'standard' as const, label: 'Standard', option: standard },
-    { method: 'express' as const, label: 'Express', option: express },
+    { method: 'express' as const, label: 'Express (courier from India to your door)', option: express },
   ];
   return (
     <View className="gap-2">

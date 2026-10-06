@@ -70,7 +70,7 @@ ${window ? `<p>Estimated delivery: <strong>${escapeHtml(window)}</strong></p>` :
 ${money('Subtotal', o.subtotal_cents)}
 ${o.discount_cents > 0 ? money('Discount', o.discount_cents, true) : ''}
 ${money('Shipping', o.shipping_cents)}
-${money('Estimated tax', o.tax_cents)}
+${money('Sales tax', o.tax_cents)}
 <tr><td colspan="2" style="padding-top:6px"><strong>Total</strong></td><td style="text-align:right"><strong>${formatUsd(
     o.total_cents,
   )}</strong></td></tr>

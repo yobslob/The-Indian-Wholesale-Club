@@ -116,7 +116,12 @@ whether a product follows it, and triggers reprice when a setting, a variant wei
 without a price. `_fx_refresh()` (pg_cron every 10 minutes, pg_net) fetches the ECB rate once a day through
 `fx_fetches` and refuses implausible jumps. `categories.tax_class` (clothing, food, general; D-073). `business_details`
 (exporter, importer, broker, FDA, contact: placeholders until saved; admin-only). `pricing_settings.spices_cleared` gates
-live spices (trigger `_spices_cleared_check`, replacing the old constraint). `guest_order_lookup(number, email)` returns the
+live spices (trigger `_spices_cleared_check`, replacing the old constraint). Migration 25 (D-073, D-070): `tax_rates`
+(one row per state where IWC is registered, with the classes it taxes; New Jersey 6.625% on general goods; no row = no
+tax; admin-only); `checkout_context(variant_ids, promo, state)` adds each line's tax class and courier cost (never its
+weight), the state's rule and express as courier pricing with a window from today; express orders have no cycle, a
+window from the order date and their pickups at once (`pickups.cycle_id` may be null); `ship_order` sends an express
+order by courier once picked; a cancel refunds the tax (`_cancel_refund_cents`). `guest_order_lookup(number, email)` returns the
 same shape for guests and is **service-only** (the server route rate-limits it). A test keeps its fields identical to the views'.
 `checkout_context(variant_ids, promo_code)` (migration 3, **service-only**) returns what the server needs to price a bag in
 one round trip: the variants as customers can buy them (through `store_*`), the promo if usable now, the shipping settings

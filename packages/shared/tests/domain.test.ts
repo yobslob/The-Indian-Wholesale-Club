@@ -152,95 +152,84 @@ describe('product attributes are strict (D-003)', () => {
   });
 });
 
-describe('checkout quote (flows.md §3, D-033, D-041)', () => {
-  const shipping = { flatCents: 900, freeMinCents: 10000, expressCents: 800 };
+describe('checkout quote (flows.md §3, D-041, D-070, D-073)', () => {
+  const shipping = { flatCents: 900, freeMinCents: 10000, express: { baseCents: 1500, minCourierCents: 2200 } };
+  const nj = { ratePct: 6.625 };
 
-  it('adds subtotal, flat shipping and the 8% tax estimate on (subtotal + shipping)', () => {
+  it('adds subtotal and flat shipping; no tax where IWC is not registered (D-073)', () => {
     const quote = quoteCheckout([{ unitPriceCents: 2500, quantity: 2 }], null, shipping);
     assert.deepEqual(quote, {
       subtotalCents: 5000,
       discountCents: 0,
       shippingCents: 900,
-      taxCents: 472, // round(5900 × 8%)
-      totalCents: 6372,
+      taxCents: 0,
+      totalCents: 5900,
       promoApplied: false,
     });
+  });
+
+  it('taxes only the taxable lines in a registered state (NJ exempts clothing)', () => {
+    const clothing = { unitPriceCents: 5000, quantity: 1, taxable: false };
+    const accessory = { unitPriceCents: 5000, quantity: 1, taxable: true };
+    assert.equal(quoteCheckout([clothing], null, shipping, 'standard', nj)?.taxCents, 0);
+    // half the order is taxable: 6.625% of (10000 + free shipping) x 1/2 = 331.25, rounds to 331
+    assert.equal(quoteCheckout([clothing, accessory], null, shipping, 'standard', nj)?.taxCents, 331);
   });
 
   it('ships free once the discounted subtotal reaches the threshold', () => {
     const quote = quoteCheckout([{ unitPriceCents: 10000, quantity: 1 }], null, shipping);
     assert.equal(quote?.shippingCents, 0);
-    assert.equal(quote?.totalCents, 10800);
+    assert.equal(quote?.totalCents, 10000);
   });
 
   it('refuses to guess shipping when an option has no price (D-040)', () => {
-    assert.equal(
-      quoteCheckout([{ unitPriceCents: 100, quantity: 1 }], null, {
-        flatCents: null,
-        freeMinCents: null,
-        expressCents: null,
-      }),
-      null,
-    );
+    const none = { flatCents: null, freeMinCents: null, express: null };
+    assert.equal(quoteCheckout([{ unitPriceCents: 100, quantity: 1 }], null, none), null);
+    assert.equal(quoteCheckout([{ unitPriceCents: 100, quantity: 1 }], null, none, 'express'), null);
   });
 
   it('applies percentage and fixed promos, never below zero, only above the minimum', () => {
     const lines = [{ unitPriceCents: 4000, quantity: 1 }];
-    const pct = quoteCheckout(
-      lines,
-      { discountType: 'percentage', discountValue: 25, minOrderCents: 0 },
-      shipping,
-    );
+    const pct = quoteCheckout(lines, { discountType: 'percentage', discountValue: 25, minOrderCents: 0 }, shipping);
     assert.equal(pct?.discountCents, 1000);
-    const fixed = quoteCheckout(
-      lines,
-      { discountType: 'fixed', discountValue: 9999, minOrderCents: 0 },
-      shipping,
-    );
+    const fixed = quoteCheckout(lines, { discountType: 'fixed', discountValue: 9999, minOrderCents: 0 }, shipping);
     assert.equal(fixed?.discountCents, 4000);
-    assert.equal(fixed?.totalCents, 900 + 72);
-    const below = quoteCheckout(
-      lines,
-      { discountType: 'fixed', discountValue: 500, minOrderCents: 5000 },
-      shipping,
-    );
+    assert.equal(fixed?.totalCents, 900);
+    const below = quoteCheckout(lines, { discountType: 'fixed', discountValue: 500, minOrderCents: 5000 }, shipping);
     assert.equal(below?.discountCents, 0);
     assert.equal(below?.promoApplied, false);
   });
 
-  it('always balances: total = subtotal − discount + shipping + tax (orders CHECK)', () => {
+  it('always balances: total = subtotal - discount + shipping + tax (orders CHECK)', () => {
     for (const unit of [1, 99, 1234, 55555]) {
       for (const qty of [1, 3]) {
-        const q = quoteCheckout([{ unitPriceCents: unit, quantity: qty }], null, shipping);
-        assert.ok(q);
-        assert.equal(
-          q.totalCents,
-          q.subtotalCents - q.discountCents + q.shippingCents + q.taxCents,
-        );
+        for (const method of ['standard', 'express'] as const) {
+          const q = quoteCheckout(
+            [{ unitPriceCents: unit, quantity: qty, taxable: true, courierCents: 900 }],
+            null,
+            shipping,
+            method,
+            nj,
+          );
+          assert.ok(q);
+          assert.equal(q.totalCents, q.subtotalCents - q.discountCents + q.shippingCents + q.taxCents);
+        }
       }
     }
   });
 
   it('rejects impossible lines', () => {
     assert.throws(() => quoteCheckout([], null, shipping), RangeError);
-    assert.throws(
-      () => quoteCheckout([{ unitPriceCents: 10, quantity: 0 }], null, shipping),
-      RangeError,
-    );
-    assert.throws(
-      () => quoteCheckout([{ unitPriceCents: 1.5, quantity: 1 }], null, shipping),
-      RangeError,
-    );
+    assert.throws(() => quoteCheckout([{ unitPriceCents: 10, quantity: 0 }], null, shipping), RangeError);
+    assert.throws(() => quoteCheckout([{ unitPriceCents: 1.5, quantity: 1 }], null, shipping), RangeError);
   });
 
-  it('D-041: standard is free, express costs $8 and never gets the free threshold', () => {
-    const d041 = { flatCents: 0, freeMinCents: null, expressCents: 800 };
-    const lines = [{ unitPriceCents: 20000, quantity: 1 }];
-    assert.equal(quoteCheckout(lines, null, d041)?.shippingCents, 0);
-    const express = quoteCheckout(lines, null, { ...d041, freeMinCents: 100 }, 'express');
-    assert.equal(express?.shippingCents, 800);
-    assert.equal(express?.taxCents, 1664); // 8% of 20800
-    assert.equal(quoteCheckout(lines, null, { ...d041, expressCents: null }, 'express'), null);
+  it('D-070: express = per order + the courier for every piece, never below the minimum, no free threshold', () => {
+    const lines = [{ unitPriceCents: 20000, quantity: 2, courierCents: 1980 }];
+    const express = quoteCheckout(lines, null, { ...shipping, freeMinCents: 100 }, 'express');
+    assert.equal(express?.shippingCents, 1500 + 3960);
+    const light = quoteCheckout([{ unitPriceCents: 2000, quantity: 1, courierCents: 550 }], null, shipping, 'express');
+    assert.equal(light?.shippingCents, 1500 + 2200, 'the courier minimum applies');
   });
 
   it('formats cents as US dollars', () => {
@@ -397,10 +386,11 @@ describe('tracking links (D-066)', () => {
     assert.equal(trackingUrl('USPS', '9400 1000 0000 0000 0000 00'), 'https://tools.usps.com/go/TrackConfirmAction?tLabels=9400100000000000000000');
     assert.equal(trackingUrl('ups', '1Z999AA10123456784'), 'https://www.ups.com/track?tracknum=1Z999AA10123456784');
     assert.equal(trackingUrl(' FedEx ', '123456789012'), 'https://www.fedex.com/fedextrack/?trknbr=123456789012');
+    assert.equal(trackingUrl('dhl', '1234567890'), 'https://www.dhl.com/us-en/home/tracking/tracking-express.html?submit=1&tracking-id=1234567890');
   });
 
   it('gives no link for other carriers or a number that is not one', () => {
-    assert.equal(trackingUrl('DHL', '1234567890'), null);
+    assert.equal(trackingUrl('OnTrac', '1234567890'), null);
     assert.equal(trackingUrl('USPS', 'abc'), null);
     assert.equal(trackingUrl('USPS', '123"><script>'), null);
     assert.equal(trackingUrl(null, '1234567890'), null);

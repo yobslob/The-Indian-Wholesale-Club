@@ -108,7 +108,7 @@ export function OrderView({
           label={o.shipping_method === 'express' ? 'Express shipping' : 'Shipping'}
           value={o.shipping_cents === 0 ? 'Free' : formatUsd(o.shipping_cents)}
         />
-        <Row label="Estimated tax" value={formatUsd(o.tax_cents)} />
+        <Row label="Sales tax" value={formatUsd(o.tax_cents)} />
         <Row label="Total" value={formatUsd(o.total_cents)} />
         {o.refunded_cents > 0 ? <Row label="Refunded" value={formatUsd(o.refunded_cents)} /> : null}
       </Card>

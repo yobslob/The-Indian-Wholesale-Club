@@ -8,6 +8,7 @@ import {
   changeDeliveryWindow,
   markOrderDelivered,
   markOrderShipped,
+  markPickup,
   moveOrder,
 } from '@repo/db/admin';
 
@@ -88,4 +89,15 @@ export async function moveOrderAction(orderId: string, form: FormData): Promise<
   await moveOrder(client, { orderId: id.parse(orderId), toCycleId: input.toCycleId, note: input.note || undefined });
   done(orderId);
   revalidatePath('/admin/cycles', 'layout');
+}
+
+/** D-070: the COO marks an express order's piece picked (or unavailable) at the shop; then it goes by courier. */
+export async function markExpressPickupAction(
+  pickupId: string,
+  status: 'picked' | 'unavailable',
+  orderId: string,
+): Promise<void> {
+  const { client } = await requireAdminAction();
+  await markPickup(client, id.parse(pickupId), z.enum(['picked', 'unavailable']).parse(status));
+  done(orderId);
 }

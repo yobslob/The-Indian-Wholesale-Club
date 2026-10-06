@@ -114,7 +114,7 @@ export function OrderView({ order }: { order: OrderDetail }): React.JSX.Element 
           <dd>{o.shipping_cents === 0 ? 'Free' : formatUsd(o.shipping_cents)}</dd>
         </div>
         <div className="flex justify-between">
-          <dt className="text-ink-muted">Estimated tax</dt>
+          <dt className="text-ink-muted">Sales tax</dt>
           <dd>{formatUsd(o.tax_cents)}</dd>
         </div>
         <div className="border-line flex justify-between border-t pt-1 font-medium">

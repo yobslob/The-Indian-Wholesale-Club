@@ -75,4 +75,17 @@ select tests.assert(
   (public.checkout_context(array[tests.id('v_live')]) -> 'shipping' ->> 'flat_cents') is null,
   'unset shipping is reported as null (checkout must refuse, not guess)');
 reset role;
+-- D-073: tax by delivery state. New Jersey (registered) taxes general goods only; Texas (not registered) has no rule.
+set local role service_role;
+select tests.assert(
+  (select (t ->> 'rate_pct')::numeric = 6.625 and (t ->> 'taxes_clothing')::boolean = false
+          and (t ->> 'taxes_general')::boolean = true
+   from (select public.checkout_context(array[tests.id('v_live')], null, 'nj') -> 'tax' as t) x),
+  'NJ: 6.625% on general goods, clothing and food exempt');
+select tests.assert(public.checkout_context(array[tests.id('v_live')], null, 'TX') -> 'tax' = 'null'::jsonb,
+  'a state where IWC is not registered: no tax');
+select tests.assert(
+  (select v ->> 'tax_class' = 'clothing' from jsonb_array_elements(public.checkout_context(array[tests.id('v_live')]) -> 'variants') v),
+  'each line carries its tax class');
+reset role;
 rollback;

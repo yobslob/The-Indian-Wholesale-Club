@@ -20,7 +20,7 @@ const STATUSES: Enum<'order_status'>[] = [
   'refunded',
 ];
 
-type SearchParams = Promise<{ status?: string }>;
+type SearchParams = Promise<{ status?: string; express?: string }>;
 
 /** All orders with a status filter (admin.md: Orders, US desk). */
 export default async function AdminOrdersPage({
@@ -29,16 +29,20 @@ export default async function AdminOrdersPage({
   searchParams: SearchParams;
 }): Promise<React.JSX.Element> {
   const { client } = await requireAdminPage();
-  const requested = (await searchParams).status;
-  const status = STATUSES.find((s) => s === requested);
-  const orders = await listAdminOrders(client, { status, limit: 200 });
+  const params = await searchParams;
+  const status = STATUSES.find((s) => s === params.status);
+  const expressToSend = params.express === '1';
+  const orders = await listAdminOrders(client, { status, expressToSend, limit: 200 });
 
   return (
     <div className="space-y-4">
       <PageTitle>Orders</PageTitle>
       <nav className="flex flex-wrap gap-3">
-        <Link href="/admin/orders" className={!status ? 'font-semibold underline' : 'underline'}>
+        <Link href="/admin/orders" className={!status && !expressToSend ? 'font-semibold underline' : 'underline'}>
           All
+        </Link>
+        <Link href="/admin/orders?express=1" className={expressToSend ? 'font-semibold underline' : 'underline'}>
+          Express to send (D-070)
         </Link>
         {STATUSES.map((s) => (
           <Link

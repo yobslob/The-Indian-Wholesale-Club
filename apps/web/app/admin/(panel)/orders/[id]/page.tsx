@@ -9,7 +9,7 @@ import {
 } from '@repo/db/admin';
 import { formatUsd, orderEventLabel } from '@repo/shared/domain';
 
-import { addNoteAction, changeWindowAction } from '@/features/admin/actions/orders';
+import { addNoteAction, changeWindowAction, markExpressPickupAction } from '@/features/admin/actions/orders';
 import { cancelOrderAction, refundItemAction } from '@/features/admin/actions/refunds';
 import { requireAdminPage } from '@/features/admin/guard';
 import { OrderMoveForm } from '@/features/admin/order-move-form';
@@ -45,6 +45,9 @@ export default async function AdminOrderPage({
   ]);
   const refundFor = new Map(itemRefunds);
   const events = [...order.events].sort((a, b) => a.created_at.localeCompare(b.created_at));
+  // D-070: an express order is picked up and sent by courier straight from India, outside any cycle.
+  const expressInIndia =
+    order.shipping_method === 'express' && !order.cycle_id && ['confirmed', 'collecting'].includes(order.status);
 
   return (
     <div className="space-y-6">
@@ -96,6 +99,20 @@ export default async function AdminOrderPage({
               {item.pickup
                 ? `${item.pickup.status}${item.pickup.payout_id ? ' · paid' : ''}${item.pickup.arrived_at ? ' · arrived' : ''}`
                 : '—'}
+              {expressInIndia && item.pickup?.status === 'pending' ? (
+                <span className="mt-1 flex gap-3">
+                  <form action={markExpressPickupAction.bind(null, item.pickup.id, 'picked', order.id)}>
+                    <button type="submit" className={button}>
+                      Picked
+                    </button>
+                  </form>
+                  <form action={markExpressPickupAction.bind(null, item.pickup.id, 'unavailable', order.id)}>
+                    <button type="submit" className="min-h-11 underline">
+                      Unavailable
+                    </button>
+                  </form>
+                </span>
+              ) : null}
             </Cell>
           </tr>
         ))}

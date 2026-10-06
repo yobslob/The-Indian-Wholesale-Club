@@ -21,6 +21,10 @@ export const checkoutVariantSchema = z.object({
   price_cents: z.number().int(),
   available: z.number().int(),
   image_path: z.string().nullable(),
+  /** D-073: taxed or exempt depends on the delivery state's rule for this class. */
+  tax_class: z.enum(['clothing', 'food', 'general']),
+  /** D-070: what the courier charges to carry one piece (express). Never the weight (INV-1). */
+  courier_cents: z.number().int(),
 });
 
 export const checkoutPromoSchema = z.object({
@@ -39,10 +43,21 @@ export const checkoutContextSchema = z.object({
     free_min_cents: z.number().int().nullable(),
   }),
   delivery: deliveryWindowSchema.nullable(),
-  /** Offered only when the express price AND express days are set (D-041, Q-18). */
+  /** D-073: the delivery state's rule, or null where IWC is not registered (no tax). */
+  tax: z
+    .object({
+      state: z.string(),
+      rate_pct: z.coerce.number(),
+      taxes_clothing: z.boolean(),
+      taxes_food: z.boolean(),
+      taxes_general: z.boolean(),
+    })
+    .nullable(),
+  /** D-070: courier from Mumbai to the door, priced per order + per piece; its window counts from today. */
   express: z
     .object({
-      price_cents: z.number().int(),
+      base_cents: z.number().int(),
+      min_courier_cents: z.number().int(),
       est_delivery_from: z.string(),
       est_delivery_to: z.string(),
     })
@@ -58,11 +73,13 @@ export async function getCheckoutContext(
   service: IwcClient,
   variantIds: string[],
   promoCode: string | null,
+  state: string | null = null,
 ): Promise<CheckoutContext> {
   const data = unwrap(
     await service.rpc('checkout_context', {
       p_variant_ids: variantIds,
       ...(promoCode ? { p_promo_code: promoCode } : {}),
+      ...(state ? { p_state: state } : {}),
     }),
   );
   return checkoutContextSchema.parse(data);

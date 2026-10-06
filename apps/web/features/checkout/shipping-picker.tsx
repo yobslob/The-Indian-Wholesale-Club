@@ -5,8 +5,8 @@ import { formatDeliveryWindow, formatUsd, type ShippingMethod } from '@repo/shar
 import type { CheckoutQuote } from './types';
 
 /**
- * Standard (free) or express ($8) shipping, each with its own delivery window
- * (D-041, D-008). Express only appears once it is set up (Q-18).
+ * Standard (free, with the next export, D-041) or express (a courier from Mumbai to the door, priced by the pieces,
+ * D-070), each with its own delivery window (D-008). Express only appears once its settings exist.
  */
 export function ShippingPicker({
   quote,
@@ -35,7 +35,7 @@ export function ShippingPicker({
     },
     {
       method: 'express',
-      label: 'Express',
+      label: 'Express (courier from India to your door)',
       cents: express.shippingCents,
       from: express.delivery.est_delivery_from,
       to: express.delivery.est_delivery_to,

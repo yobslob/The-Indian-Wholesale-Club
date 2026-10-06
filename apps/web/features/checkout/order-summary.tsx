@@ -32,7 +32,7 @@ export function OrderSummary({ quote }: { quote: CheckoutQuote }): React.JSX.Ele
           quote.shippingMethod === 'express' ? 'Express shipping' : 'Shipping',
           b.shippingCents === 0 ? 'Free' : formatUsd(b.shippingCents),
         )}
-        {row('Estimated tax', formatUsd(b.taxCents))}
+        {row('Sales tax', formatUsd(b.taxCents))}
         <div className="border-line flex justify-between border-t pt-2 font-medium">
           <dt>Total</dt>
           <dd>{formatUsd(b.totalCents)}</dd>

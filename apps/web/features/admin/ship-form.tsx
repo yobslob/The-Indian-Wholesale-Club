@@ -6,6 +6,8 @@ import { button, Field, input } from './ui';
 interface ShipOrder {
   id: string;
   status: string;
+  shipping_method: string;
+  cycle_id: string | null;
   carrier: string | null;
   tracking_number: string | null;
   items: { status: string; pickup: { status: string; arrived_at: string | null } | null }[];
@@ -17,12 +19,15 @@ interface ShipOrder {
  */
 export function ShipForm({ order }: { order: ShipOrder }): React.JSX.Element {
   const link = trackingUrl(order.carrier, order.tracking_number);
-  const unchecked = order.items.filter((i) => i.pickup?.status === 'picked' && !i.pickup.arrived_at).length;
+  const express = order.shipping_method === 'express' && !order.cycle_id; // D-070: courier straight from India
+  const unpicked = order.items.filter((i) => i.status === 'active' && i.pickup?.status === 'pending').length;
+  const canShip = express ? ['confirmed', 'collecting'].includes(order.status) && unpicked === 0 : order.status === 'arrived';
+  const unchecked = express ? 0 : order.items.filter((i) => i.pickup?.status === 'picked' && !i.pickup.arrived_at).length;
 
   return (
     <div className="border-line space-y-2 rounded-md border p-3">
       <h2 className="font-medium">Pack &amp; ship</h2>
-      {order.status === 'arrived' ? (
+      {canShip ? (
         <form action={markShippedAction.bind(null, order.id)} className="space-y-2">
           {unchecked > 0 ? (
             <p className="text-caution text-sm">
@@ -71,7 +76,9 @@ export function ShipForm({ order }: { order: ShipOrder }): React.JSX.Element {
         <p className="text-ink-muted text-sm">
           {order.status === 'delivered'
             ? `Delivered · ${order.carrier ?? ''} ${order.tracking_number ?? ''}`
-            : 'Ships once its export has arrived in the US.'}
+            : express
+              ? `Express: send by courier from India once every piece is picked (${unpicked} still to pick).`
+              : 'Ships once its export has arrived in the US.'}
         </p>
       )}
     </div>

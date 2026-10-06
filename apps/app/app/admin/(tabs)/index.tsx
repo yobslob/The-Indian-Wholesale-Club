@@ -58,6 +58,7 @@ export default function TodayScreen(): React.JSX.Element {
     ? [
         ['Orders confirmed in the open cycle', count('confirmed'), { pathname: '/admin/orders', params: { status: 'confirmed' } }, 'us'],
         ['Pickups still pending', data.summary.pendingPickups, '/admin/cycles', 'india'],
+        ['Express orders to send by courier', data.summary.expressToSend, { pathname: '/admin/orders', params: { status: 'confirmed' } }, 'india'],
         ['Picked pieces not yet paid to shops', data.summary.unpaidPickedPickups, '/admin/payouts', 'india'],
         ['Orders arrived in the US, to pack and ship', count('arrived'), { pathname: '/admin/orders', params: { status: 'arrived' } }, 'us'],
         ['Draft listings to review', data.summary.draftProducts, '/admin/listings', 'india'],
