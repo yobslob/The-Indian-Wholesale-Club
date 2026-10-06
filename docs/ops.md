@@ -70,7 +70,9 @@ by" time for up to 5 minutes after a cutoff (checkout itself always prices the r
   TODO(founder) markers on customer pages). Read-only. For production: `pnpm launch:check --url=<db url> --allow-remote`.
 - **Pricing estimates (D-047, C6):** `pnpm dev:estimates` loads Claude's researched estimates (`supabase/seed/estimates.sql`,
   each with its source and date) into the local database without a reset, filling only empty settings; a local reset
-  loads them too. For the hosted dev database, run that file in the SQL editor. Never in production (C8 launch check).
+  loads them too. For the hosted dev database, run that file in the SQL editor. In production the pilot runs on them
+  (D-069): `pnpm prod:seed` loads them once with the regions and categories (below), and Settings shows each as a
+  placeholder until the founder saves their own number.
   creates or refreshes the account with the role and the `admin_emails` row. Run it again after every `check.mjs db`
   (the reset deletes local accounts). The website also needs the email in `ADMIN_EMAILS` in `apps/web/.env.local`.
 - Admin bootstrap (after the person has signed up once): `insert into admin_emails (email) values ('<email>')` and
@@ -86,6 +88,30 @@ only on a commit whose CI run is green. Its secrets (`SUPABASE_PROJECT_REF`, `SU
 **CI** (`ci.yml`) runs `node scripts/check.mjs` on every push and pull request to `main`, on a local Supabase inside the
 runner. Optional secrets: `STRIPE_TEST_PUBLISHABLE_KEY`, `STRIPE_TEST_SECRET_KEY` (test keys only, for the checkout flow).
 The old `NEXT_PUBLIC_SUPABASE_*` / `NEXT_PUBLIC_APP_URL` CI secrets are no longer read (B-15).
+
+## Going live the first time (the founder runs every step; Claude never touches production)
+1. **Supabase:** create the production project in a US region. Database → Extensions: `pg_cron` and `pg_net` are
+   created by the migrations. Auth → URL configuration: the site URL.
+2. **GitHub → Settings → Secrets → Actions:** `SUPABASE_PROJECT_REF`, `SUPABASE_ACCESS_TOKEN`, `SUPABASE_DB_PASSWORD`,
+   `VERCEL_DEPLOY_HOOK_URL` (and `EXPO_TOKEN` once the app is built, step 9).
+3. **Vercel:** import the repo, root directory `apps/web`, region US (Washington, D.C., `iad1`). Environment variables:
+   every web row of the table above with **production** values: the production Supabase URL and keys, Stripe **live**
+   keys, `RESEND_*`, a new long random `EMAIL_OUTBOX_CRON_SECRET` (never a dev one), `ADMIN_EMAILS`, the site URLs (the
+   `*.vercel.app` address until the domain, Q-9). Create a deploy hook (Settings → Git → Deploy Hooks) for step 2.
+4. **Deploy:** Actions → Deploy → `deploy` (migrations to production, then the Vercel build). The first build reads the
+   empty catalogue; that is fine.
+5. **Data, once:** `pnpm prod:seed --url=<production DB URL> --allow-remote` (dry run), then again with `--apply`: the 36
+   states (text as drafts), the categories and the pilot numbers. Never `seed/demo.sql` or `seed/catalogue.sql`.
+6. **Vault (SQL editor):** the two `vault.create_secret` lines of §Email timer, with the production site URL and the
+   same secret as `EMAIL_OUTBOX_CRON_SECRET`.
+7. **Stripe:** add the webhook endpoint `<site>/api/webhooks/stripe` for the live account (event `payment_intent.succeeded`) and put its signing secret in
+   `STRIPE_WEBHOOK_SECRET` on Vercel (redeploy).
+8. **In the admin:** sign up, then the admin bootstrap of §Database workflow; approve and switch on the launch states
+   (Regions); fill Settings → Business and compliance details; open the first cycle with real dates; list products.
+   `pnpm launch:check --url=<production DB URL> --allow-remote` must then end "Ready to launch".
+9. **The app** is not on Vercel: it is built by EAS (the Deploy workflow's last job) and published through the App Store
+   and Google Play, which need the founder's developer accounts and a real bundle id instead of `com.root.app` (from the
+   domain, Q-9). Its `EXPO_PUBLIC_API_URL` is the production website.
 
 ## Git
 GitHub `yobslob/The-Indian_Wholesale-Club`, branch `main` (D-014). Claude commits in `C:\kod\root` and the founder pushes.

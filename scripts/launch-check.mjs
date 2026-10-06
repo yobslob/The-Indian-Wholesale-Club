@@ -27,9 +27,11 @@ if (!['127.0.0.1', 'localhost', '::1'].includes(new URL(url).hostname) && !args.
   process.exit(2);
 }
 
-/** @type {{ ok: boolean, label: string, detail?: string }[]} */
+/** @type {{ ok: boolean, label: string, detail?: string, note?: boolean }[]} */
 const results = [];
 const check = (ok, label, detail) => results.push({ ok, label, detail });
+/** Shown, but never blocks the launch: a decision says it may go live this way. */
+const note = (ok, label, detail) => results.push({ ok, label, detail, note: true });
 
 // ------------------------------------------------------------------ the database
 const client = new pg.Client({ connectionString: url });
@@ -40,7 +42,8 @@ try {
   const all = async (sql) => (await client.query(sql)).rows;
 
   const estimates = await all('select setting from public.pricing_estimates order by setting');
-  check(estimates.length === 0, 'Pricing settings are the founder\'s own numbers, not estimates (D-047)',
+  // D-069: the pilot runs on Claude's high-end placeholders, so they don't block; they stay listed until replaced.
+  note(estimates.length === 0, 'Pricing settings are the founder\'s own numbers, not placeholders (D-047; the pilot may run on them, D-069)',
     estimates.map((e) => e.setting).join(', '));
 
   const s = await one('select * from public.pricing_settings where id = 1');
@@ -140,7 +143,11 @@ check(todos.length === 0, 'Customer pages carry no TODO(founder) markers (policy
   todos.map((t) => t.replace(/\\/g, '/').replace('apps/web/app/(store)/', '')).join(', '));
 
 // ------------------------------------------------------------------ report
-const failed = results.filter((r) => !r.ok);
-for (const r of results) console.log(`${r.ok ? 'OK  ' : 'TODO'}  ${r.label}${r.ok || !r.detail ? '' : `\n        ${r.detail}`}`);
-console.log(`\n${failed.length === 0 ? 'Ready to launch.' : `${failed.length} of ${results.length} still to do before launch.`}`);
+const failed = results.filter((r) => !r.ok && !r.note);
+for (const r of results) {
+  const tag = r.ok ? 'OK  ' : r.note ? 'NOTE' : 'TODO';
+  console.log(`${tag}  ${r.label}${r.ok || !r.detail ? '' : `\n        ${r.detail}`}`);
+}
+const counted = results.filter((r) => !r.note).length;
+console.log(`\n${failed.length === 0 ? 'Ready to launch.' : `${failed.length} of ${counted} still to do before launch.`}`);
 process.exit(failed.length === 0 ? 0 : 1);
