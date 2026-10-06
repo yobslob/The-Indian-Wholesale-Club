@@ -2,6 +2,7 @@
   "expo": {
     "name": "The Indian Wholesale Club",
     "slug": "iwc",
+    "owner": "yoblsobs-team",
     "extra": {
       "eas": {
         "projectId": "a3d8cbc0-bfa4-4aa8-ad53-eea9824778f4"
