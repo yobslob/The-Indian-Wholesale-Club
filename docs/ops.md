@@ -4,7 +4,7 @@
 | Env | Web | DB | Notes |
 |---|---|---|---|
 | dev | `pnpm dev` on the founder's machine | **local Supabase** (Docker) via `apps/web/.env.local`; the hosted dev project has the same schema since 2026-09-29 (D-013) | `next build` reads the DB since R5 (static pages), so the DB it points at must have the new schema |
-| prod | not set up yet. Vercel is the likely host, US region (Q-9) | a separate Supabase project in a US region | hosted in the US (D-003) |
+| prod | Vercel (since 2026-10-06; the domain waits on Q-9) | a separate Supabase project in us-east-1 (North Virginia) | hosted in the US (D-003). The Android app is built by EAS; iOS waits for an Apple Developer account |
 
 ## Environment variables
 Names only. Values live in `.env` files that are **never committed**. The templates are `apps/web/.env.example` and `apps/app/.env.example`.
@@ -108,10 +108,21 @@ The old `NEXT_PUBLIC_SUPABASE_*` / `NEXT_PUBLIC_APP_URL` CI secrets are no longe
    `STRIPE_WEBHOOK_SECRET` on Vercel (redeploy).
 8. **In the admin:** sign up, then the admin bootstrap of §Database workflow; approve and switch on the launch states
    (Regions); fill Settings → Business and compliance details; open the first cycle with real dates; list products.
+   The first admin account: Supabase → Authentication → Users → Add user → Create new user (tick "Auto Confirm User"),
+   then in the SQL editor (the email in lowercase) `insert into public.admin_emails (email, note) values ('<email>', 'founder');` and
+   `update public.profiles set role = 'admin', desk = 'us' where id = (select id from auth.users where email = '<email>');`,
+   and the same email in `ADMIN_EMAILS` on Vercel (redeploy). Sign in at `<site>/admin`. Supabase → Authentication →
+   URL configuration: the site URL is the production website, so sign-up and password emails link there.
    `pnpm launch:check --url=<production DB URL> --allow-remote` must then end "Ready to launch".
-9. **The app** is not on Vercel: it is built by EAS (the Deploy workflow's last job) and published through the App Store
-   and Google Play, which need the founder's developer accounts and a real bundle id instead of `com.root.app` (from the
-   domain, Q-9). Its `EXPO_PUBLIC_API_URL` is the production website.
+9. **The app** is not on Vercel: EAS builds it (the Deploy workflow's last job, Android only until there is an Apple
+   Developer account). EAS cloud builds never see `apps/app/.env`: the four public settings live in the EAS
+   "production" environment, set once from `apps/app` (`eas login` first):
+   `eas env:create --environment production --visibility plaintext --name EXPO_PUBLIC_SUPABASE_URL --value <production Supabase URL>`,
+   then the same for `EXPO_PUBLIC_SUPABASE_ANON_KEY` (the production anon key), `EXPO_PUBLIC_API_URL` (the production
+   website) and `EXPO_PUBLIC_STRIPE_PUBLISHABLE_KEY` (the live publishable key). All four are public by design (they ship
+   inside the app). The Deploy workflow's `android_profile` input picks `preview` (an APK to install on a phone from the
+   EAS build page) or `production` (an AAB for Google Play). Before the first Play Store upload, replace the
+   placeholder `com.root.app` in `app.json` (Google Play never lets it change afterwards).
 
 ## Git
 GitHub `yobslob/The-Indian_Wholesale-Club`, branch `main` (D-014). Claude commits in `C:\kod\root` and the founder pushes.
