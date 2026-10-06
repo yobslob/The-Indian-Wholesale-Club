@@ -1383,6 +1383,9 @@ isOneToOne: false
               "est_delivery_from": string,"est_delivery_to": string,"order_by": string
             }[]
                            },
+"store_policy":
+{ Args: Record<PropertyKey, never>; Returns: Json
+                           },
 "store_product_page":
 { Args: { "p_product_slug": string,"p_region_slug": string }; Returns: Json
                            },

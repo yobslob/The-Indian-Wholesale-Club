@@ -154,4 +154,19 @@ select tests.act_as(tests.id('cust_a'));
 select tests.assert_fails(format('select public.customer_cancel(%L, 1, null)', tests.id('order_s')), '42501',
   'customers cancel through the website''s server, never directly');
 reset role;
+
+-- The Shipping & returns page reads the same numbers (migration 27), and only the terms a customer is offered.
+set local role anon;
+select tests.assert(
+  (select (p ->> 'return_claim_days')::int = 7
+          and p -> 'return_tiers' = '[{"days": 7, "kept_pct": 15.00}, {"days": 14, "kept_pct": 30.00}, {"days": 30, "kept_pct": 50.00}]'::jsonb
+          and (p ->> 'us_delivery_days_min')::int = 3
+   from public.store_policy() p),
+  'visitors read the return windows and delivery days the rules use');
+select tests.assert(
+  (select not (p ? 'export_cancel_deduction_pct') and not (p ? 'margin_pct') and not (p ? 'freight_cents_per_kg')
+          and not (p ? 'clearance_discount_pct')
+   from public.store_policy() p),
+  'D-003: no cost, margin or customer-care deduction in it');
+reset role;
 rollback;

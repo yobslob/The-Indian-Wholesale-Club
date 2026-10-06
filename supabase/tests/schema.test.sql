@@ -41,8 +41,8 @@ select tests.assert(
   (select coalesce(array_agg(p.proname::text order by p.proname), '{}')
    from pg_proc p join pg_namespace n on n.oid = p.pronamespace
    where n.nspname = 'public' and has_function_privilege('anon', p.oid, 'execute'))
-  = array['dev_preview', 'is_product_visible', 'store_browse', 'store_home', 'store_next_delivery', 'store_product_page',
-          'store_region_page', 'store_search', 'store_type_rows'],
+  = array['dev_preview', 'is_product_visible', 'store_browse', 'store_home', 'store_next_delivery', 'store_policy',
+          'store_product_page', 'store_region_page', 'store_search', 'store_type_rows'],
   'anon can execute only the store-facing functions');
 
 select tests.assert(
@@ -53,7 +53,7 @@ select tests.assert(
           'admin_return_received', 'admin_return_refunded', 'admin_return_rejected', 'admin_sales', 'admin_set_listed_qty', 'admin_stale_variants', 'advance_cycle', 'cancel_after_delay', 'cancel_order', 'cancel_refund_cents', 'change_delivery_window',
           'check_off_arrival', 'confirm_move_shipped', 'cutoff_cycle', 'deliver_order', 'dev_preview', 'is_admin', 'is_product_visible', 'item_refund_cents', 'keep_after_delay', 'mark_pickup', 'move_order',
           'record_payout', 'refund_order_item', 'review_eligibility', 'ship_order', 'store_browse', 'store_home', 'store_my_order', 'store_next_delivery',
-          'store_product_page', 'store_region_page', 'store_search', 'store_type_rows'],
+          'store_policy', 'store_product_page', 'store_region_page', 'store_search', 'store_type_rows'],
   'signed-in users can execute only store + admin-checked functions (never create_order)');
 
 rollback;

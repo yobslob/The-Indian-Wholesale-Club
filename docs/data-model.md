@@ -128,7 +128,9 @@ no pickups for them. `_to_clearance(item, why)` turns a returned or cancelled pi
 `clearance_discount_pct` off what was paid. `_in_india(order)` decides the customer's cancel; `returns` (one per order
 line: reason, status, the refund fixed when asked, % kept; admin-only) with `_return_quote(item, reason)` and
 `_delivered_at(order)`; `_order_actions()` adds `returns`. New settings: the cancel fee, the after-export deduction, the
-claim window, three change-of-mind tiers and the clearance discount. `guest_order_lookup(number, email)` returns the
+claim window, three change-of-mind tiers and the clearance discount. Migration 27: `store_policy()` (anon) returns the
+terms the Shipping & returns page states (shipping, express and US delivery days, the cancel fee, the claim window and
+return tiers, the tax states and classes), never a cost, margin or customer-care deduction. `guest_order_lookup(number, email)` returns the
 same shape for guests and is **service-only** (the server route rate-limits it). A test keeps its fields identical to the views'.
 `checkout_context(variant_ids, promo_code)` (migration 3, **service-only**) returns what the server needs to price a bag in
 one round trip: the variants as customers can buy them (through `store_*`), the promo if usable now, the shipping settings

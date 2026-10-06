@@ -16,6 +16,7 @@ import {
   productCardSchema,
   productPageSchema,
   regionPageSchema,
+  storePolicySchema,
   type BrowsePage,
   type DeliveryWindow,
   type HomeData,
@@ -24,6 +25,7 @@ import {
   type ProductCard,
   type ProductPage,
   type RegionPage,
+  type StorePolicy,
   type TypeRow,
   typeRowSchema,
 } from './schemas';
@@ -168,4 +170,9 @@ export async function getMyOrder(
 ): Promise<OrderDetail | null> {
   const data = unwrap(await client.rpc('store_my_order', { p_order_number: orderNumber }));
   return data === null ? null : orderDetailSchema.parse(data);
+}
+
+/** The Shipping & returns page's numbers (store_policy, migration 27). */
+export async function getStorePolicy(client: IwcClient): Promise<StorePolicy> {
+  return storePolicySchema.parse(unwrap(await client.rpc('store_policy')));
 }

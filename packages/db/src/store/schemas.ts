@@ -289,4 +289,21 @@ export type OrderEvent = z.infer<typeof orderEventSchema>;
 export type OrderDetail = z.infer<typeof orderDetailSchema>;
 export type OrderOffer = z.infer<typeof orderOfferSchema>;
 export type OrderActions = z.infer<typeof orderActionsSchema>;
+
+/** store_policy() (migration 27): the terms the Shipping & returns page states, the same numbers the rules use. */
+export const storePolicySchema = z.object({
+  shipping_flat_cents: z.number().int().nullable(),
+  free_shipping_min_cents: z.number().int().nullable(),
+  express_days_min: z.number().int().nullable(),
+  express_days_max: z.number().int().nullable(),
+  us_delivery_days_min: z.number().int().nullable(),
+  us_delivery_days_max: z.number().int().nullable(),
+  cancel_fee_pct: z.coerce.number().nullable(),
+  return_claim_days: z.number().int().nullable(),
+  return_tiers: z.array(z.object({ days: z.number().int(), kept_pct: z.coerce.number() })),
+  tax: z.array(
+    z.object({ state: z.string(), rate_pct: z.coerce.number(), clothing: z.boolean(), food: z.boolean(), general: z.boolean() }),
+  ),
+});
+export type StorePolicy = z.infer<typeof storePolicySchema>;
 export type OrderReturnOption = z.infer<typeof orderReturnOptionSchema>;
