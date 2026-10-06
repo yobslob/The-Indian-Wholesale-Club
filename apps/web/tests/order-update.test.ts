@@ -44,7 +44,7 @@ const base: OrderDetail = {
   ],
   events: [],
   offer: null,
-  actions: { can_cancel: false, cancel_refund_cents: null, delay_open: true, delay_refund_cents: 5400 },
+  actions: { can_cancel: false, cancel_refund_cents: null, delay_open: true, delay_refund_cents: 5400, returns: [] },
 };
 const url = 'https://iwc.example/orders/IWC-261006-ABCDEF0123';
 const mail = (kind: string, order: OrderDetail = base) =>
@@ -58,6 +58,8 @@ const KINDS = [
   'delivery_window_changed',
   'faster_delivery_accepted',
   'arriving_sooner',
+  'return_requested',
+  'return_rejected',
   'shipped',
   'delivered',
 ];

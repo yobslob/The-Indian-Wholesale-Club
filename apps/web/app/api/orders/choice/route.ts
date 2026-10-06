@@ -3,7 +3,7 @@ import { z } from 'zod';
 
 import {
   cancelAfterDelay,
-  cancelBeforeCutoff,
+  customerCancel,
   getOrderForCustomer,
   keepAfterDelay,
   lookupGuestOrder,
@@ -30,9 +30,10 @@ const NOT_OPEN = 'This order can no longer be changed here. Reply to your order 
 
 /**
  * POST /api/orders/choice: the customer's own decision on their order, website and app. The order is found by number
- * + email (the guest-lookup proof). What is allowed and the refund come from the database (D-042: a change of mind
- * before cutoff keeps the tax; D-008: after a delay, everything back, or keep it with the new date). Stripe is
- * refunded first, then the database records it and re-checks the amount.
+ * + email (the guest-lookup proof). What is allowed and the refund come from the database (D-072: cancel until the
+ * order leaves India, minus the cancel fee once its pieces are being collected; D-008: after a delay, everything
+ * back, or keep it with the new date). Stripe is refunded first, then the database records it and re-checks the
+ * amount.
  */
 export async function POST(request: Request): Promise<NextResponse<{ ok: true } | { error: string }>> {
   const limited = await limitRequest(request.headers, 'orderLookup');
@@ -56,8 +57,9 @@ export async function POST(request: Request): Promise<NextResponse<{ ok: true } 
       return NextResponse.json({ ok: true });
     }
 
-    const beforeCutoff = actions.can_cancel && actions.cancel_refund_cents !== null;
-    const amount = beforeCutoff ? actions.cancel_refund_cents : actions.delay_open ? actions.delay_refund_cents : null;
+    // A delay cancel refunds everything, so it comes first when both are open.
+    const delay = actions.delay_open && actions.delay_refund_cents !== null;
+    const amount = delay ? actions.delay_refund_cents : actions.can_cancel ? actions.cancel_refund_cents : null;
     if (amount === null) return NextResponse.json({ error: NOT_OPEN }, { status: 409 });
     let refundRef = 'no refund due';
     if (amount > 0) {
@@ -69,7 +71,7 @@ export async function POST(request: Request): Promise<NextResponse<{ ok: true } 
       refundRef = refund.id;
     }
     const input = { orderId: order.id, amountCents: amount, refundRef };
-    await (beforeCutoff ? cancelBeforeCutoff(service, input) : cancelAfterDelay(service, input));
+    await (delay ? cancelAfterDelay(service, input) : customerCancel(service, input));
     revalidateAfterRelease(); // reserved pieces went back to stock
     await sendDueEmails(service);
     return NextResponse.json({ ok: true });

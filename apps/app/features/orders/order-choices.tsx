@@ -9,27 +9,32 @@ import { Body, Button, ErrorText } from '@/components/ui';
 import { apiPost } from '@/lib/api';
 
 /**
- * As on the website (flows.md §7, §7b): after a delay, keep the order or cancel for everything back (D-008); before
- * cutoff, cancel for all but the tax (D-042). Same server API; cancelling asks once more.
+ * As on the website (flows.md §7, §7b): after a delay, keep the order or cancel for everything back (D-008); until it
+ * leaves India, cancel for everything back, minus the cancel fee once we started preparing it (D-072). Same server
+ * API; cancelling asks once more.
  */
 export function OrderChoices({
   actions,
   orderNumber,
   email,
   window,
+  paidCents,
   onChanged,
 }: {
   actions: OrderActions;
   orderNumber: string;
   email: string;
   window: { from: string; to: string } | null;
+  /** What the customer paid and has not had back yet. */
+  paidCents: number;
   onChanged?: () => void;
 }): React.JSX.Element | null {
   const [confirming, setConfirming] = useState(false);
   const [busy, setBusy] = useState(false);
   const [error, setError] = useState<string | null>(null);
   const [done, setDone] = useState<string | null>(null);
-  const refund = formatUsd((actions.delay_open ? actions.delay_refund_cents : actions.cancel_refund_cents) ?? 0);
+  const refundCents = (actions.delay_open ? actions.delay_refund_cents : actions.cancel_refund_cents) ?? 0;
+  const refund = formatUsd(refundCents);
   if (!actions.delay_open && !actions.can_cancel) return null;
 
   async function decide(choice: 'cancel' | 'keep'): Promise<void> {
@@ -50,7 +55,11 @@ export function OrderChoices({
       <Body>
         {actions.delay_open
           ? `${window ? `It now arrives ${formatDeliveryWindow(window.from, window.to)}. ` : ''}Keep your order with the new date, or cancel and get all ${refund} back. Sorry about this.`
-          : `You can cancel until we start preparing your order. You'd get ${refund} back: everything except the tax.`}
+          : `You can still cancel this order. You'd get ${refund} back${
+              refundCents < paidCents
+                ? `: ${formatUsd(paidCents - refundCents)} is kept because we've already started preparing it.`
+                : ', everything you paid.'
+            }`}
       </Body>
       {error ? <ErrorText>{error}</ErrorText> : null}
       {done ? (

@@ -7,7 +7,7 @@ import { requireAdminPage } from '@/features/admin/guard';
 import { listingTabs } from '@/features/admin/listing-tabs';
 import { Cell, input, linkButton, PageTitle, rupees, Table, Tabs } from '@/features/admin/ui';
 
-type SearchParams = Promise<{ q?: string; status?: string; page?: string }>;
+type SearchParams = Promise<{ q?: string; status?: string; page?: string; us?: string }>;
 
 const PAGE = 50;
 
@@ -17,7 +17,8 @@ const isStatus = (s: string | undefined): s is Status => STATUSES.includes(s as 
 
 /**
  * Catalog: every product with admin-only fields (shop, shop price, stock), optionally one status (the tabs), 50 to a
- * page with Previous / Next, so a catalogue of hundreds is never one long page and nothing is cut off.
+ * page with Previous / Next, so a catalogue of hundreds is never one long page and nothing is cut off. The US
+ * clearance tab lists pieces already in the US (D-072): drafts made from returns and cancels, published once checked.
  */
 export default async function CatalogPage({
   searchParams,
@@ -28,26 +29,40 @@ export default async function CatalogPage({
   const params = await searchParams;
   const q = params.q?.trim().slice(0, 100) ?? '';
   const status = isStatus(params.status) ? params.status : undefined;
+  const usStock = params.us === '1';
   const page = Math.min(Math.max(Number.parseInt(params.page ?? '1', 10) || 1, 1), 1000);
   // One more than a page tells whether a next page exists.
   const rows = await listAdminProducts(client, {
     search: q || undefined,
     status,
+    usStock,
     offset: (page - 1) * PAGE,
     limit: PAGE + 1,
   });
   const products = rows.slice(0, PAGE);
   const pageHref = (n: number): string => {
-    const query = new URLSearchParams({ ...(q ? { q } : {}), ...(status ? { status } : {}), ...(n > 1 ? { page: String(n) } : {}) });
+    const query = new URLSearchParams({
+      ...(q ? { q } : {}),
+      ...(status ? { status } : {}),
+      ...(usStock ? { us: '1' } : {}),
+      ...(n > 1 ? { page: String(n) } : {}),
+    });
     return query.size ? `/admin/catalog?${query.toString()}` : '/admin/catalog';
   };
 
   return (
     <div className="space-y-4">
       <PageTitle>Catalog</PageTitle>
-      <Tabs items={listingTabs()} current={status ?? 'all'} />
+      <Tabs items={listingTabs()} current={usStock ? 'us' : (status ?? 'all')} />
+      {usStock ? (
+        <p className="text-ink-muted text-sm">
+          Returned and cancelled pieces already in the US, as drafts at the clearance price. Check each piece in hand,
+          then publish it: it ships at once, without a cycle.
+        </p>
+      ) : null}
       <form className="flex gap-2">
         {status ? <input type="hidden" name="status" value={status} /> : null}
+        {usStock ? <input type="hidden" name="us" value="1" /> : null}
         <input name="q" defaultValue={q} placeholder="Search products" className={`${input} flex-1`} />
         <button type="submit" className={linkButton}>
           Search
@@ -72,6 +87,7 @@ export default async function CatalogPage({
                 {p.name}
               </Link>
               {p.is_placeholder ? <span className="text-caution ml-1 text-xs">(demo)</span> : null}
+              {p.is_us_stock ? <span className="text-ink-muted ml-1 text-xs">(in the US)</span> : null}
             </Cell>
             <Cell>{p.product_type}</Cell>
             <Cell>{p.status}</Cell>

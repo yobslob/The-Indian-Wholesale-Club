@@ -75,6 +75,22 @@ export const SETTING_GROUPS: SettingGroup[] = [
     ],
   },
   {
+    title: 'After the sale: cancels, returns, US clearance (D-071, D-072)',
+    note: 'The order page offers what these allow, with the refund already worked out.',
+    fields: [
+      { key: 'cancel_fee_pct', label: 'Customer cancel once we started preparing (% of goods kept)', kind: 'pct' },
+      { key: 'export_cancel_deduction_pct', label: 'Customer-care cancel after it left India (% of goods kept)', kind: 'pct' },
+      { key: 'return_claim_days', label: 'Damaged or wrong: report within (days of delivery)', kind: 'int' },
+      { key: 'return_tier1_days', label: 'Change of mind, first window (days)', kind: 'int' },
+      { key: 'return_tier1_pct', label: 'First window: % kept for fetching', kind: 'pct' },
+      { key: 'return_tier2_days', label: 'Second window (days)', kind: 'int' },
+      { key: 'return_tier2_pct', label: 'Second window: % kept', kind: 'pct' },
+      { key: 'return_tier3_days', label: 'Last window (days; after it, no returns)', kind: 'int' },
+      { key: 'return_tier3_pct', label: 'Last window: % kept', kind: 'pct' },
+      { key: 'clearance_discount_pct', label: 'US clearance price: % off what the customer paid', kind: 'pct' },
+    ],
+  },
+  {
     title: 'Cycles and offers',
     fields: [
       { key: 'cycle_days', label: 'Days between cutoffs (D-063)', kind: 'int' },

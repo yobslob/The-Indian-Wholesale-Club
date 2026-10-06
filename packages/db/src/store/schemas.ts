@@ -71,6 +71,8 @@ export const productSchema = productCardSchema.extend({
   craft: z.string().nullable(),
   attributes: z.record(z.unknown()),
   published_at: isoDateTime.nullable(),
+  /** A piece already in the US (a clearance piece, D-072): it ships at once, outside the cycle. */
+  is_us_stock: z.boolean().default(false),
 });
 
 export const variantSchema = z.object({
@@ -148,6 +150,8 @@ export const productPageSchema = z.object({
   similar: z.array(regionProductCardSchema),
   /** The region's other admin picks (Curated for you, D-056). */
   curated: z.array(regionProductCardSchema),
+  /** A US piece's window: today + the US delivery days (null for pieces coming from India). */
+  ships_from_us: z.object({ est_delivery_from: isoDate, est_delivery_to: isoDate }).nullable().default(null),
   /** Approved reviews: summary over all of them and the six newest (D-051, D-056). */
   reviews: reviewsSummarySchema,
   delivery: deliveryWindowSchema.nullable(),
@@ -213,12 +217,26 @@ export const orderOfferSchema = z.object({
   est_delivery_to: z.string(),
 });
 
-/** What the customer may do now (D-042 cancel before cutoff, D-008 keep or cancel after a delay), with the refunds. */
+/** A delivered piece's return options (D-071): the refund for a damage or mistake claim and for a change of mind. */
+export const orderReturnOptionSchema = z.object({
+  item_id: z.string().uuid(),
+  /** Wrong or damaged, within the claim window: everything back. Null when too late. */
+  claim_refund_cents: z.number().int().nullable(),
+  /** Unworn clothing, by days since delivery. Null when it can't be returned (food, too late). */
+  change_of_mind_refund_cents: z.number().int().nullable(),
+  requested: z.boolean(),
+});
+
+/**
+ * What the customer may do now, with the refunds: cancel until the order leaves India (D-072), keep or cancel after
+ * a delay (D-008), return delivered pieces (D-071).
+ */
 export const orderActionsSchema = z.object({
   can_cancel: z.boolean(),
   cancel_refund_cents: z.number().int().nullable(),
   delay_open: z.boolean(),
   delay_refund_cents: z.number().int().nullable(),
+  returns: z.array(orderReturnOptionSchema).default([]),
 });
 
 export const orderDetailSchema = z.object({
@@ -271,3 +289,4 @@ export type OrderEvent = z.infer<typeof orderEventSchema>;
 export type OrderDetail = z.infer<typeof orderDetailSchema>;
 export type OrderOffer = z.infer<typeof orderOfferSchema>;
 export type OrderActions = z.infer<typeof orderActionsSchema>;
+export type OrderReturnOption = z.infer<typeof orderReturnOptionSchema>;

@@ -7,6 +7,7 @@ import { requireAdminPage } from '@/features/admin/guard';
 const SECTIONS = [
   ['/admin', 'Today'],
   ['/admin/orders', 'Orders'],
+  ['/admin/returns', 'Returns'],
   ['/admin/cycles', 'Cycles'],
   ['/admin/payouts', 'Payouts'],
   ['/admin/vendors', 'Vendors'],

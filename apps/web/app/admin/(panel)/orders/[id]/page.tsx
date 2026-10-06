@@ -2,6 +2,7 @@ import { notFound } from 'next/navigation';
 
 import {
   cancelRefundCents,
+  exportCancelCents,
   getAdminOrder,
   itemRefundCents,
   listCycles,
@@ -9,6 +10,7 @@ import {
 } from '@repo/db/admin';
 import { formatUsd, orderEventLabel } from '@repo/shared/domain';
 
+import { cancelAfterExportAction } from '@/features/admin/actions/after-sales';
 import { addNoteAction, changeWindowAction, markExpressPickupAction } from '@/features/admin/actions/orders';
 import { cancelOrderAction, refundItemAction } from '@/features/admin/actions/refunds';
 import { requireAdminPage } from '@/features/admin/guard';
@@ -32,7 +34,7 @@ export default async function AdminOrderPage({
   const address = order.shipping_address as Record<string, string | null>;
   // Refund amounts come from the database rules (D-042), shown before anyone clicks.
   const unavailable = order.items.filter((i) => i.status === 'unavailable');
-  const [itemRefunds, cancelAmounts, cycles, moves] = await Promise.all([
+  const [itemRefunds, cancelAmounts, exportCancel, cycles, moves] = await Promise.all([
     Promise.all(unavailable.map(async (i) => [i.id, await itemRefundCents(client, i.id)] as const)),
     order.status === 'confirmed'
       ? Promise.all([
@@ -40,6 +42,8 @@ export default async function AdminOrderPage({
           cancelRefundCents(client, order.id, 'our_fault'),
         ])
       : null,
+    // D-072: after it left India, customer care cancels with the shipping deduction.
+    ['in_transit', 'arrived', 'shipped'].includes(order.status) ? exportCancelCents(client, order.id) : null,
     listCycles(client, 12),
     listOrderMoves(client, order.id),
   ]);
@@ -150,12 +154,26 @@ export default async function AdminOrderPage({
               <h2 className="font-medium">Cancel (before cutoff, D-042)</h2>
               <form action={cancelOrderAction.bind(null, order.id, 'customer_request')}>
                 <button type="submit" className="min-h-11 underline">
-                  Customer asked to cancel: refund {formatUsd(cancelAmounts[0])} (tax kept)
+                  Customer asked to cancel: refund {formatUsd(cancelAmounts[0])}
                 </button>
               </form>
               <form action={cancelOrderAction.bind(null, order.id, 'our_fault')}>
                 <button type="submit" className="min-h-11 underline">
                   Cancel because of us: refund {formatUsd(cancelAmounts[1])}
+                </button>
+              </form>
+            </div>
+          ) : null}
+          {exportCancel !== null ? (
+            <div className="space-y-2">
+              <h2 className="font-medium">Cancel for the customer (it left India, D-072)</h2>
+              <p className="text-ink-muted text-xs">
+                Only when the customer asked customer care. The shipping deduction is kept and its pieces become US
+                clearance drafts.
+              </p>
+              <form action={cancelAfterExportAction.bind(null, order.id)}>
+                <button type="submit" className="min-h-11 underline">
+                  Cancel and refund {formatUsd(exportCancel)}
                 </button>
               </form>
             </div>

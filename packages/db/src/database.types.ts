@@ -296,7 +296,7 @@ isOneToOne: false
                   ]
                 },"orders": {
                   Row: {
-                    "carrier": string | null,"created_at": string,"currency": string,"cycle_id": string | null,"discount_cents": number,"email": string,"est_delivery_from": string | null,"est_delivery_to": string | null,"fulfilment_mode": Database["public"]['Enums']["fulfilment_mode"],"id": string,"notes": string | null,"order_number": string,"payment_intent_id": string | null,"payment_status": Database["public"]['Enums']["payment_status"],"promo_code_id": string | null,"refunded_cents": number,"shipping_address": NonNullable<Json>,"shipping_cents": number,"shipping_method": Database["public"]['Enums']["shipping_method"],"status": Database["public"]['Enums']["order_status"],"subtotal_cents": number,"tax_cents": number,"total_cents": number,"tracking_number": string | null,"updated_at": string,"user_id": string | null
+                    "carrier": string | null,"created_at": string,"currency": string,"cycle_id": string | null,"discount_cents": number,"email": string,"est_delivery_from": string | null,"est_delivery_to": string | null,"fulfilment_mode": Database["public"]['Enums']["fulfilment_mode"],"id": string,"notes": string | null,"order_number": string,"payment_intent_id": string | null,"payment_status": Database["public"]['Enums']["payment_status"],"promo_code_id": string | null,"refunded_cents": number,"shipping_address": NonNullable<Json>,"shipping_cents": number,"shipping_method": Database["public"]['Enums']["shipping_method"],"status": Database["public"]['Enums']["order_status"],"subtotal_cents": number,"tax_cents": number,"total_cents": number,"tracking_number": string | null,"updated_at": string,"user_id": string | null,"_in_india": boolean | null
                   }
                   Insert: {
                     "carrier"?: string | null,"created_at"?: string,"currency"?: string,"cycle_id"?: string | null,"discount_cents"?: number,"email": string,"est_delivery_from"?: string | null,"est_delivery_to"?: string | null,"fulfilment_mode"?: Database["public"]['Enums']["fulfilment_mode"],"id"?: string,"notes"?: string | null,"order_number"?: string,"payment_intent_id"?: string | null,"payment_status"?: Database["public"]['Enums']["payment_status"],"promo_code_id"?: string | null,"refunded_cents"?: number,"shipping_address": NonNullable<Json>,"shipping_cents"?: number,"shipping_method"?: Database["public"]['Enums']["shipping_method"],"status"?: Database["public"]['Enums']["order_status"],"subtotal_cents": number,"tax_cents"?: number,"total_cents": number,"tracking_number"?: string | null,"updated_at"?: string,"user_id"?: string | null
@@ -420,13 +420,13 @@ isOneToOne: false
                   ]
                 },"pricing_settings": {
                   Row: {
-                    "broker_cents_per_shipment": number | null,"card_fee_fixed_cents": number | null,"card_fee_pct": number | null,"cycle_days": number | null,"domestic_days_max": number | null,"domestic_days_min": number | null,"duty_pct": number | null,"express_base_cents": number | null,"express_courier_cents_per_kg": number | null,"express_days_max": number | null,"express_days_min": number | null,"express_min_kg": number | null,"express_shipping_cents": number | null,"fast_offer_cents": number | null,"free_shipping_min_cents": number | null,"freight_cents_per_kg": number | null,"fx_auto": boolean,"fx_buffer_pct": number | null,"fx_inr_per_usd": number | null,"fx_source": string | null,"fx_updated_at": string | null,"id": number,"india_handling_paise": number | null,"leaving_soon_max": number,"margin_pct": number | null,"returns_allowance_pct": number | null,"shipment_kg": number | null,"shipping_flat_cents": number | null,"spices_cleared": boolean,"stale_listing_days": number | null,"updated_at": string,"updated_by": string | null,"us_handling_cents": number | null,"us_last_mile_cents_per_kg": number | null,"us_last_mile_min_cents": number | null,"volumetric_pct": number | null
+                    "broker_cents_per_shipment": number | null,"cancel_fee_pct": number | null,"card_fee_fixed_cents": number | null,"card_fee_pct": number | null,"clearance_discount_pct": number | null,"cycle_days": number | null,"domestic_days_max": number | null,"domestic_days_min": number | null,"duty_pct": number | null,"export_cancel_deduction_pct": number | null,"express_base_cents": number | null,"express_courier_cents_per_kg": number | null,"express_days_max": number | null,"express_days_min": number | null,"express_min_kg": number | null,"express_shipping_cents": number | null,"fast_offer_cents": number | null,"free_shipping_min_cents": number | null,"freight_cents_per_kg": number | null,"fx_auto": boolean,"fx_buffer_pct": number | null,"fx_inr_per_usd": number | null,"fx_source": string | null,"fx_updated_at": string | null,"id": number,"india_handling_paise": number | null,"leaving_soon_max": number,"margin_pct": number | null,"return_claim_days": number | null,"return_tier1_days": number | null,"return_tier1_pct": number | null,"return_tier2_days": number | null,"return_tier2_pct": number | null,"return_tier3_days": number | null,"return_tier3_pct": number | null,"returns_allowance_pct": number | null,"shipment_kg": number | null,"shipping_flat_cents": number | null,"spices_cleared": boolean,"stale_listing_days": number | null,"updated_at": string,"updated_by": string | null,"us_handling_cents": number | null,"us_last_mile_cents_per_kg": number | null,"us_last_mile_min_cents": number | null,"volumetric_pct": number | null
                   }
                   Insert: {
-                    "broker_cents_per_shipment"?: number | null,"card_fee_fixed_cents"?: number | null,"card_fee_pct"?: number | null,"cycle_days"?: number | null,"domestic_days_max"?: number | null,"domestic_days_min"?: number | null,"duty_pct"?: number | null,"express_base_cents"?: number | null,"express_courier_cents_per_kg"?: number | null,"express_days_max"?: number | null,"express_days_min"?: number | null,"express_min_kg"?: number | null,"express_shipping_cents"?: number | null,"fast_offer_cents"?: number | null,"free_shipping_min_cents"?: number | null,"freight_cents_per_kg"?: number | null,"fx_auto"?: boolean,"fx_buffer_pct"?: number | null,"fx_inr_per_usd"?: number | null,"fx_source"?: string | null,"fx_updated_at"?: string | null,"id"?: number,"india_handling_paise"?: number | null,"leaving_soon_max"?: number,"margin_pct"?: number | null,"returns_allowance_pct"?: number | null,"shipment_kg"?: number | null,"shipping_flat_cents"?: number | null,"spices_cleared"?: boolean,"stale_listing_days"?: number | null,"updated_at"?: string,"updated_by"?: string | null,"us_handling_cents"?: number | null,"us_last_mile_cents_per_kg"?: number | null,"us_last_mile_min_cents"?: number | null,"volumetric_pct"?: number | null
+                    "broker_cents_per_shipment"?: number | null,"cancel_fee_pct"?: number | null,"card_fee_fixed_cents"?: number | null,"card_fee_pct"?: number | null,"clearance_discount_pct"?: number | null,"cycle_days"?: number | null,"domestic_days_max"?: number | null,"domestic_days_min"?: number | null,"duty_pct"?: number | null,"export_cancel_deduction_pct"?: number | null,"express_base_cents"?: number | null,"express_courier_cents_per_kg"?: number | null,"express_days_max"?: number | null,"express_days_min"?: number | null,"express_min_kg"?: number | null,"express_shipping_cents"?: number | null,"fast_offer_cents"?: number | null,"free_shipping_min_cents"?: number | null,"freight_cents_per_kg"?: number | null,"fx_auto"?: boolean,"fx_buffer_pct"?: number | null,"fx_inr_per_usd"?: number | null,"fx_source"?: string | null,"fx_updated_at"?: string | null,"id"?: number,"india_handling_paise"?: number | null,"leaving_soon_max"?: number,"margin_pct"?: number | null,"return_claim_days"?: number | null,"return_tier1_days"?: number | null,"return_tier1_pct"?: number | null,"return_tier2_days"?: number | null,"return_tier2_pct"?: number | null,"return_tier3_days"?: number | null,"return_tier3_pct"?: number | null,"returns_allowance_pct"?: number | null,"shipment_kg"?: number | null,"shipping_flat_cents"?: number | null,"spices_cleared"?: boolean,"stale_listing_days"?: number | null,"updated_at"?: string,"updated_by"?: string | null,"us_handling_cents"?: number | null,"us_last_mile_cents_per_kg"?: number | null,"us_last_mile_min_cents"?: number | null,"volumetric_pct"?: number | null
                   }
                   Update: {
-                    "broker_cents_per_shipment"?: number | null,"card_fee_fixed_cents"?: number | null,"card_fee_pct"?: number | null,"cycle_days"?: number | null,"domestic_days_max"?: number | null,"domestic_days_min"?: number | null,"duty_pct"?: number | null,"express_base_cents"?: number | null,"express_courier_cents_per_kg"?: number | null,"express_days_max"?: number | null,"express_days_min"?: number | null,"express_min_kg"?: number | null,"express_shipping_cents"?: number | null,"fast_offer_cents"?: number | null,"free_shipping_min_cents"?: number | null,"freight_cents_per_kg"?: number | null,"fx_auto"?: boolean,"fx_buffer_pct"?: number | null,"fx_inr_per_usd"?: number | null,"fx_source"?: string | null,"fx_updated_at"?: string | null,"id"?: number,"india_handling_paise"?: number | null,"leaving_soon_max"?: number,"margin_pct"?: number | null,"returns_allowance_pct"?: number | null,"shipment_kg"?: number | null,"shipping_flat_cents"?: number | null,"spices_cleared"?: boolean,"stale_listing_days"?: number | null,"updated_at"?: string,"updated_by"?: string | null,"us_handling_cents"?: number | null,"us_last_mile_cents_per_kg"?: number | null,"us_last_mile_min_cents"?: number | null,"volumetric_pct"?: number | null
+                    "broker_cents_per_shipment"?: number | null,"cancel_fee_pct"?: number | null,"card_fee_fixed_cents"?: number | null,"card_fee_pct"?: number | null,"clearance_discount_pct"?: number | null,"cycle_days"?: number | null,"domestic_days_max"?: number | null,"domestic_days_min"?: number | null,"duty_pct"?: number | null,"export_cancel_deduction_pct"?: number | null,"express_base_cents"?: number | null,"express_courier_cents_per_kg"?: number | null,"express_days_max"?: number | null,"express_days_min"?: number | null,"express_min_kg"?: number | null,"express_shipping_cents"?: number | null,"fast_offer_cents"?: number | null,"free_shipping_min_cents"?: number | null,"freight_cents_per_kg"?: number | null,"fx_auto"?: boolean,"fx_buffer_pct"?: number | null,"fx_inr_per_usd"?: number | null,"fx_source"?: string | null,"fx_updated_at"?: string | null,"id"?: number,"india_handling_paise"?: number | null,"leaving_soon_max"?: number,"margin_pct"?: number | null,"return_claim_days"?: number | null,"return_tier1_days"?: number | null,"return_tier1_pct"?: number | null,"return_tier2_days"?: number | null,"return_tier2_pct"?: number | null,"return_tier3_days"?: number | null,"return_tier3_pct"?: number | null,"returns_allowance_pct"?: number | null,"shipment_kg"?: number | null,"shipping_flat_cents"?: number | null,"spices_cleared"?: boolean,"stale_listing_days"?: number | null,"updated_at"?: string,"updated_by"?: string | null,"us_handling_cents"?: number | null,"us_last_mile_cents_per_kg"?: number | null,"us_last_mile_min_cents"?: number | null,"volumetric_pct"?: number | null
                   }
                   Relationships: [
                     {
@@ -501,13 +501,13 @@ isOneToOne: false
                   ]
                 },"products": {
                   Row: {
-                    "attributes": NonNullable<Json>,"category_id": string,"craft": string | null,"created_at": string,"created_by": string | null,"description": string | null,"has_origin_label": boolean,"id": string,"is_curated": boolean,"is_placeholder": boolean,"name": string,"origin_town": string | null,"price_auto": boolean,"price_cents": number,"product_type": Database["public"]['Enums']["product_type"],"published_at": string | null,"region_id": string,"search": unknown,"shop_price_paise": number | null,"slug": string,"status": Database["public"]['Enums']["product_status"],"story": string | null,"summary": string | null,"updated_at": string,"vendor_id": string
+                    "attributes": NonNullable<Json>,"category_id": string,"craft": string | null,"created_at": string,"created_by": string | null,"description": string | null,"has_origin_label": boolean,"id": string,"is_curated": boolean,"is_placeholder": boolean,"is_us_stock": boolean,"name": string,"origin_town": string | null,"price_auto": boolean,"price_cents": number,"product_type": Database["public"]['Enums']["product_type"],"published_at": string | null,"region_id": string,"search": unknown,"shop_price_paise": number | null,"slug": string,"status": Database["public"]['Enums']["product_status"],"story": string | null,"summary": string | null,"updated_at": string,"vendor_id": string
                   }
                   Insert: {
-                    "attributes"?: NonNullable<Json>,"category_id": string,"craft"?: string | null,"created_at"?: string,"created_by"?: string | null,"description"?: string | null,"has_origin_label"?: boolean,"id"?: string,"is_curated"?: boolean,"is_placeholder"?: boolean,"name": string,"origin_town"?: string | null,"price_auto"?: boolean,"price_cents": number,"product_type": Database["public"]['Enums']["product_type"],"published_at"?: string | null,"region_id": string,"search"?: never,"shop_price_paise"?: number | null,"slug": string,"status"?: Database["public"]['Enums']["product_status"],"story"?: string | null,"summary"?: string | null,"updated_at"?: string,"vendor_id": string
+                    "attributes"?: NonNullable<Json>,"category_id": string,"craft"?: string | null,"created_at"?: string,"created_by"?: string | null,"description"?: string | null,"has_origin_label"?: boolean,"id"?: string,"is_curated"?: boolean,"is_placeholder"?: boolean,"is_us_stock"?: boolean,"name": string,"origin_town"?: string | null,"price_auto"?: boolean,"price_cents": number,"product_type": Database["public"]['Enums']["product_type"],"published_at"?: string | null,"region_id": string,"search"?: never,"shop_price_paise"?: number | null,"slug": string,"status"?: Database["public"]['Enums']["product_status"],"story"?: string | null,"summary"?: string | null,"updated_at"?: string,"vendor_id": string
                   }
                   Update: {
-                    "attributes"?: NonNullable<Json>,"category_id"?: string,"craft"?: string | null,"created_at"?: string,"created_by"?: string | null,"description"?: string | null,"has_origin_label"?: boolean,"id"?: string,"is_curated"?: boolean,"is_placeholder"?: boolean,"name"?: string,"origin_town"?: string | null,"price_auto"?: boolean,"price_cents"?: number,"product_type"?: Database["public"]['Enums']["product_type"],"published_at"?: string | null,"region_id"?: string,"search"?: never,"shop_price_paise"?: number | null,"slug"?: string,"status"?: Database["public"]['Enums']["product_status"],"story"?: string | null,"summary"?: string | null,"updated_at"?: string,"vendor_id"?: string
+                    "attributes"?: NonNullable<Json>,"category_id"?: string,"craft"?: string | null,"created_at"?: string,"created_by"?: string | null,"description"?: string | null,"has_origin_label"?: boolean,"id"?: string,"is_curated"?: boolean,"is_placeholder"?: boolean,"is_us_stock"?: boolean,"name"?: string,"origin_town"?: string | null,"price_auto"?: boolean,"price_cents"?: number,"product_type"?: Database["public"]['Enums']["product_type"],"published_at"?: string | null,"region_id"?: string,"search"?: never,"shop_price_paise"?: number | null,"slug"?: string,"status"?: Database["public"]['Enums']["product_status"],"story"?: string | null,"summary"?: string | null,"updated_at"?: string,"vendor_id"?: string
                   }
                   Relationships: [
                     {
@@ -624,6 +624,43 @@ isOneToOne: false
                   }
                   Relationships: [
                     
+                  ]
+                },"returns": {
+                  Row: {
+                    "decided_at": string | null,"id": string,"kept_pct": number,"note": string | null,"order_id": string,"order_item_id": string,"reason": string,"refund_cents": number,"refund_ref": string | null,"requested_at": string,"status": string
+                  }
+                  Insert: {
+                    "decided_at"?: string | null,"id"?: string,"kept_pct"?: number,"note"?: string | null,"order_id": string,"order_item_id": string,"reason": string,"refund_cents": number,"refund_ref"?: string | null,"requested_at"?: string,"status"?: string
+                  }
+                  Update: {
+                    "decided_at"?: string | null,"id"?: string,"kept_pct"?: number,"note"?: string | null,"order_id"?: string,"order_item_id"?: string,"reason"?: string,"refund_cents"?: number,"refund_ref"?: string | null,"requested_at"?: string,"status"?: string
+                  }
+                  Relationships: [
+                    {
+      foreignKeyName: "returns_order_id_fkey"
+      columns: ["order_id"]
+isOneToOne: false
+      referencedRelation: "orders"
+      referencedColumns: ["id"]
+    },{
+      foreignKeyName: "returns_order_id_fkey"
+      columns: ["order_id"]
+isOneToOne: false
+      referencedRelation: "store_orders"
+      referencedColumns: ["id"]
+    },{
+      foreignKeyName: "returns_order_item_id_fkey"
+      columns: ["order_item_id"]
+isOneToOne: true
+      referencedRelation: "order_items"
+      referencedColumns: ["id"]
+    },{
+      foreignKeyName: "returns_order_item_id_fkey"
+      columns: ["order_item_id"]
+isOneToOne: true
+      referencedRelation: "store_order_items"
+      referencedColumns: ["id"]
+    }
                   ]
                 },"review_photos": {
                   Row: {
@@ -1005,7 +1042,7 @@ isOneToOne: false
                   ]
                 },"store_products": {
                   Row: {
-                    "attributes": Json | null,"category_id": string | null,"category_name": string | null,"category_slug": string | null,"craft": string | null,"description": string | null,"id": string | null,"is_curated": boolean | null,"name": string | null,"price_cents": number | null,"primary_image_path": string | null,"product_type": Database["public"]['Enums']["product_type"] | null,"published_at": string | null,"region_id": string | null,"region_name": string | null,"region_slug": string | null,"search": unknown,"slug": string | null,"story": string | null,"summary": string | null
+                    "attributes": Json | null,"category_id": string | null,"category_name": string | null,"category_slug": string | null,"craft": string | null,"description": string | null,"id": string | null,"is_curated": boolean | null,"is_us_stock": boolean | null,"name": string | null,"price_cents": number | null,"primary_image_path": string | null,"product_type": Database["public"]['Enums']["product_type"] | null,"published_at": string | null,"region_id": string | null,"region_name": string | null,"region_slug": string | null,"search": unknown,"slug": string | null,"story": string | null,"summary": string | null
                   }
                   Relationships: [
                     {
@@ -1119,14 +1156,23 @@ isOneToOne: false
 "_cancel_refund_cents":
 { Args: { "p_order": string,"p_reason": string }; Returns: number
                            },
+"_customer_cancel_cents":
+{ Args: { "p_order": string }; Returns: number
+                           },
 "_cutoff_cycle":
 { Args: { "p_cycle": string }; Returns: number
                            },
 "_delay_open":
 { Args: { "p_order": string }; Returns: boolean
                            },
+"_delivered_at":
+{ Args: { "p_order": string }; Returns: string
+                           },
 "_fx_refresh":
 { Args: Record<PropertyKey, never>; Returns: string
+                           },
+"_in_india":
+{ Args: { "p_order": Database["public"]['Tables']["orders"]['Row'] }; Returns: boolean
                            },
 "_is_verified_buyer":
 { Args: { "p_product": string,"p_user": string }; Returns: boolean
@@ -1157,8 +1203,16 @@ isOneToOne: false
 "_pricing_weight_g":
 { Args: { "p_product": string }; Returns: number
                            },
+"_record_cancel":
+{ Args: { "p_amount": number,"p_note": string,"p_order": string }; Returns: undefined
+                           },
 "_reprice_products":
 { Args: { "p_product"?: string }; Returns: number
+                           },
+"_return_quote":
+{ Args: { "p_item": string,"p_reason": string }; Returns: {
+              "kept_pct": number,"refund_cents": number
+            }[]
                            },
 "_set_stock_context":
 { Args: { "p_note": string,"p_reason": Database["public"]['Enums']["stock_reason"],"p_ref_id": string,"p_ref_type": string }; Returns: undefined
@@ -1174,6 +1228,12 @@ isOneToOne: false
 "_store_product_card":
 { Args: { "p_product_id": string }; Returns: Json
                            },
+"_to_clearance":
+{ Args: { "p_item": string,"p_why": string }; Returns: string
+                           },
+"_unwind_order_pieces":
+{ Args: { "p_order": string,"p_why": string }; Returns: undefined
+                           },
 "_window_from":
 { Args: { "p_cycle": Database["public"]['Tables']["cycles"]['Row'],"p_order": Database["public"]['Tables']["orders"]['Row'] }; Returns: {
               "est_from": string,"est_to": string
@@ -1185,6 +1245,12 @@ isOneToOne: false
 "admin_attention":
 { Args: Record<PropertyKey, never>; Returns: Json
                            },
+"admin_cancel_after_export":
+{ Args: { "p_amount_cents": number,"p_order": string,"p_refund_ref": string }; Returns: undefined
+                           },
+"admin_cancel_after_export_cents":
+{ Args: { "p_order": string }; Returns: number
+                           },
 "admin_create_listing":
 { Args: { "p_listing": Json }; Returns: string
                            },
@@ -1193,6 +1259,15 @@ isOneToOne: false
                            },
 "admin_price_preview":
 { Args: { "p_shop_paise": number,"p_weight_g": number }; Returns: number
+                           },
+"admin_return_received":
+{ Args: { "p_return": string }; Returns: undefined
+                           },
+"admin_return_refunded":
+{ Args: { "p_amount_cents": number,"p_refund_ref": string,"p_return": string }; Returns: undefined
+                           },
+"admin_return_rejected":
+{ Args: { "p_note": string,"p_return": string }; Returns: undefined
                            },
 "admin_sales":
 { Args: { "p_since"?: string }; Returns: Json
@@ -1233,6 +1308,9 @@ isOneToOne: false
 { Args: { "p_order": Json }; Returns: {
               "order_id": string,"order_number": string
             }[]
+                           },
+"customer_cancel":
+{ Args: { "p_amount_cents": number,"p_order": string,"p_refund_ref": string }; Returns: undefined
                            },
 "cutoff_cycle":
 { Args: { "p_cycle": string }; Returns: number
@@ -1279,6 +1357,9 @@ isOneToOne: false
 "refund_order_item":
 { Args: { "p_amount_cents": number,"p_item": string,"p_refund_ref": string }; Returns: undefined
                            },
+"request_return":
+{ Args: { "p_item": string,"p_order": string,"p_reason": string }; Returns: string
+                           },
 "review_eligibility":
 { Args: { "p_product": string }; Returns: Json
                            },
@@ -1318,6 +1399,7 @@ isOneToOne: false
 "description": string | null,
 "id": string | null,
 "is_curated": boolean | null,
+"is_us_stock": boolean | null,
 "name": string | null,
 "price_cents": number | null,
 "primary_image_path": string | null,

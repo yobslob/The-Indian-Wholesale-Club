@@ -102,17 +102,35 @@ shows no delay warning). When the window changes (`change_delivery_window`, or a
 gets an email with the new estimate, and their order page (website and app) offers **keep my order** or **cancel for a
 full refund** until it ships in the US (`keep_after_delay`, `cancel_after_delay`, through `POST /api/orders/choice`).
 The choice is recorded as an `order_event`. The old window is never silently overwritten (INV-6). Pieces already
-collected for an order cancelled this way stay recorded as collected, with a note for the admin (Q-31).
+collected for an order cancelled this way become US clearance drafts (D-072).
 
-## 7b. Cancelling (D-042)
-- Before the cycle's cutoff (order still `confirmed`), an admin can cancel on the customer's request (refund = everything
-  except the tax) or because of IWC (refund = everything). Reserved pieces go back to stock (`released` in the ledger).
-- Stripe is refunded first, then `cancel_order()` records it and re-checks the amount. The customer sees "Order cancelled"
-  and the refunded amount.
-- **Self-service (C5):** while the order is `confirmed`, the customer's order page (website and app) offers "Cancel my
-  order" with the refund shown first (everything except the tax); `POST /api/orders/choice` refunds Stripe and calls
-  `cancel_order()` as the service role.
-- After cutoff, only a delay (§7) opens a cancel.
+## 7b. Cancelling (D-042, D-072)
+- **Until the order leaves India** (`confirmed`, `collecting`, `packed`; an express order until its courier leaves), the
+  customer's order page (website and app) offers "Cancel my order" with the refund shown first: everything back, minus
+  `cancel_fee_pct` of the goods once pieces are being collected (0 for the pilot). `POST /api/orders/choice` refunds
+  Stripe, then `customer_cancel()` records it and re-checks the amount. Pieces not collected go back to the shop's stock
+  (`released` in the ledger); collected ones become US clearance drafts (§7d).
+- Before cutoff an admin can also cancel (`cancel_order()`, on the customer's request or because of IWC: everything back).
+- **After it left India** the button is gone. Only customer care cancels (the admin order page,
+  `admin_cancel_after_export()`): everything back except `export_cancel_deduction_pct` of the goods, and every piece
+  becomes a US clearance draft.
+- Stripe is always refunded first. The customer sees "Order cancelled" and the refunded amount, never why or where.
+
+## 7c. Returns (D-071)
+- A delivered piece can be returned from the order page: **damaged or wrong** (checked against the courier's handover
+  photos), reported within `return_claim_days`, gets everything back, its share of shipping included; a **change of
+  mind**, for unworn and unaltered clothing, keeps `return_tierN_pct` by days since delivery (three windows; after the
+  last, no returns). Food is final sale. The refund is fixed when the customer asks (`POST /api/orders/return`,
+  `request_return()`); they get an email, and an admin emails them how to send it back (Q-33).
+- Admin Returns page: **Received** (the piece is at the US warehouse; it becomes a clearance draft), then **Refund**
+  (Stripe first, `admin_return_refunded()` with the fixed amount), or **Reject** with an internal note (the customer is
+  told it was not accepted and to reply).
+
+## 7d. US clearance stock (D-072)
+- A returned or cancelled piece becomes a draft product (`products.is_us_stock`), photos reused, priced
+  `clearance_discount_pct` below what was paid. Admins check the piece in hand and publish it (Catalog → US clearance).
+- Its product page says it is already in the US, with today + the US delivery days. An order of only US pieces skips the
+  cycle: it is ready to ship at once (`arrived`). Mixed with pieces from India, it travels with them.
 
 ## 8. Order statuses: internal vs what the customer sees [D-003]
 | Internal (`orders.status`) | Customer sees |

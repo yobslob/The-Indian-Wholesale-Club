@@ -36,7 +36,7 @@ export default async function ProductPage({ params }: { params: Params }): Promi
   const { region, product: productSlug } = await params;
   const page = await getProductPageCached(region, productSlug);
   if (!page) notFound();
-  const { product, variants, media, similar, curated, reviews, delivery } = page;
+  const { product, variants, media, similar, curated, reviews, delivery, ships_from_us } = page;
   const chart = sizeChart(product, variants);
 
   return (
@@ -56,7 +56,7 @@ export default async function ProductPage({ params }: { params: Params }): Promi
           </div>
           {product.summary ? <p className="text-ink-muted mb-5">{product.summary}</p> : null}
           {variants.length > 0 ? (
-            <AddToCart product={product} variants={variants} delivery={<DeliveryNote delivery={delivery} />} />
+            <AddToCart product={product} variants={variants} delivery={<DeliveryNote delivery={delivery} fromUs={ships_from_us} />} />
           ) : (
             <p className="text-ink-muted text-sm">Not available right now.</p>
           )}

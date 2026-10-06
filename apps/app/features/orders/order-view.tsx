@@ -12,6 +12,7 @@ import {
 
 import { FasterOffer } from './faster-offer';
 import { OrderChoices } from './order-choices';
+import { ReturnChoices } from './return-choices';
 
 import type { OrderDetail } from '@repo/db/store';
 
@@ -66,6 +67,16 @@ export function OrderView({
           orderNumber={o.order_number}
           email={o.email}
           window={o.est_delivery_from && o.est_delivery_to ? { from: o.est_delivery_from, to: o.est_delivery_to } : null}
+          paidCents={o.total_cents - o.refunded_cents}
+          onChanged={onChanged}
+        />
+      ) : null}
+      {order.actions && order.actions.returns.length > 0 ? (
+        <ReturnChoices
+          returns={order.actions.returns}
+          items={order.items}
+          orderNumber={o.order_number}
+          email={o.email}
           onChanged={onChanged}
         />
       ) : null}

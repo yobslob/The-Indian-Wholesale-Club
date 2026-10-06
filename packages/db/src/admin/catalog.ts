@@ -121,7 +121,7 @@ export async function updateCategory(client: IwcClient, id: string, patch: Updat
 
 // ---------------------------------------------------------------- products + variants
 
-const PRODUCT_LIST_COLUMNS = `id, slug, name, product_type, status, price_cents, shop_price_paise, is_placeholder, updated_at,
+const PRODUCT_LIST_COLUMNS = `id, slug, name, product_type, status, price_cents, shop_price_paise, is_placeholder, is_us_stock, updated_at,
   region:regions(slug, name), vendor:vendors(id, shop_name),
   variants:product_variants(id, label, qty_listed, qty_reserved, qty_confirmed_at, is_active)`;
 
@@ -130,6 +130,8 @@ export interface AdminProductFilter {
   productType?: Enum<'product_type'>;
   regionId?: string;
   vendorId?: string;
+  /** D-072: US clearance pieces only. */
+  usStock?: boolean;
   search?: string;
   limit?: number;
   /** Skip this many (the next page). */
@@ -142,6 +144,7 @@ export async function listAdminProducts(client: IwcClient, filter: AdminProductF
   if (filter.productType) query = query.eq('product_type', filter.productType);
   if (filter.regionId) query = query.eq('region_id', filter.regionId);
   if (filter.vendorId) query = query.eq('vendor_id', filter.vendorId);
+  if (filter.usStock) query = query.eq('is_us_stock', true);
   if (filter.search && filter.search.trim()) {
     query = query.textSearch('search', filter.search.trim(), {
       type: 'websearch',

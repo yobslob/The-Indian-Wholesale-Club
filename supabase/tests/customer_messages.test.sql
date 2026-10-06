@@ -30,7 +30,7 @@ select tests.assert(
 set local role authenticated;
 select tests.act_as(tests.id('cust_a'));
 select tests.assert(
-  (select public.store_my_order(o.order_number) -> 'actions' from public.store_orders o where o.id = tests.id('order_a'))
+  (select (public.store_my_order(o.order_number) -> 'actions') - 'returns' from public.store_orders o where o.id = tests.id('order_a'))
   = '{"can_cancel": true, "cancel_refund_cents": 5400, "delay_open": true, "delay_refund_cents": 5400}'::jsonb,
   'D-073 / D-008: a cancel refunds everything, the tax included (it was the state''s money)');
 select tests.assert_fails(format('select public.keep_after_delay(%L)', tests.id('order_a')), 'admin_only',
@@ -69,14 +69,14 @@ select public.cutoff_cycle(tests.id('cycle'));
 select public.mark_pickup((select p.id from public.pickups p join public.order_items oi on oi.id = p.order_item_id
                            where oi.order_id = tests.id('order_b')), 'picked');
 select tests.assert(
-  (select (public._order_actions(tests.id('order_b')) ->> 'can_cancel')::boolean) = false,
-  'D-042: no change-of-mind cancel after the cutoff');
+  (select (public._order_actions(tests.id('order_b')) ->> 'can_cancel')::boolean) = true,
+  'D-072: still in India after the cutoff, so the customer may still cancel');
 select public.change_delivery_window(tests.id('order_b'), current_date + 40, current_date + 44, 'slipped');
 select public.cancel_after_delay(tests.id('order_b'), 6000, 're_2');
 select tests.assert(
   exists (select 1 from public.order_events where order_id = tests.id('order_b') and kind = 'note'
-          and internal_note like '%Q-31%'),
-  'a collected piece of a cancelled order is flagged for the admin (Q-31)');
+          and internal_note like '%US clearance draft%'),
+  'D-072 (was Q-31): a collected piece of a cancelled order becomes US clearance stock');
 select tests.assert(
   (select p.status = 'picked' from public.pickups p join public.order_items oi on oi.id = p.order_item_id
    where oi.order_id = tests.id('order_b')),

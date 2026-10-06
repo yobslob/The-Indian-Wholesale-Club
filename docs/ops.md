@@ -99,5 +99,5 @@ Recorded because they shape the data model and flows. Each needs an owner before
 | Spices (food) | FDA food-facility registration of the maker/packer, FDA Prior Notice for each shipment, importer duties under FSVP, English labels (ingredients, net weight, allergens, origin) | spice listings stay unpublished until Q-10 is answered (D-032). `vendors.licences` stores the numbers |
 | Delivery promises | FTC Mail/Internet Order Rule: ship within the stated time (30 days if none stated), delays need customer consent with a refund option | delivery windows + delay flow (D-008, `flows.md` §7) |
 | Export from India | the exporting entity needs an IEC (Importer-Exporter Code) | cycle export documents |
-| Sales tax | US state sales tax obligations | flat 8% estimate (D-033). The tax kept on customer cancellations (D-042) needs an accountant's OK (Q-19) |
+| Sales tax | US state sales tax obligations | charged per delivery state where IWC is registered (New Jersey now, `tax_rates`, D-073); every cancel refunds the tax. An accountant should confirm the rates and thresholds |
 | Privacy | privacy policy + terms for a US site | info pages (founder input needed) |

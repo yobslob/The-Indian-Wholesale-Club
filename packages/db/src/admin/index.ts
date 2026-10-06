@@ -4,6 +4,7 @@
  * return nothing / fail for anyone else. Import only from admin code
  * (apps/web/app/admin, admin screens in the app). Never from storefront code.
  */
+export * from './after-sales';
 export * from './catalog';
 export * from './commerce';
 export * from './operations';

@@ -76,7 +76,7 @@ export default function ProductScreen(): React.JSX.Element {
             </View>
             {data.product.summary ? <Body muted>{data.product.summary}</Body> : null}
             {data.variants.length > 0 ? (
-              <AddToBag product={data.product} variants={data.variants} delivery={<DeliveryNote delivery={data.delivery} />} />
+              <AddToBag product={data.product} variants={data.variants} delivery={<DeliveryNote delivery={data.delivery} fromUs={data.ships_from_us} />} />
             ) : (
               <Body muted>Not available right now.</Body>
             )}

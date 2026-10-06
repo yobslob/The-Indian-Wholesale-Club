@@ -1,7 +1,7 @@
 import { expect, test, type Page } from '@playwright/test';
 
 import { buyDemoProduct, openOrderAsGuest } from './buy';
-import { E2E_ADMIN, E2E_CUSTOMER, serviceClient, stripeTestKeysPresent } from './env';
+import { DEMO_PRODUCT, E2E_ADMIN, E2E_CUSTOMER, serviceClient, stripeTestKeysPresent } from './env';
 
 /**
  * Flow 6 (C4, C5): what a customer may decide on their order, and the cycle pages behind it. Nothing here changes a
@@ -30,7 +30,7 @@ async function orderRow(orderNumber: string) {
 
 const isoDay = (days: number): string => new Date(Date.now() + days * 86_400_000).toISOString().slice(0, 10);
 
-test('before the cutoff, a customer cancels and gets everything but the tax back (D-042)', async ({ page }) => {
+test('before its pieces are collected, a customer cancels and gets everything back (D-072)', async ({ page }) => {
   test.skip(!stripeTestKeysPresent(), 'Stripe test keys are not set in apps/web/.env.local');
   const orderNumber = await buyDemoProduct(page);
   await openOrderAsGuest(page, orderNumber);
@@ -42,7 +42,7 @@ test('before the cutoff, a customer cancels and gets everything but the tax back
 
   const order = await orderRow(orderNumber);
   expect(order.status).toBe('cancelled');
-  expect(order.refunded_cents).toBe(order.total_cents - order.tax_cents);
+  expect(order.refunded_cents).toBe(order.total_cents);
   const { data: emails } = await serviceClient()
     .from('email_outbox')
     .select('payload')
@@ -77,6 +77,49 @@ test('after a later delivery date, the customer keeps the order (D-008)', async 
     .eq('order_id', id)
     .eq('kind', 'delay_kept');
   expect(kept?.length).toBe(1);
+});
+
+test('a delivered piece is returned: asked on the order page, received and refunded by an admin (D-071)', async ({ page }) => {
+  test.skip(!stripeTestKeysPresent(), 'Stripe test keys are not set in apps/web/.env.local');
+  const orderNumber = await buyDemoProduct(page);
+  const { id } = await orderRow(orderNumber);
+  // Delivered two days ago (the steps in between are covered in SQL, cycle_lifecycle.test.sql).
+  const service = serviceClient();
+  const { error: statusError } = await service.from('orders').update({ status: 'delivered' }).eq('id', id);
+  if (statusError) throw statusError;
+  const { error: eventError } = await service.from('order_events').insert({
+    order_id: id,
+    kind: 'delivered',
+    visible_to_customer: true,
+    created_at: new Date(Date.now() - 2 * 86_400_000).toISOString(),
+  });
+  if (eventError) throw eventError;
+
+  await openOrderAsGuest(page, orderNumber);
+  await expect(page.getByRole('heading', { name: 'Return a piece' })).toBeVisible();
+  await page.getByRole('button', { name: /^I changed my mind: \$/ }).click();
+  await page.getByRole('button', { name: /^Yes, return it for \$/ }).click();
+  await expect(page.getByText('Thanks. We will email you about sending it back.', { exact: false })).toBeVisible({
+    timeout: 30_000,
+  });
+  const { data: ret, error } = await service.from('returns').select('id, refund_cents, kept_pct').eq('order_id', id).single();
+  if (error) throw error;
+  expect(Number(ret.kept_pct)).toBeGreaterThan(0); // a change of mind keeps a share for fetching it back
+
+  await signInAsAdmin(page);
+  await page.goto('/admin/returns');
+  const row = page.locator('tr').filter({ hasText: orderNumber });
+  await row.getByRole('button', { name: 'Received' }).click();
+  await page.goto('/admin/returns?status=received');
+  await page.locator('tr').filter({ hasText: orderNumber }).getByRole('button', { name: /^Refund \$/ }).click();
+  await expect.poll(async () => (await orderRow(orderNumber)).refunded_cents, { timeout: 30_000 }).toBe(ret.refund_cents);
+  const { data: clearance } = await service
+    .from('products')
+    .select('id')
+    .eq('is_us_stock', true)
+    .eq('status', 'draft')
+    .like('slug', `${DEMO_PRODUCT.slug}-us-%`);
+  expect(clearance?.length).toBeGreaterThan(0); // the piece is a US clearance draft (D-072)
 });
 
 test('an admin opens the open cycle, its dates and its export documents (C4)', async ({ page }) => {

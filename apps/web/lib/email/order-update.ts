@@ -73,6 +73,21 @@ function parts(kind: string, order: OrderDetail, orderUrl: string): Parts | null
         ],
         link: view,
       };
+    case 'return_requested':
+      return {
+        subject: `Your return for order ${n}`,
+        paragraphs: [
+          `We got your return request. We'll email you about sending the piece back.`,
+          `Your refund goes out once it reaches us. Banks usually take 5 to 10 days to show it.`,
+        ],
+        link: view,
+      };
+    case 'return_rejected':
+      return {
+        subject: `About your return for order ${n}`,
+        paragraphs: [`We couldn't accept this return. Reply to this email and we'll talk it through.`],
+        link: view,
+      };
     case 'delivery_window_changed':
       return {
         subject: `New delivery date for order ${n}`,

@@ -11,18 +11,22 @@ type Choice = 'cancel' | 'keep';
 
 /**
  * What the customer may decide on their order (flows.md §7, §7b): after a delay, keep it with the new date or cancel
- * for everything back (D-008); before cutoff, cancel and get all but the tax back (D-042). Cancelling asks once more.
+ * for everything back (D-008); until it leaves India, cancel for everything back, minus the cancel fee once we started
+ * preparing it (D-072). Cancelling asks once more. The page never says why or where (D-003).
  */
 export function OrderChoices({
   actions,
   orderNumber,
   email,
   window,
+  paidCents,
 }: {
   actions: OrderActions;
   orderNumber: string;
   email: string;
   window: { from: string; to: string } | null;
+  /** What the customer paid and has not had back yet. */
+  paidCents: number;
 }): React.JSX.Element | null {
   const router = useRouter();
   const [confirming, setConfirming] = useState(false);
@@ -60,8 +64,10 @@ export function OrderChoices({
         <>
           <h2 className="text-ink font-medium">Changed your mind?</h2>
           <p className="text-ink text-sm">
-            You can cancel until we start preparing your order. You&apos;d get {formatUsd(refund ?? 0)} back: everything
-            except the tax.
+            You can still cancel this order. You&apos;d get {formatUsd(refund ?? 0)} back
+            {(refund ?? 0) < paidCents
+              ? `: ${formatUsd(paidCents - (refund ?? 0))} is kept because we've already started preparing it.`
+              : ', everything you paid.'}
           </p>
         </>
       )}

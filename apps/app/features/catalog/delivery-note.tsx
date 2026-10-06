@@ -13,8 +13,25 @@ const orderBy = new Intl.DateTimeFormat('en-US', {
   timeZoneName: 'short',
 });
 
-/** D-008 / D-035: the next delivery window, straight from the open cycle, in the phone's time zone. */
-export function DeliveryNote({ delivery }: { delivery: DeliveryWindow | null }): React.JSX.Element {
+/**
+ * D-008 / D-035: the next delivery window, straight from the open cycle, in the phone's time zone. A piece already in
+ * the US (D-072) has its own window: today + the US delivery days.
+ */
+export function DeliveryNote({
+  delivery,
+  fromUs = null,
+}: {
+  delivery: DeliveryWindow | null;
+  fromUs?: { est_delivery_from: string; est_delivery_to: string } | null;
+}): React.JSX.Element {
+  if (fromUs) {
+    return (
+      <Text className="font-body text-ink text-sm leading-5">
+        Already in the US. Estimated delivery {formatDeliveryWindow(fromUs.est_delivery_from, fromUs.est_delivery_to)}
+        <Text className="text-ink-muted"> when ordered on its own.</Text>
+      </Text>
+    );
+  }
   if (!delivery) {
     return (
       <Text className="font-body text-ink-muted text-sm">

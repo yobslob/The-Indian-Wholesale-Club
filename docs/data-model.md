@@ -121,7 +121,14 @@ live spices (trigger `_spices_cleared_check`, replacing the old constraint). Mig
 tax; admin-only); `checkout_context(variant_ids, promo, state)` adds each line's tax class and courier cost (never its
 weight), the state's rule and express as courier pricing with a window from today; express orders have no cycle, a
 window from the order date and their pickups at once (`pickups.cycle_id` may be null); `ship_order` sends an express
-order by courier once picked; a cancel refunds the tax (`_cancel_refund_cents`). `guest_order_lookup(number, email)` returns the
+order by courier once picked; a cancel refunds the tax (`_cancel_refund_cents`). Migration 26 (D-071, D-072): after the
+sale. `products.is_us_stock` marks US clearance pieces (in `store_products`; `store_product_page()` adds `ships_from_us`,
+today + the US delivery days); an order of only such pieces is `arrived` at once, outside the cycle, and the cutoff makes
+no pickups for them. `_to_clearance(item, why)` turns a returned or cancelled piece into a draft clearance product at
+`clearance_discount_pct` off what was paid. `_in_india(order)` decides the customer's cancel; `returns` (one per order
+line: reason, status, the refund fixed when asked, % kept; admin-only) with `_return_quote(item, reason)` and
+`_delivered_at(order)`; `_order_actions()` adds `returns`. New settings: the cancel fee, the after-export deduction, the
+claim window, three change-of-mind tiers and the clearance discount. `guest_order_lookup(number, email)` returns the
 same shape for guests and is **service-only** (the server route rate-limits it). A test keeps its fields identical to the views'.
 `checkout_context(variant_ids, promo_code)` (migration 3, **service-only**) returns what the server needs to price a bag in
 one round trip: the variants as customers can buy them (through `store_*`), the promo if usable now, the shipping settings
@@ -145,7 +152,11 @@ rule, used by the `variant_availability` read policy so the live stock feed neve
 | `ship_order(order, carrier, tracking)` | admin | §6.4: an arrived order ships (visible "Shipped" event). Raises `order_not_arrived`, `invalid_tracking` |
 | `deliver_order(order)` | admin | §6.4: a shipped order is delivered (visible event). Raises `order_not_shipped` |
 | `keep_after_delay(order)` | service (customer through the server), admin | §7: the customer keeps the order after a window change. Raises `no_open_delay` |
-| `cancel_after_delay(order, amount, ref)` | service, admin | §7: full refund after a window change (D-008), stock released for pieces not collected, a note for collected ones (Q-31). Raises `no_open_delay`, `refund_amount_mismatch` |
+| `cancel_after_delay(order, amount, ref)` | service, admin | §7: full refund after a window change (D-008), stock released for pieces not collected, collected ones to US clearance (D-072). Raises `no_open_delay`, `refund_amount_mismatch` |
+| `customer_cancel(order, amount, ref)`, `_customer_cancel_cents(order)` | service (customer through the server), admin | §7b: the customer's cancel until the order leaves India (D-072): everything back minus `cancel_fee_pct` once pieces are collected; pieces not collected back to stock, collected ones to clearance. Raises `order_left_india`, `refund_amount_mismatch` |
+| `admin_cancel_after_export_cents(order)`, `admin_cancel_after_export(order, amount, ref)` | admin | §7b: customer care cancels after it left India: all but `export_cancel_deduction_pct`, every piece to clearance. Raises `order_still_in_india_or_done`, `refund_amount_mismatch` |
+| `request_return(order, item, reason)` | service (customer through the server), admin | §7c (D-071): a delivered piece, the refund fixed by `_return_quote` now. Raises `not_returnable`, `item_not_in_order` |
+| `admin_return_received(return)`, `admin_return_refunded(return, amount, ref)`, `admin_return_rejected(return, note)` | admin | §7c: the piece is back (it becomes a clearance draft), refunded (Stripe first; the amount must be the fixed one), or rejected. Raise `return_not_open`, `return_not_received`, `refund_amount_mismatch` |
 | `mark_pickup(pickup, status, photo, note)` | admin | §4.2–4: picked / unavailable (+ D-030 refund flag + customer event) |
 | `record_payout(vendor, pickups[], method, …)` | admin | §5: computes the amount from pickups, one payout per pickup |
 | `change_delivery_window(order, from, to, note)` | admin | §7: the only way to move a window (INV-6) |
@@ -153,7 +164,7 @@ rule, used by the `variant_availability` read policy so the live stock feed neve
 | `checkout_context(variant_ids, promo)` | service | §3 step 1: pricing inputs for a bag, incl. the express option when set up (read-only) |
 | `item_refund_cents(item)`, `cancel_refund_cents(order, reason)` | admin | D-042 refund amounts (the only place the rules live) |
 | `refund_order_item(item, amount, ref)` | admin | §4.4: records the Stripe refund of an unavailable piece; re-checks the amount |
-| `cancel_order(order, reason, amount, ref)` | admin | §7b: cancels before cutoff, releases stock, records the refund; re-checks the amount |
+| `cancel_order(order, reason, amount, ref)` | admin | §7b: cancels before cutoff (admin), releases stock, records the refund; re-checks the amount |
 | `admin_set_listed_qty(variant, qty, note)` | admin | stock correction with a ledger note. It also counts as re-confirmed with the shop |
 
 **Privileges rule:** Supabase grants every new function to everyone by default. Any migration adding a function must set

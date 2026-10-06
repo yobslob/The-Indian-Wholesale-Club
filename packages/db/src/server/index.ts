@@ -208,17 +208,42 @@ export async function cancelAfterDelay(
   );
 }
 
-/** D-042: the customer's own cancel before cutoff (everything back except the tax). */
-export async function cancelBeforeCutoff(
+/**
+ * D-072: the customer's own cancel until the order leaves India: everything back, minus the cancel fee once its
+ * pieces are being collected. Call after the Stripe refund; the database re-checks the amount.
+ */
+export async function customerCancel(
   service: IwcClient,
   input: { orderId: string; amountCents: number; refundRef: string },
 ) {
   unwrap(
-    await service.rpc('cancel_order', {
+    await service.rpc('customer_cancel', {
       p_order: input.orderId,
-      p_reason: 'customer_request',
       p_amount_cents: input.amountCents,
       p_refund_ref: input.refundRef,
     }),
   );
+}
+
+export type ReturnReason = 'damaged' | 'wrong' | 'changed_mind';
+
+/**
+ * D-071: the customer asks to return a delivered piece. The refund is fixed now by the database's rule; the money
+ * goes back once the piece is received. Refuses ('not_returnable') when the piece can't be returned (anymore).
+ */
+export async function requestReturn(
+  service: IwcClient,
+  input: { orderId: string; itemId: string; reason: ReturnReason },
+): Promise<{ ok: true } | { ok: false; reason: 'not_returnable' }> {
+  const { error } = await service.rpc('request_return', {
+    p_order: input.orderId,
+    p_item: input.itemId,
+    p_reason: input.reason,
+  });
+  if (!error) return { ok: true };
+  const dbError = toDbError(error);
+  if (dbError.code === 'not_returnable' || dbError.code === 'item_not_in_order') {
+    return { ok: false, reason: 'not_returnable' };
+  }
+  throw dbError;
 }

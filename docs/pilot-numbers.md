@@ -64,7 +64,27 @@ uses its category's typical packed weight (table below).
 | Faster-delivery offer | $6.00 | Below the express fee (D-064) |
 | Re-check shop quantities after | 14 days | Half a cycle |
 
-## 7. Typical packed weight per category (used when a piece has no weight)
+## 7. Sales tax (database table `tax_rates`, D-073)
+Charged only in states where IWC is registered, and only on the classes that state taxes. A category's tax class
+(clothing, food, general) is set in `supabase/seed/categories.sql`.
+
+| State | Rate | Taxed | Basis |
+|---|---|---|---|
+| New Jersey | 6.625% | general goods only | NJ exempts clothing, footwear and food. Accessories, fabrics and sweets count as general here, to be safe |
+| Any other state | none | none | Add a row once IWC passes that state's threshold (often $100k or 200 orders a year). An accountant should confirm |
+
+## 8. After the sale (Settings → After the sale, D-071, D-072)
+| Variable | Placeholder | Basis |
+|---|---|---|
+| Customer cancel once we started preparing | 0% | D-072 names no fee while the order is in India |
+| Customer-care cancel after it left India | 25% of goods kept | Freight, duty, broker and US handling ≈ 20% of a clothing price at these numbers |
+| Damaged or wrong: report within | 7 days | D-071, checked against the courier's handover photos |
+| Change of mind: within 7 / 14 / 30 days | 15% / 30% / 50% kept | D-071. Unworn, unaltered clothing; food is final sale; after 30 days no returns |
+| US clearance price | 30% off what was paid | A returned or cancelled piece already in the US (D-072) |
+
+How a customer sends a return back is not decided yet (Q-33).
+
+## 9. Typical packed weight per category (used when a piece has no weight)
 Change in the database (`categories.default_weight_g`) or ask Claude; listed in `supabase/seed/categories.sql`.
 
 | Category | g | Category | g | Category | g |
@@ -78,7 +98,7 @@ Change in the database (`categories.default_weight_g`) or ask Claude; listed in 
 | Sweets | 600 | Snacks & Namkeen | 450 | Papad & Wadi | 400 |
 | Tea & Drinks | 300 | Whole / Ground Spices, Masala Blends | 250 | | |
 
-## 8. Business and compliance details (Settings → Business and compliance details, D-074)
+## 10. Business and compliance details (Settings → Business and compliance details, D-074)
 All "TO FILL" until you save them: exporter name, address, IEC, GSTIN; importer of record name, address, EIN, customs
 bond; customs broker; forwarder; Incoterm (placeholder "FCA Mumbai airport"); HS codes for clothing and for spices; FDA
 food facility registration, FDA US agent, FSVP importer, label maker; support email (Q-9); US return address. Spices can
