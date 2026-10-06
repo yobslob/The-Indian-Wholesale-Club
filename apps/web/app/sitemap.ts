@@ -1,4 +1,4 @@
-import { getHomeCached, listProductsCached } from '@/features/catalog/data';
+import { getHomeCached, listProductPathsCached } from '@/features/catalog/data';
 import { siteUrl } from '@/lib/env';
 
 import type { MetadataRoute } from 'next';
@@ -14,13 +14,10 @@ const STATIC_PATHS = [
   '/contact',
 ];
 
-/** Storefront pages only (never /admin, D-006). Two cached reads. */
+/** Storefront pages only (never /admin, D-006). Two cached reads; products are read 1,000 at a time (the API's cap). */
 export default async function sitemap(): Promise<MetadataRoute.Sitemap> {
   const base = siteUrl();
-  const [home, products] = await Promise.all([
-    getHomeCached(),
-    listProductsCached({ limit: 5000 }),
-  ]);
+  const [home, products] = await Promise.all([getHomeCached(), listProductPathsCached()]);
   return [
     ...STATIC_PATHS.map((path) => ({ url: `${base}${path}` })),
     ...home.regions.map((r) => ({ url: `${base}/states/${r.slug}` })),

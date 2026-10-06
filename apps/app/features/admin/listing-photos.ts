@@ -2,6 +2,7 @@ import { ImageManipulator, SaveFormat } from 'expo-image-manipulator';
 import * as ImagePicker from 'expo-image-picker';
 
 import { addProductMedia } from '@repo/db/admin';
+import { PHOTO_CACHE_CONTROL } from '@repo/shared/domain';
 
 import { supabase } from '@/lib/supabase';
 
@@ -65,7 +66,7 @@ export async function uploadListingPhotos(productId: string, photos: ListingPhot
       const body = await (await fetch(photo.uri)).arrayBuffer();
       const { type, ext } = sniff(body);
       const path = `products/${productId}/${Date.now().toString(36)}-${i}.${ext}`;
-      const { error } = await supabase.storage.from('product-media').upload(path, body, { contentType: type });
+      const { error } = await supabase.storage.from('product-media').upload(path, body, { contentType: type, cacheControl: PHOTO_CACHE_CONTROL });
       if (error) throw new Error(error.message);
       await addProductMedia(supabase, {
         product_id: productId,

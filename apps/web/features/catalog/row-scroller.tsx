@@ -16,8 +16,12 @@ export function RowScroller({ children, label }: { children: React.ReactNode; la
   useEffect(() => {
     const row = ref.current;
     if (!row) return;
-    const update = (): void =>
-      setEdges({ start: row.scrollLeft <= 4, end: row.scrollLeft + row.clientWidth >= row.scrollWidth - 4 });
+    // Called on every scroll event: re-render only when an end is reached or left, not on every frame.
+    const update = (): void => {
+      const start = row.scrollLeft <= 4;
+      const end = row.scrollLeft + row.clientWidth >= row.scrollWidth - 4;
+      setEdges((prev) => (prev.start === start && prev.end === end ? prev : { start, end }));
+    };
     update();
     row.addEventListener('scroll', update, { passive: true });
     const resize = new ResizeObserver(update);

@@ -26,8 +26,11 @@ export default async function SearchPage({
   const q = (Array.isArray(raw) ? raw[0] : raw)?.trim().slice(0, 100) ?? '';
   const showRaw = Number(Array.isArray(params.show) ? params.show[0] : params.show);
   const show = Math.min(Math.max(Number.isInteger(showRaw) ? showRaw : PAGE, PAGE), 480);
-  // One more than shown tells whether "Show more" has anything behind it.
-  const [home, found] = q ? await Promise.all([getHomeCached(), searchProducts(q, show + 1)]) : [null, []];
+  // One more than shown tells whether "Show more" has anything behind it. "Show more" reads from the first result
+  // again, so only the first page records the search (Insights would count it once per click otherwise).
+  const [home, found] = q
+    ? await Promise.all([getHomeCached(), searchProducts(q, show + 1, show === PAGE)])
+    : [null, []];
   const products = found.slice(0, show);
   const needle = q.toLowerCase();
   const regions = home ? home.regions.filter((r) => r.name.toLowerCase().includes(needle)) : [];

@@ -9,7 +9,7 @@ import { RegionAlbum } from '@/features/regions/region-album';
 import { scriptFontClass } from '@/features/regions/script-fonts';
 import { mediaUrl } from '@/lib/site';
 
-import type { RegionProductCard } from '@repo/db/store';
+import type { RegionPage, RegionProductCard } from '@repo/db/store';
 import type { Metadata } from 'next';
 
 type Params = Promise<{ region: string }>;
@@ -29,15 +29,16 @@ const heading = 'font-hero text-[clamp(26px,2.2vw,38px)] font-medium leading-tig
 const pill =
   'font-ui border-line bg-paper hover:border-ink inline-flex min-h-11 items-center gap-2 rounded-pill border px-5 text-sm font-medium';
 
-/** Clothing grouped by category, the biggest first: one row each (D-062). */
-function byCategory(products: RegionProductCard[]): { slug: string; name: string; items: RegionProductCard[] }[] {
-  const groups = new Map<string, { slug: string; name: string; items: RegionProductCard[] }>();
-  for (const p of products) {
-    const group = groups.get(p.category_slug) ?? { slug: p.category_slug, name: p.category_name, items: [] };
-    group.items.push(p);
-    groups.set(p.category_slug, group);
-  }
-  return [...groups.values()].sort((a, b) => b.items.length - a.items.length || a.name.localeCompare(b.name, 'en'));
+/**
+ * Clothing grouped by category, the biggest first: one row each (D-062). The page data carries each category's first
+ * 12 cards and its real total (category_counts, biggest first).
+ */
+function byCategory(
+  page: RegionPage,
+): { slug: string; name: string; count: number; items: RegionProductCard[] }[] {
+  return page.category_counts
+    .filter((c) => c.product_type === 'clothing')
+    .map((c) => ({ ...c, items: page.products.filter((p) => p.category_slug === c.slug) }));
 }
 
 const ROW = 12;
@@ -52,9 +53,9 @@ export default async function RegionPage({ params }: { params: Params }): Promis
   const page = await getRegionPageCached((await params).region);
   if (!page) notFound();
   const { region, album, products, most_wanted: mostWanted, curated, leaving_soon: leavingSoon } = page;
-  const clothing = products.filter((p) => p.product_type === 'clothing');
   const spices = products.filter((p) => p.product_type === 'spice');
-  const categories = byCategory(clothing);
+  const spiceCount = page.category_counts.filter((c) => c.product_type === 'spice').reduce((n, c) => n + c.count, 0);
+  const categories = byCategory(page);
   const newest = products.slice(0, ROW); // store_region_page returns newest first
   const browse = (type: 'clothing' | 'spices', category?: string): string =>
     `/${type}?state=${region.slug}${category ? `&category=${category}` : ''}`;
@@ -114,11 +115,11 @@ export default async function RegionPage({ params }: { params: Params }): Promis
             </a>
             {categories.map((c) => (
               <a key={c.slug} href={`#c-${c.slug}`} className={`${pill} shrink-0`}>
-                {c.name} <span className="text-ink-muted">{c.items.length}</span>
+                {c.name} <span className="text-ink-muted">{c.count}</span>
               </a>
             ))}
             <a href="#spices" className={`${pill} shrink-0`}>
-              Spices <span className="text-ink-muted">{spices.length}</span>
+              Spices <span className="text-ink-muted">{spiceCount}</span>
             </a>
           </nav>
           {newest.length > 0 ? (

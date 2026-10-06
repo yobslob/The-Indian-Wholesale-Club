@@ -1,14 +1,14 @@
-import { Image } from 'expo-image';
 import { Link, useLocalSearchParams } from 'expo-router';
-import { Pressable, Text, View } from 'react-native';
+import { Dimensions, Pressable, Text, View } from 'react-native';
 
 import { getRegionPage } from '@repo/db/store';
 
+import { Photo } from '@/components/photo';
 import { Body, ErrorText, Heading, Loading, Screen } from '@/components/ui';
 import { CuratedCard } from '@/features/catalog/curated-card';
-import { byCategory, ProductRow } from '@/features/catalog/product-row';
+import { ProductRow } from '@/features/catalog/product-row';
 import { RegionAlbum } from '@/features/regions/region-album';
-import { supabase, mediaUrl } from '@/lib/supabase';
+import { supabase } from '@/lib/supabase';
 import { useQuery } from '@/lib/use-query';
 
 const ROW = 12;
@@ -54,10 +54,9 @@ export default function RegionScreen(): React.JSX.Element {
           </View>
           <View className="bg-brand aspect-[5/6] overflow-hidden rounded-lg" style={accent ? { backgroundColor: accent } : undefined}>
             {data.region.hero_image_path ? (
-              <Image
-                source={mediaUrl(data.region.hero_image_path)}
-                style={{ width: '100%', height: '100%' }}
-                contentFit="cover"
+              <Photo
+                path={data.region.hero_image_path}
+                width={Dimensions.get('window').width}
                 transition={200}
                 accessibilityIgnoresInvertColors
               />
@@ -91,14 +90,18 @@ export default function RegionScreen(): React.JSX.Element {
                 products={data.leaving_soon}
                 badge={(p) => `${p.available} left`}
               />
-              {byCategory(products.filter((p) => p.product_type === 'clothing')).map((c) => (
-                <ProductRow
-                  key={c.slug}
-                  title={c.name}
-                  products={c.items.slice(0, ROW)}
-                  seeAll={{ type: 'clothing', region: slug, category: c.slug }}
-                />
-              ))}
+              {/* One row per clothing category, biggest first by its real total (the page carries its first 12). */}
+              {data.category_counts
+                .filter((c) => c.product_type === 'clothing')
+                .map((c) => ({ ...c, items: products.filter((p) => p.category_slug === c.slug) }))
+                .map((c) => (
+                  <ProductRow
+                    key={c.slug}
+                    title={c.name}
+                    products={c.items.slice(0, ROW)}
+                    seeAll={{ type: 'clothing', region: slug, category: c.slug }}
+                  />
+                ))}
               {products.some((p) => p.product_type === 'spice') ? (
                 <ProductRow
                   title="Spices"

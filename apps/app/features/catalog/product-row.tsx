@@ -30,6 +30,9 @@ export function SeeAll({ target, label }: { target: BrowseTarget; label: string 
   );
 }
 
+/** A row card's width (164, cards.tsx) plus the gap between cards (12). */
+const ROW_STEP = 176;
+
 /**
  * Cards in a row that scrolls sideways (D-062). A FlatList, so only the cards near the screen are drawn; the row
  * runs to the screen edges (the screen has a 16 px gutter).
@@ -50,7 +53,9 @@ export function ProductStrip<T extends CardData>({
       showsHorizontalScrollIndicator={false}
       className="-mx-4"
       contentContainerClassName="gap-3 px-4"
-      snapToInterval={176}
+      snapToInterval={ROW_STEP}
+      // Every card is the same width, so the list never measures one to know where it is.
+      getItemLayout={(_, index) => ({ length: ROW_STEP, offset: 16 + ROW_STEP * index, index })}
       decelerationRate="fast"
       initialNumToRender={3}
       maxToRenderPerBatch={4}
@@ -86,15 +91,4 @@ export function ProductRow<T extends CardData>({
       <ProductStrip products={products} badge={badge} />
     </View>
   );
-}
-
-/** Clothing grouped by category, the biggest first: one row each (D-062). */
-export function byCategory<T extends CardData>(products: T[]): { slug: string; name: string; items: T[] }[] {
-  const groups = new Map<string, { slug: string; name: string; items: T[] }>();
-  for (const p of products) {
-    const group = groups.get(p.category_slug) ?? { slug: p.category_slug, name: p.category_name, items: [] };
-    group.items.push(p);
-    groups.set(p.category_slug, group);
-  }
-  return [...groups.values()].sort((a, b) => b.items.length - a.items.length || a.name.localeCompare(b.name, 'en'));
 }

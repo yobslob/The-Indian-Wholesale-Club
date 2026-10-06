@@ -25,7 +25,7 @@ Enforcement: customer code reads catalog and order data only through `store_*` (
 | `/states` | all 36 regions, alphabetical, with no state/UT distinction (D-002) | static (same cached read as `/`) |
 | `/states/[region]` | **the core page:** greeting in the region's script, story, accent theme, Clothing · Spices sections | static per region (36 built at build time) |
 | `/states/[region]/[product]` | product page: gallery, options, price, availability (live), save, delivery window, origin line | static on first visit + live stock island |
-| `/clothing`, `/spices` | the **See all** page behind every row (D-062): newest first, `?state=` and `?category=` pills, 24 cards then "Show more" (`?show=`) | dynamic render over one cached read, filtered on the server |
+| `/clothing`, `/spices` | the **See all** page behind every row (D-062): newest first, `?state=` and `?category=` pills, 24 cards then "Show more" (`?show=`) | dynamic render over one cached `store_browse()` read (the cards drawn, the total, the filter counts; D-068) |
 | `/search` | search products and regions; 24 results at a time with "Show more" (`?show=`, D-067), through `store_search`, which records the words (not who searched) for the admin's Insights | dynamic (no auth) |
 | `/cart` | the bag ("Bag" in the UI; on-device state) | static shell |
 | `/checkout`, `/checkout/success` | details → server-priced total + Standard (free) / Express ($8) with each delivery window (D-041) → payment (Stripe) → order (D-038) | dynamic |
@@ -75,7 +75,7 @@ data through `@repo/db/store` (one call per screen, D-017) and share the tokens 
 | Addresses, sign-in | `addresses`, `auth/login`, `auth/signup` | own `addresses` rows · Supabase Auth (email + password, as on the web) |
 Every list in the app is a sideways row (a horizontal `FlatList`) with **See all** → the **Browse** screen
 (`app/browse.tsx`: one type, optional region and category, a virtualized two-column grid that loads 24 at a time as it
-nears the end, with the total from a count), as on the web (D-062). Explore's Clothing and Spices read only each
+nears the end, each page and the total from one `store_browse()` call, D-068), as on the web (D-062). Explore's Clothing and Spices read only each
 category's first 12 cards (`store_type_rows`); its search shows 24 with "Show more" (D-067).
 Signing in with an admin account switches the app to admin mode (`admin.md`). Nothing in the customer UI hints at this (D-006).
 

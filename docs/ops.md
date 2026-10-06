@@ -44,7 +44,9 @@ Vault secrets exist in that database (SQL editor, once per database; the values 
 `select vault.create_secret('<site URL>', 'iwc_site_url');` and `select vault.create_secret('<EMAIL_OUTBOX_CRON_SECRET>',
 'iwc_outbox_secret');`. The site URL is the deployed site for the hosted database, and `http://host.docker.internal:3000`
 for the local one (the database runs in Docker). Without them, emails still go out right after the website's own
-actions; those from the app's admin screens and the automatic cutoff wait for the timer.
+actions; those from the app's admin screens and the automatic cutoff wait for the timer. The same timer refreshes the
+website's cached store pages after a cycle closes by itself (D-068): without the Vault secrets they show the past "order
+by" time for up to 5 minutes after a cutoff (checkout itself always prices the real cycle).
 
 ## Database workflow (from R3)
 - Schema changes = a new file in `supabase/migrations/`. Never edit an applied migration.

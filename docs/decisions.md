@@ -506,3 +506,22 @@ What it means for the build: no screen downloads or draws a long list of photos 
 time and load more on request or as you scroll: See all (website: "Show more"; app: the next 24 near the end), search
 (website and app: "Show more"). Rows show at most 12 (D-062); the app's Explore reads only those 12 per category
 (`store_type_rows`). Admin lists: the website's Catalog has pages of 50; the app's Listings shows 50 with "Show more".
+
+**D-068 · 2026-10-06 · Claude, under D-011 (speed is a feature), proposed: speed and concurrency rules from the audit**
+The founder asked for "a deep-dive audit and optimization pass … lightning-fast, highly scalable, and structurally
+sound without degrading any image quality or user experience", "a strict cache invalidation strategy so that when an
+item sells out, the cached product page updates immediately" with checkout and cart bypassing the cache, smooth app
+lists, and app screens that request only the fields they need. What it means for the build (`engineering.md`
+§Performance, §Caching, §App specifics; migration 23):
+- **Checkout concurrency:** orders no longer wait for each other (`create_order` shares the open-cycle lock instead of
+  taking it alone) and lock pieces in a fixed order (no deadlocks). Overselling stays impossible (INV-3).
+- **Cache invalidation:** every cached store page carries its own tag. A sale refreshes the pages of what was sold (its
+  product page, its region page, Home) on the next request; a cancel and the automatic cutoff refresh the whole store;
+  admin changes already did. Checkout, cart, order and account reads are never cached (unchanged).
+- **App photos** come resized by the website's own image resizer (the one the website uses, same quality), at the size
+  they are drawn, with the original as the fallback. *Cost to know:* the host bills image resizing by the number of
+  distinct source photos (Vercel's image optimization); the app asks for the same photos and mostly the same widths as
+  the website, so the count barely grows. If you'd rather the app keep downloading originals, say so and it is one line
+  (`apps/app/components/photo.tsx`).
+- **Payload:** cards carry only what a card shows; the region page carries only the cards it draws; See all and the
+  app's Browse read one page plus its counts in one round trip.

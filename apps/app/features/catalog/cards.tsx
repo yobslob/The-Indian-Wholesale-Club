@@ -1,14 +1,13 @@
-import { Image } from 'expo-image';
 import { Link } from 'expo-router';
-import { useState } from 'react';
-import { Pressable, Text, View } from 'react-native';
+import { memo, useState } from 'react';
+import { Dimensions, Pressable, Text, View } from 'react-native';
 
 import { formatUsd } from '@repo/shared/domain';
 
 import type { ProductCard as ProductCardData, RegionCard as RegionCardData, RegionProductCard } from '@repo/db/store';
 
+import { Photo } from '@/components/photo';
 import { useBag } from '@/features/cart/store';
-import { mediaUrl } from '@/lib/supabase';
 
 /** One of the 36 regions (D-002). The greeting shows only once approved (the store view enforces D-019). */
 export function RegionCard({ region }: { region: RegionCardData }): React.JSX.Element {
@@ -83,7 +82,7 @@ function QuickAdd({ product }: { product: CardData }): React.JSX.Element {
  * width for a sideways row (D-062); otherwise it fills half the screen in a two-column grid. No entry animation:
  * dozens of cards animating at once made scrolling stutter.
  */
-export function ProductCard({
+export const ProductCard = memo(function ProductCard({
   product,
   badge,
   layout = 'grid',
@@ -98,10 +97,9 @@ export function ProductCard({
       <Link href={{ pathname: '/product/[region]/[slug]', params: { region: product.region_slug, slug: product.slug } }} asChild>
         <Pressable accessibilityLabel={product.name} className="bg-land aspect-[3/4] overflow-hidden rounded-[18px]">
           {product.primary_image_path ? (
-            <Image
-              source={mediaUrl(product.primary_image_path)}
-              style={{ width: '100%', height: '100%' }}
-              contentFit="cover"
+            <Photo
+              path={product.primary_image_path}
+              width={layout === 'row' ? 164 : Dimensions.get('window').width / 2}
               transition={150}
               recyclingKey={product.id}
               accessibilityIgnoresInvertColors
@@ -131,7 +129,7 @@ export function ProductCard({
       </View>
     </View>
   );
-}
+});
 
 /** Two equal columns (the reference grid on a phone). */
 export function Grid({ children }: { children: React.ReactNode }): React.JSX.Element {

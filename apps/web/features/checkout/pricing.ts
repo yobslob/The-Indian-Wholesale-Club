@@ -13,6 +13,7 @@ import {
 import { MAX_QTY_PER_LINE } from '@/features/cart/limits';
 
 import type { CheckoutProblem, CheckoutQuote } from './types';
+import type { ProductPageRef } from '@/features/catalog/revalidate';
 import type { IwcClient } from '@repo/db';
 
 export const checkoutRequestSchema = z.object({
@@ -34,7 +35,14 @@ export const checkoutRequestSchema = z.object({
 export type CheckoutRequest = z.infer<typeof checkoutRequestSchema>;
 
 export type PriceResult =
-  | { ok: true; quote: CheckoutQuote; promoCodeId: string | null; address: ShippingAddress }
+  | {
+      ok: true;
+      quote: CheckoutQuote;
+      promoCodeId: string | null;
+      address: ShippingAddress;
+      /** The product pages whose stock this order will move (refreshed after the sale, revalidate.ts). */
+      pages: ProductPageRef[];
+    }
   | { ok: false; problem: CheckoutProblem };
 
 /**
@@ -116,6 +124,10 @@ export async function priceCart(
     ok: true,
     promoCodeId: promo && breakdown.promoApplied ? promo.id : null,
     address: request.address,
+    pages: [...new Map(context.variants.map((v) => [v.product_id, v])).values()].map((v) => ({
+      regionSlug: v.region_slug,
+      productSlug: v.product_slug,
+    })),
     quote: {
       lines,
       breakdown,

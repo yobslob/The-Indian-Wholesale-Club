@@ -10,7 +10,7 @@ import {
   removeRegionPhoto,
   updateRegion,
 } from '@repo/db/admin';
-import { worstContrast } from '@repo/shared/domain';
+import { PHOTO_CACHE_CONTROL, worstContrast } from '@repo/shared/domain';
 import tokens from '@repo/tokens';
 
 import { STORE_TAG } from '@/features/catalog/data';
@@ -108,7 +108,7 @@ export async function uploadRegionImageAction(regionId: string, form: FormData):
   const region = await getRegionAdmin(client, regionIdOk);
   if (!region) throw new Error('region not found');
   const path = `regions/${region.slug}/${crypto.randomUUID()}.${ext}`;
-  const { error } = await client.storage.from('product-media').upload(path, file, { contentType: file.type });
+  const { error } = await client.storage.from('product-media').upload(path, file, { contentType: file.type, cacheControl: PHOTO_CACHE_CONTROL });
   if (error) throw new Error(`upload failed: ${error.message}`);
   await updateRegion(client, regionIdOk, { hero_image_path: path });
   revalidateTag(STORE_TAG);
@@ -129,7 +129,7 @@ export async function uploadAlbumPhotoAction(regionId: string, form: FormData): 
   const region = await getRegionAdmin(client, regionIdOk);
   if (!region) throw new Error('region not found');
   const path = `regions/${region.slug}/album/${crypto.randomUUID()}.${ext}`;
-  const { error } = await client.storage.from('product-media').upload(path, file, { contentType: file.type });
+  const { error } = await client.storage.from('product-media').upload(path, file, { contentType: file.type, cacheControl: PHOTO_CACHE_CONTROL });
   if (error) throw new Error(`upload failed: ${error.message}`);
   await addRegionPhoto(client, regionIdOk, path, alt);
   revalidateTag(STORE_TAG);

@@ -1234,6 +1234,9 @@ isOneToOne: false
 "ship_order":
 { Args: { "p_carrier": string,"p_order": string,"p_tracking": string }; Returns: undefined
                            },
+"store_browse":
+{ Args: { "p_category"?: string,"p_limit"?: number,"p_offset"?: number,"p_region"?: string,"p_type": string }; Returns: Json
+                           },
 "store_home":
 { Args: Record<PropertyKey, never>; Returns: Json
                            },
@@ -1252,7 +1255,7 @@ isOneToOne: false
 { Args: { "p_region_slug": string }; Returns: Json
                            },
 "store_search":
-{ Args: { "p_limit"?: number,"p_offset"?: number,"p_query": string }; Returns: {
+{ Args: { "p_limit"?: number,"p_offset"?: number,"p_query": string,"p_record"?: boolean }; Returns: {
               "attributes": Json | null,
 "category_id": string | null,
 "category_name": string | null,

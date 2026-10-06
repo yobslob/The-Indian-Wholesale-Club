@@ -18,9 +18,9 @@ Baseline numbers come from the founder's first `node scripts/check.mjs` run and 
 | P8 | (correctness) The rate limiter is an in-memory `Map`: per instance, reset on cold start, ineffective on serverless | `apps/web/lib/rate-limit.ts:14` |
 
 ## Performance rules (apply from R5 on; where each lives in the web code since R5)
-- **PR-1 Cacheable storefront:** storefront reads use a cookie-less anon client with no `cookies()`. They are cached and tagged, and admin publish
-  calls `revalidateTag`. Only cart, checkout, account, order, search, login and signup pages are dynamic. *Web:* `lib/supabase/store.ts` +
-  `features/catalog/data.ts` (`unstable_cache`, tag `store`, 5-minute fallback). Region pages are built at build time,
+- **PR-1 Cacheable storefront:** storefront reads use a cookie-less anon client with no `cookies()`. They are cached and tagged
+  (§Caching). Only cart, checkout, account, order, search, login and signup pages are dynamic. *Web:* `lib/supabase/store.ts` +
+  `features/catalog/data.ts` (`unstable_cache`, tag `store` plus one tag per page, 5-minute fallback). Region pages are built at build time,
   product pages on first visit. So **`next build` reads the database** (the new schema must be there).
 - **PR-2 One round trip per page:** each storefront page or endpoint gets its data from one `store_*` view or function returning exactly
   what it renders. Checkout allows at most 2.
@@ -33,9 +33,38 @@ Baseline numbers come from the founder's first `node scripts/check.mjs` run and 
   which the founder asked for (D-049, `design.md` §Direction: one small client module, off for reduced motion). Fonts (D-050 – D-052):
   Helvetica Neue and Georgia as system fonts with self-hosted fallbacks (TeX Gyre Heros, Gelasio) that load only where the
   system font is missing; Poppins, Montserrat and Inter (footer only) via `next/font`, self-hosted and subset.
-- **PR-6 Assets:** `next/image` with explicit `sizes`. Fonts via `next/font`, subset. Script fonts only on their region page.
+- **PR-6 Assets:** `next/image` with `sizes` that match the width the image really has at each breakpoint (Tailwind's `md` 768 and
+  `xl` 1280; rows use their `clamp()` widths, `features/catalog/product-card.tsx`), so photos are never upscaled and never
+  oversized; quality stays Next's default 75. Uploaded photos get a new random path and are never overwritten, so they are
+  uploaded with a one-year `Cache-Control` (`PHOTO_CACHE_CONTROL`, `packages/shared/src/domain/media.ts`) and resized copies
+  are kept a month (`images.minimumCacheTTL`, `apps/web/next.config.js`; it was the storage default of one hour). Fonts via
+  `next/font`, subset. Script fonts only on their region page. (D-068)
 - **PR-7 Realtime only where it matters:** product availability, and the admin orders/stock feed.
 - **PR-8 Dependencies cost:** every new dependency is justified in its commit message (size + reason).
+
+- **PR-9 Checkout concurrency (D-068):** `create_order` shares the open cycle's row lock (`FOR SHARE`: orders run side by
+  side, a cutoff waits for them) and reserves pieces in variant-id order (no deadlocks between two bags holding the same
+  pieces in a different order). INV-3 stays one conditional `UPDATE` per piece. Measured 2026-10-06: a second checkout
+  waited 2.6 s for a first one still open with the old exclusive lock, and not at all with the new one (`plan/current.md`).
+
+## Caching (D-068)
+| What | Cached? | Tags | Refreshed by |
+|---|---|---|---|
+| Home, region page, product page | yes (`unstable_cache` + the page's static render) | `store` + `store:home` / `store:region:<slug>` / `store:product:<region>/<slug>` | a sale (`revalidateAfterSale`: the products sold, their regions, Home), a cancel (everything), the automatic cutoff (everything), any admin change (everything), else 5 minutes |
+| See all (`/clothing`, `/spices`), sitemap | yes | `store` | admin changes, else 5 minutes. Light cards without stock, so a sale never changes them |
+| Search | no (per query) | | |
+| Cart, checkout, orders, account, every API route, admin | **never** (session or service clients, `cookies()`, POST routes) | | |
+- A sale is refreshed from `features/checkout/finalize.ts` once the order exists (browser or webhook, whichever is first),
+  from the product pages stored with the priced checkout (`features/checkout/pricing.ts` → `pending_orders`). On-demand
+  revalidation purges, so the very next request renders fresh: E2E flow 8 checks that the product and region pages say
+  "Sold out" right after the last piece is bought. Within the page, the product page's buy button also follows Realtime
+  stock (PR-7). Similar items on *other* product pages catch up within the fallback; their Add is re-checked at checkout.
+- Cancels (`app/api/orders/choice/route.ts`, admin refunds) put pieces back: everything is refreshed (rare).
+- The cutoff (D-008): `roll_cycles()` closes a cycle by itself; the every-minute timer calls the website's job
+  (`app/api/internal/email-outbox/route.ts`) in the two minutes after any cycle closes, and the job refreshes the store
+  once the cached "order by" time has passed (`revalidateIfCutoffPassed`). Needs the Vault settings (`ops.md`).
+- App admin writes go straight to the database and refresh the website through `POST /admin/revalidate` (B-17).
+- Bump `SHAPE` in `features/catalog/data.ts` whenever a cached store_* result changes shape.
 
 **Budgets (targets. Verified only by `check.mjs` numbers, never by assumption):**
 DB round trips per page: storefront ≤ 1, checkout ≤ 2 · storefront first-load JS ≤ 150 KB gzip · cached storefront
@@ -54,7 +83,7 @@ A test must **fail when the rule it protects breaks**. Never assert on source-co
 |---|---|---|---|
 | Unit | `node:test` via `tsx` (D-037) | pure logic: pricing, delivery window, status labels, attribute schemas, token preset, the web's email/site/rate-limit helpers, the app's bag and checkout request | `packages/shared/tests`, `packages/tokens/tests`, `apps/web/tests`, `apps/app/tests` |
 | DB | plain SQL (`supabase/tests/*.test.sql`), run by `check.mjs db` → `scripts/db-test.mjs` against local Supabase (D-031) | invariants INV-1…INV-9 and the business functions, as anon / customer / admin (`request.jwt.claims`), each file rolled back | `supabase/tests/` |
-| E2E smoke | Playwright (`check.mjs e2e`, after `build`) | (1) region → product → bag → checkout (Stripe test card) → thank-you → order page after the email check · (2) admin sign-in → new listing → variant → publish → visible on the storefront · (3) signed out, `/admin` → its sign-in page with `noindex`; a signed-in customer gets a plain 404 (no "admin" in page or title); no admin link, robots or sitemap entry; customer pages carry no vendor, cost or cycle fields · (4) motion and keyboard (C1): with reduced motion no Lenis, nothing hidden, no parallax; with motion Lenis runs and a card below the fold reveals when scrolled to; skip link first, the hidden Home logo shows when focused, Pick your home search + focus highlight, product page +/− and heart by keyboard · (5) rows (D-062): a row scrolls sideways and its arrow moves it, See all opens that state's category, See all pages draw 24 then 48 · (6) customer choices (C4, C5): cancel before cutoff with the refund and its email, a later delivery date then keep my order, the admin's cycle page, export documents and invoice CSV (no cycle status changes; a whole cycle is in `cycle_lifecycle.test.sql`) · (7) Insights + live (C7): a search that finds nothing shows in Insights, an order change appears on Today without a reload (Realtime), `/admin/revalidate` refuses visitors and customers and works for an admin's token (B-17) | `apps/web/e2e` |
+| E2E smoke | Playwright (`check.mjs e2e`, after `build`) | (1) region → product → bag → checkout (Stripe test card) → thank-you → order page after the email check · (2) admin sign-in → new listing → variant → publish → visible on the storefront · (3) signed out, `/admin` → its sign-in page with `noindex`; a signed-in customer gets a plain 404 (no "admin" in page or title); no admin link, robots or sitemap entry; customer pages carry no vendor, cost or cycle fields · (4) motion and keyboard (C1): with reduced motion no Lenis, nothing hidden, no parallax; with motion Lenis runs and a card below the fold reveals when scrolled to; skip link first, the hidden Home logo shows when focused, Pick your home search + focus highlight, product page +/− and heart by keyboard · (5) rows (D-062): a row scrolls sideways and its arrow moves it, See all opens that state's category, See all pages draw 24 then 48 · (6) customer choices (C4, C5): cancel before cutoff with the refund and its email, a later delivery date then keep my order, the admin's cycle page, export documents and invoice CSV (no cycle status changes; a whole cycle is in `cycle_lifecycle.test.sql`) · (7) Insights + live (C7): a search that finds nothing shows in Insights, an order change appears on Today without a reload (Realtime), `/admin/revalidate` refuses visitors and customers and works for an admin's token (B-17) · (8) a sale refreshes the cache (D-068): with one piece left, the cached product page says "Only 1 left"; once it is bought, the server's HTML of the product page and the region card say "Sold out" on the next request | `apps/web/e2e` |
 | App bundle | Expo CLI (`check.mjs bundle`) | the app bundles for Android and iOS: every import resolves in Metro and every file compiles with Babel (bugs `tsc` can't see) | `apps/app` |
 
 The E2E run starts its own production server (`next start`, port 3101) and refuses anything but local Supabase and
@@ -115,15 +144,22 @@ scripts/build-india-map.mjs  regenerates packages/shared/src/india-map/india-map
   Its sandbox has no Linux build of `lightningcss`, so CSS comes out empty there: the check proves that every import
   resolves and compiles, not how screens look.
 - Screens load data with `lib/use-query.ts` (one `@repo/db` call per screen, pull to refresh) and never show raw errors to
-  customers; admin screens show the SQL refusal code (`features/admin/use-action.ts`).
+  customers; admin screens show the SQL refusal code (`features/admin/use-action.ts`). The hook keeps the last result
+  of the 40 most recent screens in memory: a screen opened again shows at once and refreshes quietly (no spinner); the
+  memory is emptied on sign-in and sign-out (`lib/session.tsx`). JSON compression is left to the transport: the phone's
+  HTTP stack asks for gzip by itself and the hosts compress (their documented behaviour; not measured from the app).
 - **Look and motion (C1 1.4):** the same tokens and font roles as the website (`tailwind.config.js`, `lib/fonts.ts`). A
   native font file is one weight, so weights are classes (`font-ui-semibold`). iOS uses its built-in Helvetica Neue and
   Georgia; Android loads TeX Gyre Heros (`assets/fonts`) and Gelasio. The splash screen stays until the fonts are loaded.
   Motion is Reanimated (Home hero word fade on scroll, cards fading in), off when the phone asks for reduced motion.
   The India map is shared with the website (`@repo/shared/india-map`) and drawn with `react-native-svg`. Photos use
-  `expo-image` (downsampled to the size shown with a sharp filter, cached in memory and on disk); product lists are
-  horizontal `FlatList` rows and the Browse grid is a virtualized `FlatList`, so only the cards near the screen exist.
-  No entry animation on cards: dozens animating at once made scrolling stutter.
+  `expo-image` (cached in memory and on disk) through `components/photo.tsx`, which asks the website's image resizer
+  (`/_next/image`, quality 75 like the website) for the width the photo is drawn at times the screen's pixel ratio, and
+  falls back to the original if that fails (D-068): a 164-point card on a 3× phone downloads a 640-pixel copy instead of
+  the original (the local catalogue's originals average 412 KB, up to 2 MB). Development on a phone keeps originals (the
+  website resizes only photos from its own Supabase address); the web preview resizes. Product lists are
+  horizontal `FlatList` rows (fixed-width cards, `getItemLayout`) and the Browse grid is a virtualized `FlatList`, so only
+  the cards near the screen exist; cards are memoised. No entry animation on cards: dozens animating at once made scrolling stutter.
   The admin's camera flow (C3) uses `expo-image-picker` (camera and photo library) and `expo-image-manipulator`
   (shrinks to 2,400 px JPEG before upload); uploads are labelled by their real format, since the manipulator's web
   version returns PNG.

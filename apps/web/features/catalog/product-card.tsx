@@ -12,6 +12,23 @@ import type { ProductCard as ProductCardData, RegionProductCard } from '@repo/db
 type CardData = ProductCardData & Partial<Pick<RegionProductCard, 'available' | 'quick_add'>>;
 
 /**
+ * The photo's `sizes`: the width the card really has at each screen width, so the browser downloads exactly the
+ * pixels it shows (sharp, never upscaled, nothing wasted; PR-6). Rows: the fixed widths of product-row.tsx
+ * (clamp(176px, 23vw, 304px) and clamp(148px, 17vw, 224px)). Grids: ProductGrid's columns at Tailwind's md (768)
+ * and xl (1280).
+ */
+const SIZES = {
+  row: {
+    md: '(min-width: 1322px) 304px, (min-width: 766px) 23vw, 176px',
+    sm: '(min-width: 1318px) 224px, (min-width: 871px) 17vw, 148px',
+  },
+  grid: {
+    md: '(min-width: 1280px) 25vw, 50vw',
+    sm: '(min-width: 1280px) 20vw, (min-width: 768px) 34vw, 50vw',
+  },
+} as const;
+
+/**
  * The founder's reference card (D-050): a rounded 3 : 4 photo, the name, price · region and an "Add"
  * button. `size="sm"` is the smaller card of the product page grids (D-051). Server component; "Add"
  * is the only client island.
@@ -21,9 +38,12 @@ export function ProductCard({
   size = 'md',
   badge,
   reveal = true,
+  layout = 'grid',
 }: {
   product: CardData;
   size?: 'md' | 'sm';
+  /** In a sideways row (fixed width) or a grid (a column). */
+  layout?: 'row' | 'grid';
   badge?: React.ReactNode;
   /** The scroll reveal (D-049). Off for cards that start off to the side in a row: animating dozens made scrolling stutter. */
   reveal?: boolean;
@@ -42,7 +62,7 @@ export function ProductCard({
             src={mediaUrl(product.primary_image_path)}
             alt={product.name}
             fill
-            sizes={small ? '(min-width: 1100px) 20vw, (min-width: 820px) 33vw, 50vw' : '(min-width: 1100px) 25vw, 50vw'}
+            sizes={SIZES[layout][size]}
             className="duration-slow object-cover transition-transform group-hover:scale-[1.025]"
           />
         ) : (

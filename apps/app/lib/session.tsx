@@ -1,6 +1,7 @@
 import { createContext, useContext, useEffect, useMemo, useState } from 'react';
 
 import { supabase } from './supabase';
+import { clearQueryCache } from './use-query';
 
 import type { Session } from '@supabase/supabase-js';
 
@@ -43,6 +44,7 @@ export function SessionProvider({ children }: { children: React.ReactNode }): Re
   useEffect(() => {
     let active = true;
     const apply = async (session: Session | null) => {
+      clearQueryCache(); // another person's screens (orders, addresses) never show from memory
       const isAdmin = await checkAdmin(session);
       if (!active) return;
       setAuth({ ready: true, session, isAdmin });

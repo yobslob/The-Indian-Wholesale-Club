@@ -21,6 +21,9 @@ const nextConfig = {
   experimental: { serverActions: { bodySizeLimit: '10mb' } },
   images: {
     formats: ['image/avif', 'image/webp'],
+    // Photos are never overwritten (every upload gets a new random path), so a resized copy stays right: keep it a
+    // month instead of re-encoding it every hour (the storage default, max-age=3600). Same quality (75, the default).
+    minimumCacheTTL: 2678400,
     remotePatterns: [
       supabaseUrl
         ? {

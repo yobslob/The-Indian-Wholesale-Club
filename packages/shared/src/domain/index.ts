@@ -6,6 +6,7 @@ export type * from './checkout-api';
 export * from './cycles';
 export * from './delivery';
 export * from './listing';
+export * from './media';
 export * from './order-status';
 export * from './pricing';
 export * from './us-states';

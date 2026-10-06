@@ -1,4 +1,3 @@
-import { Image } from 'expo-image';
 import { useEffect } from 'react';
 import { View } from 'react-native';
 import Animated, {
@@ -13,7 +12,7 @@ import Animated, {
 
 import type { RegionPage } from '@repo/db/store';
 
-import { mediaUrl } from '@/lib/supabase';
+import { Photo } from '@/components/photo';
 
 type Photo = RegionPage['album'][number];
 
@@ -52,10 +51,9 @@ function Mosaic({ photos, patterns, hidden }: { photos: Photo[]; patterns: numbe
               height: th * CELL + (th - 1) * GAP,
             }}
           >
-            <Image
-              source={mediaUrl(photo.storage_path)}
-              style={{ width: '100%', height: '100%' }}
-              contentFit="cover"
+            <Photo
+              path={photo.storage_path}
+              width={tw * CELL + (tw - 1) * GAP}
               accessible={!hidden}
               accessibilityLabel={hidden ? undefined : photo.alt_text}
             />

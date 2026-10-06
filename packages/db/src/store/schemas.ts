@@ -44,7 +44,6 @@ export const productCardSchema = z.object({
   region_name: z.string(),
   category_slug: z.string(),
   category_name: z.string(),
-  summary: z.string().nullable(),
   price_cents: z.number().int(),
   primary_image_path: z.string().nullable(),
 });
@@ -58,7 +57,6 @@ export const quickAddSchema = z.object({
 
 /** Product card with availability, as store_home / store_region_page / store_product_page return it (C1). */
 export const regionProductCardSchema = productCardSchema.extend({
-  craft: z.string().nullable(),
   available: z.number().int(),
   published_at: isoDateTime.nullable(),
   quick_add: quickAddSchema.nullable(),
@@ -67,6 +65,7 @@ export const regionProductCardSchema = productCardSchema.extend({
 export const productSchema = productCardSchema.extend({
   region_id: z.string().uuid(),
   category_id: z.string().uuid(),
+  summary: z.string().nullable(),
   description: z.string().nullable(),
   story: z.string().nullable(),
   craft: z.string().nullable(),
@@ -96,7 +95,7 @@ export const mediaSchema = z.object({
 
 export const homeSchema = z.object({
   regions: z.array(regionCardSchema),
-  /** The four newest live products (Just listed). */
+  /** The twelve newest live products (Just listed, D-062). */
   just_listed: z.array(regionProductCardSchema),
   delivery: deliveryWindowSchema.nullable(),
 });
@@ -108,13 +107,17 @@ export const regionPageSchema = z.object({
   region: regionSchema,
   /** The region album, in the admin's order (migration 10). */
   album: z.array(albumPhotoSchema),
-  /** Every live product, newest first (New arrivals are the first four). */
+  /** The cards the page draws, newest first: the newest 12 (New arrivals) and the first 12 of each category. */
   products: z.array(regionProductCardSchema),
-  /** Most wanted: up to four in-stock pieces ordered most in the last 30 days (D-058). Ranking only, no counts. */
+  /** Every category of the region with its real total (the section pills, See all), biggest first. */
+  category_counts: z.array(
+    z.object({ slug: z.string(), name: z.string(), product_type: productType, count: z.number().int() }),
+  ),
+  /** Most wanted: up to 12 in-stock pieces ordered most in the last 30 days (D-058). Ranking only, no counts. */
   most_wanted: z.array(regionProductCardSchema),
-  /** Curated for you: up to four admin picks in the region (D-056). */
+  /** Curated for you: up to 12 admin picks in the region (D-056). */
   curated: z.array(regionProductCardSchema),
-  /** Leaving soon: up to four live pieces with 1 to leaving_soon_max left, fewest first (D-056). */
+  /** Leaving soon: up to 12 live pieces with 1 to leaving_soon_max left, fewest first (D-056). */
   leaving_soon: z.array(regionProductCardSchema),
 });
 
@@ -141,7 +144,7 @@ export const productPageSchema = z.object({
   product: productSchema,
   variants: z.array(variantSchema),
   media: z.array(mediaSchema),
-  /** Up to five other live products in the same category, own region first. */
+  /** Up to 12 other live products in the same category, own region first. */
   similar: z.array(regionProductCardSchema),
   /** The region's other admin picks (Curated for you, D-056). */
   curated: z.array(regionProductCardSchema),
@@ -240,6 +243,18 @@ export const typeRowSchema = z.object({
   products: z.array(regionProductCardSchema),
 });
 export type TypeRow = z.infer<typeof typeRowSchema>;
+
+/** store_browse(): one page of a See all list, its total, and the counts behind the state and category filters. */
+const filterCountSchema = z.object({ slug: z.string(), name: z.string(), count: z.number().int() });
+export const browsePageSchema = z.object({
+  total: z.number().int(),
+  /** Every state with pieces of this type (the state filter), A–Z. */
+  regions: z.array(filterCountSchema),
+  /** The categories within the chosen state (the category filter), biggest first. */
+  categories: z.array(filterCountSchema),
+  products: z.array(productCardSchema),
+});
+export type BrowsePage = z.infer<typeof browsePageSchema>;
 export type QuickAdd = z.infer<typeof quickAddSchema>;
 export type Review = z.infer<typeof reviewSchema>;
 export type ReviewsSummary = z.infer<typeof reviewsSummarySchema>;

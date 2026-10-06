@@ -3,58 +3,68 @@ import 'server-only';
 import { unstable_cache } from 'next/cache';
 
 import {
+  browseProducts,
   getHome,
   getProductPage,
   getRegionPage,
-  listProducts,
+  listProductPaths,
   searchProducts as searchStore,
-  type ProductListFilter,
+  type BrowseFilter,
 } from '@repo/db/store';
 
 import { storeClient } from '@/lib/supabase/store';
 
 /**
- * Cached storefront reads (engineering.md PR-1, PR-2): one store_* round trip
- * per page, shared across visitors. Admin changes call revalidateTag(STORE_TAG);
- * otherwise entries refresh after STORE_REVALIDATE_SECONDS (stock counts move).
+ * Cached storefront reads (engineering.md PR-1, PR-2): one store_* round trip per page, shared across visitors.
+ * Every entry carries STORE_TAG (admin changes refresh everything) and the tag of its own page, so a sale refreshes
+ * only the pages whose stock numbers moved (revalidate.ts, §Caching). Otherwise entries refresh after
+ * STORE_REVALIDATE_SECONDS.
  */
 export const STORE_TAG = 'store';
 export const STORE_REVALIDATE_SECONDS = 300;
 
-const options = { tags: [STORE_TAG], revalidate: STORE_REVALIDATE_SECONDS };
+export const homeTag = 'store:home';
+export const regionTag = (regionSlug: string): string => `store:region:${regionSlug}`;
+export const productTag = (regionSlug: string, productSlug: string): string =>
+  `store:product:${regionSlug}/${productSlug}`;
 
 /**
  * Part of every cache key. Bump it whenever a store_* result changes shape (a migration adds a field): cached
  * entries outlive deployments (Vercel's data cache, .next/cache locally), and an old entry would reach a page
- * that expects the new field. Last change: the region album (migration 10).
+ * that expects the new field. Last change: lighter cards, region page category counts, store_browse (migration 23).
  */
-const SHAPE = 'v10';
+const SHAPE = 'v11';
 
-export const getHomeCached = unstable_cache(() => getHome(storeClient()), ['store-home', SHAPE], options);
+const cached = <T>(key: string[], tags: string[], load: () => Promise<T>): Promise<T> =>
+  unstable_cache(load, [...key, SHAPE], { tags: [STORE_TAG, ...tags], revalidate: STORE_REVALIDATE_SECONDS })();
 
-export const getRegionPageCached = unstable_cache(
-  (regionSlug: string) => getRegionPage(storeClient(), regionSlug),
-  ['store-region-page', SHAPE],
-  options,
-);
+export const getHomeCached = () => cached(['store-home'], [homeTag], () => getHome(storeClient()));
 
-export const getProductPageCached = unstable_cache(
-  (regionSlug: string, productSlug: string) =>
+export const getRegionPageCached = (regionSlug: string) =>
+  cached(['store-region-page', regionSlug], [regionTag(regionSlug)], () =>
+    getRegionPage(storeClient(), regionSlug),
+  );
+
+export const getProductPageCached = (regionSlug: string, productSlug: string) =>
+  cached(['store-product-page', regionSlug, productSlug], [productTag(regionSlug, productSlug)], () =>
     getProductPage(storeClient(), regionSlug, productSlug),
-  ['store-product-page', SHAPE],
-  options,
-);
+  );
 
-export const listProductsCached = unstable_cache(
-  (filter: ProductListFilter) => listProducts(storeClient(), filter),
-  ['store-products', SHAPE],
-  options,
-);
+/** See all pages: light cards without stock, so a sale never has to refresh them (only STORE_TAG). */
+export const browseCached = (filter: BrowseFilter) =>
+  cached(
+    ['store-browse', filter.productType, filter.regionSlug ?? '', filter.categorySlug ?? '', String(filter.limit ?? 24)],
+    [],
+    () => browseProducts(storeClient(), filter),
+  );
+
+export const listProductPathsCached = () =>
+  cached(['store-product-paths'], [], () => listProductPaths(storeClient()));
 
 /**
- * Search is per query: not cached (dynamic page, still one round trip). `limit` grows with "Show more". Through
- * store_search, which records the words for Insights (C7).
+ * Search is per query: not cached (dynamic page, still one round trip). `limit` grows with "Show more", which reads
+ * from the first result again; only the first read is recorded for Insights (C7).
  */
-export function searchProducts(query: string, limit = 25) {
-  return searchStore(storeClient(), query, { limit });
+export function searchProducts(query: string, limit: number, record: boolean) {
+  return searchStore(storeClient(), query, { limit, record });
 }

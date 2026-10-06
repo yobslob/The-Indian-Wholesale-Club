@@ -19,6 +19,8 @@ import {
   optionAxes,
   orderEventLabel,
   quoteCheckout,
+  resizedPhotoUrl,
+  resizerWidth,
   selectionOf,
   shippingAddressSchema,
   spiceAttributesSchema,
@@ -406,5 +408,24 @@ describe('tracking links (D-066)', () => {
     assert.equal(trackingUrl('USPS', 'abc'), null);
     assert.equal(trackingUrl('USPS', '123"><script>'), null);
     assert.equal(trackingUrl(null, '1234567890'), null);
+  });
+});
+
+describe('resized photos for the app (engineering.md §App specifics)', () => {
+  it('picks the smallest served width that covers the pixels drawn, never upscaling', () => {
+    assert.equal(resizerWidth(492), 640); // a 164-point card on a 3x phone
+    assert.equal(resizerWidth(384), 384);
+    assert.equal(resizerWidth(385), 640);
+    assert.equal(resizerWidth(1), 16);
+    assert.equal(resizerWidth(9000), 3840); // the largest the resizer serves
+  });
+
+  it("asks the website's resizer for the photo at quality 75, the source encoded", () => {
+    const source = 'https://abc.supabase.co/storage/v1/object/public/product-media/products/p 1/a.jpg';
+    assert.equal(
+      resizedPhotoUrl('https://shop.example/', source, 164, 3),
+      `https://shop.example/_next/image?url=${encodeURIComponent(source)}&w=640&q=75`,
+    );
+    assert.equal(resizedPhotoUrl('https://shop.example', source, 390, 2).includes('&w=828&'), true);
   });
 });

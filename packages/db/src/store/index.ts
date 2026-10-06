@@ -5,9 +5,10 @@
  */
 import { z } from 'zod';
 
-import { toDbError, unwrap, type IwcClient } from '../client';
+import { unwrap, type IwcClient } from '../client';
 
 import {
+  browsePageSchema,
   deliveryWindowSchema,
   homeSchema,
   orderDetailSchema,
@@ -15,6 +16,7 @@ import {
   productCardSchema,
   productPageSchema,
   regionPageSchema,
+  type BrowsePage,
   type DeliveryWindow,
   type HomeData,
   type OrderDetail,
@@ -65,75 +67,77 @@ export async function getNextDelivery(client: IwcClient): Promise<DeliveryWindow
 }
 
 const PRODUCT_CARD_COLUMNS =
-  'id, slug, name, product_type, region_slug, region_name, category_slug, category_name, summary, price_cents, primary_image_path';
+  'id, slug, name, product_type, region_slug, region_name, category_slug, category_name, price_cents, primary_image_path';
 
-export interface ProductListFilter {
-  productType?: 'clothing' | 'spice';
+export interface BrowseFilter {
+  productType: 'clothing' | 'spice';
   regionSlug?: string;
   categorySlug?: string;
-  /** Full-text search over name, craft, summary, description. */
-  search?: string;
-  /** 'newest' for the See all pages (D-062); name order otherwise. */
-  sort?: 'name' | 'newest';
-  limit?: number;
-  /** Skip this many (pages of a long list: See all, search). */
+  /** Skip this many (the next page of a See all list). */
   offset?: number;
+  /** At most 500 (the database caps it). */
+  limit?: number;
 }
 
-/** /clothing, /spices, /search: product cards (1 round trip). */
-export async function listProducts(
-  client: IwcClient,
-  filter: ProductListFilter = {},
-): Promise<ProductCard[]> {
-  let query = client.from('store_products').select(PRODUCT_CARD_COLUMNS);
-  if (filter.productType) query = query.eq('product_type', filter.productType);
-  if (filter.regionSlug) query = query.eq('region_slug', filter.regionSlug);
-  if (filter.categorySlug) query = query.eq('category_slug', filter.categorySlug);
-  if (filter.search && filter.search.trim()) {
-    query = query.textSearch('search', filter.search.trim(), {
-      type: 'websearch',
-      config: 'simple',
-    });
-  }
-  query =
-    filter.sort === 'newest'
-      ? query.order('published_at', { ascending: false, nullsFirst: false }).order('name').order('id')
-      : query.order('name').order('id'); // id last: pages never repeat or skip a product
-  const limit = filter.limit ?? 60;
-  const offset = filter.offset ?? 0;
-  const data = unwrap(await query.range(offset, offset + limit - 1));
-  return z.array(productCardSchema).parse(data);
+/**
+ * See all (website /clothing and /spices, the app's Browse; D-062, D-067): one page of light cards newest first, the
+ * total, and the per-state and per-category counts for the filters, in one round trip (store_browse).
+ */
+export async function browseProducts(client: IwcClient, filter: BrowseFilter): Promise<BrowsePage> {
+  const data = unwrap(
+    await client.rpc('store_browse', {
+      p_type: filter.productType,
+      ...(filter.regionSlug ? { p_region: filter.regionSlug } : {}),
+      ...(filter.categorySlug ? { p_category: filter.categorySlug } : {}),
+      p_offset: filter.offset ?? 0,
+      p_limit: filter.limit ?? 24,
+    }),
+  );
+  return browsePageSchema.parse(data);
 }
 
 /**
  * Search (website and app): product cards a page at a time (D-067) through store_search, which also records the words
- * and the number of matches on the first page, for the admin's Insights (no user, no address).
+ * and the number of matches for the admin's Insights (no user, no address). `record: false` for a re-read of results
+ * already counted (the website's "Show more" reads from the first result again).
  */
 export async function searchProducts(
   client: IwcClient,
   query: string,
-  page: { offset?: number; limit?: number } = {},
+  page: { offset?: number; limit?: number; record?: boolean } = {},
 ): Promise<ProductCard[]> {
   const data = unwrap(
     await client
-      .rpc('store_search', { p_query: query, p_offset: page.offset ?? 0, p_limit: page.limit ?? 24 })
+      .rpc('store_search', {
+        p_query: query,
+        p_offset: page.offset ?? 0,
+        p_limit: page.limit ?? 24,
+        p_record: page.record ?? true,
+      })
       .select(PRODUCT_CARD_COLUMNS),
   );
   return z.array(productCardSchema).parse(data);
 }
 
-/** How many live products match (the "N pieces" over a list that loads page by page). */
-export async function countProducts(
-  client: IwcClient,
-  filter: Pick<ProductListFilter, 'productType' | 'regionSlug' | 'categorySlug'> = {},
-): Promise<number> {
-  let query = client.from('store_products').select('id', { count: 'exact', head: true });
-  if (filter.productType) query = query.eq('product_type', filter.productType);
-  if (filter.regionSlug) query = query.eq('region_slug', filter.regionSlug);
-  if (filter.categorySlug) query = query.eq('category_slug', filter.categorySlug);
-  const { count, error } = await query;
-  if (error) throw toDbError(error);
-  return count ?? 0;
+/** The region and slug of every live product (the sitemap), read in pages: the API returns at most 1,000 rows. */
+export async function listProductPaths(client: IwcClient): Promise<{ region_slug: string; slug: string }[]> {
+  const PAGE = 1000;
+  const paths: { region_slug: string; slug: string }[] = [];
+  for (let offset = 0; ; offset += PAGE) {
+    const rows = z
+      .array(z.object({ region_slug: z.string(), slug: z.string() }))
+      .parse(
+        unwrap(
+          await client
+            .from('store_products')
+            .select('region_slug, slug')
+            .order('id')
+            .range(offset, offset + PAGE - 1),
+        ),
+      );
+    paths.push(...rows);
+    if (rows.length < PAGE) return paths;
+  }
 }
 
 /** Explore: one row per category of a type, each with its total and first 12 cards (1 round trip, D-062). */

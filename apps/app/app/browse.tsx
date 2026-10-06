@@ -1,23 +1,23 @@
 import { useLocalSearchParams, useRouter } from 'expo-router';
+import { useCallback, useState } from 'react';
 import { ActivityIndicator, FlatList, Pressable, Text, View } from 'react-native';
 import { SafeAreaView } from 'react-native-safe-area-context';
 
-import { countProducts, listProducts } from '@repo/db/store';
+import { browseProducts, type ProductCard as ProductCardData } from '@repo/db/store';
 import tokens from '@repo/tokens';
 
 import { Body, ErrorText, Loading, Title } from '@/components/ui';
 import { ProductCard } from '@/features/catalog/cards';
 import { supabase } from '@/lib/supabase';
 import { usePagedQuery } from '@/lib/use-paged-query';
-import { useQuery } from '@/lib/use-query';
 
 const slugOrNothing = (v: unknown): string | undefined =>
   typeof v === 'string' && /^[a-z0-9-]{1,80}$/.test(v) ? v : undefined;
 
 /**
  * Browse: the "See all" screen behind every row (D-062). Every live product of one type, newest first, narrowed by
- * region and category. Loaded 24 at a time as the list nears its end, in a virtualized two-column grid, so a long
- * list is never downloaded or drawn at once.
+ * region and category. Loaded 24 at a time as the list nears its end (store_browse: the page and the total in one
+ * round trip), in a virtualized two-column grid, so a long list is never downloaded or drawn at once.
  */
 export default function BrowseScreen(): React.JSX.Element {
   const router = useRouter();
@@ -25,12 +25,17 @@ export default function BrowseScreen(): React.JSX.Element {
   const type = params.type === 'spice' ? 'spice' : 'clothing';
   const region = slugOrNothing(params.region);
   const category = slugOrNothing(params.category);
-  const filter = { productType: type, regionSlug: region, categorySlug: category } as const;
   const key = `browse:${type}:${region ?? ''}:${category ?? ''}`;
-  const { items: data, error, loading, loadingMore, loadMore, reload } = usePagedQuery(key, (offset, limit) =>
-    listProducts(supabase, { ...filter, sort: 'newest', offset, limit }),
+  const [total, setTotal] = useState<number | undefined>(undefined);
+  const { items: data, error, loading, loadingMore, loadMore, reload } = usePagedQuery(key, async (offset, limit) => {
+    const page = await browseProducts(supabase, { productType: type, regionSlug: region, categorySlug: category, offset, limit });
+    if (offset === 0) setTotal(page.total);
+    return page.products;
+  });
+  const renderItem = useCallback(
+    ({ item }: { item: ProductCardData }) => <ProductCard product={item} layout="fill" />,
+    [],
   );
-  const total = useQuery(`${key}:count`, () => countProducts(supabase, filter)).data;
   const first = data?.[0];
   const title = (category && first?.category_name) || (type === 'clothing' ? 'Clothing' : 'Spices');
 
@@ -40,7 +45,7 @@ export default function BrowseScreen(): React.JSX.Element {
         data={data ?? []}
         keyExtractor={(p) => p.id}
         numColumns={2}
-        renderItem={({ item }) => <ProductCard product={item} layout="fill" />}
+        renderItem={renderItem}
         columnWrapperClassName="gap-3"
         contentContainerClassName="gap-6 px-4 pb-16 pt-4"
         refreshing={loading}

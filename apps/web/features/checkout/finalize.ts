@@ -13,6 +13,7 @@ import {
   redeemPromo,
 } from '@repo/db/server';
 
+import { revalidateAfterSale } from '@/features/catalog/revalidate';
 import { deliverOutboxRow } from '@/lib/email/send';
 import { errorMessage, logger } from '@/lib/logger';
 import { stripeServer } from '@/lib/stripe';
@@ -40,6 +41,8 @@ export const pendingCheckoutSchema = z.object({
   totalCents: z.number().int(),
   promoCodeId: z.string().uuid().nullable(),
   shippingMethod: z.enum(['standard', 'express']).default('standard'),
+  /** The product pages to refresh after the sale; absent in checkouts stored before 2026-10-06. */
+  pages: z.array(z.object({ regionSlug: z.string(), productSlug: z.string() })).default([]),
 });
 export type PendingCheckout = z.infer<typeof pendingCheckoutSchema>;
 
@@ -64,10 +67,13 @@ export async function finalizeOrder(
   via: 'browser' | 'webhook',
   stripeEventId: string | null = null,
 ): Promise<FinalizeResult> {
-  const existing = await findOrderByPaymentIntent(service, paymentIntentId);
+  // Both reads at once: the second caller (browser or webhook) usually finds the order; the first needs the checkout.
+  const [existing, pending] = await Promise.all([
+    findOrderByPaymentIntent(service, paymentIntentId),
+    getPendingCheckout(service, paymentIntentId),
+  ]);
   if (existing) return { ok: true, orderNumber: existing.order_number };
 
-  const pending = await getPendingCheckout(service, paymentIntentId);
   const parsed = pending ? pendingCheckoutSchema.safeParse(pending.checkout_payload) : null;
   if (!parsed?.success) {
     if (via === 'webhook') {
@@ -100,9 +106,10 @@ export async function finalizeOrder(
     return { ok: false, reason: 'payment_mismatch' };
   }
 
+  const { pages, ...order } = input;
   let result;
   try {
-    result = await createOrder(service, { ...input, paymentIntentId });
+    result = await createOrder(service, { ...order, paymentIntentId });
   } catch (error) {
     // The browser and the webhook raced: payment_intent_id is unique, so one insert lost.
     if (error instanceof DbError && error.code === '23505') {
@@ -129,8 +136,13 @@ export async function finalizeOrder(
     return { ok: false, reason: 'order_refused', detail: result.reason };
   }
 
-  await markPendingReconciled(service, paymentIntentId, via);
-  if (input.promoCodeId && !(await redeemPromo(service, input.promoCodeId))) {
+  // The pieces are reserved: the pages showing their stock are rebuilt on their next visit (§Caching).
+  revalidateAfterSale(pages);
+  const [, promoRedeemed] = await Promise.all([
+    markPendingReconciled(service, paymentIntentId, via),
+    input.promoCodeId ? redeemPromo(service, input.promoCodeId) : Promise.resolve(true),
+  ]);
+  if (!promoRedeemed) {
     // The code hit its limit between pricing and payment. The customer keeps the discount they paid for.
     logger.warn('checkout.promo_limit_reached_after_payment', { orderNumber: result.orderNumber });
   }

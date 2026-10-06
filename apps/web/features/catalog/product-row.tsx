@@ -31,7 +31,7 @@ export function ProductStrip<T extends CardData>({
     <RowScroller label={label}>
       {products.map((p, i) => (
         <li key={p.id} className={`${width} shrink-0 snap-start`}>
-          <ProductCard product={p} size={size} badge={badge?.(p)} reveal={i < REVEALED} />
+          <ProductCard product={p} size={size} layout="row" badge={badge?.(p)} reveal={i < REVEALED} />
         </li>
       ))}
     </RowScroller>

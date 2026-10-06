@@ -99,7 +99,16 @@ when its value changes (`_pricing_estimate_replaced`); `_load_pricing_estimates(
 matches, no user or address; admin read) written by `store_search(q, offset, limit)`, which the website and app search
 now call. Migration 21 (B-3): `rate_limit_hits` (unlogged; keyed-hash caller + rule, one-minute windows) and
 `rate_limit_hit()` (service only). Migration 22 (B-8): `admin_attention()` (counts of recent server errors, payments to
-check and stuck emails, for Today; the tables stay service-only). `guest_order_lookup(number, email)` returns the
+check and stuck emails, for Today; the tables stay service-only). Migration 23 (D-068, speed audit): product cards
+carry no `summary` or `craft` and read their variants once; `store_region_page()`'s `products` holds only the cards the
+page draws (the newest 12 and each category's first 12) plus `category_counts` (every category with its total);
+`store_browse(type, region, category, offset, limit)` returns one page of light cards (no stock) for See all with its
+total and the per-state and per-category counts; `store_search(..., p_record)` records only when asked (the website's
+"Show more" re-reads without recording) and serves pages of up to 500; `create_order` shares the open-cycle lock and
+reserves pieces in variant-id order (PR-9); the `variant_availability` trigger fires only on stock columns and skips
+writes that change nothing; the minute timer (`_kick_email_outbox`) also runs in the two minutes after a cycle closes
+(the website then refreshes its cached "order by" time, `engineering.md` §Caching); indexes for
+`order_items.variant_id`, `wishlists.product_id` and newest-live-first. `guest_order_lookup(number, email)` returns the
 same shape for guests and is **service-only** (the server route rate-limits it). A test keeps its fields identical to the views'.
 `checkout_context(variant_ids, promo_code)` (migration 3, **service-only**) returns what the server needs to price a bag in
 one round trip: the variants as customers can buy them (through `store_*`), the promo if usable now, the shipping settings
@@ -145,7 +154,7 @@ breaking it and watching the test fail ("mutation check", `current.md`).
 |---|---|---|---|
 | INV-1 | anon/customers can't read admin-only tables or columns | grants + RLS + `store_*` | `rls_visibility.test.sql`, `schema.test.sql` |
 | INV-2 | customers can never create/update/delete orders, items, events. Only `create_order` (service) creates orders | RLS + grants | `rls_orders.test.sql` |
-| INV-3 | no overselling: conditional reservation + `qty_reserved ≤ qty_listed` CHECK. Reservations change only via functions | function + CHECK + guard trigger | `stock.test.sql` |
+| INV-3 | no overselling: conditional reservation + `qty_reserved ≤ qty_listed` CHECK. Reservations change only via functions. Concurrent orders run side by side and lock pieces in variant-id order (PR-9) | function + CHECK + guard trigger | `stock.test.sql` (concurrency checked by hand, `plan/current.md` 2026-10-06) |
 | INV-4 | every stock change writes one `stock_movements` row. The ledger sums to current stock | trigger | `stock.test.sql` |
 | INV-5 | at most one `open` cycle | partial unique index | `cycles.test.sql` (+ `cycle_advance.test.sql` for the later steps) |
 | INV-6 | a promised delivery window changes only via `change_delivery_window`, which adds a customer-visible event | guard trigger + function | `orders_window.test.sql` |

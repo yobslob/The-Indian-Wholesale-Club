@@ -45,7 +45,8 @@ export async function POST(
 
   try {
     const service = serviceClient();
-    const priced = await priceCart(service, parsed.data);
+    // Website: session cookies. App: Bearer token. Only links the order to the account. Read alongside the pricing.
+    const [priced, user] = await Promise.all([priceCart(service, parsed.data), requestUser(request)]);
     if (!priced.ok) {
       return NextResponse.json(
         { error: PROBLEM_MESSAGE[priced.problem.kind], problem: priced.problem },
@@ -53,8 +54,6 @@ export async function POST(
       );
     }
     const { quote } = priced;
-    // Website: session cookies. App: Bearer token. Only links the order to the account.
-    const user = await requestUser(request);
 
     const intent = await stripeServer().paymentIntents.create({
       amount: quote.breakdown.totalCents,
@@ -80,6 +79,7 @@ export async function POST(
       totalCents: quote.breakdown.totalCents,
       promoCodeId: priced.promoCodeId,
       shippingMethod: quote.shippingMethod,
+      pages: priced.pages,
     };
     try {
       await savePendingCheckout(service, intent.id, { ...pending });
