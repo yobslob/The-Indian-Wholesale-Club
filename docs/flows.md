@@ -121,7 +121,8 @@ collected for an order cancelled this way become US clearance drafts (D-072).
   photos), reported within `return_claim_days`, gets everything back, its share of shipping included; a **change of
   mind**, for unworn and unaltered clothing, keeps `return_tierN_pct` by days since delivery (three windows; after the
   last, no returns). Food is final sale. The refund is fixed when the customer asks (`POST /api/orders/return`,
-  `request_return()`); they get an email, and an admin emails them how to send it back (Q-33).
+  `request_return()`); they get an email, and an admin books a courier to collect it from their door, the way it was
+  delivered, with handover photos (D-076).
 - Admin Returns page: **Received** (the piece is at the US warehouse; it becomes a clearance draft), then **Refund**
   (Stripe first, `admin_return_refunded()` with the fixed amount), or **Reject** with an internal note (the customer is
   told it was not accepted and to reply).

@@ -133,7 +133,7 @@ Admins enter each cycle's dates (cutoff, estimated export, estimated arrival). N
 **D-027 · 2026-09-28 · founder (was Q-4): The COO is a full admin**, with the same access as the founder. `desk` only picks the default screen.
 Supersedes the "COO scope is open" note in D-007.
 
-**D-028 · 2026-09-28 · founder (was Q-5, first half): No returns/exchanges flow in the restructure.** Policy text is still needed before launch (Q-5).
+**D-028 · 2026-09-28 · founder (was Q-5, first half): No returns/exchanges flow in the restructure.** SUPERSEDED by D-071. Policy text is still needed before launch (Q-5).
 
 **D-029 · 2026-09-28 · founder (was Q-6): Payout records** hold the method, reference and an optional receipt photo.
 
@@ -593,3 +593,12 @@ What it means for the build: an admin enters only the shop price in ₹ (and the
 computed from every cost setting and the margin, and recomputed when a setting or the exchange rate changes. The
 exchange rate is fetched every day from a public source. Freight, duty and courier rates have no free public feed, so
 they stay settings with a "last checked" date and a reminder when they are old.
+
+**D-076 · 2026-10-06 · founder (was Q-33): A return is collected from the customer's door, the way it was delivered**
+Founder, verbatim: "The company will send someone who will take it back just as he delivered it."
+What it means for the build: the customer never ships a return themselves. Once they ask on the order page, IWC
+arranges a courier pickup from the delivery address, and the courier takes handover photos as at delivery (D-071). The
+piece goes to the US warehouse; it is received there, then refunded or rejected. The order page, the email and the
+Shipping & returns page say "we'll collect it from your door"; the admin Returns page asks the admin to book it.
+*Interpretation (proposed, confirm before launch):* the pickup costs the customer nothing beyond the share already kept
+for a change of mind (D-071), and nothing for a damaged or wrong piece. Closes Q-33.

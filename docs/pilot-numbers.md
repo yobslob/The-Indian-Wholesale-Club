@@ -82,7 +82,7 @@ Charged only in states where IWC is registered, and only on the classes that sta
 | Change of mind: within 7 / 14 / 30 days | 15% / 30% / 50% kept | D-071. Unworn, unaltered clothing; food is final sale; after 30 days no returns |
 | US clearance price | 30% off what was paid | A returned or cancelled piece already in the US (D-072) |
 
-How a customer sends a return back is not decided yet (Q-33).
+A return is collected from the customer's door by courier, the way it was delivered (D-076).
 
 ## 9. Typical packed weight per category (used when a piece has no weight)
 Change in the database (`categories.default_weight_g`) or ask Claude; listed in `supabase/seed/categories.sql`.

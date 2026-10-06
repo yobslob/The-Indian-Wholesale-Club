@@ -50,7 +50,7 @@ export function ReturnChoices({
     setBusy(false);
     setPicked(null);
     if (!res.ok) return setError(res.error);
-    setDone('Thanks. We will email you about sending it back. Your refund goes out once it reaches us.');
+    setDone('Thanks. We will be in touch to collect it from your door. Your refund goes out once it reaches us.');
     onChanged?.();
   }
 

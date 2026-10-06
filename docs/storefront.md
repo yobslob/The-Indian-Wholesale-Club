@@ -33,7 +33,7 @@ Enforcement: customer code reads catalog and order data only through `store_*` (
 | `/account`, `/account/orders`, `/account/addresses`, `/account/saved` | signed-in customer ("Save for later" on product pages fills `saved`) | dynamic |
 | `/account/reviews/[productId]` | write a review (D-051, D-056): rating + text; photos only for verified buyers; pending until an admin approves it | dynamic |
 | `/login`, `/signup` | customer auth. **No admin mention anywhere** (D-006) | dynamic (reads `?next=`), no DB call |
-| `/about`, `/how-it-works`, `/faq`, `/contact`, `/shipping-returns`, `/privacy`, `/terms` | info pages. `/shipping-returns` is a Claude draft from D-070 – D-073 whose numbers come from `store_policy()` (cached, awaiting approval); `/how-it-works` is a draft too; the rest need founder input (Q-9, legal text) and say "being written" | static (shipping-returns: cached store read) |
+| `/about`, `/how-it-works`, `/faq`, `/contact`, `/shipping-returns`, `/privacy`, `/terms` | info pages. `/shipping-returns` and `/faq` are Claude drafts from D-070 – D-073 and D-076 whose numbers come from `store_policy()` (cached, awaiting approval); `/how-it-works` is a draft too; the rest need founder input (Q-9, legal text) and say "being written" | static (shipping-returns, faq: cached store read) |
 
 Why `/states` in URLs: it's the founder's own word for the concept. UTs live under it too (D-002). Headings that list all 36
 avoid calling them "states" (e.g. "Pick your home").

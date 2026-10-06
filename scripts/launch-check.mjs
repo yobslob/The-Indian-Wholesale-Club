@@ -123,7 +123,7 @@ try {
 
 // ------------------------------------------------------------------ the repo
 const questions = readFileSync('docs/questions.md', 'utf8');
-const LAUNCH_QUESTIONS = ['Q-9', 'Q-33'];
+const LAUNCH_QUESTIONS = ['Q-9'];
 const blocking = LAUNCH_QUESTIONS.filter((q) => new RegExp(`^\\| ${q} \\|`, 'm').test(questions));
 check(blocking.length === 0, `The launch questions are answered (${LAUNCH_QUESTIONS.join(', ')})`, `open: ${blocking.join(', ')}`);
 

@@ -77,7 +77,7 @@ function parts(kind: string, order: OrderDetail, orderUrl: string): Parts | null
       return {
         subject: `Your return for order ${n}`,
         paragraphs: [
-          `We got your return request. We'll email you about sending the piece back.`,
+          `We got your return request. We'll be in touch to collect it from your door, just like the delivery.`,
           `Your refund goes out once it reaches us. Banks usually take 5 to 10 days to show it.`,
         ],
         link: view,

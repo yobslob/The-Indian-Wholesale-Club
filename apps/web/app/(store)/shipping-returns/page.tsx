@@ -1,37 +1,21 @@
-import { formatUsd, US_STATES } from '@repo/shared/domain';
-
 import { getStorePolicyCached } from '@/features/catalog/data';
 import { InfoPage } from '@/features/info/info-page';
+import { cancelSentence, dayRange, returnTiers, standardShipping, taxSentence } from '@/features/info/policy-text';
 
-import type { StorePolicy } from '@repo/db/store';
 import type { Metadata } from 'next';
 
 export const metadata: Metadata = { title: 'Shipping & returns' };
 
-const pct = (n: number): string => `${Number(n.toFixed(3))}%`;
-const days = (from: number | null, to: number | null): string | null =>
-  from !== null && to !== null ? (from === to ? `${from} days` : `${from} to ${to} days`) : null;
-
-function taxLine(rows: StorePolicy['tax']): string {
-  if (rows.length === 0) return 'No sales tax is added to orders today.';
-  const parts = rows.map((r) => {
-    const name = US_STATES.find((s) => s.code === r.state)?.name ?? r.state;
-    const exempt = [r.clothing ? null : 'clothing', r.food ? null : 'food and spices'].filter(Boolean);
-    return `${name}: ${pct(r.rate_pct)}${exempt.length ? `, not on ${exempt.join(' or ')}` : ''}`;
-  });
-  return `Sales tax is added where we are registered to collect it (${parts.join('; ')}). Checkout shows it before you pay.`;
-}
-
 /**
  * Shipping & returns. Every number comes from store_policy(), the same settings the rules apply (D-008: never a
  * hard-coded promise), so a change in the admin changes this page too.
- * TODO(founder): approve this draft (written by Claude from D-070 – D-073 and D-008; design.md voice). How a return
- * travels back is Q-33.
+ * TODO(founder): approve this draft (written by Claude from D-070 – D-073, D-076 and D-008; design.md voice).
  */
 export default async function Page(): Promise<React.JSX.Element> {
   const p = await getStorePolicyCached();
-  const express = days(p.express_days_min, p.express_days_max);
-  const usDays = days(p.us_delivery_days_min, p.us_delivery_days_max);
+  const express = dayRange(p.express_days_min, p.express_days_max);
+  const usDays = dayRange(p.us_delivery_days_min, p.us_delivery_days_max);
+  const tiers = returnTiers(p);
   const lastTier = p.return_tiers.at(-1);
 
   return (
@@ -43,10 +27,7 @@ export default async function Page(): Promise<React.JSX.Element> {
       </p>
       <ul className="list-disc space-y-1 pl-5">
         <li>
-          <strong>Standard</strong>:{' '}
-          {p.shipping_flat_cents === 0 ? 'free' : p.shipping_flat_cents !== null ? formatUsd(p.shipping_flat_cents) : 'shown at checkout'}
-          {p.free_shipping_min_cents !== null ? `, free from ${formatUsd(p.free_shipping_min_cents)}` : ''}. The window is on
-          every product page and at checkout.
+          <strong>Standard</strong>: {standardShipping(p)}. The window is on every product page and at checkout.
         </li>
         {express ? (
           <li>
@@ -61,7 +42,7 @@ export default async function Page(): Promise<React.JSX.Element> {
           </li>
         ) : null}
       </ul>
-      <p>We deliver in the US only. {taxLine(p.tax)}</p>
+      <p>We deliver in the US only. {taxSentence(p.tax)}</p>
 
       <h2 className="font-medium">If your delivery date moves</h2>
       <p>
@@ -70,11 +51,7 @@ export default async function Page(): Promise<React.JSX.Element> {
       </p>
 
       <h2 className="font-medium">Cancelling</h2>
-      <p>
-        You can cancel from your order page until your order leaves India, and get everything back
-        {p.cancel_fee_pct ? `, minus ${pct(p.cancel_fee_pct)} of the items once we have started preparing it` : ''}. After
-        that, reply to your order email and we will see what we can do.
-      </p>
+      <p>{cancelSentence(p)}</p>
 
       <h2 className="font-medium">Returns</h2>
       <ul className="list-disc space-y-1 pl-5">
@@ -84,14 +61,10 @@ export default async function Page(): Promise<React.JSX.Element> {
             days of delivery and you get everything back, shipping included.
           </li>
         ) : null}
-        {p.return_tiers.length > 0 ? (
+        {tiers && lastTier ? (
           <li>
             <strong>Changed your mind</strong>: unworn, unaltered clothing can come back. We keep part of the price for
-            bringing it back:{' '}
-            {p.return_tiers
-              .map((t, i) => `${pct(t.kept_pct)} within ${i === 0 ? '' : `${p.return_tiers[i - 1]!.days + 1} to `}${t.days} days`)
-              .join(', ')}
-            {lastTier ? ` of delivery. After ${lastTier.days} days, returns are closed.` : '.'}
+            bringing it back: {tiers} of delivery. After {lastTier.days} days, returns are closed.
           </li>
         ) : null}
         <li>
@@ -99,8 +72,8 @@ export default async function Page(): Promise<React.JSX.Element> {
         </li>
       </ul>
       <p>
-        Your order page shows what you would get back before you ask. We email you how to send the piece back, and the
-        refund goes to your card once it reaches us. Banks usually take 5 to 10 days to show it.
+        Your order page shows what you would get back before you ask. We collect the piece from your door, just as it was
+        delivered, and the refund goes to your card once it reaches us. Banks usually take 5 to 10 days to show it.
       </p>
     </InfoPage>
   );

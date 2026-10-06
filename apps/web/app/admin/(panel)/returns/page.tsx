@@ -17,7 +17,7 @@ const REASON: Record<string, string> = {
 
 /**
  * Returns (D-071), oldest first. The refund was fixed by the rule when the customer asked: a damage or mistake claim
- * gets everything back, a change of mind keeps the tier's share. Email the customer how to send the piece back; when
+ * gets everything back, a change of mind keeps the tier's share. Book a courier pickup from the customer's door (D-076); when
  * it arrives, mark it received (it becomes a US clearance draft, D-072), then refund (Stripe first). Or reject it.
  */
 export default async function ReturnsPage({
@@ -39,7 +39,8 @@ export default async function ReturnsPage({
       />
       {status === 'requested' ? (
         <p className="text-ink-muted text-sm">
-          Email each customer how to send the piece back. Mark it received once it is at the US warehouse.
+          Book a courier to collect each piece from the customer's door (handover photos, as at delivery, D-076). Mark it
+          received once it is at the US warehouse.
         </p>
       ) : null}
       {rows.length === 0 ? (

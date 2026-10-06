@@ -53,7 +53,7 @@ export function ReturnChoices({
     setBusy(false);
     setPicked(null);
     if (!res.ok) return setMessage(data.error ?? 'Something went wrong. Please try again.');
-    setMessage('Thanks. We will email you about sending it back. Your refund goes out once it reaches us.');
+    setMessage('Thanks. We will be in touch to collect it from your door. Your refund goes out once it reaches us.');
     router.refresh();
   }
 

@@ -99,7 +99,7 @@ test('a delivered piece is returned: asked on the order page, received and refun
   await expect(page.getByRole('heading', { name: 'Return a piece' })).toBeVisible();
   await page.getByRole('button', { name: /^I changed my mind: \$/ }).click();
   await page.getByRole('button', { name: /^Yes, return it for \$/ }).click();
-  await expect(page.getByText('Thanks. We will email you about sending it back.', { exact: false })).toBeVisible({
+  await expect(page.getByText('Thanks. We will be in touch to collect it from your door.', { exact: false })).toBeVisible({
     timeout: 30_000,
   });
   const { data: ret, error } = await service.from('returns').select('id, refund_cents, kept_pct').eq('order_id', id).single();
@@ -110,6 +110,7 @@ test('a delivered piece is returned: asked on the order page, received and refun
   await page.goto('/admin/returns');
   const row = page.locator('tr').filter({ hasText: orderNumber });
   await row.getByRole('button', { name: 'Received' }).click();
+  await expect(row).toHaveCount(0, { timeout: 30_000 }); // the action finished: it left the "requested" list
   await page.goto('/admin/returns?status=received');
   await page.locator('tr').filter({ hasText: orderNumber }).getByRole('button', { name: /^Refund \$/ }).click();
   await expect.poll(async () => (await orderRow(orderNumber)).refunded_cents, { timeout: 30_000 }).toBe(ret.refund_cents);
