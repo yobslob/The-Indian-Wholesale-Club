@@ -96,6 +96,12 @@ export async function listSavedProductIds(client: IwcClient): Promise<string[]> 
   return rows.map((row) => row.product_id);
 }
 
+/** Whether the signed-in customer saved this product (their own rows only, under RLS). */
+export async function isProductSaved(client: IwcClient, productId: string): Promise<boolean> {
+  const rows = unwrap(await client.from('wishlists').select('product_id').eq('product_id', productId).limit(1));
+  return rows.length > 0;
+}
+
 export async function saveProduct(client: IwcClient, userId: string, productId: string) {
   unwrap(
     await client

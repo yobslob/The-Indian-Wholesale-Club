@@ -131,7 +131,9 @@ collected for an order cancelled this way become US clearance drafts (D-072).
 - A returned or cancelled piece becomes a draft product (`products.is_us_stock`), photos reused, priced
   `clearance_discount_pct` below what was paid. Admins check the piece in hand and publish it (Catalog → US clearance).
 - Its product page says it is already in the US, with today + the US delivery days. An order of only US pieces skips the
-  cycle: it is ready to ship at once (`arrived`). Mixed with pieces from India, it travels with them.
+  cycle: it is ready to ship at once (`arrived`), and checkout shows that window before payment. Mixed with pieces from
+  India, it travels with them. Express (the courier from Mumbai, D-070) is never offered for a bag with a US piece, and
+  the database refuses one.
 
 ## 8. Order statuses: internal vs what the customer sees [D-003]
 | Internal (`orders.status`) | Customer sees |

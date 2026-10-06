@@ -1,8 +1,8 @@
 name: Deploy
 
 # Manual only (Actions → Deploy → Run workflow), reviewed in R7:
-# - Production exists since 2026-10-06 (Supabase in us-east-1, Vercel). The domain waits on Q-9, and the app's
-#   bundle ids are still placeholders (com.root.app): choose them before the first Play Store upload.
+# - Production exists since 2026-10-06 (Supabase in us-east-1, Vercel). The domain waits on Q-9. The app's ids are
+#   com.indianwholesaleclub.app (the founder, 2026-10-07), fixed for good once uploaded to Google Play.
 # - Android only: iOS needs an Apple Developer account (not yet). The app's public settings come from the EAS
 #   "production" environment (eas.json; docs/ops.md §Going live, step 9), never from apps/app/.env.
 # - Run it only on a commit whose CI run is green; `next build` no longer repeats lint and

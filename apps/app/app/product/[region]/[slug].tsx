@@ -1,9 +1,9 @@
 import { Ionicons } from '@expo/vector-icons';
 import { Link, useLocalSearchParams, useRouter } from 'expo-router';
-import { useState } from 'react';
+import { useEffect, useState } from 'react';
 import { Pressable, Text, View } from 'react-native';
 
-import { saveProduct } from '@repo/db/account';
+import { isProductSaved, saveProduct, unsaveProduct } from '@repo/db/account';
 import { getProductPage } from '@repo/db/store';
 import tokens from '@repo/tokens';
 
@@ -31,14 +31,32 @@ export default function ProductScreen(): React.JSX.Element {
   const { region, slug } = useLocalSearchParams<{ region: string; slug: string }>();
   const { data, error, loading, reload } = useQuery(`product:${region}/${slug}`, () => getProductPage(supabase, region, slug));
   const [saved, setSaved] = useState(false);
+  const productId = data?.product.id;
 
-  async function save(productId: string): Promise<void> {
+  // B-18: show whether it is already saved (the customer's own rows only).
+  useEffect(() => {
+    if (!session || !productId) return setSaved(false);
+    let live = true;
+    void isProductSaved(supabase, productId)
+      .then((isSaved) => live && setSaved(isSaved))
+      .catch(() => undefined);
+    return () => {
+      live = false;
+    };
+  }, [session, productId]);
+
+  async function toggleSave(id: string): Promise<void> {
     if (!session) {
       router.push('/auth/login');
       return;
     }
-    await saveProduct(supabase, session.user.id, productId);
-    setSaved(true);
+    if (saved) {
+      await unsaveProduct(supabase, id);
+      setSaved(false);
+    } else {
+      await saveProduct(supabase, session.user.id, id);
+      setSaved(true);
+    }
   }
 
   const sizes = data ? sizeRows(data.product, data.variants) : [];
@@ -65,10 +83,9 @@ export default function ProductScreen(): React.JSX.Element {
               </Text>
               <Pressable
                 accessibilityRole="button"
-                accessibilityLabel={saved ? 'Saved to your account' : 'Save for later'}
+                accessibilityLabel={saved ? 'Saved. Remove from saved' : 'Save for later'}
                 accessibilityState={{ selected: saved }}
-                onPress={() => void save(data.product.id)}
-                disabled={saved}
+                onPress={() => void toggleSave(data.product.id)}
                 className="border-line bg-paper h-12 w-12 items-center justify-center rounded-full border"
               >
                 <Ionicons name={saved ? 'heart' : 'heart-outline'} size={22} color={saved ? tokens.colors.brand : tokens.colors.ink} />

@@ -12,6 +12,7 @@ export type Database = {
                   Row: {
                     "city": string,"country": string,"created_at": string,"full_name": string,"id": string,"is_default": boolean,"label": string | null,"line1": string,"line2": string | null,"phone": string | null,"state": string,"updated_at": string,"user_id": string,"zip_code": string
                   }
+                  ComputedFields: never
                   Insert: {
                     "city": string,"country"?: string,"created_at"?: string,"full_name": string,"id"?: string,"is_default"?: boolean,"label"?: string | null,"line1": string,"line2"?: string | null,"phone"?: string | null,"state": string,"updated_at"?: string,"user_id": string,"zip_code": string
                   }
@@ -31,6 +32,7 @@ isOneToOne: false
                   Row: {
                     "created_at": string,"email": string,"note": string | null
                   }
+                  ComputedFields: never
                   Insert: {
                     "created_at"?: string,"email": string,"note"?: string | null
                   }
@@ -44,6 +46,7 @@ isOneToOne: false
                   Row: {
                     "context": NonNullable<Json>,"created_at": string,"event": string,"id": string
                   }
+                  ComputedFields: never
                   Insert: {
                     "context"?: NonNullable<Json>,"created_at"?: string,"event": string,"id"?: string
                   }
@@ -57,6 +60,7 @@ isOneToOne: false
                   Row: {
                     "key": string,"updated_at": string,"value": NonNullable<Json>
                   }
+                  ComputedFields: never
                   Insert: {
                     "key": string,"updated_at"?: string,"value": NonNullable<Json>
                   }
@@ -70,6 +74,7 @@ isOneToOne: false
                   Row: {
                     "group_name": string,"is_placeholder": boolean,"key": string,"label": string,"sort_order": number,"updated_at": string,"value": string
                   }
+                  ComputedFields: never
                   Insert: {
                     "group_name": string,"is_placeholder"?: boolean,"key": string,"label": string,"sort_order"?: number,"updated_at"?: string,"value"?: string
                   }
@@ -83,6 +88,7 @@ isOneToOne: false
                   Row: {
                     "created_at": string,"default_weight_g": number | null,"id": string,"is_active": boolean,"name": string,"parent_id": string | null,"product_type": Database["public"]['Enums']["product_type"],"slug": string,"sort_order": number,"tax_class": Database["public"]['Enums']["tax_class"],"updated_at": string
                   }
+                  ComputedFields: never
                   Insert: {
                     "created_at"?: string,"default_weight_g"?: number | null,"id"?: string,"is_active"?: boolean,"name": string,"parent_id"?: string | null,"product_type": Database["public"]['Enums']["product_type"],"slug": string,"sort_order"?: number,"tax_class": Database["public"]['Enums']["tax_class"],"updated_at"?: string
                   }
@@ -110,6 +116,7 @@ isOneToOne: false
               "cutoff_at": string,"est_arrival_on": string,"est_export_on": string
             } | null
                   }
+                  ComputedFields: "_next_cycle_dates"
                   Insert: {
                     "arrived_at"?: string | null,"awb"?: string | null,"closed_at"?: string | null,"code": string,"created_at"?: string,"cutoff_at": string,"duty_cents"?: number | null,"est_arrival_on": string,"est_export_on"?: string | null,"exported_at"?: string | null,"forwarder"?: string | null,"freight_cents"?: number | null,"fx_inr_per_usd"?: number | null,"id"?: string,"notes"?: string | null,"status"?: Database["public"]['Enums']["cycle_status"],"updated_at"?: string
                   }
@@ -123,6 +130,7 @@ isOneToOne: false
                   Row: {
                     "attempts": number,"created_at": string,"id": string,"kind": string,"last_error": string | null,"next_attempt_at": string,"payload": NonNullable<Json>,"provider_message_id": string | null,"recipient": string,"sent_at": string | null,"status": string
                   }
+                  ComputedFields: never
                   Insert: {
                     "attempts"?: number,"created_at"?: string,"id"?: string,"kind": string,"last_error"?: string | null,"next_attempt_at"?: string,"payload": NonNullable<Json>,"provider_message_id"?: string | null,"recipient": string,"sent_at"?: string | null,"status"?: string
                   }
@@ -136,6 +144,7 @@ isOneToOne: false
                   Row: {
                     "amount_cents": number | null,"created_at": string,"currency": string | null,"customer_email": string | null,"error_reason": string,"id": string,"metadata": Json | null,"payment_intent_id": string,"resolved_at": string | null,"resolved_by": string | null,"stripe_event_id": string | null
                   }
+                  ComputedFields: never
                   Insert: {
                     "amount_cents"?: number | null,"created_at"?: string,"currency"?: string | null,"customer_email"?: string | null,"error_reason": string,"id"?: string,"metadata"?: Json | null,"payment_intent_id": string,"resolved_at"?: string | null,"resolved_by"?: string | null,"stripe_event_id"?: string | null
                   }
@@ -149,6 +158,7 @@ isOneToOne: false
                   Row: {
                     "applied": boolean,"request_id": number,"requested_at": string
                   }
+                  ComputedFields: never
                   Insert: {
                     "applied"?: boolean,"request_id": number,"requested_at"?: string
                   }
@@ -162,6 +172,7 @@ isOneToOne: false
                   Row: {
                     "created_at": string,"email": string,"id": string,"source": string
                   }
+                  ComputedFields: never
                   Insert: {
                     "created_at"?: string,"email": string,"id"?: string,"source"?: string
                   }
@@ -175,6 +186,7 @@ isOneToOne: false
                   Row: {
                     "actor": string | null,"created_at": string,"id": string,"internal_note": string | null,"kind": string,"message": string | null,"order_id": string,"visible_to_customer": boolean
                   }
+                  ComputedFields: never
                   Insert: {
                     "actor"?: string | null,"created_at"?: string,"id"?: string,"internal_note"?: string | null,"kind": string,"message"?: string | null,"order_id": string,"visible_to_customer"?: boolean
                   }
@@ -206,6 +218,7 @@ isOneToOne: false
                   Row: {
                     "created_at": string,"id": string,"order_id": string,"product_id": string | null,"product_name": string,"quantity": number,"region_name": string,"status": Database["public"]['Enums']["order_item_status"],"total_price_cents": number,"unit_price_cents": number,"variant_id": string | null,"variant_label": string
                   }
+                  ComputedFields: never
                   Insert: {
                     "created_at"?: string,"id"?: string,"order_id": string,"product_id"?: string | null,"product_name": string,"quantity": number,"region_name": string,"status"?: Database["public"]['Enums']["order_item_status"],"total_price_cents": number,"unit_price_cents": number,"variant_id"?: string | null,"variant_label": string
                   }
@@ -255,6 +268,7 @@ isOneToOne: false
                   Row: {
                     "decided_at": string | null,"earlier": boolean,"from_cycle_id": string,"id": string,"moved_at": string,"moved_by": string | null,"note": string | null,"offer_cents": number | null,"offer_from": string | null,"offer_status": Database["public"]['Enums']["move_offer_status"],"offer_to": string | null,"order_id": string,"payment_intent_id": string | null,"shipped_confirmed_at": string | null,"to_cycle_id": string
                   }
+                  ComputedFields: never
                   Insert: {
                     "decided_at"?: string | null,"earlier": boolean,"from_cycle_id": string,"id"?: string,"moved_at"?: string,"moved_by"?: string | null,"note"?: string | null,"offer_cents"?: number | null,"offer_from"?: string | null,"offer_status"?: Database["public"]['Enums']["move_offer_status"],"offer_to"?: string | null,"order_id": string,"payment_intent_id"?: string | null,"shipped_confirmed_at"?: string | null,"to_cycle_id": string
                   }
@@ -298,6 +312,7 @@ isOneToOne: false
                   Row: {
                     "carrier": string | null,"created_at": string,"currency": string,"cycle_id": string | null,"discount_cents": number,"email": string,"est_delivery_from": string | null,"est_delivery_to": string | null,"fulfilment_mode": Database["public"]['Enums']["fulfilment_mode"],"id": string,"notes": string | null,"order_number": string,"payment_intent_id": string | null,"payment_status": Database["public"]['Enums']["payment_status"],"promo_code_id": string | null,"refunded_cents": number,"shipping_address": NonNullable<Json>,"shipping_cents": number,"shipping_method": Database["public"]['Enums']["shipping_method"],"status": Database["public"]['Enums']["order_status"],"subtotal_cents": number,"tax_cents": number,"total_cents": number,"tracking_number": string | null,"updated_at": string,"user_id": string | null,"_in_india": boolean | null
                   }
+                  ComputedFields: "_in_india"
                   Insert: {
                     "carrier"?: string | null,"created_at"?: string,"currency"?: string,"cycle_id"?: string | null,"discount_cents"?: number,"email": string,"est_delivery_from"?: string | null,"est_delivery_to"?: string | null,"fulfilment_mode"?: Database["public"]['Enums']["fulfilment_mode"],"id"?: string,"notes"?: string | null,"order_number"?: string,"payment_intent_id"?: string | null,"payment_status"?: Database["public"]['Enums']["payment_status"],"promo_code_id"?: string | null,"refunded_cents"?: number,"shipping_address": NonNullable<Json>,"shipping_cents"?: number,"shipping_method"?: Database["public"]['Enums']["shipping_method"],"status"?: Database["public"]['Enums']["order_status"],"subtotal_cents": number,"tax_cents"?: number,"total_cents": number,"tracking_number"?: string | null,"updated_at"?: string,"user_id"?: string | null
                   }
@@ -329,6 +344,7 @@ isOneToOne: false
                   Row: {
                     "checkout_payload": NonNullable<Json>,"created_at": string,"id": string,"payment_intent_id": string,"reconciled_at": string | null,"reconciled_by": string | null
                   }
+                  ComputedFields: never
                   Insert: {
                     "checkout_payload": NonNullable<Json>,"created_at"?: string,"id"?: string,"payment_intent_id": string,"reconciled_at"?: string | null,"reconciled_by"?: string | null
                   }
@@ -342,6 +358,7 @@ isOneToOne: false
                   Row: {
                     "arrived_at": string | null,"arrived_by": string | null,"created_at": string,"cycle_id": string | null,"id": string,"note": string | null,"order_item_id": string,"payout_id": string | null,"photo_path": string | null,"picked_at": string | null,"picked_by": string | null,"quantity": number,"shop_price_paise": number | null,"status": Database["public"]['Enums']["pickup_status"],"updated_at": string,"variant_id": string,"vendor_id": string
                   }
+                  ComputedFields: never
                   Insert: {
                     "arrived_at"?: string | null,"arrived_by"?: string | null,"created_at"?: string,"cycle_id"?: string | null,"id"?: string,"note"?: string | null,"order_item_id": string,"payout_id"?: string | null,"photo_path"?: string | null,"picked_at"?: string | null,"picked_by"?: string | null,"quantity": number,"shop_price_paise"?: number | null,"status"?: Database["public"]['Enums']["pickup_status"],"updated_at"?: string,"variant_id": string,"vendor_id": string
                   }
@@ -409,6 +426,7 @@ isOneToOne: false
                   Row: {
                     "checked_on": string,"created_at": string,"setting": string,"source": string,"source_url": string | null
                   }
+                  ComputedFields: never
                   Insert: {
                     "checked_on": string,"created_at"?: string,"setting": string,"source": string,"source_url"?: string | null
                   }
@@ -422,6 +440,7 @@ isOneToOne: false
                   Row: {
                     "broker_cents_per_shipment": number | null,"cancel_fee_pct": number | null,"card_fee_fixed_cents": number | null,"card_fee_pct": number | null,"clearance_discount_pct": number | null,"cycle_days": number | null,"domestic_days_max": number | null,"domestic_days_min": number | null,"duty_pct": number | null,"export_cancel_deduction_pct": number | null,"express_base_cents": number | null,"express_courier_cents_per_kg": number | null,"express_days_max": number | null,"express_days_min": number | null,"express_min_kg": number | null,"express_shipping_cents": number | null,"fast_offer_cents": number | null,"free_shipping_min_cents": number | null,"freight_cents_per_kg": number | null,"fx_auto": boolean,"fx_buffer_pct": number | null,"fx_inr_per_usd": number | null,"fx_source": string | null,"fx_updated_at": string | null,"id": number,"india_handling_paise": number | null,"leaving_soon_max": number,"margin_pct": number | null,"return_claim_days": number | null,"return_tier1_days": number | null,"return_tier1_pct": number | null,"return_tier2_days": number | null,"return_tier2_pct": number | null,"return_tier3_days": number | null,"return_tier3_pct": number | null,"returns_allowance_pct": number | null,"shipment_kg": number | null,"shipping_flat_cents": number | null,"spices_cleared": boolean,"stale_listing_days": number | null,"updated_at": string,"updated_by": string | null,"us_handling_cents": number | null,"us_last_mile_cents_per_kg": number | null,"us_last_mile_min_cents": number | null,"volumetric_pct": number | null
                   }
+                  ComputedFields: never
                   Insert: {
                     "broker_cents_per_shipment"?: number | null,"cancel_fee_pct"?: number | null,"card_fee_fixed_cents"?: number | null,"card_fee_pct"?: number | null,"clearance_discount_pct"?: number | null,"cycle_days"?: number | null,"domestic_days_max"?: number | null,"domestic_days_min"?: number | null,"duty_pct"?: number | null,"export_cancel_deduction_pct"?: number | null,"express_base_cents"?: number | null,"express_courier_cents_per_kg"?: number | null,"express_days_max"?: number | null,"express_days_min"?: number | null,"express_min_kg"?: number | null,"express_shipping_cents"?: number | null,"fast_offer_cents"?: number | null,"free_shipping_min_cents"?: number | null,"freight_cents_per_kg"?: number | null,"fx_auto"?: boolean,"fx_buffer_pct"?: number | null,"fx_inr_per_usd"?: number | null,"fx_source"?: string | null,"fx_updated_at"?: string | null,"id"?: number,"india_handling_paise"?: number | null,"leaving_soon_max"?: number,"margin_pct"?: number | null,"return_claim_days"?: number | null,"return_tier1_days"?: number | null,"return_tier1_pct"?: number | null,"return_tier2_days"?: number | null,"return_tier2_pct"?: number | null,"return_tier3_days"?: number | null,"return_tier3_pct"?: number | null,"returns_allowance_pct"?: number | null,"shipment_kg"?: number | null,"shipping_flat_cents"?: number | null,"spices_cleared"?: boolean,"stale_listing_days"?: number | null,"updated_at"?: string,"updated_by"?: string | null,"us_handling_cents"?: number | null,"us_last_mile_cents_per_kg"?: number | null,"us_last_mile_min_cents"?: number | null,"volumetric_pct"?: number | null
                   }
@@ -441,6 +460,7 @@ isOneToOne: false
                   Row: {
                     "alt_text": string,"created_at": string,"id": string,"is_primary": boolean,"product_id": string,"sort_order": number,"storage_path": string,"variant_id": string | null
                   }
+                  ComputedFields: never
                   Insert: {
                     "alt_text"?: string,"created_at"?: string,"id"?: string,"is_primary"?: boolean,"product_id": string,"sort_order"?: number,"storage_path": string,"variant_id"?: string | null
                   }
@@ -478,6 +498,7 @@ isOneToOne: false
                   Row: {
                     "created_at": string,"id": string,"is_active": boolean,"label": string,"options": NonNullable<Json>,"price_cents": number | null,"product_id": string,"qty_confirmed_at": string | null,"qty_listed": number,"qty_reserved": number,"sku": string,"sort_order": number,"updated_at": string,"weight_g": number | null
                   }
+                  ComputedFields: never
                   Insert: {
                     "created_at"?: string,"id"?: string,"is_active"?: boolean,"label": string,"options"?: NonNullable<Json>,"price_cents"?: number | null,"product_id": string,"qty_confirmed_at"?: string | null,"qty_listed"?: number,"qty_reserved"?: number,"sku": string,"sort_order"?: number,"updated_at"?: string,"weight_g"?: number | null
                   }
@@ -503,6 +524,7 @@ isOneToOne: false
                   Row: {
                     "attributes": NonNullable<Json>,"category_id": string,"craft": string | null,"created_at": string,"created_by": string | null,"description": string | null,"has_origin_label": boolean,"id": string,"is_curated": boolean,"is_placeholder": boolean,"is_us_stock": boolean,"name": string,"origin_town": string | null,"price_auto": boolean,"price_cents": number,"product_type": Database["public"]['Enums']["product_type"],"published_at": string | null,"region_id": string,"search": unknown,"shop_price_paise": number | null,"slug": string,"status": Database["public"]['Enums']["product_status"],"story": string | null,"summary": string | null,"updated_at": string,"vendor_id": string
                   }
+                  ComputedFields: never
                   Insert: {
                     "attributes"?: NonNullable<Json>,"category_id": string,"craft"?: string | null,"created_at"?: string,"created_by"?: string | null,"description"?: string | null,"has_origin_label"?: boolean,"id"?: string,"is_curated"?: boolean,"is_placeholder"?: boolean,"is_us_stock"?: boolean,"name": string,"origin_town"?: string | null,"price_auto"?: boolean,"price_cents": number,"product_type": Database["public"]['Enums']["product_type"],"published_at"?: string | null,"region_id": string,"search"?: never,"shop_price_paise"?: number | null,"slug": string,"status"?: Database["public"]['Enums']["product_status"],"story"?: string | null,"summary"?: string | null,"updated_at"?: string,"vendor_id": string
                   }
@@ -552,6 +574,7 @@ isOneToOne: false
                   Row: {
                     "created_at": string,"desk": Database["public"]['Enums']["ops_desk"] | null,"email": string | null,"full_name": string | null,"id": string,"phone": string | null,"role": Database["public"]['Enums']["app_role"],"updated_at": string
                   }
+                  ComputedFields: never
                   Insert: {
                     "created_at"?: string,"desk"?: Database["public"]['Enums']["ops_desk"] | null,"email"?: string | null,"full_name"?: string | null,"id": string,"phone"?: string | null,"role"?: Database["public"]['Enums']["app_role"],"updated_at"?: string
                   }
@@ -565,6 +588,7 @@ isOneToOne: false
                   Row: {
                     "code": string,"created_at": string,"discount_type": Database["public"]['Enums']["discount_type"],"discount_value": number,"id": string,"is_active": boolean,"max_uses": number | null,"min_order_cents": number,"updated_at": string,"uses_count": number,"valid_from": string | null,"valid_until": string | null
                   }
+                  ComputedFields: never
                   Insert: {
                     "code": string,"created_at"?: string,"discount_type": Database["public"]['Enums']["discount_type"],"discount_value": number,"id"?: string,"is_active"?: boolean,"max_uses"?: number | null,"min_order_cents"?: number,"updated_at"?: string,"uses_count"?: number,"valid_from"?: string | null,"valid_until"?: string | null
                   }
@@ -578,6 +602,7 @@ isOneToOne: false
                   Row: {
                     "hits": number,"key": string,"window_start": string
                   }
+                  ComputedFields: never
                   Insert: {
                     "hits"?: number,"key": string,"window_start": string
                   }
@@ -591,6 +616,7 @@ isOneToOne: false
                   Row: {
                     "alt_text": string,"created_at": string,"id": string,"region_id": string,"sort_order": number,"storage_path": string
                   }
+                  ComputedFields: never
                   Insert: {
                     "alt_text": string,"created_at"?: string,"id"?: string,"region_id": string,"sort_order"?: number,"storage_path": string
                   }
@@ -616,6 +642,7 @@ isOneToOne: false
                   Row: {
                     "accent_color": string | null,"content_status": Database["public"]['Enums']["content_status"],"created_at": string,"greeting_latin": string | null,"greeting_meaning": string | null,"greeting_native": string | null,"greeting_script": string | null,"hero_image_path": string | null,"id": string,"is_live": boolean,"languages": (string)[],"name": string,"slug": string,"sort_order": number,"story": string | null,"tagline": string | null,"updated_at": string
                   }
+                  ComputedFields: never
                   Insert: {
                     "accent_color"?: string | null,"content_status"?: Database["public"]['Enums']["content_status"],"created_at"?: string,"greeting_latin"?: string | null,"greeting_meaning"?: string | null,"greeting_native"?: string | null,"greeting_script"?: string | null,"hero_image_path"?: string | null,"id"?: string,"is_live"?: boolean,"languages"?: (string)[],"name": string,"slug": string,"sort_order"?: number,"story"?: string | null,"tagline"?: string | null,"updated_at"?: string
                   }
@@ -629,6 +656,7 @@ isOneToOne: false
                   Row: {
                     "decided_at": string | null,"id": string,"kept_pct": number,"note": string | null,"order_id": string,"order_item_id": string,"reason": string,"refund_cents": number,"refund_ref": string | null,"requested_at": string,"status": string
                   }
+                  ComputedFields: never
                   Insert: {
                     "decided_at"?: string | null,"id"?: string,"kept_pct"?: number,"note"?: string | null,"order_id": string,"order_item_id": string,"reason": string,"refund_cents": number,"refund_ref"?: string | null,"requested_at"?: string,"status"?: string
                   }
@@ -666,6 +694,7 @@ isOneToOne: true
                   Row: {
                     "created_at": string,"id": string,"review_id": string,"sort_order": number,"storage_path": string
                   }
+                  ComputedFields: never
                   Insert: {
                     "created_at"?: string,"id"?: string,"review_id": string,"sort_order"?: number,"storage_path": string
                   }
@@ -691,6 +720,7 @@ isOneToOne: false
                   Row: {
                     "body": string,"created_at": string,"display_name": string,"id": string,"is_verified_buyer": boolean,"moderated_at": string | null,"moderated_by": string | null,"product_id": string,"rating": number,"status": Database["public"]['Enums']["review_status"],"updated_at": string,"user_id": string
                   }
+                  ComputedFields: never
                   Insert: {
                     "body": string,"created_at"?: string,"display_name": string,"id"?: string,"is_verified_buyer"?: boolean,"moderated_at"?: string | null,"moderated_by"?: string | null,"product_id": string,"rating": number,"status"?: Database["public"]['Enums']["review_status"],"updated_at"?: string,"user_id": string
                   }
@@ -728,6 +758,7 @@ isOneToOne: false
                   Row: {
                     "created_at": string,"id": number,"query": string,"results": number
                   }
+                  ComputedFields: never
                   Insert: {
                     "created_at"?: string,"id"?: never,"query": string,"results": number
                   }
@@ -741,6 +772,7 @@ isOneToOne: false
                   Row: {
                     "actor": string | null,"created_at": string,"delta_listed": number,"delta_reserved": number,"id": number,"note": string | null,"reason": Database["public"]['Enums']["stock_reason"],"ref_id": string | null,"ref_type": string | null,"variant_id": string
                   }
+                  ComputedFields: never
                   Insert: {
                     "actor"?: string | null,"created_at"?: string,"delta_listed"?: number,"delta_reserved"?: number,"id"?: never,"note"?: string | null,"reason": Database["public"]['Enums']["stock_reason"],"ref_id"?: string | null,"ref_type"?: string | null,"variant_id": string
                   }
@@ -766,6 +798,7 @@ isOneToOne: false
                   Row: {
                     "checked_on": string,"rate_pct": number,"source": string,"state": string,"taxes_clothing": boolean,"taxes_food": boolean,"taxes_general": boolean
                   }
+                  ComputedFields: never
                   Insert: {
                     "checked_on": string,"rate_pct": number,"source": string,"state": string,"taxes_clothing"?: boolean,"taxes_food"?: boolean,"taxes_general"?: boolean
                   }
@@ -779,6 +812,7 @@ isOneToOne: false
                   Row: {
                     "available": number,"product_id": string,"updated_at": string,"variant_id": string
                   }
+                  ComputedFields: never
                   Insert: {
                     "available": number,"product_id": string,"updated_at"?: string,"variant_id": string
                   }
@@ -816,6 +850,7 @@ isOneToOne: true
                   Row: {
                     "amount_paise": number,"created_at": string,"cycle_id": string | null,"id": string,"method": string,"note": string | null,"paid_at": string,"paid_by": string | null,"receipt_path": string | null,"reference": string | null,"vendor_id": string
                   }
+                  ComputedFields: never
                   Insert: {
                     "amount_paise": number,"created_at"?: string,"cycle_id"?: string | null,"id"?: string,"method": string,"note"?: string | null,"paid_at"?: string,"paid_by"?: string | null,"receipt_path"?: string | null,"reference"?: string | null,"vendor_id": string
                   }
@@ -847,6 +882,7 @@ isOneToOne: false
                   Row: {
                     "address": string | null,"created_at": string,"email": string | null,"id": string,"is_placeholder": boolean,"licences": NonNullable<Json>,"notes": string | null,"onboarded_at": string | null,"onboarded_by": string | null,"owner_name": string | null,"payment_method": string | null,"payment_reference": string | null,"phone": string | null,"photo_path": string | null,"region_id": string,"shop_name": string,"status": Database["public"]['Enums']["vendor_status"],"town": string | null,"updated_at": string,"whatsapp": string | null
                   }
+                  ComputedFields: never
                   Insert: {
                     "address"?: string | null,"created_at"?: string,"email"?: string | null,"id"?: string,"is_placeholder"?: boolean,"licences"?: NonNullable<Json>,"notes"?: string | null,"onboarded_at"?: string | null,"onboarded_by"?: string | null,"owner_name"?: string | null,"payment_method"?: string | null,"payment_reference"?: string | null,"phone"?: string | null,"photo_path"?: string | null,"region_id": string,"shop_name": string,"status"?: Database["public"]['Enums']["vendor_status"],"town"?: string | null,"updated_at"?: string,"whatsapp"?: string | null
                   }
@@ -878,6 +914,7 @@ isOneToOne: false
                   Row: {
                     "event_id": string,"event_type": string,"id": string,"processed_at": string
                   }
+                  ComputedFields: never
                   Insert: {
                     "event_id": string,"event_type": string,"id"?: string,"processed_at"?: string
                   }
@@ -891,6 +928,7 @@ isOneToOne: false
                   Row: {
                     "created_at": string,"product_id": string,"user_id": string
                   }
+                  ComputedFields: never
                   Insert: {
                     "created_at"?: string,"product_id": string,"user_id": string
                   }
@@ -925,6 +963,7 @@ isOneToOne: false
                   Row: {
                     "id": string | null,"name": string | null,"parent_id": string | null,"product_type": Database["public"]['Enums']["product_type"] | null,"slug": string | null,"sort_order": number | null
                   }
+                  ComputedFields: never
                   Insert: {
                            "id"?: string | null,"name"?: string | null,"parent_id"?: string | null,"product_type"?: Database["public"]['Enums']["product_type"] | null,"slug"?: string | null,"sort_order"?: number | null
                          }
@@ -950,6 +989,7 @@ isOneToOne: false
                   Row: {
                     "alt_text": string | null,"id": string | null,"is_primary": boolean | null,"product_id": string | null,"sort_order": number | null,"storage_path": string | null,"variant_id": string | null
                   }
+                  ComputedFields: never
                   Relationships: [
                     {
       foreignKeyName: "product_media_product_id_fkey"
@@ -981,6 +1021,7 @@ isOneToOne: false
                   Row: {
                     "created_at": string | null,"id": string | null,"kind": string | null,"message": string | null,"order_id": string | null
                   }
+                  ComputedFields: never
                   Relationships: [
                     {
       foreignKeyName: "order_events_order_id_fkey"
@@ -1000,6 +1041,7 @@ isOneToOne: false
                   Row: {
                     "id": string | null,"order_id": string | null,"product_id": string | null,"product_name": string | null,"quantity": number | null,"region_name": string | null,"status": Database["public"]['Enums']["order_item_status"] | null,"total_price_cents": number | null,"unit_price_cents": number | null,"variant_label": string | null
                   }
+                  ComputedFields: never
                   Relationships: [
                     {
       foreignKeyName: "order_items_order_id_fkey"
@@ -1031,6 +1073,7 @@ isOneToOne: false
                   Row: {
                     "carrier": string | null,"created_at": string | null,"currency": string | null,"customer_status": string | null,"discount_cents": number | null,"email": string | null,"est_delivery_from": string | null,"est_delivery_to": string | null,"id": string | null,"order_number": string | null,"payment_status": Database["public"]['Enums']["payment_status"] | null,"refunded_cents": number | null,"shipping_address": Json | null,"shipping_cents": number | null,"shipping_method": Database["public"]['Enums']["shipping_method"] | null,"subtotal_cents": number | null,"tax_cents": number | null,"total_cents": number | null,"tracking_number": string | null
                   }
+                  ComputedFields: never
                   Insert: {
                            "carrier"?: string | null,"created_at"?: string | null,"currency"?: string | null,"customer_status"?: never,"discount_cents"?: number | null,"email"?: string | null,"est_delivery_from"?: string | null,"est_delivery_to"?: string | null,"id"?: string | null,"order_number"?: string | null,"payment_status"?: Database["public"]['Enums']["payment_status"] | null,"refunded_cents"?: number | null,"shipping_address"?: Json | null,"shipping_cents"?: number | null,"shipping_method"?: Database["public"]['Enums']["shipping_method"] | null,"subtotal_cents"?: number | null,"tax_cents"?: number | null,"total_cents"?: number | null,"tracking_number"?: string | null
                          }
@@ -1044,6 +1087,7 @@ isOneToOne: false
                   Row: {
                     "attributes": Json | null,"category_id": string | null,"category_name": string | null,"category_slug": string | null,"craft": string | null,"description": string | null,"id": string | null,"is_curated": boolean | null,"is_us_stock": boolean | null,"name": string | null,"price_cents": number | null,"primary_image_path": string | null,"product_type": Database["public"]['Enums']["product_type"] | null,"published_at": string | null,"region_id": string | null,"region_name": string | null,"region_slug": string | null,"search": unknown,"slug": string | null,"story": string | null,"summary": string | null
                   }
+                  ComputedFields: never
                   Relationships: [
                     {
       foreignKeyName: "products_category_id_product_type_fkey"
@@ -1075,6 +1119,7 @@ isOneToOne: false
                   Row: {
                     "accent_color": string | null,"greeting_latin": string | null,"greeting_meaning": string | null,"greeting_native": string | null,"greeting_script": string | null,"hero_image_path": string | null,"id": string | null,"is_live": boolean | null,"name": string | null,"slug": string | null,"sort_order": number | null,"story": string | null,"tagline": string | null
                   }
+                  ComputedFields: never
                   Insert: {
                            "accent_color"?: string | null,"greeting_latin"?: never,"greeting_meaning"?: never,"greeting_native"?: never,"greeting_script"?: never,"hero_image_path"?: string | null,"id"?: string | null,"is_live"?: boolean | null,"name"?: string | null,"slug"?: string | null,"sort_order"?: number | null,"story"?: never,"tagline"?: never
                          }
@@ -1088,6 +1133,7 @@ isOneToOne: false
                   Row: {
                     "id": string | null,"review_id": string | null,"sort_order": number | null,"storage_path": string | null
                   }
+                  ComputedFields: never
                   Relationships: [
                     {
       foreignKeyName: "review_photos_review_id_fkey"
@@ -1107,6 +1153,7 @@ isOneToOne: false
                   Row: {
                     "body": string | null,"created_at": string | null,"display_name": string | null,"id": string | null,"is_verified_buyer": boolean | null,"product_id": string | null,"rating": number | null
                   }
+                  ComputedFields: never
                   Insert: {
                            "body"?: string | null,"created_at"?: string | null,"display_name"?: string | null,"id"?: string | null,"is_verified_buyer"?: boolean | null,"product_id"?: string | null,"rating"?: number | null
                          }
@@ -1132,6 +1179,7 @@ isOneToOne: false
                   Row: {
                     "available": number | null,"id": string | null,"label": string | null,"options": Json | null,"price_cents": number | null,"product_id": string | null,"sort_order": number | null
                   }
+                  ComputedFields: never
                   Relationships: [
                     {
       foreignKeyName: "product_variants_product_id_fkey"
@@ -1172,7 +1220,7 @@ isOneToOne: false
 { Args: Record<PropertyKey, never>; Returns: string
                            },
 "_in_india":
-{ Args: { "p_order": Database["public"]['Tables']["orders"]['Row'] }; Returns: boolean
+{ Args: { "p_order": Omit<Database["public"]['Tables']["orders"]['Row'], Database["public"]['Tables']["orders"]['ComputedFields']> }; Returns: boolean
                            },
 "_is_verified_buyer":
 { Args: { "p_product": string,"p_user": string }; Returns: boolean
@@ -1187,7 +1235,7 @@ isOneToOne: false
 { Args: { "p_checked_on": string,"p_estimates": Json }; Returns: number
                            },
 "_next_cycle_dates":
-{ Args: { "p_cycle": Database["public"]['Tables']["cycles"]['Row'] }; Returns: {
+{ Args: { "p_cycle": Omit<Database["public"]['Tables']["cycles"]['Row'], Database["public"]['Tables']["cycles"]['ComputedFields']> }; Returns: {
               "cutoff_at": string,"est_arrival_on": string,"est_export_on": string
             }[]
                            },
@@ -1235,7 +1283,7 @@ isOneToOne: false
 { Args: { "p_order": string,"p_why": string }; Returns: undefined
                            },
 "_window_from":
-{ Args: { "p_cycle": Database["public"]['Tables']["cycles"]['Row'],"p_order": Database["public"]['Tables']["orders"]['Row'] }; Returns: {
+{ Args: { "p_cycle": Omit<Database["public"]['Tables']["cycles"]['Row'], Database["public"]['Tables']["cycles"]['ComputedFields']>,"p_order": Omit<Database["public"]['Tables']["orders"]['Row'], Database["public"]['Tables']["orders"]['ComputedFields']> }; Returns: {
               "est_from": string,"est_to": string
             }[]
                            },

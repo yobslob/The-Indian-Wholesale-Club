@@ -1,29 +1,54 @@
 'use client';
 
 import { usePathname, useRouter } from 'next/navigation';
-import { useState, useTransition } from 'react';
+import { useEffect, useState, useTransition } from 'react';
 
-import { saveProductAction } from './actions';
+import { saveProductAction, unsaveProductAction } from './actions';
 
 /**
- * The heart beside the product name (D-051) = "Save for later" on a static product page: the session is
- * only read when clicked; signed-out visitors go to sign-in first.
+ * The heart beside the product name (D-051) = "Save for later" on a static product page. The page stays static: the
+ * browser checks its own session (no request when signed out) and, when signed in, whether this product is saved
+ * (B-6). The client loads after the page, the chunk the live stock feed uses too, so the first load stays in budget
+ * (engineering.md §Performance). A click saves, or removes it when already saved; signed-out visitors sign in first.
  */
 export function SaveButton({ productId }: { productId: string }): React.JSX.Element {
   const router = useRouter();
   const pathname = usePathname();
   const [saved, setSaved] = useState(false);
   const [pending, startTransition] = useTransition();
+
+  useEffect(() => {
+    let live = true;
+    void (async () => {
+      const [{ browserClient }, { isProductSaved }] = await Promise.all([
+        import('@/lib/supabase/browser'),
+        import('@repo/db/account'),
+      ]);
+      const client = browserClient();
+      const { data } = await client.auth.getSession();
+      if (!data.session) return;
+      const isSaved = await isProductSaved(client, productId).catch(() => false);
+      if (live) setSaved(isSaved);
+    })();
+    return () => {
+      live = false;
+    };
+  }, [productId]);
+
   return (
     <button
       type="button"
       disabled={pending}
       aria-pressed={saved}
-      aria-label={saved ? 'Saved to your account' : 'Save for later'}
-      title={saved ? 'Saved to your account' : 'Save for later'}
+      aria-label={saved ? 'Saved. Remove from saved' : 'Save for later'}
+      title={saved ? 'Saved. Remove from saved' : 'Save for later'}
       onClick={() => {
-        if (saved) return;
         startTransition(async () => {
+          if (saved) {
+            await unsaveProductAction(productId);
+            setSaved(false);
+            return;
+          }
           const result = await saveProductAction(productId);
           if (result === 'signin') router.push(`/login?next=${encodeURIComponent(pathname)}`);
           else setSaved(true);

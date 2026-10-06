@@ -1,15 +1,24 @@
 # Current status
 
 ## Resume here
-**Speed and concurrency audit (D-068) is built** (2026-10-06, migration 23, see "Speed audit sub-steps"): checkouts no longer wait for each other, a sale refreshes the cached pages that show its stock (E2E flow 8), lighter payloads, the app's photos resized by the website. **Waiting on the founder:** Q-32 (hold a piece while the customer pays?), B-21 (checkout round-trip budget), B-23 (how long to keep searches), and a look at D-068 (the image-resizing cost note).
-**C5 (Customer messages) is built** (2026-10-06): an email for every order update, keep-or-cancel after a delay, self-service cancel. **C4 (Cycles end to end) is built** (2026-10-03). **C3 (Listing from the field) is built** (2026-10-01): an admin lists a product on a phone (camera, variants,
-prices, draft → publish) and it reaches the store; tested end to end in the app's web preview and by E2E flow 2 on the
-web (same database call). C2 is built too. **Waiting on the founder:** the COO's listing on a real phone; approve the
-six region drafts; replace Claude's pricing estimates (labelled in Settings, C6) with your own numbers before launch; set "days between cutoffs" (D-063). **The pilot steps P.1 – P.7 are built** (2026-10-06, migrations 24 – 26). **Waiting on the founder:** Q-33 (how a return travels back), Q-32. The export invoice now reads the business details (D-074), and `pnpm launch:check` covers every pilot setting, the daily rate, tax, the business details and Q-9/Q-33. The Shipping & returns page is drafted from D-070 – D-073 with every number read from the database (migration 27), awaiting the founder's approval (TODO(founder) on the page). Returns are collected from the door (D-076, closes Q-33); the FAQ is drafted from the same numbers. Go-live is written step by step in `docs/ops.md` §Going live, with `pnpm prod:seed` for the first data; Privacy and Terms are drafted from what the code does, for a lawyer's review. **Waiting on the founder:** the production accounts and steps of that section, approving the info-page drafts, Q-9 (domain: real emails, the app's bundle id). E2E flow 6 covers the cancel and delay choices; the paid faster-delivery offer is covered by unit + SQL tests only.
+
+**Production is live on Vercel and Supabase (us-east-1)** since 2026-10-06 (set up by the founder, `docs/ops.md`
+§Going live): migrations through the Deploy workflow, the first data by `pnpm prod:seed`, the first admin account, the
+Android app built by EAS (iOS waits for an Apple Developer account). Everything in the coding plan (C1 – C8) and the
+pilot steps (P.1 – P.7, migrations 24 – 28) is built and verified (log below).
+
+**Waiting on the founder (nothing here is Claude's to decide):**
+- the launch steps in the admin: approve and switch on the launch states, fill the business details, open the first
+  cycle with real dates, list products; then `pnpm launch:check --url=<production> --allow-remote` until "Ready to launch";
+- approve the drafts: Shipping & returns, FAQ, How it works, and Privacy and Terms (with a lawyer); write the About story;
+- Q-9 (the domain: real emails beyond the Resend account's own address, the support email), Q-3 (the US carrier),
+  Q-32 (hold a piece while paying?), B-21, B-23, and a look at D-068's image-resizing cost note;
+- replace the pilot's placeholder numbers in Settings as real costs come in (D-069), the B-9 Expo upgrade together.
 
 ## Steps
+
 | Step | Status | Evidence |
-|---|---|---|
+| --- | --- | --- |
 | R0 Safety net | ✅ done | commit `d5342ae`, tag `pre-restructure`. Baseline timings recorded 2026-09-28 (log) |
 | R1 Docs system | ✅ done, approved (D-023) | |
 | R2 Remove dead paths | ✅ done | commit `c22656b`. One leftover (unused `Ionicons` import in the app) was caught by the founder's run and fixed in the R4 fix commit |
@@ -21,8 +30,9 @@ six region drafts; replace Claude's pricing estimates (labelled in Settings, C6)
 | R8 Hand-off | ✅ done (docs audited, coding plan reviewed and answered by the founder, 2026-09-29) | sub-steps below |
 
 ## Verification log (facts only. Add a row per run)
+
 | Date | Commit | Who / where | What | Result |
-|---|---|---|---|---|
+| --- | --- | --- | --- | --- |
 | 2026-09-28 | `11127d8` (old app code) | founder, Windows 11, 16 CPU, 16 GB, Node 24.19, pnpm 9.12 | **baseline** `check.mjs typecheck lint test build http` (`.checks/baseline.json`) | typecheck OK 9.1 s · **lint FAIL** 21.9 s (1 import/order warning in `apps/app/app/(tabs)/profile.tsx`; turbo stopped, so web lint was not reported) · test OK 1.8 s · build OK 45.8 s · pages (prod build, median of 3): `/` 428 ms, `/shop` 420 ms, `/search` 398 ms, `/api/search` 414 ms, `/api/health` 239 ms |
 | 2026-09-28 | `96b964c` | founder, local Supabase (Postgres 15.8.1.085) | `npx supabase start` | baseline migration + all 3 seeds applied, no errors |
 | 2026-09-28 | R3 | Claude, PostgreSQL 16.13 + stub | 7 SQL test files, 99 assertions. Mutation check: 15 rule breaks | all pass. All 15 breaks caught |
@@ -102,6 +112,7 @@ six region drafts; replace Claude's pricing estimates (labelled in Settings, C6)
 | 2026-10-06 | Shipping & returns draft (migration 27) | Claude, founder's machine, local Supabase (ports 3000/3101 free) | `db-test.mjs` 32/32 (`store_policy()` as anon: the return windows and delivery days the rules use; no cost, margin, clearance or customer-care deduction; anon/customer function whitelists updated) · the page read in `next dev` at desktop and 375 px (no sideways scroll); it showed express "1 to 2 days" from `seed/demo.sql`, an override older than D-070, now removed (estimates give 15 to 18) · `check.mjs docs typecheck lint test build e2e` OK, **e2e 21/21** | OK |
 | 2026-10-06 | D-076 + FAQ draft | Claude, founder's machine, local Supabase (ports 3000/3101 free; Vault secrets re-created by the founder) | web unit tests 35/35 (new `policy-text.test.ts`; the D-003 email test caught "pickup" in the new return email, reworded to "collect it from your door") · the first e2e run failed the return flow: the test left the page before "Received" finished; it now waits for the row to leave the list · `check.mjs docs typecheck lint test build e2e` OK, **e2e 21/21**; the run before also had http and bundle OK · FAQ read in `next dev` (express 15 to 18 days) | OK |
 | 2026-10-06 | go-live prep | Claude, founder's machine, local Supabase (ports 3000/3101 free) | `prod:seed`: the three seed files loaded into emptied regions and categories inside a rolled-back transaction (36 states, 25 categories, the pilot numbers), and the script refuses a database that has regions (exit 1) · `launch:check` locally: 8 of 19 to do, the pilot numbers now a NOTE (D-069) · `check.mjs docs typecheck lint test build http e2e bundle`: all OK except e2e 19/21, both failures "An error occurred with our connection to Stripe" (`admin_error_events`, a network blip on Stripe's test API); `check.mjs e2e` again: **21/21** · `admin_error_events` also shows Resend refusing a real send: until a domain is verified (Q-9) Resend delivers only to the account's own address | OK |
+| 2026-10-07 | migration 28 + saved hearts (B-6, B-18) | Claude, founder's machine, local Supabase (ports 3000/3101 free) | `db-test.mjs` 32/32 (after_sales: a US-only bag gets the US window at checkout and no express; mixed bags no express; a bag from India keeps it; an express order with a US piece refused) · mutation: the guard trigger disabled → "refuses an express order with a US piece" fails, **caught** · first `http` run: the product page's first-load JS rose to 199 KB (> 150 KB budget) because the heart imported the browser client; now loaded after the page (the live stock feed's chunk): 119 KB · `check.mjs docs typecheck lint test build http e2e bundle` OK, **e2e 22/22** (new: the heart shows a saved piece after a reload and a second tap removes it). The app's heart: typecheck only | OK |
 | 2026-10-06 | production set up | the founder (reported in chat; Claude did not connect to production) | Supabase project in us-east-1; Deploy workflow: migrations and the Vercel deploy OK, the mobile job failed on iOS (no Apple account); `pnpm prod:seed --apply`: 36 regions, 25 categories, 32 pilot numbers; Vercel redeployed OK; Stripe set. Then Claude made the workflow build Android only and moved the app's public settings to the EAS production environment (unverified until the next Android build) | OK (founder) |
 | 2026-10-06 | email setup | Claude, founder's machine | the founder added the Resend key + sender and the two Vault secrets; `net._http_response` shows the email timer firing every minute and getting "Couldn't connect" while no website runs on port 3000 (expected); the sender now marks emails to reserved test domains (`.test`, `.example`…) done without sending (web unit tests 30/30). Real sending not observed yet | OK (partial) |
 | 2026-10-06 | speed audit, before (HEAD `433448a`) | Claude, founder's machine, local Supabase (catalogue seed: 279 live products, 5,231 variants) | `store_*` timings in psql (warm, second call) and payload sizes; then the same with 2,000 extra live products in Rajasthan (4 variants each, in a rolled-back transaction) | today's data: `store_home` 7.8 ms / 14,477 B · `store_region_page('rajasthan')` 18.9 ms / 30,737 B · `store_type_rows('clothing')` 36.7 ms / 83,160 B. **At 2,059 products in one region: `store_region_page` 130 ms and 1,035,692 B per call** (the app fetched it on every region screen) |
@@ -113,8 +124,9 @@ six region drafts; replace Claude's pricing estimates (labelled in Settings, C6)
 | 2026-10-06 | speed audit (migration 23, uncommitted tree on `433448a`) | Claude, founder's machine, local Supabase (ports 3000/3101/8081 free) | `node scripts/check.mjs` (all 9 steps, `.checks/latest.json`) | **all OK**: docs · typecheck · lint · test · **db 30/30** · build 34.8 s · http: `/` 15 ms, `/states` 16, `/states/kerala` 13, product 19, `/clothing` 28, `/search` 29, `/api/health` 34; JS 114–119 KB · **e2e 20/20** · bundle (Android 3.54 MB, iOS 3.55 MB). Local photos restored afterwards (`pnpm dev:photos`) |
 
 ## C1 sub-steps (design)
+
 | # | Sub-step | Status |
-|---|---|---|
+| --- | --- | --- |
 | 1.1 | Three mockup directions (Home, Region, Product, admin Listing) with proposed palettes, contrast checks and motion (`design/mockups/`) | ✅ founder picked A with changes (D-050) |
 | 1.1b | A v2 to the founder's feedback: symmetric grid below the hero, full width, new Just listed + Pick your home (DataMeet map, stamps, search), fonts, B/C deleted | ✅ map section approved (D-051) |
 | 1.1c | A v3 (D-051): headline options, Helvetica Neue, 700 ms name hover, region sections, new product page with reviews | ✅ reviewed (D-052) |
@@ -138,8 +150,9 @@ six region drafts; replace Claude's pricing estimates (labelled in Settings, C6)
 | 1.7 | Admin Listings in the mockup's admin look (D-050): shared admin parts restyled (every admin page), Listings form with the Clothing / Spice toggle, prices paired, drafts below; view tabs shared with Catalog (`?status=`); phone nav in one row; E2E flow 2 checks the toggle | ✅ committed · the camera, suggested price and send-for-review stay in C3 / C6 as the mockup marks them; the **app's** admin listing screen gets its look with the camera flow (C3) |
 
 ## C2 sub-steps (regions come alive)
+
 | # | Sub-step | Status |
-|---|---|---|
+| --- | --- | --- |
 | 2.1 | D-059 recorded; the founder's voice rule in `design.md` §Voice; drafted taglines and stories for the six launch regions (`regions.sql`, `draft`, D-019) | ✅ committed · founder to approve or rewrite |
 | 2.2 | Colour and size pickers on the product page, web and app (`@repo/shared` `variant-options`, unit-tested); the size chart lists each size once | ✅ committed |
 | 2.3 | The catalogue as listings (`catalogue/data/*.mjs` → `scripts/build-catalogue.mjs` → `supabase/seed/catalogue.sql`): 274 clothing live with colour × size variants, 299 pantry drafts (D-032), 5,202 variants, placeholders marked; 16 new categories; `pnpm catalogue:apply` loads it without a reset; `check.mjs docs` fails when the seed and the data differ; photo folders (`pnpm catalogue:folders`) loaded by `pnpm dev:photos`; Q-28 (origin of items made in another state), Q-29 (brands) | ✅ committed · the hosted dev DB gets it with its next reset (founder) |
@@ -148,16 +161,18 @@ six region drafts; replace Claude's pricing estimates (labelled in Settings, C6)
 | 2.4 | Region album (D-051, D-052): migration 10 (`region_photos`, admin-only; `store_region_page()` + `album`), SQL tests; admin Regions: add (with alt text) and remove album photos; the mosaic (the mockup's tile pattern, doubled for a seamless loop) between Most wanted and Curated for you on web (CSS, paused off screen, still for reduced motion, not interactive) and app (Reanimated); shown from three photos; `pnpm dev:photos` loads `_region/` extras into the album, and the founder's second Punjab photo | ✅ committed · the mockup's film-camera date stamps are left out (they were sample dates) |
 
 ## C3 sub-steps (listing from the field)
+
 | # | Sub-step | Status |
-|---|---|---|
+| --- | --- | --- |
 | 3.1 | Migration 12: `admin_create_listing` (draft + variants in one transaction, region from the shop, quantities confirmed) and `admin_stale_variants` (re-check list, nothing until `stale_listing_days` is set, D-047); SQL tests; the shared `listingInputSchema` (clothing needs fibre and care), `variantLabel`, `listingSlug`, unit-tested | ✅ committed |
 | 3.2 | App admin: Listings → New listing (shop search, camera / photo library with alt text per photo, type, category, name, fibre and care or spice details, colour × size variants with a pieces stepper, weight, shop price, price, the suggested price from Settings), photos shrunk to 2,400 px and uploaded after the draft is saved (failed ones can be sent again); Publish on clothing drafts; the re-check count on Today. New dependencies `expo-image-picker`, `expo-image-manipulator` | ✅ committed · **COO's test on a phone pending** |
 | 3.3 | Web admin: New listing through the same `admin_create_listing` (E2E flow 2 covers it); the re-check list on Today and Listings | ✅ committed |
 | 3.4 | Tab screens never show the Back control (it showed on admin tabs after sign-in); admin pushed screens use their header's back | ✅ committed |
 
 ## C4 sub-steps (cycles end to end)
+
 | # | Sub-step | Status |
-|---|---|---|
+| --- | --- | --- |
 | 4.0 | The D-045 details confirmed by the founder: D-063 (next cycle's dates from "days between cutoffs"), D-064 (discounted faster-delivery offer, else "it came sooner"), D-065 (a late payment joins the cycle just closed), D-066 (tracking links for USPS, UPS, FedEx; Q-3 stays open) | ✅ committed |
 | 4.1 | Migration 13: cycles close at their cutoff and the next opens by itself (`roll_cycles()` every minute with pg_cron, and first in `create_order`); the store and checkout show the cycle an order would join; an admin cutoff opens the next cycle too and records the real closing time; late payments (D-065, refusal `cycle_closed` with its own message); `cycle_days` in Settings; correcting a cycle's dates on its admin page. Closes B-19 | ✅ committed |
 | 4.2 | Migration 14: moving orders between cycles (`move_order`: pieces follow, a later window changes visibly), `confirm_move_shipped` (the D-064 offer at the price in Settings), `accept_fast_offer` (service), the "coming sooner" event when an un-taken early order ships; `offer` in the customer's order data. Web admin: move form and history on the order page, "It left with this export" on the cycle page, the offer price in Settings | ✅ committed · the customer's offer and payment: 4.3 |
@@ -168,8 +183,9 @@ six region drafts; replace Claude's pricing estimates (labelled in Settings, C6)
 | 4.7 | C4's "done when" in SQL: `cycle_lifecycle.test.sql` runs one cycle from open to closed with the real functions (closes by itself at its cutoff, the next opens, pickups, packed, export details, exported, arrived, check-off, fulfilling, shipped, delivered, closed) and checks what the customer saw | ✅ committed · the same as a browser E2E flow: waits for a free port 3000 and the test admin in `ADMIN_EMAILS` |
 
 ## C5 sub-steps (customer messages)
+
 | # | Sub-step | Status |
-|---|---|---|
+| --- | --- | --- |
 | 5.0 | The app on a new Wi-Fi network: in development, local Supabase and website addresses follow the computer Metro runs on (`lib/local-host.ts`, unit-tested), so "Network request failed" after a network change needs no `.env` edit | ✅ committed · founder: reload the app on the phone |
 | 5.1 | Migration 17: an email for every customer-visible order update (trigger → `email_outbox` `order_update`), the copy for each (unit-tested: escaped, nothing operational, D-003); the website sends right after its own admin actions (`after()`), and a pg_cron + pg_net timer every minute once the Vault holds the site URL and the outbox secret | ✅ committed · founder: the two Vault secrets (ops.md) |
 | 5.2 | Delays (D-008): after a window change the order page (website + app) offers keep or cancel for a full refund; `keep_after_delay`, `cancel_after_delay` (stock back for pieces not collected; collected ones flagged, Q-31) | ✅ committed |
@@ -177,20 +193,23 @@ six region drafts; replace Claude's pricing estimates (labelled in Settings, C6)
 | 5.4 | Pagination (D-067): migration 18 `store_type_rows` (the app's Explore reads 12 per category instead of every product); the app's Browse loads 24 at a time as you scroll (`lib/use-paged-query.ts`), Explore search and admin Listings with "Show more"; the website's search 24 + "Show more", admin Catalog 50 to a page (it stopped at 200 of ~595); stable ordering so pages never repeat or skip. The app's web preview follows its own address too (`lib/metro-host.ts`) | ✅ committed |
 
 ## C6 sub-steps (pricing help)
+
 | # | Sub-step | Status |
 |---|---|---|
 | 6.1 | Researched estimates, each with source and date (D-047): exchange rate ₹96.48/$ (market, 2026-10-05), freight $6.00/kg (forwarder rates for 45–100 kg + fuel surcharge), duty 22% (MFN ~12–16.5% on clothing + India's 10% Section 301 tier since 2026-07-24), margin 100% (keystone), re-check after 14 days (half a cycle, no outside source). Migration 19 `pricing_estimates` + labels in Settings; saving your own number removes the label; `supabase/seed/estimates.sql` / `pnpm dev:estimates` fill only empty settings; the suggested price says "based on estimates" (web catalog, app listing form) | ✅ committed · founder: replace them with your own numbers before launch (C8 refuses estimates) |
 
 ## C7 sub-steps (insights + live admin)
+
 | # | Sub-step | Status |
-|---|---|---|
+| --- | --- | --- |
 | 7.1 | Migration 20: `admin_sales` (pieces and revenue by state, category, shop with shop cost; active lines of paid, not-cancelled orders; any period; it replaces a 10,000-row sum in the page that also left out partly refunded orders), `admin_demand` (top searches, searches with no results, most saved), `search_queries` written by `store_search` (website + app search; words and match count only). Insights page with 30 / 90 days / all time | ✅ committed |
 | 7.2 | Today: the admin's desk first (D-007), live orders feed (Realtime on `orders`, PR-7) on the website and in the app | ✅ committed |
 | 7.3 | E2E flow 7 (Insights shows a no-result search; Today shows an order change live) | ✅ committed |
 
 ## Speed audit sub-steps (D-068, 2026-10-06)
+
 | # | Sub-step | Status |
-|---|---|---|
+| --- | --- | --- |
 | S.1 | Checkout concurrency: `create_order` shares the open-cycle lock and reserves pieces in variant-id order (PR-9); finalize reads in parallel, the checkout route reads the caller alongside the pricing | ✅ |
 | S.2 | Cache invalidation (`engineering.md` §Caching): a tag per page; a sale refreshes its products, regions and Home; cancels and the automatic cutoff refresh the store (the minute timer now also runs after a cutoff); E2E flow 8 | ✅ |
 | S.3 | Payloads: cards without summary/craft and with one pass over variants; the region page carries only the cards it draws + `category_counts`; `store_browse` for See all (website, app) replaces a 1,000-card read (silently cut off past 1,000) and the app's count query; the sitemap reads 1,000 at a time (it stopped at the API's 1,000) | ✅ |
@@ -201,19 +220,21 @@ six region drafts; replace Claude's pricing estimates (labelled in Settings, C6)
 | S.8 | Founder: Q-32, B-21, B-23; confirm D-068 | waiting |
 
 ## Pilot sub-steps (D-069 – D-075, the founder's answers of 2026-10-06)
+
 | # | Sub-step | Status |
-|---|---|---|
+| --- | --- | --- |
 | P.1 | Decisions D-069 – D-075 recorded verbatim; Q-5, Q-10, Q-18, Q-19, Q-30, Q-31 closed | ✅ committed |
 | P.2 | The pricing engine (D-075): migration 24, every cost a setting with a high-end placeholder (`docs/pilot-numbers.md`), one formula in SQL (`_auto_price_cents`, margin on the goods, costs at cost, shipment and parcel costs by weight), automatic repricing, the daily ECB rate (pg_cron + pg_net, implausible jumps refused), category weights and tax classes, business and compliance placeholders, the spices switch; Settings rebuilt from one field list; prices optional on the website and app listing forms (empty = automatic, previewed live) | ✅ committed |
 | P.3 | Tax by delivery state (D-073, replaces the flat 8%): migration 25 `tax_rates` (New Jersey 6.625% on general goods; clothing and food exempt), checkout taxes only taxable lines where IWC is registered, "Sales tax" on checkout, orders and emails; cancels refund the tax | ✅ committed |
 | P.4 | Cancel until the order leaves India (D-072): the customer's button with the refund shown first (a cancel fee once collected, 0 for the pilot); after it left, customer care cancels from the admin order page with the 25% deduction; collected pieces go to US clearance | ✅ committed |
 | P.5 | Returns (D-071): "Return a piece" on the order page (website and app) with the refund per reason, `POST /api/orders/return`, emails, the admin Returns page (received → refund via Stripe, or reject). A courier collects the piece from the door (D-076) | ✅ committed |
-| P.6 | US clearance stock (D-072): returned and cancelled pieces become drafts at 30% off (Catalog → US clearance), the product page says it is already in the US with today's window, a US-only order skips the cycle. Checkout still shows the cycle's window for a US-only bag (the confirmation has the right one) | ✅ committed |
+| P.6 | US clearance stock (D-072): returned and cancelled pieces become drafts at 30% off (Catalog → US clearance), the product page says it is already in the US with today's window, a US-only order skips the cycle. Since migration 28, checkout shows the US window for a US-only bag and offers express only without US pieces | ✅ committed |
 | P.7 | Express by courier from Mumbai, outside the cycle (D-070): priced per order + each piece's courier cost (never its weight, INV-1), window from today (15–18 days), no cycle, pickups at once, "Express to send" on Today and Orders, Picked/Unavailable on the order page, shipped by courier once picked (DHL with a tracking link) | ✅ committed |
 
 ## C8 sub-steps (launch readiness)
+
 | # | Sub-step | Status |
-|---|---|---|
+| --- | --- | --- |
 | 8.1 | `pnpm launch:check` (read-only): 16 checks over the database and the repo; on the local database today 11 still to do (estimates, `cycle_days`, placeholder catalogue, demo data, dev preview, six state texts to approve, the dev cycle, Vault settings, stuck emails, Q-5/Q-9/Q-10/Q-19/Q-30, TODO(founder) on 7 customer pages) | ✅ committed |
 | 8.2 | B-16 the app's bag kept across restarts (AsyncStorage, new dependency at Expo SDK 52's version) | ✅ committed |
 | 8.3 | B-17 app admin writes refresh the website's store pages (`POST /admin/revalidate`, admin bearer only) | ✅ committed |
@@ -222,8 +243,9 @@ six region drafts; replace Claude's pricing estimates (labelled in Settings, C6)
 | 8.6 | Founder's part: Q-5, Q-9 (domain + email), Q-10, Q-19, Q-30, Q-31; policy and info pages; approve state texts; own pricing numbers; production deploy (D-044); Expo SDK upgrade (B-9) together with a phone test | waiting |
 
 ## R7 sub-steps
+
 | # | Sub-step | Status |
-|---|---|---|
+| --- | --- | --- |
 | 7.1 | Playwright E2E (`apps/web/e2e`): checkout with the Stripe test card, admin list + publish, hidden admin + no operations fields; local-only guards | ✅ committed · never run yet |
 | 7.2 | `check.mjs`: new `e2e` and `bundle` steps; fixed step order (`db` before `build`) | ✅ committed |
 | 7.3 | Admin tab title no longer says "Admin" (a refused customer's 404 looked different from any other 404, D-006); found while writing flow 3 | ✅ committed |
@@ -232,8 +254,9 @@ six region drafts; replace Claude's pricing estimates (labelled in Settings, C6)
 | 7.6 | Founder: `check.mjs` with timings vs the baseline (the R7 "done when") | ✅ 2026-09-29, all 8 steps green, timings vs baseline logged; CI green |
 
 ## R8 sub-steps
+
 | # | Sub-step | Status |
-|---|---|---|
+| --- | --- | --- |
 | 8.1 | Log R7 (founder run all green, first CI run green) | ✅ |
 | 8.2 | Docs audit script (`check.mjs docs`) + independent read-through; every mismatch fixed in the docs, gaps logged (B-19, B-20, Q-20) | ✅ committed |
 | 8.3 | Coding plan draft (`plan/coding-plan.md`) | ✅ committed · founder review pending |
@@ -241,11 +264,13 @@ six region drafts; replace Claude's pricing estimates (labelled in Settings, C6)
 | 8.5 | Repo ready for Claude Code: CLAUDE.md for local work, `.claude/settings.json` permissions, `/check` and `/record-answer` skills | ✅ committed |
 
 ## Invariant tests (`data-model.md`)
+
 INV-1 … INV-9: implemented and passing on Claude's Postgres 16 runs and on real local Supabase, Postgres 15 (see log).
 
 ## R5 sub-steps
+
 | # | Sub-step | Status |
-|---|---|---|
+| --- | --- | --- |
 | 5.0 | Close R4: remove the unused import, `check.mjs` runs turbo with `--continue` (every package reports), commit generated types + lockfile | ✅ `97fadaf` |
 | 5.1 | Web on `@repo/db`: server Supabase clients, `features/` layout, storefront routes (`storefront.md`) | ✅ committed |
 | 5.2 | Hidden admin (`admin.md` access model), its own route group | ✅ committed (gaps listed in `admin.md`) |
@@ -255,8 +280,9 @@ INV-1 … INV-9: implemented and passing on Claude's Postgres 16 runs and on rea
 | 5.6 | Founder answers (D-041 shipping options, D-042 refunds): migration 4, checkout shipping picker, admin refund + cancel, Settings | ✅ committed · Claude-verified (log) · founder run pending |
 
 ## R6 sub-steps
+
 | # | Sub-step | Status |
-|---|---|---|
+| --- | --- | --- |
 | 6.1 | App config: rebrand (name, slug, scheme `iwc`; bundle ids wait for the domain, Q-9), `@repo/db` + `@repo/tokens`, Metro resolver for package exports, NativeWind on the tokens, import-boundary lint | ✅ committed |
 | 6.2 | Customer tabs, region and product screens on `store_*` (old screens, query layer and stores deleted) | ✅ committed |
 | 6.3 | Sign-in, checkout on the website's API with the payment sheet (D-038), order + guest lookup (new `POST /api/orders/lookup`), addresses. The checkout HTTP types moved to `packages/shared` | ✅ committed |
@@ -269,13 +295,15 @@ INV-1 … INV-9: implemented and passing on Claude's Postgres 16 runs and on rea
 **Not verified by anyone yet:** a delivered email (needs a verified sender, Q-9).
 
 ## Waiting on the founder
+
 1. Q-18: express delivery "15–18 days" (D-048), counted from the order date or from the export's arrival in the US?
 2. For C2 (Regions come alive): the greeting, tagline and story for each region you want live first (Claude can draft
    them for approval, D-019), and more photos per region for the album.
 3. Before launch: Q-3 (US carrier), Q-5 (returns policy), Q-9 (domain, D-046), Q-10 (spices compliance), Q-19 (sales tax).
 
 ## Known leftovers (tracked, not forgotten)
-- The app's bundle ids are still `com.root.app` (`apps/app/app.json`): they change with the domain (Q-9). Everything else
+
+- The app's bundle ids are still `com.indianwholesaleclub.app` (`apps/app/app.json`): they change with the domain (Q-9). Everything else
   is rebranded (D-009).
 - Still open from R5.6: express days (Q-18) and the accountant check on keeping tax (Q-19).
 - The old hosted dev DB keeps the old schema and its holes (B-1, B-14) until the reset above.
@@ -283,6 +311,7 @@ INV-1 … INV-9: implemented and passing on Claude's Postgres 16 runs and on rea
 - Founder's `apps/web/.env` has unused `RAZORPAY_*` / `TRACKING_PROXY_*` lines (safe to delete. Claude never edits `.env`).
 
 ## Session notes (environment facts, re-check each session)
+
 - **From 2026-09-29 the founder works with Claude Code** in `C:\kod\root` (CLAUDE.md §How work and verification run).
   Claude runs `check.mjs` itself; `.claude/settings.json` holds the command permissions.
 - The repo sets `core.fileMode=false`. `.gitattributes` normalises line endings to LF. `.npmrc` hoists packages (Expo SDK 52).

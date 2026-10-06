@@ -53,7 +53,10 @@ export const checkoutContextSchema = z.object({
       taxes_general: z.boolean(),
     })
     .nullable(),
-  /** D-070: courier from Mumbai to the door, priced per order + per piece; its window counts from today. */
+  /** D-072: a bag of only pieces already in the US: today + the US delivery days (null otherwise). */
+  us_delivery: z.object({ est_delivery_from: z.string(), est_delivery_to: z.string() }).nullable().default(null),
+  /** D-070: courier from Mumbai to the door, priced per order + per piece; its window counts from today. Never for a
+   * bag with a piece already in the US. */
   express: z
     .object({
       base_cents: z.number().int(),

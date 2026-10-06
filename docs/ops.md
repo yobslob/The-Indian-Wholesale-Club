@@ -121,8 +121,8 @@ The old `NEXT_PUBLIC_SUPABASE_*` / `NEXT_PUBLIC_APP_URL` CI secrets are no longe
    then the same for `EXPO_PUBLIC_SUPABASE_ANON_KEY` (the production anon key), `EXPO_PUBLIC_API_URL` (the production
    website) and `EXPO_PUBLIC_STRIPE_PUBLISHABLE_KEY` (the live publishable key). All four are public by design (they ship
    inside the app). The Deploy workflow's `android_profile` input picks `preview` (an APK to install on a phone from the
-   EAS build page) or `production` (an AAB for Google Play). Before the first Play Store upload, replace the
-   placeholder `com.root.app` in `app.json` (Google Play never lets it change afterwards).
+   EAS build page) or `production` (an AAB for Google Play). The app's id is `com.indianwholesaleclub.app` (`app.json`,
+   set by the founder on 2026-10-07); Google Play never lets it change after the first upload.
 
 ## Git
 GitHub `yobslob/The-Indian_Wholesale-Club`, branch `main` (D-014). Claude commits in `C:\kod\root` and the founder pushes.

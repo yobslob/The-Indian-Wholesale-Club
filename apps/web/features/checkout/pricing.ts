@@ -126,6 +126,10 @@ export async function priceCart(
   // No price for standard shipping yet: checkout stays closed rather than guessing a fee.
   if (!breakdown || !standard) return { ok: false, problem: { kind: 'closed' } };
 
+  // D-072: a bag of only US pieces ships from the warehouse at once, so its window is today + the US delivery days.
+  const standardWindow = context.us_delivery
+    ? { ...context.us_delivery, order_by: context.delivery.order_by }
+    : context.delivery;
   const expressWindow = context.express
     ? {
         est_delivery_from: context.express.est_delivery_from,
@@ -146,9 +150,9 @@ export async function priceCart(
       lines,
       breakdown,
       shippingMethod: method,
-      delivery: method === 'express' && expressWindow ? expressWindow : context.delivery,
+      delivery: method === 'express' && expressWindow ? expressWindow : standardWindow,
       options: {
-        standard: { shippingCents: standard.shippingCents, delivery: context.delivery },
+        standard: { shippingCents: standard.shippingCents, delivery: standardWindow },
         express:
           express && expressWindow
             ? { shippingCents: express.shippingCents, delivery: expressWindow }
