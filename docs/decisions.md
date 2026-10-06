@@ -146,7 +146,7 @@ dev DB is reset only when the app code matches the new schema (R5).
 **D-032 · 2026-09-28 · founder (was Q-10, first half): Spice listings stay unpublished** until the FDA facility and labels
 are settled (Q-10). Spices can still be drafted in the admin.
 
-**D-033 · 2026-09-28 · founder (was Q-11): Sales tax is a flat 8% estimate for now.** Stripe Tax is a later option (F-2).
+**D-033 · SUPERSEDED by D-073 · 2026-09-28 · founder (was Q-11): Sales tax is a flat 8% estimate for now.** Stripe Tax is a later option (F-2).
 
 **D-034 · 2026-09-28 · founder (was Q-12): "Preparing your order"** is the customer-facing status while goods are in India or in transit.
 
@@ -525,3 +525,71 @@ lists, and app screens that request only the fields they need. What it means for
   (`apps/app/components/photo.tsx`).
 - **Payload:** cards carry only what a card shows; the region page carries only the cards it draws; See all and the
   app's Browse read one page plus its counts in one round trip.
+
+**D-069 · 2026-10-06 · founder: A pilot shipment first; Claude sets every number at the high end until the real costs are known**
+Founder, verbatim: "We will be doing a pilot Shipping just to test the waters(how deep it is = referring to all the
+numbers that we will update once we actually know how much it is costing in each step). Therefore, for now you have to
+take charge for carefully putting in all the numbers. consider all possibilities. For starter, we will be working on
+higher end on almost all variables" and "Just put every variable in a sorted markdown so I can sort everything out when
+I have all the values till then take them by yourself as the higher end."
+What it means for the build: every cost and setting gets a high-end placeholder with its basis, listed in one sorted
+file (`docs/pilot-numbers.md`) that says where each is changed. Placeholders stay labelled until the founder replaces them
+(D-047's labels; the launch check lists them).
+*Interpretation (proposed):* "higher end" applies to costs (prices come out safe). It does not apply to sales tax, which
+is the state's money, not a cost: tax is charged only where IWC is registered, at the real rate (D-073).
+
+**D-070 · 2026-10-06 · founder (was Q-18, with D-048): Air only; standard goes through the US warehouse, express goes door to door**
+Founder, verbatim: "Let's remove the ship scenerio for now, and we are taking by air as default. Normal shipping is
+mumbai to us airport to warehouse and then to everyone, express is straight mumbai to us door to door." and "standard is
+India to us warehouse to customer, express is india to cusstomer."
+What it means for the build: standard = the cycle (D-005): pieces fly together from Mumbai, are received at the US
+warehouse and shipped to each customer. Express = the order's pieces go by international courier from Mumbai straight to
+the customer's door, outside the cycle, delivered 15 to 18 days from the order (D-048, counted from the order date).
+Closes Q-18.
+
+**D-071 · 2026-10-06 · founder (was Q-5): Returns: full refund for our mistakes, otherwise a deduction that grows with time**
+Founder, verbatim: "For return see whatever seems applicable to you, as there are a lot of scenarios, if the product is
+wrong or damaged(the carrier guy will take photos before handing over), then full return(if there are any mistakes from
+our end), otherwise if they return it in a specific window then a specific % of amount will be deducted as fetching cost
+and as the time increases the return amount will get shorter. Basically, you consider all possibilities yourself."
+*Interpretation (proposed, the founder asked Claude to set it):* wrong or damaged (checked against the courier's handover
+photos): everything back, shipping included, reported within 7 days of delivery. Otherwise, unworn and unaltered pieces:
+returned within 7 days, 15% kept for fetching; within 14 days, 30%; within 30 days, 50%; after 30 days no returns.
+Altered pieces and opened food are final sale. Returned pieces go to the US clearance sale (D-072). Every % and day is a
+setting (D-069).
+
+**D-072 · 2026-10-06 · founder (was Q-31): Cancel until the order leaves India; after that, customer care only, with a deduction, and the piece goes to a US clearance sale**
+Founder, verbatim: "Show the cancel button until the order isn't left from India, But once it is left remove it and if
+the customer calls and talks to the customer care, max solution they will get is refunded with some % deduction for
+shipping and then that piece will go to clearance sale in US"
+What it means for the build: the customer's own cancel stays on the order page until the order's export leaves India
+(statuses confirmed, collecting, packed); collected pieces return to stock. After that only an admin cancels, refunding
+the order minus a shipping deduction (a setting), and the order's pieces become US clearance stock, sold from the US
+warehouse without waiting for a cycle. Closes Q-31.
+
+**D-073 · 2026-10-06 · founder (was Q-19): Sales tax as the law sets it; the business is registered in New Jersey**
+Founder, verbatim: "Again take the numbers by yourself, business is registered in new jersey, I will change the numbers
+when I get them." (with D-069: "some tax can be considered as 2-8% legally, so we will charge it as 7% on our website")
+What it means for the build: replaces D-033's flat 8%. Tax is charged per delivery state, only in states where IWC is
+registered (New Jersey now, 6.625%), and only on taxable items: New Jersey exempts clothing, footwear and food (spices),
+so most orders carry no tax. Other states once IWC passes their thresholds (often $100k or 200 orders a year) and
+registers. Cancelled orders refund the tax. *Claude's note:* charging tax where IWC is not registered would mean
+collecting money it cannot lawfully keep or remit, so the "higher end" goes into prices instead (D-069). Supersedes
+D-033. Closes Q-19 (confirm with an accountant before scaling).
+
+**D-074 · 2026-10-06 · founder (was Q-10, Q-30): Spices compliance and the invoice details are in hand; placeholders until after deploy**
+Founder, verbatim: (Q-10) "Everything is taken, just as I said insert a placeholder value wherever needed we will sort it
+out after uploading it to vercel" and (Q-30) "Yes I have all these numbers, Insert placeholder values for now"
+What it means for the build: the FDA registration, US agent, importer and label details, and the exporter, importer,
+IEC, GSTIN, EIN, HS codes and Incoterms are settings with placeholders, listed in `docs/pilot-numbers.md`. Spices can be
+published once the founder switches "spices cleared" on in Settings (after entering the real numbers); the invoice shows
+the entered details. Closes Q-10 and Q-30.
+
+**D-075 · 2026-10-06 · founder: Prices in dollars follow from the rupee price automatically, with live rates**
+Founder, verbatim: "Also I need a system which keeps fetching these numbers which change but are provided on the web
+such as rates, freight etc. there should be like I insert the product from admin in Indian rupee and then your algorithm
+does its thing and then directly shows the price in dollar in Customer's inventory including applying everything."
+What it means for the build: an admin enters only the shop price in ₹ (and the weight); the customer price in $ is
+computed from every cost setting and the margin, and recomputed when a setting or the exchange rate changes. The
+exchange rate is fetched every day from a public source. Freight, duty and courier rates have no free public feed, so
+they stay settings with a "last checked" date and a reminder when they are old.

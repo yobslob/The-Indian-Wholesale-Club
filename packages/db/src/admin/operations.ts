@@ -91,9 +91,12 @@ export async function getPricingSettings(client: IwcClient) {
     await client
       .from('pricing_settings')
       .select(
-        `fx_inr_per_usd, freight_cents_per_kg, duty_pct, margin_pct, domestic_days_min, domestic_days_max,
+        `fx_inr_per_usd, fx_buffer_pct, fx_auto, fx_updated_at, fx_source, india_handling_paise, freight_cents_per_kg,
+          volumetric_pct, broker_cents_per_shipment, shipment_kg, duty_pct, us_handling_cents, us_last_mile_cents_per_kg,
+          us_last_mile_min_cents, returns_allowance_pct, margin_pct, card_fee_pct, card_fee_fixed_cents,
+          express_base_cents, express_courier_cents_per_kg, express_min_kg, domestic_days_min, domestic_days_max,
           shipping_flat_cents, free_shipping_min_cents, express_shipping_cents, express_days_min, express_days_max,
-          stale_listing_days, leaving_soon_max, cycle_days, fast_offer_cents, updated_at`,
+          stale_listing_days, leaving_soon_max, cycle_days, fast_offer_cents, spices_cleared, updated_at`,
       )
       .eq('id', 1)
       .single(),
@@ -114,11 +117,46 @@ export async function listPricingEstimates(client: IwcClient) {
   );
 }
 
-/** The settings the suggested price is built from (shared/domain suggestPrice). */
-export const PRICE_SUGGESTION_SETTINGS = ['fx_inr_per_usd', 'freight_cents_per_kg', 'duty_pct', 'margin_pct'];
+/** The settings the automatic price is built from (shared/domain autoPrice, D-075). */
+export const PRICE_SUGGESTION_SETTINGS = [
+  'fx_inr_per_usd', 'fx_buffer_pct', 'india_handling_paise', 'freight_cents_per_kg', 'volumetric_pct',
+  'broker_cents_per_shipment', 'shipment_kg', 'duty_pct', 'us_handling_cents', 'us_last_mile_cents_per_kg',
+  'us_last_mile_min_cents', 'returns_allowance_pct', 'margin_pct', 'card_fee_pct', 'card_fee_fixed_cents',
+];
 
 /** D-007: the signed-in admin's desk ('us' or 'india'), which orders their Today. Null when not set. */
 export async function getMyDesk(client: IwcClient, userId: string): Promise<Enum<'ops_desk'> | null> {
   const row = unwrap(await client.from('profiles').select('desk').eq('id', userId).maybeSingle());
   return row?.desk ?? null;
+}
+
+/** D-074: the business and compliance details (exporter, importer, broker, FDA, contact), each flagged while a placeholder. */
+export async function listBusinessDetails(client: IwcClient) {
+  return unwrap(
+    await client
+      .from('business_details')
+      .select('key, label, value, is_placeholder, group_name, sort_order')
+      .order('group_name')
+      .order('sort_order'),
+  );
+}
+
+/** Saves the details that changed; a saved value is no longer a placeholder. */
+export async function updateBusinessDetails(client: IwcClient, values: Record<string, string>) {
+  const current = await listBusinessDetails(client);
+  for (const d of current) {
+    const next = values[d.key]?.trim();
+    if (next === undefined || next === d.value) continue;
+    unwrap(
+      await client
+        .from('business_details')
+        .update({ value: next, is_placeholder: next === '' || /^TO FILL/i.test(next), updated_at: new Date().toISOString() })
+        .eq('key', d.key),
+    );
+  }
+}
+
+/** D-074: spices may be published once the founder clears them. */
+export async function setSpicesCleared(client: IwcClient, cleared: boolean) {
+  unwrap(await client.from('pricing_settings').update({ spices_cleared: cleared }).eq('id', 1));
 }

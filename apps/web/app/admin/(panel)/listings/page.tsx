@@ -118,14 +118,15 @@ export default async function ListingsPage(): Promise<React.JSX.Element> {
         </div>
         <div className="grid grid-cols-2 gap-4 sm:col-span-2">
           <Field label="Shop price (₹)">
-            <input name="shopPrice" type="number" step="0.01" min="0" className={input} />
+            <input name="shopPrice" type="number" step="0.01" min="0" required className={input} />
           </Field>
-          <Field label="Price (USD)">
-            <input name="price" type="number" step="0.01" min="0.01" required className={input} />
+          <Field label="Price (USD): empty = automatic">
+            <input name="price" type="number" step="0.01" min="0.01" className={input} />
           </Field>
         </div>
         <p className="text-ink-muted text-[13px] sm:col-span-2">
-          Photos, sizes and pieces are added on the draft&apos;s page after saving.
+          The dollar price follows from the shop price, the weight and every cost in Settings (D-075). Photos, sizes,
+          pieces and weights are added on the draft&apos;s page after saving.
         </p>
         <div className="sm:col-span-2">
           <button type="submit" className={`${button} w-full sm:w-auto`}>

@@ -105,7 +105,7 @@ export async function listCategories(client: IwcClient) {
   return unwrap(
     await client
       .from('categories')
-      .select('id, product_type, slug, name, parent_id, sort_order, is_active')
+      .select('id, product_type, slug, name, parent_id, sort_order, is_active, default_weight_g, tax_class')
       .order('product_type')
       .order('sort_order'),
   );
@@ -165,7 +165,7 @@ export async function getAdminProduct(client: IwcClient, id: string) {
       .from('products')
       .select(
         `id, slug, name, product_type, region_id, category_id, vendor_id, summary, description, story, craft, attributes,
-          price_cents, shop_price_paise, origin_town, has_origin_label, status, is_placeholder, published_at, is_curated,
+          price_cents, price_auto, shop_price_paise, origin_town, has_origin_label, status, is_placeholder, published_at, is_curated,
           created_at, updated_at,
           variants:product_variants(id, sku, label, options, price_cents, weight_g, qty_listed, qty_reserved,
           qty_confirmed_at, is_active, sort_order),

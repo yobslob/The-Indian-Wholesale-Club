@@ -5,6 +5,7 @@ import {
   CUSTOMER_STATUSES,
   CUSTOMER_STATUS_LABEL,
   attributesSchemaFor,
+  autoPrice,
   choose,
   clothingAttributesSchema,
   contrastRatio,
@@ -24,7 +25,6 @@ import {
   selectionOf,
   shippingAddressSchema,
   spiceAttributesSchema,
-  suggestPrice,
   timelineIndex,
   trackingUrl,
   variantLabel,
@@ -33,41 +33,37 @@ import {
 
 const settings = { fxInrPerUsd: 80, freightCentsPerKg: 1000, dutyPct: 10, marginPct: 50 };
 
-describe('suggestPrice (flows.md §2, D-047)', () => {
-  it('computes goods, freight, duty, landed and suggested price in cents', () => {
-    // ₹2,000 = 200000 paise → $25.00; 500 g at $10/kg → $5.00; 10% duty on goods → $2.50
-    const result = suggestPrice({ shopPricePaise: 200000, weightG: 500 }, settings);
-    assert.deepEqual(result, {
-      goodsCents: 2500,
-      freightCents: 500,
-      dutyCents: 250,
-      landedCents: 3250,
-      suggestedPriceCents: 4875,
-    });
+describe('autoPrice (D-075): the same numbers as supabase/tests/pricing_engine.test.sql', () => {
+  const simple = {
+    fxInrPerUsd: 100, fxBufferPct: 0, indiaHandlingPaise: 0, freightCentsPerKg: 1000, volumetricPct: 100,
+    brokerCentsPerShipment: 0, shipmentKg: 1, dutyPct: 0, usHandlingCents: 0, usLastMileCentsPerKg: 0,
+    usLastMileMinCents: 0, returnsAllowancePct: 0, marginPct: 0, cardFeePct: 0, cardFeeFixedCents: 0,
+  };
+  const full = {
+    fxInrPerUsd: 96, fxBufferPct: 4, indiaHandlingPaise: 25000, freightCentsPerKg: 700, volumetricPct: 130,
+    brokerCentsPerShipment: 35000, shipmentKg: 30, dutyPct: 26.5, usHandlingCents: 500, usLastMileCentsPerKg: 1000,
+    usLastMileMinCents: 500, returnsAllowancePct: 5, marginPct: 100, cardFeePct: 3.5, cardFeeFixedCents: 30,
+  };
+
+  it('rounds up to the next $x.99', () => {
+    assert.equal(autoPrice({ shopPricePaise: 100000, weightG: 1000 }, simple)?.priceCents, 2099);
+    assert.equal(autoPrice({ shopPricePaise: 99900, weightG: 1000 }, simple)?.priceCents, 1999);
   });
 
-  it('returns null instead of guessing when any setting is missing', () => {
-    for (const key of ['fxInrPerUsd', 'freightCentsPerKg', 'dutyPct', 'marginPct'] as const) {
-      assert.equal(
-        suggestPrice({ shopPricePaise: 1000, weightG: 100 }, { ...settings, [key]: null }),
-        null,
-        key,
-      );
-    }
+  it('every cost, the margin on the goods only, then the card fees', () => {
+    assert.equal(autoPrice({ shopPricePaise: 250000, weightG: 800 }, full)?.priceCents, 10699);
   });
 
-  it('returns null when the weight is unknown (freight cannot be computed)', () => {
-    assert.equal(suggestPrice({ shopPricePaise: 1000, weightG: null }, settings), null);
+  it('returns null while a setting, the shop price or the weight is missing', () => {
+    assert.equal(autoPrice({ shopPricePaise: 1000, weightG: null }, full), null);
+    assert.equal(autoPrice({ shopPricePaise: null, weightG: 100 }, full), null);
+    assert.equal(autoPrice({ shopPricePaise: 1000, weightG: 100 }, { ...full, marginPct: null }), null);
   });
 
-  it('rejects impossible inputs', () => {
-    assert.throws(() => suggestPrice({ shopPricePaise: -1, weightG: 100 }, settings), RangeError);
-    assert.throws(() => suggestPrice({ shopPricePaise: 10.5, weightG: 100 }, settings), RangeError);
-    assert.throws(() => suggestPrice({ shopPricePaise: 100, weightG: 0 }, settings), RangeError);
-    assert.throws(
-      () => suggestPrice({ shopPricePaise: 100, weightG: 100 }, { ...settings, fxInrPerUsd: 0 }),
-      RangeError,
-    );
+  it('refuses impossible input', () => {
+    assert.throws(() => autoPrice({ shopPricePaise: -1, weightG: 100 }, full), RangeError);
+    assert.throws(() => autoPrice({ shopPricePaise: 100, weightG: 0 }, full), RangeError);
+    assert.throws(() => autoPrice({ shopPricePaise: 100, weightG: 100 }, { ...full, fxInrPerUsd: 0 }), RangeError);
   });
 });
 

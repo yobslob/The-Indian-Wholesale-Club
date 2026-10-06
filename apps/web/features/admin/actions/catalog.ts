@@ -31,10 +31,12 @@ const slug = z
   .trim()
   .toLowerCase()
   .regex(/^[a-z0-9]+(-[a-z0-9]+)*$/, 'slug: lowercase letters, digits and dashes');
-const dollarsToCents = z.coerce
-  .number()
-  .positive()
-  .transform((v) => Math.round(v * 100));
+/** Empty = priced automatically (D-075). */
+const optionalDollars = z
+  .string()
+  .trim()
+  .transform((v) => (v === '' ? null : Math.round(Number(v) * 100)))
+  .refine((v) => v === null || (Number.isInteger(v) && v > 0), 'price must be a positive number');
 const rupeesToPaise = z
   .string()
   .trim()
@@ -95,7 +97,7 @@ export async function createProductAction(form: FormData): Promise<void> {
       productType: z.enum(['clothing', 'spice']),
       name: text(120).pipe(z.string().min(2)),
       slug,
-      price: dollarsToCents,
+      price: optionalDollars,
       shopPrice: rupeesToPaise,
       summary: optional(300),
     })
@@ -123,7 +125,7 @@ export async function createProductAction(form: FormData): Promise<void> {
     name: base.name,
     slug: base.slug,
     summary: base.summary ?? undefined,
-    price_cents: base.price,
+    price_cents: base.price ?? undefined,
     shop_price_paise: base.shopPrice ?? undefined,
     attributes,
     variants: [],
@@ -136,7 +138,7 @@ export async function updateProductAction(productId: string, form: FormData): Pr
   const input = z
     .object({
       name: text(120).pipe(z.string().min(2)),
-      price: dollarsToCents,
+      price: optionalDollars,
       shopPrice: rupeesToPaise,
       summary: optional(300),
       description: optional(4000),
@@ -146,7 +148,8 @@ export async function updateProductAction(productId: string, form: FormData): Pr
     .parse(Object.fromEntries(form));
   await updateProduct(client, id.parse(productId), {
     name: input.name,
-    price_cents: input.price,
+    // D-075: empty = automatic (the database prices it from the shop price and weight); a typed price = by hand.
+    ...(input.price === null ? { price_auto: true } : { price_auto: false, price_cents: input.price }),
     shop_price_paise: input.shopPrice,
     summary: input.summary,
     description: input.description,

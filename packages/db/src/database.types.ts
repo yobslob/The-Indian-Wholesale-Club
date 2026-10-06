@@ -66,15 +66,28 @@ isOneToOne: false
                   Relationships: [
                     
                   ]
-                },"categories": {
+                },"business_details": {
                   Row: {
-                    "created_at": string,"id": string,"is_active": boolean,"name": string,"parent_id": string | null,"product_type": Database["public"]['Enums']["product_type"],"slug": string,"sort_order": number,"updated_at": string
+                    "group_name": string,"is_placeholder": boolean,"key": string,"label": string,"sort_order": number,"updated_at": string,"value": string
                   }
                   Insert: {
-                    "created_at"?: string,"id"?: string,"is_active"?: boolean,"name": string,"parent_id"?: string | null,"product_type": Database["public"]['Enums']["product_type"],"slug": string,"sort_order"?: number,"updated_at"?: string
+                    "group_name": string,"is_placeholder"?: boolean,"key": string,"label": string,"sort_order"?: number,"updated_at"?: string,"value"?: string
                   }
                   Update: {
-                    "created_at"?: string,"id"?: string,"is_active"?: boolean,"name"?: string,"parent_id"?: string | null,"product_type"?: Database["public"]['Enums']["product_type"],"slug"?: string,"sort_order"?: number,"updated_at"?: string
+                    "group_name"?: string,"is_placeholder"?: boolean,"key"?: string,"label"?: string,"sort_order"?: number,"updated_at"?: string,"value"?: string
+                  }
+                  Relationships: [
+                    
+                  ]
+                },"categories": {
+                  Row: {
+                    "created_at": string,"default_weight_g": number | null,"id": string,"is_active": boolean,"name": string,"parent_id": string | null,"product_type": Database["public"]['Enums']["product_type"],"slug": string,"sort_order": number,"tax_class": Database["public"]['Enums']["tax_class"],"updated_at": string
+                  }
+                  Insert: {
+                    "created_at"?: string,"default_weight_g"?: number | null,"id"?: string,"is_active"?: boolean,"name": string,"parent_id"?: string | null,"product_type": Database["public"]['Enums']["product_type"],"slug": string,"sort_order"?: number,"tax_class": Database["public"]['Enums']["tax_class"],"updated_at"?: string
+                  }
+                  Update: {
+                    "created_at"?: string,"default_weight_g"?: number | null,"id"?: string,"is_active"?: boolean,"name"?: string,"parent_id"?: string | null,"product_type"?: Database["public"]['Enums']["product_type"],"slug"?: string,"sort_order"?: number,"tax_class"?: Database["public"]['Enums']["tax_class"],"updated_at"?: string
                   }
                   Relationships: [
                     {
@@ -128,6 +141,19 @@ isOneToOne: false
                   }
                   Update: {
                     "amount_cents"?: number | null,"created_at"?: string,"currency"?: string | null,"customer_email"?: string | null,"error_reason"?: string,"id"?: string,"metadata"?: Json | null,"payment_intent_id"?: string,"resolved_at"?: string | null,"resolved_by"?: string | null,"stripe_event_id"?: string | null
+                  }
+                  Relationships: [
+                    
+                  ]
+                },"fx_fetches": {
+                  Row: {
+                    "applied": boolean,"request_id": number,"requested_at": string
+                  }
+                  Insert: {
+                    "applied"?: boolean,"request_id": number,"requested_at"?: string
+                  }
+                  Update: {
+                    "applied"?: boolean,"request_id"?: number,"requested_at"?: string
                   }
                   Relationships: [
                     
@@ -394,13 +420,13 @@ isOneToOne: false
                   ]
                 },"pricing_settings": {
                   Row: {
-                    "cycle_days": number | null,"domestic_days_max": number | null,"domestic_days_min": number | null,"duty_pct": number | null,"express_days_max": number | null,"express_days_min": number | null,"express_shipping_cents": number | null,"fast_offer_cents": number | null,"free_shipping_min_cents": number | null,"freight_cents_per_kg": number | null,"fx_inr_per_usd": number | null,"id": number,"leaving_soon_max": number,"margin_pct": number | null,"shipping_flat_cents": number | null,"stale_listing_days": number | null,"updated_at": string,"updated_by": string | null
+                    "broker_cents_per_shipment": number | null,"card_fee_fixed_cents": number | null,"card_fee_pct": number | null,"cycle_days": number | null,"domestic_days_max": number | null,"domestic_days_min": number | null,"duty_pct": number | null,"express_base_cents": number | null,"express_courier_cents_per_kg": number | null,"express_days_max": number | null,"express_days_min": number | null,"express_min_kg": number | null,"express_shipping_cents": number | null,"fast_offer_cents": number | null,"free_shipping_min_cents": number | null,"freight_cents_per_kg": number | null,"fx_auto": boolean,"fx_buffer_pct": number | null,"fx_inr_per_usd": number | null,"fx_source": string | null,"fx_updated_at": string | null,"id": number,"india_handling_paise": number | null,"leaving_soon_max": number,"margin_pct": number | null,"returns_allowance_pct": number | null,"shipment_kg": number | null,"shipping_flat_cents": number | null,"spices_cleared": boolean,"stale_listing_days": number | null,"updated_at": string,"updated_by": string | null,"us_handling_cents": number | null,"us_last_mile_cents_per_kg": number | null,"us_last_mile_min_cents": number | null,"volumetric_pct": number | null
                   }
                   Insert: {
-                    "cycle_days"?: number | null,"domestic_days_max"?: number | null,"domestic_days_min"?: number | null,"duty_pct"?: number | null,"express_days_max"?: number | null,"express_days_min"?: number | null,"express_shipping_cents"?: number | null,"fast_offer_cents"?: number | null,"free_shipping_min_cents"?: number | null,"freight_cents_per_kg"?: number | null,"fx_inr_per_usd"?: number | null,"id"?: number,"leaving_soon_max"?: number,"margin_pct"?: number | null,"shipping_flat_cents"?: number | null,"stale_listing_days"?: number | null,"updated_at"?: string,"updated_by"?: string | null
+                    "broker_cents_per_shipment"?: number | null,"card_fee_fixed_cents"?: number | null,"card_fee_pct"?: number | null,"cycle_days"?: number | null,"domestic_days_max"?: number | null,"domestic_days_min"?: number | null,"duty_pct"?: number | null,"express_base_cents"?: number | null,"express_courier_cents_per_kg"?: number | null,"express_days_max"?: number | null,"express_days_min"?: number | null,"express_min_kg"?: number | null,"express_shipping_cents"?: number | null,"fast_offer_cents"?: number | null,"free_shipping_min_cents"?: number | null,"freight_cents_per_kg"?: number | null,"fx_auto"?: boolean,"fx_buffer_pct"?: number | null,"fx_inr_per_usd"?: number | null,"fx_source"?: string | null,"fx_updated_at"?: string | null,"id"?: number,"india_handling_paise"?: number | null,"leaving_soon_max"?: number,"margin_pct"?: number | null,"returns_allowance_pct"?: number | null,"shipment_kg"?: number | null,"shipping_flat_cents"?: number | null,"spices_cleared"?: boolean,"stale_listing_days"?: number | null,"updated_at"?: string,"updated_by"?: string | null,"us_handling_cents"?: number | null,"us_last_mile_cents_per_kg"?: number | null,"us_last_mile_min_cents"?: number | null,"volumetric_pct"?: number | null
                   }
                   Update: {
-                    "cycle_days"?: number | null,"domestic_days_max"?: number | null,"domestic_days_min"?: number | null,"duty_pct"?: number | null,"express_days_max"?: number | null,"express_days_min"?: number | null,"express_shipping_cents"?: number | null,"fast_offer_cents"?: number | null,"free_shipping_min_cents"?: number | null,"freight_cents_per_kg"?: number | null,"fx_inr_per_usd"?: number | null,"id"?: number,"leaving_soon_max"?: number,"margin_pct"?: number | null,"shipping_flat_cents"?: number | null,"stale_listing_days"?: number | null,"updated_at"?: string,"updated_by"?: string | null
+                    "broker_cents_per_shipment"?: number | null,"card_fee_fixed_cents"?: number | null,"card_fee_pct"?: number | null,"cycle_days"?: number | null,"domestic_days_max"?: number | null,"domestic_days_min"?: number | null,"duty_pct"?: number | null,"express_base_cents"?: number | null,"express_courier_cents_per_kg"?: number | null,"express_days_max"?: number | null,"express_days_min"?: number | null,"express_min_kg"?: number | null,"express_shipping_cents"?: number | null,"fast_offer_cents"?: number | null,"free_shipping_min_cents"?: number | null,"freight_cents_per_kg"?: number | null,"fx_auto"?: boolean,"fx_buffer_pct"?: number | null,"fx_inr_per_usd"?: number | null,"fx_source"?: string | null,"fx_updated_at"?: string | null,"id"?: number,"india_handling_paise"?: number | null,"leaving_soon_max"?: number,"margin_pct"?: number | null,"returns_allowance_pct"?: number | null,"shipment_kg"?: number | null,"shipping_flat_cents"?: number | null,"spices_cleared"?: boolean,"stale_listing_days"?: number | null,"updated_at"?: string,"updated_by"?: string | null,"us_handling_cents"?: number | null,"us_last_mile_cents_per_kg"?: number | null,"us_last_mile_min_cents"?: number | null,"volumetric_pct"?: number | null
                   }
                   Relationships: [
                     {
@@ -475,13 +501,13 @@ isOneToOne: false
                   ]
                 },"products": {
                   Row: {
-                    "attributes": NonNullable<Json>,"category_id": string,"craft": string | null,"created_at": string,"created_by": string | null,"description": string | null,"has_origin_label": boolean,"id": string,"is_curated": boolean,"is_placeholder": boolean,"name": string,"origin_town": string | null,"price_cents": number,"product_type": Database["public"]['Enums']["product_type"],"published_at": string | null,"region_id": string,"search": unknown,"shop_price_paise": number | null,"slug": string,"status": Database["public"]['Enums']["product_status"],"story": string | null,"summary": string | null,"updated_at": string,"vendor_id": string
+                    "attributes": NonNullable<Json>,"category_id": string,"craft": string | null,"created_at": string,"created_by": string | null,"description": string | null,"has_origin_label": boolean,"id": string,"is_curated": boolean,"is_placeholder": boolean,"name": string,"origin_town": string | null,"price_auto": boolean,"price_cents": number,"product_type": Database["public"]['Enums']["product_type"],"published_at": string | null,"region_id": string,"search": unknown,"shop_price_paise": number | null,"slug": string,"status": Database["public"]['Enums']["product_status"],"story": string | null,"summary": string | null,"updated_at": string,"vendor_id": string
                   }
                   Insert: {
-                    "attributes"?: NonNullable<Json>,"category_id": string,"craft"?: string | null,"created_at"?: string,"created_by"?: string | null,"description"?: string | null,"has_origin_label"?: boolean,"id"?: string,"is_curated"?: boolean,"is_placeholder"?: boolean,"name": string,"origin_town"?: string | null,"price_cents": number,"product_type": Database["public"]['Enums']["product_type"],"published_at"?: string | null,"region_id": string,"search"?: never,"shop_price_paise"?: number | null,"slug": string,"status"?: Database["public"]['Enums']["product_status"],"story"?: string | null,"summary"?: string | null,"updated_at"?: string,"vendor_id": string
+                    "attributes"?: NonNullable<Json>,"category_id": string,"craft"?: string | null,"created_at"?: string,"created_by"?: string | null,"description"?: string | null,"has_origin_label"?: boolean,"id"?: string,"is_curated"?: boolean,"is_placeholder"?: boolean,"name": string,"origin_town"?: string | null,"price_auto"?: boolean,"price_cents": number,"product_type": Database["public"]['Enums']["product_type"],"published_at"?: string | null,"region_id": string,"search"?: never,"shop_price_paise"?: number | null,"slug": string,"status"?: Database["public"]['Enums']["product_status"],"story"?: string | null,"summary"?: string | null,"updated_at"?: string,"vendor_id": string
                   }
                   Update: {
-                    "attributes"?: NonNullable<Json>,"category_id"?: string,"craft"?: string | null,"created_at"?: string,"created_by"?: string | null,"description"?: string | null,"has_origin_label"?: boolean,"id"?: string,"is_curated"?: boolean,"is_placeholder"?: boolean,"name"?: string,"origin_town"?: string | null,"price_cents"?: number,"product_type"?: Database["public"]['Enums']["product_type"],"published_at"?: string | null,"region_id"?: string,"search"?: never,"shop_price_paise"?: number | null,"slug"?: string,"status"?: Database["public"]['Enums']["product_status"],"story"?: string | null,"summary"?: string | null,"updated_at"?: string,"vendor_id"?: string
+                    "attributes"?: NonNullable<Json>,"category_id"?: string,"craft"?: string | null,"created_at"?: string,"created_by"?: string | null,"description"?: string | null,"has_origin_label"?: boolean,"id"?: string,"is_curated"?: boolean,"is_placeholder"?: boolean,"name"?: string,"origin_town"?: string | null,"price_auto"?: boolean,"price_cents"?: number,"product_type"?: Database["public"]['Enums']["product_type"],"published_at"?: string | null,"region_id"?: string,"search"?: never,"shop_price_paise"?: number | null,"slug"?: string,"status"?: Database["public"]['Enums']["product_status"],"story"?: string | null,"summary"?: string | null,"updated_at"?: string,"vendor_id"?: string
                   }
                   Relationships: [
                     {
@@ -1074,7 +1100,10 @@ isOneToOne: false
                 }
           }
           Functions: {
-            "_cancel_refund_cents":
+            "_auto_price_cents":
+{ Args: { "p_shop_paise": number,"p_weight_g": number }; Returns: number
+                           },
+"_cancel_refund_cents":
 { Args: { "p_order": string,"p_reason": string }; Returns: number
                            },
 "_cutoff_cycle":
@@ -1082,6 +1111,9 @@ isOneToOne: false
                            },
 "_delay_open":
 { Args: { "p_order": string }; Returns: boolean
+                           },
+"_fx_refresh":
+{ Args: Record<PropertyKey, never>; Returns: string
                            },
 "_is_verified_buyer":
 { Args: { "p_product": string,"p_user": string }; Returns: boolean
@@ -1108,6 +1140,12 @@ isOneToOne: false
                            },
 "_order_offer":
 { Args: { "p_order": string }; Returns: Json
+                           },
+"_pricing_weight_g":
+{ Args: { "p_product": string }; Returns: number
+                           },
+"_reprice_products":
+{ Args: { "p_product"?: string }; Returns: number
                            },
 "_set_stock_context":
 { Args: { "p_note": string,"p_reason": Database["public"]['Enums']["stock_reason"],"p_ref_id": string,"p_ref_type": string }; Returns: undefined
@@ -1139,6 +1177,9 @@ isOneToOne: false
                            },
 "admin_demand":
 { Args: { "p_since"?: string }; Returns: Json
+                           },
+"admin_price_preview":
+{ Args: { "p_shop_paise": number,"p_weight_g": number }; Returns: number
                            },
 "admin_sales":
 { Args: { "p_since"?: string }; Returns: Json
@@ -1288,7 +1329,7 @@ isOneToOne: false
                            }
           }
           Enums: {
-            "app_role": "customer"|"admin","content_status": "draft"|"approved","cycle_status": "open"|"collecting"|"packed"|"exported"|"arrived"|"fulfilling"|"closed","discount_type": "percentage"|"fixed","fulfilment_mode": "order_first","move_offer_status": "none"|"offered"|"accepted"|"lapsed","ops_desk": "us"|"india","order_item_status": "active"|"unavailable"|"refunded","order_status": "pending_payment"|"confirmed"|"collecting"|"packed"|"in_transit"|"arrived"|"shipped"|"delivered"|"cancelled"|"refunded","payment_status": "pending"|"paid"|"failed"|"refunded"|"partially_refunded","pickup_status": "pending"|"picked"|"unavailable","product_status": "draft"|"live"|"paused"|"archived","product_type": "clothing"|"spice","review_status": "pending"|"approved"|"rejected","shipping_method": "standard"|"express","stock_reason": "listed"|"adjusted"|"reserved"|"released"|"picked"|"unavailable","vendor_status": "prospect"|"active"|"paused"
+            "app_role": "customer"|"admin","content_status": "draft"|"approved","cycle_status": "open"|"collecting"|"packed"|"exported"|"arrived"|"fulfilling"|"closed","discount_type": "percentage"|"fixed","fulfilment_mode": "order_first","move_offer_status": "none"|"offered"|"accepted"|"lapsed","ops_desk": "us"|"india","order_item_status": "active"|"unavailable"|"refunded","order_status": "pending_payment"|"confirmed"|"collecting"|"packed"|"in_transit"|"arrived"|"shipped"|"delivered"|"cancelled"|"refunded","payment_status": "pending"|"paid"|"failed"|"refunded"|"partially_refunded","pickup_status": "pending"|"picked"|"unavailable","product_status": "draft"|"live"|"paused"|"archived","product_type": "clothing"|"spice","review_status": "pending"|"approved"|"rejected","shipping_method": "standard"|"express","stock_reason": "listed"|"adjusted"|"reserved"|"released"|"picked"|"unavailable","tax_class": "clothing"|"food"|"general","vendor_status": "prospect"|"active"|"paused"
           }
           CompositeTypes: {
             [_ in never]: never
@@ -1404,7 +1445,7 @@ export type CompositeTypes<
 export const Constants = {
   "public": {
           Enums: {
-            "app_role": ["customer", "admin"],"content_status": ["draft", "approved"],"cycle_status": ["open", "collecting", "packed", "exported", "arrived", "fulfilling", "closed"],"discount_type": ["percentage", "fixed"],"fulfilment_mode": ["order_first"],"move_offer_status": ["none", "offered", "accepted", "lapsed"],"ops_desk": ["us", "india"],"order_item_status": ["active", "unavailable", "refunded"],"order_status": ["pending_payment", "confirmed", "collecting", "packed", "in_transit", "arrived", "shipped", "delivered", "cancelled", "refunded"],"payment_status": ["pending", "paid", "failed", "refunded", "partially_refunded"],"pickup_status": ["pending", "picked", "unavailable"],"product_status": ["draft", "live", "paused", "archived"],"product_type": ["clothing", "spice"],"review_status": ["pending", "approved", "rejected"],"shipping_method": ["standard", "express"],"stock_reason": ["listed", "adjusted", "reserved", "released", "picked", "unavailable"],"vendor_status": ["prospect", "active", "paused"]
+            "app_role": ["customer", "admin"],"content_status": ["draft", "approved"],"cycle_status": ["open", "collecting", "packed", "exported", "arrived", "fulfilling", "closed"],"discount_type": ["percentage", "fixed"],"fulfilment_mode": ["order_first"],"move_offer_status": ["none", "offered", "accepted", "lapsed"],"ops_desk": ["us", "india"],"order_item_status": ["active", "unavailable", "refunded"],"order_status": ["pending_payment", "confirmed", "collecting", "packed", "in_transit", "arrived", "shipped", "delivered", "cancelled", "refunded"],"payment_status": ["pending", "paid", "failed", "refunded", "partially_refunded"],"pickup_status": ["pending", "picked", "unavailable"],"product_status": ["draft", "live", "paused", "archived"],"product_type": ["clothing", "spice"],"review_status": ["pending", "approved", "rejected"],"shipping_method": ["standard", "express"],"stock_reason": ["listed", "adjusted", "reserved", "released", "picked", "unavailable"],"tax_class": ["clothing", "food", "general"],"vendor_status": ["prospect", "active", "paused"]
           }
         }
 } as const

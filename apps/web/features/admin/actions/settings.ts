@@ -3,11 +3,18 @@
 import { revalidatePath, revalidateTag } from 'next/cache';
 import { z } from 'zod';
 
-import { createPromoCode, updatePricingSettings, updatePromoCode } from '@repo/db/admin';
+import {
+  createPromoCode,
+  setSpicesCleared,
+  updateBusinessDetails,
+  updatePricingSettings,
+  updatePromoCode,
+} from '@repo/db/admin';
 
 import { STORE_TAG } from '@/features/catalog/data';
 
 import { requireAdminAction } from '../guard';
+import { SETTING_FIELDS, storedValue } from '../settings-fields';
 
 /** Empty input = not decided yet = NULL (D-047, Q-18). Never a default. */
 const optionalNumber = (schema: z.ZodNumber) =>
@@ -22,46 +29,22 @@ const optionalCents = z
   .transform((v) => (v === '' ? null : Math.round(Number(v) * 100)))
   .pipe(z.number().int().min(0).nullable());
 
+/**
+ * Saves every number in Settings (the list in settings-fields.ts). Empty = not decided = NULL (D-047), never a default.
+ * A value that is not a number refuses the whole save. Prices follow in the database (D-075); the store refreshes.
+ */
 export async function updatePricingSettingsAction(form: FormData): Promise<void> {
   const { client, user } = await requireAdminAction();
-  const input = z
-    .object({
-      fx: optionalNumber(z.number().positive()),
-      freightPerKg: optionalCents,
-      dutyPct: optionalNumber(z.number().min(0).max(100)),
-      marginPct: optionalNumber(z.number().min(0).max(1000)),
-      domesticMin: optionalNumber(z.number().int().min(0).max(60)),
-      domesticMax: optionalNumber(z.number().int().min(0).max(60)),
-      staleDays: optionalNumber(z.number().int().min(1).max(365)),
-      cycleDays: optionalNumber(z.number().int().min(1).max(90)),
-      fastOffer: optionalCents.pipe(z.number().int().positive().nullable()),
-      leavingSoonMax: z.coerce.number().int().min(1).max(20),
-      shippingFlat: optionalCents,
-      freeShippingMin: optionalCents,
-      expressShipping: optionalCents,
-      expressMin: optionalNumber(z.number().int().min(0).max(60)),
-      expressMax: optionalNumber(z.number().int().min(0).max(60)),
-    })
-    .parse(Object.fromEntries(form));
-  await updatePricingSettings(client, {
-    fx_inr_per_usd: input.fx,
-    freight_cents_per_kg: input.freightPerKg,
-    duty_pct: input.dutyPct,
-    margin_pct: input.marginPct,
-    domestic_days_min: input.domesticMin,
-    domestic_days_max: input.domesticMax,
-    stale_listing_days: input.staleDays,
-    cycle_days: input.cycleDays,
-    fast_offer_cents: input.fastOffer,
-    leaving_soon_max: input.leavingSoonMax,
-    shipping_flat_cents: input.shippingFlat,
-    free_shipping_min_cents: input.freeShippingMin,
-    express_shipping_cents: input.expressShipping,
-    express_days_min: input.expressMin,
-    express_days_max: input.expressMax,
-    updated_by: user.id,
-  });
-  revalidateTag(STORE_TAG); // delivery windows use the domestic days and the next cycle's dates (D-008, D-063)
+  const patch: Record<string, number | null> = {};
+  for (const field of SETTING_FIELDS) {
+    const value = storedValue(field.kind, String(form.get(field.key) ?? ''));
+    if (Number.isNaN(value) || (field.required && value === null)) {
+      throw new Error(`Settings: "${field.label}" needs a number`);
+    }
+    patch[field.key] = value;
+  }
+  await updatePricingSettings(client, { ...patch, updated_by: user.id });
+  revalidateTag(STORE_TAG); // prices (D-075), delivery windows and the next cycle's dates (D-008, D-063) changed
   revalidatePath('/admin/settings');
 }
 
@@ -98,4 +81,22 @@ export async function togglePromoAction(promoId: string, isActive: boolean): Pro
   const { client } = await requireAdminAction();
   await updatePromoCode(client, z.string().uuid().parse(promoId), { is_active: isActive });
   revalidatePath('/admin/promotions');
+}
+
+/** D-074: the exporter, importer, broker, FDA and contact details. */
+export async function updateBusinessDetailsAction(form: FormData): Promise<void> {
+  const { client } = await requireAdminAction();
+  const values: Record<string, string> = {};
+  for (const [key, value] of form.entries()) {
+    if (/^[a-z_]+$/.test(key) && typeof value === 'string') values[key] = value.slice(0, 500);
+  }
+  await updateBusinessDetails(client, values);
+  revalidatePath('/admin/settings');
+}
+
+/** D-074: spice listings can be published once cleared. */
+export async function updateSpicesClearedAction(cleared: boolean): Promise<void> {
+  const { client } = await requireAdminAction();
+  await setSpicesCleared(client, z.boolean().parse(cleared));
+  revalidatePath('/admin/settings');
 }

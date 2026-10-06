@@ -39,6 +39,7 @@ test('an admin lists a product and publishes it to the store', async ({ page }) 
   });
   await page.locator('input[name="name"]').fill(name);
   await page.locator('input[name="slug"]').fill(slug);
+  await page.locator('input[name="shopPrice"]').fill('1200');
   await page.locator('input[name="price"]').fill('49.00');
   await page.locator('input[name="fibre"]').fill('100% cotton');
   await page.locator('input[name="care"]').fill('Hand wash cold');

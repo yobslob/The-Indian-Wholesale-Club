@@ -31,3 +31,20 @@ insert into public.categories (product_type, slug, name, sort_order) values
   ('spice', 'sweets', 'Sweets', 7),
   ('spice', 'rice-flours-and-staples', 'Rice, Flours & Staples', 8),
   ('spice', 'tea-and-drinks', 'Tea & Drinks', 9);
+
+-- D-069, D-073 (2026-10-06): each category's typical PACKED weight, used for the price when a piece has no weight
+-- of its own (high-end placeholders, docs/pilot-numbers.md), and its sales-tax class. New Jersey exempts clothing,
+-- footwear and food; accessories, fabric sold by the piece and sweets (its "candy" rule) are taxed there.
+update public.categories c set default_weight_g = w.grams, tax_class = w.tax::public.tax_class
+from (values
+  ('sarees', 900, 'clothing'), ('kurtas', 450, 'clothing'), ('suits-and-sets', 900, 'clothing'),
+  ('lehengas', 2500, 'clothing'), ('dupattas-and-stoles', 350, 'clothing'), ('shawls', 700, 'clothing'),
+  ('dhotis-and-mundus', 500, 'clothing'), ('jeans-and-trousers', 700, 'clothing'),
+  ('shirts-and-tops', 350, 'clothing'), ('co-ords-and-dresses', 600, 'clothing'),
+  ('jackets-and-knitwear', 1100, 'clothing'), ('headwear', 400, 'clothing'), ('kids', 400, 'clothing'),
+  ('footwear', 1000, 'clothing'), ('fabrics', 1200, 'general'), ('accessories', 300, 'general'),
+  ('ground-spices', 250, 'food'), ('whole-spices', 250, 'food'), ('masala-blends', 250, 'food'),
+  ('pickles-and-chutneys', 600, 'food'), ('papad-and-wadi', 400, 'food'), ('rice-flours-and-staples', 1100, 'food'),
+  ('snacks-and-namkeen', 450, 'food'), ('sweets', 600, 'general'), ('tea-and-drinks', 300, 'food')
+) as w(slug, grams, tax)
+where c.slug = w.slug;

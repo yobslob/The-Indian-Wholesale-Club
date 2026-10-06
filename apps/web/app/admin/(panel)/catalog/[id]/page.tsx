@@ -3,11 +3,10 @@ import { notFound } from 'next/navigation';
 
 import {
   getAdminProduct,
-  getPricingSettings,
   listPricingEstimates,
   PRICE_SUGGESTION_SETTINGS,
 } from '@repo/db/admin';
-import { formatUsd, suggestPrice } from '@repo/shared/domain';
+import { formatUsd } from '@repo/shared/domain';
 
 import {
   addVariantAction,
@@ -33,27 +32,12 @@ export default async function AdminProductPage({
   const { client } = await requireAdminPage();
   const { id } = await params;
   if (!/^[0-9a-f-]{36}$/.test(id)) notFound();
-  const [product, settings, estimates] = await Promise.all([
+  const [product, estimates] = await Promise.all([
     getAdminProduct(client, id),
-    getPricingSettings(client),
     listPricingEstimates(client),
   ]);
   const estimated = estimates.some((e) => PRICE_SUGGESTION_SETTINGS.includes(e.setting));
   if (!product) notFound();
-  // Suggestion only (flows.md §2 step 4); null until every pricing setting and a weight exist (D-047).
-  const weightG = product.variants.find((v) => v.weight_g !== null)?.weight_g ?? null;
-  const suggestion =
-    product.shop_price_paise === null
-      ? null
-      : suggestPrice(
-          { shopPricePaise: product.shop_price_paise, weightG },
-          {
-            fxInrPerUsd: settings.fx_inr_per_usd,
-            freightCentsPerKg: settings.freight_cents_per_kg,
-            dutyPct: settings.duty_pct,
-            marginPct: settings.margin_pct,
-          },
-        );
   const statuses = ['draft', 'live', 'paused', 'archived'] as const;
 
   return (
@@ -109,14 +93,14 @@ export default async function AdminProductPage({
         <Field label="Craft / style">
           <input name="craft" defaultValue={product.craft ?? ''} className={input} />
         </Field>
-        <Field label="Price (USD)">
+        <Field label="Price (USD): empty = automatic">
           <input
             name="price"
             type="number"
             step="0.01"
             min="0.01"
-            required
-            defaultValue={money(product.price_cents)}
+            defaultValue={product.price_auto ? '' : money(product.price_cents)}
+            placeholder={product.price_auto ? money(product.price_cents) : ''}
             className={input}
           />
         </Field>
@@ -134,9 +118,9 @@ export default async function AdminProductPage({
         </Field>
         <div className="sm:col-span-2">
           <p className="text-ink-muted">
-            {suggestion
-              ? `Suggested price ${formatUsd(suggestion.suggestedPriceCents)} (landed cost ${formatUsd(suggestion.landedCents)})${estimated ? ', based on estimates (Settings)' : ''}`
-              : 'No suggested price: needs the shop price, a variant weight and every pricing setting (D-047).'}
+            {product.price_auto
+              ? `Priced automatically: ${formatUsd(product.price_cents)} from the shop price, the weight and every cost in Settings (D-075)${estimated ? ', some of them pilot placeholders' : ''}. Type a price to set it by hand.`
+              : `Priced by hand at ${formatUsd(product.price_cents)}. Empty the price to let it follow the costs again.`}
           </p>
         </div>
         <Field label="Summary">

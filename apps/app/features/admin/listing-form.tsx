@@ -3,7 +3,14 @@ import { useState } from 'react';
 import { Pressable, Text, TextInput, View } from 'react-native';
 
 import { createListing } from '@repo/db/admin';
-import { formatUsd, listingInputSchema, listingSlug, suggestPrice, variantLabel } from '@repo/shared/domain';
+import {
+  autoPrice,
+  formatUsd,
+  listingInputSchema,
+  listingSlug,
+  variantLabel,
+  type PricingSettings,
+} from '@repo/shared/domain';
 import tokens from '@repo/tokens';
 
 import { takePhotos, uploadListingPhotos, type ListingPhoto } from './listing-photos';
@@ -15,8 +22,8 @@ import { supabase } from '@/lib/supabase';
 
 export interface ListingFormData {
   vendors: { id: string; shop_name: string; region: { name: string } | null }[];
-  categories: { id: string; product_type: 'clothing' | 'spice'; name: string; is_active: boolean }[];
-  pricing: { fxInrPerUsd: number | null; freightCentsPerKg: number | null; dutyPct: number | null; marginPct: number | null };
+  categories: { id: string; product_type: 'clothing' | 'spice'; name: string; is_active: boolean; default_weight_g: number | null }[];
+  pricing: PricingSettings;
   /** Some of those settings are still Claude's researched estimates (D-047). */
   pricingEstimated: boolean;
 }
@@ -59,8 +66,13 @@ export function ListingForm({ data, onDone }: { data: ListingFormData; onDone: (
   const shops = q ? data.vendors.filter((v) => `${v.shop_name} ${v.region?.name ?? ''}`.toLowerCase().includes(q)).slice(0, 6) : [];
   const categories = data.categories.filter((c) => c.product_type === type && c.is_active);
   const weight = Number(f.weight) || null;
-  const suggestion =
-    f.shopPrice && weight ? suggestPrice({ shopPricePaise: toCents(f.shopPrice), weightG: weight }, data.pricing) : null;
+  // D-075: the price follows from the shop price and the weight (else the category's typical weight), as the database
+  // will set it. A typed price overrides it.
+  const category = data.categories.find((c) => c.id === categoryId);
+  const autoWeight = weight ?? category?.default_weight_g ?? null;
+  const suggestion = f.shopPrice && autoWeight
+    ? autoPrice({ shopPricePaise: toCents(f.shopPrice), weightG: Math.round(autoWeight) }, data.pricing)
+    : null;
 
   async function pick(source: 'camera' | 'library'): Promise<void> {
     const result = await takePhotos(source);
@@ -78,7 +90,7 @@ export function ListingForm({ data, onDone }: { data: ListingFormData; onDone: (
       name: f.name.trim(),
       slug: listingSlug(f.name, Math.random().toString(36).slice(2, 6)),
       summary: f.summary.trim() || undefined,
-      price_cents: toCents(f.price),
+      price_cents: f.price.trim() ? toCents(f.price) : undefined,
       shop_price_paise: f.shopPrice ? toCents(f.shopPrice) : undefined,
       attributes:
         type === 'clothing'
@@ -214,15 +226,15 @@ export function ListingForm({ data, onDone }: { data: ListingFormData; onDone: (
       <Field label="Weight of one piece (grams, for the suggested price)" value={f.weight} onChangeText={set('weight')} keyboardType="number-pad" />
       <View className="flex-row gap-3">
         <View className="flex-1"><Field label="Shop price (₹)" value={f.shopPrice} onChangeText={set('shopPrice')} keyboardType="decimal-pad" /></View>
-        <View className="flex-1"><Field label="Price (USD)" value={f.price} onChangeText={set('price')} keyboardType="decimal-pad" /></View>
+        <View className="flex-1"><Field label="Price (USD), empty = automatic" value={f.price} onChangeText={set('price')} keyboardType="decimal-pad" /></View>
       </View>
       <View className="bg-surface rounded-md p-3">
         <Body muted>
           {suggestion
-            ? `Suggested ${formatUsd(suggestion.suggestedPriceCents)} (landed ${formatUsd(suggestion.landedCents)})${data.pricingEstimated ? ', based on estimates' : ''}.`
-            : f.shopPrice && weight
-              ? 'Set the exchange rate, freight, duty and margin in Settings to see a suggested price.'
-              : 'Add the shop price and the weight to see a suggested price.'}
+            ? `${f.price.trim() ? 'Automatic price would be' : 'Price:'} ${formatUsd(suggestion.priceCents)} (goods ${formatUsd(suggestion.goodsCents)}, shipping and duties ${formatUsd(suggestion.logisticsCents)})${data.pricingEstimated ? ', with pilot placeholders' : ''}.`
+            : f.shopPrice
+              ? 'Every cost in Settings is needed for the automatic price; or type a price.'
+              : 'Add the shop price (and a weight) for the automatic price.'}
         </Body>
       </View>
 

@@ -7,6 +7,7 @@ import {
   listVendors,
   PRICE_SUGGESTION_SETTINGS,
 } from '@repo/db/admin';
+import { pricingSettingsFrom } from '@repo/shared/domain';
 
 import { ErrorText, Loading, Screen } from '@/components/ui';
 import { ListingForm } from '@/features/admin/listing-form';
@@ -26,12 +27,7 @@ export default function NewListingScreen(): React.JSX.Element {
     return {
       vendors,
       categories,
-      pricing: {
-        fxInrPerUsd: pricing.fx_inr_per_usd,
-        freightCentsPerKg: pricing.freight_cents_per_kg,
-        dutyPct: pricing.duty_pct,
-        marginPct: pricing.margin_pct,
-      },
+      pricing: pricingSettingsFrom(pricing as unknown as Record<string, unknown>),
       pricingEstimated: estimates.some((e) => PRICE_SUGGESTION_SETTINGS.includes(e.setting)),
     };
   });

@@ -1,6 +1,7 @@
 -- Moving orders between cycles and the faster-delivery offer (migration 14; flows.md §6b, D-045, D-064, INV-6).
 begin;
 select tests.setup();
+update public.pricing_settings set fast_offer_cents = null where id = 1;   -- the test sets it itself below
 
 -- An earlier cycle still collecting (cycle 5 in D-045's example); the open test cycle is cycle 6. Its arrival
 -- slips after both orders were placed (they were promised arrival + 3..7 = today + 23..27).

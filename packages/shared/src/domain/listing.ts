@@ -27,7 +27,8 @@ const common = {
   name: z.string().trim().min(2).max(120),
   slug: z.string().regex(/^[a-z0-9]+(-[a-z0-9]+)*$/).max(90),
   summary: z.string().trim().max(300).optional(),
-  price_cents: z.number().int().positive(),
+  /** Empty = priced automatically from the shop price and weight (D-075). */
+  price_cents: z.number().int().positive().optional(),
   shop_price_paise: z.number().int().min(0).optional(),
   variants: z.array(listingVariantSchema).max(60),
 };
