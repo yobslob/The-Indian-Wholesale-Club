@@ -602,3 +602,20 @@ piece goes to the US warehouse; it is received there, then refunded or rejected.
 Shipping & returns page say "we'll collect it from your door"; the admin Returns page asks the admin to book it.
 *Interpretation (proposed, confirm before launch):* the pickup costs the customer nothing beyond the share already kept
 for a change of mind (D-071), and nothing for a damaged or wrong piece. Closes Q-33.
+
+**D-077 · 2026-10-07 · founder: The logo text: the I of "Indian" inside an outline of India; "Indian Wholesale Club"**
+Founder, verbatim: "Just a frontend change in hero section, Instead of plain text logo The Indian Wholesale club I want
+as shown in picture, only the outline of india and the text(I of Indian) inside it nothing else. not exactly shown in
+this but aligned as it is currently. I was thinking to keep the current text in the logo section as placed just draw an
+outline around the I. (Not the whole India obviously we have to cut the right part of it as shown in the picture
+reference also change "the indian wholesale club" with "Indian wholesale club")" (with a reference image: a gold
+outline of India, "INDIAN WHOLESALE CLUB" over its east side). Then, on seeing the outline drawn in the hero heading:
+"I didn't ask for the hero section heading keep it as was in the center without "the", I asked the outline for the
+logo text."
+What it means for the build: the website's logo text (the header) reads "Indian Wholesale Club", placed as before, and
+its I stands inside a gold outline of India whose east is cut away between the I and the "n"
+(`packages/shared/src/india-map/mark.ts`, `apps/web/features/shell/logo.tsx`). The Home hero heading stays as it was,
+without "The": "Indian / Wholesale / Club". Nothing else from the reference (no rule, ornament or tagline).
+*Interpretation (proposed, confirm on sight):* the outline is open on the I's east side, as in the reference: closing
+it would run the line through "ndian". The rename covers the logo and the hero heading only; page titles, emails, the
+footer and the app still say "The Indian Wholesale Club" (D-009) until the founder says the rename goes further.

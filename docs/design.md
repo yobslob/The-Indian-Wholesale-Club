@@ -13,7 +13,7 @@ two-panel rows), full width with small side gutters. **Fonts:** Helvetica Neue f
 (D-051; TeX Gyre Heros where it is not installed, D-052), Georgia for the logo, product title and origin line (Gelasio
 where it is not installed), Poppins for paragraphs, Montserrat for interface text (navigation, buttons, labels, product
 names on cards), Inter for the footer only. No dark mode.
-**Home hero (D-052 – D-054):** the founder's photo fills the first screen edge to edge, behind the nav bar too; "The Indian Wholesale Club" stands on its white wall,
+**Home hero (D-052 – D-054):** the founder's photo fills the first screen edge to edge, behind the nav bar too; "Indian Wholesale Club" (D-077) stands on its white wall,
 one word per line, right-aligned, with the label "Clothing and spices from home" under it and nothing else (D-055); the
 photo is AI-generated and IWC holds the rights; scrolling fades the words out while the header logo fades in. The earlier hero is archived in `design/mockups/archive/a-gallery-v3.html`.
 The D-049 bullets below still apply to the hero and to motion; their asymmetric layout rules no longer apply below it.
@@ -35,7 +35,8 @@ the effects are lighter. The app follows the same look with native motion (Reani
 region images, C2), mockups and dev pages use clearly marked placeholders, never stock photos presented as products.
 
 ## Brand [D-009]
-- Name: **The Indian Wholesale Club**. Short form **IWC**. Logo: not designed yet.
+- Name: **The Indian Wholesale Club**. Short form **IWC**. Logo text (website header, D-077): "Indian Wholesale Club", its I
+  inside a gold outline of India cut open on the east (`apps/web/features/shell/logo.tsx`).
 - What we sell: the feeling of home (D-001). Every design choice should make a homesick person feel recognised.
 
 ## Voice

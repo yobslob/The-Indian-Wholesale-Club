@@ -3,7 +3,7 @@ import Image from 'next/image';
 import { HeroScroll } from './hero-scroll';
 import styles from './home-hero.module.css';
 
-const WORDS = ['The', 'Indian', 'Wholesale', 'Club'] as const;
+const WORDS = ['Indian', 'Wholesale', 'Club'] as const;
 
 /**
  * Home hero (design.md §Direction, D-052 – D-055): the founder's photo (AI-generated, IWC holds the

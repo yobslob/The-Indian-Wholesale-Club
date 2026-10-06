@@ -1,0 +1,27 @@
+/* The I in its own box, so the mark can be placed on it. */
+.initial {
+  display: inline-block;
+  position: relative;
+}
+
+/*
+ * Placed from the mark's numbers (packages/shared/src/india-map/mark.ts). The I's capital (0.703em in Georgia) spans
+ * the mark's 400 stem units, so one unit is 0.703 / 400 em and the 1076-unit mark is 1.89em tall. Across: the stem stands
+ * at x = 320 and in the middle of the I's box: 50% − 320 units. Down: with the header's line-height of 1 the capital's
+ * top sits 0.146em under the box's top (Georgia's ascent 0.917, descent 0.219), and the stem's top is 330 units
+ * (0.58em) below the mark's top.
+ */
+.india {
+  position: absolute;
+  left: calc(50% - 0.5624em);
+  top: -0.434em;
+  height: 1.891em;
+  aspect-ratio: 440 / 1076;
+  overflow: hidden;
+  pointer-events: none;
+  fill: none;
+  stroke: #c9962f; /* gold, legible on the cream header and over the Home photo's dark top */
+  stroke-width: 1.5px;
+  stroke-linejoin: round;
+  stroke-linecap: round;
+}

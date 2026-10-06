@@ -11,7 +11,8 @@
   },
   "exports": {
     "./domain": "./src/domain/index.ts",
-    "./india-map": "./src/india-map/index.ts"
+    "./india-map": "./src/india-map/index.ts",
+    "./india-map/mark": "./src/india-map/mark.ts"
   },
   "devDependencies": {
     "@repo/typescript-config": "workspace:*",

@@ -1,6 +1,7 @@
 # Current status
 
 ## Resume here
+**Logo text (D-077, 2026-10-07):** the website header's logo reads "Indian Wholesale Club", its I inside a gold outline of India cut open on the east; the Home hero heading is unchanged except "The" is gone. Titles, emails, footer and the app keep D-009's full name until the founder says otherwise.
 
 **Production is live on Vercel and Supabase (us-east-1)** since 2026-10-06 (set up by the founder, `docs/ops.md`
 §Going live): migrations through the Deploy workflow, the first data by `pnpm prod:seed`, the first admin account, the
@@ -122,6 +123,7 @@ pilot steps (P.1 – P.7, migrations 24 – 28) is built and verified (log below
 | 2026-10-06 | speed audit | Claude, same (ports 3000/3101 free) | `check.mjs build http e2e` | build OK 76.4 s · **e2e 20/20** incl. new flow 8: one piece left, cached product page says "Only 1 left"; after the purchase the server's HTML of the product page and of the region card say "Sold out" on the next request · http (4 runs): cached pages 10–27 ms (machine noisy after the build: the static `/states` ranged 10–24 ms), `/search` 42–67 ms, JS 114–119 KB, all within budget. `pg_stat_statements`: `store_browse` ran once in 60 `/clothing` requests (cache hits) |
 | 2026-10-06 | speed audit | Claude, `next dev` + the app's web preview (browser pane) | region page pills and rows vs the database; product page at desktop and 375 px; the app's product screen; resized sizes with curl | pills = real totals (Sarees & Drapes 12, …); photos render; every app photo is requested from `/_next/image` (200). At 640 px: `kasavu_front_full.png` 1,649 KB → 55 KB WebP / 470 KB PNG; `kasavu_closeup.png` 2,031 KB → 131 KB / 605 KB; `kasavu_main.jpg` 176 KB → 95 KB / 92 KB. Not checked: a real phone (which formats its image loader accepts) |
 | 2026-10-06 | speed audit (migration 23, uncommitted tree on `433448a`) | Claude, founder's machine, local Supabase (ports 3000/3101/8081 free) | `node scripts/check.mjs` (all 9 steps, `.checks/latest.json`) | **all OK**: docs · typecheck · lint · test · **db 30/30** · build 34.8 s · http: `/` 15 ms, `/states` 16, `/states/kerala` 13, product 19, `/clothing` 28, `/search` 29, `/api/health` 34; JS 114–119 KB · **e2e 20/20** · bundle (Android 3.54 MB, iOS 3.55 MB). Local photos restored afterwards (`pnpm dev:photos`) |
+| 2026-10-07 | D-077 logo text | Claude, the founder's running `next dev` (port 3000) + Playwright 1.63 (Chromium, 3x) | the logo's I measured in its own font (Georgia: stem 0.103em, serifs 0.311em, the "n" 0.071em after them) and a search for where it fits inside India with 25 units to spare; header at 1440 and 390 px on `/about`, on Home at 250 and 700 px scrolled; `check.mjs docs typecheck lint test` | the stem lands on x = 320 of the mark as planned; header height unchanged (76 px desktop); the outline fades with the logo on Home (opacity 0.505 at 250 px). Not checked: Safari, a Mac without Georgia (Gelasio) |
 
 ## C1 sub-steps (design)
 

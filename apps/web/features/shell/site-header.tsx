@@ -1,7 +1,8 @@
 import Link from 'next/link';
 
 import { CartLink } from '@/features/cart/cart-link';
-import { SITE_NAME } from '@/lib/site';
+
+import { LogoText } from './logo';
 
 const NAV = [
   { href: '/states', label: 'States' },
@@ -32,7 +33,7 @@ export function SiteHeader(): React.JSX.Element {
           href="/"
           className="site-logo font-display mr-auto py-2 text-[22px] font-normal leading-none tracking-normal"
         >
-          {SITE_NAME}
+          <LogoText />
         </Link>
         {NAV.map((item) => (
           <Link key={item.href} href={item.href} className="py-3 hover:underline hover:underline-offset-4">
