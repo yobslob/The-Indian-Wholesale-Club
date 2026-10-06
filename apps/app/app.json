@@ -2,11 +2,18 @@
   "expo": {
     "name": "The Indian Wholesale Club",
     "slug": "iwc",
+    "extra": {
+      "eas": {
+        "projectId": "a3d8cbc0-bfa4-4aa8-ad53-eea9824"
+      }
+    },
     "version": "1.0.0",
     "orientation": "portrait",
     "scheme": "iwc",
     "userInterfaceStyle": "light",
-    "assetBundlePatterns": ["**/*"],
+    "assetBundlePatterns": [
+      "**/*"
+    ],
     "ios": {
       "supportsTablet": true,
       "bundleIdentifier": "com.root.app"
