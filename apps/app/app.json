@@ -17,10 +17,10 @@
     ],
     "ios": {
       "supportsTablet": true,
-      "bundleIdentifier": "com.root.app"
+      "bundleIdentifier": "com.indianwholesaleclub.app"
     },
     "android": {
-      "package": "com.root.app"
+      "package": "com.indianwholesaleclub.app"
     },
     "web": {
       "bundler": "metro",
@@ -40,7 +40,7 @@
       [
         "@stripe/stripe-react-native",
         {
-          "merchantIdentifier": "merchant.com.root.app",
+          "merchantIdentifier": "merchant.com.indianwholesaleclub.app",
           "enableGooglePay": true
         }
       ]
