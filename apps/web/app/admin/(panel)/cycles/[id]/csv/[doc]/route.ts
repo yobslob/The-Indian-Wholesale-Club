@@ -1,8 +1,8 @@
 import { notFound } from 'next/navigation';
 
-import { listCycleExportLines, listCycles } from '@repo/db/admin';
+import { listBusinessDetails, listCycleExportLines, listCycles } from '@repo/db/admin';
 
-import { invoiceRows, packingListRows, toCsv } from '@/features/admin/export-documents';
+import { detailsByKey, invoiceRows, packingListRows, toCsv } from '@/features/admin/export-documents';
 import { adminAccess } from '@/features/admin/guard';
 
 type Params = Promise<{ id: string; doc: string }>;
@@ -17,13 +17,15 @@ export async function GET(_request: Request, { params }: { params: Params }): Pr
   const { id, doc } = await params;
   if (!/^[0-9a-f-]{36}$/.test(id) || !['packing-list', 'invoice'].includes(doc)) notFound();
 
-  const [cycles, lines] = await Promise.all([
+  const [cycles, lines, details] = await Promise.all([
     listCycles(access.client, 100),
     listCycleExportLines(access.client, id),
+    doc === 'invoice' ? listBusinessDetails(access.client) : [],
   ]);
   const cycle = cycles.find((c) => c.id === id);
   if (!cycle) notFound();
-  const rows = doc === 'invoice' ? invoiceRows(lines, cycle.fx_inr_per_usd) : packingListRows(lines);
+  const rows =
+    doc === 'invoice' ? invoiceRows(lines, cycle.fx_inr_per_usd, detailsByKey(details)) : packingListRows(lines);
   // A byte-order mark so spreadsheet apps read ₹ and other non-ASCII text as UTF-8.
   return new Response(String.fromCharCode(0xfeff) + toCsv(rows), {
     headers: {

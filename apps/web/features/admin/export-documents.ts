@@ -2,9 +2,32 @@
  * The export's documents (flows.md §6.1), built from the cycle's picked pieces. Pure, so they have unit tests
  * (tests/export-documents.test.ts). Admin-only: the packing list names the shop each piece came from.
  *
- * The commercial invoice lists the goods only. Who exports and imports, the HS codes, the value to declare and the
- * Incoterms are not decided (TODO(founder): Q-30), so those fields stay blank and say so; nothing is guessed.
+ * The commercial invoice's header (exporter, importer of record, Incoterm, broker, forwarder) and HS codes come from
+ * Settings → Business and compliance details (D-074). A detail still a placeholder says so; one missing says where to
+ * fill it. Nothing is guessed.
  */
+
+/** business_details rows by key: the value and whether it is still a placeholder. */
+export type InvoiceDetails = Record<string, { value: string; is_placeholder: boolean }>;
+
+const MISSING = 'TO FILL (Settings → Business and compliance details)';
+
+/** The rows of listBusinessDetails, by key. */
+export function detailsByKey(rows: { key: string; value: string; is_placeholder: boolean }[]): InvoiceDetails {
+  return Object.fromEntries(rows.map((r) => [r.key, { value: r.value, is_placeholder: r.is_placeholder }]));
+}
+
+function detail(details: InvoiceDetails, key: string): string {
+  const d = details[key];
+  if (!d || !d.value.trim() || d.value.trim() === 'TO FILL') return MISSING;
+  return d.is_placeholder ? `${d.value} (placeholder)` : d.value;
+}
+
+function joined(details: InvoiceDetails, parts: [string, string][]): string {
+  const values = parts.map(([key, label]) => [label, detail(details, key)] as const);
+  if (values.every(([, v]) => v === MISSING)) return MISSING;
+  return values.map(([label, v]) => (label ? `${label} ${v}` : v)).join(' · ');
+}
 
 export interface ExportLine {
   quantity: number;
@@ -52,10 +75,10 @@ export function packingListRows(lines: ExportLine[]): Row[] {
 }
 
 /**
- * The goods, grouped by item and variant: description, fabric, origin, pieces, weight and the shop price paid in ₹
- * (and in $ at the cycle's exchange rate, when it is set). The header fields of Q-30 are marked, not filled.
+ * The goods, grouped by item and variant: description, fabric, HS code, origin, pieces, weight and the shop price
+ * paid in ₹ (and in $ at the cycle's exchange rate, when it is set), under the header from the business details.
  */
-export function invoiceRows(lines: ExportLine[], fxInrPerUsd: number | null): Row[] {
+export function invoiceRows(lines: ExportLine[], fxInrPerUsd: number | null, details: InvoiceDetails = {}): Row[] {
   const groups = new Map<string, { line: ExportLine; pieces: number }>();
   for (const l of lines) {
     const key = l.variant?.sku ?? '';
@@ -63,7 +86,6 @@ export function invoiceRows(lines: ExportLine[], fxInrPerUsd: number | null): Ro
     if (g) g.pieces += l.quantity;
     else groups.set(key, { line: l, pieces: l.quantity });
   }
-  const blank = 'TO FILL (Q-30)';
   let totalPaise = 0;
   let totalGrams = 0;
   const body = [...groups.values()].map(({ line, pieces }) => {
@@ -75,7 +97,7 @@ export function invoiceRows(lines: ExportLine[], fxInrPerUsd: number | null): Ro
       `${p?.name ?? ''} (${line.variant?.label ?? ''})`,
       p?.category?.name ?? '',
       attr(p?.attributes, 'fibre_content'),
-      blank,
+      detail(details, p?.product_type === 'spice' ? 'hs_spices' : 'hs_clothing'),
       `India (${p?.region?.name ?? ''})`,
       pieces,
       line.variant?.weight_g ? line.variant.weight_g * pieces : '',
@@ -85,10 +107,18 @@ export function invoiceRows(lines: ExportLine[], fxInrPerUsd: number | null): Ro
     ];
   });
   return [
-    ['Exporter of record', blank],
-    ['Consignee / importer of record', blank],
-    ['Incoterms', blank],
-    ['Value declared', `${blank}: shown below is the shop price paid`],
+    [
+      'Exporter of record',
+      joined(details, [['exporter_name', ''], ['exporter_address', ''], ['exporter_iec', 'IEC'], ['exporter_gstin', 'GSTIN']]),
+    ],
+    [
+      'Consignee / importer of record',
+      joined(details, [['importer_name', ''], ['importer_address', ''], ['importer_ein', 'EIN'], ['customs_bond', 'Bond']]),
+    ],
+    ['Incoterms', detail(details, 'incoterm')],
+    ['Customs broker', detail(details, 'customs_broker')],
+    ['Forwarder', detail(details, 'forwarder')],
+    ['Value', 'the shop price paid, below'],
     [],
     ['Description', 'Category', 'Fabric', 'HS code', 'Origin', 'Pieces', 'Weight (g)', 'Unit ₹', 'Total ₹', 'Total $'],
     ...body,

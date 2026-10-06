@@ -134,8 +134,8 @@ test('an admin opens the open cycle, its dates and its export documents (C4)', a
 
   await page.goto(`/admin/cycles/${cycle.id}/documents`);
   await expect(page.getByRole('heading', { name: 'Packing list' })).toBeVisible();
-  await expect(page.getByText('not decided yet (Q-30)')).toBeVisible();
+  await expect(page.getByText(/still a placeholder/)).toBeVisible();
   const csv = await page.request.get(`/admin/cycles/${cycle.id}/csv/invoice`);
   expect(csv.status()).toBe(200);
-  expect(await csv.text()).toContain('TO FILL (Q-30)');
+  expect(await csv.text()).toContain('FCA Mumbai airport (placeholder)');
 });

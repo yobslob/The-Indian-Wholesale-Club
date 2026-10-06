@@ -1,9 +1,9 @@
 import Link from 'next/link';
 import { notFound } from 'next/navigation';
 
-import { listCycleExportLines, listCycles } from '@repo/db/admin';
+import { listBusinessDetails, listCycleExportLines, listCycles } from '@repo/db/admin';
 
-import { invoiceRows, packingListRows, type Row } from '@/features/admin/export-documents';
+import { detailsByKey, invoiceRows, packingListRows, type Row } from '@/features/admin/export-documents';
 import { requireAdminPage } from '@/features/admin/guard';
 import { PageTitle } from '@/features/admin/ui';
 
@@ -29,13 +29,18 @@ function Sheet({ rows }: { rows: Row[] }): React.JSX.Element {
 
 /**
  * The export's packing list and commercial invoice (flows.md §6.1), to print or save as PDF from the browser, or
- * download as CSV. Built from the cycle's picked pieces; the invoice's undecided fields stay marked (Q-30).
+ * download as CSV. Built from the cycle's picked pieces; the invoice's header from the business details (D-074).
  */
 export default async function CycleDocumentsPage({ params }: { params: Params }): Promise<React.JSX.Element> {
   const { client } = await requireAdminPage();
   const { id } = await params;
   if (!/^[0-9a-f-]{36}$/.test(id)) notFound();
-  const [cycles, lines] = await Promise.all([listCycles(client, 100), listCycleExportLines(client, id)]);
+  const [cycles, lines, details] = await Promise.all([
+    listCycles(client, 100),
+    listCycleExportLines(client, id),
+    listBusinessDetails(client),
+  ]);
+  const unfilled = details.filter((d) => d.is_placeholder).length;
   const cycle = cycles.find((c) => c.id === id);
   if (!cycle) notFound();
 
@@ -59,10 +64,16 @@ export default async function CycleDocumentsPage({ params }: { params: Params })
       </section>
       <section className="space-y-2">
         <h2 className="font-medium">Commercial invoice (goods)</h2>
-        <p className="text-caution text-sm">
-          Exporter, consignee, HS codes, the value to declare and Incoterms are not decided yet (Q-30).
-        </p>
-        <Sheet rows={invoiceRows(lines, cycle.fx_inr_per_usd)} />
+        {unfilled > 0 ? (
+          <p className="text-caution text-sm print:hidden">
+            {unfilled} business detail{unfilled === 1 ? ' is' : 's are'} still a placeholder.{' '}
+            <Link href="/admin/settings" className="underline">
+              Fill them in Settings
+            </Link>{' '}
+            before printing.
+          </p>
+        ) : null}
+        <Sheet rows={invoiceRows(lines, cycle.fx_inr_per_usd, detailsByKey(details))} />
       </section>
     </div>
   );
