@@ -619,3 +619,18 @@ without "The": "Indian / Wholesale / Club". Nothing else from the reference (no 
 *Interpretation (proposed, confirm on sight):* the outline is open on the I's east side, as in the reference: closing
 it would run the line through "ndian". The rename covers the logo and the hero heading only; page titles, emails, the
 footer and the app still say "The Indian Wholesale Club" (D-009) until the founder says the rename goes further.
+
+**D-078 · 2026-10-07 · founder: The first cycle is a demo round on the placeholder catalogue, then cleared**
+Founder, verbatim: "I want to do the first cycle as demo round so Filling the database and inventory photos is very
+very hectic can we fetch a database regarding this and fill it? I will clear the data base once demo is completed, I
+want to fill exisiting inventory with photos sizes colors reviews of only five states delhi, maharasthra, Kerala ,Assam
+and Punjab"
+And the founder's choices of 2026-10-07 (asked as options): "Stripe test mode", "Free-licence photos", "Labelled 'Demo
+review'", "Everyone, with a demo banner".
+What it means for the build: production may carry the placeholder catalogue (catalogue/data) of Delhi, Maharashtra,
+Kerala, Assam and Punjab for the demo round, loaded by `pnpm demo:load` and removed by `pnpm demo:clear`; demo mode is
+`dev_preview` on, and every store page (and the app's Home and checkout) shows the demo banner. Photos are public-domain
+stand-ins from curated collections (museums, stock product photos), checked by eye; a photo that needs credit shows it.
+Demo reviews come from demo reviewer accounts, show only in demo mode and are always labelled "Demo review" (the FTC
+rule on fake reviews). Payments run in Stripe test mode for the whole round (Vercel and the app switch to test keys);
+real money is never taken for a demo listing. Nothing of the demo round is kept after the clear.

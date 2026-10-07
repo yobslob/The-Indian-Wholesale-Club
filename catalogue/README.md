@@ -45,7 +45,8 @@ database without a reset (same listings, photos and pieces kept). Commit the dat
 - **Real (from the catalogue):** the items, their names, the one-line descriptions, the categories, and which region they
   belong to. The descriptions are Claude-written drafts in the founder's voice rule (`docs/design.md` §Voice).
 - **Placeholders until shops are signed up** (`is_placeholder = true`, D-012): prices, pieces in stock, the shop,
-  the colours on offer and the sizes. Placeholders show only in development (`dev_preview`), never in production.
+  the colours on offer and the sizes. Placeholders show only in demo mode (`dev_preview`): in development, and in
+  production during the demo round (D-078, `pnpm demo:load` / `pnpm demo:clear`, docs/ops.md §Demo round).
 - **Pantry items are drafts:** spices cannot go live until the FDA question is settled (D-032, Q-10). They are in
   the admin Catalog, not on the store.
 

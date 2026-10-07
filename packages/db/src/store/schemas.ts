@@ -93,6 +93,8 @@ export const mediaSchema = z.object({
   alt_text: z.string(),
   sort_order: z.number().int(),
   is_primary: z.boolean(),
+  /** The attribution a free-licence photo needs (demo round, D-078); shown under the photo. */
+  credit: z.string().nullable().default(null),
 });
 
 export const homeSchema = z.object({
@@ -131,6 +133,8 @@ export const reviewSchema = z.object({
   display_name: z.string(),
   is_verified_buyer: z.boolean(),
   created_at: isoDateTime,
+  /** A demo review (D-078): shown only in the demo round, always labelled. */
+  is_demo: z.boolean().default(false),
   photos: z.array(z.string()),
 });
 

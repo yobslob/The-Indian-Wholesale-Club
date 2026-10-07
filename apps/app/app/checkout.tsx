@@ -13,6 +13,7 @@ import { DetailsForm } from '@/features/checkout/details-form';
 import { QuoteSummary, ShippingOptions } from '@/features/checkout/quote-summary';
 import { EMPTY_DETAILS, toCheckoutRequest } from '@/features/checkout/request';
 import { useCheckout } from '@/features/checkout/use-checkout';
+import { DemoBanner } from '@/features/shell/demo-banner';
 import { useSession } from '@/lib/session';
 import { supabase } from '@/lib/supabase';
 
@@ -128,6 +129,7 @@ export default function CheckoutScreen(): React.JSX.Element {
     return (
       <Screen>
         <Title>Checkout</Title>
+        <DemoBanner />
         <QuoteSummary quote={started.quote} />
         <ShippingOptions
           quote={started.quote}
@@ -148,6 +150,7 @@ export default function CheckoutScreen(): React.JSX.Element {
   return (
     <Screen>
       <Title>Checkout</Title>
+      <DemoBanner />
       <Heading>Shipping to</Heading>
       <DetailsForm value={details} onChange={setDetails} />
       {formError || checkout.error ? <ErrorText>{formError ?? checkout.error}</ErrorText> : null}

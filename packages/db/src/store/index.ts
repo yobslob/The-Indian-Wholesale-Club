@@ -176,3 +176,8 @@ export async function getMyOrder(
 export async function getStorePolicy(client: IwcClient): Promise<StorePolicy> {
   return storePolicySchema.parse(unwrap(await client.rpc('store_policy')));
 }
+
+/** Whether the store is in demo mode (dev_preview: placeholder listings and demo reviews show, D-078). */
+export async function isDemoStore(client: IwcClient): Promise<boolean> {
+  return unwrap(await client.rpc('dev_preview')) === true;
+}

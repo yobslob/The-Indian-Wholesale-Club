@@ -78,6 +78,7 @@ export function ReviewsSection({ reviews, productId }: { reviews: ReviewsSummary
               ) : null}
               <footer className="font-ui text-ink-muted mt-auto flex justify-between gap-2 text-xs font-medium">
                 <span>
+                  {r.is_demo ? <span className="text-caution font-medium">Demo review · </span> : null}
                   {r.is_verified_buyer ? <span className="text-positive">✓ Verified buyer · </span> : null}
                   {r.display_name}
                 </span>

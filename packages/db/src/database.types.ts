@@ -458,14 +458,14 @@ isOneToOne: false
                   ]
                 },"product_media": {
                   Row: {
-                    "alt_text": string,"created_at": string,"id": string,"is_primary": boolean,"product_id": string,"sort_order": number,"storage_path": string,"variant_id": string | null
+                    "alt_text": string,"created_at": string,"credit": string | null,"id": string,"is_primary": boolean,"product_id": string,"sort_order": number,"storage_path": string,"variant_id": string | null
                   }
                   ComputedFields: never
                   Insert: {
-                    "alt_text"?: string,"created_at"?: string,"id"?: string,"is_primary"?: boolean,"product_id": string,"sort_order"?: number,"storage_path": string,"variant_id"?: string | null
+                    "alt_text"?: string,"created_at"?: string,"credit"?: string | null,"id"?: string,"is_primary"?: boolean,"product_id": string,"sort_order"?: number,"storage_path": string,"variant_id"?: string | null
                   }
                   Update: {
-                    "alt_text"?: string,"created_at"?: string,"id"?: string,"is_primary"?: boolean,"product_id"?: string,"sort_order"?: number,"storage_path"?: string,"variant_id"?: string | null
+                    "alt_text"?: string,"created_at"?: string,"credit"?: string | null,"id"?: string,"is_primary"?: boolean,"product_id"?: string,"sort_order"?: number,"storage_path"?: string,"variant_id"?: string | null
                   }
                   Relationships: [
                     {
@@ -718,14 +718,14 @@ isOneToOne: false
                   ]
                 },"reviews": {
                   Row: {
-                    "body": string,"created_at": string,"display_name": string,"id": string,"is_verified_buyer": boolean,"moderated_at": string | null,"moderated_by": string | null,"product_id": string,"rating": number,"status": Database["public"]['Enums']["review_status"],"updated_at": string,"user_id": string
+                    "body": string,"created_at": string,"display_name": string,"id": string,"is_placeholder": boolean,"is_verified_buyer": boolean,"moderated_at": string | null,"moderated_by": string | null,"product_id": string,"rating": number,"status": Database["public"]['Enums']["review_status"],"updated_at": string,"user_id": string
                   }
                   ComputedFields: never
                   Insert: {
-                    "body": string,"created_at"?: string,"display_name": string,"id"?: string,"is_verified_buyer"?: boolean,"moderated_at"?: string | null,"moderated_by"?: string | null,"product_id": string,"rating": number,"status"?: Database["public"]['Enums']["review_status"],"updated_at"?: string,"user_id": string
+                    "body": string,"created_at"?: string,"display_name": string,"id"?: string,"is_placeholder"?: boolean,"is_verified_buyer"?: boolean,"moderated_at"?: string | null,"moderated_by"?: string | null,"product_id": string,"rating": number,"status"?: Database["public"]['Enums']["review_status"],"updated_at"?: string,"user_id": string
                   }
                   Update: {
-                    "body"?: string,"created_at"?: string,"display_name"?: string,"id"?: string,"is_verified_buyer"?: boolean,"moderated_at"?: string | null,"moderated_by"?: string | null,"product_id"?: string,"rating"?: number,"status"?: Database["public"]['Enums']["review_status"],"updated_at"?: string,"user_id"?: string
+                    "body"?: string,"created_at"?: string,"display_name"?: string,"id"?: string,"is_placeholder"?: boolean,"is_verified_buyer"?: boolean,"moderated_at"?: string | null,"moderated_by"?: string | null,"product_id"?: string,"rating"?: number,"status"?: Database["public"]['Enums']["review_status"],"updated_at"?: string,"user_id"?: string
                   }
                   Relationships: [
                     {
@@ -987,7 +987,7 @@ isOneToOne: false
                   ]
                 },"store_media": {
                   Row: {
-                    "alt_text": string | null,"id": string | null,"is_primary": boolean | null,"product_id": string | null,"sort_order": number | null,"storage_path": string | null,"variant_id": string | null
+                    "alt_text": string | null,"credit": string | null,"id": string | null,"is_primary": boolean | null,"product_id": string | null,"sort_order": number | null,"storage_path": string | null,"variant_id": string | null
                   }
                   ComputedFields: never
                   Relationships: [
@@ -1151,14 +1151,14 @@ isOneToOne: false
                   ]
                 },"store_reviews": {
                   Row: {
-                    "body": string | null,"created_at": string | null,"display_name": string | null,"id": string | null,"is_verified_buyer": boolean | null,"product_id": string | null,"rating": number | null
+                    "body": string | null,"created_at": string | null,"display_name": string | null,"id": string | null,"is_demo": boolean | null,"is_verified_buyer": boolean | null,"product_id": string | null,"rating": number | null
                   }
                   ComputedFields: never
                   Insert: {
-                           "body"?: string | null,"created_at"?: string | null,"display_name"?: string | null,"id"?: string | null,"is_verified_buyer"?: boolean | null,"product_id"?: string | null,"rating"?: number | null
+                           "body"?: string | null,"created_at"?: string | null,"display_name"?: string | null,"id"?: string | null,"is_demo"?: boolean | null,"is_verified_buyer"?: boolean | null,"product_id"?: string | null,"rating"?: number | null
                          }
                         Update: {
-                           "body"?: string | null,"created_at"?: string | null,"display_name"?: string | null,"id"?: string | null,"is_verified_buyer"?: boolean | null,"product_id"?: string | null,"rating"?: number | null
+                           "body"?: string | null,"created_at"?: string | null,"display_name"?: string | null,"id"?: string | null,"is_demo"?: boolean | null,"is_verified_buyer"?: boolean | null,"product_id"?: string | null,"rating"?: number | null
                          }
                         Relationships: [
                     {

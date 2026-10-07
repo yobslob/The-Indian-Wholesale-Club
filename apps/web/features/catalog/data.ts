@@ -8,6 +8,7 @@ import {
   getProductPage,
   getRegionPage,
   getStorePolicy,
+  isDemoStore,
   listProductPaths,
   searchProducts as searchStore,
   type BrowseFilter,
@@ -32,9 +33,9 @@ export const productTag = (regionSlug: string, productSlug: string): string =>
 /**
  * Part of every cache key. Bump it whenever a store_* result changes shape (a migration adds a field): cached
  * entries outlive deployments (Vercel's data cache, .next/cache locally), and an old entry would reach a page
- * that expects the new field. Last change: the product page's ships_from_us and is_us_stock (migration 26).
+ * that expects the new field. Last change: photo credits and demo reviews (migration 29).
  */
-const SHAPE = 'v12';
+const SHAPE = 'v13';
 
 const cached = <T>(key: string[], tags: string[], load: () => Promise<T>): Promise<T> =>
   unstable_cache(load, [...key, SHAPE], { tags: [STORE_TAG, ...tags], revalidate: STORE_REVALIDATE_SECONDS })();
@@ -58,6 +59,9 @@ export const browseCached = (filter: BrowseFilter) =>
     [],
     () => browseProducts(storeClient(), filter),
   );
+
+/** Demo mode (D-078): the banner on every store page. Refreshed with STORE_TAG or within 5 minutes. */
+export const isDemoStoreCached = () => cached(['store-demo'], [], () => isDemoStore(storeClient()));
 
 /** The Shipping & returns page's numbers (migration 27); a settings save refreshes it with STORE_TAG. */
 export const getStorePolicyCached = () => cached(['store-policy'], [], () => getStorePolicy(storeClient()));

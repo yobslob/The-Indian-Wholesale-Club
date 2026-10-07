@@ -59,6 +59,7 @@ export function ReviewsSection({ reviews, productId }: { reviews: ReviewsSummary
               ) : null}
               <View className="flex-row justify-between">
                 <Text className="font-ui text-ink-muted text-xs">
+                  {r.is_demo ? <Text className="text-caution">Demo review · </Text> : null}
                   {r.is_verified_buyer ? <Text className="text-positive">✓ Verified buyer · </Text> : null}
                   {r.display_name}
                 </Text>

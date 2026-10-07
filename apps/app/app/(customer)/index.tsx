@@ -8,6 +8,7 @@ import { Body, ErrorText, Heading, Loading } from '@/components/ui';
 import { ProductRow } from '@/features/catalog/product-row';
 import { HomeHero, HomeTopBar } from '@/features/home/home-hero';
 import { PickHome } from '@/features/regions/pick-home';
+import { DemoBanner } from '@/features/shell/demo-banner';
 import { supabase } from '@/lib/supabase';
 import { useQuery } from '@/lib/use-query';
 
@@ -32,6 +33,7 @@ export default function HomeScreen(): React.JSX.Element {
       >
         <HomeHero scrollY={scrollY} />
         <View className="gap-6 px-4 pb-16 pt-8">
+          <DemoBanner />
           {error ? <ErrorText>{error}</ErrorText> : null}
           {!data && loading ? <Loading /> : null}
           {data ? <ProductRow title="Just listed" products={data.just_listed} seeAll={{ type: 'clothing' }} /> : null}

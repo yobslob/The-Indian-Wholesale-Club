@@ -101,7 +101,8 @@ The old `NEXT_PUBLIC_SUPABASE_*` / `NEXT_PUBLIC_APP_URL` CI secrets are no longe
 4. **Deploy:** Actions → Deploy → `deploy` (migrations to production, then the Vercel build). The first build reads the
    empty catalogue; that is fine.
 5. **Data, once:** `pnpm prod:seed --url=<production DB URL> --allow-remote` (dry run), then again with `--apply`: the 36
-   states (text as drafts), the categories and the pilot numbers. Never `seed/demo.sql` or `seed/catalogue.sql`.
+   states (text as drafts), the categories and the pilot numbers. Never `seed/demo.sql`; the placeholder catalogue only
+   through the demo round (below).
 6. **Vault (SQL editor):** the two `vault.create_secret` lines of §Email timer, with the production site URL and the
    same secret as `EMAIL_OUTBOX_CRON_SECRET`.
 7. **Stripe:** add the webhook endpoint `<site>/api/webhooks/stripe` for the live account (event `payment_intent.succeeded`) and put its signing secret in
@@ -123,6 +124,24 @@ The old `NEXT_PUBLIC_SUPABASE_*` / `NEXT_PUBLIC_APP_URL` CI secrets are no longe
    inside the app). The Deploy workflow's `android_profile` input picks `preview` (an APK to install on a phone from the
    EAS build page) or `production` (an AAB for Google Play). The app's id is `com.indianwholesaleclub.app` (`app.json`,
    set by the founder on 2026-10-07); Google Play never lets it change after the first upload.
+
+## Demo round (D-078)
+The first cycle runs as a demo on the placeholder catalogue of five states, then everything is removed again.
+1. **Photos (once, on the founder's machine):** `pnpm demo:photos` fills `catalogue/photos/` with public-domain
+   stand-ins (museum collections and stock product photos, Openverse; paced to its 200 searches a day and cached).
+   Look at them; put any photo to drop in `catalogue/demo-photo-exclude.txt` (its id is in the folder's `source.json`),
+   delete that folder and run it again.
+2. **Stripe test mode:** on Vercel set `NEXT_PUBLIC_STRIPE_PUBLISHABLE_KEY`, `STRIPE_SECRET_KEY` to the **test** keys and
+   `STRIPE_WEBHOOK_SECRET` to the signing secret of a **test-mode** webhook endpoint (`<site>/api/webhooks/stripe`,
+   `payment_intent.succeeded`), then redeploy. The app: the EAS variable `EXPO_PUBLIC_STRIPE_PUBLISHABLE_KEY` to the test
+   key, then a new build.
+3. **Load:** `pnpm demo:load --url=<production DB URL> --api=https://<ref>.supabase.co --service-key=<service role key>
+   --allow-remote` (a dry run), then again with `--apply`: the catalogue of Delhi, Maharashtra, Kerala, Assam and Punjab,
+   the photos, labelled demo reviews from eight demo reviewer accounts, demo mode on (the banner on every page).
+4. Run the demo cycle as usual (admin: open a cycle with real dates; testers pay with card 4242 4242 4242 4242).
+5. **Clear:** `pnpm demo:clear` with the same flags (a dry run counts what goes), then with `--apply`: every placeholder
+   product with its photos and reviews, every order containing one, the placeholder shops, the demo reviewers, the demo
+   state photos; demo mode off. Then switch Vercel and the app back to the **live** Stripe keys and webhook secret.
 
 ## Git
 GitHub `yobslob/The-Indian_Wholesale-Club`, branch `main` (D-014). Claude commits in `C:\kod\root` and the founder pushes.

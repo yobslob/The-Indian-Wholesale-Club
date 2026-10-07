@@ -1,0 +1,34 @@
+# Demo photos rejected on review (scripts/demo-photos.mjs): Openverse ids, one per line, with a reason.
+# Reviewed 2026-10-07 on contact sheets of all five states.
+16ddffcf-adbc-4a60-9732-0f52409b42d7  # sunglasses, not the garment
+783f7ea9-eb6c-461d-8c77-7cbf2eafee76  # legs in a washing machine
+18ed4930-c871-468c-a428-6f93d9043046  # a stranger's face in focus
+7b905b7d-c5c4-404c-bf19-ec3c2c1b38ab  # a stranger's face in focus
+e569087c-03bb-496b-a51f-5722ab7c062b  # bride on hay, off-topic
+52f510dd-885c-49f0-9e7a-d8a739a680c0  # flower petals in hands, off-topic
+62b86d58-b3ae-4346-847c-6e3ae22f70fe  # strawberries, off-topic
+2dd166e6-24f6-4491-abcf-f3ec7b34bdfe  # sketching, off-topic
+83b432d8-23a2-4bba-9a4c-4a8df67b64be  # bridal close-up, off-topic
+e58182dd-f63d-416a-bf3e-f6ceb6ec2aae  # a stranger's face in focus
+aae954e3-7fcf-4d19-9297-ffa35c2115d0  # feet on pavement, off-topic
+08451681-13b0-4a75-98bc-5b9289fb4b26  # life jackets
+95c6e010-2f21-40d8-98a3-80a01f2f0a22  # bridal bouquet, off-topic
+01f65959-0959-4ac2-af09-f9ccc447e594  # food plating ("dressing")
+71cc8223-fe20-4b37-a3a1-960a97ae954a  # a stranger's face in focus
+ce9729ef-9b11-4256-af2c-d706968e58d7  # armour helmet
+9e5a6436-49ef-48bb-ba8e-7bd49200114d  # armour helmet
+5ce2e2c2-69e2-43a5-a4e8-1a888297bb30  # armour helmet
+15ec1a56-2b14-4edc-8fd5-8a4f84e892cd  # funerary cone
+c540047d-629f-4017-88d5-ef62fec2feb8  # religious sculpture
+a843d6c2-d3cd-4393-9635-e2ef5a6dd826  # religious sculpture
+0cb399ff-c667-4f5f-97cc-104cb0334594  # religious sculpture
+a0c23874-84ae-40bf-8188-4f1cd7df7c96  # religious sculpture
+938b2a19-5e59-48d5-ae60-2d577d2806e7  # religious sculpture
+2913458f-57df-44f6-9187-337422de0e66  # religious sculpture
+3295eb06-dcae-4181-baec-7ce8f034fbb1  # religious sculpture
+614d0535-cc67-4ebb-8491-ce10969b0210  # religious sculpture
+4224b86d-2d0a-4f40-8bf4-31fae1191022  # religious sculpture
+2eb6d2a3-36b1-49a6-a9b8-9edcbf3d295b  # religious sculpture
+3d378624-c280-46aa-bad4-1296e78ba70b  # sculpture
+2f5f64d2-5e77-4bcf-ab49-6f77fa219cd4  # sculpture
+3276b0f8-faa1-4f53-8dc0-6242cf0b1d1c  # a person lying on the floor, odd for a product

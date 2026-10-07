@@ -25,6 +25,10 @@ export function ProductGallery({ media, name }: { media: Media[]; name: string }
       <View className="bg-land aspect-[3/4] overflow-hidden rounded-lg">
         <Photo path={main.storage_path} width={Dimensions.get('window').width} accessibilityLabel={main.alt_text || name} transition={150} />
       </View>
+      {main.credit ? (
+        // A free-licence photo's attribution (demo round, D-078).
+        <Text className="font-body text-ink-muted text-xs">Photo: {main.credit}</Text>
+      ) : null}
       {others.length > 0 ? (
         <View className="flex-row gap-2.5">
           {others.map((m) => (

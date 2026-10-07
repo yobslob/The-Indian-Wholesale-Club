@@ -133,7 +133,9 @@ terms the Shipping & returns page states (shipping, express and US delivery days
 return tiers, the tax states and classes), never a cost, margin or customer-care deduction. Migration 28:
 `checkout_context()` adds `us_delivery` (a bag of only US pieces: today + the US delivery days) and offers express only
 for bags with no US piece; trigger `_express_has_no_us_stock` on `order_items` refuses an express order with one
-(`express_unavailable`). `guest_order_lookup(number, email)` returns the
+(`express_unavailable`). Migration 29 (D-078, the demo round): `product_media.credit` (a free-licence photo's
+attribution, in `store_media`); `reviews.is_placeholder` (a demo review, written only by the service role, shown only in
+demo mode, in `store_reviews` as `is_demo` so the store labels it). `guest_order_lookup(number, email)` returns the
 same shape for guests and is **service-only** (the server route rate-limits it). A test keeps its fields identical to the views'.
 `checkout_context(variant_ids, promo_code)` (migration 3, **service-only**) returns what the server needs to price a bag in
 one round trip: the variants as customers can buy them (through `store_*`), the promo if usable now, the shipping settings
