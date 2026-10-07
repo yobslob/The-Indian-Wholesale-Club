@@ -2,7 +2,7 @@
 
 **Surface:** website `/` + app `(customer)/index` · **Code:** `apps/web/app/(store)/page.tsx`,
 `apps/web/features/catalog/product-row.tsx` + `product-card.tsx` + `quick-add.tsx`, `apps/web/features/regions/pick-home*.tsx`;
-app `apps/app/app/(customer)/index.tsx` · **Status:** mockup, round 1
+app `apps/app/app/(customer)/index.tsx` · **Status:** mockup, round 2
 
 The first screen (photo, name on the wall, header, scroll fade) is settled by D-079 and is not reopened here.
 
@@ -43,9 +43,10 @@ Kept: the row with See all, 3 : 4 photos, the map + stamps + names idea, stamps 
 - Section titles in Cinzel, everything else in Karla (D-079).
 
 ## Needs
-- The hero's date stamp: keep it (film look), or a version of the photo without it? (Question for the founder.)
+None. (The hero's date stamp stays: "let the date be as is".)
 
 ## Rounds
 | Date | Round | Founder's notes | Changed |
 |---|---|---|---|
 | 2026-10-08 | 1 | — | first proposal |
+| 2026-10-08 | 2 | "Things we finalized are good such as cinzel and karla, placement of the hero heading etc etc rest should be like it was before(such as before when the header moved down the hero image its bg became colored but smoothly fading in now it harshly switches colors and also the haeding were in white)" · on the date stamp: "let the date be as is" | header on the photo back to today's look: white links over the dark band at the top (amends D-079's black nav and "no fades" for the header only), the 0.35 s cross-fade to cream once the photo has passed (as `globals.css`); the photo's date stamp stays |

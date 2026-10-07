@@ -43,8 +43,13 @@ body[data-demo='off'] .banner { display: none; }
 .top.over { position: absolute; inset: 0 0 auto; }
 .hdr { --gut: clamp(12px, 2.2cqi, 32px); display: flex; align-items: center; gap: clamp(18px, 2.2cqi, 32px); height: 72px; padding: 0 var(--gut); font: 500 14px/1 var(--font-ui); letter-spacing: .02em; }
 .hdr.solid { background: var(--canvas); color: var(--ink); box-shadow: 0 1px 0 var(--line); }
-.hdr.photo { color: #000; }
-.vp.passed .hdr.photo { background: var(--canvas); box-shadow: 0 1px 0 var(--line); }
+/* On the Home photo, as apps/web/app/globals.css today (founder, home round 2): white links over a dark band that fades
+ * down the photo; once the photo has passed, the header cross-fades to cream in 0.35 s. */
+.hdr { position: relative; transition: background-color .35s, color .35s, box-shadow .35s; }
+.hdr.photo { color: #fff; background-color: transparent; }
+.hdr.photo::before { content: ''; position: absolute; inset: 0 0 -48px; z-index: -1; pointer-events: none; background: linear-gradient(to bottom, rgb(20 17 15 / .6), rgb(20 17 15 / 0)); transition: opacity .35s; }
+.vp.passed .hdr.photo { background-color: var(--canvas); color: var(--ink); box-shadow: 0 1px 0 var(--line); }
+.vp.passed .hdr.photo::before { opacity: 0; }
 .scroller { height: 100%; overflow-y: auto; overscroll-behavior: contain; }
 .hdr.photo .logo { opacity: var(--hero-p, 0); } /* fades in as the hero scrolls away (D-053, as hero-scroll.tsx) */
 .hdr .logo { margin-right: auto; }
