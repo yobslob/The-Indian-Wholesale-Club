@@ -2,7 +2,7 @@
 
 **Surface:** website `/clothing`, `/spices` (`?state=`, `?category=`, `?show=`) + app `browse` · **Code:**
 `apps/web/app/(store)/clothing/page.tsx`, `spices/page.tsx`, `apps/web/features/catalog/browse-by-type.tsx`,
-`product-card.tsx` (ProductGrid) · **Status:** mockup, round 1
+`product-card.tsx` (ProductGrid) · **Status:** approved D-084 (2026-10-08), not built yet
 
 ## The page's job
 Everything of one type, newest first, narrowed by state and category; where every row's See all leads (D-062).
@@ -38,3 +38,4 @@ None.
 | Date | Round | Founder's notes | Changed |
 |---|---|---|---|
 | 2026-10-08 | 1 | the options above | first proposal |
+| 2026-10-08 | 2 | "I don't want both the regions and categories to pin but just the region. In phone, when the user scrolls down the filter panel changes to a circular button of the icon only. Rest approved, move onto next" | only the state row pins; on phones the Filter bar shrinks to a round icon button once scrolled; approved as D-084 |

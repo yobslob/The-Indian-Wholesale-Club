@@ -745,3 +745,19 @@ What it means for the build: `/states` is the approved Pick your home block (D-0
 names, search) as its own page, its heading in Syne; nothing else changes there. In the design pass (`design/pages/`)
 every website customer page is designed first; then one pass mocks the app's customer screens on the same decisions,
 before the admin side.
+
+**D-084 · 2026-10-08 · founder: Clothing and Spices (the See all page), from the design pass**
+Founder, verbatim: asked as options (`design/pages/browse/brief.md`): "the things that run off edge, give them a very
+very little soft blur, not too harsh", "Filters stay on screen", "One Filter button on phones". On round 1 of
+`design/pages/browse/mockup.html`: "I don't want both the regions and categories to pin but just the region. In phone,
+when the user scrolls down the filter panel changes to a circular button of the icon only. Rest approved, move onto
+next".
+What it means for the build: `/clothing` and `/spices` keep today's page (D-062, D-067, D-068) in the D-079 / D-080
+fonts with the + on every card, and:
+- **Soft edge:** where a pill row runs off the screen, its end fades into the page under a very light blur (about
+  1.5 px), only on a side that has more.
+- **Only the state row pins** under the header while the grid scrolls; the category row scrolls away with the page.
+- **Phones:** one pinned Filter bar (button + what is chosen and the count) opens a side panel from the right with the
+  menu's motion (D-079): State and Category as lists with counts, the current ones ticked, Clear; choosing a row applies
+  it and closes the panel. Once the page is scrolled the bar shrinks to a round icon-only button in the same place.
+The grid's columns stay as today (2 below 1280 px, 4 from 1280).
