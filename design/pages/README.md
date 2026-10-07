@@ -46,7 +46,7 @@ then the admin side. The pass **refines the approved design** (D-050 – D-055, 
 | 2 | `home` | `/` | `(customer)/index` | approved D-080 |
 | 3 | `cards` | product card, region stamp, sideways row + See all, pills | same parts (`features/catalog/`) | settled in `home` (D-080): + on the photo, row as today, stamp pages |
 | 4 | `region` | `/states/[region]` | `region/[slug]` | approved D-081 |
-| 5 | `product` | `/states/[region]/[product]` | `product/[region]/[slug]` | — |
+| 5 | `product` | `/states/[region]/[product]` | `product/[region]/[slug]` | mockup, round 1 |
 | 6 | `states` | `/states` | `(customer)/explore` (regions part) | — |
 | 7 | `browse` | `/clothing`, `/spices` | `browse`, `(customer)/explore` | — |
 | 8 | `search` | `/search` | search in `(customer)/explore` | — |

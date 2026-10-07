@@ -32,7 +32,7 @@ Today's layout in the D-079 / D-080 fonts (state name Cinzel, section headings S
   overflow) instead of four small fixed cards.
 
 ## Needs
-- The founder's "Something else".
+None (the "Something else" was never specified; approved without it).
 
 ## Rounds
 | Date | Round | Founder's notes | Changed |
