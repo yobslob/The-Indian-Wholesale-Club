@@ -5,7 +5,7 @@
 web and app admin). Workflow and the page register with each page's status: `design/pages/README.md`. Page 1, the
 shell (header, banner, footer, app tab bar) and the Home hero, approved 2026-10-08 as D-079 (Cinzel + Karla); not built
 yet. Page 2, Home below the hero, approved 2026-10-08 as D-080 (Syne headings, + on the card photo,
-stamp pages from 7); not built yet. Next: the region page.
+stamp pages from 7); not built yet. Page 4, the region page: mockup round 1 (`design/pages/region/`).
 
 **Logo text (D-077, 2026-10-07):** the website header's logo reads "Indian Wholesale Club", its I inside a gold outline of India cut open on the east; the Home hero heading is unchanged except "The" is gone. Titles, emails, footer and the app keep D-009's full name until the founder says otherwise.
 

@@ -10,34 +10,12 @@
 <link rel="stylesheet" href="../_shared/tokens.css">
 <link rel="stylesheet" href="../_shared/page.css">
 <link rel="stylesheet" href="../_shared/shell.css">
+<link rel="stylesheet" href="../_shared/cards.css">
 <style>
 /* ---------- Home below the hero (round 2): today's layout (apps/web/features/catalog, features/regions) in Cinzel +
  * Karla; the one change kept from round 1 is the + on the card photo. ---------- */
 .home { --g: clamp(16px, 2.2cqi, 32px); --gap: clamp(12px, 1.4cqi, 20px); padding: 0 var(--g) clamp(48px, 6cqi, 96px); }
 .sec { padding: clamp(24px, 3cqi, 48px) 0; }
-.sec-h { display: flex; justify-content: space-between; align-items: flex-end; gap: 16px; margin: 0 0 clamp(16px, 1.8cqi, 24px); }
-.sec-h h2 { margin: 0; font: 500 clamp(26px, 3cqi, 40px)/1.1 var(--font-heading); letter-spacing: -.01em; color: #1D1A17; }
-.sec-h .sub { margin: 6px 0 0; font: 400 14px/1.5 var(--font-body); color: var(--ink-muted); }
-.pill { display: inline-flex; align-items: center; height: 40px; padding: 0 18px; border-radius: var(--radius-pill); border: 1px solid var(--line); background: var(--paper); font: 500 14px/1 var(--font-ui); color: #000; text-decoration: none; flex: none; }
-
-/* Just listed: today's row (product-row.tsx, row-scroller.tsx); arrows over the photos, hidden at either end and on phones. */
-.rowwrap { position: relative; }
-.row { display: flex; gap: var(--gap); overflow-x: auto; scroll-snap-type: x mandatory; scroll-padding: var(--g); padding: 0 var(--g) 4px; margin: 0 calc(-1 * var(--g)); scrollbar-width: none; list-style: none; }
-.row::-webkit-scrollbar { display: none; }
-.card { flex: none; width: clamp(176px, 23cqi, 304px); scroll-snap-align: start; min-width: 0; }
-.card .box { position: relative; }
-.card .img { display: block; aspect-ratio: 3 / 4; border-radius: var(--radius-lg); overflow: hidden; background-color: var(--land); background-size: cover; background-position: center; }
-.card .add { position: absolute; right: 10px; bottom: 10px; width: 40px; height: 40px; border-radius: 50%; background: var(--paper); border: 1px solid var(--line); display: grid; place-items: center; color: #000; }
-.card .add svg { width: 18px; height: 18px; }
-.card .txt { padding: 14px 6px 0 14px; }
-.card .name { margin: 0; font: 600 15px/1.35 var(--font-ui); color: #000; }
-.card .meta { margin: 2px 0 0; font: 400 14px/1.35 var(--font-ui); color: var(--ink-muted); }
-.ph-tag { position: absolute; left: 14px; top: 14px; font: 600 9px/1 system-ui, sans-serif; letter-spacing: .08em; text-transform: uppercase; background: rgb(255 255 255 / .85); color: #444; padding: 4px 6px; border-radius: 4px; }
-.rarr { all: unset; cursor: pointer; position: absolute; top: 38%; z-index: 2; width: 44px; height: 44px; transform: translateY(-50%); display: grid; place-items: center; border-radius: 50%; border: 1px solid var(--line); background: rgb(251 248 243 / .95); color: var(--ink); box-shadow: 0 1px 2px rgb(0 0 0 / .05); transition: opacity .2s; font: 16px/1 var(--font-ui); }
-.rarr.l { left: -8px; } .rarr.r { right: -8px; }
-.rarr:disabled { opacity: 0; pointer-events: none; }
-@container (max-width: 767px) { .rarr { display: none; } }
-
 /* Pick your home: today's two panels (pick-home.module.css), stacked below 1100 px. */
 .pick { display: grid; grid-template-columns: 1fr 1fr; gap: var(--gap); align-items: stretch; }
 .hp { position: relative; min-width: 0; border-radius: 22px; padding: clamp(18px, 2cqi, 32px); background: var(--surface); }
@@ -138,6 +116,7 @@
 <script src="../../mockups/shared/data.js"></script>
 <script src="../../mockups/shared/india-map.js"></script>
 <script src="../_shared/shell.js"></script>
+<script src="../_shared/cards.js"></script>
 <script>
 // Placeholder data: the demo round's listings and open states as production shows them on 2026-10-08 (D-078).
 const OPEN = ['assam', 'delhi', 'kerala', 'maharashtra', 'punjab'];
@@ -152,12 +131,6 @@ const JUST = [
   ['Sample: Kolhapuri chappal', '$44.99', 'Maharashtra', null, true], ['Sample: Kerala garam masala', '$9.99', 'Kerala', null, false],
 ];
 const POSTMARK = 'ARRIVES OCT 30 – NOV 4 · '; // sample dates: the build takes them from cycle data (D-008)
-const plus = '<svg class="icon" viewBox="0 0 24 24" aria-hidden="true"><path d="M12 5v14M5 12h14"/></svg>';
-
-const card = ([name, price, state, img, sizes]) => `<li class="card">
-  <div class="box"><a class="img" href="#"${img ? ` style="background-image:url(${img})"` : ''}>${img ? '' : '<span class="ph-tag">placeholder</span>'}</a>
-  <a class="add" href="#" aria-label="${sizes ? `Choose options for ${name}` : `Add ${name} to bag`}">${plus}</a></div>
-  <div class="txt"><p class="name">${name}</p><p class="meta">${price} · ${state}</p></div></li>`;
 
 const postmark = (id) => `<svg class="postmark" viewBox="0 0 100 100" aria-hidden="true"><defs><path id="${id}" d="M50 50 m-35 0 a35 35 0 1 1 70 0 a35 35 0 1 1 -70 0"/></defs><circle cx="50" cy="50" r="47" fill="none" stroke="currentColor" stroke-width="1.6"/><circle cx="50" cy="50" r="25" fill="none" stroke="currentColor" stroke-width="1"/><text class="ring"><textPath href="#${id}">${POSTMARK.repeat(2)}</textPath></text><text class="mid" x="50" y="54" text-anchor="middle">IWC</text></svg>`;
 
@@ -236,14 +209,7 @@ document.querySelectorAll('.spager').forEach((w) => {
   next.addEventListener('click', () => track.scrollBy({ left: track.clientWidth, behavior: 'smooth' }));
   track.addEventListener('scroll', sync, { passive: true }); sync();
 });
-// Row arrows, as row-scroller.tsx: 85 % of the row per click, each hidden at its end.
-document.querySelectorAll('.rowwrap').forEach((w) => {
-  const row = w.querySelector('.row'), [prev, next] = w.querySelectorAll('.rarr');
-  const sync = () => { prev.disabled = row.scrollLeft <= 4; next.disabled = row.scrollLeft + row.clientWidth >= row.scrollWidth - 4; };
-  prev.addEventListener('click', () => row.scrollBy({ left: -row.clientWidth * .85, behavior: 'smooth' }));
-  next.addEventListener('click', () => row.scrollBy({ left: row.clientWidth * .85, behavior: 'smooth' }));
-  row.addEventListener('scroll', sync, { passive: true }); sync();
-});
+initRows();
 </script>
 </body>
 </html>
