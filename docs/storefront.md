@@ -58,7 +58,9 @@ Framer Motion page transitions (speed, `engineering.md`).
 ## The product page
 Gallery → name, price → variant picker → availability (live) → **delivery window** → add to cart → details: description,
 craft, attributes, care or storage → origin line: "Made in India · from <Region> · Imported".
-**Target (D-051, not built yet):** one full-length photo no taller than the screen with three stacked photos beside it; a
+**Target (D-082, not built yet):** tablets two columns (photos left, small ones under the big one); any photo opens a
+full-size viewer (swipe, arrows); on phones a buy bar while Add to bag is out of view and reviews as a row.
+**Target (D-051):** one full-length photo no taller than the screen with three stacked photos beside it; a
 heart beside the name saves the product; Details and Size chart open and close with + / −; then Reviews (rating + text; photos only from verified buyers; an admin checks each, D-052, D-056), Similar
 items and Curated for you as rows of smaller cards (D-062; Similar items' See all opens its category).
 

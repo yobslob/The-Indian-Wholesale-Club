@@ -3,7 +3,7 @@
 **Surface:** website `/states/[region]/[product]` + app `product/[region]/[slug]` · **Code:**
 `apps/web/app/(store)/states/[region]/[product]/page.tsx`, `apps/web/features/catalog/product-gallery.tsx`,
 `add-to-cart.tsx`, `product-details.tsx`, `apps/web/features/reviews/`; app `apps/app/app/product/[region]/[slug].tsx` ·
-**Status:** mockup, round 1
+**Status:** approved D-082 (2026-10-08), not built yet
 
 ## The page's job
 Show the piece well enough to buy it from far away: photos, price, options, honest origin and delivery, reviews.
@@ -45,3 +45,4 @@ None.
 | Date | Round | Founder's notes | Changed |
 |---|---|---|---|
 | 2026-10-08 | 1 | the options above | first proposal |
+| 2026-10-08 | — | "approved, move to next" | approved as D-082 |

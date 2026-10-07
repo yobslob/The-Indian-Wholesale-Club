@@ -721,3 +721,19 @@ name in **Cinzel**, section headings in Syne, the rest in Karla, and the + on ev
 **jump pills get the product rows' arrows** at either end (each hidden at its end; phones swipe), and **Picked for you
 is a standard row** of full-size cards filling its box, with arrows when they overflow. Not chosen: the photo first on
 phones, merging small categories.
+
+**D-082 · 2026-10-08 · founder: The product page, from the design pass**
+Founder, verbatim: asked as options (`design/pages/product/brief.md`): tablet fix "Photos left, info right
+(Recommended)"; also "regardless of screen size clicking a photo opens a panel showing full size image providing both
+swipe and arrow to move in these photos of the particular product.", "Add to bag stays in view", "Reviews as a row on
+phones". On round 1 of `design/pages/product/mockup.html`: "approved, move to next".
+What it means for the build: the product page keeps today's layout (D-051) in the D-079 / D-080 fonts (name and origin
+line in Cinzel, section headings in Syne, the rest in Karla), with:
+- **Tablets (768 – 1099 px):** two columns, the big photo with the three small ones in a row under it, the info box
+  beside them. Fixes today's bug there (the info box squeezed to one word per line, the page scrolling sideways).
+- **Photo viewer at every size:** any photo opens a full-screen panel over the page at that photo; swipe and arrows move
+  through the product's photos, with a count, a close button, Escape and the arrow keys. The small photos open the
+  viewer instead of swapping into the big spot.
+- **Phones:** a buy bar (name, price and option, Add to bag) slides up while the page's own Add to bag is out of view;
+  the review cards are a sideways row under the rating summary.
+Not chosen: a swipeable gallery on phones (the big photo and three small ones stay).
