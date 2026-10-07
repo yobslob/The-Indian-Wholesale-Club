@@ -42,7 +42,7 @@ then the admin side. The pass **refines the approved design** (D-050 – D-055, 
 ### Part 1: customer side (website at 1440 · 1024 · 768 · 390, and the app)
 | # | id | Website (`apps/web/app/(store)/`) | App (`apps/app/app/`) | Status |
 |---|---|---|---|---|
-| 1 | `shell` | header, nav, demo banner, footer (`features/shell/`) | tab bar, screen header (`(customer)/_layout.tsx`) | mockup, round 2 |
+| 1 | `shell` | header, nav, demo banner, footer (`features/shell/`) | tab bar, screen header (`(customer)/_layout.tsx`) | mockup, round 3 |
 | 2 | `home` | `/` | `(customer)/index` | — |
 | 3 | `cards` | product card, region stamp, sideways row + See all, pills | same parts (`features/catalog/`) | — |
 | 4 | `region` | `/states/[region]` | `region/[slug]` | — |

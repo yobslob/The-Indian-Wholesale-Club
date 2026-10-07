@@ -6,17 +6,13 @@
 <title>IWC design pass: 1 shell</title>
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Instrument+Serif:ital@0;1&family=Geist:wght@400;500;600&family=Cormorant+Garamond:wght@500;600&family=Manrope:wght@400;500;600&family=Bodoni+Moda:opsz,wght@6..96,400;6..96,500&family=Jost:wght@400;500&family=Eczar:wght@400;500&family=Mukta:wght@400;500;600&family=Poppins:wght@400;500&family=Montserrat:wght@500;600&family=Inter:wght@400;500&family=Gelasio&display=swap">
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Playfair+Display:wght@400;500&family=DM+Serif+Display&family=Fraunces:opsz,wght@9..144,300;9..144,400&family=Libre+Caslon+Display&family=Italiana&family=Marcellus&family=Tenor+Sans&family=Gloock&family=Young+Serif&family=Cinzel:wght@400;500&family=Syne:wght@400;500&family=Space+Grotesk:wght@400;500&family=Archivo:wght@300;400;500&family=Unbounded:wght@300;400&family=Bricolage+Grotesque:wght@400;500&family=Outfit:wght@300;400;500&family=Sora:wght@300;400;500&family=Red+Hat+Display:wght@400;500&family=Poiret+One&family=DM+Sans:wght@400;500;600&family=Hanken+Grotesk:wght@400;500;600&family=Figtree:wght@400;500;600&family=Work+Sans:wght@400;500;600&family=Karla:wght@400;500;600&family=Nunito+Sans:wght@400;500;600&family=IBM+Plex+Sans:wght@400;500;600&family=Lato:wght@400;700&family=Rubik:wght@400;500;600&family=Plus+Jakarta+Sans:wght@400;500;600&family=Albert+Sans:wght@400;500;600&family=Poppins:wght@400;500&family=Gelasio&display=swap">
 <link rel="stylesheet" href="../_shared/tokens.css">
 <link rel="stylesheet" href="../_shared/page.css">
 <style>
-/* ---------- Font pairings (round 2): two families each; "today" keeps the tokens ---------- */
-body[data-fonts='gallery'] { --f-d: 'Instrument Serif', Georgia, serif; --f-t: Geist, system-ui, sans-serif; --d-w: 400; --d-ls: -.01em; }
-body[data-fonts='couture'] { --f-d: 'Cormorant Garamond', Georgia, serif; --f-t: Manrope, system-ui, sans-serif; --d-w: 500; --d-ls: -.01em; }
-body[data-fonts='magazine'] { --f-d: 'Bodoni Moda', Georgia, serif; --f-t: Jost, system-ui, sans-serif; --d-w: 400; --d-ls: -.02em; }
-body[data-fonts='desi'] { --f-d: Eczar, Georgia, serif; --f-t: Mukta, system-ui, sans-serif; --d-w: 400; --d-ls: -.02em; }
-body:not([data-fonts='today']) { --font-hero: var(--f-d); --font-display: var(--f-d); --font-body: var(--f-t); --font-ui: var(--f-t); --font-foot: var(--f-t); }
-body { --d-w: 400; --d-ls: -.01em; }
+/* ---------- Fonts (round 3): one headline font and one text font, picked separately below ---------- */
+body { --fh: 'Playfair Display', Georgia, serif; --ft: 'DM Sans', system-ui, sans-serif; --d-w: 400; --d-ls: -.01em;
+  --font-hero: var(--fh); --font-display: var(--fh); --font-body: var(--ft); --font-ui: var(--ft); --font-foot: var(--ft); }
 
 /* ---------- Mockup layout (not part of the design) ---------- */
 .mk-wrap { padding: 24px; background: #d6d3ce; min-height: 100vh; }
@@ -32,16 +28,15 @@ body { --d-w: 400; --d-ls: -.01em; }
 .today figcaption { font: 12px/1.4 system-ui, sans-serif; color: #444; margin-bottom: 16px; }
 .draft-tag { display: inline-block; margin-left: 6px; padding: 1px 5px; border: 1px dashed currentColor; font: 700 9px/1.4 system-ui, sans-serif; letter-spacing: .08em; text-transform: uppercase; opacity: .8; vertical-align: middle; }
 
-/* Font specimens */
-.specs { display: grid; grid-template-columns: repeat(auto-fit, minmax(300px, 1fr)); gap: 16px; }
-.spec { all: unset; cursor: pointer; display: block; background: var(--canvas); color: var(--ink); border-radius: 12px; padding: 20px; box-shadow: 0 2px 10px rgba(0, 0, 0, .1); outline: 2px solid transparent; }
-.spec[aria-pressed='true'] { outline-color: var(--brand); }
-.spec .n { font: 600 11px/1 system-ui, sans-serif; letter-spacing: .08em; text-transform: uppercase; color: var(--ink-muted); }
-.spec .d { font-family: var(--sd); font-weight: var(--sw); font-size: 44px; line-height: .95; letter-spacing: -.01em; margin: 14px 0 12px; }
-.spec .s { font-family: var(--sd); font-weight: var(--sw); font-size: 22px; margin: 0 0 6px; }
-.spec .t { font-family: var(--st); font-size: 15px; line-height: 1.5; margin: 0 0 10px; color: var(--ink-muted); }
-.spec .u { font-family: var(--st); font-size: 13px; font-weight: 500; display: flex; gap: 14px; }
-.spec .f { font: 400 11px/1.4 system-ui, sans-serif; color: var(--ink-muted); margin-top: 12px; }
+/* Font tiles */
+.fgrid { display: grid; grid-template-columns: repeat(auto-fill, minmax(230px, 1fr)); gap: 10px; margin-bottom: 16px; }
+.ftile { all: unset; cursor: pointer; display: block; background: var(--canvas); color: var(--ink); border-radius: 10px; padding: 14px 16px; outline: 2px solid transparent; outline-offset: -2px; }
+.ftile:hover { outline-color: var(--line); }
+.ftile[aria-pressed='true'] { outline-color: var(--brand); }
+.ftile .nm { display: block; font: 500 11px/1 system-ui, sans-serif; letter-spacing: .04em; color: var(--ink-muted); margin-bottom: 10px; }
+.ftile .hs { display: block; font-size: 34px; line-height: 1; color: #1D1A17; }
+.ftile .ts { display: block; font-size: 15px; line-height: 1.45; color: #000; }
+.ftile .ts b { font-weight: 500; }
 
 /* ---------- Logo (D-077), as apps/web/features/shell/logo.module.css; stays Georgia (the mark is fitted to it) ---------- */
 .logo { font-family: Georgia, Gelasio, 'Times New Roman', serif; font-weight: 400; line-height: 1; text-decoration: none; white-space: nowrap; font-size: 22px; padding: 8px 0 8px 4px; }
@@ -64,10 +59,13 @@ body[data-demo='off'] .banner { display: none; }
 .top.over { position: absolute; inset: 0 0 auto; }
 .hdr { --gut: clamp(12px, 2.2cqi, 32px); display: flex; align-items: center; gap: clamp(18px, 2.2cqi, 32px); height: 72px; padding: 0 var(--gut); font: 500 14px/1 var(--font-ui); letter-spacing: .02em; }
 .hdr.solid { background: var(--canvas); color: var(--ink); box-shadow: 0 1px 0 var(--line); }
-.hdr.photo { color: #fff; background: linear-gradient(to bottom, rgb(20 17 15 / .55), rgb(20 17 15 / 0)); }
+.hdr.photo { color: #000; }
+body[data-hhead='solid'] .top.over { position: relative; }
+body[data-hhead='solid'] .hdr.photo { background: var(--canvas); box-shadow: 0 1px 0 var(--line); }
+body[data-hhead='solid'] .hdr.photo .logo { opacity: 1; }
+.vp:has(> .top.over) { display: flex; flex-direction: column; }
+.vp:has(> .top.over) .hero { flex: 1 1 auto; min-height: 0; height: auto; }
 .hdr.photo .logo { opacity: 0; } /* fades in as the hero scrolls away (approved, D-053) */
-.hdr.photo .links > a, .hdr.photo .srch:not(:hover):not(.is-open) { text-shadow: 0 1px 10px rgb(20 17 15 / .45); }
-.hdr.photo .icon { filter: drop-shadow(0 1px 6px rgb(20 17 15 / .45)); }
 .hdr .logo { margin-right: auto; }
 .hdr a { color: inherit; text-decoration: none; }
 .links { display: flex; align-items: center; gap: inherit; }
@@ -107,7 +105,7 @@ body[data-bag='empty'] .count { display: none; }
 /* Phone side panel: slides in from the right over the page and leaves the same way (same easing both ways). */
 .nav-toggle { position: absolute; opacity: 0; pointer-events: none; }
 .scrim { position: absolute; inset: 0; z-index: 30; background: rgb(20 17 15 / .4); opacity: 0; pointer-events: none; transition: opacity 420ms cubic-bezier(.65, 0, .35, 1); }
-.panel { position: absolute; top: 0; right: 0; bottom: 0; z-index: 31; width: min(86%, 360px); background: var(--canvas); color: var(--ink); padding: 6px 16px 24px 20px; transform: translateX(105%); transition: transform 420ms cubic-bezier(.65, 0, .35, 1); box-shadow: -12px 0 32px rgb(20 17 15 / .18); display: flex; flex-direction: column; }
+.panel { position: absolute; top: 0; right: 0; bottom: 0; z-index: 31; width: min(86%, 360px); background: var(--canvas); color: var(--ink); padding: 6px 16px 24px 20px; transform: translateX(105%); transition: transform 420ms cubic-bezier(.65, 0, .35, 1); border-left: 1px solid var(--line); display: flex; flex-direction: column; }
 .vp:has(.nav-toggle:checked) .scrim { opacity: 1; pointer-events: auto; }
 .vp:has(.nav-toggle:checked) .panel { transform: none; }
 .panel .x { align-self: flex-end; margin-right: -10px; }
@@ -118,15 +116,22 @@ body[data-bag='empty'] .count { display: none; }
 .panel .small { margin-top: 20px; }
 .panel .small a { display: block; padding: 10px 0; font: 500 15px/1.2 var(--font-ui); color: var(--ink-muted); text-decoration: none; }
 
-/* ---------- Home hero: the name sits low on the right, over a soft bottom fade ---------- */
-.hero { position: relative; height: 100%; background: #222 url(../../mockups/assets/hero-mood-2.webp) 30% 20% / cover no-repeat; }
-.hero::after { content: ''; position: absolute; inset: 0; background: radial-gradient(120% 75% at 100% 100%, rgb(20 17 15 / .7), rgb(20 17 15 / .35) 45%, rgb(20 17 15 / 0) 75%); }
-.hero .name { text-shadow: 0 2px 24px rgb(20 17 15 / .35); }
-.hero .name { position: absolute; z-index: 1; right: clamp(16px, 2.2cqi, 32px); bottom: clamp(28px, 6cqi, 72px); text-align: right; color: #fff; }
-.hero h1 { margin: 0; font: var(--d-w) clamp(58px, 9.6cqi, 150px)/.9 var(--font-hero); letter-spacing: var(--d-ls); }
+/* ---------- Home hero: the name on the photo's white wall at every size, right-aligned to the screen ----------
+ * The wall in image pixels (1117 x 1409): x 690 - 1117, y 335 - 670 (between the disc and the bench, right of her hair).
+ * --W/--H/--L/--T repeat what background-size: cover and background-position do, so the name is placed and sized on
+ * the wall itself: centred on the wall's middle (y 502), its width capped by the wall's width, its size by both. */
+.hero { position: relative; height: 100%; container-type: size; background: #222 url(../../mockups/assets/hero-mood-2.webp) 85% 20% / cover no-repeat;
+  --ar: .7928; --px: .85; --py: .2;
+  --W: max(100cqw, 100cqh * var(--ar)); --H: calc(var(--W) / var(--ar));
+  --L: calc((100cqw - var(--W)) * var(--px)); --T: calc((100cqh - var(--H)) * var(--py));
+  --gut: clamp(16px, 2.2cqw, 32px);
+  --avail: calc(100cqw - var(--gut) - var(--L) - var(--W) * .6177);
+  --fs: min(calc(var(--avail) / var(--k, 4.4) * .74), calc(var(--H) * .057), 108px); }
+.hero .name { position: absolute; right: var(--gut); top: calc(var(--T) + var(--H) * .3567); transform: translateY(-50%); max-width: var(--avail); text-align: right; }
+.hero h1 { margin: 0; font: var(--d-w) var(--fs)/.95 var(--font-hero); letter-spacing: var(--d-ls); color: #1D1A17; }
 .hero h1 span { display: block; }
-.hero p { margin: clamp(14px, 1.6cqi, 22px) 0 0; font: 400 clamp(15px, 1.25cqi, 18px)/1.3 var(--font-body); }
-.hero p a { color: inherit; text-underline-offset: 4px; text-decoration-thickness: 1px; white-space: nowrap; }
+.hero p { margin: calc(var(--fs) * .3) 0 0; font: 400 clamp(12px, calc(var(--fs) * .2), 18px)/1.35 var(--font-body); color: #000; }
+.hero p a { color: inherit; text-underline-offset: 3px; text-decoration-thickness: 1px; white-space: nowrap; }
 
 /* Sample content under the header (context only). */
 .page-sample { padding: 32px clamp(16px, 2.2cqi, 32px); }
@@ -185,15 +190,14 @@ body[data-bag='empty'] .tabs .badge { display: none; }
 @media (prefers-reduced-motion: reduce) { .srch, .srch *, .panel, .scrim { transition: none !important; } }
 </style>
 </head>
-<body data-demo="on" data-bag="full" data-fonts="gallery">
+<body data-demo="on" data-bag="full" data-hhead="solid">
 <div class="mk-bar">
-  <strong>IWC design pass · 1 shell · round 2</strong>
-  <span>Fonts</span>
-  <button type="button" data-set="fonts" data-val="gallery" aria-pressed="true">1 Gallery</button>
-  <button type="button" data-set="fonts" data-val="couture" aria-pressed="false">2 Couture</button>
-  <button type="button" data-set="fonts" data-val="magazine" aria-pressed="false">3 Magazine</button>
-  <button type="button" data-set="fonts" data-val="desi" aria-pressed="false">4 Desi type</button>
-  <button type="button" data-set="fonts" data-val="today" aria-pressed="false">Today</button>
+  <strong>IWC design pass · 1 shell · round 3</strong>
+  <span>Headline: <b id="fh-name">Playfair Display</b> · Text: <b id="ft-name">DM Sans</b></span>
+  <span class="sep"></span>
+  <span>Home header</span>
+  <button type="button" data-set="hhead" data-val="photo" aria-pressed="false">On the photo</button>
+  <button type="button" data-set="hhead" data-val="solid" aria-pressed="true">Solid</button>
   <span class="sep"></span>
   <span>Banner</span>
   <button type="button" data-set="demo" data-val="on" aria-pressed="true">On</button>
@@ -215,12 +219,15 @@ body[data-bag='empty'] .tabs .badge { display: none; }
     </div>
   </details>
 
-  <h2 class="mk-h">Fonts · pick one (click a card or use the bar; the whole mockup switches)</h2>
-  <p class="mk-p">Two families instead of today's five: one for the hero, headings and product titles, one for everything else. The logo stays in Georgia, because its India outline is fitted to Georgia's I; changing it means redrawing the mark's fit.</p>
-  <div class="specs" id="specs"></div>
+  <h2 class="mk-h">Fonts · pick a headline font and a text font (click a tile; the whole mockup switches)</h2>
+  <p class="mk-p">Headline: the hero name, page and section headings, product titles. Text: everything else (nav, buttons, paragraphs, prices, footer). All free, so the website and the app can both ship them. The logo stays in Georgia (its India outline is fitted to Georgia's I).</p>
+  <p class="mk-p"><b>Headline font</b></p>
+  <div class="fgrid" id="fonts-h"></div>
+  <p class="mk-p"><b>Text font</b></p>
+  <div class="fgrid" id="fonts-t"></div>
 
   <h2 class="mk-h">Website · Home, first screen</h2>
-  <p class="mk-p">The name sits low on the right over a soft fade, with your line under it; "Start here" jumps to Pick your home. Header: States · Search · About us, then Saved, Bag and Profile as icons. <b>Hover "Search" in any frame</b> to see it turn into the pill.</p>
+  <p class="mk-p">The name stays on the white wall at every size: right-aligned to the screen, centred on the wall, sized to fit it. Headline #1D1A17, the line under it and the nav black; no shade, no blur. On phones the photo shows more of its right side so the wall is there. "Start here" jumps to Pick your home. Header: States · Search · About us, then Saved, Bag and Profile as icons. <b>Hover "Search" in any frame</b> to see it turn into the pill.</p>
   <div data-frame="home" data-widths="1440,1024"></div>
   <div class="mk-row" data-frame="home" data-widths="768,390"></div>
 
@@ -323,13 +330,6 @@ document.getElementById('phones').innerHTML = [
   dev(390, 560, `${header({ active: 'States' })}${sample()}`, '390 · any page'),
 ].join('');
 
-const SPECS = [
-  ['gallery', '1 Gallery', "'Instrument Serif', serif", 'Geist, sans-serif', 400, 'Instrument Serif + Geist. Quiet, modern, lets the photos lead.'],
-  ['couture', '2 Couture', "'Cormorant Garamond', serif", 'Manrope, sans-serif', 500, 'Cormorant Garamond + Manrope. Fashion-house serif, soft and tall.'],
-  ['magazine', '3 Magazine', "'Bodoni Moda', serif", 'Jost, sans-serif', 400, 'Bodoni Moda + Jost. Sharp contrast, a printed-magazine feel.'],
-  ['desi', '4 Desi type', 'Eczar, serif', 'Mukta, sans-serif', 400, 'Eczar + Mukta. Both made by Indian type designers, with Devanagari built in.'],
-];
-document.getElementById('specs').innerHTML = SPECS.map(([k, n, d, t, w, f]) => `<button type="button" class="spec" data-set="fonts" data-val="${k}" aria-pressed="${k === 'gallery'}" style="--sd:${d};--st:${t};--sw:${w}"><span class="n">${n}</span><p class="d">Indian<br>Wholesale Club</p><p class="s">Kasavu saree</p><p class="t">Miss local market? Start here. All 28 states and 8 union territories.</p><span class="u"><span>States</span><span>Search</span><span>About us</span><span>$114.99</span></span><p class="f">${f}</p></button>`).join('');
 
 const tabs = (active) => `<nav class="tabs">${[['home', 'Home'], ['search', 'Explore'], ['bag', 'Bag'], ['heart', 'Saved'], ['person', 'Profile']].map(([i, n]) => `<a href="#"${n === active ? ' aria-current="page"' : ''}>${svg(i)}${n}${n === 'Bag' ? '<span class="badge">3</span>' : ''}</a>`).join('')}</nav><span class="home-ind"></span>`;
 const status = '<div class="status"><span>9:41</span><span>●●● ▮</span></div>';
@@ -338,6 +338,47 @@ document.getElementById('apps').innerHTML = [
   `<div>${cap('Tab root · large title')}<div class="app">${status}<h1 class="large">Explore</h1><div class="search">${svg('search')}Search</div><div class="body"><p class="lbl">States</p><div class="tiles"><div class="ph"></div><div class="ph"></div><div class="ph"></div><div class="ph"></div></div></div>${tabs('Explore')}</div></div>`,
   `<div>${cap('Pushed screen · back bar')}<div class="app">${status}<div class="bar"><button aria-label="Back">${svg('back')}</button><h2>Kerala</h2><span></span></div><div class="region-hero"></div><div class="body"><p class="lbl">New arrivals</p><div class="tiles"><div class="ph"></div><div class="ph"></div></div></div>${tabs('Explore')}</div></div>`,
 ].join('');
+
+const HEAD = [
+  ['Playfair Display', 400, 'serif'], ['DM Serif Display', 400, 'serif'], ['Fraunces', 300, 'serif'], ['Libre Caslon Display', 400, 'serif'],
+  ['Italiana', 400, 'serif'], ['Marcellus', 400, 'serif'], ['Gloock', 400, 'serif'], ['Young Serif', 400, 'serif'], ['Cinzel', 400, 'serif'],
+  ['Tenor Sans', 400, 'sans-serif'], ['Syne', 500, 'sans-serif'], ['Space Grotesk', 400, 'sans-serif'], ['Archivo', 300, 'sans-serif'],
+  ['Unbounded', 300, 'sans-serif'], ['Bricolage Grotesque', 400, 'sans-serif'], ['Outfit', 300, 'sans-serif'], ['Sora', 300, 'sans-serif'],
+  ['Red Hat Display', 400, 'sans-serif'], ['Poiret One', 400, 'sans-serif'], ['Helvetica Neue', 400, "Helvetica, 'TeX Gyre Heros', Arial, sans-serif", 'today'],
+];
+const TEXT = [
+  ['DM Sans'], ['Outfit'], ['Hanken Grotesk'], ['Figtree'], ['Work Sans'], ['Karla'], ['Nunito Sans'], ['IBM Plex Sans'],
+  ['Lato'], ['Rubik'], ['Plus Jakarta Sans'], ['Albert Sans'], ['Poppins', 'today'],
+];
+const stack = (n, fb) => `'${n}', ${fb}`;
+document.getElementById('fonts-h').innerHTML = HEAD.map(([n, w, fb, t], i) => `<button type="button" class="ftile" data-fh="${i}" aria-pressed="${i === 0}"><span class="nm">${n}${t ? ' (today)' : ''}</span><span class="hs" style="font-family:${stack(n, fb)};font-weight:${w}">Indian Wholesale Club</span></button>`).join('');
+document.getElementById('fonts-t').innerHTML = TEXT.map(([n, t], i) => `<button type="button" class="ftile" data-ft="${i}" aria-pressed="${i === 0}"><span class="nm">${n}${t ? ' (today)' : ''}</span><span class="ts" style="font-family:${stack(n, 'system-ui, sans-serif')}">Miss local market? Start here.<br><b>States · Search · About us · $114.99</b></span></button>`).join('');
+
+// "Wholesale" width in em for the headline font: the hero sizes the name so this word fits the wall.
+const setK = async () => {
+  const cs = getComputedStyle(document.body), f = `${cs.getPropertyValue('--d-w').trim()} 100px ${cs.getPropertyValue('--fh').trim()}`;
+  await document.fonts.load(f, 'Wholesale');
+  const c = document.createElement('canvas').getContext('2d'); c.font = f;
+  document.body.style.setProperty('--k', (c.measureText('Wholesale').width / 100).toFixed(3));
+};
+document.addEventListener('click', async (e) => {
+  const h = e.target.closest('[data-fh]'), t = e.target.closest('[data-ft]');
+  if (h) {
+    const [n, w, fb] = HEAD[+h.dataset.fh];
+    document.body.style.setProperty('--fh', stack(n, fb)); document.body.style.setProperty('--d-w', w);
+    document.getElementById('fh-name').textContent = n;
+    document.querySelectorAll('[data-fh]').forEach((x) => x.setAttribute('aria-pressed', x === h));
+    await setK();
+  }
+  if (t) {
+    const [n] = TEXT[+t.dataset.ft];
+    document.body.style.setProperty('--ft', stack(n, 'system-ui, sans-serif'));
+    document.getElementById('ft-name').textContent = n;
+    document.querySelectorAll('[data-ft]').forEach((x) => x.setAttribute('aria-pressed', x === t));
+    await document.fonts.ready; setTimeout(measure, 50);
+  }
+});
+setK();
 
 // Search: mouse-out closes it again unless something was typed (the founder's round-2 rule).
 document.querySelectorAll('.srch').forEach((f) => f.addEventListener('mouseleave', () => {
@@ -359,7 +400,6 @@ fit(); addEventListener('resize', fit);
 document.addEventListener('click', (e) => {
   const b = e.target.closest('[data-set]'); if (!b) return;
   document.body.dataset[b.dataset.set] = b.dataset.val;
-  if (b.dataset.set === 'fonts') document.fonts.ready.then(() => setTimeout(measure, 50));
   document.querySelectorAll(`[data-set="${b.dataset.set}"]`).forEach((x) => x.setAttribute('aria-pressed', x.dataset.val === b.dataset.val));
 });
 </script>
