@@ -1,0 +1,63 @@
+# shell: header, nav, demo banner, footer · app tab bar and screen header
+
+**Surface:** website (every page) + app (every customer screen) · **Code:** `apps/web/features/shell/`
+(`site-header.tsx`, `logo.tsx`, `demo-banner.tsx`, `site-footer.tsx`; Home's header look in `apps/web/app/globals.css`),
+`apps/app/app/(customer)/_layout.tsx` · **Status:** mockup, round 1
+
+## The page's job
+The frame around every page: say where you are (logo), get you anywhere in one tap (states, clothing, spices, search,
+account, bag), and stay out of the photographs' way. On Home it sits on the hero photo until you scroll past it.
+
+## What it shows
+Logo text with the India-I (D-077) · nav: States, Clothing, Spices, Search, Account, Bag with its count · the demo
+banner while the demo round runs (D-078) · footer: name and line, Shop / Help / About links, map credit (D-052).
+No admin link anywhere (D-006). App: tabs Home · Explore · Bag · Saved · Profile (`storefront.md` §Mobile app).
+
+## Today (production, 2026-10-07; crops in `today/`)
+1. **Phones (390):** the nav does not fit on one row. It wraps under the logo, so the header is 123 px tall
+   (`header-page-390.png`). There is no menu.
+2. **Home, every width:** the fixed header sits on top of the demo banner, so the links overlap the banner's text
+   (`header-home-*.png`). At 390 it is unreadable.
+3. **Demo banner:** four lines on a phone (about 90 px). With the two-row header, 190 px of chrome sits above
+   every page before any content.
+4. **Bag:** says "Bag" with no count when empty and no visible badge style when not, so the most useful number in the
+   header is easy to miss.
+5. **No "you are here":** the current section is not marked in the nav.
+6. **Home hero at 390:** the brand name's last word ("Club") is cut by the bottom of the first screen (844 px tall).
+   This belongs to `home`, noted here because the header's height causes part of it.
+7. **Footer:** works at both widths. At 390 the name breaks over two lines next to Shop, and the columns are uneven.
+8. **App:** the stock tab bar: system font labels, Ionicons outlines, no brand touch; each screen draws its own header.
+
+## Founder's direction
+"Let's refine what's approved" (2026-10-07). Customer side first, every device, then admin.
+
+## Design (round 1 proposal)
+Kept: the logo, the nav words and order, the cream solid header, transparent on the Home photo with the logo fading in,
+Montserrat 13 px links, the dark footer in Inter with four columns on desktop.
+
+Refined:
+- **One row at every width.** 1440 and 1024: as today, plus the current section underlined and Bag with a count pill.
+  768: the same row, gaps tighter. 390: the logo at 18 px, then the Bag icon with its count, then **Menu**. Header 56 px.
+- **Phone menu:** a full-screen cream sheet: the six places in the hero font at 30 px, then Track an order, How it
+  works, Contact in small text. Built as `<details>` + CSS, so no new client JavaScript (D-011, PR-1).
+- **Demo banner:** one line, above the header on every page including Home (the header starts below it, never on top
+  of it). Phones get the short line, and "Test card" opens the card details. The banner copy is a draft.
+- **Bag count:** a small pill in the brand colour once something is in the bag; nothing when empty.
+- **Footer at 390:** the name and line on their own row, then Shop and Help side by side, About under Shop.
+- **App tab bar:** cream background with a hairline on top, Montserrat 11 px labels, the active tab in ink with a short
+  brand-colour bar above its icon, the inactive tabs in ink-muted, the Bag badge in the brand colour. Line icons at
+  1.5 px stroke to match the logo's outline.
+- **App screen header:** tab roots get a large title in the hero font (32 px, left), pushed screens a 56 px bar with a
+  44 px back button and a 17 px title.
+
+States shown: on the photo, solid, phone menu open, bag empty and with 3 pieces, demo banner on and off.
+
+## Needs
+- Banner copy shortened (draft, D-059); the founder approves or rewrites it.
+- Footer name: D-077 kept "The Indian Wholesale Club" in the footer "until the founder says otherwise". The mockup keeps
+  it. Question for the founder: should the footer use the new logo text too?
+
+## Rounds
+| Date | Round | Founder's notes | Changed |
+|---|---|---|---|
+| 2026-10-07 | 1 | (waiting) | first proposal |

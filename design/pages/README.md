@@ -30,81 +30,54 @@ Status words: `—` not started · `brief` · `mockup` (in review, round n) · `
 |---|---|
 | Website (customer) | 1440 desktop · 1024 small laptop / tablet landscape · 768 tablet · 390 phone |
 | App (customer and admin) | 390 × 844 phone frame (and 430 for large phones where the layout changes) |
+
+"Today" screenshots of the website are taken from production (read only) with the repo's Playwright at each width;
+they live in the scratchpad, not in the repo.
 | Web admin | 1440 desktop · 390 phone (admins work on phones, `docs/admin.md`) |
 
 ## Page register
-Order is a suggestion: shared pieces first, then the paths a customer walks most.
+Order (founder, 2026-10-07): the customer side first, each page at every size on the website and in the app together,
+then the admin side. The pass **refines the approved design** (D-050 – D-055, D-077); it does not replace it.
 
-### 0. Shared pieces (used by every page)
-| id | Piece | Code today | Status |
-|---|---|---|---|
-| `web-shell` | Website header, nav, search entry, bag count, footer | `apps/web/features/shell/` | — |
-| `app-shell` | App tab bar, screen header, toasts | `apps/app/app/(customer)/_layout.tsx` | — |
-| `cards` | Product card, region stamp, sideways row with See all, pills | `apps/web/features/catalog/`, `apps/app/features/catalog/` | — |
-| `admin-shell` | Web admin nav and page frame; app admin tabs | `apps/web/features/admin/ui.tsx`, `apps/app/app/admin/(tabs)/_layout.tsx` | — |
-| `emails` | Customer emails (one layout, every message) | `apps/web/lib/email/` | — |
+### Part 1: customer side (website at 1440 · 1024 · 768 · 390, and the app)
+| # | id | Website (`apps/web/app/(store)/`) | App (`apps/app/app/`) | Status |
+|---|---|---|---|---|
+| 1 | `shell` | header, nav, demo banner, footer (`features/shell/`) | tab bar, screen header (`(customer)/_layout.tsx`) | mockup, round 1 |
+| 2 | `home` | `/` | `(customer)/index` | — |
+| 3 | `cards` | product card, region stamp, sideways row + See all, pills | same parts (`features/catalog/`) | — |
+| 4 | `region` | `/states/[region]` | `region/[slug]` | — |
+| 5 | `product` | `/states/[region]/[product]` | `product/[region]/[slug]` | — |
+| 6 | `states` | `/states` | `(customer)/explore` (regions part) | — |
+| 7 | `browse` | `/clothing`, `/spices` | `browse`, `(customer)/explore` | — |
+| 8 | `search` | `/search` | search in `(customer)/explore` | — |
+| 9 | `bag` | `/cart` | `(customer)/bag` | — |
+| 10 | `checkout` | `/checkout`, `/checkout/success` | `checkout` | — |
+| 11 | `order` | `/orders/lookup`, `/orders/[number]` | `order/lookup`, `order/[number]` | — |
+| 12 | `account` | `/account`, `/account/orders`, `/account/addresses`, `/account/saved` | `(customer)/profile`, `addresses`, `(customer)/saved` | — |
+| 13 | `review` | `/account/reviews/[productId]` | (opens the website) | — |
+| 14 | `auth` | `/login`, `/signup` | `auth/login`, `auth/signup` | — |
+| 15 | `info` | `/about`, `/how-it-works`, `/faq`, `/contact`, `/shipping-returns`, `/privacy`, `/terms` | — | — |
+| 16 | `errors` | not found, error | error and empty states | — |
+| 17 | `emails` | customer emails (`lib/email/`) | — | — |
 
-### 1. Website, customer (`apps/web/app/(store)/`)
-| id | Route | Status |
-|---|---|---|
-| `web-home` | `/` | — |
-| `web-states` | `/states` | — |
-| `web-region` | `/states/[region]` | — |
-| `web-product` | `/states/[region]/[product]` | — |
-| `web-browse` | `/clothing`, `/spices` | — |
-| `web-search` | `/search` | — |
-| `web-bag` | `/cart` | — |
-| `web-checkout` | `/checkout`, `/checkout/success` | — |
-| `web-order` | `/orders/lookup`, `/orders/[number]` | — |
-| `web-account` | `/account`, `/account/orders`, `/account/addresses`, `/account/saved` | — |
-| `web-review` | `/account/reviews/[productId]` | — |
-| `web-auth` | `/login`, `/signup` | — |
-| `web-info` | `/about`, `/how-it-works`, `/faq`, `/contact`, `/shipping-returns`, `/privacy`, `/terms` | — |
-| `web-404` | not found and error pages | — |
-
-### 2. App, customer (`apps/app/app/`)
-| id | Screen | Status |
-|---|---|---|
-| `app-home` | `(customer)/index` | — |
-| `app-explore` | `(customer)/explore` | — |
-| `app-region` | `region/[slug]` | — |
-| `app-product` | `product/[region]/[slug]` | — |
-| `app-browse` | `browse` | — |
-| `app-bag` | `(customer)/bag` | — |
-| `app-checkout` | `checkout` | — |
-| `app-saved` | `(customer)/saved` | — |
-| `app-profile` | `(customer)/profile`, `addresses` | — |
-| `app-order` | `order/[number]`, `order/lookup` | — |
-| `app-auth` | `auth/login`, `auth/signup` | — |
-
-### 3. Web admin (`apps/web/app/admin/`)
-| id | Route | Status |
-|---|---|---|
-| `admin-login` | `/admin/login` | — |
-| `admin-today` | `/admin` | — |
-| `admin-orders` | `/admin/orders`, `/admin/orders/[id]` | — |
-| `admin-cycles` | `/admin/cycles`, `/admin/cycles/[id]`, `/admin/cycles/[id]/documents` | — |
-| `admin-listings` | `/admin/listings` | — |
-| `admin-catalog` | `/admin/catalog`, `/admin/catalog/[id]` | — |
-| `admin-vendors` | `/admin/vendors` | — |
-| `admin-payouts` | `/admin/payouts` | — |
-| `admin-regions` | `/admin/regions`, `/admin/regions/[id]` | — |
-| `admin-reviews` | `/admin/reviews` | — |
-| `admin-returns` | `/admin/returns` | — |
-| `admin-customers` | `/admin/customers` | — |
-| `admin-promotions` | `/admin/promotions` | — |
-| `admin-insights` | `/admin/insights` | — |
-| `admin-settings` | `/admin/settings` | — |
-
-### 4. App admin (`apps/app/app/admin/`)
-| id | Screen | Status |
-|---|---|---|
-| `appadmin-today` | `(tabs)/index` | — |
-| `appadmin-orders` | `(tabs)/orders`, `order/[id]` | — |
-| `appadmin-cycles` | `(tabs)/cycles`, `cycle/[id]` | — |
-| `appadmin-listings` | `(tabs)/listings`, `listing/new` | — |
-| `appadmin-payouts` | `(tabs)/payouts` | — |
-| `appadmin-vendors` | `(tabs)/vendors` | — |
+### Part 2: admin side (web admin at 1440 · 390, and the app's admin mode)
+| # | id | Web (`apps/web/app/admin/`) | App (`apps/app/app/admin/`) | Status |
+|---|---|---|---|---|
+| 18 | `admin-shell` | nav and page frame (`features/admin/ui.tsx`), `/admin/login` | admin tabs (`(tabs)/_layout.tsx`) | — |
+| 19 | `admin-today` | `/admin` | `(tabs)/index` | — |
+| 20 | `admin-orders` | `/admin/orders`, `/admin/orders/[id]` | `(tabs)/orders`, `order/[id]` | — |
+| 21 | `admin-cycles` | `/admin/cycles`, `/admin/cycles/[id]`, `…/documents` | `(tabs)/cycles`, `cycle/[id]` | — |
+| 22 | `admin-listings` | `/admin/listings` | `(tabs)/listings`, `listing/new` | — |
+| 23 | `admin-catalog` | `/admin/catalog`, `/admin/catalog/[id]` | — | — |
+| 24 | `admin-vendors` | `/admin/vendors` | `(tabs)/vendors` | — |
+| 25 | `admin-payouts` | `/admin/payouts` | `(tabs)/payouts` | — |
+| 26 | `admin-regions` | `/admin/regions`, `/admin/regions/[id]` | — | — |
+| 27 | `admin-reviews` | `/admin/reviews` | — | — |
+| 28 | `admin-returns` | `/admin/returns` | — | — |
+| 29 | `admin-customers` | `/admin/customers` | — | — |
+| 30 | `admin-promotions` | `/admin/promotions` | — | — |
+| 31 | `admin-insights` | `/admin/insights` | — | — |
+| 32 | `admin-settings` | `/admin/settings` | — | — |
 
 ## Viewing the mockups
 The `mockups` entry in `.claude/launch.json` serves `design/` on port 4321, so the old mockup is at
