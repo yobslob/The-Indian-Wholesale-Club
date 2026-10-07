@@ -25,3 +25,30 @@
 .rarr:disabled { opacity: 0; pointer-events: none; }
 @container (max-width: 767px) { .rarr { display: none; } }
 
+
+/* Open-state stamps (D-080): perforated stamp, photo, name, postmark with the delivery window; pages of 6 from 7. */
+.stamps { display: grid; grid-template-columns: repeat(3, minmax(0, 1fr)); gap: var(--gap); }
+/* More than 6 open states: pages of 6 (3 x 2) that slide sideways, with an arrow on each side (founder, home round 3). */
+.spager { position: relative; }
+.spages { display: flex; overflow-x: auto; scroll-snap-type: x mandatory; scrollbar-width: none; margin: -14px -28px -16px 0; }
+.spages::-webkit-scrollbar { display: none; }
+.spages > .stamps { flex: 0 0 100%; box-sizing: border-box; padding: 14px 28px 16px 0; scroll-snap-align: start; align-content: start; }
+.sarr { all: unset; cursor: pointer; position: absolute; top: 50%; z-index: 3; width: 40px; height: 40px; transform: translateY(-50%); display: grid; place-items: center; border-radius: 50%; border: 1px solid var(--line); background: rgb(251 248 243 / .95); color: var(--ink); font: 16px/1 var(--font-ui); transition: opacity .2s; }
+.sarr.l { left: -14px; } .sarr.r { right: -14px; }
+.sarr:disabled { opacity: 0; pointer-events: none; }
+.spager .spcount { display: block; margin-top: 10px; text-align: center; font: 500 12px/1 var(--font-ui); color: var(--ink-muted); }
+.stamp { position: relative; display: block; padding: 9px; color: #000; text-decoration: none; background: radial-gradient(circle at 50% 50%, transparent 3.6px, var(--paper) 4.2px) -6px -6px / 12px 12px; filter: drop-shadow(0 6px 10px rgb(30 27 22 / .12)); transition: transform .35s cubic-bezier(.19, 1, .22, 1); }
+.stamp[hidden] { display: none; }
+.stamp:hover, .stamp.on { transform: translateY(-4px) rotate(-1.2deg); }
+.stamp .face { position: relative; display: block; aspect-ratio: 4 / 5; overflow: hidden; background-color: var(--brand); background-size: cover; background-position: center; outline: 1px solid var(--line); outline-offset: -1px; }
+.stamp .face.ph { background-color: var(--land); }
+.stamp .caption { display: flex; align-items: baseline; justify-content: space-between; gap: 6px; padding: 8px 4px 2px; background: var(--paper); }
+.stamp .caption em { font: 400 clamp(15px, 1.3cqi, 19px)/1.1 var(--font-display); font-style: normal; }
+.stamp .caption b { font: 600 9px/1 var(--font-ui); letter-spacing: .14em; text-transform: uppercase; color: var(--brand); }
+.postmark { position: absolute; top: -8%; right: -12%; width: 46%; pointer-events: none; opacity: .75; color: var(--brand); mix-blend-mode: multiply; transform: rotate(-14deg); }
+.stamp:nth-child(3n + 2) .postmark { top: 30%; transform: rotate(9deg); }
+.stamp:nth-child(3n) .postmark { top: 2%; transform: rotate(-4deg); }
+.postmark .ring { font: 600 8.2px/1 var(--font-ui); letter-spacing: 1.2px; fill: currentColor; }
+.postmark .mid { font: italic 13px/1 Georgia, Gelasio, serif; fill: currentColor; }
+@container (max-width: 480px) { .stamps { gap: 8px; } .stamp { padding: 7px; } .stamp .caption b { display: none; } .stamp .caption em { font-size: min(11.5px, 2.65cqi); letter-spacing: -.01em; } }
+/* Cinzel runs wider than Georgia: stamp names shrink on phones so "Maharashtra" fits (home round 2). */

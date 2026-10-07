@@ -30,12 +30,8 @@
 .sec h2 { margin: 0 0 16px; font: 500 clamp(22px, 2cqi, 30px)/1.1 var(--font-heading); letter-spacing: -.01em; color: #1D1A17; }
 .nores { margin: 0; font: 400 15px/1.5 var(--font-body); color: var(--ink-muted); }
 .lbl { margin: clamp(28px, 3cqi, 40px) 0 12px; font: 600 11px/1 var(--font-ui); letter-spacing: .16em; text-transform: uppercase; color: var(--ink-muted); }
-/* State results: today's state card (name, greeting, tagline). */
-.scards { display: grid; grid-template-columns: repeat(auto-fill, minmax(260px, 1fr)); gap: var(--gap); }
-.scard { display: block; padding: 20px; border-radius: var(--radius-lg); border: 1px solid var(--line); background: var(--paper); color: #000; text-decoration: none; }
-.scard b { display: block; font: 400 22px/1.1 var(--font-display); }
-.scard i { display: block; margin-top: 6px; font-style: normal; font-size: 15px; color: var(--ink-muted); }
-.scard span { display: block; margin-top: 6px; font: 400 13px/1.4 var(--font-body); color: var(--ink-muted); }
+/* State results and open states as the D-080 stamps (founder, search round 2), three across at most 660 px. */
+.sstamps { max-width: 660px; }
 .bgrid { list-style: none; margin: 0; padding: 0; display: grid; grid-template-columns: repeat(2, minmax(0, 1fr)); gap: clamp(28px, 3cqi, 44px) var(--gap); }
 .bgrid .card { width: auto; }
 @container (min-width: 1280px) { .bgrid { grid-template-columns: repeat(4, minmax(0, 1fr)); } }
@@ -44,7 +40,7 @@
 </head>
 <body data-demo="on" data-bag="full">
 <div class="mk-bar">
-  <strong>IWC design pass · 8 search · round 1</strong>
+  <strong>IWC design pass · 8 search · round 2</strong>
   <span>Results as on production (demo round)</span>
   <span class="sep"></span>
   <span>Banner</span>
@@ -78,11 +74,10 @@ const RESULTS = {
   kerala: { states: ['kerala'], items: parse('Block-printed Kerala saree|$69.99|Kerala;Davani|$142.99|Kerala;Hand-painted Kerala saree|$179.99|Kerala;Kalamkari Kerala saree|$165.99|Kerala;Mundu|$30.99|Kerala;Set-mundu|$139.99|Kerala') },
 };
 const OPEN = ['assam', 'delhi', 'kerala', 'maharashtra', 'punjab'];
-const TAGLINE = { kerala: "Kasavu for Onam, banana chips in coconut oil, and pickle packed like it's crossing an ocean." }; // the only tagline live today
 const JUST = parse('Cotton mekhela chador|$115.99|Assam;Japan-fit baggy jeans|$80.99|Delhi;Kasavu saree|$114.99|Kerala;Paithani saree|$575.99|Maharashtra;Phulkari dupatta|$33.99|Punjab;Bootcut jeans|$57.99|Delhi;Gamosa|$23.99|Assam;Patiala salwar suit|$121.99|Punjab');
-const stateCard = (slug) => { const r = IWC.regions.find((x) => x.slug === slug); return `<a class="scard" href="#"><b>${r.name}</b>${r.greeting ? `<i>${r.greeting}</i>` : ''}${TAGLINE[slug] ? `<span>${TAGLINE[slug]}</span>` : ''}</a>`; };
+const stamps = (slugs) => `<div class="sstamps">${stampsBlock(IWC.regions.filter((r) => slugs.includes(r.slug)))}</div>`;
 const rowHtml = (label, cards) => `<div class="rowwrap"><ul class="row" aria-label="${label}">${cards.map(card).join('')}</ul><button class="rarr l" type="button" aria-label="Scroll ${label} back" disabled>←</button><button class="rarr r" type="button" aria-label="Scroll ${label} on">→</button></div>`;
-const startWith = () => `<p class="lbl">Open now</p><div class="scards">${OPEN.map(stateCard).join('')}</div>
+const startWith = () => `<p class="lbl">Open now</p>${stamps(OPEN)}
   <section class="sec"><div class="sec-h"><h2>Just listed</h2><a class="pill" href="#">See all</a></div>${rowHtml('Just listed', JUST)}</section>`;
 const plural = (n, w) => `${n} ${w}${n === 1 ? '' : 's'}`;
 
@@ -91,7 +86,7 @@ const searchPage = (q) => {
   const count = r ? `<p class="rcount">${r.states.length ? `<b>${plural(r.states.length, 'state')}</b> and ` : ''}<b>${plural(r.items.length, 'piece')}</b> for “${q}”</p>` : '';
   const body = !q ? startWith()
     : !r ? `<section class="sec"><h2>Products</h2><p class="nores">No products match “${q}”.</p></section>${startWith()}`
-    : `${r.states.length ? `<section class="sec"><h2>States</h2><div class="scards">${r.states.map(stateCard).join('')}</div></section>` : ''}
+    : `${r.states.length ? `<section class="sec"><h2>States</h2>${stamps(r.states)}</section>` : ''}
        <section class="sec"><h2>Products</h2><ul class="bgrid">${r.items.map(card).join('')}</ul></section>`;
   return `<div class="sr"><h1>Search</h1>
     <form class="sbox" role="search" onsubmit="return false"><label><input type="search" value="${q}" placeholder="Search" aria-label="Search"><button class="go-i" type="submit" aria-label="Search">${svg('search')}</button></label><button class="go" type="submit">Search</button></form>
@@ -103,6 +98,7 @@ document.querySelectorAll('[data-s]').forEach((el) => {
 });
 shellInit();
 initRows();
+initStampPagers();
 </script>
 </body>
 </html>

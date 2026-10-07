@@ -761,3 +761,13 @@ fonts with the + on every card, and:
   menu's motion (D-079): State and Category as lists with counts, the current ones ticked, Clear; choosing a row applies
   it and closes the panel. Once the page is scrolled the bar shrinks to a round icon-only button in the same place.
 The grid's columns stay as today (2 below 1280 px, 4 from 1280).
+
+**D-085 · 2026-10-08 · founder: The search page, from the design pass**
+Founder, verbatim: asked as options (`design/pages/search/brief.md`): "Count with the words", "No dead end on no
+results", "Something to start with", "Icon button on phones". On round 1 of `design/pages/search/mockup.html`: "the
+state cards in search page should have the stamp as they are looking very stale. rest approved move onto next".
+What it means for the build: `/search` keeps today's page (D-067) in the D-079 / D-080 fonts with the + on every card,
+and: a **count with the words** under the box ("24 pieces for “saree”", "1 state and 6 pieces for “kerala”"; draft
+wording, approved with the mockup); matching **states shown as the D-080 stamps** (not plain cards); on **no results**,
+today's message, then the open states as stamps and the Just listed row; on an **empty search**, the same two blocks;
+on **phones**, a round search icon inside the right end of the box instead of the Search button.

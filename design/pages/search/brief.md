@@ -1,7 +1,7 @@
 # search: the results page (website + app Explore search)
 
 **Surface:** website `/search?q=` (where Enter in the header's search pill leads, D-079) + the search in app
-`(customer)/explore` · **Code:** `apps/web/app/(store)/search/page.tsx` · **Status:** mockup, round 1
+`(customer)/explore` · **Code:** `apps/web/app/(store)/search/page.tsx` · **Status:** approved D-085 (2026-10-08), not built yet
 
 ## The page's job
 Answer "do you have …?" fast: matching states first, then pieces; never leave the visitor at a dead end.
@@ -34,3 +34,4 @@ None (the count line is draft copy for approval).
 | Date | Round | Founder's notes | Changed |
 |---|---|---|---|
 | 2026-10-08 | 1 | the options above | first proposal |
+| 2026-10-08 | 2 | "the state cards in search page should have the stamp as they are looking very stale. rest approved move onto next" | states as the D-080 stamps (moved to `_shared/cards.*`, Home pixel-identical); approved as D-085 |
