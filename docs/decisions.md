@@ -817,3 +817,17 @@ parcel" button with the carrier's link once shipped, D-066), a **timeline** Conf
 Delivered drawn as a line that fills to the current step with each reached step's date from the order's updates (none
 for cancelled or refunded orders, as today), and **a photo on each item**. The faster-delivery offer, the cancel / keep
 choices and returns stay as built (D-042, D-064, D-071, D-072).
+
+**D-089 · 2026-10-08 · founder: The profile (account) page, from the design pass**
+Founder, verbatim: asked as options (`design/pages/account/brief.md`): "One profile page, sections", "Orders as cards",
+"Heart to unsave", "Sign in on the profile page". On round 1 of `design/pages/account/mockup.html`: "change the big
+buttons of edit and remove with icons of pencil and minus in the corner of the card, rest is approved, move to next".
+What it means for the build: what the profile icon opens is **one page with four sections**, Orders · Saved ·
+Addresses · Your details (a list on the left on desktop, pill tabs on phones; each section keeps its own address), Sign
+out at the foot. **Orders** are cards (the first piece's photo with "+n", number, placed date and delivery window, the
+status as a label, the total; the card opens the order page, D-088). **Saved** uses the standard cards with a **filled
+heart on the photo that removes** the piece. **Addresses** are cards with Default and "Make default", and **Edit and
+Remove as a pencil and a minus icon in the card's corner**; "Add an address" opens today's form. **Your details**: the
+email, full name, phone, Save. **Signed out**, the profile page itself shows a sign-in card (email, password; "New
+here? Create an account" turns it into account creation with full name) instead of a jump to `/login` (D-087).
+The two one-line leads on the sign-in card are draft wording, approved with the mockup.

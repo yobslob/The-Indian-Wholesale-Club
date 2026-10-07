@@ -53,7 +53,7 @@ app's customer screens, then the admin side. The pass **refines the approved des
 | 9 | `bag` | `/cart` | `(customer)/bag` | approved D-086 |
 | 10 | `checkout` | `/checkout`, `/checkout/success` | `checkout` | approved D-087 |
 | 11 | `order` | `/orders/lookup`, `/orders/[number]` | `order/lookup`, `order/[number]` | approved D-088 |
-| 12 | `account` | `/account`, `/account/orders`, `/account/addresses`, `/account/saved` | `(customer)/profile`, `addresses`, `(customer)/saved` | mockup, round 1 |
+| 12 | `account` | `/account`, `/account/orders`, `/account/addresses`, `/account/saved` | `(customer)/profile`, `addresses`, `(customer)/saved` | approved D-089 |
 | 13 | `review` | `/account/reviews/[productId]` | (opens the website) | — |
 | 14 | `auth` | `/login`, `/signup` | `auth/login`, `auth/signup` | — |
 | 15 | `info` | `/about`, `/how-it-works`, `/faq`, `/contact`, `/shipping-returns`, `/privacy`, `/terms` | — | — |

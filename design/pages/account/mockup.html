@@ -51,9 +51,14 @@
 .unsave svg { width: 20px; height: 20px; fill: currentColor; }
 /* Addresses. */
 .acards { display: grid; grid-template-columns: repeat(auto-fill, minmax(260px, 1fr)); gap: 12px; }
-.adr { padding: 18px; border-radius: var(--radius-lg); background: var(--paper); border: 1px solid var(--line); font: 400 14px/1.5 var(--font-body); color: #000; }
+.adr { position: relative; padding: 18px 96px 18px 18px; border-radius: var(--radius-lg); background: var(--paper); border: 1px solid var(--line); font: 400 14px/1.5 var(--font-body); color: #000; }
 .adr b { font: 600 15px/1.3 var(--font-ui); } .adr .def { margin-left: 8px; padding: 3px 8px; border-radius: var(--radius-pill); background: var(--surface); font: 600 11px/1 var(--font-ui); color: var(--ink-muted); }
 .adr p { margin: 6px 0 14px; color: var(--ink-muted); }
+/* Edit and Remove as icons in the card's corner (founder, account round 2). */
+.adr .corner { position: absolute; top: 8px; right: 8px; display: flex; gap: 4px; }
+.ib2 { all: unset; cursor: pointer; width: 40px; height: 40px; border-radius: 50%; display: grid; place-items: center; color: #000; }
+.ib2:hover { background: var(--surface); }
+.ib2 svg { width: 18px; height: 18px; }
 .pills { display: flex; flex-wrap: wrap; gap: 8px; }
 .pb { all: unset; cursor: pointer; display: inline-flex; align-items: center; gap: 6px; min-height: 40px; padding: 0 14px; border-radius: var(--radius-pill); border: 1px solid var(--line); background: var(--canvas); font: 500 13px/1 var(--font-ui); color: #000; }
 .pb svg { width: 14px; height: 14px; }
@@ -76,7 +81,7 @@
 </head>
 <body data-demo="on" data-bag="empty">
 <div class="mk-bar">
-  <strong>IWC design pass · 12 account · round 1</strong>
+  <strong>IWC design pass · 12 account · round 2</strong>
   <span>Sample account (Meera)</span>
   <span class="sep"></span>
   <span>Banner</span>
@@ -103,6 +108,7 @@
 const KASAVU = '../../mockups/assets/Kasavu_main.jpg';
 const chev = '<svg class="icon" viewBox="0 0 24 24" aria-hidden="true"><path d="M9 5l7 7-7 7"/></svg>';
 const pen = '<svg class="icon" viewBox="0 0 24 24" aria-hidden="true"><path d="M4 20h4L19 9l-4-4L4 16z"/><path d="m13.5 6.5 4 4"/></svg>';
+const minus = '<svg class="icon" viewBox="0 0 24 24" aria-hidden="true"><path d="M6 12h12"/></svg>';
 const heartFull = '<svg class="icon" viewBox="0 0 24 24" aria-hidden="true"><path d="M12 20s-7-4.4-7-10a4 4 0 0 1 7-2.6A4 4 0 0 1 19 10c0 5.6-7 10-7 10z"/></svg>';
 const SECTIONS = [['orders', 'Orders', 2], ['saved', 'Saved', 4], ['addresses', 'Addresses', 2], ['details', 'Your details']];
 const SAVED = [['Kasavu saree', '$114.99', 'Kerala', KASAVU, false], ['Paithani saree', '$575.99', 'Maharashtra', null, true], ['Phulkari dupatta', '$33.99', 'Punjab', null, false], ['Muga saree', '$461.99', 'Assam', null, true]];
@@ -114,8 +120,8 @@ const panes = {
     </div><p class="empty" style="margin-top:14px"><span class="sample">sample orders</span></p>`,
   saved: `<h2>Saved</h2><ul class="sgrid">${SAVED.map((c) => card(c).replace('<div class="box">', '<div class="box"><button class="unsave" type="button" aria-label="Remove from saved">' + heartFull + '</button>')).join('')}</ul>`,
   addresses: `<h2>Addresses</h2><div class="acards">
-    <div class="adr"><b>Home</b><span class="def">Default</span><p>Meera Nair<br>12 Oak St<br>Edison, NJ 08817</p><div class="pills"><button class="pb" type="button">${pen}Edit</button><button class="pb" type="button">Remove</button></div></div>
-    <div class="adr"><b>Office</b><p>Meera Nair<br>200 Park Ave, Fl 12<br>New York, NY 10166</p><div class="pills"><button class="pb" type="button">${pen}Edit</button><button class="pb" type="button">Make default</button><button class="pb" type="button">Remove</button></div></div>
+    <div class="adr"><b>Home</b><span class="def">Default</span><p>Meera Nair<br>12 Oak St<br>Edison, NJ 08817</p><span class="corner"><button class="ib2" type="button" aria-label="Edit Home">${pen}</button><button class="ib2" type="button" aria-label="Remove Home">${minus}</button></span></div>
+    <div class="adr"><b>Office</b><p>Meera Nair<br>200 Park Ave, Fl 12<br>New York, NY 10166</p><div class="pills"><button class="pb" type="button">Make default</button></div><span class="corner"><button class="ib2" type="button" aria-label="Edit Office">${pen}</button><button class="ib2" type="button" aria-label="Remove Office">${minus}</button></span></div>
     </div><button class="addbtn" type="button">+ Add an address</button><p class="empty" style="margin-top:14px"><span class="sample">sample addresses</span></p>`,
   details: `<h2>Your details</h2><form class="form" onsubmit="return false"><label class="fld">Email<span class="ro">meera@example.com</span></label><label class="fld">Full name<input value="Meera Nair"></label><label class="fld">Phone<input type="tel" value="(732) 555-0142"></label><button class="save" type="submit">Save</button></form>`,
 };

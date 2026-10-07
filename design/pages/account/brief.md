@@ -3,7 +3,7 @@
 **Surface:** website `/account`, `/account/orders`, `/account/addresses`, `/account/saved` (and `/login`, `/signup` when
 reached from the profile icon) + app `(customer)/profile`, `addresses`, `(customer)/saved` · **Code:**
 `apps/web/app/(store)/account/`, `apps/web/features/account/`, `apps/web/features/auth/auth-form.tsx` · **Status:**
-mockup, round 1
+approved D-089 (2026-10-08), not built yet
 
 ## The page's job
 The one place a customer deliberately goes for their own things: past orders, saved pieces, addresses, their details.
@@ -40,3 +40,4 @@ In the D-079 / D-080 fonts:
 | Date | Round | Founder's notes | Changed |
 |---|---|---|---|
 | 2026-10-08 | 1 | the options above | first proposal |
+| 2026-10-08 | 2 | "change the big buttons of edit and remove with icons of pencil and minus in the corner of the card, rest is approved, move to next" | Edit / Remove as pencil and minus icons in the address card's corner; approved as D-089 |
