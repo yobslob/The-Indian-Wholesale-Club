@@ -9,176 +9,7 @@
 <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Cinzel:wght@400;500&family=Karla:wght@400;500;600&family=Gelasio&display=swap">
 <link rel="stylesheet" href="../_shared/tokens.css">
 <link rel="stylesheet" href="../_shared/page.css">
-<style>
-/* ---------- Fonts (founder, round 4): Cinzel for headlines, Karla for everything else; the logo stays Georgia ---------- */
-body { --fh: Cinzel, Georgia, serif; --ft: Karla, system-ui, sans-serif; --d-w: 400; --d-ls: 0;
-  --font-hero: var(--fh); --font-display: var(--fh); --font-body: var(--ft); --font-ui: var(--ft); --font-foot: var(--ft); }
-
-/* ---------- Mockup layout (not part of the design) ---------- */
-.mk-wrap { padding: 24px; background: #d6d3ce; min-height: 100vh; }
-.mk-h { font: 600 13px/1.4 system-ui, sans-serif; color: #222; margin: 36px 0 4px; text-transform: uppercase; letter-spacing: .06em; }
-.mk-p { font: 400 13px/1.5 system-ui, sans-serif; color: #333; margin: 0 0 12px; max-width: 95ch; }
-.mk-row { display: flex; gap: 24px; flex-wrap: wrap; align-items: flex-start; }
-.mk-bar .sep { width: 1px; height: 18px; background: #444; }
-.dev { margin: 0 0 20px; }
-.dev .cap { font: 500 12px/1 system-ui, sans-serif; color: #444; margin: 0 0 6px; }
-.vp { position: relative; overflow: hidden; background: var(--canvas); box-shadow: 0 4px 24px rgba(0, 0, 0, .15); container-type: inline-size; }
-.today img { max-width: 100%; height: auto; border: 1px solid #aaa; margin: 0 0 8px; }
-.today figure { margin: 0; }
-.today figcaption { font: 12px/1.4 system-ui, sans-serif; color: #444; margin-bottom: 16px; }
-.draft-tag { display: inline-block; margin-left: 6px; padding: 1px 5px; border: 1px dashed currentColor; font: 700 9px/1.4 system-ui, sans-serif; letter-spacing: .08em; text-transform: uppercase; opacity: .8; vertical-align: middle; }
-
-
-/* ---------- Logo (D-077), as apps/web/features/shell/logo.module.css; stays Georgia (the mark is fitted to it) ---------- */
-.logo { font-family: Georgia, Gelasio, 'Times New Roman', serif; font-weight: 400; line-height: 1; text-decoration: none; white-space: nowrap; font-size: 22px; padding: 8px 0 8px 4px; }
-.logo .initial { display: inline-block; position: relative; }
-.logo svg { position: absolute; left: calc(50% - .5624em); top: -.434em; height: 1.891em; width: auto; aspect-ratio: 440 / 1076; overflow: hidden; fill: none; stroke: #c9962f; stroke-width: 1.5px; stroke-linejoin: round; stroke-linecap: round; }
-
-/* ---------- Demo banner (D-078) ---------- */
-.banner { background: var(--ink); color: var(--canvas); font: 500 13px/1.4 var(--font-ui); text-align: center; padding: 8px 16px; }
-.banner strong { font-weight: 600; }
-.banner .short { display: none; }
-.banner details { display: inline; }
-.banner summary { display: inline; cursor: pointer; text-decoration: underline; text-underline-offset: 3px; list-style: none; }
-.banner summary::-webkit-details-marker { display: none; }
-.banner details[open] summary { display: none; }
-body[data-demo='off'] .banner { display: none; }
-@container (max-width: 1100px) { .banner .long { display: none; } .banner .short { display: inline; } }
-
-/* ---------- Header ---------- */
-.top { position: relative; z-index: 20; }
-.top.over { position: absolute; inset: 0 0 auto; }
-.hdr { --gut: clamp(12px, 2.2cqi, 32px); display: flex; align-items: center; gap: clamp(18px, 2.2cqi, 32px); height: 72px; padding: 0 var(--gut); font: 500 14px/1 var(--font-ui); letter-spacing: .02em; }
-.hdr.solid { background: var(--canvas); color: var(--ink); box-shadow: 0 1px 0 var(--line); }
-.hdr.photo { color: #000; }
-.vp.passed .hdr.photo { background: var(--canvas); box-shadow: 0 1px 0 var(--line); }
-.scroller { height: 100%; overflow-y: auto; overscroll-behavior: contain; }
-.hdr.photo .logo { opacity: var(--hero-p, 0); } /* fades in as the hero scrolls away (D-053, as hero-scroll.tsx) */
-.hdr .logo { margin-right: auto; }
-.hdr a { color: inherit; text-decoration: none; }
-.links { display: flex; align-items: center; gap: inherit; }
-.links > a { display: inline-flex; align-items: center; height: 44px; }
-.links > a:hover { text-decoration: underline; text-underline-offset: 6px; }
-.links > a[aria-current] { text-decoration: underline; text-decoration-thickness: 1px; text-underline-offset: 6px; }
-.icons { display: flex; align-items: center; margin-right: -10px; }
-.ib { position: relative; width: 44px; height: 44px; display: grid; place-items: center; color: inherit; cursor: pointer; }
-.ib svg { width: 22px; height: 22px; }
-.count { position: absolute; top: 4px; right: 2px; min-width: 18px; height: 18px; padding: 0 5px; border-radius: var(--radius-pill); background: var(--brand); color: var(--on-brand); font: 600 10px/18px var(--font-ui); text-align: center; letter-spacing: 0; }
-body[data-bag='empty'] .count { display: none; }
-.icon { fill: none; stroke: currentColor; stroke-width: 1.5; stroke-linecap: round; stroke-linejoin: round; }
-.burger { display: none; }
-
-/* Search: the word "Search" turns into a pill on hover and back on mouse-out (open while it holds text). */
-.srch { position: relative; display: inline-flex; align-items: center; height: 40px; width: var(--sw0, 60px); margin: 0; border-radius: var(--radius-pill); border: 1px solid transparent; transition: width var(--t) var(--ease), background-color var(--t) var(--ease), border-color var(--t) var(--ease), color var(--t) var(--ease); --t: 320ms; --ease: cubic-bezier(.65, 0, .35, 1); }
-/* The word itself is the placeholder: set like the other links at rest, it slides into the pill on hover. */
-.srch .sm { position: absolute; left: 0; top: 50%; transform: translate(0, -50%); white-space: nowrap; line-height: 1; pointer-events: none; transition: transform var(--t) var(--ease), color var(--t) var(--ease), opacity 120ms; }
-.srch svg { position: absolute; left: 13px; width: 16px; height: 16px; opacity: 0; transition: opacity var(--t) var(--ease); }
-.srch input { all: unset; box-sizing: border-box; width: 100%; height: 100%; line-height: 1; padding: 0; font: inherit; letter-spacing: inherit; color: inherit; cursor: pointer; transition: padding var(--t) var(--ease); }
-.srch input::-webkit-search-cancel-button, .srch input::-webkit-search-decoration { -webkit-appearance: none; display: none; }
-.srch input::placeholder { color: transparent; }
-.srch:hover, .srch.is-open, .srch:has(input:not(:placeholder-shown)) { width: 260px; background: var(--paper); border-color: var(--line); color: var(--ink); }
-.srch:hover input, .srch.is-open input, .srch:has(input:not(:placeholder-shown)) input { padding: 0 16px 0 38px; cursor: text; }
-.srch:hover .sm, .srch.is-open .sm, .srch:focus-within .sm { transform: translate(38px, -50%); color: var(--ink-muted); }
-.srch:has(input:not(:placeholder-shown)) .sm { opacity: 0; }
-.srch:hover svg, .srch.is-open svg, .srch:has(input:not(:placeholder-shown)) svg { opacity: 1; }
-
-@container (max-width: 900px) { .hdr { gap: 18px; } .srch:hover, .srch.is-open { width: 200px; } }
-@container (max-width: 640px) {
-  .hdr { height: 56px; gap: 0; }
-  .hdr .logo { font-size: 16px; }
-  .links { display: none; }
-  .burger { display: grid; }
-}
-
-/* Phone side panel: slides in from the right over the page and leaves the same way (same easing both ways). */
-.nav-toggle { position: absolute; opacity: 0; pointer-events: none; }
-.scrim { position: absolute; inset: 0; z-index: 30; background: rgb(20 17 15 / .4); opacity: 0; pointer-events: none; transition: opacity 420ms cubic-bezier(.65, 0, .35, 1); }
-.panel { position: absolute; top: 0; right: 0; bottom: 0; z-index: 31; width: min(86%, 360px); background: var(--canvas); color: var(--ink); padding: 6px 16px 24px 20px; transform: translateX(105%); transition: transform 420ms cubic-bezier(.65, 0, .35, 1); border-left: 1px solid var(--line); display: flex; flex-direction: column; }
-.vp:has(.nav-toggle:checked) .scrim { opacity: 1; pointer-events: auto; }
-.vp:has(.nav-toggle:checked) .panel { transform: none; }
-.panel .x { align-self: flex-end; margin-right: -10px; }
-.panel .p-srch { display: flex; align-items: center; gap: 8px; height: 44px; margin: 8px 0 12px; padding: 0 16px; border-radius: var(--radius-pill); background: var(--paper); border: 1px solid var(--line); font: 400 15px/1 var(--font-ui); color: var(--ink-muted); }
-.panel .p-srch svg { width: 18px; height: 18px; }
-.panel ul { list-style: none; margin: 0; padding: 0; }
-.panel .big a { display: block; font: var(--d-w) 34px/1 var(--font-hero); letter-spacing: var(--d-ls); padding: 14px 0; border-bottom: 1px solid var(--line); text-decoration: none; color: inherit; }
-.panel .small { margin-top: 20px; }
-.panel .small a { display: block; padding: 10px 0; font: 500 15px/1.2 var(--font-ui); color: var(--ink-muted); text-decoration: none; }
-
-/* ---------- Home hero: the name on the photo's white wall at every size, right-aligned to the screen ----------
- * The wall in image pixels (1117 x 1409): x 690 - 1117, y 335 - 670 (between the disc and the bench, right of her hair).
- * --W/--H/--L/--T repeat what background-size: cover and background-position do, so the name is placed and sized on
- * the wall itself: centred on the wall's middle (y 502), its width capped by the wall's width, its size by both. */
-.hero { position: relative; height: 100%; container-type: size; background: #222 url(../../mockups/assets/hero-mood-2.webp) 85% 20% / cover no-repeat;
-  --ar: .7928; --px: .85; --py: .2;
-  --W: max(100cqw, 100cqh * var(--ar)); --H: calc(var(--W) / var(--ar));
-  --L: calc((100cqw - var(--W)) * var(--px)); --T: calc((100cqh - var(--H)) * var(--py));
-  --gut: clamp(16px, 2.2cqw, 32px);
-  --avail: calc(100cqw - var(--gut) - var(--L) - var(--W) * .6177);
-  --fs: min(calc(var(--avail) / var(--k, 4.4) * .74), calc(var(--H) * .057), 108px); }
-.hero .name { position: absolute; right: var(--gut); top: calc(var(--T) + var(--H) * .3567); transform: translateY(-50%); max-width: var(--avail); text-align: right; }
-.hero h1 { margin: 0; font: var(--d-w) var(--fs)/.95 var(--font-hero); letter-spacing: var(--d-ls); color: #1D1A17; }
-.hero h1 span, .hero p { --q: clamp(0, calc((var(--hero-p, 0) * 1.5 - var(--i) * .17) / .7), 1); opacity: calc(1 - var(--q)); transform: translateY(calc(var(--q) * -28px)); }
-.hero h1 span { display: block; }
-@media (prefers-reduced-motion: reduce) { .hero h1 span, .hero p { transform: none; } }
-.hero p { margin: calc(var(--fs) * .3) 0 0; font: 400 clamp(12px, calc(var(--fs) * .2), 18px)/1.35 var(--font-body); color: #000; }
-.hero p a { color: inherit; text-underline-offset: 3px; text-decoration-thickness: 1px; white-space: nowrap; }
-
-/* Sample content under the header (context only). */
-.page-sample { padding: 32px clamp(16px, 2.2cqi, 32px); }
-.page-sample h1 { font: var(--d-w) clamp(30px, 3.6cqi, 48px)/1.05 var(--font-hero); letter-spacing: var(--d-ls); margin: 0 0 8px; }
-.page-sample p { margin: 0; color: var(--ink-muted); font: 400 15px/1.5 var(--font-body); }
-.ph-row { display: grid; grid-template-columns: repeat(4, 1fr); gap: 16px; margin-top: 24px; }
-.ph-row div { aspect-ratio: 3 / 4; border-radius: var(--radius-md); }
-@container (max-width: 640px) { .ph-row { grid-template-columns: repeat(2, 1fr); gap: 12px; } }
-
-/* ---------- Footer: four columns from tablet up, one small block on phones ---------- */
-.ftr { background: var(--ink); color: #d8d0c4; font: 400 14px/1.5 var(--font-foot); padding: clamp(40px, 4cqi, 64px) clamp(16px, 2.2cqi, 32px) 40px; }
-.ftr a { color: inherit; text-decoration: none; }
-.ftr .cols { display: grid; grid-template-columns: repeat(4, 1fr); gap: 32px 24px; }
-.ftr .name { color: var(--canvas); font-size: 18px; margin: 0 0 10px; }
-.ftr .line { margin: 0; max-width: 30ch; }
-.ftr h3 { font: 500 11px/1 var(--font-foot); letter-spacing: .12em; text-transform: uppercase; color: #a39a8c; margin: 0 0 14px; }
-.ftr ul { list-style: none; margin: 0; padding: 0; display: grid; gap: 2px; }
-.ftr li a { display: inline-block; padding: 5px 0; }
-.ftr .base { margin-top: 48px; padding-top: 20px; border-top: 1px solid #3a352e; display: flex; justify-content: space-between; gap: 8px 24px; flex-wrap: wrap; font-size: 12px; color: #a39a8c; }
-.ftr .base a { text-decoration: underline; text-underline-offset: 3px; }
-.ftr .mini { display: none; }
-@container (max-width: 640px) {
-  .ftr { padding: 20px 16px 24px; font-size: 12px; }
-  .ftr .cols, .ftr .base { display: none; }
-  .ftr .mini { display: block; }
-  .ftr .mini nav { display: flex; flex-wrap: wrap; gap: 0 16px; }
-  .ftr .mini nav a { padding: 8px 0; }
-  .ftr .mini p { margin: 8px 0 0; color: #a39a8c; font-size: 11px; }
-  .ftr .mini p a { text-decoration: underline; text-underline-offset: 2px; }
-}
-
-/* ---------- App ---------- */
-.app { position: relative; width: 390px; height: 844px; background: var(--canvas); color: var(--ink); overflow: hidden; border-radius: 44px; box-shadow: 0 0 0 10px #1a1a1a, 0 8px 40px rgba(0, 0, 0, .3); margin: 10px; }
-.app .status { height: 50px; display: flex; justify-content: space-between; align-items: flex-end; padding: 0 30px 8px; font: 600 15px/1 system-ui, sans-serif; }
-.app .large { padding: 8px 16px 12px; font: var(--d-w) 34px/1.1 var(--font-hero); letter-spacing: var(--d-ls); margin: 0; }
-.app .bar { height: 56px; display: grid; grid-template-columns: 44px 1fr 44px; align-items: center; padding: 0 8px; box-shadow: 0 1px 0 var(--line); }
-.app .bar button { all: unset; width: 44px; height: 44px; display: grid; place-items: center; }
-.app .bar svg { width: 24px; height: 24px; }
-.app .bar h2 { margin: 0; text-align: center; font: var(--d-w) 20px/1 var(--font-hero); }
-.app .search { margin: 0 16px; height: 44px; border-radius: var(--radius-pill); background: var(--paper); border: 1px solid var(--line); display: flex; align-items: center; gap: 8px; padding: 0 16px; font: 400 14px/1 var(--font-body); color: var(--ink-muted); }
-.app .search svg { width: 18px; height: 18px; }
-.app .body { padding: 16px; }
-.app .body .lbl { font: 600 11px/1 var(--font-ui); letter-spacing: .12em; text-transform: uppercase; color: var(--ink-muted); margin: 8px 0 12px; }
-.app .tiles { display: grid; grid-template-columns: 1fr 1fr; gap: 12px; }
-.app .tiles div { aspect-ratio: 3 / 4; border-radius: var(--radius-md); }
-.app .region-hero { height: 300px; background: #333 url(../../mockups/assets/kerala.jpg) center / cover; }
-.tabs { position: absolute; left: 0; right: 0; bottom: 0; background: var(--canvas); box-shadow: 0 -1px 0 var(--line); display: grid; grid-template-columns: repeat(5, 1fr); padding: 0 0 30px; }
-.tabs a { position: relative; display: grid; justify-items: center; gap: 4px; padding: 10px 0 6px; font: 500 11px/1 var(--font-ui); color: var(--ink-muted); text-decoration: none; letter-spacing: .02em; }
-.tabs a svg { width: 24px; height: 24px; }
-.tabs a[aria-current] { color: var(--ink); }
-.tabs a[aria-current]::before { content: ''; position: absolute; top: 0; width: 20px; height: 2px; border-radius: 2px; background: var(--brand); }
-.tabs .badge { position: absolute; top: 5px; left: calc(50% + 6px); min-width: 18px; height: 18px; padding: 0 5px; border-radius: var(--radius-pill); background: var(--brand); color: var(--on-brand); font: 600 10px/18px var(--font-ui); text-align: center; }
-body[data-bag='empty'] .tabs .badge { display: none; }
-.app .home-ind { position: absolute; bottom: 8px; left: 50%; transform: translateX(-50%); width: 134px; height: 5px; border-radius: 3px; background: var(--ink); }
-
-@media (prefers-reduced-motion: reduce) { .srch, .srch *, .panel, .scrim { transition: none !important; } }
-</style>
+<link rel="stylesheet" href="../_shared/shell.css">
 </head>
 <body data-demo="on" data-bag="full">
 <div class="mk-bar">
@@ -231,74 +62,14 @@ body[data-bag='empty'] .tabs .badge { display: none; }
 </main>
 
 <script src="../_shared/brand.js"></script>
+<script src="../_shared/shell.js"></script>
 <script>
-const I = {
-  bag: '<path d="M5 8h14l-1 13H6L5 8z"/><path d="M9 8V6a3 3 0 0 1 6 0v2"/>',
-  burger: '<path d="M4 7h16M4 12h16M4 17h16"/>',
-  close: '<path d="M6 6l12 12M18 6 6 18"/>',
-  home: '<path d="M3 10.5 12 3l9 7.5V20a1 1 0 0 1-1 1h-5v-6h-6v6H4a1 1 0 0 1-1-1z"/>',
-  search: '<circle cx="11" cy="11" r="7"/><path d="m16.5 16.5 4.5 4.5"/>',
-  heart: '<path d="M12 20s-7-4.4-7-10a4 4 0 0 1 7-2.6A4 4 0 0 1 19 10c0 5.6-7 10-7 10z"/>',
-  person: '<circle cx="12" cy="8" r="4"/><path d="M4 21a8 8 0 0 1 16 0"/>',
-  back: '<path d="M15 5l-7 7 7 7"/>',
-};
-const svg = (n) => `<svg class="icon" viewBox="0 0 24 24" aria-hidden="true">${I[n]}</svg>`;
-const logo = () => `<a class="logo" href="#"><span class="initial">I<svg viewBox="${INDIA_MARK.viewBox}" aria-hidden="true"><path d="${INDIA_MARK.path}" vector-effect="non-scaling-stroke"/></svg></span>ndian Wholesale Club</a>`;
-const banner = () => `<div class="banner" role="note"><span class="long"><strong>Demo store.</strong> Nothing here is for sale and no real money is taken. To try checkout, pay with the test card 4242 4242 4242 4242, any future date and any CVC.</span><span class="short"><strong>Demo store.</strong> Nothing here is for sale. <details><summary>Test card</summary>4242 4242 4242 4242, any future date, any CVC.</details></span></div>`;
-
-let uid = 0;
-const header = ({ photo = false, active = '', searchOpen = false, panelOpen = false } = {}) => {
-  const id = `nav-${++uid}`;
-  return `
-  <input type="checkbox" class="nav-toggle" id="${id}"${panelOpen ? ' checked' : ''} tabindex="-1" aria-hidden="true">
-  <div class="top${photo ? ' over' : ''}">
-    ${banner()}
-    <header class="hdr ${photo ? 'photo' : 'solid'}">
-      ${logo()}
-      <nav class="links" aria-label="Main">
-        <a href="#"${active === 'States' ? ' aria-current="page"' : ''}>States</a>
-        <form class="srch${searchOpen ? ' is-open' : ''}" role="search" onsubmit="return false"><span class="sm" aria-hidden="true">Search</span>${svg('search')}<input type="search" placeholder="Search" aria-label="Search"></form>
-        <a href="#"${active === 'About us' ? ' aria-current="page"' : ''}>About us</a>
-      </nav>
-      <div class="icons">
-        <a class="ib" href="#" aria-label="Saved">${svg('heart')}</a>
-        <a class="ib" href="#" aria-label="Bag, 3 pieces">${svg('bag')}<span class="count">3</span></a>
-        <a class="ib" href="#" aria-label="Profile">${svg('person')}</a>
-        <label class="ib burger" for="${id}" aria-label="Menu">${svg('burger')}</label>
-      </div>
-    </header>
-  </div>
-  <label class="scrim" for="${id}" aria-hidden="true"></label>
-  <aside class="panel" aria-label="Menu">
-    <label class="ib x" for="${id}" aria-label="Close">${svg('close')}</label>
-    <div class="p-srch">${svg('search')}Search</div>
-    <ul class="big"><li><a href="#">States</a></li><li><a href="#">About us</a></li></ul>
-    <ul class="small"><li><a href="#">Track an order</a></li><li><a href="#">How it works</a></li><li><a href="#">Shipping &amp; returns</a></li><li><a href="#">FAQ</a></li><li><a href="#">Contact</a></li></ul>
-  </aside>`;
-};
-
-const heroHtml = (opts) => `${header({ photo: true, ...opts })}<div class="scroller"><div class="hero"><div class="name"><h1><span style="--i:0">Indian</span><span style="--i:1">Wholesale</span><span style="--i:2">Club</span></h1><p style="--i:3">Miss local market? <a href="#">Start here.</a></p></div></div>${sample()}${footer()}</div>`;
-const sample = () => `<div class="page-sample"><h1>Pick your home</h1><p>All 28 states and 8 union territories.</p><div class="ph-row"><div class="ph"></div><div class="ph"></div><div class="ph"></div><div class="ph"></div></div></div>`;
-const footer = () => `<footer class="ftr">
-  <div class="cols">
-    <div><p class="name">The Indian Wholesale Club</p><p class="line">Clothing and spices from all of India, delivered in the US. </p></div>
-    <div><h3>Shop</h3><ul><li><a href="#">States</a></li><li><a href="#">Search</a></li></ul></div>
-    <div><h3>Help</h3><ul><li><a href="#">How it works</a></li><li><a href="#">Track an order</a></li><li><a href="#">Shipping &amp; returns</a></li><li><a href="#">FAQ</a></li><li><a href="#">Contact</a></li></ul></div>
-    <div><h3>About</h3><ul><li><a href="#">About us</a></li><li><a href="#">Privacy</a></li><li><a href="#">Terms</a></li></ul></div>
-  </div>
-  <div class="base"><span>© The Indian Wholesale Club</span><span>Map data: <a href="#">DataMeet India</a>, CC BY 4.0</span></div>
-  <div class="mini"><nav aria-label="Footer"><a href="#">Track an order</a><a href="#">Shipping &amp; returns</a><a href="#">FAQ</a><a href="#">Contact</a><a href="#">Privacy</a><a href="#">Terms</a></nav><p>© The Indian Wholesale Club · Map: <a href="#">DataMeet India</a>, CC BY 4.0</p></div>
-</footer>`;
-
 const H = { 1440: 900, 1024: 768, 768: 1024, 390: 844 };
 const FRAMES = {
   home: { h: (w) => H[w], html: () => heroHtml() },
   page: { h: () => 300, html: () => `${header({ active: 'States' })}${sample()}` },
   footer: { h: () => null, html: footer },
 };
-const label = { 1440: 'desktop', 1024: 'small laptop · tablet landscape', 768: 'tablet', 390: 'phone' };
-const dev = (w, h, inner, cap) => `<div class="dev" data-w="${w}"><p class="cap">${cap || `${w} · ${label[w]}`}</p><div class="vp" style="width:${w}px;${h ? `height:${h}px` : ''}">${inner}</div></div>`;
-
 document.querySelectorAll('[data-frame]').forEach((el) => {
   const f = FRAMES[el.dataset.frame];
   el.innerHTML = el.dataset.widths.split(',').map((w) => dev(+w, f.h(+w), f.html())).join('');
@@ -311,56 +82,12 @@ document.getElementById('phones').innerHTML = [
 ].join('');
 
 
-const tabs = (active) => `<nav class="tabs">${[['home', 'Home'], ['search', 'Explore'], ['bag', 'Bag'], ['heart', 'Saved'], ['person', 'Profile']].map(([i, n]) => `<a href="#"${n === active ? ' aria-current="page"' : ''}>${svg(i)}${n}${n === 'Bag' ? '<span class="badge">3</span>' : ''}</a>`).join('')}</nav><span class="home-ind"></span>`;
-const status = '<div class="status"><span>9:41</span><span>●●● ▮</span></div>';
-const cap = (t) => `<p style="font:500 12px system-ui;color:#444;margin:0 0 6px">${t}</p>`;
 document.getElementById('apps').innerHTML = [
   `<div>${cap('Tab root · large title')}<div class="app">${status}<h1 class="large">Explore</h1><div class="search">${svg('search')}Search</div><div class="body"><p class="lbl">States</p><div class="tiles"><div class="ph"></div><div class="ph"></div><div class="ph"></div><div class="ph"></div></div></div>${tabs('Explore')}</div></div>`,
   `<div>${cap('Pushed screen · back bar')}<div class="app">${status}<div class="bar"><button aria-label="Back">${svg('back')}</button><h2>Kerala</h2><span></span></div><div class="region-hero"></div><div class="body"><p class="lbl">New arrivals</p><div class="tiles"><div class="ph"></div><div class="ph"></div></div></div>${tabs('Explore')}</div></div>`,
 ].join('');
 
-// "Wholesale" width in em for the headline font: the hero sizes the name so this word fits the wall.
-const setK = async () => {
-  const f = '400 100px Cinzel';
-  await document.fonts.load(f, 'Wholesale');
-  const c = document.createElement('canvas').getContext('2d'); c.font = f;
-  document.body.style.setProperty('--k', (c.measureText('Wholesale').width / 100).toFixed(3));
-};
-setK();
-
-// Home scroll, as apps/web/features/home/hero-scroll.tsx: --hero-p is 0 at the top and 1 after 55 % of the hero;
-// "passed" once the photo is under the header.
-document.querySelectorAll('.scroller').forEach((sc) => {
-  const vp = sc.closest('.vp'), hero = sc.querySelector('.hero'), hdr = vp.querySelector('.hdr');
-  const update = () => {
-    vp.style.setProperty('--hero-p', Math.min(1, Math.max(0, sc.scrollTop / (hero.offsetHeight * .55))).toFixed(3));
-    vp.classList.toggle('passed', sc.scrollTop >= hero.offsetHeight - hdr.offsetHeight - hdr.offsetTop);
-  };
-  sc.addEventListener('scroll', update, { passive: true }); update();
-});
-
-// Search: mouse-out closes it again unless something was typed (the founder's round-2 rule).
-document.querySelectorAll('.srch').forEach((f) => f.addEventListener('mouseleave', () => {
-  const i = f.querySelector('input'); if (!i.value) i.blur();
-}));
-
-// The word's own width at rest, in whichever font is on (re-measured when the fonts switch).
-const measure = () => document.querySelectorAll('.srch').forEach((f) => f.style.setProperty('--sw0', `${f.querySelector('.sm').offsetWidth + 4}px`));
-document.fonts.ready.then(measure);
-
-// Fit each frame to the available width (zoom keeps container queries on the frame's own width).
-const fit = () => document.querySelectorAll('.dev').forEach((d) => {
-  const w = +d.dataset.w, vp = d.querySelector('.vp'), row = d.closest('.mk-row');
-  const avail = row ? (row.clientWidth - 24 * (row.children.length - 1)) / row.children.length : d.parentElement.clientWidth;
-  vp.style.zoom = Math.min(1, avail / w);
-});
-fit(); addEventListener('resize', fit);
-
-document.addEventListener('click', (e) => {
-  const b = e.target.closest('[data-set]'); if (!b) return;
-  document.body.dataset[b.dataset.set] = b.dataset.val;
-  document.querySelectorAll(`[data-set="${b.dataset.set}"]`).forEach((x) => x.setAttribute('aria-pressed', x.dataset.val === b.dataset.val));
-});
+shellInit();
 </script>
 </body>
 </html>
