@@ -2,7 +2,7 @@
 
 **Surface:** website `/login`, `/signup` (and the same card on the profile page, D-089, and in the review panel, D-090)
 + app `auth/login`, `auth/signup` · **Code:** `apps/web/app/(store)/login/`, `signup/`, `apps/web/features/auth/auth-form.tsx`
-(Supabase Auth: `signInWithPassword`, `signUp`) · **Status:** mockup, round 1
+(Supabase Auth: `signInWithPassword`, `signUp`) · **Status:** approved D-091 (2026-10-08), not built yet
 
 ## The page's job
 Let a customer in quickly, with as little typing as possible, and never strand them (a forgotten password has a way back).
@@ -33,3 +33,4 @@ New wording here is draft (D-059).
 | Date | Round | Founder's notes | Changed |
 |---|---|---|---|
 | 2026-10-08 | 1 | the options above | first proposal |
+| 2026-10-08 | — | "approved, move to next" | approved as D-091 |

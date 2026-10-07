@@ -841,3 +841,15 @@ links from outside. The form shows **the piece at the top** (photo, name, option
 five large stars** (tap or arrow keys, "n of 5" beside it), and for verified buyers **photo tiles** with previews, × to
 remove and "+ Add photo" (hidden at the limit of 4). Fields, limits, texts and the thank-you / already-reviewed states
 stay as built (D-051, D-052, D-056).
+
+**D-091 · 2026-10-08 · founder: Signing in, from the design pass**
+Founder, verbatim: asked as options (`design/pages/auth/brief.md`): "Forgot password", "Show password eye", "Email code
+instead" (also "Nothing else" ticked; read as the three). On round 1 of `design/pages/auth/mockup.html`: "approved, move
+to next".
+What it means for the build: `/login` and `/signup` show the profile's sign-in card (D-089) centred, with an **eye** in
+every password field to show / hide it, **"Forgot password?"** (email → "Send reset link" → "Check your email" → the
+link opens "Set a new password", typed twice), and **"Email me a sign-in code"** as a second way in (email → a 6-digit
+code in six boxes that a paste fills, "Resend code", "Use a password instead"). Creating an account stays as built
+(full name, email, password; then "Check your inbox to confirm your email, then sign in."). Supabase Auth sends the
+reset and code emails; their templates are written in the IWC voice before launch. New wording is draft, approved with
+the mockup.
