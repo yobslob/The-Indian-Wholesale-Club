@@ -43,8 +43,8 @@ then the admin side. The pass **refines the approved design** (D-050 – D-055, 
 | # | id | Website (`apps/web/app/(store)/`) | App (`apps/app/app/`) | Status |
 |---|---|---|---|---|
 | 1 | `shell` | header, nav, demo banner, footer (`features/shell/`) | tab bar, screen header (`(customer)/_layout.tsx`) | approved D-079 |
-| 2 | `home` | `/` | `(customer)/index` | mockup, round 2 |
-| 3 | `cards` | product card, region stamp, sideways row + See all, pills | same parts (`features/catalog/`) | — |
+| 2 | `home` | `/` | `(customer)/index` | approved D-080 |
+| 3 | `cards` | product card, region stamp, sideways row + See all, pills | same parts (`features/catalog/`) | settled in `home` (D-080): + on the photo, row as today, stamp pages |
 | 4 | `region` | `/states/[region]` | `region/[slug]` | — |
 | 5 | `product` | `/states/[region]/[product]` | `product/[region]/[slug]` | — |
 | 6 | `states` | `/states` | `(customer)/explore` (regions part) | — |

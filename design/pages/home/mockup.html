@@ -6,7 +6,7 @@
 <title>IWC design pass: 2 home</title>
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Cinzel:wght@400;500&family=Karla:wght@400;500;600&family=Gelasio&display=swap">
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Cinzel:wght@400;500&family=Karla:wght@400;500;600&family=Syne:wght@400;500;600&family=Gelasio&display=swap">
 <link rel="stylesheet" href="../_shared/tokens.css">
 <link rel="stylesheet" href="../_shared/page.css">
 <link rel="stylesheet" href="../_shared/shell.css">
@@ -16,7 +16,7 @@
 .home { --g: clamp(16px, 2.2cqi, 32px); --gap: clamp(12px, 1.4cqi, 20px); padding: 0 var(--g) clamp(48px, 6cqi, 96px); }
 .sec { padding: clamp(24px, 3cqi, 48px) 0; }
 .sec-h { display: flex; justify-content: space-between; align-items: flex-end; gap: 16px; margin: 0 0 clamp(16px, 1.8cqi, 24px); }
-.sec-h h2 { margin: 0; font: 400 clamp(26px, 3cqi, 40px)/1.1 var(--font-hero); letter-spacing: .01em; color: #1D1A17; }
+.sec-h h2 { margin: 0; font: 500 clamp(26px, 3cqi, 40px)/1.1 var(--font-heading); letter-spacing: -.01em; color: #1D1A17; }
 .sec-h .sub { margin: 6px 0 0; font: 400 14px/1.5 var(--font-body); color: var(--ink-muted); }
 .pill { display: inline-flex; align-items: center; height: 40px; padding: 0 18px; border-radius: var(--radius-pill); border: 1px solid var(--line); background: var(--paper); font: 500 14px/1 var(--font-ui); color: #000; text-decoration: none; flex: none; }
 
@@ -62,6 +62,15 @@
 .find input::placeholder { color: var(--ink-muted); }
 .lbl { display: flex; justify-content: space-between; margin: 0 0 12px; font: 600 11px/1 var(--font-ui); letter-spacing: .16em; text-transform: uppercase; color: var(--ink-muted); }
 .stamps { display: grid; grid-template-columns: repeat(3, minmax(0, 1fr)); gap: var(--gap); }
+/* More than 6 open states: pages of 6 (3 x 2) that slide sideways, with an arrow on each side (founder, home round 3). */
+.spager { position: relative; }
+.spages { display: flex; overflow-x: auto; scroll-snap-type: x mandatory; scrollbar-width: none; margin: -14px -28px -16px 0; }
+.spages::-webkit-scrollbar { display: none; }
+.spages > .stamps { flex: 0 0 100%; box-sizing: border-box; padding: 14px 28px 16px 0; scroll-snap-align: start; align-content: start; }
+.sarr { all: unset; cursor: pointer; position: absolute; top: 50%; z-index: 3; width: 40px; height: 40px; transform: translateY(-50%); display: grid; place-items: center; border-radius: 50%; border: 1px solid var(--line); background: rgb(251 248 243 / .95); color: var(--ink); font: 16px/1 var(--font-ui); transition: opacity .2s; }
+.sarr.l { left: -14px; } .sarr.r { right: -14px; }
+.sarr:disabled { opacity: 0; pointer-events: none; }
+.spager .spcount { display: block; margin-top: 10px; text-align: center; font: 500 12px/1 var(--font-ui); color: var(--ink-muted); }
 .stamp { position: relative; display: block; padding: 9px; color: #000; text-decoration: none; background: radial-gradient(circle at 50% 50%, transparent 3.6px, var(--paper) 4.2px) -6px -6px / 12px 12px; filter: drop-shadow(0 6px 10px rgb(30 27 22 / .12)); transition: transform .35s cubic-bezier(.19, 1, .22, 1); }
 .stamp[hidden] { display: none; }
 .stamp:hover, .stamp.on { transform: translateY(-4px) rotate(-1.2deg); }
@@ -88,8 +97,8 @@
 </head>
 <body data-demo="on" data-bag="full">
 <div class="mk-bar">
-  <strong>IWC design pass · 2 home · round 2</strong>
-  <span>Cinzel + Karla (D-079)</span>
+  <strong>IWC design pass · 2 home · round 3</strong>
+  <span>Cinzel hero · Syne headings · Karla text</span>
   <span class="sep"></span>
   <span>Banner</span>
   <button type="button" data-set="demo" data-val="on" aria-pressed="true">On</button>
@@ -114,6 +123,11 @@
   <p class="mk-p">The header on the photo is as today: white links over a dark band, and a smooth fade to cream once the photo has passed. Below the photo everything is today's layout in Cinzel + Karla; the one change is the round + on each card's photo, so the name keeps the card's full width. <b>Hover a state's name for 0.7 s</b> to light it on the map; type in "Find your state" to filter.</p>
   <div class="mk-row" id="scrolls"></div>
 
+  <h2 class="mk-h">Pick your home with more than 6 open states (sample: 12)</h2>
+  <p class="mk-p">Up to 6 open states the stamps sit as they are now. From 7 on they come in pages of 6 with an arrow on each side; the pages slide with a smooth scroll, and each arrow hides at its end. Sample states marked by placeholder photos.</p>
+  <div data-home12="1440"></div>
+  <div class="mk-row"><div data-home12="768"></div><div data-home12="390"></div></div>
+
   <h2 class="mk-h">Website · below the hero, full length at each width</h2>
   <div data-home="1440"></div>
   <div data-home="1024"></div>
@@ -126,9 +140,11 @@
 <script src="../_shared/shell.js"></script>
 <script>
 // Placeholder data: the demo round's listings and open states as production shows them on 2026-10-08 (D-078).
-const LIVE = ['assam', 'delhi', 'kerala', 'maharashtra', 'punjab'];
+const OPEN = ['assam', 'delhi', 'kerala', 'maharashtra', 'punjab'];
+// Sample only: 12 open states, to show the stamp pages (more than 6).
+const OPEN12 = [...OPEN, 'rajasthan', 'goa', 'gujarat', 'karnataka', 'tamil-nadu', 'west-bengal', 'bihar'];
 const TINY = ['chandigarh', 'delhi', 'goa', 'puducherry', 'lakshadweep', 'dadra-and-nagar-haveli-and-daman-and-diu'];
-const PHOTO = { kerala: '../../mockups/assets/kerala.jpg', punjab: '../../mockups/assets/punjab_1.jpg' };
+const PHOTO = { kerala: '../../mockups/assets/kerala.jpg', punjab: '../../mockups/assets/punjab_1.jpg', rajasthan: '../../mockups/assets/rajasthan.jpg' };
 const JUST = [
   ['Cotton mekhela chador', '$115.99', 'Assam', null, true], ['Japan-fit baggy jeans', '$80.99', 'Delhi', null, true],
   ['Kasavu saree', '$114.99', 'Kerala', '../../mockups/assets/Kasavu_main.jpg', false], ['Paithani saree', '$575.99', 'Maharashtra', null, true],
@@ -146,9 +162,14 @@ const card = ([name, price, state, img, sizes]) => `<li class="card">
 const postmark = (id) => `<svg class="postmark" viewBox="0 0 100 100" aria-hidden="true"><defs><path id="${id}" d="M50 50 m-35 0 a35 35 0 1 1 70 0 a35 35 0 1 1 -70 0"/></defs><circle cx="50" cy="50" r="47" fill="none" stroke="currentColor" stroke-width="1.6"/><circle cx="50" cy="50" r="25" fill="none" stroke="currentColor" stroke-width="1"/><text class="ring"><textPath href="#${id}">${POSTMARK.repeat(2)}</textPath></text><text class="mid" x="50" y="54" text-anchor="middle">IWC</text></svg>`;
 
 let hid = 0;
-const homeBelow = () => {
+const homeBelow = (LIVE = OPEN) => {
   const k = ++hid, regions = IWC.regions;
   const live = regions.filter((r) => LIVE.includes(r.slug)), soon = regions.filter((r) => !LIVE.includes(r.slug));
+  const stamp = (r, i) => `<a class="stamp" href="#" data-slug="${r.slug}" data-name="${r.name.toLowerCase()}"><span class="face${PHOTO[r.slug] ? '' : ' ph'}"${PHOTO[r.slug] ? ` style="background-image:url(${PHOTO[r.slug]})"` : ''}></span><span class="caption"><em>${r.name}</em><b>Open</b></span>${postmark(`pm${k}-${i}`)}</a>`;
+  const pages = []; for (let i = 0; i < live.length; i += 6) pages.push(live.slice(i, i + 6));
+  const stampsHtml = live.length <= 6
+    ? `<div class="stamps">${live.map(stamp).join('')}</div>`
+    : `<div class="spager"><div class="spages">${pages.map((pg, p) => `<div class="stamps">${pg.map((r, i) => stamp(r, p * 6 + i)).join('')}</div>`).join('')}</div><button class="sarr l" type="button" aria-label="Previous states" disabled>←</button><button class="sarr r" type="button" aria-label="More states">→</button><span class="spcount">1 / ${pages.length}</span></div>`;
   const map = `<svg class="map" viewBox="${IWC.indiaMap.viewBox}" aria-hidden="true">${Object.entries(IWC.indiaMap.paths).map(([s, d]) => `<path d="${d}" data-slug="${s}"${LIVE.includes(s) ? ' class="live"' : ''}/>`).join('')}${TINY.map((s) => { const [x, y] = IWC.indiaMap.centers[s]; return `<circle cx="${x}" cy="${y}" r="8" data-slug="${s}"${LIVE.includes(s) ? ' class="live"' : ''}/>`; }).join('')}</svg>`;
   return `<div class="home">
   <section class="sec">
@@ -163,7 +184,7 @@ const homeBelow = () => {
       <div class="hp side">
         <label class="find">${svg('search')}<input type="search" placeholder="Find your state" aria-label="Find your state"></label>
         <div><p class="lbl"><span>Open now</span><span>${live.length}</span></p>
-          <div class="stamps">${live.map((r, i) => `<a class="stamp" href="#" data-slug="${r.slug}" data-name="${r.name.toLowerCase()}"><span class="face${PHOTO[r.slug] ? '' : ' ph'}"${PHOTO[r.slug] ? ` style="background-image:url(${PHOTO[r.slug]})"` : ''}></span><span class="caption"><em>${r.name}</em><b>Open</b></span>${postmark(`pm${k}-${i}`)}</a>`).join('')}</div></div>
+          ${stampsHtml}</div>
         <div><p class="lbl"><span>Coming soon</span><span>${soon.length}</span></p>
           <ul class="names">${soon.map((r) => `<li data-name="${r.name.toLowerCase()}"><a href="#" data-slug="${r.slug}">${r.name}</a></li>`).join('')}</ul></div>
       </div>
@@ -174,6 +195,9 @@ const homeBelow = () => {
 
 document.querySelectorAll('[data-home]').forEach((el) => {
   el.innerHTML = dev(+el.dataset.home, null, `${header()}${homeBelow()}${footer()}`);
+});
+document.querySelectorAll('[data-home12]').forEach((el) => {
+  el.innerHTML = dev(+el.dataset.home12, null, `${header()}${homeBelow(OPEN12)}`);
 });
 document.getElementById('scrolls').innerHTML = [
   dev(1440, 900, heroHtml({}, `${homeBelow()}${footer()}`), '1440 · scroll inside'),
@@ -199,6 +223,18 @@ document.querySelectorAll('.sec-pick').forEach((sec) => {
     const q = e.target.value.trim().toLowerCase();
     sec.querySelectorAll('[data-name]').forEach((el) => { el.hidden = q && !el.dataset.name.includes(q); });
   });
+});
+// Stamp pages: one page per click, smooth; each arrow hides at its end; the counter follows.
+document.querySelectorAll('.spager').forEach((w) => {
+  const track = w.querySelector('.spages'), [prev, next] = w.querySelectorAll('.sarr'), count = w.querySelector(".spcount");
+  const n = track.children.length;
+  const sync = () => {
+    const i = Math.round(track.scrollLeft / track.clientWidth);
+    prev.disabled = i <= 0; next.disabled = i >= n - 1; count.textContent = `${i + 1} / ${n}`;
+  };
+  prev.addEventListener('click', () => track.scrollBy({ left: -track.clientWidth, behavior: 'smooth' }));
+  next.addEventListener('click', () => track.scrollBy({ left: track.clientWidth, behavior: 'smooth' }));
+  track.addEventListener('scroll', sync, { passive: true }); sync();
 });
 // Row arrows, as row-scroller.tsx: 85 % of the row per click, each hidden at its end.
 document.querySelectorAll('.rowwrap').forEach((w) => {

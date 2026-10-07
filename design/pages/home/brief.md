@@ -2,7 +2,7 @@
 
 **Surface:** website `/` + app `(customer)/index` · **Code:** `apps/web/app/(store)/page.tsx`,
 `apps/web/features/catalog/product-row.tsx` + `product-card.tsx` + `quick-add.tsx`, `apps/web/features/regions/pick-home*.tsx`;
-app `apps/app/app/(customer)/index.tsx` · **Status:** mockup, round 2
+app `apps/app/app/(customer)/index.tsx` · **Status:** approved D-080 (2026-10-08), not built yet
 
 The first screen (photo, name on the wall, header, scroll fade) is settled by D-079 and is not reopened here.
 

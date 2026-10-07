@@ -635,7 +635,7 @@ Demo reviews come from demo reviewer accounts, show only in demo mode and are al
 rule on fake reviews). Payments run in Stripe test mode for the whole round (Vercel and the app switch to test keys);
 real money is never taken for a demo listing. Nothing of the demo round is kept after the clear.
 
-**D-079 · 2026-10-08 · founder: The shell (header, banner, footer, app tab bar) and the Home hero, from the design pass; Cinzel and Karla**
+**D-079 · 2026-10-08 · founder: The shell (header, banner, footer, app tab bar) and the Home hero, from the design pass; Cinzel and Karla · header colour, "no blur" and heading font amended by D-080**
 Founder, verbatim, over four rounds of `design/pages/shell/mockup.html` (2026-10-07 – 10-08; every round's notes are
 quoted in full in `design/pages/shell/brief.md` §Rounds):
 Round 2: "Remove clothing and spices form header and footers, add about us, instead of account I need three icons
@@ -683,3 +683,31 @@ page; the side panel also closes with Escape and a tap on the dimmed page (a fla
 ("Demo store. Nothing here is for sale." + "Test card") is approved with the mockup. Known trade-off, raised in round 3 before the
 founder chose the header on the photo: at the very top of Home the black nav crosses the dark wall disc on some widths and
 reads poorly there.
+
+**D-080 · 2026-10-08 · founder: Home below the hero, the header on the photo as before, Syne for headings, stamp pages**
+Founder, verbatim, over three rounds of `design/pages/home/mockup.html` (every round is quoted in
+`design/pages/home/brief.md` §Rounds):
+Round 2: "Things we finalized are good such as cinzel and karla, placement of the hero heading etc etc rest should be
+like it was before(such as before when the header moved down the hero image its bg became colored but smoothly fading in
+now it harshly switches colors and also the haeding were in white)" and "let the date be as is". Asked which round-1
+changes below the hero stay, the founder chose only "+ button on the photo".
+Round 3: "I need pagination in the stamps when they are less than 6 so they look as they are now, but when they are
+greater than 6 start pagination and provide two arrows on right and left, with a smooth scroll animation. rest is good
+1. Alright for lower headings let's use syne.
+2. Blur is fine I asked the no blur for harsh blurs.
+now let's move to the next page"
+What it means for the build (approved mockup: `design/pages/home/mockup.html`):
+- **Header on the Home photo, as built today** (`apps/web/app/globals.css`): white links over the dark band at the top of
+  the photo, the logo fading in with the scroll, and a 0.35 s cross-fade to cream once the photo has passed. Amends
+  D-079's black nav and its "no blur" line: soft fades and shadows are fine, only harsh blur is out.
+- **Headings below the hero in Syne** (section and page headings). Cinzel stays for the hero name, product titles and
+  stamp names; Karla for everything else. Amends D-079's fonts.
+- **Below the hero, as today** (row of cards with See all and arrows over the photos; Pick your home with the map, stamps
+  and names, stacked below 1100 px) with one change: **the add button is a round + on the card's photo**, so the name
+  keeps the card's full width; a piece with sizes opens its options.
+- **Open now stamps:** up to 6 they sit as today; **from 7, pages of 6** (3 × 2) that slide with a smooth scroll, an
+  arrow on each side (hidden at either end) and a page count under them.
+- The hero photo keeps its date stamp. On phones the stamp names scale down to fit (Cinzel runs wider than Georgia).
+*Interpretation (proposed, confirm on sight when Home is built):* "the haeding were in white" is the header's links (the
+hero name stays #1D1A17 on the white wall, D-079); "lower headings" are the section and page headings below the hero; the
+page count ("1 / 2") under the stamp pages is added so the arrows are not the only sign of more pages.

@@ -5,7 +5,8 @@
  */
 /* ---------- Fonts (founder, round 4): Cinzel for headlines, Karla for everything else; the logo stays Georgia ---------- */
 body { --fh: Cinzel, Georgia, serif; --ft: Karla, system-ui, sans-serif; --d-w: 400; --d-ls: 0;
-  --font-hero: var(--fh); --font-display: var(--fh); --font-body: var(--ft); --font-ui: var(--ft); --font-foot: var(--ft); }
+  --font-hero: var(--fh); --font-display: var(--fh); --font-body: var(--ft); --font-ui: var(--ft); --font-foot: var(--ft);
+  --font-heading: Syne, var(--ft); } /* section and page headings below the hero (founder, home round 3) */
 
 /* ---------- Mockup layout (not part of the design) ---------- */
 .mk-wrap { padding: 24px; background: #d6d3ce; min-height: 100vh; }
@@ -123,7 +124,7 @@ body[data-bag='empty'] .count { display: none; }
 
 /* Sample content under the header (context only). */
 .page-sample { padding: 32px clamp(16px, 2.2cqi, 32px); }
-.page-sample h1 { font: var(--d-w) clamp(30px, 3.6cqi, 48px)/1.05 var(--font-hero); letter-spacing: var(--d-ls); margin: 0 0 8px; }
+.page-sample h1 { font: 500 clamp(30px, 3.6cqi, 48px)/1.05 var(--font-heading); letter-spacing: -.01em; margin: 0 0 8px; }
 .page-sample p { margin: 0; color: var(--ink-muted); font: 400 15px/1.5 var(--font-body); }
 .ph-row { display: grid; grid-template-columns: repeat(4, 1fr); gap: 16px; margin-top: 24px; }
 .ph-row div { aspect-ratio: 3 / 4; border-radius: var(--radius-md); }

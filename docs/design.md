@@ -8,7 +8,9 @@
 > **Target since 2026-10-08 (D-079, not built yet):** the shell and the Home hero from the design pass: **Cinzel**
 > (headlines) and **Karla** (everything else) replace the five fonts below, the logo stays Georgia; header States ·
 > Search (hover pill) · About us + saved / bag / profile icons; phone side panel; the hero name held on the photo's white
-> wall at every size in #1D1A17; no blur anywhere. Approved mockup: `design/pages/shell/mockup.html`. The sections
+> wall at every size in #1D1A17. **D-080:** headings below the hero in **Syne**; on the Home photo the header stays as
+> today (white links over a dark band, smooth fade to cream); soft blur is fine, harsh blur is not; the card's add button
+> is a + on its photo; Open now stamps page in sixes. Approved mockups: `design/pages/shell/`, `design/pages/home/`. The sections
 > below describe today's build until the code catches up.
 > **Design pass (since 2026-10-07):** every page is designed again, one at a time; the register, the workflow and each
 > page's brief and mockup are in `design/pages/`. Until a page's mockup is approved, this file and the code stay as they are.
