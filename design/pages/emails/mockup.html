@@ -24,7 +24,7 @@
 </style>
 </head>
 <body>
-<div class="mk-bar"><strong>IWC design pass · 17 emails · round 1</strong><span>Wording as written today; only the frame changes</span></div>
+<div class="mk-bar"><strong>IWC design pass · 17 emails · round 2</strong><span>Wording as written today; only the frame changes</span></div>
 <main class="mk-wrap">
   <h2 class="mk-h">Order confirmed</h2>
   <p class="mk-p">The cream page, the logo at the top (an image at build), the pieces with photos, the brand-colour button, and the new footer. Left: a 600 px email app; right: a phone at 375.</p>
@@ -72,7 +72,7 @@ const MAILS = {
     + pieces([['Kasavu saree', 'Off-white with gold · Kerala', 1, '$114.99', KASAVU], ['Set-mundu', 'Off-white with gold · Kerala', 1, '$139.99', null]]) + totals()
     + `<p style="margin:18px 0 0;${T};font-size:13px;line-height:1.5;color:${C.muted}">Shipping to:<br>Meera Nair<br>12 Oak St<br>Edison, NJ 08817</p>` + btn('See your order')) },
   shipped: { subject: `Order ${N} is on its way`, html: shell(`Order ${N}`, `Order ${N} is on its way`,
-    p('Your order has left us and is on its way to you.') + p(`USPS tracking: <a href="#" style="color:${C.ink}">9400 1000 0000 0000 0000 00</a>`) + btn('See your order')) },
+    p('Your order has left us and is on its way to you.') + btn('Track your order') /* to our order page, not the carrier (founder, emails round 2) */) },
   delay: { subject: `New delivery date for order ${N}`, html: shell(`Order ${N}`, `New delivery date for order ${N}`,
     p(`Your order now arrives <strong>Nov 6 – Nov 11</strong>, later than we first said. We're sorry.`)
     + p(`If that doesn't work for you, you can cancel and get all <strong>$272.83</strong> back, or keep it with the new date. It's your call, on your order page.`) + btn('Keep it or cancel')) },

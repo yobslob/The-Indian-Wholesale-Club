@@ -1,7 +1,7 @@
 # emails: the customer emails (order confirmed and every order update)
 
 **Surface:** emails sent through `email_outbox` and Resend · **Code:** `apps/web/lib/email/order-confirmation.ts`,
-`order-update.ts`, `send.ts` · **Status:** mockup, round 1
+`order-update.ts`, `send.ts` · **Status:** approved D-094 (2026-10-08), not built yet
 
 ## The page's job
 Tell the customer what happened to their order in one glance, in the IWC voice, and give them the one next step.
@@ -33,3 +33,4 @@ Every email keeps today's subject and paragraphs; only the frame changes. Nothin
 | Date | Round | Founder's notes | Changed |
 |---|---|---|---|
 | 2026-10-08 | 1 | the options above | first proposal |
+| 2026-10-08 | 2 | "We will give them a tracking link which will take them back to website tracking page, rest is good" | the shipped email's tracking link is a "Track your order" button to our order page; approved as D-094 |

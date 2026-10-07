@@ -877,3 +877,16 @@ What it means for the build: the not-found page (`app/not-found.tsx`) and the er
 This page isn't here." / "That's on us, not you. Try again, and if it keeps happening, give it a few minutes."; drafts
 approved with the mockup) and **real buttons** ("Back to Home"; "Try again" and "Back to Home"). Nothing else under the
 message.
+
+**D-094 · 2026-10-08 · founder: The customer emails, from the design pass**
+Founder, verbatim: asked as options (`design/pages/emails/brief.md`): "The IWC look", "Photos of the pieces", "A useful
+footer". On round 1 of `design/pages/emails/mockup.html`: "We will give them a tracking link which will take them back
+to website tracking page, rest is good".
+What it means for the build (`apps/web/lib/email/`): every customer email keeps its wording (D-059 drafts) in a new
+frame: the cream page, the logo with the gold India outline at the top (sent as an image), the message in a card with
+a heading, Syne / Karla where the email app allows web fonts, the button in the brand colour; **small photos of the
+pieces** in the order confirmation and the item-unavailable email; a **footer** with Track your order · Shipping &
+returns · Contact, "You're getting this because you ordered from The Indian Wholesale Club. These emails are about your
+order only." and the support email (Q-9). **The shipped email's tracking link opens our order page on the website**
+(`/orders/[number]`, D-088, where "Track the parcel" goes on to the carrier), not the carrier's site. Nothing
+operational appears (D-003).
