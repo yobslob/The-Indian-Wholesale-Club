@@ -12,7 +12,7 @@ Filter button that shrinks to a round icon). Page 8, Search, approved as D-085 (
 Page 9, the Bag, approved as D-086 (photos, stepper, side panel, empty bag not blank).
 Page 10, Checkout, approved as D-087 (phone → delivery → payment, email in step 2, Edit buttons,
 the bag beside it, a quiet header, a fuller thank-you). Page 11, order tracking, approved as D-088 (status card, timeline, item photos, lookup card).
-Next: page 12, Account.
+Page 12, Account: mockup round 1 (`design/pages/account/`).
 
 **Logo text (D-077, 2026-10-07):** the website header's logo reads "Indian Wholesale Club", its I inside a gold outline of India cut open on the east; the Home hero heading is unchanged except "The" is gone. Titles, emails, footer and the app keep D-009's full name until the founder says otherwise.
 
