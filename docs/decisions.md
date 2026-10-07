@@ -806,3 +806,14 @@ D-038):
 - **Thank-you page:** today's text, then the pieces with photos, the total and the estimated delivery window.
 *Interpretation (proposed, confirm when built):* "pincode" is the US ZIP code; the ZIP → city lookup's source (a bundled
 ZIP list or a lookup service) is chosen at build time.
+
+**D-088 · 2026-10-08 · founder: Order tracking, from the design pass**
+Founder, verbatim: asked as options (`design/pages/order/brief.md`): "A real timeline", "Status card on top", "Photo on
+each item", "Lookup in a card". On round 1 of `design/pages/order/mockup.html`: "approved, move to next".
+What it means for the build: `/orders/lookup` puts the order number, email and "Find my order" in a centred card with
+"Both are in your order confirmation email." (draft wording, approved with the mockup). `/orders/[number]` opens with a
+**status card** (order number, the customer status in the heading font, the estimated delivery window, and a "Track the
+parcel" button with the carrier's link once shipped, D-066), a **timeline** Confirmed → Preparing your order → Shipped →
+Delivered drawn as a line that fills to the current step with each reached step's date from the order's updates (none
+for cancelled or refunded orders, as today), and **a photo on each item**. The faster-delivery offer, the cancel / keep
+choices and returns stay as built (D-042, D-064, D-071, D-072).

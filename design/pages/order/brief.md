@@ -2,7 +2,7 @@
 
 **Surface:** website `/orders/lookup`, `/orders/[number]` + app `order/lookup`, `order/[number]` · **Code:**
 `apps/web/app/(store)/orders/`, `apps/web/features/orders/` (`lookup-form.tsx`, `order-view.tsx`, `faster-offer.tsx`,
-`order-choices.tsx`, `return-choices.tsx`), `packages/shared/src/domain/order-status.ts` · **Status:** mockup, round 1
+`order-choices.tsx`, `return-choices.tsx`), `packages/shared/src/domain/order-status.ts` · **Status:** approved D-088 (2026-10-08), not built yet
 
 ## The page's job
 Answer "where is my order, and when does it arrive?" in one look, and offer the choices the customer has (faster
@@ -39,3 +39,4 @@ None. Dates, numbers and tracking in the mockup are samples.
 | Date | Round | Founder's notes | Changed |
 |---|---|---|---|
 | 2026-10-08 | 1 | the options above | first proposal |
+| 2026-10-08 | — | "approved, move to next" | approved as D-088 |
