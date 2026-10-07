@@ -2,7 +2,7 @@
 
 **Surface:** website `/states/[region]` + app `region/[slug]` · **Code:** `apps/web/app/(store)/states/[region]/page.tsx`,
 `apps/web/features/regions/`, `apps/web/features/catalog/product-row.tsx`, `curated-card.tsx`; app
-`apps/app/app/region/[slug].tsx` · **Status:** mockup, round 1
+`apps/app/app/region/[slug].tsx` · **Status:** approved D-081 (2026-10-08), not built yet
 
 ## The page's job
 The core page (`storefront.md` §The region page): greet the visitor in their own script, show the place, and lay out
@@ -38,3 +38,4 @@ Today's layout in the D-079 / D-080 fonts (state name Cinzel, section headings S
 | Date | Round | Founder's notes | Changed |
 |---|---|---|---|
 | 2026-10-08 | 1 | the options above | first proposal |
+| 2026-10-08 | — | "approved, move to next" | approved as D-081 |

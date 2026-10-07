@@ -46,7 +46,8 @@ Framer Motion page transitions (speed, `engineering.md`).
 1. Greeting in the region's own script, large, with its Latin transliteration and meaning beneath.
 2. Tagline and a short story: why this place feels like home.
 3. The accent colour re-themes the page (one CSS variable from `regions.accent_color`).
-4. **Every list is a row that scrolls sideways** (D-062; arrows for a mouse, swipe on a phone). Jump pills at the top
+4. **Every list is a row that scrolls sideways** (D-062; **target D-081:** the jump pills get the same arrows and Picked for you
+   is a standard row; arrows for a mouse, swipe on a phone). Jump pills at the top
    (New arrivals, each clothing category with its count, Spices). One row per clothing category, biggest first, up to 12
    cards, with **See all** → `/clothing?state=<region>&category=<category>`.
 5. Regions with no live products show "Coming soon" (`regions.is_live = false`). Anything more, like a notify-me feature, needs founder approval.

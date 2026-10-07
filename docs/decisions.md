@@ -711,3 +711,13 @@ What it means for the build (approved mockup: `design/pages/home/mockup.html`):
 *Interpretation (proposed, confirm on sight when Home is built):* "the haeding were in white" is the header's links (the
 hero name stays #1D1A17 on the white wall, D-079); "lower headings" are the section and page headings below the hero; the
 page count ("1 / 2") under the stamp pages is added so the arrows are not the only sign of more pages.
+
+**D-081 · 2026-10-08 · founder: The region page, from the design pass**
+Founder, verbatim: asked as options (`design/pages/region/brief.md`): state name font "Cinzel (Recommended)"; fixes
+"Something else", "Arrows on the jump pills", "Picked for you as a row" (the "something else" was never specified). On
+round 1 of `design/pages/region/mockup.html`: "approved, move to next".
+What it means for the build: the region page keeps today's layout (D-051, D-062) in the D-079 / D-080 fonts, the state
+name in **Cinzel**, section headings in Syne, the rest in Karla, and the + on every card (D-080). Two changes: the
+**jump pills get the product rows' arrows** at either end (each hidden at its end; phones swipe), and **Picked for you
+is a standard row** of full-size cards filling its box, with arrows when they overflow. Not chosen: the photo first on
+phones, merging small categories.
