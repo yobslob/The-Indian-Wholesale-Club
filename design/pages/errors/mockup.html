@@ -10,10 +10,9 @@
 <link rel="stylesheet" href="../_shared/tokens.css">
 <link rel="stylesheet" href="../_shared/page.css">
 <link rel="stylesheet" href="../_shared/shell.css">
-<link rel="stylesheet" href="../_shared/cards.css">
 <style>
-/* ---------- Not found / error (round 1): header and footer, a line in our voice, proper buttons, somewhere to go. ---------- */
-.er { --g: clamp(16px, 2.2cqi, 32px); --gap: clamp(12px, 1.4cqi, 20px); padding: clamp(32px, 4cqi, 64px) var(--g) clamp(48px, 6cqi, 96px); }
+/* ---------- Not found / error (round 2): header and footer, a line in our voice, proper buttons; nothing else. ---------- */
+.er { --g: clamp(16px, 2.2cqi, 32px); padding: clamp(48px, 8cqi, 120px) var(--g) clamp(64px, 10cqi, 160px); }
 .msg { max-width: 620px; }
 .msg h1 { margin: 0 0 10px; font: 500 clamp(34px, 3.6cqi, 56px)/1.05 var(--font-heading); letter-spacing: -.02em; color: #1D1A17; }
 .msg p { margin: 0 0 22px; font: 400 18px/1.5 var(--font-body); color: #000; }
@@ -21,21 +20,11 @@
 .btns { display: flex; flex-wrap: wrap; gap: 10px; }
 .b1, .b2 { display: inline-grid; place-items: center; min-height: 52px; padding: 0 28px; border-radius: var(--radius-pill); font: 600 16px/1 var(--font-ui); text-decoration: none; }
 .b1 { background: var(--brand); color: var(--on-brand); } .b2 { border: 1px solid var(--line); background: var(--paper); color: #000; }
-.sbox { display: flex; gap: 8px; max-width: 620px; margin-top: clamp(32px, 4cqi, 48px); }
-.sbox label { position: relative; flex: 1; display: flex; }
-.sbox input { all: unset; box-sizing: border-box; flex: 1; height: 48px; padding: 0 18px; border-radius: var(--radius-pill); border: 1px solid var(--line); background: var(--paper); font: 400 15px/1 var(--font-ui); }
-.sbox .go { all: unset; cursor: pointer; height: 48px; padding: 0 24px; border-radius: var(--radius-pill); background: var(--ink); color: var(--paper); font: 600 15px/48px var(--font-ui); }
-.sbox .go-i { all: unset; cursor: pointer; display: none; position: absolute; right: 4px; top: 4px; width: 40px; height: 40px; border-radius: 50%; background: var(--ink); color: var(--paper); place-items: center; }
-.sbox .go-i svg { width: 18px; height: 18px; }
-@container (max-width: 767px) { .sbox .go { display: none; } .sbox .go-i { display: grid; } .sbox input { padding-right: 52px; } }
-.lbl { margin: clamp(32px, 4cqi, 48px) 0 12px; font: 600 11px/1 var(--font-ui); letter-spacing: .16em; text-transform: uppercase; color: var(--ink-muted); }
-.sstamps { max-width: 660px; }
-.sec { padding: clamp(24px, 3cqi, 40px) 0 0; }
 </style>
 </head>
 <body data-demo="on" data-bag="empty">
 <div class="mk-bar">
-  <strong>IWC design pass · 16 errors · round 1</strong>
+  <strong>IWC design pass · 16 errors · round 2</strong>
   <span>The two lines are drafts</span>
   <span class="sep"></span>
   <span>Banner</span>
@@ -50,25 +39,15 @@
   <div class="mk-row"><div data-er="500" data-w="1440"></div></div>
 </main>
 <script src="../_shared/brand.js"></script>
-<script src="../../mockups/shared/data.js"></script>
 <script src="../_shared/shell.js"></script>
-<script src="../_shared/cards.js"></script>
 <script>
-const KASAVU = '../../mockups/assets/Kasavu_main.jpg';
-const OPEN = ['assam', 'delhi', 'kerala', 'maharashtra', 'punjab'];
-const JUST = 'Cotton mekhela chador|$115.99|Assam;Japan-fit baggy jeans|$80.99|Delhi;Kasavu saree|$114.99|Kerala;Paithani saree|$575.99|Maharashtra;Phulkari dupatta|$33.99|Punjab;Bootcut jeans|$57.99|Delhi'
-  .split(';').map((r) => { const [n, p, s] = r.split('|'); return [n, p, s, n === 'Kasavu saree' ? KASAVU : null, true]; });
-const rowHtml = (label, cards) => `<div class="rowwrap"><ul class="row" aria-label="${label}">${cards.map(card).join('')}</ul><button class="rarr l" type="button" aria-label="Scroll ${label} back" disabled>←</button><button class="rarr r" type="button" aria-label="Scroll ${label} on">→</button></div>`;
 const MSG = {
   404: `<h1>Page not found</h1><p>We looked everywhere, even under the bed. This page isn't here. <span class="draft">draft</span></p><div class="btns"><a class="b1" href="#">Back to Home</a></div>`,
   500: `<h1>Something went wrong</h1><p>That's on us, not you. Try again, and if it keeps happening, give it a few minutes. <span class="draft">draft</span></p><div class="btns"><a class="b1" href="#">Try again</a><a class="b2" href="#">Back to Home</a></div>`,
 };
-const page = (k) => `<div class="er"><div class="msg">${MSG[k]}</div>
-  <form class="sbox" role="search" onsubmit="return false"><label><input type="search" placeholder="Search" aria-label="Search"><button class="go-i" type="submit" aria-label="Search">${svg('search')}</button></label><button class="go" type="submit">Search</button></form>
-  <p class="lbl">Open now</p><div class="sstamps">${stampsBlock(IWC.regions.filter((r) => OPEN.includes(r.slug)))}</div>
-  <section class="sec"><div class="sec-h"><h2>Just listed</h2><a class="pill" href="#">See all</a></div>${rowHtml('Just listed', JUST)}</section></div>`;
+const page = (k) => `<div class="er"><div class="msg">${MSG[k]}</div></div>`; // nothing under the message (founder, errors round 2)
 document.querySelectorAll('[data-er]').forEach((el) => { const w = +el.dataset.w, k = el.dataset.er; el.innerHTML = dev(w, null, `${header()}${page(k)}${footer()}`, `${w} · ${k === '404' ? 'page not found' : 'something went wrong'}`); });
-shellInit(); initRows(); initStampPagers();
+shellInit();
 </script>
 </body>
 </html>

@@ -1,7 +1,7 @@
 # errors: page not found and something went wrong (website; the app has its own empty and error states)
 
 **Surface:** website `app/not-found.tsx` (every unknown address), `app/(store)/error.tsx` (a page that failed) · **Status:**
-mockup, round 1
+mockup, round 2
 
 ## The page's job
 Keep a lost visitor in the shop: say plainly what happened and give them somewhere to go next.
@@ -20,7 +20,7 @@ In the D-079 / D-080 fonts:
 - **A line in our voice** (draft, D-059): not found, "We looked everywhere, even under the bed. This page isn't here.";
   error, "That's on us, not you. Try again, and if it keeps happening, give it a few minutes."
 - **Proper buttons:** not found, "Back to Home"; error, "Try again" and "Back to Home".
-- **Somewhere to go** under the message: the search box (D-085), the open states as stamps (D-080) and the Just listed row.
+- ~~Somewhere to go~~ (round 1 only): removed in round 2; nothing under the message.
 
 ## Needs
 The two lines are drafts for the founder to approve or rewrite.
@@ -29,3 +29,4 @@ The two lines are drafts for the founder to approve or rewrite.
 | Date | Round | Founder's notes | Changed |
 |---|---|---|---|
 | 2026-10-08 | 1 | the options above | first proposal |
+| 2026-10-08 | 2 | "nah remove the stamps, search and just listed from there" | nothing under the message and buttons |
