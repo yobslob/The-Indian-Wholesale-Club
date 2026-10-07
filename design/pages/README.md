@@ -50,7 +50,7 @@ app's customer screens, then the admin side. The pass **refines the approved des
 | 6 | `states` | `/states` | `(customer)/explore` (regions part) | approved D-083 (= Home's Pick your home) |
 | 7 | `browse` | `/clothing`, `/spices` | `browse`, `(customer)/explore` | approved D-084 |
 | 8 | `search` | `/search` | search in `(customer)/explore` | approved D-085 |
-| 9 | `bag` | `/cart` | `(customer)/bag` | — |
+| 9 | `bag` | `/cart` | `(customer)/bag` | mockup, round 1 |
 | 10 | `checkout` | `/checkout`, `/checkout/success` | `checkout` | — |
 | 11 | `order` | `/orders/lookup`, `/orders/[number]` | `order/lookup`, `order/[number]` | — |
 | 12 | `account` | `/account`, `/account/orders`, `/account/addresses`, `/account/saved` | `(customer)/profile`, `addresses`, `(customer)/saved` | — |
