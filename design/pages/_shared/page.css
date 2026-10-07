@@ -1,0 +1,32 @@
+/*
+ * Base for every page mockup in design/pages/. Load after tokens.css. Mockup chrome (the size switcher, the
+ * placeholder marks) is styled here and is not part of any design.
+ */
+@font-face { font-family: 'TeX Gyre Heros'; font-weight: 400 500; font-display: swap; src: local('TeX Gyre Heros'), url(../../mockups/assets/texgyreheros-regular.otf) format('opentype'); }
+@font-face { font-family: 'TeX Gyre Heros'; font-weight: 600 700; font-display: swap; src: local('TeX Gyre Heros Bold'), url(../../mockups/assets/texgyreheros-bold.otf) format('opentype'); }
+
+*, *::before, *::after { box-sizing: border-box; }
+html { -webkit-text-size-adjust: 100%; }
+body { margin: 0; background: var(--canvas); color: var(--ink); font-family: var(--font-body); }
+img, svg { display: block; max-width: 100%; }
+a { color: inherit; }
+:focus-visible { outline: 2px solid var(--region, var(--brand)); outline-offset: 3px; }
+
+/* Mockup chrome: the top bar and the size frames. */
+.mk-bar {
+  position: sticky; top: 0; z-index: 100; display: flex; gap: 12px; align-items: center; flex-wrap: wrap;
+  padding: 8px 16px; background: #111; color: #eee; font: 500 12px/1.4 system-ui, sans-serif;
+}
+.mk-bar strong { color: #fff; }
+.mk-bar button {
+  all: unset; cursor: pointer; padding: 6px 10px; border-radius: 999px; color: #ccc;
+}
+.mk-bar button[aria-pressed='true'] { background: #eee; color: #111; }
+.mk-stage { display: flex; justify-content: center; padding: 24px 0 64px; background: #d6d3ce; min-height: 100vh; }
+.mk-frame { background: var(--canvas); box-shadow: 0 4px 24px rgba(0, 0, 0, .15); overflow: hidden; }
+.mk-frame iframe { display: block; border: 0; width: 100%; }
+
+/* Placeholder marks (same meaning as design/mockups/shared/mockup.css). */
+.tbd { display: block; border: 1px dashed currentColor; opacity: .75; padding: .6em .8em; font: 500 12px/1.5 system-ui, sans-serif; }
+.tbd::before { content: 'TO BE WRITTEN · '; font-weight: 700; }
+.ph { background: repeating-linear-gradient(135deg, var(--surface) 0 12px, var(--line) 12px 13px); }

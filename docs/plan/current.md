@@ -1,6 +1,9 @@
 # Current status
 
 ## Resume here
+**Design pass (2026-10-07):** the founder is designing every page again, one at a time (website at each width, app,
+web and app admin). Workflow and the page register with each page's status: `design/pages/README.md`. No page started yet.
+
 **Logo text (D-077, 2026-10-07):** the website header's logo reads "Indian Wholesale Club", its I inside a gold outline of India cut open on the east; the Home hero heading is unchanged except "The" is gone. Titles, emails, footer and the app keep D-009's full name until the founder says otherwise.
 
 **Production is live on Vercel and Supabase (us-east-1)** since 2026-10-06 (set up by the founder, `docs/ops.md`

@@ -5,6 +5,8 @@
 > **Direction chosen (2026-09-30, D-050):** A, reworked: the hero keeps its format, everything below it is a symmetric
 > full-width grid, no dark mode, fonts below. Mockup: `design/mockups/index.html` (palette with contrast, the map source,
 > the founder's remaining choices). Tokens go into `packages/tokens` in C1 step 2.
+> **Design pass (since 2026-10-07):** every page is designed again, one at a time; the register, the workflow and each
+> page's brief and mockup are in `design/pages/`. Until a page's mockup is approved, this file and the code stay as they are.
 
 ## Direction (founder, D-049; layout below the hero and fonts changed by D-050)
 **D-050 (2026-09-30):** Direction A. The hero keeps A's asymmetric, image-led format and motion; **everything below the
