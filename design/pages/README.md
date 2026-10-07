@@ -57,7 +57,7 @@ app's customer screens, then the admin side. The pass **refines the approved des
 | 13 | `review` | `/account/reviews/[productId]` | (opens the website) | approved D-090 |
 | 14 | `auth` | `/login`, `/signup` | `auth/login`, `auth/signup` | approved D-091 |
 | 15 | `info` | `/about`, `/how-it-works`, `/faq`, `/contact`, `/shipping-returns`, `/privacy`, `/terms` | — | approved D-092 |
-| 16 | `errors` | not found, error | error and empty states | mockup, round 2 |
+| 16 | `errors` | not found, error | error and empty states | approved D-093 |
 | 17 | `emails` | customer emails (`lib/email/`) | — | — |
 
 ### Part 2: admin side (web admin at 1440 · 390, and the app's admin mode)

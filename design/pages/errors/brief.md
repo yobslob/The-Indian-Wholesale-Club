@@ -1,7 +1,7 @@
 # errors: page not found and something went wrong (website; the app has its own empty and error states)
 
 **Surface:** website `app/not-found.tsx` (every unknown address), `app/(store)/error.tsx` (a page that failed) · **Status:**
-mockup, round 2
+approved D-093 (2026-10-08), not built yet
 
 ## The page's job
 Keep a lost visitor in the shop: say plainly what happened and give them somewhere to go next.
@@ -30,3 +30,4 @@ The two lines are drafts for the founder to approve or rewrite.
 |---|---|---|---|
 | 2026-10-08 | 1 | the options above | first proposal |
 | 2026-10-08 | 2 | "nah remove the stamps, search and just listed from there" | nothing under the message and buttons |
+| 2026-10-08 | — | "approved, move to next" | approved as D-093 |

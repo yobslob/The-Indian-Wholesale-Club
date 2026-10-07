@@ -867,3 +867,13 @@ approved, D-019; About and Contact still to be written).
 *Interpretation (proposed, confirm when built):* each info page keeps its URL (emails, checkout notes, search engines and
 legal links need them); opening a tab updates the URL and Back closes the panel; a direct visit opens Home with that
 panel showing.
+
+**D-093 · 2026-10-08 · founder: The not-found and error pages, from the design pass**
+Founder, verbatim: asked as options (`design/pages/errors/brief.md`): "Header and footer on them", "Somewhere to go", "A
+line in our voice", "Proper buttons". On round 1: "nah remove the stamps, search and just listed from there". On round
+2 of `design/pages/errors/mockup.html`: "approved, move to next".
+What it means for the build: the not-found page (`app/not-found.tsx`) and the error page (`app/(store)/error.tsx`) carry
+**the normal header and footer**, a heading, **one line in the IWC voice** ("We looked everywhere, even under the bed.
+This page isn't here." / "That's on us, not you. Try again, and if it keeps happening, give it a few minutes."; drafts
+approved with the mockup) and **real buttons** ("Back to Home"; "Try again" and "Back to Home"). Nothing else under the
+message.

@@ -15,7 +15,7 @@ the bag beside it, a quiet header, a fuller thank-you). Page 11, order tracking,
 Page 12, Account, approved as D-089 (one profile page, order cards, heart to unsave, sign-in on
 the page, corner icons on addresses). Page 13, the review form, approved as D-090 (panel, piece at the top, stars, photo tiles).
 Page 14, sign-in / sign-up, approved as D-091 (show password, forgot password, email code).
-Page 15, the info pages, approved as D-092 (a glass panel on the same page). Page 16, not-found and error pages: mockup round 2 (`design/pages/errors/`).
+Page 15, the info pages, approved as D-092 (a glass panel on the same page). Page 16, not-found and error pages, approved as D-093. Next: page 17, customer emails.
 
 **Logo text (D-077, 2026-10-07):** the website header's logo reads "Indian Wholesale Club", its I inside a gold outline of India cut open on the east; the Home hero heading is unchanged except "The" is gone. Titles, emails, footer and the app keep D-009's full name until the founder says otherwise.
 
