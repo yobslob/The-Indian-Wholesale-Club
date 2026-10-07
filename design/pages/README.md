@@ -36,8 +36,8 @@ they live in the scratchpad, not in the repo.
 | Web admin | 1440 desktop · 390 phone (admins work on phones, `docs/admin.md`) |
 
 ## Page register
-Order (founder, 2026-10-07): the customer side first, each page at every size on the website and in the app together,
-then the admin side. The pass **refines the approved design** (D-050 – D-055, D-077); it does not replace it.
+Order (founder, 2026-10-07; D-083): the customer side first, every website page at each size, then one pass over the
+app's customer screens, then the admin side. The pass **refines the approved design** (D-050 – D-055, D-077); it does not replace it.
 
 ### Part 1: customer side (website at 1440 · 1024 · 768 · 390, and the app)
 | # | id | Website (`apps/web/app/(store)/`) | App (`apps/app/app/`) | Status |
@@ -47,7 +47,7 @@ then the admin side. The pass **refines the approved design** (D-050 – D-055, 
 | 3 | `cards` | product card, region stamp, sideways row + See all, pills | same parts (`features/catalog/`) | settled in `home` (D-080): + on the photo, row as today, stamp pages |
 | 4 | `region` | `/states/[region]` | `region/[slug]` | approved D-081 |
 | 5 | `product` | `/states/[region]/[product]` | `product/[region]/[slug]` | approved D-082 |
-| 6 | `states` | `/states` | `(customer)/explore` (regions part) | — |
+| 6 | `states` | `/states` | `(customer)/explore` (regions part) | approved D-083 (= Home's Pick your home) |
 | 7 | `browse` | `/clothing`, `/spices` | `browse`, `(customer)/explore` | — |
 | 8 | `search` | `/search` | search in `(customer)/explore` | — |
 | 9 | `bag` | `/cart` | `(customer)/bag` | — |

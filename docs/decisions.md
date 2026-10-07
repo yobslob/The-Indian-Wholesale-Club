@@ -737,3 +737,11 @@ line in Cinzel, section headings in Syne, the rest in Karla), with:
 - **Phones:** a buy bar (name, price and option, Add to bag) slides up while the page's own Add to bag is out of view;
   the review cards are a sideways row under the rating summary.
 Not chosen: a swipeable gallery on phones (the big photo and three small ones stay).
+
+**D-083 · 2026-10-08 · founder: The States page is Home's Pick your home; the app screens get their own pass after the website**
+Founder, verbatim (asked as options): States page "Same as Home (Recommended)"; app mockups "After the website pages
+(Recommended)".
+What it means for the build: `/states` is the approved Pick your home block (D-080: map, stamps with pages from 7,
+names, search) as its own page, its heading in Syne; nothing else changes there. In the design pass (`design/pages/`)
+every website customer page is designed first; then one pass mocks the app's customer screens on the same decisions,
+before the admin side.
