@@ -853,3 +853,17 @@ code in six boxes that a paste fills, "Resend code", "Use a password instead"). 
 (full name, email, password; then "Check your inbox to confirm your email, then sign in."). Supabase Auth sends the
 reset and code emails; their templates are written in the IWC voice before launch. New wording is draft, approved with
 the mockup.
+
+**D-092 · 2026-10-08 · founder: The info pages as a glass panel on the same page, from the design pass**
+Founder, verbatim: "In the info pages I don't really need a whole new page to open, I just need a glass tab which opens
+on the same page(whichever page it is clicked on) with a cross button". On round 1 of `design/pages/info/mockup.html`:
+"need the cross to be smaller, rest approved move on".
+What it means for the build: About us (header, side menu) and the footer's info links open a **frosted-glass panel over
+the current page** (a soft blur of the page behind, D-080; the page dimmed a little) with **tabs** for About us · How it
+works · FAQ · Shipping & returns · Contact · Privacy · Terms, FAQ answers that open with + / −, and a **small × (32 px,
+with a 44 px tap area)**; Escape or a click outside also closes it, with the same short fade and lift both ways. On
+phones it is a glass sheet rising from the bottom (about 90 % of the screen). The content stays as written (drafts until
+approved, D-019; About and Contact still to be written).
+*Interpretation (proposed, confirm when built):* each info page keeps its URL (emails, checkout notes, search engines and
+legal links need them); opening a tab updates the URL and Back closes the panel; a direct visit opens Home with that
+panel showing.

@@ -2,7 +2,7 @@
 
 **Surface:** website `/about`, `/how-it-works`, `/faq`, `/contact`, `/shipping-returns`, `/privacy`, `/terms` (linked
 from the header's About us and the footer) · **Code:** `apps/web/app/(store)/<page>/page.tsx` (shipping-returns and faq
-read `store_policy()`) · **Status:** mockup, round 1
+read `store_policy()`) · **Status:** approved D-092 (2026-10-08), not built yet
 
 ## The page's job
 Answer the questions people have before and after buying, without taking them away from what they were looking at.
@@ -34,3 +34,4 @@ page(whichever page it is clicked on) with a cross button"
 | Date | Round | Founder's notes | Changed |
 |---|---|---|---|
 | 2026-10-08 | 1 | the direction above | first proposal |
+| 2026-10-08 | 2 | "need the cross to be smaller, rest approved move on" | a 32 px × (44 px tap area); approved as D-092 |
