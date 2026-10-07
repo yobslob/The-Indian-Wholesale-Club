@@ -782,3 +782,27 @@ shows the open states as stamps and the Just listed row under its sentence. **Th
 side panel** from the right with the menu's motion: "Your bag (n)", the lines, Subtotal and the shipping line, Checkout
 and "View bag" (`/cart`); an empty panel shows only the sentence and its link. Prices are still checked by the server at
 checkout (D-038).
+
+**D-087 · 2026-10-08 · founder: Checkout as phone → delivery → payment, and the thank-you page, from the design pass**
+Founder, verbatim: "I don't want to shove the signin or any details from the customer anywhere on the website, I only
+want it when the user deliberately goes to profile or if the user checks out, so we will show it like a part of the
+process, first we will only ask for number putting the us +1 with flag by default, when number is done we will ask for
+name pincode(fetch us city automatically by pincode) and address, when both are done then we will show payment
+methods." Also chosen: "Bag beside the form", "Quiet header", "Fuller thank-you page"; email "Ask email in step 2
+(Recommended)"; phone "No code, just the number (Recommended)". On round 1 of `design/pages/checkout/mockup.html`:
+"Instead of underlined change, replace it with edit. rest is good, proceed onto the next".
+What it means for the build (`/checkout`, `/checkout/success`; the order is still priced and created by the server,
+D-038):
+- **No sign-in or personal-detail prompts** anywhere on the website except Profile and checkout.
+- **Three steps on one page**, each opening when the one before is done; a finished step folds to one line with an
+  **Edit** button (not an underlined "Change"): 1. **Phone**, +1 with the US flag by default (required; delivery
+  contact only, no code sent); 2. **Delivery**: full name, email (confirmations and guest tracking, as built), ZIP code
+  with the city and state filled in from it (editable; an unknown ZIP asks for them), street, apartment (optional),
+  promo code behind "Add a promo code"; "Continue to payment" prices the bag on the server; 3. **Payment**: Standard /
+  Express with each window (D-041, D-070), Stripe's payment form, "Pay $…".
+- **The bag beside the steps** from the start (photos, lines, subtotal; shipping, tax, total and the estimated delivery
+  once priced); on phones a "Bag (n) · $…" bar at the top opens it.
+- **Quiet header** on checkout: the logo and "Back to bag"; a one-line footer.
+- **Thank-you page:** today's text, then the pieces with photos, the total and the estimated delivery window.
+*Interpretation (proposed, confirm when built):* "pincode" is the US ZIP code; the ZIP → city lookup's source (a bundled
+ZIP list or a lookup service) is chosen at build time.

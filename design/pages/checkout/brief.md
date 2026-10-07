@@ -2,7 +2,7 @@
 
 **Surface:** website `/checkout`, `/checkout/success` + app `checkout` (PaymentSheet) · **Code:**
 `apps/web/app/(store)/checkout/`, `apps/web/features/checkout/` (`checkout-flow.tsx`, `order-summary.tsx`,
-`shipping-picker.tsx`, `payment-form.tsx`, `checkout-success.tsx`) · **Status:** mockup, round 1
+`shipping-picker.tsx`, `payment-form.tsx`, `checkout-success.tsx`) · **Status:** approved D-087 (2026-10-08), not built yet
 
 ## The page's job
 Take the details we need to deliver, show the exact total and delivery window before paying (D-008, D-038), take the
@@ -50,3 +50,4 @@ beside the form", "Quiet header", "Fuller thank-you page". Then: email "Ask emai
 | Date | Round | Founder's notes | Changed |
 |---|---|---|---|
 | 2026-10-08 | 1 | the direction above | first proposal |
+| 2026-10-08 | 2 | "Instead of underlined change, replace it with edit. rest is good, proceed onto the next" | Edit buttons (pill with a pencil) instead of underlined Change; approved as D-087 |

@@ -28,14 +28,15 @@
 .co-grid { display: grid; grid-template-columns: minmax(0, 1.25fr) minmax(0, 1fr); gap: var(--gap); align-items: start; }
 @container (max-width: 900px) { .co-grid { grid-template-columns: 1fr; } }
 
-/* Steps: one open at a time; a finished one folds to a line with Change. */
+/* Steps: one open at a time; a finished one folds to a line with Edit. */
 .step { border-top: 1px solid var(--line); padding: 18px 0; }
 .step:last-child { border-bottom: 1px solid var(--line); }
 .sh { display: flex; align-items: center; gap: 12px; }
 .sh .n { width: 28px; height: 28px; border-radius: 50%; display: grid; place-items: center; flex: none; font: 600 13px/1 var(--font-ui); background: var(--surface); color: var(--ink-muted); }
 .sh h2 { margin: 0; flex: 1; font: 500 20px/1.2 var(--font-heading); color: var(--ink-muted); }
 .sh .sum { display: none; font: 400 14px/1.3 var(--font-body); color: var(--ink-muted); }
-.sh .chg { all: unset; cursor: pointer; display: none; font: 500 14px/1 var(--font-ui); color: #000; text-decoration: underline; text-underline-offset: 3px; min-height: 44px; align-items: center; }
+.sh .chg { all: unset; cursor: pointer; display: none; align-items: center; gap: 6px; min-height: 40px; padding: 0 14px; border-radius: var(--radius-pill); border: 1px solid var(--line); background: var(--paper); font: 500 14px/1 var(--font-ui); color: #000; }
+.sh .chg svg { width: 15px; height: 15px; } /* "Edit", not an underlined Change (founder, checkout round 2) */
 .sb { display: none; padding: 18px 0 4px 40px; }
 .step.open .n { background: var(--ink); color: var(--paper); } .step.open h2 { color: #1D1A17; } .step.open .sb { display: block; }
 .step.done .n { background: var(--positive); color: #fff; } .step.done h2 { color: #1D1A17; flex: none; } .step.done .sum { display: block; flex: 1; } .step.done .chg { display: inline-flex; }
@@ -50,7 +51,7 @@
 .phone .cc .flag { display: block; border-radius: 2px; box-shadow: 0 0 0 1px rgb(0 0 0 / .08); }
 .phone input { margin-top: 0 !important; border-radius: 0 var(--radius-sm) var(--radius-sm) 0 !important; }
 .cityline { margin: -6px 0 14px; font: 500 14px/1.4 var(--font-ui); color: var(--positive); min-height: 20px; }
-.cityline a { color: #000; margin-left: 8px; }
+.cityline a { margin-left: 10px; font: 500 13px/1 var(--font-ui); color: #000; text-decoration: none; border: 1px solid var(--line); background: var(--paper); border-radius: var(--radius-pill); padding: 4px 10px; }
 .btn { all: unset; cursor: pointer; display: inline-grid; place-items: center; min-height: 52px; padding: 0 28px; border-radius: var(--radius-pill); background: var(--brand); color: var(--on-brand); font: 600 16px/1 var(--font-ui); box-sizing: border-box; }
 .btn.full { width: 100%; }
 .note { margin: 12px 0 0; font: 400 13px/1.4 var(--font-body); color: var(--ink-muted); }
@@ -99,7 +100,7 @@
 </head>
 <body data-demo="on" data-bag="full">
 <div class="mk-bar">
-  <strong>IWC design pass · 10 checkout · round 1</strong>
+  <strong>IWC design pass · 10 checkout · round 2</strong>
   <span>One Kasavu saree in the bag</span>
   <span class="sep"></span>
   <span>Banner</span>
@@ -109,7 +110,7 @@
 
 <main class="mk-wrap">
   <h2 class="mk-h">Checkout: walk through it in the first two frames</h2>
-  <p class="mk-p">Type a number and Continue; then name, email, a ZIP (try <b>08817</b>, <b>10001</b> or <b>07302</b>: the city and state fill in) and the street, then Continue to payment. Finished steps fold to one line with Change. Numbers marked SAMPLE stand in for what the server and the cycle dates give (D-008, D-041, D-070, D-073).</p>
+  <p class="mk-p">Type a number and Continue; then name, email, a ZIP (try <b>08817</b>, <b>10001</b> or <b>07302</b>: the city and state fill in) and the street, then Continue to payment. Finished steps fold to one line with Edit. Numbers marked SAMPLE stand in for what the server and the cycle dates give (D-008, D-041, D-070, D-073).</p>
   <div class="mk-row"><div data-co="1" data-w="1440" data-h="900"></div></div>
   <div class="mk-row"><div data-co="1" data-w="390" data-h="844"></div><div data-co="2" data-w="390" data-h="844"></div><div data-co="3" data-w="390" data-h="844"></div></div>
   <h2 class="mk-h">Each step on desktop</h2>
@@ -142,11 +143,11 @@ const bagSummary = (thanks = false) => `<div class="bagsum"><h3>${thanks ? 'Your
   <p class="deliv">Estimated delivery: <b class="winv">Oct 30 – Nov 4</b> <span class="sample">sample dates</span></p></div>`;
 
 const steps = () => `
-  <section class="step" data-n="1"><div class="sh"><span class="n">1</span><h2>Phone</h2><span class="sum">+1 (732) 555-0142</span><button class="chg" type="button">Change</button></div>
+  <section class="step" data-n="1"><div class="sh"><span class="n">1</span><h2>Phone</h2><span class="sum">+1 (732) 555-0142</span><button class="chg" type="button"><svg class="icon" viewBox="0 0 24 24" aria-hidden="true"><path d="M4 20h4L19 9l-4-4L4 16z"/><path d="m13.5 6.5 4 4"/></svg>Edit</button></div>
     <p class="sum2">+1 (732) 555-0142</p>
     <div class="sb"><label class="fld">Phone number<span class="phone"><span class="cc"><svg class="flag" viewBox="0 0 19 10" width="22" height="12" aria-hidden="true"><rect width="19" height="10" fill="#b22234"/><rect y="0.769" width="19" height="0.769" fill="#fff"/><rect y="2.307" width="19" height="0.769" fill="#fff"/><rect y="3.845" width="19" height="0.769" fill="#fff"/><rect y="5.383" width="19" height="0.769" fill="#fff"/><rect y="6.921" width="19" height="0.769" fill="#fff"/><rect y="8.459" width="19" height="0.769" fill="#fff"/><rect width="7.6" height="5.385" fill="#3c3b6e"/></svg><span class="sr-only">United States</span>+1 ▾</span><input type="tel" inputmode="tel" autocomplete="tel-national" value="(732) 555-0142"></span></label>
       <button class="btn go" type="button">Continue</button><p class="note">For delivery only. We don't text you anything at checkout.</p></div></section>
-  <section class="step" data-n="2"><div class="sh"><span class="n">2</span><h2>Delivery</h2><span class="sum">Meera Nair · 12 Oak St, Edison, NJ 08817</span><button class="chg" type="button">Change</button></div>
+  <section class="step" data-n="2"><div class="sh"><span class="n">2</span><h2>Delivery</h2><span class="sum">Meera Nair · 12 Oak St, Edison, NJ 08817</span><button class="chg" type="button"><svg class="icon" viewBox="0 0 24 24" aria-hidden="true"><path d="M4 20h4L19 9l-4-4L4 16z"/><path d="m13.5 6.5 4 4"/></svg>Edit</button></div>
     <p class="sum2">Meera Nair · 12 Oak St, Edison, NJ 08817</p>
     <div class="sb"><label class="fld">Full name<input autocomplete="name" value="Meera Nair"></label>
       <label class="fld">Email<input type="email" autocomplete="email" value="meera@example.com"></label>
@@ -197,7 +198,7 @@ document.querySelectorAll('.co').forEach((co) => {
   });
   // ZIP → city and state (the lookup's answer); an unknown ZIP asks for the city.
   const zip = co.querySelector('.zip'), city = co.querySelector('.cityline');
-  const look = () => { const c = ZIPS[zip.value]; city.innerHTML = zip.value.length < 5 ? '' : c ? `✓ ${c[0]}, ${c[1]}<a href="#">Change</a>` : '<span style="color:var(--ink-muted)">We could not find that ZIP; type the city and state.</span>'; };
+  const look = () => { const c = ZIPS[zip.value]; city.innerHTML = zip.value.length < 5 ? '' : c ? `✓ ${c[0]}, ${c[1]}<a href="#">Edit</a>` : '<span style="color:var(--ink-muted)">We could not find that ZIP; type the city and state.</span>'; };
   zip.addEventListener('input', look); look();
   co.querySelector('.promo-t').addEventListener('click', (e) => { e.currentTarget.hidden = true; co.querySelector('.promo').hidden = false; });
   // Shipping choice changes the total and the window.
