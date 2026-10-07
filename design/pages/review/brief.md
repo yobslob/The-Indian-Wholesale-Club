@@ -1,7 +1,7 @@
 # review: writing a review (website; the app opens the website)
 
 **Surface:** website `/account/reviews/[productId]` (and, new, a panel over the product page) · **Code:**
-`apps/web/app/(store)/account/reviews/[productId]/page.tsx`, `apps/web/features/reviews/` · **Status:** mockup, round 1
+`apps/web/app/(store)/account/reviews/[productId]/page.tsx`, `apps/web/features/reviews/` · **Status:** approved D-090 (2026-10-08), not built yet
 
 ## The page's job
 Let a signed-in customer rate a piece and say why, add photos if they bought it, and know it will be read first.
@@ -33,3 +33,4 @@ None.
 | Date | Round | Founder's notes | Changed |
 |---|---|---|---|
 | 2026-10-08 | 1 | the options above | first proposal |
+| 2026-10-08 | — | "approved, move to next" | approved as D-090 |

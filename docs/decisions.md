@@ -831,3 +831,13 @@ Remove as a pencil and a minus icon in the card's corner**; "Add an address" ope
 email, full name, phone, Save. **Signed out**, the profile page itself shows a sign-in card (email, password; "New
 here? Create an account" turns it into account creation with full name) instead of a jump to `/login` (D-087).
 The two one-line leads on the sign-in card are draft wording, approved with the mockup.
+
+**D-090 · 2026-10-08 · founder: Writing a review, from the design pass**
+Founder, verbatim: asked as options (`design/pages/review/brief.md`): "Tap the stars", "The piece at the top", "Photo
+tiles", "Opens as a panel". On round 1 of `design/pages/review/mockup.html`: "approved, move to next".
+What it means for the build: "Write a review" on the product page **opens the form as a side panel** over the product
+(the menu's motion; signed out, the sign-in card first, D-089); `/account/reviews/[productId]` keeps the same form for
+links from outside. The form shows **the piece at the top** (photo, name, option · state), the rating as **one row of
+five large stars** (tap or arrow keys, "n of 5" beside it), and for verified buyers **photo tiles** with previews, × to
+remove and "+ Add photo" (hidden at the limit of 4). Fields, limits, texts and the thank-you / already-reviewed states
+stay as built (D-051, D-052, D-056).
