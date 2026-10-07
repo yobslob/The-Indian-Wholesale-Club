@@ -1,0 +1,108 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>IWC design pass: 8 search</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Cinzel:wght@400;500&family=Karla:wght@400;500;600&family=Syne:wght@400;500;600&family=Gelasio&family=Noto+Sans+Malayalam&family=Noto+Sans+Bengali&family=Noto+Sans+Devanagari&family=Noto+Sans+Gurmukhi&display=swap">
+<link rel="stylesheet" href="../_shared/tokens.css">
+<link rel="stylesheet" href="../_shared/page.css">
+<link rel="stylesheet" href="../_shared/shell.css">
+<link rel="stylesheet" href="../_shared/cards.css">
+<style>
+/* ---------- Search (round 1): today's page in the D-079 / D-080 fonts, with the count, no dead ends, something to start
+ * with, and an icon button on phones. ---------- */
+.sr { --g: clamp(16px, 2.2cqi, 32px); --gap: clamp(12px, 1.4cqi, 20px); padding: 0 var(--g) clamp(48px, 6cqi, 96px); }
+.sr h1 { margin: 0; padding: clamp(24px, 2.6cqi, 40px) 0 20px; font: 500 clamp(32px, 3cqi, 52px)/1.1 var(--font-heading); letter-spacing: -.02em; color: #1D1A17; }
+.sbox { display: flex; gap: 8px; max-width: 768px; }
+.sbox label { position: relative; flex: 1; display: flex; }
+.sbox input { all: unset; box-sizing: border-box; flex: 1; height: 48px; padding: 0 18px; border-radius: var(--radius-pill); border: 1px solid var(--line); background: var(--paper); font: 400 15px/1 var(--font-ui); color: #000; }
+.sbox .go { all: unset; cursor: pointer; height: 48px; padding: 0 24px; border-radius: var(--radius-pill); background: var(--brand); color: var(--on-brand); font: 600 15px/48px var(--font-ui); }
+.sbox .go-i { all: unset; cursor: pointer; display: none; position: absolute; right: 4px; top: 4px; width: 40px; height: 40px; border-radius: 50%; background: var(--brand); color: var(--on-brand); place-items: center; }
+.sbox .go-i svg { width: 18px; height: 18px; }
+/* Phones (founder, round 1): a round search icon inside the box's right end. */
+@container (max-width: 767px) { .sbox .go { display: none; } .sbox .go-i { display: grid; } .sbox input { padding-right: 52px; } }
+.rcount { margin: 14px 0 0; font: 400 15px/1.4 var(--font-body); color: var(--ink-muted); }
+.rcount b { font-weight: 500; color: #000; }
+.sec { padding: clamp(24px, 3cqi, 40px) 0 0; }
+.sec h2 { margin: 0 0 16px; font: 500 clamp(22px, 2cqi, 30px)/1.1 var(--font-heading); letter-spacing: -.01em; color: #1D1A17; }
+.nores { margin: 0; font: 400 15px/1.5 var(--font-body); color: var(--ink-muted); }
+.lbl { margin: clamp(28px, 3cqi, 40px) 0 12px; font: 600 11px/1 var(--font-ui); letter-spacing: .16em; text-transform: uppercase; color: var(--ink-muted); }
+/* State results: today's state card (name, greeting, tagline). */
+.scards { display: grid; grid-template-columns: repeat(auto-fill, minmax(260px, 1fr)); gap: var(--gap); }
+.scard { display: block; padding: 20px; border-radius: var(--radius-lg); border: 1px solid var(--line); background: var(--paper); color: #000; text-decoration: none; }
+.scard b { display: block; font: 400 22px/1.1 var(--font-display); }
+.scard i { display: block; margin-top: 6px; font-style: normal; font-size: 15px; color: var(--ink-muted); }
+.scard span { display: block; margin-top: 6px; font: 400 13px/1.4 var(--font-body); color: var(--ink-muted); }
+.bgrid { list-style: none; margin: 0; padding: 0; display: grid; grid-template-columns: repeat(2, minmax(0, 1fr)); gap: clamp(28px, 3cqi, 44px) var(--gap); }
+.bgrid .card { width: auto; }
+@container (min-width: 1280px) { .bgrid { grid-template-columns: repeat(4, minmax(0, 1fr)); } }
+.sr .sec-h { margin-top: 0; }
+</style>
+</head>
+<body data-demo="on" data-bag="full">
+<div class="mk-bar">
+  <strong>IWC design pass · 8 search · round 1</strong>
+  <span>Results as on production (demo round)</span>
+  <span class="sep"></span>
+  <span>Banner</span>
+  <button type="button" data-set="demo" data-val="on" aria-pressed="true">On</button>
+  <button type="button" data-set="demo" data-val="off" aria-pressed="false">Off</button>
+</div>
+
+<main class="mk-wrap">
+  <h2 class="mk-h">With results</h2>
+  <p class="mk-p">The count sits under the box with the words searched (draft wording). On phones the Search button is a round icon inside the box.</p>
+  <div data-s="saree" data-w="1440"></div>
+  <div data-s="kerala" data-w="1440"></div>
+  <div class="mk-row"><div data-s="saree" data-w="768"></div><div data-s="saree" data-w="390"></div></div>
+  <h2 class="mk-h">No results: no dead end</h2>
+  <div class="mk-row"><div data-s="zzqx" data-w="1440"></div></div>
+  <div class="mk-row"><div data-s="zzqx" data-w="390"></div><div data-s="" data-w="390"></div></div>
+  <h2 class="mk-h">No words yet: something to start with</h2>
+  <div class="mk-row"><div data-s="" data-w="1440"></div></div>
+</main>
+
+<script src="../_shared/brand.js"></script>
+<script src="../../mockups/shared/data.js"></script>
+<script src="../_shared/shell.js"></script>
+<script src="../_shared/cards.js"></script>
+<script>
+// Production results on 2026-10-08 (demo round, D-078).
+const KASAVU = '../../mockups/assets/Kasavu_main.jpg';
+const parse = (s) => s.split(';').map((r) => { const [n, p, st] = r.split('|'); return [n, p, st, n === 'Kasavu saree' ? KASAVU : null, true]; });
+const RESULTS = {
+  saree: { states: [], items: parse('Assamese handloom saree|$140.99|Assam;Block-printed Kerala saree|$69.99|Kerala;Coloured-border set saree|$69.99|Kerala;Corset blouse for sarees|$33.99|Delhi;Davani|$142.99|Kerala;Hand-painted Kerala saree|$179.99|Kerala;Himroo saree|$392.99|Maharashtra;Ilkal saree|$185.99|Maharashtra;Kalamkari Kerala saree|$165.99|Kerala;Karvath Kati saree|$413.99|Maharashtra;Kasaragod saree|$125.99|Kerala;Kasavu saree|$114.99|Kerala;Kasavu shirt|$43.99|Kerala;Khun saree|$127.99|Maharashtra;Kolhapuri saree|$82.99|Maharashtra;Muga saree|$461.99|Assam;Narayanpet saree|$107.99|Maharashtra;Nath-motif saree|$82.99|Maharashtra;Nauvari saree|$96.99|Maharashtra;Paithani saree|$575.99|Maharashtra;Palakkad handloom saree|$98.99|Kerala;Warli-painted saree|$145.99|Maharashtra;Wedding saree|$91.99|Delhi;White silk bridal saree|$244.99|Kerala') },
+  kerala: { states: ['kerala'], items: parse('Block-printed Kerala saree|$69.99|Kerala;Davani|$142.99|Kerala;Hand-painted Kerala saree|$179.99|Kerala;Kalamkari Kerala saree|$165.99|Kerala;Mundu|$30.99|Kerala;Set-mundu|$139.99|Kerala') },
+};
+const OPEN = ['assam', 'delhi', 'kerala', 'maharashtra', 'punjab'];
+const TAGLINE = { kerala: "Kasavu for Onam, banana chips in coconut oil, and pickle packed like it's crossing an ocean." }; // the only tagline live today
+const JUST = parse('Cotton mekhela chador|$115.99|Assam;Japan-fit baggy jeans|$80.99|Delhi;Kasavu saree|$114.99|Kerala;Paithani saree|$575.99|Maharashtra;Phulkari dupatta|$33.99|Punjab;Bootcut jeans|$57.99|Delhi;Gamosa|$23.99|Assam;Patiala salwar suit|$121.99|Punjab');
+const stateCard = (slug) => { const r = IWC.regions.find((x) => x.slug === slug); return `<a class="scard" href="#"><b>${r.name}</b>${r.greeting ? `<i>${r.greeting}</i>` : ''}${TAGLINE[slug] ? `<span>${TAGLINE[slug]}</span>` : ''}</a>`; };
+const rowHtml = (label, cards) => `<div class="rowwrap"><ul class="row" aria-label="${label}">${cards.map(card).join('')}</ul><button class="rarr l" type="button" aria-label="Scroll ${label} back" disabled>←</button><button class="rarr r" type="button" aria-label="Scroll ${label} on">→</button></div>`;
+const startWith = () => `<p class="lbl">Open now</p><div class="scards">${OPEN.map(stateCard).join('')}</div>
+  <section class="sec"><div class="sec-h"><h2>Just listed</h2><a class="pill" href="#">See all</a></div>${rowHtml('Just listed', JUST)}</section>`;
+const plural = (n, w) => `${n} ${w}${n === 1 ? '' : 's'}`;
+
+const searchPage = (q) => {
+  const r = RESULTS[q];
+  const count = r ? `<p class="rcount">${r.states.length ? `<b>${plural(r.states.length, 'state')}</b> and ` : ''}<b>${plural(r.items.length, 'piece')}</b> for “${q}”</p>` : '';
+  const body = !q ? startWith()
+    : !r ? `<section class="sec"><h2>Products</h2><p class="nores">No products match “${q}”.</p></section>${startWith()}`
+    : `${r.states.length ? `<section class="sec"><h2>States</h2><div class="scards">${r.states.map(stateCard).join('')}</div></section>` : ''}
+       <section class="sec"><h2>Products</h2><ul class="bgrid">${r.items.map(card).join('')}</ul></section>`;
+  return `<div class="sr"><h1>Search</h1>
+    <form class="sbox" role="search" onsubmit="return false"><label><input type="search" value="${q}" placeholder="Search" aria-label="Search"><button class="go-i" type="submit" aria-label="Search">${svg('search')}</button></label><button class="go" type="submit">Search</button></form>
+    ${count}${body}</div>`;
+};
+document.querySelectorAll('[data-s]').forEach((el) => {
+  const q = el.dataset.s, w = +el.dataset.w;
+  el.innerHTML = dev(w, null, `${header({ active: 'Search' })}${searchPage(q)}${footer()}`, `${w} · ${q ? `“${q}”` : 'no words yet'}`);
+});
+shellInit();
+initRows();
+</script>
+</body>
+</html>
