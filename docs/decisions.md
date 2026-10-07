@@ -771,3 +771,14 @@ and: a **count with the words** under the box ("24 pieces for “saree”", "1 s
 wording, approved with the mockup); matching **states shown as the D-080 stamps** (not plain cards); on **no results**,
 today's message, then the open states as stamps and the Just listed row; on an **empty search**, the same two blocks;
 on **phones**, a round search icon inside the right end of the box instead of the Search button.
+
+**D-086 · 2026-10-08 · founder: The bag, from the design pass**
+Founder, verbatim: asked as options (`design/pages/bag/brief.md`): "Photo on each line", "− 1 + instead of a dropdown",
+"Bag slides in as a panel", "Empty bag isn't blank". On round 1 of `design/pages/bag/mockup.html`: "approved, move to
+next".
+What it means for the build: `/cart` keeps today's page in the D-079 / D-080 fonts, with a **small photo on each line**
+(it and the name open the product), **quantity as − / number / +** within today's 1 – 10, and an **empty bag** that
+shows the open states as stamps and the Just listed row under its sentence. **The header's bag icon opens the bag as a
+side panel** from the right with the menu's motion: "Your bag (n)", the lines, Subtotal and the shipping line, Checkout
+and "View bag" (`/cart`); an empty panel shows only the sentence and its link. Prices are still checked by the server at
+checkout (D-038).

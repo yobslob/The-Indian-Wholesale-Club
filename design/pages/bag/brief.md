@@ -1,7 +1,7 @@
 # bag: the bag page and the bag panel (website + app Bag tab)
 
 **Surface:** website `/cart` and (new) the bag panel from the header's bag icon + app `(customer)/bag` · **Code:**
-`apps/web/app/(store)/cart/page.tsx`, `apps/web/features/cart/` · **Status:** mockup, round 1
+`apps/web/app/(store)/cart/page.tsx`, `apps/web/features/cart/` · **Status:** approved D-086 (2026-10-08), not built yet
 
 ## The page's job
 Show what is about to be bought, let the visitor change it, and get them to checkout. The bag lives on the device (no
@@ -35,3 +35,4 @@ None.
 | Date | Round | Founder's notes | Changed |
 |---|---|---|---|
 | 2026-10-08 | 1 | the options above | first proposal |
+| 2026-10-08 | — | "approved, move to next" | approved as D-086 |
