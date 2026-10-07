@@ -10,7 +10,8 @@ phone buy bar and review row). Page 6, States = Home's Pick your home (D-083); t
 their own pass after the website pages. Page 7, Clothing / Spices, approved as D-084 (soft edges, the state row pinned, a phone
 Filter button that shrinks to a round icon). Page 8, Search, approved as D-085 (count, stamps for states, no dead ends, phone icon button).
 Page 9, the Bag, approved as D-086 (photos, stepper, side panel, empty bag not blank).
-Next: page 10, Checkout.
+Page 10, Checkout: mockup round 1 (`design/pages/checkout/`): phone → delivery → payment,
+email kept in step 2, no code sent to the phone.
 
 **Logo text (D-077, 2026-10-07):** the website header's logo reads "Indian Wholesale Club", its I inside a gold outline of India cut open on the east; the Home hero heading is unchanged except "The" is gone. Titles, emails, footer and the app keep D-009's full name until the founder says otherwise.
 

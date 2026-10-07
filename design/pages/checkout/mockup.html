@@ -1,0 +1,216 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>IWC design pass: 10 checkout</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Cinzel:wght@400;500&family=Karla:wght@400;500;600;700&family=Syne:wght@400;500;600&family=Gelasio&display=swap">
+<link rel="stylesheet" href="../_shared/tokens.css">
+<link rel="stylesheet" href="../_shared/page.css">
+<link rel="stylesheet" href="../_shared/shell.css">
+<link rel="stylesheet" href="../_shared/cards.css">
+<style>
+/* ---------- Checkout (round 1): phone → delivery → payment on one page, the bag beside it, a quiet header, a fuller
+ * thank-you page. ---------- */
+.sample { display: inline-block; margin-left: 6px; padding: 1px 5px; border: 1px dashed currentColor; border-radius: 4px; font: 700 9px/1.4 system-ui, sans-serif; letter-spacing: .06em; text-transform: uppercase; color: var(--caution); vertical-align: middle; }
+/* Quiet header (founder, round 1): logo and Back to bag only. */
+.qh { display: flex; align-items: center; justify-content: space-between; height: 72px; padding: 0 clamp(16px, 2.2cqi, 32px); background: var(--canvas); box-shadow: 0 1px 0 var(--line); }
+.qh .back { display: inline-flex; align-items: center; gap: 6px; min-height: 44px; font: 500 14px/1 var(--font-ui); color: #000; text-decoration: none; }
+.qh .back svg { width: 18px; height: 18px; }
+@container (max-width: 640px) { .qh { height: 56px; } .qh .logo { font-size: 16px; } }
+.qf { padding: 18px clamp(16px, 2.2cqi, 32px); border-top: 1px solid var(--line); font: 400 12px/1.5 var(--font-foot); color: var(--ink-muted); display: flex; flex-wrap: wrap; gap: 4px 16px; }
+.qf a { color: inherit; }
+
+.co { --g: clamp(16px, 2.2cqi, 32px); --gap: clamp(16px, 2.4cqi, 40px); padding: 0 var(--g) clamp(40px, 5cqi, 80px); }
+.co h1 { margin: 0; padding: clamp(24px, 2.6cqi, 40px) 0 20px; font: 500 clamp(32px, 3cqi, 52px)/1.1 var(--font-heading); letter-spacing: -.02em; color: #1D1A17; }
+.co-grid { display: grid; grid-template-columns: minmax(0, 1.25fr) minmax(0, 1fr); gap: var(--gap); align-items: start; }
+@container (max-width: 900px) { .co-grid { grid-template-columns: 1fr; } }
+
+/* Steps: one open at a time; a finished one folds to a line with Change. */
+.step { border-top: 1px solid var(--line); padding: 18px 0; }
+.step:last-child { border-bottom: 1px solid var(--line); }
+.sh { display: flex; align-items: center; gap: 12px; }
+.sh .n { width: 28px; height: 28px; border-radius: 50%; display: grid; place-items: center; flex: none; font: 600 13px/1 var(--font-ui); background: var(--surface); color: var(--ink-muted); }
+.sh h2 { margin: 0; flex: 1; font: 500 20px/1.2 var(--font-heading); color: var(--ink-muted); }
+.sh .sum { display: none; font: 400 14px/1.3 var(--font-body); color: var(--ink-muted); }
+.sh .chg { all: unset; cursor: pointer; display: none; font: 500 14px/1 var(--font-ui); color: #000; text-decoration: underline; text-underline-offset: 3px; min-height: 44px; align-items: center; }
+.sb { display: none; padding: 18px 0 4px 40px; }
+.step.open .n { background: var(--ink); color: var(--paper); } .step.open h2 { color: #1D1A17; } .step.open .sb { display: block; }
+.step.done .n { background: var(--positive); color: #fff; } .step.done h2 { color: #1D1A17; flex: none; } .step.done .sum { display: block; flex: 1; } .step.done .chg { display: inline-flex; }
+@container (max-width: 640px) { .sb { padding-left: 0; } .sh .sum { display: none !important; } .step.done .sh { flex-wrap: wrap; } .step.done .sum2 { display: block; } }
+.sum2 { display: none; margin: 6px 0 0 40px; font: 400 14px/1.4 var(--font-body); color: var(--ink-muted); }
+.fld { display: block; margin: 0 0 14px; font: 500 13px/1.3 var(--font-ui); color: #000; }
+.fld input, .fld .in { all: unset; box-sizing: border-box; display: block; width: 100%; margin-top: 6px; min-height: 48px; padding: 0 14px; border-radius: var(--radius-sm); border: 1px solid var(--line); background: var(--paper); font: 400 15px/48px var(--font-ui); color: #000; }
+.fld input:focus { border-color: var(--ink); }
+.two { display: grid; grid-template-columns: 1fr 1fr; gap: 0 14px; }
+.phone { display: flex; margin-top: 6px; }
+.phone .cc { display: inline-flex; align-items: center; gap: 6px; min-height: 48px; padding: 0 12px; border: 1px solid var(--line); border-right: 0; border-radius: var(--radius-sm) 0 0 var(--radius-sm); background: var(--surface); font: 500 15px/1 var(--font-ui); }
+.phone .cc .flag { display: block; border-radius: 2px; box-shadow: 0 0 0 1px rgb(0 0 0 / .08); }
+.phone input { margin-top: 0 !important; border-radius: 0 var(--radius-sm) var(--radius-sm) 0 !important; }
+.cityline { margin: -6px 0 14px; font: 500 14px/1.4 var(--font-ui); color: var(--positive); min-height: 20px; }
+.cityline a { color: #000; margin-left: 8px; }
+.btn { all: unset; cursor: pointer; display: inline-grid; place-items: center; min-height: 52px; padding: 0 28px; border-radius: var(--radius-pill); background: var(--brand); color: var(--on-brand); font: 600 16px/1 var(--font-ui); box-sizing: border-box; }
+.btn.full { width: 100%; }
+.note { margin: 12px 0 0; font: 400 13px/1.4 var(--font-body); color: var(--ink-muted); }
+.promo-t { all: unset; cursor: pointer; font: 500 14px/1 var(--font-ui); color: #000; text-decoration: underline; text-underline-offset: 3px; display: inline-block; margin: 0 0 16px; }
+.ship { display: grid; gap: 8px; margin: 0 0 18px; }
+.ship label { display: flex; align-items: center; gap: 12px; min-height: 52px; padding: 0 14px; border-radius: var(--radius-sm); border: 1px solid var(--line); background: var(--paper); font: 500 14px/1.3 var(--font-ui); cursor: pointer; }
+.ship label:has(input:checked) { border-color: var(--ink); }
+.ship label span { flex: 1; } .ship label small { color: var(--ink-muted); font-size: 13px; }
+.pe { border: 1px solid var(--line); border-radius: var(--radius-sm); background: var(--paper); margin: 0 0 18px; }
+.pe .cap { display: block; padding: 8px 14px 0; font: 600 10px/1 system-ui, sans-serif; letter-spacing: .08em; text-transform: uppercase; color: #8a8173; }
+.pe .m { padding: 14px; border-bottom: 1px solid var(--line); font: 500 14px/1 var(--font-ui); }
+.pe .m:last-child { border-bottom: 0; }
+.pe .card { display: grid; grid-template-columns: 2fr 1fr 1fr; gap: 8px; margin-top: 12px; }
+.pe .card span { display: block; height: 44px; border: 1px solid var(--line); border-radius: 6px; background: #fff; font: 400 13px/44px var(--font-ui); color: #9b9488; padding: 0 10px; }
+
+/* The bag beside the steps (founder, round 1). */
+.bagsum { position: sticky; top: 16px; background: var(--surface); border-radius: var(--radius-lg); padding: 22px; }
+.bagsum h3 { margin: 0 0 14px; font: 500 18px/1 var(--font-heading); color: #1D1A17; }
+.bl { display: grid; grid-template-columns: 56px minmax(0, 1fr) auto; gap: 12px; align-items: center; padding: 10px 0; border-bottom: 1px solid var(--line); }
+.bl .pic { width: 56px; aspect-ratio: 3 / 4; border-radius: 10px; background: var(--land) center / cover; }
+.bl b { display: block; font: 600 14px/1.3 var(--font-ui); } .bl small { font: 400 13px/1.3 var(--font-ui); color: var(--ink-muted); }
+.bl .pr { font: 500 14px/1 var(--font-ui); }
+.rows { margin: 12px 0 0; display: grid; gap: 8px; font: 400 14px/1.3 var(--font-ui); }
+.rows div { display: flex; justify-content: space-between; } .rows dt { color: var(--ink-muted); } .rows dd { margin: 0; color: #000; }
+.rows .total { padding-top: 10px; border-top: 1px solid var(--line); font-weight: 700; font-size: 16px; }
+.rows .priced { display: none; } .co[data-at="3"] .rows .priced { display: flex; } .co[data-at="3"] .rows .later { display: none; }
+.deliv { margin: 12px 0 0; padding: 12px 14px; border-radius: 12px; background: var(--paper); font: 500 14px/1.4 var(--font-body); color: #000; display: none; }
+.co[data-at="3"] .deliv { display: block; }
+/* Phones: the bag as a bar at the top that opens it. */
+.bagbar { all: unset; cursor: pointer; display: none; box-sizing: border-box; width: 100%; align-items: center; justify-content: space-between; min-height: 52px; padding: 0 16px; margin: 0 0 8px; border-radius: var(--radius-md); background: var(--surface); font: 600 15px/1 var(--font-ui); color: #000; }
+.bagbar i { font-style: normal; transition: transform .25s; }
+@container (max-width: 900px) {
+  .bagbar { display: flex; } .co-grid > aside { order: -1; }
+  .bagsum { position: static; display: none; margin-bottom: 8px; } .co.bag-open .bagsum { display: block; } .co.bag-open .bagbar i { transform: rotate(180deg); }
+}
+
+/* Thank-you (founder, round 1): today's text, then the pieces, the total and the delivery window. */
+.ty { --g: clamp(16px, 2.2cqi, 32px); padding: clamp(28px, 3cqi, 56px) var(--g) clamp(48px, 6cqi, 96px); max-width: 720px; }
+.ty h1 { margin: 0 0 14px; font: 500 clamp(32px, 3cqi, 52px)/1.1 var(--font-heading); letter-spacing: -.02em; color: #1D1A17; }
+.ty p { margin: 0 0 10px; font: 400 16px/1.5 var(--font-body); color: #000; }
+.ty p.mut { font-size: 14px; color: var(--ink-muted); } .ty a { color: inherit; text-underline-offset: 3px; }
+.ty .bagsum { position: static; margin: 22px 0 18px; }
+.ty .deliv { display: block; }
+.pscroll { height: 100%; overflow-y: auto; overscroll-behavior: contain; }
+</style>
+</head>
+<body data-demo="on" data-bag="full">
+<div class="mk-bar">
+  <strong>IWC design pass · 10 checkout · round 1</strong>
+  <span>One Kasavu saree in the bag</span>
+  <span class="sep"></span>
+  <span>Banner</span>
+  <button type="button" data-set="demo" data-val="on" aria-pressed="true">On</button>
+  <button type="button" data-set="demo" data-val="off" aria-pressed="false">Off</button>
+</div>
+
+<main class="mk-wrap">
+  <h2 class="mk-h">Checkout: walk through it in the first two frames</h2>
+  <p class="mk-p">Type a number and Continue; then name, email, a ZIP (try <b>08817</b>, <b>10001</b> or <b>07302</b>: the city and state fill in) and the street, then Continue to payment. Finished steps fold to one line with Change. Numbers marked SAMPLE stand in for what the server and the cycle dates give (D-008, D-041, D-070, D-073).</p>
+  <div class="mk-row"><div data-co="1" data-w="1440" data-h="900"></div></div>
+  <div class="mk-row"><div data-co="1" data-w="390" data-h="844"></div><div data-co="2" data-w="390" data-h="844"></div><div data-co="3" data-w="390" data-h="844"></div></div>
+  <h2 class="mk-h">Each step on desktop</h2>
+  <div class="mk-row"><div data-co="2" data-w="1440" data-h="900"></div></div>
+  <div class="mk-row"><div data-co="3" data-w="1440" data-h="900"></div></div>
+  <h2 class="mk-h">Thank-you page</h2>
+  <div class="mk-row"><div data-ty="1" data-w="1440"></div><div data-ty="1" data-w="390"></div></div>
+</main>
+
+<script src="../_shared/brand.js"></script>
+<script src="../_shared/shell.js"></script>
+<script src="../_shared/cards.js"></script>
+<script>
+const KASAVU = '../../mockups/assets/Kasavu_main.jpg';
+const ZIPS = { '08817': ['Edison', 'New Jersey'], '10001': ['New York', 'New York'], '07302': ['Jersey City', 'New Jersey'] }; // the lookup's answer (source decided at build)
+const usd = (c) => `$${(c / 100).toFixed(2)}`;
+const SUB = 11499, TAX = 805, EXPRESS = 2400; // SAMPLE: the server prices these (D-041, D-070, D-073)
+const back = '<svg class="icon" viewBox="0 0 24 24" aria-hidden="true"><path d="M15 5l-7 7 7 7"/></svg>';
+const quietHeader = () => `<div class="banner" role="note"><span class="long"><strong>Demo store.</strong> Nothing here is for sale and no real money is taken. To try checkout, pay with the test card 4242 4242 4242 4242, any future date and any CVC.</span><span class="short"><strong>Demo store.</strong> Nothing here is for sale. <details><summary>Test card</summary>4242 4242 4242 4242, any future date, any CVC.</details></span></div>
+  <header class="qh">${logo()}<a class="back" href="#">${back}Back to bag</a></header>`;
+const quietFooter = () => '<footer class="qf"><span>© The Indian Wholesale Club</span><a href="#">Privacy</a><a href="#">Terms</a><a href="#">Contact</a></footer>';
+
+const bagSummary = (thanks = false) => `<div class="bagsum"><h3>${thanks ? 'Your order' : 'Your bag'}</h3>
+  <div class="bl"><span class="pic" style="background-image:url(${KASAVU})"></span><span><b>Kasavu saree</b><small>Off-white with gold · Kerala · × 1</small></span><span class="pr">$114.99</span></div>
+  <dl class="rows"><div><dt>Subtotal</dt><dd>${usd(SUB)}</dd></div>
+    <div class="later"><dt>Shipping and tax</dt><dd>after your details</dd></div>
+    <div class="priced"><dt>Shipping</dt><dd class="shipv">Free</dd></div>
+    <div class="priced"><dt>Sales tax <span class="sample">sample</span></dt><dd>${usd(TAX)}</dd></div>
+    <div class="priced total"><dt>Total</dt><dd class="totv">${usd(SUB + TAX)}</dd></div></dl>
+  <p class="deliv">Estimated delivery: <b class="winv">Oct 30 – Nov 4</b> <span class="sample">sample dates</span></p></div>`;
+
+const steps = () => `
+  <section class="step" data-n="1"><div class="sh"><span class="n">1</span><h2>Phone</h2><span class="sum">+1 (732) 555-0142</span><button class="chg" type="button">Change</button></div>
+    <p class="sum2">+1 (732) 555-0142</p>
+    <div class="sb"><label class="fld">Phone number<span class="phone"><span class="cc"><svg class="flag" viewBox="0 0 19 10" width="22" height="12" aria-hidden="true"><rect width="19" height="10" fill="#b22234"/><rect y="0.769" width="19" height="0.769" fill="#fff"/><rect y="2.307" width="19" height="0.769" fill="#fff"/><rect y="3.845" width="19" height="0.769" fill="#fff"/><rect y="5.383" width="19" height="0.769" fill="#fff"/><rect y="6.921" width="19" height="0.769" fill="#fff"/><rect y="8.459" width="19" height="0.769" fill="#fff"/><rect width="7.6" height="5.385" fill="#3c3b6e"/></svg><span class="sr-only">United States</span>+1 ▾</span><input type="tel" inputmode="tel" autocomplete="tel-national" value="(732) 555-0142"></span></label>
+      <button class="btn go" type="button">Continue</button><p class="note">For delivery only. We don't text you anything at checkout.</p></div></section>
+  <section class="step" data-n="2"><div class="sh"><span class="n">2</span><h2>Delivery</h2><span class="sum">Meera Nair · 12 Oak St, Edison, NJ 08817</span><button class="chg" type="button">Change</button></div>
+    <p class="sum2">Meera Nair · 12 Oak St, Edison, NJ 08817</p>
+    <div class="sb"><label class="fld">Full name<input autocomplete="name" value="Meera Nair"></label>
+      <label class="fld">Email<input type="email" autocomplete="email" value="meera@example.com"></label>
+      <div class="two"><label class="fld">ZIP code<input class="zip" inputmode="numeric" maxlength="5" autocomplete="postal-code" value="08817"></label><span></span></div>
+      <p class="cityline"></p>
+      <label class="fld">Street address<input autocomplete="address-line1" value="12 Oak St"></label>
+      <label class="fld">Apartment, suite (optional)<input autocomplete="address-line2"></label>
+      <button class="promo-t" type="button">Add a promo code</button>
+      <label class="fld promo" hidden>Promo code<input></label>
+      <button class="btn go full" type="button">Continue to payment</button><p class="note">US addresses only. You will see the total and delivery window before paying.</p></div></section>
+  <section class="step" data-n="3"><div class="sh"><span class="n">3</span><h2>Payment</h2></div>
+    <div class="sb"><div class="ship" role="radiogroup" aria-label="Shipping">
+        <label><input type="radio" name="SHIP" value="std" checked><span>Standard · Free</span><small>Oct 30 – Nov 4</small></label>
+        <label><input type="radio" name="SHIP" value="exp"><span>Express (courier from India to your door) · ${usd(EXPRESS)} <span class="sample">sample</span></span><small>Oct 22 – Oct 25</small></label></div>
+      <div class="pe"><span class="cap">Stripe's payment form, as today</span><div class="m">● Card<div class="card"><span>1234 1234 1234 1234</span><span>MM / YY</span><span>CVC</span></div></div><div class="m">○ Cash App Pay</div><div class="m">○ Amazon Pay</div><div class="m">○ Klarna</div></div>
+      <button class="btn go full pay" type="button">Pay ${usd(SUB + TAX)}</button></div></section>`;
+
+let fid = 0;
+const checkout = (at) => { const f = ++fid; return `<div class="co" data-at="${at}"><h1>Checkout</h1><div class="co-grid">
+  <div>${steps().replaceAll('name="SHIP"', `name="ship${f}"`)}</div>
+  <aside><button class="bagbar" type="button">Bag (1) · $114.99<i>⌄</i></button>${bagSummary()}</aside></div></div>`; };
+const thanks = () => `<div class="ty"><h1>Thank you!</h1>
+  <p>Your order number is <strong>IWC-261008-4F2A9C1D3E</strong> <span class="sample">sample</span>. We have emailed your confirmation with the estimated delivery window.</p>
+  ${bagSummary(true).replace('class="rows"', 'class="rows" style="--x:1"')}
+  <p class="mut">Track it any time from <a href="#">your order page</a> (you'll need the email you used).</p>
+  <p class="mut"><a href="#">Keep browsing</a></p></div>`;
+
+document.querySelectorAll('[data-co]').forEach((el) => {
+  const w = +el.dataset.w, h = +el.dataset.h, at = el.dataset.co;
+  el.innerHTML = dev(w, h, `<div class="pscroll">${quietHeader()}${checkout(at)}${quietFooter()}</div>`, `${w} · step ${at}${at === '1' ? ' (walk through it)' : ''}`);
+});
+document.querySelectorAll('[data-ty]').forEach((el) => {
+  const w = +el.dataset.w;
+  el.innerHTML = dev(w, null, `${header()}${thanks()}${footer()}`, `${w} · thank-you`);
+  el.querySelectorAll('.rows .priced').forEach((r) => { r.style.display = 'flex'; }); el.querySelectorAll('.rows .later').forEach((r) => r.remove());
+});
+document.querySelectorAll('.hdr .count').forEach((c) => c.remove());
+shellInit();
+
+document.querySelectorAll('.co').forEach((co) => {
+  const sync = () => {
+    const at = +co.dataset.at;
+    co.querySelectorAll('.step').forEach((s) => { const n = +s.dataset.n; s.classList.toggle('open', n === at); s.classList.toggle('done', n < at); });
+  };
+  co.querySelectorAll('.step').forEach((s) => {
+    s.querySelector('.go')?.addEventListener('click', () => { if (s.querySelector('.pay')) return; co.dataset.at = +s.dataset.n + 1; sync(); });
+    s.querySelector('.chg')?.addEventListener('click', () => { co.dataset.at = s.dataset.n; sync(); });
+  });
+  // ZIP → city and state (the lookup's answer); an unknown ZIP asks for the city.
+  const zip = co.querySelector('.zip'), city = co.querySelector('.cityline');
+  const look = () => { const c = ZIPS[zip.value]; city.innerHTML = zip.value.length < 5 ? '' : c ? `✓ ${c[0]}, ${c[1]}<a href="#">Change</a>` : '<span style="color:var(--ink-muted)">We could not find that ZIP; type the city and state.</span>'; };
+  zip.addEventListener('input', look); look();
+  co.querySelector('.promo-t').addEventListener('click', (e) => { e.currentTarget.hidden = true; co.querySelector('.promo').hidden = false; });
+  // Shipping choice changes the total and the window.
+  co.querySelectorAll('.ship input').forEach((r) => r.addEventListener('change', () => {
+    const exp = r.value === 'exp' && r.checked;
+    co.querySelector('.shipv').textContent = exp ? usd(EXPRESS) : 'Free';
+    co.querySelector('.totv').textContent = usd(SUB + TAX + (exp ? EXPRESS : 0));
+    co.querySelector('.winv').textContent = exp ? 'Oct 22 – Oct 25' : 'Oct 30 – Nov 4';
+    co.querySelector('.pay').textContent = `Pay ${usd(SUB + TAX + (exp ? EXPRESS : 0))}`;
+  }));
+  co.querySelector('.bagbar').addEventListener('click', () => co.classList.toggle('bag-open'));
+  sync();
+});
+</script>
+</body>
+</html>
