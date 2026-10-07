@@ -1,0 +1,108 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>IWC design pass: 11 order</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Cinzel:wght@400;500&family=Karla:wght@400;500;600;700&family=Syne:wght@400;500;600&family=Gelasio&display=swap">
+<link rel="stylesheet" href="../_shared/tokens.css">
+<link rel="stylesheet" href="../_shared/page.css">
+<link rel="stylesheet" href="../_shared/shell.css">
+<link rel="stylesheet" href="../_shared/cards.css">
+<style>
+/* ---------- Order tracking (round 1): a status card, a real timeline, item photos, the lookup in a card. ---------- */
+.sample { display: inline-block; margin-left: 6px; padding: 1px 5px; border: 1px dashed currentColor; border-radius: 4px; font: 700 9px/1.4 system-ui, sans-serif; letter-spacing: .06em; text-transform: uppercase; color: var(--caution); vertical-align: middle; }
+.od { --g: clamp(16px, 2.2cqi, 32px); padding: clamp(24px, 2.6cqi, 40px) var(--g) clamp(48px, 6cqi, 96px); max-width: 860px; }
+.scard { padding: clamp(22px, 2.6cqi, 36px); border-radius: var(--radius-lg); background: var(--surface); }
+.scard .no { margin: 0; font: 500 14px/1 var(--font-ui); color: var(--ink-muted); }
+.scard h1 { margin: 10px 0 0; font: 500 clamp(30px, 3.4cqi, 48px)/1.1 var(--font-heading); letter-spacing: -.02em; color: #1D1A17; }
+.scard .win { margin: 10px 0 0; font: 400 17px/1.4 var(--font-body); color: #000; }
+.scard .win b { font-weight: 600; }
+.scard .trk { display: flex; flex-wrap: wrap; align-items: center; gap: 10px 16px; margin-top: 18px; }
+.scard .trk a.btn { display: inline-flex; align-items: center; gap: 8px; height: 48px; padding: 0 22px; border-radius: var(--radius-pill); background: var(--brand); color: var(--on-brand); font: 600 15px/1 var(--font-ui); text-decoration: none; }
+.scard .trk small { font: 400 13px/1.4 var(--font-ui); color: var(--ink-muted); }
+/* Timeline: a line that fills to the current step; reached steps carry their date. */
+.tl { list-style: none; margin: clamp(22px, 2.4cqi, 32px) 0 0; padding: 0; display: grid; grid-template-columns: repeat(4, 1fr); position: relative; }
+.tl::before, .tl::after { content: ''; position: absolute; top: 9px; left: 12.5%; height: 2px; border-radius: 2px; }
+.tl::before { right: 12.5%; background: var(--line); }
+.tl::after { width: calc(75% * var(--p)); background: var(--ink); }
+.tl li { position: relative; z-index: 1; text-align: center; font: 500 13px/1.3 var(--font-ui); color: var(--ink-muted); }
+.tl li i { display: block; width: 20px; height: 20px; margin: 0 auto 8px; border-radius: 50%; background: var(--canvas); border: 2px solid var(--line); box-sizing: border-box; }
+.tl li.on { color: #000; } .tl li.on i { background: var(--ink); border-color: var(--ink); }
+.tl li.now i { box-shadow: 0 0 0 5px rgb(30 27 22 / .12); }
+.tl li small { display: block; margin-top: 2px; font-size: 12px; font-weight: 400; color: var(--ink-muted); }
+.items { list-style: none; margin: clamp(24px, 3cqi, 36px) 0 0; padding: 0; border-top: 1px solid var(--line); }
+.items li { display: grid; grid-template-columns: 56px minmax(0, 1fr) auto; gap: 14px; align-items: center; padding: 12px 0; border-bottom: 1px solid var(--line); }
+.items .pic { width: 56px; aspect-ratio: 3 / 4; border-radius: 10px; background: var(--land) center / cover; }
+.items b { display: block; font: 600 15px/1.3 var(--font-ui); } .items small { font: 400 13px/1.3 var(--font-ui); color: var(--ink-muted); }
+.items .pr { font: 500 15px/1 var(--font-ui); }
+.tot { max-width: 360px; margin: 18px 0 0 auto; display: grid; gap: 6px; font: 400 14px/1.3 var(--font-ui); }
+.tot div { display: flex; justify-content: space-between; } .tot dt { color: var(--ink-muted); } .tot dd { margin: 0; }
+.tot .t { padding-top: 8px; border-top: 1px solid var(--line); font-weight: 700; font-size: 16px; }
+.upd { margin-top: clamp(24px, 3cqi, 36px); }
+.upd h2 { margin: 0 0 10px; font: 500 18px/1 var(--font-heading); color: #1D1A17; }
+.upd ul { list-style: none; margin: 0; padding: 0; display: grid; gap: 6px; font: 400 14px/1.4 var(--font-body); color: #000; }
+.upd span { color: var(--ink-muted); }
+/* Lookup in a card. */
+.lk { --g: clamp(16px, 2.2cqi, 32px); padding: clamp(32px, 5cqi, 80px) var(--g); display: grid; place-items: center; }
+.lkc { width: min(100%, 460px); padding: clamp(24px, 3cqi, 36px); border-radius: var(--radius-lg); background: var(--surface); }
+.lkc h1 { margin: 0 0 20px; font: 500 clamp(28px, 2.6cqi, 40px)/1.1 var(--font-heading); letter-spacing: -.02em; color: #1D1A17; }
+.fld { display: block; margin: 0 0 14px; font: 500 13px/1.3 var(--font-ui); color: #000; }
+.fld input { all: unset; box-sizing: border-box; display: block; width: 100%; margin-top: 6px; min-height: 48px; padding: 0 14px; border-radius: var(--radius-sm); border: 1px solid var(--line); background: var(--paper); font: 400 15px/48px var(--font-ui); }
+.lkc .go { all: unset; cursor: pointer; display: grid; place-items: center; box-sizing: border-box; width: 100%; height: 52px; margin-top: 6px; border-radius: var(--radius-pill); background: var(--brand); color: var(--on-brand); font: 600 16px/1 var(--font-ui); }
+.lkc .hint { margin: 14px 0 0; text-align: center; font: 400 13px/1.4 var(--font-body); color: var(--ink-muted); }
+</style>
+</head>
+<body data-demo="on" data-bag="empty">
+<div class="mk-bar">
+  <strong>IWC design pass · 11 order · round 1</strong>
+  <span>Sample order, as the order page would show it</span>
+  <span class="sep"></span>
+  <span>Banner</span>
+  <button type="button" data-set="demo" data-val="on" aria-pressed="true">On</button>
+  <button type="button" data-set="demo" data-val="off" aria-pressed="false">Off</button>
+</div>
+
+<main class="mk-wrap">
+  <h2 class="mk-h">Track your order (lookup)</h2>
+  <p class="mk-p">The two fields and the button in a centred card, with one line under it (draft wording).</p>
+  <div class="mk-row"><div data-lk data-w="1440"></div><div data-lk data-w="390"></div></div>
+  <h2 class="mk-h">The order page: preparing</h2>
+  <p class="mk-p">Status card on top, the timeline filled to "Preparing" with the date of each reached step, the pieces with photos. The faster-delivery offer and the cancel / keep and return choices appear between the card and the timeline when they apply, unchanged.</p>
+  <div class="mk-row"><div data-od="preparing" data-w="1440"></div></div>
+  <div class="mk-row"><div data-od="preparing" data-w="390"></div><div data-od="shipped" data-w="390"></div></div>
+  <h2 class="mk-h">The order page: shipped (the Track the parcel button appears)</h2>
+  <div class="mk-row"><div data-od="shipped" data-w="1440"></div></div>
+</main>
+
+<script src="../_shared/brand.js"></script>
+<script src="../_shared/shell.js"></script>
+<script src="../_shared/cards.js"></script>
+<script>
+const KASAVU = '../../mockups/assets/Kasavu_main.jpg';
+const STEPS = [['Confirmed', 'Oct 8'], ['Preparing your order', 'Oct 12'], ['Shipped', 'Oct 27'], ['Delivered', '']];
+const STATE = { preparing: { label: 'Preparing your order', at: 1 }, shipped: { label: 'Shipped', at: 2 } };
+const ext = '<svg class="icon" viewBox="0 0 24 24" aria-hidden="true" style="width:16px;height:16px"><path d="M14 4h6v6M20 4l-9 9M18 14v5a1 1 0 0 1-1 1H5a1 1 0 0 1-1-1V7a1 1 0 0 1 1-1h5"/></svg>';
+
+const order = (k) => { const s = STATE[k]; return `<div class="od">
+  <div class="scard"><p class="no">Order IWC-261008-4F2A9C1D3E <span class="sample">sample</span></p><h1>${s.label}</h1>
+    <p class="win">Estimated delivery <b>Oct 30 – Nov 4</b> <span class="sample">sample dates</span></p>
+    ${k === 'shipped' ? `<div class="trk"><a class="btn" href="#">Track the parcel ${ext}</a><small>USPS · 9400 1000 0000 0000 0000 00 <span class="sample">sample</span></small></div>` : ''}
+    <ol class="tl" style="--p:${s.at / 3}">${STEPS.map(([n, d], i) => `<li class="${i <= s.at ? 'on' : ''}${i === s.at ? ' now' : ''}"><i></i>${n}${i <= s.at && d ? `<small>${d}</small>` : ''}</li>`).join('')}</ol></div>
+  <ul class="items"><li><span class="pic" style="background-image:url(${KASAVU})"></span><span><b>Kasavu saree</b><small>Off-white with gold · Kerala × 1</small></span><span class="pr">$114.99</span></li>
+    <li><span class="pic ph"></span><span><b>Set-mundu</b><small>Off-white with gold · Kerala × 1</small></span><span class="pr">$139.99</span></li></ul>
+  <dl class="tot"><div><dt>Subtotal</dt><dd>$254.98</dd></div><div><dt>Shipping</dt><dd>Free</dd></div><div><dt>Sales tax <span class="sample">sample</span></dt><dd>$17.85</dd></div><div class="t"><dt>Total</dt><dd>$272.83</dd></div></dl>
+  <section class="upd"><h2>Updates</h2><ul><li><span>Oct 8, 2026</span> · Order confirmed</li><li><span>Oct 12, 2026</span> · Preparing your order</li>${k === 'shipped' ? '<li><span>Oct 27, 2026</span> · Shipped</li>' : ''}</ul></section>
+</div>`; };
+const lookup = () => `<div class="lk"><form class="lkc" onsubmit="return false"><h1>Track your order</h1>
+  <label class="fld">Order number<input placeholder="IWC-…"></label><label class="fld">Email used for the order<input type="email"></label>
+  <button class="go" type="submit">Find my order</button><p class="hint">Both are in your order confirmation email.</p></form></div>`;
+
+document.querySelectorAll('[data-lk]').forEach((el) => { const w = +el.dataset.w; el.innerHTML = dev(w, null, `${header()}${lookup()}${footer()}`, `${w} · lookup`); });
+document.querySelectorAll('[data-od]').forEach((el) => { const w = +el.dataset.w, k = el.dataset.od; el.innerHTML = dev(w, null, `${header()}${order(k)}${footer()}`, `${w} · ${k}`); });
+shellInit();
+</script>
+</body>
+</html>
