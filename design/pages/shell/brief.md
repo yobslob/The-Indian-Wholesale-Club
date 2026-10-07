@@ -2,7 +2,7 @@
 
 **Surface:** website (every page) + app (every customer screen) · **Code:** `apps/web/features/shell/`
 (`site-header.tsx`, `logo.tsx`, `demo-banner.tsx`, `site-footer.tsx`; Home's header look in `apps/web/app/globals.css`),
-`apps/app/app/(customer)/_layout.tsx` · **Status:** mockup, round 3
+`apps/app/app/(customer)/_layout.tsx` · **Status:** approved D-079 (2026-10-08), not built yet
 
 ## The page's job
 The frame around every page: say where you are (logo), get you anywhere in one tap (states, clothing, spices, search,
@@ -63,8 +63,9 @@ States shown: on the photo, solid, phone menu open, bag empty and with 3 pieces,
 | 2026-10-07 | 1 | — | first proposal |
 | 2026-10-07 | 2 | "Remove clothing and spices form header and footers, add about us, instead of account I need three icons heart(whislisht/liked), bag(cart with the number), profile(guest or signed in doesnt matter) these three icons should be there. When search is clicked another page opens, instead as soon as search is hovered it transitions into the search placeholder pill and when the mouse is taken off it transitions back into the text of search. The Indian Wholesale club text should be more lower in the hero seciton, remove the clothing and spices from home and replace with(Miss local market? Start here.) the fonts are very trash change them. when the hamburger icon is clicked, the whole screen is taken by the sidepanel, instead it should be smoothly opened as a sidepanel hovering over the homepage and close like it opened, also it shouldn't be mentioned menu and close, the icons are enough, in webapp of phone, the footer should be very small and minimal,remove extra things" | nav: States · Search · About us + heart / bag (count) / profile icons; Clothing and Spices out of header and footer; Search morphs into a pill on hover and back on mouse-out (stays open once typed in; Enter opens the results page); hero name moved to the lower right with "Miss local market? Start here."; four font pairings to choose from (logo stays Georgia, its India mark is fitted to Georgia); phone menu is a side panel from the right over the page, same easing in and out, icons only; phone footer reduced to one block of small links |
 | 2026-10-07 | 3 | "All fonts are trash, the text is too much big and lower than before I need it in center with right aligned with the screen and always on the whitish part of the wall whatever the size of the screen is(adjust the size of text accordingly). the color should be #1D1A17(for hero headline and black for rest) don't add any blur anywhere" | the name is placed with the photo's own crop maths on the white wall (image x 690 - 1117, y 335 - 670): centred on the wall, right-aligned to the screen, sized to the wall (checked at 13 screen sizes, 2560 x 1080 to 360 x 740, all on the wall); photo crop 85 % across so phones keep the wall; headline #1D1A17, the rest black; no shade, no text or panel shadows; a gallery of 20 headline and 13 text fonts, chosen separately; the Home header is solid by default (black nav on the photo is unreadable over the disc without a shade), "on the photo" kept as a toggle |
+| 2026-10-08 | 4 | "I choose cinzel and karla, also why did you make the header bg solid make it on the photo and you also removed the fade in algorithm of the logo text in the header, undo it. footer text is fine. let's finalize and go to next steps" | Cinzel + Karla; header back on the photo with the scroll fade (words out, logo in, header cream once the photo has passed), shown in scrollable frames; footer line kept; font gallery and toggles removed; approved as D-079 |
 
-### Round 2 open points
+### Round 2 open points (closed by D-079)
 - **Fonts:** pick one of the four pairings (or none). The chosen pair replaces D-050 – D-052's five fonts with two.
 - **Footer line** "Clothing and spices from all of India, delivered in the US." still names clothing and spices
   (desktop footer). Keep, drop, or new words?

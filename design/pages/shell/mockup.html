@@ -6,12 +6,12 @@
 <title>IWC design pass: 1 shell</title>
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Playfair+Display:wght@400;500&family=DM+Serif+Display&family=Fraunces:opsz,wght@9..144,300;9..144,400&family=Libre+Caslon+Display&family=Italiana&family=Marcellus&family=Tenor+Sans&family=Gloock&family=Young+Serif&family=Cinzel:wght@400;500&family=Syne:wght@400;500&family=Space+Grotesk:wght@400;500&family=Archivo:wght@300;400;500&family=Unbounded:wght@300;400&family=Bricolage+Grotesque:wght@400;500&family=Outfit:wght@300;400;500&family=Sora:wght@300;400;500&family=Red+Hat+Display:wght@400;500&family=Poiret+One&family=DM+Sans:wght@400;500;600&family=Hanken+Grotesk:wght@400;500;600&family=Figtree:wght@400;500;600&family=Work+Sans:wght@400;500;600&family=Karla:wght@400;500;600&family=Nunito+Sans:wght@400;500;600&family=IBM+Plex+Sans:wght@400;500;600&family=Lato:wght@400;700&family=Rubik:wght@400;500;600&family=Plus+Jakarta+Sans:wght@400;500;600&family=Albert+Sans:wght@400;500;600&family=Poppins:wght@400;500&family=Gelasio&display=swap">
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Cinzel:wght@400;500&family=Karla:wght@400;500;600&family=Gelasio&display=swap">
 <link rel="stylesheet" href="../_shared/tokens.css">
 <link rel="stylesheet" href="../_shared/page.css">
 <style>
-/* ---------- Fonts (round 3): one headline font and one text font, picked separately below ---------- */
-body { --fh: 'Playfair Display', Georgia, serif; --ft: 'DM Sans', system-ui, sans-serif; --d-w: 400; --d-ls: -.01em;
+/* ---------- Fonts (founder, round 4): Cinzel for headlines, Karla for everything else; the logo stays Georgia ---------- */
+body { --fh: Cinzel, Georgia, serif; --ft: Karla, system-ui, sans-serif; --d-w: 400; --d-ls: 0;
   --font-hero: var(--fh); --font-display: var(--fh); --font-body: var(--ft); --font-ui: var(--ft); --font-foot: var(--ft); }
 
 /* ---------- Mockup layout (not part of the design) ---------- */
@@ -28,15 +28,6 @@ body { --fh: 'Playfair Display', Georgia, serif; --ft: 'DM Sans', system-ui, san
 .today figcaption { font: 12px/1.4 system-ui, sans-serif; color: #444; margin-bottom: 16px; }
 .draft-tag { display: inline-block; margin-left: 6px; padding: 1px 5px; border: 1px dashed currentColor; font: 700 9px/1.4 system-ui, sans-serif; letter-spacing: .08em; text-transform: uppercase; opacity: .8; vertical-align: middle; }
 
-/* Font tiles */
-.fgrid { display: grid; grid-template-columns: repeat(auto-fill, minmax(230px, 1fr)); gap: 10px; margin-bottom: 16px; }
-.ftile { all: unset; cursor: pointer; display: block; background: var(--canvas); color: var(--ink); border-radius: 10px; padding: 14px 16px; outline: 2px solid transparent; outline-offset: -2px; }
-.ftile:hover { outline-color: var(--line); }
-.ftile[aria-pressed='true'] { outline-color: var(--brand); }
-.ftile .nm { display: block; font: 500 11px/1 system-ui, sans-serif; letter-spacing: .04em; color: var(--ink-muted); margin-bottom: 10px; }
-.ftile .hs { display: block; font-size: 34px; line-height: 1; color: #1D1A17; }
-.ftile .ts { display: block; font-size: 15px; line-height: 1.45; color: #000; }
-.ftile .ts b { font-weight: 500; }
 
 /* ---------- Logo (D-077), as apps/web/features/shell/logo.module.css; stays Georgia (the mark is fitted to it) ---------- */
 .logo { font-family: Georgia, Gelasio, 'Times New Roman', serif; font-weight: 400; line-height: 1; text-decoration: none; white-space: nowrap; font-size: 22px; padding: 8px 0 8px 4px; }
@@ -60,12 +51,9 @@ body[data-demo='off'] .banner { display: none; }
 .hdr { --gut: clamp(12px, 2.2cqi, 32px); display: flex; align-items: center; gap: clamp(18px, 2.2cqi, 32px); height: 72px; padding: 0 var(--gut); font: 500 14px/1 var(--font-ui); letter-spacing: .02em; }
 .hdr.solid { background: var(--canvas); color: var(--ink); box-shadow: 0 1px 0 var(--line); }
 .hdr.photo { color: #000; }
-body[data-hhead='solid'] .top.over { position: relative; }
-body[data-hhead='solid'] .hdr.photo { background: var(--canvas); box-shadow: 0 1px 0 var(--line); }
-body[data-hhead='solid'] .hdr.photo .logo { opacity: 1; }
-.vp:has(> .top.over) { display: flex; flex-direction: column; }
-.vp:has(> .top.over) .hero { flex: 1 1 auto; min-height: 0; height: auto; }
-.hdr.photo .logo { opacity: 0; } /* fades in as the hero scrolls away (approved, D-053) */
+.vp.passed .hdr.photo { background: var(--canvas); box-shadow: 0 1px 0 var(--line); }
+.scroller { height: 100%; overflow-y: auto; overscroll-behavior: contain; }
+.hdr.photo .logo { opacity: var(--hero-p, 0); } /* fades in as the hero scrolls away (D-053, as hero-scroll.tsx) */
 .hdr .logo { margin-right: auto; }
 .hdr a { color: inherit; text-decoration: none; }
 .links { display: flex; align-items: center; gap: inherit; }
@@ -129,7 +117,9 @@ body[data-bag='empty'] .count { display: none; }
   --fs: min(calc(var(--avail) / var(--k, 4.4) * .74), calc(var(--H) * .057), 108px); }
 .hero .name { position: absolute; right: var(--gut); top: calc(var(--T) + var(--H) * .3567); transform: translateY(-50%); max-width: var(--avail); text-align: right; }
 .hero h1 { margin: 0; font: var(--d-w) var(--fs)/.95 var(--font-hero); letter-spacing: var(--d-ls); color: #1D1A17; }
+.hero h1 span, .hero p { --q: clamp(0, calc((var(--hero-p, 0) * 1.5 - var(--i) * .17) / .7), 1); opacity: calc(1 - var(--q)); transform: translateY(calc(var(--q) * -28px)); }
 .hero h1 span { display: block; }
+@media (prefers-reduced-motion: reduce) { .hero h1 span, .hero p { transform: none; } }
 .hero p { margin: calc(var(--fs) * .3) 0 0; font: 400 clamp(12px, calc(var(--fs) * .2), 18px)/1.35 var(--font-body); color: #000; }
 .hero p a { color: inherit; text-underline-offset: 3px; text-decoration-thickness: 1px; white-space: nowrap; }
 
@@ -190,14 +180,10 @@ body[data-bag='empty'] .tabs .badge { display: none; }
 @media (prefers-reduced-motion: reduce) { .srch, .srch *, .panel, .scrim { transition: none !important; } }
 </style>
 </head>
-<body data-demo="on" data-bag="full" data-hhead="solid">
+<body data-demo="on" data-bag="full">
 <div class="mk-bar">
-  <strong>IWC design pass · 1 shell · round 3</strong>
-  <span>Headline: <b id="fh-name">Playfair Display</b> · Text: <b id="ft-name">DM Sans</b></span>
-  <span class="sep"></span>
-  <span>Home header</span>
-  <button type="button" data-set="hhead" data-val="photo" aria-pressed="false">On the photo</button>
-  <button type="button" data-set="hhead" data-val="solid" aria-pressed="true">Solid</button>
+  <strong>IWC design pass · 1 shell · approved (D-079)</strong>
+  <span>Cinzel + Karla</span>
   <span class="sep"></span>
   <span>Banner</span>
   <button type="button" data-set="demo" data-val="on" aria-pressed="true">On</button>
@@ -219,15 +205,9 @@ body[data-bag='empty'] .tabs .badge { display: none; }
     </div>
   </details>
 
-  <h2 class="mk-h">Fonts · pick a headline font and a text font (click a tile; the whole mockup switches)</h2>
-  <p class="mk-p">Headline: the hero name, page and section headings, product titles. Text: everything else (nav, buttons, paragraphs, prices, footer). All free, so the website and the app can both ship them. The logo stays in Georgia (its India outline is fitted to Georgia's I).</p>
-  <p class="mk-p"><b>Headline font</b></p>
-  <div class="fgrid" id="fonts-h"></div>
-  <p class="mk-p"><b>Text font</b></p>
-  <div class="fgrid" id="fonts-t"></div>
 
   <h2 class="mk-h">Website · Home, first screen</h2>
-  <p class="mk-p">The name stays on the white wall at every size: right-aligned to the screen, centred on the wall, sized to fit it. Headline #1D1A17, the line under it and the nav black; no shade, no blur. On phones the photo shows more of its right side so the wall is there. "Start here" jumps to Pick your home. Header: States · Search · About us, then Saved, Bag and Profile as icons. <b>Hover "Search" in any frame</b> to see it turn into the pill.</p>
+  <p class="mk-p"><b>Scroll inside each frame.</b> The header sits on the photo; the words fade out one after another while the logo fades in, and the header turns cream once the photo has passed under it. The name stays on the white wall at every size: right-aligned to the screen, centred on the wall, sized to fit it. Headline #1D1A17, the line under it and the nav black; no shade, no blur. "Start here" jumps to Pick your home. Header: States · Search · About us, then Saved, Bag and Profile as icons. <b>Hover "Search" in any frame</b> to see it turn into the pill.</p>
   <div data-frame="home" data-widths="1440,1024"></div>
   <div class="mk-row" data-frame="home" data-widths="768,390"></div>
 
@@ -297,11 +277,11 @@ const header = ({ photo = false, active = '', searchOpen = false, panelOpen = fa
   </aside>`;
 };
 
-const heroHtml = (opts) => `${header({ photo: true, ...opts })}<div class="hero"><div class="name"><h1><span>Indian</span><span>Wholesale</span><span>Club</span></h1><p>Miss local market? <a href="#">Start here.</a></p></div></div>`;
+const heroHtml = (opts) => `${header({ photo: true, ...opts })}<div class="scroller"><div class="hero"><div class="name"><h1><span style="--i:0">Indian</span><span style="--i:1">Wholesale</span><span style="--i:2">Club</span></h1><p style="--i:3">Miss local market? <a href="#">Start here.</a></p></div></div>${sample()}${footer()}</div>`;
 const sample = () => `<div class="page-sample"><h1>Pick your home</h1><p>All 28 states and 8 union territories.</p><div class="ph-row"><div class="ph"></div><div class="ph"></div><div class="ph"></div><div class="ph"></div></div></div>`;
 const footer = () => `<footer class="ftr">
   <div class="cols">
-    <div><p class="name">The Indian Wholesale Club</p><p class="line">Clothing and spices from all of India, delivered in the US. <span class="draft-tag">keep?</span></p></div>
+    <div><p class="name">The Indian Wholesale Club</p><p class="line">Clothing and spices from all of India, delivered in the US. </p></div>
     <div><h3>Shop</h3><ul><li><a href="#">States</a></li><li><a href="#">Search</a></li></ul></div>
     <div><h3>Help</h3><ul><li><a href="#">How it works</a></li><li><a href="#">Track an order</a></li><li><a href="#">Shipping &amp; returns</a></li><li><a href="#">FAQ</a></li><li><a href="#">Contact</a></li></ul></div>
     <div><h3>About</h3><ul><li><a href="#">About us</a></li><li><a href="#">Privacy</a></li><li><a href="#">Terms</a></li></ul></div>
@@ -339,46 +319,25 @@ document.getElementById('apps').innerHTML = [
   `<div>${cap('Pushed screen · back bar')}<div class="app">${status}<div class="bar"><button aria-label="Back">${svg('back')}</button><h2>Kerala</h2><span></span></div><div class="region-hero"></div><div class="body"><p class="lbl">New arrivals</p><div class="tiles"><div class="ph"></div><div class="ph"></div></div></div>${tabs('Explore')}</div></div>`,
 ].join('');
 
-const HEAD = [
-  ['Playfair Display', 400, 'serif'], ['DM Serif Display', 400, 'serif'], ['Fraunces', 300, 'serif'], ['Libre Caslon Display', 400, 'serif'],
-  ['Italiana', 400, 'serif'], ['Marcellus', 400, 'serif'], ['Gloock', 400, 'serif'], ['Young Serif', 400, 'serif'], ['Cinzel', 400, 'serif'],
-  ['Tenor Sans', 400, 'sans-serif'], ['Syne', 500, 'sans-serif'], ['Space Grotesk', 400, 'sans-serif'], ['Archivo', 300, 'sans-serif'],
-  ['Unbounded', 300, 'sans-serif'], ['Bricolage Grotesque', 400, 'sans-serif'], ['Outfit', 300, 'sans-serif'], ['Sora', 300, 'sans-serif'],
-  ['Red Hat Display', 400, 'sans-serif'], ['Poiret One', 400, 'sans-serif'], ['Helvetica Neue', 400, "Helvetica, 'TeX Gyre Heros', Arial, sans-serif", 'today'],
-];
-const TEXT = [
-  ['DM Sans'], ['Outfit'], ['Hanken Grotesk'], ['Figtree'], ['Work Sans'], ['Karla'], ['Nunito Sans'], ['IBM Plex Sans'],
-  ['Lato'], ['Rubik'], ['Plus Jakarta Sans'], ['Albert Sans'], ['Poppins', 'today'],
-];
-const stack = (n, fb) => `'${n}', ${fb}`;
-document.getElementById('fonts-h').innerHTML = HEAD.map(([n, w, fb, t], i) => `<button type="button" class="ftile" data-fh="${i}" aria-pressed="${i === 0}"><span class="nm">${n}${t ? ' (today)' : ''}</span><span class="hs" style="font-family:${stack(n, fb)};font-weight:${w}">Indian Wholesale Club</span></button>`).join('');
-document.getElementById('fonts-t').innerHTML = TEXT.map(([n, t], i) => `<button type="button" class="ftile" data-ft="${i}" aria-pressed="${i === 0}"><span class="nm">${n}${t ? ' (today)' : ''}</span><span class="ts" style="font-family:${stack(n, 'system-ui, sans-serif')}">Miss local market? Start here.<br><b>States · Search · About us · $114.99</b></span></button>`).join('');
-
 // "Wholesale" width in em for the headline font: the hero sizes the name so this word fits the wall.
 const setK = async () => {
-  const cs = getComputedStyle(document.body), f = `${cs.getPropertyValue('--d-w').trim()} 100px ${cs.getPropertyValue('--fh').trim()}`;
+  const f = '400 100px Cinzel';
   await document.fonts.load(f, 'Wholesale');
   const c = document.createElement('canvas').getContext('2d'); c.font = f;
   document.body.style.setProperty('--k', (c.measureText('Wholesale').width / 100).toFixed(3));
 };
-document.addEventListener('click', async (e) => {
-  const h = e.target.closest('[data-fh]'), t = e.target.closest('[data-ft]');
-  if (h) {
-    const [n, w, fb] = HEAD[+h.dataset.fh];
-    document.body.style.setProperty('--fh', stack(n, fb)); document.body.style.setProperty('--d-w', w);
-    document.getElementById('fh-name').textContent = n;
-    document.querySelectorAll('[data-fh]').forEach((x) => x.setAttribute('aria-pressed', x === h));
-    await setK();
-  }
-  if (t) {
-    const [n] = TEXT[+t.dataset.ft];
-    document.body.style.setProperty('--ft', stack(n, 'system-ui, sans-serif'));
-    document.getElementById('ft-name').textContent = n;
-    document.querySelectorAll('[data-ft]').forEach((x) => x.setAttribute('aria-pressed', x === t));
-    await document.fonts.ready; setTimeout(measure, 50);
-  }
-});
 setK();
+
+// Home scroll, as apps/web/features/home/hero-scroll.tsx: --hero-p is 0 at the top and 1 after 55 % of the hero;
+// "passed" once the photo is under the header.
+document.querySelectorAll('.scroller').forEach((sc) => {
+  const vp = sc.closest('.vp'), hero = sc.querySelector('.hero'), hdr = vp.querySelector('.hdr');
+  const update = () => {
+    vp.style.setProperty('--hero-p', Math.min(1, Math.max(0, sc.scrollTop / (hero.offsetHeight * .55))).toFixed(3));
+    vp.classList.toggle('passed', sc.scrollTop >= hero.offsetHeight - hdr.offsetHeight - hdr.offsetTop);
+  };
+  sc.addEventListener('scroll', update, { passive: true }); update();
+});
 
 // Search: mouse-out closes it again unless something was typed (the founder's round-2 rule).
 document.querySelectorAll('.srch').forEach((f) => f.addEventListener('mouseleave', () => {

@@ -270,7 +270,7 @@ because the founder named it. *Proposed guard rails (design.md §Direction):* Le
 client module after the page is interactive, are switched off entirely for `prefers-reduced-motion`, never block
 keyboard or screen-reader scrolling, and the speed budgets still hold (`check.mjs http`, first-load JS ≤ 150 KB).
 
-**D-050 · 2026-09-30 · founder: Direction A chosen, symmetric grid below the hero, fonts**
+**D-050 · 2026-09-30 · founder: Direction A chosen, symmetric grid below the hero, fonts · fonts SUPERSEDED by D-079**
 Founder, verbatim, reviewing the three C1 mockups: "Direction C is absolute trash, no dark mode, B is very mid, A is workable
 upon keep the hero section format as is, make everything below it symmetrical (grid wise).  I have attached a photo for the
 grid below it. I did not like the available now and pick your home, these are just too big, now I am not asking for very
@@ -291,7 +291,7 @@ names, section titles, the product title and origin line; Montserrat "where nece
 product names on cards; product photos 3 : 4 portrait as in the reference; the attached map = the look and the official
 boundaries for Home's map, drawn from DataMeet's open data rather than traced from the (copyrighted) image (Q-21).
 
-**D-051 · 2026-09-30 · founder: Mockup v3 - map hover delay, headline options, Helvetica Neue, region and product page sections**
+**D-051 · 2026-09-30 · founder: Mockup v3 - map hover delay, headline options, Helvetica Neue, region and product page sections · Helvetica Neue SUPERSEDED by D-079**
 Founder, verbatim, reviewing mockup A v2: "Okay The map section is perfect, its just that when someone hovers over the
 states names the map reacts by darkening the actual state in the map, I want this when the user holds the mouse over that
 name for at least 700ms, and remove where's home instead send me 10 variations
@@ -322,7 +322,7 @@ delivery line); keyboard focus on a name highlights at once (no delay); the Clot
 pills above the region sections; the region's tagline and story stay in the hero. The data behind Most wanted, Curated
 for you and Leaving soon is Q-22; Helvetica Neue's web licence is Q-24; the album's accessibility is Q-25.
 
-**D-052 · 2026-09-30 · founder (was Q-21, Q-24, Q-25; part of Q-23): Headline, photo hero, fonts fallback, album, reviews check**
+**D-052 · 2026-09-30 · founder (was Q-21, Q-24, Q-25; part of Q-23): Headline, photo hero, fonts fallback, album, reviews check · fonts fallback SUPERSEDED by D-079**
 Founder, verbatim, reviewing mockup A v3: "headline: Miss local Market?
 Start here.
 Checked by an admin before they appear
@@ -353,7 +353,7 @@ photo is used only after its rights are cleared (Q-26); the words fade one after
 Club) and drift up slightly, the drift off for "reduce motion"; on phones the brand name sits under the photo, over its
 faded lower edge.
 
-**D-053 · 2026-09-30 · founder: Hero photo as the full background, only the name and the heading**
+**D-053 · 2026-09-30 · founder: Hero photo as the full background, only the name and the heading · phone fade SUPERSEDED by D-079**
 Founder, verbatim: "put the photo as background for the hero section instead of left side, also remove the
 subdescription and delivery info just the name and the heading"
 What it means for the build: the founder's photo fills the whole hero (cropped to the screen, the face kept in view); the
@@ -364,7 +364,7 @@ of D-052; the scroll fade into the header logo stays.
 phones, where the photo leaves too little clear wall, a soft dark fade at the bottom carries light text. The photo needs a
 high-resolution original for large screens (the file sent is 736 px wide), part of Q-26.
 
-**D-054 · 2026-09-30 · founder: Wider hero photo, behind the nav bar too, no white space**
+**D-054 · 2026-09-30 · founder: Wider hero photo, behind the nav bar too, no white space · nav on a dark fade SUPERSEDED by D-079**
 Founder, verbatim: "that was too much zoomed in, here I generated a new image with bigger background now carefully crop it
 such that the photo is the background of hero section and nav bar as well. I don't want any whitespaces."
 The founder attached a wider version of the hero photo (1117 × 1409 px, the background extended by image generation).
@@ -377,7 +377,7 @@ door and the disc); it turns solid ivory with dark text once the photo has scrol
 to keep her and the disc in view. The extended image is derived from the original photo, so Q-26 (rights, and a
 high-resolution original) still applies.
 
-**D-055 · 2026-09-30 · founder (was Q-26): Hero crop and label; the hero image is AI-generated and IWC has the rights; C1 build starts**
+**D-055 · 2026-09-30 · founder (was Q-26): Hero crop and label; the hero image is AI-generated and IWC has the rights; C1 build starts · crop and label SUPERSEDED by D-079**
 Founder, verbatim: "Instead of starting from 21%, start from a bit more lower so her hand is visible. remove the heading
 from there Instead put "Clothing and spices from home" in the same font as it was before getting removed.
 Rest is good you can now start the next phase. Also, this is an AI generated image and we do have the rights"
@@ -634,3 +634,52 @@ stand-ins from curated collections (museums, stock product photos), checked by e
 Demo reviews come from demo reviewer accounts, show only in demo mode and are always labelled "Demo review" (the FTC
 rule on fake reviews). Payments run in Stripe test mode for the whole round (Vercel and the app switch to test keys);
 real money is never taken for a demo listing. Nothing of the demo round is kept after the clear.
+
+**D-079 · 2026-10-08 · founder: The shell (header, banner, footer, app tab bar) and the Home hero, from the design pass; Cinzel and Karla**
+Founder, verbatim, over four rounds of `design/pages/shell/mockup.html` (2026-10-07 – 10-08; every round's notes are
+quoted in full in `design/pages/shell/brief.md` §Rounds):
+Round 2: "Remove clothing and spices form header and footers, add about us, instead of account I need three icons
+heart(whislisht/liked), bag(cart with the number),  profile(guest or signed in doesnt matter) these three icons should be
+there. When search is clicked another page opens, instead as soon as search is hovered it transitions into the search
+placeholder pill and when the mouse is taken off it transitions back into the text of search. The Indian Wholesale club
+text should be more lower in the hero seciton, remove the clothing and spices from home and replace with(Miss local
+market? Start here.) the fonts are very trash change them.
+when the hamburger icon is clicked, the whole screen is taken by the sidepanel, instead it should be smoothly opened as a
+sidepanel hovering over the homepage and close like it opened, also it shouldn't be mentioned menu and close, the icons
+are enough, in webapp of phone, the footer should be very small and minimal,remove extra things"
+Round 3: "All fonts are trash, the text is too much big and lower than before I need it in center with right aligned with
+the screen and always on the whitish part of the wall whatever the size of the screen is(adjust the size of text
+accordingly). the color should be #1D1A17(for hero headline and black for rest) don't add any blur anywhere"
+Round 4: "I choose cinzel and karla, also why did you make the header bg solid make it on the photo and you also removed
+the fade in algorithm of the logo text in the header, undo it. footer text is fine. let's finalize and go to next steps"
+What it means for the build (approved mockup: `design/pages/shell/mockup.html`):
+- **Fonts:** **Cinzel** for headlines (the hero name, page and section headings, product titles) and **Karla** for
+  everything else (nav, buttons, labels, paragraphs, prices, footer). Two families instead of five. Supersedes the fonts
+  of D-050, D-051 (Helvetica Neue) and D-052 (its fallbacks). The logo text keeps Georgia (D-077's India outline is
+  fitted to Georgia's I).
+- **Header (website):** States · Search · About us, then three icons: heart (saved), bag with its count, profile (the
+  same for guests and signed-in customers). Clothing and Spices leave the header and the footer (their pages stay).
+  The current section is underlined. **Search** is the word itself: on hover it slides into a search pill and back to
+  the word when the pointer leaves, unless something was typed; Enter opens the results page. One row at every width.
+- **Phones:** logo, heart, bag, profile and a menu icon; the menu is a side panel from the right over the page (search
+  pill, States, About us, then Track an order, How it works, Shipping & returns, FAQ, Contact), opened and closed with
+  the same motion, icons only (no "Menu" / "Close" words). The footer on phones is one small block of links (Track an
+  order, Shipping & returns, FAQ, Contact, Privacy, Terms) and the credit line.
+- **Footer (tablet and up):** Shop (States, Search) · Help · About (About us, Privacy, Terms); the name and line stay as
+  they are ("footer text is fine"), so D-077's footer name "The Indian Wholesale Club" stays.
+- **Demo banner (D-078):** above the header on every page, never under it; on narrow screens one short line with a
+  "Test card" toggle.
+- **Home hero:** the header sits on the photo (D-054) and **the scroll fade stays** (D-052): the words fade out one after
+  another while the logo fades in, and the header turns cream once the photo has passed. "Indian / Wholesale / Club"
+  (#1D1A17, Cinzel) with "Miss local market? Start here." under it (black, Karla) replaces D-055's label "Clothing and
+  spices from home". The name stays **on the photo's white wall at every screen size**: right-aligned to the screen,
+  centred on the wall, sized to fit it; the photo is cropped 85 % across and 20 % down so phones keep the wall. Nav and
+  icons on the photo are black. **No blur anywhere:** no fades, text shadows or soft shadows. Supersedes D-054's white
+  nav on a dark fade, D-055's crop and label, and D-053's phone fade.
+- **App:** cream tab bar with labels in Karla, the active tab marked by a short brand-colour bar, the bag
+  badge in the brand colour; tab roots get a large Cinzel title, pushed screens a back bar.
+*Interpretation (proposed, confirm on sight when the shell is built):* "Start here." links to Pick your home on the same
+page; the side panel also closes with Escape and a tap on the dimmed page (a flat dim, not a blur); the short banner line
+("Demo store. Nothing here is for sale." + "Test card") is approved with the mockup. Known trade-off, raised in round 3 before the
+founder chose the header on the photo: at the very top of Home the black nav crosses the dark wall disc on some widths and
+reads poorly there.

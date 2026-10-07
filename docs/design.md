@@ -5,6 +5,11 @@
 > **Direction chosen (2026-09-30, D-050):** A, reworked: the hero keeps its format, everything below it is a symmetric
 > full-width grid, no dark mode, fonts below. Mockup: `design/mockups/index.html` (palette with contrast, the map source,
 > the founder's remaining choices). Tokens go into `packages/tokens` in C1 step 2.
+> **Target since 2026-10-08 (D-079, not built yet):** the shell and the Home hero from the design pass: **Cinzel**
+> (headlines) and **Karla** (everything else) replace the five fonts below, the logo stays Georgia; header States ·
+> Search (hover pill) · About us + saved / bag / profile icons; phone side panel; the hero name held on the photo's white
+> wall at every size in #1D1A17; no blur anywhere. Approved mockup: `design/pages/shell/mockup.html`. The sections
+> below describe today's build until the code catches up.
 > **Design pass (since 2026-10-07):** every page is designed again, one at a time; the register, the workflow and each
 > page's brief and mockup are in `design/pages/`. Until a page's mockup is approved, this file and the code stay as they are.
 
@@ -14,9 +19,10 @@ hero sits on a symmetric grid** (four equal columns of 3 : 4 rounded product pho
 two-panel rows), full width with small side gutters. **Fonts:** Helvetica Neue for the hero and the section headings
 (D-051; TeX Gyre Heros where it is not installed, D-052), Georgia for the logo, product title and origin line (Gelasio
 where it is not installed), Poppins for paragraphs, Montserrat for interface text (navigation, buttons, labels, product
-names on cards), Inter for the footer only. No dark mode.
+names on cards), Inter for the footer only. No dark mode. **Target (D-079):** Cinzel + Karla, logo Georgia.
 **Home hero (D-052 – D-054):** the founder's photo fills the first screen edge to edge, behind the nav bar too; "Indian Wholesale Club" (D-077) stands on its white wall,
-one word per line, right-aligned, with the label "Clothing and spices from home" under it and nothing else (D-055); the
+one word per line, right-aligned, with the label "Clothing and spices from home" under it and nothing else (D-055; **target**
+D-079: "Miss local market? Start here.", the name sized and placed on the white wall at every width); the
 photo is AI-generated and IWC holds the rights; scrolling fades the words out while the header logo fades in. The earlier hero is archived in `design/mockups/archive/a-gallery-v3.html`.
 The D-049 bullets below still apply to the hero and to motion; their asymmetric layout rules no longer apply below it.
 The storefront reads like a **premium editorial magazine / contemporary gallery wall** built from large photographs:

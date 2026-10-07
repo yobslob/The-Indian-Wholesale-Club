@@ -33,6 +33,7 @@ Baseline numbers come from the founder's first `node scripts/check.mjs` run and 
   which the founder asked for (D-049, `design.md` §Direction: one small client module, off for reduced motion). Fonts (D-050 – D-052):
   Helvetica Neue and Georgia as system fonts with self-hosted fallbacks (TeX Gyre Heros, Gelasio) that load only where the
   system font is missing; Poppins, Montserrat and Inter (footer only) via `next/font`, self-hosted and subset.
+  **Target (D-079):** two families, Cinzel and Karla, via `next/font` (self-hosted, subset); Georgia/Gelasio for the logo only.
 - **PR-6 Assets:** `next/image` with `sizes` that match the width the image really has at each breakpoint (Tailwind's `md` 768 and
   `xl` 1280; rows use their `clamp()` widths, `features/catalog/product-card.tsx`), so photos are never upscaled and never
   oversized; quality stays Next's default 75. Uploaded photos get a new random path and are never overwritten, so they are
