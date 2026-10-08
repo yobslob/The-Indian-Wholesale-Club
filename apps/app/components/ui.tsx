@@ -30,6 +30,8 @@ export function Screen({
   onRefresh,
   back = true,
   title,
+  scrollRef,
+  top,
 }: {
   children: React.ReactNode;
   refreshing?: boolean;
@@ -38,21 +40,28 @@ export function Screen({
   back?: boolean;
   /** Tab roots: the large title. Pushed screens: the back bar's title. */
   title?: string;
+  /** For screens that scroll to a section (the region page's jump pills). */
+  scrollRef?: React.RefObject<ScrollView>;
+  /** Full-bleed content above the padded column (the region photo), under the back bar. */
+  top?: React.ReactNode;
 }): React.JSX.Element {
-  const router = useRouter();
-  const showBar = back && router.canGoBack();
+  const showBar = back;
   return (
     <SafeAreaView className="bg-canvas flex-1" edges={['top']}>
       {showBar ? <BackBar title={title} /> : null}
       <ScrollView
-        contentContainerClassName="gap-5 px-4 pb-16 pt-4"
+        ref={scrollRef}
+        contentContainerClassName="pb-16"
         keyboardShouldPersistTaps="handled"
         refreshControl={
           onRefresh ? <RefreshControl refreshing={refreshing ?? false} onRefresh={onRefresh} /> : undefined
         }
       >
-        {!showBar && title ? <Title>{title}</Title> : null}
-        {children}
+        {top}
+        <View className="gap-5 px-4 pt-4">
+          {!showBar && title ? <Title>{title}</Title> : null}
+          {children}
+        </View>
       </ScrollView>
     </SafeAreaView>
   );
@@ -64,7 +73,8 @@ export function BackBar({ title, onClose }: { title?: string; onClose?: () => vo
   return (
     <View className="bg-canvas border-line min-h-12 flex-row items-center border-b px-2">
       <Pressable
-        onPress={onClose ?? (() => router.back())}
+        // Opened from a link with nothing behind it (a shared link, a notification): Back goes Home.
+        onPress={onClose ?? (() => (router.canGoBack() ? router.back() : router.replace('/')))}
         accessibilityRole="button"
         accessibilityLabel="Back"
         className="min-h-11 w-11 items-center justify-center"

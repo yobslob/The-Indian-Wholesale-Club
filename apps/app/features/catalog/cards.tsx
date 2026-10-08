@@ -6,23 +6,10 @@ import { Dimensions, Pressable, Text, View } from 'react-native';
 import { formatUsd } from '@repo/shared/domain';
 import tokens from '@repo/tokens';
 
-import type { ProductCard as ProductCardData, RegionCard as RegionCardData, RegionProductCard } from '@repo/db/store';
+import type { ProductCard as ProductCardData, RegionProductCard } from '@repo/db/store';
 
 import { Photo } from '@/components/photo';
 import { useBag } from '@/features/cart/store';
-
-/** One of the 36 regions (D-002). The greeting shows only once approved (the store view enforces D-019). */
-export function RegionCard({ region }: { region: RegionCardData }): React.JSX.Element {
-  return (
-    <Link href={{ pathname: '/region/[slug]', params: { slug: region.slug } }} asChild>
-      <Pressable className="border-line bg-paper min-h-11 gap-1 rounded-lg border p-4">
-        <Text className="font-display text-ink text-xl">{region.name}</Text>
-        {region.greeting_native ? <Text className="text-ink-muted text-sm">{region.greeting_native}</Text> : null}
-        {!region.is_live ? <Text className="font-ui text-ink-muted text-xs">Coming soon</Text> : null}
-      </Pressable>
-    </Link>
-  );
-}
 
 type CardData = ProductCardData & Partial<Pick<RegionProductCard, 'available' | 'quick_add'>>;
 
