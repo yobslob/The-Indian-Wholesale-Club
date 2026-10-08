@@ -38,6 +38,21 @@ decision, and a phase waits for its answers.
 launch work (C8) is last, but its questions (Q-5, Q-10, Q-19) should be answered early. C6 and C7 can slot in wherever
 there is a gap.
 
+## Design pass build (D-079 – D-097, started 2026-10-08)
+The page-by-page design pass (`design/pages/`) is approved in full; "Let's build all this" (D-097). Built in this order,
+each phase a series of small commits, verified by `node scripts/check.mjs` (green) and logged in `current.md`; the
+approved mockup of each page is the reference.
+| # | Phase | Size | Builds | Waits on |
+|---|---|---|---|---|
+| **B1** | Look and frame | M | Cinzel / Karla / Syne replace the five fonts (web `next/font`, app bundled), tokens' font roles (D-079, D-080); the header (States · Search pill · About us, heart / bag count / profile icons), the phone side panel, the demo banner above the header, the footer and the phone mini footer, Home's hero name on the wall (D-079, D-080); the info pages as the glass panel (D-092); not-found and error pages (D-093) | Docker running for `check.mjs` |
+| **B2** | Browsing | L | the + on card photos, stamp pages from 7 (D-080); region jump-pill arrows, Picked for you as a row (D-081); product tablet layout, photo viewer, phone buy bar, reviews row (D-082); Clothing / Spices edges, pinned state row, phone Filter button and panel (D-084); search count, stamps, no dead ends, phone icon (D-085) | B1 |
+| **B3** | Buying | L | the bag page and the bag panel (D-086); checkout phone → delivery → payment with the ZIP lookup, Edit buttons, the bag beside it, the quiet header, the thank-you page (D-087); order lookup card, status card, timeline with dates, item photos (D-088) | B1; the ZIP data source |
+| **B4** | Account and sign-in | M | one profile page with sections, order cards, heart to unsave, address corner icons (D-089); the sign-in card with show password, forgot password and the email code (D-091); the review panel (D-090) | B3; Supabase email templates for reset and code (founder, hosted dashboard) |
+| **B5** | Emails | S | the new frame, piece photos, footer, the shipped email's link to the order page (D-094) | Q-9 for the real sender (test sender until then) |
+| **B6** | App, customer | L | every customer screen on D-095 (tabs, Home, Explore, Region, Product, Browse, Bag, Checkout, Order, Saved, Profile, help sheet, review sheet) | B1 – B4 (same server APIs) |
+| **B7** | Web admin | L | the frame with grouped nav and counts, quick find, desk clocks, chips, Today's queue, Orders search / bulk / pages, the order page's actions and confirm boxes, cycle stepper and pickups by shop, one-step listing with the photo grid and live price, Add many (D-096) | B1 |
+| **B8** | App admin | M | five tabs with counts and everything in D-097 | B7 |
+
 ## Not in this plan (founder approval needed first, `product.md` §Later ideas)
 "Ask for it from home" requests, notify-me, gift boxes (F-6; reviews are wanted, D-051, rules D-056, built with the product page in C1); returns/exchanges flow (F-4, Q-5); a faster US-stock
 option (F-5); Stripe Tax instead of the 8 % estimate (F-2).

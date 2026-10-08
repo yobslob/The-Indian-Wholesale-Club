@@ -936,3 +936,12 @@ never linked from the store, D-006):
   gallery. **Add many:** a batch of photos becomes drafts (drag to group), one row each for name, category, vendor,
   shop price (→ $), pieces; "Create n drafts".
 - The other sections take the same frame, chips, tables and confirm boxes; codes in titles (orders, cycles) in Karla.
+
+**D-097 · 2026-10-08 · founder: The app's admin mode, and building the whole design pass**
+Founder, verbatim, on round 1 of `design/pages/appadmin/mockup.html`: "Let's build all this".
+What it means: the app's admin mode is approved as drawn (five tabs Today · Orders · Cycle · Listings · More with counts;
+quick find; the desk's clocks; plain chips; the order's main action at the bottom and the Pack & ship sheet; cycle
+progress and pickups by shop; New listing with the camera or many from the gallery, Add many, drafts showing what each
+needs; Payouts that confirm; Vendors with Add a vendor; refunds and the catalog-wide sections stay on the web panel).
+And every approved design of the pass (D-079 – D-097) is now to be built, in the phases of `plan/coding-plan.md`
+§Design pass build, each verified with `node scripts/check.mjs` before it is called done.

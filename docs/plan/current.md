@@ -16,7 +16,8 @@ Page 12, Account, approved as D-089 (one profile page, order cards, heart to uns
 the page, corner icons on addresses). Page 13, the review form, approved as D-090 (panel, piece at the top, stars, photo tiles).
 Page 14, sign-in / sign-up, approved as D-091 (show password, forgot password, email code).
 Page 15, the info pages, approved as D-092 (a glass panel on the same page). Page 16, not-found and error pages, approved as D-093. Page 17, customer emails, approved as D-094. The website customer side is done. App screens approved as D-095 (`design/pages/app/`).
-Web admin approved as D-096 (`design/pages/admin/`). The app's admin mode: mockup round 1 (`design/pages/appadmin/`), the last part of the pass.
+Web admin approved as D-096 (`design/pages/admin/`). The app's admin mode approved as D-097; **the whole pass is approved and is being built** in phases B1 – B8
+(`plan/coding-plan.md` §Design pass build). Now: B1, the look and frame.
 
 **Logo text (D-077, 2026-10-07):** the website header's logo reads "Indian Wholesale Club", its I inside a gold outline of India cut open on the east; the Home hero heading is unchanged except "The" is gone. Titles, emails, footer and the app keep D-009's full name until the founder says otherwise.
 

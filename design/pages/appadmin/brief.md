@@ -1,7 +1,7 @@
 # appadmin: the app's admin mode, on the approved web admin (D-096)
 
 **Surface:** `apps/app/app/admin/` (tabs Today, Orders, Cycles, Payouts, Listings, Vendors; `order/[id]`, `cycle/[id]`,
-`listing/new`), shown only after the server says `is_admin()` (D-006, D-043) · **Status:** mockup, round 1
+`listing/new`), shown only after the server says `is_admin()` (D-006, D-043) · **Status:** approved D-097 (2026-10-08), not built yet
 
 ## The job
 The phone the COO carries to the shops and the founder checks on the move: pickups, listing with the camera, shipping,
@@ -39,3 +39,4 @@ None new. Sample data.
 | Date | Round | Founder's notes | Changed |
 |---|---|---|---|
 | 2026-10-08 | 1 | the direction above | first proposal |
+| 2026-10-08 | — | "Let's build all this" | approved as D-097 |
