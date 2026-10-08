@@ -12,12 +12,13 @@ import {
 
 import { siteUrl, supportEmail } from '@/lib/env';
 import { errorMessage, logger } from '@/lib/logger';
-import { SITE_NAME } from '@/lib/site';
+import { mediaUrl, SITE_NAME } from '@/lib/site';
 
 import { orderConfirmationHtml, orderConfirmationSubject } from './order-confirmation';
 import { orderUpdateEmail } from './order-update';
 import { isReservedAddress } from './reserved';
 
+import type { EmailContext } from './frame';
 import type { IwcClient } from '@repo/db';
 import type { OrderDetail } from '@repo/db/store';
 
@@ -39,18 +40,29 @@ export interface OutboxRow {
   attempts: number;
 }
 
+/**
+ * What every email needs from the site: its name and address, the support email, and small photos of the pieces
+ * (D-094) through the site's own image resizer (128 px wide, a 56 px photo at 2x) instead of the full-size upload.
+ */
+function emailContext(): EmailContext {
+  const site = siteUrl().replace(/\/$/, '');
+  return {
+    siteName: SITE_NAME,
+    siteUrl: site,
+    supportEmail: supportEmail(),
+    photo: (path) => `${site}/_next/image?url=${encodeURIComponent(mediaUrl(path))}&w=128&q=75`,
+  };
+}
+
 /** Subject and body for a row; null for an update that sends no email (it is marked sent and skipped). */
 function compose(row: OutboxRow, order: OrderDetail): { subject: string; html: string } | null {
+  const ctx = emailContext();
   if (row.kind === 'order_confirmation') {
-    return {
-      subject: orderConfirmationSubject(order, SITE_NAME),
-      html: orderConfirmationHtml(order, SITE_NAME, supportEmail()),
-    };
+    return { subject: orderConfirmationSubject(order, SITE_NAME), html: orderConfirmationHtml(order, ctx) };
   }
   const kind = (row.payload as { kind?: unknown }).kind;
   if (row.kind !== 'order_update' || typeof kind !== 'string') throw new Error(`Unsupported outbox row (${row.kind})`);
-  const orderUrl = `${siteUrl()}/orders/${encodeURIComponent(order.order.order_number)}`;
-  return orderUpdateEmail(kind, order, SITE_NAME, orderUrl, supportEmail());
+  return orderUpdateEmail(kind, order, ctx);
 }
 
 /**

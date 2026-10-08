@@ -1,11 +1,13 @@
-import { formatDeliveryWindow, formatUsd, trackingUrl } from '@repo/shared/domain';
+import { formatDeliveryWindow, formatUsd } from '@repo/shared/domain';
 
-import { escapeHtml } from './order-confirmation';
+import { button, escapeHtml, frame, paragraph, pieces, type EmailContext } from './frame';
 
 import type { OrderDetail } from '@repo/db/store';
 
 /**
- * The email for one customer-visible order update (flows.md §8, B-20). Built ONLY from the customer-safe order shape
+ * The email for one customer-visible order update (flows.md §8, B-20), in the D-094 frame: the subject as its heading,
+ * the missing pieces' photos when one is unavailable, and the shipped email's button to our order page (where "Track
+ * the parcel" goes on to the carrier, D-088). Built ONLY from the customer-safe order shape
  * (guest_order_lookup), so nothing operational can reach it (D-003): no shops, pickups, exports or cycles, and no
  * reason why a date moved. Every dynamic value is escaped. Copy follows design.md §Voice (D-059); the founder may
  * rewrite any of it. Pure, so it has unit tests (tests/order-update.test.ts).
@@ -20,6 +22,8 @@ interface Parts {
   subject: string;
   paragraphs: string[];
   link?: { href: string; label: string };
+  /** Pieces drawn with their photos above the text (D-094). */
+  show?: OrderDetail['items'];
 }
 
 const strong = (text: string): string => `<strong>${escapeHtml(text)}</strong>`;
@@ -46,6 +50,7 @@ function parts(kind: string, order: OrderDetail, orderUrl: string): Parts | null
       const gone = order.items.filter((i) => i.status === 'unavailable').map((i) => `${i.product_name} (${i.variant_label})`);
       return {
         subject: `Sorry, part of order ${n} isn't coming`,
+        show: order.items.filter((i) => i.status === 'unavailable'),
         paragraphs: [
           `${gone.length ? strong(gone.join(', ')) : 'One of your pieces'} is no longer available. We're sorry.`,
           `You don't pay for it: we're refunding it, and you'll get an email when the money is on its way.`,
@@ -122,23 +127,13 @@ function parts(kind: string, order: OrderDetail, orderUrl: string): Parts | null
         paragraphs: [`Nice surprise: your order is already on its way, ahead of the date we gave you.`],
         link: view,
       };
-    case 'shipped': {
-      const tracking = trackingUrl(o.carrier, o.tracking_number);
+    case 'shipped':
+      // D-094: the button opens our order page, which links on to the carrier (D-066, D-088).
       return {
         subject: `Order ${n} is on its way`,
-        paragraphs: [
-          `Your order has left us and is on its way to you.`,
-          o.carrier || o.tracking_number
-            ? `${escapeHtml(o.carrier ?? '')} tracking: ${
-                tracking
-                  ? `<a href="${escapeHtml(tracking)}">${escapeHtml(o.tracking_number)}</a>`
-                  : escapeHtml(o.tracking_number)
-              }`
-            : '',
-        ],
-        link: view,
+        paragraphs: [`Your order has left us and is on its way to you.`],
+        link: { href: orderUrl, label: 'Track your order' },
       };
-    }
     case 'delivered':
       return {
         subject: `Order ${n} is delivered`,
@@ -151,31 +146,15 @@ function parts(kind: string, order: OrderDetail, orderUrl: string): Parts | null
 }
 
 /** Null for kinds that send no email. */
-export function orderUpdateEmail(
-  kind: string,
-  order: OrderDetail,
-  siteName: string,
-  orderUrl: string,
-  supportEmail: string | null,
-): OrderUpdateEmail | null {
+export function orderUpdateEmail(kind: string, order: OrderDetail, ctx: EmailContext): OrderUpdateEmail | null {
+  const n = order.order.order_number;
+  const orderUrl = `${ctx.siteUrl}/orders/${encodeURIComponent(n)}`;
   const p = parts(kind, order, orderUrl);
   if (!p) return null;
-  const body = p.paragraphs
-    .filter(Boolean)
-    .map((text) => `<p style="font-size:15px;line-height:1.5">${text}</p>`)
-    .join('\n');
-  const link = p.link
-    ? `<p><a href="${escapeHtml(p.link.href)}" style="display:inline-block;background:#171717;color:#ffffff;padding:12px 20px;border-radius:999px;text-decoration:none">${escapeHtml(p.link.label)}</a></p>`
-    : '';
-  return {
-    subject: p.subject,
-    html: `<!doctype html><html><head><meta charset="utf-8"><title>${escapeHtml(p.subject)}</title></head>
-<body style="font-family:-apple-system,Segoe UI,Roboto,Arial,sans-serif;color:#171717;max-width:560px;margin:0 auto;padding:24px">
-<h1 style="font-size:20px">${escapeHtml(siteName)}</h1>
-<p style="font-size:13px;color:#525252">Order ${escapeHtml(order.order.order_number)}</p>
-${body}
-${link}
-${supportEmail ? `<p style="font-size:12px;color:#737373">Questions? ${escapeHtml(supportEmail)}</p>` : ''}
-</body></html>`,
-  };
+  const body = [
+    p.show && p.show.length > 0 ? `${pieces(p.show, ctx)}<div style="height:14px"></div>` : '',
+    ...p.paragraphs.filter(Boolean).map(paragraph),
+    p.link ? button(p.link.href, p.link.label) : '',
+  ].join('\n');
+  return { subject: p.subject, html: frame(ctx, { title: p.subject, orderLine: `Order ${n}`, heading: p.subject, body }) };
 }

@@ -89,3 +89,10 @@ delay notice with cancel option (D-008). All go through `email_outbox` and follo
 these, plus cancelled, refund, the faster-delivery offer and its confirmation, and "coming sooner" (D-064). The copy is in
 `apps/web/lib/email/order-update.ts` (drafted in the D-059 voice; the founder may rewrite it). Sent with Resend's test
 sender until launch (D-046).
+**D-094 (built in B5):** every email sits in one frame (`apps/web/lib/email/frame.ts`): the cream page, the logo as an
+image (`apps/web/public/email/logo.png`, the header's logo at 2x), the message in a card under a heading, Syne / Karla
+served from our own site (`apps/web/public/email/`) where the email app allows web fonts, the brand-colour button, small
+photos of the pieces (the confirmation and the item-unavailable email; 128 px copies through the site's image
+resizer), and a footer: Track your order · Shipping & returns · Contact, "You're getting this because you ordered from
+The Indian Wholesale Club. These emails are about your order only." and the support email (Q-9). The shipped email's
+button opens our order page, which links on to the carrier (D-088).

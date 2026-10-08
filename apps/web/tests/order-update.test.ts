@@ -4,6 +4,7 @@ import { describe, it } from 'node:test';
 import { orderUpdateEmail } from '../lib/email/order-update';
 import { isReservedAddress } from '../lib/email/reserved';
 
+import type { EmailContext } from '../lib/email/frame';
 import type { OrderDetail } from '@repo/db/store';
 
 const base: OrderDetail = {
@@ -47,8 +48,13 @@ const base: OrderDetail = {
   actions: { can_cancel: false, cancel_refund_cents: null, delay_open: true, delay_refund_cents: 5400, returns: [] },
 };
 const url = 'https://iwc.example/orders/IWC-261006-ABCDEF0123';
-const mail = (kind: string, order: OrderDetail = base) =>
-  orderUpdateEmail(kind, order, 'The Indian Wholesale Club', url, null);
+const ctx: EmailContext = {
+  siteName: 'The Indian Wholesale Club',
+  siteUrl: 'https://iwc.example',
+  supportEmail: null,
+  photo: (path) => `https://iwc.example/photo/${path}`,
+};
+const mail = (kind: string, order: OrderDetail = base) => orderUpdateEmail(kind, order, ctx);
 
 const KINDS = [
   'preparing',
@@ -95,9 +101,19 @@ describe('order update emails (B-20)', () => {
     assert.ok(html.includes('Keep it or cancel'));
   });
 
-  it('shipped: a tracking link for a known carrier', () => {
-    const html = mail('shipped', { ...base, order: { ...base.order, carrier: 'UPS', tracking_number: '1Z999AA10123456784' } })?.html;
-    assert.ok(html?.includes('https://www.ups.com/track?tracknum=1Z999AA10123456784'));
+  it('D-094: the shipped email tracks on our order page, not the carrier site', () => {
+    const html = mail('shipped', { ...base, order: { ...base.order, carrier: 'UPS', tracking_number: '1Z999AA10123456784' } })?.html ?? '';
+    assert.ok(html.includes(`href="${url}"`));
+    assert.ok(html.includes('Track your order'));
+    assert.ok(!html.includes('ups.com'));
+  });
+
+  it('D-094: the unavailable piece is shown with its photo', () => {
+    const html = mail('item_unavailable', {
+      ...base,
+      items: base.items.map((i) => ({ ...i, image_path: 'products/p1/mundu.jpg' })),
+    })?.html ?? '';
+    assert.ok(html.includes('https://iwc.example/photo/products/p1/mundu.jpg'));
   });
 
   it('no email for internal or unknown kinds, or an offer that is gone', () => {

@@ -69,6 +69,15 @@ const nextConfig = {
           },
         ],
       },
+      {
+        // The emails' logo and fonts (D-094) load inside email apps, from another origin; they never change between
+        // deploys of the same name, so a day of caching is safe.
+        source: '/email/:file*',
+        headers: [
+          { key: 'Access-Control-Allow-Origin', value: '*' },
+          { key: 'Cache-Control', value: 'public, max-age=86400' },
+        ],
+      },
     ];
   },
 };

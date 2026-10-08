@@ -7,7 +7,15 @@ import {
   orderConfirmationSubject,
 } from '../lib/email/order-confirmation';
 
+import type { EmailContext } from '../lib/email/frame';
 import type { OrderDetail } from '@repo/db/store';
+
+const ctx: EmailContext = {
+  siteName: 'The Indian Wholesale Club',
+  siteUrl: 'https://iwc.example',
+  supportEmail: 'help@example.com',
+  photo: (path) => `https://iwc.example/_next/image?url=${encodeURIComponent(path)}&w=128&q=75`,
+};
 
 const order: OrderDetail = {
   order: {
@@ -49,6 +57,7 @@ const order: OrderDetail = {
       unit_price_cents: 5000,
       total_price_cents: 5000,
       status: 'active',
+      image_path: 'products/p1/kasavu.jpg',
     },
   ],
   events: [],
@@ -57,7 +66,7 @@ const order: OrderDetail = {
 };
 
 describe('order confirmation email (storefront.md §Emails)', () => {
-  const html = orderConfirmationHtml(order, 'The Indian Wholesale Club', 'help@example.com');
+  const html = orderConfirmationHtml(order, ctx);
 
   it('shows the order number, the delivery window from the order (D-008) and the totals', () => {
     assert.match(html, /IWC-260928-ABCDEF0123/);
@@ -65,6 +74,18 @@ describe('order confirmation email (storefront.md §Emails)', () => {
     assert.match(html, /\$58\.32/);
     assert.match(html, /Kasavu mundu/);
     assert.match(html, /Kerala/);
+  });
+
+  it('D-094: the frame, a photo of each piece, the footer, fonts and logo from our own site', () => {
+    assert.match(html, /https:\/\/iwc\.example\/email\/logo\.png/);
+    assert.ok(html.includes('https://iwc.example/_next/image?url=products%2Fp1%2Fkasavu.jpg&amp;w=128&amp;q=75'));
+    assert.ok(html.includes('https://iwc.example/orders/lookup'));
+    assert.ok(html.includes('https://iwc.example/shipping-returns'));
+    assert.ok(html.includes('https://iwc.example/contact'));
+    assert.match(html, /These emails are about your order only\./);
+    assert.match(html, /help@example\.com/);
+    assert.ok(html.includes('https://iwc.example/orders/IWC-260928-ABCDEF0123'));
+    assert.doesNotMatch(html, /googleapis|gstatic/);
   });
 
   it('escapes customer-entered text', () => {
