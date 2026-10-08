@@ -13,7 +13,3 @@ export function InfoPage({
     </article>
   );
 }
-
-export function ComingSoon(): React.JSX.Element {
-  return <p className="text-ink-muted">This page is being written.</p>;
-}

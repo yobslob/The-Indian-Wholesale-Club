@@ -1,7 +1,7 @@
 import assert from 'node:assert/strict';
 import { describe, it } from 'node:test';
 
-import { cancelSentence, returnTiers, standardShipping, taxSentence } from '../features/info/policy-text';
+import { cancelSentence, returnTiers, standardShipping, taxSentence } from '@repo/shared/info';
 
 import type { StorePolicy } from '@repo/db/store';
 

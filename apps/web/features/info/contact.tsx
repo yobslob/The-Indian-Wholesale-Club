@@ -1,22 +1,13 @@
+import { infoBlocks } from '@repo/shared/info';
+
 import { supportEmail } from '@/lib/env';
 
+import { InfoBlocks } from './info-blocks';
 
-/** The support address comes from NEXT_PUBLIC_CONTACT_EMAIL. TODO(founder): Q-9 (domain + support email). */
+/**
+ * This page's wording comes from @repo/shared/info, one source with the app's help sheet (D-095); the support
+ * address from NEXT_PUBLIC_CONTACT_EMAIL (Q-9).
+ */
 export function ContactText(): React.JSX.Element {
-  const email = supportEmail();
-  return (
-    <>
-      {email ? (
-        <p>
-          Write to us at{' '}
-          <a href={`mailto:${email}`} className="underline">
-            {email}
-          </a>
-          . Include your order number if you have one.
-        </p>
-      ) : (
-        <p className="text-ink-muted">Contact details are coming soon.</p>
-      )}
-    </>
-  );
+  return <InfoBlocks blocks={infoBlocks('contact', { email: supportEmail() })} />;
 }

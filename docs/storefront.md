@@ -33,7 +33,7 @@ Enforcement: customer code reads catalog and order data only through `store_*` (
 | `/account`, `/account/saved`, `/account/addresses`, `/account/details` | the profile (D-089): one page, four sections (Orders · Saved · Addresses · Your details; a list on desktop, pill tabs on phones), Sign out at the foot. Orders are cards (the first piece's photo with "+n", number, placed date and window, status label, total); Saved uses the standard cards with a filled heart that removes; addresses are cards with Default / Make default and a pencil and a minus in the corner (`?edit=`, `?add=1` open the form). Signed out, the same address shows the sign-in card. `/account/orders` redirects to `/account` ("Save for later" on product pages fills `saved`) | dynamic |
 | `/account/reviews/[productId]` | write a review (D-051, D-056): rating + text; photos only for verified buyers; pending until an admin approves it. D-090: "Write a review" on the product page opens the same form as a side panel over the product (signed out, the sign-in card first, in the panel); the piece at the top, five large stars (tap or arrow keys, "n of 5"), photo tiles with previews for verified buyers (× removes, + hides at 4); this address keeps the form for links from outside | dynamic |
 | `/login`, `/signup`, `/account/password` | customer auth (D-091): the profile's sign-in card centred, with an eye on passwords, "Forgot password?" (Supabase sends a reset link back through `apps/web/app/auth/callback/route.ts` to `/account/password`, "Set a new password" typed twice) and "Email me a sign-in code" (six digits in six boxes; existing accounts only); `?link=expired` notes a used link. **No admin mention anywhere** (D-006) | dynamic (reads `?next=`), no DB call |
-| `/about`, `/how-it-works`, `/faq`, `/contact`, `/shipping-returns`, `/privacy`, `/terms` | info pages. Opened from any store page they show as a glass panel over it (D-092; intercepting routes in the `@info` slot); a direct visit shows the page. `/shipping-returns` and `/faq` are Claude drafts from D-070 – D-073 and D-076 whose numbers come from `store_policy()` (cached, awaiting approval); `/privacy` and `/terms` are drafts from what the code does and the decisions (a lawyer reviews them); `/how-it-works` is a draft too; the rest need founder input (Q-9, legal text) and say "being written" | static (shipping-returns, faq: cached store read) |
+| `/about`, `/how-it-works`, `/faq`, `/contact`, `/shipping-returns`, `/privacy`, `/terms` | info pages; their wording lives in `packages/shared/src/info/` (blocks, one source with the app's help sheet, D-095) and the numbers come from `store_policy()`. Opened from any store page they show as a glass panel over it (D-092; intercepting routes in the `@info` slot); a direct visit shows the page. `/shipping-returns` and `/faq` are Claude drafts from D-070 – D-073 and D-076 whose numbers come from `store_policy()` (cached, awaiting approval); `/privacy` and `/terms` are drafts from what the code does and the decisions (a lawyer reviews them); `/how-it-works` is a draft too; the rest need founder input (Q-9, legal text) and say "being written" | static (shipping-returns, faq: cached store read) |
 
 Why `/states` in URLs: it's the founder's own word for the concept. UTs live under it too (D-002). Headings that list all 36
 avoid calling them "states" (e.g. "Pick your home").
@@ -65,18 +65,23 @@ once Add to bag has scrolled away above the screen, and the review cards are a s
 heart beside the name saves the product; Details and Size chart open and close with + / −; then Reviews (rating + text; photos only from verified buyers; an admin checks each, D-052, D-056), Similar
 items and Curated for you as rows of smaller cards (D-062; Similar items' See all opens its category).
 
-## Mobile app (customer side, `apps/app`, built in R6)
-Tabs: **Home** (photo hero whose brand name fades on scroll, Just listed, Pick your home: the tappable map, search, stamps
-and names, as on the web) · **Explore** (regions, clothing, spices, search) · **Bag** · **Saved** ·
-**Profile** (orders, addresses, sign-in, track an order). The screens mirror the web pages above, read the same `store_*`
-data through `@repo/db/store` (one call per screen, D-017) and share the tokens (`design.md`).
+## Mobile app (customer side, `apps/app`, built in R6, redesigned in B6 on D-095)
+Tabs on the app's own cream tab bar (a brand bar over the active tab, the bag count as a brand pill): **Home** (the photo
+with "Indian Wholesale Club" on its wall and "Miss local market? Start here.", the demo strip on top, Just listed, Pick
+your home with stamp pages from 7) · **Explore** (search with the count, States · Clothing · Spices; states as stamps) ·
+**Bag** (photos, − / + , the empty bag shows stamps and Just listed; the bag is a tab, so no bag panel) · **Saved** (cards
+with a filled heart that removes) · **Profile** (Orders · Addresses · Your details as pill tabs, Track an order, About us &
+help, Sign out; signed out, the sign-in card). Tab roots have a large Syne title, pushed screens a back bar. The screens
+follow the web pages above, read the same `store_*` data through `@repo/db/store` (one call per screen, D-017) and share
+the tokens (`design.md`). About us & help is the D-092 panel as a sheet with the seven tabs; its wording comes from
+`packages/shared/src/info/` (one source with the website's info pages).
 | Screen | File (`apps/app/app/…`) | Data |
 |---|---|---|
-| Home, Explore, Bag, Saved, Profile | `(customer)/…` | `store_home()`, `listProducts`, on-device bag, `wishlists` (signed in), own orders |
-| Region, product | `region/[slug]`, `product/[region]/[slug]` (same sections as the web pages above; on the product page one photo with three thumbnails, and "Write a review" opens the website) | `store_region_page()`, `store_product_page()` + live availability |
-| Checkout | `checkout` | the website's server API: `POST /api/checkout` (server-priced quote + Standard / Express, D-041) → Stripe PaymentSheet → `POST /api/orders` (D-038). The phone never sends prices |
+| Home, Explore, Bag, Saved, Profile | `(customer)/…` | `store_home()`, `store_type_rows()`, search, on-device bag, `wishlists` (signed in), own orders as cards (`listMyOrderCards`), `store_policy()` for the help sheet |
+| Region, product | `region/[slug]`, `product/[region]/[slug]` (same sections as the web pages above: the region photo first and jump pills; on the product page the photos edge to edge with a full-screen viewer, the buy bar, reviews as a row, and "Write a review" as a sheet with the D-090 form, D-095) | `store_region_page()`, `store_product_page()` + live availability |
+| Checkout | `checkout` | phone → delivery (the ZIP fills the city and state through the website's `GET /api/zip`) → payment, as on the web (D-087); the website's server API: `POST /api/checkout` (server-priced quote + Standard / Express, D-041) → Stripe PaymentSheet → `POST /api/orders` (D-038). The phone never sends prices |
 | Order | `order/[number]` (signed-in owner, `store_my_order`) · `order/lookup` (number + checkout email via `POST /api/orders/lookup`, rate-limited, one answer for any mismatch); the faster-delivery offer (D-064) through the same API as the website, paid with the PaymentSheet; cancel / keep through `POST /api/orders/choice` | |
-| Addresses, sign-in | `addresses`, `auth/login`, `auth/signup` | own `addresses` rows · Supabase Auth (email + password, as on the web) |
+| Addresses, sign-in | `addresses` (the add / edit form), `auth/login`, `auth/signup` | own `addresses` rows · Supabase Auth: the sign-in card with the eye, Forgot password (the link opens the website's "Set a new password") and the email code (D-091) |
 Every list in the app is a sideways row (a horizontal `FlatList`) with **See all** → the **Browse** screen
 (`app/browse.tsx`: one type, optional region and category, a virtualized two-column grid that loads 24 at a time as it
 nears the end, each page and the total from one `store_browse()` call, D-068), as on the web (D-062). Explore's Clothing and Spices read only each
