@@ -3,8 +3,8 @@ import { ProductStrip } from './product-row';
 import type { RegionProductCard } from '@repo/db/store';
 
 /**
- * "Curated for you" in one card (D-051): an intro, then the picks as a row of small cards that scrolls sideways
- * (D-062). The picks are an admin's per region (D-056); personalising them from saves and views comes later.
+ * "Curated for you" in one card (D-051): an intro, then the picks as a standard row of full-size cards with the
+ * row's arrows (D-062, D-081). The picks are an admin's per region (D-056); personalising them from saves and views comes later.
  */
 export function CuratedCard({
   id,
@@ -24,7 +24,7 @@ export function CuratedCard({
           Picked for you
         </h2>
         <p className="text-ink-muted mb-[clamp(16px,1.8vw,24px)] mt-2 text-sm">Chosen by us from {regionName}.</p>
-        <ProductStrip products={products} label="Curated for you" size="sm" />
+        <ProductStrip products={products} label="Curated for you" />
       </div>
     </section>
   );

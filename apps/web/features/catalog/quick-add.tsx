@@ -7,13 +7,24 @@ import { useCart } from '@/features/cart/store';
 
 import type { ProductCard, QuickAdd as QuickAddData } from '@repo/db/store';
 
-const pill =
-  'font-ui inline-flex min-h-10 flex-none items-center justify-center gap-1.5 whitespace-nowrap rounded-pill border border-line bg-paper px-4 text-sm font-medium shadow-sm hover:border-ink';
+/** On the card's photo, bottom right (D-080): a round + so the name keeps the card's full width. */
+const spot = 'font-ui absolute bottom-2.5 right-2.5 z-[1]';
+const round = `${spot} grid size-10 place-items-center rounded-full border border-line bg-paper text-black shadow-sm transition-colors hover:border-ink`;
+
+function Icon({ d }: { d: string }): React.JSX.Element {
+  return (
+    <svg viewBox="0 0 24 24" aria-hidden="true" className="size-[18px]" fill="none" stroke="currentColor" strokeWidth="1.6" strokeLinecap="round" strokeLinejoin="round">
+      <path d={d} />
+    </svg>
+  );
+}
+const PLUS = 'M12 5v14M5 12h14';
+const CHECK = 'M5 12.5l4.5 4.5L19 7.5';
 
 /**
- * A card's "Add" (the founder's reference grid). Only a product with exactly one variant in stock is added
- * straight away (quick_add from store_*); anything else opens the product page to choose. Prices here are
- * for display only: checkout re-prices on the server.
+ * A card's + (D-080). Only a product with exactly one variant in stock is added straight away (quick_add from
+ * store_*); a piece with sizes or colours opens the product page to choose. Prices here are for display only:
+ * checkout re-prices on the server.
  */
 export function QuickAdd({
   product,
@@ -31,22 +42,20 @@ export function QuickAdd({
 
   if (available === 0) {
     return (
-      <span className={`${pill} text-ink-muted cursor-default hover:border-line`} aria-disabled="true">
-        Sold out
-      </span>
+      <span className={`${spot} bg-paper text-ink-muted rounded-pill px-3 py-1.5 text-xs font-medium`}>Sold out</span>
     );
   }
   if (!quickAdd) {
     return (
-      <Link href={href} className={pill} aria-label={`Choose options for ${product.name}`}>
-        Choose
+      <Link href={href} className={round} aria-label={`Choose options for ${product.name}`}>
+        <Icon d={PLUS} />
       </Link>
     );
   }
   return (
     <button
       type="button"
-      className={pill}
+      className={round}
       aria-label={added ? `${product.name} added to your bag` : `Add ${product.name} to your bag`}
       onClick={() => {
         add(
@@ -66,7 +75,7 @@ export function QuickAdd({
         setAdded(true);
       }}
     >
-      {added ? '✓ Added' : '＋ Add'}
+      <Icon d={added ? CHECK : PLUS} />
     </button>
   );
 }

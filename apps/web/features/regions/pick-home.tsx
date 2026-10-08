@@ -1,16 +1,13 @@
-import Image from 'next/image';
 import Link from 'next/link';
 
 import { formatDeliveryWindow } from '@repo/shared/domain';
 import { INDIA_MAP as MAP, TINY_REGIONS as TINY } from '@repo/shared/india-map';
 
-import { mediaUrl } from '@/lib/site';
-
 import { PickHomeInteractive } from './pick-home-interactive';
 import styles from './pick-home.module.css';
+import { StampGrid } from './region-stamp';
 
 import type { DeliveryWindow, RegionCard } from '@repo/db/store';
-
 
 const accent = (r: RegionCard): React.CSSProperties =>
   ({ '--acc': r.accent_color ?? 'var(--brand)' }) as React.CSSProperties;
@@ -85,36 +82,7 @@ export function PickHome({
             <span>Open now</span>
             <span>{live.length}</span>
           </h3>
-          <div className={styles.stamps}>
-            {live.map((r) => (
-              <Link key={r.slug} href={`/states/${r.slug}`} className={styles.stamp} data-slug={r.slug} data-name={r.name} style={accent(r)}>
-                <span className={styles.face}>
-                  {r.hero_image_path ? (
-                    <Image src={mediaUrl(r.hero_image_path)} alt="" fill sizes="(min-width: 1100px) 12vw, 30vw" className="object-cover" />
-                  ) : null}
-                </span>
-                <span className={styles.caption}>
-                  <em className="font-display text-[clamp(15px,1.3vw,19px)] not-italic">{r.name}</em>
-                  <b className="font-ui">Open</b>
-                </span>
-                <svg className={styles.postmark} viewBox="0 0 100 100" aria-hidden="true">
-                  <defs>
-                    <path id={`pm-${r.slug}`} d="M50 50 m-35 0 a35 35 0 1 1 70 0 a35 35 0 1 1 -70 0" />
-                  </defs>
-                  <circle cx="50" cy="50" r="47" fill="none" stroke="currentColor" strokeWidth="1.6" />
-                  <circle cx="50" cy="50" r="25" fill="none" stroke="currentColor" strokeWidth="1" />
-                  {postmark ? (
-                    <text fontSize="8.2" letterSpacing="1.2" fill="currentColor" className="font-ui font-semibold">
-                      <textPath href={`#pm-${r.slug}`}>{postmark.repeat(2)}</textPath>
-                    </text>
-                  ) : null}
-                  <text x="50" y="54" textAnchor="middle" fontSize="13" fill="currentColor" className="font-logo italic">
-                    IWC
-                  </text>
-                </svg>
-              </Link>
-            ))}
-          </div>
+          <StampGrid regions={live} postmark={postmark} idPrefix="pm" />
         </div>
 
         <div>

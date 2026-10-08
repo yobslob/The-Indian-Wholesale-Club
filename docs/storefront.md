@@ -21,7 +21,7 @@ Enforcement: customer code reads catalog and order data only through `store_*` (
 ## Web routes (`apps/web/app/(store)/…`, built in R5)
 | Route | Purpose | Rendering (see `engineering.md`) |
 |---|---|---|
-| `/` | today: "Where's home?" and the list of all 36 regions with a delivery-window teaser. **Target (D-079, the shell and hero from the design pass, `design/pages/shell/`; otherwise D-050 – D-055):** the full-screen photo hero (behind the nav bar too) with only the stacked brand name on the white wall and "Miss local market? Start here.", Just listed, Pick your home (India map + stamps + names) | static, cached `store_home()` |
+| `/` | the full-screen photo hero (behind the nav bar too) with only the stacked brand name on the white wall and "Miss local market? Start here." (D-079, `design/pages/shell/`; otherwise D-050 – D-055), Just listed, Pick your home (India map + stamps, in pages of 6 from 7 open states, + names; D-080) | static, cached `store_home()` |
 | `/states` | all 36 regions, alphabetical, with no state/UT distinction (D-002) | static (same cached read as `/`) |
 | `/states/[region]` | **the core page:** greeting in the region's script, story, accent theme, Clothing · Spices sections | static per region (36 built at build time) |
 | `/states/[region]/[product]` | product page: gallery, options, price, availability (live), save, delivery window, origin line | static on first visit + live stock island |
@@ -46,8 +46,8 @@ Framer Motion page transitions (speed, `engineering.md`).
 1. Greeting in the region's own script, large, with its Latin transliteration and meaning beneath.
 2. Tagline and a short story: why this place feels like home.
 3. The accent colour re-themes the page (one CSS variable from `regions.accent_color`).
-4. **Every list is a row that scrolls sideways** (D-062; **target D-081:** the jump pills get the same arrows and Picked for you
-   is a standard row; arrows for a mouse, swipe on a phone). Jump pills at the top
+4. **Every list is a row that scrolls sideways** (D-062; since D-081 the jump pills get the same arrows and Picked for you
+   is a standard row of full-size cards; arrows for a mouse, swipe on a phone; the pills pin under the header). Jump pills at the top
    (New arrivals, each clothing category with its count, Spices). One row per clothing category, biggest first, up to 12
    cards, with **See all** → `/clothing?state=<region>&category=<category>`.
 5. Regions with no live products show "Coming soon" (`regions.is_live = false`). Anything more, like a notify-me feature, needs founder approval.

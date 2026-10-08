@@ -5,19 +5,19 @@
 > **Direction chosen (2026-09-30, D-050):** A, reworked: the hero keeps its format, everything below it is a symmetric
 > full-width grid, no dark mode, fonts below. Mockup: `design/mockups/index.html` (palette with contrast, the map source,
 > the founder's remaining choices). Tokens go into `packages/tokens` in C1 step 2.
-> **Target since 2026-10-08 (D-079, not built yet):** the shell and the Home hero from the design pass: **Cinzel**
-> (headlines) and **Karla** (everything else) replace the five fonts below, the logo stays Georgia; header States ·
-> Search (hover pill) · About us + saved / bag / profile icons; phone side panel; the hero name held on the photo's white
-> wall at every size in #1D1A17. **D-080:** headings below the hero in **Syne**; on the Home photo the header stays as
-> today (white links over a dark band, smooth fade to cream); soft blur is fine, harsh blur is not; the card's add button
-> is a + on its photo; Open now stamps page in sixes. Approved mockups: `design/pages/shell/`, `design/pages/home/`. The sections
-> below describe today's build until the code catches up.
+> **Since 2026-10-08 (D-079, D-080; built in B1 and B2 of the design pass build):** the shell and the Home hero from the
+> design pass: **Cinzel** (headlines), **Syne** (headings below the hero) and **Karla** (everything else) replace the five
+> fonts below, the logo stays Georgia; header States · Search (hover pill) · About us + saved / bag / profile icons; phone
+> side panel; the hero name held on the photo's white wall at every size in #1D1A17; on the Home photo the header stays
+> as before (white links over a dark band, smooth fade to cream); soft blur is fine, harsh blur is not; the card's add
+> button is a round + on its photo; Open now stamps page in sixes. Approved mockups: `design/pages/shell/`,
+> `design/pages/home/`. Where the sections below still describe the older build, these lines win.
 > **Design pass (since 2026-10-07):** every page is designed again, one at a time; the register, the workflow and each
 > page's brief and mockup are in `design/pages/`. Until a page's mockup is approved, this file and the code stay as they are.
 
 ## Direction (founder, D-049; layout below the hero and fonts changed by D-050)
 **D-050 (2026-09-30):** Direction A. The hero keeps A's asymmetric, image-led format and motion; **everything below the
-hero sits on a symmetric grid** (four equal columns of 3 : 4 rounded product photos with name, price and "Add", equal
+hero sits on a symmetric grid** (four equal columns of 3 : 4 rounded product photos with name, price and "Add" (a + on the photo since D-080), equal
 two-panel rows), full width with small side gutters. **Fonts:** Helvetica Neue for the hero and the section headings
 (D-051; TeX Gyre Heros where it is not installed, D-052), Georgia for the logo, product title and origin line (Gelasio
 where it is not installed), Poppins for paragraphs, Montserrat for interface text (navigation, buttons, labels, product

@@ -3,11 +3,13 @@ import { DemoBanner } from '@/features/shell/demo-banner';
 import { Motion } from '@/features/shell/motion';
 import { SiteFooter } from '@/features/shell/site-footer';
 import { SiteHeader } from '@/features/shell/site-header';
+import { TopHeight } from '@/features/shell/top-height';
 
 /**
  * Storefront shell: server-rendered, no session reads (pages stay static, PR-1).
  * The @info slot draws an info page as a glass panel over the page it was opened from (D-092).
- * Client islands here: the bag count and the motion layer (Lenis, reveal, parallax; off for reduced motion). No admin link anywhere (D-006).
+ * Client islands here: the bag count, the motion layer (Lenis, reveal, parallax; off for reduced motion) and the
+ * header height for rows pinned under it (top-height.tsx). No admin link anywhere (D-006).
  * In the demo round (D-078) every page opens with the demo banner (a cached store read, so pages stay static); it rides
  * with the header in .site-top, above it and never under it (D-079).
  */
@@ -31,6 +33,7 @@ export default async function StoreLayout({
       <SiteFooter />
       {info}
       <Motion />
+      <TopHeight />
     </>
   );
 }

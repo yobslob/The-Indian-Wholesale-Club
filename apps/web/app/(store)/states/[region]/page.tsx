@@ -5,6 +5,7 @@ import { notFound } from 'next/navigation';
 import { CuratedCard } from '@/features/catalog/curated-card';
 import { getHomeCached, getRegionPageCached } from '@/features/catalog/data';
 import { ProductRow } from '@/features/catalog/product-row';
+import { RowScroller } from '@/features/catalog/row-scroller';
 import { RegionAlbum } from '@/features/regions/region-album';
 import { scriptFontClass } from '@/features/regions/script-fonts';
 import { mediaUrl } from '@/lib/site';
@@ -106,21 +107,26 @@ export default async function RegionPage({ params }: { params: Params }): Promis
         </p>
       ) : (
         <>
-          <nav
-            aria-label="Sections"
-            className="no-scrollbar bg-canvas sticky top-[68px] z-10 -mx-[var(--gut)] flex gap-2.5 overflow-x-auto px-[var(--gut)] py-3"
-          >
-            <a href="#new-arrivals" className={`${pill} shrink-0`}>
-              New arrivals
-            </a>
-            {categories.map((c) => (
-              <a key={c.slug} href={`#c-${c.slug}`} className={`${pill} shrink-0`}>
-                {c.name} <span className="text-ink-muted">{c.count}</span>
-              </a>
-            ))}
-            <a href="#spices" className={`${pill} shrink-0`}>
-              Spices <span className="text-ink-muted">{spiceCount}</span>
-            </a>
+          <nav aria-label="Sections" className="bg-canvas sticky top-[var(--top-h)] z-10 -mx-[var(--gut)] px-[var(--gut)] py-3">
+            <RowScroller label="Sections" pills>
+              <li className="shrink-0">
+                <a href="#new-arrivals" className={pill}>
+                  New arrivals
+                </a>
+              </li>
+              {categories.map((c) => (
+                <li key={c.slug} className="shrink-0">
+                  <a href={`#c-${c.slug}`} className={pill}>
+                    {c.name} <span className="text-ink-muted">{c.count}</span>
+                  </a>
+                </li>
+              ))}
+              <li className="shrink-0">
+                <a href="#spices" className={pill}>
+                  Spices <span className="text-ink-muted">{spiceCount}</span>
+                </a>
+              </li>
+            </RowScroller>
           </nav>
           {newest.length > 0 ? (
             <ProductRow

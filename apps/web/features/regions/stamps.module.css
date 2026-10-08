@@ -1,0 +1,167 @@
+/* Open-state stamps (D-051, D-080): perforated stamp, photo, name, postmark with the next delivery window. */
+.stamps {
+  display: grid;
+  grid-template-columns: repeat(3, minmax(0, 1fr));
+  gap: var(--gap);
+}
+.stamp {
+  position: relative;
+  display: block;
+  padding: 9px;
+  background: radial-gradient(circle at 50% 50%, transparent 3.6px, var(--paper) 4.2px) -6px -6px / 12px 12px;
+  filter: drop-shadow(0 6px 10px rgb(30 27 22 / 0.12));
+  transition: transform 0.35s cubic-bezier(0.19, 1, 0.22, 1);
+}
+/* Search hides stamps with the hidden attribute; .stamp's own display must not override it. */
+.stamp[hidden] {
+  display: none;
+}
+.stamp:hover,
+.stamp[data-on] {
+  transform: translateY(-4px) rotate(-1.2deg);
+}
+.face {
+  position: relative;
+  display: grid;
+  aspect-ratio: 4 / 5;
+  place-items: end start;
+  overflow: hidden;
+  background: var(--acc);
+  outline: 1px solid var(--line);
+  outline-offset: -1px;
+}
+.caption {
+  display: flex;
+  align-items: baseline;
+  justify-content: space-between;
+  gap: 6px;
+  padding: 8px 4px 2px;
+  background: var(--paper);
+}
+.caption em {
+  font-size: clamp(15px, 1.3vw, 19px);
+  font-style: normal;
+  line-height: 1.1;
+}
+.caption b {
+  font-size: 9px;
+  letter-spacing: 0.14em;
+  text-transform: uppercase;
+  color: var(--acc);
+}
+.postmark {
+  position: absolute;
+  top: -8%;
+  right: -12%;
+  width: 46%;
+  pointer-events: none;
+  opacity: 0.75;
+  color: var(--brand);
+  mix-blend-mode: multiply;
+  transform: rotate(-14deg);
+}
+.stamp:nth-child(3n + 2) .postmark {
+  top: 30%;
+  transform: rotate(9deg);
+}
+.stamp:nth-child(3n) .postmark {
+  top: 2%;
+  transform: rotate(-4deg);
+}
+
+/* From 7 open states: pages of 6 (3 × 2) that slide sideways, an arrow each side, a count under them (D-080).
+   The track's padding leaves room for a stamp's lift and its postmark, which hang over the page's edge. */
+.pager {
+  position: relative;
+}
+.pages {
+  display: flex;
+  overflow-x: auto;
+  scroll-snap-type: x mandatory;
+  scrollbar-width: none;
+  margin: -14px -28px -16px 0;
+}
+.pages::-webkit-scrollbar {
+  display: none;
+}
+.pages > .stamps {
+  flex: 0 0 100%;
+  box-sizing: border-box;
+  padding: 14px 28px 16px 0;
+  scroll-snap-align: start;
+  align-content: start;
+}
+.arrow {
+  position: absolute;
+  top: 50%;
+  z-index: 3;
+  display: grid;
+  width: 40px;
+  height: 40px;
+  place-items: center;
+  border: 1px solid var(--line);
+  border-radius: 50%;
+  background: rgb(251 248 243 / 0.95);
+  color: var(--ink);
+  font-size: 16px;
+  line-height: 1;
+  transform: translateY(-50%);
+  transition: opacity 0.2s;
+}
+.arrow:disabled {
+  opacity: 0;
+  pointer-events: none;
+}
+.prev {
+  left: -14px;
+}
+.next {
+  right: -14px;
+}
+.count {
+  display: block;
+  margin-top: 10px;
+  text-align: center;
+  font-size: 12px;
+  font-weight: 500;
+  line-height: 1;
+  color: var(--muted);
+}
+/* While Pick your home's search has words, every page joins one grid so no match hides on another page. */
+[data-searching] .pages {
+  display: grid;
+  grid-template-columns: repeat(3, minmax(0, 1fr));
+  gap: var(--gap);
+  overflow: visible;
+  margin: 0;
+}
+[data-searching] .pages > .stamps {
+  display: contents;
+}
+[data-searching] .arrow,
+[data-searching] .count {
+  display: none;
+}
+
+@media (max-width: 480px) {
+  .stamps,
+  [data-searching] .pages {
+    gap: 8px;
+  }
+  .stamp {
+    padding: 7px;
+  }
+  .caption b {
+    display: none;
+  }
+  /* Cinzel runs wider than Georgia: names shrink on phones so "Maharashtra" fits (D-080). */
+  .caption em {
+    font-size: min(11.5px, 2.65vw);
+    letter-spacing: -0.01em;
+  }
+}
+@media (prefers-reduced-motion: reduce) {
+  .stamp {
+    transition: none;
+  }
+}

@@ -17,7 +17,7 @@ the page, corner icons on addresses). Page 13, the review form, approved as D-09
 Page 14, sign-in / sign-up, approved as D-091 (show password, forgot password, email code).
 Page 15, the info pages, approved as D-092 (a glass panel on the same page). Page 16, not-found and error pages, approved as D-093. Page 17, customer emails, approved as D-094. The website customer side is done. App screens approved as D-095 (`design/pages/app/`).
 Web admin approved as D-096 (`design/pages/admin/`). The app's admin mode approved as D-097; **the whole pass is approved and is being built** in phases B1 – B8
-(`plan/coding-plan.md` §Design pass build). **B1 (the look and frame) is built and verified 2026-10-08** (log below). Next: B2, browsing (D-080 – D-085, with D-098's soft fade on the pinned state row).
+(`plan/coding-plan.md` §Design pass build). **B1 (the look and frame) is built and verified 2026-10-08** (log below). B2, browsing (D-080 – D-085, D-098), in progress: done (unverified until B2's full check): the round + on card photos, stamp pages from 7 (also flattened while the map search has words), the region page's pill arrows and Picked for you as a standard row, `--top-h` (the real banner + header height, `features/shell/top-height.tsx`) for pinned rows and jump-link offsets. Next in B2: the product page (D-082), Clothing / Spices (D-084, D-098), Search (D-085).
 
 **Logo text (D-077, 2026-10-07):** the website header's logo reads "Indian Wholesale Club", its I inside a gold outline of India cut open on the east; the Home hero heading is unchanged except "The" is gone. Titles, emails, footer and the app keep D-009's full name until the founder says otherwise.
 

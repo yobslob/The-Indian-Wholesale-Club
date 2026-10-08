@@ -22,8 +22,9 @@ export function Motion(): null {
     let cancelled = false;
     void import('lenis').then(({ default: Lenis }) => {
       if (cancelled) return;
-      // anchors: jump links scroll smoothly and land below the sticky header (scroll-padding-top in globals.css).
-      lenis = new Lenis({ lerp: 0.09, anchors: { offset: -96 } });
+      // anchors: jump links scroll smoothly; Lenis subtracts html's scroll-padding-top (below the sticky header,
+      // globals.css) and the target's scroll-margin itself, so no extra offset here.
+      lenis = new Lenis({ lerp: 0.09, anchors: true });
       const loop = (t: number): void => {
         lenis?.raf(t);
         frame = requestAnimationFrame(loop);

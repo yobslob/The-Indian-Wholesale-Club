@@ -119,6 +119,7 @@ export function PickHomeInteractive({
         if (hit) shown += 1;
       });
       svg.toggleAttribute('data-searching', q.length > 0);
+      root.toggleAttribute('data-searching', q.length > 0); // stamp pages join one grid (stamps.module.css)
       svg.querySelectorAll('[data-slug]').forEach((el) => {
         const name = bySlug.get(el.getAttribute('data-slug') ?? '')?.name.toLowerCase() ?? '';
         el.toggleAttribute('data-match', q.length > 0 && name.includes(q));

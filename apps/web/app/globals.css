@@ -14,11 +14,19 @@
     --line: theme('colors.line');
     --brand: theme('colors.brand');
     --land: theme('colors.land');
+    /* The sticky banner + header's height, kept exact by top-height.tsx; these are its values before that runs. */
+    --top-h: 72px;
+  }
+  @media (max-width: 767px) {
+    :root {
+      --top-h: 56px;
+    }
   }
 
-  /* The header stays at the top: anything scrolled into view (anchor links, focus, forms) lands below it. */
+  /* The header stays at the top: anything scrolled into view (anchor links, focus, forms) lands below it. Lenis's
+     jump links read the same value (motion.tsx). */
   html {
-    scroll-padding-top: 96px;
+    scroll-padding-top: calc(var(--top-h) + 24px);
   }
 
   :focus-visible {

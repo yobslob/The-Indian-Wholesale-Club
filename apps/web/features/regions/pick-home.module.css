@@ -89,72 +89,6 @@
   background: var(--brand);
 }
 
-/* Stamps: each open region as a postage stamp from home, postmarked with the next delivery window. */
-.stamps {
-  display: grid;
-  grid-template-columns: repeat(3, minmax(0, 1fr));
-  gap: var(--gap);
-}
-.stamp {
-  position: relative;
-  display: block;
-  padding: 9px;
-  background: radial-gradient(circle at 50% 50%, transparent 3.6px, var(--paper) 4.2px) -6px -6px / 12px 12px;
-  filter: drop-shadow(0 6px 10px rgb(30 27 22 / 0.12));
-  transition: transform 0.35s cubic-bezier(0.19, 1, 0.22, 1);
-}
-/* Search hides stamps with the hidden attribute; .stamp's own display must not override it. */
-.stamp[hidden] {
-  display: none;
-}
-.stamp:hover,
-.stamp[data-on] {
-  transform: translateY(-4px) rotate(-1.2deg);
-}
-.face {
-  position: relative;
-  display: grid;
-  aspect-ratio: 4 / 5;
-  place-items: end start;
-  overflow: hidden;
-  background: var(--acc);
-  outline: 1px solid var(--line);
-  outline-offset: -1px;
-}
-.caption {
-  display: flex;
-  align-items: baseline;
-  justify-content: space-between;
-  gap: 6px;
-  padding: 8px 4px 2px;
-  background: var(--paper);
-}
-.caption b {
-  font-size: 9px;
-  letter-spacing: 0.14em;
-  text-transform: uppercase;
-  color: var(--acc);
-}
-.postmark {
-  position: absolute;
-  top: -8%;
-  right: -12%;
-  width: 46%;
-  pointer-events: none;
-  opacity: 0.75;
-  color: var(--brand);
-  mix-blend-mode: multiply;
-  transform: rotate(-14deg);
-}
-.stamp:nth-child(3n + 2) .postmark {
-  top: 30%;
-  transform: rotate(9deg);
-}
-.stamp:nth-child(3n) .postmark {
-  top: 2%;
-  transform: rotate(-4deg);
-}
-
 /* Every other region, by name */
 .names {
   margin: 0;
@@ -188,16 +122,5 @@
 @media (max-width: 820px) {
   .names {
     columns: 2;
-  }
-}
-@media (max-width: 480px) {
-  .stamps {
-    gap: 8px;
-  }
-  .stamp {
-    padding: 7px;
-  }
-  .caption b {
-    display: none;
   }
 }
