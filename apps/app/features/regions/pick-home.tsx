@@ -1,59 +1,23 @@
 import { Link, useRouter } from 'expo-router';
 import { useMemo, useState } from 'react';
-import { Dimensions, Linking, Pressable, Text, TextInput, View } from 'react-native';
-import Svg, { Circle, Defs, Path, Text as SvgText, TextPath } from 'react-native-svg';
+import { Linking, Pressable, Text, TextInput, View } from 'react-native';
+import Svg, { Circle, Path } from 'react-native-svg';
 
-import { formatDeliveryWindow } from '@repo/shared/domain';
 import { INDIA_MAP, TINY_REGIONS } from '@repo/shared/india-map';
 import tokens from '@repo/tokens';
 
+import { StampGrid } from './stamps';
+
 import type { DeliveryWindow, RegionCard } from '@repo/db/store';
 
-import { Photo } from '@/components/photo';
 import { Label } from '@/components/ui';
+
 
 const accentOf = (r: RegionCard | undefined): string => r?.accent_color ?? tokens.colors.brand;
 
-function Stamp({ region, postmark, index }: { region: RegionCard; postmark: string; index: number }): React.JSX.Element {
-  const rotate = [-14, 9, -4][index % 3];
-  return (
-    <Link href={{ pathname: '/region/[slug]', params: { slug: region.slug } }} asChild>
-      <Pressable accessibilityLabel={`${region.name}, open now`} className="w-[31%]">
-        <View className="border-line bg-paper rounded-sm border-2 border-dotted p-1.5">
-          <View className="aspect-[4/5] overflow-hidden" style={{ backgroundColor: accentOf(region) }}>
-            {region.hero_image_path ? (
-              <Photo path={region.hero_image_path} width={Dimensions.get('window').width * 0.31} transition={150} />
-            ) : null}
-          </View>
-          <Text numberOfLines={1} className="font-display text-ink mt-1.5 text-[15px]">
-            {region.name}
-          </Text>
-        </View>
-        <View pointerEvents="none" className="absolute -right-2 -top-3" style={{ transform: [{ rotate: `${rotate}deg` }] }}>
-          <Svg width={52} height={52} viewBox="0 0 100 100" opacity={0.75}>
-            <Defs>
-              <Path id={`pm-${region.slug}`} d="M50 50 m-35 0 a35 35 0 1 1 70 0 a35 35 0 1 1 -70 0" />
-            </Defs>
-            <Circle cx="50" cy="50" r="47" fill="none" stroke={tokens.colors.brand} strokeWidth="2" />
-            <Circle cx="50" cy="50" r="25" fill="none" stroke={tokens.colors.brand} strokeWidth="1.2" />
-            {postmark ? (
-              <SvgText fill={tokens.colors.brand} fontSize="9" fontFamily="Montserrat_600SemiBold" letterSpacing="1">
-                <TextPath href={`#pm-${region.slug}`}>{postmark}</TextPath>
-              </SvgText>
-            ) : null}
-            <SvgText x="50" y="55" textAnchor="middle" fill={tokens.colors.brand} fontSize="13" fontFamily="Gelasio_400Regular_Italic">
-              IWC
-            </SvgText>
-          </Svg>
-        </View>
-      </Pressable>
-    </Link>
-  );
-}
-
 /**
  * "Pick your home" on a phone (D-050 – D-052): the India map (tap a state to see its name and open it), the open
- * regions as postage stamps postmarked with the next delivery window, and every other region by name, with a
+ * regions as postage stamps postmarked with the next delivery window (pages of 6 from 7, D-080), and every other region by name, with a
  * search that filters all three. The map credit stays visible (CC BY 4.0).
  */
 export function PickHome({ regions, delivery }: { regions: RegionCard[]; delivery: DeliveryWindow | null }): React.JSX.Element {
@@ -65,9 +29,6 @@ export function PickHome({ regions, delivery }: { regions: RegionCard[]; deliver
   const matches = (r: RegionCard | undefined): boolean => !q || (r?.name.toLowerCase().includes(q) ?? false);
   const live = regions.filter((r) => r.is_live && matches(r));
   const soon = regions.filter((r) => !r.is_live && matches(r)).sort((a, b) => a.name.localeCompare(b.name, 'en'));
-  const postmark = delivery
-    ? `ARRIVES ${formatDeliveryWindow(delivery.est_delivery_from, delivery.est_delivery_to).toUpperCase()} · `.repeat(2)
-    : '';
   const chosen = selected ? bySlug.get(selected) : undefined;
 
   const fill = (slug: string): string => {
@@ -125,11 +86,7 @@ export function PickHome({ regions, delivery }: { regions: RegionCard[]; deliver
       {live.length > 0 ? (
         <View className="gap-3">
           <Label>Open now</Label>
-          <View className="flex-row justify-between">
-            {live.map((r, i) => (
-              <Stamp key={r.slug} region={r} postmark={postmark} index={i} />
-            ))}
-          </View>
+          <StampGrid regions={live} delivery={delivery} />
         </View>
       ) : null}
 

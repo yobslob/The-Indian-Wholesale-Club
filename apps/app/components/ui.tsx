@@ -16,25 +16,34 @@ import tokens from '@repo/tokens';
 import type { TextInputProps } from 'react-native';
 
 /**
- * Building blocks in the approved design (design.md §Direction, D-050 – D-055): Helvetica Neue titles, Poppins
- * text, Montserrat for controls, pill buttons, rounded paper inputs and surface cards, on the shared tokens.
+ * Building blocks in the approved design (design.md, D-079, D-080, D-095): Syne titles and headings, Karla text and
+ * controls, Cinzel for names; pill buttons, rounded paper inputs and surface cards, on the shared tokens.
  */
 
+/**
+ * A screen (D-095): a tab root gets a large title in Syne; a pushed screen gets a back bar that stays at the top, with
+ * its title when it has one (the stack has no header bar, app/_layout.tsx).
+ */
 export function Screen({
   children,
   refreshing,
   onRefresh,
   back = true,
+  title,
 }: {
   children: React.ReactNode;
   refreshing?: boolean;
   onRefresh?: () => void;
-  /** A Back control on pushed screens; off where a stack header already has one (admin screens). */
+  /** A back bar on pushed screens; off on tab roots and where a stack header already has one (admin screens). */
   back?: boolean;
+  /** Tab roots: the large title. Pushed screens: the back bar's title. */
+  title?: string;
 }): React.JSX.Element {
   const router = useRouter();
+  const showBar = back && router.canGoBack();
   return (
     <SafeAreaView className="bg-canvas flex-1" edges={['top']}>
+      {showBar ? <BackBar title={title} /> : null}
       <ScrollView
         contentContainerClassName="gap-5 px-4 pb-16 pt-4"
         keyboardShouldPersistTaps="handled"
@@ -42,27 +51,37 @@ export function Screen({
           onRefresh ? <RefreshControl refreshing={refreshing ?? false} onRefresh={onRefresh} /> : undefined
         }
       >
-        {/* The stack has no header bar (app/_layout.tsx), so a pushed screen shows its own way back. */}
-        {back && router.canGoBack() ? (
-          <Pressable
-            onPress={() => router.back()}
-            accessibilityRole="button"
-            accessibilityLabel="Back"
-            className="-mb-2 -ml-1 min-h-11 flex-row items-center gap-1 self-start pr-3"
-          >
-            <Ionicons name="chevron-back" size={20} color={tokens.colors.ink} />
-            <Text className="font-ui text-ink text-sm">Back</Text>
-          </Pressable>
-        ) : null}
+        {!showBar && title ? <Title>{title}</Title> : null}
         {children}
       </ScrollView>
     </SafeAreaView>
   );
 }
 
+/** The back bar of a pushed screen: Back on the left, the screen's title in the middle (D-095). */
+export function BackBar({ title, onClose }: { title?: string; onClose?: () => void }): React.JSX.Element {
+  const router = useRouter();
+  return (
+    <View className="bg-canvas border-line min-h-12 flex-row items-center border-b px-2">
+      <Pressable
+        onPress={onClose ?? (() => router.back())}
+        accessibilityRole="button"
+        accessibilityLabel="Back"
+        className="min-h-11 w-11 items-center justify-center"
+      >
+        <Ionicons name="chevron-back" size={22} color={tokens.colors.ink} />
+      </Pressable>
+      <Text accessibilityRole="header" numberOfLines={1} className="font-heading flex-1 text-center text-[17px] text-[#1D1A17]">
+        {title ?? ''}
+      </Text>
+      <View className="w-11" />
+    </View>
+  );
+}
+
 export function Title({ children }: { children: React.ReactNode }): React.JSX.Element {
   return (
-    <Text accessibilityRole="header" className="font-heading text-ink text-[34px] leading-[38px] tracking-[-1px]">
+    <Text accessibilityRole="header" className="font-heading text-[32px] leading-[36px] tracking-[-0.6px] text-[#1D1A17]">
       {children}
     </Text>
   );

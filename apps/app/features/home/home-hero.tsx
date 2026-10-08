@@ -1,14 +1,19 @@
 import { Image, Text, View, useWindowDimensions } from 'react-native';
 import Animated, { interpolate, useAnimatedStyle, useReducedMotion, Extrapolation } from 'react-native-reanimated';
-import Svg, { Defs, LinearGradient, Rect, Stop } from 'react-native-svg';
+import { useSafeAreaInsets } from 'react-native-safe-area-context';
 
-import tokens from '@repo/tokens';
 
 import HERO from '../../assets/images/home-hero.webp';
 
 import type { SharedValue } from 'react-native-reanimated';
 
-const WORDS = ['The', 'Indian', 'Wholesale', 'Club'] as const;
+import { DemoBanner } from '@/features/shell/demo-banner';
+
+const WORDS = ['Indian', 'Wholesale', 'Club'] as const;
+/** The photo's shape (1117 × 1409) and where its white wall starts (x 690 of 1117, its middle at y 502 of 1409). */
+const AR = 1117 / 1409;
+const WALL_X = 690 / 1117;
+const WALL_Y = 502 / 1409;
 
 /** How far the hero has scrolled, 0 at the top, 1 after 55 % of it (the same curve as the website). */
 export function heroProgress(scrollY: number, heroHeight: number): number {
@@ -16,68 +21,70 @@ export function heroProgress(scrollY: number, heroHeight: number): number {
   return Math.min(1, Math.max(0, scrollY / (heroHeight * 0.55)));
 }
 
-function Word({
-  word,
-  index,
-  size,
-  scrollY,
-  heroHeight,
-}: {
-  word: string;
-  index: number;
-  size: number;
-  scrollY: SharedValue<number>;
-  heroHeight: number;
-}): React.JSX.Element {
+/**
+ * The photo laid out as the website's `background-size: cover` at 85 % 20 % (D-079), and the name's place and size on
+ * its white wall: right-aligned to the screen, centred on the wall's middle, never wider than the wall (the website's
+ * --W/--H/--L/--T/--avail/--fs maths in home-hero.module.css).
+ */
+export function wall(width: number, height: number, gutter = 16) {
+  const W = Math.max(width, height * AR);
+  const H = W / AR;
+  const L = (width - W) * 0.85;
+  const T = (height - H) * 0.2;
+  const avail = width - gutter - L - W * WALL_X;
+  const size = Math.min((avail / 4.4) * 0.74, H * 0.057, 108);
+  return { photo: { width: W, height: H, left: L, top: T }, centerY: T + H * WALL_Y, avail, size };
+}
+
+function Word({ word, index, size, scrollY, heroHeight }: { word: string; index: number; size: number; scrollY: SharedValue<number>; heroHeight: number }): React.JSX.Element {
   const reduced = useReducedMotion();
   const style = useAnimatedStyle(() => {
     const q = Math.min(1, Math.max(0, (heroProgress(scrollY.value, heroHeight) * 1.5 - index * 0.17) / 0.7));
     return { opacity: 1 - q, transform: [{ translateY: reduced ? 0 : -q * 22 }] };
   });
   return (
-    <Animated.Text
-      style={[style, { fontSize: size, lineHeight: size * 0.95, letterSpacing: -size * 0.05 }]}
-      className="font-display text-canvas text-right"
-    >
+    <Animated.Text style={[style, { fontSize: size, lineHeight: size * 0.95, color: '#1D1A17' }]} className="font-display text-right">
       {word}
     </Animated.Text>
   );
 }
 
 /**
- * The Home hero (design.md §Direction, D-052 – D-055): the founder's photo (AI-generated, IWC holds the rights)
- * edge to edge; "The Indian Wholesale Club" stacked, right-aligned, over a soft dark fade at the bottom (the
- * phone layout of the website); scrolling fades the words out, one after another.
+ * The Home hero (D-079, D-095): the founder's photo under the status bar, "Indian Wholesale Club" stacked on its white
+ * wall in #1D1A17, and "Miss local market? Start here." under it; scrolling fades the words out one after another.
+ * The demo banner rides on top of the photo. `onStart` goes to Pick your home.
  */
-export function HomeHero({ scrollY }: { scrollY: SharedValue<number> }): React.JSX.Element {
+export function HomeHero({ scrollY, onStart }: { scrollY: SharedValue<number>; onStart: () => void }): React.JSX.Element {
   const { width, height } = useWindowDimensions();
-  const heroHeight = Math.round(height * 0.82);
-  const size = Math.min(width * 0.15, 72);
+  const insets = useSafeAreaInsets();
+  const heroHeight = Math.round(height * 0.9);
+  const w = wall(width, heroHeight);
+  const lineSize = Math.min(Math.max(12, w.size * 0.2), 18);
+  const block = w.size * 0.95 * WORDS.length + w.size * 0.3 + lineSize * 1.35;
   return (
     <View style={{ height: heroHeight }} className="bg-ink overflow-hidden">
       <Image
         source={HERO}
         accessibilityLabel="A woman in a white embroidered suit and dupatta sits on a wooden bench in a hallway, her chin resting on her hand."
-        resizeMode="cover"
-        style={{ position: 'absolute', width: '100%', height: '100%' }}
+        style={{ position: 'absolute', ...w.photo }}
       />
-      <Svg style={{ position: 'absolute', bottom: 0, left: 0 }} width={width} height={heroHeight * 0.55}>
-        <Defs>
-          <LinearGradient id="fade" x1="0" y1="0" x2="0" y2="1">
-            <Stop offset="0" stopColor={tokens.colors.ink} stopOpacity="0" />
-            <Stop offset="1" stopColor={tokens.colors.ink} stopOpacity="0.82" />
-          </LinearGradient>
-        </Defs>
-        <Rect x="0" y="0" width={width} height={heroHeight * 0.55} fill="url(#fade)" />
-      </Svg>
-      <View className="absolute bottom-7 right-4" accessibilityRole="header" accessibilityLabel="The Indian Wholesale Club">
+      <View className="absolute left-0 right-0" style={{ top: insets.top }}>
+        <DemoBanner strip />
+      </View>
+      <View
+        className="absolute right-4 items-end"
+        style={{ top: w.centerY - block / 2, maxWidth: w.avail }}
+        accessibilityRole="header"
+        accessibilityLabel="Indian Wholesale Club"
+      >
         {WORDS.map((word, i) => (
-          <View key={word} style={{ height: size * 0.92 }}>
-            <Word word={word} index={i} size={size} scrollY={scrollY} heroHeight={heroHeight} />
-          </View>
+          <Word key={word} word={word} index={i} size={w.size} scrollY={scrollY} heroHeight={heroHeight} />
         ))}
-        <Text className="font-body text-canvas mt-3.5 text-right text-[11px] uppercase tracking-[1.8px]">
-          Clothing and spices from home
+        <Text className="font-body text-right text-black" style={{ marginTop: w.size * 0.3, fontSize: lineSize, lineHeight: lineSize * 1.35 }}>
+          Miss local market?{' '}
+          <Text accessibilityRole="link" onPress={onStart} className="underline">
+            Start here.
+          </Text>
         </Text>
       </View>
     </View>
@@ -87,7 +94,7 @@ export function HomeHero({ scrollY }: { scrollY: SharedValue<number> }): React.J
 /** The bar that fades in with the logo as the hero words fade out. */
 export function HomeTopBar({ scrollY, topInset }: { scrollY: SharedValue<number>; topInset: number }): React.JSX.Element {
   const { height } = useWindowDimensions();
-  const heroHeight = Math.round(height * 0.82);
+  const heroHeight = Math.round(height * 0.9);
   const style = useAnimatedStyle(() => ({
     opacity: interpolate(heroProgress(scrollY.value, heroHeight), [0.4, 1], [0, 1], Extrapolation.CLAMP),
   }));
