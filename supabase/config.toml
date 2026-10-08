@@ -44,7 +44,8 @@ file_size_limit = "50MiB"
 [auth]
 enabled = true
 site_url = "http://127.0.0.1:3000"
-additional_redirect_urls = ["http://127.0.0.1:3000"]
+# The reset link comes back to /auth/callback (D-091): the dev server and the e2e server (port 3101).
+additional_redirect_urls = ["http://127.0.0.1:3000/**", "http://localhost:3000/**", "http://localhost:3101/**"]
 jwt_expiry = 3600
 enable_signup = true
 enable_anonymous_sign_ins = false
@@ -53,6 +54,19 @@ enable_anonymous_sign_ins = false
 enable_signup = true
 double_confirm_changes = true
 enable_confirmations = false
+# "Email me a sign-in code" (D-091): six digits, valid for an hour.
+otp_length = 6
+otp_expiry = 3600
+
+# D-091: Supabase Auth sends these two emails. Draft wording in the IWC voice; the same text goes into the hosted
+# project's Auth email templates before launch (docs/ops.md).
+[auth.email.template.magic_link]
+subject = "Your sign-in code"
+content_path = "./supabase/templates/sign-in-code.html"
+
+[auth.email.template.recovery]
+subject = "Set a new password"
+content_path = "./supabase/templates/reset-password.html"
 
 [auth.external.google]
 enabled = false

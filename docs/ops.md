@@ -115,6 +115,11 @@ The old `NEXT_PUBLIC_SUPABASE_*` / `NEXT_PUBLIC_APP_URL` CI secrets are no longe
    and the same email in `ADMIN_EMAILS` on Vercel (redeploy). Sign in at `<site>/admin`. Supabase → Authentication →
    URL configuration: the site URL is the production website, so sign-up and password emails link there.
    `pnpm launch:check --url=<production DB URL> --allow-remote` must then end "Ready to launch".
+   **Sign-in emails (D-091, B4):** in the hosted project's Authentication settings, add `<production website>/**` to
+   the Redirect URLs (the reset link comes back to `/auth/callback`), and paste the two templates from
+   `supabase/templates/`: `sign-in-code.html` into **Magic Link** (subject "Your sign-in code"; it must show
+   `{{ .Token }}`, the six digits) and `reset-password.html` into **Reset Password** (subject "Set a new password").
+   Their wording is a draft (D-059 voice); local Supabase reads them from `supabase/config.toml`.
 9. **The app** is not on Vercel: EAS builds it (the Deploy workflow's last job, Android only until there is an Apple
    Developer account). EAS cloud builds never see `apps/app/.env`: the four public settings live in the EAS
    "production" environment, set once from `apps/app` (`eas login` first):

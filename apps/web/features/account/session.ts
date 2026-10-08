@@ -15,3 +15,13 @@ export async function requireCustomer(
   if (!user) redirect(`/login?next=${encodeURIComponent(path)}`);
   return { client, user };
 }
+
+/**
+ * The profile's sections (D-089): the signed-in customer, or null. Signed out, the profile layout shows the sign-in
+ * card on the page itself, so the sections render nothing instead of sending the visitor to /login.
+ */
+export async function customerOrNull(): Promise<{ client: IwcClient; user: { id: string; email: string | null } } | null> {
+  const client = await sessionClient();
+  const user = await currentUser(client);
+  return user ? { client, user } : null;
+}

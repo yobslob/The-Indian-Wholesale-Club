@@ -71,6 +71,11 @@ export async function addMyAddress(client: IwcClient, userId: string, input: Add
   unwrap(await client.from('addresses').insert({ ...toRow(input), user_id: userId }));
 }
 
+/** Edit one of the customer's own addresses (D-089); RLS (addresses_own) keeps it to their rows. */
+export async function updateMyAddress(client: IwcClient, id: string, input: AddressInput) {
+  unwrap(await client.from('addresses').update(toRow(input)).eq('id', id));
+}
+
 export async function deleteMyAddress(client: IwcClient, id: string) {
   unwrap(await client.from('addresses').delete().eq('id', id));
 }

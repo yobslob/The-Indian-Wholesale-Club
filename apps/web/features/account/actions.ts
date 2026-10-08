@@ -9,6 +9,7 @@ import {
   deleteMyAddress,
   saveProduct,
   setDefaultAddress,
+  updateMyAddress,
   unsaveProduct,
   updateMyProfile,
 } from '@repo/db/account';
@@ -38,18 +39,31 @@ export async function updateProfileAction(form: FormData): Promise<void> {
     full_name: parsed.fullName || null,
     phone: parsed.phone || null,
   });
-  revalidatePath('/account');
+  revalidatePath('/account/details');
 }
 
-export async function addAddressAction(form: FormData): Promise<void> {
-  const { client, user } = await signedIn();
+function addressFrom(form: FormData) {
   const address = shippingAddressSchema.parse(Object.fromEntries(form));
   const label =
     String(form.get('label') ?? '')
       .trim()
       .slice(0, 40) || null;
-  await addMyAddress(client, user.id, { ...address, label });
+  return { ...address, label };
+}
+
+export async function addAddressAction(form: FormData): Promise<void> {
+  const { client, user } = await signedIn();
+  await addMyAddress(client, user.id, addressFrom(form));
   revalidatePath('/account/addresses');
+  redirect('/account/addresses');
+}
+
+/** The pencil on an address card (D-089): the same form, filled in. */
+export async function updateAddressAction(id: string, form: FormData): Promise<void> {
+  const { client } = await signedIn();
+  await updateMyAddress(client, z.string().uuid().parse(id), addressFrom(form));
+  revalidatePath('/account/addresses');
+  redirect('/account/addresses');
 }
 
 export async function deleteAddressAction(id: string): Promise<void> {

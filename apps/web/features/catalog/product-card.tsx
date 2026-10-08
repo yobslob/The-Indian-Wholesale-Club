@@ -39,12 +39,15 @@ export function ProductCard({
   badge,
   reveal = true,
   layout = 'grid',
+  corner,
 }: {
   product: CardData;
   size?: 'md' | 'sm';
   /** In a sideways row (fixed width) or a grid (a column). */
   layout?: 'row' | 'grid';
   badge?: React.ReactNode;
+  /** Top right of the photo: the profile's filled heart that removes a saved piece (D-089). */
+  corner?: React.ReactNode;
   /** The scroll reveal (D-049). Off for cards that start off to the side in a row: animating dozens made scrolling stutter. */
   reveal?: boolean;
 }): React.JSX.Element {
@@ -78,6 +81,7 @@ export function ProductCard({
           ) : null}
         </Link>
         <QuickAdd product={product} quickAdd={product.quick_add} available={product.available} href={href} />
+        {corner ? <div className="absolute right-2.5 top-2.5 z-[2]">{corner}</div> : null}
       </div>
       <div className={small ? 'pl-2 pt-2.5' : 'pl-3.5 pr-1.5 pt-3.5'}>
         <Link href={href} className={`font-ui block font-semibold leading-snug ${small ? 'text-[13.5px]' : 'text-[15px]'}`}>

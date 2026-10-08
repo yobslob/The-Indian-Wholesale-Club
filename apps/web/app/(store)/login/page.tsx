@@ -1,21 +1,23 @@
-import { AuthForm } from '@/features/auth/auth-form';
+import { SignInCard } from '@/features/auth/sign-in-card';
+import { safeNextPath } from '@/lib/site';
 
 import type { Metadata } from 'next';
 
-export const metadata: Metadata = { title: 'Sign in' };
+export const metadata: Metadata = { title: 'Sign in', robots: { index: false } };
 
-type SearchParams = Promise<{ next?: string }>;
+type SearchParams = Promise<{ next?: string; link?: string }>;
 
-export default async function LoginPage({
-  searchParams,
-}: {
-  searchParams: SearchParams;
-}): Promise<React.JSX.Element> {
-  const { next } = await searchParams;
+/** The profile's sign-in card, centred (D-091). `?link=expired`: an emailed link that was used or ran out. */
+export default async function LoginPage({ searchParams }: { searchParams: SearchParams }): Promise<React.JSX.Element> {
+  const { next, link } = await searchParams;
   return (
-    <div className="space-y-6">
-      <h1 className="font-heading text-ink text-[clamp(32px,3vw,52px)] font-medium leading-tight tracking-[-0.03em]">Sign in</h1>
-      <AuthForm mode="login" next={next ?? null} />
-    </div>
+    <>
+      {link === 'expired' ? (
+        <p className="bg-surface font-body mx-auto mt-4 max-w-[440px] rounded-md px-4 py-3 text-sm" role="status">
+          That link has expired or was already used. Ask for a new one below.
+        </p>
+      ) : null}
+      <SignInCard next={safeNextPath(next, '/account')} />
+    </>
   );
 }

@@ -163,6 +163,38 @@ export async function listMyOrders(client: IwcClient): Promise<OrderSummary[]> {
   return z.array(orderSummarySchema).parse(data);
 }
 
+export interface OrderCard extends OrderSummary {
+  /** The first piece's photo (the order's items sorted by name, as the order page lists them); null without one. */
+  first_image_path: string | null;
+  /** How many other pieces the card's "+n" counts. */
+  more_pieces: number;
+}
+
+/**
+ * The profile's order cards (D-089): the customer's own orders (newest first) with the first piece's photo and how
+ * many more pieces there are. Two reads: the orders, then their items through store_order_items (own rows only).
+ */
+export async function listMyOrderCards(client: IwcClient): Promise<OrderCard[]> {
+  const orders = await listMyOrders(client);
+  if (orders.length === 0) return [];
+  const items = z
+    .array(z.object({ order_id: z.string(), product_name: z.string(), quantity: z.number().int(), image_path: z.string().nullable() }))
+    .parse(
+      unwrap(
+        await client
+          .from('store_order_items')
+          .select('order_id, product_name, quantity, image_path')
+          .in('order_id', orders.map((o) => o.id))
+          .order('product_name'),
+      ),
+    );
+  return orders.map((o) => {
+    const mine = items.filter((i) => i.order_id === o.id);
+    const pieces = mine.reduce((n, i) => n + i.quantity, 0);
+    return { ...o, first_image_path: mine[0]?.image_path ?? null, more_pieces: Math.max(pieces - 1, 0) };
+  });
+}
+
 /** /account/orders/[number]: own order with items + visible events; null if not theirs. */
 export async function getMyOrder(
   client: IwcClient,
