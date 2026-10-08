@@ -1,0 +1,132 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>IWC design pass: app admin</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Karla:wght@400;500;600;700&family=Syne:wght@500;600&display=swap">
+<link rel="stylesheet" href="../_shared/tokens.css">
+<link rel="stylesheet" href="../_shared/page.css">
+<link rel="stylesheet" href="../_shared/admin.css">
+<style>
+/* ---------- App admin (round 1): the D-096 admin in the app's patterns, 390 x 844. ---------- */
+.ph-w .cap { max-width: 390px; }
+.app { position: relative; width: 390px; height: 844px; background: var(--canvas); color: var(--ink); overflow: hidden; border-radius: 44px; box-shadow: 0 0 0 10px #1a1a1a, 0 8px 40px rgba(0, 0, 0, .3); margin: 10px; container-type: inline-size; font-family: var(--t); }
+.app .status { position: absolute; inset: 0 0 auto; z-index: 30; height: 50px; display: flex; justify-content: space-between; align-items: flex-end; padding: 0 30px 8px; font: 600 15px/1 system-ui, sans-serif; background: var(--canvas); }
+.scr { position: absolute; top: 50px; left: 0; right: 0; bottom: 84px; overflow-y: auto; overflow-x: hidden; scrollbar-width: none; }
+.scr::-webkit-scrollbar { display: none; }
+.app.notabs .scr { bottom: 0; }
+.home-ind { position: absolute; bottom: 8px; left: 50%; transform: translateX(-50%); width: 134px; height: 5px; border-radius: 3px; background: var(--ink); z-index: 31; }
+.atabs { position: absolute; left: 0; right: 0; bottom: 0; z-index: 30; display: grid; grid-template-columns: repeat(5, 1fr); padding: 0 0 30px; background: var(--canvas); box-shadow: 0 -1px 0 var(--line); }
+.atabs a { position: relative; display: grid; justify-items: center; gap: 4px; padding: 10px 0 6px; font: 600 11px/1 var(--t); color: var(--ink-muted); text-decoration: none; }
+.atabs a svg { width: 24px; height: 24px; } .atabs a[aria-current] { color: var(--ink); }
+.atabs a[aria-current]::before { content: ''; position: absolute; top: 0; width: 20px; height: 2px; border-radius: 2px; background: var(--brand); }
+.atabs b { position: absolute; top: 5px; left: calc(50% + 6px); min-width: 18px; height: 18px; padding: 0 5px; border-radius: 999px; background: var(--ink); color: var(--paper); font: 700 10px/18px var(--t); text-align: center; }
+.hdr2 { display: flex; align-items: center; gap: 8px; padding: 6px 8px 8px 16px; }
+.hdr2 h1 { margin: 0; flex: 1; font: 600 28px/1.1 var(--h); letter-spacing: -.01em; }
+.hdr2 h1.idt { font: 700 18px/1.2 var(--t); } .hdr2 .ib { width: 44px; height: 44px; display: grid; place-items: center; } .hdr2 .ib svg { width: 22px; height: 22px; }
+.bar2 { display: flex; align-items: center; height: 52px; padding: 0 8px; border-bottom: 1px solid var(--line); } .bar2 .ib { width: 44px; height: 44px; display: grid; place-items: center; } .bar2 .ib svg { width: 22px; height: 22px; } .bar2 b { flex: 1; text-align: center; font: 700 15px/1 var(--t); }
+.pad { padding: 0 14px 24px; }
+.desk { margin: 0 16px 10px; font: 500 12.5px/1.3 var(--t); color: var(--ink-muted); }
+.hscroll { display: flex; gap: 6px; overflow-x: auto; padding: 0 14px 12px; scrollbar-width: none; } .hscroll .fchip { flex: none; }
+.ocard { display: grid; grid-template-columns: 22px minmax(0, 1fr) auto; gap: 10px; align-items: start; padding: 12px; margin-bottom: 8px; border-radius: 14px; background: var(--paper); border: 1px solid var(--line); }
+.ocard.sel { border-color: var(--brand); background: rgb(122 46 35 / .04); }
+.ocard b { display: block; font: 700 14px/1.3 var(--t); } .ocard small { display: block; font: 400 12.5px/1.4 var(--t); color: var(--ink-muted); } .ocard .tt { font: 700 14px/1.3 var(--t); text-align: right; } .ocard .chip { margin-top: 6px; }
+.selbar { position: absolute; left: 10px; right: 10px; bottom: 94px; z-index: 29; display: flex; align-items: center; gap: 8px; padding: 10px; border-radius: 14px; background: var(--ink); color: var(--paper); font: 700 13px/1 var(--t); }
+.selbar .b2 { height: 36px; font-size: 13px; padding: 0 10px; }
+.mainact { position: absolute; left: 0; right: 0; bottom: 84px; z-index: 29; padding: 10px 14px; background: var(--canvas); border-top: 1px solid var(--line); }
+.mainact .b1 { width: 100%; height: 50px; font-size: 15px; border-radius: 12px; }
+.dim { position: absolute; inset: 0; z-index: 40; background: rgb(20 17 15 / .4); }
+.sheet { position: absolute; left: 0; right: 0; bottom: 0; z-index: 41; max-height: 86%; overflow: auto; background: var(--canvas); border-radius: 22px 22px 0 0; padding: 10px 16px 34px; }
+.sheet::before { content: ''; display: block; width: 40px; height: 4px; margin: 0 auto 12px; border-radius: 2px; background: var(--line); }
+.sheet h3 { margin: 0 0 6px; font: 600 20px/1.2 var(--h); } .sheet p { margin: 0 0 14px; font: 400 14px/1.5 var(--t); color: var(--ink-muted); }
+.sheet .b1, .sheet .b2 { width: 100%; height: 50px; border-radius: 12px; font-size: 15px; } .sheet .b2 { margin-top: 8px; }
+.qrow { display: flex; align-items: center; gap: 10px; padding: 10px 0; border-bottom: 1px solid var(--line); font: 400 14px/1.3 var(--t); } .qrow small { color: var(--ink-muted); } .qrow .chip { margin-left: auto; }
+.qin { display: flex; align-items: center; gap: 8px; height: 44px; margin: 0 14px 6px; padding: 0 14px; border-radius: 12px; border: 1.5px solid var(--ink); background: var(--paper); font: 500 16px/1 var(--t); } .qin svg { width: 18px; height: 18px; color: var(--ink-muted); }
+.list a { display: flex; align-items: center; justify-content: space-between; min-height: 54px; padding: 0 2px; border-bottom: 1px solid var(--line); font: 600 15px/1 var(--t); color: var(--ink); text-decoration: none; }
+.list a b { margin-left: auto; margin-right: 10px; } .list a svg { width: 18px; height: 18px; color: var(--ink-muted); } .list a.mut { color: var(--ink-muted); font-weight: 500; }
+.dcard { display: grid; grid-template-columns: 60px minmax(0, 1fr); gap: 12px; align-items: center; padding: 12px; margin-bottom: 8px; border-radius: 14px; background: var(--paper); border: 1px solid var(--line); }
+.dcard .stackp span { width: 36px; height: 48px; } .dcard .in { margin-top: 6px; }
+.dcard .in { display: block; box-sizing: border-box; height: 36px; padding: 0 10px; border-radius: 8px; border: 1px solid var(--line); background: var(--canvas); font: 400 13.5px/34px var(--t); color: var(--ink); } .dcard .in.ph0 { color: var(--ink-muted); }
+.vrow { display: grid; grid-template-columns: 44px minmax(0, 1fr) auto; gap: 12px; align-items: center; padding: 10px 0; border-bottom: 1px solid var(--line); font: 400 14px/1.3 var(--t); }
+.vrow .av2 { width: 44px; height: 44px; border-radius: 12px; background: var(--land); } .vrow b { display: block; font-weight: 700; } .vrow small { color: var(--ink-muted); }
+</style>
+</head>
+<body>
+<div class="mk-bar"><strong>IWC design pass · app admin · round 1</strong><span>All data is sample</span></div>
+<main class="mk-wrap">
+  <p class="mk-p">The app's admin mode at 390 × 844, on the approved web admin (D-096). Five tabs with counts; the search button opens quick find; the India desk is shown (times in India, New Jersey beside).</p>
+  <h2 class="mk-h">Today · quick find · Orders · selecting</h2><div class="mk-row" id="r1"></div>
+  <h2 class="mk-h">An order · Pack &amp; ship · Cycle pickups</h2><div class="mk-row" id="r2"></div>
+  <h2 class="mk-h">Listings: new with the camera · Add many · drafts</h2><div class="mk-row" id="r3"></div>
+  <h2 class="mk-h">More · Payouts (confirm) · Vendors · Add a vendor</h2><div class="mk-row" id="r4"></div>
+</main>
+<script>
+const P = (d) => `<svg class="icon" viewBox="0 0 24 24" aria-hidden="true">${d}</svg>`;
+const IC = { search: P('<circle cx="11" cy="11" r="7"/><path d="m16.5 16.5 4.5 4.5"/>'), back: P('<path d="M15 5l-7 7 7 7"/>'), chev: P('<path d="M9 5l7 7-7 7"/>'),
+  today: P('<rect x="4" y="5" width="16" height="15" rx="2"/><path d="M4 10h16M9 3v4M15 3v4"/>'), orders: P('<path d="M6 3h12v18l-3-2-3 2-3-2-3 2z"/><path d="M9 8h6M9 12h6"/>'),
+  cycle: P('<path d="M3 17l2 3h14l2-3M5 17V9l7-4 7 4v8"/><path d="M12 5v12"/>'), tag: P('<path d="M3 12V4h8l10 10-8 8z"/><circle cx="7.5" cy="8.5" r="1.5"/>'), more: P('<circle cx="5" cy="12" r="1.5"/><circle cx="12" cy="12" r="1.5"/><circle cx="19" cy="12" r="1.5"/>'),
+  phone: P('<path d="M5 4h4l2 5-2.5 1.5a11 11 0 0 0 5 5L15 13l5 2v4a2 2 0 0 1-2 2A16 16 0 0 1 3 6a2 2 0 0 1 2-2z"/>'), chat: P('<path d="M4 20l1.5-4A8 8 0 1 1 9 19z"/>'), cam: P('<path d="M4 8h3l2-3h6l2 3h3v11H4z"/><circle cx="12" cy="13" r="3.5"/>'), plus: P('<path d="M12 5v14M5 12h14"/>') };
+const KAS = '../../mockups/assets/Kasavu_main.jpg', IMG = (n) => `../product/img/${n}.jpg`;
+const chip = (t, c = '') => `<span class="chip ${c}">${t}</span>`;
+const status = '<div class="status"><span>7:11</span><span>●●● ▮</span></div>';
+const tabs = (on) => `<nav class="atabs">${[['Today', 'today'], ['Orders', 'orders', 4], ['Cycle', 'cycle', 8], ['Listings', 'tag', 3], ['More', 'more', 2]].map(([n, i, c]) => `<a href="#"${n === on ? ' aria-current="page"' : ''}>${IC[i]}${n}${c ? `<b>${c}</b>` : ''}</a>`).join('')}</nav><span class="home-ind"></span>`;
+const head = (t, cls = '') => `<div class="hdr2"><h1 class="${cls}">${t}</h1><span class="ib">${IC.search}</span></div>`;
+const bar = (t, right = '') => `<div class="bar2"><span class="ib">${IC.back}</span><b>${t}</b><span class="ib">${right}</span></div>`;
+const phone = (cap, body, o = {}) => `<div class="ph-w"><p class="cap">${cap}</p><div class="app${o.notabs ? ' notabs' : ''}">${status}<div class="scr phn">${body}</div>${o.over || ''}${o.notabs ? '<span class="home-ind"></span>' : tabs(o.tab)}</div></div>`;
+
+// Shared blocks from the web admin (D-096).
+const flow = `<div class="flow">${[['Open', 'now'], ['Collecting'], ['Packed'], ['Exported'], ['Arrived'], ['Fulfilling'], ['Closed']].map(([n, s]) => `<span class="${s || ''}"><i></i><small>${n}</small></span>`).join('')}</div>`;
+const cycleCard = `<div class="panel"><p class="muted small" style="margin:0 0 6px">Open cycle <b style="color:var(--ink)">C-2610</b> ${chip('Open', 'c-blue')}</p><div class="cd">2 d 14 h<small>to cutoff · Sun Oct 11, 9:29 AM India · Sat 11:59 PM New Jersey</small></div><div class="stats" style="margin-top:12px"><div class="stat"><b>18</b><span>orders</span></div><div class="stat"><b>31</b><span>pieces</span></div><div class="stat"><b>9</b><span>shops</span></div><div class="stat"><b>$3,412</b><span>sales</span></div></div>${flow}</div>`;
+const job = ([n, b, s, btn, u]) => `<div class="job${n ? '' : ' zero'}"><span class="n${u ? ' urgent' : ''}">${n}</span><span><b>${b}</b><span>${s}</span></span>${n ? `<a class="${u ? 'b1' : 'b2'}" href="#">${btn}</a>` : ''}</div>`;
+const today = `${head('Today')}<p class="desk">India desk · Thu 7:11 PM <span style="opacity:.7">· 9:41 AM New Jersey</span></p><div class="pad">${cycleCard}
+  <div class="attn" style="margin-top:12px;font-size:13px"><div><b>Needs attention</b><ul><li>1 customer email failed 3 times.</li></ul></div></div>
+  <p class="grp" style="padding:0;margin-top:16px">India desk · yours</p><div class="queue">${[[8, 'Pickups still to do', 'Cycle C-2609 · 5 shops', 'Start pickups', 1], [1, 'Express order to pick up and send by courier', 'Placed today', 'Open order', 1], [3, 'Draft listings to review', '', 'Review drafts'], [2, 'Shops owed for picked pieces', '₹18,400 in all', 'Pay shops']].map(job).join('')}</div>
+  <p class="grp" style="padding:0;margin-top:16px">US desk</p><div class="queue">${job([4, 'Orders arrived in the US, to ship', '', 'See orders'])}</div>
+  <div class="list" style="margin-top:14px"><a href="#">View the store${IC.chev}</a></div></div>`;
+const find = `<div class="bar2"><span class="ib">${IC.back}</span><b>Find</b><span class="ib"></span></div><div style="height:10px"></div><div class="qin">${IC.search}kas|</div><div class="pad">
+  <p class="grp" style="padding:0">Products</p><div class="qrow"><span class="pic" style="width:30px;height:40px;background-image:url(${KAS})"></span>Kasavu saree <small>· Kerala</small>${chip('Live', 'c-ok')}</div><div class="qrow"><span class="pic" style="width:30px;height:40px"></span>Kasaragod saree <small>· Kerala</small>${chip('Draft', 'c-mute')}</div>
+  <p class="grp" style="padding:0">Orders</p><div class="qrow">IWC-261008-4F2A… <small>· Meera Nair</small>${chip('Arrived · to ship', 'c-brand')}</div>
+  <p class="grp" style="padding:0">Vendors</p><div class="qrow">Kasavu House <small>· Thrissur</small></div></div>`;
+const ORD = [['IWC-261008-4F2A9C1D3E', 'Meera Nair · 2 pieces', 'Oct 8, 6:08 PM India', '$272.83', 1], ['IWC-261007-1C8E…', 'Arjun Mehta · 1 piece', 'Oct 8, 1:42 AM India', '$80.99', 1], ['IWC-261007-9A02…', 'Harpreet Kaur · 3 pieces', 'Oct 7, 8:33 PM India', '$331.97', 0], ['IWC-261006-55D1…', 'Priya Iyer · 2 pieces', 'Oct 7, 5:15 AM India', '$155.98', 0]];
+const orders = (sel) => `${head('Orders')}<div class="hscroll">${[['Arrived · to ship', 4, 1], ['All', 46], ['Confirmed', 18], ['Collecting in India', 6], ['Shipped', 12], ['Delivered', 9]].map(([n, c, on]) => `<a class="fchip${on ? ' on' : ''}" href="#">${n} <b>${c}</b></a>`).join('')}</div>
+  <div class="pad">${ORD.map(([n, c, t, tot, s]) => `<div class="ocard${sel && s ? ' sel' : ''}"${sel ? '' : ' style="grid-template-columns:minmax(0,1fr) auto"'}>${sel ? `<span class="cb${s ? ' on' : ''}">${s ? '✓' : ''}</span>` : ''}<span><b>${n}</b><small>${c} · ${t}</small>${chip('Arrived · to ship', 'c-brand')} ${chip('Paid', 'c-ok')}</span><span class="tt">${tot}</span></div>`).join('')}</div>`;
+const selbar = '<div class="selbar">2 selected<a class="b2" href="#" style="margin-left:auto">Mark shipped…</a><a class="b2" href="#">Delivered</a></div>';
+const order = `${bar('Order')}<div class="pad" style="padding-top:12px"><h1 style="margin:0 0 8px;font:700 18px/1.2 var(--t)">IWC-261008-4F2A9C1D3E</h1><p style="margin:0 0 12px">${chip('Arrived · to ship', 'c-brand')} ${chip('Paid', 'c-ok')} ${chip('Standard', 'c-mute')}</p>
+  <div class="panel" style="padding:12px 14px"><h2>Pieces<small>both arrived</small></h2>${[['Kasavu saree', 'Off-white with gold · Kerala', KAS, chip('Picked', 'c-ok') + ' ' + chip('Paid to shop', 'c-ok')], ['Set-mundu', 'Off-white with gold · Kerala', null, chip('Picked', 'c-ok') + ' ' + chip('Not paid yet', 'c-warn')]].map(([n, d, img, ch]) => `<div class="pk" style="padding:10px 0;grid-template-columns:40px minmax(0,1fr)"><span class="pic" style="width:40px;height:54px;${img ? `background-image:url(${img})` : ''}"></span><span><b>${n}</b><small>${d}</small><br>${ch}</span></div>`).join('')}</div>
+  <div class="panel" style="margin-top:12px;padding:12px 14px"><h2>Customer</h2><p style="margin:0 0 10px;font:400 14px/1.5 var(--t)">Meera Nair · 12 Oak St, Edison, NJ 08817</p><div class="row2"><a class="b2" href="#">${IC.phone}Call</a><a class="b2" href="#">${IC.chat}Text</a></div></div>
+  <div class="panel" style="margin-top:12px;padding:12px 14px"><h2>Timeline</h2><ul class="tline">${[['Oct 8, 6:08 PM', 'Order confirmed'], ['Oct 13, 4:02 PM', 'Kasavu saree picked'], ['Oct 25, 1:10 AM', 'Arrived in the US']].map(([t, x]) => `<li style="grid-template-columns:110px 1fr"><time>${t}</time><span>${x}</span></li>`).join('')}</ul></div><div style="height:80px"></div></div>`;
+const mainact = '<div class="mainact"><a class="b1" href="#">Pack &amp; ship</a></div>';
+const shipSheet = `<div class="dim"></div><div class="sheet"><h3>Pack &amp; ship</h3><p>IWC-261008-4F2A9C1D3E · 2 pieces to Edison, NJ</p><div class="row2"><label class="fl">Carrier<span class="in">USPS ▾</span></label><label class="fl">Tracking number<span class="in ph0">9400 …</span></label></div><a class="b1" href="#">Mark shipped</a><p style="margin:10px 0 0;font-size:12.5px">Emails the customer a link to their order page (D-094).</p></div>`;
+const PK = ['Kasavu House', 'Thrissur', 5, 3, [['Kasavu saree', 'Off-white with gold × 1', '₹6,200', KAS, 'done'], ['Set-mundu', 'Cream × 1', '₹7,800', null, 'todo'], ['Pattu pavada', 'Age 6 × 1', '₹2,100', null, 'todo']]];
+const pk = ([n, d, p, img, s]) => `<div class="pk ${s === 'done' ? 'done' : ''}"><span class="pic" style="width:40px;height:54px;${img ? `background-image:url(${img})` : ''}"></span><span><b>${n}</b><small>${d} · ${p}</small></span><span class="btns">${s === 'todo' ? '<a class="b1" href="#">Picked</a><a class="b2" href="#">Unavailable</a>' : chip('Picked 4:02 PM', 'c-ok')}</span></div>`;
+const cycle = `${head('Cycle C-2609', 'idt')}<div class="pad"><p class="muted small" style="margin:0 0 8px">${chip('Collecting', 'c-warn')} · export est. Oct 10 · arrival est. Oct 17</p>
+  <div class="flow" style="margin:0 0 12px">${[['Open', 'done'], ['Collecting', 'now'], ['Packed'], ['Exported'], ['Arrived'], ['Fulfilling'], ['Closed']].map(([n, s]) => `<span class="${s || ''}"><i></i><small>${n}</small></span>`).join('')}</div>
+  <a class="b1" href="#" style="width:100%;height:46px;margin-bottom:14px">Mark packed →</a>
+  <p class="muted small" style="margin:0 0 6px">23 of 31 picked · 2 unavailable · 6 to go</p><div class="prog" style="margin-bottom:12px"><i style="width:74%"></i><i class="u" style="width:6.5%"></i></div>
+  <div class="shops"><div class="shop"><div class="hd"><b>${PK[0]}</b><span>${PK[1]} · Kerala · UPI</span><div class="call"><a class="b2" href="#">${IC.phone}Call</a><a class="b2" href="#">${IC.chat}WhatsApp</a><a class="b2" href="#">Map</a></div><div class="pg"><span>3 of 5 picked</span><span class="prog"><i style="width:60%"></i></span></div></div>${PK[4].map(pk).join('')}</div></div></div>`;
+const photos = (n) => `<div class="pgrid">${[[KAS, 'Main', 'Kasavu saree, worn', 1], [IMG('2-front'), '', 'Front, full length', 1], [IMG('3-back'), '', 'Back', 1], [IMG('4-closeup'), '', 'Add alt text', 0]].slice(0, n).map(([s, t, a, d]) => `<div class="ptile"><div class="im" style="background-image:url(${s})"></div>${t ? `<span class="tag">${t}</span>` : ''}<span class="x">×</span>${d ? '' : '<span class="bar"><i></i></span>'}<div class="alt${d ? ' done' : ''}">${a}</div></div>`).join('')}</div>`;
+const ltabs = (on) => `<div class="hscroll">${[['New'], ['Add many'], ['Drafts', 3], ['Live', 112], ['Paused', 4]].map(([n, c]) => `<a class="fchip${n === on ? ' on' : ''}" href="#">${n}${c ? ` <b>${c}</b>` : ''}</a>`).join('')}</div>`;
+const newL = `${head('Listings')}${ltabs('New')}<div class="pad"><div class="drop" style="padding:12px"><a class="b1 big" href="#" style="width:100%">${IC.cam}Take photos</a><a class="b2" href="#" style="width:100%;margin-top:8px">Choose from gallery (many)</a></div>${photos(4)}<div style="height:12px"></div>
+  <label class="fl">Vendor<span class="in">Kasavu House · Thrissur ▾</span></label><label class="fl">Type<span class="seg2"><span class="on">Clothing</span><span>Spice</span></span></label><label class="fl">Category<span class="in">Sarees &amp; Drapes ▾</span></label><label class="fl">Name<span class="in">Kasavu saree</span></label><p class="slug">Web address: <b>/states/kerala/kasavu-saree</b></p>
+  <div class="price"><label class="fl">Shop price<span class="in">₹ 6,200</span></label><span class="eq">→</span><div class="sells"><small>Sells for</small><b>$114.99</b></div></div><div style="height:70px"></div></div>`;
+const saveBar = '<div class="mainact" style="display:flex;gap:8px"><a class="b2" href="#" style="flex:1;height:50px">Save draft</a><a class="b1" href="#" style="flex:1">Publish</a></div>';
+const many = `${head('Listings')}${ltabs('Add many')}<div class="pad"><a class="b1 big" href="#" style="width:100%;margin-bottom:12px">${IC.plus}Pick many photos</a><div class="groupnote" style="font-size:12.5px">7 photos → 4 drafts. Long-press a photo and drop it on another draft to group them.</div>
+  ${[[[KAS, IMG('2-front'), IMG('3-back')], 'Kasavu saree', '6,200', '$114.99'], [[IMG('4-closeup')], 'Kasavu mundu', '1,200', '$41.99'], [[null, null], '', '', '—'], [[null], '', '', '—']].map(([ims, n, sp, usd]) => `<div class="dcard"><span class="stackp">${ims.map((s) => `<span style="${s ? `background-image:url(${s})` : ''}"></span>`).join('')}</span><span><span class="in${n ? '' : ' ph0'}">${n || 'Name'}</span><span style="display:grid;grid-template-columns:1fr auto;gap:8px;align-items:center"><span class="in${sp ? '' : ' ph0'}">₹ ${sp}</span><b style="color:var(--positive);font-size:14px">${usd}</b></span></span></div>`).join('')}<div style="height:70px"></div></div>`;
+const manyBar = '<div class="mainact"><a class="b1" href="#">Create 4 drafts</a></div>';
+const drafts = `${head('Listings')}${ltabs('Drafts')}<div class="pad">${[['Kasaragod saree', 'Kerala · Kasavu House', '$125.99', 'Needs alt text on 1 photo'], ['Mel-mundu', 'Kerala · Chendamangalam Weaves', '$53.99', 'Ready to publish'], ['Kaili', 'Kerala · Kasavu House', '—', 'Needs a shop price']].map(([n, w, p, s]) => `<div class="ocard" style="grid-template-columns:44px minmax(0,1fr) auto"><span class="pic" style="width:44px;height:58px"></span><span><b>${n}</b><small>${w}</small><span class="chip ${s.startsWith('Ready') ? 'c-ok' : 'c-warn'}">${s}</span></span><span class="tt">${p}</span></div>`).join('')}</div>`;
+const more = `${head('More')}<div class="pad"><div class="list"><a href="#">Payouts<b>${chip('2 owed', 'c-warn')}</b>${IC.chev}</a><a href="#">Vendors${IC.chev}</a><a href="#">View the store${IC.chev}</a><a href="#" class="mut">Sign out</a></div><p class="muted small" style="margin-top:16px">Products, Regions, Reviews, Returns, Customers, Promotions, Insights and Settings are on the web panel.</p></div>`;
+const pay = `${bar('Payouts')}<div class="pad" style="padding-top:12px"><p class="muted small" style="margin:0 0 10px">₹18,400 owed to 2 shops</p><div class="shops">${[['Kasavu House', 'Thrissur · UPI kasavuhouse@okaxis', '₹10,600', 'Kasavu saree × 1 · Kasavu mundu × 2'], ['Chendamangalam Weaves', 'North Paravur · HDFC …4421', '₹7,800', 'Set-mundu × 1']].map(([n, m, o, l]) => `<div class="shop"><div class="hd"><b>${n}</b><span>${m}</span></div><div class="pk" style="grid-template-columns:1fr"><span><b style="font-size:22px">${o}</b><small>${l}</small></span><span class="btns"><a class="b1" href="#">Record payout</a></span></div></div>`).join('')}</div></div>`;
+const payConfirm = `<div class="dim"></div><div class="sheet"><h3>Record ₹10,600 paid to Kasavu House?</h3><p>For 3 picked pieces. They're marked paid to this shop.</p><label class="fl">Method<span class="in">UPI</span></label><label class="fl">Reference<span class="in ph0">UPI / bank ref</span></label><a class="b1" href="#">Record ₹10,600</a><a class="b2" href="#">Not yet</a></div>`;
+const vendors = `${head('Vendors')}<div class="pad"><a class="b1 big" href="#" style="width:100%;margin-bottom:10px">${IC.plus}Add a vendor</a>${[['Kasavu House', 'Thrissur · Kerala · 14 live'], ['Chendamangalam Weaves', 'North Paravur · Kerala · 6 live'], ['Phulkari Mahal', 'Patiala · Punjab · 9 live'], ['Paithani Kala', 'Yeola · Maharashtra · 4 live']].map(([n, s]) => `<div class="vrow"><span class="av2"></span><span><b>${n}</b><small>${s}</small></span><span style="color:var(--ink-muted)">${IC.chev}</span></div>`).join('')}</div>`;
+const addVendor = `<div class="dim"></div><div class="sheet"><h3>Add a vendor</h3><p>About a minute; everything can be edited later.</p><label class="fl">Shop name<span class="in ph0">e.g. Kasavu House</span></label><div class="row2"><label class="fl">Owner<span class="in ph0">Name</span></label><label class="fl">Phone / WhatsApp<span class="in ph0">+91 …</span></label></div><div class="row2"><label class="fl">State<span class="in">Kerala ▾</span></label><label class="fl">Town<span class="in ph0">Town</span></label></div><div class="row2"><label class="fl">Paid by<span class="in">UPI ▾</span></label><label class="fl">UPI id / account<span class="in ph0">name@bank</span></label></div><a class="b2" href="#" style="margin:0 0 8px">${IC.cam}Shop photo</a><a class="b1" href="#">Save vendor</a></div>`;
+
+document.getElementById('r1').innerHTML = [phone('Today (India desk)', today, { tab: 'Today' }), phone('Quick find (the search button)', find, { notabs: true }), phone('Orders: chips with counts', orders(false), { tab: 'Orders' }), phone('Orders: a long press selects', orders(true), { tab: 'Orders', over: selbar })].join('');
+document.getElementById('r2').innerHTML = [phone('An order: the main action at the bottom', order, { tab: 'Orders', over: mainact }), phone('Pack & ship sheet', order, { tab: 'Orders', over: shipSheet }), phone('Cycle: progress, pickups by shop', cycle, { tab: 'Cycle' })].join('');
+document.getElementById('r3').innerHTML = [phone('New listing: camera or many from the gallery', newL, { tab: 'Listings', over: saveBar }), phone('Add many', many, { tab: 'Listings', over: manyBar }), phone('Drafts with what each still needs', drafts, { tab: 'Listings' })].join('');
+document.getElementById('r4').innerHTML = [phone('More', more, { tab: 'More' }), phone('Payouts', pay, { tab: 'More' }), phone('Recording a payout confirms (D-096)', pay, { tab: 'More', over: payConfirm }), phone('Vendors', vendors, { tab: 'More' }), phone('Add a vendor', vendors, { tab: 'More', over: addVendor })].join('');
+</script>
+</body>
+</html>
