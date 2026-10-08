@@ -87,7 +87,7 @@ export async function getTodaySummary(client: IwcClient): Promise<TodaySummary> 
       client.from('products').select('id', { count: 'exact', head: true }).eq('status', 'draft'),
     ),
     client.from('pricing_settings').select('stale_listing_days').eq('id', 1).single(),
-    client.rpc('admin_stale_variants'),
+    client.rpc('admin_stale_variants', undefined, { get: true }),
     countRows(
       client
         .from('orders')
@@ -125,7 +125,7 @@ export type Sales = z.infer<typeof salesSchema>;
  * were not cancelled, placed since `since` (all time when null). Revenue is before tax and shipping.
  */
 export async function getSales(client: IwcClient, since: Date | null): Promise<Sales> {
-  const data = unwrap(await client.rpc('admin_sales', since ? { p_since: since.toISOString() } : {}));
+  const data = unwrap(await client.rpc('admin_sales', since ? { p_since: since.toISOString() } : {}, { get: true }));
   return salesSchema.parse(data);
 }
 
@@ -147,7 +147,7 @@ export type Demand = z.infer<typeof demandSchema>;
 
 /** What customers look for (searches, including ones that found nothing) and save, since `since` (admin_demand). */
 export async function getDemand(client: IwcClient, since: Date | null): Promise<Demand> {
-  const data = unwrap(await client.rpc('admin_demand', since ? { p_since: since.toISOString() } : {}));
+  const data = unwrap(await client.rpc('admin_demand', since ? { p_since: since.toISOString() } : {}, { get: true }));
   return demandSchema.parse(data);
 }
 
@@ -156,7 +156,7 @@ export type Attention = z.infer<typeof attentionSchema>;
 
 /** B-8: what an admin should look at (server errors in 24 h, payments to check, stuck customer emails). Counts only. */
 export async function getAttention(client: IwcClient): Promise<Attention> {
-  return attentionSchema.parse(unwrap(await client.rpc('admin_attention')));
+  return attentionSchema.parse(unwrap(await client.rpc('admin_attention', undefined, { get: true })));
 }
 
 /** The lines an admin reads for Attention; empty when all is well. */

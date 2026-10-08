@@ -34,7 +34,7 @@ export * from './schemas';
 
 /** Home + /states: all 36 regions and the next delivery window (1 round trip). */
 export async function getHome(client: IwcClient): Promise<HomeData> {
-  const data = unwrap(await client.rpc('store_home'));
+  const data = unwrap(await client.rpc('store_home', undefined, { get: true }));
   return homeSchema.parse(data);
 }
 
@@ -43,7 +43,7 @@ export async function getRegionPage(
   client: IwcClient,
   regionSlug: string,
 ): Promise<RegionPage | null> {
-  const data = unwrap(await client.rpc('store_region_page', { p_region_slug: regionSlug }));
+  const data = unwrap(await client.rpc('store_region_page', { p_region_slug: regionSlug }, { get: true }));
   return data === null ? null : regionPageSchema.parse(data);
 }
 
@@ -57,13 +57,13 @@ export async function getProductPage(
     await client.rpc('store_product_page', {
       p_region_slug: regionSlug,
       p_product_slug: productSlug,
-    }),
+    }, { get: true }),
   );
   return data === null ? null : productPageSchema.parse(data);
 }
 
 export async function getNextDelivery(client: IwcClient): Promise<DeliveryWindow | null> {
-  const rows = unwrap(await client.rpc('store_next_delivery'));
+  const rows = unwrap(await client.rpc('store_next_delivery', undefined, { get: true }));
   const first = Array.isArray(rows) ? rows[0] : undefined;
   return first ? deliveryWindowSchema.parse(first) : null;
 }
@@ -93,7 +93,7 @@ export async function browseProducts(client: IwcClient, filter: BrowseFilter): P
       ...(filter.categorySlug ? { p_category: filter.categorySlug } : {}),
       p_offset: filter.offset ?? 0,
       p_limit: filter.limit ?? 24,
-    }),
+    }, { get: true }),
   );
   return browsePageSchema.parse(data);
 }
@@ -144,7 +144,7 @@ export async function listProductPaths(client: IwcClient): Promise<{ region_slug
 
 /** Explore: one row per category of a type, each with its total and first 12 cards (1 round trip, D-062). */
 export async function getTypeRows(client: IwcClient, productType: 'clothing' | 'spice'): Promise<TypeRow[]> {
-  const data = unwrap(await client.rpc('store_type_rows', { p_type: productType }));
+  const data = unwrap(await client.rpc('store_type_rows', { p_type: productType }, { get: true }));
   return z.array(typeRowSchema).parse(data);
 }
 
@@ -168,16 +168,16 @@ export async function getMyOrder(
   client: IwcClient,
   orderNumber: string,
 ): Promise<OrderDetail | null> {
-  const data = unwrap(await client.rpc('store_my_order', { p_order_number: orderNumber }));
+  const data = unwrap(await client.rpc('store_my_order', { p_order_number: orderNumber }, { get: true }));
   return data === null ? null : orderDetailSchema.parse(data);
 }
 
 /** The Shipping & returns page's numbers (store_policy, migration 27). */
 export async function getStorePolicy(client: IwcClient): Promise<StorePolicy> {
-  return storePolicySchema.parse(unwrap(await client.rpc('store_policy')));
+  return storePolicySchema.parse(unwrap(await client.rpc('store_policy', undefined, { get: true })));
 }
 
 /** Whether the store is in demo mode (dev_preview: placeholder listings and demo reviews show, D-078). */
 export async function isDemoStore(client: IwcClient): Promise<boolean> {
-  return unwrap(await client.rpc('dev_preview')) === true;
+  return unwrap(await client.rpc('dev_preview', undefined, { get: true })) === true;
 }

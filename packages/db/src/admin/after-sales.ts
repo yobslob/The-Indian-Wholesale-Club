@@ -7,7 +7,7 @@ import { unwrap, type IwcClient } from '../client';
 
 /** After it left India: all but the shipping deduction. Null while it is still in India, or when it is done. */
 export async function exportCancelCents(client: IwcClient, orderId: string): Promise<number | null> {
-  return unwrap(await client.rpc('admin_cancel_after_export_cents', { p_order: orderId }));
+  return unwrap(await client.rpc('admin_cancel_after_export_cents', { p_order: orderId }, { get: true }));
 }
 
 export async function recordCancelAfterExport(

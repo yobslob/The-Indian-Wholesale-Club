@@ -18,7 +18,7 @@ function amountOrThrow(value: number | null, what: string): number {
 /** An unavailable piece: its price after discount + its share of the tax; the last piece refunds all that is left. */
 export async function itemRefundCents(client: IwcClient, itemId: string): Promise<number> {
   return amountOrThrow(
-    unwrap(await client.rpc('item_refund_cents', { p_item: itemId })),
+    unwrap(await client.rpc('item_refund_cents', { p_item: itemId }, { get: true })),
     'item refund',
   );
 }
@@ -30,7 +30,7 @@ export async function cancelRefundCents(
   reason: CancelReason,
 ): Promise<number> {
   return amountOrThrow(
-    unwrap(await client.rpc('cancel_refund_cents', { p_order: orderId, p_reason: reason })),
+    unwrap(await client.rpc('cancel_refund_cents', { p_order: orderId, p_reason: reason }, { get: true })),
     'cancel refund',
   );
 }

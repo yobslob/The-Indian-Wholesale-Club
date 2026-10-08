@@ -24,6 +24,10 @@ Baseline numbers come from the founder's first `node scripts/check.mjs` run and 
   product pages on first visit. So **`next build` reads the database** (the new schema must be there).
 - **PR-2 One round trip per page:** each storefront page or endpoint gets its data from one `store_*` view or function returning exactly
   what it renders. Checkout allows at most 2.
+  Read-only functions (STABLE) are called with `{ get: true }` (a GET): the API gateway retries a GET when PostgREST
+  drops the connection under it, never a POST, and a dropped POST crashed the admin Today page now and then (found
+  2026-10-08). Writes and calls with personal data (`guest_order_lookup`: the email) or structured arguments
+  (`checkout_context`) stay POST.
 - **PR-3 No over-fetching:** explicit column lists, never `select('*')`, no `count: 'exact'` on customer paths.
 - **PR-4 Narrow middleware:** runs only on `/admin`, `/account`, `/checkout` and `/orders` (`apps/web/middleware.ts`; there
   are no admin API routes). It uses `getClaims()`: a local JWT check with asymmetric signing keys, one Auth call with the

@@ -192,7 +192,7 @@ export async function createListing(client: IwcClient, input: ListingInput): Pro
 
 /** Live variants whose quantity is due a re-check with the shop (pricing_settings.stale_listing_days). */
 export async function listStaleVariants(client: IwcClient) {
-  return unwrap(await client.rpc('admin_stale_variants'));
+  return unwrap(await client.rpc('admin_stale_variants', undefined, { get: true }));
 }
 
 export async function createProduct(client: IwcClient, input: Insert<'products'>) {

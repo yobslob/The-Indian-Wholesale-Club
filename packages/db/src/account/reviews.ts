@@ -14,7 +14,7 @@ export type ReviewEligibility = z.infer<typeof reviewEligibilitySchema>;
 
 /** Whether the signed-in customer may add photos (verified buyer) and whether they already reviewed. */
 export async function getReviewEligibility(client: IwcClient, productId: string): Promise<ReviewEligibility> {
-  const data = unwrap(await client.rpc('review_eligibility', { p_product: productId }));
+  const data = unwrap(await client.rpc('review_eligibility', { p_product: productId }, { get: true }));
   return reviewEligibilitySchema.parse(data);
 }
 
