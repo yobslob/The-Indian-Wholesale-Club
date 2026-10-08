@@ -1,7 +1,8 @@
 import Image from 'next/image';
-import Link from 'next/link';
 
 import { reviewPhotoUrl } from '@/lib/site';
+
+import { WriteReview } from './write-review';
 
 import type { ReviewsSummary } from '@repo/db/store';
 
@@ -42,12 +43,7 @@ export function ReviewsSection({
         >
           Reviews
         </h2>
-        <Link
-          href={`/account/reviews/${productId}`}
-          className="font-ui border-line bg-paper hover:border-ink rounded-pill inline-flex min-h-11 items-center border px-5 text-sm font-medium"
-        >
-          Write a review
-        </Link>
+        <WriteReview productId={productId} />
       </div>
 
       {reviews.count === 0 ? (

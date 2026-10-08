@@ -27,9 +27,15 @@ type Step = 'signin' | 'create' | 'created' | 'forgot' | 'forgot-sent' | 'code' 
 export function SignInCard({
   start = 'signin',
   next = null,
+  onDone,
+  why = 'To see your orders, saved pieces and addresses.',
 }: {
   start?: 'signin' | 'create';
   next?: string | null;
+  /** The line under "Sign in": what signing in is for here. */
+  why?: string;
+  /** Instead of going to `next` or refreshing the page: the review panel signs in where it is (D-090). */
+  onDone?: () => void;
 }): React.JSX.Element {
   const router = useRouter();
   const [step, setStep] = useState<Step>(start);
@@ -43,6 +49,7 @@ export function SignInCard({
     setStep(to);
   };
   const done = (): void => {
+    if (onDone) return onDone();
     if (next) router.replace(next);
     router.refresh();
   };
@@ -110,7 +117,7 @@ export function SignInCard({
         {step === 'signin' ? (
           <>
             {heading('Sign in')}
-            {lead('To see your orders, saved pieces and addresses.')}
+            {lead(why)}
             <EmailField value={email} />
             <PasswordField label="Password" name="password" autoComplete="current-password" />
             <button

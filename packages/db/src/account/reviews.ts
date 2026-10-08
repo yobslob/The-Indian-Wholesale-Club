@@ -23,7 +23,7 @@ export async function getReviewableProduct(client: IwcClient, productId: string)
   return unwrap(
     await client
       .from('store_products')
-      .select('id, name, slug, region_slug, region_name')
+      .select('id, name, slug, region_slug, region_name, category_name, primary_image_path')
       .eq('id', productId)
       .maybeSingle(),
   );

@@ -17,7 +17,7 @@ export default async function ProfileLayout({ children }: { children: React.Reac
       <h1 className="font-heading m-0 pb-5 text-[clamp(32px,3vw,52px)] font-medium leading-tight tracking-[-0.02em] text-[#1D1A17]">
         Your account
       </h1>
-      <div className="grid items-start gap-[clamp(24px,3vw,48px)] min-[821px]:grid-cols-[220px_minmax(0,1fr)]">
+      <div className="grid grid-cols-[minmax(0,1fr)] items-start gap-[clamp(24px,3vw,48px)] min-[821px]:grid-cols-[220px_minmax(0,1fr)]">
         <div className="sticky top-[calc(var(--top-h)+16px)] hidden min-[821px]:block">
           <ProfileNav variant="side" />
           <form action={signOutAction} className="mt-3 px-3.5">

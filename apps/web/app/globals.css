@@ -445,6 +445,10 @@
     padding: 0;
     overflow: hidden;
   }
+  /* The review panel (D-090): the same panel, a little wider for the form. */
+  .review-panel {
+    width: min(94%, 480px);
+  }
   .site-panel-search {
     display: flex;
     align-items: center;
