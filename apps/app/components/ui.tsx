@@ -62,7 +62,7 @@ export function Screen({
 
 export function Title({ children }: { children: React.ReactNode }): React.JSX.Element {
   return (
-    <Text accessibilityRole="header" className="font-hero text-ink text-[34px] leading-[38px] tracking-[-1px]">
+    <Text accessibilityRole="header" className="font-heading text-ink text-[34px] leading-[38px] tracking-[-1px]">
       {children}
     </Text>
   );
@@ -70,7 +70,7 @@ export function Title({ children }: { children: React.ReactNode }): React.JSX.El
 
 export function Heading({ children }: { children: React.ReactNode }): React.JSX.Element {
   return (
-    <Text accessibilityRole="header" className="font-hero text-ink text-[24px] leading-[28px] tracking-[-0.5px]">
+    <Text accessibilityRole="header" className="font-heading text-ink text-[24px] leading-[28px] tracking-[-0.5px]">
       {children}
     </Text>
   );

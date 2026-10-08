@@ -111,7 +111,7 @@ export default function ProductScreen(): React.JSX.Element {
                 </Disclosure>
               ) : null}
             </View>
-            <Text className="border-line font-display-italic text-ink border-t pt-4 text-[18px]">
+            <Text className="border-line font-display text-ink border-t pt-4 text-[18px]">
               Made in India · from {data.product.region_name} · Imported
             </Text>
           </View>

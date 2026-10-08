@@ -1,18 +1,13 @@
 'use client';
 
-/** Storefront error boundary: generic message, no internals (engineering.md conventions). */
+import { ErrorMessage } from '@/features/shell/error-message';
+
+/** Storefront error boundary (D-093): inside the store layout, so the header and footer stay; no internals shown. */
 export default function StoreError({
   reset,
 }: {
   error: Error;
   reset: () => void;
 }): React.JSX.Element {
-  return (
-    <div className="space-y-4 py-16 text-center">
-      <h1 className="text-ink text-xl font-semibold">Something went wrong</h1>
-      <button type="button" onClick={reset} className="min-h-11 underline">
-        Try again
-      </button>
-    </div>
-  );
+  return <ErrorMessage kind="error" onRetry={reset} />;
 }

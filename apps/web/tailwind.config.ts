@@ -14,7 +14,7 @@ const withVar = (role: keyof typeof tokens.fonts, name: string, variable: string
   );
 
 const config = {
-  // Design tokens only (docs/design.md): bg-canvas, text-ink, border-line, bg-brand, font-hero, …
+  // Design tokens only (docs/design.md): bg-canvas, text-ink, border-line, bg-brand, font-heading, …
   presets: [require('@repo/tokens/preset')],
   content: ['./app/**/*.{ts,tsx}', './features/**/*.{ts,tsx}', './components/**/*.{ts,tsx}'],
   theme: {
@@ -24,12 +24,13 @@ const config = {
         region: `var(--region-accent, ${tokens.colors.region})`,
       },
       fontFamily: {
-        hero: withVar('hero', 'TeX Gyre Heros', '--font-heros'),
-        display: withVar('display', 'Gelasio', '--font-gelasio'),
-        body: withVar('body', 'Poppins', '--font-body'),
-        ui: withVar('ui', 'Montserrat', '--font-ui'),
-        foot: withVar('foot', 'Inter', '--font-foot'),
-        sans: withVar('body', 'Poppins', '--font-body'),
+        display: withVar('display', 'Cinzel', '--font-display'),
+        heading: withVar('heading', 'Syne', '--font-heading'),
+        body: withVar('body', 'Karla', '--font-text'),
+        ui: withVar('ui', 'Karla', '--font-text'),
+        foot: withVar('foot', 'Karla', '--font-text'),
+        logo: withVar('logo', 'Gelasio', '--font-gelasio'),
+        sans: withVar('body', 'Karla', '--font-text'),
       },
     },
   },

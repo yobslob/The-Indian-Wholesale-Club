@@ -116,10 +116,10 @@
 
 /*
  * Store shell (features/shell). Pages get the side gutter; a page whose first element carries
- * data-bleed (Home) runs edge to edge. On Home the header sits on the hero photo (D-054): white on a
+ * data-bleed (Home) runs edge to edge. On Home the header sits on the hero photo (D-054, D-080): white on a
  * soft dark fade, the logo hidden until the page scrolls (--hero-p, set by features/home/hero-scroll.tsx),
- * and solid again once the photo has scrolled past (html[data-hero-passed]). Pure CSS from the server
- * render, so nothing jumps when the page hydrates.
+ * and cream again, with a 0.35 s fade, once the photo has scrolled past (html[data-hero-passed]). Pure CSS
+ * from the server render, so nothing jumps when the page hydrates.
  */
 @layer components {
   .store-main {
@@ -130,10 +130,14 @@
     padding: 0;
   }
 
-  .site-header {
+  /* The banner and the header ride together (D-079): sticky on every page, on the photo on Home. */
+  .site-top {
     position: sticky;
     top: 0;
     z-index: 40;
+  }
+  .site-header {
+    position: relative;
     background-color: theme('colors.canvas');
     color: theme('colors.ink');
     box-shadow: 0 1px 0 theme('colors.line');
@@ -142,9 +146,11 @@
       color 0.35s,
       box-shadow 0.35s;
   }
-  body:has([data-home-hero]) .site-header {
+  body:has([data-home-hero]) .site-top {
     position: fixed;
     inset: 0 0 auto;
+  }
+  body:has([data-home-hero]) .site-header {
     background-color: transparent;
     color: #fff;
     box-shadow: none;
@@ -172,5 +178,451 @@
   }
   html[data-hero-passed] body:has([data-home-hero]) .site-header::before {
     opacity: 0;
+  }
+
+  /* One row at every width: logo · States · Search · About us · Saved, Bag, Profile (phones: logo · icons · menu). */
+  .site-bar {
+    display: flex;
+    align-items: center;
+    gap: clamp(18px, 2.2vw, 32px);
+    height: 72px;
+    padding: 0 var(--gut);
+    font-size: 14px;
+    font-weight: 500;
+    letter-spacing: 0.02em;
+  }
+  .site-logo {
+    padding: 8px 0 8px 4px;
+    white-space: nowrap;
+  }
+  .site-links {
+    display: flex;
+    align-items: center;
+    gap: inherit;
+  }
+  .site-links > a {
+    display: inline-flex;
+    align-items: center;
+    height: 44px;
+    text-underline-offset: 6px;
+  }
+  .site-links > a:hover,
+  .site-links > a[aria-current='page'] {
+    text-decoration: underline;
+    text-decoration-thickness: 1px;
+  }
+  .site-icons {
+    display: flex;
+    align-items: center;
+    margin-right: -10px;
+  }
+  .site-icon {
+    position: relative;
+    display: grid;
+    place-items: center;
+    width: 44px;
+    height: 44px;
+    color: inherit;
+    cursor: pointer;
+  }
+  .site-svg {
+    width: 22px;
+    height: 22px;
+  }
+  .site-count {
+    position: absolute;
+    top: 4px;
+    right: 2px;
+    min-width: 18px;
+    height: 18px;
+    padding: 0 5px;
+    border-radius: 999px;
+    background: theme('colors.brand');
+    color: theme('colors.on-brand');
+    font-size: 10px;
+    font-weight: 600;
+    line-height: 18px;
+    letter-spacing: 0;
+    text-align: center;
+  }
+  .site-burger {
+    display: none;
+    border: 0;
+    background: none;
+    padding: 0;
+  }
+  .site-panel-close {
+    border: 0;
+    background: none;
+    padding: 0;
+  }
+
+  /* Search (D-079): the word turns into a pill on hover or focus, back on mouse-out unless something was typed. */
+  .site-search {
+    --t: 320ms cubic-bezier(0.65, 0, 0.35, 1);
+    position: relative;
+    display: inline-flex;
+    align-items: center;
+    width: 3.6em;
+    height: 40px;
+    border: 1px solid transparent;
+    border-radius: 999px;
+    transition:
+      width var(--t),
+      background-color var(--t),
+      border-color var(--t),
+      color var(--t);
+  }
+  .site-search-word {
+    position: absolute;
+    left: 0;
+    top: 50%;
+    transform: translateY(-50%);
+    white-space: nowrap;
+    pointer-events: none;
+    transition:
+      transform var(--t),
+      color var(--t),
+      opacity 120ms;
+  }
+  .site-search .site-svg {
+    position: absolute;
+    left: 13px;
+    width: 16px;
+    height: 16px;
+    opacity: 0;
+    transition: opacity var(--t);
+  }
+  .site-search input {
+    box-sizing: border-box;
+    width: 100%;
+    height: 100%;
+    padding: 0;
+    border: 0;
+    background: transparent;
+    font: inherit;
+    letter-spacing: inherit;
+    color: inherit;
+    outline: none;
+    cursor: pointer;
+    transition: padding var(--t);
+  }
+  .site-search input::placeholder {
+    color: transparent;
+  }
+  .site-search input::-webkit-search-cancel-button,
+  .site-search input::-webkit-search-decoration {
+    -webkit-appearance: none;
+    display: none;
+  }
+  .site-search:hover,
+  .site-search:focus-within,
+  .site-search:has(input:not(:placeholder-shown)) {
+    width: 260px;
+    background: theme('colors.paper');
+    border-color: theme('colors.line');
+    color: theme('colors.ink');
+  }
+  .site-search:hover input,
+  .site-search:focus-within input,
+  .site-search:has(input:not(:placeholder-shown)) input {
+    padding: 0 16px 0 38px;
+    cursor: text;
+  }
+  .site-search:hover .site-search-word,
+  .site-search:focus-within .site-search-word {
+    transform: translate(38px, -50%);
+    color: theme('colors.ink-muted');
+  }
+  .site-search:has(input:not(:placeholder-shown)) .site-search-word {
+    opacity: 0;
+  }
+  .site-search:hover .site-svg,
+  .site-search:focus-within .site-svg,
+  .site-search:has(input:not(:placeholder-shown)) .site-svg {
+    opacity: 1;
+  }
+  .site-search:focus-within {
+    outline: 2px solid currentColor;
+    outline-offset: 2px;
+  }
+
+  /* The demo banner: one short line on narrow screens. */
+  .site-banner-short {
+    display: none;
+  }
+  .site-banner summary::-webkit-details-marker {
+    display: none;
+  }
+  .site-banner details[open] summary {
+    display: none;
+  }
+  @media (max-width: 1099px) {
+    .site-banner-long {
+      display: none;
+    }
+    .site-banner-short {
+      display: inline;
+    }
+  }
+
+  @media (max-width: 1023px) {
+    .site-search:hover,
+    .site-search:focus-within,
+    .site-search:has(input:not(:placeholder-shown)) {
+      width: 200px;
+    }
+  }
+  @media (max-width: 767px) {
+    .site-bar {
+      height: 56px;
+      gap: 0;
+    }
+    .site-links {
+      display: none;
+    }
+    .site-burger {
+      display: grid;
+    }
+  }
+
+  /* Phones: the menu is a side panel over the page, in and out with the same motion, icons only (D-079). */
+  .site-scrim {
+    position: fixed;
+    inset: 0;
+    z-index: 60;
+    background: rgb(20 17 15 / 0.4);
+    opacity: 0;
+    pointer-events: none;
+    transition: opacity 420ms cubic-bezier(0.65, 0, 0.35, 1);
+  }
+  .site-panel {
+    position: fixed;
+    top: 0;
+    right: 0;
+    bottom: 0;
+    z-index: 61;
+    display: flex;
+    flex-direction: column;
+    width: min(86%, 360px);
+    overflow-y: auto;
+    padding: 6px 16px 24px 20px;
+    border-left: 1px solid theme('colors.line');
+    background: theme('colors.canvas');
+    color: theme('colors.ink');
+    letter-spacing: normal;
+    visibility: hidden;
+    transform: translateX(105%);
+    transition:
+      transform 420ms cubic-bezier(0.65, 0, 0.35, 1),
+      visibility 0s 420ms;
+  }
+  .site-scrim[data-open] {
+    opacity: 1;
+    pointer-events: auto;
+  }
+  .site-panel[data-open] {
+    visibility: visible;
+    transform: none;
+    transition: transform 420ms cubic-bezier(0.65, 0, 0.35, 1);
+  }
+  .site-panel-close {
+    align-self: flex-end;
+    margin-right: -10px;
+  }
+  .site-panel-search {
+    display: flex;
+    align-items: center;
+    gap: 8px;
+    height: 44px;
+    margin: 8px 0 12px;
+    padding: 0 16px;
+    border: 1px solid theme('colors.line');
+    border-radius: 999px;
+    background: theme('colors.paper');
+    color: theme('colors.ink-muted');
+  }
+  .site-panel-search .site-svg {
+    width: 18px;
+    height: 18px;
+    flex: none;
+  }
+  .site-panel-search input {
+    flex: 1;
+    min-width: 0;
+    border: 0;
+    background: transparent;
+    font-size: 15px;
+    color: theme('colors.ink');
+    outline: none;
+  }
+  .site-panel-big a {
+    display: block;
+    padding: 14px 0;
+    border-bottom: 1px solid theme('colors.line');
+    font-family: var(--font-display), Georgia, serif;
+    font-size: 30px;
+    line-height: 1;
+  }
+  .site-panel-small {
+    margin-top: 20px;
+  }
+  .site-panel-small a {
+    display: block;
+    padding: 10px 0;
+    font-size: 15px;
+    color: theme('colors.ink-muted');
+  }
+}
+
+/*
+ * The info pages as a glass panel over the page they were opened from (D-092, features/info/info-panel.tsx): a soft blur
+ * of the page behind (D-080; not on anything sticky, engineering.md §Budgets), the page dimmed a little, a small ×.
+ * Phones: the same glass as a sheet rising from the bottom.
+ */
+@layer components {
+  html.info-open {
+    overflow: hidden;
+  }
+  .info-scrim {
+    position: fixed;
+    inset: 0;
+    z-index: 70;
+    background: rgb(20 17 15 / 0.22);
+    -webkit-backdrop-filter: blur(3px);
+    backdrop-filter: blur(3px);
+    animation: info-fade 0.3s ease;
+  }
+  .info-glass {
+    position: fixed;
+    z-index: 71;
+    left: 50%;
+    top: 50%;
+    display: flex;
+    flex-direction: column;
+    width: min(880px, calc(100% - 48px));
+    height: min(78vh, 780px);
+    transform: translate(-50%, -50%);
+    border: 1px solid rgb(255 255 255 / 0.55);
+    border-radius: 28px;
+    background: rgb(251 248 243 / 0.72);
+    -webkit-backdrop-filter: blur(22px) saturate(140%);
+    backdrop-filter: blur(22px) saturate(140%);
+    box-shadow: 0 24px 60px rgb(20 17 15 / 0.18);
+    animation: info-rise 0.3s ease;
+  }
+  .info-head {
+    display: flex;
+    align-items: center;
+    gap: 8px;
+    padding: 14px 14px 10px 20px;
+    border-bottom: 1px solid rgb(30 27 22 / 0.08);
+  }
+  .info-tabs {
+    display: flex;
+    flex: 1;
+    gap: 6px;
+    min-width: 0;
+    overflow-x: auto;
+    padding-right: 40px;
+    -webkit-mask-image: linear-gradient(to right, #000 calc(100% - 40px), transparent);
+    mask-image: linear-gradient(to right, #000 calc(100% - 40px), transparent);
+  }
+  .info-tabs a {
+    flex: none;
+    min-height: 40px;
+    padding: 0 14px;
+    border-radius: 999px;
+    font-size: 14px;
+    font-weight: 500;
+    line-height: 40px;
+    color: theme('colors.ink-muted');
+  }
+  .info-tabs a[aria-current='page'] {
+    background: rgb(30 27 22 / 0.88);
+    color: theme('colors.paper');
+  }
+  .info-close {
+    position: relative;
+    display: grid;
+    flex: none;
+    place-items: center;
+    width: 32px;
+    height: 32px;
+    margin: 0 6px;
+    border: 0;
+    border-radius: 50%;
+    background: rgb(255 255 255 / 0.6);
+    color: theme('colors.ink');
+    cursor: pointer;
+  }
+  .info-close::after {
+    content: '';
+    position: absolute;
+    inset: -6px;
+  }
+  .info-close svg {
+    width: 16px;
+    height: 16px;
+  }
+  .info-body {
+    flex: 1;
+    overflow-y: auto;
+    overscroll-behavior: contain;
+    padding: 22px clamp(20px, 4vw, 48px) 32px;
+  }
+  .info-body > div h2,
+  .info-body > div h3 {
+    margin-top: 1.4em;
+    font-family: var(--font-heading), system-ui, sans-serif;
+    font-size: 19px;
+    font-weight: 500;
+  }
+  @media (max-width: 640px) {
+    .info-glass {
+      left: 0;
+      right: 0;
+      top: auto;
+      bottom: 0;
+      width: auto;
+      height: 90vh;
+      transform: none;
+      border-radius: 24px 24px 0 0;
+      animation-name: info-sheet;
+    }
+    .info-head {
+      padding: 16px 8px 8px 14px;
+    }
+    .info-head::before {
+      content: '';
+      position: absolute;
+      top: 6px;
+      left: 50%;
+      width: 40px;
+      height: 4px;
+      margin-left: -20px;
+      border-radius: 2px;
+      background: rgb(30 27 22 / 0.2);
+    }
+    .info-body {
+      padding: 18px 18px 28px;
+    }
+  }
+  @keyframes info-fade {
+    from {
+      opacity: 0;
+    }
+  }
+  @keyframes info-rise {
+    from {
+      opacity: 0;
+      transform: translate(-50%, calc(-50% + 16px)) scale(0.985);
+    }
+  }
+  @keyframes info-sheet {
+    from {
+      opacity: 0;
+      transform: translateY(40px);
+    }
   }
 }

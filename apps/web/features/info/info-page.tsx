@@ -8,7 +8,7 @@ export function InfoPage({
 }): React.JSX.Element {
   return (
     <article className="max-w-2xl space-y-4">
-      <h1 className="font-hero text-ink text-[clamp(32px,3vw,52px)] font-medium leading-tight tracking-[-0.03em]">{title}</h1>
+      <h1 className="font-heading text-ink text-[clamp(32px,3vw,52px)] font-medium leading-tight tracking-[-0.03em]">{title}</h1>
       <div className="text-ink space-y-3">{children}</div>
     </article>
   );

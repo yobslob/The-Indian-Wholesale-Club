@@ -138,7 +138,7 @@ export function CheckoutFlow(): React.JSX.Element {
       <div className="grid gap-8 md:grid-cols-2">
         <OrderSummary quote={started.quote} />
         <div className="space-y-4">
-          <h2 className="font-hero text-ink text-[clamp(22px,1.8vw,30px)] font-medium tracking-[-0.02em]">Payment</h2>
+          <h2 className="font-heading text-ink text-[clamp(22px,1.8vw,30px)] font-medium tracking-[-0.02em]">Payment</h2>
           {error ? (
             <p className="text-danger text-sm" role="alert">
               {error}

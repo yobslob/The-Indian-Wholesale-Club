@@ -11,7 +11,7 @@ export function HeroScroll(): null {
   useEffect(() => {
     const root = document.documentElement;
     const hero = document.querySelector<HTMLElement>('[data-home-hero]');
-    const header = document.querySelector<HTMLElement>('.site-header');
+    const header = document.querySelector<HTMLElement>('.site-top');
     if (!hero) return;
     let frame = 0;
     const update = (): void => {

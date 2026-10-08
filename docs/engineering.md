@@ -30,10 +30,9 @@ Baseline numbers come from the founder's first `node scripts/check.mjs` run and 
   legacy shared secret (local Supabase and old hosted projects use the shared secret). Rate limits run inside the routes.
 - **PR-5 Server-first:** Server Components by default. Client components only for real interaction (add to cart, variant
   picker, live stock). No animation libraries on the storefront (framer-motion removed in R5) except Lenis smooth scrolling,
-  which the founder asked for (D-049, `design.md` §Direction: one small client module, off for reduced motion). Fonts (D-050 – D-052):
-  Helvetica Neue and Georgia as system fonts with self-hosted fallbacks (TeX Gyre Heros, Gelasio) that load only where the
-  system font is missing; Poppins, Montserrat and Inter (footer only) via `next/font`, self-hosted and subset.
-  **Target (D-079):** two families, Cinzel and Karla, via `next/font` (self-hosted, subset); Georgia/Gelasio for the logo only.
+  which the founder asked for (D-049, `design.md` §Direction: one small client module, off for reduced motion). Fonts
+  (D-079, D-080, since 2026-10-08): Cinzel, Syne and Karla via `next/font`, self-hosted Latin variable files (about 85 KB
+  in all); Georgia as the system font for the logo text with Gelasio, loaded only where Georgia is missing.
 - **PR-6 Assets:** `next/image` with `sizes` that match the width the image really has at each breakpoint (Tailwind's `md` 768 and
   `xl` 1280; rows use their `clamp()` widths, `features/catalog/product-card.tsx`), so photos are never upscaled and never
   oversized; quality stays Next's default 75. Uploaded photos get a new random path and are never overwritten, so they are
@@ -150,8 +149,8 @@ scripts/build-india-map.mjs  regenerates packages/shared/src/india-map/india-map
   memory is emptied on sign-in and sign-out (`lib/session.tsx`). JSON compression is left to the transport: the phone's
   HTTP stack asks for gzip by itself and the hosts compress (their documented behaviour; not measured from the app).
 - **Look and motion (C1 1.4):** the same tokens and font roles as the website (`tailwind.config.js`, `lib/fonts.ts`). A
-  native font file is one weight, so weights are classes (`font-ui-semibold`). iOS uses its built-in Helvetica Neue and
-  Georgia; Android loads TeX Gyre Heros (`assets/fonts`) and Gelasio. The splash screen stays until the fonts are loaded.
+  native font file is one weight, so weights are classes (`font-ui-semibold`). Cinzel, Syne and Karla come from the
+  `@expo-google-fonts` packages (D-079, D-080); the logo text uses Georgia on iOS and Gelasio on Android. The splash screen stays until the fonts are loaded.
   Motion is Reanimated (Home hero word fade on scroll, cards fading in), off when the phone asks for reduced motion.
   The India map is shared with the website (`@repo/shared/india-map`) and drawn with `react-native-svg`. Photos use
   `expo-image` (cached in memory and on disk) through `components/photo.tsx`, which asks the website's image resizer

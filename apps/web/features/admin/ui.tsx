@@ -11,7 +11,7 @@ export const secondaryButton = 'font-ui min-h-11 rounded-md border border-line b
 export const linkButton = 'min-h-11 underline';
 
 export function PageTitle({ children }: { children: React.ReactNode }): React.JSX.Element {
-  return <h1 className="font-hero text-[28px] font-medium leading-tight tracking-[-0.02em]">{children}</h1>;
+  return <h1 className="font-heading text-[28px] font-medium leading-tight tracking-[-0.02em]">{children}</h1>;
 }
 
 /** Small uppercase label above a group, like the store's "OPEN NOW". */

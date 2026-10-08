@@ -21,7 +21,9 @@ hero sits on a symmetric grid** (four equal columns of 3 : 4 rounded product pho
 two-panel rows), full width with small side gutters. **Fonts:** Helvetica Neue for the hero and the section headings
 (D-051; TeX Gyre Heros where it is not installed, D-052), Georgia for the logo, product title and origin line (Gelasio
 where it is not installed), Poppins for paragraphs, Montserrat for interface text (navigation, buttons, labels, product
-names on cards), Inter for the footer only. No dark mode. **Target (D-079):** Cinzel + Karla, logo Georgia.
+names on cards), Inter for the footer only. No dark mode. **Replaced by D-079 / D-080 (built 2026-10-08):** Cinzel (the
+Home name, state names, product titles, stamps), Syne (page and section headings), Karla (everything else), Georgia for
+the logo text only.
 **Home hero (D-052 – D-054):** the founder's photo fills the first screen edge to edge, behind the nav bar too; "Indian Wholesale Club" (D-077) stands on its white wall,
 one word per line, right-aligned, with the label "Clothing and spices from home" under it and nothing else (D-055; **target**
 D-079: "Miss local market? Start here.", the name sized and placed on the white wall at every width); the
@@ -93,8 +95,8 @@ unit test `packages/tokens/tests` fails if a text colour drops below WCAG AA on 
 | region accent (fallback) | `region` | overridden per region by `regions.accent_color` |
 | map regions not open yet | `land` | the India map |
 | status | `positive`, `caution`, `danger` | alerts, badges |
-Also `rounded-sm/md/lg/pill`, `duration-fast/base/slow` and the font roles `font-hero`, `font-display`, `font-body`,
-`font-ui`, `font-foot` (§Direction; the web maps them to its self-hosted fonts in `apps/web/app/fonts.ts`, the app to
+Also `rounded-sm/md/lg/pill`, `duration-fast/base/slow` and the font roles `font-display` (Cinzel), `font-heading`
+(Syne), `font-body`, `font-ui`, `font-foot` (all Karla) and `font-logo` (Georgia) (D-079, D-080; the web maps them to its self-hosted fonts in `apps/web/app/fonts.ts`, the app to
 the fonts it loads in `apps/app/lib/fonts.ts`, with one class per weight). The names
 avoid the old theme's keys (`primary`, `accent`, `success`, …); a test keeps them from coming back.
 

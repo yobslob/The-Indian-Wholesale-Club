@@ -6,8 +6,8 @@ import styles from './home-hero.module.css';
 const WORDS = ['Indian', 'Wholesale', 'Club'] as const;
 
 /**
- * Home hero (design.md §Direction, D-052 – D-055): the founder's photo (AI-generated, IWC holds the
- * rights) with the brand name and "Clothing and spices from home". Server component; the only script is
+ * Home hero (D-052 – D-055, D-079): the founder's photo (AI-generated, IWC holds the rights) with the brand name on its
+ * white wall and "Miss local market? Start here.", which jumps to Pick your home. Server component; the only script is
  * HeroScroll, which publishes the scroll position for the CSS fade.
  */
 export function HomeHero(): React.JSX.Element {
@@ -22,14 +22,16 @@ export function HomeHero(): React.JSX.Element {
         className={styles.photo}
       />
       <div className={styles.words}>
-        <h1 className={`${styles.brand} font-hero`}>
+        <h1 className={`${styles.brand} font-display`}>
           {WORDS.map((word, i) => (
             <span key={word} className={styles.word} style={{ '--i': i } as React.CSSProperties}>
               {word}{' '}
             </span>
           ))}
         </h1>
-        <p className={`${styles.label} font-hero`}>Clothing and spices from home</p>
+        <p className={`${styles.line} ${styles.word} font-body`} style={{ '--i': 3 } as React.CSSProperties}>
+          Miss local market? <a href="#pick">Start here.</a>
+        </p>
       </div>
       <HeroScroll />
     </section>

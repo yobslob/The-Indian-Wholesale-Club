@@ -20,7 +20,7 @@ export function CuratedCard({
     <section aria-labelledby={id} className="py-[clamp(24px,3vw,48px)]">
       <div className="bg-surface overflow-hidden rounded-lg px-[var(--gut)] py-[clamp(18px,2vw,32px)]">
         <p className="font-ui text-ink-muted text-[11px] font-semibold uppercase tracking-[0.16em]">Curated for you</p>
-        <h2 id={id} className="font-hero mt-2.5 text-[clamp(26px,2.2vw,38px)] font-medium leading-tight tracking-[-0.025em]">
+        <h2 id={id} className="font-heading mt-2.5 text-[clamp(26px,2.2vw,38px)] font-medium leading-tight tracking-[-0.025em]">
           Picked for you
         </h2>
         <p className="text-ink-muted mb-[clamp(16px,1.8vw,24px)] mt-2 text-sm">Chosen by us from {regionName}.</p>

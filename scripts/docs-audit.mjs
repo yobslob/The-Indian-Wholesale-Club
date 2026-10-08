@@ -94,10 +94,11 @@ for (const [id, file] of cited(/\bQ-\d+\b/g, [...notDecisions, ...Object.entries
     problems.push(`${file}: cites ${id}, which docs/questions.md does not define`);
 }
 
-// 3. Storefront pages (route groups like (store) are not part of the URL).
+// 3. Storefront pages (route groups like (store) are not part of the URL). Parallel slots (@info) hold intercepting
+// routes that draw an existing page in another way (the info panel, D-092): they add no URL, so they are skipped.
 const storefront = docs['docs/storefront.md'];
 const storeDir = 'apps/web/app/(store)';
-const webRoutes = walk(storeDir, (f) => /page\.tsx$/.test(f)).map((f) => {
+const webRoutes = walk(storeDir, (f) => /page\.tsx$/.test(f) && !posix(f).includes('/@')).map((f) => {
   const rel = posix(path.relative(storeDir, path.dirname(f)));
   return (
     '/' +

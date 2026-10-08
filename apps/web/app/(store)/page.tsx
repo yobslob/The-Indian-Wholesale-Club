@@ -20,7 +20,7 @@ export default async function HomePage(): Promise<React.JSX.Element> {
 
       <section id="pick" aria-labelledby="pick-home" className="px-[var(--gut)] py-[clamp(28px,3.4vw,56px)]">
         <div className="mb-[clamp(18px,2vw,28px)]">
-          <h2 id="pick-home" className="font-hero text-[clamp(26px,2.2vw,38px)] font-medium leading-tight tracking-[-0.025em]">
+          <h2 id="pick-home" className="font-heading text-[clamp(26px,2.2vw,38px)] font-medium leading-tight tracking-[-0.025em]">
             Pick your home
           </h2>
           <p className="text-ink-muted mt-1.5 text-sm">

@@ -37,7 +37,7 @@ export default async function SearchPage({
 
   return (
     <div className="space-y-8">
-      <h1 className="font-hero text-ink text-[clamp(32px,3vw,52px)] font-medium leading-tight tracking-[-0.03em]">Search</h1>
+      <h1 className="font-heading text-ink text-[clamp(32px,3vw,52px)] font-medium leading-tight tracking-[-0.03em]">Search</h1>
       <form action="/search" className="flex max-w-3xl gap-2" role="search">
         <label htmlFor="q" className="sr-only">
           Search
@@ -58,12 +58,12 @@ export default async function SearchPage({
         <>
           {regions.length > 0 ? (
             <section className="space-y-3">
-              <h2 className="font-hero text-ink text-[clamp(22px,1.8vw,30px)] font-medium tracking-[-0.02em]">States</h2>
+              <h2 className="font-heading text-ink text-[clamp(22px,1.8vw,30px)] font-medium tracking-[-0.02em]">States</h2>
               <RegionGrid regions={regions} />
             </section>
           ) : null}
           <section className="space-y-3">
-            <h2 className="font-hero text-ink text-[clamp(22px,1.8vw,30px)] font-medium tracking-[-0.02em]">Products</h2>
+            <h2 className="font-heading text-ink text-[clamp(22px,1.8vw,30px)] font-medium tracking-[-0.02em]">Products</h2>
             {products.length === 0 ? (
               <p className="text-ink-muted text-sm">No products match “{q}”.</p>
             ) : (

@@ -71,7 +71,7 @@ export async function BrowseByType({
 
   return (
     <div className="space-y-6">
-      <h1 className="font-hero text-ink text-[clamp(32px,3vw,52px)] font-medium leading-tight tracking-[-0.03em]">
+      <h1 className="font-heading text-ink text-[clamp(32px,3vw,52px)] font-medium leading-tight tracking-[-0.03em]">
         {categoryName ?? title}
         {stateName ? <span className="text-ink-muted"> · {stateName}</span> : null}
       </h1>

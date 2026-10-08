@@ -7,7 +7,7 @@ import type { ProductCard as ProductCardData, RegionProductCard } from '@repo/db
 
 type CardData = ProductCardData & Partial<Pick<RegionProductCard, 'available' | 'quick_add'>>;
 
-export const sectionHeading = 'font-hero text-[clamp(26px,2.2vw,38px)] font-medium leading-tight tracking-[-0.025em]';
+export const sectionHeading = 'font-heading text-[clamp(26px,2.2vw,38px)] font-medium leading-tight tracking-[-0.025em]';
 export const seeAllPill =
   'font-ui border-line bg-paper hover:border-ink inline-flex min-h-11 shrink-0 items-center rounded-pill border px-5 text-sm font-medium';
 

@@ -15,7 +15,7 @@ export default async function StatesPage(): Promise<React.JSX.Element> {
   return (
     <div className="space-y-6">
       <div>
-        <h1 className="font-hero text-ink text-[clamp(32px,3vw,52px)] font-medium leading-tight tracking-[-0.03em]">Pick your home</h1>
+        <h1 className="font-heading text-ink text-[clamp(32px,3vw,52px)] font-medium leading-tight tracking-[-0.03em]">Pick your home</h1>
         <p className="text-ink-muted mt-1.5 text-sm">All 28 states and 8 union territories. Find yours on the map or by name.</p>
       </div>
       <PickHome regions={sorted} delivery={delivery} />

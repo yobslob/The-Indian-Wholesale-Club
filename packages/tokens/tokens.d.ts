@@ -17,6 +17,6 @@ declare const tokens: {
   >;
   radius: Record<'sm' | 'md' | 'lg' | 'pill', string>;
   duration: Record<'fast' | 'base' | 'slow', string>;
-  fonts: Record<'hero' | 'display' | 'body' | 'ui' | 'foot', string[]>;
+  fonts: Record<'display' | 'heading' | 'body' | 'ui' | 'foot' | 'logo', string[]>;
 };
 export = tokens;

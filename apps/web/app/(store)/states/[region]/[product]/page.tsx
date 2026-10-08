@@ -68,7 +68,7 @@ export default async function ProductPage({ params }: { params: Params }): Promi
             ) : null}
             {chart ? <Disclosure title="Size chart">{chart}</Disclosure> : null}
           </div>
-          <p className="border-line font-display mt-4 border-t pt-4 text-[19px] italic">
+          <p className="border-line font-display mt-4 border-t pt-4 text-[17px]">
             Made in India · from {product.region_name} · Imported
           </p>
         </aside>

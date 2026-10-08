@@ -25,7 +25,7 @@ export function ReviewsSection({ reviews, productId }: { reviews: ReviewsSummary
   return (
     <section aria-labelledby="reviews" className="py-[clamp(28px,3.4vw,56px)]">
       <div className="mb-[clamp(18px,2vw,28px)] flex flex-wrap items-end justify-between gap-4">
-        <h2 id="reviews" className="font-hero text-[clamp(26px,2.2vw,38px)] font-medium leading-tight tracking-[-0.025em]">
+        <h2 id="reviews" className="font-heading text-[clamp(26px,2.2vw,38px)] font-medium leading-tight tracking-[-0.025em]">
           Reviews
         </h2>
         <Link
@@ -37,13 +37,13 @@ export function ReviewsSection({ reviews, productId }: { reviews: ReviewsSummary
       </div>
 
       {reviews.count === 0 ? (
-        <p className="bg-surface font-display rounded-lg p-[clamp(18px,2vw,32px)] text-[clamp(20px,1.8vw,28px)]">
+        <p className="bg-surface font-body rounded-lg p-[clamp(18px,2vw,32px)] text-[clamp(20px,1.8vw,28px)]">
           No reviews yet.
         </p>
       ) : (
         <div className="grid gap-[var(--gap)] md:grid-cols-2 xl:grid-cols-4">
           <div className="bg-surface rounded-lg p-[clamp(18px,2vw,32px)]">
-            <p className="font-hero m-0 text-6xl font-medium leading-none tracking-[-0.04em]">{reviews.average?.toFixed(1)}</p>
+            <p className="font-heading m-0 text-6xl font-medium leading-none tracking-[-0.04em]">{reviews.average?.toFixed(1)}</p>
             <Stars rating={reviews.average ?? 0} label={`${reviews.average?.toFixed(1)} out of 5`} />
             <p className="text-ink-muted m-0 text-sm">
               Based on {reviews.count} {reviews.count === 1 ? 'review' : 'reviews'}

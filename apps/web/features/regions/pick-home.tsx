@@ -108,7 +108,7 @@ export function PickHome({
                       <textPath href={`#pm-${r.slug}`}>{postmark.repeat(2)}</textPath>
                     </text>
                   ) : null}
-                  <text x="50" y="54" textAnchor="middle" fontSize="13" fill="currentColor" className="font-display italic">
+                  <text x="50" y="54" textAnchor="middle" fontSize="13" fill="currentColor" className="font-logo italic">
                     IWC
                   </text>
                 </svg>

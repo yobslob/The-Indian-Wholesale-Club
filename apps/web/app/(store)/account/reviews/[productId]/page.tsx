@@ -45,7 +45,7 @@ export default async function WriteReviewPage({
         </Link>{' '}
         · {product.region_name}
       </p>
-      <h1 className="font-hero text-[clamp(32px,3vw,48px)] font-medium leading-tight tracking-[-0.03em]">Write a review</h1>
+      <h1 className="font-heading text-[clamp(32px,3vw,48px)] font-medium leading-tight tracking-[-0.03em]">Write a review</h1>
 
       {sent ? (
         <p className="bg-surface rounded-lg p-6">

@@ -15,7 +15,7 @@ export default async function AccountPage(): Promise<React.JSX.Element> {
 
   return (
     <div className="space-y-8">
-      <h1 className="font-hero text-ink text-[clamp(32px,3vw,52px)] font-medium leading-tight tracking-[-0.03em]">Your account</h1>
+      <h1 className="font-heading text-ink text-[clamp(32px,3vw,52px)] font-medium leading-tight tracking-[-0.03em]">Your account</h1>
       <nav className="flex flex-wrap gap-4 text-sm">
         <Link href="/account/orders" className="underline">
           Orders

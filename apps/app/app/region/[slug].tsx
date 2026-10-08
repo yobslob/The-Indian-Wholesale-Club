@@ -46,7 +46,7 @@ export default function RegionScreen(): React.JSX.Element {
             {data.region.greeting_latin || data.region.greeting_meaning ? (
               <Body muted>{[data.region.greeting_latin, data.region.greeting_meaning].filter(Boolean).join(' · ')}</Body>
             ) : null}
-            <Text accessibilityRole="header" className="font-hero text-ink mt-3 text-[60px] leading-[62px] tracking-[-2.5px]">
+            <Text accessibilityRole="header" className="font-display text-ink mt-3 text-[52px] leading-[54px]">
               {data.region.name}
             </Text>
             {data.region.tagline ? <Body>{data.region.tagline}</Body> : null}
@@ -65,7 +65,7 @@ export default function RegionScreen(): React.JSX.Element {
 
           {!data.region.is_live ? (
             <View className="bg-surface rounded-lg p-5">
-              <Text className="font-display text-ink text-xl">
+              <Text className="font-body text-ink text-xl">
                 {data.region.name} is coming soon. We are adding its clothing and spices.
               </Text>
             </View>
@@ -112,7 +112,7 @@ export default function RegionScreen(): React.JSX.Element {
                 <View className="gap-4 pt-2">
                   <Heading>Spices</Heading>
                   <View className="bg-surface rounded-lg p-5">
-                    <Text className="font-display text-ink text-xl">Spices from {data.region.name} are coming soon.</Text>
+                    <Text className="font-body text-ink text-xl">Spices from {data.region.name} are coming soon.</Text>
                   </View>
                 </View>
               )}

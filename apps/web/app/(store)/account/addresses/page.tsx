@@ -20,7 +20,7 @@ export default async function AddressesPage(): Promise<React.JSX.Element> {
 
   return (
     <div className="space-y-8">
-      <h1 className="font-hero text-ink text-[clamp(32px,3vw,52px)] font-medium leading-tight tracking-[-0.03em]">Addresses</h1>
+      <h1 className="font-heading text-ink text-[clamp(32px,3vw,52px)] font-medium leading-tight tracking-[-0.03em]">Addresses</h1>
       {addresses.length > 0 ? (
         <ul className="space-y-3">
           {addresses.map((a) => (
@@ -56,7 +56,7 @@ export default async function AddressesPage(): Promise<React.JSX.Element> {
       )}
 
       <form action={addAddressAction} className="grid max-w-xl gap-4">
-        <h2 className="font-hero text-ink text-[clamp(22px,1.8vw,30px)] font-medium tracking-[-0.02em]">Add an address</h2>
+        <h2 className="font-heading text-ink text-[clamp(22px,1.8vw,30px)] font-medium tracking-[-0.02em]">Add an address</h2>
         <label className="font-ui block text-[13px] font-medium">
           Label (optional)
           <input name="label" className={input} />

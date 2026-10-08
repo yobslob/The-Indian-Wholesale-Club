@@ -37,7 +37,7 @@ function Word({
   return (
     <Animated.Text
       style={[style, { fontSize: size, lineHeight: size * 0.95, letterSpacing: -size * 0.05 }]}
-      className="font-hero text-canvas text-right"
+      className="font-display text-canvas text-right"
     >
       {word}
     </Animated.Text>
@@ -76,7 +76,7 @@ export function HomeHero({ scrollY }: { scrollY: SharedValue<number> }): React.J
             <Word word={word} index={i} size={size} scrollY={scrollY} heroHeight={heroHeight} />
           </View>
         ))}
-        <Text className="font-hero text-canvas mt-3.5 text-right text-[11px] uppercase tracking-[1.8px]">
+        <Text className="font-body text-canvas mt-3.5 text-right text-[11px] uppercase tracking-[1.8px]">
           Clothing and spices from home
         </Text>
       </View>
@@ -97,7 +97,7 @@ export function HomeTopBar({ scrollY, topInset }: { scrollY: SharedValue<number>
       style={[style, { paddingTop: topInset }]}
       className="bg-canvas border-line absolute left-0 right-0 top-0 border-b px-4 pb-3"
     >
-      <Text className="font-display text-ink text-[20px]">The Indian Wholesale Club</Text>
+      <Text className="font-logo text-ink text-[20px]">The Indian Wholesale Club</Text>
     </Animated.View>
   );
 }

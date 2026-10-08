@@ -22,14 +22,15 @@ module.exports = {
   radius: { sm: '6px', md: '16px', lg: '22px', pill: '999px' },
   duration: { fast: '120ms', base: '200ms', slow: '320ms' },
   /**
-   * Font roles (D-050 – D-052). Family names only: the web maps them to its self-hosted fonts
-   * (apps/web/app/fonts.ts), the app to the fonts it bundles.
+   * Font roles (D-079, D-080, D-096). Family names only: the web maps them to its self-hosted fonts
+   * (apps/web/app/fonts.ts), the app to the fonts it bundles (apps/app/lib/fonts.ts).
    */
   fonts: {
-    hero: ['Helvetica Neue', 'Helvetica', 'TeX Gyre Heros', 'Arial', 'sans-serif'], // hero + section headings
-    display: ['Georgia', 'Gelasio', 'Times New Roman', 'serif'], // logo, product title, origin line
-    body: ['Poppins', 'system-ui', 'sans-serif'], // paragraphs
-    ui: ['Montserrat', 'system-ui', 'sans-serif'], // navigation, buttons, labels, product names on cards
-    foot: ['Inter', 'system-ui', 'sans-serif'], // the footer only
+    display: ['Cinzel', 'Georgia', 'serif'], // the Home name, state names, product titles, the origin line, stamps
+    heading: ['Syne', 'system-ui', 'sans-serif'], // page and section headings below the hero (D-080)
+    body: ['Karla', 'system-ui', 'sans-serif'], // paragraphs
+    ui: ['Karla', 'system-ui', 'sans-serif'], // navigation, buttons, labels, prices, product names on cards
+    foot: ['Karla', 'system-ui', 'sans-serif'], // the footer
+    logo: ['Georgia', 'Gelasio', 'Times New Roman', 'serif'], // the logo text only (D-077's India mark is fitted to Georgia)
   },
 };

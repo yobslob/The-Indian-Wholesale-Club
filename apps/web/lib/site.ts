@@ -4,7 +4,7 @@ export const SITE_SHORT_NAME = 'IWC';
 
 /** Customer info pages (storefront.md). No admin link anywhere (D-006). */
 export const INFO_LINKS = [
-  { href: '/about', label: 'About' },
+  { href: '/about', label: 'About us' },
   { href: '/how-it-works', label: 'How it works' },
   { href: '/faq', label: 'FAQ' },
   { href: '/shipping-returns', label: 'Shipping & returns' },

@@ -1,14 +1,15 @@
-import { ComingSoon, InfoPage } from '@/features/info/info-page';
+import { AboutText } from '@/features/info/about';
+import { InfoPage } from '@/features/info/info-page';
 
 import type { Metadata } from 'next';
 
-export const metadata: Metadata = { title: 'About' };
+export const metadata: Metadata = { title: 'About us' };
 
-// TODO(founder): the About story (design.md voice). Claude-written text would be a draft (D-019).
+/** The page itself (a direct visit or a search engine); from any store page the same text opens in the glass panel (D-092). */
 export default function Page(): React.JSX.Element {
   return (
-    <InfoPage title="About">
-      <ComingSoon />
+    <InfoPage title="About us">
+      <AboutText />
     </InfoPage>
   );
 }

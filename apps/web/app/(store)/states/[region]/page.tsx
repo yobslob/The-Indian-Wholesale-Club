@@ -25,7 +25,7 @@ export async function generateMetadata({ params }: { params: Params }): Promise<
   return page ? { title: page.region.name } : {};
 }
 
-const heading = 'font-hero text-[clamp(26px,2.2vw,38px)] font-medium leading-tight tracking-[-0.025em]';
+const heading = 'font-heading text-[clamp(26px,2.2vw,38px)] font-medium leading-tight tracking-[-0.025em]';
 const pill =
   'font-ui border-line bg-paper hover:border-ink inline-flex min-h-11 items-center gap-2 rounded-pill border px-5 text-sm font-medium';
 
@@ -65,7 +65,7 @@ export default async function RegionPage({ params }: { params: Params }): Promis
       style={region.accent_color ? ({ '--region-accent': region.accent_color } as React.CSSProperties) : undefined}
     >
       <section className="grid gap-x-[var(--gap)] gap-y-8 pb-[clamp(24px,4vw,64px)] md:grid-cols-2">
-        <div className="font-hero md:pt-[clamp(16px,5vw,80px)]">
+        <div className="font-body md:pt-[clamp(16px,5vw,80px)]">
           <p className="font-ui text-ink-muted mb-7 text-[13px] font-medium">
             <Link href="/states" className="underline">
               All of India
@@ -87,7 +87,7 @@ export default async function RegionPage({ params }: { params: Params }): Promis
               {region.greeting_meaning ? <span className="text-ink">{region.greeting_meaning}</span> : null}
             </p>
           ) : null}
-          <h1 className="m-0 text-[clamp(64px,9.5vw,164px)] font-medium leading-[0.92] tracking-[-0.045em]">{region.name}</h1>
+          <h1 className="font-display text-ink m-0 text-[clamp(54px,7.4vw,112px)] font-normal leading-[0.95]">{region.name}</h1>
           {region.tagline ? <p className="mt-7 max-w-[44ch] text-lg">{region.tagline}</p> : null}
           {region.story ? <p className="text-ink-muted font-body mt-4 max-w-[60ch] whitespace-pre-line">{region.story}</p> : null}
         </div>
@@ -101,7 +101,7 @@ export default async function RegionPage({ params }: { params: Params }): Promis
       </section>
 
       {!region.is_live ? (
-        <p className="bg-surface font-display mb-8 rounded-lg p-[clamp(18px,2vw,32px)] text-[clamp(20px,1.8vw,28px)]">
+        <p className="bg-surface font-body mb-8 rounded-lg p-[clamp(18px,2vw,32px)] text-[clamp(20px,1.8vw,28px)]">
           {region.name} is coming soon. We are adding its clothing and spices.
         </p>
       ) : (
@@ -132,7 +132,7 @@ export default async function RegionPage({ params }: { params: Params }): Promis
             />
           ) : (
             <section id="new-arrivals" className="py-[clamp(24px,3vw,48px)]">
-              <p className="bg-surface font-display rounded-lg p-[clamp(18px,2vw,32px)] text-[clamp(20px,1.8vw,28px)]">
+              <p className="bg-surface font-body rounded-lg p-[clamp(18px,2vw,32px)] text-[clamp(20px,1.8vw,28px)]">
                 New pieces are on their way.
               </p>
             </section>
@@ -168,7 +168,7 @@ export default async function RegionPage({ params }: { params: Params }): Promis
               <h2 id="spices-h" className={heading}>
                 Spices
               </h2>
-              <p className="bg-surface font-display mt-[clamp(16px,1.8vw,24px)] rounded-lg p-[clamp(18px,2vw,32px)] text-[clamp(20px,1.8vw,28px)]">
+              <p className="bg-surface font-body mt-[clamp(16px,1.8vw,24px)] rounded-lg p-[clamp(18px,2vw,32px)] text-[clamp(20px,1.8vw,28px)]">
                 Spices from {region.name} are coming soon.
               </p>
             </section>

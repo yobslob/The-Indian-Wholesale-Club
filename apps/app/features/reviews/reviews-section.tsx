@@ -29,12 +29,12 @@ export function ReviewsSection({ reviews, productId }: { reviews: ReviewsSummary
       <Heading>Reviews</Heading>
       {reviews.count === 0 ? (
         <View className="bg-surface rounded-lg p-5">
-          <Text className="font-display text-ink text-xl">No reviews yet.</Text>
+          <Text className="font-body text-ink text-xl">No reviews yet.</Text>
         </View>
       ) : (
         <>
           <View className="bg-surface gap-1 rounded-lg p-5">
-            <Text className="font-hero text-ink text-[52px] leading-[56px]">{reviews.average?.toFixed(1)}</Text>
+            <Text className="font-heading text-ink text-[52px] leading-[56px]">{reviews.average?.toFixed(1)}</Text>
             <Stars rating={reviews.average ?? 0} label={`${reviews.average?.toFixed(1)} out of 5`} />
             <Text className="font-body text-ink-muted text-sm">
               Based on {reviews.count} {reviews.count === 1 ? 'review' : 'reviews'}

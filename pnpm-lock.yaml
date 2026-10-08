@@ -59,18 +59,18 @@ importers:
 
   apps/app:
     dependencies:
+      '@expo-google-fonts/cinzel':
+        specifier: ^0.4.2
+        version: 0.4.2
       '@expo-google-fonts/gelasio':
         specifier: ^0.4.1
         version: 0.4.1
-      '@expo-google-fonts/inter':
+      '@expo-google-fonts/karla':
         specifier: ^0.4.2
         version: 0.4.2
-      '@expo-google-fonts/montserrat':
+      '@expo-google-fonts/syne':
         specifier: ^0.4.2
         version: 0.4.2
-      '@expo-google-fonts/poppins':
-        specifier: ^0.4.1
-        version: 0.4.1
       '@expo/vector-icons':
         specifier: ^14.0.0
         version: 14.1.0(expo-font@13.0.4(expo@52.0.49(@babel/core@7.29.7)(@babel/preset-env@7.29.7(@babel/core@7.29.7))(@expo/metro-runtime@4.0.1(react-native@0.76.9(@babel/core@7.29.7)(@babel/preset-env@7.29.7(@babel/core@7.29.7))(@types/react@18.3.31)(react@18.3.1)))(react-native@0.76.9(@babel/core@7.29.7)(@babel/preset-env@7.29.7(@babel/core@7.29.7))(@types/react@18.3.31)(react@18.3.1))(react@18.3.1))(react@18.3.1))(react-native@0.76.9(@babel/core@7.29.7)(@babel/preset-env@7.29.7(@babel/core@7.29.7))(@types/react@18.3.31)(react@18.3.1))(react@18.3.1)
@@ -1253,17 +1253,17 @@ packages:
     resolution: {integrity: sha512-d9zaMRSTIKDLhctzH12MtXvJKSSUhaHcjV+2Z+GK+EEY7XKpP5yR4x+N3TAcHTcu963nIr+TMcCb4DBCYX1z6Q==}
     engines: {node: ^12.22.0 || ^14.17.0 || >=16.0.0}
 
+  '@expo-google-fonts/cinzel@0.4.2':
+    resolution: {integrity: sha512-UAlyuHCGjmKpMt2MoCKYueHz8ZEzjHO1VEol2G7NcPW54UH+85SWIGzpor05YNqUvr/aoqS8Qrfnswxg1RsNMw==}
+
   '@expo-google-fonts/gelasio@0.4.1':
     resolution: {integrity: sha512-mqSxj6OCIHnyRxqYYd3HSgDyWw9bI+DBWdyQRw9sNrqoceEh+3f43mY6yTrCKrBXqq0a1q9z76IvAp3HKHZQBw==}
 
-  '@expo-google-fonts/inter@0.4.2':
-    resolution: {integrity: sha512-syfiImMaDmq7cFi0of+waE2M4uSCyd16zgyWxdPOY7fN2VBmSLKEzkfbZgeOjJq61kSqPBNNtXjggiQiSD6gMQ==}
+  '@expo-google-fonts/karla@0.4.2':
+    resolution: {integrity: sha512-a99ezH+aon+ya8XR4tJX+npPP5nis6DhIIbvqhYDQgoVVWp0jebKrBFOXFzzBonkxE8YAltrTS9DdXHW4n3LAw==}
 
-  '@expo-google-fonts/montserrat@0.4.2':
-    resolution: {integrity: sha512-Xyq7rKJhhZOE1Xk4wKSSVoUeOkFmQEMhtZ3pdFrgYckGZMs115Apmld1AI8Ju+yrl5GzDdfRCCqRr33dvEDYUA==}
-
-  '@expo-google-fonts/poppins@0.4.1':
-    resolution: {integrity: sha512-LiX5oEryJqDt3UmWwr4oqf11hGMz/JEffkkNcZ3UtGwyoMFzXmBmTwcrAWrEttxypxmLNmPykDg+CY2VjKve9A==}
+  '@expo-google-fonts/syne@0.4.2':
+    resolution: {integrity: sha512-H8VJqvbZRfbfhzAcBa0N++j/2b//RuadZE+VhZ6hzUUtlCw4CyTBrQN7G2UZ+w5DCkFQyRgZ17pmFYy6b0or4Q==}
 
   '@expo/bunyan@4.0.1':
     resolution: {integrity: sha512-+Lla7nYSiHZirgK+U/uYzsLv/X+HaJienbD5AKX1UQZHYfWaP+9uuQluRB4GrEVWF0GZ7vEVp/jzaOT9k/SQlg==}
@@ -6988,13 +6988,13 @@ snapshots:
 
   '@eslint/js@8.57.1': {}
 
+  '@expo-google-fonts/cinzel@0.4.2': {}
+
   '@expo-google-fonts/gelasio@0.4.1': {}
 
-  '@expo-google-fonts/inter@0.4.2': {}
+  '@expo-google-fonts/karla@0.4.2': {}
 
-  '@expo-google-fonts/montserrat@0.4.2': {}
-
-  '@expo-google-fonts/poppins@0.4.1': {}
+  '@expo-google-fonts/syne@0.4.2': {}
 
   '@expo/bunyan@4.0.1':
     dependencies:
