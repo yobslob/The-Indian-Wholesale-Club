@@ -1,11 +1,12 @@
 import { useRouter } from 'expo-router';
-import { useMemo, useState } from 'react';
+import { useEffect, useMemo, useState } from 'react';
 import { Pressable, Text, View } from 'react-native';
 
 import { choose, formatUsd, isAvailable, optionAxes, selectionOf } from '@repo/shared/domain';
 
 import { useLiveAvailability } from './use-live-availability';
 
+import type { BuyBarState } from './buy-bar';
 import type { Product, Variant } from '@repo/db/store';
 
 import { Button } from '@/components/ui';
@@ -43,6 +44,8 @@ export function AddToBag({
   product,
   variants,
   delivery,
+  buttonRef,
+  onBar,
 }: {
   product: Pick<
     Product,
@@ -51,6 +54,10 @@ export function AddToBag({
   variants: Variant[];
   /** Shown just above the button (the delivery window, D-008). */
   delivery?: React.ReactNode;
+  /** The row with Add to bag, so the screen can tell when it has scrolled away (the buy bar, D-082). */
+  buttonRef?: React.RefObject<View>;
+  /** What the buy bar shows and does, kept in step with the choice here. */
+  onBar?: (bar: BuyBarState | null) => void;
 }): React.JSX.Element {
   const router = useRouter();
   const initial = useMemo(
@@ -67,6 +74,41 @@ export function AddToBag({
 
   const axes = useMemo(() => optionAxes(variants), [variants]);
   const variant = variants.find((v) => v.id === variantId);
+  const left = variant ? (available[variant.id] ?? 0) : 0;
+  const addToBag = (): void => {
+    if (!variant) return;
+    add(
+      {
+        variantId: variant.id,
+        productId: product.id,
+        productName: product.name,
+        productSlug: product.slug,
+        regionSlug: product.region_slug,
+        regionName: product.region_name,
+        variantLabel: variant.label,
+        unitPriceCents: variant.price_cents,
+        imagePath: product.primary_image_path,
+      },
+      quantity,
+    );
+    setAdded(true);
+  };
+  // The buy bar follows the choice: name, price · option, sold out or not, and the same add.
+  useEffect(() => {
+    if (!onBar) return;
+    onBar(
+      variant
+        ? {
+            name: product.name,
+            detail: variants.length > 1 ? `${formatUsd(variant.price_cents)} · ${variant.label}` : formatUsd(variant.price_cents),
+            soldOut: left <= 0,
+            added,
+            add: addToBag,
+          }
+        : null,
+    );
+    // addToBag is rebuilt each render; the bar needs it only when what it adds changes.
+  }, [variant?.id, quantity, left, added, onBar]);
   if (!variant) return <Text className="text-ink-muted text-sm">Not available right now.</Text>;
   const inStock = (v: Variant): boolean => (available[v.id] ?? 0) > 0;
   const selection = selectionOf(variant, axes);
@@ -75,7 +117,6 @@ export function AddToBag({
     setQuantity(1);
     setAdded(false);
   };
-  const left = available[variant.id] ?? 0;
   const soldOut = left <= 0;
   const maxQty = Math.max(1, Math.min(left, MAX_QTY_PER_LINE));
 
@@ -117,7 +158,7 @@ export function AddToBag({
         </Text>
       </View>
       {delivery ? <View className="bg-paper rounded-md px-4 py-3">{delivery}</View> : null}
-      <View className="flex-row items-center gap-3">
+      <View ref={buttonRef} collapsable={false} className="flex-row items-center gap-3">
         <Pressable
           onPress={() => setQuantity((q) => Math.max(1, q - 1))}
           className="border-line bg-paper min-h-11 min-w-11 items-center justify-center rounded-full border"
@@ -137,23 +178,7 @@ export function AddToBag({
           <Button
             label="Add to bag"
             disabled={soldOut}
-            onPress={() => {
-              add(
-                {
-                  variantId: variant.id,
-                  productId: product.id,
-                  productName: product.name,
-                  productSlug: product.slug,
-                  regionSlug: product.region_slug,
-                  regionName: product.region_name,
-                  variantLabel: variant.label,
-                  unitPriceCents: variant.price_cents,
-                  imagePath: product.primary_image_path,
-                },
-                quantity,
-              );
-              setAdded(true);
-            }}
+            onPress={addToBag}
           />
         </View>
       </View>

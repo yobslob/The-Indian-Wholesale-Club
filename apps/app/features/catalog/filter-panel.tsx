@@ -71,8 +71,9 @@ export function FilterPanel({
   return (
     <Modal visible={open} transparent animationType="fade" onRequestClose={onClose}>
       <Pressable accessibilityLabel="Close filter" onPress={onClose} className="absolute inset-0 bg-[rgba(20,17,15,0.4)]" />
-      <Animated.View style={{ position: 'absolute', top: 0, right: 0, bottom: 0, width: panel, transform: [{ translateX: x }] }} className="bg-canvas border-line border-l">
-        <SafeAreaView edges={['top', 'bottom']} className="flex-1">
+      {/* NativeWind styles plain views only: the animated wrapper takes styles, the panel inside takes the classes. */}
+      <Animated.View style={{ position: 'absolute', top: 0, right: 0, bottom: 0, width: panel, transform: [{ translateX: x }] }}>
+        <SafeAreaView edges={['top', 'bottom']} className="bg-canvas border-line flex-1 border-l">
           <View className="border-line flex-row items-center gap-2 border-b px-5 py-2">
             <Text accessibilityRole="header" className="font-heading flex-1 text-[22px] text-[#1D1A17]">
               Filter

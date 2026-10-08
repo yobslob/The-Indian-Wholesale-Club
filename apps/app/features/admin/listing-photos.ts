@@ -1,9 +1,9 @@
-import { ImageManipulator, SaveFormat } from 'expo-image-manipulator';
 import * as ImagePicker from 'expo-image-picker';
 
 import { addProductMedia } from '@repo/db/admin';
 import { PHOTO_CACHE_CONTROL } from '@repo/shared/domain';
 
+import { shrink, sniff } from '@/lib/photo-files';
 import { supabase } from '@/lib/supabase';
 
 /** A photo taken or picked for a listing, ready to upload. */
@@ -14,30 +14,8 @@ export interface ListingPhoto {
   alt: string;
 }
 
-/**
- * What a file really is, from its first bytes. The manipulator is asked for JPEG, but its web version (the app's
- * preview) hands back PNG; labelling by content means a file is never stored under the wrong type.
- */
-function sniff(bytes: ArrayBuffer): { type: string; ext: string } {
-  const b = new Uint8Array(bytes.slice(0, 12));
-  if (b[0] === 0x89 && b[1] === 0x50) return { type: 'image/png', ext: 'png' };
-  if (b[0] === 0x52 && b[1] === 0x49 && b[8] === 0x57 && b[9] === 0x45) return { type: 'image/webp', ext: 'webp' };
-  return { type: 'image/jpeg', ext: 'jpg' };
-}
-
 /** Long enough edge for a sharp product page on any phone or laptop; small enough to upload from a shop. */
 const MAX_EDGE = 2400;
-
-async function shrink(asset: ImagePicker.ImagePickerAsset): Promise<ListingPhoto> {
-  const context = ImageManipulator.manipulate(asset.uri);
-  const longest = Math.max(asset.width, asset.height);
-  if (longest > MAX_EDGE) {
-    context.resize(asset.width >= asset.height ? { width: MAX_EDGE } : { height: MAX_EDGE });
-  }
-  const image = await context.renderAsync();
-  const saved = await image.saveAsync({ compress: 0.85, format: SaveFormat.JPEG });
-  return { uri: saved.uri, width: saved.width, alt: '' };
-}
 
 /** Opens the camera (or the photo library) and returns the photos shrunk to at most 2400 px, as JPEG. */
 export async function takePhotos(source: 'camera' | 'library'): Promise<ListingPhoto[] | 'denied'> {
@@ -52,7 +30,7 @@ export async function takePhotos(source: 'camera' | 'library'): Promise<ListingP
       ? await ImagePicker.launchCameraAsync(options)
       : await ImagePicker.launchImageLibraryAsync({ ...options, allowsMultipleSelection: true, selectionLimit: 8 });
   if (result.canceled) return [];
-  return Promise.all(result.assets.map(shrink));
+  return Promise.all(result.assets.map(async (asset) => ({ ...(await shrink(asset, MAX_EDGE)), alt: '' })));
 }
 
 /**

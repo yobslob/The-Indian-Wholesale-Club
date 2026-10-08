@@ -32,6 +32,8 @@ export function Screen({
   title,
   scrollRef,
   top,
+  overlay,
+  onScroll,
 }: {
   children: React.ReactNode;
   refreshing?: boolean;
@@ -44,6 +46,9 @@ export function Screen({
   scrollRef?: React.RefObject<ScrollView>;
   /** Full-bleed content above the padded column (the region photo), under the back bar. */
   top?: React.ReactNode;
+  /** Drawn over the screen, outside the scroll (the product's buy bar). */
+  overlay?: React.ReactNode;
+  onScroll?: () => void;
 }): React.JSX.Element {
   const showBar = back;
   return (
@@ -51,6 +56,8 @@ export function Screen({
       {showBar ? <BackBar title={title} /> : null}
       <ScrollView
         ref={scrollRef}
+        onScroll={onScroll}
+        scrollEventThrottle={onScroll ? 64 : undefined}
         contentContainerClassName="pb-16"
         keyboardShouldPersistTaps="handled"
         refreshControl={
@@ -63,6 +70,7 @@ export function Screen({
           {children}
         </View>
       </ScrollView>
+      {overlay}
     </SafeAreaView>
   );
 }

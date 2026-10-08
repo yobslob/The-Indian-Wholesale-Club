@@ -1,6 +1,6 @@
 import { Ionicons } from '@expo/vector-icons';
 import { Link, useLocalSearchParams, useRouter } from 'expo-router';
-import { useEffect, useState } from 'react';
+import { useCallback, useEffect, useRef, useState } from 'react';
 import { Pressable, Text, View } from 'react-native';
 
 import { isProductSaved, saveProduct, unsaveProduct } from '@repo/db/account';
@@ -9,6 +9,7 @@ import tokens from '@repo/tokens';
 
 import { Body, ErrorText, Loading, Row, Screen } from '@/components/ui';
 import { AddToBag } from '@/features/catalog/add-to-bag';
+import { BuyBar, type BuyBarState } from '@/features/catalog/buy-bar';
 import { CuratedCard } from '@/features/catalog/curated-card';
 import { DeliveryNote } from '@/features/catalog/delivery-note';
 import { Disclosure } from '@/features/catalog/disclosure';
@@ -21,9 +22,10 @@ import { supabase } from '@/lib/supabase';
 import { useQuery } from '@/lib/use-query';
 
 /**
- * storefront.md §The product page, design.md §Direction (D-051): photos, name with the heart, add to bag with the
- * delivery window, Details and Size chart behind + / −, the origin line, reviews, Similar items, Curated for you.
- * One store_product_page() call + live availability.
+ * storefront.md §The product page (D-051, D-082, D-095): the photos edge to edge (any opens the viewer), name with the
+ * heart, add to bag with the delivery window, Details and Size chart behind + / −, the origin line, reviews as a row,
+ * Similar items, Curated for you; the buy bar slides up once Add to bag has scrolled away. One store_product_page()
+ * call + live availability.
  */
 export default function ProductScreen(): React.JSX.Element {
   const router = useRouter();
@@ -32,6 +34,14 @@ export default function ProductScreen(): React.JSX.Element {
   const { data, error, loading, reload } = useQuery(`product:${region}/${slug}`, () => getProductPage(supabase, region, slug));
   const [saved, setSaved] = useState(false);
   const productId = data?.product.id;
+  const button = useRef<View>(null);
+  const [bar, setBar] = useState<BuyBarState | null>(null);
+  const [barShown, setBarShown] = useState(false);
+  const onBar = useCallback((next: BuyBarState | null) => setBar(next), []);
+  // The buy bar shows while the screen's own Add to bag is above the top of the screen (scrolled away).
+  const onScroll = useCallback(() => {
+    button.current?.measureInWindow((_x, y, _w, h) => setBarShown(y + h < 60));
+  }, []);
 
   // B-18: show whether it is already saved (the customer's own rows only).
   useEffect(() => {
@@ -62,13 +72,19 @@ export default function ProductScreen(): React.JSX.Element {
   const sizes = data ? sizeRows(data.product, data.variants) : [];
 
   return (
-    <Screen refreshing={loading} onRefresh={reload}>
+    <Screen
+      title={data?.product.name}
+      refreshing={loading}
+      onRefresh={reload}
+      onScroll={onScroll}
+      top={data ? <ProductGallery media={data.media} name={data.product.name} /> : null}
+      overlay={<BuyBar state={bar} shown={barShown} />}
+    >
       {error ? <ErrorText>{error}</ErrorText> : null}
       {!data && loading ? <Loading /> : null}
       {data === null ? <Body muted>This product is not available.</Body> : null}
       {data ? (
         <>
-          <ProductGallery media={data.media} name={data.product.name} />
           <View className="bg-surface gap-4 rounded-lg p-5">
             <Link href={{ pathname: '/region/[slug]', params: { slug: data.product.region_slug } }} asChild>
               <Pressable className="min-h-8 justify-center">
@@ -78,7 +94,7 @@ export default function ProductScreen(): React.JSX.Element {
               </Pressable>
             </Link>
             <View className="flex-row items-start justify-between gap-3">
-              <Text accessibilityRole="header" className="font-display text-ink flex-1 text-[34px] leading-[38px]">
+              <Text accessibilityRole="header" className="font-display flex-1 text-[32px] leading-[35px] text-[#1D1A17]">
                 {data.product.name}
               </Text>
               <Pressable
@@ -93,7 +109,7 @@ export default function ProductScreen(): React.JSX.Element {
             </View>
             {data.product.summary ? <Body muted>{data.product.summary}</Body> : null}
             {data.variants.length > 0 ? (
-              <AddToBag product={data.product} variants={data.variants} delivery={<DeliveryNote delivery={data.delivery} fromUs={data.ships_from_us} />} />
+              <AddToBag product={data.product} variants={data.variants} buttonRef={button} onBar={onBar} delivery={<DeliveryNote delivery={data.delivery} fromUs={data.ships_from_us} />} />
             ) : (
               <Body muted>Not available right now.</Body>
             )}
