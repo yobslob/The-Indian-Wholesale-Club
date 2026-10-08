@@ -60,7 +60,7 @@ app's customer screens, then the admin side. The pass **refines the approved des
 | 16 | `errors` | not found, error | error and empty states | approved D-093 |
 | 17 | `emails` | customer emails (`lib/email/`) | — | approved D-094 |
 
-**App screens (D-083):** every customer screen of the app in one mockup, `design/pages/app/` · mockup, round 1.
+**App screens (D-083):** every customer screen of the app in one mockup, `design/pages/app/` · approved D-095.
 
 ### Part 2: admin side (web admin at 1440 · 390, and the app's admin mode)
 | # | id | Web (`apps/web/app/admin/`) | App (`apps/app/app/admin/`) | Status |

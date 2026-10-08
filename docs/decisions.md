@@ -890,3 +890,17 @@ returns · Contact, "You're getting this because you ordered from The Indian Who
 order only." and the support email (Q-9). **The shipped email's tracking link opens our order page on the website**
 (`/orders/[number]`, D-088, where "Track the parcel" goes on to the carrier), not the carrier's site. Nothing
 operational appears (D-003).
+
+**D-095 · 2026-10-08 · founder: The app's customer screens, from the design pass**
+Founder, verbatim: "now the app screens can be done in one go, all the pages, i believe you". On round 1 of
+`design/pages/app/mockup.html`: "approved".
+What it means for the build (`apps/app/app/`): every customer screen follows the approved website decisions (D-079 –
+D-094) in the app's own patterns: the cream tab bar (Home · Explore · Bag · Saved · Profile) with a brand bar over the
+active tab and the bag count; large Syne titles on tab roots and back bars on pushed screens; Home's photo with the name
+on the wall, then Just listed and Pick your home; Explore's States as stamps, Clothing and Spices as rows, search with the
+count; Region, Product (viewer, buy bar, reviews row), Browse (round Filter button, filter panel); the Bag tab (photos,
+− 1 +; the app has no bag panel, the bag is its tab); Checkout as phone → delivery → payment with Stripe's PaymentSheet;
+the thank-you and order screens; Saved with hearts that remove; Profile signed in (Orders · Addresses · Your details,
+Track an order, About us & help, Sign out) and signed out (the sign-in card with show password, forgot password and
+the email code); About us & help as the glass sheet; the error state. **Write a review opens the D-090 form as a sheet
+in the app** instead of sending the customer to the website.

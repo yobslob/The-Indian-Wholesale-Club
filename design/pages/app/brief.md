@@ -2,7 +2,7 @@
 
 **Surface:** `apps/app/app/` customer screens: `(customer)/index` (Home), `explore`, `bag`, `saved`, `profile`, `region/[slug]`,
 `product/[region]/[slug]`, `browse`, `checkout`, `order/[number]`, `order/lookup`, `addresses`, `auth/*` · **Status:**
-mockup, round 1
+approved D-095 (2026-10-08), not built yet
 
 ## The job
 The app is the same shop in the hand: it follows every approved website page (D-079 – D-094), adapted to what a phone
@@ -45,3 +45,4 @@ None new. Sample data as in the website mockups.
 | Date | Round | Founder's notes | Changed |
 |---|---|---|---|
 | 2026-10-08 | 1 | the direction above | first proposal |
+| 2026-10-08 | — | "approved" | approved as D-095 |
