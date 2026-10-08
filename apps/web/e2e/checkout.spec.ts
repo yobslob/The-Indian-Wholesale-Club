@@ -13,4 +13,5 @@ test('a guest buys the demo product and tracks the order', async ({ page }) => {
   const orderNumber = await buyDemoProduct(page);
   await openOrderAsGuest(page, orderNumber);
   await expect(page.getByText(/Estimated delivery/).first()).toBeVisible();
+  await expect(page.getByRole('list', { name: 'Order progress' })).toBeVisible(); // the timeline (D-088)
 });

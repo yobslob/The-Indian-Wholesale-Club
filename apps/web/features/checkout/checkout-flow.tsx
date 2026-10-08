@@ -1,53 +1,25 @@
 'use client';
 
-import Link from 'next/link';
 import { useRouter } from 'next/navigation';
 import { useEffect, useState } from 'react';
 
-import { formatUsd, US_STATES } from '@repo/shared/domain';
+import { formatUsd } from '@repo/shared/domain';
 
-import { useCart } from '@/features/cart/store';
+import { EmptyLine } from '@/features/cart/cart-view';
+import { cartCount, cartSubtotalCents, useCart } from '@/features/cart/store';
 
-import { OrderSummary } from './order-summary';
+import { BagSummary } from './bag-summary';
+import { DeliveryStep, deliverySummary, type Delivery } from './delivery-step';
+import { saveLastOrder, type SummaryLine } from './last-order';
 import { PaymentForm } from './payment-form';
+import { formatUsPhone, PhoneStep } from './phone-step';
 import { ShippingPicker } from './shipping-picker';
+import { Step } from './step';
 
-import type {
-  CheckoutErrorResponse,
-  CheckoutRequestBody,
-  CheckoutStartResponse,
-  FinalizeResponse,
-} from './types';
-
-const input = 'min-h-12 w-full rounded-md border border-line bg-paper px-3.5 text-[15px] outline-none focus:border-ink';
-
-function Field(props: {
-  name: string;
-  label: string;
-  required?: boolean;
-  type?: string;
-  autoComplete?: string;
-  defaultValue?: string | null;
-}) {
-  return (
-    <label className="font-ui text-ink block text-[13px] font-medium">
-      {props.label}
-      <input
-        name={props.name}
-        type={props.type ?? 'text'}
-        required={props.required}
-        autoComplete={props.autoComplete}
-        defaultValue={props.defaultValue ?? undefined}
-        className={input}
-      />
-    </label>
-  );
-}
+import type { CheckoutErrorResponse, CheckoutRequestBody, CheckoutStartResponse, FinalizeResponse } from './types';
 
 /** Finish the order for a paid PaymentIntent (also used after a 3-D Secure redirect). */
-export async function confirmOrder(
-  paymentIntentId: string,
-): Promise<{ orderNumber?: string; message?: string }> {
+export async function confirmOrder(paymentIntentId: string): Promise<{ orderNumber?: string; message?: string }> {
   const res = await fetch('/api/orders', {
     method: 'POST',
     headers: { 'content-type': 'application/json' },
@@ -57,31 +29,42 @@ export async function confirmOrder(
   return 'orderNumber' in body ? { orderNumber: body.orderNumber } : { message: body.error };
 }
 
-/** /checkout: details → server-priced summary + delivery window → Stripe payment → order. */
+const NO_DELIVERY: Delivery = { fullName: '', email: '', zipCode: '', city: '', state: '', line1: '', line2: '', promoCode: '' };
+
+/**
+ * /checkout (D-087): 1. phone → 2. delivery → 3. payment on one page, each opening when the one before is done and
+ * folding to a line with Edit; the bag beside them (a "Bag (n) · $…" bar on phones). Continue to payment prices the bag
+ * on the server and creates the payment for that exact total (D-038); editing an earlier step drops that payment.
+ */
 export function CheckoutFlow(): React.JSX.Element {
   const router = useRouter();
   const lines = useCart((s) => s.lines);
   const clear = useCart((s) => s.clear);
   const savedPromo = useCart((s) => s.promoCode);
   const [mounted, setMounted] = useState(false);
+  const [at, setAt] = useState<1 | 2 | 3>(1);
+  const [phone, setPhone] = useState<string | null>(null);
+  const [delivery, setDelivery] = useState<Delivery>({ ...NO_DELIVERY, promoCode: savedPromo ?? '' });
   const [busy, setBusy] = useState(false);
   const [error, setError] = useState<string | null>(null);
   const [started, setStarted] = useState<CheckoutStartResponse | null>(null);
   const [request, setRequest] = useState<CheckoutRequestBody | null>(null);
+  const [bagOpen, setBagOpen] = useState(false);
   useEffect(() => setMounted(true), []);
 
   if (!mounted) return <p className="text-ink-muted text-sm">Loading your bag…</p>;
-  if (lines.length === 0 && !started) {
-    return (
-      <p className="text-ink">
-        Your bag is empty.{' '}
-        <Link href="/states" className="underline">
-          Find something from home
-        </Link>
-        .
-      </p>
-    );
-  }
+  if (lines.length === 0 && !started) return <EmptyLine />;
+
+  const quote = started?.quote ?? null;
+  const summaryLines: SummaryLine[] = lines.map((l) => ({
+    variantId: l.variantId,
+    productName: l.productName,
+    variantLabel: l.variantLabel,
+    regionName: l.regionName,
+    quantity: l.quantity,
+    imagePath: l.imagePath,
+    totalCents: quote?.lines.find((q) => q.variantId === l.variantId)?.totalCents ?? l.unitPriceCents * l.quantity,
+  }));
 
   /** Prices the bag on the server and creates the payment for that exact total. */
   async function post(body: CheckoutRequestBody): Promise<void> {
@@ -95,28 +78,32 @@ export function CheckoutFlow(): React.JSX.Element {
     });
     const json = (await res.json()) as CheckoutStartResponse | CheckoutErrorResponse;
     setBusy(false);
-    if ('clientSecret' in json) setStarted(json);
-    else setError(json.error);
+    if (!('clientSecret' in json)) {
+      setError(json.error);
+      return;
+    }
+    setStarted(json);
+    setAt(3);
+    saveLastOrder({ paymentIntentId: json.paymentIntentId, orderNumber: null, lines: summaryLines, quote: json.quote });
   }
 
-  async function start(form: FormData): Promise<void> {
-    const text = (key: string) => String(form.get(key) ?? '').trim();
-    const body: CheckoutRequestBody = {
-      email: text('email'),
+  function priceWith(d: Delivery): void {
+    setDelivery(d);
+    void post({
+      email: d.email,
       address: {
-        fullName: text('fullName'),
-        line1: text('line1'),
-        line2: text('line2') || null,
-        city: text('city'),
-        state: text('state'),
-        zipCode: text('zipCode'),
-        phone: text('phone') || null,
+        fullName: d.fullName,
+        line1: d.line1,
+        line2: d.line2 || null,
+        city: d.city,
+        state: d.state,
+        zipCode: d.zipCode,
+        phone: phone ? formatUsPhone(phone) : null,
       },
       lines: lines.map((l) => ({ variantId: l.variantId, quantity: l.quantity })),
-      promoCode: text('promoCode') || null,
+      promoCode: d.promoCode || null,
       shippingMethod: request?.shippingMethod ?? 'standard',
-    };
-    await post(body);
+    });
   }
 
   async function paid(paymentIntentId: string, status: string): Promise<void> {
@@ -126,6 +113,7 @@ export function CheckoutFlow(): React.JSX.Element {
     }
     const result = await confirmOrder(paymentIntentId);
     if (result.orderNumber) {
+      if (started) saveLastOrder({ paymentIntentId, orderNumber: result.orderNumber, lines: summaryLines, quote: started.quote });
       clear();
       router.push(`/checkout/success?order=${encodeURIComponent(result.orderNumber)}`);
     } else {
@@ -133,139 +121,81 @@ export function CheckoutFlow(): React.JSX.Element {
     }
   }
 
-  if (started) {
-    return (
-      <div className="grid gap-8 md:grid-cols-2">
-        <OrderSummary quote={started.quote} />
-        <div className="space-y-4">
-          <h2 className="font-heading text-ink text-[clamp(22px,1.8vw,30px)] font-medium tracking-[-0.02em]">Payment</h2>
-          {error ? (
-            <p className="text-danger text-sm" role="alert">
-              {error}
-            </p>
-          ) : null}
-          <ShippingPicker
-            quote={started.quote}
-            disabled={busy}
-            onChange={(method) => request && void post({ ...request, shippingMethod: method })}
-          />
-          <PaymentForm
-            key={started.clientSecret}
-            clientSecret={started.clientSecret}
-            totalLabel={formatUsd(started.quote.breakdown.totalCents)}
-            onPaid={(id, status) => void paid(id, status)}
-          />
-          <button type="button" onClick={() => setStarted(null)} className="text-sm underline">
-            Change details
-          </button>
-        </div>
-      </div>
-    );
-  }
+  const edit = (step: 1 | 2) => () => {
+    setStarted(null);
+    setError(null);
+    setAt(step);
+  };
+  const stateOf = (n: 1 | 2 | 3): 'open' | 'done' | 'later' => (n === at ? 'open' : n < at ? 'done' : 'later');
+  const total = quote ? quote.breakdown.totalCents : cartSubtotalCents(lines);
 
   return (
-    <form
-      onSubmit={(event) => {
-        event.preventDefault();
-        void start(new FormData(event.currentTarget));
-      }}
-      className="grid max-w-xl gap-4"
-    >
-      <Field
-        name="email"
-        label="Email"
-        type="email"
-        autoComplete="email"
-        required
-        defaultValue={request?.email}
-      />
-      <Field
-        name="fullName"
-        label="Full name"
-        autoComplete="name"
-        required
-        defaultValue={request?.address.fullName}
-      />
-      <Field
-        name="line1"
-        label="Street address"
-        autoComplete="address-line1"
-        required
-        defaultValue={request?.address.line1}
-      />
-      <Field
-        name="line2"
-        label="Apartment, suite (optional)"
-        autoComplete="address-line2"
-        defaultValue={request?.address.line2}
-      />
-      <div className="grid grid-cols-2 gap-4">
-        <Field
-          name="city"
-          label="City"
-          autoComplete="address-level2"
-          required
-          defaultValue={request?.address.city}
-        />
-        <label className="font-ui text-ink block text-[13px] font-medium">
-          State
-          <select
-            name="state"
-            required
-            autoComplete="address-level1"
-            className={input}
-            defaultValue={request?.address.state ?? ''}
-          >
-            <option value="" disabled>
-              Choose…
-            </option>
-            {US_STATES.map((s) => (
-              <option key={s.code} value={s.code}>
-                {s.name}
-              </option>
-            ))}
-          </select>
-        </label>
+    <div className="grid items-start gap-[clamp(16px,2.4vw,40px)] min-[900px]:grid-cols-[minmax(0,1.25fr)_minmax(0,1fr)]">
+      <div>
+        <Step n={1} title="Phone" state={stateOf(1)} summary={phone ? formatUsPhone(phone) : ''} onEdit={edit(1)}>
+          <PhoneStep
+            value={phone}
+            onDone={(digits) => {
+              setPhone(digits);
+              setAt(2);
+            }}
+          />
+        </Step>
+        <Step n={2} title="Delivery" state={stateOf(2)} summary={delivery.line1 ? deliverySummary(delivery) : ''} onEdit={edit(2)}>
+          <DeliveryStep value={delivery} busy={busy} error={error} onDone={priceWith} />
+        </Step>
+        <Step n={3} title="Payment" state={stateOf(3)}>
+          {started && request ? (
+            <>
+              <ShippingPicker
+                quote={started.quote}
+                disabled={busy}
+                onChange={(method) => void post({ ...request, shippingMethod: method })}
+              />
+              {error ? (
+                <p className="text-danger mb-3 text-sm" role="alert">
+                  {error}
+                </p>
+              ) : null}
+              <PaymentForm
+                key={started.clientSecret}
+                clientSecret={started.clientSecret}
+                totalLabel={formatUsd(started.quote.breakdown.totalCents)}
+                onPaid={(id, status) => void paid(id, status)}
+                billing={{
+                  name: delivery.fullName,
+                  email: delivery.email,
+                  phone: phone ? `+1${phone}` : undefined,
+                  address: {
+                    line1: delivery.line1,
+                    line2: delivery.line2 || undefined,
+                    city: delivery.city,
+                    state: delivery.state,
+                    postal_code: delivery.zipCode,
+                    country: 'US',
+                  },
+                }}
+              />
+            </>
+          ) : null}
+        </Step>
       </div>
-      <div className="grid grid-cols-2 gap-4">
-        <Field
-          name="zipCode"
-          label="ZIP code"
-          autoComplete="postal-code"
-          required
-          defaultValue={request?.address.zipCode}
-        />
-        <Field
-          name="phone"
-          label="Phone (optional)"
-          type="tel"
-          autoComplete="tel"
-          defaultValue={request?.address.phone}
-        />
-      </div>
-      <label className="font-ui text-ink block text-[13px] font-medium">
-        Promo code (optional)
-        <input
-          name="promoCode"
-          defaultValue={request?.promoCode ?? savedPromo ?? ''}
-          className={input}
-        />
-      </label>
-      {error ? (
-        <p className="text-danger text-sm" role="alert">
-          {error}
-        </p>
-      ) : null}
-      <button
-        type="submit"
-        disabled={busy}
-        className="bg-brand text-on-brand font-ui min-h-12 rounded-pill px-6 text-[15px] font-medium disabled:opacity-50"
-      >
-        {busy ? 'Checking your bag…' : 'Continue to payment'}
-      </button>
-      <p className="text-ink-muted text-xs">
-        US addresses only. You will see the total and delivery window before paying.
-      </p>
-    </form>
+      <aside aria-label="Your bag" className="-order-1 min-[900px]:sticky min-[900px]:top-[calc(var(--top-h)+16px)] min-[900px]:order-none">
+        <button
+          type="button"
+          onClick={() => setBagOpen((o) => !o)}
+          aria-expanded={bagOpen}
+          className="bg-surface font-ui mb-2 flex min-h-[52px] w-full items-center justify-between rounded-md px-4 text-[15px] font-semibold min-[900px]:hidden"
+        >
+          Bag ({cartCount(lines)}) · {formatUsd(total)}
+          <span aria-hidden="true" className={`transition-transform ${bagOpen ? 'rotate-180' : ''}`}>
+            ⌄
+          </span>
+        </button>
+        <div className={bagOpen ? 'mb-2 block' : 'hidden min-[900px]:block'}>
+          <BagSummary title="Your bag" lines={summaryLines} subtotalCents={cartSubtotalCents(lines)} quote={quote} />
+        </div>
+      </aside>
+    </div>
   );
 }

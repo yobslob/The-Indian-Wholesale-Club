@@ -5,82 +5,61 @@ import { useEffect, useState } from 'react';
 
 import { formatUsd } from '@repo/shared/domain';
 
-import { MAX_QTY_PER_LINE } from './limits';
+import { BagLines } from './bag-lines';
 import { cartSubtotalCents, useCart } from './store';
 
-/** The bag. Prices are indicative; checkout re-prices on the server. */
-export function CartView(): React.JSX.Element {
-  const { lines, setQuantity, remove } = useCart();
+export const checkoutButton = 'bg-brand text-on-brand font-ui inline-grid h-[52px] place-items-center rounded-pill px-7 text-base font-semibold';
+
+/** "Your bag is empty." with its link: the page and the panel both start with it. */
+export function EmptyLine(): React.JSX.Element {
+  return (
+    <p className="text-ink m-0 text-base">
+      Your bag is empty.{' '}
+      <Link href="/states" className="underline underline-offset-[3px]">
+        Find something from home
+      </Link>
+      .
+    </p>
+  );
+}
+
+/** Subtotal with the line about what checkout adds (prices are indicative until the server prices the bag, D-038). */
+export function Subtotal(): React.JSX.Element {
+  const lines = useCart((s) => s.lines);
+  return (
+    <p className="font-ui m-0 text-base font-medium">
+      Subtotal <b className="font-bold">{formatUsd(cartSubtotalCents(lines))}</b>
+      <small className="text-ink-muted font-body mt-1 block text-[13px] font-normal">
+        Shipping, tax and delivery dates are shown at checkout.
+      </small>
+    </p>
+  );
+}
+
+/**
+ * The bag page (D-086): photo lines with − / + and the subtotal; an empty bag shows `empty` (the open states and Just
+ * listed, drawn on the server) under its sentence, so it is never a dead end.
+ */
+export function CartView({ empty }: { empty: React.ReactNode }): React.JSX.Element {
+  const lines = useCart((s) => s.lines);
   const [mounted, setMounted] = useState(false);
   useEffect(() => setMounted(true), []);
 
   if (!mounted) return <p className="text-ink-muted text-sm">Loading your bag…</p>;
   if (lines.length === 0) {
     return (
-      <p className="text-ink">
-        Your bag is empty.{' '}
-        <Link href="/states" className="underline">
-          Find something from home
-        </Link>
-        .
-      </p>
+      <div>
+        <EmptyLine />
+        {empty}
+      </div>
     );
   }
-
   return (
-    <div className="space-y-6">
-      <ul className="divide-line border-line divide-y border-y">
-        {lines.map((line) => (
-          <li key={line.variantId} className="flex flex-wrap items-center gap-4 py-4">
-            <div className="flex-1">
-              <Link
-                href={`/states/${line.regionSlug}/${line.productSlug}`}
-                className="text-ink font-medium hover:underline"
-              >
-                {line.productName}
-              </Link>
-              <p className="text-ink-muted text-sm">
-                {line.variantLabel} · {line.regionName}
-              </p>
-            </div>
-            <label className="text-sm">
-              <span className="sr-only">Quantity</span>
-              <select
-                value={line.quantity}
-                onChange={(e) => setQuantity(line.variantId, Number(e.target.value))}
-                className="border-line bg-paper font-ui min-h-11 rounded-pill border px-3"
-              >
-                {Array.from({ length: MAX_QTY_PER_LINE }, (_, i) => i + 1).map((n) => (
-                  <option key={n} value={n}>
-                    {n}
-                  </option>
-                ))}
-              </select>
-            </label>
-            <span className="w-20 text-right text-sm">
-              {formatUsd(line.unitPriceCents * line.quantity)}
-            </span>
-            <button
-              type="button"
-              onClick={() => remove(line.variantId)}
-              className="min-h-11 text-sm underline"
-            >
-              Remove
-            </button>
-          </li>
-        ))}
-      </ul>
-      <div className="flex items-center justify-between">
-        <p className="text-ink">
-          Subtotal <strong>{formatUsd(cartSubtotalCents(lines))}</strong>
-          <span className="text-ink-muted block text-xs">
-            Shipping, tax and delivery dates are shown at checkout.
-          </span>
-        </p>
-        <Link
-          href="/checkout"
-          className="bg-brand text-on-brand font-ui inline-flex min-h-12 items-center rounded-pill px-6 text-[15px] font-medium"
-        >
+    <div>
+      <BagLines />
+      <div className="flex flex-col items-stretch justify-between gap-4 pt-[22px] sm:flex-row sm:items-center">
+        <Subtotal />
+        <Link href="/checkout" className={checkoutButton}>
           Checkout
         </Link>
       </div>

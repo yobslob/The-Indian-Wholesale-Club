@@ -55,7 +55,14 @@ export function PrivacyText(): React.JSX.Element {
       <p>
         Only the companies that help us run the shop, for that job: Stripe (payments), Supabase (our database), Vercel
         (the website), Resend (our emails) and the couriers who deliver your order or collect a return, who get your
-        name, address and phone number if you gave one.
+        name, address and phone number.
+      </p>
+      <p>
+        When you type your ZIP code at checkout, we fill in the city and state from our own copy of the{' '}
+        <a href="https://www.geonames.org/" className="underline">
+          GeoNames
+        </a>{' '}
+        postal code list (CC BY 4.0), so your ZIP code goes to no one else.
       </p>
 
       <h2 className="font-medium">Your choices</h2>

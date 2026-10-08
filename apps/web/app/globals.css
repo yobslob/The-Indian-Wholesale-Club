@@ -439,6 +439,12 @@
     align-self: flex-end;
     margin-right: -10px;
   }
+  /* The bag panel (D-086): the menu's panel and motion, wider, with its own header, scrolling lines and footer. */
+  .bag-panel {
+    width: min(92%, 440px);
+    padding: 0;
+    overflow: hidden;
+  }
   .site-panel-search {
     display: flex;
     align-items: center;

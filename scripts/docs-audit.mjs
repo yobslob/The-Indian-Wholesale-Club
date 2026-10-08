@@ -7,7 +7,7 @@
  * Mechanical checks only, no opinions:
  *  1. every repo path written in backticks in CLAUDE.md or docs/ exists
  *  2. every decision (D-xxx) and question (Q-xx) the docs or code cite is defined
- *  3. every storefront page in apps/web/app/(store) is listed in docs/storefront.md, and back
+ *  3. every storefront page in apps/web/app/(store) and (checkout) is listed in docs/storefront.md, and back
  *  4. every screen file in apps/app/app is named in docs/storefront.md or docs/admin.md
  *  5. every table, view and function the migrations create is named in docs/data-model.md
  *  6. every environment variable the code reads is listed in docs/ops.md
@@ -97,17 +97,20 @@ for (const [id, file] of cited(/\bQ-\d+\b/g, [...notDecisions, ...Object.entries
 // 3. Storefront pages (route groups like (store) are not part of the URL). Parallel slots (@info) hold intercepting
 // routes that draw an existing page in another way (the info panel, D-092): they add no URL, so they are skipped.
 const storefront = docs['docs/storefront.md'];
-const storeDir = 'apps/web/app/(store)';
-const webRoutes = walk(storeDir, (f) => /page\.tsx$/.test(f) && !posix(f).includes('/@')).map((f) => {
-  const rel = posix(path.relative(storeDir, path.dirname(f)));
-  return (
-    '/' +
-    rel
-      .split('/')
-      .filter((s) => s && !/^\(.*\)$/.test(s))
-      .join('/')
-  );
-});
+// Checkout has its own quiet frame (D-087) in the (checkout) group; its URLs are store pages all the same.
+const storeDirs = ['apps/web/app/(store)', 'apps/web/app/(checkout)'];
+const webRoutes = storeDirs.flatMap((storeDir) =>
+  walk(storeDir, (f) => /page\.tsx$/.test(f) && !posix(f).includes('/@')).map((f) => {
+    const rel = posix(path.relative(storeDir, path.dirname(f)));
+    return (
+      '/' +
+      rel
+        .split('/')
+        .filter((s) => s && !/^\(.*\)$/.test(s))
+        .join('/')
+    );
+  }),
+);
 const documented = new Set(
   [...storefront.matchAll(/`(\/[^`\s]*)`/g)].map(
     (m) => m[1].replace(/\?.*$/, '').replace(/\/$/, '') || '/',

@@ -42,12 +42,12 @@ export function ShippingPicker({
     },
   ];
   return (
-    <fieldset className="space-y-2">
-      <legend className="text-ink text-sm font-medium">Shipping</legend>
+    <fieldset className="mb-[18px] grid gap-2">
+      <legend className="sr-only">Shipping</legend>
       {options.map((o) => (
         <label
           key={o.method}
-          className="border-line bg-paper flex min-h-12 items-center gap-3 rounded-md border px-3.5"
+          className="border-line bg-paper has-[:checked]:border-ink font-ui flex min-h-[52px] cursor-pointer items-center gap-3 rounded-md border px-3.5 text-sm font-medium"
         >
           <input
             type="radio"
@@ -56,10 +56,10 @@ export function ShippingPicker({
             disabled={disabled}
             onChange={() => onChange(o.method)}
           />
-          <span className="flex-1 text-sm">
+          <span className="flex-1">
             {o.label} · {o.cents === 0 ? 'Free' : formatUsd(o.cents)}
           </span>
-          <span className="text-ink-muted text-sm">{formatDeliveryWindow(o.from, o.to)}</span>
+          <small className="text-ink-muted text-[13px]">{formatDeliveryWindow(o.from, o.to)}</small>
         </label>
       ))}
     </fieldset>

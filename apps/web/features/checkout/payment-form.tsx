@@ -1,6 +1,11 @@
 'use client';
 
-import { loadStripe, type Stripe, type StripeElements } from '@stripe/stripe-js';
+import {
+  loadStripe,
+  type Stripe,
+  type StripeElements,
+  type StripePaymentElementOptions,
+} from '@stripe/stripe-js';
 import { useEffect, useRef, useState } from 'react';
 
 let stripePromise: Promise<Stripe | null> | null = null;
@@ -19,12 +24,15 @@ export function PaymentForm({
   totalLabel,
   onPaid,
   returnPath = '/checkout/success',
+  billing,
 }: {
   clientSecret: string;
   totalLabel: string;
   onPaid: (paymentIntentId: string, status: string) => void;
   /** Where a card that needs a redirect (3-D Secure) comes back to, with ?payment_intent=… */
   returnPath?: string;
+  /** The checkout's own details as the form's starting values (a US store: country US, not the visitor's location). */
+  billing?: NonNullable<StripePaymentElementOptions['defaultValues']>['billingDetails'];
 }): React.JSX.Element {
   const mountRef = useRef<HTMLDivElement>(null);
   const [stripe, setStripe] = useState<Stripe | null>(null);
@@ -37,13 +45,15 @@ export function PaymentForm({
     void getStripe().then((s) => {
       if (cancelled || !s || !mountRef.current) return;
       const els = s.elements({ clientSecret });
-      els.create('payment').mount(mountRef.current);
+      els.create('payment', billing ? { defaultValues: { billingDetails: billing } } : {}).mount(mountRef.current);
       setStripe(s);
       setElements(els);
     });
     return () => {
       cancelled = true;
     };
+    // The form is built once per payment; later changes to `billing` don't rebuild it.
+    // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [clientSecret]);
 
   async function pay(): Promise<void> {

@@ -1,14 +1,21 @@
 import Image from 'next/image';
 import Link from 'next/link';
 
+import { formatDeliveryWindow } from '@repo/shared/domain';
+
 import { mediaUrl } from '@/lib/site';
 
 import { StampPager } from './stamp-pager';
 import styles from './stamps.module.css';
 
-import type { RegionCard } from '@repo/db/store';
+import type { DeliveryWindow, RegionCard } from '@repo/db/store';
 
 type StampRegion = Pick<RegionCard, 'slug' | 'name' | 'accent_color' | 'hero_image_path'>;
+
+/** The postmark's ring text: the next delivery window from cycle data (D-008), or nothing without one. */
+export function postmarkFor(delivery: DeliveryWindow | null): string {
+  return delivery ? `ARRIVES ${formatDeliveryWindow(delivery.est_delivery_from, delivery.est_delivery_to).toUpperCase()} · ` : '';
+}
 
 /** Stamps per page; from one more than this they page (D-080). */
 const PAGE = 6;

@@ -204,6 +204,8 @@ export const orderItemSchema = z.object({
   unit_price_cents: z.number().int(),
   total_price_cents: z.number().int(),
   status: z.enum(['active', 'unavailable', 'refunded']),
+  /** The product's photo (D-088); null when it has none. Optional until every reader runs migration 30. */
+  image_path: z.string().nullable().optional(),
 });
 
 export const orderEventSchema = z.object({

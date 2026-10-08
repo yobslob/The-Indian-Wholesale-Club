@@ -1039,7 +1039,7 @@ isOneToOne: false
                   ]
                 },"store_order_items": {
                   Row: {
-                    "id": string | null,"order_id": string | null,"product_id": string | null,"product_name": string | null,"quantity": number | null,"region_name": string | null,"status": Database["public"]['Enums']["order_item_status"] | null,"total_price_cents": number | null,"unit_price_cents": number | null,"variant_label": string | null
+                    "id": string | null,"image_path": string | null,"order_id": string | null,"product_id": string | null,"product_name": string | null,"quantity": number | null,"region_name": string | null,"status": Database["public"]['Enums']["order_item_status"] | null,"total_price_cents": number | null,"unit_price_cents": number | null,"variant_label": string | null
                   }
                   ComputedFields: never
                   Relationships: [

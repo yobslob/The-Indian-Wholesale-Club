@@ -4,7 +4,7 @@ import { DEMO_PRODUCT, E2E_CUSTOMER } from './env';
 
 export const ORDER_NUMBER = /IWC-\d{6}-[0-9A-F]{10}/;
 
-/** Region → product → bag → checkout with the Stripe test card. Returns the order number from the thank-you page. */
+/** Region → product → bag → checkout (phone, delivery, payment) with the Stripe test card. Returns the order number from the thank-you page. */
 export async function buyDemoProduct(page: Page): Promise<string> {
   await page.goto(`/states/${DEMO_PRODUCT.region}`);
   await page
@@ -19,12 +19,14 @@ export async function buyDemoProduct(page: Page): Promise<string> {
   await expect(page).toHaveURL(/\/cart$/);
   await page.getByRole('link', { name: 'Checkout' }).click();
 
-  await page.locator('input[name="email"]').fill(E2E_CUSTOMER.email);
+  // D-087: phone → delivery (the ZIP fills the city and state from our own list, D-098) → payment.
+  await page.locator('input[name="phone"]').fill('(732) 555-0142');
+  await page.getByRole('button', { name: 'Continue', exact: true }).click();
   await page.locator('input[name="fullName"]').fill('E2E Customer');
-  await page.locator('input[name="line1"]').fill('1 Test Street');
-  await page.locator('input[name="city"]').fill('Edison');
-  await page.locator('select[name="state"]').selectOption('NJ');
+  await page.locator('input[name="email"]').fill(E2E_CUSTOMER.email);
   await page.locator('input[name="zipCode"]').fill('08817');
+  await expect(page.getByText('✓ Edison, NJ')).toBeVisible();
+  await page.locator('input[name="line1"]').fill('1 Test Street');
   await page.getByRole('button', { name: 'Continue to payment' }).click();
 
   // Server-priced summary with a delivery window (D-008) before any payment.
@@ -51,6 +53,8 @@ export async function buyDemoProduct(page: Page): Promise<string> {
 
   await expect(page).toHaveURL(/\/checkout\/success\?order=/, { timeout: 45_000 });
   await expect(page.getByRole('heading', { name: 'Thank you!' })).toBeVisible();
+  // The fuller thank-you (D-087): the pieces and the total from this tab's priced bag.
+  await expect(page.getByRole('heading', { name: 'Your order' })).toBeVisible();
   const orderNumber = (await page.locator('strong').filter({ hasText: ORDER_NUMBER }).textContent())?.trim() ?? '';
   expect(orderNumber).toMatch(ORDER_NUMBER);
   return orderNumber;

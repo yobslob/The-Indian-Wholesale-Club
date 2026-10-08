@@ -53,7 +53,7 @@ feature), `product_images` (→ `product_media`), the `size_enum` type (→ `opt
 
 ## Store read path (`store_*`, D-017)
 Views: `store_regions`, `store_categories`, `store_products`, `store_variants`, `store_media`, `store_orders`,
-`store_order_items`, `store_order_events`. Functions: `store_next_delivery()` ("order by" + next window, D-035), and
+`store_order_items` (with each item's product photo, `image_path`, since D-088; `guest_order_lookup` returns the same keys), `store_order_events`. Functions: `store_next_delivery()` ("order by" + next window, D-035), and
 one-round-trip page reads (PR-2, migration 2) that read **only** the views: `store_home()`, `store_region_page(slug)`,
 `store_product_page(region, slug)`, `store_my_order(number)` (signed-in). Since C1 (migration 5, the approved design):
 `store_home()` adds `just_listed` (the four newest live products), region-page cards come newest first with

@@ -1,11 +1,10 @@
 import Link from 'next/link';
 
-import { formatDeliveryWindow } from '@repo/shared/domain';
 
 import { getHomeCached, searchProducts } from '@/features/catalog/data';
 import { ProductCard, ProductGrid } from '@/features/catalog/product-card';
 import { ProductRow } from '@/features/catalog/product-row';
-import { StampGrid } from '@/features/regions/region-stamp';
+import { postmarkFor, StampGrid } from '@/features/regions/region-stamp';
 import { HeaderIcon } from '@/features/shell/header-icons';
 
 import type { Metadata } from 'next';
@@ -44,9 +43,7 @@ export default async function SearchPage({
   const regions = q ? home.regions.filter((r) => r.name.toLowerCase().includes(needle)) : [];
   const open = regions.filter((r) => r.is_live);
   const soon = regions.filter((r) => !r.is_live);
-  const postmark = home.delivery
-    ? `ARRIVES ${formatDeliveryWindow(home.delivery.est_delivery_from, home.delivery.est_delivery_to).toUpperCase()} · `
-    : '';
+  const postmark = postmarkFor(home.delivery);
   const nothing = !q || (products.length === 0 && regions.length === 0);
   // The count only counts what the search returned: with more behind "Show more", it says so ("24+").
   const pieces = more ? `${products.length}+ pieces` : plural(products.length, 'piece');

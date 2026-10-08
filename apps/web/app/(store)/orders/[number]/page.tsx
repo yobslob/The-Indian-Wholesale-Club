@@ -24,10 +24,5 @@ export default async function OrderPage({
   const client = await sessionClient();
   const order = (await currentUser(client)) ? await getMyOrder(client, orderNumber) : null;
 
-  return (
-    <div className="space-y-6">
-      <h1 className="font-heading text-ink text-[clamp(32px,3vw,52px)] font-medium leading-tight tracking-[-0.03em]">Your order</h1>
-      {order ? <OrderView order={order} /> : <LookupForm defaultNumber={orderNumber} />}
-    </div>
-  );
+  return order ? <OrderView order={order} /> : <LookupForm title="Your order" defaultNumber={orderNumber} />;
 }

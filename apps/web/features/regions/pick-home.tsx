@@ -1,11 +1,10 @@
 import Link from 'next/link';
 
-import { formatDeliveryWindow } from '@repo/shared/domain';
 import { INDIA_MAP as MAP, TINY_REGIONS as TINY } from '@repo/shared/india-map';
 
 import { PickHomeInteractive } from './pick-home-interactive';
 import styles from './pick-home.module.css';
-import { StampGrid } from './region-stamp';
+import { postmarkFor, StampGrid } from './region-stamp';
 
 import type { DeliveryWindow, RegionCard } from '@repo/db/store';
 
@@ -27,9 +26,7 @@ export function PickHome({
   const bySlug = new Map(regions.map((r) => [r.slug, r]));
   const live = regions.filter((r) => r.is_live);
   const soon = regions.filter((r) => !r.is_live);
-  const postmark = delivery
-    ? `ARRIVES ${formatDeliveryWindow(delivery.est_delivery_from, delivery.est_delivery_to).toUpperCase()} · `
-    : '';
+  const postmark = postmarkFor(delivery);
 
   return (
     <PickHomeInteractive className={styles.pick} regions={regions.map((r) => ({ slug: r.slug, name: r.name, live: r.is_live }))}>
