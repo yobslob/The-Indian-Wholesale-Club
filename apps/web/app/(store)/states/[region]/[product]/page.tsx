@@ -28,8 +28,8 @@ export async function generateMetadata({ params }: { params: Params }): Promise<
 }
 
 /**
- * storefront.md §The product page, design.md §Direction (D-051): the photos | the buying panel, then
- * Reviews, Similar items in smaller cards and Curated for you (D-051, D-056). One cached store_product_page() call; the
+ * storefront.md §The product page, design.md §Direction (D-051): the photos | the buying panel (two even columns on
+ * tablets, D-082), then Reviews, Similar items in smaller cards and Curated for you (D-051, D-056). One cached store_product_page() call; the
  * add-to-bag island refreshes availability live (PR-7).
  */
 export default async function ProductPage({ params }: { params: Params }): Promise<React.JSX.Element> {
@@ -41,9 +41,9 @@ export default async function ProductPage({ params }: { params: Params }): Promi
 
   return (
     <>
-      <div className="grid items-start gap-[var(--gap)] md:grid-cols-[auto_minmax(0,1fr)]">
+      <div className="grid items-start gap-[var(--gap)] md:grid-cols-[minmax(0,1.05fr)_minmax(0,1fr)] min-[1100px]:grid-cols-[auto_minmax(0,1fr)]">
         <ProductGallery media={media} name={product.name} />
-        <aside aria-label="Buy" className="bg-surface rounded-lg p-[clamp(22px,2.6vw,44px)] md:sticky md:top-24">
+        <aside aria-label="Buy" className="bg-surface rounded-lg p-[clamp(22px,2.6vw,44px)] md:sticky md:top-[calc(var(--top-h)+16px)]">
           <p className="font-ui text-ink-muted text-[13px] font-medium">
             <Link href={`/states/${product.region_slug}`} className="underline">
               {product.region_name}

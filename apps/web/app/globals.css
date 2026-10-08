@@ -14,6 +14,7 @@
     --line: theme('colors.line');
     --brand: theme('colors.brand');
     --land: theme('colors.land');
+    --canvas: theme('colors.canvas');
     /* The sticky banner + header's height, kept exact by top-height.tsx; these are its values before that runs. */
     --top-h: 72px;
   }
@@ -491,6 +492,15 @@
 @layer components {
   html.info-open {
     overflow: hidden;
+  }
+  /* The product photo viewer fades in over the page (D-082, photo-viewer.tsx). */
+  .viewer-in {
+    animation: viewer-in 0.25s ease;
+  }
+  @keyframes viewer-in {
+    from {
+      opacity: 0;
+    }
   }
   .info-scrim {
     position: fixed;

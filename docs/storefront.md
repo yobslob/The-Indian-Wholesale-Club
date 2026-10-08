@@ -22,11 +22,11 @@ Enforcement: customer code reads catalog and order data only through `store_*` (
 | Route | Purpose | Rendering (see `engineering.md`) |
 |---|---|---|
 | `/` | the full-screen photo hero (behind the nav bar too) with only the stacked brand name on the white wall and "Miss local market? Start here." (D-079, `design/pages/shell/`; otherwise D-050 – D-055), Just listed, Pick your home (India map + stamps, in pages of 6 from 7 open states, + names; D-080) | static, cached `store_home()` |
-| `/states` | all 36 regions, alphabetical, with no state/UT distinction (D-002) | static (same cached read as `/`) |
+| `/states` | Pick your home as its own page (D-083): all 36 regions, alphabetical, with no state/UT distinction (D-002) | static (same cached read as `/`) |
 | `/states/[region]` | **the core page:** greeting in the region's script, story, accent theme, Clothing · Spices sections | static per region (36 built at build time) |
 | `/states/[region]/[product]` | product page: gallery, options, price, availability (live), save, delivery window, origin line | static on first visit + live stock island |
-| `/clothing`, `/spices` | the **See all** page behind every row (D-062): newest first, `?state=` and `?category=` pills, 24 cards then "Show more" (`?show=`) | dynamic render over one cached `store_browse()` read (the cards drawn, the total, the filter counts; D-068) |
-| `/search` | search products and regions; 24 results at a time with "Show more" (`?show=`, D-067), through `store_search`, which records the words (not who searched) for the admin's Insights | dynamic (no auth) |
+| `/clothing`, `/spices` | the **See all** page behind every row (D-062): newest first, `?state=` and `?category=` pills, 24 cards then "Show more" (`?show=`). D-084: the state row pins under the header (a soft fade at its ends, no blur, D-098), the category row scrolls away (fade + a very light blur); phones get one Filter bar (a round icon once scrolled) and a side panel | dynamic render over one cached `store_browse()` read (the cards drawn, the total, the filter counts; D-068) |
+| `/search` | search products and regions; 24 results at a time with "Show more" (`?show=`, D-067), through `store_search`, which records the words (not who searched) for the admin's Insights. D-085: the count with the words ("24+ pieces" when Show more has more), matching open states as stamps (coming-soon ones by name), no words or no results → the open states and Just listed; phones: a round search icon in the box | dynamic (no auth) |
 | `/cart` | the bag ("Bag" in the UI; on-device state) | static shell |
 | `/checkout`, `/checkout/success` | **target D-087:** phone (+1) → delivery (name, email, ZIP with the city filled in, street) → payment, the bag beside it, a quiet header, a fuller thank-you; **today:** details → server-priced total + Standard (free) / Express ($8) with each delivery window (D-041) → payment (Stripe) → order (D-038) | dynamic |
 | `/orders/lookup`, `/orders/[number]` | order tracking. The signed-in owner sees the order directly; anyone else confirms the order email first. An open faster-delivery offer (D-064) shows above the timeline: `POST /api/orders/faster` (order number + email) → Stripe Payment Element, loaded only when taken → `POST /api/orders/faster/confirm`. The customer's choices (cancel before cutoff, D-042; keep or cancel after a delay, D-008) through `POST /api/orders/choice` (number + email, refund shown first) | dynamic |
@@ -58,9 +58,10 @@ Framer Motion page transitions (speed, `engineering.md`).
 ## The product page
 Gallery → name, price → variant picker → availability (live) → **delivery window** → add to cart → details: description,
 craft, attributes, care or storage → origin line: "Made in India · from <Region> · Imported".
-**Target (D-082, not built yet):** tablets two columns (photos left, small ones under the big one); any photo opens a
-full-size viewer (swipe, arrows); on phones a buy bar while Add to bag is out of view and reviews as a row.
-**Target (D-051):** one full-length photo no taller than the screen with three stacked photos beside it; a
+**D-082 (built in B2):** tablets (768 – 1099 px) two columns (photos left, the small ones in a row under the big one);
+any photo opens a full-size viewer over the page (swipe, arrows, arrow keys, Escape); on phones a buy bar slides up
+once Add to bag has scrolled away above the screen, and the review cards are a sideways row.
+**D-051:** from 1100 px one full-length photo no taller than the screen with three stacked photos beside it; a
 heart beside the name saves the product; Details and Size chart open and close with + / −; then Reviews (rating + text; photos only from verified buyers; an admin checks each, D-052, D-056), Similar
 items and Curated for you as rows of smaller cards (D-062; Similar items' See all opens its category).
 

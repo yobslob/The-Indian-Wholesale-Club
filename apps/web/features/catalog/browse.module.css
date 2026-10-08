@@ -1,0 +1,200 @@
+/* Clothing / Spices (D-084, D-098). */
+
+/* A pill row that runs off the screen: its end fades into the page, only on a side that has more. The pinned state
+   row fades without a blur (anything sticky re-blurs every scroll frame, D-098); the category row, which scrolls
+   away, keeps D-084's very light blur. */
+.edge {
+  position: relative;
+  margin: 0 calc(-1 * var(--gut));
+}
+.edge nav {
+  display: flex;
+  gap: 10px;
+  overflow-x: auto;
+  padding: 0 var(--gut);
+  scrollbar-width: none;
+}
+.edge nav::-webkit-scrollbar {
+  display: none;
+}
+.edge::before,
+.edge::after {
+  content: '';
+  position: absolute;
+  top: 0;
+  bottom: 0;
+  z-index: 1;
+  width: 56px;
+  pointer-events: none;
+  opacity: 0;
+  transition: opacity 0.25s;
+}
+.edge::before {
+  left: 0;
+  background: linear-gradient(to right, var(--canvas) 10%, transparent);
+}
+.edge::after {
+  right: 0;
+  background: linear-gradient(to left, var(--canvas) 10%, transparent);
+}
+.edge[data-more-l]::before,
+.edge[data-more-r]::after {
+  opacity: 1;
+}
+.edge[data-blur]::before,
+.edge[data-blur]::after {
+  backdrop-filter: blur(1.5px);
+}
+.edge[data-blur]::before {
+  mask-image: linear-gradient(to right, #000, transparent);
+}
+.edge[data-blur]::after {
+  mask-image: linear-gradient(to left, #000, transparent);
+}
+
+/* Wider screens: only the state row pins under the header (D-084). */
+.pin {
+  position: sticky;
+  top: var(--top-h);
+  z-index: 15;
+  margin: 0 calc(-1 * var(--gut));
+  padding: 8px var(--gut) 10px;
+  background: var(--canvas);
+}
+
+/* Phones: one Filter bar pinned under the header; once the page is scrolled it shrinks to a round icon button where
+   the bar was (D-084). */
+.bar {
+  position: sticky;
+  top: var(--top-h);
+  z-index: 15;
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  margin: 0 calc(-1 * var(--gut));
+  padding: 8px var(--gut);
+  background: var(--canvas);
+  transition: background-color 0.2s;
+}
+.button {
+  display: inline-flex;
+  flex: none;
+  align-items: center;
+  gap: 8px;
+  height: 44px;
+  padding: 0 18px;
+  border-radius: 999px;
+  background: var(--ink);
+  color: var(--paper);
+  font-size: 14px;
+  font-weight: 600;
+  transition:
+    padding 0.3s ease,
+    gap 0.3s ease,
+    width 0.3s ease,
+    height 0.3s ease;
+}
+.button svg {
+  width: 18px;
+  height: 18px;
+  flex: none;
+}
+.label {
+  display: inline-block;
+  max-width: 60px;
+  overflow: hidden;
+  transition:
+    max-width 0.3s ease,
+    opacity 0.2s ease;
+}
+.summary {
+  flex: 1;
+  min-width: 0;
+  overflow: hidden;
+  font-size: 14px;
+  font-weight: 500;
+  line-height: 1.3;
+  white-space: nowrap;
+  text-overflow: ellipsis;
+  transition: opacity 0.2s ease;
+}
+.summary small {
+  display: block;
+  font-size: 12px;
+  color: var(--muted);
+}
+.bar[data-stuck] {
+  background: transparent;
+  pointer-events: none;
+}
+.bar[data-stuck] .button {
+  width: 48px;
+  height: 48px;
+  justify-content: center;
+  gap: 0;
+  padding: 0;
+  pointer-events: auto;
+  box-shadow: 0 4px 12px rgb(20 17 15 / 0.18);
+}
+.bar[data-stuck] .label,
+.bar[data-stuck] .summary {
+  max-width: 0;
+  opacity: 0;
+}
+
+/* The Filter panel's lists (the panel itself is the menu's, globals.css .site-panel). */
+.head {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  padding: 4px 0 12px;
+  border-bottom: 1px solid var(--line);
+}
+.head h2 {
+  margin: 0 auto 0 0;
+  font-size: 22px;
+  font-weight: 500;
+  line-height: 1;
+  color: #1d1a17;
+}
+.head a {
+  font-size: 14px;
+  font-weight: 500;
+  color: var(--muted);
+  text-decoration: underline;
+  text-underline-offset: 3px;
+}
+.group {
+  margin: 18px 0 6px;
+  font-size: 11px;
+  font-weight: 600;
+  letter-spacing: 0.16em;
+  text-transform: uppercase;
+  color: var(--muted);
+}
+.list {
+  margin: 0;
+  padding: 0;
+  list-style: none;
+}
+.list a {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  min-height: 48px;
+  border-bottom: 1px solid var(--line);
+  font-size: 15px;
+  font-weight: 500;
+  line-height: 1.2;
+}
+.list a span {
+  margin-left: auto;
+  font-weight: 400;
+  color: var(--muted);
+}
+.list a i {
+  width: 20px;
+  flex: none;
+  font-style: normal;
+  color: var(--brand);
+}

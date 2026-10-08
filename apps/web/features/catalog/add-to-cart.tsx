@@ -1,13 +1,14 @@
 'use client';
 
 import Link from 'next/link';
-import { useMemo, useState } from 'react';
+import { useMemo, useRef, useState } from 'react';
 
 import { choose, formatUsd, isAvailable, optionAxes, selectionOf } from '@repo/shared/domain';
 
 import { MAX_QTY_PER_LINE } from '@/features/cart/limits';
 import { useCart } from '@/features/cart/store';
 
+import { BuyBar } from './buy-bar';
 import { useLiveAvailability } from './use-live-availability';
 
 import type { Product, Variant } from '@repo/db/store';
@@ -29,7 +30,8 @@ const pillClass = (selected: boolean, out: boolean): string =>
 const legendClass = 'font-ui text-ink-muted mb-2 text-[11px] font-semibold uppercase tracking-[0.16em]';
 
 /**
- * Variant picker + live availability + add to bag (the only client island on the product page). Colour and size
+ * Variant picker + live availability + add to bag, with the phone buy bar standing in for the button once it has
+ * scrolled away (D-082). Colour and size
  * get a row each when the variants carry them (`optionAxes`); otherwise one button per variant.
  */
 export function AddToCart({ product, variants, delivery }: Props): React.JSX.Element {
@@ -44,6 +46,7 @@ export function AddToCart({ product, variants, delivery }: Props): React.JSX.Ele
   );
   const [quantity, setQuantity] = useState(1);
   const [added, setAdded] = useState(false);
+  const button = useRef<HTMLButtonElement>(null);
 
   const axes = useMemo(() => optionAxes(variants), [variants]);
   const variant = variants.find((v) => v.id === variantId);
@@ -59,6 +62,23 @@ export function AddToCart({ product, variants, delivery }: Props): React.JSX.Ele
   const left = available[variant.id] ?? 0;
   const soldOut = left <= 0;
   const maxQty = Math.max(1, Math.min(left, MAX_QTY_PER_LINE));
+  const addToBag = (): void => {
+    add(
+      {
+        variantId: variant.id,
+        productId: product.id,
+        productName: product.name,
+        productSlug: product.slug,
+        regionSlug: product.region_slug,
+        regionName: product.region_name,
+        variantLabel: variant.label,
+        unitPriceCents: variant.price_cents,
+        imagePath: product.primary_image_path,
+      },
+      quantity,
+    );
+    setAdded(true);
+  };
 
   return (
     <div className="space-y-4">
@@ -137,23 +157,8 @@ export function AddToCart({ product, variants, delivery }: Props): React.JSX.Ele
         <button
           type="button"
           disabled={soldOut}
-          onClick={() => {
-            add(
-              {
-                variantId: variant.id,
-                productId: product.id,
-                productName: product.name,
-                productSlug: product.slug,
-                regionSlug: product.region_slug,
-                regionName: product.region_name,
-                variantLabel: variant.label,
-                unitPriceCents: variant.price_cents,
-                imagePath: product.primary_image_path,
-              },
-              quantity,
-            );
-            setAdded(true);
-          }}
+          ref={button}
+          onClick={addToBag}
           className="bg-brand text-on-brand font-ui min-h-14 flex-1 rounded-pill px-5 text-[15px] font-medium disabled:opacity-50"
         >
           Add to bag
@@ -167,6 +172,14 @@ export function AddToCart({ product, variants, delivery }: Props): React.JSX.Ele
           </Link>
         </p>
       ) : null}
+      <BuyBar
+        target={button}
+        name={product.name}
+        detail={variants.length > 1 ? `${formatUsd(variant.price_cents)} · ${variant.label}` : formatUsd(variant.price_cents)}
+        disabled={soldOut}
+        added={added}
+        onAdd={addToBag}
+      />
     </div>
   );
 }
