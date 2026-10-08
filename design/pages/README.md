@@ -62,7 +62,10 @@ app's customer screens, then the admin side. The pass **refines the approved des
 
 **App screens (D-083):** every customer screen of the app in one mockup, `design/pages/app/` · approved D-095.
 
-### Part 2: admin side (web admin at 1440 · 390, and the app's admin mode)
+### Part 2: admin side
+**Round 1 covers the whole web admin in one mockup** (`design/pages/admin/`): the frame and the daily screens drawn, the
+other sections on the same pattern; the app's admin mode follows.
+ (web admin at 1440 · 390, and the app's admin mode)
 | # | id | Web (`apps/web/app/admin/`) | App (`apps/app/app/admin/`) | Status |
 |---|---|---|---|---|
 | 18 | `admin-shell` | nav and page frame (`features/admin/ui.tsx`), `/admin/login` | admin tabs (`(tabs)/_layout.tsx`) | — |
