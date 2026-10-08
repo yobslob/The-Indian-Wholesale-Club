@@ -1,9 +1,11 @@
 import { useLocalSearchParams } from 'expo-router';
 import { useEffect, useRef, useState } from 'react';
+import { Text, View } from 'react-native';
 
 import type { OrderDetail } from '@repo/db/store';
 
-import { Body, Button, ErrorText, Field, Screen, Title } from '@/components/ui';
+
+import { Body, Button, ErrorText, Field, Screen } from '@/components/ui';
 import { OrderView } from '@/features/orders/order-view';
 import { apiPost } from '@/lib/api';
 
@@ -45,7 +47,7 @@ export default function OrderLookupScreen(): React.JSX.Element {
 
   if (order) {
     return (
-      <Screen>
+      <Screen title="Your order">
         <OrderView order={order} />
         <Button kind="link" label="Track another order" onPress={() => setOrder(null)} />
       </Screen>
@@ -53,32 +55,18 @@ export default function OrderLookupScreen(): React.JSX.Element {
   }
 
   return (
-    <Screen>
-      <Title>Track an order</Title>
-      <Body muted>Use the order number from your confirmation email.</Body>
-      <Field
-        label="Order number"
-        placeholder="IWC-260101-0123456789"
-        value={orderNumber}
-        onChangeText={setOrderNumber}
-        autoCapitalize="characters"
-        autoCorrect={false}
-      />
-      <Field
-        label="Email"
-        value={email}
-        onChangeText={setEmail}
-        keyboardType="email-address"
-        autoCapitalize="none"
-        autoCorrect={false}
-        autoComplete="email"
-      />
-      {error ? <ErrorText>{error}</ErrorText> : null}
-      <Button
-        label={busy ? 'Looking…' : 'Find my order'}
-        onPress={() => void find(orderNumber, email)}
-        disabled={busy}
-      />
+    <Screen title="Track an order">
+      {/* The lookup in a card (D-088). */}
+      <View className="bg-surface gap-3.5 rounded-lg p-[22px]">
+        <Text accessibilityRole="header" className="font-heading text-[28px] text-[#1D1A17]">
+          Track your order
+        </Text>
+        <Field label="Order number" placeholder="IWC-260101-0123456789" value={orderNumber} onChangeText={setOrderNumber} autoCapitalize="characters" autoCorrect={false} />
+        <Field label="Email" value={email} onChangeText={setEmail} keyboardType="email-address" autoCapitalize="none" autoCorrect={false} autoComplete="email" />
+        {error ? <ErrorText>{error}</ErrorText> : null}
+        <Button label={busy ? 'Looking…' : 'Find my order'} onPress={() => void find(orderNumber, email)} disabled={busy} />
+        <Body muted>Both are in your order confirmation email.</Body>
+      </View>
     </Screen>
   );
 }

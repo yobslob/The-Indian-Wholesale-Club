@@ -9,6 +9,8 @@ import {
   choose,
   clothingAttributesSchema,
   contrastRatio,
+  formatUsPhone,
+  usPhoneDigits,
   findVariant,
   formatDeliveryWindow,
   formatUsd,
@@ -413,5 +415,17 @@ describe('resized photos for the app (engineering.md §App specifics)', () => {
       `https://shop.example/_next/image?url=${encodeURIComponent(source)}&w=640&q=75`,
     );
     assert.equal(resizedPhotoUrl('https://shop.example', source, 390, 2).includes('&w=828&'), true);
+  });
+});
+
+describe('checkout phone (D-087)', () => {
+  it('takes a US number in any common shape, with or without +1', () => {
+    for (const t of ['7325550142', '(732) 555-0142', '+1 732 555 0142', '1-732-555-0142']) assert.equal(usPhoneDigits(t), '7325550142', t);
+  });
+  it('refuses short numbers and area codes starting with 0 or 1', () => {
+    for (const t of ['12', '555-0142', '(132) 555-0142', '(032) 555-0142', '7325550142999']) assert.equal(usPhoneDigits(t), null, t);
+  });
+  it('formats ten digits as +1 (xxx) xxx-xxxx', () => {
+    assert.equal(formatUsPhone('7325550142'), '+1 (732) 555-0142');
   });
 });

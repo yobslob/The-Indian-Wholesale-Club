@@ -177,6 +177,8 @@ export function Field({ label, ...input }: { label: string } & TextInputProps): 
     <View className="gap-1.5">
       <Text className="font-ui text-ink text-[13px]">{label}</Text>
       <TextInput
+        // Screen readers name the input by its label (React Native does not tie the Text above to it).
+        accessibilityLabel={label}
         className="border-line bg-paper text-ink font-body min-h-12 rounded-md border px-3.5 text-[15px]"
         placeholderTextColor={tokens.colors['ink-muted']}
         {...input}

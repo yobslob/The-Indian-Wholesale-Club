@@ -3,7 +3,7 @@
 import { useRouter } from 'next/navigation';
 import { useEffect, useState } from 'react';
 
-import { formatUsd } from '@repo/shared/domain';
+import { formatUsd, formatUsPhone } from '@repo/shared/domain';
 
 import { EmptyLine } from '@/features/cart/cart-view';
 import { cartCount, cartSubtotalCents, useCart } from '@/features/cart/store';
@@ -12,7 +12,7 @@ import { BagSummary } from './bag-summary';
 import { DeliveryStep, deliverySummary, type Delivery } from './delivery-step';
 import { saveLastOrder, type SummaryLine } from './last-order';
 import { PaymentForm } from './payment-form';
-import { formatUsPhone, PhoneStep } from './phone-step';
+import { PhoneStep } from './phone-step';
 import { ShippingPicker } from './shipping-picker';
 import { Step } from './step';
 

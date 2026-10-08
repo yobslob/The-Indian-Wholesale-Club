@@ -12,3 +12,4 @@ export * from './pricing';
 export * from './us-states';
 export * from './variant-options';
 export * from './tracking';
+export * from './phone';

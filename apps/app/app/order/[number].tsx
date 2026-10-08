@@ -22,7 +22,7 @@ export default function MyOrderScreen(): React.JSX.Element {
     return <Redirect href={{ pathname: '/order/lookup', params: { number } }} />;
 
   return (
-    <Screen refreshing={loading} onRefresh={reload}>
+    <Screen title="Your order" refreshing={loading} onRefresh={reload}>
       {error ? <ErrorText>{error}</ErrorText> : null}
       {!data && loading ? <Loading /> : null}
       {data ? <OrderView order={data} onChanged={reload} /> : null}
