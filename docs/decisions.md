@@ -746,7 +746,7 @@ names, search) as its own page, its heading in Syne; nothing else changes there.
 every website customer page is designed first; then one pass mocks the app's customer screens on the same decisions,
 before the admin side.
 
-**D-084 · 2026-10-08 · founder: Clothing and Spices (the See all page), from the design pass**
+**D-084 · 2026-10-08 · founder: Clothing and Spices (the See all page), from the design pass · pinned row's blur amended by D-098**
 Founder, verbatim: asked as options (`design/pages/browse/brief.md`): "the things that run off edge, give them a very
 very little soft blur, not too harsh", "Filters stay on screen", "One Filter button on phones". On round 1 of
 `design/pages/browse/mockup.html`: "I don't want both the regions and categories to pin but just the region. In phone,
@@ -945,3 +945,11 @@ progress and pickups by shop; New listing with the camera or many from the galle
 needs; Payouts that confirm; Vendors with Add a vendor; refunds and the catalog-wide sections stay on the web panel).
 And every approved design of the pass (D-079 – D-097) is now to be built, in the phases of `plan/coding-plan.md`
 §Design pass build, each verified with `node scripts/check.mjs` before it is called done.
+
+**D-098 · 2026-10-08 · founder: No blur on the pinned state row; the ZIP lookup from our own list**
+Founder, verbatim (asked as options): "Soft fade, no blur (Recommended)"; "Our own list (Recommended)".
+What it means for the build: on Clothing / Spices the **pinned state row** ends in a soft fade into the page **without
+a blur** (blur on anything sticky re-blurs the page every scroll frame, `engineering.md` §Budgets); the category row,
+which scrolls away, keeps D-084's very light blur. Amends D-084 for the pinned row only. Checkout's ZIP → city and state
+(D-087) comes from **a US ZIP list kept on our server** (GeoNames' free postal-code data, CC BY 4.0, credited on the
+privacy page): no outside service at checkout and no customer data sent anywhere.
