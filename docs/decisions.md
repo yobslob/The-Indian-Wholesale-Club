@@ -904,3 +904,35 @@ the thank-you and order screens; Saved with hearts that remove; Profile signed i
 Track an order, About us & help, Sign out) and signed out (the sign-in card with show password, forgot password and
 the email code); About us & help as the glass sheet; the error state. **Write a review opens the D-090 form as a sheet
 in the app** instead of sending the customer to the website.
+
+**D-096 · 2026-10-08 · founder: The web admin, from the design pass**
+Founder, verbatim: "now let's design the admin higly effieciently so keep your eyes out for everything considerable. The
+admin panel should be lightweight yet highly designed productively." Chosen (all offered, `design/pages/admin/brief.md`):
+"Grouped nav with counts", "Quick find (Ctrl+K)", "Your own time zone", "Plain status chips", "Today as a work queue",
+"Orders: search + bulk", "Order page: actions that apply", "Confirm money actions", "Cycle progress bar", "Pickup
+checklist by shop", "One-step new listing", "Shop price → live $ price", and "Also make the uploading easy, so that I can
+upload multiple photos on gallery grids at once, also the products listings uploadings." On round 1 of
+`design/pages/admin/mockup.html`: "approved and move on".
+What it means for the build (`apps/web/app/admin/`, `apps/web/features/admin/`; still server-rendered and light, D-011;
+never linked from the store, D-006):
+- **Frame:** a sidebar grouped by job (Daily: Today, Orders, Cycle, Listings, Payouts · Catalog: Products, Regions,
+  Reviews, Promotions · People: Customers, Vendors, Returns · Insights, Settings) with live counts of what waits; a top
+  bar with **quick find** (Ctrl+K: orders by number / name / email, products, customers, vendors), the desk's clock in
+  both zones and the live dot. Phones: a top bar with the menu, find and the title.
+- **Times** in the admin's desk zone (US: New Jersey, India: India) with the other zone beside them, never UTC.
+- **Status chips** in plain words and colours for orders, payments and pickups.
+- **Today:** the open cycle's countdown to cutoff with its progress and totals; Needs attention; the admin's desk as a
+  work queue (count, the job, one button to it), the other desk below; live orders.
+- **Orders:** search, status chips with counts, ticked rows get a bulk bar (Mark shipped asks one tracking number per
+  order; Mark delivered); pages of 50.
+- **Order page:** the order on the left (pieces with photos and pickup state, customer with tap-to-call, the timeline in
+  plain words with customer-visible lines marked); on the right only the actions possible now, the main one first, and
+  the money; **every refund and cancel confirms** with the exact amount and the customer's email.
+- **Cycle:** Open → Collecting → Packed → Exported → Arrived → Fulfilling → Closed as a bar with dates and the next step as
+  the main button; pickups as one card per shop (Call, WhatsApp, Map, progress, big Picked / Unavailable).
+- **New listing in one step:** a photo grid that takes many photos at once (drag to reorder, first is main, alt text
+  under each, upload progress), the web address from the name, the type's fields, options with pieces and weight, the
+  shop price ₹ with the dollar price shown live (D-075), Save draft / Publish; on a phone, the camera or many from the
+  gallery. **Add many:** a batch of photos becomes drafts (drag to group), one row each for name, category, vendor,
+  shop price (→ $), pieces; "Create n drafts".
+- The other sections take the same frame, chips, tables and confirm boxes; codes in titles (orders, cycles) in Karla.

@@ -2,7 +2,7 @@
 
 **Surface:** `apps/web/app/admin/(panel)/*` (Today, Orders, order page, Cycles, Listings, Catalog, Payouts, Vendors,
 Regions, Reviews, Returns, Customers, Promotions, Insights, Settings), the app's admin mode follows · **Code:**
-`apps/web/features/admin/` (`ui.tsx`, `live-feed.tsx`, forms) · **Status:** mockup, round 1
+`apps/web/features/admin/` (`ui.tsx`, `live-feed.tsx`, forms) · **Status:** approved D-096 (2026-10-08), not built yet
 
 ## The job
 Two people run the business on it (D-007): the founder (US desk, laptop and phone) and the COO (India desk, mostly a
@@ -65,3 +65,4 @@ products listings uploadings."
 | Date | Round | Founder's notes | Changed |
 |---|---|---|---|
 | 2026-10-08 | 1 | the direction above | first proposal |
+| 2026-10-08 | — | "approved and move on" | approved as D-096 |
