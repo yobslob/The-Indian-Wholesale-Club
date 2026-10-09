@@ -953,3 +953,21 @@ a blur** (blur on anything sticky re-blurs the page every scroll frame, `enginee
 which scrolls away, keeps D-084's very light blur. Amends D-084 for the pinned row only. Checkout's ZIP → city and state
 (D-087) comes from **a US ZIP list kept on our server** (GeoNames' free postal-code data, CC BY 4.0, credited on the
 privacy page): no outside service at checkout and no customer data sent anywhere.
+
+**D-099 · 2026-10-09 · Claude, under D-011 (speed is a feature) and D-068, proposed: the second speed audit, after the design pass**
+The founder asked for the audit again now that the frontend is built: "now that frontend is also setup, do this
+again", "find and optimize everything which should be optimized". What it means for the build (`engineering.md`
+PR-3, PR-5, PR-6, §App specifics; migration 31):
+- **Admin counts are made in the database.** The Orders chips, Today's order counts, the shops to pay and the cycle
+  card counted rows the API had sent, and the API sends at most 1,000: past 1,000 orders they would have shown too few,
+  with no error. Now each is one count in SQL; indexes added for the admin's busiest filters.
+- **Smaller pages, same look:** the India map on Home and States is written compactly (the very same points, about 40%
+  less text); the product page's photo viewer, review form and sign-in card load when first opened instead of with
+  the page.
+- **Smaller app download:** the app carries only the one icon font it uses instead of all 19.
+- **Saved pieces** show the newest saved first again (website and app); the order was lost between two reads.
+Left as it is, on purpose: checkout's locking and overselling guard (D-068) re-checked and unchanged; the cache
+refresh after a sale (D-068) unchanged. *Option for later, not built:* the app reads the catalogue straight from the
+database on every screen, while the website shares one cached copy among all visitors; sending the app's catalogue
+reads through the website's cache would take that load off the database at scale. It changes D-043's split (the app
+calls the website only for what needs a secret), so it waits for the founder.

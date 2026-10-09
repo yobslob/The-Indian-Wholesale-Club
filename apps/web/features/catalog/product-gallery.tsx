@@ -1,11 +1,14 @@
 'use client';
 
+import dynamic from 'next/dynamic';
 import Image from 'next/image';
 import { useRef, useState } from 'react';
 
 import { mediaUrl } from '@/lib/site';
 
-import { PhotoViewer } from './photo-viewer';
+// The viewer loads on the first click on a photo, not with the product page (engineering.md §Budgets).
+const loadViewer = () => import('./photo-viewer');
+const PhotoViewer = dynamic(() => loadViewer().then((m) => m.PhotoViewer));
 
 import type { Media } from '@repo/db/store';
 
@@ -36,7 +39,8 @@ export function ProductGallery({ media, name }: { media: Media[]; name: string }
   };
 
   return (
-    <figure className="m-0">
+    // Pointing at or tabbing to a photo starts the viewer's download, so the click opens it at once.
+    <figure className="m-0" onPointerEnter={() => void loadViewer()} onFocus={() => void loadViewer()}>
       <div className={`flex flex-col gap-[var(--gap)] ${tall} min-[1100px]:flex-row`}>
         <button
           type="button"

@@ -83,6 +83,27 @@ const slug = (n) => n.toLowerCase().replace(/&/g, 'and').replace(/[^a-z]+/g, '-'
 const SLUGS = { 'andaman-and-nicobar': 'andaman-and-nicobar-islands' };
 const TINY = new Set(['lakshadweep', 'andaman-and-nicobar-islands', 'puducherry', 'dadra-and-nagar-haveli-and-daman-and-diu', 'goa', 'chandigarh', 'delhi']);
 
+/**
+ * One ring as a compact SVG path: the first point absolute, every next one relative to the one before (`l` repeats),
+ * the same points in about half the text. The map is drawn on Home and States, and a server-rendered page carries it
+ * twice (the HTML and React's copy of it), so every byte counts double.
+ */
+function ringPath(points, decimals) {
+  const k = 10 ** decimals;
+  const q = points.map((p) => p.map((v) => Math.round(Number(v.toFixed(decimals)) * k)));
+  const num = (n) => String(n / k);
+  let d = `M${num(q[0][0])} ${num(q[0][1])}l`;
+  let first = true;
+  for (let j = 1; j < q.length; j++) {
+    for (const v of [q[j][0] - q[j - 1][0], q[j][1] - q[j - 1][1]]) {
+      const s = num(v);
+      d += first || s.startsWith('-') ? s : ` ${s}`;
+      first = false;
+    }
+  }
+  return `${d}z`;
+}
+
 const paths = {};
 const centers = {};
 names.forEach((name, i) => {
@@ -96,7 +117,7 @@ names.forEach((name, i) => {
     .filter((r) => area(r) > (tiny ? 0.04 : 2)) // drop specks, keep small islands and enclaves
     .map((r) => simplify(r, tiny ? 0.15 : 1.1))
     .filter((r) => r.length >= 3)
-    .map((r) => 'M' + r.map((p) => p[0].toFixed(tiny ? 1 : 0) + ' ' + p[1].toFixed(tiny ? 1 : 0)).join('L') + 'Z')
+    .map((r) => ringPath(r, tiny ? 1 : 0))
     .join('');
 });
 

@@ -29,6 +29,9 @@ Baseline numbers come from the founder's first `node scripts/check.mjs` run and 
   2026-10-08). Writes and calls with personal data (`guest_order_lookup`: the email) or structured arguments
   (`checkout_context`) stay POST.
 - **PR-3 No over-fetching:** explicit column lists, never `select('*')`, no `count: 'exact'` on customer paths.
+  Counts and sums are made in SQL (a head count or a function), never by fetching rows and counting them: the API
+  returns at most 1,000 rows (`supabase/config.toml` `max_rows`), so a count of fetched rows is silently wrong past
+  that (the admin's chips and Today, fixed in migration 31, D-099).
 - **PR-4 Narrow middleware:** runs only on `/admin`, `/account`, `/checkout` and `/orders` (`apps/web/middleware.ts`; there
   are no admin API routes). It uses `getClaims()`: a local JWT check with asymmetric signing keys, one Auth call with the
   legacy shared secret (local Supabase and old hosted projects use the shared secret). Rate limits run inside the routes.
@@ -37,12 +40,16 @@ Baseline numbers come from the founder's first `node scripts/check.mjs` run and 
   which the founder asked for (D-049, `design.md` §Direction: one small client module, off for reduced motion). Fonts
   (D-079, D-080, since 2026-10-08): Cinzel, Syne and Karla via `next/font`, self-hosted Latin variable files (about 85 KB
   in all); Georgia as the system font for the logo text with Gelasio, loaded only where Georgia is missing.
+  Click-only parts load on the click (`next/dynamic`), never with the page: the product page's photo viewer (its
+  download starts when a photo is pointed at), the review panel's form and sign-in card (D-099).
 - **PR-6 Assets:** `next/image` with `sizes` that match the width the image really has at each breakpoint (Tailwind's `md` 768 and
   `xl` 1280; rows use their `clamp()` widths, `features/catalog/product-card.tsx`), so photos are never upscaled and never
   oversized; quality stays Next's default 75. Uploaded photos get a new random path and are never overwritten, so they are
   uploaded with a one-year `Cache-Control` (`PHOTO_CACHE_CONTROL`, `packages/shared/src/domain/media.ts`) and resized copies
   are kept a month (`images.minimumCacheTTL`, `apps/web/next.config.js`; it was the storage default of one hour). Fonts via
   `next/font`, subset. Script fonts only on their region page. (D-068)
+  The India map's paths are written compactly (each point relative to the one before, `scripts/build-india-map.mjs`):
+  the same points in 44 KB instead of 76 KB, which counts twice on Home and States (the HTML and React's copy of it). (D-099)
 - **PR-7 Realtime only where it matters:** product availability, and the admin orders/stock feed.
 - **PR-8 Dependencies cost:** every new dependency is justified in its commit message (size + reason).
 
@@ -156,6 +163,8 @@ scripts/build-india-map.mjs  regenerates packages/shared/src/india-map/india-map
   native font file is one weight, so weights are classes (`font-ui-semibold`). Cinzel, Syne and Karla come from the
   `@expo-google-fonts` packages (D-079, D-080); the logo text uses Georgia on iOS and Gelasio on Android. The splash screen stays until the fonts are loaded.
   Motion is Reanimated (Home hero word fade on scroll, cards fading in), off when the phone asks for reduced motion.
+  Icons are imported one set at a time (`@expo/vector-icons/Ionicons`, never the package root): the root brings every
+  set's font file into the app package, 19 fonts where one is used (D-099).
   The India map is shared with the website (`@repo/shared/india-map`) and drawn with `react-native-svg`. Photos use
   `expo-image` (cached in memory and on disk) through `components/photo.tsx`, which asks the website's image resizer
   (`/_next/image`, quality 75 like the website) for the width the photo is drawn at times the screen's pixel ratio, and

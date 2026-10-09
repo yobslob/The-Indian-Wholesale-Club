@@ -1,3 +1,5 @@
+import { z } from 'zod';
+
 import { DbError, unwrap, type Enum, type Insert, type IwcClient, type Update } from '../client';
 
 // ---------------------------------------------------------------- cycles (flows.md §1)
@@ -226,21 +228,11 @@ export async function listOrderMoves(client: IwcClient, orderId: string) {
  * before tax and shipping (as Insights counts them). Cancelled pieces and unpaid orders are left out.
  */
 export async function getCycleTotals(client: IwcClient, cycleId: string) {
-  const rows = unwrap(
-    await client
-      .from('orders')
-      .select('id, items:order_items(quantity, total_price_cents, status, product:products(vendor_id))')
-      .eq('cycle_id', cycleId)
-      .not('status', 'in', '(pending_payment,cancelled,refunded)')
-      .limit(5000),
-  );
-  const items = rows.flatMap((o) => o.items).filter((i) => i.status === 'active');
-  return {
-    orders: rows.length,
-    pieces: items.reduce((n, i) => n + i.quantity, 0),
-    shops: new Set(items.map((i) => i.product?.vendor_id).filter(Boolean)).size,
-    salesCents: items.reduce((n, i) => n + i.total_price_cents, 0),
-  };
+  // Counted in the database (admin_cycle_totals, migration 31): summing rows sent over stopped at 1,000 orders.
+  const data = z
+    .object({ orders: z.number().int(), pieces: z.number().int(), shops: z.number().int(), sales_cents: z.number().int() })
+    .parse(unwrap(await client.rpc('admin_cycle_totals', { p_cycle: cycleId }, { get: true })));
+  return { orders: data.orders, pieces: data.pieces, shops: data.shops, salesCents: data.sales_cents };
 }
 
 /** The cycle whose pickups are still waiting longest: where "Start pickups" on Today leads (D-096). */

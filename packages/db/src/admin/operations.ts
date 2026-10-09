@@ -1,3 +1,5 @@
+import { z } from 'zod';
+
 import { unwrap, type Enum, type IwcClient, type Update } from '../client';
 
 // ---------------------------------------------------------------- orders
@@ -43,21 +45,30 @@ export async function listAdminOrders(client: IwcClient, filter: AdminOrderFilte
   return { orders: data ?? [], total: count ?? 0 };
 }
 
+const orderCountsSchema = z.object({
+  by_status: z.record(z.string(), z.number().int()),
+  express_to_send: z.number().int(),
+  shops_owed: z.number().int(),
+});
+
+/**
+ * Counted in the database (admin_order_counts, migration 31): every order by status, express orders still to send and
+ * the shops owed for picked pieces. Counting rows sent over stopped at the API's 1,000-row cap.
+ */
+export async function getOrderCounts(client: IwcClient) {
+  const data = orderCountsSchema.parse(unwrap(await client.rpc('admin_order_counts', undefined, { get: true })));
+  return {
+    byStatus: data.by_status as Partial<Record<Enum<'order_status'>, number>>,
+    expressToSend: data.express_to_send,
+    shopsOwed: data.shops_owed,
+  };
+}
+
 /** The Orders page's chips (D-096): how many orders are in each status, and express orders still to send. */
 export async function countOrdersByStatus(client: IwcClient) {
-  const [rows, express] = await Promise.all([
-    client.from('orders').select('status').limit(20000),
-    client
-      .from('orders')
-      .select('id', { count: 'exact', head: true })
-      .eq('shipping_method', 'express')
-      .is('cycle_id', null)
-      .in('status', ['confirmed', 'collecting']),
-  ]);
-  const byStatus: Partial<Record<Enum<'order_status'>, number>> = {};
-  for (const r of unwrap(rows)) byStatus[r.status] = (byStatus[r.status] ?? 0) + 1;
-  if (express.error) throw new Error(express.error.message);
-  return { byStatus, all: unwrap(rows).length, expressToSend: express.count ?? 0 };
+  const { byStatus, expressToSend } = await getOrderCounts(client);
+  const all = Object.values(byStatus).reduce((n, c) => n + (c ?? 0), 0);
+  return { byStatus, all, expressToSend };
 }
 
 export async function getAdminOrder(client: IwcClient, id: string) {

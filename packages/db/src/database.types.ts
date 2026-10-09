@@ -1302,8 +1302,14 @@ isOneToOne: false
 "admin_create_listing":
 { Args: { "p_listing": Json }; Returns: string
                            },
+"admin_cycle_totals":
+{ Args: { "p_cycle": string }; Returns: Json
+                           },
 "admin_demand":
 { Args: { "p_since"?: string }; Returns: Json
+                           },
+"admin_order_counts":
+{ Args: Record<PropertyKey, never>; Returns: Json
                            },
 "admin_price_preview":
 { Args: { "p_shop_paise": number,"p_weight_g": number }; Returns: number

@@ -137,6 +137,10 @@ for bags with no US piece; trigger `_express_has_no_us_stock` on `order_items` r
 attribution, in `store_media`); `reviews.is_placeholder` (a demo review, written only by the service role, shown only in
 demo mode, in `store_reviews` as `is_demo` so the store labels it). `guest_order_lookup(number, email)` returns the
 same shape for guests and is **service-only** (the server route rate-limits it). A test keeps its fields identical to the views'.
+Migration 31 (D-099, the second speed audit): `admin_order_counts()` (every order by status, express orders still to
+send, shops owed for picked pieces) and `admin_cycle_totals(cycle)` (the cycle card's orders, pieces, shops and sales),
+admin only, counted in SQL because the API sends at most 1,000 rows; indexes for orders by status and newest, pickups
+by status, what each shop is owed, and a payout's pieces.
 `checkout_context(variant_ids, promo_code)` (migration 3, **service-only**) returns what the server needs to price a bag in
 one round trip: the variants as customers can buy them (through `store_*`), the promo if usable now, the shipping settings
 and the next window (D-038).

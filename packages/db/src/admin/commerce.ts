@@ -2,7 +2,7 @@ import { z } from 'zod';
 
 import { unwrap, type Enum, type Insert, type IwcClient, type Update } from '../client';
 
-import { filterWords } from './operations';
+import { filterWords, getOrderCounts } from './operations';
 
 // ---------------------------------------------------------------- promo codes (kept from the old admin)
 
@@ -73,8 +73,8 @@ async function countRows(
 }
 
 export async function getTodaySummary(client: IwcClient): Promise<TodaySummary> {
-  const [orders, pendingPickups, unpaidPickedPickups, draftProducts, staleDays, stale, expressToSend] = await Promise.all([
-    client.from('orders').select('status').in('status', OPEN_ORDER_STATUSES).limit(5000),
+  const [counts, pendingPickups, unpaidPickedPickups, draftProducts, staleDays, stale] = await Promise.all([
+    getOrderCounts(client),
     countRows(
       client.from('pickups').select('id', { count: 'exact', head: true }).eq('status', 'pending'),
     ),
@@ -90,20 +90,21 @@ export async function getTodaySummary(client: IwcClient): Promise<TodaySummary> 
     ),
     client.from('pricing_settings').select('stale_listing_days').eq('id', 1).single(),
     client.rpc('admin_stale_variants', undefined, { get: true }),
-    countRows(
-      client
-        .from('orders')
-        .select('id', { count: 'exact', head: true })
-        .eq('shipping_method', 'express')
-        .is('cycle_id', null)
-        .in('status', ['confirmed', 'collecting']),
-    ),
   ]);
   const ordersByStatus: TodaySummary['ordersByStatus'] = {};
-  for (const row of unwrap(orders))
-    ordersByStatus[row.status] = (ordersByStatus[row.status] ?? 0) + 1;
+  for (const status of OPEN_ORDER_STATUSES) {
+    const n = counts.byStatus[status];
+    if (n) ordersByStatus[status] = n;
+  }
   const staleVariants = unwrap(staleDays).stale_listing_days === null ? null : unwrap(stale).length;
-  return { ordersByStatus, pendingPickups, unpaidPickedPickups, draftProducts, staleVariants, expressToSend };
+  return {
+    ordersByStatus,
+    pendingPickups,
+    unpaidPickedPickups,
+    draftProducts,
+    staleVariants,
+    expressToSend: counts.expressToSend,
+  };
 }
 
 /** D-096: what waits behind each section of the admin's sidebar. Head counts only, one round trip each, in parallel. */
@@ -122,12 +123,11 @@ export async function getWaitingCounts(client: IwcClient): Promise<WaitingCounts
     countRows(client.from('orders').select('id', head).eq('status', 'arrived')),
     countRows(client.from('pickups').select('id', head).eq('status', 'pending')),
     countRows(client.from('products').select('id', head).eq('status', 'draft')),
-    client.from('pickups').select('vendor_id').eq('status', 'picked').is('payout_id', null).limit(5000),
+    getOrderCounts(client),
     countRows(client.from('reviews').select('id', head).eq('status', 'pending')),
     countRows(client.from('returns').select('id', head).eq('status', 'requested')),
   ]);
-  const shopsOwed = new Set(unwrap(owed).map((p) => p.vendor_id)).size;
-  return { ordersToShip, pickupsToDo, drafts, shopsOwed, reviews, returns };
+  return { ordersToShip, pickupsToDo, drafts, shopsOwed: owed.shopsOwed, reviews, returns };
 }
 
 /**

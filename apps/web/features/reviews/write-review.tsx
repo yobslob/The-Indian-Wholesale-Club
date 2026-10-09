@@ -1,13 +1,20 @@
 'use client';
 
+import dynamic from 'next/dynamic';
 import Link from 'next/link';
 import { useCallback, useEffect, useRef, useState } from 'react';
 
-import { SignInCard } from '@/features/auth/sign-in-card';
 import { HeaderIcon } from '@/features/shell/header-icons';
 
 import { reviewFormStateAction, type ReviewFormState } from './actions';
-import { ReviewForm } from './review-form';
+
+// The panel's insides load when it first opens, not with the product page (engineering.md §Budgets): most visitors
+// never open it. The click starts both downloads while the server says who is signed in.
+const loadSignIn = () => import('@/features/auth/sign-in-card');
+const loadForm = () => import('./review-form');
+const waiting = () => <p className="text-ink-muted text-sm">Loading…</p>;
+const SignInCard = dynamic(() => loadSignIn().then((m) => m.SignInCard), { loading: waiting });
+const ReviewForm = dynamic(() => loadForm().then((m) => m.ReviewForm), { loading: waiting });
 
 const pill =
   'font-ui border-line bg-paper hover:border-ink inline-flex min-h-11 items-center rounded-pill border px-5 text-sm font-medium';
@@ -25,6 +32,8 @@ export function WriteReview({ productId }: { productId: string }): React.JSX.Ele
   const close = useRef<HTMLButtonElement>(null);
 
   const load = useCallback(() => {
+    void loadSignIn();
+    void loadForm();
     setState(null);
     void reviewFormStateAction(productId).then(setState);
   }, [productId]);

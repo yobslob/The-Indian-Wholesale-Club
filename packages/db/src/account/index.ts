@@ -125,12 +125,16 @@ export async function unsaveProduct(client: IwcClient, productId: string) {
 const SAVED_CARD_COLUMNS =
   'id, slug, name, product_type, region_slug, region_name, category_slug, category_name, summary, price_cents, primary_image_path';
 
-/** Saved products that are still visible in the store (2 round trips; account pages are dynamic). */
+/**
+ * Saved products that are still visible in the store, the newest saved first (2 round trips; account pages are
+ * dynamic). The second read returns the cards in no particular order, so they are put back in the saved order.
+ */
 export async function listSavedProducts(client: IwcClient): Promise<ProductCard[]> {
   const ids = await listSavedProductIds(client);
   if (ids.length === 0) return [];
   const data = unwrap(await client.from('store_products').select(SAVED_CARD_COLUMNS).in('id', ids));
-  return z.array(productCardSchema).parse(data);
+  const cards = new Map(z.array(productCardSchema).parse(data).map((card) => [card.id, card]));
+  return ids.flatMap((id) => cards.get(id) ?? []);
 }
 
 export * from './reviews';
