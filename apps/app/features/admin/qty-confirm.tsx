@@ -4,10 +4,10 @@ import { Text, TextInput, View } from 'react-native';
 import { setListedQty } from '@repo/db/admin';
 import tokens from '@repo/tokens';
 
-import { utc } from './format';
+import { AdminButton, useDesk, when } from './ui';
 import { useAction } from './use-action';
 
-import { Button, ErrorText } from '@/components/ui';
+import { ErrorText } from '@/components/ui';
 import { supabase } from '@/lib/supabase';
 
 export interface VariantQty {
@@ -31,6 +31,7 @@ export function QtyConfirm({
 }): React.JSX.Element {
   const [qty, setQty] = useState(String(variant.qty_listed));
   const action = useAction(onDone);
+  const desk = useDesk();
   const value = Number(qty);
   const valid = /^\d+$/.test(qty.trim()) && value <= 10000;
 
@@ -40,7 +41,7 @@ export function QtyConfirm({
         {variant.label} · listed {variant.qty_listed} · reserved {variant.qty_reserved}
       </Text>
       <Text className="text-ink-muted text-xs">
-        Confirmed with the shop {utc(variant.qty_confirmed_at)}
+        Confirmed with the shop {when(variant.qty_confirmed_at, desk)}
       </Text>
       <View className="flex-row items-center gap-3">
         <TextInput
@@ -49,10 +50,10 @@ export function QtyConfirm({
           keyboardType="number-pad"
           accessibilityLabel={`Quantity for ${variant.label}`}
           placeholderTextColor={tokens.colors['ink-muted']}
-          className="border-line text-ink min-h-11 w-20 rounded-sm border px-3"
+          className="border-line bg-canvas text-ink min-h-11 w-20 rounded-[9px] border px-3"
         />
-        <Button
-          label="Confirm qty"
+        <AdminButton
+          label="Confirm pieces"
           disabled={action.busy || !valid}
           onPress={() =>
             void action.run(() => setListedQty(supabase, variant.id, value, 'confirmed in app'))

@@ -72,7 +72,7 @@ export default function FindScreen(): React.JSX.Element {
                 key={p.id}
                 title={p.name}
                 sub={p.region?.name}
-                href={{ pathname: '/admin/listings', params: { view: p.status } }}
+                href={{ pathname: '/admin/listing/[id]', params: { id: p.id } }}
                 lead={<View className="bg-land h-10 w-[30px] overflow-hidden rounded-md">{main ? <Photo path={main.storage_path} width={30} /> : null}</View>}
               >
                 <StatusChip map={PRODUCT_STATUS} status={p.status} />

@@ -123,7 +123,8 @@ export async function updateCategory(client: IwcClient, id: string, patch: Updat
 
 const PRODUCT_LIST_COLUMNS = `id, slug, name, product_type, status, price_cents, shop_price_paise, is_placeholder, is_us_stock, updated_at,
   region:regions(slug, name), vendor:vendors(id, shop_name),
-  variants:product_variants(id, label, qty_listed, qty_reserved, qty_confirmed_at, is_active)`;
+  variants:product_variants(id, label, qty_listed, qty_reserved, qty_confirmed_at, is_active),
+  media:product_media(storage_path, is_primary, sort_order)`;
 
 export interface AdminProductFilter {
   status?: Enum<'product_status'>;

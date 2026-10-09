@@ -37,9 +37,15 @@ export async function takePhotos(source: 'camera' | 'library'): Promise<ListingP
  * Uploads a listing's photos with the admin's own session (storage policy "iwc admin insert") and records them
  * in product_media, in order, the first as the main photo. Returns the photos that failed, so they can be retried.
  */
-export async function uploadListingPhotos(productId: string, photos: ListingPhoto[], startAt = 0): Promise<ListingPhoto[]> {
+export async function uploadListingPhotos(
+  productId: string,
+  photos: ListingPhoto[],
+  startAt = 0,
+  onPhoto?: (done: number) => void,
+): Promise<ListingPhoto[]> {
   const failed: ListingPhoto[] = [];
   for (const [i, photo] of photos.entries()) {
+    onPhoto?.(i);
     try {
       const body = await (await fetch(photo.uri)).arrayBuffer();
       const { type, ext } = sniff(body);
