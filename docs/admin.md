@@ -20,7 +20,7 @@ Shops never get logins. The founder and COO enter all shop data (D-018).
 **App** (built in R6: `apps/app/app/admin/`)
 - One app for everyone and one sign-in screen. After sign-in, the app asks the database `is_admin()` (role **and** email
   in `admin_emails`, `apps/app/lib/session.tsx`). The phone never decides this itself.
-- Only if the server says yes does it mount the admin navigator (Today · Orders · Cycles · Payouts · Listings · Vendors) in
+- Only if the server says yes does it mount the admin navigator (since B8, D-097: Today · Orders · Cycle · Listings · More) in
   place of the customer tabs; anyone else opening `/admin` is sent to the store. The admin's Today screen has "View the
   store"; the Profile tab then shows "Back to admin", rendered only for that server-confirmed admin.
 - Admin screens are bundled in the app binary (mobile apps can't hide code), so all protection is server-side, as on the web (D-043):
@@ -57,14 +57,23 @@ The order page refunds unavailable pieces and cancels orders before cutoff, with
 the buttons (Stripe first, then the database). **Web only:** refunds need the Stripe secret key, which lives on the server;
 the app's order list marks unavailable pieces "to refund on the web panel".
 
-**App admin mode (R6), what each screen does:** Today (the same counts as the web, each opening its screen) · Orders (filter
-by status → detail: items with pickup state, internal timeline, mark shipped with carrier + tracking, mark delivered) ·
-Cycles (list → one cycle: cut off, move to the next status, per-shop pickup checklist with Picked / Unavailable) · Payouts
-(what each shop is owed, record a payout; the amount is computed in SQL) · Listings (draft / live / paused, confirm each
-variant's quantity with the shop) · Vendors (list, add a shop). Adding a product with the camera and publishing it work in the app since C3; creating cycles and editing a
-listing's text stay on the web panel.
+**App admin mode, what each screen does (B8, D-097, on the web's look):** five tabs with counts of what waits
+(Orders to ship, Pickups to do, Drafts, Shops owed) and a search button on each that opens **quick find**; times in the
+desk's zone and plain chips (`@repo/shared/admin`, one source with the web panel). **Today**: the cycle countdown,
+totals and progress, Needs attention, the desk's queue with one big button per job, live orders, View the store.
+**Orders**: search, chips with counts, cards; a long press selects, with Mark shipped… (a sheet, one tracking number
+each) and Delivered (asks first). **Order**: pieces with photos and pickup state, Call / Text / Email, the timeline, the
+one main action at the bottom (Pack & ship sheet, Mark delivered); express pieces picked there; refunds, cancels and new
+delivery dates on the web panel. **Cycle** tab: the cycle being worked on, its progress and next step (Cut off asks
+first), pickups by shop (Call, WhatsApp, Map, Picked / Unavailable, which asks first), the arrival check-off, other
+cycles. **Listings**: New (Take photos or many from the gallery, the photo grid, live $ price, Save draft / Publish), Add
+many (one draft card per photo, Join the draft above, the shop, category, fabric and care set once), Drafts / Live /
+Paused with what each draft still needs; a listing's screen publishes, pauses and confirms pieces. **More**: Payouts
+(Record payout asks first in a sheet with the amount), Vendors (Add a vendor as a sheet with a shop photo, kept in the
+private `vendor-docs` bucket), View the store, Sign out. Creating cycles and editing a listing's words stay on the web
+panel.
 
-**Not built yet** (coding phase): photo upload for vendors/receipts (products: web admin since C1, the phone camera since C3), customer emails for
+**Not built yet** (coding phase): photo upload for receipts and licences (products: web admin since C1, the phone camera since C3; a shop's photo in the app since B8), customer emails for
 refunds and cancellations, delay warnings on Today, live (Realtime) order/stock feed, packing list +
 commercial invoice export, bulk edits of products (orders: bulk ship / deliver since B7), category editing. In the app: cycle creation, refunds, editing a listing's text.
 

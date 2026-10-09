@@ -121,8 +121,9 @@ export function Sheet({ open, onClose, title, children }: { open: boolean; onClo
       <KeyboardAvoidingView behavior={Platform.OS === 'ios' ? 'padding' : undefined} className="flex-1">
         <Pressable accessibilityLabel="Close" onPress={onClose} className="flex-1 bg-[rgba(20,17,15,0.4)]" />
         <View className="bg-canvas max-h-[86%] rounded-t-[22px]">
-          <SafeAreaView edges={['bottom']}>
-            <ScrollView contentContainerClassName="gap-3 px-4 pb-6 pt-2.5" keyboardShouldPersistTaps="handled">
+          {/* Shrinks to the sheet's height so a long form scrolls inside it. */}
+          <SafeAreaView edges={['bottom']} className="shrink">
+            <ScrollView className="shrink grow-0" contentContainerClassName="gap-3 px-4 pb-6 pt-2.5" keyboardShouldPersistTaps="handled">
               <View className="bg-line mb-1 h-1 w-10 self-center rounded-sm" />
               <Text accessibilityRole="header" className="font-heading-semibold text-ink text-[20px] leading-6">
                 {title}

@@ -3,11 +3,12 @@ import { listAllPayablePickups } from '@repo/db/admin';
 import type { PayableGroup } from '@/features/admin/payout-card';
 
 import { Body, ErrorText, Loading, Screen } from '@/components/ui';
+import { rupees } from '@/features/admin/format';
 import { PayoutCard } from '@/features/admin/payout-card';
 import { supabase } from '@/lib/supabase';
 import { useQuery } from '@/lib/use-query';
 
-/** Payouts (India desk): what each shop is owed for picked pieces, and recording the payment. */
+/** Payouts (D-097, India desk): what each shop is owed for picked pieces, one card each; recording a payment asks first. */
 export default function AdminPayoutsScreen(): React.JSX.Element {
   const { data, error, loading, reload } = useQuery('admin:payouts', async () => {
     const pickups = await listAllPayablePickups(supabase);
@@ -38,6 +39,11 @@ export default function AdminPayoutsScreen(): React.JSX.Element {
       {error ? <ErrorText>{error}</ErrorText> : null}
       {!data && loading ? <Loading /> : null}
       {data && data.length === 0 ? <Body muted>Nothing to pay right now.</Body> : null}
+      {data && data.length > 0 ? (
+        <Body muted>
+          {rupees(data.reduce((s, g) => s + g.paise, 0))} owed to {data.length} shop{data.length === 1 ? '' : 's'}
+        </Body>
+      ) : null}
       {data?.map((g) => (
         <PayoutCard key={`${g.vendorId}:${g.pickupIds.join(',')}`} group={g} onDone={reload} />
       ))}
