@@ -55,8 +55,8 @@ export async function listPickups(client: IwcClient, cycleId: string) {
       .from('pickups')
       .select(
         `id, status, quantity, shop_price_paise, picked_at, arrived_at, photo_path, note, payout_id,
-          vendor:vendors(id, shop_name, phone, whatsapp, town),
-          variant:product_variants(id, label, sku),
+          vendor:vendors(id, shop_name, phone, whatsapp, town, address, payment_method, region:regions(name)),
+          variant:product_variants(id, label, sku, product:products(media:product_media(storage_path, is_primary, sort_order))),
           item:order_items(id, product_name, variant_label, order_id, order:orders(order_number))`,
       )
       .eq('cycle_id', cycleId)

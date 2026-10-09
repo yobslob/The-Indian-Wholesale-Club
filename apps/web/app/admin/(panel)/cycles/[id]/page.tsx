@@ -2,130 +2,152 @@ import Link from 'next/link';
 import { notFound } from 'next/navigation';
 
 import { listCycleMoves, listCycles, listPickups } from '@repo/db/admin';
-import { nextCycleStatus } from '@repo/shared/domain';
+import { nextCycleStatus, type CycleStatus } from '@repo/shared/domain';
 
-import {
-  advanceCycleAction,
-  cutoffCycleAction,
-  markPickupAction,
-} from '@/features/admin/actions/cycles';
+import { advanceCycleAction, cutoffCycleAction } from '@/features/admin/actions/cycles';
 import { ArrivalList } from '@/features/admin/arrival-list';
+import { Chip, CYCLE_STATUS } from '@/features/admin/chips';
+import { ConfirmButton } from '@/features/admin/confirm';
 import { CycleDatesForm } from '@/features/admin/cycle-dates-form';
 import { CycleExportForm } from '@/features/admin/cycle-export-form';
+import { CycleFlow } from '@/features/admin/cycle-flow';
 import { CycleMoves } from '@/features/admin/cycle-moves';
 import { requireAdminPage } from '@/features/admin/guard';
-import { button, PageTitle, rupees, When } from '@/features/admin/ui';
+import { PickupCards, Progress } from '@/features/admin/pickup-cards';
+import { shortDate } from '@/features/admin/time';
+import { button, FilterChips, PageHead, Panel, secondaryButton, When } from '@/features/admin/ui';
 
 type Params = Promise<{ id: string }>;
+type SearchParams = Promise<{ show?: string }>;
 
-/** One cycle: timeline actions and the per-shop pickup checklists (admin.md: one screen per job). */
-export default async function CyclePage({
-  params,
-}: {
-  params: Params;
-}): Promise<React.JSX.Element> {
-  const { client } = await requireAdminPage();
+/** The one next step of a cycle, as its main button says it (D-096). */
+const NEXT_LABEL: Partial<Record<CycleStatus, string>> = {
+  packed: 'Mark packed',
+  exported: 'Mark exported',
+  arrived: 'Mark arrived',
+  fulfilling: 'Start fulfilling',
+  closed: 'Close the cycle',
+};
+
+/**
+ * One cycle (D-096): its progress from Open to Closed with the next step as the main button, then the pickups as one
+ * card per shop (Call, WhatsApp, Map, how far along, Picked / Unavailable per piece) filtered To pick · All ·
+ * Unavailable; below, its dates, export details, arrival check-off and moved orders.
+ */
+export default async function CyclePage({ params, searchParams }: { params: Params; searchParams: SearchParams }): Promise<React.JSX.Element> {
+  const { client, desk } = await requireAdminPage();
   const { id } = await params;
   if (!/^[0-9a-f-]{36}$/.test(id)) notFound();
-  const [cycles, pickups, moves] = await Promise.all([
-    listCycles(client, 100),
-    listPickups(client, id),
-    listCycleMoves(client, id),
-  ]);
+  const [cycles, pickups, moves] = await Promise.all([listCycles(client, 100), listPickups(client, id), listCycleMoves(client, id)]);
   const cycle = cycles.find((c) => c.id === id);
   if (!cycle) notFound();
 
-  const byVendor = new Map<
-    string,
-    { name: string; phone: string | null; town: string | null; rows: typeof pickups }
-  >();
-  for (const p of pickups) {
-    const key = p.vendor?.id ?? 'unknown';
-    const group = byVendor.get(key) ?? {
-      name: p.vendor?.shop_name ?? 'Unknown shop',
-      phone: p.vendor?.phone ?? null,
-      town: p.vendor?.town ?? null,
-      rows: [],
-    };
-    group.rows.push(p);
-    byVendor.set(key, group);
-  }
   const next = nextCycleStatus(cycle.status);
+  const picked = pickups.filter((p) => p.status === 'picked').length;
+  const gone = pickups.filter((p) => p.status === 'unavailable').length;
+  const toGo = pickups.length - picked - gone;
+  const shops = new Set(pickups.map((p) => p.vendor?.id)).size;
+  const { show: asked } = await searchParams;
+  const show = asked === 'all' || asked === 'unavailable' || asked === 'topick' ? asked : toGo > 0 ? 'topick' : 'all';
+  const pendingShops = new Set(pickups.filter((p) => p.status === 'pending').map((p) => p.vendor?.id));
+  const shown =
+    show === 'unavailable' ? pickups.filter((p) => p.status === 'unavailable') : show === 'topick' ? pickups.filter((p) => pendingShops.has(p.vendor?.id)) : pickups;
+  const base = `/admin/cycles/${cycle.id}`;
 
   return (
-    <div className="space-y-6">
-      <PageTitle>Cycle {cycle.code}</PageTitle>
-      <p>
-        {cycle.status} · cutoff <When iso={cycle.cutoff_at} inline /> · est. export {cycle.est_export_on ?? '—'} ·
-        est. arrival {cycle.est_arrival_on}
-      </p>
-      {cycle.notes ? <p className="text-ink-muted">{cycle.notes}</p> : null}
-      {pickups.some((p) => p.status === 'picked') ? (
-        <p>
-          <Link href={`/admin/cycles/${cycle.id}/documents`} className="underline">
-            Packing list and commercial invoice
-          </Link>
-        </p>
-      ) : null}
-      {cycle.status === 'open' ? (
-        <form action={cutoffCycleAction.bind(null, cycle.id)}>
-          <button type="submit" className={button}>
-            Cut off now (closes ordering, creates pickups, opens the next cycle)
-          </button>
-        </form>
-      ) : next ? (
-        <form action={advanceCycleAction.bind(null, cycle.id)}>
-          <button type="submit" className={button}>
-            Move to “{next}”
-          </button>
-        </form>
-      ) : null}
-      <CycleDatesForm cycle={cycle} />
-      <CycleExportForm cycle={cycle} />
-      <ArrivalList cycle={cycle} pickups={pickups} />
-      <CycleMoves cycle={cycle} moves={moves} />
-
-      {[...byVendor.entries()].map(([vendorId, group]) => (
-        <section key={vendorId} className="border-line space-y-2 rounded-md border p-3">
-          <h2 className="font-medium">
-            {group.name}
-            <span className="text-ink-muted ml-2 font-normal">
-              {[group.town, group.phone].filter(Boolean).join(' · ')}
+    <>
+      <PageHead
+        back={{ href: '/admin/cycles', label: 'Cycles' }}
+        code
+        title={`Cycle ${cycle.code}`}
+        sub={
+          <>
+            <Chip tone={CYCLE_STATUS[cycle.status][1]}>{CYCLE_STATUS[cycle.status][0]}</Chip>
+            <span>
+              · {cycle.status === 'open' ? 'cutoff' : 'cut off'} <When iso={cycle.cutoff_at} inline />
+              {cycle.est_export_on ? ` · export est. ${shortDate(cycle.est_export_on)}` : ''} · arrival est. {shortDate(cycle.est_arrival_on)}
             </span>
-          </h2>
-          <ul className="divide-line divide-y">
-            {group.rows.map((p) => (
-              <li key={p.id} className="flex flex-wrap items-center gap-3 py-2">
-                <span className="flex-1">
-                  {p.item?.product_name} · {p.variant?.label} × {p.quantity} ·{' '}
-                  {rupees(p.shop_price_paise)}
-                </span>
-                {p.status === 'pending' ? (
-                  <>
-                    <form action={markPickupAction.bind(null, p.id, 'picked', cycle.id)}>
-                      <button type="submit" className={button}>
-                        Picked
-                      </button>
-                    </form>
-                    <form action={markPickupAction.bind(null, p.id, 'unavailable', cycle.id)}>
-                      <button type="submit" className="min-h-11 underline">
-                        Unavailable
-                      </button>
-                    </form>
-                  </>
-                ) : (
-                  <span className={p.status === 'unavailable' ? 'text-caution' : 'text-positive'}>
-                    {p.status}
-                  </span>
-                )}
-              </li>
-            ))}
-          </ul>
+          </>
+        }
+        actions={
+          <>
+            {picked > 0 ? (
+              <Link href={`${base}/documents`} className={secondaryButton}>
+                Documents
+              </Link>
+            ) : null}
+            {!['open', 'collecting'].includes(cycle.status) ? (
+              <a href="#export" className={secondaryButton}>
+                Export details
+              </a>
+            ) : null}
+            {cycle.status === 'open' ? (
+              <ConfirmButton
+                label="Cut off now…"
+                className={button}
+                title={`Cut off ${cycle.code} now?`}
+                confirm="Cut off now"
+                danger={false}
+                action={cutoffCycleAction.bind(null, cycle.id)}
+              >
+                It closes ordering for this cycle, makes the pickup lists for the shops, tells its customers their order is being prepared, and
+                opens the next cycle. It closes by itself at its cutoff anyway.
+              </ConfirmButton>
+            ) : next && NEXT_LABEL[next] ? (
+              <form action={advanceCycleAction.bind(null, cycle.id)}>
+                <button type="submit" className={button}>
+                  {NEXT_LABEL[next]} →
+                </button>
+              </form>
+            ) : null}
+          </>
+        }
+      />
+      {cycle.notes ? <p className="text-ink-muted -mt-2 mb-4 text-[14px]">{cycle.notes}</p> : null}
+      <Panel className="mb-4">
+        <CycleFlow cycle={cycle} desk={desk} variant="stepper" />
+      </Panel>
+
+      {pickups.length > 0 ? (
+        <section aria-labelledby="pickups" className="mb-6">
+          <div className="mb-3 flex flex-wrap items-end gap-3">
+            <div>
+              <h2 id="pickups" className="font-heading text-[19px] font-semibold">
+                Pickups
+              </h2>
+              <p className="text-ink-muted mt-1 text-[14px]">
+                {picked} of {pickups.length} picked{gone ? ` · ${gone} unavailable` : ''} · {toGo} to go · {shops} shop{shops === 1 ? '' : 's'}
+              </p>
+            </div>
+            <div className="md:ml-auto">
+              <FilterChips
+                items={[
+                  { href: `${base}?show=topick`, label: 'To pick', count: toGo, on: show === 'topick' },
+                  { href: `${base}?show=all`, label: 'All', count: pickups.length, on: show === 'all' },
+                  { href: `${base}?show=unavailable`, label: 'Unavailable', count: gone, on: show === 'unavailable' },
+                ]}
+              />
+            </div>
+          </div>
+          <p className="mb-4 flex">
+            <Progress done={picked} gone={gone} total={pickups.length} />
+          </p>
+          {shown.length > 0 ? <PickupCards pickups={shown} cycleId={cycle.id} /> : <p className="text-ink-muted">Nothing here.</p>}
         </section>
-      ))}
-      {pickups.length === 0 && cycle.status !== 'open' ? (
-        <p className="text-ink-muted">No pickups in this cycle.</p>
+      ) : cycle.status !== 'open' ? (
+        <p className="text-ink-muted mb-6">No pickups in this cycle.</p>
       ) : null}
-    </div>
+
+      <div className="grid grid-cols-[minmax(0,1fr)] gap-4 lg:grid-cols-2">
+        <CycleDatesForm cycle={cycle} />
+        <div id="export" className="scroll-mt-20 empty:hidden">
+          <CycleExportForm cycle={cycle} />
+        </div>
+      </div>
+      <div className="mt-4 grid gap-4">
+        <ArrivalList cycle={cycle} pickups={pickups} />
+        <CycleMoves cycle={cycle} moves={moves} />
+      </div>
+    </>
   );
 }

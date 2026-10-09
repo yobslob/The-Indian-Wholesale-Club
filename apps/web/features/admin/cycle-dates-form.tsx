@@ -18,9 +18,9 @@ export async function CycleDatesForm({ cycle }: { cycle: CycleDates }): Promise<
   return (
     <form
       action={updateCycleDatesAction.bind(null, cycle.id)}
-      className="border-line grid max-w-2xl gap-3 rounded-md border p-3 sm:grid-cols-3"
+      className="border-line bg-paper grid gap-3 rounded-[14px] border px-[18px] py-4 sm:grid-cols-3"
     >
-      <h2 className="font-medium sm:col-span-3">Dates</h2>
+      <h2 className="font-heading text-[15px] font-semibold sm:col-span-3">Dates</h2>
       {open ? (
         <Field label={`Cutoff (${ZONES[deskOrder(desk)[0]].place} time)`}>
           <input

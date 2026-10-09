@@ -3,9 +3,10 @@ import Link from 'next/link';
 import { listCycles } from '@repo/db/admin';
 
 import { createCycleAction } from '@/features/admin/actions/cycles';
+import { Chip, CYCLE_STATUS } from '@/features/admin/chips';
 import { requireAdminPage } from '@/features/admin/guard';
-import { deskOrder, ZONES } from '@/features/admin/time';
-import { button, Cell, Field, input, PageTitle, Table, When } from '@/features/admin/ui';
+import { deskOrder, shortDate, ZONES } from '@/features/admin/time';
+import { button, Cell, Field, input, PageHead, Table, When } from '@/features/admin/ui';
 
 /**
  * Cycles (flows.md §1): one open at a time (INV-5). Each closes at its cutoff and the next opens by itself (D-045,
@@ -18,19 +19,21 @@ export default async function CyclesPage(): Promise<React.JSX.Element> {
 
   return (
     <div className="space-y-6">
-      <PageTitle>Cycles</PageTitle>
+      <PageHead title="Cycles" sub="One open at a time; each closes at its cutoff and the next opens by itself." />
       <Table head={['Code', 'Status', 'Cutoff', 'Est. export', 'Est. arrival']}>
         {cycles.map((c) => (
           <tr key={c.id}>
             <Cell>
-              <Link href={`/admin/cycles/${c.id}`} className="underline">
+              <Link href={`/admin/cycles/${c.id}`} className="font-semibold">
                 {c.code}
               </Link>
             </Cell>
-            <Cell>{c.status}</Cell>
+            <Cell>
+              <Chip tone={CYCLE_STATUS[c.status][1]}>{CYCLE_STATUS[c.status][0]}</Chip>
+            </Cell>
             <Cell><When iso={c.cutoff_at} /></Cell>
-            <Cell>{c.est_export_on ?? '—'}</Cell>
-            <Cell>{c.est_arrival_on}</Cell>
+            <Cell>{shortDate(c.est_export_on)}</Cell>
+            <Cell>{shortDate(c.est_arrival_on)}</Cell>
           </tr>
         ))}
       </Table>
@@ -41,11 +44,8 @@ export default async function CyclesPage(): Promise<React.JSX.Element> {
           the days between cutoffs (Settings). Correct them on the cycle.
         </p>
       ) : (
-        <form
-          action={createCycleAction}
-          className="border-line grid max-w-md gap-3 rounded-md border p-3"
-        >
-          <h2 className="font-medium">Open a new cycle</h2>
+        <form action={createCycleAction} className="border-line bg-paper grid max-w-md gap-3 rounded-[14px] border px-[18px] py-4">
+          <h2 className="font-heading text-[15px] font-semibold">Open a new cycle</h2>
           <Field label="Code">
             <input name="code" required className={input} placeholder="2026-10-A" />
           </Field>

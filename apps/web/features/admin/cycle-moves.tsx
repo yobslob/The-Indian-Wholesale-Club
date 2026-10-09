@@ -34,8 +34,8 @@ export function CycleMoves({
   if (current.length === 0) return null;
   const exported = EXPORTED.includes(cycle.status);
   return (
-    <section className="border-line space-y-2 rounded-md border p-3">
-      <h2 className="font-medium">Orders moved into this cycle</h2>
+    <section className="border-line bg-paper space-y-2 rounded-[14px] border px-[18px] py-4">
+      <h2 className="font-heading text-[15px] font-semibold">Orders moved into this cycle</h2>
       <ul className="divide-line divide-y">
         {current.map((m) => (
           <li key={m.id} className="flex flex-wrap items-center gap-3 py-2">

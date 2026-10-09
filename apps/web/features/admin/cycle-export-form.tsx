@@ -20,9 +20,9 @@ export function CycleExportForm({ cycle }: { cycle: CycleExport }): React.JSX.El
   return (
     <form
       action={updateCycleExportAction.bind(null, cycle.id)}
-      className="border-line grid max-w-2xl gap-3 rounded-md border p-3 sm:grid-cols-3"
+      className="border-line bg-paper grid gap-3 rounded-[14px] border px-[18px] py-4 sm:grid-cols-3"
     >
-      <h2 className="font-medium sm:col-span-3">Export</h2>
+      <h2 className="font-heading text-[15px] font-semibold sm:col-span-3">Export</h2>
       {missing && cycle.status !== 'packed' ? (
         <p className="text-caution text-sm sm:col-span-3">The air waybill or the forwarder is not recorded yet.</p>
       ) : null}

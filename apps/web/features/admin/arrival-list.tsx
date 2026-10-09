@@ -35,8 +35,8 @@ export function ArrivalList({
   const done = picked.filter((p) => p.arrived_at).length;
 
   return (
-    <section className="border-line space-y-3 rounded-md border p-3">
-      <h2 className="font-medium">
+    <section className="border-line bg-paper space-y-3 rounded-[14px] border px-[18px] py-4">
+      <h2 className="font-heading text-[15px] font-semibold">
         Arrival check-off · {done} of {picked.length} pieces
       </h2>
       {[...byOrder.entries()].map(([orderId, group]) => (
