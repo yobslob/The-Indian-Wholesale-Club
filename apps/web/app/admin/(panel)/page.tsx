@@ -82,8 +82,8 @@ export default async function TodayPage(): Promise<React.JSX.Element> {
   return (
     <>
       <PageHead title={greeting(now, desk)} sub={desk ? `${DESK_NAME[own]} first; the ${DESK_NAME[other]} below.` : 'Both desks below.'} />
-      <div className="grid items-start gap-[18px] lg:grid-cols-[minmax(0,1fr)_340px]">
-        <div className="grid gap-4">
+      <div className="grid grid-cols-[minmax(0,1fr)] items-start gap-[18px] lg:grid-cols-[minmax(0,1fr)_340px]">
+        <div className="grid min-w-0 grid-cols-[minmax(0,1fr)] gap-4">
           {cycle && totals ? (
             <Panel>
               <div className="grid items-center gap-[18px] md:grid-cols-[1.1fr_1fr]">

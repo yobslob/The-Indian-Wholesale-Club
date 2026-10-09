@@ -29,6 +29,9 @@ async function orderRow(orderNumber: string) {
 }
 
 const isoDay = (days: number): string => new Date(Date.now() + days * 86_400_000).toISOString().slice(0, 10);
+/** As the admin shows a calendar day (features/admin/time.ts): "Dec 7". */
+const shortDay = (days: number): string =>
+  new Date(`${isoDay(days)}T12:00:00Z`).toLocaleDateString('en-US', { month: 'short', day: 'numeric', timeZone: 'UTC' });
 
 test('before its pieces are collected, a customer cancels and gets everything back (D-072)', async ({ page }) => {
   test.skip(!stripeTestKeysPresent(), 'Stripe test keys are not set in apps/web/.env.local');
@@ -59,12 +62,13 @@ test('after a later delivery date, the customer keeps the order (D-008)', async 
 
   await signInAsAdmin(page);
   await page.goto(`/admin/orders/${id}`);
-  const estimate = page.locator('form').filter({ hasText: 'New delivery estimate' });
+  await page.getByRole('button', { name: 'New delivery date…' }).click();
+  const estimate = page.getByRole('dialog', { name: 'New delivery date' });
   await estimate.locator('input[name="from"]').fill(isoDay(60));
   await estimate.locator('input[name="to"]').fill(isoDay(64));
   await estimate.locator('input[name="note"]').fill('E2E: export slipped');
   await estimate.getByRole('button', { name: 'Change window' }).click();
-  await expect(page.getByText(`${isoDay(60)} → ${isoDay(64)}`)).toBeVisible();
+  await expect(page.getByText(`${shortDay(60)} – ${shortDay(64)}`)).toBeVisible();
 
   await openOrderAsGuest(page, orderNumber);
   await expect(page.getByRole('heading', { name: 'Your delivery date moved' })).toBeVisible();
