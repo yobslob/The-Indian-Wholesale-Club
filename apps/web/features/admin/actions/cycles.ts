@@ -13,12 +13,12 @@ import {
   recordPayout,
   updateCycle,
 } from '@repo/db/admin';
+import { zonedToIso } from '@repo/shared/admin';
 
 import { STORE_TAG } from '@/features/catalog/data';
 
 import { sendEmailsSoon } from '../emails-soon';
 import { requireAdminAction } from '../guard';
-import { zonedToIso } from '../time';
 
 const id = z.string().uuid();
 const isoDate = z.string().regex(/^\d{4}-\d{2}-\d{2}$/);

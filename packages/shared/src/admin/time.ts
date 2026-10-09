@@ -1,10 +1,8 @@
-import type { Enum } from '@repo/db';
-
 /**
- * Times in the admin's own desk zone, the other desk's beside them, never UTC (D-096). The US desk works from New
+ * Admin only (the web panel and the app's admin mode). Times in the admin's own desk zone, the other desk's beside them, never UTC (D-096). The US desk works from New
  * Jersey, the India desk from India (D-007). An admin without a desk sees New Jersey first, where the business is.
  */
-export type Desk = Enum<'ops_desk'>;
+export type Desk = 'us' | 'india';
 
 export const ZONES: Record<Desk, { tz: string; place: string; abbr: string }> = {
   us: { tz: 'America/New_York', place: 'New Jersey', abbr: 'ET' },

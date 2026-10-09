@@ -8,6 +8,7 @@ import {
   getPickupCycle,
   getTodaySummary,
 } from '@repo/db/admin';
+import { bothPlaces, deskOrder, greeting, timeLeft, type Desk } from '@repo/shared/admin';
 
 import { Chip } from '@/features/admin/chips';
 import { waitingCounts } from '@/features/admin/counts';
@@ -15,7 +16,6 @@ import { CycleFlow } from '@/features/admin/cycle-flow';
 import { requireAdminPage } from '@/features/admin/guard';
 import { LiveFeed } from '@/features/admin/live-feed';
 import { Queue, type Job } from '@/features/admin/queue';
-import { bothPlaces, deskOrder, greeting, timeLeft, type Desk } from '@/features/admin/time';
 import { PageHead, Panel, SectionTitle } from '@/features/admin/ui';
 
 const DESK_NAME: Record<Desk, string> = { us: 'US desk', india: 'India desk' };

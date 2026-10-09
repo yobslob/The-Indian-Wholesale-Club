@@ -2,6 +2,7 @@ import Link from 'next/link';
 import { notFound } from 'next/navigation';
 
 import { listCycleMoves, listCycles, listPickups } from '@repo/db/admin';
+import { shortDate } from '@repo/shared/admin';
 import { nextCycleStatus, type CycleStatus } from '@repo/shared/domain';
 
 import { advanceCycleAction, cutoffCycleAction } from '@/features/admin/actions/cycles';
@@ -14,7 +15,6 @@ import { CycleFlow } from '@/features/admin/cycle-flow';
 import { CycleMoves } from '@/features/admin/cycle-moves';
 import { requireAdminPage } from '@/features/admin/guard';
 import { PickupCards, Progress } from '@/features/admin/pickup-cards';
-import { shortDate } from '@/features/admin/time';
 import { button, FilterChips, PageHead, Panel, secondaryButton, When } from '@/features/admin/ui';
 
 type Params = Promise<{ id: string }>;

@@ -2,7 +2,7 @@ import { Text } from 'react-native';
 
 import { listRegionsAdmin, listVendors } from '@repo/db/admin';
 
-import { Body, Card, ErrorText, Loading, Screen, Title } from '@/components/ui';
+import { Body, Card, ErrorText, Loading, Screen } from '@/components/ui';
 import { VendorForm } from '@/features/admin/vendor-form';
 import { supabase } from '@/lib/supabase';
 import { useQuery } from '@/lib/use-query';
@@ -18,8 +18,7 @@ export default function AdminVendorsScreen(): React.JSX.Element {
   });
 
   return (
-    <Screen back={false} refreshing={loading} onRefresh={reload}>
-      <Title>Vendors</Title>
+    <Screen title="Vendors" refreshing={loading} onRefresh={reload}>
       {error ? <ErrorText>{error}</ErrorText> : null}
       {!data && loading ? <Loading /> : null}
       {data && data.vendors.length === 0 ? <Body muted>No shops yet.</Body> : null}

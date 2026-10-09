@@ -1,5 +1,6 @@
+import { isoToZoned, ZONES, deskOrder } from '@repo/shared/admin';
+
 import { updateCycleDatesAction } from './actions/cycles';
-import { isoToZoned, ZONES, deskOrder } from './time';
 import { button, Field, input, myDesk } from './ui';
 
 interface CycleDates {

@@ -1,7 +1,8 @@
+import { deskTimeLine } from '@repo/shared/admin';
+
 import { moveOrderAction } from './actions/orders';
 import { CYCLE_STATUS } from './chips';
 import { FormButton } from './confirm';
-import { deskTimeLine } from './time';
 import { Field, input, myDesk, When } from './ui';
 
 import type { Enum } from '@repo/db';

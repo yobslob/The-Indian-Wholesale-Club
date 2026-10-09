@@ -1,11 +1,11 @@
 import Link from 'next/link';
 
 import { listCycles } from '@repo/db/admin';
+import { deskOrder, shortDate, ZONES } from '@repo/shared/admin';
 
 import { createCycleAction } from '@/features/admin/actions/cycles';
 import { Chip, CYCLE_STATUS } from '@/features/admin/chips';
 import { requireAdminPage } from '@/features/admin/guard';
-import { deskOrder, shortDate, ZONES } from '@/features/admin/time';
 import { button, Cell, Field, input, PageHead, Table, When } from '@/features/admin/ui';
 
 /**

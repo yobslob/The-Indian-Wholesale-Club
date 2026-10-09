@@ -16,17 +16,6 @@ export default function AdminLayout(): React.JSX.Element {
   if (!ready) return <Loading />;
   if (!isAdmin || viewingStore) return <Redirect href="/" />;
 
-  return (
-    <Stack
-      screenOptions={{
-        headerTintColor: tokens.colors.ink,
-        contentStyle: { backgroundColor: tokens.colors.canvas },
-      }}
-    >
-      <Stack.Screen name="(tabs)" options={{ headerShown: false }} />
-      <Stack.Screen name="order/[id]" options={{ title: 'Order' }} />
-      <Stack.Screen name="cycle/[id]" options={{ title: 'Cycle' }} />
-      <Stack.Screen name="listing/new" options={{ title: 'New listing' }} />
-    </Stack>
-  );
+  // Pushed screens draw their own back bar (Screen), as the customer screens do (D-095, D-097).
+  return <Stack screenOptions={{ headerShown: false, contentStyle: { backgroundColor: tokens.colors.canvas } }} />;
 }

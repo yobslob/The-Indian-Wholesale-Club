@@ -1,8 +1,9 @@
 import Link from 'next/link';
 
+import { deskTime, type Desk } from '@repo/shared/admin';
+
 import { adminAccess } from './guard';
 import { panel } from './styles';
-import { deskTime, type Desk } from './time';
 
 /**
  * The admin's building blocks in the approved look (D-096, design/pages/admin): plain and dense, the store's tokens,

@@ -24,7 +24,7 @@ module.exports = {
           {
             patterns: [
               {
-                group: ['@/features/admin', '@/features/admin/*', '@/app/admin', '@/app/admin/*'],
+                group: ['@/features/admin', '@/features/admin/*', '@/app/admin', '@/app/admin/*', '@repo/shared/admin'],
                 message: 'Storefront code must not import admin code (D-006, engineering.md).',
               },
               {

@@ -2,7 +2,7 @@ import { listAllPayablePickups } from '@repo/db/admin';
 
 import type { PayableGroup } from '@/features/admin/payout-card';
 
-import { Body, ErrorText, Loading, Screen, Title } from '@/components/ui';
+import { Body, ErrorText, Loading, Screen } from '@/components/ui';
 import { PayoutCard } from '@/features/admin/payout-card';
 import { supabase } from '@/lib/supabase';
 import { useQuery } from '@/lib/use-query';
@@ -34,8 +34,7 @@ export default function AdminPayoutsScreen(): React.JSX.Element {
   });
 
   return (
-    <Screen back={false} refreshing={loading} onRefresh={reload}>
-      <Title>Payouts</Title>
+    <Screen title="Payouts" refreshing={loading} onRefresh={reload}>
       {error ? <ErrorText>{error}</ErrorText> : null}
       {!data && loading ? <Loading /> : null}
       {data && data.length === 0 ? <Body muted>Nothing to pay right now.</Body> : null}

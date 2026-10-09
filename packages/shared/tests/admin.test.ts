@@ -1,7 +1,7 @@
 import assert from 'node:assert/strict';
 import { describe, it } from 'node:test';
 
-import { dateRange, deskTime, isoToZoned, zonedToIso } from '../features/admin/time';
+import { dateRange, deskTime, isoToZoned, zonedToIso } from '../src/admin';
 
 describe('admin times in the desk zone (D-096)', () => {
   // 2026-10-08 13:38 UTC = 9:38 AM in New Jersey (EDT) = 7:08 PM in India.

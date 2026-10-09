@@ -1,12 +1,12 @@
 import Link from 'next/link';
 
 import { countOrdersByStatus, listAdminOrders } from '@repo/db/admin';
+import { dateRange, deskTime, ZONES, deskOrder } from '@repo/shared/admin';
 import { formatUsd } from '@repo/shared/domain';
 
 import { ORDER_STATUS } from '@/features/admin/chips';
 import { requireAdminPage } from '@/features/admin/guard';
 import { OrdersTable, type OrderRow } from '@/features/admin/orders-table';
-import { dateRange, deskTime, ZONES, deskOrder } from '@/features/admin/time';
 import { Empty, FilterChips, input, PageHead, secondaryButton } from '@/features/admin/ui';
 
 import type { Enum } from '@repo/db';

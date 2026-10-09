@@ -2,6 +2,7 @@ import Link from 'next/link';
 import { notFound } from 'next/navigation';
 
 import { cancelRefundCents, exportCancelCents, getAdminOrder, itemRefundCents, listCycles, listOrderMoves } from '@repo/db/admin';
+import { dateRange } from '@repo/shared/admin';
 import { formatUsd } from '@repo/shared/domain';
 
 import { cancelAfterExportAction } from '@/features/admin/actions/after-sales';
@@ -14,7 +15,6 @@ import { adminEventText } from '@/features/admin/order-events';
 import { canMove, MoveOrderButton, MovesList } from '@/features/admin/order-move-form';
 import { OrderPieces } from '@/features/admin/order-pieces';
 import { ShipForm, shipState } from '@/features/admin/ship-form';
-import { dateRange } from '@/features/admin/time';
 import { dangerButton, Field, input, PageHead, Panel, rupees, When } from '@/features/admin/ui';
 
 type Params = Promise<{ id: string }>;

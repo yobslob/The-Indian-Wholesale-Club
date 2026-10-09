@@ -1,7 +1,7 @@
+import { deskTime, shortDate, type Desk } from '@repo/shared/admin';
 import { CYCLE_FLOW, type CycleStatus } from '@repo/shared/domain';
 
 import { CYCLE_STATUS } from './chips';
-import { deskTime, shortDate, type Desk } from './time';
 
 interface FlowCycle {
   status: CycleStatus;

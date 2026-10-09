@@ -4,9 +4,10 @@ import Link from 'next/link';
 import { usePathname } from 'next/navigation';
 import { useEffect, useState } from 'react';
 
+import { ZONES, deskOrder, type Desk } from '@repo/shared/admin';
+
 import { LiveChannel, LiveDot } from './live-feed';
 import { QuickFind } from './quick-find';
-import { ZONES, deskOrder, type Desk } from './time';
 
 import type { WaitingCounts } from '@repo/db/admin';
 

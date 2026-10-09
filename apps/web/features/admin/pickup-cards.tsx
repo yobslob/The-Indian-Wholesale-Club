@@ -1,11 +1,12 @@
 import Image from 'next/image';
 
+import { deskTime } from '@repo/shared/admin';
+
 import { mediaUrl } from '@/lib/site';
 
 import { markPickupAction } from './actions/cycles';
 import { Chip } from './chips';
 import { ConfirmButton } from './confirm';
-import { deskTime } from './time';
 import { button, myDesk, rupees, secondaryButton } from './ui';
 
 import type { listPickups } from '@repo/db/admin';

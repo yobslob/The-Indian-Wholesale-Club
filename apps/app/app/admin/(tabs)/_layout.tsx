@@ -1,39 +1,39 @@
-import { Ionicons } from '@expo/vector-icons';
 import { Tabs } from 'expo-router';
+import { useEffect } from 'react';
 
-import tokens from '@repo/tokens';
+import { getWaitingCounts } from '@repo/db/admin';
 
-type IconName = React.ComponentProps<typeof Ionicons>['name'];
+import { TabBar } from '@/features/shell/tab-bar';
+import { supabase } from '@/lib/supabase';
+import { useQuery } from '@/lib/use-query';
 
-const TABS: { name: string; title: string; icon: IconName }[] = [
-  { name: 'index', title: 'Today', icon: 'today-outline' },
-  { name: 'orders', title: 'Orders', icon: 'receipt-outline' },
-  { name: 'cycles', title: 'Cycles', icon: 'boat-outline' },
-  { name: 'payouts', title: 'Payouts', icon: 'cash-outline' },
-  { name: 'listings', title: 'Listings', icon: 'pricetags-outline' },
-  { name: 'vendors', title: 'Vendors', icon: 'storefront-outline' },
-];
+const ICONS = {
+  index: 'today-outline',
+  orders: 'receipt-outline',
+  cycles: 'boat-outline',
+  listings: 'pricetags-outline',
+  more: 'ellipsis-horizontal',
+} as const;
 
-/** The admin sections the app carries (admin.md §Sections, "App" column). */
+/**
+ * The admin mode's five tabs (D-097): Today · Orders · Cycle · Listings · More, each with a count of what waits
+ * (orders to ship, pickups to do, drafts, shops owed), refreshed every minute and after each change.
+ */
 export default function AdminTabs(): React.JSX.Element {
+  const { data: counts, reload } = useQuery('admin:waiting', () => getWaitingCounts(supabase));
+  useEffect(() => {
+    const timer = setInterval(reload, 60_000);
+    return () => clearInterval(timer);
+  }, [reload]);
+  const badge = (n: number | undefined): number | undefined => (n ? n : undefined);
+
   return (
-    <Tabs
-      screenOptions={{
-        headerShown: false,
-        tabBarActiveTintColor: tokens.colors.ink,
-        tabBarInactiveTintColor: tokens.colors['ink-muted'],
-      }}
-    >
-      {TABS.map((t) => (
-        <Tabs.Screen
-          key={t.name}
-          name={t.name}
-          options={{
-            title: t.title,
-            tabBarIcon: ({ color }) => <Ionicons name={t.icon} size={22} color={color} />,
-          }}
-        />
-      ))}
+    <Tabs screenOptions={{ headerShown: false }} tabBar={(props) => <TabBar {...props} icons={ICONS} badgeLabel={(n) => `${n} waiting`} />}>
+      <Tabs.Screen name="index" options={{ title: 'Today' }} />
+      <Tabs.Screen name="orders" options={{ title: 'Orders', tabBarBadge: badge(counts?.ordersToShip) }} />
+      <Tabs.Screen name="cycles" options={{ title: 'Cycle', tabBarBadge: badge(counts?.pickupsToDo) }} />
+      <Tabs.Screen name="listings" options={{ title: 'Listings', tabBarBadge: badge(counts?.drafts) }} />
+      <Tabs.Screen name="more" options={{ title: 'More', tabBarBadge: badge(counts?.shopsOwed) }} />
     </Tabs>
   );
 }
