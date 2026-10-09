@@ -1,7 +1,10 @@
+import { shipState } from '@repo/shared/admin';
 import { CARRIERS, trackingUrl } from '@repo/shared/domain';
 
 import { markDeliveredAction, markShippedAction } from './actions/orders';
 import { button, Field, input } from './ui';
+
+export { shipState };
 
 export interface ShipOrder {
   id: string;
@@ -11,15 +14,6 @@ export interface ShipOrder {
   carrier: string | null;
   tracking_number: string | null;
   items: { status: string; pickup: { status: string; arrived_at: string | null } | null }[];
-}
-
-/** What the order's main action is now (D-096): pack and ship, mark delivered, or nothing on this side. */
-export function shipState(order: ShipOrder): { canShip: boolean; express: boolean; unpicked: number; unchecked: number } {
-  const express = order.shipping_method === 'express' && !order.cycle_id; // D-070: courier straight from India
-  const unpicked = order.items.filter((i) => i.status === 'active' && i.pickup?.status === 'pending').length;
-  const canShip = express ? ['confirmed', 'collecting'].includes(order.status) && unpicked === 0 : order.status === 'arrived';
-  const unchecked = express ? 0 : order.items.filter((i) => i.pickup?.status === 'picked' && !i.pickup.arrived_at).length;
-  return { canShip, express, unpicked, unchecked };
 }
 
 /**

@@ -150,3 +150,30 @@ export function when(iso: string | null | undefined, desk: Desk | null): string 
   const t = deskTime(iso, desk);
   return `${t.main} · ${t.other}`;
 }
+
+/** A sheet that asks first (D-096's confirm rule): what happens, then the one button that does it. */
+export function ConfirmSheet({
+  open,
+  title,
+  children,
+  confirm,
+  onConfirm,
+  onClose,
+  busy = false,
+}: {
+  open: boolean;
+  title: string;
+  children: React.ReactNode;
+  confirm: string;
+  onConfirm: () => void;
+  onClose: () => void;
+  busy?: boolean;
+}): React.JSX.Element {
+  return (
+    <Sheet open={open} onClose={onClose} title={title}>
+      <Text className="font-body text-ink-muted text-[14px] leading-5">{children}</Text>
+      <AdminButton big label={busy ? 'Working…' : confirm} disabled={busy} onPress={onConfirm} />
+      <AdminButton big kind="secondary" label="Not yet" onPress={onClose} />
+    </Sheet>
+  );
+}

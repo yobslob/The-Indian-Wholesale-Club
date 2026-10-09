@@ -3,6 +3,7 @@ import { notFound } from 'next/navigation';
 
 import { cancelRefundCents, exportCancelCents, getAdminOrder, itemRefundCents, listCycles, listOrderMoves } from '@repo/db/admin';
 import { dateRange } from '@repo/shared/admin';
+import { adminEventText } from '@repo/shared/admin';
 import { formatUsd } from '@repo/shared/domain';
 
 import { cancelAfterExportAction } from '@/features/admin/actions/after-sales';
@@ -11,7 +12,6 @@ import { cancelOrderAction } from '@/features/admin/actions/refunds';
 import { Chip, ORDER_STATUS, PAYMENT_STATUS } from '@/features/admin/chips';
 import { ConfirmButton, FormButton } from '@/features/admin/confirm';
 import { requireAdminPage } from '@/features/admin/guard';
-import { adminEventText } from '@/features/admin/order-events';
 import { canMove, MoveOrderButton, MovesList } from '@/features/admin/order-move-form';
 import { OrderPieces } from '@/features/admin/order-pieces';
 import { ShipForm, shipState } from '@/features/admin/ship-form';
