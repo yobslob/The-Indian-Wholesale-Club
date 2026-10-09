@@ -7,20 +7,57 @@ export interface AdminOrderFilter {
   cycleId?: string;
   /** D-070: express orders still in India (no cycle, not yet sent by courier). */
   expressToSend?: boolean;
+  /** Order number, email or the name it ships to (D-096). */
+  search?: string;
   limit?: number;
+  /** Skip this many (the next page). */
+  offset?: number;
 }
 
+/** Words safe inside PostgREST's or() filter. */
+export function filterWords(words: string): string {
+  return words.replace(/[%*,()\\:"']/g, ' ').trim().slice(0, 60);
+}
+
+/** One page of orders, newest first, and how many match in all (D-096: pages of 50). */
 export async function listAdminOrders(client: IwcClient, filter: AdminOrderFilter = {}) {
   let query = client.from('orders').select(
-    `id, order_number, email, status, payment_status, cycle_id, est_delivery_from, est_delivery_to, total_cents,
-        tracking_number, carrier, created_at, items:order_items(id, status)`,
+    `id, order_number, email, status, payment_status, cycle_id, shipping_method, shipping_address, est_delivery_from,
+        est_delivery_to, total_cents, tracking_number, carrier, created_at, items:order_items(id, status, quantity)`,
+    { count: 'exact' },
   );
   if (filter.status) query = query.eq('status', filter.status);
   if (filter.cycleId) query = query.eq('cycle_id', filter.cycleId);
   if (filter.expressToSend) {
     query = query.eq('shipping_method', 'express').is('cycle_id', null).in('status', ['confirmed', 'collecting']);
   }
-  return unwrap(await query.order('created_at', { ascending: false }).limit(filter.limit ?? 100));
+  const q = filterWords(filter.search ?? '');
+  if (q.length >= 2) query = query.or(`order_number.ilike.%${q}%,email.ilike.%${q}%,shipping_address->>fullName.ilike.%${q}%`);
+  const limit = filter.limit ?? 100;
+  const offset = filter.offset ?? 0;
+  const { data, error, count } = await query
+    .order('created_at', { ascending: false })
+    .order('id')
+    .range(offset, offset + limit - 1);
+  if (error) throw new Error(error.message);
+  return { orders: data ?? [], total: count ?? 0 };
+}
+
+/** The Orders page's chips (D-096): how many orders are in each status, and express orders still to send. */
+export async function countOrdersByStatus(client: IwcClient) {
+  const [rows, express] = await Promise.all([
+    client.from('orders').select('status').limit(20000),
+    client
+      .from('orders')
+      .select('id', { count: 'exact', head: true })
+      .eq('shipping_method', 'express')
+      .is('cycle_id', null)
+      .in('status', ['confirmed', 'collecting']),
+  ]);
+  const byStatus: Partial<Record<Enum<'order_status'>, number>> = {};
+  for (const r of unwrap(rows)) byStatus[r.status] = (byStatus[r.status] ?? 0) + 1;
+  if (express.error) throw new Error(express.error.message);
+  return { byStatus, all: unwrap(rows).length, expressToSend: express.count ?? 0 };
 }
 
 export async function getAdminOrder(client: IwcClient, id: string) {

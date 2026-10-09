@@ -101,3 +101,45 @@ export async function markExpressPickupAction(
   await markPickup(client, id.parse(pickupId), z.enum(['picked', 'unavailable']).parse(status));
   done(orderId);
 }
+
+export interface BulkResult {
+  done: number;
+  failed: { id: string; error: string }[];
+}
+
+/** Each order on its own: one that fails (wrong status, a typo) doesn't stop the rest; the admin sees which. */
+async function eachOrder(ids: string[], run: (id: string) => Promise<void>): Promise<BulkResult> {
+  const result: BulkResult = { done: 0, failed: [] };
+  for (const orderId of ids) {
+    try {
+      await run(orderId);
+      result.done += 1;
+    } catch (error) {
+      result.failed.push({ id: orderId, error: error instanceof Error ? error.message : 'failed' });
+    }
+  }
+  sendEmailsSoon();
+  revalidatePath('/admin/orders', 'layout');
+  return result;
+}
+
+/** D-096: Mark shipped for several orders at once, one carrier and tracking number each (D-066). */
+export async function bulkShipAction(lines: { orderId: string; carrier: string; tracking: string }[]): Promise<BulkResult> {
+  const { client } = await requireAdminAction();
+  const parsed = z
+    .array(z.object({ orderId: id, carrier: z.string().trim().min(2).max(40), tracking: z.string().trim().min(4).max(60) }))
+    .min(1)
+    .max(50)
+    .parse(lines);
+  const byId = new Map(parsed.map((l) => [l.orderId, l]));
+  return eachOrder([...byId.keys()], async (orderId) => {
+    const line = byId.get(orderId)!;
+    await markOrderShipped(client, orderId, line.carrier, line.tracking);
+  });
+}
+
+/** D-096: Mark delivered for several shipped orders at once. */
+export async function bulkDeliveredAction(orderIds: string[]): Promise<BulkResult> {
+  const { client } = await requireAdminAction();
+  return eachOrder(z.array(id).min(1).max(50).parse(orderIds), (orderId) => markOrderDelivered(client, orderId));
+}

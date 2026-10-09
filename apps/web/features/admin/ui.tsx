@@ -123,13 +123,13 @@ export function Tabs({
 /** Filter chips with counts (Orders, Cycle pickups): links, the current one in ink. */
 export function FilterChips({ items }: { items: { href: string; label: string; count?: number; on: boolean }[] }): React.JSX.Element {
   return (
-    <nav aria-label="Filter" className="mb-3 flex flex-wrap gap-1.5">
+    <nav aria-label="Filter" className="-mx-3.5 mb-3 flex gap-1.5 overflow-x-auto px-3.5 md:mx-0 md:flex-wrap md:px-0">
       {items.map((c) => (
         <Link
           key={c.href}
           href={c.href}
           aria-current={c.on ? 'true' : undefined}
-          className={`font-ui inline-flex h-9 items-center gap-1.5 rounded-full border px-3 text-[13px] font-medium md:h-8 ${
+          className={`font-ui inline-flex h-9 shrink-0 items-center gap-1.5 whitespace-nowrap rounded-full border px-3 text-[13px] font-medium md:h-8 ${
             c.on ? 'border-ink bg-ink text-paper' : 'border-line bg-paper text-ink hover:border-ink-muted'
           }`}
         >

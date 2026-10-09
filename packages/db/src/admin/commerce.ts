@@ -2,6 +2,8 @@ import { z } from 'zod';
 
 import { unwrap, type Enum, type Insert, type IwcClient, type Update } from '../client';
 
+import { filterWords } from './operations';
+
 // ---------------------------------------------------------------- promo codes (kept from the old admin)
 
 export async function listPromoCodes(client: IwcClient) {
@@ -134,7 +136,7 @@ export async function getWaitingCounts(client: IwcClient): Promise<WaitingCounts
  * filter characters before they reach `or()`.
  */
 export async function adminQuickFind(client: IwcClient, words: string) {
-  const q = words.replace(/[%*,()\\:"']/g, ' ').trim().slice(0, 60);
+  const q = filterWords(words);
   if (q.length < 2) return { orders: [], products: [], customers: [], vendors: [] };
   const like = `%${q}%`;
   const [orders, products, customers, vendors] = await Promise.all([

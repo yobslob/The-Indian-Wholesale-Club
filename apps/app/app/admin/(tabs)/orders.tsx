@@ -28,7 +28,7 @@ export default function AdminOrdersScreen(): React.JSX.Element {
   const params = useLocalSearchParams<{ status?: string }>();
   const status = FILTERS.find((f) => f === params.status) ?? 'all';
   const { data, error, loading, reload } = useQuery(`admin:orders:${status}`, () =>
-    listAdminOrders(supabase, status === 'all' ? {} : { status }),
+    listAdminOrders(supabase, status === 'all' ? {} : { status }).then((r) => r.orders),
   );
 
   return (
