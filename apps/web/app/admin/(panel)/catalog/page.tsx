@@ -3,9 +3,10 @@ import Link from 'next/link';
 import { countProductsByStatus, listAdminProducts } from '@repo/db/admin';
 import { formatUsd } from '@repo/shared/domain';
 
+import { PRODUCT_STATUS, StatusChip } from '@/features/admin/chips';
 import { requireAdminPage } from '@/features/admin/guard';
 import { listingTabs } from '@/features/admin/listing-tabs';
-import { Cell, input, linkButton, PageTitle, rupees, Table, Tabs } from '@/features/admin/ui';
+import { Cell, input, linkButton, PageHead, rupees, Table, Tabs } from '@/features/admin/ui';
 
 type SearchParams = Promise<{ q?: string; status?: string; page?: string; us?: string }>;
 
@@ -55,7 +56,7 @@ export default async function CatalogPage({
 
   return (
     <div className="space-y-4">
-      <PageTitle>Catalog</PageTitle>
+      <PageHead title="Products" />
       <Tabs items={listingTabs(counts)} current={usStock ? 'us' : (status ?? 'all')} />
       {usStock ? (
         <p className="text-ink-muted text-sm">
@@ -86,14 +87,16 @@ export default async function CatalogPage({
         {products.map((p) => (
           <tr key={p.id}>
             <Cell>
-              <Link href={`/admin/catalog/${p.id}`} className="underline">
+              <Link href={`/admin/catalog/${p.id}`} className="font-semibold">
                 {p.name}
               </Link>
               {p.is_placeholder ? <span className="text-caution ml-1 text-xs">(demo)</span> : null}
               {p.is_us_stock ? <span className="text-ink-muted ml-1 text-xs">(in the US)</span> : null}
             </Cell>
             <Cell>{p.product_type}</Cell>
-            <Cell>{p.status}</Cell>
+            <Cell>
+              <StatusChip map={PRODUCT_STATUS} status={p.status} />
+            </Cell>
             <Cell>{p.region?.name}</Cell>
             <Cell>{p.vendor?.shop_name}</Cell>
             <Cell>{formatUsd(p.price_cents)}</Cell>

@@ -4,7 +4,7 @@ import { updateBusinessDetailsAction, updatePricingSettingsAction, updateSpicesC
 import { EstimateNote } from '@/features/admin/estimate-note';
 import { requireAdminPage } from '@/features/admin/guard';
 import { displayValue, SETTING_GROUPS } from '@/features/admin/settings-fields';
-import { button, Field, input, PageTitle, SectionTitle, When } from '@/features/admin/ui';
+import { button, Field, input, PageHead, SectionTitle, When } from '@/features/admin/ui';
 
 /**
  * Settings: every number that prices and delivers an order (D-069: the pilot's high-end placeholders, each labelled
@@ -24,7 +24,7 @@ export default async function SettingsPage(): Promise<React.JSX.Element> {
 
   return (
     <div className="space-y-8">
-      <PageTitle>Settings</PageTitle>
+      <PageHead title="Settings" />
       <p className="text-ink-muted max-w-2xl">
         Last updated <When iso={s.updated_at} inline />. Prices are worked out from these numbers by themselves (D-075). The exchange
         rate updates every day
@@ -91,7 +91,7 @@ export default async function SettingsPage(): Promise<React.JSX.Element> {
         </div>
         {groups.map((g) => (
           <fieldset key={g} className="grid gap-4 sm:grid-cols-2">
-            <legend className="font-medium sm:col-span-2">{g}</legend>
+            <legend className="font-heading text-[15px] font-semibold sm:col-span-2">{g}</legend>
             {details
               .filter((d) => d.group_name === g)
               .map((d) => (

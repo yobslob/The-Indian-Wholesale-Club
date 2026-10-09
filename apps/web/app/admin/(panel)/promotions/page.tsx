@@ -3,7 +3,7 @@ import { formatUsd } from '@repo/shared/domain';
 
 import { createPromoAction, togglePromoAction } from '@/features/admin/actions/settings';
 import { requireAdminPage } from '@/features/admin/guard';
-import { button, Cell, Field, input, PageTitle, Table, When } from '@/features/admin/ui';
+import { button, Cell, Field, input, PageHead, Table, When } from '@/features/admin/ui';
 
 /** Promo codes (kept from the old admin). Redemption is limit-checked in SQL. */
 export default async function PromotionsPage(): Promise<React.JSX.Element> {
@@ -11,7 +11,7 @@ export default async function PromotionsPage(): Promise<React.JSX.Element> {
   const promos = await listPromoCodes(client);
   return (
     <div className="space-y-6">
-      <PageTitle>Promotions</PageTitle>
+      <PageHead title="Promotions" />
       <Table head={['Code', 'Discount', 'Min order', 'Uses', 'Valid until', 'Active', '']}>
         {promos.map((p) => (
           <tr key={p.id}>
@@ -40,9 +40,9 @@ export default async function PromotionsPage(): Promise<React.JSX.Element> {
       </Table>
       <form
         action={createPromoAction}
-        className="border-line grid max-w-2xl gap-3 rounded-md border p-3 sm:grid-cols-3"
+        className="border-line grid max-w-2xl gap-3 rounded-[14px] border bg-paper px-[18px] py-4 sm:grid-cols-3"
       >
-        <h2 className="font-medium sm:col-span-3">New code</h2>
+        <h2 className="font-heading text-[15px] font-semibold sm:col-span-3">New code</h2>
         <Field label="Code">
           <input name="code" required className={input} />
         </Field>

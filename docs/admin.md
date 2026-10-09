@@ -66,7 +66,27 @@ listing's text stay on the web panel.
 
 **Not built yet** (coding phase): photo upload for vendors/receipts (products: web admin since C1, the phone camera since C3), customer emails for
 refunds and cancellations, delay warnings on Today, live (Realtime) order/stock feed, packing list +
-commercial invoice export, bulk edits, category editing. In the app: cycle creation, refunds, editing a listing's text.
+commercial invoice export, bulk edits of products (orders: bulk ship / deliver since B7), category editing. In the app: cycle creation, refunds, editing a listing's text.
+
+## The web admin's look and daily screens (B7, D-096)
+Built 2026-10-09 from `design/pages/admin/` (code in `apps/web/features/admin/`):
+- **Frame** (`frame.tsx`): the sidebar grouped Daily · Catalog · People with counts of what waits (`getWaitingCounts`);
+  the top bar with **quick find** (Ctrl+K: `adminQuickFind`, five each of orders, products, customers, shops), the
+  desk's clock in both zones and the live dot (one Realtime channel for the whole admin, `live-feed.tsx`). Phones: menu,
+  title, find.
+- **Times** in the admin's desk zone (`profiles.desk`; none set → New Jersey first) with the other zone beside them,
+  never UTC (`time.ts`); cycle cutoffs are typed in that zone.
+- **Chips** in plain words (`chips.tsx`). **Today**: the open cycle's countdown, totals and progress, Needs attention,
+  each desk's queue. **Orders**: search, chips with counts, ticked rows → Mark shipped… (one carrier and tracking
+  number each) / Mark delivered, pages of 50. **Order page**: only the actions that apply; every refund and cancel (and
+  a return's refund, and Record payout) asks first in a box with the amount and, for the customer's, the email they get
+  (`confirm.tsx`). Marking a piece Unavailable at pickup asks first too, since the customer is emailed.
+- **Cycle**: the progress bar with the next step as the main button; pickups as one card per shop (Call, WhatsApp, Map).
+- **New listing in one step** (`listing/`): photos shrink to 2400 px in the browser and upload as soon as they are
+  dropped, with the admin's session, to `product-media/products/drafts/<batch>/`; saving records them on the product.
+  Photos dropped on a form that is then abandoned stay in that folder (unused, not shown anywhere). **Add many**: one
+  draft per photo row; the shop, the fabric and the care are typed once for the batch (every draft needs them, ops.md
+  §Compliance) and can be changed per piece on its page. Clothing only (spices can't go live yet, D-032).
 
 ## Design principles for the admin
 1. **One screen per job.** "Pick up at Shop X" is one checklist, not a table with filters.

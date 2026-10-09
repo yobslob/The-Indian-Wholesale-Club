@@ -4,8 +4,10 @@ import { listReturns, RETURN_STATUSES, type ReturnStatus } from '@repo/db/admin'
 import { formatUsd } from '@repo/shared/domain';
 
 import { returnReceivedAction, returnRefundAction, returnRejectAction } from '@/features/admin/actions/after-sales';
+import { Chip } from '@/features/admin/chips';
+import { ConfirmButton } from '@/features/admin/confirm';
 import { requireAdminPage } from '@/features/admin/guard';
-import { button, Cell, Empty, input, PageTitle, Table, Tabs, When } from '@/features/admin/ui';
+import { button, Cell, Empty, input, PageHead, secondaryButton, Sub, Table, Tabs, When } from '@/features/admin/ui';
 
 type SearchParams = Promise<{ status?: string }>;
 
@@ -32,13 +34,13 @@ export default async function ReturnsPage({
 
   return (
     <div className="space-y-4">
-      <PageTitle>Returns</PageTitle>
+      <PageHead title="Returns" />
       <Tabs
         items={RETURN_STATUSES.map((s) => ({ key: s, href: `/admin/returns?status=${s}`, label: s[0]!.toUpperCase() + s.slice(1) }))}
         current={status}
       />
       {status === 'requested' ? (
-        <p className="text-ink-muted text-sm">
+        <p className="text-ink-muted text-[14px]">
           Book a courier to collect each piece from the customer's door (handover photos, as at delivery, D-076). Mark it
           received once it is at the US warehouse.
         </p>
@@ -52,11 +54,11 @@ export default async function ReturnsPage({
               <Cell><When iso={r.requested_at} /></Cell>
               <Cell>
                 {r.order ? (
-                  <Link href={`/admin/orders/${r.order.id}`} className="underline">
+                  <Link href={`/admin/orders/${r.order.id}`} className="font-semibold">
                     {r.order.order_number}
                   </Link>
                 ) : null}
-                <span className="text-ink-muted block text-xs">{r.order?.email}</span>
+                <Sub>{r.order?.email}</Sub>
               </Cell>
               <Cell>
                 {r.item ? `${r.item.product_name} (${r.item.variant_label}) · ${r.item.region_name}` : '—'}
@@ -64,7 +66,7 @@ export default async function ReturnsPage({
               <Cell>{REASON[r.reason] ?? r.reason}</Cell>
               <Cell>
                 {formatUsd(r.refund_cents)}
-                {Number(r.kept_pct) > 0 ? <span className="text-ink-muted block text-xs">{Number(r.kept_pct)}% kept</span> : null}
+                {Number(r.kept_pct) > 0 ? <Sub>{Number(r.kept_pct)}% kept</Sub> : null}
               </Cell>
               <Cell>
                 {r.status === 'requested' ? (
@@ -74,23 +76,41 @@ export default async function ReturnsPage({
                     </button>
                   </form>
                 ) : null}
-                {r.status === 'received' ? (
-                  <form action={returnRefundAction.bind(null, r.id)}>
-                    <button type="submit" className={button}>
-                      Refund {formatUsd(r.refund_cents)}
-                    </button>
-                  </form>
+                {r.status === 'received' && r.order ? (
+                  <ConfirmButton
+                    label={`Refund ${formatUsd(r.refund_cents)}…`}
+                    className={button}
+                    title={`Refund ${formatUsd(r.refund_cents)}?`}
+                    confirm={`Refund ${formatUsd(r.refund_cents)}`}
+                    action={returnRefundAction.bind(null, r.id)}
+                    mail={{
+                      subject: `Your refund for order ${r.order.order_number}`,
+                      text: `We've refunded ${formatUsd(r.order.refunded_cents + r.refund_cents)} to your card so far. Banks usually take 5 to 10 days to show it.`,
+                    }}
+                  >
+                    The returned {r.item?.product_name ?? 'piece'} on order {r.order.order_number}, as fixed when it was asked for
+                    {Number(r.kept_pct) > 0 ? ` (${Number(r.kept_pct)}% kept for bringing it back)` : ''}. Stripe sends it to the card first.
+                  </ConfirmButton>
                 ) : null}
                 {r.status === 'requested' || r.status === 'received' ? (
                   <form action={returnRejectAction.bind(null, r.id)} className="mt-2 flex gap-2">
                     <input name="note" required placeholder="Why (internal)" className={input} />
-                    <button type="submit" className="min-h-11 underline">
+                    <button type="submit" className={secondaryButton}>
                       Reject
                     </button>
                   </form>
                 ) : null}
-                {r.status === 'refunded' ? <>Refunded <When iso={r.decided_at} inline /></> : null}
-                {r.status === 'rejected' ? <>Rejected <When iso={r.decided_at} inline />{r.note ? `: ${r.note}` : ''}</> : null}
+                {r.status === 'refunded' ? (
+                  <>
+                    <Chip tone="ok">Refunded</Chip> <When iso={r.decided_at} inline />
+                  </>
+                ) : null}
+                {r.status === 'rejected' ? (
+                  <>
+                    <Chip tone="mute">Rejected</Chip> <When iso={r.decided_at} inline />
+                    {r.note ? `: ${r.note}` : ''}
+                  </>
+                ) : null}
               </Cell>
             </tr>
           ))}

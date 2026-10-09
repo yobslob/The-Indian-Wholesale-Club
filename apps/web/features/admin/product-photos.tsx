@@ -23,8 +23,8 @@ interface Photo {
 export function ProductPhotos({ productId, media }: { productId: string; media: Photo[] }): React.JSX.Element {
   const photos = media.slice().sort((a, b) => Number(b.is_primary) - Number(a.is_primary) || a.sort_order - b.sort_order);
   return (
-    <section className="border-line max-w-3xl space-y-3 rounded-md border p-3">
-      <h2 className="font-medium">Photos ({photos.length})</h2>
+    <section className="border-line max-w-3xl space-y-3 rounded-[14px] border bg-paper px-[18px] py-4">
+      <h2 className="font-heading text-[15px] font-semibold">Photos ({photos.length})</h2>
       <p className="text-ink-muted text-sm">
         The main photo leads the product page and its card. Portrait 3 : 4 fits best; taller photos are cropped. JPEG, PNG,
         WebP or AVIF, up to 8 MB.

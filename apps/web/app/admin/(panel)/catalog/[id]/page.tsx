@@ -15,6 +15,7 @@ import {
   setProductCuratedAction,
   updateProductAction,
 } from '@/features/admin/actions/catalog';
+import { PRODUCT_STATUS, StatusChip } from '@/features/admin/chips';
 import { requireAdminPage } from '@/features/admin/guard';
 import { ProductPhotos } from '@/features/admin/product-photos';
 import { button, Cell, Field, input, PageHead, Table, When } from '@/features/admin/ui';
@@ -54,7 +55,7 @@ export default async function AdminProductPage({
         </p>
       ) : null}
       <p>
-        {product.product_type} · status <strong>{product.status}</strong>
+        <StatusChip map={PRODUCT_STATUS} status={product.status} /> {product.product_type === 'spice' ? 'Spice' : 'Clothing'}
         {product.published_at ? <> · first published <When iso={product.published_at} inline /></> : ''}
         {product.status === 'live' ? (
           <>
@@ -155,7 +156,7 @@ export default async function AdminProductPage({
       </form>
 
       <section className="space-y-2">
-        <h2 className="font-medium">Variants and stock</h2>
+        <h2 className="font-heading text-[15px] font-semibold">Variants and stock</h2>
         <Table
           head={[
             'Variant',

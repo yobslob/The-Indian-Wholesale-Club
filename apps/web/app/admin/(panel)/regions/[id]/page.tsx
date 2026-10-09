@@ -11,7 +11,7 @@ import {
   uploadRegionImageAction,
 } from '@/features/admin/actions/regions';
 import { requireAdminPage } from '@/features/admin/guard';
-import { button, Field, input, linkButton, PageTitle } from '@/features/admin/ui';
+import { button, Field, input, linkButton, PageHead } from '@/features/admin/ui';
 import { mediaUrl } from '@/lib/site';
 
 type Params = Promise<{ id: string }>;
@@ -43,14 +43,14 @@ export default async function RegionEditPage({
 
   return (
     <div className="space-y-6">
-      <PageTitle>{region.name}</PageTitle>
+      <PageHead back={{ href: '/admin/regions', label: 'Regions' }} title={region.name} />
       <p>
         Content: <strong>{region.content_status}</strong>
         {region.greeting_script ? ` · script ${region.greeting_script}` : ''}
       </p>
 
-      <section className="border-line max-w-2xl space-y-3 rounded-md border p-3">
-        <h2 className="font-medium">Main photo</h2>
+      <section className="border-line max-w-2xl space-y-3 rounded-[14px] border bg-paper px-[18px] py-4">
+        <h2 className="font-heading text-[15px] font-semibold">Main photo</h2>
         <p className="text-ink-muted text-sm">
           Shown on the region page and on its stamp on the home page. JPEG, PNG, WebP or AVIF, up to 8 MB; portrait works best.
         </p>
@@ -69,8 +69,8 @@ export default async function RegionEditPage({
         </form>
       </section>
 
-      <section className="border-line max-w-2xl space-y-3 rounded-md border p-3">
-        <h2 className="font-medium">Album ({album.length})</h2>
+      <section className="border-line max-w-2xl space-y-3 rounded-[14px] border bg-paper px-[18px] py-4">
+        <h2 className="font-heading text-[15px] font-semibold">Album ({album.length})</h2>
         <p className="text-ink-muted text-sm">
           More photos of {region.name}: the region page shows them as a slow sideways mosaic once there are three or more.
           Landscape and portrait both work; 1,600 px wide or more looks sharp. Each photo needs a line describing it.

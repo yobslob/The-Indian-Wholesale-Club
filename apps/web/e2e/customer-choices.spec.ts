@@ -117,6 +117,7 @@ test('a delivered piece is returned: asked on the order page, received and refun
   await expect(row).toHaveCount(0, { timeout: 30_000 }); // the action finished: it left the "requested" list
   await page.goto('/admin/returns?status=received');
   await page.locator('tr').filter({ hasText: orderNumber }).getByRole('button', { name: /^Refund \$/ }).click();
+  await page.getByRole('dialog').getByRole('button', { name: /^Refund \$/ }).click(); // D-096: it asks first
   await expect.poll(async () => (await orderRow(orderNumber)).refunded_cents, { timeout: 30_000 }).toBe(ret.refund_cents);
   const { data: clearance } = await service
     .from('products')

@@ -32,7 +32,7 @@ export async function listReturns(client: IwcClient, status?: ReturnStatus) {
     .from('returns')
     .select(
       `id, reason, status, refund_cents, kept_pct, requested_at, decided_at, refund_ref, note,
-       order:orders(id, order_number, email, payment_intent_id),
+       order:orders(id, order_number, email, payment_intent_id, refunded_cents),
        item:order_items(product_name, variant_label, region_name)`,
     );
   if (status) query = query.eq('status', status);

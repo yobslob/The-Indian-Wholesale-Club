@@ -3,8 +3,9 @@ import Link from 'next/link';
 import { getDemand, getSales, type Sales } from '@repo/db/admin';
 import { formatUsd } from '@repo/shared/domain';
 
+import { PRODUCT_STATUS, StatusChip } from '@/features/admin/chips';
 import { requireAdminPage } from '@/features/admin/guard';
-import { Cell, Empty, PageTitle, rupees, SectionTitle, Table, Tabs } from '@/features/admin/ui';
+import { Cell, Empty, PageHead, rupees, SectionTitle, Table, Tabs } from '@/features/admin/ui';
 
 type SearchParams = Promise<{ period?: string }>;
 
@@ -50,7 +51,7 @@ export default async function InsightsPage({ searchParams }: { searchParams: Sea
 
   return (
     <div className="space-y-8">
-      <PageTitle>Insights</PageTitle>
+      <PageHead title="Insights" />
       <Tabs
         items={PERIODS.map((p) => ({ key: p.key, label: p.label, href: `/admin/insights?period=${p.key}` }))}
         current={period.key}
@@ -114,7 +115,9 @@ export default async function InsightsPage({ searchParams }: { searchParams: Sea
                   </Link>
                 </Cell>
                 <Cell>{p.region}</Cell>
-                <Cell>{p.status}</Cell>
+                <Cell>
+                  <StatusChip map={PRODUCT_STATUS} status={p.status as keyof typeof PRODUCT_STATUS} />
+                </Cell>
                 <Cell>{p.saves}</Cell>
                 <Cell className={p.available === 0 ? 'text-caution' : ''}>{p.available}</Cell>
               </tr>

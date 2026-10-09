@@ -4,7 +4,7 @@ import { listRegionsAdmin } from '@repo/db/admin';
 
 import { approveRegionAction } from '@/features/admin/actions/regions';
 import { requireAdminPage } from '@/features/admin/guard';
-import { button, Cell, PageTitle, Table } from '@/features/admin/ui';
+import { button, Cell, PageHead, Table } from '@/features/admin/ui';
 
 /** Regions (admin.md): all 36, their content status (D-019) and whether they are live. */
 export default async function RegionsPage(): Promise<React.JSX.Element> {
@@ -12,7 +12,7 @@ export default async function RegionsPage(): Promise<React.JSX.Element> {
   const regions = await listRegionsAdmin(client);
   return (
     <div className="space-y-4">
-      <PageTitle>Regions</PageTitle>
+      <PageHead title="Regions" />
       <p className="text-ink-muted">
         Greeting, tagline and story show to customers only after approval (D-019).
       </p>

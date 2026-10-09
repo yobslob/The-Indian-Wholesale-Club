@@ -5,7 +5,7 @@ import { listBusinessDetails, listCycleExportLines, listCycles } from '@repo/db/
 
 import { detailsByKey, invoiceRows, packingListRows, type Row } from '@/features/admin/export-documents';
 import { requireAdminPage } from '@/features/admin/guard';
-import { PageTitle } from '@/features/admin/ui';
+import { PageHead } from '@/features/admin/ui';
 
 type Params = Promise<{ id: string }>;
 
@@ -46,7 +46,7 @@ export default async function CycleDocumentsPage({ params }: { params: Params })
 
   return (
     <div className="space-y-8">
-      <PageTitle>Export documents · {cycle.code}</PageTitle>
+      <PageHead back={{ href: `/admin/cycles/${cycle.id}`, label: `Cycle ${cycle.code}` }} title={`Export documents · ${cycle.code}`} />
       <p className="text-ink-muted print:hidden">
         {lines.length} picked piece lines. Print this page (or save it as PDF), or download{' '}
         <Link href={`/admin/cycles/${id}/csv/packing-list`} className="underline" prefetch={false}>
@@ -59,11 +59,11 @@ export default async function CycleDocumentsPage({ params }: { params: Params })
         as CSV.
       </p>
       <section className="space-y-2 break-after-page">
-        <h2 className="font-medium">Packing list</h2>
+        <h2 className="font-heading text-[15px] font-semibold">Packing list</h2>
         <Sheet rows={packingListRows(lines)} />
       </section>
       <section className="space-y-2">
-        <h2 className="font-medium">Commercial invoice (goods)</h2>
+        <h2 className="font-heading text-[15px] font-semibold">Commercial invoice (goods)</h2>
         {unfilled > 0 ? (
           <p className="text-caution text-sm print:hidden">
             {unfilled} business detail{unfilled === 1 ? ' is' : 's are'} still a placeholder.{' '}

@@ -1,8 +1,9 @@
 import { listRegionsAdmin, listVendors } from '@repo/db/admin';
 
 import { createVendorAction } from '@/features/admin/actions/catalog';
+import { Chip } from '@/features/admin/chips';
 import { requireAdminPage } from '@/features/admin/guard';
-import { button, Cell, Field, input, PageTitle, Table } from '@/features/admin/ui';
+import { button, Cell, Field, input, PageHead, Table } from '@/features/admin/ui';
 
 /** Vendors (admin.md, D-018): shops never log in; the founder and COO enter everything. Admin only (D-003). */
 export default async function VendorsPage(): Promise<React.JSX.Element> {
@@ -11,12 +12,12 @@ export default async function VendorsPage(): Promise<React.JSX.Element> {
 
   return (
     <div className="space-y-6">
-      <PageTitle>Vendors</PageTitle>
+      <PageHead title="Vendors" />
       <Table head={['Shop', 'Owner', 'Region', 'Town', 'Phone', 'Payment', 'Status']}>
         {vendors.map((v) => (
-          <tr key={v.id}>
+          <tr key={v.id} id={`v-${v.id}`} className="scroll-mt-20 target:[&>td]:bg-brand/5">
             <Cell>
-              {v.shop_name}
+              <b className="font-semibold">{v.shop_name}</b>
               {v.is_placeholder ? <span className="text-caution ml-1 text-xs">(demo)</span> : null}
             </Cell>
             <Cell>{v.owner_name ?? '—'}</Cell>
@@ -26,16 +27,18 @@ export default async function VendorsPage(): Promise<React.JSX.Element> {
             <Cell>
               {[v.payment_method, v.payment_reference].filter(Boolean).join(' · ') || '—'}
             </Cell>
-            <Cell>{v.status}</Cell>
+            <Cell>
+              <Chip tone={v.status === 'active' ? 'ok' : v.status === 'paused' ? 'warn' : 'mute'}>{v.status === 'active' ? 'Active' : v.status === 'paused' ? 'Paused' : 'Prospect'}</Chip>
+            </Cell>
           </tr>
         ))}
       </Table>
 
       <form
         action={createVendorAction}
-        className="border-line grid max-w-2xl gap-3 rounded-md border p-3 sm:grid-cols-2"
+        className="border-line grid max-w-2xl gap-3 rounded-[14px] border bg-paper px-[18px] py-4 sm:grid-cols-2"
       >
-        <h2 className="font-medium sm:col-span-2">Add a shop</h2>
+        <h2 className="font-heading text-[15px] font-semibold sm:col-span-2">Add a shop</h2>
         <Field label="Shop name">
           <input name="shopName" required className={input} />
         </Field>

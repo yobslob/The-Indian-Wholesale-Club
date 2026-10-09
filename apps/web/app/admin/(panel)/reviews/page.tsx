@@ -5,7 +5,7 @@ import { listReviewsForModeration } from '@repo/db/admin';
 
 import { moderateReviewAction } from '@/features/admin/actions/reviews';
 import { requireAdminPage } from '@/features/admin/guard';
-import { button, PageTitle } from '@/features/admin/ui';
+import { button, PageHead } from '@/features/admin/ui';
 import { reviewPhotoUrl } from '@/lib/site';
 
 /**
@@ -18,14 +18,14 @@ export default async function ReviewsPage(): Promise<React.JSX.Element> {
 
   return (
     <div className="space-y-6">
-      <PageTitle>Reviews</PageTitle>
+      <PageHead title="Reviews" />
       <p className="text-ink-muted">
         {pending.length === 0 ? 'Nothing waiting.' : `${pending.length} waiting, oldest first.`} Approved reviews show on the
         product page within a few minutes.
       </p>
       <ul className="grid max-w-3xl gap-4">
         {pending.map((r) => (
-          <li key={r.id} className="border-line space-y-2 rounded-md border p-3">
+          <li key={r.id} className="border-line space-y-2 rounded-[14px] border bg-paper px-[18px] py-4">
             <p className="text-sm">
               {r.product ? (
                 <Link href={`/states/${r.product.region?.slug}/${r.product.slug}`} className="font-medium underline">

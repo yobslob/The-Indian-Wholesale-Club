@@ -53,9 +53,10 @@ export default async function AdminOrderPage({ params }: { params: Params }): Pr
     subject: `Order ${n} is cancelled`,
     text: `Your order is cancelled.${amount > 0 ? ` ${formatUsd(order.refunded_cents + amount)} is on its way back to your card. Banks usually take 5 to 10 days to show it.` : ''}`,
   });
-  const picked = order.items.flatMap((i) => (i.pickup && i.pickup.status === 'picked' ? [i.pickup] : []));
-  const shopTotal = picked.reduce((s, p) => s + (p.shop_price_paise ?? 0), 0);
-  const shopPaid = picked.filter((p) => p.payout_id).reduce((s, p) => s + (p.shop_price_paise ?? 0), 0);
+  // What the shops are owed for this order's picked pieces, and how much of it is paid (quantity × shop price, as record_payout counts).
+  const picked = order.items.flatMap((i) => (i.pickup && i.pickup.status === 'picked' ? [{ ...i.pickup, owed: i.quantity * (i.pickup.shop_price_paise ?? 0) }] : []));
+  const shopTotal = picked.reduce((s, p) => s + p.owed, 0);
+  const shopPaid = picked.filter((p) => p.payout_id).reduce((s, p) => s + p.owed, 0);
   const main = canShip || order.status === 'shipped';
 
   return (
