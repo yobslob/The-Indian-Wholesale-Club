@@ -88,3 +88,28 @@ export function isoToZoned(iso: string, desk: Desk | null): string {
   );
   return `${parts.year}-${parts.month}-${parts.day}T${parts.hour}:${parts.minute}`;
 }
+
+/** "Sat Oct 10, 11:59 PM New Jersey" and "Sun 9:29 AM India": a moment named in both desks' places (the cutoff). */
+export function bothPlaces(iso: string, desk: Desk | null): [string, string] {
+  const at = new Date(iso);
+  return deskOrder(desk).map((d) => {
+    const z = ZONES[d];
+    return `${format(z.tz, { weekday: 'short', month: 'short', day: 'numeric' }).format(at)}, ${format(z.tz, TIME).format(at)} ${z.place}`;
+  }) as [string, string];
+}
+
+/** Morning, afternoon or evening at the admin's desk. */
+export function greeting(now: Date, desk: Desk | null): string {
+  const hour = Number(format(ZONES[deskOrder(desk)[0]].tz, { hour: 'numeric', hourCycle: 'h23' }).format(now));
+  return hour < 12 ? 'Good morning' : hour < 17 ? 'Good afternoon' : 'Good evening';
+}
+
+/** "2 d 14 h", "5 h 12 min", "12 min": the time left until a moment; null once it has passed. */
+export function timeLeft(iso: string, now: Date): string | null {
+  const minutes = Math.floor((new Date(iso).getTime() - now.getTime()) / 60_000);
+  if (minutes < 0) return null;
+  const d = Math.floor(minutes / 1440);
+  const h = Math.floor((minutes % 1440) / 60);
+  const m = minutes % 60;
+  return d > 0 ? `${d} d ${h} h` : h > 0 ? `${h} h ${m} min` : `${m} min`;
+}

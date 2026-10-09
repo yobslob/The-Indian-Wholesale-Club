@@ -220,3 +220,40 @@ export async function listOrderMoves(client: IwcClient, orderId: string) {
       .order('moved_at', { ascending: false }),
   );
 }
+
+/**
+ * Today's cycle card (D-096): the open cycle's orders, pieces, shops and sales so far. Sales are the pieces' prices,
+ * before tax and shipping (as Insights counts them). Cancelled pieces and unpaid orders are left out.
+ */
+export async function getCycleTotals(client: IwcClient, cycleId: string) {
+  const rows = unwrap(
+    await client
+      .from('orders')
+      .select('id, items:order_items(quantity, total_price_cents, status, product:products(vendor_id))')
+      .eq('cycle_id', cycleId)
+      .not('status', 'in', '(pending_payment,cancelled,refunded)')
+      .limit(5000),
+  );
+  const items = rows.flatMap((o) => o.items).filter((i) => i.status === 'active');
+  return {
+    orders: rows.length,
+    pieces: items.reduce((n, i) => n + i.quantity, 0),
+    shops: new Set(items.map((i) => i.product?.vendor_id).filter(Boolean)).size,
+    salesCents: items.reduce((n, i) => n + i.total_price_cents, 0),
+  };
+}
+
+/** The cycle whose pickups are still waiting longest: where "Start pickups" on Today leads (D-096). */
+export async function getPickupCycle(client: IwcClient) {
+  const row = unwrap(
+    await client
+      .from('pickups')
+      .select('cycle:cycles(id, code)')
+      .eq('status', 'pending')
+      .not('cycle_id', 'is', null)
+      .order('created_at')
+      .limit(1)
+      .maybeSingle(),
+  );
+  return row?.cycle ?? null;
+}

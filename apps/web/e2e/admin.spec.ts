@@ -16,7 +16,7 @@ test('an admin lists a product and publishes it to the store', async ({ page }) 
   await page.locator('input[name="email"]').fill(E2E_ADMIN.email);
   await page.locator('input[name="password"]').fill(E2E_ADMIN.password);
   await page.getByRole('button', { name: 'Sign in' }).click();
-  await expect(page.getByRole('heading', { name: 'Today' })).toBeVisible();
+  await expect(page.getByRole('heading', { name: /^Good (morning|afternoon|evening)$/ })).toBeVisible();
 
   await page.goto('/admin/listings');
   const shop = page.locator('select[name="vendorId"]');

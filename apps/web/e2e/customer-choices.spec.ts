@@ -15,7 +15,7 @@ async function signInAsAdmin(page: Page): Promise<void> {
   await page.locator('input[name="email"]').fill(E2E_ADMIN.email);
   await page.locator('input[name="password"]').fill(E2E_ADMIN.password);
   await page.getByRole('button', { name: 'Sign in' }).click();
-  await expect(page.getByRole('heading', { name: 'Today' })).toBeVisible();
+  await expect(page.getByRole('heading', { name: /^Good (morning|afternoon|evening)$/ })).toBeVisible();
 }
 
 async function orderRow(orderNumber: string) {
