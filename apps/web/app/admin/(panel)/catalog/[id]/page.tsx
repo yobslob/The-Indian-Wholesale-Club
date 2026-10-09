@@ -17,17 +17,20 @@ import {
 } from '@/features/admin/actions/catalog';
 import { requireAdminPage } from '@/features/admin/guard';
 import { ProductPhotos } from '@/features/admin/product-photos';
-import { button, Cell, Field, input, PageTitle, Table, When } from '@/features/admin/ui';
+import { button, Cell, Field, input, PageHead, Table, When } from '@/features/admin/ui';
 
 type Params = Promise<{ id: string }>;
+type SearchParams = Promise<{ note?: string }>;
 
 const money = (cents: number) => (cents / 100).toFixed(2);
 
 /** Product editor: fields, publish state, photos, variants and stock (flows.md §2, §9). */
 export default async function AdminProductPage({
   params,
+  searchParams,
 }: {
   params: Params;
+  searchParams: SearchParams;
 }): Promise<React.JSX.Element> {
   const { client } = await requireAdminPage();
   const { id } = await params;
@@ -39,10 +42,17 @@ export default async function AdminProductPage({
   const estimated = estimates.some((e) => PRICE_SUGGESTION_SETTINGS.includes(e.setting));
   if (!product) notFound();
   const statuses = ['draft', 'live', 'paused', 'archived'] as const;
+  // Why a new listing saved as a draft instead of publishing (listing/new-listing.tsx).
+  const note = (await searchParams).note?.slice(0, 300);
 
   return (
     <div className="space-y-6">
-      <PageTitle>{product.name}</PageTitle>
+      <PageHead back={{ href: '/admin/catalog', label: 'Products' }} title={product.name} />
+      {note ? (
+        <p role="status" className="border-caution/25 bg-caution/[0.08] text-caution rounded-xl border px-3.5 py-3 text-[14px]">
+          {note}
+        </p>
+      ) : null}
       <p>
         {product.product_type} · status <strong>{product.status}</strong>
         {product.published_at ? <> · first published <When iso={product.published_at} inline /></> : ''}

@@ -1,6 +1,6 @@
 import Link from 'next/link';
 
-import { listAdminProducts } from '@repo/db/admin';
+import { countProductsByStatus, listAdminProducts } from '@repo/db/admin';
 import { formatUsd } from '@repo/shared/domain';
 
 import { requireAdminPage } from '@/features/admin/guard';
@@ -32,13 +32,16 @@ export default async function CatalogPage({
   const usStock = params.us === '1';
   const page = Math.min(Math.max(Number.parseInt(params.page ?? '1', 10) || 1, 1), 1000);
   // One more than a page tells whether a next page exists.
-  const rows = await listAdminProducts(client, {
-    search: q || undefined,
-    status,
-    usStock,
-    offset: (page - 1) * PAGE,
-    limit: PAGE + 1,
-  });
+  const [rows, counts] = await Promise.all([
+    listAdminProducts(client, {
+      search: q || undefined,
+      status,
+      usStock,
+      offset: (page - 1) * PAGE,
+      limit: PAGE + 1,
+    }),
+    countProductsByStatus(client),
+  ]);
   const products = rows.slice(0, PAGE);
   const pageHref = (n: number): string => {
     const query = new URLSearchParams({
@@ -53,7 +56,7 @@ export default async function CatalogPage({
   return (
     <div className="space-y-4">
       <PageTitle>Catalog</PageTitle>
-      <Tabs items={listingTabs()} current={usStock ? 'us' : (status ?? 'all')} />
+      <Tabs items={listingTabs(counts)} current={usStock ? 'us' : (status ?? 'all')} />
       {usStock ? (
         <p className="text-ink-muted text-sm">
           Returned and cancelled pieces already in the US, as drafts at the clearance price. Check each piece in hand,

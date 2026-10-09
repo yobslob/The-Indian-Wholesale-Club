@@ -72,7 +72,7 @@ export default async function TodayPage(): Promise<React.JSX.Element> {
       },
       summary.staleVariants === null
         ? { n: null, what: 'Quantities to re-check with the shops', sub: 'Set "stale after" days in Settings to count them', go: 'Settings', href: '/admin/settings' }
-        : { n: summary.staleVariants, what: 'Quantities to re-check with the shops', go: 'Re-check', href: '/admin/listings#recheck' },
+        : { n: summary.staleVariants, what: 'Quantities to re-check with the shops', go: 'Re-check', href: '/admin/listings?view=recheck' },
     ],
   };
   const [own, other] = deskOrder(desk);

@@ -162,6 +162,19 @@ export async function listAdminProducts(client: IwcClient, filter: AdminProductF
   );
 }
 
+/** How many products are in each status: the Listings tabs' counts (D-096). */
+export async function countProductsByStatus(client: IwcClient): Promise<Record<Enum<'product_status'>, number>> {
+  const head = { count: 'exact', head: true } as const;
+  const statuses = ['draft', 'live', 'paused', 'archived'] as const;
+  const counts = await Promise.all(statuses.map((s) => client.from('products').select('id', head).eq('status', s)));
+  return Object.fromEntries(
+    statuses.map((s, i) => {
+      if (counts[i]!.error) throw new Error(counts[i]!.error!.message);
+      return [s, counts[i]!.count ?? 0];
+    }),
+  ) as Record<Enum<'product_status'>, number>;
+}
+
 export async function getAdminProduct(client: IwcClient, id: string) {
   return unwrap(
     await client

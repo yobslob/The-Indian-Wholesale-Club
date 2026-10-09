@@ -3,8 +3,8 @@ import { expect, test } from '@playwright/test';
 import { E2E_ADMIN, E2E_SLUG_PREFIX } from './env';
 
 /**
- * Flow 2 (engineering.md §Testing): admin sign-in → new listing (draft) → variant
- * with stock → publish → the product is visible on the storefront.
+ * Flow 2 (engineering.md §Testing): admin sign-in → new listing in one step (draft, with its option and
+ * stock) → publish → the product is visible on the storefront.
  */
 test('an admin lists a product and publishes it to the store', async ({ page }) => {
   const stamp = Date.now().toString(36);
@@ -30,26 +30,20 @@ test('an admin lists a product and publishes it to the store', async ({ page }) 
   await page.getByText('Clothing', { exact: true }).click();
   await expect(page.getByRole('radio', { name: 'Clothing' })).toBeChecked();
   await expect(page.locator('input[name="ingredients"]')).toBeHidden();
+  // D-096: one step. The category list follows the type; the web address follows the name, and Edit changes it.
   const category = page.locator('select[name="categoryId"]');
-  await category.selectOption({
-    label: await category
-      .locator('option', { hasText: /^clothing · / })
-      .first()
-      .innerText(),
-  });
+  await category.selectOption({ index: 1 });
   await page.locator('input[name="name"]').fill(name);
+  await page.getByRole('button', { name: 'Edit' }).click();
   await page.locator('input[name="slug"]').fill(slug);
-  await page.locator('input[name="shopPrice"]').fill('1200');
-  await page.locator('input[name="price"]').fill('49.00');
   await page.locator('input[name="fibre"]').fill('100% cotton');
   await page.locator('input[name="care"]').fill('Hand wash cold');
+  await page.getByLabel('Pieces, option 1').fill('3');
+  await page.locator('input[name="shopPrice"]').fill('1200');
+  await page.getByRole('button', { name: 'set by hand' }).click();
+  await page.locator('input[name="price"]').fill('49.00');
   await page.getByRole('button', { name: 'Save draft' }).click();
   await expect(page).toHaveURL(/\/admin\/catalog\/[0-9a-f-]{36}$/);
-
-  await page.locator('input[name="label"]').fill('One size');
-  await page.locator('input[name="sku"]').fill(`E2E-${stamp}`.toUpperCase());
-  await page.locator('input[name="qty"]').last().fill('3');
-  await page.getByRole('button', { name: 'Add variant' }).click();
   await expect(page.getByRole('cell', { name: 'One size' })).toBeVisible();
 
   await page.getByRole('button', { name: 'Publish' }).click();
