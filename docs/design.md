@@ -108,7 +108,9 @@ for "reduce motion" and when off screen.
 
 ## Admin look
 Plain, dense and fast. The same tokens, no brand decoration. Phone layouts for field jobs (`admin.md`).
-Since C1 the web admin follows the approved mockup's admin screen (D-050; `apps/web/features/admin/ui.tsx`): Helvetica
-Neue page titles, Montserrat labels and controls, paper fields, ink primary buttons, small uppercase section labels,
-view tabs (Listings: New / Drafts / Live / Paused / All), one scrolling nav row on phones. The Listings form picks the
-type with a Clothing / Spice toggle that shows only that type's fields (CSS, no client code).
+Since B7 the web admin follows the approved admin design (D-096, `design/pages/admin/`; the class strings in
+`apps/web/features/admin/styles.ts`, the parts in `ui.tsx`, the frame in `frame.tsx`): Syne page titles (codes such as
+order and cycle numbers in Karla), Karla for everything else, paper panels, ink primary buttons, plain status chips in
+words and colours (`chips.tsx`), small uppercase group labels. A sidebar grouped by job with counts of what waits; a top
+bar with quick find (Ctrl+K), the desk's clock in both zones and the live dot; on phones a top bar with the menu, the
+page title and find. Times are in the admin's desk zone with the other zone beside them, never UTC (`time.ts`).

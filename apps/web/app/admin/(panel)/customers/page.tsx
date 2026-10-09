@@ -1,7 +1,7 @@
 import { listCustomers } from '@repo/db/admin';
 
 import { requireAdminPage } from '@/features/admin/guard';
-import { Cell, PageTitle, Table, utc } from '@/features/admin/ui';
+import { Cell, PageTitle, Table, When } from '@/features/admin/ui';
 
 /** Customers (US desk): accounts and how many orders each placed. Guests appear only on orders. */
 export default async function CustomersPage(): Promise<React.JSX.Element> {
@@ -16,7 +16,7 @@ export default async function CustomersPage(): Promise<React.JSX.Element> {
             <Cell>{c.email}</Cell>
             <Cell>{c.full_name ?? '—'}</Cell>
             <Cell>{c.phone ?? '—'}</Cell>
-            <Cell>{utc(c.created_at)}</Cell>
+            <Cell><When iso={c.created_at} /></Cell>
             <Cell>{c.orders[0]?.count ?? 0}</Cell>
           </tr>
         ))}

@@ -3,7 +3,7 @@ import Link from 'next/link';
 import { formatUsd } from '@repo/shared/domain';
 
 import { confirmMoveShippedAction } from './actions/cycles';
-import { button, utc } from './ui';
+import { button, When } from './ui';
 
 interface Move {
   id: string;
@@ -43,7 +43,7 @@ export function CycleMoves({
               <Link href={`/admin/orders/${m.order_id}`} className="underline">
                 {m.order?.order_number}
               </Link>{' '}
-              from {m.from_cycle?.code} ({m.earlier ? 'earlier' : 'later'}) · {utc(m.moved_at)}
+              from {m.from_cycle?.code} ({m.earlier ? 'earlier' : 'later'}) · <When iso={m.moved_at} inline />
             </span>
             {m.shipped_confirmed_at ? (
               <span className="text-positive">

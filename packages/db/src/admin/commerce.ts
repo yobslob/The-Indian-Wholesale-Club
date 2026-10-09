@@ -104,6 +104,58 @@ export async function getTodaySummary(client: IwcClient): Promise<TodaySummary> 
   return { ordersByStatus, pendingPickups, unpaidPickedPickups, draftProducts, staleVariants, expressToSend };
 }
 
+/** D-096: what waits behind each section of the admin's sidebar. Head counts only, one round trip each, in parallel. */
+export interface WaitingCounts {
+  ordersToShip: number;
+  pickupsToDo: number;
+  drafts: number;
+  shopsOwed: number;
+  reviews: number;
+  returns: number;
+}
+
+export async function getWaitingCounts(client: IwcClient): Promise<WaitingCounts> {
+  const head = { count: 'exact', head: true } as const;
+  const [ordersToShip, pickupsToDo, drafts, owed, reviews, returns] = await Promise.all([
+    countRows(client.from('orders').select('id', head).eq('status', 'arrived')),
+    countRows(client.from('pickups').select('id', head).eq('status', 'pending')),
+    countRows(client.from('products').select('id', head).eq('status', 'draft')),
+    client.from('pickups').select('vendor_id').eq('status', 'picked').is('payout_id', null).limit(5000),
+    countRows(client.from('reviews').select('id', head).eq('status', 'pending')),
+    countRows(client.from('returns').select('id', head).eq('status', 'requested')),
+  ]);
+  const shopsOwed = new Set(unwrap(owed).map((p) => p.vendor_id)).size;
+  return { ordersToShip, pickupsToDo, drafts, shopsOwed, reviews, returns };
+}
+
+/**
+ * Quick find (D-096, Ctrl+K): orders by number, email or the name they ship to; products by name; customers by
+ * email or name; shops by name or town. Five of each, admin only (RLS). The words are stripped of PostgREST's
+ * filter characters before they reach `or()`.
+ */
+export async function adminQuickFind(client: IwcClient, words: string) {
+  const q = words.replace(/[%*,()\\:"']/g, ' ').trim().slice(0, 60);
+  if (q.length < 2) return { orders: [], products: [], customers: [], vendors: [] };
+  const like = `%${q}%`;
+  const [orders, products, customers, vendors] = await Promise.all([
+    client
+      .from('orders')
+      .select('id, order_number, email, status, shipping_address, created_at')
+      .or(`order_number.ilike.${like},email.ilike.${like},shipping_address->>fullName.ilike.${like}`)
+      .order('created_at', { ascending: false })
+      .limit(5),
+    client
+      .from('products')
+      .select('id, name, status, region:regions(name), media:product_media(storage_path, is_primary)')
+      .ilike('name', like)
+      .order('updated_at', { ascending: false })
+      .limit(5),
+    client.from('profiles').select('id, email, full_name').eq('role', 'customer').or(`email.ilike.${like},full_name.ilike.${like}`).limit(5),
+    client.from('vendors').select('id, shop_name, town, region:regions(name)').or(`shop_name.ilike.${like},town.ilike.${like}`).limit(5),
+  ]);
+  return { orders: unwrap(orders), products: unwrap(products), customers: unwrap(customers), vendors: unwrap(vendors) };
+}
+
 // ---------------------------------------------------------------- Insights (real numbers only, no fabricated analytics)
 
 const salesLineSchema = z.object({

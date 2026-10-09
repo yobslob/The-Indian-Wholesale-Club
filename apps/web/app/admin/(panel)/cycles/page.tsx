@@ -4,14 +4,15 @@ import { listCycles } from '@repo/db/admin';
 
 import { createCycleAction } from '@/features/admin/actions/cycles';
 import { requireAdminPage } from '@/features/admin/guard';
-import { button, Cell, Field, input, PageTitle, Table, utc } from '@/features/admin/ui';
+import { deskOrder, ZONES } from '@/features/admin/time';
+import { button, Cell, Field, input, PageTitle, Table, When } from '@/features/admin/ui';
 
 /**
  * Cycles (flows.md §1): one open at a time (INV-5). Each closes at its cutoff and the next opens by itself (D-045,
  * D-063); an admin opens one here only when none is open (the first, or after a pause).
  */
 export default async function CyclesPage(): Promise<React.JSX.Element> {
-  const { client } = await requireAdminPage();
+  const { client, desk } = await requireAdminPage();
   const cycles = await listCycles(client, 30);
   const hasOpen = cycles.some((c) => c.status === 'open');
 
@@ -27,7 +28,7 @@ export default async function CyclesPage(): Promise<React.JSX.Element> {
               </Link>
             </Cell>
             <Cell>{c.status}</Cell>
-            <Cell>{utc(c.cutoff_at)}</Cell>
+            <Cell><When iso={c.cutoff_at} /></Cell>
             <Cell>{c.est_export_on ?? '—'}</Cell>
             <Cell>{c.est_arrival_on}</Cell>
           </tr>
@@ -48,7 +49,7 @@ export default async function CyclesPage(): Promise<React.JSX.Element> {
           <Field label="Code">
             <input name="code" required className={input} placeholder="2026-10-A" />
           </Field>
-          <Field label="Cutoff (UTC)">
+          <Field label={`Cutoff (${ZONES[deskOrder(desk)[0]].place} time)`}>
             <input name="cutoffAt" type="datetime-local" required className={input} />
           </Field>
           <Field label="Estimated export date">

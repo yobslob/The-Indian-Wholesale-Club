@@ -16,7 +16,7 @@ import { cancelOrderAction, refundItemAction } from '@/features/admin/actions/re
 import { requireAdminPage } from '@/features/admin/guard';
 import { OrderMoveForm } from '@/features/admin/order-move-form';
 import { ShipForm } from '@/features/admin/ship-form';
-import { button, Cell, Field, input, PageTitle, Table, utc } from '@/features/admin/ui';
+import { button, Cell, Field, input, PageTitle, Table, When } from '@/features/admin/ui';
 
 type Params = Promise<{ id: string }>;
 
@@ -58,7 +58,7 @@ export default async function AdminOrderPage({
       <PageTitle>Order {order.order_number}</PageTitle>
       <p>
         {order.email} · {order.status} · payment {order.payment_status} · placed{' '}
-        {utc(order.created_at)} · total {formatUsd(order.total_cents)} · {order.shipping_method}{' '}
+        <When iso={order.created_at} inline /> · total {formatUsd(order.total_cents)} · {order.shipping_method}{' '}
         shipping
         {order.refunded_cents > 0 ? ` · refunded ${formatUsd(order.refunded_cents)}` : ''}
       </p>
@@ -194,7 +194,7 @@ export default async function AdminOrderPage({
         <ul className="space-y-1">
           {events.map((e) => (
             <li key={e.id}>
-              {utc(e.created_at)} · {e.kind}
+              <When iso={e.created_at} inline /> · {e.kind}
               {e.visible_to_customer
                 ? ` (customer sees: “${orderEventLabel(e.kind)}”)`
                 : ' (internal)'}

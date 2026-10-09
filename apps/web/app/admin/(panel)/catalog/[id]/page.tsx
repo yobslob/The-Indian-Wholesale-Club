@@ -17,7 +17,7 @@ import {
 } from '@/features/admin/actions/catalog';
 import { requireAdminPage } from '@/features/admin/guard';
 import { ProductPhotos } from '@/features/admin/product-photos';
-import { button, Cell, Field, input, PageTitle, Table, utc } from '@/features/admin/ui';
+import { button, Cell, Field, input, PageTitle, Table, When } from '@/features/admin/ui';
 
 type Params = Promise<{ id: string }>;
 
@@ -45,7 +45,7 @@ export default async function AdminProductPage({
       <PageTitle>{product.name}</PageTitle>
       <p>
         {product.product_type} · status <strong>{product.status}</strong>
-        {product.published_at ? ` · first published ${utc(product.published_at)}` : ''}
+        {product.published_at ? <> · first published <When iso={product.published_at} inline /></> : ''}
         {product.status === 'live' ? (
           <>
             {' '}
@@ -165,7 +165,7 @@ export default async function AdminProductPage({
               <Cell>{v.sku}</Cell>
               <Cell>{v.qty_listed}</Cell>
               <Cell>{v.qty_reserved}</Cell>
-              <Cell>{utc(v.qty_confirmed_at)}</Cell>
+              <Cell><When iso={v.qty_confirmed_at} /></Cell>
               <Cell>
                 <form action={setQtyAction.bind(null, product.id, v.id)} className="flex gap-2">
                   <input

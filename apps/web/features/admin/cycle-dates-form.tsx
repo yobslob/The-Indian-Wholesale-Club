@@ -1,5 +1,6 @@
 import { updateCycleDatesAction } from './actions/cycles';
-import { button, Field, input } from './ui';
+import { isoToZoned, ZONES, deskOrder } from './time';
+import { button, Field, input, myDesk } from './ui';
 
 interface CycleDates {
   id: string;
@@ -10,7 +11,8 @@ interface CycleDates {
 }
 
 /** D-045 / D-063: the dates a cycle opened with by itself are a guess to correct. The cutoff only while open. */
-export function CycleDatesForm({ cycle }: { cycle: CycleDates }): React.JSX.Element | null {
+export async function CycleDatesForm({ cycle }: { cycle: CycleDates }): Promise<React.JSX.Element | null> {
+  const desk = await myDesk();
   if (['arrived', 'fulfilling', 'closed'].includes(cycle.status)) return null;
   const open = cycle.status === 'open';
   return (
@@ -20,12 +22,12 @@ export function CycleDatesForm({ cycle }: { cycle: CycleDates }): React.JSX.Elem
     >
       <h2 className="font-medium sm:col-span-3">Dates</h2>
       {open ? (
-        <Field label="Cutoff (UTC)">
+        <Field label={`Cutoff (${ZONES[deskOrder(desk)[0]].place} time)`}>
           <input
             name="cutoffAt"
             type="datetime-local"
             required
-            defaultValue={cycle.cutoff_at.slice(0, 16)}
+            defaultValue={isoToZoned(cycle.cutoff_at, desk)}
             className={input}
           />
         </Field>

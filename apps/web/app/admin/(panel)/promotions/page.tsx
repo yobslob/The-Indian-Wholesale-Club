@@ -3,7 +3,7 @@ import { formatUsd } from '@repo/shared/domain';
 
 import { createPromoAction, togglePromoAction } from '@/features/admin/actions/settings';
 import { requireAdminPage } from '@/features/admin/guard';
-import { button, Cell, Field, input, PageTitle, Table, utc } from '@/features/admin/ui';
+import { button, Cell, Field, input, PageTitle, Table, When } from '@/features/admin/ui';
 
 /** Promo codes (kept from the old admin). Redemption is limit-checked in SQL. */
 export default async function PromotionsPage(): Promise<React.JSX.Element> {
@@ -26,7 +26,7 @@ export default async function PromotionsPage(): Promise<React.JSX.Element> {
               {p.uses_count}
               {p.max_uses ? ` / ${p.max_uses}` : ''}
             </Cell>
-            <Cell>{utc(p.valid_until)}</Cell>
+            <Cell><When iso={p.valid_until} /></Cell>
             <Cell>{p.is_active ? 'yes' : 'no'}</Cell>
             <Cell>
               <form action={togglePromoAction.bind(null, p.id, !p.is_active)}>

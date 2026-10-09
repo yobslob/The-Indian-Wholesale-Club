@@ -6,7 +6,7 @@ import { formatUsd } from '@repo/shared/domain';
 import { createProductAction } from '@/features/admin/actions/catalog';
 import { requireAdminPage } from '@/features/admin/guard';
 import { listingTabs } from '@/features/admin/listing-tabs';
-import { button, Cell, Field, input, PageTitle, SectionTitle, Table, Tabs, utc } from '@/features/admin/ui';
+import { button, Cell, Field, input, PageTitle, SectionTitle, Table, Tabs, When } from '@/features/admin/ui';
 
 const typeOption =
   'font-ui flex min-h-12 flex-col items-center justify-center rounded-md px-3 text-center text-[15px] text-ink ' +
@@ -182,7 +182,7 @@ export default async function ListingsPage(): Promise<React.JSX.Element> {
                 <Cell>{v.label}</Cell>
                 <Cell>{v.shop_name}</Cell>
                 <Cell>{v.qty_listed}</Cell>
-                <Cell>{v.qty_confirmed_at ? utc(v.qty_confirmed_at) : 'never'}</Cell>
+                <Cell>{v.qty_confirmed_at ? <When iso={v.qty_confirmed_at} /> : 'never'}</Cell>
               </tr>
             ))}
           </Table>

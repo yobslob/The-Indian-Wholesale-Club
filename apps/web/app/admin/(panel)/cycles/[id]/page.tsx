@@ -14,7 +14,7 @@ import { CycleDatesForm } from '@/features/admin/cycle-dates-form';
 import { CycleExportForm } from '@/features/admin/cycle-export-form';
 import { CycleMoves } from '@/features/admin/cycle-moves';
 import { requireAdminPage } from '@/features/admin/guard';
-import { button, PageTitle, rupees, utc } from '@/features/admin/ui';
+import { button, PageTitle, rupees, When } from '@/features/admin/ui';
 
 type Params = Promise<{ id: string }>;
 
@@ -56,7 +56,7 @@ export default async function CyclePage({
     <div className="space-y-6">
       <PageTitle>Cycle {cycle.code}</PageTitle>
       <p>
-        {cycle.status} · cutoff {utc(cycle.cutoff_at)} · est. export {cycle.est_export_on ?? '—'} ·
+        {cycle.status} · cutoff <When iso={cycle.cutoff_at} inline /> · est. export {cycle.est_export_on ?? '—'} ·
         est. arrival {cycle.est_arrival_on}
       </p>
       {cycle.notes ? <p className="text-ink-muted">{cycle.notes}</p> : null}

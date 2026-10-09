@@ -4,7 +4,7 @@ import { updateBusinessDetailsAction, updatePricingSettingsAction, updateSpicesC
 import { EstimateNote } from '@/features/admin/estimate-note';
 import { requireAdminPage } from '@/features/admin/guard';
 import { displayValue, SETTING_GROUPS } from '@/features/admin/settings-fields';
-import { button, Field, input, PageTitle, SectionTitle, utc } from '@/features/admin/ui';
+import { button, Field, input, PageTitle, SectionTitle, When } from '@/features/admin/ui';
 
 /**
  * Settings: every number that prices and delivers an order (D-069: the pilot's high-end placeholders, each labelled
@@ -26,9 +26,9 @@ export default async function SettingsPage(): Promise<React.JSX.Element> {
     <div className="space-y-8">
       <PageTitle>Settings</PageTitle>
       <p className="text-ink-muted max-w-2xl">
-        Last updated {utc(s.updated_at)}. Prices are worked out from these numbers by themselves (D-075). The exchange
+        Last updated <When iso={s.updated_at} inline />. Prices are worked out from these numbers by themselves (D-075). The exchange
         rate updates every day
-        {s.fx_updated_at ? ` (last ${utc(s.fx_updated_at)}${s.fx_source ? `, ${s.fx_source}` : ''})` : ''}.
+        {s.fx_updated_at ? <> (last <When iso={s.fx_updated_at} inline />{s.fx_source ? `, ${s.fx_source}` : ''})</> : ''}.
       </p>
       {estimates.length > 0 ? (
         <p className="text-caution max-w-2xl">

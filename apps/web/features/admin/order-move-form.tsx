@@ -1,5 +1,6 @@
 import { moveOrderAction } from './actions/orders';
-import { button, Field, input, utc } from './ui';
+import { deskTimeLine } from './time';
+import { button, Field, input, myDesk, When } from './ui';
 
 interface CycleOption {
   id: string;
@@ -25,7 +26,7 @@ const ACCEPTING = ['open', 'collecting', 'packed'];
  * flows.md §6b, D-045: put an order in the cycle it really travels with. Earlier: the customer is told nothing until
  * the move is confirmed on the cycle (then the D-064 offer). Later: the window changes and the customer sees it.
  */
-export function OrderMoveForm({
+export async function OrderMoveForm({
   order,
   cycles,
   moves,
@@ -33,7 +34,8 @@ export function OrderMoveForm({
   order: { id: string; status: string; cycle_id: string | null };
   cycles: CycleOption[];
   moves: Move[];
-}): React.JSX.Element {
+}): Promise<React.JSX.Element> {
+  const desk = await myDesk();
   const targets = cycles.filter((c) => ACCEPTING.includes(c.status) && c.id !== order.cycle_id);
   const current = cycles.find((c) => c.id === order.cycle_id);
   return (
@@ -45,7 +47,7 @@ export function OrderMoveForm({
             <select name="toCycleId" required className={input}>
               {targets.map((c) => (
                 <option key={c.id} value={c.id}>
-                  {c.code} ({c.status}, cutoff {utc(c.cutoff_at)})
+                  {c.code} ({c.status}, cutoff {deskTimeLine(c.cutoff_at, desk)})
                 </option>
               ))}
             </select>
@@ -68,7 +70,7 @@ export function OrderMoveForm({
         <ul className="text-ink-muted space-y-1 text-sm">
           {moves.map((m) => (
             <li key={m.id}>
-              {utc(m.moved_at)} · {m.from_cycle?.code} → {m.to_cycle?.code} ({m.earlier ? 'earlier' : 'later'})
+              <When iso={m.moved_at} inline /> · {m.from_cycle?.code} → {m.to_cycle?.code} ({m.earlier ? 'earlier' : 'later'})
               {m.shipped_confirmed_at ? ' · confirmed shipped' : ''}
               {m.offer_status !== 'none' ? ` · offer ${m.offer_status}` : ''}
               {m.note ? ` · ${m.note}` : ''}

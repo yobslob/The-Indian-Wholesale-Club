@@ -5,7 +5,7 @@ import { formatUsd } from '@repo/shared/domain';
 
 import { returnReceivedAction, returnRefundAction, returnRejectAction } from '@/features/admin/actions/after-sales';
 import { requireAdminPage } from '@/features/admin/guard';
-import { button, Cell, Empty, input, PageTitle, Table, Tabs, utc } from '@/features/admin/ui';
+import { button, Cell, Empty, input, PageTitle, Table, Tabs, When } from '@/features/admin/ui';
 
 type SearchParams = Promise<{ status?: string }>;
 
@@ -49,7 +49,7 @@ export default async function ReturnsPage({
         <Table head={['Asked', 'Order', 'Piece', 'Reason', 'Refund', 'Next']}>
           {rows.map((r) => (
             <tr key={r.id}>
-              <Cell>{utc(r.requested_at)}</Cell>
+              <Cell><When iso={r.requested_at} /></Cell>
               <Cell>
                 {r.order ? (
                   <Link href={`/admin/orders/${r.order.id}`} className="underline">
@@ -89,8 +89,8 @@ export default async function ReturnsPage({
                     </button>
                   </form>
                 ) : null}
-                {r.status === 'refunded' ? `Refunded ${utc(r.decided_at)}` : null}
-                {r.status === 'rejected' ? `Rejected ${utc(r.decided_at)}${r.note ? `: ${r.note}` : ''}` : null}
+                {r.status === 'refunded' ? <>Refunded <When iso={r.decided_at} inline /></> : null}
+                {r.status === 'rejected' ? <>Rejected <When iso={r.decided_at} inline />{r.note ? `: ${r.note}` : ''}</> : null}
               </Cell>
             </tr>
           ))}

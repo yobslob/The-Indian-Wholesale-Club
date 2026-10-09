@@ -4,7 +4,7 @@ import { attentionLines, getAttention, getMyDesk, getOpenCycle, getTodaySummary 
 
 import { requireAdminPage } from '@/features/admin/guard';
 import { LiveFeed } from '@/features/admin/live-feed';
-import { PageTitle, SectionTitle, utc } from '@/features/admin/ui';
+import { PageTitle, SectionTitle, When } from '@/features/admin/ui';
 
 /**
  * Today (admin.md): what needs doing now. Every item links to the screen that fixes it. The admin's own desk comes
@@ -55,7 +55,7 @@ export default async function TodayPage(): Promise<React.JSX.Element> {
       <section className="border-line rounded-md border p-4">
         {cycle ? (
           <p>
-            Open cycle <strong>{cycle.code}</strong> · cutoff {utc(cycle.cutoff_at)} · est. arrival{' '}
+            Open cycle <strong>{cycle.code}</strong> · cutoff <When iso={cycle.cutoff_at} inline /> · est. arrival{' '}
             {cycle.est_arrival_on} ·{' '}
             <Link href={`/admin/cycles/${cycle.id}`} className="underline">
               open

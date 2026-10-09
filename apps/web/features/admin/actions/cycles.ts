@@ -18,13 +18,14 @@ import { STORE_TAG } from '@/features/catalog/data';
 
 import { sendEmailsSoon } from '../emails-soon';
 import { requireAdminAction } from '../guard';
+import { zonedToIso } from '../time';
 
 const id = z.string().uuid();
 const isoDate = z.string().regex(/^\d{4}-\d{2}-\d{2}$/);
 
-/** Dates are always entered by an admin (D-026). Cutoff is entered in UTC. */
+/** Dates are always entered by an admin (D-026). The cutoff is typed in the admin's own zone (D-096). */
 export async function createCycleAction(form: FormData): Promise<void> {
-  const { client } = await requireAdminAction();
+  const { client, desk } = await requireAdminAction();
   const input = z
     .object({
       code: z.string().trim().min(2).max(40),
@@ -36,7 +37,7 @@ export async function createCycleAction(form: FormData): Promise<void> {
   await createCycle(client, {
     code: input.code,
     status: 'open',
-    cutoff_at: `${input.cutoffAt}:00Z`,
+    cutoff_at: zonedToIso(input.cutoffAt, desk),
     est_export_on: input.estExportOn || null,
     est_arrival_on: input.estArrivalOn,
   });
@@ -49,7 +50,7 @@ export async function createCycleAction(form: FormData): Promise<void> {
  * were promised (INV-6); a later arrival goes through the delay flow (flows.md §7).
  */
 export async function updateCycleDatesAction(cycleId: string, form: FormData): Promise<void> {
-  const { client } = await requireAdminAction();
+  const { client, desk } = await requireAdminAction();
   const input = z
     .object({
       cutoffAt: z
@@ -61,7 +62,7 @@ export async function updateCycleDatesAction(cycleId: string, form: FormData): P
     })
     .parse(Object.fromEntries(form));
   await updateCycle(client, id.parse(cycleId), {
-    ...(input.cutoffAt ? { cutoff_at: `${input.cutoffAt}:00Z` } : {}),
+    ...(input.cutoffAt ? { cutoff_at: zonedToIso(input.cutoffAt, desk) } : {}),
     est_export_on: input.estExportOn || null,
     est_arrival_on: input.estArrivalOn,
   });

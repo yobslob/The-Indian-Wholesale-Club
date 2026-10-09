@@ -26,6 +26,19 @@
       "port": 3000
     },
     {
+      "name": "web-e2e-admin",
+      "runtimeExecutable": "pnpm",
+      "runtimeArgs": [
+        "--filter",
+        "web",
+        "dev"
+      ],
+      "port": 3000,
+      "env": {
+        "ADMIN_EMAILS": "e2e-admin@iwc.test"
+      }
+    },
+    {
       "name": "app-web",
       "runtimeExecutable": "pnpm",
       "runtimeArgs": [

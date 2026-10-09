@@ -4,7 +4,7 @@ import { listAdminOrders } from '@repo/db/admin';
 import { formatUsd } from '@repo/shared/domain';
 
 import { requireAdminPage } from '@/features/admin/guard';
-import { Cell, Empty, PageTitle, Table, utc } from '@/features/admin/ui';
+import { Cell, Empty, PageTitle, Table, When } from '@/features/admin/ui';
 
 import type { Enum } from '@repo/db';
 
@@ -65,7 +65,7 @@ export default async function AdminOrdersPage({
                   {o.order_number}
                 </Link>
               </Cell>
-              <Cell>{utc(o.created_at)}</Cell>
+              <Cell><When iso={o.created_at} /></Cell>
               <Cell>{o.email}</Cell>
               <Cell>
                 {o.status} / {o.payment_status}
