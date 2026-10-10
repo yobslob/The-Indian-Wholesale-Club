@@ -58,7 +58,7 @@ A third role: a vendor's owner uploads their own pieces; the GPU worker makes th
 phase is small commits, verified by `node scripts/check.mjs` and logged in `current.md`.
 | # | Phase | Size | Builds | Waits on |
 |---|---|---|---|---|
-| **V1** | Database | M | role `vendor`, `vendor_accounts` (the user, its vendor, language, active), `is_vendor()`, sign-in codes for the QR / link, `vendor_*` read functions and `vendor_submit_piece`, `photo_jobs`, `house_models`, `vendor_applications`, the private upload bucket and its rules, INV-8 and its SQL tests | — |
+| **V1** | Database | M | role `vendor`, `vendor_accounts` (the user, its vendor, language, active), `is_vendor()`, sign-in codes for the QR / link, `vendor_*` read functions and `vendor_submit_piece`, `photo_jobs`, `house_models`, `vendor_applications`, the private upload bucket and its rules, INV-10 and its SQL tests | — |
 | **V2** | Vendor web `/vendor` | L | QR / link sign-in, "Join as a vendor?", Home (pictures of what waits), New piece (three guided photos with checks, then details and ₹ price), My pieces, Keep ready, Money; English + Hindi first | V1 |
 | **V3** | Admin | M | vendor accounts with their QR / link, join requests, the review of vendor pieces (photos, AI candidates, pick, price, publish) | V1 |
 | **V4** | Photo worker | M | the Python worker in the repo (models outside it), its limited account, a start-on-boot note in `ops.md`; the 6 – 7 house models made and approved | V1; the founder approves the house models |

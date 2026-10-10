@@ -1045,7 +1045,7 @@ Under D-102, D-101, D-003, D-006 and D-011:
 - **Access is enforced in the database:** `is_vendor()` (role `vendor`, account active, linked to one vendor); every
   vendor read goes through `vendor_*` functions that filter by the caller's vendor and return whitelisted columns; base
   tables stay admin-only. SQL tests prove a vendor cannot read another vendor, a customer, an order's buyer, the
-  customer price or costs (INV-8).
+  customer price or costs (INV-10).
 - **Hidden like the admin:** `/vendor` on the website (`noindex`, never linked from the store), its code loaded only
   there; vendor mode in the app only after the server confirms `is_vendor()`.
 - **Made for shop owners:** one job per screen, big buttons, pictures before words; the three photos one at a time with
