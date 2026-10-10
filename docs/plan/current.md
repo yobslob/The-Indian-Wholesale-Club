@@ -23,7 +23,9 @@ Web admin approved as D-096 (`design/pages/admin/`). The app's admin mode approv
 
 **Product photo pipeline (D-100 founder, D-101 proposed, 2026-10-10):** a spike on the founder's RTX 4060 (log below)
 chose free models for a three-view card (AI model Front / Back, the real close-up); not built yet. Waiting on the founder:
-Q-34 (who takes the photos), the house models' look, and approving D-101.
+the house models' look. **Vendor accounts (D-102, D-103):** a third role
+where a vendor's owner uploads their own pieces; planned as V1 – V6 (`plan/coding-plan.md`), not built yet. Open: Q-35
+(US stores).
 
 **Logo text (D-077, 2026-10-07):** the website header's logo reads "Indian Wholesale Club", its I inside a gold outline of India cut open on the east; the Home hero heading is unchanged except "The" is gone. Titles, emails, footer and the app keep D-009's full name until the founder says otherwise.
 

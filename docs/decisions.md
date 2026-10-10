@@ -98,7 +98,7 @@ Resend (email). Rebuild the domain, schema, data access, tests and docs. Why: th
 Base tables that hold vendor, cost or operations data are admin-only under RLS. Customer surfaces read whitelisted
 columns through `store_*` views/functions. This makes D-003 structural and testable (INV-1 in `data-model.md`).
 
-**D-018 · 2026-09-27 · proposed: Shops never get logins.** Founder/COO enter all shop data.
+**D-018 · 2026-09-27 · proposed: Shops never get logins. · SUPERSEDED by D-102** Founder/COO enter all shop data.
 
 **D-019 · 2026-09-27 · proposed: Claude-drafted content is marked `draft`**
 Region greetings, stories and taglines written by Claude are seeded with `content_status = 'draft'`. They are visible in the admin,
@@ -1005,3 +1005,52 @@ spike on the founder's laptop (RTX 4060 8 GB, 16 GB RAM; numbers in `plan/curren
 - **House models are synthetic**, never a real person's likeness without a signed release.
 Not built yet. Open before it is: the house models' look, locking the model's face across photos, and a folded
 (not draped) saree, which the spike did not test.
+
+**D-102 · 2026-10-10 · founder (was Q-34): Vendors get their own sign-in; the photo pipeline is approved · Supersedes D-018**
+Founder, verbatim: "Let's add another role in this website, now there will be customer, admin and retailer. I have
+attached a reference pipeline, don't take it as the final word. This is just an example, make the final one according
+to yourself. 1. The shop name is never going out to customers. 2. yes pipeline is good just make sure if we can still
+somehow make it productive and efficient, also engaging for the retailer as most of them are not that sharp in
+education and technology. 3. keep the admin uploading part as is(but there is no staff for that purpose) and the
+retailer role will give access to uploadings. 4. we will keep 6-7 models in our assets 5. remove the extra data that we
+downloaded in this process which we'll never need."
+And the founder's choices of 2026-10-10 (asked as options): where vendors work "Both" (a phone web link and the app);
+sign-in "qr/link is the main choice but also provide a very small option of join as a vendor? on main sign in page for
+the us stores trying to partnership with iwc", then "Retailer sign-in page only (Recommended)" for that option and
+"Both" for who may ask to join (shops in India now, US stores as a later decision, Q-35); what a vendor sees "Sold:
+keep it ready", "Money owed / paid (₹)", "The AI model photos" (not the customer price); language "English + each
+region's language". The attached reference (a FastAPI server, a task queue and storage on the laptop) is an example only.
+What it means for the build (design in D-103):
+- **Three roles:** customer, admin, vendor (the founder's "retailer"; glossary). A vendor's owner signs in and uploads
+  their own pieces; the admin's listing flow stays as it is. D-018 is superseded.
+- **The vendor's name never reaches customers** (D-003 unchanged): not in the store, its page source, emails or API
+  replies.
+- **A vendor sees** their own pieces and whether each waits, is live or needs a retake; pieces ordered and to keep
+  ready for collection (the piece and count only, never who bought it); money owed and paid in ₹; the AI model photos of
+  their pieces. Never customers, other vendors, the customer price or IWC's costs.
+- **Where:** a hidden phone web page first, then a vendor mode in the app. **Sign-in:** a one-time QR code or link made
+  by an admin. **"Join as a vendor?"** only on the vendor sign-in page, never on a customer surface.
+- **Languages:** the vendor screens in English and the vendor's region's language.
+- **Photos:** the D-101 pipeline is approved; 6 – 7 house models are kept in our assets.
+*Interpretation (proposed, confirm when V1 starts):* every vendor upload stays a draft until an admin approves it,
+picks the photo and sets the price; translations drafted by Claude are marked draft until someone fluent checks them
+(as D-019); a join request is reviewed by an admin, and the COO meets the shop before it gets a QR code.
+
+**D-103 · 2026-10-10 · Claude, proposed: How vendor accounts and the photo worker are built**
+Under D-102, D-101, D-003, D-006 and D-011:
+- **No server on the laptop.** Supabase stays the only backend: a vendor's phone uploads straight to private storage
+  and saves a draft through database functions; a `photo_jobs` table is the queue. The GPU worker on the founder's
+  laptop signs in as its own limited account, takes jobs when the laptop is on, uploads the candidate photos and marks
+  the job done. Vendors can upload when the laptop is off; nothing on the internet depends on it.
+- **Access is enforced in the database:** `is_vendor()` (role `vendor`, account active, linked to one vendor); every
+  vendor read goes through `vendor_*` functions that filter by the caller's vendor and return whitelisted columns; base
+  tables stay admin-only. SQL tests prove a vendor cannot read another vendor, a customer, an order's buyer, the
+  customer price or costs (INV-8).
+- **Hidden like the admin:** `/vendor` on the website (`noindex`, never linked from the store), its code loaded only
+  there; vendor mode in the app only after the server confirms `is_vendor()`.
+- **Made for shop owners:** one job per screen, big buttons, pictures before words; the three photos one at a time with
+  an outline to follow and an instant "too dark" / "blurry" check; then category, fabric, sizes and pieces, and the shop
+  price in ₹; statuses as pictures (waiting · being made · live · sold · keep ready); the AI photo shown when ready.
+- **Storage kept small:** photos shrink on the phone before upload; candidates not picked are deleted once an admin
+  picks one; the raw front and back are deleted after approval; the close-up is kept (it is published, D-100).
+Phases V1 – V6 in `plan/coding-plan.md` §Vendor accounts.

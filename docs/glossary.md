@@ -11,6 +11,9 @@ confusion. If you need a concept that isn't here, add it (and a decision if it's
 | **product type** | `clothing` or `spice`. Decides which attributes and options apply | `product_type` | "Clothing", "Spices" | kind |
 | **category** | a browse group inside a type (Sarees, Kurtas, Masalas…) | `categories` | category name | collection |
 | **vendor** | a shop in India that supplies pieces. **Admin only** (D-003) | `vendors`, `vendor_id` | never shown | supplier, seller, merchant, shop (in code) |
+| **vendor account** | the sign-in of a vendor's owner (D-102): uploads their own pieces, sees only their own | `profiles.role = 'vendor'`, `vendor_accounts`, `is_vendor()`, `vendor_*` functions, `/vendor` | never shown (vendor copy: "your shop") | retailer, partner, seller account |
+| **house model** | one of IWC's 6 – 7 synthetic models who wear the pieces in AI photos (D-101, D-102) | `house_models` | never named | mannequin, avatar |
+| **photo job** | one queued run of the photo pipeline for one product view (D-103) | `photo_jobs` | never shown | task |
 | **cycle** | one round: take orders → cutoff → collect from vendors → export → arrive in the US → deliver. One export every 20–23 days (D-005). **Admin only** | `cycles`, `cycle_id` | never shown. Customers only see dates | batch, shipment |
 | **cutoff** | the last moment an order joins the current cycle | `cycles.cutoff_at` | "Order by <date>" (D-035) | deadline |
 | **export** | the physical India → US consignment of a cycle (AWB, customs) | fields on `cycles` | never shown | shipment (reserved for the US parcel) |

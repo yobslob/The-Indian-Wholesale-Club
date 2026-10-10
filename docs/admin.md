@@ -1,7 +1,8 @@
 # Admin: hidden web panel + app admin mode
 
 Users: founder (US desk) and COO (India desk), both `role = 'admin'` with the same access (D-007, D-027).
-Shops never get logins. The founder and COO enter all shop data (D-018).
+Vendors' owners get their own sign-in to upload their pieces (D-102, superseded D-018; **not built yet**, V1 – V6 in
+`plan/coding-plan.md`); the admin's own listing flow stays as it is, and every vendor upload waits for an admin (D-102).
 
 ## Access model (D-006)
 **Web**

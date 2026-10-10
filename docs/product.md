@@ -54,6 +54,7 @@ Retail to consumers. "Wholesale Club" is only the name, with no B2B or membershi
 | Mobile app (iOS/Android) | everyone | the same app; admin mode unlocks after an admin signs in |
 | Web admin `/admin` | founder, COO | hidden, loaded only after admin sign-in (`admin.md`) |
 | App admin mode | founder, COO | field jobs: listing with camera, pickups, payouts, US packing |
+| Vendor web `/vendor` + app vendor mode | a vendor's owner | upload their own pieces, see only their own (D-102, D-103). **Not built yet** |
 
 ## Not decided yet (see `questions.md`)
 US carrier (Q-3) · returns policy (Q-5) · domain, support email and hosting (Q-9) · spices compliance owner (Q-10).
