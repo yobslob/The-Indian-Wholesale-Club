@@ -148,6 +148,20 @@ The first cycle runs as a demo on the placeholder catalogue of five states, then
    product with its photos and reviews, every order containing one, the placeholder shops, the demo reviewers, the demo
    state photos; demo mode off. Then switch Vercel and the app back to the **live** Stripe keys and webhook secret.
 
+## Photo worker (D-101, D-103; the founder runs every step on production)
+The AI product photos are made on the founder's laptop by `tools/photo-worker` (its README has setup and running).
+For production, once:
+1. Supabase dashboard (production) → Authentication → Add user: an email of your choice (e.g. a `+worker` alias)
+   and a long password, "Auto confirm". Then SQL editor: `update public.profiles set role = 'worker' where email =
+   '<that email>';`. The account can only take photo jobs and use the two photo buckets (`data-model.md`).
+2. `tools/photo-worker/.env` (you write it, never committed): `IWC_SUPABASE_URL` and `IWC_SUPABASE_ANON_KEY` (the
+   production project's public URL and anon key, as in the app), `IWC_WORKER_EMAIL`, `IWC_WORKER_PASSWORD`.
+3. The chosen house models (6 – 7, D-102) uploaded to `product-media/house-models/<slug>/front.jpg` and `back.jpg` with
+   a `house_models` row each (the admin screen comes with V3).
+4. Start it with Windows (README, Task Scheduler). When the laptop is off, pieces wait in the queue; nothing breaks.
+Locally, `pnpm dev:photo-e2e <front> <back> <close-up> --house=<front>,<back>` makes the worker account, signs in as a
+vendor, uploads a piece through the vendor's storage rules and queues its jobs.
+
 ## Git
 GitHub `yobslob/The-Indian_Wholesale-Club`, branch `main` (D-014). Claude commits in `C:\kod\root` and the founder pushes.
 Baseline tag `pre-restructure` = the whole pre-IWC codebase (stealth layer included, for reference only).

@@ -20,7 +20,7 @@ create table public.vendor_submissions (
   created_by uuid references public.profiles (id) on delete set null,
   product_type public.product_type not null default 'clothing',
   category_id uuid,
-  -- the vendor's own words: fabric, care, colour, note (only these keys, set by vendor_submit)
+  -- the vendor's own words: fabric, care, colour, note, and who wears it (women / men / kids / unisex); set by vendor_submit
   details jsonb not null default '{}'::jsonb check (jsonb_typeof(details) = 'object'),
   variants jsonb not null default '[]'::jsonb check (jsonb_typeof(variants) = 'array'),   -- [{label, qty}]
   shop_price_paise integer check (shop_price_paise > 0),
@@ -130,7 +130,7 @@ begin
 end $$;
 
 -- Sends a piece: details checked, then the AI photo jobs are queued (clothing) or it waits for an admin (spices).
--- p_details: {category_id, fabric, care, colour, note, shop_price_paise, variants: [{label, qty}]}
+-- p_details: {category_id, wears, fabric, care, colour, note, shop_price_paise, variants: [{label, qty}]}
 create function public.vendor_submit(p_submission uuid, p_details jsonb)
 returns void
 language plpgsql volatile security definer set search_path = public, pg_temp as $$
@@ -176,6 +176,9 @@ begin
      or (p_details ->> 'shop_price_paise')::numeric not between 1 and 2147483647 then
     raise exception 'price_needed' using errcode = 'P0001';
   end if;
+  if coalesce(p_details ->> 'wears', '') not in ('women', 'men', 'kids', 'unisex') then
+    raise exception 'wears_needed' using errcode = 'P0001';
+  end if;
   foreach v_text in array array['fabric', 'care', 'colour', 'note'] loop
     if length(coalesce(p_details ->> v_text, '')) > 500 then
       raise exception 'text_too_long' using errcode = 'P0001';
@@ -185,7 +188,7 @@ begin
   update public.vendor_submissions
      set category_id = nullif(p_details ->> 'category_id', '')::uuid,
          details = jsonb_strip_nulls(jsonb_build_object(
-           'fabric', nullif(btrim(p_details ->> 'fabric'), ''), 'care', nullif(btrim(p_details ->> 'care'), ''),
+           'wears', p_details ->> 'wears', 'fabric', nullif(btrim(p_details ->> 'fabric'), ''), 'care', nullif(btrim(p_details ->> 'care'), ''),
            'colour', nullif(btrim(p_details ->> 'colour'), ''), 'note', nullif(btrim(p_details ->> 'note'), ''))),
          variants = (select jsonb_agg(jsonb_build_object('label', btrim(e ->> 'label'), 'qty', (e ->> 'qty')::integer))
                      from jsonb_array_elements(v_variants) e),

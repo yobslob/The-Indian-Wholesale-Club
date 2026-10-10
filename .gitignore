@@ -77,3 +77,8 @@ catalogue/photos/
 
 # Supabase Studio saved queries (local, may hold secrets)
 supabase/snippets/
+
+# The photo worker (tools/photo-worker): its Python environment and caches; the models live outside the repo
+tools/photo-worker/.venv/
+__pycache__/
+tools/photo-worker/worker.log*

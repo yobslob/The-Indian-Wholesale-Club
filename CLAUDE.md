@@ -65,7 +65,7 @@ This file is the only one to read at the start of every session. Everything else
 `apps/web` Next.js storefront (`app/(store)`) + hidden admin (`app/admin`), code by feature in `features/` · `apps/app` Expo app (customer tabs + admin mode after `is_admin()`, code by feature in `features/`; checkout via the web's API) ·
 `packages/shared` pure domain logic (`src/domain`) · `packages/db` typed DB access (`store`/`account`/`admin`/`server`) ·
 `packages/tokens` design tokens · `packages/*-config` tooling presets · `supabase/` migrations + seed + SQL tests ·
-`scripts/` dev scripts (`check.mjs` = verification) · `docs/` everything above · `.claude/` Claude Code settings + project skills.
+`scripts/` dev scripts (`check.mjs` = verification) · `tools/photo-worker` the Python GPU worker for AI product photos (models outside the repo) · `docs/` everything above · `.claude/` Claude Code settings + project skills.
 The layout (web and app) is in `docs/engineering.md` §Layout.
 
 ## How work and verification run

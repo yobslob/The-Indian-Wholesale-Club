@@ -140,14 +140,17 @@ begin
   return (
     select jsonb_build_object(
       'job_id', v_job.id, 'view', v_job.view, 'submission_id', s.id, 'product_type', s.product_type,
-      'category', c.slug, 'colour', s.details ->> 'colour', 'fabric', s.details ->> 'fabric',
+      'category', c.slug, 'wears', s.details ->> 'wears', 'colour', s.details ->> 'colour',
+      'fabric', s.details ->> 'fabric',
       'photos', (select jsonb_object_agg(ph.view, ph.storage_path)
                  from public.vendor_submission_photos ph where ph.submission_id = s.id),
       'house_model', (select jsonb_build_object('slug', h.slug, 'wears', h.wears, 'front_path', h.front_path,
                                                 'back_path', h.back_path)
                       from public.house_models h
+                      -- the admin's choice, else the first active model who wears what the piece is for
                       where h.id = coalesce(v_job.house_model_id,
-                                            (select h2.id from public.house_models h2 where h2.is_active
+                                            (select h2.id from public.house_models h2
+                                              where h2.is_active and h2.wears = coalesce(nullif(s.details ->> 'wears', 'unisex'), 'women')
                                               order by h2.sort_order, h2.slug limit 1))))
     from public.vendor_submissions s
     left join public.categories c on c.id = s.category_id

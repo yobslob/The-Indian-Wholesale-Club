@@ -15,6 +15,7 @@
     "format:check": "prettier --check \"**/*.{ts,tsx,js,jsx,json,md,css}\"",
     "prepare": "husky",
     "dev:admin": "node scripts/dev-admin.mjs",
+    "dev:photo-e2e": "node scripts/dev-photo-e2e.mjs",
     "dev:photos": "node scripts/dev-photos.mjs",
     "demo:photos": "node scripts/demo-photos.mjs",
     "demo:load": "node scripts/demo.mjs load",

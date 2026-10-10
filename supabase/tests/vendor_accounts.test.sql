@@ -81,12 +81,18 @@ select tests.assert_fails(format('select public.vendor_submit(%L, %L)', tests.id
   jsonb_build_object('category_id', tests.id('cat_clothing'),
                      'variants', jsonb_build_array(jsonb_build_object('label', 'M', 'qty', 2)))),
   'price_needed', 'the shop price is needed');
+select tests.assert_fails(format('select public.vendor_submit(%L, %L)', tests.id('sub_a'),
+  jsonb_build_object('category_id', tests.id('cat_clothing'), 'shop_price_paise', 120000, 'wears', 'everyone',
+                     'variants', jsonb_build_array(jsonb_build_object('label', 'M', 'qty', 2)))),
+  'wears_needed', 'who wears it is one of women, men, kids, unisex');
 select public.vendor_submit(tests.id('sub_a'), jsonb_build_object(
-  'category_id', tests.id('cat_clothing'), 'shop_price_paise', 120000, 'fabric', 'Cotton', 'secret', 'dropped',
+  'category_id', tests.id('cat_clothing'), 'wears', 'women', 'shop_price_paise', 120000, 'fabric', 'Cotton',
+  'secret', 'dropped',
   'variants', jsonb_build_array(jsonb_build_object('label', 'M', 'qty', 2), jsonb_build_object('label', 'L', 'qty', 1))));
 select tests.assert((public.vendor_submission(tests.id('sub_a')) ->> 'status') = 'waiting',
   'a sent clothing piece waits for its AI photos');
-select tests.assert(not (public.vendor_submission(tests.id('sub_a')) -> 'details') ? 'secret',
+select tests.assert(not (public.vendor_submission(tests.id('sub_a')) -> 'details') ? 'secret'
+  and (public.vendor_submission(tests.id('sub_a')) -> 'details' ->> 'wears') = 'women',
   'only the known detail keys are kept');
 select tests.assert(not public.vendor_may_upload(tests.id('vendor') || '/' || tests.id('sub_a') || '/front2.jpg'),
   'no uploads into a sent submission');

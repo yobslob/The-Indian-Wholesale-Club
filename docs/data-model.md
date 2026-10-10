@@ -42,7 +42,7 @@ operations data are never queried from customer code.
 | | `cycles` | code, status, `cutoff_at`, est. export/arrival, actual dates, AWB, forwarder, freight, duty, FX | admin |
 | | `pickups` | one per ordered piece: vendor, cycle, variant, qty, shop price, status, who/when, photo, payout | admin |
 | | `vendor_payouts` | INR paid to a vendor. The amount is computed from the pickups it covers | admin |
-| | `vendor_submissions` | a piece a vendor sent: category, details in their words, sizes, shop price in ₹, status (adding → waiting → photos_ready → approved, or needs_retake / declined), the product it became | vendor via `vendor_*` / admin |
+| | `vendor_submissions` | a piece a vendor sent: category, who wears it (women / men / kids / unisex: picks the house model; kids are never shown on a model), details in their words, sizes, shop price in ₹, status (adding → waiting → photos_ready → approved, or needs_retake / declined), the product it became | vendor via `vendor_*` / admin |
 | | `vendor_submission_photos` | front, back, close-up in bucket `vendor-uploads` (`<vendor>/<submission>/<file>`) with the phone's checks | vendor via functions / admin |
 | | `house_models` | IWC's synthetic models (D-101): wears women / men, front and back photos in `product-media/house-models/` | admin |
 | | `photo_jobs` | the GPU worker's queue: one per view of a clothing piece, candidates in bucket `photo-candidates` | worker via functions / admin |
