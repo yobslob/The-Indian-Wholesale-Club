@@ -31,12 +31,12 @@ export async function middleware(request: NextRequest): Promise<NextResponse> {
   // local JWT check; with the legacy shared secret it falls back to one Auth call.
   await supabase.auth.getClaims();
 
-  if (request.nextUrl.pathname.startsWith('/admin')) {
+  if (request.nextUrl.pathname.startsWith('/admin') || request.nextUrl.pathname.startsWith('/vendor')) {
     response.headers.set('X-Robots-Tag', 'noindex, nofollow');
   }
   return response;
 }
 
 export const config = {
-  matcher: ['/admin/:path*', '/account/:path*', '/checkout/:path*', '/orders/:path*'],
+  matcher: ['/admin/:path*', '/vendor/:path*', '/account/:path*', '/checkout/:path*', '/orders/:path*'],
 };

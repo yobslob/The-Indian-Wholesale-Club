@@ -23,6 +23,7 @@ function groups(c: WaitingCounts): [string, Item[]][] {
         { href: '/admin/orders', label: 'Orders', count: c.ordersToShip, hint: 'Arrived · to ship' },
         { href: '/admin/cycles', label: 'Cycle', count: c.pickupsToDo, hint: 'Pickups to do' },
         { href: '/admin/listings', label: 'Listings', count: c.drafts, hint: 'Drafts' },
+        { href: '/admin/vendor-pieces', label: 'Vendor pieces', count: c.vendorPieces, hint: 'Photos ready to pick' },
         { href: '/admin/payouts', label: 'Payouts', count: c.shopsOwed, hint: 'Shops owed' },
       ],
     ],
@@ -31,6 +32,7 @@ function groups(c: WaitingCounts): [string, Item[]][] {
       [
         { href: '/admin/catalog', label: 'Products' },
         { href: '/admin/regions', label: 'Regions' },
+        { href: '/admin/house-models', label: 'House models' },
         { href: '/admin/reviews', label: 'Reviews', count: c.reviews, hint: 'To approve', soft: true },
         { href: '/admin/promotions', label: 'Promotions' },
       ],
@@ -39,7 +41,7 @@ function groups(c: WaitingCounts): [string, Item[]][] {
       'People',
       [
         { href: '/admin/customers', label: 'Customers' },
-        { href: '/admin/vendors', label: 'Vendors' },
+        { href: '/admin/vendors', label: 'Vendors', count: c.joinRequests, hint: 'Join requests', soft: true },
         { href: '/admin/returns', label: 'Returns', count: c.returns, hint: 'Requested', soft: true },
       ],
     ],

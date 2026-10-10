@@ -504,14 +504,14 @@ isOneToOne: false
                   ]
                 },"product_media": {
                   Row: {
-                    "alt_text": string,"created_at": string,"credit": string | null,"id": string,"is_primary": boolean,"product_id": string,"sort_order": number,"storage_path": string,"variant_id": string | null
+                    "alt_text": string,"created_at": string,"credit": string | null,"id": string,"is_ai": boolean,"is_primary": boolean,"product_id": string,"sort_order": number,"storage_path": string,"variant_id": string | null
                   }
                   ComputedFields: never
                   Insert: {
-                    "alt_text"?: string,"created_at"?: string,"credit"?: string | null,"id"?: string,"is_primary"?: boolean,"product_id": string,"sort_order"?: number,"storage_path": string,"variant_id"?: string | null
+                    "alt_text"?: string,"created_at"?: string,"credit"?: string | null,"id"?: string,"is_ai"?: boolean,"is_primary"?: boolean,"product_id": string,"sort_order"?: number,"storage_path": string,"variant_id"?: string | null
                   }
                   Update: {
-                    "alt_text"?: string,"created_at"?: string,"credit"?: string | null,"id"?: string,"is_primary"?: boolean,"product_id"?: string,"sort_order"?: number,"storage_path"?: string,"variant_id"?: string | null
+                    "alt_text"?: string,"created_at"?: string,"credit"?: string | null,"id"?: string,"is_ai"?: boolean,"is_primary"?: boolean,"product_id"?: string,"sort_order"?: number,"storage_path"?: string,"variant_id"?: string | null
                   }
                   Relationships: [
                     {
@@ -1199,7 +1199,7 @@ isOneToOne: false
                   ]
                 },"store_media": {
                   Row: {
-                    "alt_text": string | null,"credit": string | null,"id": string | null,"is_primary": boolean | null,"product_id": string | null,"sort_order": number | null,"storage_path": string | null,"variant_id": string | null
+                    "alt_text": string | null,"credit": string | null,"id": string | null,"is_ai": boolean | null,"is_primary": boolean | null,"product_id": string | null,"sort_order": number | null,"storage_path": string | null,"variant_id": string | null
                   }
                   ComputedFields: never
                   Relationships: [

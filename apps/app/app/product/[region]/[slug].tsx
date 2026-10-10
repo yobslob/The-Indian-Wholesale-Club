@@ -13,7 +13,7 @@ import { BuyBar, type BuyBarState } from '@/features/catalog/buy-bar';
 import { CuratedCard } from '@/features/catalog/curated-card';
 import { DeliveryNote } from '@/features/catalog/delivery-note';
 import { Disclosure } from '@/features/catalog/disclosure';
-import { Details, hasDetails, sizeRows } from '@/features/catalog/product-details';
+import { Details, sizeRows } from '@/features/catalog/product-details';
 import { ProductGallery } from '@/features/catalog/product-gallery';
 import { ProductRow } from '@/features/catalog/product-row';
 import { ReviewsSection } from '@/features/reviews/reviews-section';
@@ -114,11 +114,9 @@ export default function ProductScreen(): React.JSX.Element {
               <Body muted>Not available right now.</Body>
             )}
             <View>
-              {hasDetails(data.product) ? (
-                <Disclosure title="Details" defaultOpen>
-                  <Details product={data.product} />
-                </Disclosure>
-              ) : null}
+              <Disclosure title="Details" defaultOpen>
+                <Details product={data.product} media={data.media} />
+              </Disclosure>
               {sizes.length > 0 ? (
                 <Disclosure title="Size chart">
                   {sizes.map(([size, length]) => (

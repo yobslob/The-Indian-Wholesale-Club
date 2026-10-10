@@ -33,9 +33,9 @@ export const productTag = (regionSlug: string, productSlug: string): string =>
 /**
  * Part of every cache key. Bump it whenever a store_* result changes shape (a migration adds a field): cached
  * entries outlive deployments (Vercel's data cache, .next/cache locally), and an old entry would reach a page
- * that expects the new field. Last change: photo credits and demo reviews (migration 29).
+ * that expects the new field. Last change: the AI-photo flag on product photos (migration 35, D-100).
  */
-const SHAPE = 'v13';
+const SHAPE = 'v14';
 
 const cached = <T>(key: string[], tags: string[], load: () => Promise<T>): Promise<T> =>
   unstable_cache(load, [...key, SHAPE], { tags: [STORE_TAG, ...tags], revalidate: STORE_REVALIDATE_SECONDS })();

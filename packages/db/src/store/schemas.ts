@@ -95,6 +95,8 @@ export const mediaSchema = z.object({
   is_primary: z.boolean(),
   /** The attribution a free-licence photo needs (demo round, D-078); shown under the photo. */
   credit: z.string().nullable().default(null),
+  /** An AI-generated model photo (D-100, D-101); the product's Details say so. */
+  is_ai: z.boolean().default(false),
 });
 
 export const homeSchema = z.object({

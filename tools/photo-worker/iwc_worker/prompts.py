@@ -23,6 +23,8 @@ STYLE = {
     "lehengas": "with its blouse and dupatta as shown in image 2",
     "shawls": "draped over the shoulders",
     "dupattas-and-stoles": "draped over the shoulders, over a plain matching outfit",
+    "kurtas": "worn over plain slim trousers in a matching colour if image 2 shows no trousers or bottoms",
+    "shirts-and-tops": "worn with plain trousers in a matching neutral colour if image 2 shows no bottoms",
 }
 
 

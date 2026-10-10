@@ -13,3 +13,4 @@ export * from './us-states';
 export * from './variant-options';
 export * from './tracking';
 export * from './phone';
+export * from './product-details';

@@ -37,7 +37,7 @@ operations data are never queried from customer code.
 | | `products` | region, category, `product_type`, name, slug, summary, description, story, craft, `attributes` (customer-safe JSON), `price_cents`, `status`, search vector; `vendor_id`*, `shop_price_paise`*, `origin_town`*, `has_origin_label`*, `is_placeholder`*. **Spices cannot be `live`** (CHECK, D-032) | store (live only) / admin |
 | | `product_variants` | `options` JSON, SKU*, label, price override, `weight_g`*, `qty_listed`*, `qty_reserved`*, `qty_confirmed_at`* | store (`available` only) / admin |
 | | `variant_availability` | public mirror `variant_id → available`, trigger-maintained, in the Realtime publication (live "only 2 left", D-010) | store (visible products) |
-| | `product_media` | Storage paths (bucket `product-media`), alt text, one primary per product | store / admin |
+| | `product_media` | Storage paths (bucket `product-media`), alt text, one primary per product, `is_ai` (an AI-generated model photo, D-100: the product's Details say so) | store / admin |
 | Supply | `vendors` | shop + owner, phone/WhatsApp, address, town, region, payment method + reference (D-029), licences, status, notes, photo | admin |
 | | `cycles` | code, status, `cutoff_at`, est. export/arrival, actual dates, AWB, forwarder, freight, duty, FX | admin |
 | | `pickups` | one per ordered piece: vendor, cycle, variant, qty, shop price, status, who/when, photo, payout | admin |

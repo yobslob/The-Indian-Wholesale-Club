@@ -41,7 +41,7 @@ writes refresh the website's store pages at once (`POST /admin/revalidate`, B-17
 | Section | Job | Main desk | Web | App |
 |---|---|---|---|---|
 | **Today** | what needs doing now: pickups due, stale listings, payouts due / exports to receive, orders to ship, delay warnings | both | ✓ | ✓ |
-| **Vendors** | onboard a shop in about a minute (name, owner, phone/WhatsApp, region, payment method, licences, photo), history | India | ✓ | ✓ |
+| **Vendors** | onboard a shop in about a minute (name, owner, phone/WhatsApp, region, payment method, licences, photo), history; its vendor accounts with the one-time QR / link, the screens' language, switch off (D-102); "Join as a vendor?" requests | India | ✓ | ✓ |
 | **Listings** | add products with the camera (`flows.md` §2), confirm quantities, drafts → live | India | ✓ (incl. the re-check list) | ✓ (new listing with the camera, publish, confirm qty; 50 with "Show more", D-067) |
 | **Cycles** | current cycle timeline and dates, cutoff, per-shop pickup checklists, packing list + commercial invoice export, export/arrival | both | ✓ (closes and opens by itself, D-045; dates corrected on the cycle; orders moved in, confirmed as shipped (D-064); export details; arrival check-off; packing list + commercial invoice (print/PDF and CSV; Q-30 fields marked)) | ✓ (pickups, cutoff, next step, arrival check-off) |
 | **Payouts** | payable per vendor, record payouts | India | ✓ | ✓ |
@@ -52,6 +52,8 @@ writes refresh the website's store pages at once (`POST /admin/revalidate`, B-17
 | **Customers** | customer list, orders per customer | US | ✓ | — |
 | **Promotions** | promo codes (kept from the old admin) | US | ✓ | — |
 | **Insights** | sales by state, category and shop (with what the shops were paid), for 30 days, 90 days or all time; searches that found nothing (what to list next), top searches, most saved pieces. Real numbers only, computed in SQL (`admin_sales`, `admin_demand`) | both | ✓ | — |
+| **Vendor pieces** | pieces vendors sent (D-102, D-103): their real photos, the AI candidates per pose, pick, name, care, price (empty = from the shop price), publish; or make a pose again on another model, ask for new photos, decline (`vendor.md`) | both | ✓ | — |
+| **House models** | the founder's models (D-104): front and back pose each, switch on / off | both | ✓ | — |
 | **Settings** | pricing settings, each estimate labelled with its source and date until the founder saves their own (D-047) (admins are managed in the DB + `ADMIN_EMAILS`, `ops.md`) | both | ✓ | — |
 
 The order page refunds unavailable pieces and cancels orders before cutoff, with the amounts from the D-042 rules shown on

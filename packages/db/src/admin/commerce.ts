@@ -115,19 +115,25 @@ export interface WaitingCounts {
   shopsOwed: number;
   reviews: number;
   returns: number;
+  /** Vendor pieces whose AI photos are made: an admin picks and publishes (D-103). */
+  vendorPieces: number;
+  /** "Join as a vendor?" requests not yet answered (D-102). */
+  joinRequests: number;
 }
 
 export async function getWaitingCounts(client: IwcClient): Promise<WaitingCounts> {
   const head = { count: 'exact', head: true } as const;
-  const [ordersToShip, pickupsToDo, drafts, owed, reviews, returns] = await Promise.all([
+  const [ordersToShip, pickupsToDo, drafts, owed, reviews, returns, vendorPieces, joinRequests] = await Promise.all([
     countRows(client.from('orders').select('id', head).eq('status', 'arrived')),
     countRows(client.from('pickups').select('id', head).eq('status', 'pending')),
     countRows(client.from('products').select('id', head).eq('status', 'draft')),
     getOrderCounts(client),
     countRows(client.from('reviews').select('id', head).eq('status', 'pending')),
     countRows(client.from('returns').select('id', head).eq('status', 'requested')),
+    countRows(client.from('vendor_submissions').select('id', head).eq('status', 'photos_ready')),
+    countRows(client.from('vendor_applications').select('id', head).eq('status', 'new')),
   ]);
-  return { ordersToShip, pickupsToDo, drafts, shopsOwed: owed.shopsOwed, reviews, returns };
+  return { ordersToShip, pickupsToDo, drafts, shopsOwed: owed.shopsOwed, reviews, returns, vendorPieces, joinRequests };
 }
 
 /**

@@ -7,7 +7,7 @@ import { CuratedCard } from '@/features/catalog/curated-card';
 import { getProductPageCached } from '@/features/catalog/data';
 import { DeliveryNote } from '@/features/catalog/delivery-note';
 import { Disclosure } from '@/features/catalog/disclosure';
-import { hasDetails, ProductDetails, sizeChart } from '@/features/catalog/product-details';
+import { photoNote, ProductDetails, sizeChart } from '@/features/catalog/product-details';
 import { ProductGallery } from '@/features/catalog/product-gallery';
 import { ProductRow } from '@/features/catalog/product-row';
 import { ReviewsSection } from '@/features/reviews/reviews-section';
@@ -61,11 +61,9 @@ export default async function ProductPage({ params }: { params: Params }): Promi
             <p className="text-ink-muted text-sm">Not available right now.</p>
           )}
           <div className="mt-6">
-            {hasDetails(product) ? (
-              <Disclosure title="Details" defaultOpen>
-                <ProductDetails product={product} />
-              </Disclosure>
-            ) : null}
+            <Disclosure title="Details" defaultOpen>
+              <ProductDetails product={product} photos={photoNote(media)} />
+            </Disclosure>
             {chart ? <Disclosure title="Size chart">{chart}</Disclosure> : null}
           </div>
           <p className="border-line font-display mt-4 border-t pt-4 text-[17px]">

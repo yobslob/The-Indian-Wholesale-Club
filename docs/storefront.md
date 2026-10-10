@@ -58,9 +58,11 @@ Framer Motion page transitions (speed, `engineering.md`).
 ## The product page
 Gallery → name, price → variant picker → availability (live) → **delivery window** → add to cart → details: description,
 craft, attributes, care or storage → origin line: "Made in India · from <Region> · Imported".
-**D-100 (not built yet):** clothing photos are Front, Back (worn by an AI-generated model, D-101) and the Material
-close-up, which is always the original photo; Details (above the Size chart) then say how to wash it, that the model
-photos are AI-generated, and where the cloth comes from.
+**D-100 (built):** clothing photos are Front, Back (worn by an AI-generated model, D-101) and the Material
+close-up, which is always the original photo; Details (above the Size chart) say how to wash it (Care), where it is
+from (Made in: India, from <Region>) and, when a photo is AI-generated, that the model photos are; one builder for the
+website and the app (`@repo/shared/domain` `detailRows`). The wording is Claude's draft (D-012) until the founder
+approves it.
 **D-082 (built in B2):** tablets (768 – 1099 px) two columns (photos left, the small ones in a row under the big one);
 any photo opens a full-size viewer over the page (swipe, arrows, arrow keys, Escape); on phones a buy bar slides up
 once Add to bag has scrolled away above the screen, and the review cards are a sideways row.

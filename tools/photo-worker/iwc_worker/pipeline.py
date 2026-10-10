@@ -105,37 +105,44 @@ class Pipeline:
                      generator=torch.Generator("cuda").manual_seed(seed)).images[0] for seed in seeds]
 
     def colour_match(self, gen: Image.Image, house: Image.Image, real_pixels: np.ndarray) -> Image.Image:
-        """Pulls the garment's main colour back to the real photo's (the model drifts, e.g. reddish-brown to plum).
-        The garment = the person on the output minus skin (its colour taken from the house model) and dark hair; only
-        pixels near the garment's main colour move, so faces, skin, the wall and secondary print colours stay."""
+        """Pulls the garment's colours back to the real photo's (the model drifts: reddish-brown to plum, black to navy).
+        The garment = the person on the output minus skin (its colour from the house model), the head and the feet.
+        Up to two main colours are matched (a cream saree and its black blouse), each shift capped; faces, skin, the
+        wall and small print details keep their own colours."""
         lab = lambda im: cv2.cvtColor(np.array(im.convert("RGB")), cv2.COLOR_RGB2LAB).astype(np.float32)
         g = lab(gen)
-        h = lab(house)
-        house_person = self.mask(house) > 0.5
-        hp = h[house_person]
-        # skin: the house model's person pixels that are neither the white clothes (bright, grey) nor hair (dark)
+        hp = lab(house)[self.mask(house) > 0.5]
         chroma = np.linalg.norm(hp[:, 1:] - 128, axis=1)
         skin = hp[(hp[:, 0] > 60) & (hp[:, 0] < 235) & (chroma > 8)]
         if len(skin) < 500 or len(real_pixels) < 500:
             return gen
-        skin_ref = np.median(skin, axis=0)
         person = self.mask(gen) > 0.5
-        garment = person & (np.linalg.norm(g - skin_ref, axis=2) > 18) & (g[..., 0] > 45)
-        garment = cv2.morphologyEx(garment.astype(np.uint8), cv2.MORPH_OPEN, np.ones((5, 5), np.uint8))
+        ys = np.where(person.any(axis=1))[0]
+        if len(ys) == 0:
+            return gen
+        top, bottom = ys.min(), ys.max()
+        garment = person & (np.linalg.norm(g - np.median(skin, axis=0), axis=2) > 18)
+        garment[: top + int(0.13 * (bottom - top))] = False          # head and hair
+        garment[bottom - int(0.05 * (bottom - top)):] = False        # feet and footwear
+        garment = cv2.morphologyEx(garment.astype(np.uint8), cv2.MORPH_OPEN, np.ones((5, 5), np.uint8)) > 0
         if garment.sum() < 0.03 * garment.size:
             return gen
         real = cv2.cvtColor(real_pixels.reshape(-1, 1, 3).astype(np.uint8), cv2.COLOR_RGB2LAB).reshape(-1, 3)
-        real = real.astype(np.float32)
-        real_main = np.median(real, axis=0)
-        real_main = real[np.linalg.norm(real - real_main, axis=1) < 30].mean(axis=0)
-        gen_px = g[garment > 0]
-        gen_main = np.median(gen_px, axis=0)
-        near = gen_px[np.linalg.norm(gen_px - gen_main, axis=1) < 30]
-        if len(near) < 500:
+        pairs = _paired_colours(real.astype(np.float32), g[garment])
+        if not pairs:
             return gen
-        shift = real_main - near.mean(axis=0)
-        weight = np.clip(1 - np.linalg.norm(g - gen_main, axis=2) / 40, 0, 1) * garment
-        weight = cv2.GaussianBlur(weight.astype(np.float32), (0, 0), 3)[..., None]
+        shift = np.zeros_like(g)
+        total = np.zeros(g.shape[:2], np.float32)
+        for gen_c, real_c in pairs:
+            w = np.clip(1 - np.linalg.norm(g - gen_c, axis=2) / 50, 0, 1) * garment
+            delta = real_c - gen_c
+            delta *= min(1.0, 60 / max(float(np.linalg.norm(delta)), 1e-6))   # never move a colour more than 60 dE
+            shift += w[..., None] * delta
+            total += w
+        # The blend of the pairs' shifts (weighted mean), applied as strongly as the pixel belongs to the garment's
+        # colours: once, not squared.
+        shift /= np.maximum(total, 1e-6)[..., None]
+        weight = cv2.GaussianBlur(np.clip(total, 0, 1), (0, 0), 3)[..., None]
         out = np.clip(g + shift * weight, 0, 255).astype(np.uint8)
         return Image.fromarray(cv2.cvtColor(out, cv2.COLOR_LAB2RGB))
 
@@ -157,3 +164,21 @@ class Pipeline:
         self.esr = esr.to("cpu")
         torch.cuda.empty_cache()
         return Image.fromarray(y)
+
+
+def _paired_colours(real: np.ndarray, gen: np.ndarray) -> list[tuple[np.ndarray, np.ndarray]]:
+    """The garment's main colours in the real photo and in the output, paired light to light, dark to dark: two when
+    both show two clear colours (each at least 12 % of the garment), else one."""
+    def centres(px: np.ndarray) -> list[tuple[np.ndarray, float]]:
+        sample = px[np.random.default_rng(0).choice(len(px), min(len(px), 20000), replace=False)].astype(np.float32)
+        _, labels, c = cv2.kmeans(sample, 2, None, (cv2.TERM_CRITERIA_EPS + cv2.TERM_CRITERIA_MAX_ITER, 20, 0.5), 3,
+                                  cv2.KMEANS_PP_CENTERS)
+        share = [float((labels == i).mean()) for i in range(2)]
+        two = min(share) >= 0.12 and np.linalg.norm(c[0] - c[1]) > 25
+        if not two:
+            return [(np.median(sample, axis=0), 1.0)]
+        return sorted([(c[i], share[i]) for i in range(2)], key=lambda x: float(x[0][0]))
+    r, g = centres(real), centres(gen)
+    if len(r) != len(g):
+        r, g = [(np.median(real, axis=0), 1.0)], [(np.median(gen, axis=0), 1.0)]
+    return [(gc, rc) for (gc, _), (rc, _) in zip(g, r)]

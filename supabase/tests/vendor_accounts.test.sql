@@ -133,7 +133,7 @@ select tests.assert_fails(format('select public.admin_approve_submission(%L, %L,
 select tests.act_as(tests.id('admin'));
 select tests.remember('p_from_sub', public.admin_approve_submission(tests.id('sub_a'),
   jsonb_build_object('name', 'Cotton kurta', 'slug', 'cotton-kurta-from-vendor', 'price_cents', 4800),
-  jsonb_build_array(jsonb_build_object('path', 'products/x/front.jpg', 'alt_text', 'Cotton kurta, front'),
+  jsonb_build_array(jsonb_build_object('path', 'products/x/front.jpg', 'alt_text', 'Cotton kurta, front', 'is_ai', true),
                     jsonb_build_object('path', 'products/x/closeup.jpg', 'alt_text', 'Cotton kurta, close-up'))));
 select tests.assert((select vendor_id = tests.id('vendor') and status = 'draft' and shop_price_paise = 120000
                      from public.products where id = tests.id('p_from_sub')),
@@ -142,6 +142,8 @@ select tests.assert((select count(*) from public.product_variants where product_
   'with the vendor''s sizes');
 select tests.assert((select storage_path from public.product_media where product_id = tests.id('p_from_sub')
                      and is_primary) = 'products/x/front.jpg', 'the first picked photo is the main one');
+select tests.assert((select bool_and(is_ai = (storage_path = 'products/x/front.jpg')) from public.product_media
+                     where product_id = tests.id('p_from_sub')), 'D-100: the AI photo is flagged, the real close-up is not');
 
 select tests.act_as(tests.id('vend_a'));
 select tests.assert((public.vendor_submission(tests.id('sub_a')) -> 'product' ->> 'status') = 'draft',

@@ -1,44 +1,17 @@
 import { Text, View } from 'react-native';
 
-import { clothingAttributesSchema, spiceAttributesSchema } from '@repo/shared/domain';
+import { clothingAttributesSchema, detailRows, photoNote } from '@repo/shared/domain';
 
-import type { Product, Variant } from '@repo/db/store';
+import type { Media, Product, Variant } from '@repo/db/store';
 
 import { Row } from '@/components/ui';
 
-/** Attribute rows for customers. Invalid attribute data is not shown (D-003). */
-function attributeRows(product: Product): [string, string][] {
-  if (product.product_type === 'clothing') {
-    const parsed = clothingAttributesSchema.safeParse(product.attributes);
-    if (!parsed.success) return [];
-    const a = parsed.data;
-    const rows: [string, string][] = [
-      ['Fabric', a.fibre_content],
-      ['Care', a.care],
-    ];
-    if (a.notes) rows.push(['Notes', a.notes]);
-    return rows;
-  }
-  const parsed = spiceAttributesSchema.safeParse(product.attributes);
-  if (!parsed.success) return [];
-  const a = parsed.data;
-  const rows: [string, string][] = [
-    ['Ingredients', a.ingredients],
-    ['Allergens', a.allergens.length > 0 ? a.allergens.join(', ') : 'None declared'],
-    ['Shelf life', `${a.shelf_life_days} days`],
-  ];
-  if (a.storage) rows.push(['Storage', a.storage]);
-  return rows;
-}
-
-/** True when the listing has anything for the "Details" section. */
-export function hasDetails(product: Product): boolean {
-  return Boolean(product.description || product.craft || product.story) || attributeRows(product).length > 0;
-}
-
-/** Description, craft, attributes and story (the "Details" section). */
-export function Details({ product }: { product: Product }): React.JSX.Element {
-  const rows = attributeRows(product);
+/**
+ * Description, craft, attributes, where it is from and what the photos are (D-100), then the story: the "Details"
+ * section, above the Size chart. The rows are shared with the website (`@repo/shared/domain`).
+ */
+export function Details({ product, media }: { product: Product; media: Media[] }): React.JSX.Element {
+  const rows = detailRows(product, photoNote(media));
   return (
     <View className="gap-2">
       {product.description ? <Text className="font-body text-ink text-sm leading-5">{product.description}</Text> : null}

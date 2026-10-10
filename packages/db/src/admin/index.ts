@@ -11,3 +11,4 @@ export * from './operations';
 export * from './refunds';
 export * from './reviews';
 export * from './supply';
+export * from './vendor-pieces';

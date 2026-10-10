@@ -2,13 +2,24 @@
 -- The admin's review of vendor submissions and the photo worker's queue (D-101, D-102, D-103).
 -- =============================================================================
 
+-- An AI-generated product photo (D-100, D-101): the store says so in the product's Details. Real photos (the close-up,
+-- an admin's own photos) stay false.
+alter table public.product_media add column is_ai boolean not null default false;
+
+-- Same columns as migration 29, is_ai appended.
+create or replace view public.store_media as
+select m.id, m.product_id, m.variant_id, m.storage_path, m.alt_text, m.sort_order, m.is_primary, m.credit, m.is_ai
+from public.product_media m
+join public.products p on p.id = m.product_id
+where p.status = 'live' and (not p.is_placeholder or public.dev_preview());
+
 -- -----------------------------------------------------------------------------
 -- Admin
 -- -----------------------------------------------------------------------------
 -- Approve: the submission becomes a draft product (admin_create_listing: region from the vendor, priced from the shop
 -- price unless a price is given) with the photos the admin picked (already copied to product-media; the first is the
 -- main photo). p_listing as admin_create_listing's input; vendor, type and, when left out, category, shop price and
--- sizes come from the submission. p_media: [{path, alt_text}] in order.
+-- sizes come from the submission. p_media: [{path, alt_text, is_ai}] in order (is_ai: an AI model photo).
 create function public.admin_approve_submission(p_submission uuid, p_listing jsonb, p_media jsonb)
 returns uuid
 language plpgsql volatile security invoker set search_path = public, pg_temp as $$
@@ -38,8 +49,9 @@ begin
       'variants', coalesce(p_listing -> 'variants', v_sub.variants)));
 
   for v_item in select * from jsonb_array_elements(p_media) loop
-    insert into public.product_media (product_id, storage_path, alt_text, sort_order, is_primary)
-    values (v_product, v_item ->> 'path', coalesce(v_item ->> 'alt_text', ''), v_n, v_n = 0);
+    insert into public.product_media (product_id, storage_path, alt_text, sort_order, is_primary, is_ai)
+    values (v_product, v_item ->> 'path', coalesce(v_item ->> 'alt_text', ''), v_n, v_n = 0,
+            coalesce((v_item ->> 'is_ai')::boolean, false));
     v_n := v_n + 1;
   end loop;
 

@@ -1,40 +1,15 @@
-import { clothingAttributesSchema, spiceAttributesSchema } from '@repo/shared/domain';
+import { clothingAttributesSchema, detailRows, type PhotoNote } from '@repo/shared/domain';
 
 import type { Product, Variant } from '@repo/db/store';
 
-/** Attribute rows for customers. Unknown or invalid attribute data is not shown (D-003). */
-function attributeRows(product: Product): [string, string][] {
-  if (product.product_type === 'clothing') {
-    const parsed = clothingAttributesSchema.safeParse(product.attributes);
-    if (!parsed.success) return [];
-    const a = parsed.data;
-    const rows: [string, string][] = [
-      ['Fabric', a.fibre_content],
-      ['Care', a.care],
-    ];
-    if (a.notes) rows.push(['Notes', a.notes]);
-    return rows;
-  }
-  const parsed = spiceAttributesSchema.safeParse(product.attributes);
-  if (!parsed.success) return [];
-  const a = parsed.data;
-  const rows: [string, string][] = [
-    ['Ingredients', a.ingredients],
-    ['Allergens', a.allergens.length > 0 ? a.allergens.join(', ') : 'None declared'],
-    ['Shelf life', `${a.shelf_life_days} days`],
-  ];
-  if (a.storage) rows.push(['Storage', a.storage]);
-  return rows;
-}
+export { photoNote } from '@repo/shared/domain';
 
-/** True when the listing has anything for the "Details" section. */
-export function hasDetails(product: Product): boolean {
-  return Boolean(product.description || product.craft || product.story) || attributeRows(product).length > 0;
-}
-
-/** Description, craft, attributes and story: the "Details" section of the product page. */
-export function ProductDetails({ product }: { product: Product }): React.JSX.Element {
-  const rows = attributeRows(product);
+/**
+ * Description, craft, attributes, where it is from and what the photos are (D-100), then the story: the "Details"
+ * section of the product page, above the Size chart.
+ */
+export function ProductDetails({ product, photos }: { product: Product; photos: PhotoNote }): React.JSX.Element {
+  const rows = detailRows(product, photos);
   return (
     <div className="space-y-3">
       {product.description ? <p className="whitespace-pre-line">{product.description}</p> : null}

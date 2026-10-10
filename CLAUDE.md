@@ -58,6 +58,7 @@ This file is the only one to read at the start of every session. Everything else
 | customer pages (web or app) | `docs/storefront.md` + `docs/design.md` |
 | the page-by-page design pass (mockups) | `design/pages/README.md` + `docs/design.md` (+ `storefront.md` or `admin.md` for that page only) |
 | admin (web or app) | `docs/admin.md` |
+| vendor screens, vendor accounts, the photo worker | `docs/vendor.md` + `docs/data-model.md` |
 | performance, tests, tooling, code style | `docs/engineering.md` |
 | env vars, deploy, DB reset, legal/compliance | `docs/ops.md` |
 
