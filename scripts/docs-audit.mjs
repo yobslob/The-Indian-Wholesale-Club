@@ -136,7 +136,7 @@ for (const [, r] of tableRows.matchAll(/`(\/[^`\s]*)`/g)) {
 }
 
 // 4. App screens: each file under apps/app/app is named (by its route path) in the docs.
-const appDocs = storefront + docs['docs/admin.md'];
+const appDocs = storefront + docs['docs/admin.md'] + (docs['docs/vendor.md'] ?? ''); // vendor mode: vendor.md (D-103)
 for (const f of walk('apps/app/app', (x) => x.endsWith('.tsx')).map(posix)) {
   const rel = f.replace('apps/app/app/', '').replace(/\.tsx$/, '');
   // Layouts and tab home screens (index) are covered by the tab lists in the docs.
@@ -150,7 +150,7 @@ for (const f of walk('apps/app/app', (x) => x.endsWith('.tsx')).map(posix)) {
     appDocs.includes(route) ||
     appDocs.includes(rel) ||
     (leaf !== 'index' && new RegExp(`\\b${leaf}\\b`, 'i').test(appDocs));
-  if (!named) problems.push(`docs: app screen ${f} is not described in storefront.md or admin.md`);
+  if (!named) problems.push(`docs: app screen ${f} is not described in storefront.md, admin.md or vendor.md`);
 }
 
 // 5. Schema objects.
