@@ -48,6 +48,18 @@ def jpeg(img: Image.Image) -> bytes:
     return buf.getvalue()
 
 
+_house_cache: dict[str, Image.Image] = {}
+
+
+def house_photo(sb: Supabase, path: str) -> Image.Image:
+    """A house model's photo, downloaded once per worker run (an upload gets a new path, so a cached one never goes stale)."""
+    if path not in _house_cache:
+        if len(_house_cache) > 40:
+            _house_cache.clear()
+        _house_cache[path] = open_image(sb.download_public("product-media", path))
+    return _house_cache[path]
+
+
 def process(sb: Supabase, pipe: Pipeline, job: dict) -> list[str]:
     view = job["view"]
     photo_path = (job.get("photos") or {}).get(view)
@@ -56,7 +68,7 @@ def process(sb: Supabase, pipe: Pipeline, job: dict) -> list[str]:
     garment, real_pixels = pipe.garment_on_white(open_image(sb.download("vendor-uploads", photo_path)))
     house_model = job.get("house_model")
     if on_model(job.get("category"), job.get("wears")) and house_model:
-        house = open_image(sb.download_public("product-media", house_model[f"{view}_path"]))
+        house = house_photo(sb, house_model[f"{view}_path"])
         prompt = try_on_prompt(view, job["category"], job.get("wears"))
         outs = [pipe.colour_match(o, house, real_pixels) for o in pipe.try_on(house, garment, prompt, SEEDS)]
     else:

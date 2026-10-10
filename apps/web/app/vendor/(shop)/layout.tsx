@@ -5,7 +5,7 @@ import { VendorShell } from '@/features/vendor/shell';
 export default async function VendorShopLayout({ children }: { children: React.ReactNode }): Promise<React.JSX.Element> {
   const { me, lang } = await requireVendorPage();
   return (
-    <VendorShell lang={lang} shopName={me.shop_name}>
+    <VendorShell lang={lang} shopName={me.shop_name} regionLanguages={me.region.languages}>
       {children}
     </VendorShell>
   );

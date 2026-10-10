@@ -1068,3 +1068,26 @@ from the vendor's front photo, the back from the back. 6 women and 4 men (amends
 (`w_1_green_kurti_set.jpg`): a warm cream plaster wall, matching ethnic footwear, small earrings for women; no bindi or
 other jewellery is added. The founder confirms the images are licensed for commercial use (the example carries an
 image generator's corner mark, which our photos do not copy).
+
+**D-105 · 2026-10-10 · founder + Claude, proposed: The vendor integration as built; women_black chosen**
+Founder, verbatim: "I updated all the models I want. You will find them in mockups/assets/women_black. Now, You have
+to try the kurti and saree set on each model so 24 photos(6 kurti front, 6 kurti back, 6 saree front and 6 saree back)
+in total. Then we will compare them with the women_white the previous model photos we had, Women_black should work
+better because it has more skin but let's see. After all this you should finish up this integration, code whatever is
+left, and make sure in the last that everything is ergonomic, productive and efficient without loosing any quality or
+experience."
+What it means for the build (the founder's expectation held, `plan/current.md` log 2026-10-10):
+- **House models: `women_black`** (6 women, separate front and back files). `women_white` let its white bodysuit into 4
+  of 6 saree back views; `women_black` into none. The 4 men are still to come (D-104).
+- **Built without a mockup round** at the founder's word ("code whatever is left"): the vendor web and app, the admin's
+  Vendor pieces and House models, the product page's Details (`vendor.md`, `admin.md`, `storefront.md`).
+*Claude's choices in it (proposed, the founder confirms or changes):*
+- A kurti or top photographed alone is shown over plain matching trousers (it came out as a short dress).
+- The colour fix also corrects dark garments and up to two colours of a piece (a saree and its blouse).
+- The product page's words "Made in: India, from <Region>" and "The photos on a model are AI-generated from real photos
+  of this piece; the close-up is a real photo." are drafts (D-012).
+- The vendor screens' 11 Indian languages are Claude drafts until someone fluent checks each (D-102); the switch offers
+  English, Hindi and the shop's region language, not all twelve.
+- The app's vendor sign-in has no visible link anywhere a customer looks (D-003): it opens from IWC's app link
+  (`iwc://vendor-login?code=…`) or the website's QR link works in the phone's browser.
+

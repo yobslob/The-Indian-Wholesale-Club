@@ -3,18 +3,18 @@
 import Link from 'next/link';
 import { usePathname } from 'next/navigation';
 
-import { LANGUAGE_CODES, LANGUAGES, t, type Language } from '@repo/shared/vendor';
+import { LANGUAGES, switchLanguages, t, type Language } from '@repo/shared/vendor';
 
 import { setVendorLanguageAction } from './actions';
 import { Icon, type IconName } from './icons';
 
-/** The language switch: one tap per language, the current one marked; comes back to the same screen. */
-export function LanguageSwitch({ lang }: { lang: Language }): React.JSX.Element {
+/** The language switch: English, Hindi and the shop's region's language, one tap each; back to the same screen. */
+export function LanguageSwitch({ lang, regionLanguages = [] }: { lang: Language; regionLanguages?: string[] }): React.JSX.Element {
   const path = usePathname();
   return (
     <form action={setVendorLanguageAction} className="flex flex-wrap gap-1.5" aria-label={t(lang, 'language')}>
       <input type="hidden" name="back" value={path} />
-      {LANGUAGE_CODES.map((code) => (
+      {switchLanguages(lang, regionLanguages).map((code) => (
         <button
           key={code}
           name="lang"

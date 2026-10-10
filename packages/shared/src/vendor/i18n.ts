@@ -1,5 +1,15 @@
+import { asm } from './messages/as';
+import { bn } from './messages/bn';
 import { en, type MessageKey, type Messages } from './messages/en';
+import { gu } from './messages/gu';
 import { hi } from './messages/hi';
+import { kn } from './messages/kn';
+import { ml } from './messages/ml';
+import { mr } from './messages/mr';
+import { or } from './messages/or';
+import { pa } from './messages/pa';
+import { ta } from './messages/ta';
+import { te } from './messages/te';
 
 /**
  * The vendor screens' languages (D-102: English and each region's language). Every language except English is a
@@ -8,6 +18,16 @@ import { hi } from './messages/hi';
 export const LANGUAGES = {
   en: { name: 'English', messages: en },
   hi: { name: 'हिन्दी', messages: hi },
+  bn: { name: 'বাংলা', messages: bn },
+  ta: { name: 'தமிழ்', messages: ta },
+  te: { name: 'తెలుగు', messages: te },
+  mr: { name: 'मराठी', messages: mr },
+  gu: { name: 'ગુજરાતી', messages: gu },
+  kn: { name: 'ಕನ್ನಡ', messages: kn },
+  ml: { name: 'മലയാളം', messages: ml },
+  pa: { name: 'ਪੰਜਾਬੀ', messages: pa },
+  or: { name: 'ଓଡ଼ିଆ', messages: or },
+  as: { name: 'অসমীয়া', messages: asm },
 } satisfies Record<string, { name: string; messages: Messages }>;
 
 export type Language = keyof typeof LANGUAGES;
@@ -28,6 +48,16 @@ export function languageForRegion(languages: readonly string[]): Language {
     if (isLanguage(code)) return code;
   }
   return 'hi';
+}
+
+/**
+ * The few languages the switch offers a shop (one tap each, never a list of twelve): English, Hindi, the shop's
+ * region's language and the one it uses now.
+ */
+export function switchLanguages(current: string, regionLanguages: readonly string[] = []): Language[] {
+  const list: Language[] = ['en', 'hi', languageForRegion(regionLanguages)];
+  if (isLanguage(current)) list.push(current);
+  return LANGUAGE_CODES.filter((code) => list.includes(code));
 }
 
 /** The word for `key` in `lang`, with {placeholders} filled. */

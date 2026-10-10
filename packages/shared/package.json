@@ -7,7 +7,7 @@
   "sideEffects": false,
   "scripts": {
     "typecheck": "tsc --noEmit",
-    "test": "tsx --test tests/domain.test.ts tests/admin.test.ts tests/product-details.test.ts"
+    "test": "tsx --test tests/domain.test.ts tests/admin.test.ts tests/product-details.test.ts tests/vendor.test.ts"
   },
   "exports": {
     "./domain": "./src/domain/index.ts",

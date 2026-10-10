@@ -30,8 +30,11 @@ a `vendor_*` database function filtered by the caller's vendor (`data-model.md`)
 | Keep ready | `/vendor/ready` | ordered pieces IWC will collect: piece, size, how many, "after <cutoff>" (never who bought them) |
 | Money | `/vendor/money` | owed in ₹ for collected pieces, the latest collected pieces, payouts |
 
-**Languages (D-102):** English and the vendor's region's language (`@repo/shared/vendor` `i18n.ts`, a switch on every
-screen, kept in a cookie). Every language but English is a Claude draft until someone fluent checks it.
+**Languages (D-102, D-105):** English, Hindi, Bengali, Tamil, Telugu, Marathi, Gujarati, Kannada, Malayalam, Punjabi,
+Odia and Assamese (`@repo/shared/vendor` `messages/`); a region whose language is not among them gets Hindi. The
+switch on every screen offers English, Hindi and the shop's region language (kept in a cookie on the web, on the
+phone in the app). Every language but English is a Claude draft until someone fluent checks it; a unit test keeps
+every word and its {placeholders} in each.
 
 ## Photos (D-100, D-101, D-104)
 The vendor's photos go to the private `vendor-uploads` bucket, shrunk to 2400 px on the phone. The GPU worker

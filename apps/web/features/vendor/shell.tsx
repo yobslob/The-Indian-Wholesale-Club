@@ -11,10 +11,12 @@ import { LanguageSwitch, VendorTabs } from './nav';
 export function VendorShell({
   lang,
   shopName,
+  regionLanguages,
   children,
 }: {
   lang: Language;
   shopName: string;
+  regionLanguages: string[];
   children: React.ReactNode;
 }): React.JSX.Element {
   return (
@@ -32,7 +34,7 @@ export function VendorShell({
           </form>
         </div>
         <div className="mt-2">
-          <LanguageSwitch lang={lang} />
+          <LanguageSwitch lang={lang} regionLanguages={regionLanguages} />
         </div>
       </header>
       <main className="flex-1 px-4 pb-28 pt-5">{children}</main>

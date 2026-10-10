@@ -3,7 +3,7 @@ import { useRouter } from 'expo-router';
 import { Pressable, Text, View } from 'react-native';
 
 import { vendorKeepReady, vendorMoney, vendorPieces } from '@repo/db/vendor';
-import { formatRupees, LANGUAGE_CODES, LANGUAGES } from '@repo/shared/vendor';
+import { formatRupees, LANGUAGES, switchLanguages } from '@repo/shared/vendor';
 import tokens from '@repo/tokens';
 
 import { Button, Screen } from '@/components/ui';
@@ -41,7 +41,7 @@ export default function VendorHome(): React.JSX.Element {
   return (
     <Screen back={false} title={w('hello', { name: me?.owner_name ?? me?.shop_name ?? '' })} refreshing={loading} onRefresh={reload}>
       <View className="flex-row flex-wrap gap-2">
-        {LANGUAGE_CODES.map((code) => (
+        {switchLanguages(lang, me?.region.languages).map((code) => (
           <Pressable key={code} accessibilityRole="button" accessibilityState={{ selected: code === lang }} onPress={() => setLang(code)} className={`min-h-9 justify-center rounded-pill border px-3 ${code === lang ? 'border-ink bg-ink' : 'border-line bg-paper'}`}>
             <Text className={`font-ui text-[13px] ${code === lang ? 'text-paper' : 'text-ink'}`}>{LANGUAGES[code].name}</Text>
           </Pressable>

@@ -21,6 +21,7 @@ class Pipeline:
         self.seg = None
         self.flux = None
         self.esr = None
+        self._skin: dict[int, np.ndarray | None] = {}   # a house model's skin colour, once per photo (by id)
 
     # --- models --------------------------------------------------------------------------------------------------
     def _seg(self):
@@ -111,17 +112,15 @@ class Pipeline:
         wall and small print details keep their own colours."""
         lab = lambda im: cv2.cvtColor(np.array(im.convert("RGB")), cv2.COLOR_RGB2LAB).astype(np.float32)
         g = lab(gen)
-        hp = lab(house)[self.mask(house) > 0.5]
-        chroma = np.linalg.norm(hp[:, 1:] - 128, axis=1)
-        skin = hp[(hp[:, 0] > 60) & (hp[:, 0] < 235) & (chroma > 8)]
-        if len(skin) < 500 or len(real_pixels) < 500:
+        skin_ref = self._skin_colour(house, lab)
+        if skin_ref is None or len(real_pixels) < 500:
             return gen
         person = self.mask(gen) > 0.5
         ys = np.where(person.any(axis=1))[0]
         if len(ys) == 0:
             return gen
         top, bottom = ys.min(), ys.max()
-        garment = person & (np.linalg.norm(g - np.median(skin, axis=0), axis=2) > 18)
+        garment = person & (np.linalg.norm(g - skin_ref, axis=2) > 18)
         garment[: top + int(0.13 * (bottom - top))] = False          # head and hair
         garment[bottom - int(0.05 * (bottom - top)):] = False        # feet and footwear
         garment = cv2.morphologyEx(garment.astype(np.uint8), cv2.MORPH_OPEN, np.ones((5, 5), np.uint8)) > 0
@@ -145,6 +144,17 @@ class Pipeline:
         weight = cv2.GaussianBlur(np.clip(total, 0, 1), (0, 0), 3)[..., None]
         out = np.clip(g + shift * weight, 0, 255).astype(np.uint8)
         return Image.fromarray(cv2.cvtColor(out, cv2.COLOR_LAB2RGB))
+
+    def _skin_colour(self, house: Image.Image, lab) -> np.ndarray | None:
+        """The house model's skin colour: person pixels that are neither the fitted clothes nor hair. Kept per photo, so a
+        job's three candidates (and the next jobs on the same model) measure it once."""
+        key = id(house)
+        if key not in self._skin:
+            hp = lab(house)[self.mask(house) > 0.5]
+            chroma = np.linalg.norm(hp[:, 1:] - 128, axis=1)
+            skin = hp[(hp[:, 0] > 60) & (hp[:, 0] < 235) & (chroma > 8)]
+            self._skin = {key: np.median(skin, axis=0) if len(skin) >= 500 else None}
+        return self._skin[key]
 
     # --- product shot and upscale --------------------------------------------------------------------------------
     @staticmethod
