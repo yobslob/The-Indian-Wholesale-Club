@@ -971,3 +971,37 @@ refresh after a sale (D-068) unchanged. *Option for later, not built:* the app r
 database on every screen, while the website shares one cached copy among all visitors; sending the app's catalogue
 reads through the website's cache would take that load off the database at scale. It changes D-043's split (the app
 calls the website only for what needs a secret), so it waits for the founder.
+
+**D-100 · 2026-10-10 · founder: Product photos: the close-up is the real photo; the details say the model photo is AI-generated**
+Founder, verbatim: "You are right the close up of material will be the original photo dropped by the retailer.
+labelling will be done and added in the details section above the size chart which will contain how it should be
+washed and the photo is ai generated, where the cloth is actually originated from etc etc"
+Context: the product photo pipeline proposed by Claude (D-101): each clothing piece gets a three-view card, Front and
+Back worn by an AI-generated model, and a Material close-up.
+What it means for the build:
+- **The Material close-up is always the original photo** of the piece. It is never generated, never upscaled (upscalers
+  invent weave detail) and never edited beyond a crop and a white balance.
+- **The product page's Details** (the section above the Size chart, `storefront.md` §The product page) carry the care
+  (how to wash it), a line saying the model photos are AI-generated, and where the cloth comes from.
+*Interpretation (proposed, confirm when the pipeline is built):* "where the cloth is actually originated from" is the
+honest origin line that already exists ("Made in India · from <Region> · Imported", D-004), never the shop (D-003);
+the AI line shows only on pieces that have an AI-generated photo, and the photos themselves carry no badge. Who takes
+the photos ("dropped by the retailer") is Q-34.
+
+**D-101 · 2026-10-10 · Claude, proposed: The product photo pipeline runs on the founder's GPU, free models only**
+The founder asked for the best free / open-source way to turn raw shop photos into a three-view product card without
+paid AI and without risk to the website or app, then: "Now try whatever you want to from my gpu". Proposed after a
+spike on the founder's laptop (RTX 4060 8 GB, 16 GB RAM; numbers in `plan/current.md`, verification log 2026-10-10):
+- **Where it runs:** a batch worker on the founder's machine, never on Vercel or in the app. Drafts wait in the admin;
+  nothing goes live until a person picks and approves a photo. Customers only ever get the finished image files.
+- **Capture (admin app):** three guided shots per piece (front, back, close-up) on a plain sheet with nothing touching
+  the garment, each piece of a set shot on its own; the app checks size, brightness and blur after each shot.
+- **Steps:** BiRefNet cutout (MIT) → FLUX.2 [klein] 4B (Apache 2.0) puts the garment on a fixed synthetic house model,
+  front from the front photo and back from the back photo, 3 – 4 candidates → the garment's colour matched back to the
+  real photo → Real-ESRGAN ×2 (BSD-3). FASHN VTON v1.5 was tried and set aside (lost tone-on-tone embroidery, sheer
+  fabric and flares; its human parser is non-commercial).
+- **Not used:** models whose licence forbids commercial use (IDM-VTON, CatVTON, OOTDiffusion, RMBG-2.0, FLUX.2 [klein]
+  9B, 4x-UltraSharp), hosted free tiers that would send shop photos to a public service (D-003).
+- **House models are synthetic**, never a real person's likeness without a signed release.
+Not built yet. Open before it is: the house models' look, locking the model's face across photos, and a folded
+(not draped) saree, which the spike did not test.
