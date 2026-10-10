@@ -49,11 +49,20 @@ select tests.assert(
   (select coalesce(array_agg(p.proname::text order by p.proname), '{}')
    from pg_proc p join pg_namespace n on n.oid = p.pronamespace
    where n.nspname = 'public' and has_function_privilege('authenticated', p.oid, 'execute'))
-  = array['admin_attention', 'admin_cancel_after_export', 'admin_cancel_after_export_cents', 'admin_create_listing', 'admin_cycle_totals', 'admin_demand', 'admin_order_counts', 'admin_price_preview',
-          'admin_return_received', 'admin_return_refunded', 'admin_return_rejected', 'admin_sales', 'admin_set_listed_qty', 'admin_stale_variants', 'advance_cycle', 'cancel_after_delay', 'cancel_order', 'cancel_refund_cents', 'change_delivery_window',
-          'check_off_arrival', 'confirm_move_shipped', 'cutoff_cycle', 'deliver_order', 'dev_preview', 'is_admin', 'is_product_visible', 'item_refund_cents', 'keep_after_delay', 'mark_pickup', 'move_order',
-          'record_payout', 'refund_order_item', 'review_eligibility', 'ship_order', 'store_browse', 'store_home', 'store_my_order', 'store_next_delivery',
-          'store_policy', 'store_product_page', 'store_region_page', 'store_search', 'store_type_rows'],
-  'signed-in users can execute only store + admin-checked functions (never create_order)');
+  = array['admin_approve_submission', 'admin_attention', 'admin_cancel_after_export',
+          'admin_cancel_after_export_cents', 'admin_create_listing', 'admin_cycle_totals',
+          'admin_decline_submission', 'admin_demand', 'admin_order_counts', 'admin_price_preview',
+          'admin_request_retake', 'admin_rerun_photo_job', 'admin_return_received', 'admin_return_refunded',
+          'admin_return_rejected', 'admin_sales', 'admin_set_listed_qty', 'admin_stale_variants',
+          'admin_vendor_sign_in_code', 'advance_cycle', 'cancel_after_delay', 'cancel_order', 'cancel_refund_cents',
+          'change_delivery_window', 'check_off_arrival', 'confirm_move_shipped', 'cutoff_cycle', 'deliver_order',
+          'dev_preview', 'is_admin', 'is_product_visible', 'is_vendor', 'is_worker', 'item_refund_cents',
+          'keep_after_delay', 'mark_pickup', 'move_order', 'my_vendor_id', 'record_payout', 'refund_order_item',
+          'review_eligibility', 'ship_order', 'store_browse', 'store_home', 'store_my_order', 'store_next_delivery',
+          'store_policy', 'store_product_page', 'store_region_page', 'store_search', 'store_type_rows',
+          'vendor_add_photo', 'vendor_delete_submission', 'vendor_keep_ready', 'vendor_may_upload', 'vendor_me',
+          'vendor_money', 'vendor_new_submission', 'vendor_pieces', 'vendor_submission', 'vendor_submit',
+          'worker_claim_job', 'worker_finish_job'],
+  'signed-in users can execute only store, admin-, vendor- and worker-checked functions (never create_order)');
 
 rollback;

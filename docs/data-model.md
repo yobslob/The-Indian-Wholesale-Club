@@ -12,6 +12,8 @@
 | **store** | anyone (anon + customers) | only through `store_*` views/functions exposing whitelisted columns |
 | **owner** | the signed-in customer, own rows only | RLS `auth.uid() = user_id` (profiles, addresses, wishlists), or `store_*` views filtered by `auth.uid()` (orders) |
 | **admin** | founder + COO | RLS `is_admin()`: `profiles.role = 'admin'` **and** email in `admin_emails` (D-006) |
+| **vendor** | a vendor's owner, own vendor only (D-102) | `vendor_*` functions filtered by `my_vendor_id()` (role `vendor` + an active `vendor_accounts` row); no base table (INV-10) |
+| **worker** | the photo worker's account on the founder's laptop (D-103) | `worker_*` functions and the photo buckets (role `worker`) |
 | **service** | server code only (webhooks, jobs, order creation) | service-role key, never shipped to clients |
 
 Customer-facing code (storefront, customer screens in the app) reads catalog and order data **only** through `store_*`
@@ -27,6 +29,9 @@ operations data are never queried from customer code.
 | People | `profiles` | one per auth user (created by trigger): name, phone, `role`, `desk`* (D-007). Users may edit only `full_name`, `phone` | owner / admin |
 | | `admin_emails` | the DB copy of the admin allowlist, the second gate of `is_admin()` (INV-7). Mirrors the `ADMIN_EMAILS` env var | service |
 | | `addresses` | US shipping addresses (one default per user) | owner |
+| | `vendor_accounts` | a vendor's sign-in: the user, its vendor, the screens' language, active (D-102) | own row / admin |
+| | `vendor_sign_in_codes` | one-time QR / link codes, stored only as a hash, used once, expiring | functions only |
+| | `vendor_applications` | "Join as a vendor?" requests (country IN or US, Q-35), status | admin |
 | Places | `regions` | the 36 regions (D-002): slug, name, sort, `is_live`, greeting (native + ISO 15924 script + Latin + meaning), languages, tagline, story, hero image, accent colour, `content_status` (D-019) | store (text only if approved) / admin |
 | Catalog | `categories` | browse groups per product type. A child always has its parent's type | store / admin |
 | | `products` | region, category, `product_type`, name, slug, summary, description, story, craft, `attributes` (customer-safe JSON), `price_cents`, `status`, search vector; `vendor_id`*, `shop_price_paise`*, `origin_town`*, `has_origin_label`*, `is_placeholder`*. **Spices cannot be `live`** (CHECK, D-032) | store (live only) / admin |
@@ -37,6 +42,10 @@ operations data are never queried from customer code.
 | | `cycles` | code, status, `cutoff_at`, est. export/arrival, actual dates, AWB, forwarder, freight, duty, FX | admin |
 | | `pickups` | one per ordered piece: vendor, cycle, variant, qty, shop price, status, who/when, photo, payout | admin |
 | | `vendor_payouts` | INR paid to a vendor. The amount is computed from the pickups it covers | admin |
+| | `vendor_submissions` | a piece a vendor sent: category, details in their words, sizes, shop price in ₹, status (adding → waiting → photos_ready → approved, or needs_retake / declined), the product it became | vendor via `vendor_*` / admin |
+| | `vendor_submission_photos` | front, back, close-up in bucket `vendor-uploads` (`<vendor>/<submission>/<file>`) with the phone's checks | vendor via functions / admin |
+| | `house_models` | IWC's synthetic models (D-101): wears women / men, front and back photos in `product-media/house-models/` | admin |
+| | `photo_jobs` | the GPU worker's queue: one per view of a clothing piece, candidates in bucket `photo-candidates` | worker via functions / admin |
 | | `stock_movements` | append-only ledger, written by trigger only (INV-4) | admin (read) |
 | | `pricing_settings` | one row: FX, freight/kg, duty %, margin %, domestic delivery days, stale-listing days, standard shipping + free threshold, express shipping + express days. Price-suggestion values and days start NULL (Q-15, Q-18); shipping prices set by migration 4 (D-041) | admin |
 | Orders | `orders` | number `IWC-YYMMDD-<10 hex>`, email, internal `status`, `cycle_id`*, `fulfilment_mode` (`order_first`, D-024), `shipping_method` (D-041), `est_delivery_from/_to` (D-008), totals in cents (USD only, D-036), `refunded_cents` (D-042), Stripe ids, address snapshot, tracking, carrier, `notes`* | owner via `store_orders` / admin |
@@ -141,6 +150,17 @@ Migration 31 (D-099, the second speed audit): `admin_order_counts()` (every orde
 send, shops owed for picked pieces) and `admin_cycle_totals(cycle)` (the cycle card's orders, pieces, shops and sales),
 admin only, counted in SQL because the API sends at most 1,000 rows; indexes for orders by status and newest, pickups
 by status, what each shop is owed, and a payout's pieces.
+Migrations 32 – 35 (D-102, D-103, vendor accounts): roles `vendor` and `worker`; `my_vendor_id()`, `is_vendor()`,
+`is_worker()`, the internal `_vendor_or_raise()` (refuses non-vendors); `admin_vendor_sign_in_code(user, days)` (a one-time code shown once; older unused ones stop working) and
+the service-only `_link_vendor_account(user, vendor, language, by)` and `_redeem_vendor_code(code)`. A vendor reads
+`vendor_me()`, `vendor_keep_ready()` (ordered pieces not yet collected: piece, size, count and the cycle's cutoff, never
+who bought it), `vendor_money()` (owed and paid in ₹), `vendor_pieces(offset, limit)` and `vendor_submission(id)`, and
+writes through `vendor_new_submission(type)`, `vendor_add_photo(...)`, `vendor_submit(id, details)` (checks photos,
+category, sizes and price, then queues the photo jobs) and `vendor_delete_submission(id)`; storage allows uploads only
+where `vendor_may_upload(path)` says. Admins review with `admin_approve_submission(id, listing, media)` (a draft
+product through `admin_create_listing`), `admin_request_retake`, `admin_decline_submission`, `admin_rerun_photo_job`.
+The worker uses `worker_claim_job()` (oldest queued, or one left running for 30 minutes; failed after 3 tries) and
+`worker_finish_job(job, candidates, error)`.
 `checkout_context(variant_ids, promo_code)` (migration 3, **service-only**) returns what the server needs to price a bag in
 one round trip: the variants as customers can buy them (through `store_*`), the promo if usable now, the shipping settings
 and the next window (D-038).
@@ -196,6 +216,7 @@ breaking it and watching the test fail ("mutation check", `current.md`).
 | INV-7 | admin = role `admin` **and** allowlisted email, in the DB (`is_admin()`) and in the website (`apps/web/features/admin/guard.ts`) | function + server guard | `rls_admin.test.sql` |
 | INV-8 | draft region text and placeholder products never appear in `store_*` output (unless `dev_preview`) | view filters; a trigger re-drafts edited text | `rls_visibility.test.sql`, `region_content.test.sql`, `checkout.test.sql` (not buyable either) |
 | INV-9 | money columns are integers (`*_cents` USD, `*_paise` INR) | column types | `schema.test.sql` |
+| INV-10 | a vendor account reads only its own vendor, only through `vendor_*` functions, and never a buyer, an order number, a customer price, a cost or an admin note; sign-in codes work once (D-102, D-103) | `my_vendor_id()` filters + no base-table RLS + `vendor_may_upload` | `vendor_accounts.test.sql` |
 
 ## Seed (`supabase/seed/`, applied by `supabase db reset`, local only)
 - `regions.sql`: all 36 regions. Names and slugs are factual. Greetings are Claude drafts (`content_status = 'draft'`, D-019).

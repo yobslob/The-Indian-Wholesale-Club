@@ -168,6 +168,20 @@ isOneToOne: false
                   Relationships: [
                     
                   ]
+                },"house_models": {
+                  Row: {
+                    "back_path": string,"created_at": string,"front_path": string,"id": string,"is_active": boolean,"label": string,"slug": string,"sort_order": number,"wears": string
+                  }
+                  ComputedFields: never
+                  Insert: {
+                    "back_path": string,"created_at"?: string,"front_path": string,"id"?: string,"is_active"?: boolean,"label": string,"slug": string,"sort_order"?: number,"wears": string
+                  }
+                  Update: {
+                    "back_path"?: string,"created_at"?: string,"front_path"?: string,"id"?: string,"is_active"?: boolean,"label"?: string,"slug"?: string,"sort_order"?: number,"wears"?: string
+                  }
+                  Relationships: [
+                    
+                  ]
                 },"newsletter_subscribers": {
                   Row: {
                     "created_at": string,"email": string,"id": string,"source": string
@@ -353,6 +367,38 @@ isOneToOne: false
                   }
                   Relationships: [
                     
+                  ]
+                },"photo_jobs": {
+                  Row: {
+                    "attempts": number,"candidates": (string)[],"claimed_at": string | null,"claimed_by": string | null,"created_at": string,"error": string | null,"finished_at": string | null,"house_model_id": string | null,"id": string,"status": Database["public"]['Enums']["photo_job_status"],"submission_id": string,"view": Database["public"]['Enums']["photo_view"]
+                  }
+                  ComputedFields: never
+                  Insert: {
+                    "attempts"?: number,"candidates"?: (string)[],"claimed_at"?: string | null,"claimed_by"?: string | null,"created_at"?: string,"error"?: string | null,"finished_at"?: string | null,"house_model_id"?: string | null,"id"?: string,"status"?: Database["public"]['Enums']["photo_job_status"],"submission_id": string,"view": Database["public"]['Enums']["photo_view"]
+                  }
+                  Update: {
+                    "attempts"?: number,"candidates"?: (string)[],"claimed_at"?: string | null,"claimed_by"?: string | null,"created_at"?: string,"error"?: string | null,"finished_at"?: string | null,"house_model_id"?: string | null,"id"?: string,"status"?: Database["public"]['Enums']["photo_job_status"],"submission_id"?: string,"view"?: Database["public"]['Enums']["photo_view"]
+                  }
+                  Relationships: [
+                    {
+      foreignKeyName: "photo_jobs_claimed_by_fkey"
+      columns: ["claimed_by"]
+isOneToOne: false
+      referencedRelation: "profiles"
+      referencedColumns: ["id"]
+    },{
+      foreignKeyName: "photo_jobs_house_model_id_fkey"
+      columns: ["house_model_id"]
+isOneToOne: false
+      referencedRelation: "house_models"
+      referencedColumns: ["id"]
+    },{
+      foreignKeyName: "photo_jobs_submission_id_fkey"
+      columns: ["submission_id"]
+isOneToOne: false
+      referencedRelation: "vendor_submissions"
+      referencedColumns: ["id"]
+    }
                   ]
                 },"pickups": {
                   Row: {
@@ -846,6 +892,70 @@ isOneToOne: true
       referencedColumns: ["id"]
     }
                   ]
+                },"vendor_accounts": {
+                  Row: {
+                    "created_at": string,"created_by": string | null,"is_active": boolean,"language": string,"last_seen_at": string | null,"user_id": string,"vendor_id": string
+                  }
+                  ComputedFields: never
+                  Insert: {
+                    "created_at"?: string,"created_by"?: string | null,"is_active"?: boolean,"language"?: string,"last_seen_at"?: string | null,"user_id": string,"vendor_id": string
+                  }
+                  Update: {
+                    "created_at"?: string,"created_by"?: string | null,"is_active"?: boolean,"language"?: string,"last_seen_at"?: string | null,"user_id"?: string,"vendor_id"?: string
+                  }
+                  Relationships: [
+                    {
+      foreignKeyName: "vendor_accounts_created_by_fkey"
+      columns: ["created_by"]
+isOneToOne: false
+      referencedRelation: "profiles"
+      referencedColumns: ["id"]
+    },{
+      foreignKeyName: "vendor_accounts_user_id_fkey"
+      columns: ["user_id"]
+isOneToOne: true
+      referencedRelation: "profiles"
+      referencedColumns: ["id"]
+    },{
+      foreignKeyName: "vendor_accounts_vendor_id_fkey"
+      columns: ["vendor_id"]
+isOneToOne: false
+      referencedRelation: "vendors"
+      referencedColumns: ["id"]
+    }
+                  ]
+                },"vendor_applications": {
+                  Row: {
+                    "admin_note": string | null,"city": string | null,"country": string,"created_at": string,"id": string,"language": string | null,"owner_name": string,"phone": string,"region_id": string | null,"sells": string | null,"shop_name": string,"status": Database["public"]['Enums']["application_status"],"updated_at": string,"vendor_id": string | null
+                  }
+                  ComputedFields: never
+                  Insert: {
+                    "admin_note"?: string | null,"city"?: string | null,"country": string,"created_at"?: string,"id"?: string,"language"?: string | null,"owner_name": string,"phone": string,"region_id"?: string | null,"sells"?: string | null,"shop_name": string,"status"?: Database["public"]['Enums']["application_status"],"updated_at"?: string,"vendor_id"?: string | null
+                  }
+                  Update: {
+                    "admin_note"?: string | null,"city"?: string | null,"country"?: string,"created_at"?: string,"id"?: string,"language"?: string | null,"owner_name"?: string,"phone"?: string,"region_id"?: string | null,"sells"?: string | null,"shop_name"?: string,"status"?: Database["public"]['Enums']["application_status"],"updated_at"?: string,"vendor_id"?: string | null
+                  }
+                  Relationships: [
+                    {
+      foreignKeyName: "vendor_applications_region_id_fkey"
+      columns: ["region_id"]
+isOneToOne: false
+      referencedRelation: "regions"
+      referencedColumns: ["id"]
+    },{
+      foreignKeyName: "vendor_applications_region_id_fkey"
+      columns: ["region_id"]
+isOneToOne: false
+      referencedRelation: "store_regions"
+      referencedColumns: ["id"]
+    },{
+      foreignKeyName: "vendor_applications_vendor_id_fkey"
+      columns: ["vendor_id"]
+isOneToOne: false
+      referencedRelation: "vendors"
+      referencedColumns: ["id"]
+    }
+                  ]
                 },"vendor_payouts": {
                   Row: {
                     "amount_paise": number,"created_at": string,"cycle_id": string | null,"id": string,"method": string,"note": string | null,"paid_at": string,"paid_by": string | null,"receipt_path": string | null,"reference": string | null,"vendor_id": string
@@ -872,6 +982,108 @@ isOneToOne: false
       referencedColumns: ["id"]
     },{
       foreignKeyName: "vendor_payouts_vendor_id_fkey"
+      columns: ["vendor_id"]
+isOneToOne: false
+      referencedRelation: "vendors"
+      referencedColumns: ["id"]
+    }
+                  ]
+                },"vendor_sign_in_codes": {
+                  Row: {
+                    "code_hash": string,"created_at": string,"created_by": string | null,"expires_at": string,"used_at": string | null,"user_id": string
+                  }
+                  ComputedFields: never
+                  Insert: {
+                    "code_hash": string,"created_at"?: string,"created_by"?: string | null,"expires_at": string,"used_at"?: string | null,"user_id": string
+                  }
+                  Update: {
+                    "code_hash"?: string,"created_at"?: string,"created_by"?: string | null,"expires_at"?: string,"used_at"?: string | null,"user_id"?: string
+                  }
+                  Relationships: [
+                    {
+      foreignKeyName: "vendor_sign_in_codes_created_by_fkey"
+      columns: ["created_by"]
+isOneToOne: false
+      referencedRelation: "profiles"
+      referencedColumns: ["id"]
+    },{
+      foreignKeyName: "vendor_sign_in_codes_user_id_fkey"
+      columns: ["user_id"]
+isOneToOne: false
+      referencedRelation: "vendor_accounts"
+      referencedColumns: ["user_id"]
+    }
+                  ]
+                },"vendor_submission_photos": {
+                  Row: {
+                    "checks": NonNullable<Json>,"created_at": string,"storage_path": string,"submission_id": string,"view": Database["public"]['Enums']["photo_view"]
+                  }
+                  ComputedFields: never
+                  Insert: {
+                    "checks"?: NonNullable<Json>,"created_at"?: string,"storage_path": string,"submission_id": string,"view": Database["public"]['Enums']["photo_view"]
+                  }
+                  Update: {
+                    "checks"?: NonNullable<Json>,"created_at"?: string,"storage_path"?: string,"submission_id"?: string,"view"?: Database["public"]['Enums']["photo_view"]
+                  }
+                  Relationships: [
+                    {
+      foreignKeyName: "vendor_submission_photos_submission_id_fkey"
+      columns: ["submission_id"]
+isOneToOne: false
+      referencedRelation: "vendor_submissions"
+      referencedColumns: ["id"]
+    }
+                  ]
+                },"vendor_submissions": {
+                  Row: {
+                    "admin_note": string | null,"category_id": string | null,"created_at": string,"created_by": string | null,"decided_at": string | null,"decided_by": string | null,"details": NonNullable<Json>,"id": string,"product_id": string | null,"product_type": Database["public"]['Enums']["product_type"],"retake_reason": string | null,"shop_price_paise": number | null,"status": Database["public"]['Enums']["submission_status"],"submitted_at": string | null,"updated_at": string,"variants": NonNullable<Json>,"vendor_id": string
+                  }
+                  ComputedFields: never
+                  Insert: {
+                    "admin_note"?: string | null,"category_id"?: string | null,"created_at"?: string,"created_by"?: string | null,"decided_at"?: string | null,"decided_by"?: string | null,"details"?: NonNullable<Json>,"id"?: string,"product_id"?: string | null,"product_type"?: Database["public"]['Enums']["product_type"],"retake_reason"?: string | null,"shop_price_paise"?: number | null,"status"?: Database["public"]['Enums']["submission_status"],"submitted_at"?: string | null,"updated_at"?: string,"variants"?: NonNullable<Json>,"vendor_id": string
+                  }
+                  Update: {
+                    "admin_note"?: string | null,"category_id"?: string | null,"created_at"?: string,"created_by"?: string | null,"decided_at"?: string | null,"decided_by"?: string | null,"details"?: NonNullable<Json>,"id"?: string,"product_id"?: string | null,"product_type"?: Database["public"]['Enums']["product_type"],"retake_reason"?: string | null,"shop_price_paise"?: number | null,"status"?: Database["public"]['Enums']["submission_status"],"submitted_at"?: string | null,"updated_at"?: string,"variants"?: NonNullable<Json>,"vendor_id"?: string
+                  }
+                  Relationships: [
+                    {
+      foreignKeyName: "vendor_submissions_category_id_product_type_fkey"
+      columns: ["category_id","product_type"]
+isOneToOne: false
+      referencedRelation: "categories"
+      referencedColumns: ["id","product_type"]
+    },{
+      foreignKeyName: "vendor_submissions_category_id_product_type_fkey"
+      columns: ["category_id","product_type"]
+isOneToOne: false
+      referencedRelation: "store_categories"
+      referencedColumns: ["id","product_type"]
+    },{
+      foreignKeyName: "vendor_submissions_created_by_fkey"
+      columns: ["created_by"]
+isOneToOne: false
+      referencedRelation: "profiles"
+      referencedColumns: ["id"]
+    },{
+      foreignKeyName: "vendor_submissions_decided_by_fkey"
+      columns: ["decided_by"]
+isOneToOne: false
+      referencedRelation: "profiles"
+      referencedColumns: ["id"]
+    },{
+      foreignKeyName: "vendor_submissions_product_id_fkey"
+      columns: ["product_id"]
+isOneToOne: false
+      referencedRelation: "products"
+      referencedColumns: ["id"]
+    },{
+      foreignKeyName: "vendor_submissions_product_id_fkey"
+      columns: ["product_id"]
+isOneToOne: false
+      referencedRelation: "store_products"
+      referencedColumns: ["id"]
+    },{
+      foreignKeyName: "vendor_submissions_vendor_id_fkey"
       columns: ["vendor_id"]
 isOneToOne: false
       referencedRelation: "vendors"
@@ -1231,6 +1443,9 @@ isOneToOne: false
 "_leaving_soon_max":
 { Args: Record<PropertyKey, never>; Returns: number
                            },
+"_link_vendor_account":
+{ Args: { "p_by": string,"p_language": string,"p_user": string,"p_vendor": string }; Returns: undefined
+                           },
 "_load_pricing_estimates":
 { Args: { "p_checked_on": string,"p_estimates": Json }; Returns: number
                            },
@@ -1253,6 +1468,9 @@ isOneToOne: false
                            },
 "_record_cancel":
 { Args: { "p_amount": number,"p_note": string,"p_order": string }; Returns: undefined
+                           },
+"_redeem_vendor_code":
+{ Args: { "p_code": string }; Returns: string
                            },
 "_reprice_products":
 { Args: { "p_product"?: string }; Returns: number
@@ -1282,6 +1500,9 @@ isOneToOne: false
 "_unwind_order_pieces":
 { Args: { "p_order": string,"p_why": string }; Returns: undefined
                            },
+"_vendor_or_raise":
+{ Args: Record<PropertyKey, never>; Returns: string
+                           },
 "_window_from":
 { Args: { "p_cycle": Omit<Database["public"]['Tables']["cycles"]['Row'], Database["public"]['Tables']["cycles"]['ComputedFields']>,"p_order": Omit<Database["public"]['Tables']["orders"]['Row'], Database["public"]['Tables']["orders"]['ComputedFields']> }; Returns: {
               "est_from": string,"est_to": string
@@ -1289,6 +1510,9 @@ isOneToOne: false
                            },
 "accept_fast_offer":
 { Args: { "p_move": string,"p_payment_intent": string }; Returns: undefined
+                           },
+"admin_approve_submission":
+{ Args: { "p_listing": Json,"p_media": Json,"p_submission": string }; Returns: string
                            },
 "admin_attention":
 { Args: Record<PropertyKey, never>; Returns: Json
@@ -1305,6 +1529,9 @@ isOneToOne: false
 "admin_cycle_totals":
 { Args: { "p_cycle": string }; Returns: Json
                            },
+"admin_decline_submission":
+{ Args: { "p_note"?: string,"p_submission": string }; Returns: undefined
+                           },
 "admin_demand":
 { Args: { "p_since"?: string }; Returns: Json
                            },
@@ -1313,6 +1540,12 @@ isOneToOne: false
                            },
 "admin_price_preview":
 { Args: { "p_shop_paise": number,"p_weight_g": number }; Returns: number
+                           },
+"admin_request_retake":
+{ Args: { "p_note"?: string,"p_reason": string,"p_submission": string }; Returns: undefined
+                           },
+"admin_rerun_photo_job":
+{ Args: { "p_house_model"?: string,"p_job": string }; Returns: undefined
                            },
 "admin_return_received":
 { Args: { "p_return": string }; Returns: undefined
@@ -1333,6 +1566,9 @@ isOneToOne: false
 { Args: Record<PropertyKey, never>; Returns: {
               "label": string,"product_id": string,"product_name": string,"qty_confirmed_at": string,"qty_listed": number,"shop_name": string,"variant_id": string
             }[]
+                           },
+"admin_vendor_sign_in_code":
+{ Args: { "p_days"?: number,"p_user": string }; Returns: string
                            },
 "advance_cycle":
 { Args: { "p_cycle": string }; Returns: Database["public"]['Enums']["cycle_status"]
@@ -1390,6 +1626,12 @@ isOneToOne: false
 "is_product_visible":
 { Args: { "p_product": string }; Returns: boolean
                            },
+"is_vendor":
+{ Args: Record<PropertyKey, never>; Returns: boolean
+                           },
+"is_worker":
+{ Args: Record<PropertyKey, never>; Returns: boolean
+                           },
 "item_refund_cents":
 { Args: { "p_item": string }; Returns: number
                            },
@@ -1401,6 +1643,9 @@ isOneToOne: false
                            },
 "move_order":
 { Args: { "p_note"?: string,"p_order": string,"p_to_cycle": string }; Returns: string
+                           },
+"my_vendor_id":
+{ Args: Record<PropertyKey, never>; Returns: string
                            },
 "rate_limit_hit":
 { Args: { "p_key": string,"p_limit": number,"p_window_seconds": number }; Returns: Json
@@ -1478,10 +1723,46 @@ isOneToOne: false
       } },
 "store_type_rows":
 { Args: { "p_type": string }; Returns: Json
+                           },
+"vendor_add_photo":
+{ Args: { "p_checks"?: Json,"p_path": string,"p_submission": string,"p_view": Database["public"]['Enums']["photo_view"] }; Returns: undefined
+                           },
+"vendor_delete_submission":
+{ Args: { "p_submission": string }; Returns: undefined
+                           },
+"vendor_keep_ready":
+{ Args: Record<PropertyKey, never>; Returns: Json
+                           },
+"vendor_may_upload":
+{ Args: { "p_path": string }; Returns: boolean
+                           },
+"vendor_me":
+{ Args: Record<PropertyKey, never>; Returns: Json
+                           },
+"vendor_money":
+{ Args: Record<PropertyKey, never>; Returns: Json
+                           },
+"vendor_new_submission":
+{ Args: { "p_type"?: Database["public"]['Enums']["product_type"] }; Returns: string
+                           },
+"vendor_pieces":
+{ Args: { "p_limit"?: number,"p_offset"?: number }; Returns: Json
+                           },
+"vendor_submission":
+{ Args: { "p_submission": string }; Returns: Json
+                           },
+"vendor_submit":
+{ Args: { "p_details": Json,"p_submission": string }; Returns: undefined
+                           },
+"worker_claim_job":
+{ Args: Record<PropertyKey, never>; Returns: Json
+                           },
+"worker_finish_job":
+{ Args: { "p_candidates": (string)[],"p_error"?: string,"p_job": string }; Returns: undefined
                            }
           }
           Enums: {
-            "app_role": "customer"|"admin","content_status": "draft"|"approved","cycle_status": "open"|"collecting"|"packed"|"exported"|"arrived"|"fulfilling"|"closed","discount_type": "percentage"|"fixed","fulfilment_mode": "order_first","move_offer_status": "none"|"offered"|"accepted"|"lapsed","ops_desk": "us"|"india","order_item_status": "active"|"unavailable"|"refunded","order_status": "pending_payment"|"confirmed"|"collecting"|"packed"|"in_transit"|"arrived"|"shipped"|"delivered"|"cancelled"|"refunded","payment_status": "pending"|"paid"|"failed"|"refunded"|"partially_refunded","pickup_status": "pending"|"picked"|"unavailable","product_status": "draft"|"live"|"paused"|"archived","product_type": "clothing"|"spice","review_status": "pending"|"approved"|"rejected","shipping_method": "standard"|"express","stock_reason": "listed"|"adjusted"|"reserved"|"released"|"picked"|"unavailable","tax_class": "clothing"|"food"|"general","vendor_status": "prospect"|"active"|"paused"
+            "app_role": "customer"|"admin"|"vendor"|"worker","application_status": "new"|"contacted"|"accepted"|"declined","content_status": "draft"|"approved","cycle_status": "open"|"collecting"|"packed"|"exported"|"arrived"|"fulfilling"|"closed","discount_type": "percentage"|"fixed","fulfilment_mode": "order_first","move_offer_status": "none"|"offered"|"accepted"|"lapsed","ops_desk": "us"|"india","order_item_status": "active"|"unavailable"|"refunded","order_status": "pending_payment"|"confirmed"|"collecting"|"packed"|"in_transit"|"arrived"|"shipped"|"delivered"|"cancelled"|"refunded","payment_status": "pending"|"paid"|"failed"|"refunded"|"partially_refunded","photo_job_status": "queued"|"running"|"done"|"failed","photo_view": "front"|"back"|"closeup","pickup_status": "pending"|"picked"|"unavailable","product_status": "draft"|"live"|"paused"|"archived","product_type": "clothing"|"spice","review_status": "pending"|"approved"|"rejected","shipping_method": "standard"|"express","stock_reason": "listed"|"adjusted"|"reserved"|"released"|"picked"|"unavailable","submission_status": "adding"|"waiting"|"photos_ready"|"needs_retake"|"approved"|"declined","tax_class": "clothing"|"food"|"general","vendor_status": "prospect"|"active"|"paused"
           }
           CompositeTypes: {
             [_ in never]: never
@@ -1597,7 +1878,7 @@ export type CompositeTypes<
 export const Constants = {
   "public": {
           Enums: {
-            "app_role": ["customer", "admin"],"content_status": ["draft", "approved"],"cycle_status": ["open", "collecting", "packed", "exported", "arrived", "fulfilling", "closed"],"discount_type": ["percentage", "fixed"],"fulfilment_mode": ["order_first"],"move_offer_status": ["none", "offered", "accepted", "lapsed"],"ops_desk": ["us", "india"],"order_item_status": ["active", "unavailable", "refunded"],"order_status": ["pending_payment", "confirmed", "collecting", "packed", "in_transit", "arrived", "shipped", "delivered", "cancelled", "refunded"],"payment_status": ["pending", "paid", "failed", "refunded", "partially_refunded"],"pickup_status": ["pending", "picked", "unavailable"],"product_status": ["draft", "live", "paused", "archived"],"product_type": ["clothing", "spice"],"review_status": ["pending", "approved", "rejected"],"shipping_method": ["standard", "express"],"stock_reason": ["listed", "adjusted", "reserved", "released", "picked", "unavailable"],"tax_class": ["clothing", "food", "general"],"vendor_status": ["prospect", "active", "paused"]
+            "app_role": ["customer", "admin", "vendor", "worker"],"application_status": ["new", "contacted", "accepted", "declined"],"content_status": ["draft", "approved"],"cycle_status": ["open", "collecting", "packed", "exported", "arrived", "fulfilling", "closed"],"discount_type": ["percentage", "fixed"],"fulfilment_mode": ["order_first"],"move_offer_status": ["none", "offered", "accepted", "lapsed"],"ops_desk": ["us", "india"],"order_item_status": ["active", "unavailable", "refunded"],"order_status": ["pending_payment", "confirmed", "collecting", "packed", "in_transit", "arrived", "shipped", "delivered", "cancelled", "refunded"],"payment_status": ["pending", "paid", "failed", "refunded", "partially_refunded"],"photo_job_status": ["queued", "running", "done", "failed"],"photo_view": ["front", "back", "closeup"],"pickup_status": ["pending", "picked", "unavailable"],"product_status": ["draft", "live", "paused", "archived"],"product_type": ["clothing", "spice"],"review_status": ["pending", "approved", "rejected"],"shipping_method": ["standard", "express"],"stock_reason": ["listed", "adjusted", "reserved", "released", "picked", "unavailable"],"submission_status": ["adding", "waiting", "photos_ready", "needs_retake", "approved", "declined"],"tax_class": ["clothing", "food", "general"],"vendor_status": ["prospect", "active", "paused"]
           }
         }
 } as const
