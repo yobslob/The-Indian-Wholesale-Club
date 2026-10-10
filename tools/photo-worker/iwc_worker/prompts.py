@@ -26,6 +26,12 @@ STYLE = {
 }
 
 
+# The house look (D-104, the founder's example w_1_green_kurti_set): a warm wall, styled like an Indian-wear catalogue.
+SCENE = ("standing on a plain light floor in front of a softly lit, warm cream textured plaster wall, soft natural "
+         "daylight from the side")
+STYLING = {"women": "matching ethnic flat footwear (juttis) and small earrings", "men": "matching ethnic footwear (mojaris)"}
+
+
 def on_model(category: str | None, wears: str | None) -> bool:
     return category in ON_MODEL and wears in ("women", "men", "unisex")
 
@@ -36,9 +42,12 @@ def try_on_prompt(view: str, category: str, wears: str | None) -> str:
     style = f", {STYLE[category]}" if category in STYLE else ""
     keep = (f"Keep the {word}'s exact colour, pattern, print, embroidery, neckline, sleeves, hem and length exactly as "
             f"in image 2.")
+    styling = STYLING["men" if wears == "men" else "women"]
+    scene = (f"The whole body from head to feet, {SCENE}, wearing {styling}. Photorealistic Indian-wear catalogue "
+             f"photo, sharp focus.")
     if view == "back":
-        return (f"The {who} from image 1, seen from behind exactly as in image 1, wearing the {word} shown from the back "
-                f"in image 2{style}. {keep} Show only what image 2 shows; do not add designs that are not in it. Same "
-                f"pose, framing, studio background and lighting as image 1. Photorealistic e-commerce catalogue photo.")
-    return (f"The {who} from image 1 wearing the {word} shown in image 2{style}. {keep} Same pose, framing, face, studio "
-            f"background and lighting as image 1. Photorealistic e-commerce catalogue photo.")
+        return (f"The {who} from image 1 in exactly the same pose as image 1, seen from behind with the head turned to "
+                f"the side, wearing the {word} shown from the back in image 2{style}. {keep} Show only what image 2 "
+                f"shows; do not add designs that are not in it. Same face, hair and body as image 1. {scene}")
+    return (f"The {who} from image 1 in exactly the same pose as image 1, facing the camera, wearing the {word} shown in "
+            f"image 2{style}. {keep} Same face, hair and body as image 1. {scene}")

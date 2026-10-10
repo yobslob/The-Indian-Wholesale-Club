@@ -1054,3 +1054,17 @@ Under D-102, D-101, D-003, D-006 and D-011:
 - **Storage kept small:** photos shrink on the phone before upload; candidates not picked are deleted once an admin
   picks one; the raw front and back are deleted after approval; the close-up is kept (it is published, D-100).
 Phases V1 – V6 in `plan/coding-plan.md` §Vendor accounts.
+
+**D-104 · 2026-10-10 · founder: The house models are the founder's own; two poses, two photos**
+Founder, verbatim: "I do not want any of these models, I will be providing my own AI generated licensed models free to
+use. I have provided one as w_1 as initial and w_1_green_kurti_set as the output. I want these two poses only as
+different images. I have provided one example for you to see, I will be giving 6 female and 4 male models soon."
+What it means for the build: the ten candidates Claude generated are dropped (and `make_house_models.py`); the house
+models are the founder's images (`design/mockups/assets/w_1.jpg` is the first), each holding two poses side by side:
+facing front, and from behind with the head turned. The worker splits each into its front and back pose
+(`tools/photo-worker/prepare_house_model.py`) and every piece gets two separate photos, one per pose: the front photo
+from the vendor's front photo, the back from the back. 6 women and 4 men (amends D-102's "6 – 7").
+*Interpretation (proposed, confirm on the next results):* the look follows the example output
+(`w_1_green_kurti_set.jpg`): a warm cream plaster wall, matching ethnic footwear, small earrings for women; no bindi or
+other jewellery is added. The founder confirms the images are licensed for commercial use (the example carries an
+image generator's corner mark, which our photos do not copy).

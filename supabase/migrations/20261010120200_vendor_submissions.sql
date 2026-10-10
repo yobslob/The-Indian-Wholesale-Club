@@ -49,7 +49,7 @@ create table public.vendor_submission_photos (
   primary key (submission_id, view)
 );
 
--- IWC's 6 - 7 synthetic house models (D-101, D-102). Photos in product-media under house-models/<slug>/.
+-- The founder's house models (D-104: 6 women, 4 men, two poses each). Photos in product-media under house-models/<slug>/.
 create table public.house_models (
   id uuid primary key default gen_random_uuid(),
   slug text not null unique check (slug ~ '^[a-z0-9]+(-[a-z0-9]+)*$'),

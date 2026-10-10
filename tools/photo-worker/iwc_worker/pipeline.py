@@ -104,29 +104,37 @@ class Pipeline:
         return [pipe(image=refs, prompt=prompt, width=OUT_W, height=OUT_H, num_inference_steps=4, guidance_scale=1.0,
                      generator=torch.Generator("cuda").manual_seed(seed)).images[0] for seed in seeds]
 
-    @staticmethod
-    def colour_match(gen: Image.Image, house: Image.Image, real_pixels: np.ndarray) -> Image.Image:
+    def colour_match(self, gen: Image.Image, house: Image.Image, real_pixels: np.ndarray) -> Image.Image:
         """Pulls the garment's main colour back to the real photo's (the model drifts, e.g. reddish-brown to plum).
-        The garment = what changed from the house model's photo; only pixels near its main colour move, so faces,
-        skin and secondary print colours stay as they are."""
-        g = cv2.cvtColor(np.array(gen.convert("RGB")), cv2.COLOR_RGB2LAB).astype(np.float32)
-        h = cv2.cvtColor(np.array(house.convert("RGB").resize(gen.size)), cv2.COLOR_RGB2LAB).astype(np.float32)
-        changed = (np.linalg.norm(g - h, axis=2) > 22).astype(np.uint8)
-        changed = cv2.morphologyEx(changed, cv2.MORPH_OPEN, np.ones((5, 5), np.uint8))
-        changed = cv2.morphologyEx(changed, cv2.MORPH_CLOSE, np.ones((9, 9), np.uint8))
-        if changed.sum() < 0.04 * changed.size or len(real_pixels) < 500:
+        The garment = the person on the output minus skin (its colour taken from the house model) and dark hair; only
+        pixels near the garment's main colour move, so faces, skin, the wall and secondary print colours stay."""
+        lab = lambda im: cv2.cvtColor(np.array(im.convert("RGB")), cv2.COLOR_RGB2LAB).astype(np.float32)
+        g = lab(gen)
+        h = lab(house)
+        house_person = self.mask(house) > 0.5
+        hp = h[house_person]
+        # skin: the house model's person pixels that are neither the white clothes (bright, grey) nor hair (dark)
+        chroma = np.linalg.norm(hp[:, 1:] - 128, axis=1)
+        skin = hp[(hp[:, 0] > 60) & (hp[:, 0] < 235) & (chroma > 8)]
+        if len(skin) < 500 or len(real_pixels) < 500:
+            return gen
+        skin_ref = np.median(skin, axis=0)
+        person = self.mask(gen) > 0.5
+        garment = person & (np.linalg.norm(g - skin_ref, axis=2) > 18) & (g[..., 0] > 45)
+        garment = cv2.morphologyEx(garment.astype(np.uint8), cv2.MORPH_OPEN, np.ones((5, 5), np.uint8))
+        if garment.sum() < 0.03 * garment.size:
             return gen
         real = cv2.cvtColor(real_pixels.reshape(-1, 1, 3).astype(np.uint8), cv2.COLOR_RGB2LAB).reshape(-1, 3)
         real = real.astype(np.float32)
         real_main = np.median(real, axis=0)
         real_main = real[np.linalg.norm(real - real_main, axis=1) < 30].mean(axis=0)
-        gen_px = g[changed > 0]
+        gen_px = g[garment > 0]
         gen_main = np.median(gen_px, axis=0)
         near = gen_px[np.linalg.norm(gen_px - gen_main, axis=1) < 30]
         if len(near) < 500:
             return gen
         shift = real_main - near.mean(axis=0)
-        weight = np.clip(1 - np.linalg.norm(g - gen_main, axis=2) / 40, 0, 1) * changed
+        weight = np.clip(1 - np.linalg.norm(g - gen_main, axis=2) / 40, 0, 1) * garment
         weight = cv2.GaussianBlur(weight.astype(np.float32), (0, 0), 3)[..., None]
         out = np.clip(g + shift * weight, 0, 255).astype(np.uint8)
         return Image.fromarray(cv2.cvtColor(out, cv2.COLOR_LAB2RGB))

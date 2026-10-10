@@ -16,7 +16,7 @@ generated or upscaled (D-100). About a minute per view on the RTX 4060 (unverifi
 | `iwc_worker/pipeline.py` | the models and image steps |
 | `iwc_worker/prompts.py` | which categories go on a model, and the words FLUX gets |
 | `iwc_worker/supa.py` | sign-in, database functions, storage (plain HTTPS, no service key) |
-| `make_house_models.py` | house model candidates for the founder to choose from |
+| `prepare_house_model.py` | splits one of the founder's house model images (two poses side by side) into front and back |
 
 ## Setup (once)
 1. **Models** (16 GB, outside the repo) in `C:\kod\iwc-photo-models\` (or set `IWC_MODELS`): `flux2-klein-4b\`
@@ -42,7 +42,9 @@ It logs to the console and `worker.log`. To start it with Windows: Task Schedule
 `C:\kod\root\tools\photo-worker\.venv\Scripts\pythonw.exe` with argument `worker.py` and "Start in"
 `C:\kod\root\tools\photo-worker`.
 
-## House models
-`make_house_models.py` writes ten candidates (front and back) and a contact sheet to
-`C:\kod\iwc-photo-models\house-model-candidates\`. The chosen 6 – 7 go to `product-media/house-models/<slug>/front.jpg`
-and `back.jpg` with a `house_models` row each (the admin screen for this is V3).
+## House models (D-104)
+The founder supplies them: 6 women and 4 men, AI-generated and licensed, each one image with two poses side by side
+(facing front; from behind with the head turned). `prepare_house_model.py <image> <slug>` splits it into
+`<IWC_MODELS>\house-models\<slug>\front.jpg` and `back.jpg`; those go to `product-media/house-models/<slug>/` with a
+`house_models` row (the admin screen for this is V3). Every piece gets two photos, one per pose, on the house look of the
+founder's example (a warm plaster wall, matching footwear; `iwc_worker/prompts.py`).

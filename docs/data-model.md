@@ -44,7 +44,7 @@ operations data are never queried from customer code.
 | | `vendor_payouts` | INR paid to a vendor. The amount is computed from the pickups it covers | admin |
 | | `vendor_submissions` | a piece a vendor sent: category, who wears it (women / men / kids / unisex: picks the house model; kids are never shown on a model), details in their words, sizes, shop price in ₹, status (adding → waiting → photos_ready → approved, or needs_retake / declined), the product it became | vendor via `vendor_*` / admin |
 | | `vendor_submission_photos` | front, back, close-up in bucket `vendor-uploads` (`<vendor>/<submission>/<file>`) with the phone's checks | vendor via functions / admin |
-| | `house_models` | IWC's synthetic models (D-101): wears women / men, front and back photos in `product-media/house-models/` | admin |
+| | `house_models` | the founder's models (D-104): wears women / men, the front and back pose in `product-media/house-models/<slug>/` | admin |
 | | `photo_jobs` | the GPU worker's queue: one per view of a clothing piece, candidates in bucket `photo-candidates` | worker via functions / admin |
 | | `stock_movements` | append-only ledger, written by trigger only (INV-4) | admin (read) |
 | | `pricing_settings` | one row: FX, freight/kg, duty %, margin %, domestic delivery days, stale-listing days, standard shipping + free threshold, express shipping + express days. Price-suggestion values and days start NULL (Q-15, Q-18); shipping prices set by migration 4 (D-041) | admin |
