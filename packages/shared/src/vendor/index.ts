@@ -2,3 +2,4 @@
 export * from './i18n';
 export * from './photo-check';
 export * from './piece';
+export * from './status';

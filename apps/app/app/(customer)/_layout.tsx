@@ -6,10 +6,12 @@ import { useSession } from '@/lib/session';
 
 /** Customer tabs (storefront.md §Mobile app, D-095): Home · Explore · Bag · Saved · Profile, on the app's own tab bar. */
 export default function CustomerTabs(): React.JSX.Element {
-  const { ready, isAdmin, viewingStore } = useSession();
+  const { ready, isAdmin, isVendor, viewingStore } = useSession();
   const count = useBag((s) => bagCount(s.lines));
   // A server-confirmed admin lands in admin mode (D-006); nothing here hints at it.
   if (ready && isAdmin && !viewingStore) return <Redirect href="/admin" />;
+  // A vendor account lands in vendor mode (D-102, vendor.md).
+  if (ready && isVendor) return <Redirect href="/vendor" />;
 
   return (
     <Tabs tabBar={(props) => <TabBar {...props} />} screenOptions={{ headerShown: false }}>

@@ -1,12 +1,11 @@
 import Link from 'next/link';
 
 import { vendorPieces } from '@repo/db/vendor';
-import { t } from '@repo/shared/vendor';
+import { pieceStatus, t, TONE_CLASS } from '@repo/shared/vendor';
 
 import { requireVendorPage } from '@/features/vendor/guard';
 import { photoUrls } from '@/features/vendor/photos';
 import { VendorTitle } from '@/features/vendor/shell';
-import { pieceStatus, TONE_CLASS } from '@/features/vendor/status';
 
 /** My pieces (D-103): what the shop sent and what is in the store, newest first, each with its photo and state. */
 export default async function PiecesPage(): Promise<React.JSX.Element> {

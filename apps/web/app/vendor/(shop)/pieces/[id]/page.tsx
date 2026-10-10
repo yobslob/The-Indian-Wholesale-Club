@@ -1,14 +1,13 @@
 import { notFound } from 'next/navigation';
 
 import { vendorCategories, vendorSubmission } from '@repo/db/vendor';
-import { t, type Wears } from '@repo/shared/vendor';
+import { pieceStatus, t, TONE_CLASS, type Wears } from '@repo/shared/vendor';
 
 import { requireVendorPage } from '@/features/vendor/guard';
 import { Icon } from '@/features/vendor/icons';
 import { NewPiece } from '@/features/vendor/new-piece';
 import { photoUrls } from '@/features/vendor/photos';
 import { VendorTitle } from '@/features/vendor/shell';
-import { pieceStatus, TONE_CLASS } from '@/features/vendor/status';
 
 const VIEWS = ['front', 'back', 'closeup'] as const;
 

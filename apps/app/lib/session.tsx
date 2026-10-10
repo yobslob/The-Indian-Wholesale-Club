@@ -14,6 +14,8 @@ interface AuthState {
    * email in admin_emails. Never decided on the phone; the UI only reflects it.
    */
   isAdmin: boolean;
+  /** Server-confirmed vendor account (D-102): is_vendor() = role 'vendor' AND an active account. */
+  isVendor: boolean;
 }
 
 interface SessionState extends AuthState {
@@ -26,28 +28,29 @@ const SessionContext = createContext<SessionState>({
   ready: false,
   session: null,
   isAdmin: false,
+  isVendor: false,
   viewingStore: false,
   setViewingStore: () => undefined,
 });
 
-async function checkAdmin(session: Session | null): Promise<boolean> {
-  if (!session) return false;
-  const { data, error } = await supabase.rpc('is_admin');
-  return !error && data === true;
+async function checkRole(session: Session | null): Promise<{ isAdmin: boolean; isVendor: boolean }> {
+  if (!session) return { isAdmin: false, isVendor: false };
+  const [admin, vendor] = await Promise.all([supabase.rpc('is_admin'), supabase.rpc('is_vendor')]);
+  return { isAdmin: !admin.error && admin.data === true, isVendor: !vendor.error && vendor.data === true };
 }
 
-/** One sign-in screen for everyone; admin mode appears only when the server says so (admin.md). */
+/** One sign-in screen for everyone; admin mode and vendor mode appear only when the server says so (admin.md, vendor.md). */
 export function SessionProvider({ children }: { children: React.ReactNode }): React.JSX.Element {
-  const [auth, setAuth] = useState<AuthState>({ ready: false, session: null, isAdmin: false });
+  const [auth, setAuth] = useState<AuthState>({ ready: false, session: null, isAdmin: false, isVendor: false });
   const [viewingStore, setViewingStore] = useState(false);
 
   useEffect(() => {
     let active = true;
     const apply = async (session: Session | null) => {
       clearQueryCache(); // another person's screens (orders, addresses) never show from memory
-      const isAdmin = await checkAdmin(session);
+      const roles = await checkRole(session);
       if (!active) return;
-      setAuth({ ready: true, session, isAdmin });
+      setAuth({ ready: true, session, ...roles });
       setViewingStore(false);
     };
     void supabase.auth.getSession().then(({ data }) => apply(data.session));

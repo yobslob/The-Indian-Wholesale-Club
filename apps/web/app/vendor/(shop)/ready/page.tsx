@@ -1,10 +1,9 @@
 import { vendorKeepReady } from '@repo/db/vendor';
-import { t } from '@repo/shared/vendor';
+import { shortDate, t } from '@repo/shared/vendor';
 
 import { requireVendorPage } from '@/features/vendor/guard';
 import { photoUrls } from '@/features/vendor/photos';
 import { VendorTitle } from '@/features/vendor/shell';
-import { shortDate } from '@/features/vendor/status';
 
 /**
  * Keep ready (D-102): pieces customers ordered that IWC will collect, with the size, how many and from when. Never

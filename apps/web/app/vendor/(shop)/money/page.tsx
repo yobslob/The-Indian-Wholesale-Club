@@ -1,9 +1,8 @@
 import { vendorMoney } from '@repo/db/vendor';
-import { formatRupees, t } from '@repo/shared/vendor';
+import { formatRupees, shortDate, t } from '@repo/shared/vendor';
 
 import { requireVendorPage } from '@/features/vendor/guard';
 import { VendorTitle } from '@/features/vendor/shell';
-import { shortDate } from '@/features/vendor/status';
 
 /** Money (D-102): what IWC owes for collected pieces, in rupees, then the pieces collected and the payouts made. */
 export default async function MoneyPage(): Promise<React.JSX.Element> {

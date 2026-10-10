@@ -14,7 +14,12 @@ a `vendor_*` database function filtered by the caller's vendor (`data-model.md`)
   password, no SMS. Every page checks `is_vendor()` on the server (`features/vendor/guard.ts`).
 - **"Join as a vendor?"** only on the vendor sign-in page (`/vendor/join`, never on a customer surface, D-003): shops in
   India pick their state; a US store's request waits for Q-35. Requests land on the admin's Vendors page.
-- **App:** the same screens as a vendor mode after the server confirms `is_vendor()` (V5, not built yet).
+- **App** (`apps/app/app/vendor/`, `features/vendor/`): the same screens as a vendor mode, mounted only after the
+  server confirms `is_vendor()` (`lib/session.tsx`); the customer tabs send a vendor there. Sign-in by the code on
+  `vendor-login` (opened by the app link `iwc://vendor-login?code=…`, or typed), redeemed by the website's server
+  (D-043); never linked from a customer screen. Photos from the camera or the gallery, checked on the phone like the
+  website (`jpeg-js` reads the pixels). The language switch is kept on the phone. Lint keeps vendor and customer
+  code apart (`apps/app/.eslintrc.js`).
 
 ## Screens (phone first: one job per screen, pictures before words, 44 px+ targets)
 | Screen | Route | What |

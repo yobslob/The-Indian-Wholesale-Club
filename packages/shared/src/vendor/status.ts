@@ -1,6 +1,6 @@
-import type { MessageKey } from '@repo/shared/vendor';
+import type { MessageKey } from './i18n';
 
-/** What a vendor sees for a piece's state (D-103): one word and a colour, pictures carry the rest. */
+/** What a vendor sees for a piece's state (D-103): one word and a colour, pictures carry the rest. Web and app. */
 export type Tone = 'wait' | 'ok' | 'act' | 'mute';
 
 export function pieceStatus(kind: 'submission' | 'product', status: string): { key: MessageKey; tone: Tone } {
@@ -9,20 +9,14 @@ export function pieceStatus(kind: 'submission' | 'product', status: string): { k
     if (status === 'draft') return { key: 'status_draft', tone: 'wait' };
     return { key: 'status_paused', tone: 'mute' };
   }
-  switch (status) {
-    case 'waiting':
-      return { key: 'status_waiting', tone: 'wait' };
-    case 'photos_ready':
-      return { key: 'status_photos_ready', tone: 'wait' };
-    case 'needs_retake':
-      return { key: 'status_needs_retake', tone: 'act' };
-    case 'declined':
-      return { key: 'status_declined', tone: 'mute' };
-    default:
-      return { key: 'status_adding', tone: 'act' };
-  }
+  if (status === 'waiting') return { key: 'status_waiting', tone: 'wait' };
+  if (status === 'photos_ready') return { key: 'status_photos_ready', tone: 'wait' };
+  if (status === 'needs_retake') return { key: 'status_needs_retake', tone: 'act' };
+  if (status === 'declined') return { key: 'status_declined', tone: 'mute' };
+  return { key: 'status_adding', tone: 'act' };
 }
 
+/** Tailwind / NativeWind classes on the shared tokens: the same on the website and in the app. */
 export const TONE_CLASS: Record<Tone, string> = {
   wait: 'bg-caution/15 text-ink',
   ok: 'bg-positive/15 text-ink',
