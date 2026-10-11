@@ -70,13 +70,13 @@ end $$;
 -- Food: live only once cleared (D-074; production has it cleared since D-107).
 update public.pricing_settings set food_cleared = false where id = 1;
 insert into public.products (slug, name, product_type, region_id, category_id, vendor_id, price_cents, status)
-values ('test-spice-x', 'Test spice', 'food', tests.id('region'), tests.id('cat_spice'), tests.id('vendor'), 900, 'draft')
-returning tests.remember('spice_x', id);
-select tests.assert_fails(format('update public.products set status = %L where id = %L', 'live', tests.id('spice_x')),
+values ('test-food-x', 'Test food', 'food', tests.id('region'), tests.id('cat_food'), tests.id('vendor'), 900, 'draft')
+returning tests.remember('food_x', id);
+select tests.assert_fails(format('update public.products set status = %L where id = %L', 'live', tests.id('food_x')),
   'products_food_not_live', 'not cleared: food stays a draft');
 update public.pricing_settings set food_cleared = true where id = 1;
-update public.products set status = 'live' where id = tests.id('spice_x');
-select tests.assert((select status = 'live' from public.products where id = tests.id('spice_x')), 'cleared: it can go live');
+update public.products set status = 'live' where id = tests.id('food_x');
+select tests.assert((select status = 'live' from public.products where id = tests.id('food_x')), 'cleared: it can go live');
 
 -- A listing without a price is priced automatically; without a shop price it needs one.
 set local role authenticated;

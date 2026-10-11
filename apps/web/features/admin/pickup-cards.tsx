@@ -92,6 +92,12 @@ async function ShopCard({ rows, cycleId }: { rows: Pickup[]; cycleId: string }):
                 <small className="text-ink-muted text-[12.5px]">
                   {p.variant?.label ?? p.item?.variant_label} × {p.quantity} · {rupees(p.shop_price_paise)} · {p.item?.order?.order_number}
                 </small>
+                {p.variant?.product?.source_url ? (
+                  // D-110: an imported piece is ordered on its shop's page, to the hub.
+                  <a href={p.variant.product.source_url} target="_blank" rel="noreferrer" className="block text-[12.5px] font-semibold underline">
+                    Order it online ↗
+                  </a>
+                ) : null}
               </span>
               <span className="col-span-2 flex gap-1.5 md:col-span-1 [&>*]:flex-1 md:[&>*]:flex-none">
                 {p.status === 'pending' ? (

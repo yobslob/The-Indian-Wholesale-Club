@@ -10,5 +10,6 @@ export * from './commerce';
 export * from './operations';
 export * from './refunds';
 export * from './reviews';
+export * from './sourcing';
 export * from './supply';
 export * from './vendor-pieces';

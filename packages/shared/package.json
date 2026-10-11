@@ -7,7 +7,7 @@
   "sideEffects": false,
   "scripts": {
     "typecheck": "tsc --noEmit",
-    "test": "tsx --test tests/domain.test.ts tests/admin.test.ts tests/product-details.test.ts tests/vendor.test.ts"
+    "test": "tsx --test tests/domain.test.ts tests/admin.test.ts tests/product-details.test.ts tests/vendor.test.ts tests/sourcing.test.ts"
   },
   "exports": {
     "./domain": "./src/domain/index.ts",
@@ -15,7 +15,8 @@
     "./india-map/mark": "./src/india-map/mark.ts",
     "./info": "./src/info/index.ts",
     "./admin": "./src/admin/index.ts",
-    "./vendor": "./src/vendor/index.ts"
+    "./vendor": "./src/vendor/index.ts",
+    "./sourcing": "./src/sourcing/index.ts"
   },
   "devDependencies": {
     "@repo/typescript-config": "workspace:*",

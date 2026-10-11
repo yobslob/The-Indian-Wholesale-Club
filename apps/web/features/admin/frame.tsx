@@ -31,6 +31,7 @@ function groups(c: WaitingCounts): [string, Item[]][] {
       'Catalog',
       [
         { href: '/admin/catalog', label: 'Products' },
+        { href: '/admin/import', label: 'Import from shops' },
         { href: '/admin/regions', label: 'Regions' },
         { href: '/admin/house-models', label: 'House models' },
         { href: '/admin/reviews', label: 'Reviews', count: c.reviews, hint: 'To approve', soft: true },

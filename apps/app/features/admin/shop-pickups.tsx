@@ -98,6 +98,16 @@ export function ShopCard({
                 <Text className="font-body text-ink-muted text-[12.5px]">
                   {p.variant?.label ?? p.item?.variant_label} × {p.quantity} · {rupees(p.shop_price_paise)} · {p.item?.order?.order_number}
                 </Text>
+                {p.variant?.product?.source_url ? (
+                  // D-110: an imported piece is ordered on its shop's page, to the hub.
+                  <Text
+                    accessibilityRole="link"
+                    onPress={() => void Linking.openURL(p.variant?.product?.source_url ?? '')}
+                    className="font-ui-semibold text-ink text-[12.5px] underline"
+                  >
+                    Order it online
+                  </Text>
+                ) : null}
               </View>
             </View>
             {p.status === 'pending' ? (

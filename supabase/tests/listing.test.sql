@@ -48,7 +48,7 @@ select tests.assert_fails(format('select public.admin_create_listing(%L::jsonb)'
   'vendor_not_found', 'a listing needs an active shop');
 
 select tests.remember('food', public.admin_create_listing(jsonb_build_object(
-  'vendor_id', tests.id('vendor'), 'category_id', tests.id('cat_spice'), 'product_type', 'food',
+  'vendor_id', tests.id('vendor'), 'category_id', tests.id('cat_food'), 'product_type', 'food',
   'name', 'Field masala', 'slug', 'field-masala', 'price_cents', 900,
   'variants', jsonb_build_array(jsonb_build_object('label', '100 g', 'qty', 5)))));
 update public.pricing_settings set food_cleared = false where id = 1;

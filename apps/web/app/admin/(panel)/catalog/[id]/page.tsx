@@ -7,6 +7,7 @@ import {
   PRICE_SUGGESTION_SETTINGS,
 } from '@repo/db/admin';
 import { formatUsd, PRODUCT_TYPE_LABEL } from '@repo/shared/domain';
+import { siteLabel } from '@repo/shared/sourcing';
 
 import {
   addVariantAction,
@@ -67,6 +68,15 @@ export default async function AdminProductPage({
           </>
         ) : null}
       </p>
+      {product.source_url ? (
+        <p className="text-[14px]">
+          Imported from{' '}
+          <a href={product.source_url} target="_blank" rel="noreferrer" className="underline">
+            {siteLabel(product.source_site ?? '')}
+          </a>{' '}
+          · price checked <When iso={product.source_checked_at} inline /> · to update it, open the page and click Add to IWC (D-110)
+        </p>
+      ) : null}
       <div className="flex flex-wrap gap-2">
         {statuses
           .filter((s) => s !== product.status)
