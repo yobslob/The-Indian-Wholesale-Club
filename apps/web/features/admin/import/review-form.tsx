@@ -109,7 +109,7 @@ export function ReviewForm({
 
   const category = data.categories.find((c) => c.id === categoryId);
   const weight = Number(f.weight) > 0 ? Number(f.weight) : (category?.default_weight_g ?? null);
-  const cents = livePrice(toPaise(f.shopPrice), weight, data.pricing);
+  const cents = livePrice(toPaise(f.shopPrice), weight, data.pricing, type);
   const toggle = (url: string): void =>
     setPhotos((list) =>
       list.includes(url) ? list.filter((u) => u !== url) : [...list, url].slice(0, 12),

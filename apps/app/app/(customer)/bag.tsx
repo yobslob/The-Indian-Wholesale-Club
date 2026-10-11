@@ -6,6 +6,7 @@ import { formatUsd } from '@repo/shared/domain';
 
 import { Photo } from '@/components/photo';
 import { Body, Button, Label, Screen } from '@/components/ui';
+import { ChargeRows } from '@/features/cart/charges';
 import { bagSubtotalCents, MAX_QTY_PER_LINE, useBag } from '@/features/cart/store';
 import { ProductRow } from '@/features/catalog/product-row';
 import { StampGrid } from '@/features/regions/stamps';
@@ -98,7 +99,8 @@ export default function BagScreen(): React.JSX.Element {
             <Text className="font-ui text-ink text-base">
               Subtotal <Text className="font-ui-semibold">{formatUsd(bagSubtotalCents(lines))}</Text>
             </Text>
-            <Body muted>Shipping, tax and delivery dates are shown at checkout.</Body>
+            <ChargeRows />
+            <Body muted>Tax and delivery dates are shown at checkout.</Body>
           </View>
           <Button label="Checkout" onPress={() => router.push('/checkout')} />
         </>

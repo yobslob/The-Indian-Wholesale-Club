@@ -153,7 +153,9 @@ export async function getPricingSettings(client: IwcClient) {
           us_last_mile_min_cents, returns_allowance_pct, margin_pct, card_fee_pct, card_fee_fixed_cents,
           express_base_cents, express_courier_cents_per_kg, express_min_kg, domestic_days_min, domestic_days_max,
           shipping_flat_cents, free_shipping_min_cents, express_shipping_cents, express_days_min, express_days_max,
-          stale_listing_days, leaving_soon_max, cycle_days, fast_offer_cents, food_cleared, updated_at`,
+          stale_listing_days, leaving_soon_max, cycle_days, fast_offer_cents, food_cleared, margin_clothing_pct, margin_food_pct,
+          margin_home_pct, courier_first_kg_paise, courier_next_kg_paise, small_order_margin_pct, parcel_handling_paise,
+          updated_at`,
       )
       .eq('id', 1)
       .single(),

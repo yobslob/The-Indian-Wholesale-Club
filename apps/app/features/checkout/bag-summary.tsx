@@ -7,6 +7,7 @@ import type { CheckoutQuote } from '@repo/shared/domain';
 
 import { Photo } from '@/components/photo';
 import { Row } from '@/components/ui';
+import { ChargeValue } from '@/features/cart/charges';
 
 /**
  * The bag in checkout and on the thank-you screen (D-087): photos, lines and the subtotal; shipping, tax, the total
@@ -39,7 +40,23 @@ export function BagSummary({ title, lines, quote }: { title: string; lines: BagL
       {b && quote ? (
         <>
           {b.discountCents > 0 ? <Row label={`Discount (${quote.promoCode ?? ''})`} value={`−${formatUsd(b.discountCents)}`} /> : null}
-          <Row label={quote.shippingMethod === 'express' ? 'Express shipping' : 'Shipping'} value={b.shippingCents === 0 ? 'Free' : formatUsd(b.shippingCents)} />
+          {quote.shippingMethod === 'express' ? (
+            <Row label="Express shipping" value={formatUsd(b.shippingCents)} />
+          ) : (
+            <>
+              {/* D-111: a small order's parcel shipping and retailer charges; struck through once they are free. */}
+              <View className="flex-row justify-between gap-3">
+                <Text className="font-body text-ink-muted flex-1 text-sm">Shipping</Text>
+                <ChargeValue cents={b.shippingCents || (b.waivedCents?.shipping ?? 0)} free={b.shippingCents === 0} />
+              </View>
+              {b.retailerCents > 0 || (b.waivedCents?.retailer ?? 0) > 0 ? (
+                <View className="flex-row justify-between gap-3">
+                  <Text className="font-body text-ink-muted flex-1 text-sm">Retailer charges</Text>
+                  <ChargeValue cents={b.retailerCents || (b.waivedCents?.retailer ?? 0)} free={b.retailerCents === 0} />
+                </View>
+              ) : null}
+            </>
+          )}
           <Row label="Sales tax" value={formatUsd(b.taxCents)} />
           <View className="border-line flex-row justify-between border-t pt-2">
             <Text className="font-ui-semibold text-ink text-base">Total</Text>

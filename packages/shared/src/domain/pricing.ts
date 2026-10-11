@@ -5,9 +5,11 @@
  * both to the founder's worked examples.
  *
  * India cost (the rupee price + India handling %) and the shipping allocation by weight make the landed cost; the
- * margin applies to all of it, then the card fees; the price goes up to the next .29 / .49 / .79 / .99. Returns null
+ * margin (by product type, D-111) applies to all of it, then the card fees; the price goes up to the next .29 / .49 / .79 / .99. Returns null
  * while any setting is missing: nothing is ever defaulted (D-047, D-069 keeps every number in Settings).
  */
+import type { ProductType } from './product-types';
+
 export interface PricingSettings {
   fxInrPerUsd: number | null;
   fxBufferPct: number | null;
@@ -16,6 +18,8 @@ export interface PricingSettings {
   marginPct: number | null;
   cardFeePct: number | null;
   cardFeeFixedCents: number | null;
+  /** D-111: the margin of each product type; a type without one uses `marginPct`. */
+  typeMarginPct?: Partial<Record<ProductType, number | null>>;
 }
 
 export interface PriceBreakdown {
@@ -37,6 +41,7 @@ export function pricingSettingsFrom(row: Record<string, unknown>): PricingSettin
     marginPct: n('margin_pct'),
     cardFeePct: n('card_fee_pct'),
     cardFeeFixedCents: n('card_fee_fixed_cents'),
+    typeMarginPct: { clothing: n('margin_clothing_pct'), food: n('margin_food_pct'), home: n('margin_home_pct') },
   };
 }
 
@@ -48,13 +53,21 @@ export function priceEnding(cents: number): number {
   return Math.floor(c / 100) * 100 + ENDINGS.find((e) => e >= c % 100)!;
 }
 
+/** The margin for a product type (D-111): its own, else the general one. */
+export function marginFor(s: PricingSettings, type?: ProductType | null): number | null {
+  return (type ? s.typeMarginPct?.[type] : null) ?? s.marginPct;
+}
+
 export function autoPrice(
-  input: { shopPricePaise: number | null; weightG: number | null },
+  input: { shopPricePaise: number | null; weightG: number | null; productType?: ProductType | null },
   s: PricingSettings,
 ): PriceBreakdown | null {
-  const values = Object.values(s);
-  if (input.shopPricePaise === null || input.weightG === null || values.some((v) => v === null)) return null;
-  const v = s as { [K in keyof PricingSettings]: number };
+  const margin = marginFor(s, input.productType);
+  const needed = [s.fxInrPerUsd, s.fxBufferPct, s.indiaHandlingPct, s.shipAllocPaisePerKg, s.cardFeePct, s.cardFeeFixedCents];
+  if (input.shopPricePaise === null || input.weightG === null || margin === null || needed.some((n) => n === null))
+    return null;
+  const [fxInrPerUsd, fxBufferPct, indiaHandlingPct, shipAllocPaisePerKg, cardFeePct, cardFeeFixedCents] = needed as number[];
+  const v = { fxInrPerUsd, fxBufferPct, indiaHandlingPct, shipAllocPaisePerKg, cardFeePct, cardFeeFixedCents, marginPct: margin } as Record<string, number>;
   if (!(v.fxInrPerUsd > 0)) throw new RangeError('fxInrPerUsd must be > 0');
   if (!Number.isInteger(input.shopPricePaise) || input.shopPricePaise < 0)
     throw new RangeError('shopPricePaise must be a non-negative integer');

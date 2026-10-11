@@ -654,3 +654,8 @@
     }
   }
 }
+
+/* D-111: the free-delivery bar floats over the page bottom; the page keeps room for it. */
+html[data-free-bar] body {
+  padding-bottom: 96px;
+}

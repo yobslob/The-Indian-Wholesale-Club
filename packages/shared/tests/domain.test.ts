@@ -61,6 +61,17 @@ describe('autoPrice (D-109): the same numbers as supabase/tests/pricing_engine.t
     assert.equal(autoPrice({ shopPricePaise: 25000, weightG: 250 }, full)?.priceCents, 1129);
   });
 
+  it('D-111: each type has its own margin (clothing 50%, food 25%, home 60%)', () => {
+    const typed = { ...full, typeMarginPct: { clothing: 50, food: 25, home: 60 } };
+    assert.equal(autoPrice({ shopPricePaise: 150000, weightG: 450, productType: 'clothing' }, typed)?.priceCents, 3929);
+    assert.equal(autoPrice({ shopPricePaise: 25000, weightG: 250, productType: 'food' }, typed)?.priceCents, 929);
+    assert.equal(autoPrice({ shopPricePaise: 150000, weightG: 450, productType: 'home' }, typed)?.priceCents, 4179);
+    // A type without its own margin uses the general one; with neither there is no price.
+    const noFood = { ...typed, typeMarginPct: { food: null } };
+    assert.equal(autoPrice({ shopPricePaise: 25000, weightG: 250, productType: 'food' }, noFood)?.priceCents, 1129);
+    assert.equal(autoPrice({ shopPricePaise: 25000, weightG: 250, productType: 'food' }, { ...full, marginPct: null }), null);
+  });
+
   it('returns null while a setting, the shop price or the weight is missing', () => {
     assert.equal(autoPrice({ shopPricePaise: 1000, weightG: null }, full), null);
     assert.equal(autoPrice({ shopPricePaise: null, weightG: 100 }, full), null);
@@ -163,12 +174,30 @@ describe('checkout quote (flows.md §3, D-041, D-070, D-073)', () => {
   const shipping = { flatCents: 900, freeMinCents: 10000, express: { baseCents: 1500, minCourierCents: 2200 } };
   const nj = { ratePct: 6.625 };
 
+  it('D-111: a small order pays its charges; from the free line up they are waived and shown', () => {
+    const smallOrder = { shippingCents: 1979, retailerCents: 199 };
+    const settings = { flatCents: 0, freeMinCents: 14999, express: null, smallOrder };
+    const small = quoteCheckout([{ unitPriceCents: 3929, quantity: 1 }], null, settings)!;
+    assert.deepEqual([small.shippingCents, small.retailerCents, small.totalCents], [1979, 199, 3929 + 1979 + 199]);
+    const big = quoteCheckout([{ unitPriceCents: 3929, quantity: 4 }], null, settings)!;
+    assert.deepEqual([big.shippingCents, big.retailerCents, big.totalCents], [0, 0, 3929 * 4]);
+    assert.deepEqual(big.waivedCents, { shipping: 1979, retailer: 199 });
+    // Express has its own fee: no small-order charges.
+    const express = { ...settings, express: { baseCents: 1500, minCourierCents: 2200 } };
+    assert.equal(quoteCheckout([{ unitPriceCents: 3929, quantity: 1 }], null, express, 'express')!.retailerCents, 0);
+    // A promo that takes the bag under the line brings the charges back.
+    const promo = { discountType: 'percentage' as const, discountValue: 10, minOrderCents: 0 };
+    assert.equal(quoteCheckout([{ unitPriceCents: 3929, quantity: 4 }], promo, settings)!.retailerCents, 199);
+  });
+
   it('adds subtotal and flat shipping; no tax where IWC is not registered (D-073)', () => {
     const quote = quoteCheckout([{ unitPriceCents: 2500, quantity: 2 }], null, shipping);
     assert.deepEqual(quote, {
       subtotalCents: 5000,
       discountCents: 0,
       shippingCents: 900,
+      retailerCents: 0,
+      waivedCents: { shipping: 0, retailer: 0 },
       taxCents: 0,
       totalCents: 5900,
       promoApplied: false,

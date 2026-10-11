@@ -1,11 +1,12 @@
 import { formatDeliveryWindow, formatUsd } from '@repo/shared/domain';
 
 import { LinePhoto } from '@/features/cart/bag-lines';
+import { ChargeValue } from '@/features/cart/charge-lines';
 
 import type { SummaryLine } from './last-order';
 import type { CheckoutQuote } from './types';
 
-function Row({ label, value, strong = false }: { label: string; value: string; strong?: boolean }): React.JSX.Element {
+function Row({ label, value, strong = false }: { label: string; value: React.ReactNode; strong?: boolean }): React.JSX.Element {
   return (
     <div className={`flex justify-between ${strong ? 'border-line mt-1 border-t pt-2.5 text-base font-bold' : ''}`}>
       <dt className={strong ? '' : 'text-ink-muted'}>{label}</dt>
@@ -52,10 +53,23 @@ export function BagSummary({
         {b ? (
           <>
             {b.discountCents > 0 ? <Row label={`Discount (${quote.promoCode})`} value={`−${formatUsd(b.discountCents)}`} /> : null}
-            <Row
-              label={quote.shippingMethod === 'express' ? 'Express shipping' : 'Shipping'}
-              value={b.shippingCents === 0 ? 'Free' : formatUsd(b.shippingCents)}
-            />
+            {quote.shippingMethod === 'express' ? (
+              <Row label="Express shipping" value={formatUsd(b.shippingCents)} />
+            ) : (
+              <>
+                {/* D-111: a small order's parcel shipping and retailer charges; struck through once they are free. */}
+                <Row
+                  label="Shipping"
+                  value={<ChargeValue cents={b.shippingCents || (b.waivedCents?.shipping ?? 0)} free={b.shippingCents === 0} />}
+                />
+                {b.retailerCents > 0 || (b.waivedCents?.retailer ?? 0) > 0 ? (
+                  <Row
+                    label="Retailer charges"
+                    value={<ChargeValue cents={b.retailerCents || (b.waivedCents?.retailer ?? 0)} free={b.retailerCents === 0} />}
+                  />
+                ) : null}
+              </>
+            )}
             <Row label="Sales tax" value={formatUsd(b.taxCents)} />
             <Row label="Total" value={formatUsd(b.totalCents)} strong />
           </>

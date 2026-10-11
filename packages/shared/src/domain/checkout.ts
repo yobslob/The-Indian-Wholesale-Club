@@ -30,6 +30,17 @@ export interface ShippingSettings {
   freeMinCents: number | null;
   /** Express: per order + the pieces' courier costs, at least the minimum (D-070). Null = no express. */
   express: { baseCents: number; minCourierCents: number } | null;
+  /**
+   * D-111: below `freeMinCents`, a standard parcel pays these (store_bag_charges); from it up they are waived. Null or
+   * absent = no small-order charges.
+   */
+  smallOrder?: SmallOrderCharges | null;
+}
+
+/** One parcel's extra shipping and the retailer charges, as store_bag_charges() works them out for a bag. */
+export interface SmallOrderCharges {
+  shippingCents: number;
+  retailerCents: number;
 }
 
 /** Sales tax in the delivery state (D-073); null where IWC is not registered (no tax). */
@@ -40,7 +51,12 @@ export interface QuoteTax {
 export interface CheckoutBreakdown {
   subtotalCents: number;
   discountCents: number;
+  /** Shipping paid (the flat rate or express, plus a small order's parcel shipping, D-111). */
   shippingCents: number;
+  /** D-111: a small order's retailer charges (0 from the free-shipping line up). */
+  retailerCents: number;
+  /** D-111: what the small-order charges would have been, shown struck through once they are free. */
+  waivedCents: { shipping: number; retailer: number };
   taxCents: number;
   totalCents: number;
   promoApplied: boolean;
@@ -106,16 +122,26 @@ export function quoteCheckout(
   const discounted = subtotalCents - discountCents;
   const freeShipping =
     method === 'standard' && shipping.freeMinCents !== null && discounted >= shipping.freeMinCents;
-  const shippingCents = freeShipping ? 0 : price;
+  const small = method === 'standard' && shipping.smallOrder ? shipping.smallOrder : null;
+  if (small) {
+    assertCents(small.shippingCents, 'smallOrder.shippingCents');
+    assertCents(small.retailerCents, 'smallOrder.retailerCents');
+  }
+  const shippingCents = freeShipping ? 0 : price + (small?.shippingCents ?? 0);
+  const retailerCents = freeShipping ? 0 : (small?.retailerCents ?? 0);
   const taxableShare = subtotalCents === 0 ? 0 : taxableCents / subtotalCents;
-  const taxCents = tax ? Math.round(((discounted + shippingCents) * taxableShare * tax.ratePct) / 100) : 0;
+  const taxCents = tax
+    ? Math.round(((discounted + shippingCents + retailerCents) * taxableShare * tax.ratePct) / 100)
+    : 0;
 
   return {
     subtotalCents,
     discountCents,
     shippingCents,
+    retailerCents,
+    waivedCents: freeShipping && small ? { shipping: small.shippingCents, retailer: small.retailerCents } : { shipping: 0, retailer: 0 },
     taxCents,
-    totalCents: discounted + shippingCents + taxCents,
+    totalCents: discounted + shippingCents + retailerCents + taxCents,
     promoApplied,
   };
 }

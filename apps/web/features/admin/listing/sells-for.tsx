@@ -1,6 +1,6 @@
 'use client';
 
-import { autoPrice, formatUsd, type PricingSettings } from '@repo/shared/domain';
+import { autoPrice, formatUsd, type PricingSettings, type ProductType } from '@repo/shared/domain';
 
 /** Rupees typed (6,200 or 6200.50) → paise; null when empty or not a number. */
 export function toPaise(rupees: string): number | null {
@@ -10,11 +10,16 @@ export function toPaise(rupees: string): number | null {
   return Number.isFinite(n) && n >= 0 ? Math.round(n * 100) : null;
 }
 
-/** The automatic price for a shop price and weight (D-075), the database's own formula; null until it can be worked out. */
-export function livePrice(shopPaise: number | null, weightG: number | null, pricing: PricingSettings): number | null {
+/** The automatic price for a shop price, weight and type (D-109, D-111), the database's own formula; null until it can be worked out. */
+export function livePrice(
+  shopPaise: number | null,
+  weightG: number | null,
+  pricing: PricingSettings,
+  productType: ProductType,
+): number | null {
   if (shopPaise === null || !weightG || weightG <= 0) return null;
   try {
-    return autoPrice({ shopPricePaise: shopPaise, weightG: Math.round(weightG) }, pricing)?.priceCents ?? null;
+    return autoPrice({ shopPricePaise: shopPaise, weightG: Math.round(weightG), productType }, pricing)?.priceCents ?? null;
   } catch {
     return null;
   }

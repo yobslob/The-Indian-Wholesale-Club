@@ -247,8 +247,16 @@ export default async function AdminOrderPage({ params }: { params: Params }): Pr
               ) : null}
               <div>
                 <dt>Shipping</dt>
-                <dd>{order.shipping_cents === 0 ? 'Free' : formatUsd(order.shipping_cents)}</dd>
+                <dd>
+                  {order.shipping_cents === 0 ? 'Free' : formatUsd(order.shipping_cents - order.retailer_charge_cents)}
+                </dd>
               </div>
+              {order.retailer_charge_cents > 0 ? (
+                <div>
+                  <dt>Retailer charges (D-111)</dt>
+                  <dd>{formatUsd(order.retailer_charge_cents)}</dd>
+                </div>
+              ) : null}
               <div>
                 <dt>Sales tax</dt>
                 <dd>{formatUsd(order.tax_cents)}</dd>

@@ -215,3 +215,28 @@ export async function getStorePolicy(client: IwcClient): Promise<StorePolicy> {
 export async function isDemoStore(client: IwcClient): Promise<boolean> {
   return unwrap(await client.rpc('dev_preview', undefined, { get: true })) === true;
 }
+
+export const bagChargesSchema = z.object({
+  /** The free-shipping line (null = none). */
+  free_min_cents: z.number().int().nullable(),
+  shipping_cents: z.number().int().min(0),
+  retailer_cents: z.number().int().min(0),
+});
+export type BagCharges = z.infer<typeof bagChargesSchema>;
+
+/**
+ * D-111: a bag's small-order charges (one courier parcel's shipping beyond what the prices carry, and the retailer
+ * charges), worked out in the database where the weights are (INV-1). Charged below `free_min_cents`, struck through
+ * from it up. The bag, the free-delivery bar and checkout all read this one function.
+ */
+export async function getBagCharges(
+  client: IwcClient,
+  items: { variantId: string; quantity: number }[],
+): Promise<BagCharges> {
+  const data = unwrap(
+    await client.rpc('store_bag_charges', {
+      p_items: items.slice(0, 50).map((i) => ({ variant_id: i.variantId, quantity: i.quantity })),
+    }),
+  );
+  return bagChargesSchema.parse(data);
+}

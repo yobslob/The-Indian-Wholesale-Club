@@ -1,5 +1,6 @@
 import { Redirect, Tabs } from 'expo-router';
 
+import { FreeDeliveryBar } from '@/features/cart/charges';
 import { bagCount, useBag } from '@/features/cart/store';
 import { TabBar } from '@/features/shell/tab-bar';
 import { useSession } from '@/lib/session';
@@ -14,10 +15,26 @@ export default function CustomerTabs(): React.JSX.Element {
   if (ready && isVendor) return <Redirect href="/vendor" />;
 
   return (
-    <Tabs tabBar={(props) => <TabBar {...props} />} screenOptions={{ headerShown: false }}>
+    <Tabs
+      tabBar={(props) => (
+        <TabBar
+          {...props}
+          // D-111: the free-delivery bar rides above the tabs, except on the Bag tab (its summary says the same).
+          above={
+            props.state.routes[props.state.index]?.name === 'bag' ? null : (
+              <FreeDeliveryBar onPress={() => props.navigation.navigate('bag')} />
+            )
+          }
+        />
+      )}
+      screenOptions={{ headerShown: false }}
+    >
       <Tabs.Screen name="index" options={{ title: 'Home' }} />
       <Tabs.Screen name="explore" options={{ title: 'Explore' }} />
-      <Tabs.Screen name="bag" options={{ title: 'Bag', tabBarBadge: count > 0 ? count : undefined }} />
+      <Tabs.Screen
+        name="bag"
+        options={{ title: 'Bag', tabBarBadge: count > 0 ? count : undefined }}
+      />
       <Tabs.Screen name="saved" options={{ title: 'Saved' }} />
       <Tabs.Screen name="profile" options={{ title: 'Profile' }} />
     </Tabs>

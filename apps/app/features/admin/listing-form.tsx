@@ -125,11 +125,11 @@ export function ListingForm({ data, onDone }: { data: ListingFormData; onDone: (
   const vendor = data.vendors.find((v) => v.id === vendorId);
   const categories = data.categories.filter((c) => c.product_type === type && c.is_active);
   const weight = Number(f.weight) || null;
-  // D-075: the price follows from the shop price and the weight (else the category's typical weight), as the database
+  // D-109, D-111: the price follows from the shop price, the type's margin and the weight (else the category's typical weight), as the database
   // will set it. A typed price overrides it.
   const category = data.categories.find((c) => c.id === categoryId);
   const autoWeight = weight ?? category?.default_weight_g ?? null;
-  const suggestion = f.shopPrice && autoWeight ? autoPrice({ shopPricePaise: toCents(f.shopPrice), weightG: Math.round(autoWeight) }, data.pricing) : null;
+  const suggestion = f.shopPrice && autoWeight ? autoPrice({ shopPricePaise: toCents(f.shopPrice), weightG: Math.round(autoWeight), productType: type }, data.pricing) : null;
   const slug = listingSlug(f.name || 'new listing', suffix);
 
   async function pick(source: 'camera' | 'library'): Promise<void> {

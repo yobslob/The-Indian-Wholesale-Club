@@ -36,6 +36,14 @@ export function BuyBar({
     io.observe(el);
     return () => io.disconnect();
   }, [target]);
+  // The free-delivery bar (D-111) rides above this bar on phones while it shows.
+  useEffect(() => {
+    if (shown) document.documentElement.dataset.buyBar = '';
+    else delete document.documentElement.dataset.buyBar;
+    return () => {
+      delete document.documentElement.dataset.buyBar;
+    };
+  }, [shown]);
 
   return (
     <div

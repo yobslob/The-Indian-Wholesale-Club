@@ -31,7 +31,7 @@ export function orderConfirmationHtml(order: OrderDetail, ctx: EmailContext): st
   const rows: [string, string][] = [['Subtotal', formatUsd(o.subtotal_cents)]];
   if (o.discount_cents > 0) rows.push(['Discount', `−${formatUsd(o.discount_cents)}`]);
   rows.push(
-    [o.shipping_method === 'express' ? 'Express shipping' : 'Shipping', o.shipping_cents === 0 ? 'Free' : formatUsd(o.shipping_cents)],
+    [o.shipping_method === 'express' ? 'Express shipping' : o.shipping_cents > 0 ? 'Shipping & retailer charges' : 'Shipping', o.shipping_cents === 0 ? 'Free' : formatUsd(o.shipping_cents)],
     ['Sales tax', formatUsd(o.tax_cents)],
     ['Total', formatUsd(o.total_cents)],
   );

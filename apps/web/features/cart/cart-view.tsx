@@ -6,6 +6,7 @@ import { useEffect, useState } from 'react';
 import { formatUsd } from '@repo/shared/domain';
 
 import { BagLines } from './bag-lines';
+import { ChargeLines } from './charge-lines';
 import { cartSubtotalCents, useCart } from './store';
 
 export const checkoutButton = 'bg-brand text-on-brand font-ui inline-grid h-[52px] place-items-center rounded-pill px-7 text-base font-semibold';
@@ -23,16 +24,20 @@ export function EmptyLine(): React.JSX.Element {
   );
 }
 
-/** Subtotal with the line about what checkout adds (prices are indicative until the server prices the bag, D-038). */
+/**
+ * Subtotal, the small-order charges (D-111) and the line about what checkout adds (prices are indicative until the
+ * server prices the bag, D-038).
+ */
 export function Subtotal(): React.JSX.Element {
   const lines = useCart((s) => s.lines);
   return (
-    <p className="font-ui m-0 text-base font-medium">
-      Subtotal <b className="font-bold">{formatUsd(cartSubtotalCents(lines))}</b>
-      <small className="text-ink-muted font-body mt-1 block text-[13px] font-normal">
-        Shipping, tax and delivery dates are shown at checkout.
-      </small>
-    </p>
+    <div className="grid min-w-[240px] gap-2">
+      <p className="font-ui m-0 flex items-baseline justify-between gap-3 text-base font-medium">
+        Subtotal <b className="font-bold">{formatUsd(cartSubtotalCents(lines))}</b>
+      </p>
+      <ChargeLines />
+      <small className="text-ink-muted font-body block text-[13px] font-normal">Tax and delivery dates are shown at checkout.</small>
+    </div>
   );
 }
 

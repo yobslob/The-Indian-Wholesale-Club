@@ -33,12 +33,28 @@ update public.pricing_settings set ship_alloc_paise_per_kg = 146100 where id = 1
 update public.products set price_auto = true where id = tests.id('p_live');
 update public.product_variants set weight_g = 800 where id = tests.id('v_live');
 select tests.assert((select price_cents from public.products where id = tests.id('p_live')) =
-                    public._auto_price_cents(100000, 800), 'a weight on a variant prices the product');
+                    public._auto_price_cents(100000, 800, 'clothing'), 'a weight on a variant prices the product');
 select tests.assert((select price_cents from public.products where id = tests.id('p_draft')) = 5000,
   'a hand-priced product keeps its price');
-update public.pricing_settings set margin_pct = 150 where id = 1;
+update public.pricing_settings set margin_clothing_pct = 150 where id = 1;
 select tests.assert((select price_cents from public.products where id = tests.id('p_live')) =
-                    public._auto_price_cents(100000, 800), 'a new margin reprices it at once');
+                    public._auto_price_cents(100000, 800, 'clothing'), 'a new margin reprices it at once');
+-- D-111: each type has its own margin; a type without one falls back to the general margin.
+update public.pricing_settings set margin_pct = 50, margin_clothing_pct = 50, margin_food_pct = 25, margin_home_pct = 60
+where id = 1;
+select tests.assert(public._auto_price_cents(150000, 450, 'clothing') = 3929, 'D-111: clothing at 50% (the kurta, $39.29)');
+select tests.assert(public._auto_price_cents(25000, 250, 'food') < public._auto_price_cents(25000, 250, 'clothing'),
+  'D-111: food at 25% costs less than at 50%');
+select tests.assert(public._auto_price_cents(150000, 450, 'home') > public._auto_price_cents(150000, 450, 'clothing'),
+  'D-111: home & gifts at 60% costs more than at 50%');
+update public.pricing_settings set margin_food_pct = null where id = 1;
+select tests.assert(public._auto_price_cents(25000, 250, 'food') = public._auto_price_cents(25000, 250),
+  'D-111: no food margin = the general margin');
+update public.pricing_settings set margin_food_pct = 25, food_cleared = true where id = 1;
+update public.products set product_type = 'food', category_id = tests.id('cat_food') where id = tests.id('p_live');
+select tests.assert((select price_cents from public.products where id = tests.id('p_live')) =
+                    public._auto_price_cents(100000, 800, 'food'), 'D-111: a product that becomes food takes its margin');
+update public.products set product_type = 'clothing', category_id = tests.id('cat_clothing') where id = tests.id('p_live');
 update public.categories set default_weight_g = 2000 where id = tests.id('cat_clothing');
 update public.product_variants set weight_g = null where product_id = tests.id('p_live');
 select tests.assert((select price_cents from public.products where id = tests.id('p_live')) =
@@ -87,7 +103,7 @@ select tests.remember('auto_listing', public.admin_create_listing(jsonb_build_ob
   'attributes', jsonb_build_object('fibre_content', 'Silk', 'care', 'Dry clean'),
   'variants', jsonb_build_array(jsonb_build_object('label', 'Red', 'qty', 1, 'weight_g', 900)))));
 select tests.assert(
-  (select price_auto and price_cents = public.admin_price_preview(300000, 900) from public.products
+  (select price_auto and price_cents = public.admin_price_preview(300000, 900, 'clothing') from public.products
    where id = tests.id('auto_listing')),
   'D-075: entered in ₹, priced in $ by itself');
 select tests.assert_fails(format('select public.admin_create_listing(%L::jsonb)', jsonb_build_object(
@@ -96,7 +112,7 @@ select tests.assert_fails(format('select public.admin_create_listing(%L::jsonb)'
   'variants', jsonb_build_array(jsonb_build_object('label', 'One', 'qty', 1)))), 'price_needed',
   'no shop price and no price: the admin is asked for one');
 select tests.act_as(tests.id('cust_a'));
-select tests.assert_fails('select public.admin_price_preview(100000, 800)', 'admin_only', 'customers never see the costs');
+select tests.assert_fails('select public.admin_price_preview(100000, 800, ''food'')', 'admin_only', 'customers never see the costs');
 reset role;
 
 rollback;

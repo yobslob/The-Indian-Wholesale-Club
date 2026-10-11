@@ -21,6 +21,7 @@ confusion. If you need a concept that isn't here, add it (and a decision if it's
 | **export** | the physical India → US consignment of a cycle (AWB, customs) | fields on `cycles` | never shown | shipment (reserved for the US parcel) |
 | **pickup** | collecting one ordered piece from its vendor. **Admin only** | `pickups` | never shown | collection, sourcing |
 | **payout** | a payment in INR to a vendor for collected pieces. **Admin only** | `vendor_payouts` | never shown | settlement |
+| **small-order charges** | below the free-shipping line, a bag's **Shipping** (its own courier parcel beyond what the prices carry) and **Retailer charges** (shop delivery to the hub + packing); waived from the line up (D-111) | `store_bag_charges()`, `orders.retailer_charge_cents` | "Shipping", "Retailer charges" | small order fee, surcharge |
 | **shipment** | the US domestic parcel sent to a customer (with tracking number) | `orders.tracking_number`, status `shipped` | "Shipped" | export |
 | **delivery window** | the from/to dates promised before payment (D-008) | `orders.est_delivery_from/_to` | "Arrives Oct 30 – Nov 4" | ETA (in customer copy) |
 | **desk** | which side an admin works: `us` or `india` (D-007) | `profiles.desk` | never shown | team, side |

@@ -150,6 +150,12 @@ Migration 31 (D-099, the second speed audit): `admin_order_counts()` (every orde
 send, shops owed for picked pieces) and `admin_cycle_totals(cycle)` (the cycle card's orders, pieces, shops and sales),
 admin only, counted in SQL because the API sends at most 1,000 rows; indexes for orders by status and newest, pickups
 by status, what each shop is owed, and a payout's pieces.
+Migration 40 (D-111): `pricing_settings` margins by type (`margin_clothing_pct`, `margin_food_pct`, `margin_home_pct`),
+the courier's rates (`courier_first_kg_paise`, `courier_next_kg_paise`), `small_order_margin_pct` and
+`parcel_handling_paise`; `_auto_price_cents(shop, weight, type)` (the two-argument form = no type) and
+`admin_price_preview(shop, weight, type)`; `orders.retailer_charge_cents` (the part of `shipping_cents` that was retailer
+charges, admin view); `store_bag_charges(items)` (anon: a bag's small-order shipping and retailer charges and the
+free-shipping line, never a weight; `supabase/tests/bag_charges.test.sql`).
 Migrations 38 – 39 (D-110): the type `spice` renamed `food` (`food_cleared`, trigger `_food_cleared_check`); imported
 listings: `products.source_url` (unique, https), `source_site`, `source_checked_at`, `source_in_stock` and
 `vendors.online_site`, all admin-only (no `store_*` object reads them; `supabase/tests/sourced_listings.test.sql`).

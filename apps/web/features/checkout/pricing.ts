@@ -3,6 +3,7 @@ import 'server-only';
 import { z } from 'zod';
 
 import { getCheckoutContext } from '@repo/db/server';
+import { getBagCharges } from '@repo/db/store';
 import {
   emailSchema,
   quoteCheckout,
@@ -63,7 +64,10 @@ export async function priceCart(
     );
   }
   const ids = [...quantities.keys()];
-  const context = await getCheckoutContext(service, ids, request.promoCode ?? null, request.address.state);
+  const [context, charges] = await Promise.all([
+    getCheckoutContext(service, ids, request.promoCode ?? null, request.address.state),
+    getBagCharges(service, ids.map((variantId) => ({ variantId, quantity: quantities.get(variantId)! }))),
+  ]);
   const byId = new Map(context.variants.map((v) => [v.variant_id, v]));
 
   const unavailable = ids.filter((id) => !byId.has(id));
@@ -108,10 +112,12 @@ export async function priceCart(
       }
     : null;
   // D-041: standard is free (a setting). D-070: express is the courier from Mumbai to the door, priced per order +
-  // per piece, offered once its settings exist.
+  // per piece, offered once its settings exist. D-111: below the free-shipping line a standard parcel pays its own
+  // shipping and the retailer charges.
   const shipping = {
     flatCents: context.shipping.flat_cents,
     freeMinCents: context.shipping.free_min_cents,
+    smallOrder: { shippingCents: charges.shipping_cents, retailerCents: charges.retailer_cents },
     express: context.express
       ? { baseCents: context.express.base_cents, minCourierCents: context.express.min_courier_cents }
       : null,
@@ -125,7 +131,7 @@ export async function priceCart(
   const breakdown = method === 'express' ? express : standard;
   // No price for standard shipping yet: checkout stays closed rather than guessing a fee.
   if (!breakdown || !standard) return { ok: false, problem: { kind: 'closed' } };
-  // D-109: shipping is in the prices, so a parcel needs at least the smallest order (before any promo).
+  // A smallest order is still a setting (D-109); since D-111 it is unset and small bags pay the charges instead.
   const minOrderCents = context.shipping.min_order_cents;
   if (minOrderCents !== null && breakdown.subtotalCents < minOrderCents) {
     return { ok: false, problem: { kind: 'below_minimum', minOrderCents, subtotalCents: breakdown.subtotalCents } };
@@ -157,7 +163,7 @@ export async function priceCart(
       shippingMethod: method,
       delivery: method === 'express' && expressWindow ? expressWindow : standardWindow,
       options: {
-        standard: { shippingCents: standard.shippingCents, delivery: standardWindow },
+        standard: { shippingCents: standard.shippingCents + standard.retailerCents, delivery: standardWindow },
         express:
           express && expressWindow
             ? { shippingCents: express.shippingCents, delivery: expressWindow }

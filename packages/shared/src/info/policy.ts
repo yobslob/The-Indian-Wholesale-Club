@@ -24,10 +24,13 @@ export const pct = (n: number): string => `${Number(n.toFixed(3))}%`;
 export const dayRange = (from: number | null, to: number | null): string | null =>
   from !== null && to !== null ? (from === to ? `${from} days` : `${from} to ${to} days`) : null;
 
-/** "free", "$5.00", plus the free-shipping threshold when there is one; with a smallest order (D-109), "free on orders over $x". */
+/** "free", "$5.00", plus the free-shipping threshold when there is one (D-111: small orders pay their charges); with a smallest order (D-109), "free on orders over $x". */
 export function standardShipping(p: InfoPolicy): string {
   if (p.min_order_cents !== null && p.shipping_flat_cents === 0)
     return `free on orders over ${formatUsd(p.min_order_cents)} (the smallest order we can send)`;
+  // D-111: below the line a small order pays its own parcel's shipping and the retailer charges.
+  if (p.shipping_flat_cents === 0 && p.free_shipping_min_cents !== null)
+    return `free on orders over ${formatUsd(p.free_shipping_min_cents)}; a smaller order pays its parcel's shipping and retailer charges, shown in your bag before checkout`;
   const base =
     p.shipping_flat_cents === 0 ? 'free' : p.shipping_flat_cents !== null ? formatUsd(p.shipping_flat_cents) : 'shown at checkout';
   return p.free_shipping_min_cents !== null && p.shipping_flat_cents !== 0

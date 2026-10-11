@@ -159,3 +159,34 @@ What it means for the build:
 default (the shop's own stock is unknown, so this is only a cap until the next price check); the state is never
 guessed silently (a pre-filled guess from well-known craft names, confirmed by the admin, D-004). The hub timings
 (1–10 days to the hub, 8–11 days by air) are the founder's; customer delivery dates still come from cycle data (D-008).
+
+**D-111 · 2026-10-12 · founder: Margins by product type; small orders pay their charges instead of a minimum; the free-delivery bar**
+Founder, verbatim: "we also figured out some amazon types numbers, which consists of 10% safety buffer on Indian side
+then a dynamic(50% on clothing, 25% on edibles and 60% on home and decor) profit margin which basically includes all the
+taxes and costs and yet saves us some profit. We have to handle and figure this out in a dynamical solution. The package
+side is clear as it will be around 5kg or more because the minimum shipment we have set is 149.99$ so the user has to
+select 3-4 items. And don't do the "you can't order below 149.99", instead add charges and show it like shipping charges
+and retailer charges and they both will cover the cost if a single package has to be ordered from india to usa just keep
+the profit margin on below 149 orders low so they don't overprice. and strikethrough the shipping charges and retailer
+charges as soon as cart goes above 149 but silently we are adding all those costs in the item itself. So basically keep
+it profit productive in each case without getting too overpricy. On a little note I have added how a little popup should
+look like once the user has added one item. this popup will keep showing dynamically how much the user needs to add for
+free shipping" (with a screenshot of a bar: "Add ₹72 more to unlock FREE DELIVERY", a progress line, "CART 1 ITEM", the
+item's photo and an arrow).
+What it means for the build (migration `supabase/migrations/20261012120000_pilot_charges.sql`):
+- The pilot price (D-109) takes the product type's margin: clothing 50%, food 25%, home & gifts 60% (Settings, one
+  field each; `margin_pct` is the fallback). India handling stays the 10% buffer. Every automatic price follows.
+- D-109's smallest order goes. Below the free-shipping line ($149.99) the bag, checkout and the order show
+  **Shipping** (one courier parcel of the bag's weight at the founder's quoted rates, ₹2,242 for the first kg and
+  ₹678.50 for each further kg incl. GST, less the shipping already inside the item prices) and **Retailer charges**
+  (the shop's delivery to the hub and the packing of one parcel), both with a low small-order margin and card fees.
+  From the line up both show struck through and "Free": the item prices carry the costs. `store_bag_charges()` works
+  them out where the weights are (INV-1); checkout charges them on the server.
+- The **free-delivery bar**: once a piece is in the bag, a card at the bottom of every store page (web) and above the
+  tabs (app) says how much more unlocks free delivery, with a progress line, the bag count and the newest photo; it
+  opens the bag. In the brand colour, not the screenshot's blue.
+*Claude's choices in it (proposed, the founder confirms or changes in Settings):* the small-order margin 10% and the
+retailer charges ₹150 per parcel (labelled estimates); the shipping allocation inside prices stays ₹1,461/kg (the
+2 kg slab, D-109) although the founder expects parcels around 5 kg, so heavier parcels earn a little more; a promo that
+takes a bag under the line brings the charges back; express (D-070) has its own fee and no small-order charges.
+

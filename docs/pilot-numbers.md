@@ -1,5 +1,11 @@
 # Pilot numbers: every variable, its placeholder and where to change it
 
+> **Pilot pricing today (D-109, D-111):** price = (shop ₹ × 1.10 India handling) ÷ rate + kg × ₹1,461 shipping
+> allocation, × (1 + the type's margin: clothing 50%, food 25%, home & gifts 60%), + card fees, up to .29/.49/.79/.99.
+> Below $149.99 a bag also pays Shipping (its own parcel at ₹2,242 first kg + ₹678.50 each further kg, less what the
+> prices carry) and Retailer charges (₹150 per parcel), both at a 10% small-order margin; from $149.99 up they show
+> struck through as free. Every number is in Settings. The sections below describe the retailer model's formula (D-075).
+
 The pilot shipment (D-069) runs on **high-end placeholders** chosen by Claude on 2026-10-06, so prices come out safe
 while the real costs are unknown. Each placeholder carries an "estimate" label in the admin (Settings) until you save
 your own number, which removes the label. `pnpm launch:check` lists every placeholder left.

@@ -81,7 +81,9 @@ export async function POST(
       })),
       subtotalCents: quote.breakdown.subtotalCents,
       discountCents: quote.breakdown.discountCents,
-      shippingCents: quote.breakdown.shippingCents,
+      // D-111: the retailer charges travel inside the order's shipping; their part is kept beside it.
+      shippingCents: quote.breakdown.shippingCents + quote.breakdown.retailerCents,
+      retailerChargeCents: quote.breakdown.retailerCents,
       taxCents: quote.breakdown.taxCents,
       totalCents: quote.breakdown.totalCents,
       promoCodeId: priced.promoCodeId,

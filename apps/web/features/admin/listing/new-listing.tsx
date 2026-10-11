@@ -51,7 +51,7 @@ export function NewListing({ data }: { data: ListingFormData }): React.JSX.Eleme
   const webSlug = slug ?? autoSlug;
   const weights = options.map((o) => Number(o.weight)).filter((w) => w > 0);
   const weight = weights.length ? Math.max(...weights) : (category?.default_weight_g ?? null);
-  const cents = livePrice(toPaise(f.shopPrice), weight, data.pricing);
+  const cents = livePrice(toPaise(f.shopPrice), weight, data.pricing, type);
 
   const save = (publish: boolean): void => {
     setProblem(null);

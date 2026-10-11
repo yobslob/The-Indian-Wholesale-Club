@@ -34,8 +34,12 @@ describe('policy text (Shipping & returns, FAQ)', () => {
     assert.equal(taxSentence([]), 'No sales tax is added to orders today.');
   });
 
-  it('free shipping never says "free from" a threshold', () => {
-    assert.equal(standardShipping({ ...policy, free_shipping_min_cents: 10000 }), 'free');
+  it('free shipping says what a smaller order pays (D-111)', () => {
+    assert.equal(standardShipping(policy), 'free');
+    assert.equal(
+      standardShipping({ ...policy, free_shipping_min_cents: 14999 }),
+      "free on orders over $149.99; a smaller order pays its parcel's shipping and retailer charges, shown in your bag before checkout",
+    );
     assert.equal(standardShipping({ ...policy, shipping_flat_cents: 500, free_shipping_min_cents: 10000 }), '$5.00, free from $100.00');
     assert.equal(
       standardShipping({ ...policy, min_order_cents: 14999 }),

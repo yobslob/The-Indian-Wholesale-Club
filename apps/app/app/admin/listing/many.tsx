@@ -125,7 +125,7 @@ function AddMany({ data }: { data: ListingFormData }): React.JSX.Element {
       ))}
 
       {drafts.map((d, i) => {
-        const cents = d.shopPrice && category?.default_weight_g ? autoPrice({ shopPricePaise: toCents(d.shopPrice), weightG: category.default_weight_g }, data.pricing)?.priceCents : null;
+        const cents = d.shopPrice && category?.default_weight_g ? autoPrice({ shopPricePaise: toCents(d.shopPrice), weightG: category.default_weight_g, productType: 'clothing' }, data.pricing)?.priceCents : null;
         return (
           <View key={d.key} className="border-line bg-paper flex-row gap-3 rounded-[14px] border p-3">
             <View className="w-[60px]">

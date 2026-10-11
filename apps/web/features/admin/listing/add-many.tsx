@@ -225,7 +225,7 @@ export function AddMany({ data }: { data: ListingFormData }): React.JSX.Element 
                       <input aria-label={`Shop price in rupees, row ${i + 1}`} inputMode="decimal" value={r.shopPrice} onChange={(e) => set(r.key, { shopPrice: e.target.value })} placeholder="₹" className={cell} />
                     </td>
                     <td>
-                      <SellsFor compact cents={livePrice(toPaise(r.shopPrice), cat?.default_weight_g ?? null, data.pricing)} />
+                      <SellsFor compact cents={livePrice(toPaise(r.shopPrice), cat?.default_weight_g ?? null, data.pricing, 'clothing')} />
                     </td>
                     <td>
                       <input aria-label={`Pieces, row ${i + 1}`} type="number" min="0" value={r.pieces} onChange={(e) => set(r.key, { pieces: e.target.value })} className={`${cell} w-20 text-right`} />

@@ -129,7 +129,7 @@ export function OrderView({
       <View className="gap-1.5">
         <Row label="Subtotal" value={formatUsd(o.subtotal_cents)} />
         {o.discount_cents > 0 ? <Row label="Discount" value={`−${formatUsd(o.discount_cents)}`} /> : null}
-        <Row label={o.shipping_method === 'express' ? 'Express shipping' : 'Shipping'} value={o.shipping_cents === 0 ? 'Free' : formatUsd(o.shipping_cents)} />
+        <Row label={o.shipping_method === 'express' ? 'Express shipping' : o.shipping_cents > 0 ? 'Shipping & retailer charges' : 'Shipping'} value={o.shipping_cents === 0 ? 'Free' : formatUsd(o.shipping_cents)} />
         <Row label="Sales tax" value={formatUsd(o.tax_cents)} />
         <View className="border-line flex-row justify-between border-t pt-2">
           <Text className="font-ui-semibold text-ink text-base">Total</Text>
