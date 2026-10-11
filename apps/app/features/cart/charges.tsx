@@ -4,11 +4,11 @@ import { Pressable, Text, View } from 'react-native';
 import { getBagCharges, type BagCharges } from '@repo/db/store';
 import { formatUsd } from '@repo/shared/domain';
 
+import { bagCount, bagSubtotalCents, useBag, type BagLine } from './store';
+
 import { Photo } from '@/components/photo';
 import { supabase } from '@/lib/supabase';
 import { useQuery } from '@/lib/use-query';
-
-import { bagCount, bagSubtotalCents, useBag, type BagLine } from './store';
 
 const bagKey = (lines: BagLine[]): string =>
   lines
