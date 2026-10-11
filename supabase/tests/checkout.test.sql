@@ -11,7 +11,7 @@ insert into public.promo_codes (code, discount_type, discount_value, max_uses, u
 values ('USEDUP', 'fixed', 500, 1, 1);
 insert into public.promo_codes (code, discount_type, discount_value, is_active)
 values ('OFF', 'fixed', 500, false);
-update public.pricing_settings set shipping_flat_cents = 900, free_shipping_min_cents = 10000 where id = 1;
+update public.pricing_settings set shipping_flat_cents = 900, free_shipping_min_cents = 10000, min_order_cents = 5000 where id = 1;
 
 -- Privileges: never callable by visitors or customers (it reads promo_codes).
 set local role anon;
@@ -45,8 +45,8 @@ select tests.assert(
   and (current_setting('tests.ctx')::jsonb -> 'promo' ->> 'discount_value') = '10',
   'a usable promo code is found case-insensitively');
 select tests.assert(
-  (current_setting('tests.ctx')::jsonb -> 'shipping') = '{"flat_cents": 900, "free_min_cents": 10000}'::jsonb,
-  'shipping settings are returned as stored');
+  (current_setting('tests.ctx')::jsonb -> 'shipping') = '{"flat_cents": 900, "free_min_cents": 10000, "min_order_cents": 5000}'::jsonb,
+  'shipping settings are returned as stored (D-109: includes min_order_cents)');
 select tests.assert((current_setting('tests.ctx')::jsonb -> 'delivery' ->> 'est_delivery_from') is not null,
   'the next delivery window is included');
 
