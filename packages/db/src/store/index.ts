@@ -84,7 +84,7 @@ export interface BrowseFilter {
 }
 
 /**
- * See all (website /clothing and /spices, the app's Browse; D-062, D-067): one page of light cards newest first, the
+ * See all (website /clothing and /food, the app's Browse; D-062, D-067): one page of light cards newest first, the
  * total, and the per-state and per-category counts for the filters, in one round trip (store_browse).
  */
 export async function browseProducts(client: IwcClient, filter: BrowseFilter): Promise<BrowsePage> {

@@ -10,6 +10,20 @@ const supabaseWs = supabaseOrigin.replace(/^http/, 'ws');
 // React Fast Refresh needs eval in development only.
 const devEval = process.env.NODE_ENV === 'production' ? '' : " 'unsafe-eval'";
 
+const SECURITY_HEADERS = [
+    {
+      key: 'Strict-Transport-Security',
+      value: 'max-age=63072000; includeSubDomains; preload',
+    },
+    { key: 'X-Frame-Options', value: 'SAMEORIGIN' },
+    { key: 'X-Content-Type-Options', value: 'nosniff' },
+    { key: 'Referrer-Policy', value: 'strict-origin-when-cross-origin' },
+    {
+      key: 'Permissions-Policy',
+      value: 'camera=(), microphone=(), geolocation=(), browsing-topics=()',
+    },
+];
+
 /** @type {import('next').NextConfig} */
 const nextConfig = {
   transpilePackages: ['@repo/db', '@repo/shared'],
@@ -39,10 +53,15 @@ const nextConfig = {
           },
     ],
   },
+  // D-110: Spices became Food; old links keep working.
+  async redirects() {
+    return [{ source: '/spices', destination: '/food', permanent: true }];
+  },
   async headers() {
     return [
       {
-        source: '/(.*)',
+        // Every page but the importer, whose preview shows the source site's photos before they are copied (D-110).
+        source: '/((?!admin/import).*)',
         headers: [
           {
             key: 'Content-Security-Policy',
@@ -56,17 +75,24 @@ const nextConfig = {
               `connect-src 'self' ${supabaseOrigin} ${supabaseWs} https://api.stripe.com`,
             ].join('; '),
           },
+          ...SECURITY_HEADERS,
+        ],
+      },
+      {
+        source: '/admin/import',
+        headers: [
           {
-            key: 'Strict-Transport-Security',
-            value: 'max-age=63072000; includeSubDomains; preload',
+            key: 'Content-Security-Policy',
+            value: [
+              "default-src 'self'",
+              `script-src 'self' 'unsafe-inline'${devEval}`,
+              "style-src 'self' 'unsafe-inline'",
+              "font-src 'self' data:",
+              `img-src 'self' data: blob: https: ${supabaseOrigin}`,
+              `connect-src 'self' ${supabaseOrigin} ${supabaseWs}`,
+            ].join('; '),
           },
-          { key: 'X-Frame-Options', value: 'SAMEORIGIN' },
-          { key: 'X-Content-Type-Options', value: 'nosniff' },
-          { key: 'Referrer-Policy', value: 'strict-origin-when-cross-origin' },
-          {
-            key: 'Permissions-Policy',
-            value: 'camera=(), microphone=(), geolocation=(), browsing-topics=()',
-          },
+          ...SECURITY_HEADERS,
         ],
       },
       {

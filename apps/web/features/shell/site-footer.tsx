@@ -46,7 +46,7 @@ const MAP_CREDIT = (
 );
 
 /**
- * Store footer (D-079): Karla; four columns from tablet up, without Clothing and Spices (their pages stay); on phones one
+ * Store footer (D-079): Karla; four columns from tablet up, without Clothing and Food (their pages stay); on phones one
  * small block. Carries the map's licence credit (D-052).
  */
 export function SiteFooter(): React.JSX.Element {
@@ -57,7 +57,7 @@ export function SiteFooter(): React.JSX.Element {
           <div>
             <p className="text-canvas mb-2.5 text-lg">{SITE_NAME}</p>
             {/* TODO(founder): approve the footer line (design.md voice, D-019). */}
-            <p className="max-w-[30ch]">Clothing and spices from all of India, delivered in the US.</p>
+            <p className="max-w-[30ch]">Clothing, food and gifts from all of India, delivered in the US.</p>
           </div>
           {COLUMNS.map((col) => (
             <div key={col.title}>

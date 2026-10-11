@@ -10,7 +10,7 @@
  *
  * Everything the catalogue does not say (prices, pieces, shops) is a DEV PLACEHOLDER: every row is
  * is_placeholder = true (D-012), prices and pieces are derived from the slug so the output is stable. Pantry items
- * are drafts: spices cannot go live (D-032, a database rule). Product ids are derived from the slug, so loading it
+ * are drafts: food cannot go live until cleared (D-074). Product ids are derived from the slug, so loading it
  * again updates the same listings and keeps their photos and pieces.
  */
 import { existsSync, mkdirSync, readFileSync, writeFileSync } from 'node:fs';
@@ -48,7 +48,7 @@ const { COLOURS, SIZES, PACKS } = await import(pathToFileURL('catalogue/data/set
 
 // Category slugs and their product type, read from the category seed (one source of truth).
 const categories = new Map(
-  [...readFileSync('supabase/seed/categories.sql', 'utf8').matchAll(/\('(clothing|spice)', '([a-z0-9-]+)'/g)].map(
+  [...readFileSync('supabase/seed/categories.sql', 'utf8').matchAll(/\('(clothing|food)', '([a-z0-9-]+)'/g)].map(
     (m) => [m[2], m[1]],
   ),
 );
@@ -64,12 +64,12 @@ for (const region of REGIONS) {
     if (categories.get(item.category) !== item.type) problems.push(`${where}: category "${item.category}" is not a ${item.type} category`);
     const band = BANDS[item.category] ?? [1999, 4999];
     const base = band[0] + (hash(slug) % (band[1] - band[0]));
-    const price = cents(base * (TIER[item.tier] ?? 1), item.type === 'spice' ? 399 : 999);
+    const price = cents(base * (TIER[item.tier] ?? 1), item.type === 'food' ? 399 : 999);
     const rank = launch.indexOf(item);
     const row = {
       slug, region, name: item.name, type: item.type, category: item.category, summary: item.summary,
       price, shopPaise: Math.round(price * 24.9), origin: item.from ?? null,
-      status: item.type === 'spice' ? 'draft' : 'live',
+      status: item.type === 'food' ? 'draft' : 'live',
       // Launch picks are the newest (New arrivals), then the rest in file order.
       age: rank >= 0 ? rank + 1 : 100 + index,
       curated: rank >= 0 && rank < 4 && item.type === 'clothing',
@@ -99,7 +99,7 @@ if (problems.length) {
 }
 
 const clothing = listings.filter((l) => l.type === 'clothing');
-const pantry = listings.filter((l) => l.type === 'spice');
+const pantry = listings.filter((l) => l.type === 'food');
 const vendorId = (region) => `00000000-0000-4000-8000-0000000003${String(REGIONS.indexOf(region) + 1).padStart(2, '0')}`;
 const productValues = listings.map(
   (l) =>

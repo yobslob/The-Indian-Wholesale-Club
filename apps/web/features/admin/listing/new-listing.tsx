@@ -136,7 +136,7 @@ export function NewListing({ data }: { data: ListingFormData }): React.JSX.Eleme
                 </label>
               ))}
             </div>
-            {type === 'spice' ? <small className="text-ink-muted text-[12px]">Spices go live once &quot;Spices are cleared&quot; is on in Settings (D-074, D-107).</small> : null}
+            {type === 'food' ? <small className="text-ink-muted text-[12px]">Food goes live once &quot;Food is cleared&quot; is on in Settings (D-074, D-107).</small> : null}
           </fieldset>
           <label className="block space-y-[5px]">
             <span className={label}>Category</span>

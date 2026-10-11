@@ -248,7 +248,7 @@ export function ListingForm({ data, onDone }: { data: ListingFormData; onDone: (
             </Pressable>
           ))}
         </View>
-        {type === 'spice' ? <Body muted>Spices go live once &quot;Spices are cleared&quot; is on in Settings (D-074, D-107).</Body> : null}
+        {type === 'food' ? <Body muted>Food goes live once &quot;Food is cleared&quot; is on in Settings (D-074, D-107).</Body> : null}
         <View className="flex-row flex-wrap gap-2">
           {categories.map((c) => (
             <Pressable key={c.id} onPress={() => setCategoryId(c.id)} className={chip(categoryId === c.id)} accessibilityRole="button" accessibilityState={{ selected: categoryId === c.id }}>

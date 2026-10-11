@@ -136,7 +136,7 @@ begin
   insert into public.categories (product_type, slug, name) values ('clothing', 'test-clothing', 'Test clothing')
   returning id into v_id;
   perform tests.remember('cat_clothing', v_id);
-  insert into public.categories (product_type, slug, name) values ('spice', 'test-spice', 'Test spice')
+  insert into public.categories (product_type, slug, name) values ('food', 'test-spice', 'Test spice')
   returning id into v_id;
   perform tests.remember('cat_spice', v_id);
 

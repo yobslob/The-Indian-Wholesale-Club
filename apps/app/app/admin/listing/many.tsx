@@ -179,7 +179,7 @@ function AddMany({ data }: { data: ListingFormData }): React.JSX.Element {
   );
 }
 
-/** Add many (D-097): a batch of photos becomes drafts, one card each. Clothing (spices can't go live yet, D-032). */
+/** Add many (D-097): a batch of photos becomes drafts, one card each. Clothing only. */
 export default function AddManyScreen(): React.JSX.Element {
   const { data, error, loading } = useListingData();
   if (data) return <AddMany data={data} />;

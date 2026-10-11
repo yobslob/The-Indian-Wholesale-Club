@@ -115,9 +115,9 @@ async function load() {
   }
   const { rows: [counts] } = await client.query(`
     select count(*) filter (where product_type = 'clothing')::int as clothing,
-           count(*) filter (where product_type = 'spice')::int as pantry
+           count(*) filter (where product_type = 'food')::int as pantry
     from public.products where is_placeholder`);
-  console.log(`Catalogue: ${counts.clothing} clothing listings (live), ${counts.pantry} pantry (drafts until spices are cleared).`);
+  console.log(`Catalogue: ${counts.clothing} clothing listings (live), ${counts.pantry} pantry (drafts until food is cleared).`);
 
   // 2. Photos.
   const photos = await uploadCataloguePhotos(db, { regions: DEMO_REGIONS, prefix: 'demo-' });

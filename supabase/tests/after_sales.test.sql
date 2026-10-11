@@ -165,8 +165,8 @@ select tests.assert(exists (select 1 from public.products where is_us_stock and 
   'the returned piece is a clearance draft');
 
 -- Food is final sale for a change of mind; a damage claim still works.
-update public.pricing_settings set spices_cleared = true where id = 1;
-update public.products set product_type = 'spice', category_id = tests.id('cat_spice') where id = tests.id('p_live');
+update public.pricing_settings set food_cleared = true where id = 1;
+update public.products set product_type = 'food', category_id = tests.id('cat_spice') where id = tests.id('p_live');
 select tests.remember('order_s', pg_temp.buy('pi_s', tests.id('v_x'), 5000));
 update public.orders set status = 'delivered' where id = tests.id('order_s');
 insert into public.order_events (order_id, kind, visible_to_customer) values (tests.id('order_s'), 'delivered', true);

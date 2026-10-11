@@ -153,7 +153,7 @@ export async function getPricingSettings(client: IwcClient) {
           us_last_mile_min_cents, returns_allowance_pct, margin_pct, card_fee_pct, card_fee_fixed_cents,
           express_base_cents, express_courier_cents_per_kg, express_min_kg, domestic_days_min, domestic_days_max,
           shipping_flat_cents, free_shipping_min_cents, express_shipping_cents, express_days_min, express_days_max,
-          stale_listing_days, leaving_soon_max, cycle_days, fast_offer_cents, spices_cleared, updated_at`,
+          stale_listing_days, leaving_soon_max, cycle_days, fast_offer_cents, food_cleared, updated_at`,
       )
       .eq('id', 1)
       .single(),
@@ -212,7 +212,7 @@ export async function updateBusinessDetails(client: IwcClient, values: Record<st
   }
 }
 
-/** D-074: spices may be published once the founder clears them. */
-export async function setSpicesCleared(client: IwcClient, cleared: boolean) {
-  unwrap(await client.from('pricing_settings').update({ spices_cleared: cleared }).eq('id', 1));
+/** D-074: food may be published once the founder clears them. */
+export async function setFoodCleared(client: IwcClient, cleared: boolean) {
+  unwrap(await client.from('pricing_settings').update({ food_cleared: cleared }).eq('id', 1));
 }

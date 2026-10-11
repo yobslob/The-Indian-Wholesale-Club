@@ -19,7 +19,7 @@ export const clothingAttributesSchema = z
   })
   .strict();
 
-export const spiceAttributesSchema = z
+export const foodAttributesSchema = z
   .object({
     ingredients: z.string().trim().min(1).max(1000),
     /** Declared allergens; an empty list means "none declared". */
@@ -42,13 +42,13 @@ export const homeAttributesSchema = z
   .strict();
 
 export type ClothingAttributes = z.infer<typeof clothingAttributesSchema>;
-export type SpiceAttributes = z.infer<typeof spiceAttributesSchema>;
+export type FoodAttributes = z.infer<typeof foodAttributesSchema>;
 export type HomeAttributes = z.infer<typeof homeAttributesSchema>;
 
 export function attributesSchemaFor(productType: ProductType) {
   return productType === 'clothing'
     ? clothingAttributesSchema
-    : productType === 'spice'
-      ? spiceAttributesSchema
+    : productType === 'food'
+      ? foodAttributesSchema
       : homeAttributesSchema;
 }

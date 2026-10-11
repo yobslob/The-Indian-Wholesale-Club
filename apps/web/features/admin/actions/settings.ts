@@ -5,7 +5,7 @@ import { z } from 'zod';
 
 import {
   createPromoCode,
-  setSpicesCleared,
+  setFoodCleared,
   updateBusinessDetails,
   updatePricingSettings,
   updatePromoCode,
@@ -94,9 +94,9 @@ export async function updateBusinessDetailsAction(form: FormData): Promise<void>
   revalidatePath('/admin/settings');
 }
 
-/** D-074: spice listings can be published once cleared. */
-export async function updateSpicesClearedAction(cleared: boolean): Promise<void> {
+/** D-074: food listings can be published once cleared. */
+export async function updateFoodClearedAction(cleared: boolean): Promise<void> {
   const { client } = await requireAdminAction();
-  await setSpicesCleared(client, z.boolean().parse(cleared));
+  await setFoodCleared(client, z.boolean().parse(cleared));
   revalidatePath('/admin/settings');
 }

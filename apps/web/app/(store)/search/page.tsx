@@ -62,7 +62,7 @@ export default async function SearchPage({
               name="q"
               type="search"
               defaultValue={q}
-              placeholder="Search a state, a saree, a spice…"
+              placeholder="Search a state, a saree, a masala…"
               className="border-line bg-paper focus:border-ink min-h-12 flex-1 rounded-pill border px-4 pr-[52px] text-[15px] outline-none md:pr-4"
             />
             <button type="submit" aria-label="Search" className="bg-brand text-on-brand absolute right-1 top-1 grid size-10 place-items-center rounded-full md:hidden">

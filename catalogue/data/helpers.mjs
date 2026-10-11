@@ -13,5 +13,5 @@ export function c(name, category, colours, sizes, summary, extra = {}) {
 }
 
 export function p(name, category, packs, summary, extra = {}) {
-  return { type: 'spice', name, category, packs, summary, ...extra };
+  return { type: 'food', name, category, packs, summary, ...extra };
 }

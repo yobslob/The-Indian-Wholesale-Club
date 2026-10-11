@@ -1,4 +1,4 @@
-import { clothingAttributesSchema, homeAttributesSchema, spiceAttributesSchema } from './attributes';
+import { clothingAttributesSchema, homeAttributesSchema, foodAttributesSchema } from './attributes';
 
 import type { ProductType } from './product-types';
 
@@ -36,7 +36,7 @@ export function detailRows(product: DetailsInput, photos: PhotoNote): [string, s
       if (parsed.data.notes) rows.push(['Notes', parsed.data.notes]);
     }
   } else {
-    const parsed = spiceAttributesSchema.safeParse(product.attributes);
+    const parsed = foodAttributesSchema.safeParse(product.attributes);
     if (parsed.success) {
       const a = parsed.data;
       rows.push(

@@ -26,7 +26,7 @@ import {
   resizerWidth,
   selectionOf,
   shippingAddressSchema,
-  spiceAttributesSchema,
+  foodAttributesSchema,
   timelineIndex,
   trackingUrl,
   variantLabel,
@@ -54,7 +54,7 @@ describe('autoPrice (D-109): the same numbers as supabase/tests/pricing_engine.t
     assert.equal(autoPrice({ shopPricePaise: 104900, weightG: 1000 }, simple)?.priceCents, 2049); // $20.49 stays
   });
 
-  it('the worked examples of D-109: kurta, saree, lehenga, spice pack', () => {
+  it('the worked examples of D-109: kurta, saree, lehenga, food pack', () => {
     assert.equal(autoPrice({ shopPricePaise: 150000, weightG: 450 }, full)?.priceCents, 3929);
     assert.equal(autoPrice({ shopPricePaise: 400000, weightG: 900 }, full)?.priceCents, 9629);
     assert.equal(autoPrice({ shopPricePaise: 1200000, weightG: 2500 }, full)?.priceCents, 28329);
@@ -139,22 +139,22 @@ describe('product attributes are strict (D-003)', () => {
     assert.equal(clothingAttributesSchema.safeParse({ care: 'Dry clean' }).success, false);
   });
 
-  it('requires ingredients, allergens and shelf life for spices', () => {
+  it('requires ingredients, allergens and shelf life for food', () => {
     assert.ok(
-      spiceAttributesSchema.safeParse({
+      foodAttributesSchema.safeParse({
         ingredients: 'Cardamom',
         allergens: [],
         shelf_life_days: 365,
       }).success,
     );
     assert.equal(
-      spiceAttributesSchema.safeParse({ ingredients: 'Cardamom', allergens: [] }).success,
+      foodAttributesSchema.safeParse({ ingredients: 'Cardamom', allergens: [] }).success,
       false,
     );
   });
 
   it('picks the schema by product type', () => {
-    assert.equal(attributesSchemaFor('spice'), spiceAttributesSchema);
+    assert.equal(attributesSchemaFor('food'), foodAttributesSchema);
     assert.equal(attributesSchemaFor('clothing'), clothingAttributesSchema);
   });
 });
@@ -373,7 +373,7 @@ describe('a new listing (flows.md §2, C3)', () => {
       true,
     );
     assert.equal(
-      listingInputSchema.safeParse({ ...base, product_type: 'spice', attributes: { fibre_content: 'x', care: 'y' } }).success,
+      listingInputSchema.safeParse({ ...base, product_type: 'food', attributes: { fibre_content: 'x', care: 'y' } }).success,
       false,
     );
   });

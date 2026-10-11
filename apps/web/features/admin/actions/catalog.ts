@@ -12,7 +12,7 @@ import {
   setProductStatus,
   updateProduct,
 } from '@repo/db/admin';
-import { clothingAttributesSchema, homeAttributesSchema, PRODUCT_TYPES, spiceAttributesSchema, type ListingInput } from '@repo/shared/domain';
+import { clothingAttributesSchema, homeAttributesSchema, PRODUCT_TYPES, foodAttributesSchema, type ListingInput } from '@repo/shared/domain';
 
 import { STORE_TAG } from '@/features/catalog/data';
 
@@ -110,7 +110,7 @@ export async function createProductAction(form: FormData): Promise<void> {
         })
       : base.productType === 'home'
         ? homeAttributesSchema.parse({ material: field(form, 'material') })
-        : spiceAttributesSchema.parse({
+        : foodAttributesSchema.parse({
           ingredients: field(form, 'ingredients'),
           allergens: field(form, 'allergens')
             .split(',')
@@ -170,7 +170,7 @@ export async function setProductCuratedAction(productId: string, curated: boolea
   revalidatePath(`/admin/catalog/${productId}`);
 }
 
-/** Publishing makes it visible in the store. The database refuses live spices until they are cleared (D-074, D-107). */
+/** Publishing makes it visible in the store. The database refuses live food until it is cleared (D-074, D-107). */
 export async function setProductStatusAction(
   productId: string,
   status: 'draft' | 'live' | 'paused' | 'archived',

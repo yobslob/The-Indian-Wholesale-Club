@@ -39,7 +39,7 @@ export function taxSentence(rows: InfoPolicy['tax']): string {
   if (rows.length === 0) return 'No sales tax is added to orders today.';
   const parts = rows.map((r) => {
     const name = US_STATES.find((s) => s.code === r.state)?.name ?? r.state;
-    const exempt = [r.clothing ? null : 'clothing', r.food ? null : 'food and spices'].filter(Boolean);
+    const exempt = [r.clothing ? null : 'clothing', r.food ? null : 'food'].filter(Boolean);
     return `${name}: ${pct(r.rate_pct)}${exempt.length ? `, not on ${exempt.join(' or ')}` : ''}`;
   });
   return `Sales tax is added where we are registered to collect it (${parts.join('; ')}). Checkout shows it before you pay.`;

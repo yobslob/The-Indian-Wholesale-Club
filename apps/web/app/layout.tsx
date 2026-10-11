@@ -8,7 +8,7 @@ import type { Metadata, Viewport } from 'next';
 export const metadata: Metadata = {
   title: { default: SITE_NAME, template: `%s · ${SITE_NAME}` },
   // TODO(founder): approve the site description (design.md voice). Draft, D-019.
-  description: 'Clothing and spices from every state of India, delivered in the US.',
+  description: 'Clothing, food and gifts from every state of India, delivered in the US.',
   metadataBase: new URL(
     process.env.NEXT_PUBLIC_SITE_URL || process.env.NEXT_PUBLIC_APP_URL || 'http://localhost:3000',
   ),

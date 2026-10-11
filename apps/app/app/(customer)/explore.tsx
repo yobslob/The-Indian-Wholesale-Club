@@ -40,8 +40,8 @@ function SoonNames({ regions }: { regions: RegionCard[] }): React.JSX.Element {
 }
 
 /**
- * Explore (storefront.md, D-083 – D-085, D-095): search, then States · Clothing · Spices · Home & gifts (D-106). States are the open ones as
- * stamps and every other by name; Clothing and Spices are one sideways row per category with See all (D-062). A search
+ * Explore (storefront.md, D-083 – D-085, D-095): search, then States · Clothing · Food · Home & gifts (D-106, D-110). States are the open ones as
+ * stamps and every other by name; Clothing and Food are one sideways row per category with See all (D-062). A search
  * shows the count with the words, matching open states as stamps, the pieces 24 at a time, and on no results the open
  * states, so it is never a dead end. A tab reads only each category's first 12 cards (store_type_rows).
  */
@@ -75,7 +75,7 @@ export default function ExploreScreen(): React.JSX.Element {
         <TextInput
           value={query}
           onChangeText={setQuery}
-          placeholder="A state, a saree, a spice…"
+          placeholder="A state, a saree, a masala…"
           placeholderTextColor={tokens.colors['ink-muted']}
           accessibilityLabel="Search"
           returnKeyType="search"
@@ -182,7 +182,7 @@ export default function ExploreScreen(): React.JSX.Element {
               seeAll={row.count > row.products.length ? { type: tab, category: row.slug } : undefined}
             />
           ))}
-          {rows.data && rows.data.length === 0 ? <Body muted>{tab === 'clothing' ? 'New pieces are on their way.' : `${tab === 'spice' ? 'Spices are' : 'Home & gifts are'} coming soon.`}</Body> : null}
+          {rows.data && rows.data.length === 0 ? <Body muted>{tab === 'clothing' ? 'New pieces are on their way.' : `${tab === 'food' ? 'Food is' : 'Home & gifts are'} coming soon.`}</Body> : null}
         </>
       )}
     </Screen>

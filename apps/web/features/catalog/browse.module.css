@@ -1,4 +1,4 @@
-/* Clothing / Spices (D-084, D-098). */
+/* Clothing / Food (D-084, D-098). */
 
 /* A pill row that runs off the screen: its end fades into the page, only on a side that has more. The pinned state
    row fades without a blur (anything sticky re-blurs every scroll frame, D-098); the category row, which scrolls

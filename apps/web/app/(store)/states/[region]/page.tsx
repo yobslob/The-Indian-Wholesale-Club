@@ -50,14 +50,14 @@ const ROW = 12;
  * The core page (storefront.md §The region page, design.md §Direction). One cached store_region_page()
  * call. Every list is a row that scrolls sideways with See all where there is more (D-062): New arrivals, Most wanted
  * (D-058), the album (D-051, once it has three photos), Curated for you and Leaving soon (D-056), then one row per
- * clothing category, then Spices, then Home & gifts (D-106) when the state has some.
+ * clothing category, then Food, then Home & gifts (D-106) when the state has some.
  */
 export default async function RegionPage({ params }: { params: Params }): Promise<React.JSX.Element> {
   const page = await getRegionPageCached((await params).region);
   if (!page) notFound();
   const { region, album, products, most_wanted: mostWanted, curated, leaving_soon: leavingSoon } = page;
-  const spices = products.filter((p) => p.product_type === 'spice');
-  const spiceCount = page.category_counts.filter((c) => c.product_type === 'spice').reduce((n, c) => n + c.count, 0);
+  const food = products.filter((p) => p.product_type === 'food');
+  const foodCount = page.category_counts.filter((c) => c.product_type === 'food').reduce((n, c) => n + c.count, 0);
   const home = products.filter((p) => p.product_type === 'home');
   const homeCount = page.category_counts.filter((c) => c.product_type === 'home').reduce((n, c) => n + c.count, 0);
   const categories = byCategory(page);
@@ -107,7 +107,7 @@ export default async function RegionPage({ params }: { params: Params }): Promis
 
       {!region.is_live ? (
         <p className="bg-surface font-body mb-8 rounded-lg p-[clamp(18px,2vw,32px)] text-[clamp(20px,1.8vw,28px)]">
-          {region.name} is coming soon. We are adding its clothing and spices.
+          {region.name} is coming soon. We are adding its clothing, food and gifts.
         </p>
       ) : (
         <>
@@ -126,8 +126,8 @@ export default async function RegionPage({ params }: { params: Params }): Promis
                 </li>
               ))}
               <li className="shrink-0">
-                <a href="#spices" className={pill}>
-                  Spices <span className="text-ink-muted">{spiceCount}</span>
+                <a href="#food" className={pill}>
+                  Food <span className="text-ink-muted">{foodCount}</span>
                 </a>
               </li>
               {homeCount > 0 ? (
@@ -178,15 +178,15 @@ export default async function RegionPage({ params }: { params: Params }): Promis
               href={browse('clothing', c.slug)}
             />
           ))}
-          {spices.length > 0 ? (
-            <ProductRow id="spices" title="Spices" products={spices.slice(0, ROW)} href={browse('spice')} />
+          {food.length > 0 ? (
+            <ProductRow id="food" title="Food" products={food.slice(0, ROW)} href={browse('food')} />
           ) : (
-            <section id="spices" aria-labelledby="spices-h" className="scroll-mt-20 py-[clamp(24px,3vw,48px)]">
-              <h2 id="spices-h" className={heading}>
-                Spices
+            <section id="food" aria-labelledby="food-h" className="scroll-mt-20 py-[clamp(24px,3vw,48px)]">
+              <h2 id="food-h" className={heading}>
+                Food
               </h2>
               <p className="bg-surface font-body mt-[clamp(16px,1.8vw,24px)] rounded-lg p-[clamp(18px,2vw,32px)] text-[clamp(20px,1.8vw,28px)]">
-                Spices from {region.name} are coming soon.
+                Food from {region.name} is coming soon.
               </p>
             </section>
           )}

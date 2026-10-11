@@ -1,6 +1,6 @@
 import { getPricingSettings, listBusinessDetails, listPricingEstimates } from '@repo/db/admin';
 
-import { updateBusinessDetailsAction, updatePricingSettingsAction, updateSpicesClearedAction } from '@/features/admin/actions/settings';
+import { updateBusinessDetailsAction, updatePricingSettingsAction, updateFoodClearedAction } from '@/features/admin/actions/settings';
 import { EstimateNote } from '@/features/admin/estimate-note';
 import { requireAdminPage } from '@/features/admin/guard';
 import { displayValue, SETTING_GROUPS } from '@/features/admin/settings-fields';
@@ -9,7 +9,7 @@ import { button, Field, input, PageHead, SectionTitle, When } from '@/features/a
 /**
  * Settings: every number that prices and delivers an order (D-069: the pilot's high-end placeholders, each labelled
  * with its basis until the founder saves their own; the full list is docs/pilot-numbers.md). Prices follow from them
- * automatically (D-075). Business and compliance details for the invoice and spices (D-074) below.
+ * automatically (D-075). Business and compliance details for the invoice and food (D-074) below.
  */
 export default async function SettingsPage(): Promise<React.JSX.Element> {
   const { client } = await requireAdminPage();
@@ -67,15 +67,15 @@ export default async function SettingsPage(): Promise<React.JSX.Element> {
       </form>
 
       <section className="max-w-3xl space-y-3">
-        <SectionTitle>Spices (D-032, D-074)</SectionTitle>
+        <SectionTitle>Food (D-032, D-074)</SectionTitle>
         <p className="text-sm">
-          {s.spices_cleared
-            ? 'Cleared: spice listings can be published.'
-            : 'Not cleared: spice listings stay drafts. Fill the FDA details below first, then switch this on.'}
+          {s.food_cleared
+            ? 'Cleared: food listings can be published.'
+            : 'Not cleared: food listings stay drafts. Fill the FDA details below first, then switch this on.'}
         </p>
-        <form action={updateSpicesClearedAction.bind(null, !s.spices_cleared)}>
-          <button type="submit" className={s.spices_cleared ? 'min-h-11 underline' : button}>
-            {s.spices_cleared ? 'Stop publishing spices' : 'Spices are cleared: allow publishing'}
+        <form action={updateFoodClearedAction.bind(null, !s.food_cleared)}>
+          <button type="submit" className={s.food_cleared ? 'min-h-11 underline' : button}>
+            {s.food_cleared ? 'Stop publishing food' : 'Food is cleared: allow publishing'}
           </button>
         </form>
       </section>
@@ -85,7 +85,7 @@ export default async function SettingsPage(): Promise<React.JSX.Element> {
           <SectionTitle>Business and compliance details (D-074)</SectionTitle>
           {placeholders > 0 ? (
             <p className="text-caution text-sm">
-              {placeholders} still placeholders. They go on the commercial invoice and the spice paperwork.
+              {placeholders} still placeholders. They go on the commercial invoice and the food paperwork.
             </p>
           ) : null}
         </div>

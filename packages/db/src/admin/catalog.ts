@@ -217,7 +217,7 @@ export async function updateProduct(client: IwcClient, id: string, patch: Update
   unwrap(await client.from('products').update(patch).eq('id', id));
 }
 
-/** Publishing stamps published_at the first time. The DB refuses live spices (D-032). */
+/** Publishing stamps published_at the first time. The DB refuses live food until it is cleared (D-074). */
 export async function setProductStatus(
   client: IwcClient,
   id: string,

@@ -2,7 +2,7 @@
 -- Initial category tree, PROPOSED by Claude for founder review (not a decision).
 -- Categories are plain rows: the founder can rename, add or deactivate them in
 -- the admin without a schema change. The catalogue (D-059) added everything after
--- Dhotis & Mundus. "Spice" is the database's name for the whole pantry (D-002).
+-- Dhotis & Mundus. "food" is the whole pantry: masalas, snacks, sweets, staples (D-110).
 -- =============================================================================
 
 insert into public.categories (product_type, slug, name, sort_order) values
@@ -22,15 +22,15 @@ insert into public.categories (product_type, slug, name, sort_order) values
   ('clothing', 'accessories', 'Accessories', 14),
   ('clothing', 'kids', 'Kids', 15),
   ('clothing', 'fabrics', 'Fabrics', 16),
-  ('spice', 'whole-spices', 'Whole Spices', 1),
-  ('spice', 'ground-spices', 'Ground Spices', 2),
-  ('spice', 'masala-blends', 'Masala Blends', 3),
-  ('spice', 'pickles-and-chutneys', 'Pickles & Chutneys', 4),
-  ('spice', 'papad-and-wadi', 'Papad & Wadi', 5),
-  ('spice', 'snacks-and-namkeen', 'Snacks & Namkeen', 6),
-  ('spice', 'sweets', 'Sweets', 7),
-  ('spice', 'rice-flours-and-staples', 'Rice, Flours & Staples', 8),
-  ('spice', 'tea-and-drinks', 'Tea & Drinks', 9);
+  ('food', 'whole-spices', 'Whole Spices', 1),
+  ('food', 'ground-spices', 'Ground Spices', 2),
+  ('food', 'masala-blends', 'Masala Blends', 3),
+  ('food', 'pickles-and-chutneys', 'Pickles & Chutneys', 4),
+  ('food', 'papad-and-wadi', 'Papad & Wadi', 5),
+  ('food', 'snacks-and-namkeen', 'Snacks & Namkeen', 6),
+  ('food', 'sweets', 'Sweets', 7),
+  ('food', 'rice-flours-and-staples', 'Rice, Flours & Staples', 8),
+  ('food', 'tea-and-drinks', 'Tea & Drinks', 9);
 
 -- D-106 (2026-10-11): Home & gifts, the third product type (tax class general by its trigger).
 insert into public.categories (product_type, slug, name, sort_order) values

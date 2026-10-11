@@ -23,7 +23,7 @@ const howItWorks = (): Block[] => [
     kind: 'ol',
     items: [
       ['Pick your state, or any state you miss.'],
-      ['Choose its clothing and spices.'],
+      ['Choose its clothing, food and gifts.'],
       ['Before you pay, you see the estimated delivery window for your order.'],
       ['We deliver to your door in the US and keep you updated until it arrives.'],
     ],
@@ -42,13 +42,13 @@ function faq(policy: InfoPolicy): Block[] {
   if (policy.return_claim_days !== null)
     returns.push(p(`If a piece arrives damaged or is not what you ordered, tell us from your order page within ${policy.return_claim_days} days of delivery and you get everything back.`));
   if (tiers && lastTier)
-    returns.push(p(`Changed your mind? Unworn, unaltered clothing can come back: we keep ${tiers} of delivery, for bringing it back. After ${lastTier.days} days, returns are closed. Food and spices are final sale.`));
+    returns.push(p(`Changed your mind? Unworn, unaltered clothing can come back: we keep ${tiers} of delivery, for bringing it back. After ${lastTier.days} days, returns are closed. Food is final sale.`));
   returns.push(p('We collect the piece from your door, just as it was delivered.'));
   return [
     {
       kind: 'qa',
       items: [
-        { q: 'What do you sell?', a: [p("Clothing and spices from India's 28 states and 8 union territories. Pick the state you miss, or any state you love, and shop what it is known for.")] },
+        { q: 'What do you sell?', a: [p("Clothing, food and gifts from India's 28 states and 8 union territories. Pick the state you miss, or any state you love, and shop what it is known for.")] },
         { q: 'Where do the pieces come from?', a: [p('Every piece is made in India. Its page shows the state it comes from, and it is imported to the US for your order.')] },
         {
           q: 'When will my order arrive?',
@@ -88,7 +88,7 @@ function shippingReturns(policy: InfoPolicy): Block[] {
     returns.push([{ strong: 'Damaged or not what you ordered' }, `: tell us from your order page within ${policy.return_claim_days} days of delivery and you get everything back, shipping included.`]);
   if (tiers && lastTier)
     returns.push([{ strong: 'Changed your mind' }, `: unworn, unaltered clothing can come back. We keep part of the price for bringing it back: ${tiers} of delivery. After ${lastTier.days} days, returns are closed.`]);
-  returns.push([{ strong: 'Food and spices' }, ' are final sale, unless they arrive damaged or are not what you ordered.']);
+  returns.push([{ strong: 'Food' }, ' is final sale, unless they arrive damaged or are not what you ordered.']);
   return [
     h('Delivery'),
     p('Every piece is made in India and comes to you from there. Before you pay, you see the estimated delivery window for your order, and we tell you if it changes.'),
@@ -147,7 +147,7 @@ const privacy = (email: string | null): Block[] => [
 const terms = (): Block[] => [
   p('These terms apply when you buy from The Indian Wholesale Club, a New Jersey business. We are the seller of everything on this site.'),
   h('What we sell'),
-  p('Clothing and spices made in India. Each product page says which state it comes from; every piece is imported. We deliver to addresses in the US only.'),
+  p('Clothing, food and gifts made in India. Each product page says which state it comes from; every piece is imported. We deliver to addresses in the US only.'),
   h('Prices and payment'),
   p('Prices are in US dollars. Shipping and any sales tax are shown at checkout before you pay. Payment is taken when you place the order. If a piece sells out while you are paying, we refund you in full and tell you why.'),
   h('Delivery'),

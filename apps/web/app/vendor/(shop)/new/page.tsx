@@ -13,7 +13,7 @@ export default async function NewPiecePage(): Promise<React.JSX.Element> {
     client.from('vendor_accounts').select('vendor_id').maybeSingle(),
   ]);
   if (!account) throw new Error('vendor account missing');
-  // Clothing first (what most shops sell); spices after (they wait for D-032 to go live, but can be sent).
+  // Clothing first (what most shops sell); food after.
   const sorted = [...categories].sort((a, b) => (a.product_type === b.product_type ? 0 : a.product_type === 'clothing' ? -1 : 1));
   return (
     <>

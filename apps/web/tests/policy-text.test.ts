@@ -30,7 +30,7 @@ describe('policy text (Shipping & returns, FAQ)', () => {
   });
 
   it('names the tax state and what it does not tax (D-073)', () => {
-    assert.match(taxSentence(policy.tax), /New Jersey: 6\.625%, not on clothing or food and spices/);
+    assert.match(taxSentence(policy.tax), /New Jersey: 6\.625%, not on clothing or food/);
     assert.equal(taxSentence([]), 'No sales tax is added to orders today.');
   });
 

@@ -47,13 +47,13 @@ select tests.assert_fails(format('select public.admin_create_listing(%L::jsonb)'
   'name', 'No shop', 'slug', 'no-shop', 'price_cents', 4900)),
   'vendor_not_found', 'a listing needs an active shop');
 
-select tests.remember('spice', public.admin_create_listing(jsonb_build_object(
-  'vendor_id', tests.id('vendor'), 'category_id', tests.id('cat_spice'), 'product_type', 'spice',
+select tests.remember('food', public.admin_create_listing(jsonb_build_object(
+  'vendor_id', tests.id('vendor'), 'category_id', tests.id('cat_spice'), 'product_type', 'food',
   'name', 'Field masala', 'slug', 'field-masala', 'price_cents', 900,
   'variants', jsonb_build_array(jsonb_build_object('label', '100 g', 'qty', 5)))));
-update public.pricing_settings set spices_cleared = false where id = 1;
-select tests.assert_fails(format('update public.products set status = %L where id = %L', 'live', tests.id('spice')),
-  '23514', 'D-074: a spice listing stays a draft until spices are cleared');
+update public.pricing_settings set food_cleared = false where id = 1;
+select tests.assert_fails(format('update public.products set status = %L where id = %L', 'live', tests.id('food')),
+  '23514', 'D-074: a food listing stays a draft until food is cleared');
 
 select tests.act_as(tests.id('cust_a'));
 select tests.assert_fails(format('select public.admin_create_listing(%L::jsonb)', jsonb_build_object(
@@ -66,7 +66,7 @@ reset role;
 -- The re-check list: live variants not confirmed within stale_listing_days.
 update public.products set status = 'live', published_at = now() where id = tests.id('new');
 update public.product_variants set qty_confirmed_at = now() - interval '10 days' where sku = 'FIELD-KURTA-1';
-update public.product_variants set qty_confirmed_at = now() - interval '10 days' where product_id = tests.id('spice');
+update public.product_variants set qty_confirmed_at = now() - interval '10 days' where product_id = tests.id('food');
 set local role authenticated;
 select tests.act_as(tests.id('admin'));
 update public.pricing_settings set stale_listing_days = null where id = 1;
@@ -80,7 +80,7 @@ select tests.assert(
   (select array_agg(label order by label) from public.admin_stale_variants() where product_id = tests.id('new'))
   = array['Red · M'],
   'a live variant confirmed 10 days ago is listed; one confirmed today is not');
-select tests.assert(not exists (select 1 from public.admin_stale_variants() where product_id = tests.id('spice')),
+select tests.assert(not exists (select 1 from public.admin_stale_variants() where product_id = tests.id('food')),
   'drafts are not on the list');
 reset role;
 

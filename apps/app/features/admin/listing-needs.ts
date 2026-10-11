@@ -9,7 +9,7 @@ interface Draftish {
 
 /**
  * What a draft still needs before it can go live (D-097: drafts show it on their card): a photo, the shop price (what
- * the shop is paid, D-005) and pieces. Spices go live once they are cleared in Settings (D-074, D-107).
+ * the shop is paid, D-005) and pieces. Food goes live once it is cleared in Settings (D-074, D-107).
  */
 export function listingNeeds(p: Draftish): [string, Tone] {
   if (p.media.length === 0) return ['Needs a photo', 'warn'];

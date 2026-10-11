@@ -1,5 +1,5 @@
 -- The pricing engine (migration 24, D-075; the formula of the Amazon -> door pilot since migration 38, D-109): the
--- formula, automatic repricing, the daily rate, spices cleared, listings without a price.
+-- formula, automatic repricing, the daily rate, food cleared, listings without a price.
 begin;
 select tests.setup();
 
@@ -67,14 +67,14 @@ begin
     'and the refusal shows on Today (B-8)');
 end $$;
 
--- Spices: live only once cleared (D-074; production has them cleared since D-107).
-update public.pricing_settings set spices_cleared = false where id = 1;
+-- Food: live only once cleared (D-074; production has it cleared since D-107).
+update public.pricing_settings set food_cleared = false where id = 1;
 insert into public.products (slug, name, product_type, region_id, category_id, vendor_id, price_cents, status)
-values ('test-spice-x', 'Test spice', 'spice', tests.id('region'), tests.id('cat_spice'), tests.id('vendor'), 900, 'draft')
+values ('test-spice-x', 'Test spice', 'food', tests.id('region'), tests.id('cat_spice'), tests.id('vendor'), 900, 'draft')
 returning tests.remember('spice_x', id);
 select tests.assert_fails(format('update public.products set status = %L where id = %L', 'live', tests.id('spice_x')),
-  'products_spice_not_live', 'not cleared: a spice stays a draft');
-update public.pricing_settings set spices_cleared = true where id = 1;
+  'products_food_not_live', 'not cleared: food stays a draft');
+update public.pricing_settings set food_cleared = true where id = 1;
 update public.products set status = 'live' where id = tests.id('spice_x');
 select tests.assert((select status = 'live' from public.products where id = tests.id('spice_x')), 'cleared: it can go live');
 

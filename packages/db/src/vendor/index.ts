@@ -147,7 +147,7 @@ const categorySchema = z.object({
 });
 export type VendorCategory = z.infer<typeof categorySchema>;
 
-/** The clothing and spice categories a vendor picks from (customer-safe: store_categories). */
+/** The clothing, food and home categories a vendor picks from (customer-safe: store_categories). */
 export async function vendorCategories(client: IwcClient): Promise<VendorCategory[]> {
   const rows = unwrap(
     await client.from('store_categories').select('id, slug, name, product_type').order('sort_order').order('name'),

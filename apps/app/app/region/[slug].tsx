@@ -19,7 +19,7 @@ const ROW = 12;
  * The core page (storefront.md §The region page, D-081, D-095). One store_region_page() call: the photo first, then
  * the greeting in its own script (the phone's system fonts cover every Indian script), the name in Cinzel, tagline
  * and story; jump pills to each section; New arrivals, Most wanted (D-058), the album (D-051), Picked for you as a
- * row inside its box (D-081), Leaving soon (D-056), then one row per clothing category, Spices and Home & gifts (D-062,
+ * row inside its box (D-081), Leaving soon (D-056), then one row per clothing category, Food and Home & gifts (D-062,
  * D-106).
  */
 export default function RegionScreen(): React.JSX.Element {
@@ -35,8 +35,8 @@ export default function RegionScreen(): React.JSX.Element {
   const categories = (data?.category_counts ?? [])
     .filter((c) => c.product_type === 'clothing')
     .map((c) => ({ ...c, items: products.filter((p) => p.category_slug === c.slug) }));
-  const spices = products.filter((p) => p.product_type === 'spice');
-  const spiceCount = (data?.category_counts ?? []).filter((c) => c.product_type === 'spice').reduce((n, c) => n + c.count, 0);
+  const food = products.filter((p) => p.product_type === 'food');
+  const foodCount = (data?.category_counts ?? []).filter((c) => c.product_type === 'food').reduce((n, c) => n + c.count, 0);
   const home = products.filter((p) => p.product_type === 'home');
   const homeCount = (data?.category_counts ?? []).filter((c) => c.product_type === 'home').reduce((n, c) => n + c.count, 0);
   const mark = (key: string) => (e: { nativeEvent: { layout: { y: number } } }) => {
@@ -49,7 +49,7 @@ export default function RegionScreen(): React.JSX.Element {
   const pills: [string, string, number | null][] = [
     ['new', 'New arrivals', null],
     ...categories.map((c): [string, string, number | null] => [`c-${c.slug}`, c.name, c.count]),
-    ['spices', 'Spices', spiceCount],
+    ['food', 'Food', foodCount],
     ...(homeCount > 0 ? [['home', PRODUCT_TYPE_LABEL.home, homeCount] as [string, string, number | null]] : []),
   ];
 
@@ -93,7 +93,7 @@ export default function RegionScreen(): React.JSX.Element {
           {!data.region.is_live ? (
             <View className="bg-surface rounded-lg p-5">
               <Text className="font-body text-ink text-xl">
-                {data.region.name} is coming soon. We are adding its clothing and spices.
+                {data.region.name} is coming soon. We are adding its clothing, food and gifts.
               </Text>
             </View>
           ) : (
@@ -129,14 +129,14 @@ export default function RegionScreen(): React.JSX.Element {
                   <ProductRow title={c.name} products={c.items.slice(0, ROW)} seeAll={{ type: 'clothing', region: slug, category: c.slug }} />
                 </View>
               ))}
-              <View onLayout={mark('spices')}>
-                {spices.length > 0 ? (
-                  <ProductRow title="Spices" products={spices.slice(0, ROW)} seeAll={{ type: 'spice', region: slug }} />
+              <View onLayout={mark('food')}>
+                {food.length > 0 ? (
+                  <ProductRow title="Food" products={food.slice(0, ROW)} seeAll={{ type: 'food', region: slug }} />
                 ) : (
                   <View className="gap-4 pt-2">
-                    <Heading>Spices</Heading>
+                    <Heading>Food</Heading>
                     <View className="bg-surface rounded-lg p-5">
-                      <Text className="font-body text-ink text-xl">Spices from {data.region.name} are coming soon.</Text>
+                      <Text className="font-body text-ink text-xl">Food from {data.region.name} is coming soon.</Text>
                     </View>
                   </View>
                 )}

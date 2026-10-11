@@ -7,7 +7,7 @@ const STATIC_PATHS = [
   '/',
   '/states',
   '/clothing',
-  '/spices',
+  '/food',
   '/home-and-gifts',
   '/how-it-works',
   '/about',
