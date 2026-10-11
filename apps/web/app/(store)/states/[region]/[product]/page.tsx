@@ -1,6 +1,8 @@
 import Link from 'next/link';
 import { notFound } from 'next/navigation';
 
+import { PRODUCT_TYPE_LABEL } from '@repo/shared/domain';
+
 import { SaveButton } from '@/features/account/save-button';
 import { AddToCart } from '@/features/catalog/add-to-cart';
 import { CuratedCard } from '@/features/catalog/curated-card';
@@ -48,7 +50,7 @@ export default async function ProductPage({ params }: { params: Params }): Promi
             <Link href={`/states/${product.region_slug}`} className="underline">
               {product.region_name}
             </Link>
-            &nbsp;·&nbsp; {product.product_type === 'clothing' ? 'Clothing' : 'Spices'} &nbsp;·&nbsp; {product.category_name}
+            &nbsp;·&nbsp; {PRODUCT_TYPE_LABEL[product.product_type]} &nbsp;·&nbsp; {product.category_name}
           </p>
           <div className="my-3 flex items-start justify-between gap-4">
             <h1 className="font-display text-[clamp(38px,3.6vw,64px)] leading-none tracking-[-0.02em]">{product.name}</h1>

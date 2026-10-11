@@ -51,8 +51,9 @@ select tests.remember('spice', public.admin_create_listing(jsonb_build_object(
   'vendor_id', tests.id('vendor'), 'category_id', tests.id('cat_spice'), 'product_type', 'spice',
   'name', 'Field masala', 'slug', 'field-masala', 'price_cents', 900,
   'variants', jsonb_build_array(jsonb_build_object('label', '100 g', 'qty', 5)))));
+update public.pricing_settings set spices_cleared = false where id = 1;
 select tests.assert_fails(format('update public.products set status = %L where id = %L', 'live', tests.id('spice')),
-  '23514', 'D-032: a spice listing stays a draft');
+  '23514', 'D-074: a spice listing stays a draft until spices are cleared');
 
 select tests.act_as(tests.id('cust_a'));
 select tests.assert_fails(format('select public.admin_create_listing(%L::jsonb)', jsonb_build_object(

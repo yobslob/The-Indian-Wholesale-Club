@@ -8,8 +8,9 @@ import tokens from '@repo/tokens';
 import { useVendor } from './context';
 
 import type { TakenPhoto } from './photo';
+import type { ProductType } from '@repo/shared/domain';
 
-export type Category = { id: string; name: string; product_type: 'clothing' | 'spice' };
+export type Category = { id: string; name: string; product_type: ProductType };
 export type Details = { sizes: { label: string; qty: number }[]; price: string; fabric: string; care: string; colour: string; note: string };
 
 const pill = (on: boolean): string => `min-h-12 justify-center rounded-md border px-3 ${on ? 'border-brand bg-brand' : 'border-line bg-paper'}`;

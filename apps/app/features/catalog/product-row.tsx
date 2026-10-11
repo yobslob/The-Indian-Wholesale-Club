@@ -4,6 +4,7 @@ import { FlatList, Pressable, Text, View } from 'react-native';
 import { ProductCard } from './cards';
 
 import type { ProductCard as ProductCardData, RegionProductCard } from '@repo/db/store';
+import type { ProductType } from '@repo/shared/domain';
 
 import { Body, Heading } from '@/components/ui';
 
@@ -11,7 +12,7 @@ type CardData = ProductCardData & Partial<Pick<RegionProductCard, 'available' | 
 
 /** Where "See all" goes: the Browse screen for one type, narrowed by region and category (D-062). */
 export interface BrowseTarget {
-  type: 'clothing' | 'spice';
+  type: ProductType;
   region?: string;
   category?: string;
 }

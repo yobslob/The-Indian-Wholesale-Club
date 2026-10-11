@@ -1,5 +1,7 @@
 import { z } from 'zod';
 
+import type { ProductType } from '../domain/product-types';
+
 /**
  * A vendor's piece (D-102, D-103), as the vendor fills it in (website and app). The database checks the same rules
  * again in vendor_submit; this gives the vendor the answer before anything is sent.
@@ -11,8 +13,8 @@ export type Wears = (typeof WEARS)[number];
 export const PHOTO_VIEWS = ['front', 'back', 'closeup'] as const;
 export type PhotoView = (typeof PHOTO_VIEWS)[number];
 
-/** Clothing needs all three; spices a front photo and a close-up (vendor_submit). */
-export const viewsNeeded = (productType: 'clothing' | 'spice'): PhotoView[] =>
+/** Clothing needs all three; spices and home goods a front photo and a close-up (vendor_submit). */
+export const viewsNeeded = (productType: ProductType): PhotoView[] =>
   productType === 'clothing' ? ['front', 'back', 'closeup'] : ['front', 'closeup'];
 
 /** The sizes a vendor taps most; any other label can be typed. */

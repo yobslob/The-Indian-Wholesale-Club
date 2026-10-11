@@ -1,6 +1,8 @@
 import Link from 'next/link';
 import { z } from 'zod';
 
+import { PRODUCT_TYPE_PATH, type ProductType } from '@repo/shared/domain';
+
 import styles from './browse.module.css';
 import { browseCached } from './data';
 import { EdgeRow } from './edge-row';
@@ -34,7 +36,7 @@ export function browseParams(raw: RawParams): BrowseParams {
 }
 
 /**
- * /clothing and /spices, the "See all" pages behind every row (D-062): every live product of one type, newest
+ * /clothing, /spices and /home-and-gifts (D-106), the "See all" pages behind every row (D-062): every live product of one type, newest
  * first, narrowed by state and category through the URL. One cached store_browse() read returns the cards drawn
  * (24, then "Show more", D-067), the total and the filter counts, so the page never loads the whole catalogue.
  * D-084: the state row pins under the header and the category row scrolls away, both with soft ends (D-098); phones
@@ -46,7 +48,7 @@ export async function BrowseByType({
   emptyText,
   params,
 }: {
-  productType: 'clothing' | 'spice';
+  productType: ProductType;
   title: string;
   emptyText: string;
   params: BrowseParams;
@@ -58,7 +60,7 @@ export async function BrowseByType({
     categorySlug: params.category,
     limit,
   });
-  const base = productType === 'clothing' ? '/clothing' : '/spices';
+  const base = PRODUCT_TYPE_PATH[productType];
   const states = page.regions;
   const categories = page.categories;
   const allCount = states.reduce((sum, s) => sum + s.count, 0);

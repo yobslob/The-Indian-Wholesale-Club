@@ -32,6 +32,12 @@ insert into public.categories (product_type, slug, name, sort_order) values
   ('spice', 'rice-flours-and-staples', 'Rice, Flours & Staples', 8),
   ('spice', 'tea-and-drinks', 'Tea & Drinks', 9);
 
+-- D-106 (2026-10-11): Home & gifts, the third product type (tax class general by its trigger).
+insert into public.categories (product_type, slug, name, sort_order) values
+  ('home', 'pooja-and-spiritual', 'Pooja & Spiritual', 1),
+  ('home', 'thaali-and-serveware', 'Thaali & Serveware', 2),
+  ('home', 'handicrafts-and-decor', 'Handicrafts & Decor', 3);
+
 -- D-069, D-073 (2026-10-06): each category's typical PACKED weight, used for the price when a piece has no weight
 -- of its own (high-end placeholders, docs/pilot-numbers.md), and its sales-tax class. New Jersey exempts clothing,
 -- footwear and food; accessories, fabric sold by the piece and sweets (its "candy" rule) are taxed there.
@@ -45,6 +51,7 @@ from (values
   ('footwear', 1000, 'clothing'), ('fabrics', 1200, 'general'), ('accessories', 300, 'general'),
   ('ground-spices', 250, 'food'), ('whole-spices', 250, 'food'), ('masala-blends', 250, 'food'),
   ('pickles-and-chutneys', 600, 'food'), ('papad-and-wadi', 400, 'food'), ('rice-flours-and-staples', 1100, 'food'),
-  ('snacks-and-namkeen', 450, 'food'), ('sweets', 600, 'general'), ('tea-and-drinks', 300, 'food')
+  ('snacks-and-namkeen', 450, 'food'), ('sweets', 600, 'general'), ('tea-and-drinks', 300, 'food'),
+  ('pooja-and-spiritual', 600, 'general'), ('thaali-and-serveware', 2000, 'general'), ('handicrafts-and-decor', 1500, 'general')
 ) as w(slug, grams, tax)
 where c.slug = w.slug;

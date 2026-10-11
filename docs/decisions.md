@@ -1091,3 +1091,31 @@ What it means for the build (the founder's expectation held, `plan/current.md` l
 - The app's vendor sign-in has no visible link anywhere a customer looks (D-003): it opens from IWC's app link
   (`iwc://vendor-login?code=…`) or the website's QR link works in the phone's browser.
 
+**D-106 · 2026-10-11 · founder: A third product type, Home & gifts (amends D-002)**
+Founder, verbatim: "Now clear the whole inventory from production website and introduce spice, and then insert this
+inventory accordingly." (with the catalogue file `india_regional_products_master_with_photos.csv`), and the founder's
+choice of 2026-10-11 when asked what to do with its Pooja, serveware and decor rows: "Add a 'Home & gifts' type".
+What it means for the build: besides clothing and spices, each state sells **Home & gifts**: Pooja & spiritual items,
+thaali & serveware, handicrafts & decor (product type `home`, three categories, tax class general). It gets its own
+See all page and a place in the menus, the region page and search, like Spices. Everything else in D-002 stands.
+*Claude's choices in it (proposed, the founder confirms or changes):* the route `/home-and-gifts` and the menu label
+"Home & gifts"; Pooja items are described plainly, as objects, never as blessings or promises.
+
+**D-107 · 2026-10-11 · founder: Spices are introduced on the store**
+Founder, verbatim: "introduce spice" (in the message of D-106).
+What it means for the build: "Spices are cleared" (`pricing_settings.spices_cleared`, D-074) is switched on, so pantry
+listings can be live. D-074's FDA and label details stay placeholders in Settings until the founder enters them.
+
+**D-108 · 2026-10-11 · founder: The production inventory is replaced by the master catalogue, as placeholders**
+Founder, verbatim: as D-106, and the founder's choices of 2026-10-11: "No photos for now", "Placeholder rupee prices",
+clear "Everything".
+What it means for the build: everything listed on production goes (the demo catalogue with its photos, demo reviews and
+demo orders, and the founder's own "Demo saree" draft); settings, states and cycles stay. The master catalogue (2,880
+rows, 36 states, built by another AI tool) goes in as placeholder listings (`is_placeholder`, D-012), shown while demo
+mode is on (D-078), cleared with `pnpm demo:clear`:
+- names and one-line details from the file, as drafts; its "Ecommerce_Popularity_Trend" claims ("Amazon bestseller"…)
+  are never shown, and its photos are not used (61 generic pictures reused across 2,880 items);
+- the shop price in rupees is the low end of the file's range where it has one, a category band otherwise, and the
+  dollar price follows from the pricing engine (D-075);
+- sizes and colours are the catalogue's placeholder sets by category; stock and shops are placeholders;
+- "Top 10 Most Ordered" is not a category: those rows mark each state's picks (the newest and Curated for you).

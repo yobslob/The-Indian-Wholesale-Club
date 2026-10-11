@@ -1,5 +1,7 @@
 import { z } from 'zod';
 
+import type { ProductType } from './product-types';
+
 /**
  * products.attributes, per product type. These are shown to customers, so the
  * schemas are STRICT: an unknown key (e.g. a vendor detail) is rejected, never
@@ -27,9 +29,26 @@ export const spiceAttributesSchema = z
   })
   .strict();
 
+/** Home & gifts (D-106): what it is made of; size and care when they matter. */
+export const homeAttributesSchema = z
+  .object({
+    /** e.g. "Brass", "Sheesham wood". */
+    material: z.string().trim().min(1).max(200),
+    /** e.g. "20 cm across". */
+    dimensions: z.string().trim().max(200).optional(),
+    care: z.string().trim().max(500).optional(),
+    notes: z.string().trim().max(500).optional(),
+  })
+  .strict();
+
 export type ClothingAttributes = z.infer<typeof clothingAttributesSchema>;
 export type SpiceAttributes = z.infer<typeof spiceAttributesSchema>;
+export type HomeAttributes = z.infer<typeof homeAttributesSchema>;
 
-export function attributesSchemaFor(productType: 'clothing' | 'spice') {
-  return productType === 'clothing' ? clothingAttributesSchema : spiceAttributesSchema;
+export function attributesSchemaFor(productType: ProductType) {
+  return productType === 'clothing'
+    ? clothingAttributesSchema
+    : productType === 'spice'
+      ? spiceAttributesSchema
+      : homeAttributesSchema;
 }

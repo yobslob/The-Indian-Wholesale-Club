@@ -34,7 +34,7 @@ operations data are never queried from customer code.
 | | `vendor_applications` | "Join as a vendor?" requests (country IN or US, Q-35), status | admin |
 | Places | `regions` | the 36 regions (D-002): slug, name, sort, `is_live`, greeting (native + ISO 15924 script + Latin + meaning), languages, tagline, story, hero image, accent colour, `content_status` (D-019) | store (text only if approved) / admin |
 | Catalog | `categories` | browse groups per product type. A child always has its parent's type | store / admin |
-| | `products` | region, category, `product_type`, name, slug, summary, description, story, craft, `attributes` (customer-safe JSON), `price_cents`, `status`, search vector; `vendor_id`*, `shop_price_paise`*, `origin_town`*, `has_origin_label`*, `is_placeholder`*. **Spices cannot be `live`** (CHECK, D-032) | store (live only) / admin |
+| | `products` | region, category, `product_type`, name, slug, summary, description, story, craft, `attributes` (customer-safe JSON), `price_cents`, `status`, search vector; `vendor_id`*, `shop_price_paise`*, `origin_town`*, `has_origin_label`*, `is_placeholder`*. **Spices are `live` only while "Spices are cleared" is on** (`pricing_settings.spices_cleared`, D-074; on since D-107) | store (live only) / admin |
 | | `product_variants` | `options` JSON, SKU*, label, price override, `weight_g`*, `qty_listed`*, `qty_reserved`*, `qty_confirmed_at`* | store (`available` only) / admin |
 | | `variant_availability` | public mirror `variant_id → available`, trigger-maintained, in the Realtime publication (live "only 2 left", D-010) | store (visible products) |
 | | `product_media` | Storage paths (bucket `product-media`), alt text, one primary per product, `is_ai` (an AI-generated model photo, D-100: the product's Details say so) | store / admin |
@@ -150,6 +150,8 @@ Migration 31 (D-099, the second speed audit): `admin_order_counts()` (every orde
 send, shops owed for picked pieces) and `admin_cycle_totals(cycle)` (the cycle card's orders, pieces, shops and sales),
 admin only, counted in SQL because the API sends at most 1,000 rows; indexes for orders by status and newest, pickups
 by status, what each shop is owed, and a payout's pieces.
+Migrations 36 – 37 (D-106): the product type `home` (Home & gifts) with its three categories, taxed as general goods by
+the category trigger, and the business detail `hs_home` for its shipping documents.
 Migrations 32 – 35 (D-102, D-103, vendor accounts): roles `vendor` and `worker`; `my_vendor_id()`, `is_vendor()`,
 `is_worker()`, the internal `_vendor_or_raise()` (refuses non-vendors); `admin_vendor_sign_in_code(user, days)` (a one-time code shown once; older unused ones stop working) and
 the service-only `_link_vendor_account(user, vendor, language, by)` and `_redeem_vendor_code(code)`. A vendor reads

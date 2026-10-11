@@ -8,7 +8,7 @@ confusion. If you need a concept that isn't here, add it (and a decision if it's
 | **region** | one of India's 28 states or 8 UTs, all treated the same (D-002) | `regions`, `region_id`, `/states/[region]` | the region's name; "state", "home" | `state` in code (clashes with React state and the US address field), province |
 | **product** | a sellable item as customers see it ("Kasavu saree") | `products` | product name | item, listing |
 | **variant** | one buyable option of a product (size/colour or weight), with its own SKU and stock | `product_variants` | size / weight picker | SKU as a synonym for variant |
-| **product type** | `clothing` or `spice`. Decides which attributes and options apply | `product_type` | "Clothing", "Spices" | kind |
+| **product type** | `clothing`, `spice` or `home` (D-106). Decides which attributes and options apply | `product_type` | "Clothing", "Spices", "Home & gifts" | kind |
 | **category** | a browse group inside a type (Sarees, Kurtas, Masalas…) | `categories` | category name | collection |
 | **vendor** | a shop in India that supplies pieces. **Admin only** (D-003) | `vendors`, `vendor_id` | never shown | supplier, seller, merchant, shop (in code) |
 | **vendor account** | the sign-in of a vendor's owner (D-102): uploads their own pieces, sees only their own | `profiles.role = 'vendor'`, `vendor_accounts`, `is_vendor()`, `vendor_*` functions, `/vendor` | never shown (vendor copy: "your shop") | retailer, partner, seller account |

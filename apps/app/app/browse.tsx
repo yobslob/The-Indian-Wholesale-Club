@@ -5,6 +5,7 @@ import { ActivityIndicator, FlatList, Pressable, Text, View } from 'react-native
 import { SafeAreaView } from 'react-native-safe-area-context';
 
 import { browseProducts, type BrowsePage, type ProductCard as ProductCardData } from '@repo/db/store';
+import { isProductType, PRODUCT_TYPE_LABEL, type ProductType } from '@repo/shared/domain';
 import tokens from '@repo/tokens';
 
 import { BackBar, Body, ErrorText, Loading, Title } from '@/components/ui';
@@ -27,7 +28,7 @@ const STUCK_AT = 120;
 export default function BrowseScreen(): React.JSX.Element {
   const router = useRouter();
   const params = useLocalSearchParams();
-  const type = params.type === 'spice' ? 'spice' : 'clothing';
+  const type: ProductType = isProductType(params.type) ? params.type : 'clothing';
   const region = slugOrNothing(params.region);
   const category = slugOrNothing(params.category);
   const key = `browse:${type}:${region ?? ''}:${category ?? ''}`;
@@ -42,7 +43,7 @@ export default function BrowseScreen(): React.JSX.Element {
   const renderItem = useCallback(({ item }: { item: ProductCardData }) => <ProductCard product={item} layout="fill" />, []);
   const stateName = meta?.regions.find((r) => r.slug === region)?.name;
   const categoryName = meta?.categories.find((c) => c.slug === category)?.name;
-  const title = categoryName ?? (type === 'clothing' ? 'Clothing' : 'Spices');
+  const title = categoryName ?? PRODUCT_TYPE_LABEL[type];
   const count = meta ? `${meta.total} ${meta.total === 1 ? 'piece' : 'pieces'}` : '';
   const chosen = `${stateName ?? 'All states'} · ${categoryName ?? 'Everything'}`;
   const allCount = meta?.regions.reduce((n, r) => n + r.count, 0);

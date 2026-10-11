@@ -1,12 +1,14 @@
 import { z } from 'zod';
 
+import { PRODUCT_TYPES } from '@repo/shared/domain';
+
 /**
  * Shapes of everything the customer side reads (store_* views and functions).
  * zod strips unknown keys, so even if the database ever returned an extra
  * column it would not reach the UI (defense in depth for D-003 / INV-1).
  */
 
-const productType = z.enum(['clothing', 'spice']);
+const productType = z.enum(PRODUCT_TYPES);
 const isoDate = z.string(); // 'YYYY-MM-DD'
 const isoDateTime = z.string();
 

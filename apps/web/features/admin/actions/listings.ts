@@ -24,7 +24,7 @@ function plain(error: unknown): string {
   if (message.includes('price_needed')) return 'Set the shop price (with every cost in Settings), or a price by hand.';
   if (message.includes('vendor_not_found')) return 'Pick an active shop.';
   if (message.includes('products_slug') || message.includes('duplicate key')) return 'That web address is taken: edit it.';
-  if (message.includes('spice') || message.includes('D-032')) return 'Spices can’t go live yet (D-032).';
+  if (message.includes('spice')) return 'Spices go live once “Spices are cleared” is on in Settings (D-107).';
   return message.length < 200 ? message : 'Could not save. Try again.';
 }
 

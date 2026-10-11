@@ -23,10 +23,13 @@ test('an admin lists a product and publishes it to the store', async ({ page }) 
   await shop.selectOption({
     label: await shop.locator('option', { hasText: 'Kerala' }).first().innerText(),
   });
-  // Type is a Clothing / Spice toggle: Spice swaps the clothing fields for the spice ones, Clothing brings them back.
-  await page.getByText('Spice', { exact: true }).click();
+  // Type is a Clothing / Spices / Home & gifts toggle (D-106): each swaps in its own fields, Clothing brings them back.
+  await page.getByText('Spices', { exact: true }).click();
   await expect(page.locator('input[name="ingredients"]')).toBeVisible();
   await expect(page.locator('input[name="fibre"]')).toBeHidden();
+  await page.getByText('Home & gifts', { exact: true }).click();
+  await expect(page.locator('input[name="material"]')).toBeVisible();
+  await expect(page.locator('input[name="ingredients"]')).toBeHidden();
   await page.getByText('Clothing', { exact: true }).click();
   await expect(page.getByRole('radio', { name: 'Clothing' })).toBeChecked();
   await expect(page.locator('input[name="ingredients"]')).toBeHidden();

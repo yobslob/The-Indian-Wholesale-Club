@@ -4,6 +4,7 @@ import { useState } from 'react';
 import { Pressable, Text, TextInput, View } from 'react-native';
 
 import { getHome, getTypeRows, searchProducts } from '@repo/db/store';
+import { PRODUCT_TYPE_LABEL, PRODUCT_TYPES, type ProductType } from '@repo/shared/domain';
 import tokens from '@repo/tokens';
 
 import type { RegionCard } from '@repo/db/store';
@@ -16,11 +17,10 @@ import { supabase } from '@/lib/supabase';
 import { usePagedQuery } from '@/lib/use-paged-query';
 import { useQuery } from '@/lib/use-query';
 
-type Tab = 'states' | 'clothing' | 'spice';
+type Tab = 'states' | ProductType;
 const TABS: { key: Tab; label: string }[] = [
   { key: 'states', label: 'States' },
-  { key: 'clothing', label: 'Clothing' },
-  { key: 'spice', label: 'Spices' },
+  ...PRODUCT_TYPES.map((t) => ({ key: t, label: PRODUCT_TYPE_LABEL[t] })),
 ];
 const plural = (n: number, word: string): string => `${n} ${word}${n === 1 ? '' : 's'}`;
 
@@ -40,7 +40,7 @@ function SoonNames({ regions }: { regions: RegionCard[] }): React.JSX.Element {
 }
 
 /**
- * Explore (storefront.md, D-083 – D-085, D-095): search, then States · Clothing · Spices. States are the open ones as
+ * Explore (storefront.md, D-083 – D-085, D-095): search, then States · Clothing · Spices · Home & gifts (D-106). States are the open ones as
  * stamps and every other by name; Clothing and Spices are one sideways row per category with See all (D-062). A search
  * shows the count with the words, matching open states as stamps, the pieces 24 at a time, and on no results the open
  * states, so it is never a dead end. A tab reads only each category's first 12 cards (store_type_rows).
@@ -116,7 +116,9 @@ export default function ExploreScreen(): React.JSX.Element {
               onPress={() => setTab(t.key)}
               className={`min-h-[38px] flex-1 items-center justify-center rounded-pill ${tab === t.key ? 'border-line bg-paper border' : ''}`}
             >
-              <Text className={`font-ui text-sm ${tab === t.key ? 'text-ink' : 'text-ink-muted'}`}>{t.label}</Text>
+              <Text numberOfLines={1} adjustsFontSizeToFit className={`font-ui text-sm ${tab === t.key ? 'text-ink' : 'text-ink-muted'}`}>
+                {t.label}
+              </Text>
             </Pressable>
           ))}
         </View>
@@ -177,10 +179,10 @@ export default function ExploreScreen(): React.JSX.Element {
               key={row.slug}
               title={row.name}
               products={row.products}
-              seeAll={row.count > row.products.length ? { type: tab === 'spice' ? 'spice' : 'clothing', category: row.slug } : undefined}
+              seeAll={row.count > row.products.length ? { type: tab, category: row.slug } : undefined}
             />
           ))}
-          {rows.data && rows.data.length === 0 ? <Body muted>{tab === 'spice' ? 'Spices are coming soon.' : 'New pieces are on their way.'}</Body> : null}
+          {rows.data && rows.data.length === 0 ? <Body muted>{tab === 'clothing' ? 'New pieces are on their way.' : `${tab === 'spice' ? 'Spices are' : 'Home & gifts are'} coming soon.`}</Body> : null}
         </>
       )}
     </Screen>

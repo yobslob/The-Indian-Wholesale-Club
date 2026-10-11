@@ -1,6 +1,6 @@
 import { z } from 'zod';
 
-import { clothingAttributesSchema, spiceAttributesSchema } from './attributes';
+import { clothingAttributesSchema, homeAttributesSchema, spiceAttributesSchema } from './attributes';
 
 /**
  * A new listing (flows.md §2, C3), as the admin builds it on the web or on a phone and sends it to
@@ -36,6 +36,7 @@ const common = {
 export const listingInputSchema = z.discriminatedUnion('product_type', [
   z.object({ ...common, product_type: z.literal('clothing'), attributes: clothingAttributesSchema }),
   z.object({ ...common, product_type: z.literal('spice'), attributes: spiceAttributesSchema }),
+  z.object({ ...common, product_type: z.literal('home'), attributes: homeAttributesSchema }),
 ]);
 export type ListingInput = z.infer<typeof listingInputSchema>;
 

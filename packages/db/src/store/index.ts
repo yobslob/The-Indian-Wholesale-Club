@@ -5,6 +5,8 @@
  */
 import { z } from 'zod';
 
+import type { ProductType } from '@repo/shared/domain';
+
 import { unwrap, type IwcClient } from '../client';
 
 import {
@@ -72,7 +74,7 @@ const PRODUCT_CARD_COLUMNS =
   'id, slug, name, product_type, region_slug, region_name, category_slug, category_name, price_cents, primary_image_path';
 
 export interface BrowseFilter {
-  productType: 'clothing' | 'spice';
+  productType: ProductType;
   regionSlug?: string;
   categorySlug?: string;
   /** Skip this many (the next page of a See all list). */
@@ -143,7 +145,7 @@ export async function listProductPaths(client: IwcClient): Promise<{ region_slug
 }
 
 /** Explore: one row per category of a type, each with its total and first 12 cards (1 round trip, D-062). */
-export async function getTypeRows(client: IwcClient, productType: 'clothing' | 'spice'): Promise<TypeRow[]> {
+export async function getTypeRows(client: IwcClient, productType: ProductType): Promise<TypeRow[]> {
   const data = unwrap(await client.rpc('store_type_rows', { p_type: productType }, { get: true }));
   return z.array(typeRowSchema).parse(data);
 }

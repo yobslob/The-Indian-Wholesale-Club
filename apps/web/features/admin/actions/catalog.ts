@@ -12,7 +12,7 @@ import {
   setProductStatus,
   updateProduct,
 } from '@repo/db/admin';
-import { clothingAttributesSchema, spiceAttributesSchema, type ListingInput } from '@repo/shared/domain';
+import { clothingAttributesSchema, homeAttributesSchema, PRODUCT_TYPES, spiceAttributesSchema, type ListingInput } from '@repo/shared/domain';
 
 import { STORE_TAG } from '@/features/catalog/data';
 
@@ -94,7 +94,7 @@ export async function createProductAction(form: FormData): Promise<void> {
     .object({
       vendorId: id,
       categoryId: id,
-      productType: z.enum(['clothing', 'spice']),
+      productType: z.enum(PRODUCT_TYPES),
       name: text(120).pipe(z.string().min(2)),
       slug,
       price: optionalDollars,
@@ -108,7 +108,9 @@ export async function createProductAction(form: FormData): Promise<void> {
           fibre_content: field(form, 'fibre'),
           care: field(form, 'care'),
         })
-      : spiceAttributesSchema.parse({
+      : base.productType === 'home'
+        ? homeAttributesSchema.parse({ material: field(form, 'material') })
+        : spiceAttributesSchema.parse({
           ingredients: field(form, 'ingredients'),
           allergens: field(form, 'allergens')
             .split(',')
@@ -168,7 +170,7 @@ export async function setProductCuratedAction(productId: string, curated: boolea
   revalidatePath(`/admin/catalog/${productId}`);
 }
 
-/** Publishing makes it visible in the store. The database refuses live spices (D-032). */
+/** Publishing makes it visible in the store. The database refuses live spices until they are cleared (D-074, D-107). */
 export async function setProductStatusAction(
   productId: string,
   status: 'draft' | 'live' | 'paused' | 'archived',

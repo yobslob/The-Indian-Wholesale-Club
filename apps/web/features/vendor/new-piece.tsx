@@ -53,7 +53,7 @@ export function NewPiece({
 
   const views = viewsNeeded(category?.product_type ?? 'clothing');
   const client = browserClient();
-  const canChoose = category !== null && (category.product_type === 'spice' || wears !== null);
+  const canChoose = category !== null && (category.product_type !== 'clothing' || wears !== null);
 
   async function photoTaken(view: (typeof views)[number], shot: Shot | null): Promise<void> {
     setError(false);
@@ -136,7 +136,7 @@ export function NewPiece({
   return (
     <div className="space-y-5">
       {step === 0 ? (
-        <ChooseStep lang={lang} categories={categories} category={category} wears={wears} onCategory={(c) => { setCategory(c); if (c.product_type === 'spice') setWears(null); }} onWears={setWears} />
+        <ChooseStep lang={lang} categories={categories} category={category} wears={wears} onCategory={(c) => { setCategory(c); if (c.product_type !== 'clothing') setWears(null); }} onWears={setWears} />
       ) : view ? (
         <PhotoStep key={view} lang={lang} view={view} step={step} total={views.length + 1} existing={existing?.photos[view] ?? null} onShot={(shot) => void photoTaken(view, shot)} />
       ) : (

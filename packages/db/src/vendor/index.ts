@@ -1,5 +1,7 @@
 import { z } from 'zod';
 
+import { PRODUCT_TYPES, type ProductType } from '@repo/shared/domain';
+
 import { unwrap, type IwcClient } from '../client';
 
 /**
@@ -35,7 +37,7 @@ export const vendorSubmissionSchema = z.object({
   id: z.string().uuid(),
   status: z.enum(STATUSES),
   retake_reason: z.enum(REASONS).nullable(),
-  product_type: z.enum(['clothing', 'spice']),
+  product_type: z.enum(PRODUCT_TYPES),
   category_id: z.string().uuid().nullable(),
   details: z.record(z.string()),
   variants: z.array(z.object({ label: z.string(), qty: z.number().int() })),
@@ -110,7 +112,7 @@ export async function vendorMoney(client: IwcClient): Promise<VendorMoney> {
   return moneySchema.parse(unwrap(await client.rpc('vendor_money', undefined, { get: true })));
 }
 
-export async function newSubmission(client: IwcClient, productType: 'clothing' | 'spice' = 'clothing'): Promise<string> {
+export async function newSubmission(client: IwcClient, productType: ProductType = 'clothing'): Promise<string> {
   return z.string().uuid().parse(unwrap(await client.rpc('vendor_new_submission', { p_type: productType })));
 }
 
@@ -141,7 +143,7 @@ const categorySchema = z.object({
   id: z.string().uuid(),
   slug: z.string(),
   name: z.string(),
-  product_type: z.enum(['clothing', 'spice']),
+  product_type: z.enum(PRODUCT_TYPES),
 });
 export type VendorCategory = z.infer<typeof categorySchema>;
 

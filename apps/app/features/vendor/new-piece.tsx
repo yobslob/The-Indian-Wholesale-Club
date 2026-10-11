@@ -101,7 +101,7 @@ export function NewPiece({ vendorId, categories, existing }: { vendorId: string;
   return (
     <View className="gap-5">
       {step === 0 ? (
-        <ChooseStep categories={categories} category={category} wears={wears} onCategory={(c) => { setCategory(c); if (c.product_type === 'spice') setWears(null); }} onWears={setWears} />
+        <ChooseStep categories={categories} category={category} wears={wears} onCategory={(c) => { setCategory(c); if (c.product_type !== 'clothing') setWears(null); }} onWears={setWears} />
       ) : view ? (
         <PhotoStep view={view} step={step} total={views.length + 1} shot={shot} existing={existing?.photos[view]} busy={busy} onTake={(s) => void take(s)} onUse={() => void use()} />
       ) : (

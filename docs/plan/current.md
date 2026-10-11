@@ -46,6 +46,12 @@ pilot steps (P.1 – P.7, migrations 24 – 28) is built and verified (log below
 then `pnpm demo:load` against production with Stripe in test mode, and `pnpm demo:clear` afterwards
 (`docs/ops.md` §Demo round).
 
+**Master catalogue (D-106 – D-108, 2026-10-11):** a third product type, Home & gifts (`home`, `/home-and-gifts`,
+migrations 36 – 37), spices cleared, and `pnpm catalogue:master`, which replaces the whole inventory with
+`catalogue/master/products.csv` (2,863 placeholder listings without photos, all 36 states). Built and verified locally
+(log below). **Production:** the founder pushes and runs the Deploy workflow (migrations 36 – 37), then the load runs
+against production (`docs/ops.md` §Master catalogue). Proposed, for the founder to confirm: home pieces follow the
+clothing-only rule for change-of-mind returns (none), and the category each row was sorted into (by keywords).
 **Waiting on the founder (nothing here is Claude's to decide):**
 - the launch steps in the admin: approve and switch on the launch states, fill the business details, open the first
   cycle with real dates, list products; then `pnpm launch:check --url=<production> --allow-remote` until "Ready to launch";
@@ -182,6 +188,7 @@ then `pnpm demo:load` against production with Stripe in test mode, and `pnpm dem
 | 2026-10-10 | V5 app vendor mode (on `eed5abf` + uncommitted tree) | Claude, the app's web preview (`app-web`), local Supabase | `check.mjs typecheck lint bundle`; signed in as a local test vendor in the preview; Home, My pieces | typecheck OK · lint OK (incl. new boundaries: vendor ↔ admin, customer ↔ vendor) · **bundle OK 41.0 s (Android and iOS)**; the app went to vendor mode on `is_vendor()`, Home in Hindi with the four tiles and five tabs, My pieces empty state. Not verified: the camera, the gallery and `jpeg-js` on a phone; the code sign-in from the app (the preview can't call the website's API across origins; the same route works from the website) |
 | 2026-10-10 | V6 languages + worker caches (on `f9f5677` + uncommitted tree) | Claude, founder's machine | `tsx --test tests/vendor.test.ts` (shared); the colour fix twice on the saved test image | 18/18 pass: all 12 languages have every word and keep every {placeholder}; language picks; the form turns ₹1,200 into 120000 paise; the photo check flags a small dark flat photo and passes a good one. The worker's colour fix gives the same result (23, 36, 52) and measures the house model once: 0.64 s instead of 1.37 s for the next candidate; house photos downloaded once per run |
 | 2026-10-10 | vendor accounts V1 – V6 complete (on `f9f5677` + uncommitted tree: V6, worker caches, D-105) | Claude, founder's machine, local Supabase, port 3000 free | `node scripts/check.mjs` (all steps) | **all OK**: docs 0.4 s · typecheck 10.6 s · lint 14.0 s · test 2.2 s · db 45.1 s (35/35) · build 67.1 s · http 3.0 s (`/` 15 ms, 123 KB JS; product page 8 ms, 127 KB; all under budget) · e2e 85.2 s (incl. hidden admin, no vendor fields on customer pages) · bundle 9.4 s |
+| 2026-10-11 | Home & gifts, spices cleared, master catalogue (D-106 – D-108; on `0ec9c65` + uncommitted tree) | Claude, founder's machine, local Supabase, port 3000 free | `node scripts/check.mjs` (all steps), then `docs typecheck lint test db` again; `pnpm catalogue:master` dry run and `--apply` on local; the web preview | docs OK 0.7 s · typecheck OK 14.1 s · lint OK 21.1 s · test OK 3.3 s · **db OK 78.2 s (36/36, new `home_type.test.sql`)** · build OK 80.0 s · http OK 4.0 s (`/` 18 ms, 123 KB JS; all under budget) · bundle OK 46.5 s · **e2e 19 passed, 3 failed**: the admin listing test passed after its type toggle was updated; the 3 payment tests stopped where Stripe's card form loads, because `js.stripe.com` did not answer within 20 s from this machine (`curl`). Payment e2e unverified on this tree. Loader: removed 579 products and 5 orders, added 2,863 listings (1,117 clothing, 442 spices, 1,304 home & gifts), every price from the pricing engine; `/home-and-gifts`, `/states/meghalaya` and a spice page render with no console errors |
 
 ## C1 sub-steps (design)
 

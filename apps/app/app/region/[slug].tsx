@@ -3,6 +3,7 @@ import { useRef } from 'react';
 import { Dimensions, Pressable, ScrollView, Text, View } from 'react-native';
 
 import { getRegionPage } from '@repo/db/store';
+import { PRODUCT_TYPE_LABEL } from '@repo/shared/domain';
 
 import { Photo } from '@/components/photo';
 import { Body, ErrorText, Heading, Loading, Screen } from '@/components/ui';
@@ -18,7 +19,8 @@ const ROW = 12;
  * The core page (storefront.md §The region page, D-081, D-095). One store_region_page() call: the photo first, then
  * the greeting in its own script (the phone's system fonts cover every Indian script), the name in Cinzel, tagline
  * and story; jump pills to each section; New arrivals, Most wanted (D-058), the album (D-051), Picked for you as a
- * row inside its box (D-081), Leaving soon (D-056), then one row per clothing category and Spices (D-062).
+ * row inside its box (D-081), Leaving soon (D-056), then one row per clothing category, Spices and Home & gifts (D-062,
+ * D-106).
  */
 export default function RegionScreen(): React.JSX.Element {
   const { slug } = useLocalSearchParams<{ slug: string }>();
@@ -35,6 +37,8 @@ export default function RegionScreen(): React.JSX.Element {
     .map((c) => ({ ...c, items: products.filter((p) => p.category_slug === c.slug) }));
   const spices = products.filter((p) => p.product_type === 'spice');
   const spiceCount = (data?.category_counts ?? []).filter((c) => c.product_type === 'spice').reduce((n, c) => n + c.count, 0);
+  const home = products.filter((p) => p.product_type === 'home');
+  const homeCount = (data?.category_counts ?? []).filter((c) => c.product_type === 'home').reduce((n, c) => n + c.count, 0);
   const mark = (key: string) => (e: { nativeEvent: { layout: { y: number } } }) => {
     sectionY.current[key] = e.nativeEvent.layout.y;
   };
@@ -46,6 +50,7 @@ export default function RegionScreen(): React.JSX.Element {
     ['new', 'New arrivals', null],
     ...categories.map((c): [string, string, number | null] => [`c-${c.slug}`, c.name, c.count]),
     ['spices', 'Spices', spiceCount],
+    ...(homeCount > 0 ? [['home', PRODUCT_TYPE_LABEL.home, homeCount] as [string, string, number | null]] : []),
   ];
 
   return (
@@ -136,6 +141,11 @@ export default function RegionScreen(): React.JSX.Element {
                   </View>
                 )}
               </View>
+              {home.length > 0 ? (
+                <View onLayout={mark('home')}>
+                  <ProductRow title={PRODUCT_TYPE_LABEL.home} products={home.slice(0, ROW)} seeAll={{ type: 'home', region: slug }} />
+                </View>
+              ) : null}
             </>
           )}
         </>

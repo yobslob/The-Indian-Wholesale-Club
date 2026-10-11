@@ -1,11 +1,13 @@
-import { clothingAttributesSchema, spiceAttributesSchema } from './attributes';
+import { clothingAttributesSchema, homeAttributesSchema, spiceAttributesSchema } from './attributes';
+
+import type { ProductType } from './product-types';
 
 /**
  * The product page's "Details" rows (website and app): the attributes customers may see (D-003; invalid data is not
  * shown), where the piece is from, and what the photos are (D-100). Pure, so both apps draw the same rows.
  */
 export type DetailsInput = {
-  product_type: 'clothing' | 'spice';
+  product_type: ProductType;
   attributes: unknown;
   region_name: string;
 };
@@ -23,6 +25,14 @@ export function detailRows(product: DetailsInput, photos: PhotoNote): [string, s
     const parsed = clothingAttributesSchema.safeParse(product.attributes);
     if (parsed.success) {
       rows.push(['Fabric', parsed.data.fibre_content], ['Care', parsed.data.care]);
+      if (parsed.data.notes) rows.push(['Notes', parsed.data.notes]);
+    }
+  } else if (product.product_type === 'home') {
+    const parsed = homeAttributesSchema.safeParse(product.attributes);
+    if (parsed.success) {
+      rows.push(['Material', parsed.data.material]);
+      if (parsed.data.dimensions) rows.push(['Size', parsed.data.dimensions]);
+      if (parsed.data.care) rows.push(['Care', parsed.data.care]);
       if (parsed.data.notes) rows.push(['Notes', parsed.data.notes]);
     }
   } else {

@@ -8,6 +8,7 @@ const STATIC_PATHS = [
   '/states',
   '/clothing',
   '/spices',
+  '/home-and-gifts',
   '/how-it-works',
   '/about',
   '/faq',

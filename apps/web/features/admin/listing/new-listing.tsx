@@ -3,7 +3,7 @@
 import { useRouter } from 'next/navigation';
 import { useEffect, useState, useTransition } from 'react';
 
-import { listingSlug, variantLabel, type PricingSettings } from '@repo/shared/domain';
+import { listingSlug, PRODUCT_TYPE_LABEL, PRODUCT_TYPES, variantLabel, type PricingSettings, type ProductType } from '@repo/shared/domain';
 
 import { saveListingAction } from '../actions/listings';
 import { button, input, panel, secondaryButton } from '../styles';
@@ -14,7 +14,7 @@ import { livePrice, SellsFor, toPaise } from './sells-for';
 
 export interface ListingFormData {
   vendors: { id: string; shop_name: string; town: string | null; region: { name: string; slug: string } | null }[];
-  categories: { id: string; product_type: 'clothing' | 'spice'; name: string; is_active: boolean; default_weight_g: number | null }[];
+  categories: { id: string; product_type: ProductType; name: string; is_active: boolean; default_weight_g: number | null }[];
   pricing: PricingSettings;
 }
 
@@ -33,10 +33,10 @@ export function NewListing({ data }: { data: ListingFormData }): React.JSX.Eleme
   // A short random tail keeps two listings with one name apart; drawn in the browser only, so the page hydrates cleanly.
   const [suffix, setSuffix] = useState('');
   useEffect(() => setSuffix(Math.random().toString(36).slice(2, 6)), []);
-  const [type, setType] = useState<'clothing' | 'spice'>('clothing');
+  const [type, setType] = useState<ProductType>('clothing');
   const [vendorId, setVendorId] = useState('');
   const [categoryId, setCategoryId] = useState('');
-  const [f, setF] = useState({ name: '', summary: '', fibre: '', care: '', ingredients: '', allergens: '', shelfLife: '', shopPrice: '', price: '' });
+  const [f, setF] = useState({ name: '', summary: '', fibre: '', care: '', ingredients: '', allergens: '', shelfLife: '', material: '', dimensions: '', shopPrice: '', price: '' });
   const [slug, setSlug] = useState<string | null>(null);
   const [byHand, setByHand] = useState(false);
   const [options, setOptions] = useState<Option[]>([newOption()]);
@@ -68,7 +68,9 @@ export function NewListing({ data }: { data: ListingFormData }): React.JSX.Eleme
       attributes:
         type === 'clothing'
           ? { fibre_content: f.fibre.trim(), care: f.care.trim() }
-          : {
+          : type === 'home'
+            ? { material: f.material.trim(), ...(f.dimensions.trim() ? { dimensions: f.dimensions.trim() } : {}) }
+            : {
               ingredients: f.ingredients.trim(),
               allergens: f.allergens.split(',').map((a) => a.trim()).filter(Boolean),
               shelf_life_days: Number(f.shelfLife),
@@ -116,8 +118,8 @@ export function NewListing({ data }: { data: ListingFormData }): React.JSX.Eleme
           </label>
           <fieldset className="space-y-[5px]">
             <legend className={label}>Type</legend>
-            <div className="border-line bg-canvas mt-[5px] grid grid-cols-2 rounded-[10px] border p-[3px]">
-              {(['clothing', 'spice'] as const).map((t) => (
+            <div className="border-line bg-canvas mt-[5px] grid grid-cols-3 rounded-[10px] border p-[3px]">
+              {PRODUCT_TYPES.map((t) => (
                 <label key={t} className={seg(type === t)}>
                   <input
                     type="radio"
@@ -130,11 +132,11 @@ export function NewListing({ data }: { data: ListingFormData }): React.JSX.Eleme
                     }}
                     className="sr-only"
                   />
-                  {t === 'clothing' ? 'Clothing' : 'Spice'}
+                  {PRODUCT_TYPE_LABEL[t]}
                 </label>
               ))}
             </div>
-            {type === 'spice' ? <small className="text-ink-muted text-[12px]">Spices can be saved as drafts; they can&apos;t go live yet (D-032).</small> : null}
+            {type === 'spice' ? <small className="text-ink-muted text-[12px]">Spices go live once &quot;Spices are cleared&quot; is on in Settings (D-074, D-107).</small> : null}
           </fieldset>
           <label className="block space-y-[5px]">
             <span className={label}>Category</span>
@@ -181,6 +183,17 @@ export function NewListing({ data }: { data: ListingFormData }): React.JSX.Eleme
               <label className="block space-y-[5px]">
                 <span className={label}>Care</span>
                 <input name="care" value={f.care} onChange={set('care')} placeholder="Hand wash, dry in shade" className={input} />
+              </label>
+            </div>
+          ) : type === 'home' ? (
+            <div className="grid grid-cols-2 gap-2.5">
+              <label className="block space-y-[5px]">
+                <span className={label}>Material</span>
+                <input name="material" value={f.material} onChange={set('material')} placeholder="Brass" className={input} />
+              </label>
+              <label className="block space-y-[5px]">
+                <span className={label}>Size (optional)</span>
+                <input name="dimensions" value={f.dimensions} onChange={set('dimensions')} placeholder="20 cm across" className={input} />
               </label>
             </div>
           ) : (

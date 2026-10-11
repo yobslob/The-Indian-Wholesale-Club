@@ -4,7 +4,10 @@ import { t, WEARS, type Language, type Wears } from '@repo/shared/vendor';
 
 import { Icon, type IconName } from './icons';
 
-export type Category = { id: string; name: string; product_type: 'clothing' | 'spice' };
+import type { ProductType } from '@repo/shared/domain';
+
+
+export type Category = { id: string; name: string; product_type: ProductType };
 
 const WEARS_ICON: Record<Wears, IconName> = { women: 'women', men: 'men', kids: 'kids', unisex: 'anyone' };
 

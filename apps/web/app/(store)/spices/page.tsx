@@ -6,7 +6,7 @@ export const metadata: Metadata = { title: 'Spices' };
 
 type SearchParams = Promise<Record<string, string | string[] | undefined>>;
 
-/** Spices stay unpublished until the compliance question is answered (D-032, Q-10). */
+/** Spices: every live pantry listing (D-107: published since "Spices are cleared" was switched on, D-074). */
 export default async function SpicesPage({ searchParams }: { searchParams: SearchParams }): Promise<React.JSX.Element> {
   return (
     <BrowseByType

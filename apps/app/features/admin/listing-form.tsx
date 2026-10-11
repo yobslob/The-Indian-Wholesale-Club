@@ -10,7 +10,18 @@ import {
   PRICE_SUGGESTION_SETTINGS,
   setProductStatus,
 } from '@repo/db/admin';
-import { autoPrice, formatUsd, listingInputSchema, listingSlug, pricingSettingsFrom, variantLabel, type PricingSettings } from '@repo/shared/domain';
+import {
+  autoPrice,
+  formatUsd,
+  listingInputSchema,
+  listingSlug,
+  pricingSettingsFrom,
+  PRODUCT_TYPE_LABEL,
+  PRODUCT_TYPES,
+  variantLabel,
+  type PricingSettings,
+  type ProductType,
+} from '@repo/shared/domain';
 
 import { takePhotos, uploadListingPhotos, type ListingPhoto } from './listing-photos';
 import { PhotoTiles } from './photo-tiles';
@@ -24,7 +35,7 @@ import { useQuery, type QueryState } from '@/lib/use-query';
 
 export interface ListingFormData {
   vendors: { id: string; shop_name: string; town?: string | null; region: { name: string; slug?: string } | null }[];
-  categories: { id: string; product_type: 'clothing' | 'spice'; name: string; is_active: boolean; default_weight_g: number | null }[];
+  categories: { id: string; product_type: ProductType; name: string; is_active: boolean; default_weight_g: number | null }[];
   pricing: PricingSettings;
   /** Some of those settings are still Claude's researched estimates (D-047). */
   pricingEstimated: boolean;
@@ -60,6 +71,7 @@ const MESSAGES: Record<string, string> = {
   care: 'Care is needed, e.g. Hand wash cold.',
   ingredients: 'Ingredients are needed.',
   shelf_life_days: 'Shelf life in days is needed.',
+  material: 'Say what it is made of, e.g. Brass.',
 };
 
 /** The shop, found by typing (there are many): the chosen one as a chip, tap it to change. */
@@ -99,9 +111,9 @@ export function ShopPicker({ vendors, value, onChange }: { vendors: ListingFormD
 export function ListingForm({ data, onDone }: { data: ListingFormData; onDone: () => void }): React.JSX.Element {
   const [vendorId, setVendorId] = useState<string | null>(null);
   const [photos, setPhotos] = useState<ListingPhoto[]>([]);
-  const [type, setType] = useState<'clothing' | 'spice'>('clothing');
+  const [type, setType] = useState<ProductType>('clothing');
   const [categoryId, setCategoryId] = useState<string | null>(null);
-  const [f, setF] = useState({ name: '', summary: '', fibre: '', care: '', ingredients: '', allergens: '', shelfLife: '', weight: '', shopPrice: '', price: '' });
+  const [f, setF] = useState({ name: '', summary: '', fibre: '', care: '', ingredients: '', allergens: '', shelfLife: '', material: '', dimensions: '', weight: '', shopPrice: '', price: '' });
   const [variants, setVariants] = useState<VariantDraft[]>([EMPTY_VARIANT]);
   const [problem, setProblem] = useState<string | null>(null);
   const [saved, setSaved] = useState<{ id: string; failed: ListingPhoto[] } | null>(null);
@@ -141,7 +153,9 @@ export function ListingForm({ data, onDone }: { data: ListingFormData; onDone: (
       attributes:
         type === 'clothing'
           ? { fibre_content: f.fibre, care: f.care }
-          : { ingredients: f.ingredients, allergens: f.allergens.split(',').map((a) => a.trim()).filter(Boolean), shelf_life_days: Number(f.shelfLife) },
+          : type === 'home'
+            ? { material: f.material, ...(f.dimensions.trim() ? { dimensions: f.dimensions } : {}) }
+            : { ingredients: f.ingredients, allergens: f.allergens.split(',').map((a) => a.trim()).filter(Boolean), shelf_life_days: Number(f.shelfLife) },
       variants: variants.map((v) => ({
         label: variantLabel(v),
         options: { colour: v.colour.trim() || undefined, size: v.size.trim() || undefined },
@@ -196,7 +210,7 @@ export function ListingForm({ data, onDone }: { data: ListingFormData; onDone: (
         <AdminButton
           big
           label={uploading !== null ? `Photo ${uploading + 1} of ${photos.length}…` : action.busy ? 'Saving…' : 'Publish'}
-          disabled={action.busy || type === 'spice'}
+          disabled={action.busy}
           onPress={() => void save(true)}
         />
       </View>
@@ -219,7 +233,7 @@ export function ListingForm({ data, onDone }: { data: ListingFormData; onDone: (
       <View className="gap-2">
         <Group>Type</Group>
         <View className="border-line bg-canvas flex-row rounded-[10px] border p-[3px]">
-          {(['clothing', 'spice'] as const).map((t) => (
+          {PRODUCT_TYPES.map((t) => (
             <Pressable
               key={t}
               onPress={() => {
@@ -230,11 +244,11 @@ export function ListingForm({ data, onDone }: { data: ListingFormData; onDone: (
               accessibilityState={{ selected: type === t }}
               className={`min-h-10 flex-1 items-center justify-center rounded-lg ${type === t ? 'bg-ink' : ''}`}
             >
-              <Text className={`font-ui-semibold text-[13px] ${type === t ? 'text-paper' : 'text-ink-muted'}`}>{t === 'clothing' ? 'Clothing' : 'Spice'}</Text>
+              <Text className={`font-ui-semibold text-[13px] ${type === t ? 'text-paper' : 'text-ink-muted'}`}>{PRODUCT_TYPE_LABEL[t]}</Text>
             </Pressable>
           ))}
         </View>
-        {type === 'spice' ? <Body muted>Spices can be saved as drafts; they can&apos;t go live yet (D-032).</Body> : null}
+        {type === 'spice' ? <Body muted>Spices go live once &quot;Spices are cleared&quot; is on in Settings (D-074, D-107).</Body> : null}
         <View className="flex-row flex-wrap gap-2">
           {categories.map((c) => (
             <Pressable key={c.id} onPress={() => setCategoryId(c.id)} className={chip(categoryId === c.id)} accessibilityRole="button" accessibilityState={{ selected: categoryId === c.id }}>
@@ -258,6 +272,15 @@ export function ListingForm({ data, onDone }: { data: ListingFormData; onDone: (
           </View>
           <View className="flex-1">
             <Field label="Care" value={f.care} onChangeText={set('care')} placeholder="Hand wash cold" />
+          </View>
+        </View>
+      ) : type === 'home' ? (
+        <View className="flex-row gap-3">
+          <View className="flex-1">
+            <Field label="Material" value={f.material} onChangeText={set('material')} placeholder="Brass" />
+          </View>
+          <View className="flex-1">
+            <Field label="Size (optional)" value={f.dimensions} onChangeText={set('dimensions')} placeholder="20 cm across" />
           </View>
         </View>
       ) : (

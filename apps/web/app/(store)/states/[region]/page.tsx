@@ -2,6 +2,8 @@ import Image from 'next/image';
 import Link from 'next/link';
 import { notFound } from 'next/navigation';
 
+import { PRODUCT_TYPE_LABEL, PRODUCT_TYPE_PATH, type ProductType } from '@repo/shared/domain';
+
 import { CuratedCard } from '@/features/catalog/curated-card';
 import { getHomeCached, getRegionPageCached } from '@/features/catalog/data';
 import { ProductRow } from '@/features/catalog/product-row';
@@ -48,7 +50,7 @@ const ROW = 12;
  * The core page (storefront.md §The region page, design.md §Direction). One cached store_region_page()
  * call. Every list is a row that scrolls sideways with See all where there is more (D-062): New arrivals, Most wanted
  * (D-058), the album (D-051, once it has three photos), Curated for you and Leaving soon (D-056), then one row per
- * clothing category, then Spices.
+ * clothing category, then Spices, then Home & gifts (D-106) when the state has some.
  */
 export default async function RegionPage({ params }: { params: Params }): Promise<React.JSX.Element> {
   const page = await getRegionPageCached((await params).region);
@@ -56,10 +58,12 @@ export default async function RegionPage({ params }: { params: Params }): Promis
   const { region, album, products, most_wanted: mostWanted, curated, leaving_soon: leavingSoon } = page;
   const spices = products.filter((p) => p.product_type === 'spice');
   const spiceCount = page.category_counts.filter((c) => c.product_type === 'spice').reduce((n, c) => n + c.count, 0);
+  const home = products.filter((p) => p.product_type === 'home');
+  const homeCount = page.category_counts.filter((c) => c.product_type === 'home').reduce((n, c) => n + c.count, 0);
   const categories = byCategory(page);
   const newest = products.slice(0, ROW); // store_region_page returns newest first
-  const browse = (type: 'clothing' | 'spices', category?: string): string =>
-    `/${type}?state=${region.slug}${category ? `&category=${category}` : ''}`;
+  const browse = (type: ProductType, category?: string): string =>
+    `${PRODUCT_TYPE_PATH[type]}?state=${region.slug}${category ? `&category=${category}` : ''}`;
 
   return (
     <div
@@ -126,6 +130,13 @@ export default async function RegionPage({ params }: { params: Params }): Promis
                   Spices <span className="text-ink-muted">{spiceCount}</span>
                 </a>
               </li>
+              {homeCount > 0 ? (
+                <li className="shrink-0">
+                  <a href="#home-and-gifts" className={pill}>
+                    {PRODUCT_TYPE_LABEL.home} <span className="text-ink-muted">{homeCount}</span>
+                  </a>
+                </li>
+              ) : null}
             </RowScroller>
           </nav>
           {newest.length > 0 ? (
@@ -168,7 +179,7 @@ export default async function RegionPage({ params }: { params: Params }): Promis
             />
           ))}
           {spices.length > 0 ? (
-            <ProductRow id="spices" title="Spices" products={spices.slice(0, ROW)} href={browse('spices')} />
+            <ProductRow id="spices" title="Spices" products={spices.slice(0, ROW)} href={browse('spice')} />
           ) : (
             <section id="spices" aria-labelledby="spices-h" className="scroll-mt-20 py-[clamp(24px,3vw,48px)]">
               <h2 id="spices-h" className={heading}>
@@ -179,6 +190,14 @@ export default async function RegionPage({ params }: { params: Params }): Promis
               </p>
             </section>
           )}
+          {home.length > 0 ? (
+            <ProductRow
+              id="home-and-gifts"
+              title={PRODUCT_TYPE_LABEL.home}
+              products={home.slice(0, ROW)}
+              href={browse('home')}
+            />
+          ) : null}
         </>
       )}
     </div>

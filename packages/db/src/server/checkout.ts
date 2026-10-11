@@ -4,6 +4,8 @@
  */
 import { z } from 'zod';
 
+import { PRODUCT_TYPES } from '@repo/shared/domain';
+
 import { DbError, unwrap, type IwcClient } from '../client';
 import { deliveryWindowSchema } from '../store/schemas';
 
@@ -14,7 +16,7 @@ export const checkoutVariantSchema = z.object({
   product_id: z.string().uuid(),
   product_name: z.string(),
   product_slug: z.string(),
-  product_type: z.enum(['clothing', 'spice']),
+  product_type: z.enum(PRODUCT_TYPES),
   region_slug: z.string(),
   region_name: z.string(),
   label: z.string(),

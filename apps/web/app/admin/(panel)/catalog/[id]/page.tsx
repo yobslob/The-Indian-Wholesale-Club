@@ -6,7 +6,7 @@ import {
   listPricingEstimates,
   PRICE_SUGGESTION_SETTINGS,
 } from '@repo/db/admin';
-import { formatUsd } from '@repo/shared/domain';
+import { formatUsd, PRODUCT_TYPE_LABEL } from '@repo/shared/domain';
 
 import {
   addVariantAction,
@@ -55,7 +55,7 @@ export default async function AdminProductPage({
         </p>
       ) : null}
       <p>
-        <StatusChip map={PRODUCT_STATUS} status={product.status} /> {product.product_type === 'spice' ? 'Spice' : 'Clothing'}
+        <StatusChip map={PRODUCT_STATUS} status={product.status} /> {PRODUCT_TYPE_LABEL[product.product_type]}
         {product.published_at ? <> · first published <When iso={product.published_at} inline /></> : ''}
         {product.status === 'live' ? (
           <>
@@ -86,11 +86,6 @@ export default async function AdminProductPage({
           {product.is_curated ? 'Remove from Curated for you' : 'Add to Curated for you'}
         </button>
       </form>
-      {product.product_type === 'spice' ? (
-        <p className="text-caution">
-          Spices cannot be published until the compliance question is answered (D-032, Q-10).
-        </p>
-      ) : null}
 
       <ProductPhotos productId={product.id} media={product.media} />
 

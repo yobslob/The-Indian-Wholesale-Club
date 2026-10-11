@@ -64,7 +64,8 @@ begin
     'and the refusal shows on Today (B-8)');
 end $$;
 
--- Spices: live only once cleared (D-074).
+-- Spices: live only once cleared (D-074; production has them cleared since D-107).
+update public.pricing_settings set spices_cleared = false where id = 1;
 insert into public.products (slug, name, product_type, region_id, category_id, vendor_id, price_cents, status)
 values ('test-spice-x', 'Test spice', 'spice', tests.id('region'), tests.id('cat_spice'), tests.id('vendor'), 900, 'draft')
 returning tests.remember('spice_x', id);

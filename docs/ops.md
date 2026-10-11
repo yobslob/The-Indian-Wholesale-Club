@@ -148,6 +148,14 @@ The first cycle runs as a demo on the placeholder catalogue of five states, then
    product with its photos and reviews, every order containing one, the placeholder shops, the demo reviewers, the demo
    state photos; demo mode off. Then switch Vercel and the app back to the **live** Stripe keys and webhook secret.
 
+## Master catalogue (D-108)
+`pnpm catalogue:master --url=<production DB URL> --api=https://<ref>.supabase.co --service-key=<service role key>
+--allow-remote` (a dry run), then again with `--apply`, **after** the Deploy workflow has applied migrations 36 – 37.
+In one transaction it removes every product (with its photos, sizes and reviews), every order containing one, the
+placeholder shops and the demo reviewers and state photos, then loads `catalogue/master/products.csv` as placeholder
+listings without photos (one placeholder shop per state), puts every state live, clears spices (D-107) and turns demo
+mode on. `pnpm demo:clear` removes the placeholders again.
+
 ## Photo worker (D-101, D-103; the founder runs every step on production)
 The AI product photos are made on the founder's laptop by `tools/photo-worker` (its README has setup and running).
 For production, once:
