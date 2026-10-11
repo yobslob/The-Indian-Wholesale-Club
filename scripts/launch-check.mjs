@@ -47,9 +47,8 @@ try {
     estimates.map((e) => e.setting).join(', '));
 
   const s = await one('select * from public.pricing_settings where id = 1');
-  const unset = ['fx_inr_per_usd', 'fx_buffer_pct', 'india_handling_paise', 'freight_cents_per_kg', 'volumetric_pct',
-    'broker_cents_per_shipment', 'shipment_kg', 'duty_pct', 'us_handling_cents', 'us_last_mile_cents_per_kg',
-    'us_last_mile_min_cents', 'margin_pct', 'returns_allowance_pct', 'card_fee_pct', 'card_fee_fixed_cents',
+  const unset = ['fx_inr_per_usd', 'fx_buffer_pct', 'india_handling_pct', 'ship_alloc_paise_per_kg', 'margin_pct',
+    'card_fee_pct', 'card_fee_fixed_cents',
     'domestic_days_min', 'domestic_days_max', 'shipping_flat_cents', 'stale_listing_days', 'cycle_days',
     'export_cancel_deduction_pct', 'return_claim_days', 'return_tier1_days', 'return_tier1_pct', 'return_tier2_days',
     'return_tier2_pct', 'return_tier3_days', 'return_tier3_pct', 'clearance_discount_pct'].filter((k) => s[k] === null);

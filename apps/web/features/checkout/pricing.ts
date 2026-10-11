@@ -125,6 +125,11 @@ export async function priceCart(
   const breakdown = method === 'express' ? express : standard;
   // No price for standard shipping yet: checkout stays closed rather than guessing a fee.
   if (!breakdown || !standard) return { ok: false, problem: { kind: 'closed' } };
+  // D-109: shipping is in the prices, so a parcel needs at least the smallest order (before any promo).
+  const minOrderCents = context.shipping.min_order_cents;
+  if (minOrderCents !== null && breakdown.subtotalCents < minOrderCents) {
+    return { ok: false, problem: { kind: 'below_minimum', minOrderCents, subtotalCents: breakdown.subtotalCents } };
+  }
 
   // D-072: a bag of only US pieces ships from the warehouse at once, so its window is today + the US delivery days.
   const standardWindow = context.us_delivery

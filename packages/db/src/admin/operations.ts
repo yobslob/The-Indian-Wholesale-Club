@@ -147,7 +147,8 @@ export async function getPricingSettings(client: IwcClient) {
     await client
       .from('pricing_settings')
       .select(
-        `fx_inr_per_usd, fx_buffer_pct, fx_auto, fx_updated_at, fx_source, india_handling_paise, freight_cents_per_kg,
+        `fx_inr_per_usd, fx_buffer_pct, fx_auto, fx_updated_at, fx_source, india_handling_pct, ship_alloc_paise_per_kg,
+          min_order_cents, india_handling_paise, freight_cents_per_kg,
           volumetric_pct, broker_cents_per_shipment, shipment_kg, duty_pct, us_handling_cents, us_last_mile_cents_per_kg,
           us_last_mile_min_cents, returns_allowance_pct, margin_pct, card_fee_pct, card_fee_fixed_cents,
           express_base_cents, express_courier_cents_per_kg, express_min_kg, domestic_days_min, domestic_days_max,
@@ -173,11 +174,10 @@ export async function listPricingEstimates(client: IwcClient) {
   );
 }
 
-/** The settings the automatic price is built from (shared/domain autoPrice, D-075). */
+/** The settings the automatic price is built from (shared/domain autoPrice, D-109). */
 export const PRICE_SUGGESTION_SETTINGS = [
-  'fx_inr_per_usd', 'fx_buffer_pct', 'india_handling_paise', 'freight_cents_per_kg', 'volumetric_pct',
-  'broker_cents_per_shipment', 'shipment_kg', 'duty_pct', 'us_handling_cents', 'us_last_mile_cents_per_kg',
-  'us_last_mile_min_cents', 'returns_allowance_pct', 'margin_pct', 'card_fee_pct', 'card_fee_fixed_cents',
+  'fx_inr_per_usd', 'fx_buffer_pct', 'india_handling_pct', 'ship_alloc_paise_per_kg', 'margin_pct', 'card_fee_pct',
+  'card_fee_fixed_cents',
 ];
 
 /** D-007: the signed-in admin's desk ('us' or 'india'), which orders their Today. Null when not set. */

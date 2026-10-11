@@ -43,6 +43,8 @@ export const checkoutContextSchema = z.object({
   shipping: z.object({
     flat_cents: z.number().int().nullable(),
     free_min_cents: z.number().int().nullable(),
+    /** D-109: smaller bags cannot check out. */
+    min_order_cents: z.number().int().nullable().default(null),
   }),
   delivery: deliveryWindowSchema.nullable(),
   /** D-073: the delivery state's rule, or null where IWC is not registered (no tax). */

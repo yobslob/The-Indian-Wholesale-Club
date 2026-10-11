@@ -8,6 +8,7 @@ import type { StorePolicy } from '@repo/db/store';
 const policy: StorePolicy = {
   shipping_flat_cents: 0,
   free_shipping_min_cents: null,
+  min_order_cents: null,
   express_days_min: 15,
   express_days_max: 18,
   us_delivery_days_min: 3,
@@ -36,6 +37,10 @@ describe('policy text (Shipping & returns, FAQ)', () => {
   it('free shipping never says "free from" a threshold', () => {
     assert.equal(standardShipping({ ...policy, free_shipping_min_cents: 10000 }), 'free');
     assert.equal(standardShipping({ ...policy, shipping_flat_cents: 500, free_shipping_min_cents: 10000 }), '$5.00, free from $100.00');
+    assert.equal(
+      standardShipping({ ...policy, min_order_cents: 14999 }),
+      'free on orders over $149.99 (the smallest order we can send)',
+    ); // D-109
   });
 
   it('mentions the cancel fee only when there is one (D-072)', () => {

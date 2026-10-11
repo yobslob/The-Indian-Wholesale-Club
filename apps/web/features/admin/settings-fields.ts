@@ -29,29 +29,15 @@ export const SETTING_GROUPS: SettingGroup[] = [
     ],
   },
   {
-    title: 'Costs per piece, India side',
-    fields: [{ key: 'india_handling_paise', label: 'Pickup, local transport and packing per piece (₹)', kind: 'inr' }],
-  },
-  {
-    title: 'Standard: air freight Mumbai → US airport → warehouse (D-070)',
+    title: 'Amazon → door pilot price (D-109)',
+    note: 'Price = (Amazon ₹ + India handling) ÷ rate + kg × shipping allocation, plus the margin on all of it, then card fees; up to .29 / .49 / .79 / .99.',
     fields: [
-      { key: 'freight_cents_per_kg', label: 'Air freight per billed kg ($)', kind: 'usd' },
-      { key: 'volumetric_pct', label: 'Billed weight as % of real weight (volume)', kind: 'pct' },
-      { key: 'broker_cents_per_shipment', label: 'Customs broker, fees and bond per export ($)', kind: 'usd' },
-      { key: 'shipment_kg', label: 'Billed kg in one export (shares the export costs)', kind: 'number' },
-      { key: 'duty_pct', label: 'US duty on the value at export (%)', kind: 'pct' },
-      { key: 'us_handling_cents', label: 'US warehouse handling per piece ($)', kind: 'usd' },
-      { key: 'us_last_mile_cents_per_kg', label: 'US delivery to the customer per kg ($)', kind: 'usd' },
-      { key: 'us_last_mile_min_cents', label: 'US delivery, smallest parcel ($)', kind: 'usd' },
-    ],
-  },
-  {
-    title: 'Margin, risk and card fees',
-    fields: [
-      { key: 'margin_pct', label: 'Margin on the goods (%)', kind: 'pct' },
-      { key: 'returns_allowance_pct', label: 'Set aside for returns and damage (%)', kind: 'pct' },
+      { key: 'india_handling_pct', label: 'India handling, % of the Amazon price', kind: 'pct' },
+      { key: 'ship_alloc_paise_per_kg', label: 'Courier shipping allocation per kg (₹)', kind: 'inr' },
+      { key: 'margin_pct', label: 'Margin on the landed cost (%, covers customs, returns and profit)', kind: 'pct' },
       { key: 'card_fee_pct', label: 'Card fee (%)', kind: 'pct' },
       { key: 'card_fee_fixed_cents', label: 'Card fee per payment ($)', kind: 'usd' },
+      { key: 'min_order_cents', label: 'Smallest order that can check out ($, empty = none)', kind: 'usd' },
     ],
   },
   {

@@ -1,30 +1,33 @@
--- The pricing engine (migration 24, D-075): the formula, automatic repricing, the daily rate, spices cleared, listings
--- without a price.
+-- The pricing engine (migration 24, D-075; the formula of the Amazon -> door pilot since migration 38, D-109): the
+-- formula, automatic repricing, the daily rate, spices cleared, listings without a price.
 begin;
 select tests.setup();
 
--- Simple numbers first: ₹100 per $, no buffer, only goods + freight. A ₹1,000 piece of 1 kg: $10 + $10 = $20.00,
--- rounded up to $20.99.
+-- Simple numbers first: ₹100 per $, no buffer, only goods + shipping. A ₹1,000 piece of 1 kg at ₹1,000/kg:
+-- $10 + $10 = $20.00, up to $20.29 (D-109: endings .29, .49, .79, .99).
 update public.pricing_settings set
-  fx_inr_per_usd = 100, fx_buffer_pct = 0, fx_auto = false, india_handling_paise = 0, freight_cents_per_kg = 1000,
-  volumetric_pct = 100, broker_cents_per_shipment = 0, shipment_kg = 1, duty_pct = 0, us_handling_cents = 0,
-  us_last_mile_cents_per_kg = 0, us_last_mile_min_cents = 0, returns_allowance_pct = 0, margin_pct = 0,
-  card_fee_pct = 0, card_fee_fixed_cents = 0
+  fx_inr_per_usd = 100, fx_buffer_pct = 0, fx_auto = false, india_handling_pct = 0, ship_alloc_paise_per_kg = 100000,
+  margin_pct = 0, card_fee_pct = 0, card_fee_fixed_cents = 0
  where id = 1;
-select tests.assert(public._auto_price_cents(100000, 1000) = 2099, 'goods $10 + freight $10, up to $20.99');
-select tests.assert(public._auto_price_cents(99900, 1000) = 1999, '$19.99 of cost already ends in .99 and stays');
+select tests.assert(public._auto_price_cents(100000, 1000) = 2029, '$20.00 goes up to $20.29');
+select tests.assert(public._auto_price_cents(103000, 1000) = 2049, '$20.30 goes up to $20.49');
+select tests.assert(public._auto_price_cents(105000, 1000) = 2079, '$20.50 goes up to $20.79');
+select tests.assert(public._auto_price_cents(108000, 1000) = 2099, '$20.80 goes up to $20.99');
+select tests.assert(public._auto_price_cents(104900, 1000) = 2049, '$20.49 already has an ending and stays');
 select tests.assert(public._auto_price_cents(100000, null) is null, 'no weight, no price');
 
--- Every cost at once (the same case as packages/shared tests/domain.test.ts "autoPrice").
+-- The founder's pilot numbers and worked examples (D-109; the same as packages/shared tests/domain.test.ts).
 update public.pricing_settings set
-  fx_inr_per_usd = 96, fx_buffer_pct = 4, india_handling_paise = 25000, freight_cents_per_kg = 700,
-  volumetric_pct = 130, broker_cents_per_shipment = 35000, shipment_kg = 30, duty_pct = 26.5,
-  us_handling_cents = 500, us_last_mile_cents_per_kg = 1000, us_last_mile_min_cents = 500, returns_allowance_pct = 5,
-  margin_pct = 100,
-  card_fee_pct = 3.5, card_fee_fixed_cents = 30
+  fx_inr_per_usd = 96.35, fx_buffer_pct = 4, india_handling_pct = 10, ship_alloc_paise_per_kg = 146100,
+  margin_pct = 50, card_fee_pct = 3.4, card_fee_fixed_cents = 30
  where id = 1;
-select tests.assert(public._auto_price_cents(250000, 800) = 10699,
-  'a ₹2,500 piece of 800 g: $106.99, margin on the goods, every cost at cost, then fees (worked out by hand)');
+select tests.assert(public._auto_price_cents(150000, 450) = 3929, 'D-109: a ₹1,500 kurta of 450 g is $39.29');
+select tests.assert(public._auto_price_cents(400000, 900) = 9629, 'D-109: a ₹4,000 saree of 900 g is $96.29');
+select tests.assert(public._auto_price_cents(1200000, 2500) = 28329, 'D-109: a ₹12,000 lehenga of 2.5 kg is $283.29');
+select tests.assert(public._auto_price_cents(25000, 250) = 1129, 'D-109: a ₹250 spice pack of 250 g is $11.29');
+update public.pricing_settings set ship_alloc_paise_per_kg = null where id = 1;
+select tests.assert(public._auto_price_cents(150000, 450) is null, 'a missing setting gives no price');
+update public.pricing_settings set ship_alloc_paise_per_kg = 146100 where id = 1;
 
 -- Repricing: the auto-priced fixture product follows the settings; a hand-priced one does not.
 update public.products set price_auto = true where id = tests.id('p_live');

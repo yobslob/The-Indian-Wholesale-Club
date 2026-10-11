@@ -63,6 +63,8 @@ export type CheckoutProblem =
   | { kind: 'unavailable'; variantIds: string[] }
   | { kind: 'sold_out'; variantIds: string[] }
   | { kind: 'express_unavailable' }
+  /** The bag is below the smallest order (D-109). */
+  | { kind: 'below_minimum'; minOrderCents: number; subtotalCents: number }
   | { kind: 'closed' };
 
 export interface CheckoutErrorResponse {

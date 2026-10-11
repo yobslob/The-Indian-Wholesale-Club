@@ -304,6 +304,8 @@ export type OrderActions = z.infer<typeof orderActionsSchema>;
 export const storePolicySchema = z.object({
   shipping_flat_cents: z.number().int().nullable(),
   free_shipping_min_cents: z.number().int().nullable(),
+  /** D-109: the smallest order that can check out. */
+  min_order_cents: z.number().int().nullable().default(null),
   express_days_min: z.number().int().nullable(),
   express_days_max: z.number().int().nullable(),
   us_delivery_days_min: z.number().int().nullable(),

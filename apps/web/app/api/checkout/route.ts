@@ -1,6 +1,7 @@
 import { NextResponse } from 'next/server';
 
 import { savePendingCheckout } from '@repo/db/server';
+import { formatUsd } from '@repo/shared/domain';
 
 import { checkoutRequestSchema, priceCart } from '@/features/checkout/pricing';
 import { errorMessage, logger } from '@/lib/logger';
@@ -10,7 +11,7 @@ import { isStripeConfigured, stripeServer } from '@/lib/stripe';
 import { serviceClient } from '@/lib/supabase/service';
 
 import type { PendingCheckout } from '@/features/checkout/finalize';
-import type { CheckoutErrorResponse, CheckoutStartResponse } from '@/features/checkout/types';
+import type { CheckoutErrorResponse, CheckoutProblem, CheckoutStartResponse } from '@/features/checkout/types';
 
 const PROBLEM_MESSAGE = {
   unavailable: 'Some items in your bag are no longer available.',
@@ -18,6 +19,12 @@ const PROBLEM_MESSAGE = {
   express_unavailable: 'Express shipping is not available right now.',
   closed: 'Checkout is not open right now. Please try again soon.',
 } as const;
+
+function problemMessage(problem: CheckoutProblem): string {
+  if (problem.kind === 'below_minimum')
+    return `Orders start at ${formatUsd(problem.minOrderCents)}, with free shipping. Add ${formatUsd(problem.minOrderCents - problem.subtotalCents)} more to check out.`;
+  return PROBLEM_MESSAGE[problem.kind];
+}
 
 /**
  * POST /api/checkout (flows.md §3 steps 1–3): price the bag on the server,
@@ -49,7 +56,7 @@ export async function POST(
     const [priced, user] = await Promise.all([priceCart(service, parsed.data), requestUser(request)]);
     if (!priced.ok) {
       return NextResponse.json(
-        { error: PROBLEM_MESSAGE[priced.problem.kind], problem: priced.problem },
+        { error: problemMessage(priced.problem), problem: priced.problem },
         { status: priced.problem.kind === 'closed' ? 503 : 409 },
       );
     }

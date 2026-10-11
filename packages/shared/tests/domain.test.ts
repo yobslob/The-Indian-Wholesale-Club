@@ -35,25 +35,30 @@ import {
 
 const settings = { fxInrPerUsd: 80, freightCentsPerKg: 1000, dutyPct: 10, marginPct: 50 };
 
-describe('autoPrice (D-075): the same numbers as supabase/tests/pricing_engine.test.sql', () => {
+describe('autoPrice (D-109): the same numbers as supabase/tests/pricing_engine.test.sql', () => {
   const simple = {
-    fxInrPerUsd: 100, fxBufferPct: 0, indiaHandlingPaise: 0, freightCentsPerKg: 1000, volumetricPct: 100,
-    brokerCentsPerShipment: 0, shipmentKg: 1, dutyPct: 0, usHandlingCents: 0, usLastMileCentsPerKg: 0,
-    usLastMileMinCents: 0, returnsAllowancePct: 0, marginPct: 0, cardFeePct: 0, cardFeeFixedCents: 0,
+    fxInrPerUsd: 100, fxBufferPct: 0, indiaHandlingPct: 0, shipAllocPaisePerKg: 100000, marginPct: 0,
+    cardFeePct: 0, cardFeeFixedCents: 0,
   };
+  // The founder's pilot numbers at 96.35 rupees to the dollar (D-109).
   const full = {
-    fxInrPerUsd: 96, fxBufferPct: 4, indiaHandlingPaise: 25000, freightCentsPerKg: 700, volumetricPct: 130,
-    brokerCentsPerShipment: 35000, shipmentKg: 30, dutyPct: 26.5, usHandlingCents: 500, usLastMileCentsPerKg: 1000,
-    usLastMileMinCents: 500, returnsAllowancePct: 5, marginPct: 100, cardFeePct: 3.5, cardFeeFixedCents: 30,
+    fxInrPerUsd: 96.35, fxBufferPct: 4, indiaHandlingPct: 10, shipAllocPaisePerKg: 146100, marginPct: 50,
+    cardFeePct: 3.4, cardFeeFixedCents: 30,
   };
 
-  it('rounds up to the next $x.99', () => {
-    assert.equal(autoPrice({ shopPricePaise: 100000, weightG: 1000 }, simple)?.priceCents, 2099);
-    assert.equal(autoPrice({ shopPricePaise: 99900, weightG: 1000 }, simple)?.priceCents, 1999);
+  it('rounds up to the next .29, .49, .79 or .99', () => {
+    assert.equal(autoPrice({ shopPricePaise: 100000, weightG: 1000 }, simple)?.priceCents, 2029); // $20.00
+    assert.equal(autoPrice({ shopPricePaise: 103000, weightG: 1000 }, simple)?.priceCents, 2049); // $20.30
+    assert.equal(autoPrice({ shopPricePaise: 105000, weightG: 1000 }, simple)?.priceCents, 2079); // $20.50
+    assert.equal(autoPrice({ shopPricePaise: 108000, weightG: 1000 }, simple)?.priceCents, 2099); // $20.80
+    assert.equal(autoPrice({ shopPricePaise: 104900, weightG: 1000 }, simple)?.priceCents, 2049); // $20.49 stays
   });
 
-  it('every cost, the margin on the goods only, then the card fees', () => {
-    assert.equal(autoPrice({ shopPricePaise: 250000, weightG: 800 }, full)?.priceCents, 10699);
+  it('the worked examples of D-109: kurta, saree, lehenga, spice pack', () => {
+    assert.equal(autoPrice({ shopPricePaise: 150000, weightG: 450 }, full)?.priceCents, 3929);
+    assert.equal(autoPrice({ shopPricePaise: 400000, weightG: 900 }, full)?.priceCents, 9629);
+    assert.equal(autoPrice({ shopPricePaise: 1200000, weightG: 2500 }, full)?.priceCents, 28329);
+    assert.equal(autoPrice({ shopPricePaise: 25000, weightG: 250 }, full)?.priceCents, 1129);
   });
 
   it('returns null while a setting, the shop price or the weight is missing', () => {
