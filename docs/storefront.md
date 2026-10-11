@@ -23,9 +23,9 @@ Enforcement: customer code reads catalog and order data only through `store_*` (
 |---|---|---|
 | `/` | the full-screen photo hero (behind the nav bar too) with only the stacked brand name on the white wall and "Miss local market? Start here." (D-079, `design/pages/shell/`; otherwise D-050 – D-055), Just listed, Pick your home (India map + stamps, in pages of 6 from 7 open states, + names; D-080) | static, cached `store_home()` |
 | `/states` | Pick your home as its own page (D-083): all 36 regions, alphabetical, with no state/UT distinction (D-002) | static (same cached read as `/`) |
-| `/states/[region]` | **the core page:** greeting in the region's script, story, accent theme, Clothing · Spices sections | static per region (36 built at build time) |
+| `/states/[region]` | **the core page:** greeting in the region's script, story, accent theme, Clothing · Food · Home & gifts sections | static per region (36 built at build time) |
 | `/states/[region]/[product]` | product page: gallery, options, price, availability (live), save, delivery window, origin line | static on first visit + live stock island |
-| `/clothing`, `/spices`, `/home-and-gifts` (D-106) | the **See all** page behind every row (D-062): newest first, `?state=` and `?category=` pills, 24 cards then "Show more" (`?show=`). D-084: the state row pins under the header (a soft fade at its ends, no blur, D-098), the category row scrolls away (fade + a very light blur); phones get one Filter bar (a round icon once scrolled) and a side panel | dynamic render over one cached `store_browse()` read (the cards drawn, the total, the filter counts; D-068) |
+| `/clothing`, `/food`, `/home-and-gifts` (D-106, D-110; the old /spices address redirects to /food) | the **See all** page behind every row (D-062): newest first, `?state=` and `?category=` pills, 24 cards then "Show more" (`?show=`). D-084: the state row pins under the header (a soft fade at its ends, no blur, D-098), the category row scrolls away (fade + a very light blur); phones get one Filter bar (a round icon once scrolled) and a side panel | dynamic render over one cached `store_browse()` read (the cards drawn, the total, the filter counts; D-068) |
 | `/search` | search products and regions; 24 results at a time with "Show more" (`?show=`, D-067), through `store_search`, which records the words (not who searched) for the admin's Insights. D-085: the count with the words ("24+ pieces" when Show more has more), matching open states as stamps (coming-soon ones by name), no words or no results → the open states and Just listed; phones: a round search icon in the box | dynamic (no auth) |
 | `/cart` | the bag ("Bag" in the UI; on-device state). D-086: a photo on each line, − / number / + (1 – 10), an empty bag shows the open states as stamps and Just listed; the header's bag icon opens the same bag as a side panel (it stays a link to `/cart` for new tabs and without JavaScript) | static shell |
 | `/checkout`, `/checkout/success` | D-087: phone (+1, required, no code) → delivery (name, email, ZIP with the city and state filled in from our own list through `GET /api/zip`, D-098; street, apartment, promo code) → server-priced total + Standard (free) / Express with each delivery window (D-041) → payment (Stripe) → order (D-038); finished steps fold to a line with Edit; the bag beside the steps (a bar on phones); `/checkout` sits in the quiet frame of the `(checkout)` route group (logo and Back to bag, a one-line footer). The thank-you page adds the pieces, the total and the delivery window from this tab's priced bag (sessionStorage) | dynamic |
@@ -48,10 +48,10 @@ Framer Motion page transitions (speed, `engineering.md`).
 3. The accent colour re-themes the page (one CSS variable from `regions.accent_color`).
 4. **Every list is a row that scrolls sideways** (D-062; since D-081 the jump pills get the same arrows and Picked for you
    is a standard row of full-size cards; arrows for a mouse, swipe on a phone; the pills pin under the header). Jump pills at the top
-   (New arrivals, each clothing category with its count, Spices). One row per clothing category, biggest first, up to 12
+   (New arrivals, each clothing category with its count, Food). One row per clothing category, biggest first, up to 12
    cards, with **See all** → `/clothing?state=<region>&category=<category>`.
 5. Regions with no live products show "Coming soon" (`regions.is_live = false`). Anything more, like a notify-me feature, needs founder approval.
-**Target (D-051; built in C1 and C2; the lists are rows, D-062; the album shows once a region has three album photos):** below the hero (greeting, tagline, story, image): Clothing / Spices filter pills, then
+**Target (D-051; built in C1 and C2; the lists are rows, D-062; the album shows once a region has three album photos):** below the hero (greeting, tagline, story, image): Clothing / Food filter pills, then
 **New arrivals → Most wanted → a photo album that scrolls sideways by itself (not interactive) → Curated for you (a card)
 → Leaving soon** (almost out of stock). Curated for you = admin picks per region, Leaving soon = 1–2 left (D-056); Most wanted = most pieces ordered in the last 30 days (D-058); the album has no pause control (founder, D-052).
 
@@ -73,7 +73,7 @@ items and Curated for you as rows of smaller cards (D-062; Similar items' See al
 ## Mobile app (customer side, `apps/app`, built in R6, redesigned in B6 on D-095)
 Tabs on the app's own cream tab bar (a brand bar over the active tab, the bag count as a brand pill): **Home** (the photo
 with "Indian Wholesale Club" on its wall and "Miss local market? Start here.", the demo strip on top, Just listed, Pick
-your home with stamp pages from 7) · **Explore** (search with the count, States · Clothing · Spices; states as stamps) ·
+your home with stamp pages from 7) · **Explore** (search with the count, States · Clothing · Food · Home & gifts; states as stamps) ·
 **Bag** (photos, − / + , the empty bag shows stamps and Just listed; the bag is a tab, so no bag panel) · **Saved** (cards
 with a filled heart that removes) · **Profile** (Orders · Addresses · Your details as pill tabs, Track an order, About us &
 help, Sign out; signed out, the sign-in card). Tab roots have a large Syne title, pushed screens a back bar. The screens
@@ -89,7 +89,7 @@ the tokens (`design.md`). About us & help is the D-092 panel as a sheet with the
 | Addresses, sign-in | `addresses` (the add / edit form), `auth/login`, `auth/signup` | own `addresses` rows · Supabase Auth: the sign-in card with the eye, Forgot password (the link opens the website's "Set a new password") and the email code (D-091) |
 Every list in the app is a sideways row (a horizontal `FlatList`) with **See all** → the **Browse** screen
 (`app/browse.tsx`: one type, optional region and category, a virtualized two-column grid that loads 24 at a time as it
-nears the end, each page and the total from one `store_browse()` call, D-068), as on the web (D-062). Explore's Clothing and Spices read only each
+nears the end, each page and the total from one `store_browse()` call, D-068), as on the web (D-062). Explore's Clothing and Food read only each
 category's first 12 cards (`store_type_rows`); its search shows 24 with "Show more" (D-067).
 Signing in with an admin account switches the app to admin mode (`admin.md`). Nothing in the customer UI hints at this (D-006).
 

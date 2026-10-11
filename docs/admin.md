@@ -1,8 +1,8 @@
 # Admin: hidden web panel + app admin mode
 
 Users: founder (US desk) and COO (India desk), both `role = 'admin'` with the same access (D-007, D-027).
-Vendors' owners get their own sign-in to upload their pieces (D-102, superseded D-018; **not built yet**, V1 – V6 in
-`plan/coding-plan.md`); the admin's own listing flow stays as it is, and every vendor upload waits for an admin (D-102).
+Vendors' owners have their own sign-in to upload their pieces (D-102, built V1 – V6, `vendor.md`); every vendor upload
+waits for an admin. Pilot listings are imported from online shops (D-110, §Import from shops).
 
 ## Access model (D-006)
 **Web**
@@ -98,7 +98,7 @@ Built 2026-10-09 from `design/pages/admin/` (code in `apps/web/features/admin/`)
   dropped, with the admin's session, to `product-media/products/drafts/<batch>/`; saving records them on the product.
   Photos dropped on a form that is then abandoned stay in that folder (unused, not shown anywhere). **Add many**: one
   draft per photo row; the shop, the fabric and the care are typed once for the batch (every draft needs them, ops.md
-  §Compliance) and can be changed per piece on its page. Clothing only (spices can't go live yet, D-032).
+  §Compliance) and can be changed per piece on its page. Clothing only.
 
 ## Design principles for the admin
 1. **One screen per job.** "Pick up at Shop X" is one checklist, not a table with filters.
@@ -112,3 +112,27 @@ Built 2026-10-09 from `design/pages/admin/` (code in `apps/web/features/admin/`)
 The order list/detail with status changes, the promo code manager and the inline stock adjuster (now it writes `stock_movements`).
 Today's counts are plain queries now (`getTodaySummary` in `packages/db/src/admin/commerce.ts`).
 **Removed:** Logistics / "stealth" simulator, the stealth preview card, and fabricated analytics.
+
+## Import from shops (D-110)
+`/admin/import` (web only; sidebar: Catalog → Import from shops). Code: `apps/web/features/admin/import/`, the parsing
+in `packages/shared/src/sourcing/`, the reads and writes in `packages/db/src/admin/sourcing.ts`.
+- **Bring products in.** The **Add to IWC** bookmark (dragged once to the bookmarks bar) reads the product page the
+  admin has open (Myntra's pdpData, Amazon's title, price, photos and details, any shop's schema.org JSON-LD and meta
+  tags) and opens the importer in one reused tab. Big shops refuse servers, so this runs in the admin's browser.
+  **Paste links** (up to 20) has the server read the pages; it works for shops that allow it and says which need the
+  bookmark. Products wait in a queue (kept in that browser) and are checked one at a time.
+- **Check and save.** Pre-filled, never silently decided: the state (a guess only from well-known craft and food
+  names, D-004), type and category, name, summary and description (the shop's own words), the details customers must
+  see (fabric and care; ingredients, allergens and shelf life; material), the photos (pick and order; copied into our
+  storage on save, never loaded from the shop on a customer page, D-003), pieces per size (5 by default: a cap, the
+  shop's stock is unknown), packed weight and the price on the shop in ₹, with the dollar price worked out live
+  (D-109). Save draft or Publish.
+- **Where it lives.** A listing of the shop's online vendor for that state (`vendors.online_site`, made on first use),
+  with `products.source_url`, `source_site`, `source_checked_at`, `source_in_stock` (admin only).
+- **Keeping prices right.** Importing a page again finds its listing by the cleaned address: the price, the sizes in
+  stock and the check date are updated (sizes the shop no longer has stop selling; pieces already ordered stay); tick
+  "Also replace" to take the new name, words and photos too. The page lists every imported listing, the one checked
+  longest ago first, with a link to open it.
+- **When one sells.** The cycle's pickup cards (web and app) show "Order it online" for an imported piece: the India
+  desk orders it there to the hub, then marks it picked as usual.
+

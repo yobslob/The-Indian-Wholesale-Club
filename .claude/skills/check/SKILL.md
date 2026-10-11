@@ -1,6 +1,6 @@
 ---
 name: check
-description: Run the project's verification (scripts/check.mjs), read .checks/latest.json and log the result in docs/plan/current.md. Use before calling any work done, and when the user asks to check, verify or test.
+description: Run the project's verification (scripts/check.mjs), read .checks/latest.json and record the result in docs/plan/current.md. Use before calling any work done, and when the user asks to check, verify or test.
 argument-hint: "[steps, e.g. docs typecheck lint test]"
 ---
 
@@ -13,8 +13,9 @@ argument-hint: "[steps, e.g. docs typecheck lint test]"
 3. Read `.checks/latest.json`. For each failing step, read its `outputTail`; E2E failures also leave a screenshot, a
    trace and `error-context.md` in `.checks/e2e-results/`. Fix the cause, not the test, unless the test is wrong, and
    say which it was.
-4. Add one row to the verification log in `docs/plan/current.md`: date, commit (`git rev-parse --short HEAD`, note
-   uncommitted changes), "Claude Code, <machine>", what ran, and the facts: each step OK/FAIL with seconds, route
-   timings from the `http` step, E2E passed/total. Facts only; nothing is "done" or "fast" without this row (D-012).
+4. **Replace** the one row under "Last verification" in `docs/plan/current.md` (don't add rows; history is in git):
+   date, commit (`git rev-parse --short HEAD`, note uncommitted changes), "Claude Code, <machine>", what ran, and the
+   facts: each step OK/FAIL with seconds, route timings over budget only, E2E passed/total. Facts only; nothing is
+   "done" or "fast" without it (D-012).
 5. Remember: the `db` step resets the **local** database, which deletes local accounts. Tell the user to run
    `pnpm dev:admin <email> <password>` if they need their admin account back.

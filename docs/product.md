@@ -3,7 +3,7 @@
 Last reviewed 2026-09-27. Every rule cites `decisions.md`. Unknowns live in `questions.md`, not here.
 
 ## The problem [D-001, D-022]
-Indians living in the US miss home, and specifically the clothing and spices of *their* region. Today they either:
+Indians living in the US miss home, and specifically the clothing, food and things of *their* region. Today they either:
 - wait for international couriers, which take a long time and are very expensive for Indians living abroad, or
 - ask a relative or friend travelling from India, and carry the feeling of owing them a favour.
 
@@ -12,15 +12,15 @@ Indians living in the US miss home, and specifically the clothing and spices of 
 - **Secondary:** US citizens who love India.
 
 ## What we sell [D-001, D-002]
-- **The feeling of home**, through each region's own clothing and spices.
+- **The feeling of home**, through each region's own clothing, food, and home & gifts.
 - **36 regions:** all 28 states and 8 union territories, presented identically. There is no "state vs UT" anywhere in the UI.
-- **Product types at launch:** `clothing`, `spice`. New types only by founder decision.
+- **Product types:** `clothing`, `food` (masalas, namkeen, sweets, pickles, staples) and `home` (D-106, D-110). New types only by founder decision.
 
 ## How it works
 
 **What the customer sees** (the whole customer-side story, D-003):
 1. Pick your home region.
-2. Browse its clothing and spices, then order and pay in USD.
+2. Browse its clothing, food and gifts, then order and pay in USD.
 3. Receive it in the US within the estimated delivery window shown before payment (D-008).
 
 **What happens behind the scenes** (admin only, never on a customer surface, D-003 and D-005):
@@ -57,7 +57,7 @@ Retail to consumers. "Wholesale Club" is only the name, with no B2B or membershi
 | Vendor web `/vendor` + app vendor mode | a vendor's owner | upload their own pieces, see only their own (D-102, D-103, `vendor.md`). Built (web and app) |
 
 ## Not decided yet (see `questions.md`)
-US carrier (Q-3) · returns policy (Q-5) · domain, support email and hosting (Q-9) · spices compliance owner (Q-10).
+US carrier (Q-3) · returns policy (Q-5) · domain, support email and hosting (Q-9) · food compliance details (D-074).
 
 ## Later ideas (not scheduled, founder must approve)
 - **"Ask for it from home":** a customer requests an item from a region and the team sources it. This directly replaces asking a relative.

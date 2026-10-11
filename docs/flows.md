@@ -29,13 +29,23 @@ open ──cutoff──► collecting ──► packed ──► exported ──
 3. Add variants with their options and the quantity the shop has (`qty_listed`).
 4. Enter the shop price in ₹. The system suggests a USD price from `pricing_settings` (landed cost + margin), and an admin sets the final `price_cents`.
    While those settings hold Claude's researched estimates (D-047, C6), the suggestion says "based on estimates".
-5. Save as `draft`. An admin reviews it and sets it `live`. Spices stay unpublished until Q-10 is answered (D-032).
+5. Save as `draft`. An admin reviews it and sets it `live`. Food goes live only while "Food is cleared" is on (D-074, D-110).
 - `qty_confirmed_at` records when the shop last confirmed quantities. The admin sees listings not confirmed within N days
   (N is set in `pricing_settings`) so they can re-check with the shop.
 - **Built (C3):** steps 1–5 on a phone (app admin → Listings → New listing: camera or photo library, photos shrunk to
   2,400 px and uploaded after the draft is saved, failed photos can be sent again) and on the web; both go through
   `admin_create_listing` (one transaction) and the shared `listingInputSchema`. Publishing a clothing draft works in
   the app and on the web. The re-check list is on Today and Listings (web) and Today (app). Offline drafts: later (F-3).
+
+## 2b. Pilot: a listing imported from an online shop (D-110)
+1. The admin imports a product page (`admin.md` §Import from shops): photos, words and the shop's price come from the
+   page; the admin confirms the state, type, category and details. The listing belongs to that shop's online vendor in
+   that state, and its shop price is the shop's price, so the dollar price follows D-109.
+2. It sells like any piece: the order joins the open cycle and its window comes from cycle data (D-008).
+3. At the cutoff it gets a pickup like any piece. The India desk opens "Order it online", orders it to the hub (1–10
+   days, the founder's figure), marks it picked once it arrives, and it is flown to the US with the export (8–11 days).
+4. Importing the page again before an order updates the price and the sizes in stock; a size the shop no longer has
+   stops selling, and pieces already ordered stay reserved.
 
 ## 3. Placing an order (customer)
 1. The cart holds variants. At checkout, the server computes totals from the catalog (never from the browser): subtotal,

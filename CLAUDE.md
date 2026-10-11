@@ -1,97 +1,64 @@
 # The Indian Wholesale Club (IWC): read this first
 
-This file is the only one to read at the start of every session. Everything else is loaded on demand
-(see "Before touching X, read Y"). Rules are tagged with decision IDs (`D-xxx`) from `docs/decisions.md`.
+The only file to read at the start of a session. Read other docs only when the table below sends you there.
+Rules cite decision IDs (`D-xxx`, index in `docs/decisions.md`).
 
-## What we are building
-- A US storefront (web + iOS/Android app on one Supabase backend) for Indians living in the US, and Americans
-  who love India, who miss home. [D-001]
-- The customer picks one of India's **36 regions** (28 states + 8 union territories, shown the same way) and buys that
-  region's **clothing and spices**. [D-002]
-- **Order-first supply:** shops in India are signed up in person, and their pieces are listed as IWC's own inventory. Customers order,
-  then the ordered pieces are collected from the shops. Everything ships together every 20–23 days and is then delivered in the
-  US. [D-005]
-- Two operators: the **founder** runs the US side and the **COO** runs the India side. [D-007]
+## What it is
+- A US storefront (web + iOS/Android app, one Supabase backend) for Indians in the US and Americans who love India,
+  who miss home. [D-001] The customer picks one of India's **36 regions** (states and UTs, shown alike) and buys its
+  **clothing, food and home & gifts**. [D-002, D-106, D-110]
+- **Today (pilot):** listings are imported from Indian online shops (Myntra, Amazon India…) at `/admin/import`; a sold
+  piece is ordered to the hub (1–10 days) and flown to the US (8–11 days). Prices follow the shop's price. [D-109, D-110]
+- **Target (retailer model):** shops in India are signed up, list their pieces (vendor accounts), orders are collected
+  from them and exported together every 20–23 days. [D-005, D-102]
+- Two operators: the **founder** (US side) and the **COO** (India side). [D-007]
 
-## Non-negotiables (if a task would break one, stop and ask)
-1. **No operations info on any customer surface.** No shops/vendors, sourcing, pickups, payouts, staff or India-side
-   logistics in web pages, the app, emails, API responses or page source. IWC is the seller. [D-003, D-017]
-2. **Honest origin.** Show the region and "Made in India" / "Imported". Never mask or rewrite where goods come from. [D-004]
-3. **Invisible admin.** No links or hints, and not indexed. Admin code never loads for customers. Access is enforced on the
-   server (role + email allowlist), never by hiding alone. [D-006]
-4. **Delivery dates come from cycle data.** Never hard-code a delivery promise. [D-008]
-5. **Money is always an integer:** USD in `*_cents`, INR in `*_paise`.
-6. **Speed is a feature.** Read `docs/engineering.md` §Performance before adding a query, a dependency or a client component. [D-011]
+## Non-negotiables (stop and ask before breaking one)
+1. **No operations info on any customer surface:** no shops, sources, pickups, payouts or India logistics in pages,
+   the app, emails, API responses or page source. IWC is the seller. [D-003, D-017]
+2. **Honest origin:** show the region and "Made in India"; never invent or mask where goods come from. [D-004]
+3. **Invisible admin:** no links or hints; access checked on the server (role + email allowlist). [D-006]
+4. **Delivery dates come from cycle data**, never hard-coded. [D-008]
+5. **Money is an integer:** USD in `*_cents`, INR in `*_paise`.
+6. **Speed is a feature:** read `docs/engineering.md` §Performance before adding a query, dependency or client component. [D-011]
 
-## Anti-hallucination rules [D-012]
-- **Do not invent** business rules, prices, fees, delivery times, legal or policy text, product facts, shop details,
-  or regional/cultural content presented as fact. If you need one: check `docs/questions.md`. If it is unanswered there,
-  ask the founder. In code, use `TODO(founder): Q-xx`. In seed data, set `is_placeholder = true` (fake rows) or
-  `content_status = 'draft'` (Claude-drafted text awaiting founder approval).
-- **Every rule in the docs cites a decision ID.** A rule without an ID is unconfirmed. Don't build on it without asking.
-- **Code is the truth for what exists. `decisions.md` is the truth for what should be.** When they disagree, report
-  the mismatch. Don't silently pick one side.
-- **No claim without evidence.** "Done", "works", "fast" and "fixed" need a `.checks/latest.json` result or a command you actually
-  ran, recorded in `docs/plan/current.md` with the date and commit. Otherwise write "unverified".
-- **Don't copy code into docs** (column lists, props, env values). Link the file path instead, because copies go stale.
-- **Docs describe the target, code describes the present.** Where they differ, the doc says so ("Target", "Today", "Not
-  built yet"), and `docs/plan/current.md` says what has landed. `node scripts/check.mjs docs` checks the mechanical part.
+## Don't invent [D-012]
+Business rules, prices, fees, delivery times, policy text, product facts and regional content come from the founder.
+Unknown → `docs/questions.md`, else ask. In code: `TODO(founder): Q-xx`. Fake rows: `is_placeholder = true`.
+Claude-drafted text: `content_status = 'draft'`. Code is the truth for what exists, `docs/decisions.md` for what
+should be; report a mismatch instead of picking a side. "Done/works/fixed" needs a check you actually ran.
 
-## Where each kind of truth lives
-| Fact | Single source |
-|---|---|
-| The business, users, principles | `docs/product.md` |
-| Vocabulary (and forbidden synonyms) | `docs/glossary.md` |
-| Decisions (founder, approved, proposed) | `docs/decisions.md` |
-| Unanswered questions | `docs/questions.md` |
-| DB schema (actual) | `supabase/migrations/` (generated types in `packages/db` after R4) |
-| Routes (actual) | `apps/web/app/`, `apps/app/app/` |
-| Status, next step, verification evidence | `docs/plan/current.md` |
-| What gets built next (phases C1–C8) | `docs/plan/coding-plan.md` |
-
-## Before touching X, read Y
+## Read only what the task needs
 | Task | Read |
 |---|---|
-| anything | this file + `docs/plan/current.md` |
-| schema, queries, RLS, seed | `docs/data-model.md` |
+| where things stand, what's next | `docs/plan/current.md` (short) |
+| schema, queries, RLS, seed | `docs/data-model.md` (+ the migration itself) |
 | cycles, orders, pickups, stock, payouts | `docs/flows.md` |
 | customer pages (web or app) | `docs/storefront.md` + `docs/design.md` |
-| the page-by-page design pass (mockups) | `design/pages/README.md` + `docs/design.md` (+ `storefront.md` or `admin.md` for that page only) |
-| admin (web or app) | `docs/admin.md` |
-| vendor screens, vendor accounts, the photo worker | `docs/vendor.md` + `docs/data-model.md` |
+| admin (web or app), importing from shops | `docs/admin.md` |
+| vendor accounts, the photo worker | `docs/vendor.md` |
 | performance, tests, tooling, code style | `docs/engineering.md` |
-| env vars, deploy, DB reset, legal/compliance | `docs/ops.md` |
+| env vars, deploy, DB reset, legal | `docs/ops.md` |
+| words (DB = code = UI) | `docs/glossary.md` |
+| a decision's full text / old history | search its ID in `docs/archive/` (not read otherwise) |
 
 ## Repo map
-`apps/web` Next.js storefront (`app/(store)`) + hidden admin (`app/admin`), code by feature in `features/` · `apps/app` Expo app (customer tabs + admin mode after `is_admin()`, code by feature in `features/`; checkout via the web's API) ·
-`packages/shared` pure domain logic (`src/domain`) · `packages/db` typed DB access (`store`/`account`/`admin`/`server`) ·
-`packages/tokens` design tokens · `packages/*-config` tooling presets · `supabase/` migrations + seed + SQL tests ·
-`scripts/` dev scripts (`check.mjs` = verification) · `tools/photo-worker` the Python GPU worker for AI product photos (models outside the repo) · `docs/` everything above · `.claude/` Claude Code settings + project skills.
-The layout (web and app) is in `docs/engineering.md` §Layout.
+`apps/web` Next.js store `app/(store)` + hidden admin `app/admin`, code in `features/` · `apps/app` Expo app ·
+`packages/shared` pure logic (`domain`, `sourcing`, `info`, `vendor`) · `packages/db` typed queries
+(`store`/`account`/`admin`/`server`/`vendor`) · `packages/tokens` design tokens · `supabase/` migrations, seed, SQL
+tests · `scripts/` (`check.mjs` = verification) · `tools/photo-worker` GPU photo worker · `catalogue/` the six
+launch regions' listings. `design/` and `docs/archive/` are history; `.ignore` keeps them out of searches.
 
-## How work and verification run
-**Claude Code on the founder's machine (the normal setup since 2026-09-29):** the repo is `C:\kod\root` (Windows 11,
-Docker Desktop for local Supabase, pnpm 9). Claude edits, runs and commits here directly.
-- Verify with `node scripts/check.mjs` (all steps, ~5 min) or named steps (`node scripts/check.mjs docs typecheck lint
-  test`). It writes `.checks/latest.json`; record the numbers in `docs/plan/current.md`. "Done" needs a green run.
-- Local Supabase must be running (`npx supabase start`); the `db` step resets the **local** database (and deletes local
-  accounts: `pnpm dev:admin <email> <password>` recreates an admin).
-- Allowed and denied commands are in `.claude/settings.json`. **Never:** edit `.env` files (the founder edits them; reading
-  one asks first, because they hold keys), reset or push to a hosted database (`supabase db reset --linked`, `db push`), run the Deploy workflow, force-push.
-  Ask before `git push` (CI runs `check.mjs` on every push to `main`).
-- Project skills: `/check` (run and log a verification) and `/record-answer` (file a founder answer as a decision).
-**Claude in a cloud sandbox (earlier sessions):** no npm registry, no `next build`; it worked in this folder through a
-device bridge and the founder ran `check.mjs` (`engineering.md` §Testing).
+## Working here
+- Repo `C:\kod\root` (Windows 11, Docker Desktop, pnpm 9). Verify with `node scripts/check.mjs` (all, ~5 min) or
+  named steps (`docs typecheck lint test`); it writes `.checks/latest.json`. The `db` step resets the **local**
+  database (`pnpm dev:admin <email> <password>` recreates an admin).
+- **Never:** edit `.env` files, reset or push to a hosted database, run the Deploy workflow, force-push. Ask before
+  `git push`. Allowed commands: `.claude/settings.json`. Skills: `/check`, `/record-answer`.
+- Small commits that say what and why. Update `docs/plan/current.md` (replace, don't append) and any doc whose rule
+  changed in the same commit. New decision → `docs/decisions.md`; new unknown → `docs/questions.md`.
 
-## Session ritual
-1. Read this file, then the "Resume here" section of `docs/plan/current.md`.
-2. Read only the docs the table above points to.
-3. Make small commits. The message says what changed and why.
-4. In the same commit, update `docs/plan/current.md` (done / evidence / next) and any doc whose rule changed.
-5. New decision → append to `docs/decisions.md`. New unknown → append to `docs/questions.md`.
-
-## Conventions (details in `docs/engineering.md`)
-- Glossary terms everywhere: DB = code = folders = routes. An Indian state/UT is a `region` in code, and "state" or "home" in UI copy. [D-016]
-- Customer-side reads use only `store_*` views/functions (plus the customer's own rows under RLS). Base tables holding vendor or
-  cost data are admin-only. [D-017]
-- Storefront code must never import from admin code. Validate with zod at every boundary. No `any`. Keep files under ~250 lines.
+## Conventions
+- Glossary words everywhere. An Indian state/UT is a `region` in code, "state" in UI copy. [D-016]
+- Customer code reads only `store_*` views/functions (plus own rows under RLS). [D-017] Storefront never imports
+  admin code. zod at every boundary. No `any`. Files under ~250 lines. Short comments: say why, cite the D-id once.

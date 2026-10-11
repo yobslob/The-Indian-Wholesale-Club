@@ -20,7 +20,6 @@
     "demo:photos": "node scripts/demo-photos.mjs",
     "demo:load": "node scripts/demo.mjs load",
     "demo:clear": "node scripts/demo.mjs clear",
-    "catalogue:master": "node scripts/master-catalogue.mjs",
     "dev:estimates": "node scripts/dev-estimates.mjs",
     "launch:check": "node scripts/launch-check.mjs",
     "prod:seed": "node scripts/production-seed.mjs",

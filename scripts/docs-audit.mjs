@@ -47,7 +47,8 @@ const code = Object.fromEntries(codeFiles.map((f) => [f, read(f)]));
 // (the verification log and backlog in docs/plan, the engineering diagnosis of the old code)
 // are skipped: they describe code that is gone on purpose.
 const ROOTS = /^(apps|packages|supabase|scripts|docs|\.github)\//;
-const HISTORY = new Set(['docs/plan/current.md', 'docs/plan/backlog.md']);
+const HISTORY = new Set(['docs/plan/backlog.md']);
+const isHistory = (file) => HISTORY.has(file) || file.startsWith('docs/archive/');
 function withoutHistory(file, text) {
   if (file !== 'docs/engineering.md') return text;
   const start = text.indexOf('## Diagnosis');
@@ -55,7 +56,7 @@ function withoutHistory(file, text) {
   return start < 0 ? text : text.slice(0, start) + text.slice(end);
 }
 for (const [file, full] of Object.entries(docs)) {
-  if (HISTORY.has(file)) continue;
+  if (isHistory(file)) continue;
   const text = withoutHistory(file, full);
   for (const [, raw] of text.matchAll(/`([^`\s]+)`/g)) {
     const p = raw.replace(/[.,:;)]+$/, '').replace(/#.*$/, '');
@@ -66,13 +67,13 @@ for (const [file, full] of Object.entries(docs)) {
 }
 
 // 2. Decision and question ids.
-const decisions = new Set(
-  [...read('docs/decisions.md').matchAll(/\*\*(D-\d{3})\b/g)].map((m) => m[1]),
-);
+// The index (docs/decisions.md) and the full text of older entries (docs/archive/decisions-full.md).
+const decisionText = read('docs/decisions.md') + read('docs/archive/decisions-full.md');
+const decisions = new Set([...decisionText.matchAll(/\*\*(D-\d{3})\b/g)].map((m) => m[1]));
 // Known questions: open ones (questions.md) and answered ones (listed there, or "was Q-n" in decisions.md).
 const questions = new Set([
   ...[...read('docs/questions.md').matchAll(/\bQ-\d+\b/g)].map((m) => m[0]),
-  ...[...read('docs/decisions.md').matchAll(/was (Q-\d+)/g)].map((m) => m[1]),
+  ...[...decisionText.matchAll(/was (Q-\d+)/g)].map((m) => m[1]),
 ]);
 const cited = (re, texts) => {
   const seen = new Map();
@@ -88,7 +89,7 @@ for (const [id, file] of cited(/\bD-\d{3}\b/g, [
     problems.push(`${file}: cites ${id}, which docs/decisions.md does not define`);
 }
 // decisions.md names answered questions ("was Q-4"); those left questions.md on purpose.
-const notDecisions = Object.entries(docs).filter(([f]) => f !== 'docs/decisions.md');
+const notDecisions = Object.entries(docs).filter(([f]) => f !== 'docs/decisions.md' && !f.startsWith('docs/archive/'));
 for (const [id, file] of cited(/\bQ-\d+\b/g, [...notDecisions, ...Object.entries(code)])) {
   if (!questions.has(id))
     problems.push(`${file}: cites ${id}, which docs/questions.md does not define`);

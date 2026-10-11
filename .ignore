@@ -1,0 +1,15 @@
+# Skipped by code search (ripgrep, so Claude's Grep and Glob too): history, generated files and big data that
+# answer no question about how the code works today. Open one of them by its path when you really need it.
+docs/archive/
+design/
+pnpm-lock.yaml
+packages/db/src/database.types.ts
+supabase/seed/catalogue.sql
+apps/web/features/checkout/zip-codes.json
+packages/shared/src/india-map/*.json
+apps/web/public/
+apps/app/assets/
+*.woff2
+*.png
+*.jpg
+*.webp

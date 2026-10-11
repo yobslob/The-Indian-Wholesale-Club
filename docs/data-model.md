@@ -38,7 +38,7 @@ operations data are never queried from customer code.
 | | `product_variants` | `options` JSON, SKU*, label, price override, `weight_g`*, `qty_listed`*, `qty_reserved`*, `qty_confirmed_at`* | store (`available` only) / admin |
 | | `variant_availability` | public mirror `variant_id → available`, trigger-maintained, in the Realtime publication (live "only 2 left", D-010) | store (visible products) |
 | | `product_media` | Storage paths (bucket `product-media`), alt text, one primary per product, `is_ai` (an AI-generated model photo, D-100: the product's Details say so) | store / admin |
-| Supply | `vendors` | shop + owner, phone/WhatsApp, address, town, region, payment method + reference (D-029), licences, status, notes, photo | admin |
+| Supply | `vendors` | shop + owner, phone/WhatsApp, address, town, region, payment method + reference (D-029), licences, status, notes, photo; `online_site` = an online shop's host for imported listings (one vendor per shop and state, D-110) | admin |
 | | `cycles` | code, status, `cutoff_at`, est. export/arrival, actual dates, AWB, forwarder, freight, duty, FX | admin |
 | | `pickups` | one per ordered piece: vendor, cycle, variant, qty, shop price, status, who/when, photo, payout | admin |
 | | `vendor_payouts` | INR paid to a vendor. The amount is computed from the pickups it covers | admin |
@@ -124,8 +124,8 @@ whether a product follows it, and triggers reprice when a setting, a variant wei
 `default_weight_g` changes; `admin_price_preview()` lets admins preview it; `admin_create_listing()` prices a listing
 without a price. `_fx_refresh()` (pg_cron every 10 minutes, pg_net) fetches the ECB rate once a day through
 `fx_fetches` and refuses implausible jumps. `categories.tax_class` (clothing, food, general; D-073). `business_details`
-(exporter, importer, broker, FDA, contact: placeholders until saved; admin-only). `pricing_settings.spices_cleared` gates
-live spices (trigger `_spices_cleared_check`, replacing the old constraint). Migration 25 (D-073, D-070): `tax_rates`
+(exporter, importer, broker, FDA, contact: placeholders until saved; admin-only). `pricing_settings.spices_cleared` (now `food_cleared`, D-110) gates
+live food (trigger `_food_cleared_check` since D-110). Migration 25 (D-073, D-070): `tax_rates`
 (one row per state where IWC is registered, with the classes it taxes; New Jersey 6.625% on general goods; no row = no
 tax; admin-only); `checkout_context(variant_ids, promo, state)` adds each line's tax class and courier cost (never its
 weight), the state's rule and express as courier pricing with a window from today; express orders have no cycle, a
@@ -150,6 +150,9 @@ Migration 31 (D-099, the second speed audit): `admin_order_counts()` (every orde
 send, shops owed for picked pieces) and `admin_cycle_totals(cycle)` (the cycle card's orders, pieces, shops and sales),
 admin only, counted in SQL because the API sends at most 1,000 rows; indexes for orders by status and newest, pickups
 by status, what each shop is owed, and a payout's pieces.
+Migrations 38 – 39 (D-110): the type `spice` renamed `food` (`food_cleared`, trigger `_food_cleared_check`); imported
+listings: `products.source_url` (unique, https), `source_site`, `source_checked_at`, `source_in_stock` and
+`vendors.online_site`, all admin-only (no `store_*` object reads them; `supabase/tests/sourced_listings.test.sql`).
 Migrations 36 – 37 (D-106): the product type `home` (Home & gifts) with its three categories, taxed as general goods by
 the category trigger, and the business detail `hs_home` for its shipping documents.
 Migrations 32 – 35 (D-102, D-103, vendor accounts): roles `vendor` and `worker`; `my_vendor_id()`, `is_vendor()`,
@@ -225,7 +228,7 @@ breaking it and watching the test fail ("mutation check", `current.md`).
   Six regions have no greeting yet (Andaman & Nicobar, Arunachal Pradesh, Goa, Jammu & Kashmir, Lakshadweep, Nagaland)
   and Ladakh/Manipur have only a Latin form. **The founder fills and approves them.** The six launch regions (D-059) have
   drafted taglines and stories (still `draft`); images and accent colours are empty on purpose.
-- `categories.sql`: 16 clothing + 9 pantry (`spice`) categories, **proposed** for founder review.
+- `categories.sql`: 16 clothing + 9 food (`food`, D-110) + 3 home categories, **proposed** for founder review.
 - `demo.sql`: **dev only.** `is_placeholder = true`, 4 clothing products in Kerala/Rajasthan/Punjab, one open cycle,
   placeholder domestic delivery days (3–7) and express days (1–2), `dev_preview = true`. (The $0 standard / $8 express
   prices are real settings from migration 4, D-041.) Never run against production.

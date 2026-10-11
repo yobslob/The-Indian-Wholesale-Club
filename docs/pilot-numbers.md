@@ -100,9 +100,9 @@ Change in the database (`categories.default_weight_g`) or ask Claude; listed in 
 
 ## 10. Business and compliance details (Settings → Business and compliance details, D-074)
 All "TO FILL" until you save them: exporter name, address, IEC, GSTIN; importer of record name, address, EIN, customs
-bond; customs broker; forwarder; Incoterm (placeholder "FCA Mumbai airport"); HS codes for clothing and for spices; FDA
-food facility registration, FDA US agent, FSVP importer, label maker; support email (Q-9); US return address. Spices can
-be published only after "Spices are cleared" in Settings.
+bond; customs broker; forwarder; Incoterm (placeholder "FCA Mumbai airport"); HS codes for clothing and for food; FDA
+food facility registration, FDA US agent, FSVP importer, label maker; support email (Q-9); US return address. Food can
+be published only after "Food is cleared" in Settings.
 
 ## What the placeholders produce (local catalogue, 2026-10-06)
 Average automatic price per category: lehengas $381, sarees $166, suits $150, jackets $117, shawls $107, kurtas $71,
@@ -110,4 +110,4 @@ dupattas $70, shirts $54. Two lessons for the pilot:
 - **Heavy staples don't work by air:** a 5 kg bag of rice or flour comes to about $128 (freight, customs and delivery
   follow the weight). Keep staples out of the pilot, or only in small packs.
 - **Small pantry packets land around $27–30:** the fixed costs per piece (India pickup, US handling, the smallest US
-  parcel) dominate a ₹150 spice. Bundles or a minimum pantry order would bring that down.
+  parcel) dominate a ₹150 food pack. Bundles or a minimum pantry order would bring that down.

@@ -62,7 +62,7 @@ Baseline numbers come from the founder's first `node scripts/check.mjs` run and 
 | What | Cached? | Tags | Refreshed by |
 |---|---|---|---|
 | Home, region page, product page | yes (`unstable_cache` + the page's static render) | `store` + `store:home` / `store:region:<slug>` / `store:product:<region>/<slug>` | a sale (`revalidateAfterSale`: the products sold, their regions, Home), a cancel (everything), the automatic cutoff (everything), any admin change (everything), else 5 minutes |
-| See all (`/clothing`, `/spices`), sitemap | yes | `store` | admin changes, else 5 minutes. Light cards without stock, so a sale never changes them |
+| See all (`/clothing`, `/food`, `/home-and-gifts`), sitemap | yes | `store` | admin changes, else 5 minutes. Light cards without stock, so a sale never changes them |
 | Search | no (per query) | | |
 | Cart, checkout, orders, account, every API route, admin | **never** (session or service clients, `cookies()`, POST routes) | | |
 - A sale is refreshed from `features/checkout/finalize.ts` once the order exists (browser or webhook, whichever is first),

@@ -1,6 +1,6 @@
 # The Indian Wholesale Club (IWC)
 
-A US storefront (web + iOS/Android app) for the clothing and spices of India's regions.
+A US storefront (web + iOS/Android app) for the clothing, food and home goods of India's regions.
 Monorepo: Next.js web · Expo app · Supabase · Stripe.
 
 - **Start here:** [`CLAUDE.md`](CLAUDE.md), the project rules, map and doc index (for people and for Claude).

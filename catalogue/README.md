@@ -3,9 +3,8 @@
 The six launch regions (Delhi, Punjab, Rajasthan, Assam, Maharashtra, Kerala, D-059) and every item from
 `docs/iwc-live-regions-catalogue.md`, as listings with their colours, sizes and pack sizes.
 
-**The master catalogue (D-108):** `master/products.csv` holds 2,880 rows for all 36 states (built by another AI tool;
-its popularity column and photo links are never used). `pnpm catalogue:master` loads it as placeholders
-(`docs/ops.md` §Master catalogue); the mapping to categories and options is `scripts/lib/master-map.mjs`.
+**Pilot listings** come from Indian online shops through the admin's Import from shops page (D-110), not from here.
+The 2,880-row master catalogue (D-108) was removed; `pnpm demo:clear` clears its placeholders (`docs/ops.md`).
 
 ## Adding photos (on your machine)
 

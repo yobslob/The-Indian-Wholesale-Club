@@ -20,7 +20,7 @@
  * No dependencies. Works on Windows, macOS, Linux (Node >= 20).
  */
 import { spawn, execSync } from 'node:child_process';
-import { mkdirSync, writeFileSync } from 'node:fs';
+import { mkdirSync, readdirSync, rmSync, writeFileSync } from 'node:fs';
 import os from 'node:os';
 import { gzipSync } from 'node:zlib';
 
@@ -228,6 +228,9 @@ mkdirSync('.checks', { recursive: true });
 const json = JSON.stringify(report, null, 2);
 writeFileSync('.checks/latest.json', json);
 writeFileSync(`.checks/${report.startedAt.replace(/[:.]/g, '-')}.json`, json);
+// Keep the last 10 dated runs; older ones are history nobody reads (and noise in searches).
+const dated = readdirSync('.checks').filter((f) => /^\d{4}-.*\.json$/.test(f)).sort();
+for (const old of dated.slice(0, -10)) rmSync(`.checks/${old}`);
 
 if (report.steps.http?.routes) {
   console.log(`\nRoute timings (median of 3; budgets ${BUDGET_MS} ms for cached pages, ${BUDGET_JS_KB} KB first-load JS):`);
