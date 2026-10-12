@@ -55,7 +55,7 @@ export function RowScroller({
       <ul
         ref={ref}
         aria-label={label}
-        className={pills ? `${list} gap-2.5` : `${list} snap-x snap-mandatory scroll-px-[var(--gut)] gap-[var(--gap)] pb-1`}
+        className={pills ? `${list} gap-2.5` : `${list} drift drift-row -my-4 snap-x snap-mandatory scroll-px-[var(--gut)] gap-[var(--gap)] pb-5 pt-4`}
       >
         {children}
       </ul>

@@ -144,7 +144,7 @@ export function AddToCart({ product, variants, delivery }: Props): React.JSX.Ele
       ) : null}
 
       <p className={`flex items-center gap-2 text-sm ${soldOut ? 'text-caution' : ''}`} aria-live="polite">
-        <span aria-hidden="true" className={`size-2 rounded-full ${soldOut ? 'bg-caution' : 'bg-region'}`} />
+        <span aria-hidden="true" className={`size-2 rounded-full ${soldOut ? 'bg-caution' : 'bg-region live-dot'}`} />
         {soldOut ? 'Sold out' : left <= 3 ? `Only ${left} left` : 'In stock'}
       </p>
 

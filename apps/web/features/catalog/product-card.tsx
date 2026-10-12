@@ -95,7 +95,7 @@ export function ProductCard({
   );
 }
 
-/** The reference grid: four equal columns (five for small cards), two on phones. */
+/** The reference grid: four equal columns (five for small cards), two on phones; its columns drift with the scroll (D-116). */
 export function ProductGrid({
   children,
   size = 'md',
@@ -107,8 +107,8 @@ export function ProductGrid({
     <div
       className={
         size === 'sm'
-          ? 'grid grid-cols-2 gap-x-[var(--gap)] gap-y-7 md:grid-cols-3 xl:grid-cols-5'
-          : 'grid grid-cols-2 gap-x-[var(--gap)] gap-y-[clamp(28px,3vw,44px)] xl:grid-cols-4'
+          ? 'drift drift-cols-3 drift-cols-5 grid grid-cols-2 gap-x-[var(--gap)] gap-y-7 md:grid-cols-3 xl:grid-cols-5'
+          : 'drift grid grid-cols-2 gap-x-[var(--gap)] gap-y-[clamp(28px,3vw,44px)] xl:grid-cols-4'
       }
     >
       {children}

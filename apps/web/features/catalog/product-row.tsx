@@ -9,7 +9,7 @@ type CardData = ProductCardData & Partial<Pick<RegionProductCard, 'available' | 
 
 export const sectionHeading = 'font-heading text-[clamp(26px,2.2vw,38px)] font-medium leading-tight tracking-[-0.025em]';
 export const seeAllPill =
-  'font-ui border-line bg-paper hover:border-ink inline-flex min-h-11 shrink-0 items-center rounded-pill border px-5 text-sm font-medium';
+  'font-ui border-line bg-paper hover:border-ink group inline-flex min-h-11 shrink-0 items-center gap-1.5 rounded-pill border px-5 text-sm font-medium transition-colors';
 
 /** Cards a row shows before it is scrolled sideways on a wide screen: only these get the scroll reveal. */
 const REVEALED = 5;
@@ -64,7 +64,7 @@ export function ProductRow<T extends CardData>({
     <section id={id} aria-labelledby={`${id}-h`} className="scroll-mt-20 py-[clamp(24px,3vw,48px)]">
       <div className="mb-[clamp(16px,1.8vw,24px)] flex items-end justify-between gap-4">
         <div className="min-w-0">
-          <h2 id={`${id}-h`} className={sectionHeading}>
+          <h2 id={`${id}-h`} className={sectionHeading} data-reveal="">
             {title}
           </h2>
           {sub ? <p className="text-ink-muted mt-1.5 text-sm">{sub}</p> : null}
@@ -72,6 +72,9 @@ export function ProductRow<T extends CardData>({
         {href ? (
           <Link href={href} className={seeAllPill}>
             See all<span className="sr-only"> {title}</span>
+            <span aria-hidden="true" className="-mr-1 transition-transform duration-300 group-hover:translate-x-1">
+              →
+            </span>
           </Link>
         ) : null}
       </div>

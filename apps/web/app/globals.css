@@ -58,6 +58,29 @@
   .press:active:not(:disabled) {
     transform: scale(0.97);
   }
+  /* "In stock": the dot breathes a soft ring, slowly (D-116). */
+  .live-dot {
+    position: relative;
+  }
+  .live-dot::after {
+    content: '';
+    position: absolute;
+    inset: 0;
+    border-radius: inherit;
+    background: inherit;
+    animation: live-dot 2.4s cubic-bezier(0.22, 1, 0.36, 1) infinite;
+  }
+  @keyframes live-dot {
+    0% {
+      transform: scale(1);
+      opacity: 0.5;
+    }
+    70%,
+    100% {
+      transform: scale(3);
+      opacity: 0;
+    }
+  }
   /* A line that rises in when it appears (status lines, D-116). */
   .rise-in {
     animation: rise-in 0.4s cubic-bezier(0.22, 1, 0.36, 1);
@@ -150,6 +173,11 @@
     clip-path: inset(12% 0 12% 0);
     opacity: 0;
     transform: scale(1.06);
+  }
+  /* Section headings rise out of a mask instead (D-116). */
+  h2[data-reveal='pending'] {
+    clip-path: inset(0 0 100% 0);
+    transform: translateY(0.45em);
   }
   [data-speed] {
     will-change: transform;
@@ -891,6 +919,75 @@ html[data-free-bar] body {
     to {
       transform: scale(1.9);
       opacity: 0;
+    }
+  }
+}
+
+/*
+ * Velocity drift (D-116, the floating composition of D-049): while the page scrolls fast, a grid's columns and a row's
+ * cards fall a few pixels behind or run ahead by their own amount (--k), so the composition floats apart and closes
+ * again as the scroll settles. --sv is the scroll's velocity (motion.tsx; never set for reduced motion), at most
+ * ±30 px per frame; at most ±24 px of drift. Phones get half.
+ */
+@layer components {
+  .drift > * {
+    --k: 0;
+    transform: translate3d(0, calc(var(--sv, 0) * var(--k) * var(--drift, 0.8px)), 0);
+    will-change: transform;
+  }
+  .drift > :nth-child(2n) {
+    --k: 0.7;
+  }
+  @media (min-width: 768px) {
+    .drift-cols-3 > :nth-child(n) {
+      --k: 0;
+    }
+    .drift-cols-3 > :nth-child(3n + 2) {
+      --k: 0.7;
+    }
+    .drift-cols-3 > :nth-child(3n) {
+      --k: 0.35;
+    }
+  }
+  @media (min-width: 1280px) {
+    .drift > :nth-child(n) {
+      --k: 0;
+    }
+    .drift > :nth-child(4n + 2) {
+      --k: 0.7;
+    }
+    .drift > :nth-child(4n + 3) {
+      --k: 0.3;
+    }
+    .drift > :nth-child(4n) {
+      --k: 1;
+    }
+    .drift-cols-5 > :nth-child(n) {
+      --k: 0;
+    }
+    .drift-cols-5 > :nth-child(5n + 2) {
+      --k: 0.6;
+    }
+    .drift-cols-5 > :nth-child(5n + 3) {
+      --k: 1;
+    }
+    .drift-cols-5 > :nth-child(5n + 4) {
+      --k: 0.4;
+    }
+  }
+  /* A sideways row: a slow wave along the cards. */
+  .drift-row > :nth-child(n) {
+    --k: 0;
+  }
+  .drift-row > :nth-child(3n + 2) {
+    --k: 0.6;
+  }
+  .drift-row > :nth-child(3n) {
+    --k: 0.25;
+  }
+  @media (max-width: 767px) {
+    .drift > * {
+      --drift: 0.4px;
     }
   }
 }

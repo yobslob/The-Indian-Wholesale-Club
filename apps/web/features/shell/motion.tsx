@@ -5,7 +5,9 @@ import { useEffect } from 'react';
 
 /**
  * The storefront's motion (design.md §Direction, D-049): Lenis smooth scrolling, images that reveal as they
- * enter the viewport, and a gentle parallax on [data-speed] elements. Progressive enhancement only:
+ * enter the viewport, a gentle parallax on [data-speed] elements, and the scroll's velocity as `--sv` on <html> (px per
+ * frame, ±30) so grids and rows can float apart a little while the page moves fast and settle when it stops (D-116,
+ * `.drift` in globals.css). Progressive enhancement only:
  * - Lenis is imported after the page is interactive (not in the first-load bundle, engineering.md §Budgets);
  * - with prefers-reduced-motion nothing runs: native scroll, no parallax, every image simply visible;
  * - only images still below the fold are hidden for the reveal, so nothing on screen ever flickers, and
@@ -24,7 +26,18 @@ export function Motion(): null {
       if (cancelled) return;
       // anchors: jump links scroll smoothly; Lenis subtracts html's scroll-padding-top (below the sticky header,
       // globals.css) and the target's scroll-margin itself, so no extra offset here.
-      lenis = new Lenis({ lerp: 0.09, anchors: true });
+      const instance = new Lenis({ lerp: 0.09, anchors: true });
+      lenis = instance;
+      // Lenis eases its velocity back to 0 as the page settles, so the drift springs home by itself. Written only when
+      // it moves by more than 0.1 px, which also lets it rest at exactly 0.
+      const root = document.documentElement;
+      let last = 0;
+      instance.on('scroll', ({ velocity }) => {
+        const v = Math.max(-30, Math.min(30, Math.abs(velocity) < 0.1 ? 0 : velocity));
+        if (Math.abs(v - last) < 0.1 && (v !== 0 || last === 0)) return;
+        last = v;
+        root.style.setProperty('--sv', v.toFixed(1));
+      });
       const loop = (t: number): void => {
         lenis?.raf(t);
         frame = requestAnimationFrame(loop);

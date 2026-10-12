@@ -285,4 +285,11 @@ for reduced motion; only transform and opacity in loops).
 - **Bag page:** the totals and Checkout sit together under the prices' column on wide screens (Checkout was at the far
   edge from the totals); primary buttons give under the finger.
 - **Header:** the links' underline draws in from the left.
+- **Velocity drift:** product grids' columns and the cards of sideways rows fall behind or run ahead by their own
+  amount while the page scrolls fast (Lenis's velocity, at most 24 px, half on phones) and close again as it settles.
+- **Section headings** of the rows rise out of a mask as they come into view; "See all" gets an arrow that nudges.
+- **Region page:** the sticky section pills follow the reader: the section in the middle of the screen has its pill
+  filled in ink, slid into view.
+- **Product page:** Details and Size chart open smoothly and the + folds into a −; "In stock" has a slow breathing dot;
+  the region · type · category line gets even spacing.
 *Claude's choices in it (proposed):* everything above; each is its own small change and can be undone alone.

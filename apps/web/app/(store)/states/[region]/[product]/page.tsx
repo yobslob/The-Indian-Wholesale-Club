@@ -46,11 +46,18 @@ export default async function ProductPage({ params }: { params: Params }): Promi
       <div className="grid items-start gap-[var(--gap)] md:grid-cols-[minmax(0,1.05fr)_minmax(0,1fr)] min-[1100px]:grid-cols-[auto_minmax(0,1fr)]">
         <ProductGallery media={media} name={product.name} />
         <aside aria-label="Buy" className="bg-surface rounded-lg p-[clamp(22px,2.6vw,44px)] md:sticky md:top-[calc(var(--top-h)+16px)]">
-          <p className="font-ui text-ink-muted text-[13px] font-medium">
-            <Link href={`/states/${product.region_slug}`} className="underline">
+          <p className="font-ui text-ink-muted flex flex-wrap items-center gap-x-2 text-[13px] font-medium">
+            <Link href={`/states/${product.region_slug}`} className="hover:text-ink underline underline-offset-[3px]">
               {product.region_name}
             </Link>
-            &nbsp;·&nbsp; {PRODUCT_TYPE_LABEL[product.product_type]} &nbsp;·&nbsp; {product.category_name}
+            <span aria-hidden="true">·</span>
+            <span>{PRODUCT_TYPE_LABEL[product.product_type]}</span>
+            {product.category_name ? (
+              <>
+                <span aria-hidden="true">·</span>
+                <span>{product.category_name}</span>
+              </>
+            ) : null}
           </p>
           <div className="my-3 flex items-start justify-between gap-4">
             <h1 className="font-display text-[clamp(38px,3.6vw,64px)] leading-none tracking-[-0.02em]">{product.name}</h1>

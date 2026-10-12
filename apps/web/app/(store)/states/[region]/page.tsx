@@ -10,6 +10,7 @@ import { ProductRow } from '@/features/catalog/product-row';
 import { RowScroller } from '@/features/catalog/row-scroller';
 import { RegionAlbum } from '@/features/regions/region-album';
 import { scriptFontClass } from '@/features/regions/script-fonts';
+import { SectionSpy } from '@/features/regions/section-spy';
 import { mediaUrl } from '@/lib/site';
 
 import type { RegionPage, RegionProductCard } from '@repo/db/store';
@@ -29,8 +30,9 @@ export async function generateMetadata({ params }: { params: Params }): Promise<
 }
 
 const heading = 'font-heading text-[clamp(26px,2.2vw,38px)] font-medium leading-tight tracking-[-0.025em]';
+// aria-current: the section being read (SectionSpy, D-116).
 const pill =
-  'font-ui border-line bg-paper hover:border-ink inline-flex min-h-11 items-center gap-2 rounded-pill border px-5 text-sm font-medium';
+  'font-ui border-line bg-paper hover:border-ink inline-flex min-h-11 items-center gap-2 rounded-pill border px-5 text-sm font-medium transition-colors duration-300 aria-[current]:border-ink aria-[current]:bg-ink aria-[current]:text-paper [&[aria-current]>span]:text-paper/70';
 
 /**
  * Clothing grouped by category, the biggest first: one row each (D-062). The page data carries each category's first
@@ -138,6 +140,7 @@ export default async function RegionPage({ params }: { params: Params }): Promis
                 </li>
               ) : null}
             </RowScroller>
+            <SectionSpy />
           </nav>
           {newest.length > 0 ? (
             <ProductRow
