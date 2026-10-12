@@ -19,6 +19,9 @@ phase's sub-steps and every verification run) is in `docs/archive/status-log-to-
   Standard delivery); a standard order needs no cycle and its pieces go on the pickup list at once.
 - **Saved addresses at checkout (D-114, 2026-10-12):** signed in, checkout offers the saved addresses (default filled
   in) and a paid order saves its address to the account.
+- **Polish pass (D-116, 2026-10-12):** the free-delivery pill with a glowing meter (web and app), the add-to-bag
+  flight and Added state, velocity drift on grids and rows, heading reveals, section pills that follow the reader,
+  smooth Details, the app's gliding tab marker; layouts unchanged.
 - **Food (D-110):** the product type `spice` is now `food` (page `/food`; `/spices` redirects).
 
 ## Next for the founder
@@ -33,7 +36,7 @@ phase's sub-steps and every verification run) is in `docs/archive/status-log-to-
 ## Last verification
 | Date | Commit | Where | Result |
 |---|---|---|---|
-| 2026-10-12 | D-115 commit | Claude, founder's Windows machine with Docker | typecheck, lint, test, db (incl. new `pilot_delivery.test.sql`), docs, build, e2e 23/23 (the buy flow with the pilot on, no open cycle) all OK; product page shows "Estimated delivery Oct 24 – Oct 30" (no order-by). |
+| 2026-10-12 | 0478b44 + uncommitted (region greeting write-in, checkout step check; docs) | Claude Code, founder's Windows machine with Docker | docs 0.5s, typecheck 15.5s, lint 21.2s, test 2.5s, db 64.7s, build 86.9s, http 3.4s, e2e 146.6s (23/23), bundle 20.5s: all OK. No route over budget (cached pages 10 – 52 ms, first-load JS 123 – 131 KB). |
 
 ## Known leftovers
 - App bundle ids are still `com.indianwholesaleclub.app` (`apps/app/app.json`); they change with the domain (Q-9).

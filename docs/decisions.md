@@ -292,6 +292,8 @@ for reduced motion; only transform and opacity in loops).
   filled in ink, slid into view.
 - **Product page:** Details and Size chart open smoothly and the + folds into a −; "In stock" has a slow breathing dot;
   the region · type · category line gets even spacing.
+- **Region page greeting:** the greeting in the state's own script writes itself in, left to right, as the page opens.
+- **Checkout:** a finished step's check draws itself and the next step's content rises in.
 - **Panels and fields (web):** the menu's links and the bag panel's lines slide in one after another as the panel
   opens; a text field being typed in gets a soft brand halo.
 - **App:** the same free-delivery pill above the tabs (Reanimated; the glow is drawn with layered halos so Android

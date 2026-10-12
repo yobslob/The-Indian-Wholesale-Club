@@ -91,6 +91,19 @@
       opacity: 0;
     }
   }
+  /* The region's greeting in its own script writes itself in, left to right, as the page opens (D-116). */
+  .write-in {
+    animation: write-in 1.6s 0.15s cubic-bezier(0.65, 0, 0.35, 1) backwards;
+  }
+  @keyframes write-in {
+    from {
+      clip-path: inset(0 100% 0 0);
+      opacity: 0.4;
+    }
+    to {
+      clip-path: inset(0 0 0 0);
+    }
+  }
   /* A line that rises in when it appears (status lines, D-116). */
   .rise-in {
     animation: rise-in 0.4s cubic-bezier(0.22, 1, 0.36, 1);

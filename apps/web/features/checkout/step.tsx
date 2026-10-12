@@ -14,13 +14,20 @@ export function Step({
   onEdit?: () => void;
   children?: React.ReactNode;
 }): React.JSX.Element {
+  // The dot changes colour smoothly and a done step's check draws itself (D-116).
   const dot =
     state === 'open' ? 'bg-ink text-paper' : state === 'done' ? 'bg-positive text-white' : 'bg-surface text-ink-muted';
   return (
     <section className="border-line border-t py-[18px] last:border-b" aria-labelledby={`step-${n}`}>
       <div className="flex flex-wrap items-center gap-3">
-        <span className={`font-ui grid size-7 flex-none place-items-center rounded-full text-[13px] font-semibold ${dot}`} aria-hidden="true">
-          {state === 'done' ? '✓' : n}
+        <span className={`font-ui grid size-7 flex-none place-items-center rounded-full text-[13px] font-semibold transition-colors duration-300 ${dot}`} aria-hidden="true">
+          {state === 'done' ? (
+            <svg viewBox="0 0 24 24" className="size-4" fill="none" stroke="currentColor" strokeWidth="2.4" strokeLinecap="round" strokeLinejoin="round">
+              <path d="M5 12.5l4.5 4.5L19 7.5" className="draw-check" />
+            </svg>
+          ) : (
+            n
+          )}
         </span>
         <h2 id={`step-${n}`} className={`font-heading m-0 text-xl font-medium leading-tight ${state === 'later' ? 'text-ink-muted' : 'text-[#1D1A17]'} ${state === 'done' ? '' : 'flex-1'}`}>
           {title}
@@ -44,7 +51,7 @@ export function Step({
           </>
         ) : null}
       </div>
-      {state === 'open' ? <div className="pb-1 pt-[18px] sm:pl-10">{children}</div> : null}
+      {state === 'open' ? <div className="rise-in pb-1 pt-[18px] sm:pl-10">{children}</div> : null}
     </section>
   );
 }

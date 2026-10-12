@@ -81,7 +81,7 @@ export default async function RegionPage({ params }: { params: Params }): Promis
           </p>
           {region.greeting_native ? (
             <p
-              className={`text-region m-0 text-[clamp(56px,8vw,128px)] font-light leading-[1.15] ${scriptFontClass(region.greeting_script)}`}
+              className={`write-in text-region m-0 text-[clamp(56px,8vw,128px)] font-light leading-[1.15] ${scriptFontClass(region.greeting_script)}`}
               lang={region.greeting_script ? `und-${region.greeting_script}` : undefined}
             >
               {region.greeting_native}
