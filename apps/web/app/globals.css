@@ -45,6 +45,39 @@
 
 /* Rows of cards that scroll sideways (features/catalog/row-scroller.tsx, D-062): no scrollbar, arrows instead. */
 @layer utilities {
+  /* D-116: a button that gives under the finger (primary buttons). */
+  .press {
+    transition:
+      transform 160ms cubic-bezier(0.2, 0.7, 0.2, 1),
+      filter 160ms ease,
+      opacity 160ms ease;
+  }
+  .press:hover:not(:disabled) {
+    filter: brightness(1.08);
+  }
+  .press:active:not(:disabled) {
+    transform: scale(0.97);
+  }
+  /* A line that rises in when it appears (status lines, D-116). */
+  .rise-in {
+    animation: rise-in 0.4s cubic-bezier(0.22, 1, 0.36, 1);
+  }
+  /* A check that draws itself (pathLength-free: the check's path is short, 24 units is enough). */
+  .draw-check {
+    stroke-dasharray: 24;
+    animation: draw-check 0.45s 0.1s cubic-bezier(0.65, 0, 0.35, 1) backwards;
+  }
+  @keyframes rise-in {
+    from {
+      opacity: 0;
+      transform: translateY(6px);
+    }
+  }
+  @keyframes draw-check {
+    from {
+      stroke-dashoffset: 24;
+    }
+  }
   .no-scrollbar {
     scrollbar-width: none;
   }
@@ -209,16 +242,29 @@
     align-items: center;
     gap: inherit;
   }
+  /* The links' underline draws in from the left on hover and stays under the current page (D-116). */
   .site-links > a {
+    position: relative;
     display: inline-flex;
     align-items: center;
     height: 44px;
-    text-underline-offset: 6px;
   }
-  .site-links > a:hover,
-  .site-links > a[aria-current='page'] {
-    text-decoration: underline;
-    text-decoration-thickness: 1px;
+  .site-links > a::after {
+    content: '';
+    position: absolute;
+    left: 0;
+    right: 0;
+    bottom: 8px;
+    height: 1px;
+    background: currentColor;
+    transform: scaleX(0);
+    transform-origin: right center;
+    transition: transform 0.45s cubic-bezier(0.65, 0, 0.35, 1);
+  }
+  .site-links > a:hover::after,
+  .site-links > a[aria-current='page']::after {
+    transform: scaleX(1);
+    transform-origin: left center;
   }
   .site-icons {
     display: flex;
@@ -237,6 +283,14 @@
   .site-svg {
     width: 22px;
     height: 22px;
+  }
+  .site-count[data-pop] {
+    animation: count-pop 0.5s 0.75s cubic-bezier(0.34, 1.56, 0.64, 1) backwards;
+  }
+  @keyframes count-pop {
+    from {
+      transform: scale(0.3);
+    }
   }
   .site-count {
     position: absolute;
@@ -655,7 +709,188 @@
   }
 }
 
-/* D-111: the free-delivery bar floats over the page bottom; the page keeps room for it. */
+/* D-111: the free-delivery pill floats over the page bottom; the page keeps room for it. */
 html[data-free-bar] body {
-  padding-bottom: 96px;
+  padding-bottom: 84px;
+}
+
+/*
+ * The free-delivery meter (D-111, D-116; features/cart/free-delivery-bar.tsx, the bag's summary): light fills it from
+ * the left up to --fd (0 – 1) with a glowing edge that breathes, flares when the bag grows (data-surge) and fades out
+ * once delivery is free; a sheen runs across once at the line. Only transform and opacity animate (no repaint loops).
+ */
+@layer components {
+  .fd-pill {
+    overflow: hidden;
+    isolation: isolate;
+    box-shadow:
+      0 10px 28px rgb(30 27 22 / 0.26),
+      inset 0 0 0 1px rgb(255 255 255 / 0.08);
+    transition:
+      transform 0.5s cubic-bezier(0.34, 1.4, 0.64, 1),
+      opacity 0.3s ease,
+      bottom 0.3s cubic-bezier(0.2, 0.7, 0.2, 1),
+      box-shadow 0.6s ease;
+  }
+  .fd-pill:hover {
+    box-shadow:
+      0 14px 34px rgb(30 27 22 / 0.32),
+      inset 0 0 0 1px rgb(255 255 255 / 0.14);
+  }
+  .fd-pill[data-free] {
+    box-shadow:
+      0 10px 28px rgb(30 27 22 / 0.26),
+      0 0 0 1px rgb(255 214 170 / 0.5),
+      0 0 22px rgb(255 190 140 / 0.35);
+  }
+  .fd-fill {
+    position: absolute;
+    inset: 0;
+    z-index: 0;
+    pointer-events: none;
+    transform-origin: left center;
+  }
+  .fd-fill::before {
+    content: '';
+    position: absolute;
+    inset: 0;
+    background: linear-gradient(90deg, rgb(255 236 214 / 0.03), rgb(255 236 214 / 0.2));
+    transform: scaleX(var(--fd, 0));
+    transform-origin: left center;
+    transition: transform 1.1s cubic-bezier(0.22, 1, 0.36, 1);
+  }
+  .fd-edge {
+    position: absolute;
+    top: 0;
+    bottom: 0;
+    width: 2px;
+    border-radius: 2px;
+    background: rgb(255 244 228 / 0.95);
+    box-shadow:
+      0 0 10px 2px rgb(255 214 170 / 0.75),
+      0 0 26px 8px rgb(255 190 140 / 0.35);
+    left: calc(var(--fd, 0) * 100% - 2px);
+    transition:
+      left 1.1s cubic-bezier(0.22, 1, 0.36, 1),
+      opacity 0.6s ease;
+    animation: fd-breathe 2.8s ease-in-out infinite;
+  }
+  .fd-edge[data-surge] {
+    animation:
+      fd-flare 1.2s cubic-bezier(0.22, 1, 0.36, 1),
+      fd-breathe 2.8s ease-in-out 1.2s infinite;
+  }
+  .fd-pill[data-free] .fd-edge {
+    opacity: 0;
+    animation: none;
+  }
+  .fd-sheen {
+    position: absolute;
+    inset: 0;
+    z-index: 0;
+    pointer-events: none;
+    background: linear-gradient(105deg, transparent 35%, rgb(255 244 228 / 0.38) 50%, transparent 65%);
+    transform: translateX(-100%);
+    animation: fd-sheen 1.4s cubic-bezier(0.65, 0, 0.35, 1) 0.4s forwards;
+  }
+  .fd-count {
+    animation: fd-pop 0.45s cubic-bezier(0.34, 1.56, 0.64, 1);
+  }
+  @keyframes fd-breathe {
+    50% {
+      opacity: 0.6;
+    }
+  }
+  @keyframes fd-flare {
+    0% {
+      opacity: 1;
+      scale: 2.2 1;
+      filter: brightness(1.6);
+    }
+    100% {
+      opacity: 1;
+      scale: 1 1;
+      filter: none;
+    }
+  }
+  @keyframes fd-sheen {
+    to {
+      transform: translateX(100%);
+    }
+  }
+  @keyframes fd-pop {
+    0% {
+      transform: scale(0.4);
+    }
+  }
+  /* The bag's summary: the same meter as a slim line. */
+  .fd-line {
+    position: relative;
+    height: 6px;
+    border-radius: 999px;
+    background: theme('colors.surface');
+    overflow: visible;
+  }
+  .fd-line .fd-fill::before {
+    border-radius: 999px;
+    background: linear-gradient(90deg, color-mix(in srgb, theme('colors.brand') 45%, transparent), theme('colors.brand'));
+  }
+  .fd-line .fd-edge {
+    top: -3px;
+    bottom: -3px;
+    width: 3px;
+    background: #fff4e4;
+  }
+  .fd-line[data-free] .fd-edge {
+    opacity: 0;
+    animation: none;
+  }
+}
+
+/* The card's + (D-080, D-116, features/catalog/quick-add.tsx): a quarter turn and a lift on hover; once added it fills
+   with the brand colour, the check draws itself and a ring ripples out once. */
+@layer components {
+  .quick-add {
+    transition:
+      transform 0.35s cubic-bezier(0.34, 1.56, 0.64, 1),
+      background-color 0.3s ease,
+      color 0.3s ease,
+      border-color 0.3s ease;
+  }
+  .quick-add svg {
+    transition: transform 0.45s cubic-bezier(0.34, 1.56, 0.64, 1);
+  }
+  .quick-add:hover {
+    transform: translateY(-2px);
+  }
+  .quick-add:hover:not([data-added]) svg {
+    transform: rotate(90deg);
+  }
+  .quick-add:active {
+    transform: scale(0.9);
+  }
+  .quick-add[data-added] {
+    border-color: theme('colors.brand');
+    background-color: theme('colors.brand');
+    color: theme('colors.on-brand');
+  }
+  .quick-add[data-added] path {
+    stroke-dasharray: 24;
+    animation: draw-check 0.45s 0.05s cubic-bezier(0.65, 0, 0.35, 1) backwards;
+  }
+  .quick-add[data-added]::after {
+    content: '';
+    position: absolute;
+    inset: -1px;
+    border-radius: inherit;
+    border: 2px solid theme('colors.brand');
+    animation: ripple 0.7s cubic-bezier(0.22, 1, 0.36, 1) forwards;
+    pointer-events: none;
+  }
+  @keyframes ripple {
+    to {
+      transform: scale(1.9);
+      opacity: 0;
+    }
+  }
 }

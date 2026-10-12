@@ -3,13 +3,16 @@
 import Link from 'next/link';
 import { useState } from 'react';
 
+import { flyToBag } from '@/features/cart/fly-to-bag';
 import { useCart } from '@/features/cart/store';
+import { mediaUrl } from '@/lib/site';
 
 import type { ProductCard, QuickAdd as QuickAddData } from '@repo/db/store';
 
 /** On the card's photo, bottom right (D-080): a round + so the name keeps the card's full width. */
 const spot = 'font-ui absolute bottom-2.5 right-2.5 z-[1]';
-const round = `${spot} grid size-10 place-items-center rounded-full border border-line bg-paper text-black shadow-sm transition-colors hover:border-ink`;
+// Hover turns the + a quarter and lifts the button; once added it fills with the brand colour and a ring ripples out (D-116).
+const round = `${spot} quick-add grid size-10 place-items-center rounded-full border border-line bg-paper text-black shadow-sm hover:border-ink`;
 
 function Icon({ d }: { d: string }): React.JSX.Element {
   return (
@@ -56,8 +59,9 @@ export function QuickAdd({
     <button
       type="button"
       className={round}
+      data-added={added || undefined}
       aria-label={added ? `${product.name} added to your bag` : `Add ${product.name} to your bag`}
-      onClick={() => {
+      onClick={(e) => {
         add(
           {
             variantId: quickAdd.variant_id,
@@ -73,6 +77,7 @@ export function QuickAdd({
           1,
         );
         setAdded(true);
+        flyToBag(e.currentTarget, product.primary_image_path ? mediaUrl(product.primary_image_path) : null);
       }}
     >
       <Icon d={added ? CHECK : PLUS} />

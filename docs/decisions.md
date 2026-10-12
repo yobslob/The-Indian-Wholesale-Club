@@ -259,3 +259,30 @@ What it means for the build (migration `supabase/migrations/20261012160000_pilot
 - Non-negotiable 4 now reads: delivery dates come from cycle data or, in the pilot, from its days in Settings; never
   hard-coded. Standard shipping is set to $0 where it was empty (D-041), which also kept checkout closed.
 *Claude's choices in it (proposed):* the window counts calendar days from the order date; express keeps its own days.
+
+**D-116 · 2026-10-12 · founder: A polish pass on every element before launch (website and app)**
+Founder, verbatim: "Everything is live and working, now we have to design the exisiting frontend sleekly because we are
+at the last step of going live now we have to design this website professionally and I am not talking about big
+changes, I am talking about all the individual elements, their ergonomics, their usability and design, the minimilism,
+their interactivity, for e.g. the free delivary bar card is too big, it should be like a pill and the filling bar
+should be more creative like it should show a light glow filling up as soon as user adds something. This was just an
+example, you have to find things yourself in website, webapp and phone app. also remember to keep these designs
+flabbergasting and new such as we did in the grid(floating composition, lenis smooth scrolling with gentle vertical
+parallax, velocity based movements, art direction aesthetic similarly find more of these and apply wherever applicable)
+we don't necessarily have to make the website too much but we can find a lot of scope of designing in different parts
+of the website."
+What it means for the build: layouts stay as approved (D-079 – D-098); single elements get sharper, smaller and more
+alive. Motion follows design.md's guard rails (CSS or the Web Animations API on the web, Reanimated in the app; nothing
+for reduced motion; only transform and opacity in loops).
+- **Free-delivery pill (web and app):** D-111's card becomes a 56 px pill: the newest photo in a circle with the count,
+  one line of text, a chevron. The pill is the meter: a soft light fills it from the left with a glowing edge that
+  breathes, flares each time the bag grows and gives way to one sheen at the line. The bag's summary shows the same
+  meter as a slim line under "Add $x more for free delivery". Phones say "more for" instead of "more to unlock".
+- **Adding to the bag:** the piece's photo flies in an arc to the header's bag, which bounces, and its count pops. The
+  product page's Add to bag flips to "✓ Added" for a moment; its quantity dropdown becomes the bag's − / + stepper.
+  The card's + turns a quarter on hover; once added it fills with the brand colour, the check draws itself and a ring
+  ripples out.
+- **Bag page:** the totals and Checkout sit together under the prices' column on wide screens (Checkout was at the far
+  edge from the totals); primary buttons give under the finger.
+- **Header:** the links' underline draws in from the left.
+*Claude's choices in it (proposed):* everything above; each is its own small change and can be undone alone.

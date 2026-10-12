@@ -21,7 +21,8 @@ export function BuyBar({
   disabled: boolean;
   /** The page's "Added" line is off screen while the bar shows, so the bar's button says it. */
   added: boolean;
-  onAdd: () => void;
+  /** Called with the bar's button, where the add-to-bag flight starts (D-116). */
+  onAdd: (from: Element) => void;
 }): React.JSX.Element {
   const [shown, setShown] = useState(false);
 
@@ -60,8 +61,8 @@ export function BuyBar({
       <button
         type="button"
         disabled={disabled}
-        onClick={onAdd}
-        className="bg-brand text-on-brand font-ui h-12 w-[150px] flex-none rounded-pill text-[15px] font-medium disabled:opacity-50"
+        onClick={(e) => onAdd(e.currentTarget)}
+        className="bg-brand text-on-brand font-ui press h-12 w-[150px] flex-none rounded-pill text-[15px] font-medium disabled:opacity-50"
       >
         {added ? '✓ Added' : 'Add to bag'}
       </button>

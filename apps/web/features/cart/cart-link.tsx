@@ -20,6 +20,14 @@ export function CartLink(): React.JSX.Element {
   const link = useRef<HTMLAnchorElement>(null);
   useEffect(() => setMounted(true), []);
   const count = mounted ? cartCount(lines) : 0;
+  // The count pops when the bag grows (D-116), not when it first appears after hydration.
+  const seen = useRef<number | null>(null);
+  const [pop, setPop] = useState(0);
+  useEffect(() => {
+    if (!mounted) return;
+    if (seen.current !== null && count > seen.current) setPop((n) => n + 1);
+    seen.current = count;
+  }, [mounted, count]);
   const onClose = useCallback((refocus: boolean) => {
     setOpen(false);
     if (refocus) link.current?.focus();
@@ -41,7 +49,11 @@ export function CartLink(): React.JSX.Element {
         }}
       >
         <HeaderIcon name="bag" />
-        {count > 0 ? <span className="site-count">{count}</span> : null}
+        {count > 0 ? (
+          <span key={pop} className="site-count" data-pop={pop > 0 || undefined}>
+            {count}
+          </span>
+        ) : null}
       </Link>
       {mounted ? <BagPanel open={open} onClose={onClose} /> : null}
     </>

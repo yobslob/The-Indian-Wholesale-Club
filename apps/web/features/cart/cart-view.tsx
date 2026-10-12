@@ -62,9 +62,10 @@ export function CartView({ empty }: { empty: React.ReactNode }): React.JSX.Eleme
   return (
     <div>
       <BagLines />
-      <div className="flex flex-col items-stretch justify-between gap-4 pt-[22px] sm:flex-row sm:items-center">
+      {/* The totals and Checkout together under the prices' column (D-116): the eye ends where the button is. */}
+      <div className="grid gap-4 pt-[22px] sm:ml-auto sm:max-w-[380px]">
         <Subtotal />
-        <Link href="/checkout" className={checkoutButton}>
+        <Link href="/checkout" className={`${checkoutButton} press w-full`}>
           Checkout
         </Link>
       </div>

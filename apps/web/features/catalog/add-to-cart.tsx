@@ -1,12 +1,14 @@
 'use client';
 
 import Link from 'next/link';
-import { useMemo, useRef, useState } from 'react';
+import { useEffect, useMemo, useRef, useState } from 'react';
 
 import { choose, formatUsd, isAvailable, optionAxes, selectionOf } from '@repo/shared/domain';
 
+import { flyToBag } from '@/features/cart/fly-to-bag';
 import { MAX_QTY_PER_LINE } from '@/features/cart/limits';
 import { useCart } from '@/features/cart/store';
+import { mediaUrl } from '@/lib/site';
 
 import { BuyBar } from './buy-bar';
 import { useLiveAvailability } from './use-live-availability';
@@ -27,6 +29,7 @@ const pillClass = (selected: boolean, out: boolean): string =>
   `font-ui bg-paper min-h-11 rounded-pill border px-4 text-sm font-medium ${
     selected ? 'border-ink shadow-[inset_0_0_0_1px_theme(colors.ink)]' : 'border-line'
   } ${out ? 'line-through opacity-60' : ''}`;
+const stepButton = 'grid size-11 place-items-center text-lg font-medium disabled:cursor-default disabled:text-line';
 const legendClass = 'font-ui text-ink-muted mb-2 text-[11px] font-semibold uppercase tracking-[0.16em]';
 
 /**
@@ -46,7 +49,14 @@ export function AddToCart({ product, variants, delivery }: Props): React.JSX.Ele
   );
   const [quantity, setQuantity] = useState(1);
   const [added, setAdded] = useState(false);
+  // The button says "Added" for a moment after each add, then is ready for the next one (D-116).
+  const [flash, setFlash] = useState(0);
   const button = useRef<HTMLButtonElement>(null);
+  useEffect(() => {
+    if (!flash) return;
+    const t = setTimeout(() => setFlash(0), 1800);
+    return () => clearTimeout(t);
+  }, [flash]);
 
   const axes = useMemo(() => optionAxes(variants), [variants]);
   const variant = variants.find((v) => v.id === variantId);
@@ -62,7 +72,7 @@ export function AddToCart({ product, variants, delivery }: Props): React.JSX.Ele
   const left = available[variant.id] ?? 0;
   const soldOut = left <= 0;
   const maxQty = Math.max(1, Math.min(left, MAX_QTY_PER_LINE));
-  const addToBag = (): void => {
+  const addToBag = (from: Element | null = button.current): void => {
     add(
       {
         variantId: variant.id,
@@ -78,6 +88,8 @@ export function AddToCart({ product, variants, delivery }: Props): React.JSX.Ele
       quantity,
     );
     setAdded(true);
+    setFlash((n) => n + 1);
+    flyToBag(from, product.primary_image_path ? mediaUrl(product.primary_image_path) : null);
   };
 
   return (
@@ -139,36 +151,49 @@ export function AddToCart({ product, variants, delivery }: Props): React.JSX.Ele
       {delivery ? <div className="bg-paper rounded-md px-4 py-3.5">{delivery}</div> : null}
 
       <div className="flex items-center gap-3">
-        <label className="text-ink text-sm">
-          Qty{' '}
-          <select
-            value={quantity}
-            onChange={(e) => setQuantity(Number(e.target.value))}
-            disabled={soldOut}
-            className="border-line bg-paper font-ui min-h-12 rounded-pill border px-3"
-          >
-            {Array.from({ length: maxQty }, (_, i) => i + 1).map((n) => (
-              <option key={n} value={n}>
-                {n}
-              </option>
-            ))}
-          </select>
-        </label>
+        {/* The bag's − / + (D-086) instead of a dropdown: one tap per piece, the same control as in the bag (D-116). */}
+        <div
+          role="group"
+          aria-label="Quantity"
+          className={`border-line bg-paper font-ui inline-flex h-14 flex-none items-center rounded-pill border ${soldOut ? 'opacity-50' : ''}`}
+        >
+          <button type="button" className={stepButton} aria-label="One fewer" disabled={soldOut || quantity <= 1} onClick={() => setQuantity((q) => q - 1)}>
+            −
+          </button>
+          <output className="min-w-[20px] text-center text-[15px] font-semibold tabular-nums" aria-live="polite">
+            {quantity}
+          </output>
+          <button type="button" className={stepButton} aria-label="One more" disabled={soldOut || quantity >= maxQty} onClick={() => setQuantity((q) => q + 1)}>
+            +
+          </button>
+        </div>
         <button
           type="button"
           disabled={soldOut}
           ref={button}
-          onClick={addToBag}
-          className="bg-brand text-on-brand font-ui min-h-14 flex-1 rounded-pill px-5 text-[15px] font-medium disabled:opacity-50"
+          onClick={() => addToBag()}
+          className="bg-brand text-on-brand font-ui press relative min-h-14 flex-1 overflow-hidden rounded-pill px-5 text-[15px] font-medium disabled:opacity-50"
         >
-          Add to bag
+          <span className={`block transition-[transform,opacity] duration-300 ${flash ? '-translate-y-6 opacity-0' : ''}`}>Add to bag</span>
+          <span
+            aria-hidden="true"
+            className={`absolute inset-0 grid place-items-center transition-[transform,opacity] duration-300 ${flash ? '' : 'translate-y-6 opacity-0'}`}
+          >
+            <span className="inline-flex items-center gap-2">
+              <svg viewBox="0 0 24 24" className="size-[18px]" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
+                <path d="M5 12.5l4.5 4.5L19 7.5" className="draw-check" />
+              </svg>
+              Added
+            </span>
+          </span>
         </button>
       </div>
       {added ? (
-        <p className="text-positive text-sm" role="status">
+        <p className="rise-in text-positive m-0 text-sm" role="status">
           Added.{' '}
-          <Link href="/cart" className="underline">
+          <Link href="/cart" className="group text-ink inline-flex items-center gap-1 font-medium underline underline-offset-[3px]">
             View bag
+            <span aria-hidden="true" className="transition-transform group-hover:translate-x-0.5">→</span>
           </Link>
         </p>
       ) : null}
@@ -177,7 +202,7 @@ export function AddToCart({ product, variants, delivery }: Props): React.JSX.Ele
         name={product.name}
         detail={variants.length > 1 ? `${formatUsd(variant.price_cents)} · ${variant.label}` : formatUsd(variant.price_cents)}
         disabled={soldOut}
-        added={added}
+        added={flash > 0}
         onAdd={addToBag}
       />
     </div>
