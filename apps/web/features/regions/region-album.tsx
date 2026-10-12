@@ -59,13 +59,32 @@ function Mosaic({ photos, hidden }: { photos: Photo[]; hidden?: boolean }): Reac
  * The region album (D-051, D-052): the region's photos as a mosaic that drifts sideways by itself, between Most
  * wanted and Curated for you. Not interactive and no pause control (founder's decision); still for reduced
  * motion, paused off screen (features/shell/motion.tsx). Server-rendered, no client code of its own.
+ * Home shows it for all of India (D-113) with `reveal`: it opens with the clip-and-scale reveal and floats with a
+ * gentle parallax as the page scrolls (motion.tsx's [data-reveal] and [data-speed]).
  */
-export function RegionAlbum({ photos, regionName }: { photos: Photo[]; regionName: string }): React.JSX.Element | null {
+export function RegionAlbum({
+  photos,
+  regionName,
+  reveal = false,
+}: {
+  photos: Photo[];
+  regionName: string;
+  reveal?: boolean;
+}): React.JSX.Element | null {
   if (photos.length < ALBUM_MINIMUM) return null;
   const patterns = Math.max(1, Math.ceil(photos.length / TILES_PER_PATTERN));
   return (
-    <section aria-label={`Photos of ${regionName}`} className="-mx-[var(--gut)] py-[clamp(24px,3vw,48px)]">
-      <div className="album" data-album="on" style={{ ['--album-duration' as string]: `${110 * patterns}s` }}>
+    <section
+      aria-label={`Photos of ${regionName}`}
+      data-reveal={reveal ? '' : undefined}
+      className="-mx-[var(--gut)] py-[clamp(24px,3vw,48px)]"
+    >
+      <div
+        className="album"
+        data-album="on"
+        data-speed={reveal ? '0.05' : undefined}
+        style={{ ['--album-duration' as string]: `${110 * patterns}s` }}
+      >
         <div className="album-track">
           <Mosaic photos={photos} />
           <Mosaic photos={photos} hidden />

@@ -21,7 +21,7 @@ Enforcement: customer code reads catalog and order data only through `store_*` (
 ## Web routes (`apps/web/app/(store)/…`, built in R5)
 | Route | Purpose | Rendering (see `engineering.md`) |
 |---|---|---|
-| `/` | the full-screen photo hero (behind the nav bar too) with only the stacked brand name on the white wall and "Miss local market? Start here." (D-079, `design/pages/shell/`; otherwise D-050 – D-055), Just listed, Pick your home (India map + stamps, in pages of 6 from 7 open states, + names; D-080) | static, cached `store_home()` |
+| `/` | the full-screen photo hero (behind the nav bar too) with only the stacked brand name on the white wall and "Miss local market? Start here." (D-079, `design/pages/shell/`; otherwise D-050 – D-055), the album of all of India (the region pages' drifting mosaic: the states' album photos, then their newest pieces' main photos; it opens with the clip-and-scale reveal and a gentle parallax, D-113), Pick your home (India map + stamps, in pages of 6 from 7 open states, + names; D-080), then Just listed (D-113) | static, cached `store_home()` |
 | `/states` | Pick your home as its own page (D-083): all 36 regions, alphabetical, with no state/UT distinction (D-002) | static (same cached read as `/`) |
 | `/states/[region]` | **the core page:** greeting in the region's script, story, accent theme, Clothing · Food · Home & gifts sections | static per region (36 built at build time) |
 | `/states/[region]/[product]` | product page: gallery, options, price, availability (live), save, delivery window, origin line | static on first visit + live stock island |

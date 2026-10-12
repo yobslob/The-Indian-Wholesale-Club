@@ -17,7 +17,7 @@ const MORE = [
 ] as const;
 
 /**
- * Store header (D-079): States · Search (a pill on hover) · About us, then Saved, Bag and Profile as icons; on phones the
+ * Store header (D-079, D-113): Search (a pill that grows into a bar on scroll) · States · About us, then Saved, Bag and Profile as icons; on phones the
  * logo, the icons and a menu button that opens a side panel over the page. Server-rendered with
  * no session reads, so pages stay static (PR-1); the bag count, the search pill, the menu and the current-section mark are the only client
  * islands. Its look
@@ -37,8 +37,8 @@ export function SiteHeader(): React.JSX.Element {
           <LogoText />
         </Link>
         <nav aria-label="Main" className="site-links">
-          <NavLink href="/states">States</NavLink>
           <SearchPill />
+          <NavLink href="/states">States</NavLink>
           <NavLink href="/about">About us</NavLink>
         </nav>
         <div className="site-icons">

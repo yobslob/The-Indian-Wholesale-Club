@@ -210,3 +210,22 @@ What it means for the build (migration `supabase/migrations/20261012140000_fixed
   small-order margin go. Checkout's summary shows both charges from the first step (tax after the address).
 - "$0.00" replaces "Free" wherever a shipping amount is shown (bag, checkout, shipping choice, orders, the email).
 Supersedes D-111 in part (the charge formula and "Free"; its type margins and free-delivery bar stay).
+
+**D-113 · 2026-10-12 · founder: Home's moving album of all of India; the header's Search grows into a search bar**
+Founder, verbatim: "On the home page, move just listed under the map section, in place of just listed will be replace
+a moving global grid." Asked what the grid is: "by a moving global grid i mean the same as the individual states have
+it." with this art direction: "Oversized artwork photography arranged like a contemporary gallery wall. Uneven spacing,
+offset images, floating compositions, and intentional negative space. Lenis smooth scrolling with gentle vertical
+parallax and velocity-based movement. Images reveal through subtle clipping and scale transitions. Minimal typography
+with a sophisticated art-direction aesthetic."
+And: "make the search button visible and bigger and minimalistic. (swap states and search button) as soon as the person
+scrolls down the search button will animate into a long search bar."
+What it means for the build (migration `supabase/migrations/20261012150000_home_album.sql`):
+- Home (web): hero → the album → Pick your home → Just listed. The album is the region pages' drifting mosaic (D-051,
+  D-052, `features/regions/region-album.tsx`) fed by `store_home().album`: the states' album photos first, one state
+  at a time in turn, then the main photo of each state's newest pieces the same way, up to 30. It opens with the
+  site's clip-and-scale reveal and floats with a gentle parallax (Lenis and both effects already ran site-wide, D-049).
+- Header (web, tablet and desktop): Search · States · About us. Search is a 44 px pill with its icon and word; once the
+  page is scrolled it grows into a long search bar (also on hover, focus and while typing); still on reduced motion.
+*Claude's choices in it (proposed, the founder confirms or changes):* products fill the album while few state photos
+exist (it stays not clickable, like the states' album); phones keep search in the menu; the app's Home keeps its order.

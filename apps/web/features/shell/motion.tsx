@@ -42,7 +42,7 @@ export function Motion(): null {
   useEffect(() => {
     if (window.matchMedia('(prefers-reduced-motion: reduce)').matches) return;
     const pending = [...document.querySelectorAll<HTMLElement>('[data-reveal]')].filter(
-      (el) => el.getBoundingClientRect().top > window.innerHeight,
+      (el) => el.getBoundingClientRect().top >= window.innerHeight, // at the fold = not yet seen (Home's album)
     );
     pending.forEach((el) => el.setAttribute('data-reveal', 'pending'));
     const io = new IntersectionObserver(

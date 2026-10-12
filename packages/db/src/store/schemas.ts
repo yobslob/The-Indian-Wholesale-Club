@@ -103,6 +103,8 @@ export const mediaSchema = z.object({
 
 export const homeSchema = z.object({
   regions: z.array(regionCardSchema),
+  /** Home's album from all of India (D-113): the states' album photos, then their newest pieces' main photos (≤ 30). */
+  album: z.array(z.object({ storage_path: z.string(), alt_text: z.string() })).default([]),
   /** The twelve newest live products (Just listed, D-062). */
   just_listed: z.array(regionProductCardSchema),
   delivery: deliveryWindowSchema.nullable(),

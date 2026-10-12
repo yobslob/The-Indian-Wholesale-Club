@@ -2,9 +2,11 @@ import { getHomeCached } from '@/features/catalog/data';
 import { ProductRow } from '@/features/catalog/product-row';
 import { HomeHero } from '@/features/home/home-hero';
 import { PickHome } from '@/features/regions/pick-home';
+import { RegionAlbum } from '@/features/regions/region-album';
 
 /**
- * Home (storefront.md, design.md §Direction, D-050 – D-055): the photo hero, Just listed (a row, D-062), Pick your home.
+ * Home (storefront.md, design.md §Direction, D-050 – D-055, D-113): the photo hero, the album of all of India (the
+ * region pages' drifting mosaic), Pick your home, then Just listed (a row, D-062).
  * One cached store_home() call (PR-1, PR-2). Runs edge to edge (data-bleed); sections keep the gutter.
  */
 export default async function HomePage(): Promise<React.JSX.Element> {
@@ -15,7 +17,7 @@ export default async function HomePage(): Promise<React.JSX.Element> {
       <HomeHero />
 
       <div className="px-[var(--gut)]">
-        <ProductRow id="just-listed" title="Just listed" products={home.just_listed} href="/clothing" />
+        <RegionAlbum photos={home.album} regionName="India" reveal />
       </div>
 
       <section id="pick" aria-labelledby="pick-home" className="px-[var(--gut)] py-[clamp(28px,3.4vw,56px)]">
@@ -29,6 +31,10 @@ export default async function HomePage(): Promise<React.JSX.Element> {
         </div>
         <PickHome regions={home.regions} delivery={home.delivery} />
       </section>
+
+      <div className="px-[var(--gut)]">
+        <ProductRow id="just-listed" title="Just listed" products={home.just_listed} href="/clothing" />
+      </div>
     </div>
   );
 }

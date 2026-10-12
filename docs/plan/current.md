@@ -12,11 +12,14 @@ phase's sub-steps and every verification run) is in `docs/archive/status-log-to-
   (struck through at $0.00 from $149.99 up); the free-delivery bar on the website and above the app's tabs.
 - **Import from shops (D-110, 2026-10-12):** `/admin/import` with the Add to IWC bookmark, pasted links, the review
   form, re-import to update price and sizes, "Order it online" on the pickup cards (web and app) (`admin.md` §Import from shops).
+- **Home and header (D-113, 2026-10-12):** Home runs hero → the album of all of India (the states' drifting mosaic)
+  → Pick your home → Just listed; the header's Search is a visible pill first in the links that grows into a search
+  bar on scroll.
 - **Food (D-110):** the product type `spice` is now `food` (page `/food`; `/spices` redirects).
 
 ## Next for the founder
 1. Run `node scripts/check.mjs`, push, then run the Deploy workflow: it applies the new migrations (the latest is
-   `20261012140000_fixed_small_order_charges`, D-112) to production.
+   `20261012150000_home_album`, D-113) to production.
 2. Clear the 2,880 placeholder listings: `pnpm demo:clear … --allow-remote`, then with `--apply` (`ops.md`).
 3. On `/admin/import`, drag **Add to IWC** to the bookmarks bar, open a product on Myntra or Amazon and click it.
 4. Decide: the name "Food" and 5 pieces per size by default (D-110 proposals); D-105's vendor-screen drafts; the four
@@ -26,7 +29,7 @@ phase's sub-steps and every verification run) is in `docs/archive/status-log-to-
 ## Last verification
 | Date | Commit | Where | Result |
 |---|---|---|---|
-| 2026-10-12 | D-110 commits | Claude, cloud sandbox with the founder's `node_modules` (no Docker, no network) | tsc web/db/shared clean · unit tests shared 84/84, web 37/37 · all 39 migrations + seeds applied and 37/37 SQL test files passed on plain Postgres 16 with a Supabase stand-in · the bookmark run in Chromium on Amazon- and Myntra-shaped pages. **Not run:** `next build`, ESLint with the Next plugin, e2e, a real shop page. Run `node scripts/check.mjs` before pushing. |
+| 2026-10-12 | D-112, D-113 commits | Claude, founder's Windows machine with Docker | `node scripts/check.mjs` docs, typecheck, lint, test, db (every SQL test file, incl. the new bag charges), build, e2e 22/22 (the buy flow) all OK; by hand in the browser: bag $18.79 + $1.99 below $149.99 and struck through at $0.00 above, checkout shows both from its first step, Home's album reveals, Search grows into a bar on scroll (1366 and 900 px). |
 
 ## Known leftovers
 - App bundle ids are still `com.indianwholesaleclub.app` (`apps/app/app.json`); they change with the domain (Q-9).

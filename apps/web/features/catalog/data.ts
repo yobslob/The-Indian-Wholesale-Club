@@ -40,7 +40,8 @@ const SHAPE = 'v14';
 const cached = <T>(key: string[], tags: string[], load: () => Promise<T>): Promise<T> =>
   unstable_cache(load, [...key, SHAPE], { tags: [STORE_TAG, ...tags], revalidate: STORE_REVALIDATE_SECONDS })();
 
-export const getHomeCached = () => cached(['store-home'], [homeTag], () => getHome(storeClient()));
+// v2: Home's album (D-113); a new key so no entry cached before it (without the album) is read back.
+export const getHomeCached = () => cached(['store-home-v2'], [homeTag], () => getHome(storeClient()));
 
 export const getRegionPageCached = (regionSlug: string) =>
   cached(['store-region-page', regionSlug], [regionTag(regionSlug)], () =>

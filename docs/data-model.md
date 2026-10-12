@@ -150,6 +150,8 @@ Migration 31 (D-099, the second speed audit): `admin_order_counts()` (every orde
 send, shops owed for picked pieces) and `admin_cycle_totals(cycle)` (the cycle card's orders, pieces, shops and sales),
 admin only, counted in SQL because the API sends at most 1,000 rows; indexes for orders by status and newest, pickups
 by status, what each shop is owed, and a payout's pieces.
+Migration 42 (D-113): `store_home()` adds `album` (up to 30 photos: the states' album photos, then the main photo of
+each state's newest pieces, one state at a time in turn).
 Migration 41 (D-112): `_auto_price_cents` without card fees; `pricing_settings.small_order_shipping_cents` and
 `small_order_retailer_cents` (fixed charges) replace D-111's courier rates, `small_order_margin_pct` and
 `parcel_handling_paise` (dropped); `store_bag_charges` returns the fixed amounts for a bag with a piece from India.

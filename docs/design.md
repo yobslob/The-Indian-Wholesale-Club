@@ -7,7 +7,7 @@
 > the founder's remaining choices). Tokens go into `packages/tokens` in C1 step 2.
 > **Since 2026-10-08 (D-079, D-080; built in B1 and B2 of the design pass build):** the shell and the Home hero from the
 > design pass: **Cinzel** (headlines), **Syne** (headings below the hero) and **Karla** (everything else) replace the five
-> fonts below, the logo stays Georgia; header States · Search (hover pill) · About us + saved / bag / profile icons; phone
+> fonts below, the logo stays Georgia; header Search (a visible pill that grows into a long search bar once the page scrolls, D-113) · States · About us + saved / bag / profile icons; phone
 > side panel; the hero name held on the photo's white wall at every size in #1D1A17; on the Home photo the header stays
 > as before (white links over a dark band, smooth fade to cream); soft blur is fine, harsh blur is not; the card's add
 > button is a round + on its photo; Open now stamps page in sixes. Approved mockups: `design/pages/shell/`,

@@ -266,16 +266,18 @@
     padding: 0;
   }
 
-  /* Search (D-079): the word turns into a pill on hover or focus, back on mouse-out unless something was typed. */
+  /* Search (D-079, D-113): a visible pill (icon + "Search") first in the links; it grows into a long search bar once
+     the page is scrolled (html[data-scrolled], search-pill.tsx), on hover or focus, and while something is typed. */
   .site-search {
-    --t: 320ms cubic-bezier(0.65, 0, 0.35, 1);
+    --t: 420ms cubic-bezier(0.65, 0, 0.35, 1);
     position: relative;
     display: inline-flex;
     align-items: center;
-    width: 3.6em;
-    height: 40px;
-    border: 1px solid transparent;
+    width: 118px;
+    height: 44px;
+    border: 1px solid color-mix(in srgb, currentColor 40%, transparent);
     border-radius: 999px;
+    font-size: 15px;
     transition:
       width var(--t),
       background-color var(--t),
@@ -284,29 +286,27 @@
   }
   .site-search-word {
     position: absolute;
-    left: 0;
+    left: 42px;
     top: 50%;
     transform: translateY(-50%);
     white-space: nowrap;
     pointer-events: none;
     transition:
-      transform var(--t),
       color var(--t),
       opacity 120ms;
   }
   .site-search .site-svg {
     position: absolute;
-    left: 13px;
-    width: 16px;
-    height: 16px;
-    opacity: 0;
-    transition: opacity var(--t);
+    left: 15px;
+    width: 18px;
+    height: 18px;
+    pointer-events: none;
   }
   .site-search input {
     box-sizing: border-box;
     width: 100%;
     height: 100%;
-    padding: 0;
+    padding: 0 18px 0 42px;
     border: 0;
     background: transparent;
     font: inherit;
@@ -314,7 +314,6 @@
     color: inherit;
     outline: none;
     cursor: pointer;
-    transition: padding var(--t);
   }
   .site-search input::placeholder {
     color: transparent;
@@ -324,36 +323,36 @@
     -webkit-appearance: none;
     display: none;
   }
+  html[data-scrolled] .site-search,
   .site-search:hover,
   .site-search:focus-within,
   .site-search:has(input:not(:placeholder-shown)) {
-    width: 260px;
+    width: clamp(240px, 30vw, 440px);
     background: theme('colors.paper');
     border-color: theme('colors.line');
     color: theme('colors.ink');
   }
+  html[data-scrolled] .site-search input,
   .site-search:hover input,
-  .site-search:focus-within input,
-  .site-search:has(input:not(:placeholder-shown)) input {
-    padding: 0 16px 0 38px;
+  .site-search:focus-within input {
     cursor: text;
   }
+  html[data-scrolled] .site-search-word,
   .site-search:hover .site-search-word,
   .site-search:focus-within .site-search-word {
-    transform: translate(38px, -50%);
     color: theme('colors.ink-muted');
   }
   .site-search:has(input:not(:placeholder-shown)) .site-search-word {
     opacity: 0;
   }
-  .site-search:hover .site-svg,
-  .site-search:focus-within .site-svg,
-  .site-search:has(input:not(:placeholder-shown)) .site-svg {
-    opacity: 1;
-  }
   .site-search:focus-within {
     outline: 2px solid currentColor;
     outline-offset: 2px;
+  }
+  @media (prefers-reduced-motion: reduce) {
+    .site-search {
+      transition: none;
+    }
   }
 
   /* The demo banner: one short line on narrow screens. */
@@ -376,10 +375,11 @@
   }
 
   @media (max-width: 1023px) {
+    html[data-scrolled] .site-search,
     .site-search:hover,
     .site-search:focus-within,
     .site-search:has(input:not(:placeholder-shown)) {
-      width: 200px;
+      width: 220px;
     }
   }
   @media (max-width: 767px) {
