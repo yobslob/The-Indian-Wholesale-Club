@@ -78,7 +78,8 @@ region images, C2), mockups and dev pages use clearly marked placeholders, never
    stock photos presented as products.
 6. **Motion:** as §Direction (D-049): Lenis smooth scroll + reveal/parallax, the only motion library allowed on the
    storefront (no framer-motion), off for `prefers-reduced-motion`. Everything else CSS.
-   **Polish pass (D-116):** Lenis's velocity is `--sv` on `<html>`; `.drift` grids and rows float apart by column while
+   **Polish pass (D-116, D-117):** the free-delivery bar fills sideways with a glowing head (`.fd-bar`); phones have
+   Search where wider screens have Saved (`phone-search.tsx`); the page clips sideways overflow. Lenis's velocity is `--sv` on `<html>`; `.drift` grids and rows float apart by column while
    the page scrolls fast. Element motion lives in `globals.css` (`.fd-*` free-delivery meter, `.press`, `.rise-in`,
    `.draw-check`, `.quick-add`, `.live-dot`, `.write-in`, panel stagger) and `features/cart/fly-to-bag.ts` (Web Animations);
    the app uses Reanimated (`free-delivery-pill.tsx`, `meter-line.tsx`, the tab bar). Loops animate transform or opacity only.

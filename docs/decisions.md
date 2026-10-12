@@ -302,3 +302,29 @@ for reduced motion; only transform and opacity in loops).
   when it grows. The card's + squeezes under the finger and springs back filled with the brand colour. Explore's
   States · Clothing · Food · Home & gifts are sized by their words, so "Home & gifts" is no longer cut off.
 *Claude's choices in it (proposed):* everything above; each is its own small change and can be undone alone.
+
+**D-117 · 2026-10-12 · founder: The free-delivery bar fills sideways; phones get Search for Saved; layout fixes** · amends D-116, D-079
+Founder, verbatim: "1. I want the same thing in the free delivery pill but currently it is a vertical line, I want a
+horizontal bar which fills up. 2. The frame bleeds on the website, make it responsive properly(it might be due to the
+grid or I dont know) 3. a subtle whitish cloudy blur can be seen on both ends of the grid on home as well as the state
+page, remove that 4. On almost every page there is white empty space below the footer. 5. In phone view there is no
+search icon replace the wishlist with search icon when clicked it takes over the navbar. 6. find more crashes"
+What it means for the build:
+- **Free-delivery pill (web and app):** D-116's light fill with a vertical glowing edge goes. Under the pill's line of
+  text a slim bar fills from the left: a glowing head at its end that breathes and flares on each add, and a shimmer
+  running through the filled part; full at the line, then one sheen across the pill. The bag's summary uses the same
+  bar in brand on cream.
+- **No sideways bleed:** photos below the fold wait for their reveal at 106 %, and Home's full-width album at 106 %
+  pushed the page 43 px past the window (production, 1440 wide). The page now clips anything wider than the window
+  sideways (`overflow-x: clip` on html and body; sticky still works).
+- **No fade at the album's ends:** the album's mosaic (Home and state pages) no longer fades out to the page colour at
+  its left and right ends.
+- **The footer ends the page:** on a short page the main part grows so nothing shows under the dark footer, and the
+  room kept for the free-delivery pill is the footer's own padding instead of the page's.
+- **Phones (under 768 px):** the header's heart becomes a search icon; a tap grows a search bar over the whole header
+  bar (circle reveal from the icon, field focused, × or Escape closes, Enter opens /search). Saved moves into the menu
+  panel's big links. Wider screens keep the heart.
+- **Found broken (item 6):** on production every info link (About us, How it works, FAQ, Shipping & returns, Contact,
+  Privacy, Terms) fell back to a full page load instead of the glass panel (D-092): Vercel's 5-minute re-render of the
+  cached intercepted route answered 404, and each page view also sent seven failing prefetches. The panel routes now
+  render on request and links to info pages are not prefetched.

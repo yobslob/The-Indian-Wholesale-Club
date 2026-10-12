@@ -13,6 +13,12 @@ export const INFO_LINKS = [
   { href: '/terms', label: 'Terms' },
 ] as const;
 
+/**
+ * Links to an info page are not prefetched (D-116): from a store page they open the @info glass panel (D-092), whose
+ * routes render on request (see `app/(store)/@info/`), so a prefetch would be a server call per link on every page.
+ */
+export const isInfoPath = (href: string): boolean => INFO_LINKS.some((l) => l.href === href);
+
 /** Public URL of a file in a public storage bucket. */
 function publicUrl(bucket: string, storagePath: string): string {
   const base = process.env.NEXT_PUBLIC_SUPABASE_URL ?? '';

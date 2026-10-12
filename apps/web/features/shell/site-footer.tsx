@@ -1,6 +1,6 @@
 import Link from 'next/link';
 
-import { INFO_LINKS, SITE_NAME } from '@/lib/site';
+import { INFO_LINKS, isInfoPath, SITE_NAME } from '@/lib/site';
 
 const COLUMNS = [
   {
@@ -51,7 +51,7 @@ const MAP_CREDIT = (
  */
 export function SiteFooter(): React.JSX.Element {
   return (
-    <footer className="bg-ink font-foot mt-[clamp(24px,3vw,48px)] px-[var(--gut)] text-[#D8D0C4]">
+    <footer className="site-footer bg-ink font-foot mt-[clamp(24px,3vw,48px)] px-[var(--gut)] text-[#D8D0C4]">
       <div className="hidden pb-10 pt-[clamp(40px,4vw,64px)] text-sm md:block">
         <div className="grid grid-cols-4 gap-x-[var(--gap)] gap-y-8">
           <div>
@@ -65,7 +65,7 @@ export function SiteFooter(): React.JSX.Element {
               <ul className="grid gap-2">
                 {col.links.map((link) => (
                   <li key={link.href}>
-                    <Link href={link.href} className="text-canvas hover:underline">
+                    <Link href={link.href} prefetch={isInfoPath(link.href) ? false : undefined} className="text-canvas hover:underline">
                       {link.label}
                     </Link>
                   </li>
@@ -82,7 +82,7 @@ export function SiteFooter(): React.JSX.Element {
       <div className="py-5 text-xs md:hidden">
         <nav aria-label="Footer" className="flex flex-wrap gap-x-4">
           {MINI.map((link) => (
-            <Link key={link.href} href={link.href} className="text-canvas py-2">
+            <Link key={link.href} href={link.href} prefetch={isInfoPath(link.href) ? false : undefined} className="text-canvas py-2">
               {link.label}
             </Link>
           ))}

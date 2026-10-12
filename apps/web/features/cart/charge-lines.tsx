@@ -3,7 +3,7 @@
 import { formatUsd } from '@repo/shared/domain';
 
 import { freeDelivery, useBagCharges } from './charges';
-import { useSurge } from './free-delivery-bar';
+import { FreeMeter, useSurge } from './free-delivery-bar';
 import { useCart } from './store';
 
 /** "$18.79", or "$18.79" struck through and "$0.00" once the bag reaches the free-delivery line (D-111, D-112). */
@@ -45,7 +45,9 @@ export function ChargeLines(): React.JSX.Element | null {
       ) : null}
       {line !== null && !free ? (
         <div className="mt-1.5 grid gap-2">
-          <p className="text-brand m-0 text-[13px] font-semibold">Add {formatUsd(leftCents)} more for free delivery</p>
+          <p className="text-brand m-0 text-[13px] font-semibold">
+            Add {formatUsd(leftCents)} more for free delivery
+          </p>
           <Meter share={share} />
         </div>
       ) : null}
@@ -53,16 +55,9 @@ export function ChargeLines(): React.JSX.Element | null {
   );
 }
 
-/** The free-delivery pill's meter as a slim line (D-116): the same glowing edge, flaring when the bag grows. */
+/** The free-delivery pill's bar, in brand on cream (D-116), flaring when the bag grows. */
 function Meter({ share }: { share: number }): React.JSX.Element {
-  const surge = useSurge(share);
-  return (
-    <span className="fd-line block" aria-hidden="true">
-      <span className="fd-fill" style={{ '--fd': Math.max(share, 0.04) } as React.CSSProperties}>
-        <i key={surge} className="fd-edge" data-surge={surge > 0 || undefined} />
-      </span>
-    </span>
-  );
+  return <FreeMeter share={share} surge={useSurge(share)} tone="canvas" />;
 }
 
 /**

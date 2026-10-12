@@ -12,7 +12,6 @@ import Animated, {
   withSpring,
   withTiming,
 } from 'react-native-reanimated';
-import Svg, { Defs, LinearGradient, Rect, Stop } from 'react-native-svg';
 
 import { formatUsd } from '@repo/shared/domain';
 import tokens from '@repo/tokens';
@@ -26,9 +25,10 @@ const EASE = Easing.bezier(0.22, 1, 0.36, 1);
 
 /**
  * The free-delivery pill (D-111, D-116), the website's in the app: above the tabs once a piece is in the bag. The
- * newest photo with the count, one line of text, a chevron; the pill itself is the meter: a soft light fills it from
- * the left with a glowing edge that breathes and flares each time the bag grows, and gives way to one sheen at the
- * line. A tap opens the Bag tab. Reduce motion: the fill simply sits at its place.
+ * newest photo with the count, one line of text with a bar under it that fills with light (a glowing head that
+ * breathes and flares each time the bag grows, a shimmer running through the filled part), a chevron; at the line
+ * the bar is full and one sheen crosses the pill. A tap opens the Bag tab. Reduce motion: the bar simply sits at its
+ * place.
  */
 export function FreeDeliveryBar({ onPress }: { onPress: () => void }): React.JSX.Element | null {
   const lines = useBag((s) => s.lines);
@@ -39,8 +39,10 @@ export function FreeDeliveryBar({ onPress }: { onPress: () => void }): React.JSX
   const newest = lines[lines.length - 1];
   const reduce = useReducedMotion();
 
-  const [width, setWidth] = useState(0);
+  const [width, setWidth] = useState(0); // the bar's
+  const [pillWidth, setPillWidth] = useState(0);
   const fill = useSharedValue(0);
+  const shimmer = useSharedValue(-1);
   const flare = useSharedValue(0);
   const breathe = useSharedValue(1);
   const sheen = useSharedValue(-1);
@@ -77,20 +79,28 @@ export function FreeDeliveryBar({ onPress }: { onPress: () => void }): React.JSX
 
   useEffect(() => {
     if (reduce) return;
+    shimmer.value = withRepeat(
+      withTiming(2.4, { duration: 2600, easing: Easing.inOut(Easing.quad) }),
+      -1,
+      false,
+    );
     breathe.value = withRepeat(
       withTiming(0.6, { duration: 1400, easing: Easing.inOut(Easing.ease) }),
       -1,
       true,
     );
-  }, [reduce, breathe]);
+  }, [reduce, breathe, shimmer]);
 
   const fillStyle = useAnimatedStyle(() => ({ width: fill.value * width }));
-  const edgeStyle = useAnimatedStyle(() => ({
+  const headStyle = useAnimatedStyle(() => ({
     opacity: free ? 0 : Math.max(breathe.value, flare.value),
-    transform: [{ translateX: fill.value * width - 9 }, { scaleX: 1 + flare.value * 1.6 }],
+    transform: [{ translateX: fill.value * width - 9 }, { scale: 1 + flare.value * 1.4 }],
+  }));
+  const shimmerStyle = useAnimatedStyle(() => ({
+    transform: [{ translateX: shimmer.value * width * 0.45 }],
   }));
   const sheenStyle = useAnimatedStyle(() => ({
-    transform: [{ translateX: sheen.value * width }, { skewX: '-18deg' }],
+    transform: [{ translateX: sheen.value * pillWidth }, { skewX: '-18deg' }],
   }));
   const countStyle = useAnimatedStyle(() => ({ transform: [{ scale: pop.value }] }));
 
@@ -104,44 +114,10 @@ export function FreeDeliveryBar({ onPress }: { onPress: () => void }): React.JSX
           : `Add ${formatUsd(leftCents)} more to unlock free delivery. Bag, ${count} items`
       }
       onPress={onPress}
-      onLayout={(e) => setWidth(e.nativeEvent.layout.width)}
+      onLayout={(e) => setPillWidth(e.nativeEvent.layout.width)}
       className="bg-brand rounded-pill mx-3 mb-2 h-14 flex-row items-center gap-3 overflow-hidden pl-2 pr-4 active:opacity-90"
       style={free ? { borderWidth: 1, borderColor: 'rgba(255,214,170,0.55)' } : undefined}
     >
-      <Animated.View
-        pointerEvents="none"
-        className="absolute bottom-0 left-0 top-0"
-        style={fillStyle}
-      >
-        <Svg width="100%" height="100%">
-          <Defs>
-            <LinearGradient id="fd" x1="0" y1="0" x2="1" y2="0">
-              <Stop offset="0" stopColor="#FFECD6" stopOpacity="0.03" />
-              <Stop offset="1" stopColor="#FFECD6" stopOpacity="0.2" />
-            </LinearGradient>
-          </Defs>
-          <Rect width="100%" height="100%" fill="url(#fd)" />
-        </Svg>
-      </Animated.View>
-      {/* The edge: a bright 2 pt line inside two soft halos, so it glows on Android too (no coloured shadows there). */}
-      <Animated.View
-        pointerEvents="none"
-        className="absolute bottom-0 left-0 top-0 w-[18px] items-center"
-        style={edgeStyle}
-      >
-        <View
-          className="absolute bottom-0 top-0 w-[18px] rounded-full"
-          style={{ backgroundColor: 'rgba(255,190,140,0.16)' }}
-        />
-        <View
-          className="absolute bottom-0 top-0 w-[8px] rounded-full"
-          style={{ backgroundColor: 'rgba(255,214,170,0.35)' }}
-        />
-        <View
-          className="absolute bottom-0 top-0 w-[2px] rounded-full"
-          style={{ backgroundColor: 'rgba(255,244,228,0.95)' }}
-        />
-      </Animated.View>
       <Animated.View
         pointerEvents="none"
         className="absolute bottom-[-10px] top-[-10px] w-16"
@@ -161,18 +137,52 @@ export function FreeDeliveryBar({ onPress }: { onPress: () => void }): React.JSX
           <Text className="font-ui-semibold text-paper text-[10px]">{count}</Text>
         </Animated.View>
       </View>
-      <Text numberOfLines={1} className="font-ui text-on-brand flex-1 text-[13.5px]">
-        {free ? (
-          <>
-            <Text className="font-ui-semibold">FREE DELIVERY</Text> unlocked
-          </>
-        ) : (
-          <>
-            Add <Text className="font-ui-semibold">{formatUsd(leftCents)}</Text> more for{' '}
-            <Text className="font-ui-semibold">FREE DELIVERY</Text>
-          </>
-        )}
-      </Text>
+      <View className="flex-1 gap-[7px]">
+        <Text numberOfLines={1} className="font-ui text-on-brand text-[13.5px] leading-[15px]">
+          {free ? (
+            <>
+              <Text className="font-ui-semibold">FREE DELIVERY</Text> unlocked
+            </>
+          ) : (
+            <>
+              Add <Text className="font-ui-semibold">{formatUsd(leftCents)}</Text> more for{' '}
+              <Text className="font-ui-semibold">FREE DELIVERY</Text>
+            </>
+          )}
+        </Text>
+        {/* The bar: a track, the fill with a shimmer running through it, and the glowing head (two soft halos around a
+          bright dot, so it glows on Android too, where shadows are not coloured). */}
+        <View
+          className="h-1 rounded-full"
+          style={{ backgroundColor: 'rgba(255,255,255,0.2)' }}
+          onLayout={(e) => setWidth(e.nativeEvent.layout.width)}
+        >
+          <Animated.View
+            className="absolute bottom-0 left-0 top-0 overflow-hidden rounded-full"
+            style={[{ backgroundColor: 'rgba(255,240,224,0.85)' }, fillStyle]}
+          >
+            <Animated.View
+              className="absolute bottom-0 top-0 w-[45%]"
+              style={[{ left: '-45%', backgroundColor: 'rgba(255,255,255,0.7)' }, shimmerStyle]}
+            />
+          </Animated.View>
+          <Animated.View
+            pointerEvents="none"
+            className="absolute -top-[7px] h-[18px] w-[18px] items-center justify-center"
+            style={headStyle}
+          >
+            <View
+              className="absolute h-[18px] w-[18px] rounded-full"
+              style={{ backgroundColor: 'rgba(255,190,140,0.25)' }}
+            />
+            <View
+              className="absolute h-3 w-3 rounded-full"
+              style={{ backgroundColor: 'rgba(255,214,170,0.45)' }}
+            />
+            <View className="h-2 w-2 rounded-full" style={{ backgroundColor: '#FFF4E4' }} />
+          </Animated.View>
+        </View>
+      </View>
       <Ionicons name="chevron-forward" size={16} color="rgba(255,255,255,0.85)" />
     </Pressable>
   );

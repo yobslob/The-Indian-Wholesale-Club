@@ -43,7 +43,7 @@ export function InfoPanel({ title, children }: { title: string; children: React.
         <header className="info-head font-ui">
           <nav className="info-tabs no-scrollbar" aria-label="Information">
             {INFO_LINKS.map((l) => (
-              <Link key={l.href} href={l.href} replace scroll={false} aria-current={l.href === path ? 'page' : undefined}>
+              <Link key={l.href} href={l.href} prefetch={false} replace scroll={false} aria-current={l.href === path ? 'page' : undefined}>
                 {l.label}
               </Link>
             ))}

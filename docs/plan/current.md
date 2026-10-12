@@ -22,6 +22,9 @@ phase's sub-steps and every verification run) is in `docs/archive/status-log-to-
 - **Polish pass (D-116, 2026-10-12):** the free-delivery pill with a glowing meter (web and app), the add-to-bag
   flight and Added state, velocity drift on grids and rows, heading reveals, section pills that follow the reader,
   smooth Details, the app's gliding tab marker; layouts unchanged.
+- **Fixes after launch check (D-117, 2026-10-12):** the pill's bar fills sideways; phones get Search in the header (Saved
+  in the menu); no sideways bleed, no album fade, the footer ends every page; info links open the glass panel on
+  Vercel again (the panel routes render on request).
 - **Food (D-110):** the product type `spice` is now `food` (page `/food`; `/spices` redirects).
 
 ## Next for the founder
@@ -36,7 +39,7 @@ phase's sub-steps and every verification run) is in `docs/archive/status-log-to-
 ## Last verification
 | Date | Commit | Where | Result |
 |---|---|---|---|
-| 2026-10-12 | 0478b44 + uncommitted (region greeting write-in, checkout step check; docs) | Claude Code, founder's Windows machine with Docker | docs 0.5s, typecheck 15.5s, lint 21.2s, test 2.5s, db 64.7s, build 86.9s, http 3.4s, e2e 146.6s (23/23), bundle 20.5s: all OK. No route over budget (cached pages 10 – 52 ms, first-load JS 123 – 131 KB). |
+| 2026-10-12 | b4df0f0 + uncommitted (D-117 fixes) | Claude Code, founder's Windows machine with Docker | docs 1.4s, typecheck 18.0s, lint 24.1s, test 2.7s, db 88.8s, build 80.4s, http 3.2s, bundle 17.5s: OK. e2e first 18/23 (a leftover `next start` of Claude's on port 3000 served the old build while `.next` was rebuilt, so checkout hung at "Checking your bag"); re-run alone on a free port 150.7s, 23/23 OK. No route over budget (11 – 57 ms, 123 – 132 KB). |
 
 ## Known leftovers
 - App bundle ids are still `com.indianwholesaleclub.app` (`apps/app/app.json`); they change with the domain (Q-9).

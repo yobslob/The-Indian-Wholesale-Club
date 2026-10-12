@@ -1,10 +1,12 @@
 import Link from 'next/link';
 
 import { CartLink } from '@/features/cart/cart-link';
+import { isInfoPath } from '@/lib/site';
 
 import { HeaderIcon } from './header-icons';
 import { LogoText } from './logo';
 import { NavLink } from './nav-link';
+import { PhoneSearch } from './phone-search';
 import { SearchPill } from './search-pill';
 import { SiteMenu } from './site-menu';
 
@@ -42,9 +44,11 @@ export function SiteHeader(): React.JSX.Element {
           <NavLink href="/about">About us</NavLink>
         </nav>
         <div className="site-icons">
-          <Link href="/account/saved" className="site-icon" aria-label="Saved">
+          {/* Phones: Search takes Saved's place (Saved is in the menu there, D-116). */}
+          <Link href="/account/saved" className="site-icon hidden md:grid" aria-label="Saved">
             <HeaderIcon name="heart" />
           </Link>
+          <PhoneSearch />
           <CartLink />
           <Link href="/account" className="site-icon" aria-label="Profile">
             <HeaderIcon name="person" />
@@ -59,13 +63,20 @@ export function SiteHeader(): React.JSX.Element {
                 <Link href="/states">States</Link>
               </li>
               <li>
-                <Link href="/about">About us</Link>
+                <Link href="/about" prefetch={false}>
+                  About us
+                </Link>
+              </li>
+              <li>
+                <Link href="/account/saved">Saved</Link>
               </li>
             </ul>
             <ul className="site-panel-small">
               {MORE.map((l) => (
                 <li key={l.href}>
-                  <Link href={l.href}>{l.label}</Link>
+                  <Link href={l.href} prefetch={isInfoPath(l.href) ? false : undefined}>
+                    {l.label}
+                  </Link>
                 </li>
               ))}
             </ul>
