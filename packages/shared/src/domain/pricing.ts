@@ -5,7 +5,8 @@
  * both to the founder's worked examples.
  *
  * India cost (the rupee price + India handling %) and the shipping allocation by weight make the landed cost; the
- * margin (by product type, D-111) applies to all of it, then the card fees; the price goes up to the next .29 / .49 / .79 / .99. Returns null
+ * margin (by product type, D-111) applies to all of it and covers the card fees too (D-112); the price goes up to the
+ * next .29 / .49 / .79 / .99. Returns null
  * while any setting is missing: nothing is ever defaulted (D-047, D-069 keeps every number in Settings).
  */
 import type { ProductType } from './product-types';
@@ -16,8 +17,6 @@ export interface PricingSettings {
   indiaHandlingPct: number | null;
   shipAllocPaisePerKg: number | null;
   marginPct: number | null;
-  cardFeePct: number | null;
-  cardFeeFixedCents: number | null;
   /** D-111: the margin of each product type; a type without one uses `marginPct`. */
   typeMarginPct?: Partial<Record<ProductType, number | null>>;
 }
@@ -39,8 +38,6 @@ export function pricingSettingsFrom(row: Record<string, unknown>): PricingSettin
     indiaHandlingPct: n('india_handling_pct'),
     shipAllocPaisePerKg: n('ship_alloc_paise_per_kg'),
     marginPct: n('margin_pct'),
-    cardFeePct: n('card_fee_pct'),
-    cardFeeFixedCents: n('card_fee_fixed_cents'),
     typeMarginPct: { clothing: n('margin_clothing_pct'), food: n('margin_food_pct'), home: n('margin_home_pct') },
   };
 }
@@ -63,11 +60,11 @@ export function autoPrice(
   s: PricingSettings,
 ): PriceBreakdown | null {
   const margin = marginFor(s, input.productType);
-  const needed = [s.fxInrPerUsd, s.fxBufferPct, s.indiaHandlingPct, s.shipAllocPaisePerKg, s.cardFeePct, s.cardFeeFixedCents];
+  const needed = [s.fxInrPerUsd, s.fxBufferPct, s.indiaHandlingPct, s.shipAllocPaisePerKg];
   if (input.shopPricePaise === null || input.weightG === null || margin === null || needed.some((n) => n === null))
     return null;
-  const [fxInrPerUsd, fxBufferPct, indiaHandlingPct, shipAllocPaisePerKg, cardFeePct, cardFeeFixedCents] = needed as number[];
-  const v = { fxInrPerUsd, fxBufferPct, indiaHandlingPct, shipAllocPaisePerKg, cardFeePct, cardFeeFixedCents, marginPct: margin } as Record<string, number>;
+  const [fxInrPerUsd, fxBufferPct, indiaHandlingPct, shipAllocPaisePerKg] = needed as number[];
+  const v = { fxInrPerUsd, fxBufferPct, indiaHandlingPct, shipAllocPaisePerKg, marginPct: margin } as Record<string, number>;
   if (!(v.fxInrPerUsd > 0)) throw new RangeError('fxInrPerUsd must be > 0');
   if (!Number.isInteger(input.shopPricePaise) || input.shopPricePaise < 0)
     throw new RangeError('shopPricePaise must be a non-negative integer');
@@ -76,6 +73,6 @@ export function autoPrice(
   const rate = v.fxInrPerUsd * (1 - v.fxBufferPct / 100);
   const goods = (input.shopPricePaise * (1 + v.indiaHandlingPct / 100)) / rate; // paise ÷ (₹ per $) = cents
   const shipping = (v.shipAllocPaisePerKg * input.weightG) / 1000 / rate;
-  const price = ((goods + shipping) * (1 + v.marginPct / 100) + v.cardFeeFixedCents) / (1 - v.cardFeePct / 100);
+  const price = (goods + shipping) * (1 + v.marginPct / 100);
   return { goodsCents: Math.round(goods), logisticsCents: Math.round(shipping), priceCents: priceEnding(price) };
 }

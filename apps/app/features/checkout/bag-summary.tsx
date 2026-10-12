@@ -7,7 +7,7 @@ import type { CheckoutQuote } from '@repo/shared/domain';
 
 import { Photo } from '@/components/photo';
 import { Row } from '@/components/ui';
-import { ChargeValue } from '@/features/cart/charges';
+import { ChargeRows, ChargeValue } from '@/features/cart/charges';
 
 /**
  * The bag in checkout and on the thank-you screen (D-087): photos, lines and the subtotal; shipping, tax, the total
@@ -71,7 +71,11 @@ export function BagSummary({ title, lines, quote }: { title: string; lines: BagL
           </View>
         </>
       ) : (
-        <Row label="Shipping and tax" value="after your details" />
+        <>
+          {/* D-112: the fixed charges from the first step; the server prices them again with the address. */}
+          <ChargeRows />
+          <Row label="Sales tax" value="after your details" />
+        </>
       )}
     </View>
   );

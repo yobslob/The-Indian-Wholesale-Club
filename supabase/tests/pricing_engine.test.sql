@@ -16,15 +16,20 @@ select tests.assert(public._auto_price_cents(108000, 1000) = 2099, '$20.80 goes 
 select tests.assert(public._auto_price_cents(104900, 1000) = 2049, '$20.49 already has an ending and stays');
 select tests.assert(public._auto_price_cents(100000, null) is null, 'no weight, no price');
 
--- The founder's pilot numbers and worked examples (D-109; the same as packages/shared tests/domain.test.ts).
+-- The founder's pilot numbers and worked examples (D-109; the same as packages/shared tests/domain.test.ts). Since
+-- D-112 the card fees are inside the margin: they no longer change a price.
 update public.pricing_settings set
   fx_inr_per_usd = 96.35, fx_buffer_pct = 4, india_handling_pct = 10, ship_alloc_paise_per_kg = 146100,
   margin_pct = 50, card_fee_pct = 3.4, card_fee_fixed_cents = 30
  where id = 1;
-select tests.assert(public._auto_price_cents(150000, 450) = 3929, 'D-109: a ₹1,500 kurta of 450 g is $39.29');
-select tests.assert(public._auto_price_cents(400000, 900) = 9629, 'D-109: a ₹4,000 saree of 900 g is $96.29');
-select tests.assert(public._auto_price_cents(1200000, 2500) = 28329, 'D-109: a ₹12,000 lehenga of 2.5 kg is $283.29');
-select tests.assert(public._auto_price_cents(25000, 250) = 1129, 'D-109: a ₹250 spice pack of 250 g is $11.29');
+select tests.assert(public._auto_price_cents(150000, 450) = 3749, 'D-109: a ₹1,500 kurta of 450 g is $37.49');
+select tests.assert(public._auto_price_cents(400000, 900) = 9279, 'D-109: a ₹4,000 saree of 900 g is $92.79');
+select tests.assert(public._auto_price_cents(1200000, 2500) = 27349, 'D-109: a ₹12,000 lehenga of 2.5 kg is $273.49');
+select tests.assert(public._auto_price_cents(25000, 250) = 1049, 'D-109: a ₹250 spice pack of 250 g at 50% is $10.49');
+update public.pricing_settings set card_fee_pct = 10, card_fee_fixed_cents = 500 where id = 1;
+select tests.assert(public._auto_price_cents(150000, 450) = 3749, 'D-112: card fees do not change a price');
+update public.pricing_settings set card_fee_pct = null, card_fee_fixed_cents = null where id = 1;
+select tests.assert(public._auto_price_cents(150000, 450) = 3749, 'D-112: nor does a missing card fee');
 update public.pricing_settings set ship_alloc_paise_per_kg = null where id = 1;
 select tests.assert(public._auto_price_cents(150000, 450) is null, 'a missing setting gives no price');
 update public.pricing_settings set ship_alloc_paise_per_kg = 146100 where id = 1;
@@ -42,7 +47,7 @@ select tests.assert((select price_cents from public.products where id = tests.id
 -- D-111: each type has its own margin; a type without one falls back to the general margin.
 update public.pricing_settings set margin_pct = 50, margin_clothing_pct = 50, margin_food_pct = 25, margin_home_pct = 60
 where id = 1;
-select tests.assert(public._auto_price_cents(150000, 450, 'clothing') = 3929, 'D-111: clothing at 50% (the kurta, $39.29)');
+select tests.assert(public._auto_price_cents(150000, 450, 'clothing') = 3749, 'D-111: clothing at 50% (the kurta, $37.49)');
 select tests.assert(public._auto_price_cents(25000, 250, 'food') < public._auto_price_cents(25000, 250, 'clothing'),
   'D-111: food at 25% costs less than at 50%');
 select tests.assert(public._auto_price_cents(150000, 450, 'home') > public._auto_price_cents(150000, 450, 'clothing'),

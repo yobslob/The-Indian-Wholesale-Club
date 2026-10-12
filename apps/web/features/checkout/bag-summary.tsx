@@ -1,7 +1,7 @@
 import { formatDeliveryWindow, formatUsd } from '@repo/shared/domain';
 
 import { LinePhoto } from '@/features/cart/bag-lines';
-import { ChargeValue } from '@/features/cart/charge-lines';
+import { ChargeValue, PendingChargeRows } from '@/features/cart/charge-lines';
 
 import type { SummaryLine } from './last-order';
 import type { CheckoutQuote } from './types';
@@ -74,7 +74,10 @@ export function BagSummary({
             <Row label="Total" value={formatUsd(b.totalCents)} strong />
           </>
         ) : (
-          <Row label="Shipping and tax" value="after your details" />
+          <>
+            <PendingChargeRows />
+            <Row label="Sales tax" value="after your details" />
+          </>
         )}
       </dl>
       {quote?.promoRejected ? <p className="text-caution mt-3 text-sm">That promo code can&apos;t be used on this order.</p> : null}

@@ -40,7 +40,7 @@ export function ShippingOptions({
           >
             <Text className="font-ui text-ink flex-1 text-sm">
               {selected ? '● ' : '○ '}
-              {label} · {option.shippingCents === 0 ? 'Free' : formatUsd(option.shippingCents)}
+              {label} · {formatUsd(option.shippingCents)}
             </Text>
             <Text className="font-ui text-ink-muted text-[13px]">
               {formatDeliveryWindow(

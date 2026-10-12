@@ -154,7 +154,7 @@ export async function getPricingSettings(client: IwcClient) {
           express_base_cents, express_courier_cents_per_kg, express_min_kg, domestic_days_min, domestic_days_max,
           shipping_flat_cents, free_shipping_min_cents, express_shipping_cents, express_days_min, express_days_max,
           stale_listing_days, leaving_soon_max, cycle_days, fast_offer_cents, food_cleared, margin_clothing_pct, margin_food_pct,
-          margin_home_pct, courier_first_kg_paise, courier_next_kg_paise, small_order_margin_pct, parcel_handling_paise,
+          margin_home_pct, small_order_shipping_cents, small_order_retailer_cents,
           updated_at`,
       )
       .eq('id', 1)
@@ -176,11 +176,8 @@ export async function listPricingEstimates(client: IwcClient) {
   );
 }
 
-/** The settings the automatic price is built from (shared/domain autoPrice, D-109). */
-export const PRICE_SUGGESTION_SETTINGS = [
-  'fx_inr_per_usd', 'fx_buffer_pct', 'india_handling_pct', 'ship_alloc_paise_per_kg', 'margin_pct', 'card_fee_pct',
-  'card_fee_fixed_cents',
-];
+/** The settings the automatic price is built from (shared/domain autoPrice, D-109; no card fees since D-112). */
+export const PRICE_SUGGESTION_SETTINGS = ['fx_inr_per_usd', 'fx_buffer_pct', 'india_handling_pct', 'ship_alloc_paise_per_kg', 'margin_pct'];
 
 /** D-007: the signed-in admin's desk ('us' or 'india'), which orders their Today. Null when not set. */
 export async function getMyDesk(client: IwcClient, userId: string): Promise<Enum<'ops_desk'> | null> {

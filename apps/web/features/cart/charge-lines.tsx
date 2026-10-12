@@ -5,15 +5,15 @@ import { formatUsd } from '@repo/shared/domain';
 import { freeDelivery, useBagCharges } from './charges';
 import { useCart } from './store';
 
-/** "$19.79", or "$19.79" struck through and "Free" once the bag reaches the free-delivery line (D-111). */
+/** "$18.79", or "$18.79" struck through and "$0.00" once the bag reaches the free-delivery line (D-111, D-112). */
 export function ChargeValue({ cents, free }: { cents: number; free: boolean }): React.JSX.Element {
-  if (cents === 0) return <span>Free</span>;
+  if (cents === 0) return <span>{formatUsd(0)}</span>;
   return free ? (
     <span>
       <s className="text-ink-muted mr-1.5" aria-label={`was ${formatUsd(cents)}`}>
         {formatUsd(cents)}
       </s>
-      Free
+      {formatUsd(0)}
     </span>
   ) : (
     <span>{formatUsd(cents)}</span>
@@ -48,5 +48,30 @@ export function ChargeLines(): React.JSX.Element | null {
         </p>
       ) : null}
     </div>
+  );
+}
+
+/**
+ * Checkout's summary before the server has priced the bag: the two charges as rows of its list, so the customer sees
+ * them from the first step (D-112); the server prices them again with the address.
+ */
+export function PendingChargeRows(): React.JSX.Element | null {
+  const lines = useCart((s) => s.lines);
+  const charges = useBagCharges();
+  if (!charges) return null;
+  const { free } = freeDelivery(lines, charges);
+  const row = (label: string, cents: number) => (
+    <div className="flex justify-between">
+      <dt className="text-ink-muted">{label}</dt>
+      <dd className="m-0">
+        <ChargeValue cents={cents} free={free} />
+      </dd>
+    </div>
+  );
+  return (
+    <>
+      {row('Shipping', charges.shippingCents)}
+      {charges.retailerCents > 0 ? row('Retailer charges', charges.retailerCents) : null}
+    </>
   );
 }

@@ -38,12 +38,10 @@ const settings = { fxInrPerUsd: 80, freightCentsPerKg: 1000, dutyPct: 10, margin
 describe('autoPrice (D-109): the same numbers as supabase/tests/pricing_engine.test.sql', () => {
   const simple = {
     fxInrPerUsd: 100, fxBufferPct: 0, indiaHandlingPct: 0, shipAllocPaisePerKg: 100000, marginPct: 0,
-    cardFeePct: 0, cardFeeFixedCents: 0,
   };
-  // The founder's pilot numbers at 96.35 rupees to the dollar (D-109).
+  // The founder's pilot numbers at 96.35 rupees to the dollar (D-109); card fees are inside the margin (D-112).
   const full = {
     fxInrPerUsd: 96.35, fxBufferPct: 4, indiaHandlingPct: 10, shipAllocPaisePerKg: 146100, marginPct: 50,
-    cardFeePct: 3.4, cardFeeFixedCents: 30,
   };
 
   it('rounds up to the next .29, .49, .79 or .99', () => {
@@ -54,21 +52,21 @@ describe('autoPrice (D-109): the same numbers as supabase/tests/pricing_engine.t
     assert.equal(autoPrice({ shopPricePaise: 104900, weightG: 1000 }, simple)?.priceCents, 2049); // $20.49 stays
   });
 
-  it('the worked examples of D-109: kurta, saree, lehenga, food pack', () => {
-    assert.equal(autoPrice({ shopPricePaise: 150000, weightG: 450 }, full)?.priceCents, 3929);
-    assert.equal(autoPrice({ shopPricePaise: 400000, weightG: 900 }, full)?.priceCents, 9629);
-    assert.equal(autoPrice({ shopPricePaise: 1200000, weightG: 2500 }, full)?.priceCents, 28329);
-    assert.equal(autoPrice({ shopPricePaise: 25000, weightG: 250 }, full)?.priceCents, 1129);
+  it('the worked examples of D-109 without card fees (D-112): kurta, saree, lehenga, food pack', () => {
+    assert.equal(autoPrice({ shopPricePaise: 150000, weightG: 450 }, full)?.priceCents, 3749);
+    assert.equal(autoPrice({ shopPricePaise: 400000, weightG: 900 }, full)?.priceCents, 9279);
+    assert.equal(autoPrice({ shopPricePaise: 1200000, weightG: 2500 }, full)?.priceCents, 27349);
+    assert.equal(autoPrice({ shopPricePaise: 25000, weightG: 250 }, full)?.priceCents, 1049);
   });
 
   it('D-111: each type has its own margin (clothing 50%, food 25%, home 60%)', () => {
     const typed = { ...full, typeMarginPct: { clothing: 50, food: 25, home: 60 } };
-    assert.equal(autoPrice({ shopPricePaise: 150000, weightG: 450, productType: 'clothing' }, typed)?.priceCents, 3929);
-    assert.equal(autoPrice({ shopPricePaise: 25000, weightG: 250, productType: 'food' }, typed)?.priceCents, 929);
-    assert.equal(autoPrice({ shopPricePaise: 150000, weightG: 450, productType: 'home' }, typed)?.priceCents, 4179);
+    assert.equal(autoPrice({ shopPricePaise: 150000, weightG: 450, productType: 'clothing' }, typed)?.priceCents, 3749);
+    assert.equal(autoPrice({ shopPricePaise: 25000, weightG: 250, productType: 'food' }, typed)?.priceCents, 879);
+    assert.equal(autoPrice({ shopPricePaise: 150000, weightG: 450, productType: 'home' }, typed)?.priceCents, 3999);
     // A type without its own margin uses the general one; with neither there is no price.
     const noFood = { ...typed, typeMarginPct: { food: null } };
-    assert.equal(autoPrice({ shopPricePaise: 25000, weightG: 250, productType: 'food' }, noFood)?.priceCents, 1129);
+    assert.equal(autoPrice({ shopPricePaise: 25000, weightG: 250, productType: 'food' }, noFood)?.priceCents, 1049);
     assert.equal(autoPrice({ shopPricePaise: 25000, weightG: 250, productType: 'food' }, { ...full, marginPct: null }), null);
   });
 

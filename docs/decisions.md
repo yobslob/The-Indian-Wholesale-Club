@@ -190,3 +190,23 @@ retailer charges ₹150 per parcel (labelled estimates); the shipping allocation
 2 kg slab, D-109) although the founder expects parcels around 5 kg, so heavier parcels earn a little more; a promo that
 takes a bag under the line brings the charges back; express (D-070) has its own fee and no small-order charges.
 
+
+**D-112 · 2026-10-12 · founder: Card fees are inside the margins; the small-order charges are fixed and show $0.00 when waived**
+Founder, verbatim (asked why prices came out high): "The prices are a bit off, I don't know what factor is affecting
+that but Clothing is always off by 2 or 3 dollar and food products are expensive by 60 or 70 cents. Change something
+so this fixes." Claude found the card fee (3.4% + $0.30, charged on every piece) added on top of the type margin and
+asked whether the margins already cover card fees: "1. yes."
+On checkout: "We don't have to make the shipping and retailer charges variable, they basically do not change. As soon
+as 149.99 hits they both get strike through and instead of free show 0.00." Asked for the two amounts (today's
+charges for one piece): "2. yes 18.79 and 1.99 works".
+What it means for the build (migration `supabase/migrations/20261012140000_fixed_small_order_charges.sql`):
+- The pilot price is landed × (1 + the type's margin), up to .29 / .49 / .79 / .99: no card fee on top. Every automatic
+  price follows (the kurta of D-109 goes from $39.29 to $37.49, the 250 g food pack at 25% from $9.29 to $8.79).
+  `card_fee_pct` and `card_fee_fixed_cents` stay as columns for the retailer model (D-005) and leave the pilot's
+  Settings.
+- Below the free-shipping line ($149.99) any bag with a piece from India pays **Shipping $18.79** and **Retailer
+  charges $1.99**, whatever its weight (Settings, `small_order_shipping_cents`, `small_order_retailer_cents`). From the
+  line up both are struck through with **$0.00** beside them, never "Free". D-111's courier rates, parcel handling and
+  small-order margin go. Checkout's summary shows both charges from the first step (tax after the address).
+- "$0.00" replaces "Free" wherever a shipping amount is shown (bag, checkout, shipping choice, orders, the email).
+Supersedes D-111 in part (the charge formula and "Free"; its type margins and free-delivery bar stay).

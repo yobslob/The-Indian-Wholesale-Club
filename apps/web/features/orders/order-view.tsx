@@ -195,7 +195,7 @@ export function OrderView({ order }: { order: OrderDetail }): React.JSX.Element 
             {/* D-111: a small order's shipping includes its retailer charges. */}
             {o.shipping_method === 'express' ? 'Express shipping' : o.shipping_cents > 0 ? 'Shipping & retailer charges' : 'Shipping'}
           </dt>
-          <dd className="m-0">{o.shipping_cents === 0 ? 'Free' : formatUsd(o.shipping_cents)}</dd>
+          <dd className="m-0">{formatUsd(o.shipping_cents)}</dd>
         </div>
         <div className="flex justify-between">
           <dt className="text-ink-muted">Sales tax</dt>

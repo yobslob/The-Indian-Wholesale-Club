@@ -57,7 +57,7 @@ export function ShippingPicker({
             onChange={() => onChange(o.method)}
           />
           <span className="flex-1">
-            {o.label} · {o.cents === 0 ? 'Free' : formatUsd(o.cents)}
+            {o.label} · {formatUsd(o.cents)}
           </span>
           <small className="text-ink-muted text-[13px]">{formatDeliveryWindow(o.from, o.to)}</small>
         </label>

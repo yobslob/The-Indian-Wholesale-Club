@@ -43,12 +43,12 @@ function freeDelivery(lines: BagLine[], charges: BagCharges | null) {
   };
 }
 
-/** "$19.79", or struck through and "Free" from the free-delivery line up. */
+/** "$18.79", or struck through and "$0.00" from the free-delivery line up (D-112). */
 export function ChargeValue({ cents, free }: { cents: number; free: boolean }): React.JSX.Element {
-  if (cents === 0) return <Text className="font-body text-ink text-sm">Free</Text>;
+  if (cents === 0) return <Text className="font-body text-ink text-sm">{formatUsd(0)}</Text>;
   return free ? (
     <Text className="font-body text-ink text-sm">
-      <Text className="text-ink-muted line-through">{formatUsd(cents)}</Text> Free
+      <Text className="text-ink-muted line-through">{formatUsd(cents)}</Text> {formatUsd(0)}
     </Text>
   ) : (
     <Text className="font-body text-ink text-sm">{formatUsd(cents)}</Text>
