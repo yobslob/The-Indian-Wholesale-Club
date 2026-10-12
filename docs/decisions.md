@@ -245,3 +245,17 @@ What it means for the build:
   is logged and never fails the order).
 *Claude's choices in it (proposed):* the phone is saved with the address; the app's checkout is unchanged (its orders
 save the address too, but it does not offer saved ones yet).
+
+**D-115 · 2026-10-12 · founder: The pilot is made to order: no cycles, delivery 12 – 18 days from the order** · amends D-008
+Founder, verbatim: "you have to know now there is no cutoff in pilot now because as soon as the user  orders I buy it
+from the specific website and ship it to us so there is no cutoff or cycles, for now it should show delivery in 12-18
+days. For now take all control over yourself dont ask me to do anything and fix checkout"
+Why checkout stayed closed: it opens only with a delivery window, which came from an open cycle (D-008).
+What it means for the build (migration `supabase/migrations/20261012160000_pilot_made_to_order.sql`):
+- Settings → Standard delivery: "Pilot, made to order: delivery days from the order" 12 to 18 (`pilot_delivery_days_min`,
+  `_max`). While both are set, every window the store shows (home stamps, product pages, checkout) is today + those
+  days with no "order by", and a standard order needs no cycle: none on the order, its pieces on the pickup list at
+  once (like express, D-070), to be ordered online (D-110). Emptying either day brings the cycle model back unchanged.
+- Non-negotiable 4 now reads: delivery dates come from cycle data or, in the pilot, from its days in Settings; never
+  hard-coded. Standard shipping is set to $0 where it was empty (D-041), which also kept checkout closed.
+*Claude's choices in it (proposed):* the window counts calendar days from the order date; express keeps its own days.

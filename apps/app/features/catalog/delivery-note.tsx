@@ -43,10 +43,12 @@ export function DeliveryNote({
     <Text className="font-body text-ink text-sm leading-5">
       Estimated delivery{' '}
       {formatDeliveryWindow(delivery.est_delivery_from, delivery.est_delivery_to)}
-      <Text className="text-ink-muted">
-        {' '}
-        if you order by {orderBy.format(new Date(delivery.order_by))}
-      </Text>
+      {delivery.order_by ? (
+        <Text className="text-ink-muted">
+          {' '}
+          if you order by {orderBy.format(new Date(delivery.order_by))}
+        </Text>
+      ) : null}
     </Text>
   );
 }

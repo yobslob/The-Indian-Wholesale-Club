@@ -119,7 +119,9 @@ begin
   -- a clean slate that does not depend on dev seed data
   update public.cycles set status = 'closed', closed_at = now() where status = 'open';
   update public.app_settings set value = 'false'::jsonb where key = 'dev_preview';
-  update public.pricing_settings set domestic_days_min = 3, domestic_days_max = 7 where id = 1;
+  -- The cycle model by default (D-008); pilot_delivery.test.sql switches the made-to-order pilot on (D-115).
+  update public.pricing_settings set domestic_days_min = 3, domestic_days_max = 7, pilot_delivery_days_min = null,
+                                     pilot_delivery_days_max = null where id = 1;
 
   perform tests.create_user('cust_a', 'cust.a@example.test');
   perform tests.create_user('cust_b', 'cust.b@example.test');

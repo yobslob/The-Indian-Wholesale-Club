@@ -61,8 +61,10 @@ export const SETTING_GROUPS: SettingGroup[] = [
     ],
   },
   {
-    title: 'Standard delivery and shipping (D-008, D-041)',
+    title: 'Standard delivery and shipping (D-008, D-041, D-115)',
     fields: [
+      { key: 'pilot_delivery_days_min', label: 'Pilot, made to order: delivery days from the order: from (empty = cycles)', kind: 'int' },
+      { key: 'pilot_delivery_days_max', label: 'Pilot, made to order: delivery days from the order: to', kind: 'int' },
       { key: 'domestic_days_min', label: 'US delivery days after the export arrives: from', kind: 'int' },
       { key: 'domestic_days_max', label: 'US delivery days after the export arrives: to', kind: 'int' },
       { key: 'shipping_flat_cents', label: 'Standard shipping per order ($, 0 = free)', kind: 'usd' },

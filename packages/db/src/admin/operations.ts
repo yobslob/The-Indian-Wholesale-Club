@@ -154,7 +154,8 @@ export async function getPricingSettings(client: IwcClient) {
           express_base_cents, express_courier_cents_per_kg, express_min_kg, domestic_days_min, domestic_days_max,
           shipping_flat_cents, free_shipping_min_cents, express_shipping_cents, express_days_min, express_days_max,
           stale_listing_days, leaving_soon_max, cycle_days, fast_offer_cents, food_cleared, margin_clothing_pct, margin_food_pct,
-          margin_home_pct, small_order_shipping_cents, small_order_retailer_cents,
+          margin_home_pct, small_order_shipping_cents, small_order_retailer_cents, pilot_delivery_days_min,
+          pilot_delivery_days_max,
           updated_at`,
       )
       .eq('id', 1)

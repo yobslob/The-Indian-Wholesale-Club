@@ -150,6 +150,9 @@ Migration 31 (D-099, the second speed audit): `admin_order_counts()` (every orde
 send, shops owed for picked pieces) and `admin_cycle_totals(cycle)` (the cycle card's orders, pieces, shops and sales),
 admin only, counted in SQL because the API sends at most 1,000 rows; indexes for orders by status and newest, pickups
 by status, what each shop is owed, and a payout's pieces.
+Migration 43 (D-115): `pricing_settings.pilot_delivery_days_min/max` (the made-to-order pilot, 12 – 18); while both are
+set, `store_next_delivery()` returns today + those days with a null `order_by`, and a standard `create_order` needs no
+cycle (no `cycle_id`, window from today, pickups at once like express). Both empty = the cycle model.
 Migration 42 (D-113): `store_home()` adds `album` (up to 30 photos: the states' album photos, then the main photo of
 each state's newest pieces, one state at a time in turn).
 Migration 41 (D-112): `_auto_price_cents` without card fees; `pricing_settings.small_order_shipping_cents` and

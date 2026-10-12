@@ -18,7 +18,8 @@ Rules cite decision IDs (`D-xxx`, index in `docs/decisions.md`).
    the app, emails, API responses or page source. IWC is the seller. [D-003, D-017]
 2. **Honest origin:** show the region and "Made in India"; never invent or mask where goods come from. [D-004]
 3. **Invisible admin:** no links or hints; access checked on the server (role + email allowlist). [D-006]
-4. **Delivery dates come from cycle data**, never hard-coded. [D-008]
+4. **Delivery dates come from cycle data**, or in the made-to-order pilot from its delivery days in Settings; never
+   hard-coded. [D-008, D-115]
 5. **Money is an integer:** USD in `*_cents`, INR in `*_paise`.
 6. **Speed is a feature:** read `docs/engineering.md` §Performance before adding a query, dependency or client component. [D-011]
 

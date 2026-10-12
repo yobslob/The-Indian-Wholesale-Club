@@ -15,6 +15,8 @@ phase's sub-steps and every verification run) is in `docs/archive/status-log-to-
 - **Home and header (D-113, 2026-10-12):** Home runs hero → the album of all of India (the states' drifting mosaic)
   → Pick your home → Just listed; the header's Search is a visible pill first in the links that grows into a search
   bar on scroll.
+- **Made-to-order pilot (D-115, 2026-10-12):** no cycles or cutoff; delivery is today + 12 – 18 days (Settings →
+  Standard delivery); a standard order needs no cycle and its pieces go on the pickup list at once.
 - **Saved addresses at checkout (D-114, 2026-10-12):** signed in, checkout offers the saved addresses (default filled
   in) and a paid order saves its address to the account.
 - **Food (D-110):** the product type `spice` is now `food` (page `/food`; `/spices` redirects).
@@ -31,7 +33,7 @@ phase's sub-steps and every verification run) is in `docs/archive/status-log-to-
 ## Last verification
 | Date | Commit | Where | Result |
 |---|---|---|---|
-| 2026-10-12 | D-114 commit | Claude, founder's Windows machine with Docker | typecheck, lint, test OK; build OK; e2e 23/23 incl. the new `saved-address.spec.ts` (a signed-in order saves its address; the next checkout opens at Delivery with it). Production checkout read from Vercel logs: the 500 was Supabase's "Invalid API key" (fixed by the founder's redeploy); since then it answers 503 "closed": no open cycle or delivery days on production. |
+| 2026-10-12 | D-115 commit | Claude, founder's Windows machine with Docker | typecheck, lint, test, db (incl. new `pilot_delivery.test.sql`), docs, build, e2e 23/23 (the buy flow with the pilot on, no open cycle) all OK; product page shows "Estimated delivery Oct 24 – Oct 30" (no order-by). |
 
 ## Known leftovers
 - App bundle ids are still `com.indianwholesaleclub.app` (`apps/app/app.json`); they change with the domain (Q-9).

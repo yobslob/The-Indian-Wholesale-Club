@@ -33,7 +33,8 @@ export interface QuotedLine {
 export interface DeliveryDates {
   est_delivery_from: string;
   est_delivery_to: string;
-  order_by: string;
+  /** Null in the made-to-order pilot: no cutoff (D-115). */
+  order_by: string | null;
 }
 
 export interface CheckoutQuote {

@@ -13,7 +13,8 @@ const isoDate = z.string(); // 'YYYY-MM-DD'
 const isoDateTime = z.string();
 
 export const deliveryWindowSchema = z.object({
-  order_by: isoDateTime,
+  /** The cycle's cutoff; null in the made-to-order pilot, which has none (D-115). */
+  order_by: isoDateTime.nullable(),
   est_delivery_from: isoDate,
   est_delivery_to: isoDate,
 });

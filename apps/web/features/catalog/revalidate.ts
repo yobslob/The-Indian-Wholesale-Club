@@ -41,7 +41,8 @@ export function revalidateAfterRelease(): void {
  */
 export async function revalidateIfCutoffPassed(): Promise<boolean> {
   const cached = (await getHomeCached()).delivery;
-  if (!cached || Date.parse(cached.order_by) > Date.now()) return false;
+  // The made-to-order pilot has no cutoff (D-115); its window moves with the date and the 5-minute cache.
+  if (!cached?.order_by || Date.parse(cached.order_by) > Date.now()) return false;
   const live = await getNextDelivery(storeClient());
   if (live?.order_by === cached.order_by) return false; // never purge twice for the same window
   revalidateTag(STORE_TAG);
