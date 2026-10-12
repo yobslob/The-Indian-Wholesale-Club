@@ -5,6 +5,17 @@
 const supabaseUrl = process.env.NEXT_PUBLIC_SUPABASE_URL
   ? new URL(process.env.NEXT_PUBLIC_SUPABASE_URL)
   : null;
+// A NEXT_PUBLIC_ value ships to every browser: stop the build on anything but the plain project address, so a pasted
+// database connection string (with its password) never reaches the page (found 2026-10-12).
+if (
+  supabaseUrl &&
+  (!['http:', 'https:'].includes(supabaseUrl.protocol) || supabaseUrl.username || supabaseUrl.password || supabaseUrl.pathname !== '/')
+) {
+  throw new Error(
+    'NEXT_PUBLIC_SUPABASE_URL must be the project address only, like https://<project-ref>.supabase.co ' +
+      '(Supabase → Project Settings → Data API → Project URL), not the database connection string.',
+  );
+}
 const supabaseOrigin = supabaseUrl ? supabaseUrl.origin : 'https://*.supabase.co';
 const supabaseWs = supabaseOrigin.replace(/^http/, 'ws');
 // React Fast Refresh needs eval in development only.
