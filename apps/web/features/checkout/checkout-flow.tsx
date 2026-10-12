@@ -3,7 +3,7 @@
 import { useRouter } from 'next/navigation';
 import { useEffect, useState } from 'react';
 
-import { formatUsd, formatUsPhone } from '@repo/shared/domain';
+import { formatUsd, formatUsPhone, usPhoneDigits } from '@repo/shared/domain';
 
 import { EmptyLine } from '@/features/cart/cart-view';
 import { cartCount, cartSubtotalCents, useCart } from '@/features/cart/store';
@@ -13,10 +13,18 @@ import { DeliveryStep, deliverySummary, type Delivery } from './delivery-step';
 import { saveLastOrder, type SummaryLine } from './last-order';
 import { PaymentForm } from './payment-form';
 import { PhoneStep } from './phone-step';
+import { SavedAddresses } from './saved-addresses';
 import { ShippingPicker } from './shipping-picker';
 import { Step } from './step';
 
-import type { CheckoutErrorResponse, CheckoutRequestBody, CheckoutStartResponse, FinalizeResponse } from './types';
+import type {
+  CheckoutErrorResponse,
+  CheckoutRequestBody,
+  CheckoutStartResponse,
+  FinalizeResponse,
+  SavedAddress,
+  SavedDetails,
+} from './types';
 
 /** Finish the order for a paid PaymentIntent (also used after a 3-D Secure redirect). */
 export async function confirmOrder(paymentIntentId: string): Promise<{ orderNumber?: string; message?: string }> {
@@ -31,20 +39,31 @@ export async function confirmOrder(paymentIntentId: string): Promise<{ orderNumb
 
 const NO_DELIVERY: Delivery = { fullName: '', email: '', zipCode: '', city: '', state: '', line1: '', line2: '', promoCode: '' };
 
+/** D-114: the delivery form filled from a saved address (the promo code stays what it was). */
+function deliveryFrom(a: SavedAddress | null, email: string, promoCode: string): Delivery {
+  if (!a) return { ...NO_DELIVERY, email, promoCode };
+  return { fullName: a.fullName, email, zipCode: a.zipCode, city: a.city, state: a.state, line1: a.line1, line2: a.line2 ?? '', promoCode };
+}
+
 /**
  * /checkout (D-087): 1. phone → 2. delivery → 3. payment on one page, each opening when the one before is done and
  * folding to a line with Edit; the bag beside them (a "Bag (n) · $…" bar on phones). Continue to payment prices the bag
  * on the server and creates the payment for that exact total (D-038); editing an earlier step drops that payment.
+ * Signed in (D-114): the default saved address and its phone fill the steps (it opens at Delivery when the phone is
+ * known), the other saved addresses can be picked, and the address of a paid order is saved (finalize.ts).
  */
-export function CheckoutFlow(): React.JSX.Element {
+export function CheckoutFlow({ saved }: { saved: SavedDetails | null }): React.JSX.Element {
   const router = useRouter();
   const lines = useCart((s) => s.lines);
   const clear = useCart((s) => s.clear);
   const savedPromo = useCart((s) => s.promoCode);
   const [mounted, setMounted] = useState(false);
-  const [at, setAt] = useState<1 | 2 | 3>(1);
-  const [phone, setPhone] = useState<string | null>(null);
-  const [delivery, setDelivery] = useState<Delivery>({ ...NO_DELIVERY, promoCode: savedPromo ?? '' });
+  const first = saved?.addresses[0] ?? null;
+  const savedPhone = first?.phone ? usPhoneDigits(first.phone) : null;
+  const [at, setAt] = useState<1 | 2 | 3>(savedPhone ? 2 : 1);
+  const [phone, setPhone] = useState<string | null>(savedPhone);
+  const [delivery, setDelivery] = useState<Delivery>(() => deliveryFrom(first, saved?.email ?? '', savedPromo ?? ''));
+  const [picked, setPicked] = useState(first?.id ?? 'new');
   const [busy, setBusy] = useState(false);
   const [error, setError] = useState<string | null>(null);
   const [started, setStarted] = useState<CheckoutStartResponse | null>(null);
@@ -142,7 +161,18 @@ export function CheckoutFlow(): React.JSX.Element {
           />
         </Step>
         <Step n={2} title="Delivery" state={stateOf(2)} summary={delivery.line1 ? deliverySummary(delivery) : ''} onEdit={edit(2)}>
-          <DeliveryStep value={delivery} busy={busy} error={error} onDone={priceWith} />
+          <SavedAddresses
+            addresses={saved?.addresses ?? []}
+            picked={picked}
+            onPick={(a) => {
+              setPicked(a?.id ?? 'new');
+              setDelivery((d) => deliveryFrom(a, d.email, d.promoCode));
+              const digits = a?.phone ? usPhoneDigits(a.phone) : null;
+              if (digits) setPhone(digits);
+            }}
+          />
+          {/* Keyed by the pick: the form's fields start from the address picked. */}
+          <DeliveryStep key={picked} value={delivery} busy={busy} error={error} onDone={priceWith} />
         </Step>
         <Step n={3} title="Payment" state={stateOf(3)}>
           {started && request ? (

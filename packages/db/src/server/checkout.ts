@@ -273,3 +273,43 @@ export async function listDueEmails(service: IwcClient, limit = 20) {
       .limit(limit),
   );
 }
+
+// ---------------------------------------------------------------- the address of a paid order (D-114)
+
+/** A paid order's delivery address, as the checkout stored it. */
+export interface OrderAddress {
+  fullName: string;
+  line1: string;
+  line2: string | null;
+  city: string;
+  state: string;
+  zipCode: string;
+  phone: string | null;
+}
+
+const same = (a: string | null, b: string | null): boolean =>
+  (a ?? '').trim().toLowerCase() === (b ?? '').trim().toLowerCase();
+
+/**
+ * D-114: a signed-in customer's paid order adds its address to their saved addresses, unless the same street, unit and
+ * ZIP is already there; their first one becomes the default. Service role (called once, when the order is created).
+ */
+export async function rememberOrderAddress(service: IwcClient, userId: string, a: OrderAddress): Promise<void> {
+  const saved = unwrap(
+    await service.from('addresses').select('line1, line2, zip_code, is_default').eq('user_id', userId),
+  );
+  if (saved.some((s) => same(s.line1, a.line1) && same(s.line2, a.line2) && same(s.zip_code, a.zipCode))) return;
+  unwrap(
+    await service.from('addresses').insert({
+      user_id: userId,
+      full_name: a.fullName,
+      line1: a.line1,
+      line2: a.line2,
+      city: a.city,
+      state: a.state,
+      zip_code: a.zipCode,
+      phone: a.phone,
+      is_default: !saved.some((s) => s.is_default),
+    }),
+  );
+}

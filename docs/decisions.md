@@ -229,3 +229,19 @@ What it means for the build (migration `supabase/migrations/20261012150000_home_
   page is scrolled it grows into a long search bar (also on hover, focus and while typing); still on reduced motion.
 *Claude's choices in it (proposed, the founder confirms or changes):* products fill the album while few state photos
 exist (it stays not clickable, like the states' album); phones keep search in the menu; the app's Home keeps its order.
+
+**D-114 · 2026-10-12 · founder: Checkout saves the address and offers the saved ones**
+Founder, verbatim: "Also fix how once I Sign in and make one payment after going through those 3 steps it should be
+saved as an address which can be used again and if there is already an address saved it can be used, look into this
+part and how the functioning is broken."
+What was there: checkout never read the saved addresses and never saved the one used; addresses lived only on Profile →
+Addresses. Orders were linked to the account when signed in.
+What it means for the build:
+- Signed in, `/checkout` reads the customer's email and saved addresses on the server (`features/checkout/saved-details.ts`).
+  The default (else the first) fills the delivery form and its phone fills step 1, so checkout opens at Delivery; the
+  other saved addresses are radio cards above the form, and "A new address" empties it.
+- A signed-in customer's paid order adds its address to their saved addresses unless the same street, unit and ZIP is
+  there; the first one becomes the default (`rememberOrderAddress`, called once when the order is created; a failure
+  is logged and never fails the order).
+*Claude's choices in it (proposed):* the phone is saved with the address; the app's checkout is unchanged (its orders
+save the address too, but it does not offer saved ones yet).

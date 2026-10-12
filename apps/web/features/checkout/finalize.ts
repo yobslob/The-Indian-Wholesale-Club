@@ -11,7 +11,9 @@ import {
   markPendingReconciled,
   recordFailedReconciliation,
   redeemPromo,
+  rememberOrderAddress,
 } from '@repo/db/server';
+import { shippingAddressSchema } from '@repo/shared/domain';
 
 import { revalidateAfterSale } from '@/features/catalog/revalidate';
 import { deliverOutboxRow } from '@/lib/email/send';
@@ -147,6 +149,13 @@ export async function finalizeOrder(
   if (!promoRedeemed) {
     // The code hit its limit between pricing and payment. The customer keeps the discount they paid for.
     logger.warn('checkout.promo_limit_reached_after_payment', { orderNumber: result.orderNumber });
+  }
+  // D-114: a signed-in customer's address is kept for their next checkout. Never fails the order.
+  const address = shippingAddressSchema.safeParse(input.shippingAddress);
+  if (input.userId && address.success) {
+    await rememberOrderAddress(service, input.userId, address.data).catch((error: unknown) =>
+      logger.warn('checkout.address_not_saved', { orderNumber: result.orderNumber, error: errorMessage(error) }),
+    );
   }
   try {
     const outboxId = await enqueueEmail(service, 'order_confirmation', input.email, {

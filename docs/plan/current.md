@@ -15,6 +15,8 @@ phase's sub-steps and every verification run) is in `docs/archive/status-log-to-
 - **Home and header (D-113, 2026-10-12):** Home runs hero → the album of all of India (the states' drifting mosaic)
   → Pick your home → Just listed; the header's Search is a visible pill first in the links that grows into a search
   bar on scroll.
+- **Saved addresses at checkout (D-114, 2026-10-12):** signed in, checkout offers the saved addresses (default filled
+  in) and a paid order saves its address to the account.
 - **Food (D-110):** the product type `spice` is now `food` (page `/food`; `/spices` redirects).
 
 ## Next for the founder
@@ -29,7 +31,7 @@ phase's sub-steps and every verification run) is in `docs/archive/status-log-to-
 ## Last verification
 | Date | Commit | Where | Result |
 |---|---|---|---|
-| 2026-10-12 | D-112, D-113 commits | Claude, founder's Windows machine with Docker | `node scripts/check.mjs` docs, typecheck, lint, test, db (every SQL test file, incl. the new bag charges), build, e2e 22/22 (the buy flow) all OK; by hand in the browser: bag $18.79 + $1.99 below $149.99 and struck through at $0.00 above, checkout shows both from its first step, Home's album reveals, Search grows into a bar on scroll (1366 and 900 px). |
+| 2026-10-12 | D-114 commit | Claude, founder's Windows machine with Docker | typecheck, lint, test OK; build OK; e2e 23/23 incl. the new `saved-address.spec.ts` (a signed-in order saves its address; the next checkout opens at Delivery with it). Production checkout read from Vercel logs: the 500 was Supabase's "Invalid API key" (fixed by the founder's redeploy); since then it answers 503 "closed": no open cycle or delivery days on production. |
 
 ## Known leftovers
 - App bundle ids are still `com.indianwholesaleclub.app` (`apps/app/app.json`); they change with the domain (Q-9).
