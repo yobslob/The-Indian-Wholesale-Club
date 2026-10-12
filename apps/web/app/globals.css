@@ -35,6 +35,16 @@
     outline-offset: 2px;
   }
 
+  /* Text fields: a soft brand halo grows around the one being typed in (D-116), on top of the ink border. */
+  :where(input, textarea, select).border-line {
+    transition:
+      border-color 0.2s ease,
+      box-shadow 0.25s ease;
+  }
+  :where(input, textarea, select).border-line:focus {
+    box-shadow: 0 0 0 4px color-mix(in srgb, theme('colors.brand') 12%, transparent);
+  }
+
   @media (prefers-reduced-motion: reduce) {
     * {
       animation: none !important;
@@ -567,6 +577,34 @@
   }
   .site-panel-small {
     margin-top: 20px;
+  }
+  /* What a panel holds slides in one after another as it opens (D-116): the menu's links, the bag's lines. */
+  .site-panel[data-open] :is(.site-panel-big, .site-panel-small, .bag-panel ul) > li {
+    animation: panel-item 0.55s cubic-bezier(0.22, 1, 0.36, 1) backwards;
+  }
+  .site-panel[data-open] :is(.site-panel-big, .site-panel-small, .bag-panel ul) > li:nth-child(1) {
+    animation-delay: 0.12s;
+  }
+  .site-panel[data-open] :is(.site-panel-big, .site-panel-small, .bag-panel ul) > li:nth-child(2) {
+    animation-delay: 0.17s;
+  }
+  .site-panel[data-open] :is(.site-panel-big, .site-panel-small, .bag-panel ul) > li:nth-child(3) {
+    animation-delay: 0.22s;
+  }
+  .site-panel[data-open] :is(.site-panel-big, .site-panel-small, .bag-panel ul) > li:nth-child(4) {
+    animation-delay: 0.27s;
+  }
+  .site-panel[data-open] :is(.site-panel-big, .site-panel-small, .bag-panel ul) > li:nth-child(n + 5) {
+    animation-delay: 0.32s;
+  }
+  .site-panel-small {
+    --from: 12px;
+  }
+  @keyframes panel-item {
+    from {
+      opacity: 0;
+      transform: translateX(var(--from, 28px));
+    }
   }
   .site-panel-small a {
     display: block;

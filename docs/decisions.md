@@ -292,4 +292,11 @@ for reduced motion; only transform and opacity in loops).
   filled in ink, slid into view.
 - **Product page:** Details and Size chart open smoothly and the + folds into a −; "In stock" has a slow breathing dot;
   the region · type · category line gets even spacing.
+- **Panels and fields (web):** the menu's links and the bag panel's lines slide in one after another as the panel
+  opens; a text field being typed in gets a soft brand halo.
+- **App:** the same free-delivery pill above the tabs (Reanimated; the glow is drawn with layered halos so Android
+  shows it too) and the same meter line in the Bag's summary, whose Subtotal now lines up with the rows under it. The
+  tab bar's brand marker glides to the chosen tab, the current tab's icon is filled and springs, the bag count pops
+  when it grows. The card's + squeezes under the finger and springs back filled with the brand colour. Explore's
+  States · Clothing · Food · Home & gifts are sized by their words, so "Home & gifts" is no longer cut off.
 *Claude's choices in it (proposed):* everything above; each is its own small change and can be undone alone.

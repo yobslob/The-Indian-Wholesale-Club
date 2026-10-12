@@ -114,7 +114,7 @@ export default function ExploreScreen(): React.JSX.Element {
               accessibilityRole="tab"
               accessibilityState={{ selected: tab === t.key }}
               onPress={() => setTab(t.key)}
-              className={`min-h-[38px] flex-1 items-center justify-center rounded-pill ${tab === t.key ? 'border-line bg-paper border' : ''}`}
+              className={`min-h-[38px] grow items-center justify-center rounded-pill px-2.5 ${tab === t.key ? 'border-line bg-paper border' : ''}`}
             >
               <Text numberOfLines={1} adjustsFontSizeToFit className={`font-ui text-sm ${tab === t.key ? 'text-ink' : 'text-ink-muted'}`}>
                 {t.label}

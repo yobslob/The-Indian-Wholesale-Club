@@ -2,6 +2,14 @@ import Ionicons from '@expo/vector-icons/Ionicons';
 import { Link } from 'expo-router';
 import { memo, useState } from 'react';
 import { Dimensions, Pressable, Text, View } from 'react-native';
+import Animated, {
+  useAnimatedStyle,
+  useReducedMotion,
+  useSharedValue,
+  withSequence,
+  withSpring,
+  withTiming,
+} from 'react-native-reanimated';
 
 import { formatUsd } from '@repo/shared/domain';
 import tokens from '@repo/tokens';
@@ -21,10 +29,15 @@ type CardData = ProductCardData & Partial<Pick<RegionProductCard, 'available' | 
 function QuickAdd({ product }: { product: CardData }): React.JSX.Element {
   const add = useBag((s) => s.add);
   const [added, setAdded] = useState(false);
-  const round = 'bg-paper border-line absolute bottom-2.5 right-2.5 h-10 w-10 items-center justify-center rounded-full border';
+  // D-116: a press squeezes the + and it springs back filled with the brand colour, a check in it.
+  const scale = useSharedValue(1);
+  const reduce = useReducedMotion();
+  const pressStyle = useAnimatedStyle(() => ({ transform: [{ scale: scale.value }] }));
+  const round =
+    'bg-paper border-line absolute bottom-2.5 right-2.5 h-10 w-10 items-center justify-center rounded-full border';
   if (product.available === 0) {
     return (
-      <View className="bg-paper absolute bottom-2.5 right-2.5 rounded-pill px-3 py-1.5">
+      <View className="bg-paper rounded-pill absolute bottom-2.5 right-2.5 px-3 py-1.5">
         <Text className="font-ui text-ink-muted text-xs">Sold out</Text>
       </View>
     );
@@ -32,7 +45,13 @@ function QuickAdd({ product }: { product: CardData }): React.JSX.Element {
   const quick = product.quick_add;
   if (!quick) {
     return (
-      <Link href={{ pathname: '/product/[region]/[slug]', params: { region: product.region_slug, slug: product.slug } }} asChild>
+      <Link
+        href={{
+          pathname: '/product/[region]/[slug]',
+          params: { region: product.region_slug, slug: product.slug },
+        }}
+        asChild
+      >
         <Pressable accessibilityLabel={`Choose options for ${product.name}`} className={round}>
           <Ionicons name="add" size={20} color={tokens.colors.ink} />
         </Pressable>
@@ -40,30 +59,49 @@ function QuickAdd({ product }: { product: CardData }): React.JSX.Element {
     );
   }
   return (
-    <Pressable
-      accessibilityRole="button"
-      accessibilityLabel={added ? `${product.name} added to your bag` : `Add ${product.name} to your bag`}
-      className={round}
-      onPress={() => {
-        add(
-          {
-            variantId: quick.variant_id,
-            productId: product.id,
-            productName: product.name,
-            productSlug: product.slug,
-            regionSlug: product.region_slug,
-            regionName: product.region_name,
-            variantLabel: quick.label,
-            unitPriceCents: quick.price_cents,
-            imagePath: product.primary_image_path,
-          },
-          1,
-        );
-        setAdded(true);
-      }}
-    >
-      <Ionicons name={added ? 'checkmark' : 'add'} size={20} color={tokens.colors.ink} />
-    </Pressable>
+    <Animated.View className="absolute bottom-2.5 right-2.5" style={pressStyle}>
+      <Pressable
+        accessibilityRole="button"
+        accessibilityLabel={
+          added ? `${product.name} added to your bag` : `Add ${product.name} to your bag`
+        }
+        className={`h-10 w-10 items-center justify-center rounded-full border ${added ? 'bg-brand border-brand' : 'bg-paper border-line'}`}
+        onPressIn={() => {
+          if (!reduce) scale.value = withTiming(0.86, { duration: 90 });
+        }}
+        onPressOut={() => {
+          if (!reduce) scale.value = withSpring(1, { damping: 9, stiffness: 300 });
+        }}
+        onPress={() => {
+          add(
+            {
+              variantId: quick.variant_id,
+              productId: product.id,
+              productName: product.name,
+              productSlug: product.slug,
+              regionSlug: product.region_slug,
+              regionName: product.region_name,
+              variantLabel: quick.label,
+              unitPriceCents: quick.price_cents,
+              imagePath: product.primary_image_path,
+            },
+            1,
+          );
+          setAdded(true);
+          if (!reduce)
+            scale.value = withSequence(
+              withTiming(1.18, { duration: 120 }),
+              withSpring(1, { damping: 7, stiffness: 260 }),
+            );
+        }}
+      >
+        <Ionicons
+          name={added ? 'checkmark' : 'add'}
+          size={20}
+          color={added ? tokens.colors['on-brand'] : tokens.colors.ink}
+        />
+      </Pressable>
+    </Animated.View>
   );
 }
 
@@ -88,8 +126,17 @@ export const ProductCard = memo(function ProductCard({
   return (
     <View className={`${width} gap-2.5`}>
       <View>
-        <Link href={{ pathname: '/product/[region]/[slug]', params: { region: product.region_slug, slug: product.slug } }} asChild>
-          <Pressable accessibilityLabel={product.name} className="bg-land aspect-[3/4] overflow-hidden rounded-[18px]">
+        <Link
+          href={{
+            pathname: '/product/[region]/[slug]',
+            params: { region: product.region_slug, slug: product.slug },
+          }}
+          asChild
+        >
+          <Pressable
+            accessibilityLabel={product.name}
+            className="bg-land aspect-[3/4] overflow-hidden rounded-[18px]"
+          >
             {product.primary_image_path ? (
               <Photo
                 path={product.primary_image_path}
@@ -102,7 +149,7 @@ export const ProductCard = memo(function ProductCard({
               <Text className="font-ui text-ink-muted m-auto text-xs">Photo coming soon</Text>
             )}
             {badge ? (
-              <View className="bg-paper absolute left-2.5 top-2.5 rounded-pill px-2.5 py-1">
+              <View className="bg-paper rounded-pill absolute left-2.5 top-2.5 px-2.5 py-1">
                 <Text className="font-ui text-ink text-[11px]">{badge}</Text>
               </View>
             ) : null}

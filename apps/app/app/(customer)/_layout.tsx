@@ -1,6 +1,6 @@
 import { Redirect, Tabs } from 'expo-router';
 
-import { FreeDeliveryBar } from '@/features/cart/charges';
+import { FreeDeliveryBar } from '@/features/cart/free-delivery-pill';
 import { bagCount, useBag } from '@/features/cart/store';
 import { TabBar } from '@/features/shell/tab-bar';
 import { useSession } from '@/lib/session';

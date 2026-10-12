@@ -96,9 +96,10 @@ export default function BagScreen(): React.JSX.Element {
             })}
           </View>
           <View className="gap-1">
-            <Text className="font-ui text-ink text-base">
-              Subtotal <Text className="font-ui-semibold">{formatUsd(bagSubtotalCents(lines))}</Text>
-            </Text>
+            <View className="flex-row items-baseline justify-between gap-3">
+              <Text className="font-ui text-ink text-base">Subtotal</Text>
+              <Text className="font-ui-semibold text-ink text-base">{formatUsd(bagSubtotalCents(lines))}</Text>
+            </View>
             <ChargeRows />
             <Body muted>Tax and delivery dates are shown at checkout.</Body>
           </View>
