@@ -30,6 +30,7 @@ async function search(ctx: RunContext, target: SourcingTarget): Promise<Offer[]>
       try {
         const offers = await shopFor(shop.reader).search(ctx.lanes.of(shop.site), target.query);
         ctx.stats.page(shop.site);
+        log(`  ${shop.site}: ${offers.length} result${offers.length === 1 ? '' : 's'}`);
         return offers;
       } catch (error) {
         ctx.stats.page(shop.site, error);
@@ -115,6 +116,7 @@ async function tryCandidate(
   const s = ctx.plan.settings;
   const shop = shopOf(ctx, c.best.site);
   if (!shop) return `${c.best.site}: not an enabled shop`;
+  log(`  reading ${c.best.site}: ${c.best.title.slice(0, 80)}`);
   const read = await readPage(ctx, c.best.site, c.best.url);
   if (!read?.product) return `${c.best.site}: page unreadable`;
   if (!targetMatcher(target).matches(read.product.title))
@@ -168,6 +170,9 @@ export async function findForTarget(ctx: RunContext, target: SourcingTarget): Pr
     now: ctx.now,
     limit: s.listings_per_target,
   });
+  log(
+    `  ${candidates.length} candidate${candidates.length === 1 ? '' : 's'} are the target, in stock and fast enough`,
+  );
   let added = 0;
   const reasons: string[] = [];
   for (const c of candidates) {

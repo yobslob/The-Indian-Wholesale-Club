@@ -4,6 +4,8 @@ import { createClient, type SupabaseClient } from '@supabase/supabase-js';
 
 import { planSchema, type SourcingPlan } from '@repo/shared/sourcing/auto';
 
+import { describeNetError, supabaseFetch } from './net';
+
 import type { Env } from './env';
 
 /**
@@ -17,12 +19,21 @@ export class Db {
   static async signIn(env: Env): Promise<Db> {
     const client = createClient(env.IWC_SUPABASE_URL, env.IWC_SUPABASE_ANON_KEY, {
       auth: { persistSession: false, autoRefreshToken: true },
+      global: { fetch: supabaseFetch },
     });
     const { error } = await client.auth.signInWithPassword({
       email: env.IWC_WORKER_EMAIL,
       password: env.IWC_WORKER_PASSWORD,
     });
-    if (error) throw new Error(`Worker sign-in failed: ${error.message}`);
+    if (error) {
+      const why = (error as { originalError?: unknown }).originalError;
+      throw new Error(
+        `Worker sign-in failed: ${why ? describeNetError(why) : error.message}` +
+          (error.status
+            ? ''
+            : ` (check IWC_SUPABASE_URL and this PC's internet; \`pnpm sourcing doctor\` tests the road)`),
+      );
+    }
     return new Db(client);
   }
 

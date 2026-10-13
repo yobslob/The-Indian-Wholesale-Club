@@ -1,7 +1,5 @@
 import { chromium, type BrowserContext, type Page } from 'playwright';
 
-import { looksBlocked } from '@repo/shared/sourcing';
-
 import type { Env } from './env';
 
 /**
@@ -24,8 +22,30 @@ export async function openBrowser(
     viewport: { width: 1366, height: 900 },
     locale: 'en-IN',
     timezoneId: 'Asia/Kolkata',
-    args: opts.headless ? [] : ['--window-position=-2400,0'],
+    // the browser a person uses: no "controlled by automated software" flag for shops to refuse
+    ignoreDefaultArgs: ['--enable-automation'],
+    args: [
+      '--disable-blink-features=AutomationControlled',
+      ...(opts.headless ? [] : ['--window-position=-2400,0']),
+    ],
   });
+  // The page readers are sent to the page as source; tsx names functions with a `__name` helper the page lacks.
+  await context.addInitScript({ content: 'globalThis.__name = globalThis.__name || ((f) => f);' });
+  if (opts.headless) {
+    // headless Chrome says "HeadlessChrome" in its user agent, which some shops (Zepto) answer with an error
+    const probe = await context.newPage();
+    const agent = (await probe.evaluate('navigator.userAgent')) as string;
+    await probe.close();
+    if (/Headless/.test(agent)) {
+      const real = agent.replace('HeadlessChrome', 'Chrome');
+      context.on('page', (page) => {
+        void context
+          .newCDPSession(page)
+          .then((cdp) => cdp.send('Network.setUserAgentOverride', { userAgent: real }))
+          .catch(() => undefined);
+      });
+    }
+  }
   if (!opts.images) {
     // pages read faster without photos, fonts and video; photos are fetched on their own when a listing is made
     await context.route('**/*', (route) =>
@@ -78,13 +98,24 @@ export class Lane {
   }
 }
 
-/** Opens a page and fails clearly when the shop shows a robot check instead. */
+const ROBOT_CHECK =
+  /captcha|robot check|are you a robot|not a robot|verify you are (a )?human|access denied|request blocked|pardon our interruption|unusual traffic/i;
+
+/**
+ * Opens a page and fails clearly when the shop shows a robot check instead. It looks at what the page shows, not
+ * its source: a normal shop page often loads a captcha script it never shows.
+ */
 export async function open(page: Page, url: string, waitFor?: string): Promise<void> {
-  await page.goto(url, { waitUntil: 'domcontentloaded', timeout: TIMEOUT_MS });
+  const res = await page.goto(url, { waitUntil: 'domcontentloaded', timeout: TIMEOUT_MS });
   if (waitFor) await page.waitForSelector(waitFor, { timeout: 15_000 }).catch(() => undefined);
   else await page.waitForLoadState('load', { timeout: 15_000 }).catch(() => undefined);
-  const html = await page.content();
-  if (looksBlocked(html)) throw new Error('the shop showed a robot check');
+  const shown = (await page.evaluate(
+    "document.title + ' ' + (document.body ? document.body.innerText : '').slice(0, 4000)",
+  )) as string;
+  if (ROBOT_CHECK.test(shown) && shown.length < 3000)
+    throw new Error('the shop showed a robot check');
+  if (res && res.status() >= 400 && shown.trim().length < 200)
+    throw new Error(`the shop answered ${res.status()}`);
 }
 
 export class Lanes {

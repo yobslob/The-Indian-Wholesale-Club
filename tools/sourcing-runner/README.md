@@ -43,7 +43,12 @@ pnpm sourcing run              the checks that are due, then the queued targets
 pnpm sourcing run --checks     only the checks
 pnpm sourcing run --targets    only the targets
 pnpm sourcing try "kasuri methi" --type food    a dry run: what it would add (nothing is written)
+pnpm sourcing doctor           tests the road to IWC's database and the worker sign-in
 ```
+
+Indian ISPs have answered Supabase's addresses wrongly before (Jio, Airtel and ACT in early 2026; Node says only
+"fetch failed"). When the normal road fails, the runner looks Supabase up over HTTPS at Cloudflare or Google and
+carries on, and says so in the log. `doctor` shows which step fails: this network's DNS, public DNS, HTTPS, sign-in.
 
 It logs to the console and `sourcing.log`. Each shop gets one page at a time with a pause of 2.5–4 seconds between
 pages; the shops run side by side. How long a full run takes is not measured yet (first run at the hub).

@@ -7,6 +7,7 @@ import { Db } from './db';
 import { loadEnv } from './env';
 import { findForTarget } from './find';
 import { errorText, log, ShopStats } from './log';
+import { describeNetError, resolveOverHttps } from './net';
 
 import type { SourcingPlan } from '@repo/shared/sourcing/auto';
 
@@ -16,6 +17,7 @@ import type { SourcingPlan } from '@repo/shared/sourcing/auto';
  *   pnpm sourcing run                    the weekly checks that are due, then the queued targets
  *   pnpm sourcing run --checks           only the checks      (--targets: only the targets)
  *   pnpm sourcing try "kasuri methi" --type food    a dry run: what it would add, nothing written
+ *   pnpm sourcing doctor                 tests the road to Supabase and the worker sign-in
  * Windows Task Scheduler runs `run` once a day (README.md).
  */
 
@@ -37,6 +39,40 @@ async function setup(): Promise<void> {
     'Set the hub address (or its pincode) on each tab, then close the browser. The profile keeps it.',
   );
   await new Promise<void>((resolve) => context.on('close', () => resolve()));
+}
+
+/** What stands between this PC and IWC's database: DNS, public DNS, HTTPS, the worker sign-in. */
+async function doctor(): Promise<number> {
+  const env = loadEnv(true);
+  const host = new URL(env.IWC_SUPABASE_URL).hostname;
+  const { lookup } = await import('node:dns/promises');
+  const step = async (name: string, work: () => Promise<string>): Promise<boolean> => {
+    try {
+      log(`ok    ${name}: ${await work()}`);
+      return true;
+    } catch (error) {
+      log(`FAIL  ${name}: ${describeNetError(error)}`);
+      return false;
+    }
+  };
+  await step("this network's DNS", async () =>
+    (await lookup(host, { all: true })).map((a) => a.address).join(', '),
+  );
+  await step('public DNS (Cloudflare/Google)', async () =>
+    (await resolveOverHttps(host)).join(', '),
+  );
+  await step('Supabase over HTTPS', async () => {
+    const res = await fetch(`${env.IWC_SUPABASE_URL}/auth/v1/health`, {
+      headers: { apikey: env.IWC_SUPABASE_ANON_KEY },
+      signal: AbortSignal.timeout(15_000),
+    });
+    return `HTTP ${res.status}`;
+  });
+  const signedIn = await step('worker sign-in (with public DNS if needed)', async () => {
+    await Db.signIn(env);
+    return 'signed in as the worker';
+  });
+  return signedIn ? 0 : 1;
 }
 
 async function run(args: string[]): Promise<number> {
@@ -161,10 +197,12 @@ const main =
       ? run(args)
       : command === 'try'
         ? dryRun(args)
-        : null;
+        : command === 'doctor'
+          ? doctor()
+          : null;
 if (!main) {
   console.log(
-    'Usage: pnpm sourcing setup | run [--checks|--targets] | try "<query>" --type food|clothing|home [--match "regex"]',
+    'Usage: pnpm sourcing setup | doctor | run [--checks|--targets] | try "<query>" --type food|clothing|home [--match "regex"]',
   );
   process.exit(2);
 }
