@@ -1,6 +1,7 @@
 import { sourcedProductSchema, type RawCapture, type SourcedProduct } from './capture';
 import { htmlToText, oneLine, parseRupeesToPaise } from './text';
 import { cleanSourceUrl, siteOf } from './url';
+import { amazonVariants, myntraVariants, shopifyVariants, swatchVariants } from './variants';
 
 type Obj = Record<string, unknown>;
 const isObj = (v: unknown): v is Obj => typeof v === 'object' && v !== null && !Array.isArray(v);
@@ -218,10 +219,25 @@ export function normalizeCapture(raw: RawCapture): SourcedProduct | null {
     if (sizes.length) out.sizes = sizes;
     const category = oneLine(str(ld.category));
     if (category) out.hints = [category];
+    // quick-commerce shops put "Key Features", "Shelf Life", "Ingredients" here
+    out.specs = asArray(ld.additionalProperty)
+      .filter(isObj)
+      .map((p) => [oneLine(str(p.name)), htmlToText(str(p.value))] as [string, string]);
   }
   if (isObj(raw.myntra)) fromMyntra(raw.myntra, out);
   if (raw.amazon) fromAmazon(raw.amazon, out);
   if (!out.images?.length && raw.dom?.images) out.images = raw.dom.images;
+
+  const price = out.pricePaise ?? null;
+  const variants = raw.amazon
+    ? amazonVariants(raw.amazon, site, price, out.inStock ?? null)
+    : isObj(raw.myntra)
+      ? myntraVariants(raw.myntra, url, price)
+      : raw.swatch
+        ? swatchVariants(raw.swatch, url, price, out.mrpPaise ?? null, out.inStock ?? null)
+        : raw.shopify
+          ? shopifyVariants(raw.shopify, url)
+          : [];
 
   if (!out.currency && INDIAN_SITE.test(site)) out.currency = 'INR';
   const product = {
@@ -242,6 +258,8 @@ export function normalizeCapture(raw: RawCapture): SourcedProduct | null {
     inStock: out.inStock ?? null,
     sizes: (out.sizes ?? []).slice(0, 40),
     hints: (out.hints ?? []).map((h) => h.slice(0, 120)).slice(0, 10),
+    variants,
+    deliveryText: oneLine(raw.delivery ?? '').slice(0, 300) || null,
   };
   if (!product.title || (!product.images.length && product.pricePaise === null)) return null;
   const parsed = sourcedProductSchema.safeParse(product);

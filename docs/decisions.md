@@ -328,3 +328,43 @@ What it means for the build:
   Privacy, Terms) fell back to a full page load instead of the glass panel (D-092): Vercel's 5-minute re-render of the
   cached intercepted route answered 404, and each page view also sent seven failing prefetches. The panel routes now
   render on request and links to info pages are not prefetched.
+**D-118 · 2026-10-13 · founder: Auto-sourcing from targets, variants of every kind, a weekly price and stock check**
+Founder, verbatim: "Alright all of your csv is approved, your rules are correct, drop the held items, and now although
+we have to preserve the bookmark process for the admin, but we will have to smartly automate the inventory ingestion,
+so make something which picks the category say himachali rajma then finds it on the web then only adds those pieces to
+iwc which provide under 2-3 days delivery for e.g. zepto, blinkit, bigbasket, instamart, amazon, flipkart, myntra for
+clothes, oyela, nishorama, offduty. Also one addition, generalise the category on items like, different colors for
+clothes, different types for edibles like i found different types which i attached. make something for this and also a
+weekly check strictly on prices and stock of everything, if it changes on indian website(linked to product in backend)
+then it changes on iwc too. Be very smart, optimal and efficient about this process." (with a screenshot of Amazon's
+"Flavour Name" picker: Assorted, Chocolate Malai, Crushed Peanut, Malai and Mawa Malai Chikki, each with its own price).
+The approved list is the state bestseller list of 2026-10-12 (282 products after the 14 "can't ship yet" rows were
+dropped: Indian rice, fresh mithai, mustard oil).
+What it means for the build (migrations `supabase/migrations/20261013090000_auto_sourcing.sql`, `..._0100_variant_prices`,
+`..._0200_sourcing_worker`; the runner `tools/sourcing-runner`; the rules in `packages/shared/src/sourcing/auto`):
+- **Targets** (`/admin/import/auto`): a name, the words to search and to require, a state, a type and category,
+  a tier. The list is added from a CSV (the bestseller list's columns).
+- **The sourcing runner** runs on a PC in India whose browser has the hub's address set on each shop. Per target it
+  searches every enabled shop of that type side by side; keeps results that are the target (the target's words, and
+  no other form of it: rajma masala is not rajma), in stock and reaching the hub within **3 days**; puts the same
+  product on several shops together (the others are backup sources); reads the best pages and adds up to 3 listings,
+  different brands first, each with all its items as variants and its photos copied. A page that shows its own
+  delivery date (Amazon, Flipkart, quick commerce) must show one within the limit; shops whose pages don't (Myntra
+  without a pincode, Shopify shops) count as the founder's 2–3 days. The bookmark import stays as it was and now keeps
+  the page's variants with their own prices too.
+- **Variants of every kind**: a variant's options are colour, flavour, type (`style`), pack and size; the product page
+  shows one row per option that differs. A variant can have its own shop price (`product_variants.shop_price_paise`)
+  and is priced from it at its own weight; the product shows its lowest variant price.
+- **The weekly check**: every sourced listing (found or imported by hand) is read again every 7 days, each page once.
+  Prices follow the shop; a variant sold out on its shop stops selling (pieces already ordered stay reserved) and comes
+  back when the shop has it again; the cheapest in-stock source within the delivery limit is the one the India desk
+  orders from; a new flavour or pack on the page becomes a new variant; a page unreadable twice stops that source.
+- None of it reaches customers (D-003): sources, shops, targets and runs are admin and worker only, and the listing's
+  words are cleaned of every mention of the shop, delivery, returns and offers.
+*Claude's choices in it (proposed, the founder confirms or changes in the admin):* 3 listings per target; a price that
+rises more than 60% or falls more than 50% since the last check is held for an admin instead of followed (a wrong pack
+or a page error, not a real price); 5 pieces on sale per variant while the shop has it (D-110's cap); 40 targets per
+daily run; a target with nothing found is searched again after 30 days; new listings wait as drafts until an admin
+publishes them ("go live by themselves" is a switch), and go live only with a photo and every detail customers must see.
+Nishorama's shop address (`nishorama.com`) and its platform are assumed until the first run shows them.
+

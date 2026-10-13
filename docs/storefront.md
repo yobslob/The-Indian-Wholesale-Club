@@ -9,7 +9,8 @@ Anything not on this list stays off customer surfaces: pages, app, emails, API r
 JSON sent to the browser.
 - **Region:** name, greeting (approved text only, D-019), tagline, story, image, accent colour.
 - **Product:** name, summary, description, story, craft/style name (e.g. "Kanjeevaram silk"), type, category, attributes
-  (fibre and care, or ingredients, allergens and shelf life), photos, price, variants (size/colour/weight), availability count, and
+  (fibre and care, or ingredients, allergens and shelf life), photos, price, variants (one row of choices per option that differs: colour, flavour, type, pack, size;
+  each variant can have its own price, D-118), availability count, and
   **"Made in India" / "Imported"**.
 - **Delivery:** the estimated delivery window, and "order by <date>" (D-035).
 - **Own orders:** number, items, totals, customer-facing status (`flows.md` §8), delivery window, US carrier + tracking link.

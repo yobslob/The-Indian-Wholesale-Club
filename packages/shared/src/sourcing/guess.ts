@@ -1,7 +1,8 @@
 import { parseGrams, parseShelfLifeDays } from './text';
 
-import type { ProductType } from '../domain/product-types';
 import type { SourcedProduct } from './capture';
+import type { VariantOptions } from '../domain/listing';
+import type { ProductType } from '../domain/product-types';
 
 /**
  * First guesses for the import form (D-110). They only pre-fill it: the admin confirms the state, type and category
@@ -351,4 +352,49 @@ export function sourcedVariants(
       qty: s.available ? qty : 0,
       ...weight,
     }));
+}
+
+/**
+ * The listing's variants from an imported page (D-118): the page's own items when it shows several (flavours, packs,
+ * colours with sizes), each with its own shop price and the shop's id for the weekly check; otherwise its sizes
+ * (sourcedVariants). An item the shop has run out of gets 0 pieces.
+ */
+export function importVariants(
+  product: SourcedProduct,
+  qty: number,
+  weightG: number | null,
+): {
+  label: string;
+  options: VariantOptions;
+  qty: number;
+  weight_g?: number;
+  shop_price_paise?: number;
+  source: { key: string; url: string; inStock: boolean; pricePaise: number } | null;
+}[] {
+  const priced = product.variants.filter((v) => v.pricePaise);
+  if (priced.length > 1 || (priced.length === 1 && Object.keys(priced[0]!.options).length > 0)) {
+    const seen = new Set<string>();
+    return priced
+      .filter((v) => !seen.has(v.label.toLowerCase()) && !!seen.add(v.label.toLowerCase()))
+      .map((v) => {
+        const weight = v.weightG ?? weightG;
+        return {
+          label: v.label,
+          options: v.options,
+          qty: v.inStock === false ? 0 : qty,
+          ...(weight && weight > 0 ? { weight_g: Math.round(weight) } : {}),
+          shop_price_paise: v.pricePaise!,
+          source: {
+            key: v.key,
+            url: v.url,
+            inStock: v.inStock !== false,
+            pricePaise: v.pricePaise!,
+          },
+        };
+      });
+  }
+  return sourcedVariants(product.sizes, qty, weightG, product.inStock).map((v) => ({
+    ...v,
+    source: null,
+  }));
 }

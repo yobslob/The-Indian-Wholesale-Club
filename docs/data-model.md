@@ -35,7 +35,8 @@ operations data are never queried from customer code.
 | Places | `regions` | the 36 regions (D-002): slug, name, sort, `is_live`, greeting (native + ISO 15924 script + Latin + meaning), languages, tagline, story, hero image, accent colour, `content_status` (D-019) | store (text only if approved) / admin |
 | Catalog | `categories` | browse groups per product type. A child always has its parent's type | store / admin |
 | | `products` | region, category, `product_type`, name, slug, summary, description, story, craft, `attributes` (customer-safe JSON), `price_cents`, `status`, search vector; `vendor_id`*, `shop_price_paise`*, `origin_town`*, `has_origin_label`*, `is_placeholder`*. **Spices are `live` only while "Spices are cleared" is on** (`pricing_settings.spices_cleared`, D-074; on since D-107) | store (live only) / admin |
-| | `product_variants` | `options` JSON, SKU*, label, price override, `weight_g`*, `qty_listed`*, `qty_reserved`*, `qty_confirmed_at`* | store (`available` only) / admin |
+| | `product_variants` | `options` JSON (colour, flavour, style = "Type", pack, size: D-118), SKU*, label, price override, `weight_g`*, `qty_listed`*, `qty_reserved`*, `qty_confirmed_at`*, `shop_price_paise`*, `source_id`* | store (`available` only) / admin |
+| | `product_sources` | the shop items a variant can be ordered as, checked weekly (D-118) | admin / worker via functions |
 | | `variant_availability` | public mirror `variant_id → available`, trigger-maintained, in the Realtime publication (live "only 2 left", D-010) | store (visible products) |
 | | `product_media` | Storage paths (bucket `product-media`), alt text, one primary per product, `is_ai` (an AI-generated model photo, D-100: the product's Details say so) | store / admin |
 | Supply | `vendors` | shop + owner, phone/WhatsApp, address, town, region, payment method + reference (D-029), licences, status, notes, photo; `online_site` = an online shop's host for imported listings (one vendor per shop and state, D-110) | admin |
@@ -46,6 +47,7 @@ operations data are never queried from customer code.
 | | `vendor_submission_photos` | front, back, close-up in bucket `vendor-uploads` (`<vendor>/<submission>/<file>`) with the phone's checks | vendor via functions / admin |
 | | `house_models` | the founder's models (D-104): wears women / men, the front and back pose in `product-media/house-models/<slug>/` | admin |
 | | `photo_jobs` | the GPU worker's queue: one per view of a clothing piece, candidates in bucket `photo-candidates` | worker via functions / admin |
+| | `sourcing_settings`, `sourcing_shops`, `sourcing_targets`, `sourcing_runs` | auto-sourcing's rules, shops, targets and run log (D-118) | admin / worker via functions |
 | | `stock_movements` | append-only ledger, written by trigger only (INV-4) | admin (read) |
 | | `pricing_settings` | one row: FX, freight/kg, duty %, margin %, domestic delivery days, stale-listing days, standard shipping + free threshold, express shipping + express days. Price-suggestion values and days start NULL (Q-15, Q-18); shipping prices set by migration 4 (D-041) | admin |
 | Orders | `orders` | number `IWC-YYMMDD-<10 hex>`, email, internal `status`, `cycle_id`*, `fulfilment_mode` (`order_first`, D-024), `shipping_method` (D-041), `est_delivery_from/_to` (D-008), totals in cents (USD only, D-036), `refunded_cents` (D-042), Stripe ids, address snapshot, tracking, carrier, `notes`* | owner via `store_orders` / admin |
@@ -150,6 +152,26 @@ Migration 31 (D-099, the second speed audit): `admin_order_counts()` (every orde
 send, shops owed for picked pieces) and `admin_cycle_totals(cycle)` (the cycle card's orders, pieces, shops and sales),
 admin only, counted in SQL because the API sends at most 1,000 rows; indexes for orders by status and newest, pickups
 by status, what each shop is owed, and a payout's pieces.
+Migrations 44 – 46 (D-118, auto-sourcing): `sourcing_settings` (one row: delivery limit, listings per target, check
+interval, pieces per variant, targets per run, the price-jump guard, auto-publish), `sourcing_shops` (each shop the
+runner searches: its reader, types, fallback delivery days, on/off, last good run and problem), `sourcing_targets`
+(name, query, `must_match`, type, category, region, tier, status `queued → searching → found / none`, `paused`; one per
+name and state), `product_sources` (every shop item a variant can be ordered as: site, page, item address, `item_key`
+(the shop's id; null for a pre-D-118 import until its first check), price, MRP, stock, delivery days, check date, failed
+reads, a held price in `review` / `review_price_paise`; unique per site and item) and `sourcing_runs` (the run log), all
+admin and worker only; `products.sourcing_target_id`; `product_variants.shop_price_paise` (a variant's own shop price:
+it is auto-priced from it at its own weight, and the product's price is its cheapest variant's, `_product_auto_price`;
+`_reprice_products` reprices variants too) and `source_id` (the source the desk orders from). The runner (role `worker`)
+uses `worker_sourcing_plan(checks)` (settings, shops, the targets it now holds, the listings due a check with their
+sources, the items already listed), `worker_sourcing_add(target, listing)` (a draft listing of the shop's vendor for the
+target's state, `_online_vendor`, with its variants, sources and backups; an item already listed returns that listing),
+`worker_sourcing_media(product, media, publish)` (photos once, under `products/<id>/`; storage allows the upload only
+where `worker_may_add_photos(product)` says), `worker_sourcing_target_done(target, note)`,
+`worker_sourcing_checked(product, results)` (prices and stock follow the shop, a jump beyond the guard is held, new items
+become variants, then `_sourcing_settle`: each variant takes its best usable source, its shop price and a top-up of
+pieces, or stops selling) and `worker_sourcing_log(run)`. Admins decide a held price with
+`admin_sourcing_review(source, accept)`. `admin_create_listing` takes a variant's `shop_price_paise`. Tests:
+`supabase/tests/auto_sourcing.test.sql`.
 Migration 43 (D-115): `pricing_settings.pilot_delivery_days_min/max` (the made-to-order pilot, 12 – 18); while both are
 set, `store_next_delivery()` returns today + those days with a null `order_by`, and a standard `create_order` needs no
 cycle (no `cycle_id`, window from today, pickups at once like express). Both empty = the cycle model.

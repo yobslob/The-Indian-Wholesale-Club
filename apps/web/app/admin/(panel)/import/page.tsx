@@ -48,6 +48,11 @@ export default async function ImportPage(): Promise<React.JSX.Element> {
       <PageHead
         title="Import from shops"
         sub="Pilot listings from Indian online shops: their photos, words and today's price, ordered to the hub once sold."
+        actions={
+          <Link href="/admin/import/auto" className="underline">
+            Auto-sourcing: targets, shops, weekly checks
+          </Link>
+        }
       />
       <Importer data={data} />
       <section aria-labelledby="imported" className="mt-10 space-y-3">

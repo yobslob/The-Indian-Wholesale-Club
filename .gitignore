@@ -82,3 +82,7 @@ supabase/snippets/
 tools/photo-worker/.venv/
 __pycache__/
 tools/photo-worker/worker.log*
+
+# The sourcing runner (tools/sourcing-runner, D-118): its log (its .env is covered above; the browser profile lives
+# outside the repo)
+tools/sourcing-runner/sourcing.log

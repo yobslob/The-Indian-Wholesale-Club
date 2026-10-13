@@ -98,3 +98,71 @@ export async function removeProductMedia(client: IwcClient, productId: string): 
   );
   return rows.map((r) => r.storage_path);
 }
+
+/**
+ * The shop items an imported listing's variants are ordered as (D-118), so the weekly check covers listings imported
+ * by hand too: each variant's item is updated when known (by the shop's id, else by the variant), added otherwise, and
+ * becomes the variant's source when it has none. An item another listing already follows is left to that listing.
+ */
+export async function syncImportSources(
+  client: IwcClient,
+  productId: string,
+  site: string,
+  pageUrl: string,
+  items: {
+    variantId: string;
+    key: string | null;
+    url: string;
+    pricePaise: number;
+    inStock: boolean;
+  }[],
+) {
+  const existing = unwrap(
+    await client
+      .from('product_sources')
+      .select('id, variant_id, item_key')
+      .eq('product_id', productId)
+      .eq('site', site),
+  );
+  const checkedAt = new Date().toISOString();
+  for (const item of items) {
+    const hit = existing.find(
+      (e) => (item.key && e.item_key === item.key) || e.variant_id === item.variantId,
+    );
+    const fields = {
+      page_url: pageUrl,
+      item_url: item.url,
+      price_paise: item.pricePaise,
+      in_stock: item.inStock,
+      checked_at: checkedAt,
+      fail_count: 0,
+      last_error: null,
+    };
+    const { data, error } = hit
+      ? await client
+          .from('product_sources')
+          .update({ ...fields, ...(item.key ? { item_key: item.key } : {}) })
+          .eq('id', hit.id)
+          .select('id')
+          .single()
+      : await client
+          .from('product_sources')
+          .insert({
+            ...fields,
+            product_id: productId,
+            variant_id: item.variantId,
+            site,
+            item_key: item.key,
+          })
+          .select('id')
+          .single();
+    if (error || !data) continue; // that item is another listing's (one listing per shop item)
+    unwrap(
+      await client
+        .from('product_variants')
+        .update({ source_id: data.id })
+        .eq('id', item.variantId)
+        .is('source_id', null),
+    );
+  }
+}

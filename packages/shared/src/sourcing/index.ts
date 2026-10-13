@@ -5,3 +5,5 @@ export * from './html';
 export * from './normalize';
 export * from './text';
 export * from './url';
+export * from './delivery';
+export * from './variants';

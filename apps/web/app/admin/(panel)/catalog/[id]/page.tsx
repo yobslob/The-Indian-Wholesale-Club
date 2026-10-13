@@ -1,11 +1,7 @@
 import Link from 'next/link';
 import { notFound } from 'next/navigation';
 
-import {
-  getAdminProduct,
-  listPricingEstimates,
-  PRICE_SUGGESTION_SETTINGS,
-} from '@repo/db/admin';
+import { getAdminProduct, listPricingEstimates, PRICE_SUGGESTION_SETTINGS } from '@repo/db/admin';
 import { formatUsd, PRODUCT_TYPE_LABEL } from '@repo/shared/domain';
 import { siteLabel } from '@repo/shared/sourcing';
 
@@ -19,7 +15,18 @@ import {
 import { PRODUCT_STATUS, StatusChip } from '@/features/admin/chips';
 import { requireAdminPage } from '@/features/admin/guard';
 import { ProductPhotos } from '@/features/admin/product-photos';
-import { button, Cell, Field, input, PageHead, Table, When } from '@/features/admin/ui';
+import { DetailsForm, SourcesTable } from '@/features/admin/product-sourcing';
+import {
+  button,
+  Cell,
+  Field,
+  input,
+  PageHead,
+  rupees,
+  Sub,
+  Table,
+  When,
+} from '@/features/admin/ui';
 
 type Params = Promise<{ id: string }>;
 type SearchParams = Promise<{ note?: string }>;
@@ -51,13 +58,24 @@ export default async function AdminProductPage({
     <div className="space-y-6">
       <PageHead back={{ href: '/admin/catalog', label: 'Products' }} title={product.name} />
       {note ? (
-        <p role="status" className="border-caution/25 bg-caution/[0.08] text-caution rounded-xl border px-3.5 py-3 text-[14px]">
+        <p
+          role="status"
+          className="border-caution/25 bg-caution/[0.08] text-caution rounded-xl border px-3.5 py-3 text-[14px]"
+        >
           {note}
         </p>
       ) : null}
       <p>
-        <StatusChip map={PRODUCT_STATUS} status={product.status} /> {PRODUCT_TYPE_LABEL[product.product_type]}
-        {product.published_at ? <> · first published <When iso={product.published_at} inline /></> : ''}
+        <StatusChip map={PRODUCT_STATUS} status={product.status} />{' '}
+        {PRODUCT_TYPE_LABEL[product.product_type]}
+        {product.published_at ? (
+          <>
+            {' '}
+            · first published <When iso={product.published_at} inline />
+          </>
+        ) : (
+          ''
+        )}
         {product.status === 'live' ? (
           <>
             {' '}
@@ -74,7 +92,8 @@ export default async function AdminProductPage({
           <a href={product.source_url} target="_blank" rel="noreferrer" className="underline">
             {siteLabel(product.source_site ?? '')}
           </a>{' '}
-          · price checked <When iso={product.source_checked_at} inline /> · to update it, open the page and click Add to IWC (D-110)
+          · price and stock checked <When iso={product.source_checked_at} inline />, then every week
+          by the sourcing runner (D-118)
         </p>
       ) : null}
       <div className="flex flex-wrap gap-2">
@@ -88,9 +107,13 @@ export default async function AdminProductPage({
             </form>
           ))}
       </div>
-      <form action={setProductCuratedAction.bind(null, product.id, !product.is_curated)} className="flex items-center gap-3">
+      <form
+        action={setProductCuratedAction.bind(null, product.id, !product.is_curated)}
+        className="flex items-center gap-3"
+      >
         <span>
-          Curated for you: <strong>{product.is_curated ? 'yes' : 'no'}</strong> (shown on its region page)
+          Curated for you: <strong>{product.is_curated ? 'yes' : 'no'}</strong> (shown on its region
+          page)
         </span>
         <button type="submit" className="min-h-11 underline">
           {product.is_curated ? 'Remove from Curated for you' : 'Add to Curated for you'}
@@ -160,6 +183,8 @@ export default async function AdminProductPage({
         </div>
       </form>
 
+      <DetailsForm id={product.id} type={product.product_type} attributes={product.attributes} />
+
       <section className="space-y-2">
         <h2 className="font-heading text-[15px] font-semibold">Variants and stock</h2>
         <Table
@@ -177,11 +202,14 @@ export default async function AdminProductPage({
               <Cell>
                 {v.label}
                 {v.price_cents ? ` · $${money(v.price_cents)}` : ''}
+                {v.shop_price_paise ? <Sub>shop {rupees(v.shop_price_paise)}</Sub> : null}
               </Cell>
               <Cell>{v.sku}</Cell>
               <Cell>{v.qty_listed}</Cell>
               <Cell>{v.qty_reserved}</Cell>
-              <Cell><When iso={v.qty_confirmed_at} /></Cell>
+              <Cell>
+                <When iso={v.qty_confirmed_at} />
+              </Cell>
               <Cell>
                 <form action={setQtyAction.bind(null, product.id, v.id)} className="flex gap-2">
                   <input
@@ -228,6 +256,8 @@ export default async function AdminProductPage({
           </button>
         </form>
       </section>
+
+      <SourcesTable client={client} productId={product.id} variants={product.variants} />
     </div>
   );
 }

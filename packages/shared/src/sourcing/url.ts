@@ -15,6 +15,12 @@ const LABELS: Record<string, string> = {
   'jiomart.com': 'JioMart',
   'bigbasket.com': 'bigbasket',
   'snapdeal.com': 'Snapdeal',
+  'blinkit.com': 'Blinkit',
+  'zepto.com': 'Zepto',
+  'swiggy.com': 'Instamart',
+  'oyela.in': 'Oyela',
+  'offduty.in': 'Offduty',
+  'nishorama.com': 'Nishorama',
 };
 
 /** The site's host without www. / m. ("myntra.com"), or null for something that is not an http(s) URL. */

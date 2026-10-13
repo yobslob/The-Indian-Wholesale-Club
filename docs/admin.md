@@ -134,5 +134,30 @@ in `packages/shared/src/sourcing/`, the reads and writes in `packages/db/src/adm
   "Also replace" to take the new name, words and photos too. The page lists every imported listing, the one checked
   longest ago first, with a link to open it.
 - **When one sells.** The cycle's pickup cards (web and app) show "Order it online" for an imported piece: the India
-  desk orders it there to the hub, then marks it picked as usual.
+  desk orders it there to the hub, then marks it picked as usual. The product's page lists **Where to order it**: every
+  shop item each variant can be ordered as, the one in use first ("ordered from here", D-118).
+- **Variants with their own prices (D-118).** A page with a variation picker (Amazon's flavours or packs, Flipkart's
+  options, Myntra's sizes, a Shopify shop's colours and sizes) is saved as one listing with a variant per item, each
+  priced from its own shop price; the form lists them. Every import also records its shop items, so the weekly check
+  covers it.
+
+## Auto-sourcing (D-118)
+`/admin/import/auto` (web only; linked from Import from shops). Code: `apps/web/features/admin/import/auto/`, the
+rules in `packages/shared/src/sourcing/auto/`, the reads and writes in `packages/db/src/admin/auto-sourcing.ts`, the
+runner in `tools/sourcing-runner/` (its README says how to set it up on the PC at the hub).
+- **Targets.** "Add targets from a CSV" takes the state bestseller list as it is (columns Product, Type, IWC category,
+  IWC region slug; optionally Tier, Search words, Must match); a row already there for that state is skipped. Each
+  target shows its state: waiting, being searched, found (how many listings), nothing fit (with why), paused; Search
+  again, Pause, Remove.
+- **Found and waiting.** What the runner adds arrives as drafts (in Products → Drafts) unless "go live by themselves"
+  is on. **Publish the ready** publishes every found draft with a photo and every detail customers must see (food only
+  once it is cleared, D-074); the product page has **Details customers see** to finish the others.
+- **Prices held for you.** A price that jumped beyond the rule stops that shop item and waits here: accept the new
+  price, or stop using that shop (the next cheapest in-stock source takes over).
+- **Shops.** Each shop the runner searches, the types it sells, the delivery days used when its page shows none, on or
+  off, its last good run and its last problem (a shop that changed its page shows up here first).
+- **Rules.** Delivery limit (days), listings per target, how often listings are checked, pieces on sale per variant,
+  targets per run, the price-jump guard, and whether new listings go live by themselves.
+- **Recent runs.** What each run did: targets searched, listings added, listings checked, prices and stock changed,
+  prices held, problems.
 

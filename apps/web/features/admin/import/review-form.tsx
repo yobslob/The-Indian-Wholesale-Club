@@ -107,6 +107,7 @@ export function ReviewForm({
     (key: keyof typeof f) => (e: React.ChangeEvent<HTMLInputElement | HTMLTextAreaElement>) =>
       setF((v) => ({ ...v, [key]: e.target.value }));
 
+  const priced = product.variants.filter((v) => v.pricePaise);
   const category = data.categories.find((c) => c.id === categoryId);
   const weight = Number(f.weight) > 0 ? Number(f.weight) : (category?.default_weight_g ?? null);
   const cents = livePrice(toPaise(f.shopPrice), weight, data.pricing, type);
@@ -333,10 +334,20 @@ export function ReviewForm({
           </div>
         )}
         <p className="text-ink-muted text-[12.5px] leading-[1.35]">
-          Sizes:{' '}
-          {product.sizes.length
-            ? product.sizes.map((s) => (s.available ? s.label : `${s.label} (sold out)`)).join(', ')
-            : 'one size'}
+          {priced.length > 1
+            ? `Variants, each priced from its own shop price (D-118): ${priced
+                .map(
+                  (v) =>
+                    `${v.label} ${inr(v.pricePaise!)}${v.inStock === false ? ' (sold out)' : ''}`,
+                )
+                .join(', ')}`
+            : `Sizes: ${
+                product.sizes.length
+                  ? product.sizes
+                      .map((s) => (s.available ? s.label : `${s.label} (sold out)`))
+                      .join(', ')
+                  : 'one size'
+              }`}
         </p>
         <div className="grid grid-cols-2 gap-2.5">
           {field('qty', 'Pieces offered per size', { type: 'number', min: 0, max: 99 })}

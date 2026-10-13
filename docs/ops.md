@@ -169,6 +169,20 @@ For production, once:
 Locally, `pnpm dev:photo-e2e <front> <back> <close-up> --house=<front>,<back>` makes the worker account, signs in as a
 vendor, uploads a piece through the vendor's storage rules and queues its jobs.
 
+## Sourcing runner (D-118; the founder runs every step on production)
+Auto-sourcing and the weekly price and stock check run on a PC **in India** by `tools/sourcing-runner` (its README has
+setup and running). For production, once:
+1. The worker account (above) works; the role `worker` can also run the `worker_sourcing_*` functions and add photos
+   to a listing the runner made (`data-model.md`).
+2. `tools/sourcing-runner/.env` (you write it, never committed): `IWC_SUPABASE_URL`, `IWC_SUPABASE_ANON_KEY`,
+   `IWC_WORKER_EMAIL`, `IWC_WORKER_PASSWORD`; optionally `IWC_SOURCING_PROFILE` (the browser profile folder),
+   `IWC_SOURCING_CHANNEL` (`chrome`, `msedge`, `chromium`) and `IWC_SOURCING_HEADLESS` (`1` = no window).
+3. `pnpm sourcing setup`, then the hub's address on every shop that opens (Blinkit, Zepto, Instamart, BigBasket: the
+   address; Amazon, Flipkart, Myntra: the pincode). Then the targets: Admin → Import → Auto-sourcing → Add targets from
+   a CSV (the state bestseller list).
+4. Task Scheduler runs `pnpm sourcing run` daily (README). When the PC is off nothing is added or checked; listings keep
+   their last checked price and stock, and the admin page shows the last run.
+
 ## Git
 GitHub `yobslob/The-Indian_Wholesale-Club`, branch `main` (D-014). Claude commits in `C:\kod\root` and the founder pushes.
 Baseline tag `pre-restructure` = the whole pre-IWC codebase (stealth layer included, for reference only).

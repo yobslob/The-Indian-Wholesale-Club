@@ -1,5 +1,7 @@
 import { z } from 'zod';
 
+import { variantOptionsSchema } from '../domain/listing';
+
 /**
  * What the "Add to IWC" button (bookmarklet.ts) or the server's page fetch (html.ts) reads off a shop's product page.
  * It is untrusted input from another site: every field is optional, size-capped, and only ever parsed (normalize.ts),
@@ -30,13 +32,69 @@ export const rawCaptureSchema = z.object({
         .optional(),
       images: z.array(str(2000)).max(80).optional(),
       size: str(100).optional(),
+      asin: str(20).optional(),
+      /** Amazon's variation picker: which option each item (ASIN) has, and the swatches' own prices (D-118). */
+      twister: z
+        .object({
+          dims: z.array(str(60)).max(4).optional(),
+          labels: z.record(str(80)).optional(),
+          values: z.record(z.array(str(120)).max(4)).optional(),
+          swatches: z
+            .array(
+              z.object({
+                asin: str(20),
+                dim: str(60).optional(),
+                label: str(200).optional(),
+                price: str(100).optional(),
+                mrp: str(100).optional(),
+                available: z.boolean().optional(),
+              }),
+            )
+            .max(300)
+            .optional(),
+        })
+        .optional(),
     })
     .optional(),
+  /** The page's delivery promise as printed ("FREE delivery Wednesday, 21 October", "Delivery by Fri, 16 Oct"). */
+  delivery: str(300).optional(),
+  /** Other variations as links (Flipkart): the picked value per option, and the other values' pages. */
+  swatch: z
+    .object({
+      selected: z
+        .array(z.tuple([str(60), str(120)]))
+        .max(4)
+        .optional(),
+      links: z
+        .array(z.object({ url: str(2000), label: str(200), axis: str(60).optional() }))
+        .max(80)
+        .optional(),
+    })
+    .optional(),
+  /** Shopify's own product data on its pages (window.ShopifyAnalytics.meta.product). */
+  shopify: z.unknown().optional(),
   dom: z
     .object({ images: z.array(str(2000)).max(30).optional(), h1: str(1000).optional() })
     .optional(),
 });
 export type RawCapture = z.infer<typeof rawCaptureSchema>;
+
+/**
+ * One buyable item of a product page: a flavour, a pack size, a colour and size. `key` is the shop's id for it (an
+ * ASIN, a Flipkart pid, a Myntra sku, a Shopify variant id) and `url` where it is ordered. Money in paise.
+ */
+export const sourcedVariantSchema = z.object({
+  key: z.string().min(1).max(200),
+  url: z.string().url().max(2000),
+  label: z.string().min(1).max(80),
+  options: variantOptionsSchema,
+  pricePaise: z.number().int().positive().nullable(),
+  mrpPaise: z.number().int().positive().nullable(),
+  inStock: z.boolean().nullable(),
+  weightG: z.number().int().positive().max(50_000).nullable(),
+  image: z.string().url().max(2000).nullable(),
+});
+export type SourcedVariant = z.infer<typeof sourcedVariantSchema>;
 
 /** A product as the importer shows it for review: one shape for every shop. Money in paise (CLAUDE.md rule 5). */
 export const sourcedProductSchema = z.object({
@@ -60,6 +118,10 @@ export const sourcedProductSchema = z.object({
   sizes: z.array(z.object({ label: z.string().min(1).max(40), available: z.boolean() })).max(40),
   /** The shop's own grouping ("Sarees", "Women"), used only to guess the type and category. */
   hints: z.array(z.string().max(120)).max(10),
+  /** Its items, each with its own price and stock when the page shows them (D-118); empty: one item. */
+  variants: z.array(sourcedVariantSchema).max(60).default([]),
+  /** The delivery promise as the page prints it (delivery.ts turns it into days). */
+  deliveryText: z.string().max(300).nullable().default(null),
 });
 export type SourcedProduct = z.infer<typeof sourcedProductSchema>;
 

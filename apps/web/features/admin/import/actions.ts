@@ -11,7 +11,9 @@ import {
   removeProductMedia,
   setListedQty,
   setProductStatus,
+  syncImportSources,
   updateSourcedProduct,
+  updateVariant,
 } from '@repo/db/admin';
 import {
   attributesSchemaFor,
@@ -20,9 +22,9 @@ import {
   type ListingInput,
 } from '@repo/shared/domain';
 import {
+  importVariants,
   siteLabel,
   sourcedProductSchema,
-  sourcedVariants,
   type SourcedProduct,
 } from '@repo/shared/sourcing';
 
@@ -132,12 +134,8 @@ export async function saveImportAction(raw: ImportInput): Promise<ImportResult> 
       error: `Fill in ${String(attributes.error.issues[0]?.path[0] ?? 'the details').replace(/_/g, ' ')}.`,
     };
   const photos = input.photos.filter((p) => input.product.images.includes(p));
-  const variants = sourcedVariants(
-    input.product.sizes,
-    input.qtyPerSize,
-    input.weightG,
-    input.product.inStock,
-  );
+  // the page's flavours, packs or colours with their own prices when it has them, else its sizes (D-118)
+  const variants = importVariants(input.product, input.qtyPerSize, input.weightG);
   const inStock = variants.some((v) => v.qty > 0);
   const checked = new Date().toISOString();
 
@@ -166,6 +164,8 @@ export async function saveImportAction(raw: ImportInput): Promise<ImportResult> 
           const target = Math.max(v.qty, current.qty_reserved);
           if (target !== current.qty_listed)
             await setListedQty(client, current.id, target, `Checked on ${input.product.site}`);
+          if (v.shop_price_paise)
+            await updateVariant(client, current.id, { shop_price_paise: v.shop_price_paise });
         } else {
           next += 1;
           await createVariant(client, {
@@ -177,6 +177,7 @@ export async function saveImportAction(raw: ImportInput): Promise<ImportResult> 
             weight_g: v.weight_g ?? null,
             sort_order: next,
             qty_confirmed_at: checked,
+            shop_price_paise: v.shop_price_paise ?? null,
           });
         }
       }
@@ -189,6 +190,7 @@ export async function saveImportAction(raw: ImportInput): Promise<ImportResult> 
           await setListedQty(client, e.id, e.qty_reserved, `No longer on ${input.product.site}`);
         }
       }
+      await recordSources(client, existing.id, input.product, variants);
       let note: string | undefined;
       if (input.replaceDetails && photos.length) {
         const old = await removeProductMedia(client, existing.id);
@@ -226,7 +228,13 @@ export async function saveImportAction(raw: ImportInput): Promise<ImportResult> 
       summary: input.summary || undefined,
       shop_price_paise: input.shopPricePaise,
       attributes: attributes.data,
-      variants,
+      variants: variants.map((v) => ({
+        label: v.label,
+        options: v.options,
+        qty: v.qty,
+        weight_g: v.weight_g,
+        shop_price_paise: v.shop_price_paise,
+      })),
     } as ListingInput;
     const id = await createListing(client, listing);
     await updateSourcedProduct(client, id, {
@@ -236,6 +244,7 @@ export async function saveImportAction(raw: ImportInput): Promise<ImportResult> 
       source_checked_at: checked,
       source_in_stock: inStock,
     });
+    await recordSources(client, id, input.product, variants);
     const { failed } = await copySourcePhotos(client, id, photos, input.name);
     const status = input.publish ? await publishOrNote(client, id) : { published: false };
     done(id);
@@ -247,6 +256,37 @@ export async function saveImportAction(raw: ImportInput): Promise<ImportResult> 
   } catch (error) {
     return { error: plain(error) };
   }
+}
+
+/** The shop items behind the listing's variants, for the weekly check (D-118). */
+async function recordSources(
+  client: Parameters<typeof syncImportSources>[0],
+  productId: string,
+  product: SourcedProduct,
+  variants: ReturnType<typeof importVariants>,
+): Promise<void> {
+  const saved = await getSourcedProduct(client, product.url);
+  if (!saved) return;
+  const items = saved.variants.flatMap((sv) => {
+    const v = variants.find((x) => x.label.toLowerCase() === sv.label.toLowerCase());
+    if (!v) return [];
+    return [
+      {
+        variantId: sv.id,
+        key: v.source?.key ?? null,
+        url: v.source?.url ?? product.url,
+        pricePaise: v.source?.pricePaise ?? product.pricePaise ?? v.shop_price_paise ?? 0,
+        inStock: v.qty > 0,
+      },
+    ];
+  });
+  await syncImportSources(
+    client,
+    productId,
+    product.site,
+    product.url,
+    items.filter((i) => i.pricePaise > 0),
+  );
 }
 
 function done(id: string): void {

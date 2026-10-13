@@ -1,6 +1,16 @@
 import { z } from 'zod';
 
 import { clothingAttributesSchema, homeAttributesSchema, foodAttributesSchema } from './attributes';
+import { OPTION_KEYS, type OptionKey } from './variant-options';
+
+const optionValue = z.string().trim().min(1).max(40).optional();
+/** What tells variants apart; nothing else may be stored there (customers see it). */
+export const variantOptionsSchema = z
+  .object(
+    Object.fromEntries(OPTION_KEYS.map((k) => [k, optionValue])) as Record<OptionKey, typeof optionValue>,
+  )
+  .strict();
+export type VariantOptions = z.infer<typeof variantOptionsSchema>;
 
 /**
  * A new listing (flows.md §2, C3), as the admin builds it on the web or on a phone and sends it to
@@ -9,16 +19,13 @@ import { clothingAttributesSchema, homeAttributesSchema, foodAttributesSchema } 
  */
 export const listingVariantSchema = z.object({
   label: z.string().trim().min(1).max(80),
-  /** Colour and size drive the product page pickers (variant-options.ts). */
-  options: z
-    .object({
-      colour: z.string().trim().min(1).max(40).optional(),
-      size: z.string().trim().min(1).max(40).optional(),
-    })
-    .strict(),
+  /** Colour, flavour, style, pack and size drive the product page pickers (variant-options.ts, D-118). */
+  options: variantOptionsSchema,
   /** Pieces the shop has now. */
   qty: z.number().int().min(0).max(9999),
   weight_g: z.number().int().positive().max(50_000).optional(),
+  /** This variant's own shop price, when it costs its own amount (a flavour, a pack: D-118). */
+  shop_price_paise: z.number().int().positive().optional(),
 });
 
 const common = {
@@ -40,9 +47,13 @@ export const listingInputSchema = z.discriminatedUnion('product_type', [
 ]);
 export type ListingInput = z.infer<typeof listingInputSchema>;
 
-/** "Red · M", "Red", "M", or "One size": the label customers see on a variant. */
-export function variantLabel(options: { colour?: string; size?: string }): string {
-  return [options.colour?.trim(), options.size?.trim()].filter(Boolean).join(' · ') || 'One size';
+/** "Red · M", "Malai · 500 g", "M", or "One size": the label customers see on a variant. */
+export function variantLabel(options: Partial<Record<OptionKey, string>>): string {
+  return (
+    OPTION_KEYS.map((k) => options[k]?.trim())
+      .filter(Boolean)
+      .join(' · ') || 'One size'
+  );
 }
 
 /** A URL slug from the name, with a short suffix so two listings with one name never clash. */

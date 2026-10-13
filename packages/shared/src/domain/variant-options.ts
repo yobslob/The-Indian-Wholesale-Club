@@ -1,10 +1,12 @@
 /**
- * Colour and size pickers for a product's variants (product page, web and app). A variant's `options` holds its
- * colour and size (`{ colour: 'Maroon', size: 'M' }`); a product with many of each shows two rows of choices instead
- * of one long list. Pure functions, no I/O.
+ * Option pickers for a product's variants (product page, web and app). A variant's `options` holds what tells it
+ * apart: colour and size for clothing, flavour or type and pack size for food, style for anything else
+ * (`{ colour: 'Maroon', size: 'M' }`, `{ flavour: 'Malai', pack: '500 g' }`, D-118); a product with many of each
+ * shows one row of choices per option instead of one long list. Pure functions, no I/O.
  */
 
-export const OPTION_KEYS = ['colour', 'size'] as const;
+/** In the order the rows show. */
+export const OPTION_KEYS = ['colour', 'flavour', 'style', 'pack', 'size'] as const;
 export type OptionKey = (typeof OPTION_KEYS)[number];
 export type Selection = Partial<Record<OptionKey, string>>;
 
@@ -18,19 +20,25 @@ export interface OptionAxis {
   values: string[];
 }
 
-const LABEL: Record<OptionKey, string> = { colour: 'Colour', size: 'Size' };
+export const OPTION_LABEL: Record<OptionKey, string> = {
+  colour: 'Colour',
+  flavour: 'Flavour',
+  style: 'Type',
+  pack: 'Pack',
+  size: 'Size',
+};
 
 const valueOf = (v: WithOptions, key: OptionKey): string | undefined =>
   typeof v.options[key] === 'string' ? (v.options[key] as string) : undefined;
 
 /**
- * The axes to show: colour and/or size, each only when variants differ on it, values in variant order. Empty when
+ * The axes to show: each option only when variants differ on it, values in variant order. Empty when
  * the axes can't tell every variant apart (then the product page falls back to one button per variant).
  */
 export function optionAxes(variants: WithOptions[]): OptionAxis[] {
   const axes = OPTION_KEYS.map((key) => ({
     key,
-    label: LABEL[key],
+    label: OPTION_LABEL[key],
     values: [...new Set(variants.map((v) => valueOf(v, key)).filter((x): x is string => x !== undefined))],
   })).filter((a) => a.values.length > 1);
   if (axes.length === 0) return [];

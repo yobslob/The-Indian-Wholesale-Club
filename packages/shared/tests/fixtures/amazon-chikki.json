@@ -1,0 +1,93 @@
+{
+  "v": 1,
+  "url": "https://www.amazon.in/dp/B09P78ZG2L?th=1",
+  "canonical": "https://www.amazon.in/LONAVALA-FOODS-Famous-Malai-Chikki/dp/B09P78ZG2L",
+  "title": "LONAVALA FOODS Famous Malai Chikki - 500 grams, 48 Pieces | No Added Preservatives And Colours Aromatic Seasme Seed, Crunchy Nuts & Jaggery | Indian Sweet Butter Chikki Bars : Amazon.in: Grocery & Gourmet Foods",
+  "meta": {},
+  "ld": [],
+  "dom": {
+    "h1": "Product summary presents key product information Keyboard shortcut shift + alt + D"
+  },
+  "delivery": "FREE delivery Tuesday, 20 October Limited Period Festive Offer. Details",
+  "amazon": {
+    "title": "LONAVALA FOODS Famous Malai Chikki - 500 grams, 48 Pieces | No Added Preservatives And Colours Aromatic Seasme Seed, Crunchy Nuts & Jaggery | Indian Sweet Butter Chikki Bars",
+    "byline": "Brand: LONAVALA FOODS",
+    "availability": "Only 1 left in stock.",
+    "price": "₹464.00",
+    "mrp": "₹699",
+    "bullets": [
+      "✅ Malai Butter Chikki Bar – A rich, creamy malai-flavored gajak made with aromatic sesame (til), crunchy nuts, and jaggery.",
+      "✅ Preservative-Free & Natural – No added colors or chemicals; made using pure desi ingredients and traditional methods.",
+      "✅ Festive & Everyday Sweet – Suitable for Diwali, Rakhi, gifting, or daily sweet cravings with a healthy twist."
+    ],
+    "description": "LONAVALA FOODS Famous Malai Chikki - 500 grams | No Added Preservatives And Colours | Aromatic Seasme Seed, Crunchy Nuts & Jaggery | Indian Sweet Butter Chikki Bars",
+    "size": "",
+    "specs": [
+      ["Product Dimensions ‏", "‎ 20.5 x 12.5 x 3 cm; 500 g"],
+      ["Country of Origin ‏", "‎ India"],
+      ["Item Weight ‏", "‎ 500 g"],
+      ["Net Quantity ‏", "‎ 500.0 Grams"],
+      ["Generic Name ‏", "‎ Malai Chikki"]
+    ],
+    "images": [
+      "https://m.media-amazon.com/images/I/51wn2YLkHsL._SL1000_.jpg",
+      "https://m.media-amazon.com/images/I/71vHqD9bWpL._SL1350_.jpg",
+      "https://m.media-amazon.com/images/I/61rcP-1tJVL._SL1222_.jpg"
+    ],
+    "asin": "B09P78ZG2L",
+    "important": "Important information Legal Disclaimer: Actual product packaging and materials may contain more and different information than what is shown on our app or website.",
+    "twister": {
+      "values": {
+        "B09P6CV2BK": ["Crushed Peanut Chikki"],
+        "B0BT4TM5HY": ["Chocolate Malai Chikki"],
+        "B09P6H1PZH": ["Assorted Chikki"],
+        "B0BT4S8HGW": ["Mawa Malai Chikki"],
+        "B09P78ZG2L": ["Malai Chikki"]
+      },
+      "dims": ["flavor_name"],
+      "labels": { "flavor_name": "Flavour Name" },
+      "swatches": [
+        {
+          "asin": "B09P78ZG2L",
+          "dim": "flavor_name",
+          "label": "Malai Chikki",
+          "price": "₹464.00",
+          "mrp": "₹699.00",
+          "available": true
+        },
+        {
+          "asin": "B09P6H1PZH",
+          "dim": "flavor_name",
+          "label": "Assorted Chikki",
+          "price": "₹499.00",
+          "mrp": "₹599.00",
+          "available": true
+        },
+        {
+          "asin": "B0BT4TM5HY",
+          "dim": "flavor_name",
+          "label": "Chocolate Malai Chikki",
+          "price": "₹549.00",
+          "mrp": "₹699.00",
+          "available": true
+        },
+        {
+          "asin": "B09P6CV2BK",
+          "dim": "flavor_name",
+          "label": "Crushed Peanut Chikki",
+          "price": "₹549.00",
+          "mrp": "₹799.00",
+          "available": true
+        },
+        {
+          "asin": "B0BT4S8HGW",
+          "dim": "flavor_name",
+          "label": "Mawa Malai Chikki",
+          "price": "₹549.00",
+          "mrp": "₹799.00",
+          "available": true
+        }
+      ]
+    }
+  }
+}

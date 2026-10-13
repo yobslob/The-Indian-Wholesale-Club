@@ -26,19 +26,29 @@ phase's sub-steps and every verification run) is in `docs/archive/status-log-to-
   in the menu); no sideways bleed, no album fade, the footer ends every page; info links open the glass panel on
   Vercel again (the panel routes render on request).
 - **Food (D-110):** the product type `spice` is now `food` (page `/food`; `/spices` redirects).
+- **Auto-sourcing and the weekly check (D-118, 2026-10-13):** targets (`/admin/import/auto`, added from the state
+  bestseller CSV); `tools/sourcing-runner` on a PC in India searches Blinkit, Zepto, Instamart, BigBasket, Amazon,
+  Flipkart, Myntra, Oyela, Nishorama and Offduty, adds listings that reach the hub within 3 days with every variant
+  (colour, flavour, type, pack, size, each with its own price) and backup sources, and re-reads every sourced listing
+  weekly (price, stock, cheapest source; jumps held for an admin). The bookmark import keeps variants and prices too.
 
 ## Next for the founder
 1. Run `node scripts/check.mjs`, push, then run the Deploy workflow: it applies the new migrations (the latest is
-   `20261012150000_home_album`, D-113) to production.
-2. Clear the 2,880 placeholder listings: `pnpm demo:clear … --allow-remote`, then with `--apply` (`ops.md`).
-3. On `/admin/import`, drag **Add to IWC** to the bookmarks bar, open a product on Myntra or Amazon and click it.
-4. Decide: the name "Food" and 5 pieces per size by default (D-110 proposals); D-105's vendor-screen drafts; the four
-   men house models (D-104); Q-35 (US stores).
-5. Before launch: Q-3 (US carrier), Q-9 (domain and support email), Q-32 (holding a piece while paying).
+   `20261013090200_sourcing_worker`, D-118) to production.
+2. Set up the sourcing runner on the hub PC (`tools/sourcing-runner/README.md`): `.env`, `pnpm sourcing setup` with the
+   hub's address on each shop, `pnpm sourcing try "himachali rajma" --type food` (a dry run), then upload the state
+   list CSV at Admin → Import → Auto-sourcing and schedule `pnpm sourcing run` daily.
+3. Clear the 2,880 placeholder listings: `pnpm demo:clear … --allow-remote`, then with `--apply` (`ops.md`).
+4. On `/admin/import`, drag **Add to IWC** to the bookmarks bar, open a product on Myntra or Amazon and click it.
+5. Decide: the name "Food" and 5 pieces per size by default (D-110 proposals); D-118's proposals (3 listings per
+   target, the 60% rise / 50% fall guard, drafts until published, 40 targets a day); D-105's vendor-screen drafts; the
+   four men house models (D-104); Q-35 (US stores).
+6. Before launch: Q-3 (US carrier), Q-9 (domain and support email), Q-32 (holding a piece while paying).
 
 ## Last verification
 | Date | Commit | Where | Result |
 |---|---|---|---|
+| 2026-10-13 | D-118 commit | Claude, cloud sandbox with the founder's `node_modules` (no Docker, no shop access) | tsc web/db/shared/runner clean · unit tests shared 106/106 (auto-sourcing 20), web 37/37 · all 48 migrations + seeds applied and 40/40 SQL test files passed on plain Postgres 16 with a Supabase stand-in · the page readers run in the founder's browser on live Amazon, Flipkart, Myntra, Blinkit and BigBasket pages · `pnpm sourcing try` started and logged each shop (no shop reachable from the sandbox). **Not run:** `next build`, ESLint with the Next plugin, e2e, a full run at the hub, Zepto and Instamart pages. Run `node scripts/check.mjs` before pushing. |
 | 2026-10-12 | b4df0f0 + uncommitted (D-117 fixes) | Claude Code, founder's Windows machine with Docker | docs 1.4s, typecheck 18.0s, lint 24.1s, test 2.7s, db 88.8s, build 80.4s, http 3.2s, bundle 17.5s: OK. e2e first 18/23 (a leftover `next start` of Claude's on port 3000 served the old build while `.next` was rebuilt, so checkout hung at "Checking your bag"); re-run alone on a free port 150.7s, 23/23 OK. No route over budget (11 – 57 ms, 123 – 132 KB). |
 
 ## Known leftovers
