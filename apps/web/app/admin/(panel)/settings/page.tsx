@@ -2,8 +2,8 @@ import { getPricingSettings, listBusinessDetails, listPricingEstimates } from '@
 
 import { updateBusinessDetailsAction, updatePricingSettingsAction, updateFoodClearedAction } from '@/features/admin/actions/settings';
 import { EstimateNote } from '@/features/admin/estimate-note';
-import { ProfitCheck } from '@/features/admin/profit-check';
 import { requireAdminPage } from '@/features/admin/guard';
+import { ProfitCheck } from '@/features/admin/profit-check';
 import { displayValue, SETTING_GROUPS } from '@/features/admin/settings-fields';
 import { button, Field, input, PageHead, SectionTitle, When } from '@/features/admin/ui';
 
