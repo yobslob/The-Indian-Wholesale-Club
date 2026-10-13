@@ -16,8 +16,9 @@ import { cartCount, useCart } from './store';
  * The free-delivery pill (D-111, D-116): once a piece is in the bag, a slim pill floats at the bottom of every store
  * page with the newest photo and the bag's count, how much more unlocks free delivery and, under that line, a bar
  * that fills with light: a glowing head, a shimmer running through the filled part, a flare each time the bag grows.
- * At the line the bar is full and a sheen runs across the pill once. A tap opens the bag. Not on the bag page, which
- * shows the same bar in its summary. The look is `.fd-*` in globals.css.
+ * At the line the bar is full and a sheen runs across the pill once; from there the bar fills again with the bulk
+ * saving until its cap (D-119). A tap opens the bag. Not on the bag page, which shows the same bars in its summary.
+ * The look is `.fd-*` in globals.css.
  */
 export function FreeDeliveryBar(): React.JSX.Element | null {
   const lines = useCart((s) => s.lines);
@@ -37,10 +38,13 @@ export function FreeDeliveryBar(): React.JSX.Element | null {
     };
   }, [visible]);
 
-  const { free, leftCents, share } = visible
+  const { free, leftCents, share, bulk } = visible
     ? freeDelivery(lines, charges)
-    : { free: false, leftCents: 0, share: 0 };
-  const surge = useSurge(share);
+    : { free: false, leftCents: 0, share: 0, bulk: null };
+  // D-119: past the line the bar shows the bulk saving filling up to its cap.
+  const bulkOn = free && bulk !== null && bulk.capCents > 0;
+  const meter = bulkOn && bulk.savingCents > 0 ? bulk.share : free ? 1 : share;
+  const surge = useSurge(meter);
   if (!visible) return null;
 
   const count = cartCount(lines);
@@ -91,7 +95,16 @@ export function FreeDeliveryBar(): React.JSX.Element | null {
       </span>
       <span className="relative z-[1] grid min-w-0 flex-1 gap-[7px]">
         <span className="truncate text-[13.5px] font-medium leading-none sm:text-[14.5px]">
-          {free ? (
+          {bulkOn && bulk.capped ? (
+            <>
+              <b className="font-bold">{formatUsd(bulk.capCents)}</b> off: <b className="font-bold tracking-[0.02em]">BIGGEST SAVING</b>
+            </>
+          ) : bulkOn && bulk.savingCents > 0 ? (
+            <>
+              Saving <b className="font-bold">{formatUsd(bulk.savingCents)}</b>
+              <span className="hidden sm:inline"> · add more, save more</span>
+            </>
+          ) : free ? (
             <>
               <b className="font-bold tracking-[0.02em]">FREE DELIVERY</b> unlocked
             </>
@@ -107,7 +120,7 @@ export function FreeDeliveryBar(): React.JSX.Element | null {
             . Bag, {count} {count === 1 ? 'item' : 'items'}
           </span>
         </span>
-        <FreeMeter share={free ? 1 : share} surge={surge} />
+        <FreeMeter share={meter} surge={surge} />
       </span>
       <svg
         viewBox="0 0 24 24"

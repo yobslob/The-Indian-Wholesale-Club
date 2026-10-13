@@ -26,6 +26,8 @@ export interface CreateOrderInput {
   shippingCents: number;
   /** D-111: the part of shippingCents that is a small order's retailer charges. */
   retailerChargeCents?: number;
+  /** D-119: the part of discountCents that is the bulk saving. */
+  bulkSavingCents?: number;
   taxCents: number;
   totalCents: number;
   paymentIntentId: string;
@@ -98,10 +100,13 @@ export async function createOrder(
   }
   const row = Array.isArray(data) ? data[0] : undefined;
   if (!row) throw new DbError('create_order_empty', 'create_order returned no row');
-  // The split is for the admin's records only (the total already counts it), so it is written beside the order.
-  if (input.retailerChargeCents) {
+  // The splits are for the admin's records only (the total already counts them), so they are written beside the order.
+  if (input.retailerChargeCents || input.bulkSavingCents) {
     unwrap(
-      await service.from('orders').update({ retailer_charge_cents: input.retailerChargeCents }).eq('id', row.order_id),
+      await service
+        .from('orders')
+        .update({ retailer_charge_cents: input.retailerChargeCents ?? 0, bulk_saving_cents: input.bulkSavingCents ?? 0 })
+        .eq('id', row.order_id),
     );
   }
   return { ok: true, orderId: row.order_id, orderNumber: row.order_number };

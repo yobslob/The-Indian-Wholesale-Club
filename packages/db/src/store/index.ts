@@ -221,13 +221,17 @@ export const bagChargesSchema = z.object({
   free_min_cents: z.number().int().nullable(),
   shipping_cents: z.number().int().min(0),
   retailer_cents: z.number().int().min(0),
+  /** D-119: the bulk saving from the line up (% of the amount over it, up to the cap); 0 = none. */
+  bulk_saving_pct: z.number().min(0).default(0),
+  bulk_saving_cap_cents: z.number().int().min(0).default(0),
 });
 export type BagCharges = z.infer<typeof bagChargesSchema>;
 
 /**
  * D-111: a bag's small-order charges (one courier parcel's shipping beyond what the prices carry, and the retailer
  * charges), worked out in the database where the weights are (INV-1). Charged below `free_min_cents`, struck through
- * from it up. The bag, the free-delivery bar and checkout all read this one function.
+ * from it up; from it up the bulk saving's two numbers apply (D-119). The bag, the free-delivery bar and checkout all
+ * read this one function.
  */
 export async function getBagCharges(
   client: IwcClient,

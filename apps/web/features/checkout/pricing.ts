@@ -118,6 +118,8 @@ export async function priceCart(
     flatCents: context.shipping.flat_cents,
     freeMinCents: context.shipping.free_min_cents,
     smallOrder: { shippingCents: charges.shipping_cents, retailerCents: charges.retailer_cents },
+    // D-119: from the line up, the bulk saving (worked out on the discounted subtotal, never from the browser).
+    bulkSaving: { pct: charges.bulk_saving_pct, capCents: charges.bulk_saving_cap_cents },
     express: context.express
       ? { baseCents: context.express.base_cents, minCourierCents: context.express.min_courier_cents }
       : null,

@@ -40,6 +40,8 @@ export function BagSummary({ title, lines, quote }: { title: string; lines: BagL
       {b && quote ? (
         <>
           {b.discountCents > 0 ? <Row label={`Discount (${quote.promoCode ?? ''})`} value={`−${formatUsd(b.discountCents)}`} /> : null}
+          {/* D-119: from the free-shipping line up, the bulk saving. */}
+          {(b.bulkSavingCents ?? 0) > 0 ? <Row label="Bulk saving" value={`−${formatUsd(b.bulkSavingCents)}`} /> : null}
           {quote.shippingMethod === 'express' ? (
             <Row label="Express shipping" value={formatUsd(b.shippingCents)} />
           ) : (

@@ -80,7 +80,9 @@ export async function POST(
         unitPriceCents: l.unitPriceCents,
       })),
       subtotalCents: quote.breakdown.subtotalCents,
-      discountCents: quote.breakdown.discountCents,
+      // D-119: the order's discount is the promo and the bulk saving; the saving's part is kept beside it.
+      discountCents: quote.breakdown.discountCents + quote.breakdown.bulkSavingCents,
+      bulkSavingCents: quote.breakdown.bulkSavingCents,
       // D-111: the retailer charges travel inside the order's shipping; their part is kept beside it.
       shippingCents: quote.breakdown.shippingCents + quote.breakdown.retailerCents,
       retailerChargeCents: quote.breakdown.retailerCents,

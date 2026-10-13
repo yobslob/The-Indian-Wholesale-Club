@@ -29,7 +29,7 @@ export function ChargeLines(): React.JSX.Element | null {
   const lines = useCart((s) => s.lines);
   const charges = useBagCharges();
   if (!charges) return null;
-  const { free, leftCents, line, share } = freeDelivery(lines, charges);
+  const { free, leftCents, line, share, bulk } = freeDelivery(lines, charges);
   const row = 'flex items-baseline justify-between gap-3 text-[14px]';
   return (
     <div className="font-ui grid gap-1" aria-live="polite">
@@ -43,6 +43,12 @@ export function ChargeLines(): React.JSX.Element | null {
           <ChargeValue cents={charges.retailerCents} free={free} />
         </p>
       ) : null}
+      {bulk.savingCents > 0 ? (
+        <p className={row}>
+          <span>Bulk saving</span>
+          <span className="text-positive font-semibold">−{formatUsd(bulk.savingCents)}</span>
+        </p>
+      ) : null}
       {line !== null && !free ? (
         <div className="mt-1.5 grid gap-2">
           <p className="text-brand m-0 text-[13px] font-semibold">
@@ -51,6 +57,22 @@ export function ChargeLines(): React.JSX.Element | null {
           <Meter share={share} />
         </div>
       ) : null}
+      {free ? <BulkHint bulk={bulk} /> : null}
+    </div>
+  );
+}
+
+/** D-119: from the line up, how the bulk saving grows and where it stops. */
+function BulkHint({ bulk }: { bulk: ReturnType<typeof freeDelivery>['bulk'] }): React.JSX.Element | null {
+  if (bulk.capCents === 0) return null;
+  return (
+    <div className="mt-1.5 grid gap-2">
+      <p className="text-brand m-0 text-[13px] font-semibold">
+        {bulk.capped
+          ? `You've unlocked the biggest bulk saving: ${formatUsd(bulk.capCents)}`
+          : `Every ${formatUsd(bulk.perDollarCents ?? 0)} more saves $1 more, up to ${formatUsd(bulk.capCents)}`}
+      </p>
+      <Meter share={bulk.share} />
     </div>
   );
 }
@@ -68,7 +90,7 @@ export function PendingChargeRows(): React.JSX.Element | null {
   const lines = useCart((s) => s.lines);
   const charges = useBagCharges();
   if (!charges) return null;
-  const { free } = freeDelivery(lines, charges);
+  const { free, bulk } = freeDelivery(lines, charges);
   const row = (label: string, cents: number) => (
     <div className="flex justify-between">
       <dt className="text-ink-muted">{label}</dt>
@@ -81,6 +103,12 @@ export function PendingChargeRows(): React.JSX.Element | null {
     <>
       {row('Shipping', charges.shippingCents)}
       {charges.retailerCents > 0 ? row('Retailer charges', charges.retailerCents) : null}
+      {bulk.savingCents > 0 ? (
+        <div className="flex justify-between">
+          <dt className="text-ink-muted">Bulk saving</dt>
+          <dd className="text-positive m-0">−{formatUsd(bulk.savingCents)}</dd>
+        </div>
+      ) : null}
     </>
   );
 }

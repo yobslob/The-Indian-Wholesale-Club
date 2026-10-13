@@ -35,6 +35,41 @@ export interface ShippingSettings {
    * absent = no small-order charges.
    */
   smallOrder?: SmallOrderCharges | null;
+  /** D-119: from `freeMinCents` up, the bulk saving (a % of the amount over the line, up to a cap). */
+  bulkSaving?: BulkSaving | null;
+}
+
+/** D-119: the bulk saving's two numbers (store_bag_charges). */
+export interface BulkSaving {
+  pct: number;
+  capCents: number;
+}
+
+/**
+ * D-119: what a bag saves from the free-shipping line up: `pct` of the amount over the line, never more than the cap
+ * (the saturation point: after it, pieces add at full price). 0 below the line or without the numbers.
+ */
+export function bulkSavingCents(subtotalCents: number, freeMinCents: number | null, bulk: BulkSaving | null | undefined): number {
+  if (!bulk || freeMinCents === null || subtotalCents < freeMinCents || bulk.pct <= 0 || bulk.capCents <= 0) return 0;
+  return Math.min(bulk.capCents, Math.round(((subtotalCents - freeMinCents) * bulk.pct) / 100));
+}
+
+/**
+ * D-119: where a bag stands on the bulk saving, for the bag and the free-delivery pill: the saving now, whether it has
+ * reached the cap, and how much more to spend to save one more dollar (null once capped or without a saving).
+ */
+export function bulkProgress(subtotalCents: number, freeMinCents: number | null, bulk: BulkSaving | null | undefined) {
+  const savingCents = bulkSavingCents(subtotalCents, freeMinCents, bulk);
+  const active = Boolean(bulk && bulk.pct > 0 && bulk.capCents > 0 && freeMinCents !== null);
+  const capped = active && savingCents >= bulk!.capCents;
+  return {
+    savingCents,
+    capped,
+    capCents: active ? bulk!.capCents : 0,
+    /** Spend this much more to save $1 more. */
+    perDollarCents: active && !capped ? Math.round(10000 / bulk!.pct) : null,
+    share: active ? Math.min(savingCents / bulk!.capCents, 1) : 0,
+  };
 }
 
 /** One parcel's extra shipping and the retailer charges, as store_bag_charges() works them out for a bag. */
@@ -50,7 +85,10 @@ export interface QuoteTax {
 
 export interface CheckoutBreakdown {
   subtotalCents: number;
+  /** The promo's discount (the bulk saving is apart, below). */
   discountCents: number;
+  /** D-119: the bulk saving from the free-shipping line up. */
+  bulkSavingCents: number;
   /** Shipping paid (the flat rate or express, plus a small order's parcel shipping, D-111). */
   shippingCents: number;
   /** D-111: a small order's retailer charges (0 from the free-shipping line up). */
@@ -129,19 +167,26 @@ export function quoteCheckout(
   }
   const shippingCents = freeShipping ? 0 : price + (small?.shippingCents ?? 0);
   const retailerCents = freeShipping ? 0 : (small?.retailerCents ?? 0);
+  if (shipping.bulkSaving) {
+    assertCents(shipping.bulkSaving.capCents, 'bulkSaving.capCents');
+    if (!(shipping.bulkSaving.pct >= 0)) throw new RangeError('bulkSaving.pct must be >= 0');
+  }
+  const bulkCents = bulkSavingCents(discounted, shipping.freeMinCents, shipping.bulkSaving);
+  const goods = discounted - bulkCents;
   const taxableShare = subtotalCents === 0 ? 0 : taxableCents / subtotalCents;
   const taxCents = tax
-    ? Math.round(((discounted + shippingCents + retailerCents) * taxableShare * tax.ratePct) / 100)
+    ? Math.round(((goods + shippingCents + retailerCents) * taxableShare * tax.ratePct) / 100)
     : 0;
 
   return {
     subtotalCents,
     discountCents,
+    bulkSavingCents: bulkCents,
     shippingCents,
     retailerCents,
     waivedCents: freeShipping && small ? { shipping: small.shippingCents, retailer: small.retailerCents } : { shipping: 0, retailer: 0 },
     taxCents,
-    totalCents: discounted + shippingCents + retailerCents + taxCents,
+    totalCents: goods + shippingCents + retailerCents + taxCents,
     promoApplied,
   };
 }

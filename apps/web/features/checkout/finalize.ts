@@ -41,6 +41,8 @@ export const pendingCheckoutSchema = z.object({
   shippingCents: z.number().int(),
   /** D-111: the part of shippingCents that is retailer charges (absent before 2026-10-12). */
   retailerChargeCents: z.number().int().min(0).default(0),
+  /** D-119: the part of discountCents that is the bulk saving (absent before 2026-10-14). */
+  bulkSavingCents: z.number().int().min(0).default(0),
   taxCents: z.number().int(),
   totalCents: z.number().int(),
   promoCodeId: z.string().uuid().nullable(),

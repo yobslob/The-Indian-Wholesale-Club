@@ -121,7 +121,7 @@ To change a decision, add a new one (`Supersedes D-xxx`) and mark the old line `
 
 ## Recent (full text)
 
-**D-109 · 2026-10-11 · founder: The pilot price follows the shop's own price (Amazon → door)**
+**D-109 · 2026-10-11 · founder: The pilot price follows the shop's own price (Amazon → door)** · formula SUPERSEDED by D-119
 Recorded on 2026-10-12 from migration `supabase/migrations/20261011120000_pilot_pricing.sql`; the founder's words
 were not filed when it was built, so the numbers below are the ones that migration saved as the founder's.
 While the pilot runs, a piece is bought from an Indian online shop, repacked and sent to the customer by courier, so
@@ -160,7 +160,7 @@ default (the shop's own stock is unknown, so this is only a cap until the next p
 guessed silently (a pre-filled guess from well-known craft names, confirmed by the admin, D-004). The hub timings
 (1–10 days to the hub, 8–11 days by air) are the founder's; customer delivery dates still come from cycle data (D-008).
 
-**D-111 · 2026-10-12 · founder: Margins by product type; small orders pay their charges instead of a minimum; the free-delivery bar**
+**D-111 · 2026-10-12 · founder: Margins by product type; small orders pay their charges instead of a minimum; the free-delivery bar** · margins amended by D-119
 Founder, verbatim: "we also figured out some amazon types numbers, which consists of 10% safety buffer on Indian side
 then a dynamic(50% on clothing, 25% on edibles and 60% on home and decor) profit margin which basically includes all the
 taxes and costs and yet saves us some profit. We have to handle and figure this out in a dynamical solution. The package
@@ -191,7 +191,7 @@ retailer charges ₹150 per parcel (labelled estimates); the shipping allocation
 takes a bag under the line brings the charges back; express (D-070) has its own fee and no small-order charges.
 
 
-**D-112 · 2026-10-12 · founder: Card fees are inside the margins; the small-order charges are fixed and show $0.00 when waived**
+**D-112 · 2026-10-12 · founder: Card fees are inside the margins; the small-order charges are fixed and show $0.00 when waived** · formula SUPERSEDED by D-119
 Founder, verbatim (asked why prices came out high): "The prices are a bit off, I don't know what factor is affecting
 that but Clothing is always off by 2 or 3 dollar and food products are expensive by 60 or 70 cents. Change something
 so this fixes." Claude found the card fee (3.4% + $0.30, charged on every piece) added on top of the type margin and
@@ -368,3 +368,41 @@ daily run; a target with nothing found is searched again after 30 days; new list
 publishes them ("go live by themselves" is a switch), and go live only with a photo and every detail customers must see.
 Nishorama's shop address (`nishorama.com`) and its platform are assumed until the first run shows them.
 
+**D-119 · 2026-10-14 · founder: The pilot price in two recipes, a profit guard, and a bulk saving that stops at a cap**
+Founder, verbatim: "we are close enough to the pricing still we are running in loss as we have a risk of going
+underpriced, we have to tune the pricing more. The flow of indian product price, then 10% indian safety buffer, then air
+shipping and then 50% margin on overall is working but we still have to keep the price in mind. Figure something out
+smartly that the price tunes in more." Asked how US duty is paid: "It should get paid in the 50% profit margin". After
+the first tuner: "why are you stressing out on customer ordering just one snack of 90rs 100g when he definitely has to
+pay 20$ shipping so why are you charging the 3.49$ to 4.49$ 2. then the mid range are good 3. then the heavy ones as more
+and more and heavier total bag gets, you decrease the total cost, instead put a saturation point after which no matter
+how much the customer is adding orginal price will be totaled(the customer will have a notion that the more they add the
+more discount they will get.) rest is good, I feel like we wont be going in loss in any condition." The founder's own
+formula: "Adjusted shop price = Shop price ÷ 0.90 Shipping cost = Weight in grams ÷ 100 × ₹146(constant shipping) Total
+cost = Adjusted shop price + Shipping cost Selling price in INR = Total cost ÷ Category factor (food 0.75, clothing 0.50,
+home decor 0.40 margins) Selling price in USD = Selling price in INR ÷ USD exchange rate". Then: "Okay give me the final
+tuner which uses my formula but smartly on clothes and home decor and your very smart tuner on food." and "yes this
+good now lay off a bit of cheaper foods and everything is good to go after making push the changes".
+What it means for the build (migration `supabase/migrations/20261014090000_pilot_pricing_two_recipes.sql`):
+- **Clothing and home & gifts** take the founder's formula: (shop ₹ ÷ 0.90 + g ÷ 100 × ₹146) ÷ rate, then ÷ (1 − margin):
+  clothing 50%, home 60% of the price. A **taper** eases the margin on expensive pieces (clothing down to 38% from $20 to
+  $150 of cost, home to 45% from $15 to $100), so a ₹12,000 lehenga is $296.49 instead of about $367.
+- **Food** takes the cost-by-cost tuner: (shop ₹ + ₹15 fee) × 1.10 ÷ rate + billed kg (140% of the label) × the courier
+  rate card (₹2,242 first kg, ₹678.50 each further kg, ₹1,050 per parcel) over a 5 kg parcel ÷ rate, × 1.25.
+- **The profit guard** on every piece: duty is paid from the margin, as the founder said; a price is lifted only where
+  the margin cannot pay US duty (clothing 22%, food 16%, home 13%, on what the customer pays) and the 2.9% card fee and
+  still leave the minimum profit ($4 a piece for clothing and home, 8% of the price; food 4% and no dollar minimum, the
+  "lay off a bit of cheaper foods").
+- The exchange rate keeps its 4% safety buffer (D-075) and prices keep the .29 / .49 / .79 / .99 ending (D-109).
+- **Bulk saving:** from the free-shipping line ($149.99) up, 10% of the amount over the line comes off the bag, up to
+  $25; after that, pieces add at full price. The bag, checkout and the free-delivery bar (web and app) show it; checkout
+  works it out on the server and the order keeps it inside its discount (`orders.bulk_saving_cents`, admin view).
+- **Settings** lists every number in the groups above, with a profit check that reprices sample pieces and bags as they
+  are typed. The small-order charges stay $18.79 + $1.99 (D-112).
+*Claude's choices in it (proposed, the founder confirms or changes in Settings):* the duty rates (US MFN + India's 10%
+Section 301 tariff; de minimis is suspended), the ₹1,050 per parcel (box + customs clearance), the food fee, parcel kg
+and billed weight are estimates labelled in Settings until real bills replace them; duty is counted on what the customer
+pays (a duty-paid parcel to a shopper is usually valued so), the safe side; the taper points, the minimum profits and
+the bulk numbers come from the tuner the founder approved; customer order pages and emails show the bulk saving inside
+"Discount" (the admin's order page shows it apart). Supersedes D-109's and D-112's formula; D-111's margins now mean a
+margin of the price for clothing and home.

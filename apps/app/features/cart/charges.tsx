@@ -1,7 +1,7 @@
 import { Text, View } from 'react-native';
 
 import { getBagCharges, type BagCharges } from '@repo/db/store';
-import { formatUsd } from '@repo/shared/domain';
+import { bulkProgress, formatUsd } from '@repo/shared/domain';
 
 import { MeterLine } from './meter-line';
 import { bagSubtotalCents, useBag, type BagLine } from './store';
@@ -30,16 +30,21 @@ export function useBagCharges(): BagCharges | null {
   return key ? (data ?? null) : null;
 }
 
-/** Where the bag stands against the free-delivery line (D-111). */
+/** Where the bag stands against the free-delivery line (D-111) and, from it up, on the bulk saving (D-119). */
 export function freeDelivery(lines: BagLine[], charges: BagCharges | null) {
   const subtotal = bagSubtotalCents(lines);
   const line = charges?.free_min_cents ?? null;
   const free = line !== null && subtotal >= line;
+  const bulk =
+    charges && charges.bulk_saving_pct > 0 && charges.bulk_saving_cap_cents > 0
+      ? { pct: charges.bulk_saving_pct, capCents: charges.bulk_saving_cap_cents }
+      : null;
   return {
     free,
     line,
     leftCents: line === null ? 0 : Math.max(line - subtotal, 0),
     share: line ? Math.min(subtotal / line, 1) : 1,
+    bulk: bulkProgress(subtotal, line, bulk),
   };
 }
 
@@ -77,12 +82,18 @@ export function ChargeRows(): React.JSX.Element | null {
   const lines = useBag((s) => s.lines);
   const charges = useBagCharges();
   if (!charges) return null;
-  const { free, leftCents, line, share } = freeDelivery(lines, charges);
+  const { free, leftCents, line, share, bulk } = freeDelivery(lines, charges);
   return (
     <View className="gap-1">
       <ChargeRow label="Shipping" cents={charges.shipping_cents} free={free} />
       {charges.retailer_cents > 0 ? (
         <ChargeRow label="Retailer charges" cents={charges.retailer_cents} free={free} />
+      ) : null}
+      {bulk.savingCents > 0 ? (
+        <View className="flex-row justify-between gap-3">
+          <Text className="font-body text-ink-muted flex-1 text-sm">Bulk saving</Text>
+          <Text className="font-body text-positive text-sm">−{formatUsd(bulk.savingCents)}</Text>
+        </View>
       ) : null}
       {line !== null && !free ? (
         <View className="mt-1 gap-2">
@@ -90,6 +101,17 @@ export function ChargeRows(): React.JSX.Element | null {
             Add {formatUsd(leftCents)} more for free delivery
           </Text>
           <MeterLine share={share} />
+        </View>
+      ) : null}
+      {/* D-119: from the line up, how the bulk saving grows and where it stops. */}
+      {free && bulk.capCents > 0 ? (
+        <View className="mt-1 gap-2">
+          <Text className="font-ui-semibold text-brand text-[13px]">
+            {bulk.capped
+              ? `You've unlocked the biggest bulk saving: ${formatUsd(bulk.capCents)}`
+              : `Every ${formatUsd(bulk.perDollarCents ?? 0)} more saves $1 more, up to ${formatUsd(bulk.capCents)}`}
+          </Text>
+          <MeterLine share={bulk.share} />
         </View>
       ) : null}
     </View>

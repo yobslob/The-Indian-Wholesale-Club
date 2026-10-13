@@ -1,13 +1,15 @@
--- The pricing engine (migration 24, D-075; the formula of the Amazon -> door pilot since migration 38, D-109): the
--- formula, automatic repricing, the daily rate, food cleared, listings without a price.
+-- The pricing engine (migration 24, D-075; the pilot formula since migration 38, D-109; two recipes and the profit
+-- guard since D-119): the formula, automatic repricing, the daily rate, food cleared, listings without a price.
 begin;
 select tests.setup();
 
--- Simple numbers first: ₹100 per $, no buffer, only goods + shipping. A ₹1,000 piece of 1 kg at ₹1,000/kg:
--- $10 + $10 = $20.00, up to $20.29 (D-109: endings .29, .49, .79, .99).
+-- Simple numbers first, the clothing recipe without taper or guard: ₹100 per $, no buffer, shop ÷ 1, ₹100 per 100 g,
+-- margin 0. A ₹1,000 piece of 1 kg: $10 + $10 = $20.00, up to $20.29 (D-109: endings .29, .49, .79, .99).
 update public.pricing_settings set
-  fx_inr_per_usd = 100, fx_buffer_pct = 0, fx_auto = false, india_handling_pct = 0, ship_alloc_paise_per_kg = 100000,
-  margin_pct = 0, card_fee_pct = 0, card_fee_fixed_cents = 0
+  fx_inr_per_usd = 100, fx_buffer_pct = 0, fx_auto = false, shop_divisor = 1, ship_paise_per_100g = 10000,
+  margin_pct = 0, margin_clothing_pct = 0, margin_clothing_min_pct = null, margin_home_min_pct = null,
+  duty_clothing_pct = 0, duty_food_pct = 0, duty_home_pct = 0, min_profit_clothing_cents = 0, min_profit_food_cents = 0,
+  min_profit_home_cents = 0, min_profit_pct = 0, min_profit_food_pct = 0, guard_card_fee_pct = 0
  where id = 1;
 select tests.assert(public._auto_price_cents(100000, 1000) = 2029, '$20.00 goes up to $20.29');
 select tests.assert(public._auto_price_cents(103000, 1000) = 2049, '$20.30 goes up to $20.49');
@@ -15,24 +17,58 @@ select tests.assert(public._auto_price_cents(105000, 1000) = 2079, '$20.50 goes 
 select tests.assert(public._auto_price_cents(108000, 1000) = 2099, '$20.80 goes up to $20.99');
 select tests.assert(public._auto_price_cents(104900, 1000) = 2049, '$20.49 already has an ending and stays');
 select tests.assert(public._auto_price_cents(100000, null) is null, 'no weight, no price');
+-- D-119: the founder's margin divides: cost ÷ (1 − 50%) doubles it.
+update public.pricing_settings set margin_clothing_pct = 50 where id = 1;
+select tests.assert(public._auto_price_cents(100000, 1000, 'clothing') = 4029, 'D-119: $20 ÷ (1 − 50%) = $40.29');
+update public.pricing_settings set shop_divisor = 0.9 where id = 1;
+select tests.assert(public._auto_price_cents(90000, 1000, 'clothing') = 4029, 'D-119: ₹900 ÷ 0.90 = ₹1,000');
 
--- The founder's pilot numbers and worked examples (D-109; the same as packages/shared tests/domain.test.ts). Since
--- D-112 the card fees are inside the margin: they no longer change a price.
+-- The founder's numbers (D-119, the final tuner; the same as packages/shared tests/domain.test.ts) at ₹96.30.
 update public.pricing_settings set
-  fx_inr_per_usd = 96.35, fx_buffer_pct = 4, india_handling_pct = 10, ship_alloc_paise_per_kg = 146100,
-  margin_pct = 50, card_fee_pct = 3.4, card_fee_fixed_cents = 30
+  fx_inr_per_usd = 96.30, fx_buffer_pct = 4, shop_divisor = 0.90, ship_paise_per_100g = 14600,
+  margin_pct = 50, margin_clothing_pct = 50, margin_clothing_min_pct = 38, taper_clothing_from_cents = 2000,
+  taper_clothing_to_cents = 15000, margin_home_pct = 60, margin_home_min_pct = 45, taper_home_from_cents = 1500,
+  taper_home_to_cents = 10000, margin_food_pct = 25, india_handling_pct = 10, food_fee_paise = 1500, food_parcel_kg = 5,
+  food_billed_pct = 140, courier_first_kg_paise = 224200, courier_next_kg_paise = 67850, parcel_fixed_paise = 105000,
+  duty_clothing_pct = 22, duty_food_pct = 16, duty_home_pct = 13, min_profit_clothing_cents = 400,
+  min_profit_food_cents = 0, min_profit_home_cents = 400, min_profit_pct = 8, min_profit_food_pct = 4,
+  guard_card_fee_pct = 2.9
  where id = 1;
-select tests.assert(public._auto_price_cents(150000, 450) = 3749, 'D-109: a ₹1,500 kurta of 450 g is $37.49');
-select tests.assert(public._auto_price_cents(400000, 900) = 9279, 'D-109: a ₹4,000 saree of 900 g is $92.79');
-select tests.assert(public._auto_price_cents(1200000, 2500) = 27349, 'D-109: a ₹12,000 lehenga of 2.5 kg is $273.49');
-select tests.assert(public._auto_price_cents(25000, 250) = 1049, 'D-109: a ₹250 spice pack of 250 g at 50% is $10.49');
+select tests.assert(public._auto_price_cents(129900, 450, 'clothing') = 4529, 'D-119: a ₹1,299 kurta of 450 g is $45.29');
+select tests.assert(public._auto_price_cents(750000, 900, 'clothing') = 18079, 'D-119: a ₹7,500 saree of 900 g is $180.79');
+select tests.assert(public._auto_price_cents(1200000, 2500, 'clothing') = 29649, 'D-119: a ₹12,000 lehenga of 2.5 kg is $296.49');
+select tests.assert(public._auto_price_cents(180000, 1200, 'home') = 9129, 'D-119: a ₹1,800 brass piece of 1.2 kg is $91.29');
+select tests.assert(public._auto_price_cents(65000, 400, 'home') = 3549, 'D-119: a ₹650 diya of 400 g is $35.49');
+select tests.assert(public._auto_price_cents(9000, 100, 'food') = 399, 'D-119: a ₹90 snack of 100 g is $3.99');
+select tests.assert(public._auto_price_cents(15000, 250, 'food') = 849, 'D-119: a ₹150 masala of 250 g is $8.49');
+select tests.assert(public._auto_price_cents(22000, 400, 'food') = 1329, 'D-119: a ₹220 namkeen of 400 g is $13.29');
+-- The taper keeps a big piece from doubling: without it the lehenga is far dearer.
+update public.pricing_settings set margin_clothing_min_pct = null where id = 1;
+select tests.assert(public._auto_price_cents(1200000, 2500, 'clothing') > 34000, 'D-119: no taper, the lehenga is over $340');
+select tests.assert(public._auto_price_cents(129900, 450, 'clothing') = 4549,
+  'D-119: the taper barely touches a kurta ($45.49 without it, $45.29 with it)');
+update public.pricing_settings set margin_clothing_min_pct = 38 where id = 1;
+-- The guard lifts a cheap food piece whose margin cannot pay duty and the card fee; it leaves a kurta alone.
+update public.pricing_settings set duty_food_pct = 0, guard_card_fee_pct = 0, min_profit_food_pct = 0 where id = 1;
+select tests.assert(public._auto_price_cents(15000, 250, 'food') = 829, 'D-119: without the guard the masala is $8.29, not $8.49');
+update public.pricing_settings set duty_food_pct = 16, guard_card_fee_pct = 2.9, min_profit_food_pct = 4 where id = 1;
+update public.pricing_settings set duty_clothing_pct = 0 where id = 1;
+select tests.assert(public._auto_price_cents(129900, 450, 'clothing') = 4529, 'D-119: the kurta''s margin already pays its duty');
+update public.pricing_settings set duty_clothing_pct = 22, min_profit_clothing_cents = 5000 where id = 1;
+select tests.assert(public._auto_price_cents(129900, 450, 'clothing') > 6000, 'D-119: a minimum profit in dollars lifts a price');
+update public.pricing_settings set min_profit_clothing_cents = 400 where id = 1;
+-- Card fees in the retailer model's settings never touch a pilot price (D-112).
 update public.pricing_settings set card_fee_pct = 10, card_fee_fixed_cents = 500 where id = 1;
-select tests.assert(public._auto_price_cents(150000, 450) = 3749, 'D-112: card fees do not change a price');
-update public.pricing_settings set card_fee_pct = null, card_fee_fixed_cents = null where id = 1;
-select tests.assert(public._auto_price_cents(150000, 450) = 3749, 'D-112: nor does a missing card fee');
-update public.pricing_settings set ship_alloc_paise_per_kg = null where id = 1;
-select tests.assert(public._auto_price_cents(150000, 450) is null, 'a missing setting gives no price');
-update public.pricing_settings set ship_alloc_paise_per_kg = 146100 where id = 1;
+select tests.assert(public._auto_price_cents(129900, 450, 'clothing') = 4529, 'D-112: card_fee_pct does not change a price');
+-- A missing setting gives no price; an empty guard number counts as 0.
+update public.pricing_settings set shop_divisor = null where id = 1;
+select tests.assert(public._auto_price_cents(129900, 450, 'clothing') is null, 'no shop divisor, no clothing price');
+select tests.assert(public._auto_price_cents(9000, 100, 'food') = 399, 'food does not need it');
+update public.pricing_settings set shop_divisor = 0.90, courier_first_kg_paise = null where id = 1;
+select tests.assert(public._auto_price_cents(9000, 100, 'food') is null, 'no rate card, no food price');
+update public.pricing_settings set courier_first_kg_paise = 224200, min_profit_pct = null where id = 1;
+select tests.assert(public._auto_price_cents(129900, 450, 'clothing') is not null, 'an empty guard number still prices');
+update public.pricing_settings set min_profit_pct = 8 where id = 1;
 
 -- Repricing: the auto-priced fixture product follows the settings; a hand-priced one does not.
 update public.products set price_auto = true where id = tests.id('p_live');
@@ -41,21 +77,19 @@ select tests.assert((select price_cents from public.products where id = tests.id
                     public._auto_price_cents(100000, 800, 'clothing'), 'a weight on a variant prices the product');
 select tests.assert((select price_cents from public.products where id = tests.id('p_draft')) = 5000,
   'a hand-priced product keeps its price');
-update public.pricing_settings set margin_clothing_pct = 150 where id = 1;
+update public.pricing_settings set margin_clothing_pct = 70 where id = 1;
 select tests.assert((select price_cents from public.products where id = tests.id('p_live')) =
                     public._auto_price_cents(100000, 800, 'clothing'), 'a new margin reprices it at once');
 -- D-111: each type has its own margin; a type without one falls back to the general margin.
-update public.pricing_settings set margin_pct = 50, margin_clothing_pct = 50, margin_food_pct = 25, margin_home_pct = 60
-where id = 1;
-select tests.assert(public._auto_price_cents(150000, 450, 'clothing') = 3749, 'D-111: clothing at 50% (the kurta, $37.49)');
+update public.pricing_settings set margin_pct = 50, margin_clothing_pct = 50 where id = 1;
+select tests.assert(public._auto_price_cents(129900, 450, 'clothing') = 4529, 'D-119: clothing back at 50% (the kurta, $45.29)');
 select tests.assert(public._auto_price_cents(25000, 250, 'food') < public._auto_price_cents(25000, 250, 'clothing'),
-  'D-111: food at 25% costs less than at 50%');
+  'D-111: food costs less than clothing');
 select tests.assert(public._auto_price_cents(150000, 450, 'home') > public._auto_price_cents(150000, 450, 'clothing'),
-  'D-111: home & gifts at 60% costs more than at 50%');
-update public.pricing_settings set margin_food_pct = null where id = 1;
-select tests.assert(public._auto_price_cents(25000, 250, 'food') = public._auto_price_cents(25000, 250),
-  'D-111: no food margin = the general margin');
-update public.pricing_settings set margin_food_pct = 25, food_cleared = true where id = 1;
+  'D-111: home & gifts at 60% costs more than clothing at 50%');
+update public.pricing_settings set margin_food_pct = null, margin_pct = 25 where id = 1;
+select tests.assert(public._auto_price_cents(15000, 250, 'food') = 849, 'D-111: no food margin = the general margin');
+update public.pricing_settings set margin_food_pct = 25, margin_pct = 50, food_cleared = true where id = 1;
 update public.products set product_type = 'food', category_id = tests.id('cat_food') where id = tests.id('p_live');
 select tests.assert((select price_cents from public.products where id = tests.id('p_live')) =
                     public._auto_price_cents(100000, 800, 'food'), 'D-111: a product that becomes food takes its margin');

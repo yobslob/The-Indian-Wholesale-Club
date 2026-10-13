@@ -152,6 +152,17 @@ Migration 31 (D-099, the second speed audit): `admin_order_counts()` (every orde
 send, shops owed for picked pieces) and `admin_cycle_totals(cycle)` (the cycle card's orders, pieces, shops and sales),
 admin only, counted in SQL because the API sends at most 1,000 rows; indexes for orders by status and newest, pickups
 by status, what each shop is owed, and a payout's pieces.
+Migration 47 (D-119): the pilot price in two recipes. `pricing_settings` gains, for clothing and home & gifts,
+`shop_divisor`, `ship_paise_per_100g`, `margin_clothing_min_pct` / `margin_home_min_pct` and the taper's
+`taper_<type>_from_cents` / `_to_cents` (the type margins are now a margin of the price, cost ÷ (1 − margin)); for food,
+`food_fee_paise`, `food_parcel_kg`, `food_billed_pct` (with `india_handling_pct` and the markup `margin_food_pct`); the
+courier rate card `courier_first_kg_paise`, `courier_next_kg_paise`, `parcel_fixed_paise`; the profit guard
+`duty_<type>_pct`, `min_profit_<type>_cents`, `min_profit_pct`, `min_profit_food_pct`, `guard_card_fee_pct`; the bulk
+saving `bulk_saving_pct`, `bulk_saving_cap_cents`. `_auto_price_cents(shop, weight, type)` applies the type's recipe,
+then lifts a price to the guard, then the .29/.49/.79/.99 ending (`_tapered_margin` is its helper);
+`ship_alloc_paise_per_kg` is no longer read. `store_bag_charges` also returns the two bulk numbers;
+`orders.bulk_saving_cents` is the part of `discount_cents` that was the bulk saving (admin view). Tests:
+`pricing_engine.test.sql`, `bag_charges.test.sql`.
 Migrations 44 – 46 (D-118, auto-sourcing): `sourcing_settings` (one row: delivery limit, listings per target, check
 interval, pieces per variant, targets per run, the price-jump guard, auto-publish), `sourcing_shops` (each shop the
 runner searches: its reader, types, fallback delivery days, on/off, last good run and problem), `sourcing_targets`

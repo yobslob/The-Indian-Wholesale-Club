@@ -239,10 +239,16 @@ export default async function AdminOrderPage({ params }: { params: Params }): Pr
                 <dt>Subtotal</dt>
                 <dd>{formatUsd(order.subtotal_cents)}</dd>
               </div>
-              {order.discount_cents > 0 ? (
+              {order.discount_cents - order.bulk_saving_cents > 0 ? (
                 <div>
                   <dt>Discount</dt>
-                  <dd>−{formatUsd(order.discount_cents)}</dd>
+                  <dd>−{formatUsd(order.discount_cents - order.bulk_saving_cents)}</dd>
+                </div>
+              ) : null}
+              {order.bulk_saving_cents > 0 ? (
+                <div>
+                  <dt>Bulk saving (D-119)</dt>
+                  <dd>−{formatUsd(order.bulk_saving_cents)}</dd>
                 </div>
               ) : null}
               <div>

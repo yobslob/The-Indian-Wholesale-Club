@@ -7,7 +7,11 @@ select tests.setup();
 -- Simple numbers: ₹100 per $, no margin or fees, ₹1,000 a kg shipping. ₹100 at 500 g = $1 + $5 = $6.00 -> $6.29.
 update public.pricing_settings set
   fx_inr_per_usd = 100, fx_buffer_pct = 0, fx_auto = false, india_handling_pct = 0, ship_alloc_paise_per_kg = 100000,
-  margin_pct = 0, margin_food_pct = 0, card_fee_pct = 0, card_fee_fixed_cents = 0
+  margin_pct = 0, margin_food_pct = 0, card_fee_pct = 0, card_fee_fixed_cents = 0,
+  -- D-119's food recipe with simple numbers: ₹1,000 per kg, no fee, the label's weight, no guard
+  courier_first_kg_paise = 100000, courier_next_kg_paise = 100000, food_parcel_kg = 1, parcel_fixed_paise = 0,
+  food_fee_paise = 0, food_billed_pct = 100, duty_food_pct = 0, min_profit_food_cents = 0, min_profit_food_pct = 0,
+  guard_card_fee_pct = 0
  where id = 1;
 select tests.create_user('worker', 'worker@example.test');
 update public.profiles set role = 'worker' where id = tests.id('worker');

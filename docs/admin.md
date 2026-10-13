@@ -54,7 +54,7 @@ writes refresh the website's store pages at once (`POST /admin/revalidate`, B-17
 | **Insights** | sales by state, category and shop (with what the shops were paid), for 30 days, 90 days or all time; searches that found nothing (what to list next), top searches, most saved pieces. Real numbers only, computed in SQL (`admin_sales`, `admin_demand`) | both | ✓ | — |
 | **Vendor pieces** | pieces vendors sent (D-102, D-103): their real photos, the AI candidates per pose, pick, name, care, price (empty = from the shop price), publish; or make a pose again on another model, ask for new photos, decline (`vendor.md`) | both | ✓ | — |
 | **House models** | the founder's models (D-104): front and back pose each, switch on / off | both | ✓ | — |
-| **Settings** | pricing settings, each estimate labelled with its source and date until the founder saves their own (D-047) (admins are managed in the DB + `ADMIN_EMAILS`, `ops.md`) | both | ✓ | — |
+| **Settings** | pricing settings, each estimate labelled with its source and date until the founder saves their own (D-047); the pilot price's two recipes, the courier rate card, the profit guard and the bulk saving, with a **profit check** under them that reprices sample pieces and bags as the numbers are typed (web, D-119) (admins are managed in the DB + `ADMIN_EMAILS`, `ops.md`) | both | ✓ | — |
 
 The order page refunds unavailable pieces and cancels orders before cutoff, with the amounts from the D-042 rules shown on
 the buttons (Stripe first, then the database). **Web only:** refunds need the Stripe secret key, which lives on the server;
@@ -126,7 +126,7 @@ in `packages/shared/src/sourcing/`, the reads and writes in `packages/db/src/adm
   see (fabric and care; ingredients, allergens and shelf life; material), the photos (pick and order; copied into our
   storage on save, never loaded from the shop on a customer page, D-003), pieces per size (5 by default: a cap, the
   shop's stock is unknown), packed weight and the price on the shop in ₹, with the dollar price worked out live
-  (D-109). Save draft or Publish.
+  (D-109, D-119). Save draft or Publish.
 - **Where it lives.** A listing of the shop's online vendor for that state (`vendors.online_site`, made on first use),
   with `products.source_url`, `source_site`, `source_checked_at`, `source_in_stock` (admin only).
 - **Keeping prices right.** Importing a page again finds its listing by the cleaned address: the price, the sizes in

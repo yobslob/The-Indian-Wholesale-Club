@@ -34,7 +34,9 @@ export function FreeDeliveryBar({ onPress }: { onPress: () => void }): React.JSX
   const lines = useBag((s) => s.lines);
   const charges = useBagCharges();
   const visible = lines.length > 0 && charges !== null && charges.free_min_cents !== null;
-  const { free, leftCents, share } = freeDelivery(lines, charges);
+  const { free, leftCents, share, bulk } = freeDelivery(lines, charges);
+  // D-119: past the line the bar shows the bulk saving filling up to its cap.
+  const saving = free && bulk.capCents > 0 && bulk.savingCents > 0;
   const count = bagCount(lines);
   const newest = lines[lines.length - 1];
   const reduce = useReducedMotion();
@@ -48,7 +50,7 @@ export function FreeDeliveryBar({ onPress }: { onPress: () => void }): React.JSX
   const sheen = useSharedValue(-1);
   const pop = useSharedValue(1);
   const last = useRef<{ share: number; count: number } | null>(null);
-  const target = free ? 1 : Math.max(share, 0.04);
+  const target = saving ? Math.max(bulk.share, 0.04) : free ? 1 : Math.max(share, 0.04);
 
   useEffect(() => {
     if (!visible || width === 0) return;
@@ -109,7 +111,9 @@ export function FreeDeliveryBar({ onPress }: { onPress: () => void }): React.JSX
     <Pressable
       accessibilityRole="button"
       accessibilityLabel={
-        free
+        saving
+          ? `Saving ${formatUsd(bulk.savingCents)}${bulk.capped ? ', the biggest saving' : ''}. Bag, ${count} items`
+          : free
           ? `Free delivery unlocked. Bag, ${count} items`
           : `Add ${formatUsd(leftCents)} more to unlock free delivery. Bag, ${count} items`
       }
@@ -139,7 +143,16 @@ export function FreeDeliveryBar({ onPress }: { onPress: () => void }): React.JSX
       </View>
       <View className="flex-1 gap-[7px]">
         <Text numberOfLines={1} className="font-ui text-on-brand text-[13.5px] leading-[15px]">
-          {free ? (
+          {saving && bulk.capped ? (
+            <>
+              <Text className="font-ui-semibold">{formatUsd(bulk.capCents)}</Text> off:{' '}
+              <Text className="font-ui-semibold">BIGGEST SAVING</Text>
+            </>
+          ) : saving ? (
+            <>
+              Saving <Text className="font-ui-semibold">{formatUsd(bulk.savingCents)}</Text> · add more, save more
+            </>
+          ) : free ? (
             <>
               <Text className="font-ui-semibold">FREE DELIVERY</Text> unlocked
             </>

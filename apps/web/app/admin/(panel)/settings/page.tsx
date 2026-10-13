@@ -2,6 +2,7 @@ import { getPricingSettings, listBusinessDetails, listPricingEstimates } from '@
 
 import { updateBusinessDetailsAction, updatePricingSettingsAction, updateFoodClearedAction } from '@/features/admin/actions/settings';
 import { EstimateNote } from '@/features/admin/estimate-note';
+import { ProfitCheck } from '@/features/admin/profit-check';
 import { requireAdminPage } from '@/features/admin/guard';
 import { displayValue, SETTING_GROUPS } from '@/features/admin/settings-fields';
 import { button, Field, input, PageHead, SectionTitle, When } from '@/features/admin/ui';
@@ -38,7 +39,7 @@ export default async function SettingsPage(): Promise<React.JSX.Element> {
         </p>
       ) : null}
 
-      <form action={updatePricingSettingsAction} className="max-w-3xl space-y-8">
+      <form id="pricing-form" action={updatePricingSettingsAction} className="max-w-3xl space-y-8">
         {SETTING_GROUPS.map((group) => (
           <section key={group.title} className="space-y-3">
             <SectionTitle>{group.title}</SectionTitle>
@@ -61,6 +62,8 @@ export default async function SettingsPage(): Promise<React.JSX.Element> {
             </div>
           </section>
         ))}
+        {/* D-119: what the numbers on the form do to prices and to each sample bag's profit, before saving. */}
+        <ProfitCheck formId="pricing-form" saved={row} />
         <button type="submit" className={button}>
           Save numbers
         </button>

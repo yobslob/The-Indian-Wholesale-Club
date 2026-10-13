@@ -155,7 +155,12 @@ export async function getPricingSettings(client: IwcClient) {
           shipping_flat_cents, free_shipping_min_cents, express_shipping_cents, express_days_min, express_days_max,
           stale_listing_days, leaving_soon_max, cycle_days, fast_offer_cents, food_cleared, margin_clothing_pct, margin_food_pct,
           margin_home_pct, small_order_shipping_cents, small_order_retailer_cents, pilot_delivery_days_min,
-          pilot_delivery_days_max,
+          pilot_delivery_days_max, shop_divisor, ship_paise_per_100g, margin_clothing_min_pct, margin_home_min_pct,
+          taper_clothing_from_cents, taper_clothing_to_cents, taper_home_from_cents, taper_home_to_cents, food_fee_paise,
+          food_parcel_kg, food_billed_pct, courier_first_kg_paise, courier_next_kg_paise, parcel_fixed_paise,
+          duty_clothing_pct, duty_food_pct, duty_home_pct, min_profit_clothing_cents, min_profit_food_cents,
+          min_profit_home_cents, min_profit_pct, min_profit_food_pct, guard_card_fee_pct, bulk_saving_pct,
+          bulk_saving_cap_cents,
           updated_at`,
       )
       .eq('id', 1)
@@ -177,8 +182,11 @@ export async function listPricingEstimates(client: IwcClient) {
   );
 }
 
-/** The settings the automatic price is built from (shared/domain autoPrice, D-109; no card fees since D-112). */
-export const PRICE_SUGGESTION_SETTINGS = ['fx_inr_per_usd', 'fx_buffer_pct', 'india_handling_pct', 'ship_alloc_paise_per_kg', 'margin_pct'];
+/** The settings the automatic price is built from whose estimate label matters on a listing (shared/domain autoPrice, D-119). */
+export const PRICE_SUGGESTION_SETTINGS = [
+  'fx_inr_per_usd', 'fx_buffer_pct', 'margin_pct', 'food_fee_paise', 'food_parcel_kg', 'food_billed_pct',
+  'parcel_fixed_paise', 'duty_clothing_pct', 'duty_food_pct', 'duty_home_pct',
+];
 
 /** D-007: the signed-in admin's desk ('us' or 'india'), which orders their Today. Null when not set. */
 export async function getMyDesk(client: IwcClient, userId: string): Promise<Enum<'ops_desk'> | null> {

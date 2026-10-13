@@ -3,6 +3,8 @@
 import { useEffect } from 'react';
 import { create } from 'zustand';
 
+import { bulkProgress, type BulkSaving } from '@repo/shared/domain';
+
 import { cartSubtotalCents, useCart, type CartLine } from './store';
 
 /** D-111: a bag's small-order charges, as /api/bag-charges works them out (cents). */
@@ -10,6 +12,8 @@ export interface BagCharges {
   freeMinCents: number | null;
   shippingCents: number;
   retailerCents: number;
+  /** D-119: the bulk saving from the line up; null = none. */
+  bulk: BulkSaving | null;
 }
 
 const useChargesStore = create<{ key: string; charges: BagCharges | null }>(() => ({
@@ -33,7 +37,14 @@ function parse(data: unknown): BagCharges | null {
   const shippingCents = int(d.shipping_cents);
   const retailerCents = int(d.retailer_cents);
   if (shippingCents === null || retailerCents === null) return null;
-  return { freeMinCents: int(d.free_min_cents), shippingCents, retailerCents };
+  const pct = typeof d.bulk_saving_pct === 'number' && d.bulk_saving_pct > 0 ? d.bulk_saving_pct : 0;
+  const cap = int(d.bulk_saving_cap_cents) ?? 0;
+  return {
+    freeMinCents: int(d.free_min_cents),
+    shippingCents,
+    retailerCents,
+    bulk: pct > 0 && cap > 0 ? { pct, capCents: cap } : null,
+  };
 }
 
 /**
@@ -64,7 +75,10 @@ export function useBagCharges(): BagCharges | null {
   return key ? charges : null;
 }
 
-/** What the bar and the bag say: how far from free delivery, and whether the charges are waived. */
+/**
+ * What the bar and the bag say: how far from free delivery, whether the charges are waived and, from the line up,
+ * the bulk saving so far (D-119).
+ */
 export function freeDelivery(lines: CartLine[], charges: BagCharges | null) {
   const subtotal = cartSubtotalCents(lines);
   const line = charges?.freeMinCents ?? null;
@@ -75,5 +89,6 @@ export function freeDelivery(lines: CartLine[], charges: BagCharges | null) {
     free,
     leftCents: line === null ? 0 : Math.max(line - subtotal, 0),
     share: line ? Math.min(subtotal / line, 1) : 1,
+    bulk: bulkProgress(subtotal, line, charges?.bulk),
   };
 }
