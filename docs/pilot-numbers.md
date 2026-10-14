@@ -1,7 +1,7 @@
 # Pilot numbers: every variable, its placeholder and where to change it
 
-> **Beta pricing today (D-127):** every automatic price = (shop ₹ × 1.10 + kg × ₹2,000) ÷ the day's rate, then food
-> × 1.20, clothing ÷ 0.60, home & gifts ÷ 0.50, to the cent (no price ending). Fixed in code; the numbers below are the
+> **Beta pricing today (D-127):** every automatic price = (shop ₹ × 1.10 + kg × ₹2,000) ÷ ₹92 (fixed: the day's
+> rate less the 4% buffer, converted last), then food × 1.20, clothing ÷ 0.60, home & gifts ÷ 0.50, to the cent (no price ending). Fixed in code; the numbers below are the
 > full formula's, archived in `docs/archive/pricing-full-formula.md` and unused for prices until the beta ends (the bag's
 > charges still use the courier, duty and Shipping numbers).
 >

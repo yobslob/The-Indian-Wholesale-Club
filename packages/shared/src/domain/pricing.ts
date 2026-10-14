@@ -18,7 +18,7 @@
  * what a piece cannot (D-125).
  *
  * Beta (D-127, `betaPricing`): a fixed formula replaces all of the above (archived in
- * docs/archive/pricing-full-formula.md): (shop ₹ × 1.10 + kg × ₹2,000) ÷ the day's rate, food × 1.20, clothing ÷ 0.60,
+ * docs/archive/pricing-full-formula.md): (shop ₹ × 1.10 + kg × ₹2,000) ÷ ₹92 (fixed), food × 1.20, clothing ÷ 0.60,
  * home & gifts ÷ 0.50, to the cent (no price ending in the beta).
  */
 import type { ProductType } from './product-types';
@@ -75,6 +75,8 @@ export type PriceRule = 'recipe' | 'tapered' | 'guard' | 'small' | 'band' | 'bet
 
 /** D-127: the beta formula's fixed numbers, as the database's `_auto_price_cents()` (migration 20261015120000). */
 export const BETA_PRICING = {
+  /** D-127: converted last at a fixed ₹92 a dollar (the day's rate less the 4% buffer, rounded), not the day's rate */
+  inrPerUsd: 92,
   indiaHandling: 0.1,
   flightPaisePerKg: 200000,
   /** food: on top of cost; clothing and home & gifts: of the price */
@@ -235,12 +237,18 @@ export function autoPrice(
   s: PricingSettings,
 ): PriceBreakdown | null {
   const { shopPricePaise: shop, weightG: g } = input;
+  if (s.betaPricing) {
+    if (shop === null || g === null) return null;
+    if (!Number.isInteger(shop) || shop < 0)
+      throw new RangeError('shopPricePaise must be a non-negative integer');
+    if (!Number.isInteger(g) || g <= 0) throw new RangeError('weightG must be a positive integer');
+    return betaPrice(shop, g, input.productType);
+  }
   if (shop === null || g === null || s.fxInrPerUsd === null) return null;
   if (!(s.fxInrPerUsd > 0)) throw new RangeError('fxInrPerUsd must be > 0');
   if (!Number.isInteger(shop) || shop < 0)
     throw new RangeError('shopPricePaise must be a non-negative integer');
   if (!Number.isInteger(g) || g <= 0) throw new RangeError('weightG must be a positive integer');
-  if (s.betaPricing) return betaPrice(shop, g, input.productType, s.fxInrPerUsd);
   if (s.fxBufferPct === null) return null;
   const rate = s.fxInrPerUsd * (1 - s.fxBufferPct / 100);
   const type: ProductType =
@@ -310,10 +318,10 @@ export function autoPrice(
   return { costCents: Math.round(cost), priceCents: recipe, rule };
 }
 
-/** D-127: the beta formula (no buffer, no fee, no packing %, no guard). */
-function betaPrice(shop: number, g: number, t: ProductType | null | undefined, fx: number): PriceBreakdown {
-  const { indiaHandling, flightPaisePerKg, margin } = BETA_PRICING;
-  const cost = (shop * (1 + indiaHandling) + (flightPaisePerKg * g) / 1000) / fx;
+/** D-127: the beta formula in rupees, converted last at ₹92 (no fee, no packing %, no guard, no ending). */
+function betaPrice(shop: number, g: number, t: ProductType | null | undefined): PriceBreakdown {
+  const { inrPerUsd, indiaHandling, flightPaisePerKg, margin } = BETA_PRICING;
+  const cost = (shop * (1 + indiaHandling) + (flightPaisePerKg * g) / 1000) / inrPerUsd;
   const price =
     t === 'food' ? cost * (1 + margin.food) : t === 'home' ? cost / (1 - margin.home) : cost / (1 - margin.clothing);
   return { costCents: Math.round(cost), priceCents: Math.round(price), rule: 'beta' };

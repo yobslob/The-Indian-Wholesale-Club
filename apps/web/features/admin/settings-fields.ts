@@ -22,7 +22,7 @@ export interface SettingGroup {
 export const SETTING_GROUPS: SettingGroup[] = [
   {
     title: 'Beta pricing is on (D-127)',
-    note: 'Every automatic price uses the fixed beta formula: (shop ₹ × 1.10 India handling + weight kg × ₹2,000 flight) ÷ the exchange rate below (no buffer), then food +20% on cost, clothing 40% and home & gifts 50% of the price, to the cent (no price ending). The price numbers below are the full formula\'s, kept for after the beta (docs/archive/pricing-full-formula.md); they change no price while the beta is on. Bag charges (Shipping, retailer charges, bulk saving) still use them.',
+    note: 'Every automatic price uses the fixed beta formula: (shop ₹ × 1.10 India handling + weight kg × ₹2,000 flight) in rupees, converted last at a fixed ₹92 a dollar (the exchange rate below no longer moves a beta price), then food +20% on cost, clothing 40% and home & gifts 50% of the price, to the cent (no price ending). The price numbers below are the full formula\'s, kept for after the beta (docs/archive/pricing-full-formula.md); they change no price while the beta is on. Bag charges (Shipping, retailer charges, bulk saving) still use them.',
     fields: [],
   },
   {

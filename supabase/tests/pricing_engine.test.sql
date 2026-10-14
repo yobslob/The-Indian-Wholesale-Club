@@ -4,15 +4,18 @@
 begin;
 select tests.setup();
 
--- D-127: the beta formula, fixed in code: (shop ₹ × 1.10 + kg × ₹2,000) ÷ the day's rate (no buffer); food × 1.20,
--- clothing ÷ 0.60, home & gifts ÷ 0.50; up to the next ending. The founder's 20 products at ₹96.30.
+-- D-127: the beta formula, fixed in code: (shop ₹ × 1.10 + kg × ₹2,000) in rupees, converted last at a fixed ₹92; food
+-- × 1.20, clothing ÷ 0.60, home & gifts ÷ 0.50, to the cent. The day's rate does not move a beta price.
 update public.pricing_settings set beta_pricing = true, fx_inr_per_usd = 96.30, fx_buffer_pct = 4, fx_auto = false
  where id = 1;
-select tests.assert(public._auto_price_cents(9000, 100, 'food') = 373, 'D-127: ₹90 garam masala of 100 g: cost $3.10, +20% = $3.73 (to the cent)');
-select tests.assert(public._auto_price_cents(23000, 1000, 'food') = 2807, 'D-127: ₹230 bhujia of 1 kg: cost $23.40, +20% = $28.07');
-select tests.assert(public._auto_price_cents(69900, 450, 'clothing') = 2888, 'D-127: ₹699 kurta of 450 g: cost $17.33 ÷ 0.60 = $28.88');
-select tests.assert(public._auto_price_cents(35000, 525, 'home') = 2980, 'D-127: ₹350 brass diya of 525 g: cost $14.90 ÷ 0.50 = $29.80');
+select tests.assert(public._auto_price_cents(9000, 100, 'food') = 390, 'D-127: ₹90 garam masala of 100 g: ₹299 + 20% = ₹358.80 ÷ 92 = $3.90');
+select tests.assert(public._auto_price_cents(23000, 1000, 'food') = 2939, 'D-127: ₹230 bhujia of 1 kg: ₹2,253 + 20% ÷ 92 = $29.39');
+select tests.assert(public._auto_price_cents(69900, 450, 'clothing') = 3023, 'D-127: ₹699 kurta of 450 g: ₹1,668.90 ÷ 0.60 ÷ 92 = $30.23');
+select tests.assert(public._auto_price_cents(35000, 525, 'home') = 3120, 'D-127: ₹350 brass diya of 525 g: ₹1,435 ÷ 0.50 ÷ 92 = $31.20');
 select tests.assert(public._auto_price_cents(9000, null, 'food') is null, 'D-127: no weight, no price');
+update public.pricing_settings set fx_inr_per_usd = 80 where id = 1;
+select tests.assert(public._auto_price_cents(9000, 100, 'food') = 390, 'D-127: the day''s rate does not move a beta price (₹92 fixed)');
+update public.pricing_settings set fx_inr_per_usd = 96.30 where id = 1;
 select tests.assert((select price_cents from public.products where id = tests.id('p_live'))
                     is not distinct from (select price_cents from public.products where id = tests.id('p_live')),
   'D-127: the switch reprices without error');

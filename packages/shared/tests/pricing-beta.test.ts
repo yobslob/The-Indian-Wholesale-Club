@@ -1,5 +1,5 @@
 /**
- * D-127: the beta formula, fixed in code: (shop ₹ × 1.10 + kg × ₹2,000) ÷ the day's rate, food × 1.20, clothing ÷ 0.60,
+ * D-127: the beta formula, fixed in code: (shop ₹ × 1.10 + kg × ₹2,000) ÷ ₹92 (fixed), food × 1.20, clothing ÷ 0.60,
  * home & gifts ÷ 0.50, to the cent (no ending); the same numbers as supabase/tests/pricing_engine.test.sql.
  */
 import assert from 'node:assert/strict';
@@ -14,10 +14,10 @@ const price = (rupees: number, g: number, t: ProductType, s = beta) =>
 
 describe('beta pricing (D-127)', () => {
   it('prices the founder\'s table', () => {
-    assert.equal(price(90, 100, 'food')?.priceCents, 373);
-    assert.equal(price(230, 1000, 'food')?.priceCents, 2807);
-    assert.equal(price(699, 450, 'clothing')?.priceCents, 2888);
-    assert.equal(price(350, 525, 'home')?.priceCents, 2980);
+    assert.equal(price(90, 100, 'food')?.priceCents, 390);
+    assert.equal(price(230, 1000, 'food')?.priceCents, 2939);
+    assert.equal(price(699, 450, 'clothing')?.priceCents, 3023);
+    assert.equal(price(350, 525, 'home')?.priceCents, 3120);
     assert.equal(price(90, 100, 'food')?.rule, 'beta');
   });
 
@@ -33,9 +33,10 @@ describe('beta pricing (D-127)', () => {
     }
   });
 
-  it('needs no buffer or other setting, only the rate; off, the full formula prices again', () => {
-    assert.equal(price(90, 100, 'food', { ...beta, fxBufferPct: null })?.priceCents, 373);
-    assert.equal(price(90, 100, 'food', { ...beta, fxInrPerUsd: null }), null);
+  it('converts at a fixed ₹92 and needs no setting; off, the full formula prices again', () => {
+    assert.equal(price(90, 100, 'food', { ...beta, fxBufferPct: null })?.priceCents, 390);
+    assert.equal(price(90, 100, 'food', { ...beta, fxInrPerUsd: null })?.priceCents, 390);
+    assert.equal(price(90, 100, 'food', { ...beta, fxInrPerUsd: 80 })?.priceCents, 390, 'the day\'s rate does not move it');
     assert.equal(price(90, 100, 'food', { ...beta, betaPricing: false }), null, 'the full formula needs its settings');
     assert.equal(pricingSettingsFrom({ beta_pricing: true }).betaPricing, true);
     assert.equal(pricingSettingsFrom({}).betaPricing, false);

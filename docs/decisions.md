@@ -593,8 +593,10 @@ What it means for the build (migration `20261015120000_beta_pricing.sql`):
   `20261015130000_beta_exact_cents.sql`: "don't round up the numbers, I need the original numbers, so i get to see
   margin as 20, 20, 20, 20, 40, 40, 40, 40 … like this"; the first cut went up to .29/.49/.69/.79/.99). The numbers
   are in code (`_auto_price_cents`, `BETA_PRICING` in `packages/shared`), not Settings; only the exchange rate moves
-  prices. ₹90 masala of 100 g $3.73, bhujia 1 kg $28.07, ₹699 kurta $28.88, ₹1,499 kurta set $59.69, ₹350 brass diya
-  $29.80. The founder's example listed home & gifts at 60; the rule he set says 50%, which the build follows.
+  prices. **Amended again** (migration `20261015140000_beta_rate_92.sql`): "take safety buffer as 4% as 92rs and convert
+  at last": worked out in rupees and divided by a fixed ₹92 at the end; the day's rate no longer moves a beta price.
+  At ₹92: ₹90 masala of 100 g $3.90, bhujia 1 kg $29.39, ₹699 kurta $30.23, ₹1,499 kurta set $62.48, ₹350 brass diya
+  $31.20 (at the day's rate they were $3.73, $28.07, $28.88, $59.69, $29.80). The founder's example listed home & gifts at 60; the rule he set says 50%, which the build follows.
 - **Archived, not deleted:** the full formula (D-119 – D-126) is written up in `docs/archive/pricing-full-formula.md`
   and stays in the code behind `pricing_settings.beta_pricing`; a migration setting it false brings it back with its
   settings as they were.
@@ -603,4 +605,6 @@ What it means for the build (migration `20261015120000_beta_pricing.sql`):
 *Claude's choices in it:* food's margin on its cost and clothing's and home's of the price, as the founder's tables have
 read since D-119; flight on the label's weight; no shop divisor, fee, packing % or buffer ("strict"). Not in the beta
 formula: US duty and the card fee. Shipping makes up for them per bag, so no sample bag loses (the least: one masala,
-+$1.95), but food-heavy bags past $149.99 pay Shipping (14 × 1 kg bhujia $91.79, 20 pantry pieces $36.49).
++$1.95; at ₹92 +$2.09), but food-heavy bags past $149.99 pay Shipping (at ₹92: 14 × 1 kg bhujia $77.29, 20 pantry
+pieces $30.49, 60 masala packets $47.29). Asked again how the margin counts, the founder answered "calculate after adding
+shipping": the margin is taken on the whole cost including the flight, as built.
