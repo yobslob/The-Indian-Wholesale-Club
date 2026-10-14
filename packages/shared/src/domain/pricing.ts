@@ -19,7 +19,7 @@
  *
  * Beta (D-127, `betaPricing`): a fixed formula replaces all of the above (archived in
  * docs/archive/pricing-full-formula.md): (shop ₹ × 1.10 + kg × ₹2,000) ÷ the day's rate, food × 1.20, clothing ÷ 0.60,
- * home & gifts ÷ 0.50, up to the next ending.
+ * home & gifts ÷ 0.50, to the cent (no price ending in the beta).
  */
 import type { ProductType } from './product-types';
 
@@ -316,5 +316,5 @@ function betaPrice(shop: number, g: number, t: ProductType | null | undefined, f
   const cost = (shop * (1 + indiaHandling) + (flightPaisePerKg * g) / 1000) / fx;
   const price =
     t === 'food' ? cost * (1 + margin.food) : t === 'home' ? cost / (1 - margin.home) : cost / (1 - margin.clothing);
-  return { costCents: Math.round(cost), priceCents: priceEnding(price), rule: 'beta' };
+  return { costCents: Math.round(cost), priceCents: Math.round(price), rule: 'beta' };
 }

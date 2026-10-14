@@ -53,12 +53,12 @@ phase's sub-steps and every verification run) is in `docs/archive/status-log-to-
   endings .29/.49/.69/.79/.99. Shipping still keeps every bag whole: heavy food bags past $149.99 pay some Shipping.
 
 - **Beta pricing (D-127, 2026-10-15):** every automatic price is (shop ₹ × 1.10 + kg × ₹2,000) ÷ rate, food +20% on
-  cost, clothing 40% and home 50% of the price, fixed in code; the full formula is archived
+  cost, clothing 40% and home 50% of the price, to the cent, fixed in code; the full formula is archived
   (`docs/archive/pricing-full-formula.md`) and returns when `beta_pricing` is set false.
 
 ## Next for the founder
 1. Run `node scripts/check.mjs` (Docker Desktop and `npx supabase start` first), push, then the Deploy workflow: it
-   applies the new migrations (the latest is `20261015120000_beta_pricing`, D-127; it and D-119 – D-126
+   applies the new migrations (the latest is `20261015130000_beta_exact_cents`, D-127; it and D-119 – D-126
    reprice every listing) to production. Confirm with the courier that ₹2,000 includes the box and clearance, and
    whether it bills by box size; correct Settings → Courier rate card if not.
 2. Then Admin → Products → Drafts → **Publish all drafts**; it says how many went live, what held the rest and how
@@ -80,6 +80,7 @@ phase's sub-steps and every verification run) is in `docs/archive/status-log-to-
 ## Last verification
 | Date | Commit | Where | Result |
 |---|---|---|---|
+| 2026-10-15 | D-127 exact cents | Claude, cloud sandbox | all 58 migrations + seeds on plain Postgres 16 with the Supabase stand-in: 43/43 SQL test files (`pricing_engine`: the beta to the cent) · unit tests shared 132/132 (`pricing-beta`: each type exactly at its margin) · tsc shared, db, web clean · docs audit OK. **Not run:** ESLint with the Next plugin, `next build`, e2e, http, the app build. |
 | 2026-10-15 | D-127 commit | Claude, cloud sandbox | all 57 migrations + seeds on plain Postgres 16 with the Supabase stand-in: 43/43 SQL test files (`pricing_engine` with the beta formula) · unit tests shared 132/132 (new `pricing-beta`), web 37/37, app 10/10 · tsc shared, db, web clean; app no new errors against the sandbox baseline · docs audit OK. **Not run:** ESLint with the Next plugin, `next build`, e2e, http, the app build. |
 | 2026-10-15 | D-126 commit | Claude, cloud sandbox | all 56 migrations + seeds on plain Postgres 16 with the Supabase stand-in: 43/43 SQL test files (`pricing_engine` with the band, the .69 ending and the founder's table) · unit tests shared 129/129 (new `pricing-band`: the band, every sample bag profitable), web 37/37, app 10/10 · tsc shared, db, web clean; app no new errors against the sandbox baseline · docs audit OK. **Not run:** ESLint with the Next plugin, `next build`, e2e, http, the app build. |
 | 2026-10-14 | D-125 commit | Claude, cloud sandbox | all 55 migrations + seeds on plain Postgres 16 with the Supabase stand-in: 43/43 SQL test files (`bag_charges` with the parcel rule; mutation-checked) · unit tests shared 124/124 (no sample bag loses, also with food at 30%), web 37/37, app 10/10 · tsc shared, db, web clean; app no new errors against the sandbox baseline · docs audit OK. **Not run:** ESLint with the Next plugin, `next build`, e2e, http, the app build. |

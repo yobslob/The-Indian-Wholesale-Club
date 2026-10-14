@@ -189,7 +189,7 @@ courier rate card `courier_first_kg_paise`, `courier_next_kg_paise`, `parcel_fix
 saving `bulk_saving_pct`, `bulk_saving_cap_cents`. `_auto_price_cents(shop, weight, type)` applies the type's recipe,
 then lifts a price to the guard, then the .29/.49/.79/.99 ending (`_tapered_margin` is its helper; D-126 adds the .69
 ending, and `food_margin_max_pct` with `_band_price(cost, lo, hi)` prices food in its 17–20% band without the guard
-or the shelf). Migration 56 (D-127): `beta_pricing` puts the fixed beta formula in front of all of it (see
+or the shelf). Migration 56 (D-127): `beta_pricing` puts the fixed beta formula in front of all of it (migration 57: to the cent; see
 `docs/archive/pricing-full-formula.md` for the full one);
 `ship_alloc_paise_per_kg` is no longer read. `store_bag_charges` also returns the two bulk numbers;
 `orders.bulk_saving_cents` is the part of `discount_cents` that was the bulk saving (admin view). Tests:

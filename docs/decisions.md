@@ -589,9 +589,12 @@ exchange rate, then flight 2000rs/kg strict, then margin strict 20% food, 40%clo
 send me the table with price margin."
 What it means for the build (migration `20261015120000_beta_pricing.sql`):
 - **Every automatic price:** cost = (shop ₹ × 1.10 + weight kg × ₹2,000) ÷ the day's ₹ per $ (no buffer); food × 1.20,
-  clothing ÷ 0.60, home & gifts ÷ 0.50; up to .29/.49/.69/.79/.99. The numbers are in code
-  (`_auto_price_cents`, `BETA_PRICING` in `packages/shared`), not Settings; only the exchange rate moves prices.
-  ₹90 masala of 100 g $3.79, bhujia 1 kg $28.29, ₹699 kurta $28.99, ₹1,499 kurta set $59.79, ₹350 brass diya $29.99.
+  clothing ÷ 0.60, home & gifts ÷ 0.50, **to the cent** (amended the same night, migration
+  `20261015130000_beta_exact_cents.sql`: "don't round up the numbers, I need the original numbers, so i get to see
+  margin as 20, 20, 20, 20, 40, 40, 40, 40 … like this"; the first cut went up to .29/.49/.69/.79/.99). The numbers
+  are in code (`_auto_price_cents`, `BETA_PRICING` in `packages/shared`), not Settings; only the exchange rate moves
+  prices. ₹90 masala of 100 g $3.73, bhujia 1 kg $28.07, ₹699 kurta $28.88, ₹1,499 kurta set $59.69, ₹350 brass diya
+  $29.80. The founder's example listed home & gifts at 60; the rule he set says 50%, which the build follows.
 - **Archived, not deleted:** the full formula (D-119 – D-126) is written up in `docs/archive/pricing-full-formula.md`
   and stays in the code behind `pricing_settings.beta_pricing`; a migration setting it false brings it back with its
   settings as they were.
@@ -600,4 +603,4 @@ What it means for the build (migration `20261015120000_beta_pricing.sql`):
 *Claude's choices in it:* food's margin on its cost and clothing's and home's of the price, as the founder's tables have
 read since D-119; flight on the label's weight; no shop divisor, fee, packing % or buffer ("strict"). Not in the beta
 formula: US duty and the card fee. Shipping makes up for them per bag, so no sample bag loses (the least: one masala,
-+$2.00), but food-heavy bags past $149.99 pay Shipping (14 × 1 kg bhujia $89.49, 20 pantry pieces $35.49).
++$1.95), but food-heavy bags past $149.99 pay Shipping (14 × 1 kg bhujia $91.79, 20 pantry pieces $36.49).
