@@ -26,7 +26,7 @@ confusion. If you need a concept that isn't here, add it (and a decision if it's
 | **small-food shelf** | light, cheap food (up to ₹200 and 250 g by default) priced on whole-dollar steps, $1.99 – $3.99, carrying half its shipping share (D-120) | `small_food_*` in `pricing_settings`, rule `small` in `autoPrice` |
 | **all-India listing** | a listing with no state (`products.region_id` null): the store names no state for it, it fills every state's page after the state's own pieces and lives at `/states/india/<slug>` (D-121) | `region_id is null`, `ALL_INDIA_SLUG`, `productPath()` |
 | **pack** | a food piece's pack size on its card ("200 g"), from its option or its name (D-122) | `_store_pack()`, `pack` on cards |
-| **food weight** | the part of a bag's Shipping that carries its food's courier beyond what the food's prices carry; paid at every bag size, less as the bag grows (D-123) | `food_weight_cents`, `bagChargesAt()` |
+| **food weight** | the part of a bag's Shipping that carries its food's courier beyond what the food's prices carry; it makes Shipping grow as food goes in, less as the bag grows; never shown on its own, free with Shipping from the line up (D-123, D-124) | `food_weight_cents`, `bagChargesAt()` |
 | **profit guard** | the floor under every automatic price: the margin must pay US duty and the card fee and still leave the type's minimum profit (D-119) | `duty_<type>_pct`, `min_profit_*`, `guard_card_fee_pct` |
 | **shipment** | the US domestic parcel sent to a customer (with tracking number) | `orders.tracking_number`, status `shipped` | "Shipped" | export |
 | **delivery window** | the from/to dates promised before payment (D-008) | `orders.est_delivery_from/_to` | "Arrives Oct 30 – Nov 4" | ETA (in customer copy) |

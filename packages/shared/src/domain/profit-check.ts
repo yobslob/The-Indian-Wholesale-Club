@@ -70,6 +70,16 @@ export const SAMPLE_BAGS: readonly SampleBag[] = [
     pieces: [...rep(6, [380, 2000, 'food']), ...rep(4, [150, 250, 'food'])],
   },
   {
+    name: 'Bhujia, 12 × 1 kg',
+    note: 'just under the line (D-124)',
+    pieces: rep(12, [230, 1000, 'food']),
+  },
+  {
+    name: 'Bhujia, 14 × 1 kg',
+    note: 'just past the line: Shipping free (D-124)',
+    pieces: rep(14, [230, 1000, 'food']),
+  },
+  {
     name: 'Brass decor',
     note: '3 pieces',
     pieces: [
@@ -149,7 +159,7 @@ export function checkBag(
     retailerPct: charges.retailerPct ?? null,
     foodWeight: foodCents > 0 && charges.foodOff ? { cents: foodCents, ...charges.foodOff } : null,
   });
-  const chargesCents = at.shippingCents + at.retailerCents + at.foodCents;
+  const chargesCents = at.shippingCents + at.retailerCents;
   const saving = bulkSavingCents(goods, charges.freeMinCents, charges.bulk);
   const pays = goods + chargesCents - saving;
 

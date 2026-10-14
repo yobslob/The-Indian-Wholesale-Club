@@ -21,15 +21,10 @@ export function ChargeValue({ cents, free }: { cents: number; free: boolean }): 
   );
 }
 
-/** D-123: the food weight's line: what it costs at this bag, and how much the bag's size already took off. */
-export function foodWeightLabel(offPct: number): string {
-  return offPct > 0 ? `Food weight (${offPct}% off)` : 'Food weight';
-}
-
 /**
- * The bag's Shipping and Retailer charges under its subtotal (D-111, D-123): the parcel's shipping and the retailer
- * charges are paid below the free-delivery line and struck through above it; the food weight is paid at every size,
- * less as the bag grows. Checkout prices them again on the server.
+ * The bag's Shipping and Retailer charges under its subtotal (D-111, D-124): Shipping starts at the parcel's amount and
+ * grows with the food in the bag; both are paid below the free-delivery line and struck through above it. Checkout
+ * prices them again on the server.
  */
 export function ChargeLines(): React.JSX.Element | null {
   const lines = useCart((s) => s.lines);
@@ -43,12 +38,6 @@ export function ChargeLines(): React.JSX.Element | null {
         <span>Shipping</span>
         <ChargeValue cents={at.shippingCents || at.waivedShippingCents} free={free} />
       </p>
-      {at.foodFullCents > 0 ? (
-        <p className={row}>
-          <span>{foodWeightLabel(at.foodOffPct)}</span>
-          <span>{formatUsd(at.foodCents)}</span>
-        </p>
-      ) : null}
       {at.retailerCents + at.waivedRetailerCents > 0 ? (
         <p className={row}>
           <span>Retailer charges</span>
@@ -64,9 +53,7 @@ export function ChargeLines(): React.JSX.Element | null {
       {line !== null && !free ? (
         <div className="mt-1.5 grid gap-2">
           <p className="text-brand m-0 text-[13px] font-semibold">
-            {at.foodFullCents > 0
-              ? `Add ${formatUsd(leftCents)} more and Shipping comes off`
-              : `Add ${formatUsd(leftCents)} more for free delivery`}
+            Add {formatUsd(leftCents)} more for free delivery
           </p>
           <Meter share={share} />
         </div>
@@ -116,12 +103,6 @@ export function PendingChargeRows(): React.JSX.Element | null {
   return (
     <>
       {row('Shipping', at.shippingCents || at.waivedShippingCents)}
-      {at.foodFullCents > 0 ? (
-        <div className="flex justify-between">
-          <dt className="text-ink-muted">{foodWeightLabel(at.foodOffPct)}</dt>
-          <dd className="m-0">{formatUsd(at.foodCents)}</dd>
-        </div>
-      ) : null}
       {at.retailerCents + at.waivedRetailerCents > 0 ? row('Retailer charges', at.retailerCents || at.waivedRetailerCents) : null}
       {bulk.savingCents > 0 ? (
         <div className="flex justify-between">

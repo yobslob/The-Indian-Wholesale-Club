@@ -1,7 +1,7 @@
 import { formatDeliveryWindow, formatUsd } from '@repo/shared/domain';
 
 import { LinePhoto } from '@/features/cart/bag-lines';
-import { ChargeValue, foodWeightLabel, PendingChargeRows } from '@/features/cart/charge-lines';
+import { ChargeValue, PendingChargeRows } from '@/features/cart/charge-lines';
 
 import type { SummaryLine } from './last-order';
 import type { CheckoutQuote } from './types';
@@ -59,19 +59,11 @@ export function BagSummary({
               <Row label="Express shipping" value={formatUsd(b.shippingCents)} />
             ) : (
               <>
-                {/* D-111: the parcel's shipping and the retailer charges, struck through once free; D-123: the food weight, always. */}
+                {/* D-111, D-124: Shipping (the parcel + the food in the bag) and the retailer charges; struck through once free. */}
                 <Row
                   label="Shipping"
-                  value={
-                    <ChargeValue
-                      cents={b.shippingCents - (b.foodWeightCents ?? 0) || (b.waivedCents?.shipping ?? 0)}
-                      free={b.shippingCents - (b.foodWeightCents ?? 0) === 0}
-                    />
-                  }
+                  value={<ChargeValue cents={b.shippingCents || (b.waivedCents?.shipping ?? 0)} free={b.shippingCents === 0} />}
                 />
-                {(b.foodWeightCents ?? 0) > 0 ? (
-                  <Row label={foodWeightLabel(b.foodWeightOffPct ?? 0)} value={formatUsd(b.foodWeightCents)} />
-                ) : null}
                 {b.retailerCents > 0 || (b.waivedCents?.retailer ?? 0) > 0 ? (
                   <Row
                     label="Retailer charges"

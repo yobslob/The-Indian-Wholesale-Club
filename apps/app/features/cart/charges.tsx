@@ -88,15 +88,6 @@ export function ChargeRows(): React.JSX.Element | null {
   return (
     <View className="gap-1">
       <ChargeRow label="Shipping" cents={at.shippingCents || at.waivedShippingCents} free={free} />
-      {/* D-123: the food weight, paid at every bag size, less as the bag grows */}
-      {at.foodFullCents > 0 ? (
-        <View className="flex-row justify-between gap-3">
-          <Text className="font-body text-ink-muted flex-1 text-sm">
-            {at.foodOffPct > 0 ? `Food weight (${at.foodOffPct}% off)` : 'Food weight'}
-          </Text>
-          <Text className="font-body text-ink text-sm">{formatUsd(at.foodCents)}</Text>
-        </View>
-      ) : null}
       {at.retailerCents + at.waivedRetailerCents > 0 ? (
         <ChargeRow label="Retailer charges" cents={at.retailerCents || at.waivedRetailerCents} free={free} />
       ) : null}
@@ -109,9 +100,7 @@ export function ChargeRows(): React.JSX.Element | null {
       {line !== null && !free ? (
         <View className="mt-1 gap-2">
           <Text className="font-ui-semibold text-brand text-[13px]">
-            {at.foodFullCents > 0
-              ? `Add ${formatUsd(leftCents)} more and Shipping comes off`
-              : `Add ${formatUsd(leftCents)} more for free delivery`}
+            Add {formatUsd(leftCents)} more for free delivery
           </Text>
           <MeterLine share={share} />
         </View>

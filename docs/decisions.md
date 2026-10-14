@@ -485,7 +485,7 @@ the list's rules: left out are perishables (fresh pitha, chhena sweets, siddu, h
 and frozen food: 45), fish and prawn pickles (US import rules: 8) and names too vague to search ("Namkeen", "Herb
 seasoning": 30); an item in four or more states, or made only of everyday words, is for all states.
 
-**D-123 · 2026-10-14 · founder: The bag's charges follow the bag; food carries its weight in Shipping, not in its price**
+**D-123 · 2026-10-14 · founder: The bag's charges follow the bag; food carries its weight in Shipping, not in its price** · display and the free line amended by D-124
 Founder, verbatim: "add new rule where the final shipping and retailer cost is not constant anymore, it changes with the
 total amount in the bag, doesn't matter if its strikethrough or not it will follow a rule so that the food can be cheaper
 because i feel like 8.49 and 20.49 is still very expensive for bhujia." Asked who pays for the food's flight, the founder
@@ -508,4 +508,20 @@ weight; it loses $8.27, as small bags did before); 4 × 400 g + 2 masalas $66.84
 *Claude's choices in it:* the food weight is worked out per kg of label weight with the same rate card and billed % as
 the prices; the courier's rate card and the steps are settings. A lever if big food bags feel dear: 20% less per $50, up
 to 60% less, brings 12 × 1 kg to $244.33 (+$32.65).
+
+**D-124 · 2026-10-14 · founder: One Shipping number that grows with the bag, struck through and free from the line up**
+Founder, verbatim: "this is good but you didn't have to show the cutomer a new cost to pay, you just had to add it in the
+backend and in the frontend the shipping just increases. I asked the shipping for 18.79 on 0$ cart and then increase as
+the bag fills up. let's say (just an example) if it is 90$ for 140$ bag then it will still increase even after 149 it's
+just that we will strikethrough the shipping price and show it as free."
+What it means for the build (no migration; `bagChargesAt()` in packages/shared, the bag and checkout, web and app):
+- **No Food weight line.** Shipping is one number: $18.79 for the parcel plus the bag's food weight (D-123: 10% less
+  per $50 of goods, up to 40% less), so it starts at $18.79 and grows as food goes in.
+- **From $149.99 up** Shipping keeps following the bag but is struck through and free, like the retailer charges
+  (1.5% of the goods, at least $0.99). Food prices stay as D-123 (bhujia $2.79 / $4.79 / $10.99).
+- **What it costs (profit check, now with these two bags):** 12 × 1 kg bhujia ($131.88 of goods) pays $274.89 with
+  Shipping $141.03 (+$61.71); 14 × 1 kg ($153.86) pays $153.47 with Shipping free and IWC loses $83.58, because past
+  the line nothing pays the 70% of the food's flight its price leaves out. Mixed bags past the line keep their profit.
+*Claude's choices in it:* the bag's hint is "Add $X more for free delivery" again. The loss on food-heavy bags past the
+line is the founder's to decide (see the reply of 2026-10-14).
 

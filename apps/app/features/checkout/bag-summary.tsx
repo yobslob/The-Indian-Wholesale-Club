@@ -46,20 +46,11 @@ export function BagSummary({ title, lines, quote }: { title: string; lines: BagL
             <Row label="Express shipping" value={formatUsd(b.shippingCents)} />
           ) : (
             <>
-              {/* D-111: the parcel's shipping, struck through once free; D-123: the food weight, always. */}
+              {/* D-111, D-124: Shipping (the parcel + the food in the bag), struck through once free. */}
               <View className="flex-row justify-between gap-3">
                 <Text className="font-body text-ink-muted flex-1 text-sm">Shipping</Text>
-                <ChargeValue
-                  cents={b.shippingCents - (b.foodWeightCents ?? 0) || (b.waivedCents?.shipping ?? 0)}
-                  free={b.shippingCents - (b.foodWeightCents ?? 0) === 0}
-                />
+                <ChargeValue cents={b.shippingCents || (b.waivedCents?.shipping ?? 0)} free={b.shippingCents === 0} />
               </View>
-              {(b.foodWeightCents ?? 0) > 0 ? (
-                <Row
-                  label={(b.foodWeightOffPct ?? 0) > 0 ? `Food weight (${b.foodWeightOffPct}% off)` : 'Food weight'}
-                  value={formatUsd(b.foodWeightCents)}
-                />
-              ) : null}
               {b.retailerCents > 0 || (b.waivedCents?.retailer ?? 0) > 0 ? (
                 <View className="flex-row justify-between gap-3">
                   <Text className="font-body text-ink-muted flex-1 text-sm">Retailer charges</Text>
