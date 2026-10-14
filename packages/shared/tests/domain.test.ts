@@ -166,6 +166,15 @@ describe('autoPrice (D-119): the same numbers as supabase/tests/pricing_engine.t
       assert.equal(price(90, 100, 'food', { ...shelf, smallFoodShipSharePct: null }), 399);
     });
 
+    it('D-122: every food piece carries 70% of its courier, so weight and price move together', () => {
+      const d122 = { ...shelf, foodShipSharePct: 70, smallFoodShipSharePct: 70 };
+      assert.equal(price(55, 200, 'food', d122), 399);
+      assert.equal(price(100, 400, 'food', d122), 849);
+      assert.equal(price(230, 1000, 'food', d122), 2049);
+      assert.equal(price(90, 100, 'food', d122), 299);
+      assert.equal(price(100, 400, 'food', shelf), 1129, 'no share set: the full share (D-119)');
+    });
+
     it('the profit check: mixed bags over the line still make money; a bag of packets alone is the cost', () => {
       const charges = { freeMinCents: 14999, shippingCents: 1879, retailerCents: 199, bulk: { pct: 10, capCents: 2500 } };
       for (const bag of SAMPLE_BAGS) {

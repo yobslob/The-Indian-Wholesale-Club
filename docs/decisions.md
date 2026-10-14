@@ -368,7 +368,7 @@ daily run; a target with nothing found is searched again after 30 days; new list
 publishes them ("go live by themselves" is a switch), and go live only with a photo and every detail customers must see.
 Nishorama's shop address (`nishorama.com`) and its platform are assumed until the first run shows them.
 
-**D-119 · 2026-10-14 · founder: The pilot price in two recipes, a profit guard, and a bulk saving that stops at a cap** · small food amended by D-120
+**D-119 · 2026-10-14 · founder: The pilot price in two recipes, a profit guard, and a bulk saving that stops at a cap** · small food amended by D-120, D-122
 Founder, verbatim: "we are close enough to the pricing still we are running in loss as we have a risk of going
 underpriced, we have to tune the pricing more. The flow of indian product price, then 10% indian safety buffer, then air
 shipping and then 50% margin on overall is working but we still have to keep the price in mind. Figure something out
@@ -454,4 +454,34 @@ What it means for the build (migration `20261014140000_all_india_and_bands.sql`)
 address word `india`; the Myntra target list and its numbers; 1.5 g per rupee and 200 g (estimates in Settings);
 nothing made outside India is listed. Myntra's listings reach the hub only if its delivery days (Auto-sourcing → Shops)
 are within the limit (3 days).
+
+**D-122 · 2026-10-14 · founder: Food priced in step with its weight, footwear like Amazon US, the pack on food cards, See all for every type, each state's own first row, food for every state**
+Founder, verbatim: "slippers and jutis are all listed from 45-60$ while they are 30-40 on amazon us. also there is no
+sense in picked numbers as 200gm bhujiya is 3$ but 400gm is 12$ and 1000gm is 29$ also add a tag of weight on the card
+of food item so the person knows why one card is 2$ and another is 4. Also when see all is clicked only clothing is
+opened, there is no way to go to food except manually type the address, so when see all is click there should be a
+glass toggle button which can switch between clothing food and home decor. Next we are filling food items so I am
+attaching a list which has to be filled. at least 5-8 products per object. [...] Also in Just listed, I should be
+seeing that state's particular items, because in every state items are the same, so the first row should be different."
+What it means for the build (migration `20261014160000_food_share_footwear_pack.sql`):
+- **Food in step with its weight.** Every food piece carries the same share of its courier cost, 70%
+  (`food_ship_share_pct`; the small-food shelf the same 70%), instead of 100% above the shelf and 50% on it. At ₹96.30:
+  bhujia 200 g (₹55) $3.99, 400 g (₹100) $8.49 (was $11.29), 1 kg (₹230) $20.49 (was $27.49). The air courier costs
+  about $20 for a 1 kg bag (1.4 kg billed), so 1 kg cannot go much lower without losing money.
+- **Footwear** without its own weight is priced at 600 g (a pair with its box), not 1 kg: ₹600 $33.49, ₹800 $38.29,
+  ₹1,000 $42.99. The Myntra list's footwear targets now take ₹400 – ₹900.
+- **The pack size on food cards** ("200 g"), on the photo: the pack of the option whose price the card shows, else the
+  weight in the name (the pack size is printed on the pack; not operations information).
+- **See all for every type:** the See all pages have a frosted-glass switch, Clothing · Food · Home & gifts, keeping
+  the chosen state; Similar items opens its own type. The "All states" count counts each piece once.
+- **The first row is the state's own:** New arrivals on a state's page shows only that state's pieces (all-India
+  pieces fill the rows below, D-121); "New pieces are on their way" until it has some.
+- **Food for every state:** `tools/sourcing-runner/targets/food-by-state.csv`, 753 targets from the founder's list,
+  6 listings each (about 4,500): a state's specialties tagged with its state (562), everyday foods sold everywhere
+  (turmeric powder, mango pickle, roasted chana…) once for all states with no state (191), so no state shows another
+  state's or a national brand's food as its own (D-004).
+*Claude's choices in it (proposed):* 70% and 600 g (estimates in Settings / the category's weight); the toggle's look;
+the list's rules: left out are perishables (fresh pitha, chhena sweets, siddu, holige, puran poli and other fresh breads
+and frozen food: 45), fish and prawn pickles (US import rules: 8) and names too vague to search ("Namkeen", "Herb
+seasoning": 30); an item in four or more states, or made only of everyday words, is for all states.
 

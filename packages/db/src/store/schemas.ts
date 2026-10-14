@@ -50,6 +50,8 @@ export const productCardSchema = z.object({
   category_name: z.string(),
   price_cents: z.number().int(),
   primary_image_path: z.string().nullable(),
+  /** A food piece's pack size ("200 g"), shown on its card (D-122); null otherwise. Optional until migration 52. */
+  pack: z.string().nullable().optional(),
 });
 
 /** Set only when the product has exactly one variant and it is in stock: a card's "Add" puts it in the bag. */
@@ -280,6 +282,8 @@ export type TypeRow = z.infer<typeof typeRowSchema>;
 const filterCountSchema = z.object({ slug: z.string(), name: z.string(), count: z.number().int() });
 export const browsePageSchema = z.object({
   total: z.number().int(),
+  /** Every piece of the type, whatever the filters (D-122); optional until migration 52. */
+  all_total: z.number().int().optional(),
   /** Every state with pieces of this type (the state filter), A–Z. */
   regions: z.array(filterCountSchema),
   /** The categories within the chosen state (the category filter), biggest first. */

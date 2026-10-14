@@ -50,8 +50,8 @@ Patiala salwars,clothing,jeans-and-trousers,all,3,women patiala salwar,patiala,m
 Ethnic skirts,clothing,co-ords-and-dresses,all,3,women ethnic skirt,skirt,myntra,600,1600,10
 Women's ethnic jackets,clothing,jackets-and-knitwear,all,2,women ethnic jacket shrug,jacket|shrug,myntra,600,1600,12
 Lehenga cholis,clothing,lehengas,all,1,women lehenga choli dupatta,lehenga,myntra,600,1600,20
-Women's mojaris and juttis,clothing,footwear,all,1,women ethnic mojaris,mojari|jutti,myntra,600,1600,15
-Women's kolhapuris,clothing,footwear,all,2,women kolhapuri,kolhapuri,myntra,600,1600,12
+Women's mojaris and juttis,clothing,footwear,all,1,women ethnic mojaris,mojari|jutti,myntra,400,900,15
+Women's kolhapuris,clothing,footwear,all,2,women kolhapuri,kolhapuri,myntra,400,900,12
 Potli bags,clothing,accessories,all,2,potli bag,potli,myntra,600,1600,12
 Jhumka earrings,clothing,accessories,all,2,jhumka earrings,jhumk,myntra,600,1600,15
 Men's cotton kurtas,clothing,kurtas,all,1,men cotton kurta,^(?!.*\b(with|set|sets)\b).*\bkurtas?\b,myntra,600,1600,25
@@ -67,8 +67,8 @@ Men's dhotis,clothing,dhotis-and-mundus,all,2,men dhoti,dhoti,myntra,600,1600,12
 Mundus and veshtis,clothing,dhotis-and-mundus,all,2,men mundu veshti,mundu|veshti|dhoti,myntra,600,1600,12
 Men's lungis,clothing,dhotis-and-mundus,all,3,men lungi,lungi,myntra,600,1600,10
 Men's ethnic shirts,clothing,shirts-and-tops,all,2,men mandarin collar ethnic shirt,shirt,myntra,600,1600,15
-Men's mojaris,clothing,footwear,all,1,men mojaris,mojari|jutti,myntra,600,1600,15
-Men's kolhapuri chappals,clothing,footwear,all,2,men kolhapuri chappal,kolhapuri,myntra,600,1600,12
+Men's mojaris,clothing,footwear,all,1,men mojaris,mojari|jutti,myntra,400,900,15
+Men's kolhapuri chappals,clothing,footwear,all,2,men kolhapuri chappal,kolhapuri,myntra,400,900,12
 Men's shawls,clothing,shawls,all,3,men shawl,shawl,myntra,600,1600,10
 Safa and pagdi,clothing,headwear,all,3,safa pagdi turban,safa|pagdi|turban,myntra,600,1600,10
 Boys' kurta pyjama sets,clothing,kids,all,1,boys kurta pyjama set,kurta,myntra,600,1600,20

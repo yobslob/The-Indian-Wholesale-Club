@@ -30,7 +30,7 @@ const SIZES = {
 
 /**
  * The founder's reference card (D-050): a rounded 3 : 4 photo with a round + on it (D-080), then the name and
- * price · region across the card's full width. `size="sm"` is the smaller card of the product page grids (D-051).
+ * price · region across the card's full width; a food piece's pack size sits on its photo (D-122). `size="sm"` is the smaller card of the product page grids (D-051).
  * Server component; the + is the only client island.
  */
 export function ProductCard({
@@ -77,6 +77,12 @@ export function ProductCard({
           {badge ? (
             <span className="bg-paper font-ui absolute left-3.5 top-3.5 rounded-pill px-3 py-1.5 text-xs font-medium">
               {badge}
+            </span>
+          ) : null}
+          {product.pack ? (
+            // D-122: a food piece's pack size, so two prices read side by side make sense
+            <span className="bg-paper/75 font-ui absolute bottom-3.5 left-3.5 rounded-pill px-2.5 py-1 text-xs font-semibold backdrop-blur-md">
+              {product.pack}
             </span>
           ) : null}
         </Link>

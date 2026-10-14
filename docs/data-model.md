@@ -152,6 +152,10 @@ Migration 31 (D-099, the second speed audit): `admin_order_counts()` (every orde
 send, shops owed for picked pieces) and `admin_cycle_totals(cycle)` (the cycle card's orders, pieces, shops and sales),
 admin only, counted in SQL because the API sends at most 1,000 rows; indexes for orders by status and newest, pickups
 by status, what each shop is owed, and a payout's pieces.
+Migration 52 (D-122): `pricing_settings.food_ship_share_pct` (the share of its courier a food piece carries, empty =
+all); `_auto_price_cents` applies it; footwear's `default_weight_g` 600; `_store_pack(product, name, type)` and the cards
+(`_store_product_card`, `store_browse`) carry `pack`; `store_browse` returns `all_total`. Tests: `food_cards.test.sql`,
+`pricing_engine.test.sql`.
 Migration 50 (D-121): `products.region_id`, `order_items.region_name`, `sourcing_targets.region_id` and an online
 shop's `vendors.region_id` may be empty (an all-India listing; `vendors_region_or_online`: a shop in person still has
 its state; one all-India vendor per online shop). `store_products` left-joins the state; `store_region_page` and

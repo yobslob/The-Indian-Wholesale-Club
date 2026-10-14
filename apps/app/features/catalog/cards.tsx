@@ -153,6 +153,12 @@ export const ProductCard = memo(function ProductCard({
                 <Text className="font-ui text-ink text-[11px]">{badge}</Text>
               </View>
             ) : null}
+            {product.pack ? (
+              // D-122: a food piece's pack size on its photo
+              <View className="bg-paper/80 rounded-pill absolute bottom-2.5 left-2.5 px-2.5 py-1">
+                <Text className="font-ui-semibold text-ink text-[11px]">{product.pack}</Text>
+              </View>
+            ) : null}
           </Pressable>
         </Link>
         <QuickAdd product={product} />

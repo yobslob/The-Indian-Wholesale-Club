@@ -22,6 +22,8 @@ const PIECES: [string, number, number, ProductType][] = [
   ['Masala ₹150 · 250 g', 150, 250, 'food'],
   ['Masala ₹250 · 250 g', 250, 250, 'food'],
   ['Namkeen ₹220 · 400 g', 220, 400, 'food'],
+  ['Bhujia ₹100 · 400 g', 100, 400, 'food'],
+  ['Bhujia ₹230 · 1 kg', 230, 1000, 'food'],
   ['Kurta ₹1,299 · 450 g', 1299, 450, 'clothing'],
   ['Saree ₹7,500 · 900 g', 7500, 900, 'clothing'],
   ['Lehenga ₹12,000 · 2.5 kg', 12000, 2500, 'clothing'],

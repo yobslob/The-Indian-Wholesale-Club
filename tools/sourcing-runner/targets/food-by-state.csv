@@ -1,0 +1,754 @@
+Product,Type,IWC category,IWC region slug,Tier,Search words,Must match,Shops,Min ₹,Max ₹,Listings
+Coastal curry masala,food,masala-blends,andaman-and-nicobar-islands,1,coastal curry masala,^(?=.*coastal)(?=.*masal),,,,6
+Packaged coastal namkeen,food,snacks-and-namkeen,andaman-and-nicobar-islands,1,packaged coastal namkeen,^(?=.*coastal)(?=.*namkeen),,,,6
+Guntur red chilli powder,food,ground-spices,andhra-pradesh,1,guntur red chilli powder,^(?=.*guntur)(?=.*red)(?=.*powde),,,,6
+Andhra biryani masala,food,masala-blends,andhra-pradesh,1,andhra biryani masala,^(?=.*biryani)(?=.*masal),,,,6
+Andhra chicken masala,food,masala-blends,andhra-pradesh,1,andhra chicken masala,^(?=.*chicken)(?=.*masal),,,,6
+Andhra fish curry masala,food,masala-blends,andhra-pradesh,1,andhra fish curry masala,^(?=.*fish)(?=.*masal),,,,6
+Andhra karam podi,food,masala-blends,andhra-pradesh,1,andhra karam podi,^(?=.*karam)(?=.*podi),,,,6
+Andhra mutton masala,food,masala-blends,andhra-pradesh,1,andhra mutton masala,^(?=.*mutton)(?=.*masal),,,,6
+Gutti vankaya masala,food,masala-blends,andhra-pradesh,1,gutti vankaya masala,^(?=.*gutti)(?=.*vankaya)(?=.*masal),,,,6
+Idli podi,food,masala-blends,andhra-pradesh,1,idli podi,^(?=.*idli)(?=.*podi),,,,6
+Kandi podi,food,masala-blends,andhra-pradesh,1,kandi podi,^(?=.*kandi)(?=.*podi),,,,6
+Nalla karam podi,food,masala-blends,andhra-pradesh,1,nalla karam podi,^(?=.*nalla)(?=.*karam),,,,6
+Pappula podi,food,masala-blends,andhra-pradesh,1,pappula podi,^(?=.*pappula)(?=.*podi),,,,6
+Peanut podi,food,masala-blends,andhra-pradesh,1,peanut podi,^(?=.*peanut)(?=.*podi),,,,6
+Pulihora powder,food,masala-blends,andhra-pradesh,1,pulihora powder,^(?=.*pulihora)(?=.*powde),,,,6
+Avakaya mango pickle,food,pickles-and-chutneys,andhra-pradesh,1,avakaya mango pickle,^(?=.*avakaya)(?=.*mango)(?=.*pickl),,,,6
+Bellam avakaya,food,pickles-and-chutneys,andhra-pradesh,1,bellam avakaya,^(?=.*bellam)(?=.*avakaya),,,,6
+Dosakaya pickle,food,pickles-and-chutneys,andhra-pradesh,1,dosakaya pickle,^(?=.*dosakaya)(?=.*pickl),,,,6
+Gongura pachadi,food,pickles-and-chutneys,andhra-pradesh,1,gongura pachadi,^(?=.*gongura)(?=.*pachadi),,,,6
+Gongura pickle,food,pickles-and-chutneys,andhra-pradesh,1,gongura pickle,^(?=.*gongura)(?=.*pickl),,,,6
+Magaya pickle,food,pickles-and-chutneys,andhra-pradesh,1,magaya pickle,^(?=.*magaya)(?=.*pickl),,,,6
+Pandu mirchi pickle,food,pickles-and-chutneys,andhra-pradesh,1,pandu mirchi pickle,^(?=.*pandu)(?=.*mirchi)(?=.*pickl),,,,6
+Usirikaya,food,pickles-and-chutneys,andhra-pradesh,1,usirikaya,^(?=.*usirikaya),,,,6
+Andhra mixture,food,snacks-and-namkeen,andhra-pradesh,1,andhra mixture,^(?=.*mixture),,,,6
+Chakodi,food,snacks-and-namkeen,andhra-pradesh,1,chakodi,^(?=.*chakodi),,,,6
+Chegodilu,food,snacks-and-namkeen,andhra-pradesh,1,chegodilu,^(?=.*chegodilu),,,,6
+Chekkalu,food,snacks-and-namkeen,andhra-pradesh,1,chekkalu,^(?=.*chekkalu),,,,6
+Janthikalu,food,snacks-and-namkeen,andhra-pradesh,1,janthikalu,^(?=.*janthikalu),,,,6
+Jantikalu,food,snacks-and-namkeen,andhra-pradesh,1,jantikalu,^(?=.*jantikalu),,,,6
+Karam boondi,food,snacks-and-namkeen,andhra-pradesh,1,karam boondi,^(?=.*karam)(?=.*boondi),,,,6
+Murukulu,food,snacks-and-namkeen,andhra-pradesh,1,murukulu,^(?=.*murukulu),,,,6
+Pappu chekkalu,food,snacks-and-namkeen,andhra-pradesh,1,pappu chekkalu,^(?=.*pappu)(?=.*chekkalu),,,,6
+Pootharekulu with jaggery,food,sweets,andhra-pradesh,1,pootharekulu with jaggery,^(?=.*pootharekulu)(?=.*jaggery),,,,6
+Putharekulu,food,sweets,andhra-pradesh,1,putharekulu,^(?=.*putharekulu),,,,6
+Sunnundalu,food,sweets,andhra-pradesh,1,sunnundalu,^(?=.*sunnundalu),,,,6
+Fermented bamboo shoot,food,pickles-and-chutneys,arunachal-pradesh,1,fermented bamboo shoot,^(?=.*fermented)(?=.*bamboo),,,,6
+Thukpa noodle kits,food,snacks-and-namkeen,arunachal-pradesh,1,thukpa noodle kits,^(?=.*thukpa)(?=.*noodle),,,,6
+Khapse,food,sweets,arunachal-pradesh,1,khapse,^(?=.*khapse),,,,6
+Assamese panch phoron,food,masala-blends,assam,1,assamese panch phoron,^(?=.*panch)(?=.*phoron),,,,6
+Dried bhut jolokia powder,food,masala-blends,assam,1,dried bhut jolokia powder,^(?=.*bhut)(?=.*jolokia)(?=.*powde),,,,6
+Khar seasoning,food,masala-blends,assam,1,khar seasoning,^(?=.*khar),,,,6
+Bamboo shoot condiment,food,pickles-and-chutneys,assam,1,bamboo shoot condiment,^(?=.*bamboo)(?=.*shoot),,,,6
+Bhut jolokia pickle,food,pickles-and-chutneys,assam,1,bhut jolokia pickle,^(?=.*bhut)(?=.*jolokia)(?=.*pickl),,,,6
+Elephant apple pickle,food,pickles-and-chutneys,assam,1,elephant apple pickle,^(?=.*elephant)(?=.*apple)(?=.*pickl),,,,6
+Hog plum pickle,food,pickles-and-chutneys,assam,1,hog plum pickle,^(?=.*hog)(?=.*plum)(?=.*pickl),,,,6
+Indian olive pickle,food,pickles-and-chutneys,assam,1,indian olive pickle,^(?=.*olive)(?=.*pickl),,,,6
+Assamese nimki,food,snacks-and-namkeen,assam,1,assamese nimki,^(?=.*nimki),,,,6
+Jolpan mixes,food,snacks-and-namkeen,assam,1,jolpan mixes,^(?=.*jolpan),,,,6
+Til ladoo,food,sweets,assam,1,til ladoo,^(?=.*til)(?=.*ladoo),,,,6
+Bhut jolokia chilli,food,whole-spices,assam,1,bhut jolokia chilli,^(?=.*bhut)(?=.*jolokia),,,,6
+Aloo chokha seasoning,food,masala-blends,bihar,1,aloo chokha seasoning,^(?=.*aloo)(?=.*chokha),,,,6
+Dhania-jeera powder,food,masala-blends,bihar,1,dhania-jeera powder,^(?=.*dhania)(?=.*jeera)(?=.*powde),,,,6
+Litti chokha masala,food,masala-blends,bihar,1,litti chokha masala,^(?=.*litti)(?=.*chokha)(?=.*masal),,,,6
+Sattu seasoning,food,masala-blends,bihar,1,sattu seasoning,^(?=.*sattu),,,,6
+Bihari bhujia,food,snacks-and-namkeen,bihar,1,bihari bhujia,^(?=.*bhujia),,,,6
+Chura snack mix,food,snacks-and-namkeen,bihar,1,chura snack mix,^(?=.*chura),,,,6
+Lai,food,snacks-and-namkeen,bihar,1,lai,^(?=.*lai),,,,6
+Murhi mixture,food,snacks-and-namkeen,bihar,1,murhi mixture,^(?=.*murhi)(?=.*mixture),,,,6
+Anarsa,food,sweets,bihar,1,anarsa,^(?=.*anarsa),,,,6
+Khurma,food,sweets,bihar,1,khurma,^(?=.*khurma),,,,6
+Thekua,food,sweets,bihar,1,thekua,^(?=.*thekua),,,,6
+Tilkut,food,sweets,bihar,1,tilkut,^(?=.*tilkut),,,,6
+Sattu drink mix,food,tea-and-drinks,bihar,1,sattu drink mix,^(?=.*sattu)(?=.*drink),,,,6
+Amritsari fish masala,food,masala-blends,chandigarh,1,amritsari fish masala,^(?=.*amritsari)(?=.*fish)(?=.*masal),,,,6
+Dal makhani masala,food,masala-blends,chandigarh,1,dal makhani masala,^(?=.*dal)(?=.*makhani)(?=.*masal),,,,6
+Punjabi garam masala,food,masala-blends,chandigarh,1,punjabi garam masala,^(?=.*garam)(?=.*masal),,,,6
+Punjabi mixture,food,snacks-and-namkeen,chandigarh,1,punjabi mixture,^(?=.*mixture),,,,6
+Chhattisgarhi chilli powder,food,ground-spices,chhattisgarh,1,chhattisgarhi chilli powder,^(?=.*chhattisgarhi)(?=.*chilli)(?=.*powde),,,,6
+Rice-dish seasoning,food,masala-blends,chhattisgarh,1,rice-dish seasoning,^(?=.*rice)(?=.*dish),,,,6
+Angakar roti mix,food,rice-flours-and-staples,chhattisgarh,1,angakar roti mix,^(?=.*angakar)(?=.*roti),,,,6
+Bafauri mix,food,rice-flours-and-staples,chhattisgarh,1,bafauri mix,^(?=.*bafauri),,,,6
+Chilla mix,food,rice-flours-and-staples,chhattisgarh,1,chilla mix,^(?=.*chilla),,,,6
+Sabudana snacks,food,snacks-and-namkeen,chhattisgarh,1,sabudana snacks,^(?=.*sabudana),,,,6
+Thethri,food,snacks-and-namkeen,chhattisgarh,1,thethri,^(?=.*thethri),,,,6
+Khurma,food,sweets,chhattisgarh,1,khurma,^(?=.*khurma),,,,6
+Til-gur snacks,food,sweets,chhattisgarh,1,til-gur snacks,^(?=.*til)(?=.*gur),,,,6
+Coastal curry masala,food,masala-blends,dadra-and-nagar-haveli-and-daman-and-diu,1,coastal curry masala,^(?=.*coastal)(?=.*masal),,,,6
+Dhana-jeera powder,food,masala-blends,dadra-and-nagar-haveli-and-daman-and-diu,1,dhana-jeera powder,^(?=.*dhana)(?=.*jeera)(?=.*powde),,,,6
+Gujarati garam masala,food,masala-blends,dadra-and-nagar-haveli-and-daman-and-diu,1,gujarati garam masala,^(?=.*garam)(?=.*masal),,,,6
+Chhundo,food,pickles-and-chutneys,dadra-and-nagar-haveli-and-daman-and-diu,1,chhundo,^(?=.*chhundo),,,,6
+Fafda,food,snacks-and-namkeen,dadra-and-nagar-haveli-and-daman-and-diu,1,fafda,^(?=.*fafda),,,,6
+Gathiya,food,snacks-and-namkeen,dadra-and-nagar-haveli-and-daman-and-diu,1,gathiya,^(?=.*gathiya),,,,6
+Gujarati chevdo,food,snacks-and-namkeen,dadra-and-nagar-haveli-and-daman-and-diu,1,gujarati chevdo,^(?=.*chevdo),,,,6
+Khakhra,food,snacks-and-namkeen,dadra-and-nagar-haveli-and-daman-and-diu,1,khakhra,^(?=.*khakhra),,,,6
+Sev mamra,food,snacks-and-namkeen,dadra-and-nagar-haveli-and-daman-and-diu,1,sev mamra,^(?=.*sev)(?=.*mamra),,,,6
+Nihari masala,food,masala-blends,delhi,1,nihari masala,^(?=.*nihari)(?=.*masal),,,,6
+Pani puri masala,food,masala-blends,delhi,1,pani puri masala,^(?=.*pani)(?=.*puri)(?=.*masal),,,,6
+Pav bhaji masala,food,masala-blends,delhi,1,pav bhaji masala,^(?=.*pav)(?=.*bhaji)(?=.*masal),,,,6
+Chana jor garam,food,snacks-and-namkeen,delhi,1,chana jor garam,^(?=.*chana)(?=.*jor),,,,6
+Delhi-style mixture,food,snacks-and-namkeen,delhi,1,delhi-style mixture,^(?=.*mixture),,,,6
+Khasta kachori snack mix,food,snacks-and-namkeen,delhi,1,khasta kachori snack mix,^(?=.*khasta)(?=.*kachori),,,,6
+Papdi,food,snacks-and-namkeen,delhi,1,papdi,^(?=.*papdi),,,,6
+Ambot tik masala,food,masala-blends,goa,1,ambot tik masala,^(?=.*ambot)(?=.*tik)(?=.*masal),,,,6
+Balchão masala,food,masala-blends,goa,1,balchão masala,^(?=.*balchão)(?=.*masal),,,,6
+Cafreal masala,food,masala-blends,goa,1,cafreal masala,^(?=.*cafreal)(?=.*masal),,,,6
+Goan fish curry masala,food,masala-blends,goa,1,goan fish curry masala,^(?=.*fish)(?=.*masal),,,,6
+Goan garam masala,food,masala-blends,goa,1,goan garam masala,^(?=.*garam)(?=.*masal),,,,6
+Goan meat masala,food,masala-blends,goa,1,goan meat masala,^(?=.*meat)(?=.*masal),,,,6
+Goan sausage seasoning,food,masala-blends,goa,1,goan sausage seasoning,^(?=.*sausage),,,,6
+Kokum seasoning,food,masala-blends,goa,1,kokum seasoning,^(?=.*kokum),,,,6
+Recheado masala,food,masala-blends,goa,1,recheado masala,^(?=.*recheado)(?=.*masal),,,,6
+Sorpotel masala,food,masala-blends,goa,1,sorpotel masala,^(?=.*sorpotel)(?=.*masal),,,,6
+Vindaloo masala,food,masala-blends,goa,1,vindaloo masala,^(?=.*vindaloo)(?=.*masal),,,,6
+Xacuti masala,food,masala-blends,goa,1,xacuti masala,^(?=.*xacuti)(?=.*masal),,,,6
+Brinjal pickle,food,pickles-and-chutneys,goa,1,brinjal pickle,^(?=.*brinjal)(?=.*pickl),,,,6
+Goan mango pickle,food,pickles-and-chutneys,goa,1,goan mango pickle,^(?=.*mango)(?=.*pickl),,,,6
+Recheado-style chilli condiment,food,pickles-and-chutneys,goa,1,recheado-style chilli condiment,^(?=.*chilli),,,,6
+Tendli pickle,food,pickles-and-chutneys,goa,1,tendli pickle,^(?=.*tendli)(?=.*pickl),,,,6
+"Bebinca, packaged",food,snacks-and-namkeen,goa,1,"bebinca, packaged",^(?=.*bebinca),,,,6
+Goan chakli,food,snacks-and-namkeen,goa,1,goan chakli,^(?=.*chakli),,,,6
+Goan chivda,food,snacks-and-namkeen,goa,1,goan chivda,^(?=.*chivda),,,,6
+Goan poi crisps,food,snacks-and-namkeen,goa,1,goan poi crisps,^(?=.*poi)(?=.*crisp),,,,6
+Khaje,food,snacks-and-namkeen,goa,1,khaje,^(?=.*khaje),,,,6
+Kokum candies,food,sweets,goa,1,kokum candies,^(?=.*kokum)(?=.*candie),,,,6
+Kulkuls,food,sweets,goa,1,kulkuls,^(?=.*kulkul),,,,6
+Shankarpali,food,sweets,goa,1,shankarpali,^(?=.*shankarpali),,,,6
+Dabeli masala,food,masala-blends,gujarat,1,dabeli masala,^(?=.*dabeli)(?=.*masal),,,,6
+Dhana-jeera powder,food,masala-blends,gujarat,1,dhana-jeera powder,^(?=.*dhana)(?=.*jeera)(?=.*powde),,,,6
+Dhokla seasoning,food,masala-blends,gujarat,1,dhokla seasoning,^(?=.*dhokla),,,,6
+Fafda seasoning,food,masala-blends,gujarat,1,fafda seasoning,^(?=.*fafda),,,,6
+Gujarati garam masala,food,masala-blends,gujarat,1,gujarati garam masala,^(?=.*garam)(?=.*masal),,,,6
+Handvo masala,food,masala-blends,gujarat,1,handvo masala,^(?=.*handvo)(?=.*masal),,,,6
+Kadhi masala,food,masala-blends,gujarat,1,kadhi masala,^(?=.*kadhi)(?=.*masal),,,,6
+Khichdi masala,food,masala-blends,gujarat,1,khichdi masala,^(?=.*khichdi)(?=.*masal),,,,6
+Methia masala,food,masala-blends,gujarat,1,methia masala,^(?=.*methia)(?=.*masal),,,,6
+Sambharo seasoning,food,masala-blends,gujarat,1,sambharo seasoning,^(?=.*sambharo),,,,6
+Thepla masala,food,masala-blends,gujarat,1,thepla masala,^(?=.*thepla)(?=.*masal),,,,6
+Undhiyu masala,food,masala-blends,gujarat,1,undhiyu masala,^(?=.*undhiyu)(?=.*masal),,,,6
+Fulwadi,food,papad-and-wadi,gujarat,1,fulwadi,^(?=.*fulwadi),,,,6
+Khichiya papad,food,papad-and-wadi,gujarat,1,khichiya papad,^(?=.*khichiya)(?=.*papad),,,,6
+Chana methia pickle,food,pickles-and-chutneys,gujarat,1,chana methia pickle,^(?=.*chana)(?=.*methia)(?=.*pickl),,,,6
+Chhundo,food,pickles-and-chutneys,gujarat,1,chhundo,^(?=.*chhundo),,,,6
+Cucumber pickle,food,pickles-and-chutneys,gujarat,1,cucumber pickle,^(?=.*cucumber)(?=.*pickl),,,,6
+Gunda pickle,food,pickles-and-chutneys,gujarat,1,gunda pickle,^(?=.*gunda)(?=.*pickl),,,,6
+Kerda pickle,food,pickles-and-chutneys,gujarat,1,kerda pickle,^(?=.*kerda)(?=.*pickl),,,,6
+Mango chunda-style relish,food,pickles-and-chutneys,gujarat,1,mango chunda-style relish,^(?=.*mango)(?=.*relish),,,,6
+Methia keri,food,pickles-and-chutneys,gujarat,1,methia keri,^(?=.*methia)(?=.*keri),,,,6
+Ganthiya mix,food,rice-flours-and-staples,gujarat,1,ganthiya mix,^(?=.*ganthiya),,,,6
+Bhavnagari gathiya,food,snacks-and-namkeen,gujarat,1,bhavnagari gathiya,^(?=.*bhavnagari)(?=.*gathiya),,,,6
+Chorafali,food,snacks-and-namkeen,gujarat,1,chorafali,^(?=.*chorafali),,,,6
+Fafda,food,snacks-and-namkeen,gujarat,1,fafda,^(?=.*fafda),,,,6
+Gujarati chevdo,food,snacks-and-namkeen,gujarat,1,gujarati chevdo,^(?=.*chevdo),,,,6
+Khakhra,food,snacks-and-namkeen,gujarat,1,khakhra,^(?=.*khakhra),,,,6
+Khakhra chips,food,snacks-and-namkeen,gujarat,1,khakhra chips,^(?=.*khakhra)(?=.*chips),,,,6
+Methi mathri,food,snacks-and-namkeen,gujarat,1,methi mathri,^(?=.*methi)(?=.*mathri),,,,6
+Nylon sev,food,snacks-and-namkeen,gujarat,1,nylon sev,^(?=.*nylon)(?=.*sev),,,,6
+Papdi,food,snacks-and-namkeen,gujarat,1,papdi,^(?=.*papdi),,,,6
+Sev mamra,food,snacks-and-namkeen,gujarat,1,sev mamra,^(?=.*sev)(?=.*mamra),,,,6
+Thepla,food,snacks-and-namkeen,gujarat,1,thepla,^(?=.*thepla),,,,6
+Tikha gathiya,food,snacks-and-namkeen,gujarat,1,tikha gathiya,^(?=.*tikha)(?=.*gathiya),,,,6
+Bajra khichdi seasoning,food,masala-blends,haryana,1,bajra khichdi seasoning,^(?=.*bajra)(?=.*khichdi),,,,6
+Bajra crackers,food,snacks-and-namkeen,haryana,1,bajra crackers,^(?=.*bajra)(?=.*cracker),,,,6
+Bajra namkeen,food,snacks-and-namkeen,haryana,1,bajra namkeen,^(?=.*bajra)(?=.*namkeen),,,,6
+Besan sev,food,snacks-and-namkeen,haryana,1,besan sev,^(?=.*besan)(?=.*sev),,,,6
+Methi mathri,food,snacks-and-namkeen,haryana,1,methi mathri,^(?=.*methi)(?=.*mathri),,,,6
+Chha gosht masala,food,masala-blends,himachal-pradesh,1,chha gosht masala,^(?=.*chha)(?=.*gosht)(?=.*masal),,,,6
+Himachali madra masala,food,masala-blends,himachal-pradesh,1,himachali madra masala,^(?=.*madra)(?=.*masal),,,,6
+Sepu vadi,food,papad-and-wadi,himachal-pradesh,1,sepu vadi,^(?=.*sepu)(?=.*vadi),,,,6
+Lingri pickle,food,pickles-and-chutneys,himachal-pradesh,1,lingri pickle,^(?=.*lingri)(?=.*pickl),,,,6
+Lotus stem pickle,food,pickles-and-chutneys,himachal-pradesh,1,lotus stem pickle,^(?=.*lotus)(?=.*stem)(?=.*pickl),,,,6
+Mittha rice mix,food,rice-flours-and-staples,himachal-pradesh,1,mittha rice mix,^(?=.*mittha)(?=.*rice),,,,6
+Patande mix,food,rice-flours-and-staples,himachal-pradesh,1,patande mix,^(?=.*patande),,,,6
+Tudkiya bhath seasoning kit,food,rice-flours-and-staples,himachal-pradesh,1,tudkiya bhath seasoning kit,^(?=.*tudkiya)(?=.*bhath),,,,6
+Bhey lotus stem chips,food,snacks-and-namkeen,himachal-pradesh,1,bhey lotus stem chips,^(?=.*bhey)(?=.*lotus),,,,6
+Chana madra snack mix,food,snacks-and-namkeen,himachal-pradesh,1,chana madra snack mix,^(?=.*chana)(?=.*madra),,,,6
+Himachali namkeen,food,snacks-and-namkeen,himachal-pradesh,1,himachali namkeen,^(?=.*namkeen),,,,6
+Fruit leather,food,sweets,himachal-pradesh,1,fruit leather,^(?=.*fruit)(?=.*leather),,,,6
+Kashmiri chilli powder,food,ground-spices,jammu-and-kashmir,1,kashmiri chilli powder,^(?=.*kashmiri)(?=.*chilli)(?=.*powde),,,,6
+Dum aloo masala,food,masala-blends,jammu-and-kashmir,1,dum aloo masala,^(?=.*dum)(?=.*aloo)(?=.*masal),,,,6
+Haak seasoning,food,masala-blends,jammu-and-kashmir,1,haak seasoning,^(?=.*haak),,,,6
+Kahwa spice blend,food,masala-blends,jammu-and-kashmir,1,kahwa spice blend,^(?=.*kahwa),,,,6
+Kashmiri garam masala,food,masala-blends,jammu-and-kashmir,1,kashmiri garam masala,^(?=.*kashmiri)(?=.*garam)(?=.*masal),,,,6
+Rogan josh masala,food,masala-blends,jammu-and-kashmir,1,rogan josh masala,^(?=.*rogan)(?=.*josh)(?=.*masal),,,,6
+Ver masala,food,masala-blends,jammu-and-kashmir,1,ver masala,^(?=.*ver)(?=.*masal),,,,6
+Wazwan masala blend,food,masala-blends,jammu-and-kashmir,1,wazwan masala blend,^(?=.*wazwan)(?=.*masal),,,,6
+Yakhni seasoning,food,masala-blends,jammu-and-kashmir,1,yakhni seasoning,^(?=.*yakhni),,,,6
+Haak greens pickle,food,pickles-and-chutneys,jammu-and-kashmir,1,haak greens pickle,^(?=.*haak)(?=.*green)(?=.*pickl),,,,6
+Kashmiri chilli pickle,food,pickles-and-chutneys,jammu-and-kashmir,1,kashmiri chilli pickle,^(?=.*kashmiri)(?=.*chilli)(?=.*pickl),,,,6
+Lotus stem pickle,food,pickles-and-chutneys,jammu-and-kashmir,1,lotus stem pickle,^(?=.*lotus)(?=.*stem)(?=.*pickl),,,,6
+Kashmiri dried fruit mix,food,sweets,jammu-and-kashmir,1,kashmiri dried fruit mix,^(?=.*kashmiri)(?=.*fruit),,,,6
+Kashmiri kahwa biscuits,food,tea-and-drinks,jammu-and-kashmir,1,kashmiri kahwa biscuits,^(?=.*kashmiri)(?=.*kahwa),,,,6
+Dhuska seasoning,food,masala-blends,jharkhand,1,dhuska seasoning,^(?=.*dhuska),,,,6
+Sattu seasoning,food,masala-blends,jharkhand,1,sattu seasoning,^(?=.*sattu),,,,6
+Chilka roti mix,food,rice-flours-and-staples,jharkhand,1,chilka roti mix,^(?=.*chilka)(?=.*roti),,,,6
+Dhuska mix,food,rice-flours-and-staples,jharkhand,1,dhuska mix,^(?=.*dhuska),,,,6
+Murhi mixture,food,snacks-and-namkeen,jharkhand,1,murhi mixture,^(?=.*murhi)(?=.*mixture),,,,6
+Rugra-based packaged snacks,food,snacks-and-namkeen,jharkhand,1,rugra-based packaged snacks,^(?=.*rugra),,,,6
+Sattu snack mix,food,snacks-and-namkeen,jharkhand,1,sattu snack mix,^(?=.*sattu),,,,6
+Thekua,food,sweets,jharkhand,1,thekua,^(?=.*thekua),,,,6
+Tilkut,food,sweets,jharkhand,1,tilkut,^(?=.*tilkut),,,,6
+Byadgi chilli powder,food,ground-spices,karnataka,1,byadgi chilli powder,^(?=.*byadgi)(?=.*chilli)(?=.*powde),,,,6
+Agasi chutney pudi,food,masala-blends,karnataka,1,agasi chutney pudi,^(?=.*agasi)(?=.*pudi)(?=.*chutn),,,,6
+Bisi bele bath powder,food,masala-blends,karnataka,1,bisi bele bath powder,^(?=.*bisi)(?=.*bele)(?=.*powde),,,,6
+Chutney pudi,food,masala-blends,karnataka,1,chutney pudi,^(?=.*pudi)(?=.*chutn),,,,6
+Gojju powder,food,masala-blends,karnataka,1,gojju powder,^(?=.*gojju)(?=.*powde),,,,6
+Jolada rotti seasoning,food,masala-blends,karnataka,1,jolada rotti seasoning,^(?=.*jolada)(?=.*rotti),,,,6
+Kori gassi masala,food,masala-blends,karnataka,1,kori gassi masala,^(?=.*kori)(?=.*gassi)(?=.*masal),,,,6
+Kundapura masala,food,masala-blends,karnataka,1,kundapura masala,^(?=.*kundapura)(?=.*masal),,,,6
+Mangalore fish curry masala,food,masala-blends,karnataka,1,mangalore fish curry masala,^(?=.*mangalore)(?=.*fish)(?=.*masal),,,,6
+Menthe hittu,food,masala-blends,karnataka,1,menthe hittu,^(?=.*menthe)(?=.*hittu),,,,6
+Mysore masala powder,food,masala-blends,karnataka,1,mysore masala powder,^(?=.*mysore)(?=.*powde),,,,6
+Palyada pudi,food,masala-blends,karnataka,1,palyada pudi,^(?=.*palyada)(?=.*pudi),,,,6
+Puliogare powder,food,masala-blends,karnataka,1,puliogare powder,^(?=.*puliogare)(?=.*powde),,,,6
+Saaru powder,food,masala-blends,karnataka,1,saaru powder,^(?=.*saaru)(?=.*powde),,,,6
+Shenga chutney pudi,food,masala-blends,karnataka,1,shenga chutney pudi,^(?=.*shenga)(?=.*pudi)(?=.*chutn),,,,6
+Udupi sambar powder,food,masala-blends,karnataka,1,udupi sambar powder,^(?=.*udupi)(?=.*sambar)(?=.*powde),,,,6
+Vangi bath powder,food,masala-blends,karnataka,1,vangi bath powder,^(?=.*vangi)(?=.*bath)(?=.*powde),,,,6
+Gongura-style pickle,food,pickles-and-chutneys,karnataka,1,gongura-style pickle,^(?=.*pickl),,,,6
+Gooseberry thokku,food,pickles-and-chutneys,karnataka,1,gooseberry thokku,^(?=.*gooseberry)(?=.*thokku),,,,6
+Hog plum pickle,food,pickles-and-chutneys,karnataka,1,hog plum pickle,^(?=.*hog)(?=.*plum)(?=.*pickl),,,,6
+Mangalore-style vegetable pickle,food,pickles-and-chutneys,karnataka,1,mangalore-style vegetable pickle,^(?=.*vegetable)(?=.*pickl),,,,6
+Tender mango pickle,food,pickles-and-chutneys,karnataka,1,tender mango pickle,^(?=.*tender)(?=.*mango)(?=.*pickl),,,,6
+Tomato thokku,food,pickles-and-chutneys,karnataka,1,tomato thokku,^(?=.*tomato)(?=.*thokku),,,,6
+Chiroti,food,rice-flours-and-staples,karnataka,1,chiroti,^(?=.*chiroti),,,,6
+Avalakki mixture,food,snacks-and-namkeen,karnataka,1,avalakki mixture,^(?=.*avalakki)(?=.*mixture),,,,6
+Benne murukku,food,snacks-and-namkeen,karnataka,1,benne murukku,^(?=.*benne)(?=.*murukku),,,,6
+Chakkuli,food,snacks-and-namkeen,karnataka,1,chakkuli,^(?=.*chakkuli),,,,6
+Chakli,food,snacks-and-namkeen,karnataka,1,chakli,^(?=.*chakli),,,,6
+Congress kadlekai,food,snacks-and-namkeen,karnataka,1,congress kadlekai,^(?=.*congres)(?=.*kadlekai),,,,6
+Khara boondi,food,snacks-and-namkeen,karnataka,1,khara boondi,^(?=.*khara)(?=.*boondi),,,,6
+Khara sev,food,snacks-and-namkeen,karnataka,1,khara sev,^(?=.*khara)(?=.*sev),,,,6
+Kodubale,food,snacks-and-namkeen,karnataka,1,kodubale,^(?=.*kodubale),,,,6
+Maddur vada-style packaged snacks,food,snacks-and-namkeen,karnataka,1,maddur vada-style packaged snacks,^(?=.*maddur),,,,6
+Nippattu,food,snacks-and-namkeen,karnataka,1,nippattu,^(?=.*nippattu),,,,6
+Ragi crackers,food,snacks-and-namkeen,karnataka,1,ragi crackers,^(?=.*ragi)(?=.*cracker),,,,6
+Ragi murukku,food,snacks-and-namkeen,karnataka,1,ragi murukku,^(?=.*ragi)(?=.*murukku),,,,6
+Dharwad peda,food,sweets,karnataka,1,dharwad peda,^(?=.*dharwad)(?=.*peda),,,,6
+Mysore pak,food,sweets,karnataka,1,mysore pak,^(?=.*mysore)(?=.*pak),,,,6
+Appam stew spice blend,food,masala-blends,kerala,1,appam stew spice blend,^(?=.*appam)(?=.*stew),,,,6
+Avial masala,food,masala-blends,kerala,1,avial masala,^(?=.*avial)(?=.*masal),,,,6
+Beef ularthiyathu masala,food,masala-blends,kerala,1,beef ularthiyathu masala,^(?=.*beef)(?=.*ularthiyathu)(?=.*masal),,,,6
+Chemmeen curry masala,food,masala-blends,kerala,1,chemmeen curry masala,^(?=.*chemmeen)(?=.*masal),,,,6
+Chicken roast masala,food,masala-blends,kerala,1,chicken roast masala,^(?=.*chicken)(?=.*roast)(?=.*masal),,,,6
+Fish fry masala,food,masala-blends,kerala,1,fish fry masala,^(?=.*fish)(?=.*fry)(?=.*masal),,,,6
+Kerala garam masala,food,masala-blends,kerala,1,kerala garam masala,^(?=.*garam)(?=.*masal),,,,6
+Kerala sambar powder,food,masala-blends,kerala,1,kerala sambar powder,^(?=.*sambar)(?=.*powde),,,,6
+Malabar biryani masala,food,masala-blends,kerala,1,malabar biryani masala,^(?=.*malabar)(?=.*biryani)(?=.*masal),,,,6
+Puttu podi seasoning,food,masala-blends,kerala,1,puttu podi seasoning,^(?=.*puttu)(?=.*podi),,,,6
+Beetroot pickle,food,pickles-and-chutneys,kerala,1,beetroot pickle,^(?=.*beetroot)(?=.*pickl),,,,6
+Bilimbi pickle,food,pickles-and-chutneys,kerala,1,bilimbi pickle,^(?=.*bilimbi)(?=.*pickl),,,,6
+Kadumanga pickle,food,pickles-and-chutneys,kerala,1,kadumanga pickle,^(?=.*kadumanga)(?=.*pickl),,,,6
+Tender mango pickle,food,pickles-and-chutneys,kerala,1,tender mango pickle,^(?=.*tender)(?=.*mango)(?=.*pickl),,,,6
+Kozhukatta mix,food,rice-flours-and-staples,kerala,1,kozhukatta mix,^(?=.*kozhukatta),,,,6
+Palada dessert mix,food,rice-flours-and-staples,kerala,1,palada dessert mix,^(?=.*palada)(?=.*dessert),,,,6
+Kerala mixture,food,snacks-and-namkeen,kerala,1,kerala mixture,^(?=.*mixture),,,,6
+Kerala-style spicy peanuts,food,snacks-and-namkeen,kerala,1,kerala-style spicy peanuts,^(?=.*peanut),,,,6
+Murukku,food,snacks-and-namkeen,kerala,1,murukku,^(?=.*murukku),,,,6
+Sharkara upperi,food,snacks-and-namkeen,kerala,1,sharkara upperi,^(?=.*sharkara)(?=.*upperi),,,,6
+Achappam,food,sweets,kerala,1,achappam,^(?=.*achappam),,,,6
+Avalose podi,food,sweets,kerala,1,avalose podi,^(?=.*avalose)(?=.*podi),,,,6
+Chakka varatti,food,sweets,kerala,1,chakka varatti,^(?=.*chakka)(?=.*varatti),,,,6
+Kerala banana halwa,food,sweets,kerala,1,kerala banana halwa,^(?=.*banana)(?=.*halwa),,,,6
+Kuzhalappam,food,sweets,kerala,1,kuzhalappam,^(?=.*kuzhalappam),,,,6
+Malabar black pepper,food,whole-spices,kerala,1,malabar black pepper,^(?=.*malabar)(?=.*black),,,,6
+Tsampa roasted barley flour,food,rice-flours-and-staples,ladakh,1,tsampa roasted barley flour,^(?=.*tsampa)(?=.*barley),,,,6
+Khambir-style packaged bread products,food,snacks-and-namkeen,ladakh,1,khambir-style packaged bread products,^(?=.*bread),,,,6
+Apricot kernels,food,sweets,ladakh,1,apricot kernels,^(?=.*apricot)(?=.*kernel),,,,6
+Khapse,food,sweets,ladakh,1,khapse,^(?=.*khapse),,,,6
+Coastal fish curry masala,food,masala-blends,lakshadweep,1,coastal fish curry masala,^(?=.*coastal)(?=.*fish)(?=.*masal),,,,6
+Bhopali biryani masala,food,masala-blends,madhya-pradesh,1,bhopali biryani masala,^(?=.*bhopali)(?=.*biryani)(?=.*masal),,,,6
+Bhopali gosht masala,food,masala-blends,madhya-pradesh,1,bhopali gosht masala,^(?=.*bhopali)(?=.*gosht)(?=.*masal),,,,6
+Bhutte ka kees seasoning,food,masala-blends,madhya-pradesh,1,bhutte ka kees seasoning,^(?=.*bhutte)(?=.*kees),,,,6
+Dal bafla masala,food,masala-blends,madhya-pradesh,1,dal bafla masala,^(?=.*dal)(?=.*bafla)(?=.*masal),,,,6
+Indori jeeravan,food,masala-blends,madhya-pradesh,1,indori jeeravan,^(?=.*indori)(?=.*jeeravan),,,,6
+Poha masala,food,masala-blends,madhya-pradesh,1,poha masala,^(?=.*poha)(?=.*masal),,,,6
+Ratlami sev masala,food,masala-blends,madhya-pradesh,1,ratlami sev masala,^(?=.*ratlami)(?=.*sev)(?=.*masal),,,,6
+Bhopali shami kebab mix,food,rice-flours-and-staples,madhya-pradesh,1,bhopali shami kebab mix,^(?=.*bhopali)(?=.*shami),,,,6
+Bhutte ka kees mix,food,rice-flours-and-staples,madhya-pradesh,1,bhutte ka kees mix,^(?=.*bhutte)(?=.*kees),,,,6
+Dal moth,food,snacks-and-namkeen,madhya-pradesh,1,dal moth,^(?=.*dal)(?=.*moth),,,,6
+Indori mixture,food,snacks-and-namkeen,madhya-pradesh,1,indori mixture,^(?=.*indori)(?=.*mixture),,,,6
+Indori sev,food,snacks-and-namkeen,madhya-pradesh,1,indori sev,^(?=.*indori)(?=.*sev),,,,6
+Kachori snack mix,food,snacks-and-namkeen,madhya-pradesh,1,kachori snack mix,^(?=.*kachori),,,,6
+Poha snack mix,food,snacks-and-namkeen,madhya-pradesh,1,poha snack mix,^(?=.*poha),,,,6
+Ratlami sev,food,snacks-and-namkeen,madhya-pradesh,1,ratlami sev,^(?=.*ratlami)(?=.*sev),,,,6
+Sabudana namkeen,food,snacks-and-namkeen,madhya-pradesh,1,sabudana namkeen,^(?=.*sabudana)(?=.*namkeen),,,,6
+Ujjaini sev,food,snacks-and-namkeen,madhya-pradesh,1,ujjaini sev,^(?=.*ujjaini)(?=.*sev),,,,6
+Amti masala,food,masala-blends,maharashtra,1,amti masala,^(?=.*amti)(?=.*masal),,,,6
+Bharli vangi masala,food,masala-blends,maharashtra,1,bharli vangi masala,^(?=.*bharli)(?=.*vangi)(?=.*masal),,,,6
+Goda masala,food,masala-blends,maharashtra,1,goda masala,^(?=.*goda)(?=.*masal),,,,6
+Kala masala,food,masala-blends,maharashtra,1,kala masala,^(?=.*kala)(?=.*masal),,,,6
+Kanda-lasun masala,food,masala-blends,maharashtra,1,kanda-lasun masala,^(?=.*kanda)(?=.*lasun)(?=.*masal),,,,6
+Kolhapuri masala,food,masala-blends,maharashtra,1,kolhapuri masala,^(?=.*kolhapuri)(?=.*masal),,,,6
+Malvani masala,food,masala-blends,maharashtra,1,malvani masala,^(?=.*malvani)(?=.*masal),,,,6
+Misal pav masala,food,masala-blends,maharashtra,1,misal pav masala,^(?=.*misal)(?=.*pav)(?=.*masal),,,,6
+Pandhra rassa masala,food,masala-blends,maharashtra,1,pandhra rassa masala,^(?=.*pandhra)(?=.*rassa)(?=.*masal),,,,6
+Pav bhaji masala,food,masala-blends,maharashtra,1,pav bhaji masala,^(?=.*pav)(?=.*bhaji)(?=.*masal),,,,6
+Puran poli seasoning,food,masala-blends,maharashtra,1,puran poli seasoning,^(?=.*puran)(?=.*poli),,,,6
+Saoji masala,food,masala-blends,maharashtra,1,saoji masala,^(?=.*saoji)(?=.*masal),,,,6
+Solkadhi spice blend,food,masala-blends,maharashtra,1,solkadhi spice blend,^(?=.*solkadhi),,,,6
+Tambda rassa masala,food,masala-blends,maharashtra,1,tambda rassa masala,^(?=.*tambda)(?=.*rassa)(?=.*masal),,,,6
+Thecha seasoning,food,masala-blends,maharashtra,1,thecha seasoning,^(?=.*thecha),,,,6
+Usal masala,food,masala-blends,maharashtra,1,usal masala,^(?=.*usal)(?=.*masal),,,,6
+Vada pav dry chutney,food,masala-blends,maharashtra,1,vada pav dry chutney,^(?=.*vada)(?=.*pav)(?=.*chutn),,,,6
+Bhakarwadi,food,papad-and-wadi,maharashtra,1,bhakarwadi,^(?=.*bhakarwadi),,,,6
+Chitale-style bhakarwadi,food,papad-and-wadi,maharashtra,1,chitale-style bhakarwadi,^(?=.*bhakarwadi),,,,6
+Kothimbir vadi mix,food,papad-and-wadi,maharashtra,1,kothimbir vadi mix,^(?=.*kothimbir)(?=.*vadi),,,,6
+Pune bakarwadi,food,papad-and-wadi,maharashtra,1,pune bakarwadi,^(?=.*pune)(?=.*bakarwadi),,,,6
+Ambadi pickle,food,pickles-and-chutneys,maharashtra,1,ambadi pickle,^(?=.*ambadi)(?=.*pickl),,,,6
+Karvand pickle,food,pickles-and-chutneys,maharashtra,1,karvand pickle,^(?=.*karvand)(?=.*pickl),,,,6
+Mirchi thecha,food,pickles-and-chutneys,maharashtra,1,mirchi thecha,^(?=.*mirchi)(?=.*thecha),,,,6
+Thecha,food,pickles-and-chutneys,maharashtra,1,thecha,^(?=.*thecha),,,,6
+Thalipeeth bhajani,food,rice-flours-and-staples,maharashtra,1,thalipeeth bhajani,^(?=.*thalipeeth)(?=.*bhajani),,,,6
+Chakli,food,snacks-and-namkeen,maharashtra,1,chakli,^(?=.*chakli),,,,6
+Farsan mixture,food,snacks-and-namkeen,maharashtra,1,farsan mixture,^(?=.*farsan)(?=.*mixture),,,,6
+Kolhapuri bhadang,food,snacks-and-namkeen,maharashtra,1,kolhapuri bhadang,^(?=.*kolhapuri)(?=.*bhadang),,,,6
+Patal poha mixture,food,snacks-and-namkeen,maharashtra,1,patal poha mixture,^(?=.*patal)(?=.*poha),,,,6
+Poha chivda,food,snacks-and-namkeen,maharashtra,1,poha chivda,^(?=.*poha)(?=.*chivda),,,,6
+Sabudana chivda,food,snacks-and-namkeen,maharashtra,1,sabudana chivda,^(?=.*sabudana)(?=.*chivda),,,,6
+Anarsa,food,sweets,maharashtra,1,anarsa,^(?=.*anarsa),,,,6
+Chirote,food,sweets,maharashtra,1,chirote,^(?=.*chirote),,,,6
+Shankarpali,food,sweets,maharashtra,1,shankarpali,^(?=.*shankarpali),,,,6
+Fermented soybean seasoning,food,masala-blends,manipur,1,fermented soybean seasoning,^(?=.*fermented)(?=.*soybean),,,,6
+Singju seasoning,food,masala-blends,manipur,1,singju seasoning,^(?=.*singju),,,,6
+Fermented soybean condiment,food,pickles-and-chutneys,manipur,1,fermented soybean condiment,^(?=.*fermented)(?=.*soybean),,,,6
+Umorok chilli pickle,food,pickles-and-chutneys,manipur,1,umorok chilli pickle,^(?=.*umorok)(?=.*chilli)(?=.*pickl),,,,6
+Chak-hao rice snacks,food,snacks-and-namkeen,manipur,1,chak-hao rice snacks,^(?=.*chak)(?=.*hao),,,,6
+Umorok chilli,food,whole-spices,manipur,1,umorok chilli,^(?=.*umorok)(?=.*chilli),,,,6
+Fermented bamboo shoot condiment,food,pickles-and-chutneys,meghalaya,1,fermented bamboo shoot condiment,^(?=.*fermented)(?=.*bamboo),,,,6
+Pukhlein,food,snacks-and-namkeen,meghalaya,1,pukhlein,^(?=.*pukhlein),,,,6
+Pusaw,food,snacks-and-namkeen,meghalaya,1,pusaw,^(?=.*pusaw),,,,6
+Fermented bamboo shoot,food,pickles-and-chutneys,mizoram,1,fermented bamboo shoot,^(?=.*fermented)(?=.*bamboo),,,,6
+Chhangban-style rice snacks,food,snacks-and-namkeen,mizoram,1,chhangban-style rice snacks,^(?=.*rice),,,,6
+Sticky rice cakes,food,snacks-and-namkeen,mizoram,1,sticky rice cakes,^(?=.*sticky)(?=.*rice),,,,6
+Axone seasoning,food,masala-blends,nagaland,1,axone seasoning,^(?=.*axone),,,,6
+Fermented soybean seasoning,food,masala-blends,nagaland,1,fermented soybean seasoning,^(?=.*fermented)(?=.*soybean),,,,6
+Axone-based condiment,food,pickles-and-chutneys,nagaland,1,axone-based condiment,^(?=.*axone),,,,6
+Fermented bamboo shoot,food,pickles-and-chutneys,nagaland,1,fermented bamboo shoot,^(?=.*fermented)(?=.*bamboo),,,,6
+King chilli pickle,food,pickles-and-chutneys,nagaland,1,king chilli pickle,^(?=.*king)(?=.*chilli)(?=.*pickl),,,,6
+Naga chilli pickle,food,pickles-and-chutneys,nagaland,1,naga chilli pickle,^(?=.*naga)(?=.*chilli)(?=.*pickl),,,,6
+Dried Naga chilli,food,whole-spices,nagaland,1,dried naga chilli,^(?=.*naga)(?=.*chilli),,,,6
+Naga king chilli,food,whole-spices,nagaland,1,naga king chilli,^(?=.*naga)(?=.*king),,,,6
+Besara mustard blend,food,masala-blends,odisha,1,besara mustard blend,^(?=.*besara)(?=.*mustard),,,,6
+Dahi baigana seasoning,food,masala-blends,odisha,1,dahi baigana seasoning,^(?=.*dahi)(?=.*baigana),,,,6
+Dalma masala,food,masala-blends,odisha,1,dalma masala,^(?=.*dalma)(?=.*masal),,,,6
+Ghuguni masala,food,masala-blends,odisha,1,ghuguni masala,^(?=.*ghuguni)(?=.*masal),,,,6
+Pakhala seasoning,food,masala-blends,odisha,1,pakhala seasoning,^(?=.*pakhala),,,,6
+Panch phutana,food,masala-blends,odisha,1,panch phutana,^(?=.*panch)(?=.*phutana),,,,6
+Santula seasoning,food,masala-blends,odisha,1,santula seasoning,^(?=.*santula),,,,6
+Badi,food,papad-and-wadi,odisha,1,badi,^(?=.*badi),,,,6
+Ambula pickle,food,pickles-and-chutneys,odisha,1,ambula pickle,^(?=.*ambula)(?=.*pickl),,,,6
+Kankada-style regional pickle,food,pickles-and-chutneys,odisha,1,kankada-style regional pickle,^(?=.*pickl),,,,6
+Chakuli pitha mix,food,rice-flours-and-staples,odisha,1,chakuli pitha mix,^(?=.*chakuli)(?=.*pitha),,,,6
+Mudhi mixture,food,snacks-and-namkeen,odisha,1,mudhi mixture,^(?=.*mudhi)(?=.*mixture),,,,6
+Packaged dalma snack mix,food,snacks-and-namkeen,odisha,1,packaged dalma snack mix,^(?=.*dalma),,,,6
+Khurma,food,sweets,odisha,1,khurma,^(?=.*khurma),,,,6
+Til ladoo,food,sweets,odisha,1,til ladoo,^(?=.*til)(?=.*ladoo),,,,6
+Chettinad masala,food,masala-blends,puducherry,1,chettinad masala,^(?=.*chettinad)(?=.*masal),,,,6
+Idli milagai podi,food,masala-blends,puducherry,1,idli milagai podi,^(?=.*idli)(?=.*milagai),,,,6
+Madras curry powder,food,masala-blends,puducherry,1,madras curry powder,^(?=.*madra)(?=.*powde),,,,6
+Paruppu podi,food,masala-blends,puducherry,1,paruppu podi,^(?=.*paruppu)(?=.*podi),,,,6
+Puliyodarai powder,food,masala-blends,puducherry,1,puliyodarai powder,^(?=.*puliyodarai)(?=.*powde),,,,6
+Mango thokku,food,pickles-and-chutneys,puducherry,1,mango thokku,^(?=.*mango)(?=.*thokku),,,,6
+Tomato thokku,food,pickles-and-chutneys,puducherry,1,tomato thokku,^(?=.*tomato)(?=.*thokku),,,,6
+Murukku,food,snacks-and-namkeen,puducherry,1,murukku,^(?=.*murukku),,,,6
+Ribbon pakoda,food,snacks-and-namkeen,puducherry,1,ribbon pakoda,^(?=.*ribbon)(?=.*pakoda),,,,6
+Thattai,food,snacks-and-namkeen,puducherry,1,thattai,^(?=.*thattai),,,,6
+Amritsari fish masala,food,masala-blends,punjab,1,amritsari fish masala,^(?=.*amritsari)(?=.*fish)(?=.*masal),,,,6
+Dal makhani masala,food,masala-blends,punjab,1,dal makhani masala,^(?=.*dal)(?=.*makhani)(?=.*masal),,,,6
+Pindi chana masala,food,masala-blends,punjab,1,pindi chana masala,^(?=.*pindi)(?=.*chana)(?=.*masal),,,,6
+Punjabi garam masala,food,masala-blends,punjab,1,punjabi garam masala,^(?=.*garam)(?=.*masal),,,,6
+Punjabi kadhi masala,food,masala-blends,punjab,1,punjabi kadhi masala,^(?=.*kadhi)(?=.*masal),,,,6
+Sarson ka saag seasoning,food,masala-blends,punjab,1,sarson ka saag seasoning,^(?=.*sarson)(?=.*saag),,,,6
+Amritsari papad,food,papad-and-wadi,punjab,1,amritsari papad,^(?=.*amritsari)(?=.*papad),,,,6
+Punjabi wadiyan,food,papad-and-wadi,punjab,1,punjabi wadiyan,^(?=.*wadiyan),,,,6
+Mixed vegetable achar,food,pickles-and-chutneys,punjab,1,mixed vegetable achar,^(?=.*mixed)(?=.*vegetable),,,,6
+Punjabi mango achar,food,pickles-and-chutneys,punjab,1,punjabi mango achar,^(?=.*mango)(?=.*achar),,,,6
+Punjabi mint chutney,food,pickles-and-chutneys,punjab,1,punjabi mint chutney,^(?=.*mint)(?=.*chutn),,,,6
+Besan sev,food,snacks-and-namkeen,punjab,1,besan sev,^(?=.*besan)(?=.*sev),,,,6
+Punjabi masala chips,food,snacks-and-namkeen,punjab,1,punjabi masala chips,^(?=.*chips)(?=.*masal),,,,6
+Punjabi mathi,food,snacks-and-namkeen,punjab,1,punjabi mathi,^(?=.*mathi),,,,6
+Punjabi mixture,food,snacks-and-namkeen,punjab,1,punjabi mixture,^(?=.*mixture),,,,6
+Punjabi samosa snack mix,food,snacks-and-namkeen,punjab,1,punjabi samosa snack mix,^(?=.*samosa),,,,6
+Gur gajak,food,sweets,punjab,1,gur gajak,^(?=.*gur)(?=.*gajak),,,,6
+Panjiri,food,sweets,punjab,1,panjiri,^(?=.*panjiri),,,,6
+Bajra khichdi seasoning,food,masala-blends,rajasthan,1,bajra khichdi seasoning,^(?=.*bajra)(?=.*khichdi),,,,6
+Dal baati masala,food,masala-blends,rajasthan,1,dal baati masala,^(?=.*dal)(?=.*baati)(?=.*masal),,,,6
+Gatte ki sabzi masala,food,masala-blends,rajasthan,1,gatte ki sabzi masala,^(?=.*gatte)(?=.*sabzi)(?=.*masal),,,,6
+Jodhpuri mirch masala,food,masala-blends,rajasthan,1,jodhpuri mirch masala,^(?=.*jodhpuri)(?=.*mirch)(?=.*masal),,,,6
+Ker sangri masala,food,masala-blends,rajasthan,1,ker sangri masala,^(?=.*ker)(?=.*sangri)(?=.*masal),,,,6
+Laal maas masala,food,masala-blends,rajasthan,1,laal maas masala,^(?=.*laal)(?=.*maas)(?=.*masal),,,,6
+Methi masala,food,masala-blends,rajasthan,1,methi masala,^(?=.*methi)(?=.*masal),,,,6
+Panchkuta masala,food,masala-blends,rajasthan,1,panchkuta masala,^(?=.*panchkuta)(?=.*masal),,,,6
+Panchmel dal seasoning,food,masala-blends,rajasthan,1,panchmel dal seasoning,^(?=.*panchmel)(?=.*dal),,,,6
+Rajasthani curry masala,food,masala-blends,rajasthan,1,rajasthani curry masala,^(?=.*masal),,,,6
+Rajasthani garam masala,food,masala-blends,rajasthan,1,rajasthani garam masala,^(?=.*garam)(?=.*masal),,,,6
+Rajasthani kadhi masala,food,masala-blends,rajasthan,1,rajasthani kadhi masala,^(?=.*kadhi)(?=.*masal),,,,6
+Badi,food,papad-and-wadi,rajasthan,1,badi,^(?=.*badi),,,,6
+Mangodi,food,papad-and-wadi,rajasthan,1,mangodi,^(?=.*mangodi),,,,6
+Rajasthani papad,food,papad-and-wadi,rajasthan,1,rajasthani papad,^(?=.*papad),,,,6
+Kachri pickle,food,pickles-and-chutneys,rajasthan,1,kachri pickle,^(?=.*kachri)(?=.*pickl),,,,6
+Ker pickle,food,pickles-and-chutneys,rajasthan,1,ker pickle,^(?=.*ker)(?=.*pickl),,,,6
+Ker sangri pickle,food,pickles-and-chutneys,rajasthan,1,ker sangri pickle,^(?=.*ker)(?=.*sangri)(?=.*pickl),,,,6
+Sangri pickle,food,pickles-and-chutneys,rajasthan,1,sangri pickle,^(?=.*sangri)(?=.*pickl),,,,6
+Mirchi vada mix,food,rice-flours-and-staples,rajasthan,1,mirchi vada mix,^(?=.*mirchi)(?=.*vada),,,,6
+Bajra crackers,food,snacks-and-namkeen,rajasthan,1,bajra crackers,^(?=.*bajra)(?=.*cracker),,,,6
+Bikaneri bhujia,food,snacks-and-namkeen,rajasthan,1,bikaneri bhujia,^(?=.*bikaneri)(?=.*bhujia),,,,6
+Bikaneri sev,food,snacks-and-namkeen,rajasthan,1,bikaneri sev,^(?=.*bikaneri)(?=.*sev),,,,6
+Dal kachori,food,snacks-and-namkeen,rajasthan,1,dal kachori,^(?=.*dal)(?=.*kachori),,,,6
+Jodhpuri gathiya,food,snacks-and-namkeen,rajasthan,1,jodhpuri gathiya,^(?=.*jodhpuri)(?=.*gathiya),,,,6
+Khasta kachori,food,snacks-and-namkeen,rajasthan,1,khasta kachori,^(?=.*khasta)(?=.*kachori),,,,6
+Methi mathri,food,snacks-and-namkeen,rajasthan,1,methi mathri,^(?=.*methi)(?=.*mathri),,,,6
+Moth dal namkeen,food,snacks-and-namkeen,rajasthan,1,moth dal namkeen,^(?=.*moth)(?=.*dal),,,,6
+Pyaaz kachori snack mix,food,snacks-and-namkeen,rajasthan,1,pyaaz kachori snack mix,^(?=.*pyaaz)(?=.*kachori),,,,6
+Til patti,food,sweets,rajasthan,1,til patti,^(?=.*til)(?=.*patti),,,,6
+Dalle chilli powder,food,ground-spices,sikkim,1,dalle chilli powder,^(?=.*dalle)(?=.*chilli)(?=.*powde),,,,6
+Momo masala,food,masala-blends,sikkim,1,momo masala,^(?=.*momo)(?=.*masal),,,,6
+Dalle chilli pickle,food,pickles-and-chutneys,sikkim,1,dalle chilli pickle,^(?=.*dalle)(?=.*chilli)(?=.*pickl),,,,6
+Fermented vegetable condiment,food,pickles-and-chutneys,sikkim,1,fermented vegetable condiment,^(?=.*fermented)(?=.*vegetable),,,,6
+Timur chilli condiment,food,pickles-and-chutneys,sikkim,1,timur chilli condiment,^(?=.*timur)(?=.*chilli),,,,6
+Momo wrapper mix,food,rice-flours-and-staples,sikkim,1,momo wrapper mix,^(?=.*momo)(?=.*wrapper),,,,6
+Churpi,food,snacks-and-namkeen,sikkim,1,churpi,^(?=.*churpi),,,,6
+Khapse,food,sweets,sikkim,1,khapse,^(?=.*khapse),,,,6
+Timur pepper,food,whole-spices,sikkim,1,timur pepper,^(?=.*timur)(?=.*pepper),,,,6
+Chettinad masala,food,masala-blends,tamil-nadu,1,chettinad masala,^(?=.*chettinad)(?=.*masal),,,,6
+Curry leaf podi,food,masala-blends,tamil-nadu,1,curry leaf podi,^(?=.*leaf)(?=.*podi),,,,6
+Garlic rasam powder,food,masala-blends,tamil-nadu,1,garlic rasam powder,^(?=.*garlic)(?=.*rasam)(?=.*powde),,,,6
+Idli milagai podi,food,masala-blends,tamil-nadu,1,idli milagai podi,^(?=.*idli)(?=.*milagai),,,,6
+Kollu podi,food,masala-blends,tamil-nadu,1,kollu podi,^(?=.*kollu)(?=.*podi),,,,6
+Kootu podi,food,masala-blends,tamil-nadu,1,kootu podi,^(?=.*kootu)(?=.*podi),,,,6
+Kuzhambu milagai thool,food,masala-blends,tamil-nadu,1,kuzhambu milagai thool,^(?=.*kuzhambu)(?=.*milagai),,,,6
+Madras curry powder,food,masala-blends,tamil-nadu,1,madras curry powder,^(?=.*madra)(?=.*powde),,,,6
+Paruppu podi,food,masala-blends,tamil-nadu,1,paruppu podi,^(?=.*paruppu)(?=.*podi),,,,6
+Paruppu rasam powder,food,masala-blends,tamil-nadu,1,paruppu rasam powder,^(?=.*paruppu)(?=.*rasam)(?=.*powde),,,,6
+Poondu podi,food,masala-blends,tamil-nadu,1,poondu podi,^(?=.*poondu)(?=.*podi),,,,6
+Poriyal podi,food,masala-blends,tamil-nadu,1,poriyal podi,^(?=.*poriyal)(?=.*podi),,,,6
+Puliyodarai powder,food,masala-blends,tamil-nadu,1,puliyodarai powder,^(?=.*puliyodarai)(?=.*powde),,,,6
+Rasam seasoning,food,masala-blends,tamil-nadu,1,rasam seasoning,^(?=.*rasam),,,,6
+Sundal seasoning,food,masala-blends,tamil-nadu,1,sundal seasoning,^(?=.*sundal),,,,6
+Vatha kuzhambu masala,food,masala-blends,tamil-nadu,1,vatha kuzhambu masala,^(?=.*vatha)(?=.*kuzhambu)(?=.*masal),,,,6
+Vathal kuzhambu powder,food,masala-blends,tamil-nadu,1,vathal kuzhambu powder,^(?=.*vathal)(?=.*kuzhambu)(?=.*powde),,,,6
+Appalam,food,papad-and-wadi,tamil-nadu,1,appalam,^(?=.*appalam),,,,6
+Masala appalam,food,papad-and-wadi,tamil-nadu,1,masala appalam,^(?=.*appalam)(?=.*masal),,,,6
+Citron pickle,food,pickles-and-chutneys,tamil-nadu,1,citron pickle,^(?=.*citron)(?=.*pickl),,,,6
+Coriander thokku,food,pickles-and-chutneys,tamil-nadu,1,coriander thokku,^(?=.*coriander)(?=.*thokku),,,,6
+Curry leaf thokku,food,pickles-and-chutneys,tamil-nadu,1,curry leaf thokku,^(?=.*leaf)(?=.*thokku),,,,6
+Drumstick pickle,food,pickles-and-chutneys,tamil-nadu,1,drumstick pickle,^(?=.*drumstick)(?=.*pickl),,,,6
+Gongura pickle,food,pickles-and-chutneys,tamil-nadu,1,gongura pickle,^(?=.*gongura)(?=.*pickl),,,,6
+Maavadu,food,pickles-and-chutneys,tamil-nadu,1,maavadu,^(?=.*maavadu),,,,6
+Mango thokku,food,pickles-and-chutneys,tamil-nadu,1,mango thokku,^(?=.*mango)(?=.*thokku),,,,6
+Mint thokku,food,pickles-and-chutneys,tamil-nadu,1,mint thokku,^(?=.*mint)(?=.*thokku),,,,6
+Narthangai pickle,food,pickles-and-chutneys,tamil-nadu,1,narthangai pickle,^(?=.*narthangai)(?=.*pickl),,,,6
+Onion thokku,food,pickles-and-chutneys,tamil-nadu,1,onion thokku,^(?=.*onion)(?=.*thokku),,,,6
+Tamarind thokku,food,pickles-and-chutneys,tamil-nadu,1,tamarind thokku,^(?=.*tamarind)(?=.*thokku),,,,6
+Tomato thokku,food,pickles-and-chutneys,tamil-nadu,1,tomato thokku,^(?=.*tomato)(?=.*thokku),,,,6
+Pakoda mix,food,rice-flours-and-staples,tamil-nadu,1,pakoda mix,^(?=.*pakoda),,,,6
+Kai murukku,food,snacks-and-namkeen,tamil-nadu,1,kai murukku,^(?=.*kai)(?=.*murukku),,,,6
+Kara boondi,food,snacks-and-namkeen,tamil-nadu,1,kara boondi,^(?=.*kara)(?=.*boondi),,,,6
+Karasev,food,snacks-and-namkeen,tamil-nadu,1,karasev,^(?=.*karasev),,,,6
+Madras mixture,food,snacks-and-namkeen,tamil-nadu,1,madras mixture,^(?=.*madra)(?=.*mixture),,,,6
+Murukku,food,snacks-and-namkeen,tamil-nadu,1,murukku,^(?=.*murukku),,,,6
+Omapodi,food,snacks-and-namkeen,tamil-nadu,1,omapodi,^(?=.*omapodi),,,,6
+Ragi murukku,food,snacks-and-namkeen,tamil-nadu,1,ragi murukku,^(?=.*ragi)(?=.*murukku),,,,6
+Ribbon murukku,food,snacks-and-namkeen,tamil-nadu,1,ribbon murukku,^(?=.*ribbon)(?=.*murukku),,,,6
+Ribbon pakoda,food,snacks-and-namkeen,tamil-nadu,1,ribbon pakoda,^(?=.*ribbon)(?=.*pakoda),,,,6
+Seedai,food,snacks-and-namkeen,tamil-nadu,1,seedai,^(?=.*seedai),,,,6
+Thattai,food,snacks-and-namkeen,tamil-nadu,1,thattai,^(?=.*thattai),,,,6
+Thattai murukku,food,snacks-and-namkeen,tamil-nadu,1,thattai murukku,^(?=.*thattai)(?=.*murukku),,,,6
+Thenkuzhal,food,snacks-and-namkeen,tamil-nadu,1,thenkuzhal,^(?=.*thenkuzhal),,,,6
+Adhirasam,food,sweets,tamil-nadu,1,adhirasam,^(?=.*adhirasam),,,,6
+Coconut burfi,food,sweets,tamil-nadu,1,coconut burfi,^(?=.*coconut)(?=.*burfi),,,,6
+Ellu urundai,food,sweets,tamil-nadu,1,ellu urundai,^(?=.*ellu)(?=.*urundai),,,,6
+Kadalai urundai,food,sweets,tamil-nadu,1,kadalai urundai,^(?=.*kadalai)(?=.*urundai),,,,6
+Kovilpatti kadalai mittai,food,sweets,tamil-nadu,1,kovilpatti kadalai mittai,^(?=.*kovilpatti)(?=.*kadalai),,,,6
+Manoharam,food,sweets,tamil-nadu,1,manoharam,^(?=.*manoharam),,,,6
+Mysore pak,food,sweets,tamil-nadu,1,mysore pak,^(?=.*mysore)(?=.*pak),,,,6
+Palkova,food,sweets,tamil-nadu,1,palkova,^(?=.*palkova),,,,6
+Bagara baingan masala,food,masala-blends,telangana,1,bagara baingan masala,^(?=.*bagara)(?=.*baingan)(?=.*masal),,,,6
+Curry leaf podi,food,masala-blends,telangana,1,curry leaf podi,^(?=.*leaf)(?=.*podi),,,,6
+Dalcha masala,food,masala-blends,telangana,1,dalcha masala,^(?=.*dalcha)(?=.*masal),,,,6
+Dum biryani masala,food,masala-blends,telangana,1,dum biryani masala,^(?=.*dum)(?=.*biryani)(?=.*masal),,,,6
+Garlic podi,food,masala-blends,telangana,1,garlic podi,^(?=.*garlic)(?=.*podi),,,,6
+Hyderabadi biryani masala,food,masala-blends,telangana,1,hyderabadi biryani masala,^(?=.*hyderabadi)(?=.*biryani)(?=.*masal),,,,6
+Hyderabadi haleem masala,food,masala-blends,telangana,1,hyderabadi haleem masala,^(?=.*hyderabadi)(?=.*haleem)(?=.*masal),,,,6
+Idli podi,food,masala-blends,telangana,1,idli podi,^(?=.*idli)(?=.*podi),,,,6
+Mirchi ka salan masala,food,masala-blends,telangana,1,mirchi ka salan masala,^(?=.*mirchi)(?=.*salan)(?=.*masal),,,,6
+Nalla karam podi,food,masala-blends,telangana,1,nalla karam podi,^(?=.*nalla)(?=.*karam),,,,6
+Telangana karam podi,food,masala-blends,telangana,1,telangana karam podi,^(?=.*karam)(?=.*podi),,,,6
+Dosakaya pickle,food,pickles-and-chutneys,telangana,1,dosakaya pickle,^(?=.*dosakaya)(?=.*pickl),,,,6
+Gongura pachadi,food,pickles-and-chutneys,telangana,1,gongura pachadi,^(?=.*gongura)(?=.*pachadi),,,,6
+Gongura pickle,food,pickles-and-chutneys,telangana,1,gongura pickle,^(?=.*gongura)(?=.*pickl),,,,6
+Pandu mirchi pickle,food,pickles-and-chutneys,telangana,1,pandu mirchi pickle,^(?=.*pandu)(?=.*mirchi)(?=.*pickl),,,,6
+Jonna rotte mix,food,rice-flours-and-staples,telangana,1,jonna rotte mix,^(?=.*jonna)(?=.*rotte),,,,6
+Sarva pindi mix,food,rice-flours-and-staples,telangana,1,sarva pindi mix,^(?=.*sarva)(?=.*pindi),,,,6
+Chegodilu,food,snacks-and-namkeen,telangana,1,chegodilu,^(?=.*chegodilu),,,,6
+Chekkalu,food,snacks-and-namkeen,telangana,1,chekkalu,^(?=.*chekkalu),,,,6
+Garijelu,food,snacks-and-namkeen,telangana,1,garijelu,^(?=.*garijelu),,,,6
+Janthikalu,food,snacks-and-namkeen,telangana,1,janthikalu,^(?=.*janthikalu),,,,6
+Karam boondi,food,snacks-and-namkeen,telangana,1,karam boondi,^(?=.*karam)(?=.*boondi),,,,6
+Murukulu,food,snacks-and-namkeen,telangana,1,murukulu,^(?=.*murukulu),,,,6
+Sajja crackers,food,snacks-and-namkeen,telangana,1,sajja crackers,^(?=.*sajja)(?=.*cracker),,,,6
+Sakinalu,food,snacks-and-namkeen,telangana,1,sakinalu,^(?=.*sakinalu),,,,6
+Sakinalu snack packs,food,snacks-and-namkeen,telangana,1,sakinalu snack packs,^(?=.*sakinalu)(?=.*packs),,,,6
+Berma seasoning fermented fish,food,masala-blends,tripura,1,berma seasoning fermented fish,^(?=.*berma)(?=.*fermented),,,,6
+Awan bangwi traditional rice cake,food,snacks-and-namkeen,tripura,1,awan bangwi traditional rice cake,^(?=.*awan)(?=.*bangwi),,,,6
+Chakhwi-inspired snack mixes,food,snacks-and-namkeen,tripura,1,chakhwi-inspired snack mixes,^(?=.*chakhwi),,,,6
+Sticky rice cakes,food,snacks-and-namkeen,tripura,1,sticky rice cakes,^(?=.*sticky)(?=.*rice),,,,6
+Dhania powder,food,ground-spices,uttar-pradesh,1,dhania powder,^(?=.*dhania)(?=.*powde),,,,6
+Jeera powder,food,ground-spices,uttar-pradesh,1,jeera powder,^(?=.*jeera)(?=.*powde),,,,6
+Aloo tikki seasoning,food,masala-blends,uttar-pradesh,1,aloo tikki seasoning,^(?=.*aloo)(?=.*tikki),,,,6
+Awadhi biryani masala,food,masala-blends,uttar-pradesh,1,awadhi biryani masala,^(?=.*awadhi)(?=.*biryani)(?=.*masal),,,,6
+Banarasi chaat masala,food,masala-blends,uttar-pradesh,1,banarasi chaat masala,^(?=.*banarasi)(?=.*chaat)(?=.*masal),,,,6
+Bedmi puri masala,food,masala-blends,uttar-pradesh,1,bedmi puri masala,^(?=.*bedmi)(?=.*puri)(?=.*masal),,,,6
+Galouti kebab masala,food,masala-blends,uttar-pradesh,1,galouti kebab masala,^(?=.*galouti)(?=.*kebab)(?=.*masal),,,,6
+Kanpuri garam masala,food,masala-blends,uttar-pradesh,1,kanpuri garam masala,^(?=.*kanpuri)(?=.*garam)(?=.*masal),,,,6
+Lucknowi garam masala,food,masala-blends,uttar-pradesh,1,lucknowi garam masala,^(?=.*lucknowi)(?=.*garam)(?=.*masal),,,,6
+Mathura-style curry masala,food,masala-blends,uttar-pradesh,1,mathura-style curry masala,^(?=.*masal),,,,6
+Mughlai meat masala,food,masala-blends,uttar-pradesh,1,mughlai meat masala,^(?=.*mughlai)(?=.*meat)(?=.*masal),,,,6
+Nihari masala,food,masala-blends,uttar-pradesh,1,nihari masala,^(?=.*nihari)(?=.*masal),,,,6
+Pani puri masala,food,masala-blends,uttar-pradesh,1,pani puri masala,^(?=.*pani)(?=.*puri)(?=.*masal),,,,6
+Tunday-style kebab seasoning,food,masala-blends,uttar-pradesh,1,tunday-style kebab seasoning,^(?=.*kebab),,,,6
+Bedmi puri mix,food,rice-flours-and-staples,uttar-pradesh,1,bedmi puri mix,^(?=.*bedmi)(?=.*puri),,,,6
+Khasta kachori mix,food,rice-flours-and-staples,uttar-pradesh,1,khasta kachori mix,^(?=.*khasta)(?=.*kachori),,,,6
+Banarasi nimki,food,snacks-and-namkeen,uttar-pradesh,1,banarasi nimki,^(?=.*banarasi)(?=.*nimki),,,,6
+Banarasi sev,food,snacks-and-namkeen,uttar-pradesh,1,banarasi sev,^(?=.*banarasi)(?=.*sev),,,,6
+Dal moth,food,snacks-and-namkeen,uttar-pradesh,1,dal moth,^(?=.*dal)(?=.*moth),,,,6
+Papdi,food,snacks-and-namkeen,uttar-pradesh,1,papdi,^(?=.*papdi),,,,6
+Agra petha,food,sweets,uttar-pradesh,1,agra petha,^(?=.*agra)(?=.*petha),,,,6
+Banarasi lal peda,food,sweets,uttar-pradesh,1,banarasi lal peda,^(?=.*banarasi)(?=.*lal),,,,6
+Mathura peda,food,sweets,uttar-pradesh,1,mathura peda,^(?=.*mathura)(?=.*peda),,,,6
+Tilkut,food,sweets,uttar-pradesh,1,tilkut,^(?=.*tilkut),,,,6
+Bhang jeera seasoning,food,masala-blends,uttarakhand,1,bhang jeera seasoning,^(?=.*bhang)(?=.*jeera),,,,6
+Jakhiya seasoning,food,masala-blends,uttarakhand,1,jakhiya seasoning,^(?=.*jakhiya),,,,6
+Jakhya tadka mix,food,masala-blends,uttarakhand,1,jakhya tadka mix,^(?=.*jakhya)(?=.*tadka),,,,6
+Bhang jeera chutney,food,pickles-and-chutneys,uttarakhand,1,bhang jeera chutney,^(?=.*bhang)(?=.*jeera)(?=.*chutn),,,,6
+Hemp-seed chutney,food,pickles-and-chutneys,uttarakhand,1,hemp-seed chutney,^(?=.*hemp)(?=.*seed)(?=.*chutn),,,,6
+Lingura pickle,food,pickles-and-chutneys,uttarakhand,1,lingura pickle,^(?=.*lingura)(?=.*pickl),,,,6
+Jhangora flour mix,food,rice-flours-and-staples,uttarakhand,1,jhangora flour mix,^(?=.*jhangora)(?=.*flour),,,,6
+Aloo gutuk-style snack mix,food,snacks-and-namkeen,uttarakhand,1,aloo gutuk-style snack mix,^(?=.*aloo),,,,6
+Jhangora snack mix,food,snacks-and-namkeen,uttarakhand,1,jhangora snack mix,^(?=.*jhangora),,,,6
+Kumaoni raita seasoning,food,snacks-and-namkeen,uttarakhand,1,kumaoni raita seasoning,^(?=.*raita),,,,6
+Mandua crackers,food,snacks-and-namkeen,uttarakhand,1,mandua crackers,^(?=.*mandua)(?=.*cracker),,,,6
+Roasted bhatt snacks,food,snacks-and-namkeen,uttarakhand,1,roasted bhatt snacks,^(?=.*bhatt),,,,6
+Arsa,food,sweets,uttarakhand,1,arsa,^(?=.*arsa),,,,6
+Bal mithai,food,sweets,uttarakhand,1,bal mithai,^(?=.*bal)(?=.*mithai),,,,6
+Singori,food,sweets,uttarakhand,1,singori,^(?=.*singori),,,,6
+Aloo dum masala,food,masala-blends,west-bengal,1,aloo dum masala,^(?=.*aloo)(?=.*dum)(?=.*masal),,,,6
+Bengali bhaja masala,food,masala-blends,west-bengal,1,bengali bhaja masala,^(?=.*bhaja)(?=.*masal),,,,6
+Bengali garam masala,food,masala-blends,west-bengal,1,bengali garam masala,^(?=.*garam)(?=.*masal),,,,6
+Chholar dal seasoning,food,masala-blends,west-bengal,1,chholar dal seasoning,^(?=.*chholar)(?=.*dal),,,,6
+Chicken chaap masala,food,masala-blends,west-bengal,1,chicken chaap masala,^(?=.*chicken)(?=.*chaap)(?=.*masal),,,,6
+Ghugni masala,food,masala-blends,west-bengal,1,ghugni masala,^(?=.*ghugni)(?=.*masal),,,,6
+Jhal muri masala,food,masala-blends,west-bengal,1,jhal muri masala,^(?=.*jhal)(?=.*muri)(?=.*masal),,,,6
+Kasundi mustard blend,food,masala-blends,west-bengal,1,kasundi mustard blend,^(?=.*kasundi)(?=.*mustard),,,,6
+Kosha mangsho masala,food,masala-blends,west-bengal,1,kosha mangsho masala,^(?=.*kosha)(?=.*mangsho)(?=.*masal),,,,6
+Posto seasoning,food,masala-blends,west-bengal,1,posto seasoning,^(?=.*posto),,,,6
+Shorshe bata seasoning,food,masala-blends,west-bengal,1,shorshe bata seasoning,^(?=.*shorshe)(?=.*bata),,,,6
+Elephant apple pickle,food,pickles-and-chutneys,west-bengal,1,elephant apple pickle,^(?=.*elephant)(?=.*apple)(?=.*pickl),,,,6
+Hog plum pickle,food,pickles-and-chutneys,west-bengal,1,hog plum pickle,^(?=.*hog)(?=.*plum)(?=.*pickl),,,,6
+Kasundi,food,pickles-and-chutneys,west-bengal,1,kasundi,^(?=.*kasundi),,,,6
+Olive pickle,food,pickles-and-chutneys,west-bengal,1,olive pickle,^(?=.*olive)(?=.*pickl),,,,6
+Jhal muri mix,food,rice-flours-and-staples,west-bengal,1,jhal muri mix,^(?=.*jhal)(?=.*muri),,,,6
+Bengali chanachur,food,snacks-and-namkeen,west-bengal,1,bengali chanachur,^(?=.*chanachur),,,,6
+Bengali spicy mixture,food,snacks-and-namkeen,west-bengal,1,bengali spicy mixture,^(?=.*mixture),,,,6
+Ghugni snack mix,food,snacks-and-namkeen,west-bengal,1,ghugni snack mix,^(?=.*ghugni),,,,6
+Kathi roll spice-and-snack kits,food,snacks-and-namkeen,west-bengal,1,kathi roll spice-and-snack kits,^(?=.*kathi)(?=.*roll),,,,6
+Khasta kachori,food,snacks-and-namkeen,west-bengal,1,khasta kachori,^(?=.*khasta)(?=.*kachori),,,,6
+Kucho nimki,food,snacks-and-namkeen,west-bengal,1,kucho nimki,^(?=.*kucho)(?=.*nimki),,,,6
+Muri mixture,food,snacks-and-namkeen,west-bengal,1,muri mixture,^(?=.*muri)(?=.*mixture),,,,6
+Chanar murki,food,sweets,west-bengal,1,chanar murki,^(?=.*chanar)(?=.*murki),,,,6
+Moa,food,sweets,west-bengal,1,moa,^(?=.*moa),,,,6
+Narkel naru,food,sweets,west-bengal,1,narkel naru,^(?=.*narkel)(?=.*naru),,,,6
+Til naru,food,sweets,west-bengal,1,til naru,^(?=.*til)(?=.*naru),,,,6
+Chilli powder,food,ground-spices,,2,chilli powder,^(?=.*chilli)(?=.*powde),,,,6
+Coriander powder,food,ground-spices,,2,coriander powder,^(?=.*coriander)(?=.*powde),,,,6
+Cumin powder,food,ground-spices,,2,cumin powder,^(?=.*cumin)(?=.*powde),,,,6
+Dry ginger powder,food,ground-spices,,2,dry ginger powder,^(?=.*ginger)(?=.*powde),,,,6
+Fennel powder,food,ground-spices,,2,fennel powder,^(?=.*fennel)(?=.*powde),,,,6
+Ginger powder,food,ground-spices,,2,ginger powder,^(?=.*ginger)(?=.*powde),,,,6
+Mustard powder,food,ground-spices,,2,mustard powder,^(?=.*mustard)(?=.*powde),,,,6
+Red chilli powder,food,ground-spices,,2,red chilli powder,^(?=.*red)(?=.*chilli)(?=.*powde),,,,6
+Roasted cumin powder,food,ground-spices,,2,roasted cumin powder,^(?=.*cumin)(?=.*powde),,,,6
+Turmeric powder,food,ground-spices,,2,turmeric powder,^(?=.*turmeric)(?=.*powde),,,,6
+Achari masala,food,masala-blends,,2,achari masala,^(?=.*achari)(?=.*masal),,,,6
+Aloo gobi seasoning,food,masala-blends,,2,aloo gobi seasoning,^(?=.*aloo)(?=.*gobi),,,,6
+Bamboo shoot seasoning,food,masala-blends,,2,bamboo shoot seasoning,^(?=.*bamboo)(?=.*shoot),,,,6
+Biryani masala,food,masala-blends,,2,biryani masala,^(?=.*biryani)(?=.*masal),,,,6
+Black pepper seasoning,food,masala-blends,,2,black pepper seasoning,^(?=.*black)(?=.*pepper),,,,6
+Black sesame seasoning,food,masala-blends,,2,black sesame seasoning,^(?=.*black)(?=.*sesame),,,,6
+Buckwheat seasoning,food,masala-blends,,2,buckwheat seasoning,^(?=.*buckwheat),,,,6
+Butter chicken masala,food,masala-blends,,2,butter chicken masala,^(?=.*butter)(?=.*chicken)(?=.*masal),,,,6
+Chaat masala,food,masala-blends,,2,chaat masala,^(?=.*chaat)(?=.*masal),,,,6
+Chana masala,food,masala-blends,,2,chana masala,^(?=.*chana)(?=.*masal),,,,6
+Chicken curry masala,food,masala-blends,,2,chicken curry masala,^(?=.*chicken)(?=.*masal),,,,6
+Chicken masala,food,masala-blends,,2,chicken masala,^(?=.*chicken)(?=.*masal),,,,6
+Chilli-salt blend,food,masala-blends,,2,chilli-salt blend,^(?=.*chilli)(?=.*salt),,,,6
+Chole masala,food,masala-blends,,2,chole masala,^(?=.*chole)(?=.*masal),,,,6
+Clove blend,food,masala-blends,,2,clove blend,^(?=.*clove),,,,6
+Coconut curry seasoning,food,masala-blends,,2,coconut curry seasoning,^(?=.*coconut),,,,6
+Coconut-based curry seasoning,food,masala-blends,,2,coconut-based curry seasoning,^(?=.*coconut),,,,6
+Coriander-cumin blend,food,masala-blends,,2,coriander-cumin blend,^(?=.*coriander)(?=.*cumin),,,,6
+Curry leaf seasoning,food,masala-blends,,2,curry leaf seasoning,^(?=.*leaf),,,,6
+Curry masala,food,masala-blends,,2,curry masala,^(?=.*masal),,,,6
+Curry powder,food,masala-blends,,2,curry powder,^(?=.*powde),,,,6
+Dried mint seasoning,food,masala-blends,,2,dried mint seasoning,^(?=.*mint),,,,6
+Fish curry masala,food,masala-blends,,2,fish curry masala,^(?=.*fish)(?=.*masal),,,,6
+Fish curry spice blend,food,masala-blends,,2,fish curry spice blend,^(?=.*fish),,,,6
+Garam masala,food,masala-blends,,2,garam masala,^(?=.*garam)(?=.*masal),,,,6
+Garlic chutney powder,food,masala-blends,,2,garlic chutney powder,^(?=.*garlic)(?=.*chutn),,,,6
+Garlic seasoning,food,masala-blends,,2,garlic seasoning,^(?=.*garlic),,,,6
+Garlic-chilli blend,food,masala-blends,,2,garlic-chilli blend,^(?=.*garlic)(?=.*chilli),,,,6
+Garlic-chilli powder,food,masala-blends,,2,garlic-chilli powder,^(?=.*garlic)(?=.*chilli)(?=.*powde),,,,6
+Garlic-chilli seasoning,food,masala-blends,,2,garlic-chilli seasoning,^(?=.*garlic)(?=.*chilli),,,,6
+Ginger seasoning,food,masala-blends,,2,ginger seasoning,^(?=.*ginger),,,,6
+Herb-salt blend,food,masala-blends,,2,herb-salt blend,^(?=.*salt),,,,6
+Kadai paneer masala,food,masala-blends,,2,kadai paneer masala,^(?=.*kadai)(?=.*paneer)(?=.*masal),,,,6
+Kebab masala,food,masala-blends,,2,kebab masala,^(?=.*kebab)(?=.*masal),,,,6
+Korma masala,food,masala-blends,,2,korma masala,^(?=.*korma)(?=.*masal),,,,6
+Meat curry masala,food,masala-blends,,2,meat curry masala,^(?=.*meat)(?=.*masal),,,,6
+Meat curry spice blend,food,masala-blends,,2,meat curry spice blend,^(?=.*meat),,,,6
+Meat masala,food,masala-blends,,2,meat masala,^(?=.*meat)(?=.*masal),,,,6
+Mustard seasoning,food,masala-blends,,2,mustard seasoning,^(?=.*mustard),,,,6
+Mutton masala,food,masala-blends,,2,mutton masala,^(?=.*mutton)(?=.*masal),,,,6
+Namkeen seasoning,food,masala-blends,,2,namkeen seasoning,^(?=.*namkeen),,,,6
+Nigella seed blend,food,masala-blends,,2,nigella seed blend,^(?=.*nigella)(?=.*seed),,,,6
+Noodle soup seasoning,food,masala-blends,,2,noodle soup seasoning,^(?=.*noodle)(?=.*soup),,,,6
+Panch phoron,food,masala-blends,,2,panch phoron,^(?=.*panch)(?=.*phoron),,,,6
+Paneer tikka masala,food,masala-blends,,2,paneer tikka masala,^(?=.*paneer)(?=.*tikka)(?=.*masal),,,,6
+Papad masala,food,masala-blends,,2,papad masala,^(?=.*papad)(?=.*masal),,,,6
+Peanut chutney powder,food,masala-blends,,2,peanut chutney powder,^(?=.*peanut)(?=.*chutn),,,,6
+Pepper chicken masala,food,masala-blends,,2,pepper chicken masala,^(?=.*pepper)(?=.*chicken)(?=.*masal),,,,6
+Pepper masala,food,masala-blends,,2,pepper masala,^(?=.*pepper)(?=.*masal),,,,6
+Pepper seasoning,food,masala-blends,,2,pepper seasoning,^(?=.*pepper),,,,6
+Pickle masala,food,masala-blends,,2,pickle masala,^(?=.*pickl),,,,6
+Poppy seed seasoning,food,masala-blends,,2,poppy seed seasoning,^(?=.*poppy)(?=.*seed),,,,6
+Pulao masala,food,masala-blends,,2,pulao masala,^(?=.*pulao)(?=.*masal),,,,6
+Rajma masala,food,masala-blends,,2,rajma masala,^(?=.*rajma)(?=.*masal),,,,6
+Rasam powder,food,masala-blends,,2,rasam powder,^(?=.*rasam)(?=.*powde),,,,6
+Roasted cumin-chilli powder,food,masala-blends,,2,roasted cumin-chilli powder,^(?=.*cumin)(?=.*chilli)(?=.*powde),,,,6
+Sabzi masala,food,masala-blends,,2,sabzi masala,^(?=.*sabzi)(?=.*masal),,,,6
+Sambar powder,food,masala-blends,,2,sambar powder,^(?=.*sambar)(?=.*powde),,,,6
+Sesame chutney powder,food,masala-blends,,2,sesame chutney powder,^(?=.*sesame)(?=.*chutn),,,,6
+Shahi paneer masala,food,masala-blends,,2,shahi paneer masala,^(?=.*shahi)(?=.*paneer)(?=.*masal),,,,6
+Smoked chilli blend,food,masala-blends,,2,smoked chilli blend,^(?=.*smoked)(?=.*chilli),,,,6
+Smoked chilli powder,food,masala-blends,,2,smoked chilli powder,^(?=.*smoked)(?=.*chilli)(?=.*powde),,,,6
+Smoked chilli seasoning,food,masala-blends,,2,smoked chilli seasoning,^(?=.*smoked)(?=.*chilli),,,,6
+Tandoori masala,food,masala-blends,,2,tandoori masala,^(?=.*tandoori)(?=.*masal),,,,6
+Tikka masala,food,masala-blends,,2,tikka masala,^(?=.*tikka)(?=.*masal),,,,6
+Masala papad,food,papad-and-wadi,,2,masala papad,^(?=.*papad)(?=.*masal),,,,6
+Papad,food,papad-and-wadi,,2,papad,^(?=.*papad),,,,6
+Amla pickle,food,pickles-and-chutneys,,2,amla pickle,^(?=.*amla)(?=.*pickl),,,,6
+Apple chutney,food,pickles-and-chutneys,,2,apple chutney,^(?=.*apple)(?=.*chutn),,,,6
+Apricot chutney,food,pickles-and-chutneys,,2,apricot chutney,^(?=.*apricot)(?=.*chutn),,,,6
+Bamboo shoot pickle,food,pickles-and-chutneys,,2,bamboo shoot pickle,^(?=.*bamboo)(?=.*shoot)(?=.*pickl),,,,6
+Bitter gourd pickle,food,pickles-and-chutneys,,2,bitter gourd pickle,^(?=.*bitter)(?=.*gourd)(?=.*pickl),,,,6
+Carrot pickle,food,pickles-and-chutneys,,2,carrot pickle,^(?=.*carrot)(?=.*pickl),,,,6
+Carrot-turnip pickle,food,pickles-and-chutneys,,2,carrot-turnip pickle,^(?=.*carrot)(?=.*turnip)(?=.*pickl),,,,6
+Cauliflower pickle,food,pickles-and-chutneys,,2,cauliflower pickle,^(?=.*cauliflower)(?=.*pickl),,,,6
+Chilli chutney,food,pickles-and-chutneys,,2,chilli chutney,^(?=.*chilli)(?=.*chutn),,,,6
+Chilli pickle,food,pickles-and-chutneys,,2,chilli pickle,^(?=.*chilli)(?=.*pickl),,,,6
+Coconut chutney,food,pickles-and-chutneys,,2,coconut chutney,^(?=.*coconut)(?=.*chutn),,,,6
+Coriander chutney,food,pickles-and-chutneys,,2,coriander chutney,^(?=.*coriander)(?=.*chutn),,,,6
+Curry leaf chutney,food,pickles-and-chutneys,,2,curry leaf chutney,^(?=.*leaf)(?=.*chutn),,,,6
+Date-tamarind chutney,food,pickles-and-chutneys,,2,date-tamarind chutney,^(?=.*date)(?=.*tamarind)(?=.*chutn),,,,6
+Dates pickle,food,pickles-and-chutneys,,2,dates pickle,^(?=.*dates)(?=.*pickl),,,,6
+Dry garlic chutney,food,pickles-and-chutneys,,2,dry garlic chutney,^(?=.*garlic)(?=.*chutn),,,,6
+Garlic chutney,food,pickles-and-chutneys,,2,garlic chutney,^(?=.*garlic)(?=.*chutn),,,,6
+Garlic pickle,food,pickles-and-chutneys,,2,garlic pickle,^(?=.*garlic)(?=.*pickl),,,,6
+Ginger pickle,food,pickles-and-chutneys,,2,ginger pickle,^(?=.*ginger)(?=.*pickl),,,,6
+Gooseberry pickle,food,pickles-and-chutneys,,2,gooseberry pickle,^(?=.*gooseberry)(?=.*pickl),,,,6
+Green chilli chutney,food,pickles-and-chutneys,,2,green chilli chutney,^(?=.*green)(?=.*chilli)(?=.*chutn),,,,6
+Green chilli pickle,food,pickles-and-chutneys,,2,green chilli pickle,^(?=.*green)(?=.*chilli)(?=.*pickl),,,,6
+Green tomato pickle,food,pickles-and-chutneys,,2,green tomato pickle,^(?=.*green)(?=.*tomato)(?=.*pickl),,,,6
+Jackfruit pickle,food,pickles-and-chutneys,,2,jackfruit pickle,^(?=.*jackfruit)(?=.*pickl),,,,6
+Karela pickle,food,pickles-and-chutneys,,2,karela pickle,^(?=.*karela)(?=.*pickl),,,,6
+Lemon pickle,food,pickles-and-chutneys,,2,lemon pickle,^(?=.*lemon)(?=.*pickl),,,,6
+Lime pickle,food,pickles-and-chutneys,,2,lime pickle,^(?=.*lime)(?=.*pickl),,,,6
+Mango pickle,food,pickles-and-chutneys,,2,mango pickle,^(?=.*mango)(?=.*pickl),,,,6
+Mint chutney,food,pickles-and-chutneys,,2,mint chutney,^(?=.*mint)(?=.*chutn),,,,6
+Mixed vegetable pickle,food,pickles-and-chutneys,,2,mixed vegetable pickle,^(?=.*mixed)(?=.*vegetable)(?=.*pickl),,,,6
+Mustard chutney,food,pickles-and-chutneys,,2,mustard chutney,^(?=.*mustard)(?=.*chutn),,,,6
+Mustard mango pickle,food,pickles-and-chutneys,,2,mustard mango pickle,^(?=.*mustard)(?=.*mango)(?=.*pickl),,,,6
+Mustard pickle,food,pickles-and-chutneys,,2,mustard pickle,^(?=.*mustard)(?=.*pickl),,,,6
+Mustard-green pickle,food,pickles-and-chutneys,,2,mustard-green pickle,^(?=.*mustard)(?=.*green)(?=.*pickl),,,,6
+Mustard-leaf pickle,food,pickles-and-chutneys,,2,mustard-leaf pickle,^(?=.*mustard)(?=.*leaf)(?=.*pickl),,,,6
+Onion pickle,food,pickles-and-chutneys,,2,onion pickle,^(?=.*onion)(?=.*pickl),,,,6
+Peanut chutney,food,pickles-and-chutneys,,2,peanut chutney,^(?=.*peanut)(?=.*chutn),,,,6
+Radish pickle,food,pickles-and-chutneys,,2,radish pickle,^(?=.*radish)(?=.*pickl),,,,6
+Red chilli pickle,food,pickles-and-chutneys,,2,red chilli pickle,^(?=.*red)(?=.*chilli)(?=.*pickl),,,,6
+Sesame chutney,food,pickles-and-chutneys,,2,sesame chutney,^(?=.*sesame)(?=.*chutn),,,,6
+Spicy mango pickle,food,pickles-and-chutneys,,2,spicy mango pickle,^(?=.*mango)(?=.*pickl),,,,6
+Stuffed red chilli pickle,food,pickles-and-chutneys,,2,stuffed red chilli pickle,^(?=.*stuffed)(?=.*red)(?=.*pickl),,,,6
+Sweet mango chutney,food,pickles-and-chutneys,,2,sweet mango chutney,^(?=.*mango)(?=.*chutn),,,,6
+Sweet mango pickle,food,pickles-and-chutneys,,2,sweet mango pickle,^(?=.*mango)(?=.*pickl),,,,6
+Tamarind chutney,food,pickles-and-chutneys,,2,tamarind chutney,^(?=.*tamarind)(?=.*chutn),,,,6
+Tomato chutney,food,pickles-and-chutneys,,2,tomato chutney,^(?=.*tomato)(?=.*chutn),,,,6
+Tomato pickle,food,pickles-and-chutneys,,2,tomato pickle,^(?=.*tomato)(?=.*pickl),,,,6
+Turmeric pickle,food,pickles-and-chutneys,,2,turmeric pickle,^(?=.*turmeric)(?=.*pickl),,,,6
+Turnip pickle,food,pickles-and-chutneys,,2,turnip pickle,^(?=.*turnip)(?=.*pickl),,,,6
+Walnut chutney,food,pickles-and-chutneys,,2,walnut chutney,^(?=.*walnut)(?=.*chutn),,,,6
+Spicy puffed rice mix,food,rice-flours-and-staples,,2,spicy puffed rice mix,^(?=.*puffed)(?=.*rice),,,,6
+Achari mathi,food,snacks-and-namkeen,,2,achari mathi,^(?=.*achari)(?=.*mathi),,,,6
+Aloo bhujia,food,snacks-and-namkeen,,2,aloo bhujia,^(?=.*aloo)(?=.*bhujia),,,,6
+Banana chips,food,snacks-and-namkeen,,2,banana chips,^(?=.*banana)(?=.*chips),,,,6
+Barley snack mixes,food,snacks-and-namkeen,,2,barley snack mixes,^(?=.*barley),,,,6
+Bhujia sev,food,snacks-and-namkeen,,2,bhujia sev,^(?=.*bhujia)(?=.*sev),,,,6
+Buckwheat crackers,food,snacks-and-namkeen,,2,buckwheat crackers,^(?=.*buckwheat)(?=.*cracker),,,,6
+Coconut biscuits,food,snacks-and-namkeen,,2,coconut biscuits,^(?=.*coconut)(?=.*biscuit),,,,6
+Coconut chips,food,snacks-and-namkeen,,2,coconut chips,^(?=.*coconut)(?=.*chips),,,,6
+Dried apple snacks,food,snacks-and-namkeen,,2,dried apple snacks,^(?=.*apple),,,,6
+Garlic sev,food,snacks-and-namkeen,,2,garlic sev,^(?=.*garlic)(?=.*sev),,,,6
+Jackfruit chips,food,snacks-and-namkeen,,2,jackfruit chips,^(?=.*jackfruit)(?=.*chips),,,,6
+Masala cashews,food,snacks-and-namkeen,,2,masala cashews,^(?=.*cashew)(?=.*masal),,,,6
+Masala makhana,food,snacks-and-namkeen,,2,masala makhana,^(?=.*makhana)(?=.*masal),,,,6
+Masala nuts,food,snacks-and-namkeen,,2,masala nuts,^(?=.*nuts)(?=.*masal),,,,6
+Masala peanuts,food,snacks-and-namkeen,,2,masala peanuts,^(?=.*peanut)(?=.*masal),,,,6
+Mathi,food,snacks-and-namkeen,,2,mathi,^(?=.*mathi),,,,6
+Mathri,food,snacks-and-namkeen,,2,mathri,^(?=.*mathri),,,,6
+Millet crackers,food,snacks-and-namkeen,,2,millet crackers,^(?=.*millet)(?=.*cracker),,,,6
+Moong dal namkeen,food,snacks-and-namkeen,,2,moong dal namkeen,^(?=.*moong)(?=.*dal),,,,6
+Namak pare,food,snacks-and-namkeen,,2,namak pare,^(?=.*namak)(?=.*pare),,,,6
+Nimki,food,snacks-and-namkeen,,2,nimki,^(?=.*nimki),,,,6
+Puffed rice,food,snacks-and-namkeen,,2,puffed rice,^(?=.*puffed)(?=.*rice),,,,6
+Rice cakes,food,snacks-and-namkeen,,2,rice cakes,^(?=.*rice)(?=.*cakes),,,,6
+Rice crackers,food,snacks-and-namkeen,,2,rice crackers,^(?=.*rice)(?=.*cracker),,,,6
+Roasted barley snacks,food,snacks-and-namkeen,,2,roasted barley snacks,^(?=.*barley),,,,6
+Roasted cashews,food,snacks-and-namkeen,,2,roasted cashews,^(?=.*cashew),,,,6
+Roasted chana,food,snacks-and-namkeen,,2,roasted chana,^(?=.*chana),,,,6
+Roasted corn snacks,food,snacks-and-namkeen,,2,roasted corn snacks,^(?=.*corn),,,,6
+Roasted gram,food,snacks-and-namkeen,,2,roasted gram,^(?=.*gram),,,,6
+Roasted lotus seeds,food,snacks-and-namkeen,,2,roasted lotus seeds,^(?=.*lotus)(?=.*seeds),,,,6
+Roasted nuts,food,snacks-and-namkeen,,2,roasted nuts,^(?=.*nuts),,,,6
+Roasted rice snacks,food,snacks-and-namkeen,,2,roasted rice snacks,^(?=.*rice),,,,6
+Rusk,food,snacks-and-namkeen,,2,rusk,^(?=.*rusk),,,,6
+Sesame snacks,food,snacks-and-namkeen,,2,sesame snacks,^(?=.*sesame),,,,6
+Shakkar pare,food,snacks-and-namkeen,,2,shakkar pare,^(?=.*shakkar)(?=.*pare),,,,6
+Spiced cashews,food,snacks-and-namkeen,,2,spiced cashews,^(?=.*spiced)(?=.*cashew),,,,6
+Spiced peanuts,food,snacks-and-namkeen,,2,spiced peanuts,^(?=.*spiced)(?=.*peanut),,,,6
+Spicy boondi,food,snacks-and-namkeen,,2,spicy boondi,^(?=.*boondi),,,,6
+Spicy peanuts,food,snacks-and-namkeen,,2,spicy peanuts,^(?=.*peanut),,,,6
+Spicy roasted peanuts,food,snacks-and-namkeen,,2,spicy roasted peanuts,^(?=.*peanut),,,,6
+Tapioca chips,food,snacks-and-namkeen,,2,tapioca chips,^(?=.*tapioca)(?=.*chips),,,,6
+Tapioca crackers,food,snacks-and-namkeen,,2,tapioca crackers,^(?=.*tapioca)(?=.*cracker),,,,6
+Almond snacks,food,sweets,,2,almond snacks,^(?=.*almond),,,,6
+Coconut ladoo,food,sweets,,2,coconut ladoo,^(?=.*coconut)(?=.*ladoo),,,,6
+Coconut sweets,food,sweets,,2,coconut sweets,^(?=.*coconut)(?=.*sweet),,,,6
+Dried apricots,food,sweets,,2,dried apricots,^(?=.*apricot),,,,6
+Dried fruit mixes,food,sweets,,2,dried fruit mixes,^(?=.*fruit),,,,6
+Gajak,food,sweets,,2,gajak,^(?=.*gajak),,,,6
+Khaja,food,sweets,,2,khaja,^(?=.*khaja),,,,6
+Peanut chikki,food,sweets,,2,peanut chikki,^(?=.*peanut)(?=.*chikki),,,,6
+Pinni,food,sweets,,2,pinni,^(?=.*pinni),,,,6
+Rewri,food,sweets,,2,rewri,^(?=.*rewri),,,,6
+Sesame sweets,food,sweets,,2,sesame sweets,^(?=.*sesame)(?=.*sweet),,,,6
+Sesame-jaggery snacks,food,sweets,,2,sesame-jaggery snacks,^(?=.*sesame)(?=.*jaggery),,,,6
+Walnut snacks,food,sweets,,2,walnut snacks,^(?=.*walnut),,,,6
+Black cardamom,food,whole-spices,,2,black cardamom,^(?=.*black)(?=.*cardamom),,,,6
+Black pepper,food,whole-spices,,2,black pepper,^(?=.*black)(?=.*pepper),,,,6
+Dried bird's-eye chilli,food,whole-spices,,2,dried bird's-eye chilli,^(?=.*bird)(?=.*eye),,,,6
+Dried chilli,food,whole-spices,,2,dried chilli,^(?=.*chilli),,,,6
+Dried chilli flakes,food,whole-spices,,2,dried chilli flakes,^(?=.*chilli)(?=.*flake),,,,6
+Dried ginger,food,whole-spices,,2,dried ginger,^(?=.*ginger),,,,6
+Green cardamom,food,whole-spices,,2,green cardamom,^(?=.*green)(?=.*cardamom),,,,6
+Red chilli,food,whole-spices,,2,red chilli,^(?=.*red)(?=.*chilli),,,,6

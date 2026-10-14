@@ -8,6 +8,7 @@ import { browseCached } from './data';
 import { EdgeRow } from './edge-row';
 import { PhoneFilter } from './phone-filter';
 import { ProductCard, ProductGrid } from './product-card';
+import { TypeToggle } from './type-toggle';
 
 const PAGE = 24;
 /** The most cards one page draws (20 pages of "Show more"; the database allows 500). */
@@ -63,7 +64,8 @@ export async function BrowseByType({
   const base = PRODUCT_TYPE_PATH[productType];
   const states = page.regions;
   const categories = page.categories;
-  const allCount = states.reduce((sum, s) => sum + s.count, 0);
+  // D-122: each state's count includes the all-India pieces, so the states' counts don't add up to everything
+  const allCount = page.all_total ?? states.reduce((sum, s) => sum + s.count, 0);
   const shown = page.products;
   const count = shown.length;
   const href = (next: BrowseParams): string => {
@@ -78,6 +80,7 @@ export async function BrowseByType({
 
   return (
     <div className="space-y-6">
+      <TypeToggle current={productType} state={params.state} />
       <h1 className="font-heading text-ink text-[clamp(32px,3vw,52px)] font-medium leading-tight tracking-[-0.03em]">
         {categoryName ?? title}
         {stateName ? <span className="text-ink-muted"> · {stateName}</span> : null}

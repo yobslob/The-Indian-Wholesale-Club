@@ -31,6 +31,8 @@ export default function RegionScreen(): React.JSX.Element {
   const sectionY = useRef<Record<string, number>>({});
   const accent = data?.region.accent_color ?? undefined;
   const products = data?.products ?? [];
+  // D-122: New arrivals is the state's own pieces; all-India pieces fill the rows below
+  const own = products.filter((p) => p.region_slug === data?.region.slug);
   const width = Dimensions.get('window').width;
   const categories = (data?.category_counts ?? [])
     .filter((c) => c.product_type === 'clothing')
@@ -115,7 +117,7 @@ export default function RegionScreen(): React.JSX.Element {
                 <ProductRow
                   title="New arrivals"
                   sub={`Newest pieces from ${data.region.name}.`}
-                  products={products.slice(0, ROW)}
+                  products={own.slice(0, ROW)}
                   seeAll={{ type: 'clothing', region: slug }}
                 />
               </View>

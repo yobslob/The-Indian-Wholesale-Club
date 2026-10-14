@@ -5,7 +5,7 @@ import { ActivityIndicator, FlatList, Pressable, Text, View } from 'react-native
 import { SafeAreaView } from 'react-native-safe-area-context';
 
 import { browseProducts, type BrowsePage, type ProductCard as ProductCardData } from '@repo/db/store';
-import { isProductType, PRODUCT_TYPE_LABEL, type ProductType } from '@repo/shared/domain';
+import { isProductType, PRODUCT_TYPE_LABEL, PRODUCT_TYPES, type ProductType } from '@repo/shared/domain';
 import tokens from '@repo/tokens';
 
 import { BackBar, Body, ErrorText, Loading, Title } from '@/components/ui';
@@ -37,7 +37,7 @@ export default function BrowseScreen(): React.JSX.Element {
   const [stuck, setStuck] = useState(false);
   const { items: data, error, loading, loadingMore, loadMore, reload } = usePagedQuery(key, async (offset, limit) => {
     const page = await browseProducts(supabase, { productType: type, regionSlug: region, categorySlug: category, offset, limit });
-    if (offset === 0) setMeta({ total: page.total, regions: page.regions, categories: page.categories });
+    if (offset === 0) setMeta({ total: page.total, all_total: page.all_total, regions: page.regions, categories: page.categories });
     return page.products;
   });
   const renderItem = useCallback(({ item }: { item: ProductCardData }) => <ProductCard product={item} layout="fill" />, []);
@@ -46,7 +46,8 @@ export default function BrowseScreen(): React.JSX.Element {
   const title = categoryName ?? PRODUCT_TYPE_LABEL[type];
   const count = meta ? `${meta.total} ${meta.total === 1 ? 'piece' : 'pieces'}` : '';
   const chosen = `${stateName ?? 'All states'} · ${categoryName ?? 'Everything'}`;
-  const allCount = meta?.regions.reduce((n, r) => n + r.count, 0);
+  // D-122: each state's count includes the all-India pieces
+  const allCount = meta?.all_total ?? meta?.regions.reduce((n, r) => n + r.count, 0);
 
   return (
     <SafeAreaView className="bg-canvas flex-1" edges={['top']}>
@@ -69,6 +70,22 @@ export default function BrowseScreen(): React.JSX.Element {
         ListFooterComponent={loadingMore ? <ActivityIndicator color={tokens.colors.ink} /> : null}
         ListHeaderComponent={
           <View className="gap-3">
+            {/* D-122: switch between the three types, keeping the state */}
+            <View className="border-line bg-paper/70 flex-row self-start rounded-pill border p-1">
+              {PRODUCT_TYPES.map((t) => (
+                <Pressable
+                  key={t}
+                  accessibilityRole="button"
+                  accessibilityState={{ selected: t === type }}
+                  onPress={() => router.setParams({ type: t, category: '' })}
+                  className={`min-h-10 justify-center rounded-pill px-4 ${t === type ? 'bg-ink' : ''}`}
+                >
+                  <Text className={`font-ui-semibold text-[13px] ${t === type ? 'text-paper' : 'text-ink'}`}>
+                    {PRODUCT_TYPE_LABEL[t]}
+                  </Text>
+                </Pressable>
+              ))}
+            </View>
             <Title>
               {title}
               {stateName ? <Text className="text-ink-muted"> · {stateName}</Text> : null}

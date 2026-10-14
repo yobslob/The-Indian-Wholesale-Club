@@ -162,6 +162,7 @@ export async function getPricingSettings(client: IwcClient) {
           min_profit_home_cents, min_profit_pct, min_profit_food_pct, guard_card_fee_pct, bulk_saving_pct,
           bulk_saving_cap_cents, small_food_max_shop_paise, small_food_max_g, small_food_ship_share_pct,
           small_food_floor_cents, small_food_ceiling_cents, home_est_g_per_rupee, home_est_min_g,
+          food_ship_share_pct,
           updated_at`,
       )
       .eq('id', 1)

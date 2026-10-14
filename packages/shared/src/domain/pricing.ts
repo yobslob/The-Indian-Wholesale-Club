@@ -36,6 +36,8 @@ export interface PricingSettings {
   foodFeePaise?: N;
   foodParcelKg?: N;
   foodBilledPct?: N;
+  /** D-122: the share of its courier cost a food piece carries (the rest is the small-order charges' or the bag's). */
+  foodShipSharePct?: N;
   courierFirstKgPaise?: N;
   courierNextKgPaise?: N;
   parcelFixedPaise?: N;
@@ -90,6 +92,7 @@ export function pricingSettingsFrom(row: Record<string, unknown>): PricingSettin
     foodFeePaise: n('food_fee_paise'),
     foodParcelKg: n('food_parcel_kg'),
     foodBilledPct: n('food_billed_pct'),
+    foodShipSharePct: n('food_ship_share_pct'),
     courierFirstKgPaise: n('courier_first_kg_paise'),
     courierNextKgPaise: n('courier_next_kg_paise'),
     parcelFixedPaise: n('parcel_fixed_paise'),
@@ -210,7 +213,8 @@ export function autoPrice(
     if (alloc === null || s.indiaHandlingPct == null) return null;
     goods = ((shop + (s.foodFeePaise ?? 0)) * (1 + s.indiaHandlingPct / 100)) / rate;
     ship = (alloc * g * (s.foodBilledPct ?? 100)) / 100 / 1000 / rate;
-    cost = goods + ship;
+    // D-122: a share of the courier, the same for every weight, so 400 g costs about twice 200 g (no jumps)
+    cost = goods + (ship * (s.foodShipSharePct ?? 100)) / 100;
     price = cost * (1 + margin / 100);
     minPct = s.minProfitFoodPct ?? s.minProfitPct ?? 0;
   } else {

@@ -1,7 +1,7 @@
 import Link from 'next/link';
 import { notFound } from 'next/navigation';
 
-import { PRODUCT_TYPE_LABEL } from '@repo/shared/domain';
+import { PRODUCT_TYPE_LABEL, PRODUCT_TYPE_PATH } from '@repo/shared/domain';
 
 import { SaveButton } from '@/features/account/save-button';
 import { AddToCart } from '@/features/catalog/add-to-cart';
@@ -92,7 +92,7 @@ export default async function ProductPage({ params }: { params: Params }): Promi
           id="similar"
           title="Similar items"
           products={similar}
-          href={`/clothing?category=${product.category_slug}`}
+          href={`${PRODUCT_TYPE_PATH[product.product_type]}?category=${product.category_slug}`}
           size="sm"
         />
       ) : null}

@@ -63,7 +63,8 @@ export default async function RegionPage({ params }: { params: Params }): Promis
   const home = products.filter((p) => p.product_type === 'home');
   const homeCount = page.category_counts.filter((c) => c.product_type === 'home').reduce((n, c) => n + c.count, 0);
   const categories = byCategory(page);
-  const newest = products.slice(0, ROW); // store_region_page returns newest first
+  // D-122: the first row is the state's own pieces, newest first; all-India pieces fill the rows below
+  const newest = products.filter((p) => p.region_slug === region.slug).slice(0, ROW);
   const browse = (type: ProductType, category?: string): string =>
     `${PRODUCT_TYPE_PATH[type]}?state=${region.slug}${category ? `&category=${category}` : ''}`;
 

@@ -7,6 +7,8 @@
 >   (₹2,242 first kg, ₹678.50 each further kg, ₹1,050 per parcel: about ₹1,201/kg) ÷ rate, × 1.25.
 > - **Home & gifts without a weight (D-121):** priced at shop ₹ × 1.5 g (at least 200 g, at most the category's
 >   typical weight) instead of the category's 1.5 – 2 kg: a ₹200 basket is $17.99, not $62.29.
+> - **Food in step with its weight (D-122):** every food piece carries 70% of its courier share (the shelf too):
+>   bhujia 200 g $3.99, 400 g $8.49, 1 kg $20.49. Footwear without a weight is priced at 600 g.
 > - **Small-food shelf (D-120):** food up to ₹200 and 250 g: goods × 1.25 + half its shipping share, up to the next of
 >   $1.99 / $2.99 / $3.99 (at most $3.99, at least the guard on its goods). ₹100 · 100 g $2.99, ₹100 · 200 g $3.99.
 > - **Profit guard, every piece:** lifted only if the margin cannot pay US duty on the price (clothing 22%, food 16%,

@@ -32,7 +32,7 @@ update public.pricing_settings set
   food_billed_pct = 140, courier_first_kg_paise = 224200, courier_next_kg_paise = 67850, parcel_fixed_paise = 105000,
   duty_clothing_pct = 22, duty_food_pct = 16, duty_home_pct = 13, min_profit_clothing_cents = 400,
   min_profit_food_cents = 0, min_profit_home_cents = 400, min_profit_pct = 8, min_profit_food_pct = 4,
-  guard_card_fee_pct = 2.9, small_food_max_shop_paise = null
+  guard_card_fee_pct = 2.9, small_food_max_shop_paise = null, food_ship_share_pct = null
  where id = 1;
 select tests.assert(public._auto_price_cents(129900, 450, 'clothing') = 4529, 'D-119: a ₹1,299 kurta of 450 g is $45.29');
 select tests.assert(public._auto_price_cents(750000, 900, 'clothing') = 18079, 'D-119: a ₹7,500 saree of 900 g is $180.79');
@@ -78,6 +78,17 @@ update public.pricing_settings set small_food_floor_cents = 199, small_food_ceil
   small_food_ship_share_pct = null where id = 1;
 select tests.assert(public._auto_price_cents(9000, 100, 'food') = 399, 'D-120: an empty shelf number turns it off');
 update public.pricing_settings set small_food_ship_share_pct = 50, small_food_max_shop_paise = null where id = 1;
+
+-- D-122: every food piece carries 70% of its courier, the shelf too: weight and price move together.
+update public.pricing_settings set food_ship_share_pct = 70, small_food_ship_share_pct = 70, small_food_max_shop_paise = 20000
+ where id = 1;
+select tests.assert(public._auto_price_cents(5500, 200, 'food') = 399, 'D-122: bhujia ₹55 · 200 g is $3.99');
+select tests.assert(public._auto_price_cents(10000, 400, 'food') = 849, 'D-122: ₹100 · 400 g is $8.49, not $11.29');
+select tests.assert(public._auto_price_cents(23000, 1000, 'food') = 2049, 'D-122: ₹230 · 1 kg is $20.49, not $27.49');
+select tests.assert(public._auto_price_cents(9000, 100, 'food') = 299, 'D-122: the masala of 100 g stays $2.99');
+update public.pricing_settings set food_ship_share_pct = null, small_food_ship_share_pct = 50, small_food_max_shop_paise = null
+ where id = 1;
+select tests.assert(public._auto_price_cents(10000, 400, 'food') = 1129, 'D-122: an empty share is the full share (D-119)');
 -- Card fees in the retailer model's settings never touch a pilot price (D-112).
 update public.pricing_settings set card_fee_pct = 10, card_fee_fixed_cents = 500 where id = 1;
 select tests.assert(public._auto_price_cents(129900, 450, 'clothing') = 4529, 'D-112: card_fee_pct does not change a price');

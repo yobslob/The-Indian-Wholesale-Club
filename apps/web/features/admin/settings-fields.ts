@@ -48,14 +48,15 @@ export const SETTING_GROUPS: SettingGroup[] = [
     ],
   },
   {
-    title: 'Pilot price: food (D-119)',
-    note: 'Price = (shop ₹ + fee per piece) × (1 + India handling) ÷ rate + billed kg × the courier rate card spread over a typical food parcel ÷ rate, then × (1 + margin). Up to .29 / .49 / .79 / .99.',
+    title: 'Pilot price: food (D-119, D-122)',
+    note: 'Price = (shop ₹ + fee per piece) × (1 + India handling) ÷ rate + billed kg × the courier rate card spread over a typical food parcel ÷ rate × its share (D-122), then × (1 + margin). Up to .29 / .49 / .79 / .99.',
     fields: [
       { key: 'food_fee_paise', label: 'Shop fee per piece (₹): delivery and handling into the hub', kind: 'inr' },
       { key: 'india_handling_pct', label: 'India handling: cushion for price drift (% of the shop price)', kind: 'pct' },
       { key: 'margin_food_pct', label: 'Food: margin added on top of cost (%)', kind: 'pct' },
       { key: 'food_parcel_kg', label: 'A typical food parcel (kg)', kind: 'number' },
       { key: 'food_billed_pct', label: 'Billed weight, % of the label\'s weight (jars, bulky packs)', kind: 'pct' },
+      { key: 'food_ship_share_pct', label: 'Share of its courier a food piece carries (%, D-122; empty = all of it)', kind: 'pct' },
     ],
   },
   {
