@@ -187,7 +187,9 @@ Migration 47 (D-119): the pilot price in two recipes. `pricing_settings` gains, 
 courier rate card `courier_first_kg_paise`, `courier_next_kg_paise`, `parcel_fixed_paise`; the profit guard
 `duty_<type>_pct`, `min_profit_<type>_cents`, `min_profit_pct`, `min_profit_food_pct`, `guard_card_fee_pct`; the bulk
 saving `bulk_saving_pct`, `bulk_saving_cap_cents`. `_auto_price_cents(shop, weight, type)` applies the type's recipe,
-then lifts a price to the guard, then the .29/.49/.79/.99 ending (`_tapered_margin` is its helper);
+then lifts a price to the guard, then the .29/.49/.79/.99 ending (`_tapered_margin` is its helper; D-126 adds the .69
+ending, and `food_margin_max_pct` with `_band_price(cost, lo, hi)` prices food in its 17–20% band without the guard
+or the shelf);
 `ship_alloc_paise_per_kg` is no longer read. `store_bag_charges` also returns the two bulk numbers;
 `orders.bulk_saving_cents` is the part of `discount_cents` that was the bulk saving (admin view). Tests:
 `pricing_engine.test.sql`, `bag_charges.test.sql`.

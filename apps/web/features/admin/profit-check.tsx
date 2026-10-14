@@ -37,6 +37,7 @@ const RULE = {
   tapered: 'tapered margin',
   guard: 'guard',
   small: 'small food shelf',
+  band: 'food margin band',
 } as const;
 
 /** The form's numbers as a settings row: what is typed, else what is saved. */

@@ -67,10 +67,11 @@ describe('autoPrice (D-119): the same numbers as supabase/tests/pricing_engine.t
   const price = (rupees: number, g: number, productType: ProductType, s = full) =>
     autoPrice({ shopPricePaise: rupees * 100, weightG: g, productType }, s)?.priceCents;
 
-  it('rounds up to the next .29, .49, .79 or .99', () => {
+  it('rounds up to the next .29, .49, .69, .79 or .99 (D-126)', () => {
     assert.equal(autoPrice({ shopPricePaise: 100000, weightG: 1000 }, simple)?.priceCents, 2029); // $20.00
     assert.equal(autoPrice({ shopPricePaise: 103000, weightG: 1000 }, simple)?.priceCents, 2049); // $20.30
-    assert.equal(autoPrice({ shopPricePaise: 105000, weightG: 1000 }, simple)?.priceCents, 2079); // $20.50
+    assert.equal(autoPrice({ shopPricePaise: 105000, weightG: 1000 }, simple)?.priceCents, 2069); // $20.50
+    assert.equal(autoPrice({ shopPricePaise: 107000, weightG: 1000 }, simple)?.priceCents, 2079); // $20.70
     assert.equal(autoPrice({ shopPricePaise: 108000, weightG: 1000 }, simple)?.priceCents, 2099); // $20.80
     assert.equal(autoPrice({ shopPricePaise: 104900, weightG: 1000 }, simple)?.priceCents, 2049); // $20.49 stays
   });
@@ -83,7 +84,7 @@ describe('autoPrice (D-119): the same numbers as supabase/tests/pricing_engine.t
 
   it('the worked examples: clothing and home taper, food has the guard', () => {
     assert.equal(price(1299, 450, 'clothing'), 4529);
-    assert.equal(price(7500, 900, 'clothing'), 18079);
+    assert.equal(price(7500, 900, 'clothing'), 18069);
     assert.equal(price(12000, 2500, 'clothing'), 29649);
     assert.equal(price(1800, 1200, 'home'), 9129);
     assert.equal(price(650, 400, 'home'), 3549);

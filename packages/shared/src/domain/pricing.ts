@@ -7,12 +7,15 @@
  * Clothing and home & gifts (the founder's formula): (shop ₹ ÷ divisor + g ÷ 100 × ₹ per 100 g) ÷ rate, ÷ (1 − margin),
  * the margin tapering down on expensive pieces. Food: (shop ₹ + fee) × (1 + India handling) ÷ rate + billed kg × the
  * courier rate card over a typical food parcel ÷ rate, × (1 + margin). Then the guard (the margin must pay US duty and
- * the card fee and leave a minimum profit) and up to .29 / .49 / .79 / .99. Null while a setting the recipe needs is
+ * the card fee and leave a minimum profit) and up to .29 / .49 / .69 / .79 / .99 (D-126). Null while a setting the recipe needs is
  * missing (D-047: nothing defaulted); an empty guard number counts as 0.
  *
  * Small food (D-120): a light, cheap food piece (a masala packet, a small snack) is priced on a shelf of whole-dollar
  * steps ($1.99, $2.99, $3.99): its goods at the food margin plus only part of its shipping share (the small-order
  * charges pay a small bag's courier), up to the next step, never below the goods' guard, at most the top step.
+ *
+ * Food in a band (D-126, when its top is set): 17–20% on its cost, no guard and no shelf; the bag's Shipping brings
+ * what a piece cannot (D-125).
  */
 import type { ProductType } from './product-types';
 
@@ -38,6 +41,8 @@ export interface PricingSettings {
   foodBilledPct?: N;
   /** D-122: the share of its courier cost a food piece carries (the rest is the small-order charges' or the bag's). */
   foodShipSharePct?: N;
+  /** D-126: the top of food's margin band (its bottom is food's margin); empty = the guard and the shelf as before. */
+  foodMarginMaxPct?: N;
   courierFirstKgPaise?: N;
   courierNextKgPaise?: N;
   parcelFixedPaise?: N;
@@ -58,8 +63,9 @@ export interface PricingSettings {
   homeEstMinG?: N;
 }
 
-/** Which rule set a price: the type's recipe, its tapered margin, the guard (D-119) or the small-food shelf (D-120). */
-export type PriceRule = 'recipe' | 'tapered' | 'guard' | 'small';
+/** Which rule set a price: the type's recipe, its tapered margin, the guard (D-119), the small-food shelf (D-120) or
+ * food's margin band (D-126). */
+export type PriceRule = 'recipe' | 'tapered' | 'guard' | 'small' | 'band';
 
 export interface PriceBreakdown {
   /** The piece's cost before margin (cents). */
@@ -93,6 +99,7 @@ export function pricingSettingsFrom(row: Record<string, unknown>): PricingSettin
     foodParcelKg: n('food_parcel_kg'),
     foodBilledPct: n('food_billed_pct'),
     foodShipSharePct: n('food_ship_share_pct'),
+    foodMarginMaxPct: n('food_margin_max_pct'),
     courierFirstKgPaise: n('courier_first_kg_paise'),
     courierNextKgPaise: n('courier_next_kg_paise'),
     parcelFixedPaise: n('parcel_fixed_paise'),
@@ -119,12 +126,31 @@ export function pricingSettingsFrom(row: Record<string, unknown>): PricingSettin
   };
 }
 
-const ENDINGS = [29, 49, 79, 99];
+const ENDINGS = [29, 49, 69, 79, 99];
 
-/** Cents → up to the next price ending in .29, .49, .79 or .99 (D-109). */
+/** Cents → up to the next price ending in .29, .49, .69, .79 or .99 (D-109, D-126). */
 export function priceEnding(cents: number): number {
   const c = Math.ceil(cents - 1e-9);
   return Math.floor(c / 100) * 100 + ENDINGS.find((e) => e >= c % 100)!;
+}
+
+/**
+ * A price in a margin band on its cost (D-126), as the database's `_band_price()`: the first ending at or above +lo%;
+ * past +hi% (a cheap piece, where one ending is a big step), the ending closest to the band, a tie going up.
+ */
+export function bandPrice(cost: number, lo: number, hi: number): number {
+  const low = cost * (1 + lo / 100);
+  const high = cost * (1 + Math.max(hi, lo) / 100);
+  const up = priceEnding(low);
+  if (up <= high) return up;
+  const d = Math.floor(high / 100);
+  const down = [d - 1, d]
+    .filter((x) => x >= 0)
+    .flatMap((x) => ENDINGS.map((e) => x * 100 + e))
+    .filter((v) => v <= high);
+  if (down.length === 0) return up;
+  const best = Math.max(...down);
+  return low - best >= up - high ? up : best;
 }
 
 /** The margin for a product type (D-111): its own, else the general one. */
@@ -220,6 +246,13 @@ export function autoPrice(
     cost = goods + (ship * (s.foodShipSharePct ?? 100)) / 100;
     price = cost * (1 + margin / 100);
     minPct = s.minProfitFoodPct ?? s.minProfitPct ?? 0;
+    // D-126: food in its band, no guard and no shelf (the bag's Shipping covers a piece that cannot pay its way)
+    if (s.foodMarginMaxPct != null)
+      return {
+        costCents: Math.round(cost),
+        priceCents: bandPrice(cost, margin, s.foodMarginMaxPct),
+        rule: 'band',
+      };
   } else {
     if (s.shopDivisor == null || s.shipPaisePer100g == null || !(s.shopDivisor > 0)) return null;
     cost = (shop / s.shopDivisor + (s.shipPaisePer100g * g) / 100) / rate;

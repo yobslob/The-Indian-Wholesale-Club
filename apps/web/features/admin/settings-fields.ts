@@ -30,7 +30,7 @@ export const SETTING_GROUPS: SettingGroup[] = [
   },
   {
     title: 'Pilot price: clothing and home & gifts (D-119)',
-    note: 'Price = (shop ₹ ÷ the divisor + weight g ÷ 100 × ₹ per 100 g) ÷ rate, then ÷ (1 − margin). The margin eases from the type\'s margin down to its lowest margin as the cost before margin rises between the two dollar amounts, so a big piece does not land at twice its cost. Up to .29 / .49 / .79 / .99.',
+    note: 'Price = (shop ₹ ÷ the divisor + weight g ÷ 100 × ₹ per 100 g) ÷ rate, then ÷ (1 − margin). The margin eases from the type\'s margin down to its lowest margin as the cost before margin rises between the two dollar amounts, so a big piece does not land at twice its cost. Up to .29 / .49 / .69 / .79 / .99 (D-126).',
     fields: [
       { key: 'shop_divisor', label: 'Shop price ÷ (0.90 = a 10% cushion for price drift)', kind: 'number' },
       { key: 'ship_paise_per_100g', label: 'Shipping per 100 g (₹)', kind: 'inr' },
@@ -49,11 +49,12 @@ export const SETTING_GROUPS: SettingGroup[] = [
   },
   {
     title: 'Pilot price: food (D-119, D-122)',
-    note: 'Price = (shop ₹ + fee per piece) × (1 + India handling) ÷ rate + billed kg × the courier rate card spread over a typical food parcel ÷ rate × its share (D-122), then × (1 + margin). Up to .29 / .49 / .79 / .99.',
+    note: 'Price = (shop ₹ + fee per piece) × (1 + India handling) ÷ rate + billed kg × the courier rate card spread over a typical food parcel ÷ rate × its share (D-122), then × (1 + margin). Up to .29 / .49 / .69 / .79 / .99. With a band top (D-126): food is priced at its margin up to the band top, the ending nearest the band, without the guard or the small-food shelf; a bag\'s Shipping brings what its pieces cannot (D-125).',
     fields: [
       { key: 'food_fee_paise', label: 'Shop fee per piece (₹): delivery and handling into the hub', kind: 'inr' },
       { key: 'india_handling_pct', label: 'India handling: cushion for price drift (% of the shop price)', kind: 'pct' },
-      { key: 'margin_food_pct', label: 'Food: margin added on top of cost (%)', kind: 'pct' },
+      { key: 'margin_food_pct', label: 'Food: margin added on top of cost (%; the band\'s bottom)', kind: 'pct' },
+      { key: 'food_margin_max_pct', label: 'Food: band top, margin on cost at most (%, D-126; empty = guard and shelf as before)', kind: 'pct' },
       { key: 'food_parcel_kg', label: 'A typical food parcel (kg)', kind: 'number' },
       { key: 'food_billed_pct', label: 'Billed weight, % of the label\'s weight (jars, bulky packs)', kind: 'pct' },
       { key: 'food_ship_share_pct', label: 'Share of its courier a food piece carries (%, D-122; empty = all of it, D-125)', kind: 'pct' },
@@ -61,7 +62,7 @@ export const SETTING_GROUPS: SettingGroup[] = [
   },
   {
     title: 'Small food shelf (D-120)',
-    note: 'A light, cheap food piece (a masala packet, a small snack) carries only part of its shipping share, since a small bag pays its courier through the small-order charges, and is priced up to the next whole-dollar step: $1.99, $2.99, $3.99, at most the top step and never below what its goods cost after duty and the card fee. Empty any number to turn the shelf off.',
+    note: 'A light, cheap food piece (a masala packet, a small snack) carries only part of its shipping share, since a small bag pays its courier through the small-order charges, and is priced up to the next whole-dollar step: $1.99, $2.99, $3.99, at most the top step and never below what its goods cost after duty and the card fee. Empty any number to turn the shelf off. Not used while food has a band top (D-126).',
     fields: [
       { key: 'small_food_max_shop_paise', label: 'Pieces costing at most (shop ₹)', kind: 'inr' },
       { key: 'small_food_max_g', label: 'and weighing at most (g)', kind: 'int' },
@@ -75,7 +76,7 @@ export const SETTING_GROUPS: SettingGroup[] = [
     note: 'Prices food\'s shipping, and the real cost of a parcel in the profit check below.',
     fields: [
       { key: 'courier_first_kg_paise', label: 'First kg (₹, incl. GST)', kind: 'inr' },
-      { key: 'courier_next_kg_paise', label: 'Each further kg (₹)', kind: 'inr' },
+      { key: 'courier_next_kg_paise', label: 'Each further kg (₹, billed by the half kg)', kind: 'inr' },
       { key: 'parcel_fixed_paise', label: 'Fixed per parcel: box and customs clearance (₹)', kind: 'inr' },
     ],
   },

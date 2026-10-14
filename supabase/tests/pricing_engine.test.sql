@@ -1,19 +1,21 @@
 -- The pricing engine (migration 24, D-075; the pilot formula since migration 38, D-109; two recipes and the profit
--- guard since D-119, the small-food shelf since D-120): the formula, automatic repricing, the daily rate, food cleared, listings without a price.
+-- guard since D-119, the small-food shelf since D-120, food's margin band and the .69 ending since D-126): the formula, automatic repricing, the daily rate, food cleared, listings without a price.
 begin;
 select tests.setup();
 
 -- Simple numbers first, the clothing recipe without taper or guard: ₹100 per $, no buffer, shop ÷ 1, ₹100 per 100 g,
--- margin 0. A ₹1,000 piece of 1 kg: $10 + $10 = $20.00, up to $20.29 (D-109: endings .29, .49, .79, .99).
+-- margin 0. A ₹1,000 piece of 1 kg: $10 + $10 = $20.00, up to $20.29 (D-109, D-126: endings .29, .49, .69, .79, .99).
 update public.pricing_settings set
   fx_inr_per_usd = 100, fx_buffer_pct = 0, fx_auto = false, shop_divisor = 1, ship_paise_per_100g = 10000,
   margin_pct = 0, margin_clothing_pct = 0, margin_clothing_min_pct = null, margin_home_min_pct = null,
   duty_clothing_pct = 0, duty_food_pct = 0, duty_home_pct = 0, min_profit_clothing_cents = 0, min_profit_food_cents = 0,
-  min_profit_home_cents = 0, min_profit_pct = 0, min_profit_food_pct = 0, guard_card_fee_pct = 0
+  min_profit_home_cents = 0, min_profit_pct = 0, min_profit_food_pct = 0, guard_card_fee_pct = 0,
+  food_margin_max_pct = null
  where id = 1;
 select tests.assert(public._auto_price_cents(100000, 1000) = 2029, '$20.00 goes up to $20.29');
 select tests.assert(public._auto_price_cents(103000, 1000) = 2049, '$20.30 goes up to $20.49');
-select tests.assert(public._auto_price_cents(105000, 1000) = 2079, '$20.50 goes up to $20.79');
+select tests.assert(public._auto_price_cents(105000, 1000) = 2069, 'D-126: $20.50 goes up to $20.69');
+select tests.assert(public._auto_price_cents(107000, 1000) = 2079, '$20.70 goes up to $20.79');
 select tests.assert(public._auto_price_cents(108000, 1000) = 2099, '$20.80 goes up to $20.99');
 select tests.assert(public._auto_price_cents(104900, 1000) = 2049, '$20.49 already has an ending and stays');
 select tests.assert(public._auto_price_cents(100000, null) is null, 'no weight, no price');
@@ -35,7 +37,7 @@ update public.pricing_settings set
   guard_card_fee_pct = 2.9, small_food_max_shop_paise = null, food_ship_share_pct = null
  where id = 1;
 select tests.assert(public._auto_price_cents(129900, 450, 'clothing') = 4529, 'D-119: a ₹1,299 kurta of 450 g is $45.29');
-select tests.assert(public._auto_price_cents(750000, 900, 'clothing') = 18079, 'D-119: a ₹7,500 saree of 900 g is $180.79');
+select tests.assert(public._auto_price_cents(750000, 900, 'clothing') = 18069, 'D-119: a ₹7,500 saree of 900 g is $180.69');
 select tests.assert(public._auto_price_cents(1200000, 2500, 'clothing') = 29649, 'D-119: a ₹12,000 lehenga of 2.5 kg is $296.49');
 select tests.assert(public._auto_price_cents(180000, 1200, 'home') = 9129, 'D-119: a ₹1,800 brass piece of 1.2 kg is $91.29');
 select tests.assert(public._auto_price_cents(65000, 400, 'home') = 3549, 'D-119: a ₹650 diya of 400 g is $35.49');
@@ -67,7 +69,7 @@ select tests.assert(public._auto_price_cents(9000, 100, 'food') = 399, 'D-125: t
 select tests.assert(public._auto_price_cents(5000, 100, 'food') = 349, 'D-125: its recipe under the next step is kept');
 select tests.assert(public._auto_price_cents(15000, 250, 'food') = 849,
   'D-125: the ₹150 masala of 250 g keeps its recipe (was $3.99, under its cost)');
-select tests.assert(public._auto_price_cents(10000, 200, 'food') = 679, 'D-125: a ₹100 packet of 200 g is $6.79');
+select tests.assert(public._auto_price_cents(10000, 200, 'food') = 669, 'D-125: a ₹100 packet of 200 g is $6.69');
 select tests.assert(public._auto_price_cents(22000, 400, 'food') = 1329, 'D-120: the namkeen of 400 g keeps its recipe');
 select tests.assert(public._auto_price_cents(9000, 100, 'clothing') > 399, 'D-120: the shelf is food only');
 update public.pricing_settings set small_food_floor_cents = 49, small_food_ceiling_cents = 99 where id = 1;
@@ -83,6 +85,28 @@ select tests.assert(public._auto_price_cents(10000, 400, 'food') = 849, 'D-122: 
 select tests.assert(public._auto_price_cents(23000, 1000, 'food') = 2049, 'D-122: at 70%, ₹230 · 1 kg is $20.49');
 update public.pricing_settings set food_ship_share_pct = null where id = 1;
 select tests.assert(public._auto_price_cents(10000, 400, 'food') = 1129, 'D-125: an empty share is the whole flight (D-119)');
+-- D-126: the courier at ₹2,000 a kg, everything in; clothing 42% (lowest 35%), home & gifts 50% (lowest 40%); food
+-- packed tighter (110%) and in a band of 17–20% on its cost, without the guard or the shelf (the founder's table).
+update public.pricing_settings set courier_first_kg_paise = 200000, courier_next_kg_paise = 200000, parcel_fixed_paise = 0,
+  ship_paise_per_100g = 20000, margin_clothing_pct = 42, margin_clothing_min_pct = 35, margin_home_pct = 50,
+  margin_home_min_pct = 40, margin_food_pct = 17, food_margin_max_pct = 20, food_billed_pct = 110,
+  small_food_max_shop_paise = 20000 where id = 1;
+select tests.assert(public._auto_price_cents(9000, 100, 'food') = 429, 'D-126: the ₹90 garam masala of 100 g is $4.29');
+select tests.assert(public._auto_price_cents(23000, 1000, 'food') = 3129, 'D-126: a ₹230 bhujia of 1 kg is $31.29 (17.1%)');
+select tests.assert(public._auto_price_cents(18000, 250, 'food') = 969, 'D-126: a ₹180 tea of 250 g is $9.69 (.69)');
+select tests.assert(public._auto_price_cents(4000, 100, 'food') = 369,
+  'D-126: a ₹40 chilli powder: $3.69 (21.8%) is as near the band as $3.49 (15.2%), and a tie goes up');
+select tests.assert(public._auto_price_cents(69900, 450, 'clothing') = 3129, 'D-126: a ₹699 kurta stays $31.29');
+select tests.assert(public._auto_price_cents(149900, 900, 'clothing') = 6369, 'D-126: a ₹1,499 kurta set is $63.69');
+select tests.assert(public._auto_price_cents(35000, 525, 'home') = 3129, 'D-126: a ₹350 brass diya stays $31.29');
+select tests.assert(public._band_price(1000, 17, 20) = 1179, 'D-126: $10 in the band is $11.79');
+select tests.assert(public._band_price(303, 17, 20) = 369 and public._band_price(300, 17, 20) = 349,
+  'D-126: under the band when that ending is nearer ($3.49 for a $3.00 cost)');
+update public.pricing_settings set food_margin_max_pct = null where id = 1;
+select tests.assert(public._auto_price_cents(9000, 100, 'food') <> 429, 'D-126: an empty band top brings the guard back');
+update public.pricing_settings set courier_first_kg_paise = 224200, courier_next_kg_paise = 67850, parcel_fixed_paise = 105000,
+  ship_paise_per_100g = 14600, margin_clothing_pct = 50, margin_clothing_min_pct = 38, margin_home_pct = 60,
+  margin_home_min_pct = 45, margin_food_pct = 25, food_billed_pct = 140, small_food_max_shop_paise = null where id = 1;
 -- Card fees in the retailer model's settings never touch a pilot price (D-112).
 update public.pricing_settings set card_fee_pct = 10, card_fee_fixed_cents = 500 where id = 1;
 select tests.assert(public._auto_price_cents(129900, 450, 'clothing') = 4529, 'D-112: card_fee_pct does not change a price');

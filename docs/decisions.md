@@ -525,7 +525,7 @@ What it means for the build (no migration; `bagChargesAt()` in packages/shared, 
 *Claude's choices in it:* the bag's hint is "Add $X more for free delivery" again. The loss on food-heavy bags past the
 line is the founder's to decide (see the reply of 2026-10-14).
 
-**D-125 · 2026-10-14 · founder: No bag ever loses: every cost in the price, heavy pieces on the founder's formula**
+**D-125 · 2026-10-14 · founder: No bag ever loses: every cost in the price, heavy pieces on the founder's formula** · food's price amended by D-126 (the band; Shipping still keeps every bag whole)
 Founder, verbatim: "Noooo we can't bear any loss, we have to add all the costs in margin including the weight cost, how
 are we going in loss in 14 piece order that is absurd, think deeply out of this logic, like in this whole cost logic
 where are we going wrong. we should be listing lighter orders and heavier orders should be following our initial
@@ -555,3 +555,29 @@ What it means for the build (migration `20261014200000_parcel_pays_its_way.sql`)
 clothing / home); "lighter" is served by listing light pieces (they are cheap because they are light), heavy food stays
 on the formula.
 
+**D-126 · 2026-10-15 · founder: The courier at ₹2,000 a kg; food in a strict 17–20% band, packed tighter; prices end in .69 too**
+Founder, verbatim: "I just got updated from the courier guy the shipping will be changed from 1460 to 2000, now think of
+all situation and let me know if we decrease our margins or any other way can we still adjust 2k shipping in the same
+prices?"; then "generate a new table in which we lower the food margins to sharp strict 17-20% because I want to compare
+and still pack food tighter"; then "Alright now fix the prices on these, it's all good, also change the round off to 29,
+49,69,79,99".
+What it means for the build (migration `20261015090000_courier_2000_food_band.sql`; every number is a setting):
+- **Courier:** ₹2,000 per kg, everything in (no first-kg premium, no per-parcel fee), billed by the half kg from 1 kg.
+  Clothing and home & gifts carry ₹200 per 100 g (was ₹146). A 1 kg parcel now costs less than before (₹2,000, was
+  ₹3,292 with the box and clearance); above about 2 kg more.
+- **Clothing 42%** (lowest 35% on the dearest pieces), **home & gifts 50%** (lowest 40%): their prices stay about where
+  they were (a ₹699 kurta $31.29, a ₹1,499 kurta set $63.69, a ₹350 brass diya $31.29).
+- **Food packed tighter:** billed at 110% of its label (was 140%).
+- **Food in a band, 17–20% on its cost** (`margin_food_pct` = the bottom, the new `food_margin_max_pct` = the top): the
+  first price ending at or above +17%; past +20% (a cheap piece, where one ending is a big step) the ending nearer the
+  band, a tie going up. Food skips the profit guard and the small-food shelf; an empty band top brings both back.
+  Garam masala ₹90 · 100 g $4.29, bhujia 200 g $6.69, 400 g $12.79, 1 kg $31.29, tea ₹180 · 250 g $9.69.
+- **Price endings** .29, .49, .69, .79, .99 for every price (was .29 / .49 / .79 / .99).
+- **No bag loses still holds (D-125):** a food piece in the band leaves less than its duty and card fee (cents to $0.71
+  on 1 kg of bhujia, as shown to the founder), and the bag's Shipping brings what its parcel still needs. One garam
+  masala pays $26.07 (Shipping $20.99), one kurta $55.27. **The cost of it:** a food-heavy bag past $149.99 pays some
+  Shipping instead of free: 14 × 1 kg bhujia $54.99, 20 pantry pieces $20.29, 60 masala packets $30.29. Mixed and
+  clothing bags stay free. Every sample bag in the profit check leaves a profit (the least: one masala, $1.92).
+*Claude's choices in it:* ₹2,000 read as all-in (to confirm with the courier: box, clearance, volumetric weight, a lower
+rate for heavier parcels); the taper's lowest margins (35%, 40%) and the 110% packing are from the table the founder
+approved; the band's tie rule.

@@ -48,10 +48,15 @@ phase's sub-steps and every verification run) is in `docs/archive/status-log-to-
   small masalas $1.99 – $3.99); Shipping below $149.99 is at least $18.79 and more when a bag's pieces cannot pay for
   its parcel; free from the line up. D-123 / D-124's food weight is retired.
 
+- **Courier ₹2,000 a kg, food band, .69 (D-126, 2026-10-15):** the courier at ₹2,000 a kg all in; clothing 42%, home
+  50% (prices about the same); food packed at 110% and priced 17–20% on its cost (masala $4.29, bhujia 1 kg $31.29);
+  endings .29/.49/.69/.79/.99. Shipping still keeps every bag whole: heavy food bags past $149.99 pay some Shipping.
+
 ## Next for the founder
 1. Run `node scripts/check.mjs` (Docker Desktop and `npx supabase start` first), push, then the Deploy workflow: it
-   applies the new migrations (the latest is `20261014200000_parcel_pays_its_way`, D-125; it and D-119 – D-123
-   reprice every listing) to production.
+   applies the new migrations (the latest is `20261015090000_courier_2000_food_band`, D-126; it and D-119 – D-125
+   reprice every listing) to production. Confirm with the courier that ₹2,000 includes the box and clearance, and
+   whether it bills by box size; correct Settings → Courier rate card if not.
 2. Then Admin → Products → Drafts → **Publish all drafts**; it says how many went live, what held the rest and how
    many still lack details customers see (fibre and care, ingredients and allergens).
 3. Replace the D-119 / D-120 estimates in Settings with real bills (one courier invoice, one duty bill): the per-parcel
@@ -71,6 +76,7 @@ phase's sub-steps and every verification run) is in `docs/archive/status-log-to-
 ## Last verification
 | Date | Commit | Where | Result |
 |---|---|---|---|
+| 2026-10-15 | D-126 commit | Claude, cloud sandbox | all 56 migrations + seeds on plain Postgres 16 with the Supabase stand-in: 43/43 SQL test files (`pricing_engine` with the band, the .69 ending and the founder's table) · unit tests shared 129/129 (new `pricing-band`: the band, every sample bag profitable), web 37/37, app 10/10 · tsc shared, db, web clean; app no new errors against the sandbox baseline · docs audit OK. **Not run:** ESLint with the Next plugin, `next build`, e2e, http, the app build. |
 | 2026-10-14 | D-125 commit | Claude, cloud sandbox | all 55 migrations + seeds on plain Postgres 16 with the Supabase stand-in: 43/43 SQL test files (`bag_charges` with the parcel rule; mutation-checked) · unit tests shared 124/124 (no sample bag loses, also with food at 30%), web 37/37, app 10/10 · tsc shared, db, web clean; app no new errors against the sandbox baseline · docs audit OK. **Not run:** ESLint with the Next plugin, `next build`, e2e, http, the app build. |
 | 2026-10-14 | D-124 commit | Claude, cloud sandbox | unit tests shared 124/124 (the D-124 rule), web 37/37, app 10/10 · tsc shared, db, web clean; app no new errors against the sandbox baseline · 43/43 SQL test files (no SQL change) · docs audit OK. **Not run:** ESLint with the Next plugin, `next build`, e2e, http, the app build. |
 | 2026-10-14 | D-123 commit | Claude, cloud sandbox with the founder's `node_modules` (no Docker) | all 54 migrations + seeds on plain Postgres 16 with the Supabase stand-in: 43/43 SQL test files pass (`bag_charges` with the food weight) · unit tests shared 124/124, web 37/37, app 10/10 · tsc shared, db, web clean; app no new errors against the sandbox baseline · docs audit OK. **Not run:** ESLint with the Next plugin, `next build`, e2e, http, the app build. Run `node scripts/check.mjs` before pushing. |

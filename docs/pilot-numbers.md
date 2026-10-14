@@ -1,10 +1,13 @@
 # Pilot numbers: every variable, its placeholder and where to change it
 
-> **Pilot pricing today (D-119, D-120):** two recipes, every number in Settings.
-> - **Clothing and home & gifts:** (shop ₹ ÷ 0.90 + g ÷ 100 × ₹146) ÷ rate, then ÷ (1 − margin). Margin of the price:
->   clothing 50% easing to 38% as the cost before margin goes from $20 to $150; home 60% easing to 45% from $15 to $100.
-> - **Food:** (shop ₹ + ₹15 fee) × 1.10 ÷ rate + billed kg (140% of the label) × the rate card over a 5 kg parcel
->   (₹2,242 first kg, ₹678.50 each further kg, ₹1,050 per parcel: about ₹1,201/kg) ÷ rate, × 1.25.
+> **Pilot pricing today (D-119, D-126):** two recipes, every number in Settings.
+> - **Courier (D-126):** ₹2,000 per kg, everything in, billed by the half kg from 1 kg (was ₹2,242 first kg, ₹678.50
+>   each further kg and ₹1,050 per parcel).
+> - **Clothing and home & gifts:** (shop ₹ ÷ 0.90 + g ÷ 100 × ₹200) ÷ rate, then ÷ (1 − margin). Margin of the price:
+>   clothing 42% easing to 35% as the cost before margin goes from $20 to $150; home 50% easing to 40% from $15 to $100.
+> - **Food (D-126):** cost = (shop ₹ + ₹15 fee) × 1.10 ÷ rate + billed kg (110% of the label) × ₹2,000 ÷ rate; the price
+>   is 17–20% on that cost (the first ending at or above +17%), with no guard and no shelf: the bag's Shipping covers a
+>   piece that cannot pay its duty and card fee (D-125). ₹90 masala $4.29, bhujia 400 g $12.79, 1 kg $31.29.
 > - **Home & gifts without a weight (D-121):** priced at shop ₹ × 1.5 g (at least 200 g, at most the category's
 >   typical weight) instead of the category's 1.5 – 2 kg: a ₹200 basket is $17.99, not $62.29.
 > - **No bag loses (D-125):** every piece carries its whole cost (food its whole flight again); Shipping below $149.99 is
@@ -14,7 +17,7 @@
 >   $1.99 / $2.99 / $3.99 (at most $3.99, at least the guard on its goods). ₹100 · 100 g $2.99, ₹100 · 200 g $3.99.
 > - **Profit guard, every piece:** lifted only if the margin cannot pay US duty on the price (clothing 22%, food 16%,
 >   home 13%) and the 2.9% card fee and leave $4 (clothing, home) and 8% (food: 4%, no dollar minimum).
-> - Rate = the day's ₹ per $ less the 4% buffer; up to .29/.49/.79/.99. Below $149.99 a bag pays Shipping $18.79 and
+> - Rate = the day's ₹ per $ less the 4% buffer; up to .29/.49/.69/.79/.99 (D-126). Below $149.99 a bag pays Shipping $18.79 and
 >   Retailer charges $1.99; from $149.99 up they show struck through at $0.00 and 10% of the amount over the line comes
 >   off as the bulk saving, up to $25.
 > - Worked examples at ₹96.30 (the shelf off; on, the snack and the masala are $2.99 and $3.99): snack ₹90 · 100 g $3.99, masala ₹150 · 250 g $8.49, namkeen ₹220 · 400 g $13.29, kurta
