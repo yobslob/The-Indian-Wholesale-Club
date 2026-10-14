@@ -38,6 +38,7 @@ const RULE = {
   guard: 'guard',
   small: 'small food shelf',
   band: 'food margin band',
+  beta: 'beta formula',
 } as const;
 
 /** The form's numbers as a settings row: what is typed, else what is saved. */

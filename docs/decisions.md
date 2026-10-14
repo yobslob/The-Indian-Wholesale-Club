@@ -555,7 +555,7 @@ What it means for the build (migration `20261014200000_parcel_pays_its_way.sql`)
 clothing / home); "lighter" is served by listing light pieces (they are cheap because they are light), heavy food stays
 on the formula.
 
-**D-126 · 2026-10-15 · founder: The courier at ₹2,000 a kg; food in a strict 17–20% band, packed tighter; prices end in .69 too**
+**D-126 · 2026-10-15 · founder: The courier at ₹2,000 a kg; food in a strict 17–20% band, packed tighter; prices end in .69 too** · paused by D-127 (beta pricing; archived)
 Founder, verbatim: "I just got updated from the courier guy the shipping will be changed from 1460 to 2000, now think of
 all situation and let me know if we decrease our margins or any other way can we still adjust 2k shipping in the same
 prices?"; then "generate a new table in which we lower the food margins to sharp strict 17-20% because I want to compare
@@ -581,3 +581,23 @@ What it means for the build (migration `20261015090000_courier_2000_food_band.sq
 *Claude's choices in it:* ₹2,000 read as all-in (to confirm with the courier: box, clearance, volumetric weight, a lower
 rate for heavier parcels); the taper's lowest margins (35%, 40%) and the 110% packing are from the table the founder
 approved; the band's tie rule.
+
+**D-127 · 2026-10-15 · founder: Beta pricing, fixed in code; the full formula archived**
+Founder, verbatim: "1. Take all of this complete logic and put it in archive so we can use it later. 2. We are going to
+hardcode this system for a beta testing to see prices, Strictly put shop price, strict, then india handling 10%, then
+exchange rate, then flight 2000rs/kg strict, then margin strict 20% food, 40%clothing and 50% home n decor. 3. and then
+send me the table with price margin."
+What it means for the build (migration `20261015120000_beta_pricing.sql`):
+- **Every automatic price:** cost = (shop ₹ × 1.10 + weight kg × ₹2,000) ÷ the day's ₹ per $ (no buffer); food × 1.20,
+  clothing ÷ 0.60, home & gifts ÷ 0.50; up to .29/.49/.69/.79/.99. The numbers are in code
+  (`_auto_price_cents`, `BETA_PRICING` in `packages/shared`), not Settings; only the exchange rate moves prices.
+  ₹90 masala of 100 g $3.79, bhujia 1 kg $28.29, ₹699 kurta $28.99, ₹1,499 kurta set $59.79, ₹350 brass diya $29.99.
+- **Archived, not deleted:** the full formula (D-119 – D-126) is written up in `docs/archive/pricing-full-formula.md`
+  and stays in the code behind `pricing_settings.beta_pricing`; a migration setting it false brings it back with its
+  settings as they were.
+- **Unchanged:** the bag's charges (D-125): Shipping at least $18.79 and what a parcel still needs, free from $149.99
+  unless the bag still needs it; retailer charges; the bulk saving.
+*Claude's choices in it:* food's margin on its cost and clothing's and home's of the price, as the founder's tables have
+read since D-119; flight on the label's weight; no shop divisor, fee, packing % or buffer ("strict"). Not in the beta
+formula: US duty and the card fee. Shipping makes up for them per bag, so no sample bag loses (the least: one masala,
++$2.00), but food-heavy bags past $149.99 pay Shipping (14 × 1 kg bhujia $89.49, 20 pantry pieces $35.49).

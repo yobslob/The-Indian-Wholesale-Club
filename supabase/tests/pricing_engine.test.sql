@@ -1,7 +1,22 @@
 -- The pricing engine (migration 24, D-075; the pilot formula since migration 38, D-109; two recipes and the profit
--- guard since D-119, the small-food shelf since D-120, food's margin band and the .69 ending since D-126): the formula, automatic repricing, the daily rate, food cleared, listings without a price.
+-- guard since D-119, the small-food shelf since D-120, food's margin band and the .69 ending since D-126, the beta
+-- formula since D-127): the formula, automatic repricing, the daily rate, food cleared, listings without a price.
 begin;
 select tests.setup();
+
+-- D-127: the beta formula, fixed in code: (shop ₹ × 1.10 + kg × ₹2,000) ÷ the day's rate (no buffer); food × 1.20,
+-- clothing ÷ 0.60, home & gifts ÷ 0.50; up to the next ending. The founder's 20 products at ₹96.30.
+update public.pricing_settings set beta_pricing = true, fx_inr_per_usd = 96.30, fx_buffer_pct = 4, fx_auto = false
+ where id = 1;
+select tests.assert(public._auto_price_cents(9000, 100, 'food') = 379, 'D-127: ₹90 garam masala of 100 g: cost $3.10, +20% $3.72 → $3.79');
+select tests.assert(public._auto_price_cents(23000, 1000, 'food') = 2829, 'D-127: ₹230 bhujia of 1 kg: cost $23.40, +20% $28.08 → $28.29');
+select tests.assert(public._auto_price_cents(69900, 450, 'clothing') = 2899, 'D-127: ₹699 kurta of 450 g: cost $17.33 ÷ 0.60 = $28.88 → $28.99');
+select tests.assert(public._auto_price_cents(35000, 525, 'home') = 2999, 'D-127: ₹350 brass diya of 525 g: cost $14.90 ÷ 0.50 = $29.80 → $29.99');
+select tests.assert(public._auto_price_cents(9000, null, 'food') is null, 'D-127: no weight, no price');
+select tests.assert((select price_cents from public.products where id = tests.id('p_live'))
+                    is not distinct from (select price_cents from public.products where id = tests.id('p_live')),
+  'D-127: the switch reprices without error');
+update public.pricing_settings set beta_pricing = false where id = 1;
 
 -- Simple numbers first, the clothing recipe without taper or guard: ₹100 per $, no buffer, shop ÷ 1, ₹100 per 100 g,
 -- margin 0. A ₹1,000 piece of 1 kg: $10 + $10 = $20.00, up to $20.29 (D-109, D-126: endings .29, .49, .69, .79, .99).

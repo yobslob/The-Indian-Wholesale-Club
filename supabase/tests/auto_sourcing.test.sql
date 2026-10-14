@@ -11,7 +11,8 @@ update public.pricing_settings set
   -- D-119's food recipe with simple numbers: ₹1,000 per kg, no fee, the label's weight, no guard
   courier_first_kg_paise = 100000, courier_next_kg_paise = 100000, food_parcel_kg = 1, parcel_fixed_paise = 0,
   food_fee_paise = 0, food_billed_pct = 100, duty_food_pct = 0, min_profit_food_cents = 0, min_profit_food_pct = 0,
-  guard_card_fee_pct = 0, food_ship_share_pct = null
+  guard_card_fee_pct = 0, food_ship_share_pct = null,
+  beta_pricing = false  -- the full formula (D-127's beta is tested in pricing_engine)
  where id = 1;
 select tests.create_user('worker', 'worker@example.test');
 update public.profiles set role = 'worker' where id = tests.id('worker');

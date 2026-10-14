@@ -1,6 +1,11 @@
 # Pilot numbers: every variable, its placeholder and where to change it
 
-> **Pilot pricing today (D-119, D-126):** two recipes, every number in Settings.
+> **Beta pricing today (D-127):** every automatic price = (shop ₹ × 1.10 + kg × ₹2,000) ÷ the day's rate, then food
+> × 1.20, clothing ÷ 0.60, home & gifts ÷ 0.50, up to .29/.49/.69/.79/.99. Fixed in code; the numbers below are the
+> full formula's, archived in `docs/archive/pricing-full-formula.md` and unused for prices until the beta ends (the bag's
+> charges still use the courier, duty and Shipping numbers).
+>
+> **The full formula (D-119, D-126), paused:** two recipes, every number in Settings.
 > - **Courier (D-126):** ₹2,000 per kg, everything in, billed by the half kg from 1 kg (was ₹2,242 first kg, ₹678.50
 >   each further kg and ₹1,050 per parcel).
 > - **Clothing and home & gifts:** (shop ₹ ÷ 0.90 + g ÷ 100 × ₹200) ÷ rate, then ÷ (1 − margin). Margin of the price:

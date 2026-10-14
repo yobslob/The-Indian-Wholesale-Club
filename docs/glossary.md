@@ -27,6 +27,7 @@ confusion. If you need a concept that isn't here, add it (and a decision if it's
 | **all-India listing** | a listing with no state (`products.region_id` null): the store names no state for it, it fills every state's page after the state's own pieces and lives at `/states/india/<slug>` (D-121) | `region_id is null`, `ALL_INDIA_SLUG`, `productPath()` |
 | **pack** | a food piece's pack size on its card ("200 g"), from its option or its name (D-122) | `_store_pack()`, `pack` on cards |
 | **food weight** | retired (D-125): the part of Shipping that carried food's flight when prices carried less of it (D-123, D-124) | unused `food_off_*` settings |
+| **beta pricing** | the fixed formula during the beta: (shop ₹ × 1.10 + kg × ₹2,000) ÷ rate, food +20% on cost, clothing 40% and home & gifts 50% of the price (D-127) | `pricing_settings.beta_pricing`, `BETA_PRICING`, rule `beta` in `autoPrice` |
 | **food margin band** | food priced 17–20% on its cost, without the profit guard or the small-food shelf; the bag's Shipping covers a piece that cannot pay its duty (D-126) | `margin_food_pct` (bottom), `food_margin_max_pct` (top), `_band_price`, rule `band` in `autoPrice` |
 | **profit guard** | the floor under every automatic price: the margin must pay US duty and the card fee and still leave the type's minimum profit (D-119) | `duty_<type>_pct`, `min_profit_*`, `guard_card_fee_pct` |
 | **shipment** | the US domestic parcel sent to a customer (with tracking number) | `orders.tracking_number`, status `shipped` | "Shipped" | export |
