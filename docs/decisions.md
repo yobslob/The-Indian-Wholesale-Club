@@ -191,7 +191,7 @@ retailer charges ₹150 per parcel (labelled estimates); the shipping allocation
 takes a bag under the line brings the charges back; express (D-070) has its own fee and no small-order charges.
 
 
-**D-112 · 2026-10-12 · founder: Card fees are inside the margins; the small-order charges are fixed and show $0.00 when waived** · formula SUPERSEDED by D-119
+**D-112 · 2026-10-12 · founder: Card fees are inside the margins; the small-order charges are fixed and show $0.00 when waived** · formula SUPERSEDED by D-119; charges amended by D-123
 Founder, verbatim (asked why prices came out high): "The prices are a bit off, I don't know what factor is affecting
 that but Clothing is always off by 2 or 3 dollar and food products are expensive by 60 or 70 cents. Change something
 so this fixes." Claude found the card fee (3.4% + $0.30, charged on every piece) added on top of the type margin and
@@ -484,4 +484,28 @@ What it means for the build (migration `20261014160000_food_share_footwear_pack.
 the list's rules: left out are perishables (fresh pitha, chhena sweets, siddu, holige, puran poli and other fresh breads
 and frozen food: 45), fish and prawn pickles (US import rules: 8) and names too vague to search ("Namkeen", "Herb
 seasoning": 30); an item in four or more states, or made only of everyday words, is for all states.
+
+**D-123 · 2026-10-14 · founder: The bag's charges follow the bag; food carries its weight in Shipping, not in its price**
+Founder, verbatim: "add new rule where the final shipping and retailer cost is not constant anymore, it changes with the
+total amount in the bag, doesn't matter if its strikethrough or not it will follow a rule so that the food can be cheaper
+because i feel like 8.49 and 20.49 is still very expensive for bhujia." Asked who pays for the food's flight, the founder
+chose "Food weight in shipping": food prices carry 30% of their courier; the bag's Shipping carries the rest as the
+food weight, 10% less for every $50 of goods, up to 40% less, paid even above the free-shipping line; the parcel's
+$18.79 stays (struck through from $149.99); the retailer charges become 1.5% of the bag, at least $0.99.
+What it means for the build (migration `20261014180000_food_weight_charge.sql`):
+- **Food prices** carry 30% of their courier (`food_ship_share_pct`, the small-food shelf too): bhujia 200 g $2.79,
+  400 g $4.79, 1 kg $10.99 (were $3.99 / $8.49 / $20.49); a 100 g masala $2.49.
+- **Food weight** (a line under Shipping in the bag, the pill's bag and checkout, web and app): the food's courier its
+  prices leave out, worked out in the database from the bag's food weights (INV-1: only cents leave it), $12.73 a kg at
+  today's rate; 10% less for every $50 of goods, at most 40% less; paid at every bag size.
+- **Shipping** ($18.79 for the parcel) is paid below $149.99 and struck through from it up, as D-112.
+- **Retailer charges** are 1.5% of the goods, at least $0.99 (were a fixed $1.99), struck through from the line up
+  showing what they would be. Below the line the bag says "Add $X more and Shipping comes off" when it has food.
+- Every number is in Settings (Bag charges); the profit check uses the same rule.
+What it does to bags (profit check at ₹96.30): one 400 g bhujia pays $29.66 (the parcel's $18.79 and $6.09 of food
+weight; it loses $8.27, as small bags did before); 4 × 400 g + 2 masalas $66.84 (+$3.99); 12 × 1 kg bhujia $274.89
+(+$61.71: the food weight over-recovers on big parcels, whose courier per kg is lower); mixed bags keep their profit.
+*Claude's choices in it:* the food weight is worked out per kg of label weight with the same rate card and billed % as
+the prices; the courier's rate card and the steps are settings. A lever if big food bags feel dear: 20% less per $50, up
+to 60% less, brings 12 × 1 kg to $244.33 (+$32.65).
 

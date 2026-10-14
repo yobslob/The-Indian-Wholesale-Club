@@ -3,7 +3,7 @@ import 'server-only';
 import { z } from 'zod';
 
 import { getCheckoutContext } from '@repo/db/server';
-import { getBagCharges } from '@repo/db/store';
+import { getBagCharges, smallOrderOf } from '@repo/db/store';
 import {
   emailSchema,
   quoteCheckout,
@@ -117,7 +117,8 @@ export async function priceCart(
   const shipping = {
     flatCents: context.shipping.flat_cents,
     freeMinCents: context.shipping.free_min_cents,
-    smallOrder: { shippingCents: charges.shipping_cents, retailerCents: charges.retailer_cents },
+    // D-123: the retailer % and the bag's food weight travel with them (bagChargesAt, on the discounted goods)
+    smallOrder: smallOrderOf(charges),
     // D-119: from the line up, the bulk saving (worked out on the discounted subtotal, never from the browser).
     bulkSaving: { pct: charges.bulk_saving_pct, capCents: charges.bulk_saving_cap_cents },
     express: context.express

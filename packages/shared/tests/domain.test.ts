@@ -7,6 +7,7 @@ import {
   attributesSchemaFor,
   autoPrice,
   bulkProgress,
+  bagChargesAt,
   bulkSavingCents,
   checkBag,
   SAMPLE_BAGS,
@@ -319,6 +320,37 @@ describe('checkout quote (flows.md §3, D-041, D-070, D-073)', () => {
     assert.equal(quoteCheckout([{ unitPriceCents: 3929, quantity: 4 }], promo, settings)!.retailerCents, 199);
   });
 
+  it('D-123: the food weight is paid at every size, less per $50 of goods; retailer charges 1.5%, at least $0.99', () => {
+    const smallOrder = {
+      shippingCents: 1879,
+      retailerCents: 99,
+      retailerPct: 1.5,
+      foodWeight: { cents: 1000, stepCents: 5000, stepPct: 10, maxPct: 40 },
+    };
+    const at = (goods: number) => bagChargesAt(goods, 14999, smallOrder);
+    assert.deepEqual(
+      [at(3000).shippingCents, at(3000).foodCents, at(3000).retailerCents],
+      [1879, 1000, 99],
+      'a $30 bag: the parcel, all the food weight, the retailer minimum',
+    );
+    assert.deepEqual([at(10000).foodOffPct, at(10000).foodCents, at(10000).retailerCents], [20, 800, 150]);
+    const big = at(30000);
+    assert.deepEqual(
+      [big.shippingCents, big.waivedShippingCents, big.retailerCents, big.waivedRetailerCents, big.foodOffPct, big.foodCents],
+      [0, 1879, 0, 450, 40, 600],
+      'past the line: the parcel and retailer charges struck through, the food weight 40% less and still paid',
+    );
+    const settings = { flatCents: 0, freeMinCents: 14999, express: null, smallOrder };
+    const q = quoteCheckout([{ unitPriceCents: 30000, quantity: 1 }], null, settings)!;
+    assert.deepEqual(
+      [q.shippingCents, q.retailerCents, q.foodWeightCents, q.foodWeightOffPct, q.totalCents],
+      [600, 0, 600, 40, 30600],
+    );
+    assert.deepEqual(q.waivedCents, { shipping: 1879, retailer: 450 });
+    const small = quoteCheckout([{ unitPriceCents: 3000, quantity: 1 }], null, settings)!;
+    assert.deepEqual([small.shippingCents, small.retailerCents, small.totalCents], [2879, 99, 3000 + 2879 + 99]);
+  });
+
   it('adds subtotal and flat shipping; no tax where IWC is not registered (D-073)', () => {
     const quote = quoteCheckout([{ unitPriceCents: 2500, quantity: 2 }], null, shipping);
     assert.deepEqual(quote, {
@@ -328,6 +360,8 @@ describe('checkout quote (flows.md §3, D-041, D-070, D-073)', () => {
       shippingCents: 900,
       retailerCents: 0,
       waivedCents: { shipping: 0, retailer: 0 },
+      foodWeightCents: 0,
+      foodWeightOffPct: 0,
       taxCents: 0,
       totalCents: 5900,
       promoApplied: false,

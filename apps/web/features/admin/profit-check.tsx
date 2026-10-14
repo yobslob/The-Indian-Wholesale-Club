@@ -86,6 +86,11 @@ export function ProfitCheck({ formId, saved }: { formId: string; saved: Row }): 
       shippingCents: row.small_order_shipping_cents ?? 0,
       retailerCents: row.small_order_retailer_cents ?? 0,
       bulk: { pct: row.bulk_saving_pct ?? 0, capCents: row.bulk_saving_cap_cents ?? 0 },
+      // D-123: the retailer % and the food weight's discount steps
+      retailerPct: row.retailer_pct ?? null,
+      foodOff: row.food_off_step_cents
+        ? { stepCents: row.food_off_step_cents, stepPct: row.food_off_step_pct ?? 0, maxPct: row.food_off_max_pct ?? 0 }
+        : null,
     };
     return {
       pieces: PIECES.map(([label, rupees, g, type]) => ({

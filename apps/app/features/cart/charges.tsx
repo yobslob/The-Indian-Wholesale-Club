@@ -1,7 +1,7 @@
 import { Text, View } from 'react-native';
 
-import { getBagCharges, type BagCharges } from '@repo/db/store';
-import { bulkProgress, formatUsd } from '@repo/shared/domain';
+import { getBagCharges, smallOrderOf, type BagCharges } from '@repo/db/store';
+import { bagChargesAt, bulkProgress, formatUsd } from '@repo/shared/domain';
 
 import { MeterLine } from './meter-line';
 import { bagSubtotalCents, useBag, type BagLine } from './store';
@@ -42,6 +42,8 @@ export function freeDelivery(lines: BagLine[], charges: BagCharges | null) {
   return {
     free,
     line,
+    /** D-123: the charges at this bag's goods (the parcel, the retailer charges, the food weight). */
+    at: bagChargesAt(subtotal, line, charges ? smallOrderOf(charges) : null),
     leftCents: line === null ? 0 : Math.max(line - subtotal, 0),
     share: line ? Math.min(subtotal / line, 1) : 1,
     bulk: bulkProgress(subtotal, line, bulk),
@@ -82,12 +84,21 @@ export function ChargeRows(): React.JSX.Element | null {
   const lines = useBag((s) => s.lines);
   const charges = useBagCharges();
   if (!charges) return null;
-  const { free, leftCents, line, share, bulk } = freeDelivery(lines, charges);
+  const { free, leftCents, line, share, bulk, at } = freeDelivery(lines, charges);
   return (
     <View className="gap-1">
-      <ChargeRow label="Shipping" cents={charges.shipping_cents} free={free} />
-      {charges.retailer_cents > 0 ? (
-        <ChargeRow label="Retailer charges" cents={charges.retailer_cents} free={free} />
+      <ChargeRow label="Shipping" cents={at.shippingCents || at.waivedShippingCents} free={free} />
+      {/* D-123: the food weight, paid at every bag size, less as the bag grows */}
+      {at.foodFullCents > 0 ? (
+        <View className="flex-row justify-between gap-3">
+          <Text className="font-body text-ink-muted flex-1 text-sm">
+            {at.foodOffPct > 0 ? `Food weight (${at.foodOffPct}% off)` : 'Food weight'}
+          </Text>
+          <Text className="font-body text-ink text-sm">{formatUsd(at.foodCents)}</Text>
+        </View>
+      ) : null}
+      {at.retailerCents + at.waivedRetailerCents > 0 ? (
+        <ChargeRow label="Retailer charges" cents={at.retailerCents || at.waivedRetailerCents} free={free} />
       ) : null}
       {bulk.savingCents > 0 ? (
         <View className="flex-row justify-between gap-3">
@@ -98,7 +109,9 @@ export function ChargeRows(): React.JSX.Element | null {
       {line !== null && !free ? (
         <View className="mt-1 gap-2">
           <Text className="font-ui-semibold text-brand text-[13px]">
-            Add {formatUsd(leftCents)} more for free delivery
+            {at.foodFullCents > 0
+              ? `Add ${formatUsd(leftCents)} more and Shipping comes off`
+              : `Add ${formatUsd(leftCents)} more for free delivery`}
           </Text>
           <MeterLine share={share} />
         </View>

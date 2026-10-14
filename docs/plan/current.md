@@ -44,11 +44,13 @@ phase's sub-steps and every verification run) is in `docs/archive/status-log-to-
 - **Food by weight, footwear, cards, See all, food list (D-122, 2026-10-14):** food carries 70% of its courier (200 g
   $3.99, 400 g $8.49, 1 kg $20.49); footwear at 600 g; pack size on food cards; the type switch on See all; New arrivals
   is the state's own; `tools/sourcing-runner/targets/food-by-state.csv` (753 targets).
+- **Food weight in Shipping (D-123, 2026-10-14):** food prices carry 30% of their courier (bhujia $2.79 / $4.79 /
+  $10.99); the bag's Shipping adds the food weight, 10% less per $50 of goods up to 40%; retailer charges 1.5%, ≥ $0.99.
 
 ## Next for the founder
 1. Run `node scripts/check.mjs` (Docker Desktop and `npx supabase start` first), push, then the Deploy workflow: it
-   applies the new migrations (the latest is `20261014160000_food_share_footwear_pack`, D-122; it and D-119 – D-121
-   reprice every listing) to production.
+   applies the new migrations (the latest is `20261014180000_food_weight_charge`, D-123; it and D-119 – D-122 reprice
+   every listing) to production.
 2. Then Admin → Products → Drafts → **Publish all drafts**; it says how many went live, what held the rest and how
    many still lack details customers see (fibre and care, ingredients and allergens).
 3. Replace the D-119 / D-120 estimates in Settings with real bills (one courier invoice, one duty bill): the per-parcel
@@ -68,6 +70,7 @@ phase's sub-steps and every verification run) is in `docs/archive/status-log-to-
 ## Last verification
 | Date | Commit | Where | Result |
 |---|---|---|---|
+| 2026-10-14 | D-123 commit | Claude, cloud sandbox with the founder's `node_modules` (no Docker) | all 54 migrations + seeds on plain Postgres 16 with the Supabase stand-in: 43/43 SQL test files pass (`bag_charges` with the food weight) · unit tests shared 124/124, web 37/37, app 10/10 · tsc shared, db, web clean; app no new errors against the sandbox baseline · docs audit OK. **Not run:** ESLint with the Next plugin, `next build`, e2e, http, the app build. Run `node scripts/check.mjs` before pushing. |
 | 2026-10-14 | D-122 commit | Claude, cloud sandbox with the founder's `node_modules` (no Docker) | all 53 migrations + seeds on plain Postgres 16 with the Supabase stand-in: 43/43 SQL test files pass (new: `food_cards`) · unit tests shared 123/123, web 37/37, app 10/10 · tsc shared, db, web, runner clean; app no new errors against the sandbox baseline · both target CSVs read with no errors · docs audit OK. **Not run:** ESLint with the Next plugin, `next build`, e2e, http, the app build. Run `node scripts/check.mjs` before pushing. |
 | 2026-10-14 | D-121 commit | Claude, cloud sandbox with the founder's `node_modules` (no Docker) | all 52 migrations + seeds applied on plain Postgres 16 with the Supabase stand-in: 42/42 SQL test files pass (new: `all_india`; mutation check: reordering the state's page fails it) · unit tests shared 122/122, web 37/37, app 10/10 · tsc shared, db, web and runner clean; the app shows no new errors against the sandbox's baseline (no React Native types there) · docs audit OK. **Not run:** ESLint with the Next plugin, `next build`, e2e, http, the app build, a run at the hub (Myntra's price filter in the search address is untested; results are checked against the band anyway). Run `node scripts/check.mjs` before pushing. |
 | 2026-10-14 | D-120 commit | Claude, cloud sandbox with the founder's `node_modules` (no Docker) | all 51 migrations + seeds applied on plain Postgres 16 with the Supabase stand-in: 41/41 SQL test files pass (new: `publish_drafts`; `pricing_engine` with the shelf) · shared unit tests 117/117 · tsc shared, db and web clean. **Not run:** ESLint (its Next plugin does not load in the sandbox), `next build`, e2e, http, the app. Run `node scripts/check.mjs` before pushing. |
