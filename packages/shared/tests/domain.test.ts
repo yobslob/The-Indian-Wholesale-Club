@@ -133,6 +133,47 @@ describe('autoPrice (D-119): the same numbers as supabase/tests/pricing_engine.t
     }
     assert.equal(checkBag(SAMPLE_BAGS[0]!, { ...full, shopDivisor: null }, charges), null);
   });
+
+  describe('the small-food shelf (D-120), as pricing_engine.test.sql', () => {
+    const shelf: PricingSettings = {
+      ...full,
+      smallFoodMaxShopPaise: 20000, smallFoodMaxG: 250, smallFoodShipSharePct: 50,
+      smallFoodFloorCents: 199, smallFoodCeilingCents: 399,
+    };
+    const rule = (rupees: number, g: number, s = shelf) =>
+      autoPrice({ shopPricePaise: rupees * 100, weightG: g, productType: 'food' }, s)?.rule;
+
+    it('puts small food on $1.99 / $2.99 / $3.99', () => {
+      assert.equal(price(90, 100, 'food', shelf), 299);
+      assert.equal(price(100, 200, 'food', shelf), 399);
+      assert.equal(price(50, 100, 'food', shelf), 199);
+      assert.equal(price(150, 250, 'food', shelf), 399);
+      assert.equal(price(20, 20, 'food', shelf), 199);
+      assert.equal(rule(90, 100), 'small');
+    });
+
+    it('leaves heavier or dearer food, and every other type, on its recipe', () => {
+      assert.equal(price(220, 400, 'food', shelf), 1329);
+      assert.equal(price(220, 250, 'food', shelf), 979);
+      assert.equal(rule(220, 250), 'guard');
+      assert.ok(price(90, 100, 'clothing', shelf)! > 399);
+    });
+
+    it('never goes under what the goods cost after duty; an empty number turns it off', () => {
+      assert.equal(price(90, 100, 'food', { ...shelf, smallFoodFloorCents: 49, smallFoodCeilingCents: 99 }), 399);
+      assert.equal(price(50, 100, 'food', { ...shelf, smallFoodFloorCents: 299, smallFoodCeilingCents: 299 }), 299);
+      assert.equal(price(90, 100, 'food', { ...shelf, smallFoodShipSharePct: null }), 399);
+    });
+
+    it('the profit check: mixed bags over the line still make money; a bag of packets alone is the cost', () => {
+      const charges = { freeMinCents: 14999, shippingCents: 1879, retailerCents: 199, bulk: { pct: 10, capCents: 2500 } };
+      for (const bag of SAMPLE_BAGS) {
+        const r = checkBag(bag, shelf, charges)!;
+        if (bag.name === 'Masala packets only') assert.ok(r.profitCents < 0, 'packets alone past the line lose');
+        else if (r.goodsCents >= 14999) assert.ok(r.profitCents > 0, `${bag.name} makes money`);
+      }
+    });
+  });
 });
 
 describe('bulk saving (D-119)', () => {

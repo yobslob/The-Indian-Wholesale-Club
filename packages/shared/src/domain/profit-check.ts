@@ -50,6 +50,16 @@ export const SAMPLE_BAGS: readonly SampleBag[] = [
     ],
   },
   {
+    name: 'Masala packets only',
+    note: '60 × 100 g, past the line (D-120)',
+    pieces: rep(60, [90, 100, 'food']),
+  },
+  {
+    name: 'Masalas + a kurta',
+    note: '12 packets + 2 kurtas',
+    pieces: [...rep(12, [90, 100, 'food']), ...rep(2, [1299, 450, 'clothing'])],
+  },
+  {
     name: 'Namkeen + pickles',
     note: '16 pieces',
     pieces: [...rep(8, [220, 400, 'food']), ...rep(8, [300, 500, 'food'])],

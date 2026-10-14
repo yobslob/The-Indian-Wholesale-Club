@@ -17,8 +17,10 @@ type Row = Record<string, number | null>;
 
 /** Sample pieces to read the recipes and the guard at a glance (shop ₹, g, type). */
 const PIECES: [string, number, number, ProductType][] = [
+  ['Masala ₹50 · 50 g', 50, 50, 'food'],
   ['Snack ₹90 · 100 g', 90, 100, 'food'],
   ['Masala ₹150 · 250 g', 150, 250, 'food'],
+  ['Masala ₹250 · 250 g', 250, 250, 'food'],
   ['Namkeen ₹220 · 400 g', 220, 400, 'food'],
   ['Kurta ₹1,299 · 450 g', 1299, 450, 'clothing'],
   ['Saree ₹7,500 · 900 g', 7500, 900, 'clothing'],
@@ -27,7 +29,12 @@ const PIECES: [string, number, number, ProductType][] = [
   ['Brass decor ₹1,800 · 1.2 kg', 1800, 1200, 'home'],
 ];
 
-const RULE = { recipe: 'recipe', tapered: 'tapered margin', guard: 'guard' } as const;
+const RULE = {
+  recipe: 'recipe',
+  tapered: 'tapered margin',
+  guard: 'guard',
+  small: 'small food shelf',
+} as const;
 
 /** The form's numbers as a settings row: what is typed, else what is saved. */
 function readForm(form: HTMLFormElement, saved: Row): Row {

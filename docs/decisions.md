@@ -368,7 +368,7 @@ daily run; a target with nothing found is searched again after 30 days; new list
 publishes them ("go live by themselves" is a switch), and go live only with a photo and every detail customers must see.
 Nishorama's shop address (`nishorama.com`) and its platform are assumed until the first run shows them.
 
-**D-119 · 2026-10-14 · founder: The pilot price in two recipes, a profit guard, and a bulk saving that stops at a cap**
+**D-119 · 2026-10-14 · founder: The pilot price in two recipes, a profit guard, and a bulk saving that stops at a cap** · small food amended by D-120
 Founder, verbatim: "we are close enough to the pricing still we are running in loss as we have a risk of going
 underpriced, we have to tune the pricing more. The flow of indian product price, then 10% indian safety buffer, then air
 shipping and then 50% margin on overall is working but we still have to keep the price in mind. Figure something out
@@ -406,3 +406,28 @@ pays (a duty-paid parcel to a shopper is usually valued so), the safe side; the 
 the bulk numbers come from the tuner the founder approved; customer order pages and emails show the bulk saving inside
 "Discount" (the admin's order page shows it apart). Supersedes D-109's and D-112's formula; D-111's margins now mean a
 margin of the price for clothing and home.
+
+**D-120 · 2026-10-14 · founder: Small food on $1.99 – $3.99, and every draft published**
+Founder, verbatim: "Alright Although I wanted to achieve total of 3000 items from all over india, but let's publish all
+of these 307 drafts, also before this little update about this, some articles mostly like masala and very small priced
+articles are shown 4.29, 7.29 which actually are of 1.99, 2.99,3.99 so limit them in this range, smartly"
+What it means for the build (migrations `20261014120000_small_food_shelf.sql`, `20261014120100_publish_drafts.sql`):
+- **The small-food shelf.** A food piece (each variant on its own) costing at most ₹200 at the shop and weighing at most
+  250 g is priced on whole-dollar steps: **$1.99, $2.99, $3.99**. Its goods are priced as in D-119 (shop ₹ + fee, × 1.10,
+  ÷ rate, × 1.25), plus only **half its shipping share** (a small bag pays its courier through the small-order charges,
+  D-112), then up to the next step and at most $3.99; never below what its goods cost after duty and the card fee, and
+  never dearer than its own D-119 price (raised to $1.99). At ₹96.30: ₹50 · 100 g $1.99, ₹90 · 100 g $2.99 (was $3.99),
+  ₹100 · 100 g $2.99 (was $4.29), ₹100 · 200 g $3.99 (was $6.79), ₹150 · 250 g $3.99 (was $8.49). Heavier or dearer
+  food, clothing and home keep D-119. All five numbers are in Settings (Small food shelf); an empty one turns it off.
+- **What it costs (the profit check shows it):** a bag of only shelf packets past the free-shipping line loses (60
+  packets of ₹90 · 100 g: −$14.85, the courier on 8.5 kg is not paid by $2.99 packets); the 20-piece pantry bag drops
+  from +$22 to +$5; a bag of packets with clothing still makes money (12 packets + 2 kurtas: +$23.74).
+- **Publish all drafts** (Products → Drafts): every draft with a photo, an active option and a piece to sell goes live
+  at once, each on its own (food is refused only while not cleared, D-074); the rest stay drafts and are counted. Demo
+  listings and US clearance pieces are not touched. Drafts go live even without every detail customers see (fibre and
+  care, ingredients and allergens, material): the result counts them, to be finished on the product page.
+*Claude's choices in it (proposed, the founder confirms or changes in Settings):* the ₹200 and 250 g limits, the 50%
+shipping share, the steps a dollar apart (the founder named $1.99, $2.99, $3.99), skipping drafts with no photo, no
+option or nothing to sell. The 3,000-listing goal is noted; the sourcing runner's targets and listings per target set
+how fast it is reached (D-118).
+

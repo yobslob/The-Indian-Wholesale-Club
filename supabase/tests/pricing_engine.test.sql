@@ -1,5 +1,5 @@
 -- The pricing engine (migration 24, D-075; the pilot formula since migration 38, D-109; two recipes and the profit
--- guard since D-119): the formula, automatic repricing, the daily rate, food cleared, listings without a price.
+-- guard since D-119, the small-food shelf since D-120): the formula, automatic repricing, the daily rate, food cleared, listings without a price.
 begin;
 select tests.setup();
 
@@ -32,7 +32,7 @@ update public.pricing_settings set
   food_billed_pct = 140, courier_first_kg_paise = 224200, courier_next_kg_paise = 67850, parcel_fixed_paise = 105000,
   duty_clothing_pct = 22, duty_food_pct = 16, duty_home_pct = 13, min_profit_clothing_cents = 400,
   min_profit_food_cents = 0, min_profit_home_cents = 400, min_profit_pct = 8, min_profit_food_pct = 4,
-  guard_card_fee_pct = 2.9
+  guard_card_fee_pct = 2.9, small_food_max_shop_paise = null
  where id = 1;
 select tests.assert(public._auto_price_cents(129900, 450, 'clothing') = 4529, 'D-119: a ₹1,299 kurta of 450 g is $45.29');
 select tests.assert(public._auto_price_cents(750000, 900, 'clothing') = 18079, 'D-119: a ₹7,500 saree of 900 g is $180.79');
@@ -57,6 +57,27 @@ select tests.assert(public._auto_price_cents(129900, 450, 'clothing') = 4529, 'D
 update public.pricing_settings set duty_clothing_pct = 22, min_profit_clothing_cents = 5000 where id = 1;
 select tests.assert(public._auto_price_cents(129900, 450, 'clothing') > 6000, 'D-119: a minimum profit in dollars lifts a price');
 update public.pricing_settings set min_profit_clothing_cents = 400 where id = 1;
+
+-- D-120: the small-food shelf ($1.99 / $2.99 / $3.99 for food up to ₹200 and 250 g, half its shipping share).
+update public.pricing_settings set small_food_max_shop_paise = 20000, small_food_max_g = 250,
+  small_food_ship_share_pct = 50, small_food_floor_cents = 199, small_food_ceiling_cents = 399 where id = 1;
+select tests.assert(public._auto_price_cents(9000, 100, 'food') = 299, 'D-120: the ₹90 snack of 100 g is $2.99, not $3.99');
+select tests.assert(public._auto_price_cents(10000, 200, 'food') = 399, 'D-120: a ₹100 packet of 200 g is $3.99, not $6.79');
+select tests.assert(public._auto_price_cents(5000, 100, 'food') = 199, 'D-120: a ₹50 masala of 100 g is $1.99');
+select tests.assert(public._auto_price_cents(15000, 250, 'food') = 399, 'D-120: the ₹150 masala of 250 g stops at $3.99');
+select tests.assert(public._auto_price_cents(2000, 20, 'food') = 199, 'D-120: a featherweight piece is raised to $1.99');
+select tests.assert(public._auto_price_cents(22000, 400, 'food') = 1329, 'D-120: the namkeen of 400 g keeps its recipe');
+select tests.assert(public._auto_price_cents(22000, 250, 'food') = 979, 'D-120: over ₹200 keeps its recipe');
+select tests.assert(public._auto_price_cents(9000, 100, 'clothing') > 399, 'D-120: the shelf is food only');
+update public.pricing_settings set small_food_floor_cents = 299, small_food_ceiling_cents = 299 where id = 1;
+select tests.assert(public._auto_price_cents(5000, 100, 'food') = 299, 'D-120: one step: every shelf piece is $2.99');
+update public.pricing_settings set small_food_floor_cents = 49, small_food_ceiling_cents = 99 where id = 1;
+select tests.assert(public._auto_price_cents(9000, 100, 'food') = 399,
+  'D-120: a top step below what the goods cost after duty leaves the piece on its recipe');
+update public.pricing_settings set small_food_floor_cents = 199, small_food_ceiling_cents = 399,
+  small_food_ship_share_pct = null where id = 1;
+select tests.assert(public._auto_price_cents(9000, 100, 'food') = 399, 'D-120: an empty shelf number turns it off');
+update public.pricing_settings set small_food_ship_share_pct = 50, small_food_max_shop_paise = null where id = 1;
 -- Card fees in the retailer model's settings never touch a pilot price (D-112).
 update public.pricing_settings set card_fee_pct = 10, card_fee_fixed_cents = 500 where id = 1;
 select tests.assert(public._auto_price_cents(129900, 450, 'clothing') = 4529, 'D-112: card_fee_pct does not change a price');

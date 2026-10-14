@@ -229,6 +229,22 @@ export async function setProductStatus(
   unwrap(await client.from('products').update(patch).eq('id', id));
 }
 
+export interface PublishDraftsResult {
+  published: number;
+  no_photo: number;
+  no_option: number;
+  no_stock: number;
+  refused: number;
+  note: string | null;
+  /** Published without every detail customers see (fibre and care, ingredients and allergens, material). */
+  live_missing_details: number;
+}
+
+/** Every draft that is ready goes live, each on its own (D-120); the rest are counted by what they lack. */
+export async function publishDrafts(client: IwcClient): Promise<PublishDraftsResult> {
+  return unwrap(await client.rpc('admin_publish_drafts')) as unknown as PublishDraftsResult;
+}
+
 /** New variant; an initial qty_listed is logged as 'listed' in the stock ledger. */
 export async function createVariant(client: IwcClient, input: Insert<'product_variants'>) {
   return unwrap(await client.from('product_variants').insert(input).select('id').single());

@@ -8,9 +8,11 @@ import {
   createListing,
   createVariant,
   createVendor,
+  publishDrafts,
   setListedQty,
   setProductStatus,
   updateProduct,
+  type PublishDraftsResult,
 } from '@repo/db/admin';
 import { clothingAttributesSchema, homeAttributesSchema, PRODUCT_TYPES, foodAttributesSchema, type ListingInput } from '@repo/shared/domain';
 
@@ -184,6 +186,16 @@ export async function setProductStatusAction(
   revalidateTag(STORE_TAG);
   revalidatePath(`/admin/catalog/${productId}`);
   revalidatePath('/admin/listings');
+}
+
+/** Products → Drafts: every ready draft goes live at once (D-120); the database says how many and what held the rest. */
+export async function publishDraftsAction(): Promise<PublishDraftsResult> {
+  const { client } = await requireAdminAction();
+  const result = await publishDrafts(client);
+  revalidateTag(STORE_TAG);
+  revalidatePath('/admin/catalog');
+  revalidatePath('/admin/listings');
+  return result;
 }
 
 export async function addVariantAction(productId: string, form: FormData): Promise<void> {

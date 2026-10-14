@@ -152,6 +152,12 @@ Migration 31 (D-099, the second speed audit): `admin_order_counts()` (every orde
 send, shops owed for picked pieces) and `admin_cycle_totals(cycle)` (the cycle card's orders, pieces, shops and sales),
 admin only, counted in SQL because the API sends at most 1,000 rows; indexes for orders by status and newest, pickups
 by status, what each shop is owed, and a payout's pieces.
+Migrations 48 – 49 (D-120): `pricing_settings` gains the small-food shelf, `small_food_max_shop_paise`,
+`small_food_max_g`, `small_food_ship_share_pct`, `small_food_floor_cents`, `small_food_ceiling_cents` (ceiling ≥
+floor); `_auto_price_cents` puts small food on whole-dollar steps from the floor to the ceiling (half its shipping
+share, the guard on its goods, never above its own recipe). `admin_publish_drafts()` (admin only) publishes every
+ready draft one by one and returns how many went live and what held the rest (`no_photo`, `no_option`, `no_stock`,
+`refused`, `live_missing_details`). Tests: `pricing_engine.test.sql`, `publish_drafts.test.sql`.
 Migration 47 (D-119): the pilot price in two recipes. `pricing_settings` gains, for clothing and home & gifts,
 `shop_divisor`, `ship_paise_per_100g`, `margin_clothing_min_pct` / `margin_home_min_pct` and the taper's
 `taper_<type>_from_cents` / `_to_cents` (the type margins are now a margin of the price, cost ÷ (1 − margin)); for food,

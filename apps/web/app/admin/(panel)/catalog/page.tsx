@@ -6,6 +6,7 @@ import { formatUsd } from '@repo/shared/domain';
 import { PRODUCT_STATUS, StatusChip } from '@/features/admin/chips';
 import { requireAdminPage } from '@/features/admin/guard';
 import { listingTabs } from '@/features/admin/listing-tabs';
+import { PublishDrafts } from '@/features/admin/publish-drafts';
 import { Cell, input, linkButton, PageHead, rupees, Table, Tabs } from '@/features/admin/ui';
 
 type SearchParams = Promise<{ q?: string; status?: string; page?: string; us?: string }>;
@@ -58,6 +59,7 @@ export default async function CatalogPage({
     <div className="space-y-4">
       <PageHead title="Products" />
       <Tabs items={listingTabs(counts)} current={usStock ? 'us' : (status ?? 'all')} />
+      {status === 'draft' && !usStock && counts.draft > 0 ? <PublishDrafts /> : null}
       {usStock ? (
         <p className="text-ink-muted text-sm">
           Returned and cancelled pieces already in the US, as drafts at the clearance price. Check each piece in hand,

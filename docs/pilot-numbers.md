@@ -1,16 +1,18 @@
 # Pilot numbers: every variable, its placeholder and where to change it
 
-> **Pilot pricing today (D-119):** two recipes, every number in Settings.
+> **Pilot pricing today (D-119, D-120):** two recipes, every number in Settings.
 > - **Clothing and home & gifts:** (shop ₹ ÷ 0.90 + g ÷ 100 × ₹146) ÷ rate, then ÷ (1 − margin). Margin of the price:
 >   clothing 50% easing to 38% as the cost before margin goes from $20 to $150; home 60% easing to 45% from $15 to $100.
 > - **Food:** (shop ₹ + ₹15 fee) × 1.10 ÷ rate + billed kg (140% of the label) × the rate card over a 5 kg parcel
 >   (₹2,242 first kg, ₹678.50 each further kg, ₹1,050 per parcel: about ₹1,201/kg) ÷ rate, × 1.25.
+> - **Small-food shelf (D-120):** food up to ₹200 and 250 g: goods × 1.25 + half its shipping share, up to the next of
+>   $1.99 / $2.99 / $3.99 (at most $3.99, at least the guard on its goods). ₹100 · 100 g $2.99, ₹100 · 200 g $3.99.
 > - **Profit guard, every piece:** lifted only if the margin cannot pay US duty on the price (clothing 22%, food 16%,
 >   home 13%) and the 2.9% card fee and leave $4 (clothing, home) and 8% (food: 4%, no dollar minimum).
 > - Rate = the day's ₹ per $ less the 4% buffer; up to .29/.49/.79/.99. Below $149.99 a bag pays Shipping $18.79 and
 >   Retailer charges $1.99; from $149.99 up they show struck through at $0.00 and 10% of the amount over the line comes
 >   off as the bulk saving, up to $25.
-> - Worked examples at ₹96.30: snack ₹90 · 100 g $3.99, masala ₹150 · 250 g $8.49, namkeen ₹220 · 400 g $13.29, kurta
+> - Worked examples at ₹96.30 (the shelf off; on, the snack and the masala are $2.99 and $3.99): snack ₹90 · 100 g $3.99, masala ₹150 · 250 g $8.49, namkeen ₹220 · 400 g $13.29, kurta
 >   ₹1,299 · 450 g $45.29, saree ₹7,500 · 900 g $180.79, lehenga ₹12,000 · 2.5 kg $296.49, brass ₹1,800 · 1.2 kg $91.29.
 > - Estimates (labelled in Settings until a real bill replaces them): duty %, ₹1,050 per parcel, the food fee, parcel kg
 >   and billed weight. The sections below describe the retailer model's formula (D-075).

@@ -9,6 +9,10 @@
  * courier rate card over a typical food parcel ÷ rate, × (1 + margin). Then the guard (the margin must pay US duty and
  * the card fee and leave a minimum profit) and up to .29 / .49 / .79 / .99. Null while a setting the recipe needs is
  * missing (D-047: nothing defaulted); an empty guard number counts as 0.
+ *
+ * Small food (D-120): a light, cheap food piece (a masala packet, a small snack) is priced on a shelf of whole-dollar
+ * steps ($1.99, $2.99, $3.99): its goods at the food margin plus only part of its shipping share (the small-order
+ * charges pay a small bag's courier), up to the next step, never below the goods' guard, at most the top step.
  */
 import type { ProductType } from './product-types';
 
@@ -41,10 +45,16 @@ export interface PricingSettings {
   minProfitPct?: N;
   minProfitFoodPct?: N;
   guardCardFeePct?: N;
+  /** Small food (D-120): which pieces (shop ₹ and grams at most), the shipping share they carry, the shelf. */
+  smallFoodMaxShopPaise?: N;
+  smallFoodMaxG?: N;
+  smallFoodShipSharePct?: N;
+  smallFoodFloorCents?: N;
+  smallFoodCeilingCents?: N;
 }
 
-/** Which rule set a price: the type's recipe, its tapered margin, or the guard (D-119). */
-export type PriceRule = 'recipe' | 'tapered' | 'guard';
+/** Which rule set a price: the type's recipe, its tapered margin, the guard (D-119) or the small-food shelf (D-120). */
+export type PriceRule = 'recipe' | 'tapered' | 'guard' | 'small';
 
 export interface PriceBreakdown {
   /** The piece's cost before margin (cents). */
@@ -93,6 +103,11 @@ export function pricingSettingsFrom(row: Record<string, unknown>): PricingSettin
     minProfitPct: n('min_profit_pct'),
     minProfitFoodPct: n('min_profit_food_pct'),
     guardCardFeePct: n('guard_card_fee_pct'),
+    smallFoodMaxShopPaise: n('small_food_max_shop_paise'),
+    smallFoodMaxG: n('small_food_max_g'),
+    smallFoodShipSharePct: n('small_food_ship_share_pct'),
+    smallFoodFloorCents: n('small_food_floor_cents'),
+    smallFoodCeilingCents: n('small_food_ceiling_cents'),
   };
 }
 
@@ -123,6 +138,26 @@ export function foodShippingPaisePerKg(s: PricingSettings): N {
   return (first + (kg - 1) * next + (s.parcelFixedPaise ?? 0)) / kg;
 }
 
+/**
+ * A small food piece's step on the shelf (D-120). `goods` is its cost before shipping, `ship` its full shipping cost
+ * and `guardGoods` the least its goods alone may sell for (the guard on the goods). Null when the piece is not small
+ * food, the shelf is off (a number empty), or even the top step cannot pay for its goods.
+ */
+export function smallFoodPrice(
+  shopPaise: number,
+  g: number,
+  parts: { goods: number; ship: number; margin: number; guardGoods: number },
+  s: PricingSettings,
+): number | null {
+  const { smallFoodMaxShopPaise: maxShop, smallFoodMaxG: maxG, smallFoodShipSharePct: share } = s;
+  const { smallFoodFloorCents: floor, smallFoodCeilingCents: ceiling } = s;
+  if (maxShop == null || maxG == null || share == null || floor == null || ceiling == null) return null;
+  if (shopPaise > maxShop || g > maxG || ceiling < floor || parts.guardGoods > ceiling) return null;
+  const base = Math.max(parts.goods * (1 + parts.margin / 100) + (parts.ship * share) / 100, parts.guardGoods);
+  // whole-dollar steps up from the bottom one ($1.99 → $2.99 → $3.99), at most the top one
+  return Math.min(floor + Math.max(0, Math.ceil((base - floor - 1e-9) / 100)) * 100, ceiling);
+}
+
 export function autoPrice(
   input: {
     shopPricePaise: number | null;
@@ -144,15 +179,17 @@ export function autoPrice(
   if (margin === null) return null;
 
   let cost: number;
+  let goods = 0;
+  let ship = 0;
   let price: number;
   let rule: PriceRule = 'recipe';
   let minPct: number;
   if (type === 'food') {
     const alloc = foodShippingPaisePerKg(s);
     if (alloc === null || s.indiaHandlingPct == null) return null;
-    cost =
-      ((shop + (s.foodFeePaise ?? 0)) * (1 + s.indiaHandlingPct / 100)) / rate +
-      (alloc * g * (s.foodBilledPct ?? 100)) / 100 / 1000 / rate;
+    goods = ((shop + (s.foodFeePaise ?? 0)) * (1 + s.indiaHandlingPct / 100)) / rate;
+    ship = (alloc * g * (s.foodBilledPct ?? 100)) / 100 / 1000 / rate;
+    cost = goods + ship;
     price = cost * (1 + margin / 100);
     minPct = s.minProfitFoodPct ?? s.minProfitPct ?? 0;
   } else {
@@ -173,10 +210,24 @@ export function autoPrice(
 
   // The guard: after duty (on what the customer pays) and the card fee, the minimum profit must be left.
   const cut = ((s.dutyPct?.[type] ?? 0) + (s.guardCardFeePct ?? 0)) / 100;
-  const guard = Math.max(
-    (cost + (s.minProfitCents?.[type] ?? 0)) / Math.max(0.05, 1 - cut),
-    cost / Math.max(0.05, 1 - cut - minPct / 100),
-  );
+  const guardOf = (c: number) =>
+    Math.max(
+      (c + (s.minProfitCents?.[type] ?? 0)) / Math.max(0.05, 1 - cut),
+      c / Math.max(0.05, 1 - cut - minPct / 100),
+    );
+  const guard = guardOf(cost);
   if (guard > price) rule = 'guard';
-  return { costCents: Math.round(cost), priceCents: priceEnding(Math.max(price, guard)), rule };
+  const recipe = priceEnding(Math.max(price, guard));
+  const small =
+    type === 'food'
+      ? smallFoodPrice(shop, g, { goods, ship, margin, guardGoods: guardOf(goods) }, s)
+      : null;
+  // on the shelf, but never dearer than its own recipe (a featherweight piece), and never under the bottom step
+  if (small !== null)
+    return {
+      costCents: Math.round(cost),
+      priceCents: Math.min(small, Math.max(s.smallFoodFloorCents ?? 0, recipe)),
+      rule: 'small',
+    };
+  return { costCents: Math.round(cost), priceCents: recipe, rule };
 }

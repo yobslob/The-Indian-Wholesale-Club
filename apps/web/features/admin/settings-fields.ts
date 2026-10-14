@@ -57,6 +57,17 @@ export const SETTING_GROUPS: SettingGroup[] = [
     ],
   },
   {
+    title: 'Small food shelf (D-120)',
+    note: 'A light, cheap food piece (a masala packet, a small snack) carries only part of its shipping share, since a small bag pays its courier through the small-order charges, and is priced up to the next whole-dollar step: $1.99, $2.99, $3.99, at most the top step and never below what its goods cost after duty and the card fee. Empty any number to turn the shelf off.',
+    fields: [
+      { key: 'small_food_max_shop_paise', label: 'Pieces costing at most (shop ₹)', kind: 'inr' },
+      { key: 'small_food_max_g', label: 'and weighing at most (g)', kind: 'int' },
+      { key: 'small_food_ship_share_pct', label: 'Share of its shipping a shelf piece carries (%)', kind: 'pct' },
+      { key: 'small_food_floor_cents', label: 'Bottom step ($)', kind: 'usd' },
+      { key: 'small_food_ceiling_cents', label: 'Top step ($)', kind: 'usd' },
+    ],
+  },
+  {
     title: 'Courier rate card (D-119)',
     note: 'Prices food\'s shipping, and the real cost of a parcel in the profit check below.',
     fields: [
