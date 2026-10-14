@@ -136,53 +136,53 @@ describe('autoPrice (D-119): the same numbers as supabase/tests/pricing_engine.t
     assert.equal(checkBag(SAMPLE_BAGS[0]!, { ...full, shopDivisor: null }, charges), null);
   });
 
-  describe('the small-food shelf (D-120), as pricing_engine.test.sql', () => {
+  describe('the small-food shelf (D-120, D-125), as pricing_engine.test.sql', () => {
     const shelf: PricingSettings = {
       ...full,
-      smallFoodMaxShopPaise: 20000, smallFoodMaxG: 250, smallFoodShipSharePct: 50,
+      smallFoodMaxShopPaise: 20000, smallFoodMaxG: 250, smallFoodShipSharePct: 100,
       smallFoodFloorCents: 199, smallFoodCeilingCents: 399,
     };
     const rule = (rupees: number, g: number, s = shelf) =>
       autoPrice({ shopPricePaise: rupees * 100, weightG: g, productType: 'food' }, s)?.rule;
 
-    it('puts small food on $1.99 / $2.99 / $3.99', () => {
-      assert.equal(price(90, 100, 'food', shelf), 299);
-      assert.equal(price(100, 200, 'food', shelf), 399);
-      assert.equal(price(50, 100, 'food', shelf), 199);
-      assert.equal(price(150, 250, 'food', shelf), 399);
+    it('rounds a light, cheap piece to its step, never under its whole cost', () => {
       assert.equal(price(20, 20, 'food', shelf), 199);
+      assert.equal(price(90, 100, 'food', shelf), 399);
+      assert.equal(price(50, 100, 'food', shelf), 349, 'its recipe is under the next step: the recipe');
       assert.equal(rule(90, 100), 'small');
     });
 
-    it('leaves heavier or dearer food, and every other type, on its recipe', () => {
+    it('D-125: a piece whose whole cost is above the top step keeps its recipe (was $3.99, under cost)', () => {
+      assert.equal(price(150, 250, 'food', shelf), 849);
+      assert.equal(price(55, 200, 'food', shelf), 599);
+      assert.equal(rule(150, 250), 'guard');
       assert.equal(price(220, 400, 'food', shelf), 1329);
-      assert.equal(price(220, 250, 'food', shelf), 979);
-      assert.equal(rule(220, 250), 'guard');
       assert.ok(price(90, 100, 'clothing', shelf)! > 399);
     });
 
-    it('never goes under what the goods cost after duty; an empty number turns it off', () => {
-      assert.equal(price(90, 100, 'food', { ...shelf, smallFoodFloorCents: 49, smallFoodCeilingCents: 99 }), 399);
-      assert.equal(price(50, 100, 'food', { ...shelf, smallFoodFloorCents: 299, smallFoodCeilingCents: 299 }), 299);
+    it('an empty number turns the shelf off', () => {
       assert.equal(price(90, 100, 'food', { ...shelf, smallFoodShipSharePct: null }), 399);
+      assert.equal(rule(90, 100, { ...shelf, smallFoodCeilingCents: null }), 'guard');
     });
 
-    it('D-122: every food piece carries 70% of its courier, so weight and price move together', () => {
-      const d122 = { ...shelf, foodShipSharePct: 70, smallFoodShipSharePct: 70 };
-      assert.equal(price(55, 200, 'food', d122), 399);
+    it('D-122: a share below 100% takes part of the flight out of the price', () => {
+      const d122 = { ...shelf, foodShipSharePct: 70 };
       assert.equal(price(100, 400, 'food', d122), 849);
       assert.equal(price(230, 1000, 'food', d122), 2049);
-      assert.equal(price(90, 100, 'food', d122), 299);
-      assert.equal(price(100, 400, 'food', shelf), 1129, 'no share set: the full share (D-119)');
+      assert.equal(price(100, 400, 'food', shelf), 1129, 'no share set: the whole flight (D-119, D-125)');
     });
 
-    it('the profit check: mixed bags over the line still make money; a bag of packets alone is the cost', () => {
-      const charges = { freeMinCents: 14999, shippingCents: 1879, retailerCents: 199, bulk: { pct: 10, capCents: 2500 } };
-      for (const bag of SAMPLE_BAGS) {
-        const r = checkBag(bag, shelf, charges)!;
-        if (bag.name === 'Masala packets only') assert.ok(r.profitCents < 0, 'packets alone past the line lose');
-        else if (r.goodsCents >= 14999) assert.ok(r.profitCents > 0, `${bag.name} makes money`);
+    it('D-125: no sample bag loses, small or big, and Shipping makes up what a share below 100% leaves out', () => {
+      const charges = { freeMinCents: 14999, shippingCents: 1879, retailerCents: 99, retailerPct: 1.5, bulk: { pct: 10, capCents: 2500 } };
+      const one = (rupees: number, grams: number) => ({ name: 'one', note: '', pieces: [[rupees, grams, 'food']] as const });
+      for (const s of [shelf, { ...shelf, foodShipSharePct: 30, smallFoodShipSharePct: 30 }]) {
+        for (const bag of [...SAMPLE_BAGS, one(90, 100), one(100, 400), one(230, 1000)]) {
+          const r = checkBag(bag, s, charges)!;
+          assert.ok(r.profitCents >= 0, `${bag.name} at ${s.foodShipSharePct ?? 100}%: ${r.profitCents}`);
+        }
       }
+      const masala = checkBag(one(90, 100), shelf, charges)!;
+      assert.ok(masala.chargesCents > 1879 + 99, 'one masala pays more than $18.79: a parcel costs about $34 to fly');
     });
   });
 });
@@ -320,33 +320,25 @@ describe('checkout quote (flows.md §3, D-041, D-070, D-073)', () => {
     assert.equal(quoteCheckout([{ unitPriceCents: 3929, quantity: 4 }], promo, settings)!.retailerCents, 199);
   });
 
-  it('D-124: Shipping starts at the parcel and grows with the food; from the line up it is struck through and free', () => {
-    const smallOrder = {
-      shippingCents: 1879,
-      retailerCents: 99,
-      retailerPct: 1.5,
-      foodWeight: { cents: 1000, stepCents: 5000, stepPct: 10, maxPct: 40 },
-    };
-    const at = (goods: number) => bagChargesAt(goods, 14999, smallOrder);
-    assert.equal(bagChargesAt(0, 14999, { ...smallOrder, foodWeight: null }).shippingCents, 1879, 'an empty bag: $18.79');
-    assert.deepEqual(
-      [at(3000).shippingCents, at(3000).foodCents, at(3000).retailerCents],
-      [2879, 1000, 99],
-      'a $30 bag: the parcel and all its food weight in one Shipping, the retailer minimum',
-    );
-    assert.deepEqual([at(10000).foodOffPct, at(10000).shippingCents, at(10000).retailerCents], [20, 2679, 150]);
+  it('D-125: Shipping as the bag works it out; struck through and free from the line, unless the bag still needs it', () => {
+    const smallOrder = { shippingCents: 3679, pastLineCents: 0, retailerCents: 99, retailerPct: 1.5 };
+    const at = (goods: number, small = smallOrder) => bagChargesAt(goods, 14999, small);
+    assert.deepEqual([at(399).shippingCents, at(399).retailerCents], [3679, 99], 'one masala: what its parcel needs');
+    assert.deepEqual([at(10000).shippingCents, at(10000).retailerCents], [3679, 150]);
     const big = at(30000);
     assert.deepEqual(
-      [big.shippingCents, big.waivedShippingCents, big.retailerCents, big.waivedRetailerCents, big.foodOffPct],
-      [0, 1879 + 600, 0, 450, 40],
-      'past the line: Shipping still follows the bag, struck through and free',
+      [big.shippingCents, big.waivedShippingCents, big.retailerCents, big.waivedRetailerCents],
+      [0, 3679, 0, 450],
+      'past the line: struck through and free',
     );
+    const owes = at(30000, { ...smallOrder, pastLineCents: 1229 });
+    assert.deepEqual([owes.shippingCents, owes.waivedShippingCents], [1229, 0], 'a bag that cannot pay its way past the line still pays it');
     const settings = { flatCents: 0, freeMinCents: 14999, express: null, smallOrder };
     const q = quoteCheckout([{ unitPriceCents: 30000, quantity: 1 }], null, settings)!;
     assert.deepEqual([q.shippingCents, q.retailerCents, q.totalCents], [0, 0, 30000]);
-    assert.deepEqual(q.waivedCents, { shipping: 2479, retailer: 450 });
-    const small = quoteCheckout([{ unitPriceCents: 3000, quantity: 1 }], null, settings)!;
-    assert.deepEqual([small.shippingCents, small.retailerCents, small.totalCents], [2879, 99, 3000 + 2879 + 99]);
+    assert.deepEqual(q.waivedCents, { shipping: 3679, retailer: 450 });
+    const small = quoteCheckout([{ unitPriceCents: 399, quantity: 1 }], null, settings)!;
+    assert.deepEqual([small.shippingCents, small.retailerCents, small.totalCents], [3679, 99, 399 + 3679 + 99]);
   });
 
   it('adds subtotal and flat shipping; no tax where IWC is not registered (D-073)', () => {
@@ -358,8 +350,6 @@ describe('checkout quote (flows.md §3, D-041, D-070, D-073)', () => {
       shippingCents: 900,
       retailerCents: 0,
       waivedCents: { shipping: 0, retailer: 0 },
-      foodWeightCents: 0,
-      foodWeightOffPct: 0,
       taxCents: 0,
       totalCents: 5900,
       promoApplied: false,

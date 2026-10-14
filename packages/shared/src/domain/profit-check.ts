@@ -7,7 +7,7 @@
  * the goods, the card fee (+ 30¢) and a 2% returns allowance, all at the day's rate (no safety buffer).
  */
 import { bagChargesAt, bulkSavingCents, type BulkSaving } from './checkout';
-import { autoPrice, foodShippingPaisePerKg, type PricingSettings } from './pricing';
+import { autoPrice, priceEnding, type PricingSettings } from './pricing';
 
 import type { ProductType } from './product-types';
 
@@ -104,23 +104,40 @@ const SHOP_FEE_PAISE: Record<ProductType, number> = { clothing: 4000, home: 6000
 
 export interface SampleBagCharges {
   freeMinCents: number | null;
+  /** The parcel's amount: the least Shipping below the line (D-112). */
   shippingCents: number;
   retailerCents: number;
   bulk: BulkSaving | null;
-  /** D-123: the retailer charges' % of the goods (at least retailerCents), and the food weight's discount steps. */
+  /** D-123: the retailer charges' % of the goods (at least retailerCents). */
   retailerPct?: number | null;
-  foodOff?: { stepCents: number; stepPct: number; maxPct: number } | null;
 }
 
 /**
- * D-123: the cents per kg of food a bag carries beyond what the food's prices carry, as store_bag_charges() works it
- * out: the rate card over a food parcel × billed % × (1 − the food's share) ÷ the effective rate.
+ * D-125: what a bag's Shipping must bring for it not to lose, as store_bag_charges() works it out (the same numbers at
+ * the effective rate): the parcel's courier (first kg, each further half kg, box and clearance) and the card's fixed
+ * fee, less what the pieces leave after their shop cost, duty, the card fee and 2% returns; over what a dollar keeps.
  */
-export function foodWeightCentsPerKg(s: PricingSettings): number {
-  const alloc = foodShippingPaisePerKg(s);
-  if (alloc === null || s.fxInrPerUsd === null || s.fxBufferPct === null) return 0;
-  const rate = s.fxInrPerUsd * (1 - s.fxBufferPct / 100);
-  return (alloc * ((s.foodBilledPct ?? 100) / 100) * ((100 - (s.foodShipSharePct ?? 100)) / 100)) / rate;
+export function neededShippingCents(
+  pieces: readonly SamplePiece[],
+  prices: readonly number[],
+  s: PricingSettings,
+  bulkSavingCents = 0,
+): number | null {
+  const { fxInrPerUsd: fx, fxBufferPct: buffer, courierFirstKgPaise: first, courierNextKgPaise: next } = s;
+  if (fx == null || buffer == null || first == null || next == null) return null;
+  const rate = fx * (1 - buffer / 100);
+  const keep = 1 - (s.guardCardFeePct ?? 0) / 100 - 0.02;
+  let kg = 0;
+  let contribution = 0;
+  pieces.forEach(([rupees, grams, type], i) => {
+    kg += (grams * (type === 'food' ? (s.foodBilledPct ?? 100) : 100)) / 100 / 1000;
+    const fee = type === 'food' ? (s.foodFeePaise ?? 0) : SHOP_FEE_PAISE[type];
+    contribution +=
+      prices[i]! * (keep - (s.dutyPct?.[type] ?? 0) / 100) - (rupees * 100 * 1.03 + fee) / rate;
+  });
+  const billed = Math.max(Math.ceil(Math.max(kg, 1) * 2) / 2 - 1, 0);
+  const courier = (first + billed * next + (s.parcelFixedPaise ?? 0)) / rate + 30;
+  return (courier - contribution + bulkSavingCents) / Math.max(keep, 0.5);
 }
 
 export interface BagResult {
@@ -151,16 +168,19 @@ export function checkBag(
   }
   const fx = s.fxInrPerUsd!;
   const goods = prices.reduce((a, b) => a + b, 0);
-  const foodKg = bag.pieces.reduce((n, [, grams, type]) => n + (type === 'food' ? grams / 1000 : 0), 0);
-  const foodCents = Math.round(foodKg * foodWeightCentsPerKg(s));
+  const saving0 = bulkSavingCents(goods, charges.freeMinCents, charges.bulk);
+  // D-125: Shipping is at least the parcel's amount, more when the pieces cannot pay for the parcel; past the line
+  // only what the bag still needs
+  const need = neededShippingCents(bag.pieces, prices, s) ?? 0;
+  const needPast = neededShippingCents(bag.pieces, prices, s, saving0) ?? 0;
   const at = bagChargesAt(goods, charges.freeMinCents, {
-    shippingCents: charges.shippingCents,
+    shippingCents: need > charges.shippingCents ? priceEnding(need) : charges.shippingCents,
+    pastLineCents: needPast > 0 ? priceEnding(needPast) : 0,
     retailerCents: charges.retailerCents,
     retailerPct: charges.retailerPct ?? null,
-    foodWeight: foodCents > 0 && charges.foodOff ? { cents: foodCents, ...charges.foodOff } : null,
   });
   const chargesCents = at.shippingCents + at.retailerCents;
-  const saving = bulkSavingCents(goods, charges.freeMinCents, charges.bulk);
+  const saving = saving0;
   const pays = goods + chargesCents - saving;
 
   let indiaPaise = 0;

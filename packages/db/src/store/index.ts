@@ -226,29 +226,18 @@ export const bagChargesSchema = z.object({
   bulk_saving_cap_cents: z.number().int().min(0).default(0),
   /** D-123: the retailer charges are this % of the goods, at least `retailer_cents`; 0 = the fixed amount. */
   retailer_pct: z.number().min(0).default(0),
-  /** D-123: the bag's food weight at the full rate, and how it comes down as the goods grow. */
-  food_weight_cents: z.number().int().min(0).default(0),
-  food_off_step_cents: z.number().int().positive().nullable().default(null),
-  food_off_step_pct: z.number().min(0).default(0),
-  food_off_max_pct: z.number().min(0).default(0),
+  /** D-125: what a bag past the free-shipping line still pays as Shipping (0 when its prices pay its flight). */
+  past_line_cents: z.number().int().min(0).default(0),
 });
 export type BagCharges = z.infer<typeof bagChargesSchema>;
 
-/** The bag's charges in the shared checkout shape (D-111, D-123): the same rule in the bag, the pill and checkout. */
+/** The bag's charges in the shared checkout shape (D-111, D-125): the same rule in the bag, the pill and checkout. */
 export function smallOrderOf(c: BagCharges): SmallOrderCharges {
   return {
     shippingCents: c.shipping_cents,
+    pastLineCents: c.past_line_cents,
     retailerCents: c.retailer_cents,
     retailerPct: c.retailer_pct || null,
-    foodWeight:
-      c.food_weight_cents > 0
-        ? {
-            cents: c.food_weight_cents,
-            stepCents: c.food_off_step_cents ?? 0,
-            stepPct: c.food_off_step_pct,
-            maxPct: c.food_off_max_pct,
-          }
-        : null,
   };
 }
 

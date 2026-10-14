@@ -22,9 +22,9 @@ export function ChargeValue({ cents, free }: { cents: number; free: boolean }): 
 }
 
 /**
- * The bag's Shipping and Retailer charges under its subtotal (D-111, D-124): Shipping starts at the parcel's amount and
- * grows with the food in the bag; both are paid below the free-delivery line and struck through above it. Checkout
- * prices them again on the server.
+ * The bag's Shipping and Retailer charges under its subtotal (D-111, D-125): Shipping is at least the parcel's amount,
+ * more when the bag's pieces cannot pay for the parcel; both are paid below the free-delivery line and struck through
+ * above it. Checkout prices them again on the server.
  */
 export function ChargeLines(): React.JSX.Element | null {
   const lines = useCart((s) => s.lines);
@@ -36,7 +36,7 @@ export function ChargeLines(): React.JSX.Element | null {
     <div className="font-ui grid gap-1" aria-live="polite">
       <p className={row}>
         <span>Shipping</span>
-        <ChargeValue cents={at.shippingCents || at.waivedShippingCents} free={free} />
+        <ChargeValue cents={at.shippingCents || at.waivedShippingCents} free={free && at.shippingCents === 0} />
       </p>
       {at.retailerCents + at.waivedRetailerCents > 0 ? (
         <p className={row}>
@@ -92,17 +92,17 @@ export function PendingChargeRows(): React.JSX.Element | null {
   const charges = useBagCharges();
   if (!charges) return null;
   const { free, bulk, at } = freeDelivery(lines, charges);
-  const row = (label: string, cents: number) => (
+  const row = (label: string, cents: number, struck = free) => (
     <div className="flex justify-between">
       <dt className="text-ink-muted">{label}</dt>
       <dd className="m-0">
-        <ChargeValue cents={cents} free={free} />
+        <ChargeValue cents={cents} free={struck} />
       </dd>
     </div>
   );
   return (
     <>
-      {row('Shipping', at.shippingCents || at.waivedShippingCents)}
+      {row('Shipping', at.shippingCents || at.waivedShippingCents, free && at.shippingCents === 0)}
       {at.retailerCents + at.waivedRetailerCents > 0 ? row('Retailer charges', at.retailerCents || at.waivedRetailerCents) : null}
       {bulk.savingCents > 0 ? (
         <div className="flex justify-between">

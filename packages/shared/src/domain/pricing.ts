@@ -163,22 +163,25 @@ export function fallbackWeightG(
 }
 
 /**
- * A small food piece's step on the shelf (D-120). `goods` is its cost before shipping, `ship` its full shipping cost
- * and `guardGoods` the least its goods alone may sell for (the guard on the goods). Null when the piece is not small
- * food, the shelf is off (a number empty), or even the top step cannot pay for its goods.
+ * A small food piece's step on the shelf (D-120, D-125). `goods` is its cost before shipping, `ship` its full shipping
+ * cost; `guardOf` lifts a cost to what pays duty, the card fee and the minimum profit. Null when the piece is not small
+ * food, the shelf is off (a number empty), or its whole cost does not fit under the top step: the shelf never sells a
+ * piece under its cost (D-125), it only rounds a cheap one up to a whole-dollar step.
  */
 export function smallFoodPrice(
   shopPaise: number,
   g: number,
-  parts: { goods: number; ship: number; margin: number; guardGoods: number },
+  parts: { goods: number; ship: number; margin: number; guardOf: (cost: number) => number },
   s: PricingSettings,
 ): number | null {
   const { smallFoodMaxShopPaise: maxShop, smallFoodMaxG: maxG, smallFoodShipSharePct: share } = s;
   const { smallFoodFloorCents: floor, smallFoodCeilingCents: ceiling } = s;
   if (maxShop == null || maxG == null || share == null || floor == null || ceiling == null) return null;
-  if (shopPaise > maxShop || g > maxG || ceiling < floor || parts.guardGoods > ceiling) return null;
-  const base = Math.max(parts.goods * (1 + parts.margin / 100) + (parts.ship * share) / 100, parts.guardGoods);
-  // whole-dollar steps up from the bottom one ($1.99 → $2.99 → $3.99), at most the top one
+  if (shopPaise > maxShop || g > maxG || ceiling < floor) return null;
+  const carried = parts.goods + (parts.ship * share) / 100;
+  const base = Math.max(parts.goods * (1 + parts.margin / 100) + (parts.ship * share) / 100, parts.guardOf(carried));
+  if (base > ceiling) return null;
+  // whole-dollar steps up from the bottom one ($1.99 → $2.99 → $3.99)
   return Math.min(floor + Math.max(0, Math.ceil((base - floor - 1e-9) / 100)) * 100, ceiling);
 }
 
@@ -245,7 +248,7 @@ export function autoPrice(
   const recipe = priceEnding(Math.max(price, guard));
   const small =
     type === 'food'
-      ? smallFoodPrice(shop, g, { goods, ship, margin, guardGoods: guardOf(goods) }, s)
+      ? smallFoodPrice(shop, g, { goods, ship, margin, guardOf }, s)
       : null;
   // on the shelf, but never dearer than its own recipe (a featherweight piece), and never under the bottom step
   if (small !== null)

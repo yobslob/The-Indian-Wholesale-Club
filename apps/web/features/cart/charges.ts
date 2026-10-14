@@ -10,7 +10,7 @@ import { cartSubtotalCents, useCart, type CartLine } from './store';
 /** D-111: a bag's small-order charges, as /api/bag-charges works them out (cents). */
 export interface BagCharges {
   freeMinCents: number | null;
-  /** The parcel's shipping, the retailer charges' rule and the food weight (D-111, D-123). */
+  /** Shipping (the parcel, or what the bag needs to pay its way), the retailer charges' rule (D-111, D-123, D-125). */
   small: SmallOrderCharges;
   /** D-119: the bulk saving from the line up; null = none. */
   bulk: BulkSaving | null;
@@ -40,21 +40,13 @@ function parse(data: unknown): BagCharges | null {
   const num = (v: unknown): number => (typeof v === 'number' && v > 0 ? v : 0);
   const pct = num(d.bulk_saving_pct);
   const cap = int(d.bulk_saving_cap_cents) ?? 0;
-  const food = int(d.food_weight_cents) ?? 0;
   return {
     freeMinCents: int(d.free_min_cents),
     small: {
       shippingCents,
+      pastLineCents: int(d.past_line_cents) ?? 0,
       retailerCents,
       retailerPct: num(d.retailer_pct) || null,
-      foodWeight: food
-        ? {
-            cents: food,
-            stepCents: int(d.food_off_step_cents) ?? 0,
-            stepPct: num(d.food_off_step_pct),
-            maxPct: num(d.food_off_max_pct),
-          }
-        : null,
     },
     bulk: pct > 0 && cap > 0 ? { pct, capCents: cap } : null,
   };
@@ -100,7 +92,7 @@ export function freeDelivery(lines: CartLine[], charges: BagCharges | null) {
     subtotal,
     line,
     free,
-    /** D-123: the charges at this bag's goods (the parcel, the retailer charges, the food weight). */
+    /** D-125: the charges at this bag's goods (Shipping and the retailer charges, paid or struck through). */
     at: bagChargesAt(subtotal, line, charges?.small ?? null),
     leftCents: line === null ? 0 : Math.max(line - subtotal, 0),
     share: line ? Math.min(subtotal / line, 1) : 1,

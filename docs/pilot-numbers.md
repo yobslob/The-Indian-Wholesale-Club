@@ -7,10 +7,10 @@
 >   (₹2,242 first kg, ₹678.50 each further kg, ₹1,050 per parcel: about ₹1,201/kg) ÷ rate, × 1.25.
 > - **Home & gifts without a weight (D-121):** priced at shop ₹ × 1.5 g (at least 200 g, at most the category's
 >   typical weight) instead of the category's 1.5 – 2 kg: a ₹200 basket is $17.99, not $62.29.
-> - **Food weight in Shipping (D-123):** food carries 30% of its courier in its price (bhujia 200 g $2.79, 400 g $4.79,
->   1 kg $10.99); the bag's Shipping ($18.79) grows by the rest, the food weight ($12.73 a kg), 10% less per $50 of
->   goods, up to 40% less; from $149.99 up Shipping is struck through and free (D-124). Retailer charges 1.5% of the goods, at least $0.99. Footwear without a weight: 600 g (D-122).
-> - **Small-food shelf (D-120):** food up to ₹200 and 250 g: goods × 1.25 + half its shipping share, up to the next of
+> - **No bag loses (D-125):** every piece carries its whole cost (food its whole flight again); Shipping below $149.99 is
+>   at least $18.79 and more when a bag's pieces cannot pay for its parcel (~$34 for any parcel); free from the line up.
+>   Bhujia 200 g $5.99, 400 g $11.29, 1 kg $27.49; footwear without a weight: 600 g (D-122).
+> - **Small-food shelf (D-120, D-125):** food up to ₹200 and 250 g with its whole cost, rounded up to the next of
 >   $1.99 / $2.99 / $3.99 (at most $3.99, at least the guard on its goods). ₹100 · 100 g $2.99, ₹100 · 200 g $3.99.
 > - **Profit guard, every piece:** lifted only if the margin cannot pay US duty on the price (clothing 22%, food 16%,
 >   home 13%) and the 2.9% card fee and leave $4 (clothing, home) and 8% (food: 4%, no dollar minimum).

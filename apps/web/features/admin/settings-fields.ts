@@ -56,7 +56,7 @@ export const SETTING_GROUPS: SettingGroup[] = [
       { key: 'margin_food_pct', label: 'Food: margin added on top of cost (%)', kind: 'pct' },
       { key: 'food_parcel_kg', label: 'A typical food parcel (kg)', kind: 'number' },
       { key: 'food_billed_pct', label: 'Billed weight, % of the label\'s weight (jars, bulky packs)', kind: 'pct' },
-      { key: 'food_ship_share_pct', label: 'Share of its courier a food piece carries (%, D-122; empty = all of it)', kind: 'pct' },
+      { key: 'food_ship_share_pct', label: 'Share of its courier a food piece carries (%, D-122; empty = all of it, D-125)', kind: 'pct' },
     ],
   },
   {
@@ -95,16 +95,13 @@ export const SETTING_GROUPS: SettingGroup[] = [
     ],
   },
   {
-    title: 'Bag charges: shipping, food weight, retailer charges, bulk saving (D-111, D-119, D-123)',
-    note: 'Below the free-shipping line a bag pays the parcel\'s shipping and the retailer charges (a % of the goods, at least the amount set). From the line up both show struck through at $0.00. The food weight (the food\'s courier that its prices leave out) is paid at every bag size, less by a step for every step of goods. The bulk saving grows with every dollar over the line until its cap.',
+    title: 'Bag charges: shipping, retailer charges, bulk saving (D-111, D-119, D-123, D-125)',
+    note: 'Below the free-shipping line a bag pays Shipping (at least the amount set; more when its pieces cannot pay for the parcel: the courier\'s first kg, box and clearance) and the retailer charges (a % of the goods, at least the amount set). From the line up both show struck through at $0.00. The bulk saving grows with every dollar over the line until its cap. No bag ever loses: the profit check below shows each one.',
     fields: [
       { key: 'free_shipping_min_cents', label: 'Shipping and retailer charges come off from ($)', kind: 'usd' },
-      { key: 'small_order_shipping_cents', label: 'Shipping below the line ($)', kind: 'usd' },
+      { key: 'small_order_shipping_cents', label: 'Shipping below the line, at least ($)', kind: 'usd' },
       { key: 'small_order_retailer_cents', label: 'Retailer charges, at least ($)', kind: 'usd' },
       { key: 'retailer_pct', label: 'Retailer charges: % of the goods (D-123; empty = the fixed amount above)', kind: 'pct' },
-      { key: 'food_off_step_cents', label: 'Food weight: one step of goods ($, D-123)', kind: 'usd' },
-      { key: 'food_off_step_pct', label: 'Food weight: % less per step', kind: 'pct' },
-      { key: 'food_off_max_pct', label: 'Food weight: at most % less', kind: 'pct' },
       { key: 'bulk_saving_pct', label: 'Bulk saving: % of the amount over the line', kind: 'pct' },
       { key: 'bulk_saving_cap_cents', label: 'Largest bulk saving ($)', kind: 'usd' },
       { key: 'min_order_cents', label: 'Smallest order that can check out ($, empty = none)', kind: 'usd' },

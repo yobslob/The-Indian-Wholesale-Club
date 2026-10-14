@@ -42,7 +42,7 @@ export function freeDelivery(lines: BagLine[], charges: BagCharges | null) {
   return {
     free,
     line,
-    /** D-123: the charges at this bag's goods (the parcel, the retailer charges, the food weight). */
+    /** D-125: the charges at this bag's goods (Shipping and the retailer charges, paid or struck through). */
     at: bagChargesAt(subtotal, line, charges ? smallOrderOf(charges) : null),
     leftCents: line === null ? 0 : Math.max(line - subtotal, 0),
     share: line ? Math.min(subtotal / line, 1) : 1,
@@ -87,7 +87,7 @@ export function ChargeRows(): React.JSX.Element | null {
   const { free, leftCents, line, share, bulk, at } = freeDelivery(lines, charges);
   return (
     <View className="gap-1">
-      <ChargeRow label="Shipping" cents={at.shippingCents || at.waivedShippingCents} free={free} />
+      <ChargeRow label="Shipping" cents={at.shippingCents || at.waivedShippingCents} free={free && at.shippingCents === 0} />
       {at.retailerCents + at.waivedRetailerCents > 0 ? (
         <ChargeRow label="Retailer charges" cents={at.retailerCents || at.waivedRetailerCents} free={free} />
       ) : null}

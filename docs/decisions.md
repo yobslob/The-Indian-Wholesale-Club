@@ -368,7 +368,7 @@ daily run; a target with nothing found is searched again after 30 days; new list
 publishes them ("go live by themselves" is a switch), and go live only with a photo and every detail customers must see.
 Nishorama's shop address (`nishorama.com`) and its platform are assumed until the first run shows them.
 
-**D-119 · 2026-10-14 · founder: The pilot price in two recipes, a profit guard, and a bulk saving that stops at a cap** · small food amended by D-120, D-122
+**D-119 · 2026-10-14 · founder: The pilot price in two recipes, a profit guard, and a bulk saving that stops at a cap** · small food amended by D-120, D-122; restored by D-125
 Founder, verbatim: "we are close enough to the pricing still we are running in loss as we have a risk of going
 underpriced, we have to tune the pricing more. The flow of indian product price, then 10% indian safety buffer, then air
 shipping and then 50% margin on overall is working but we still have to keep the price in mind. Figure something out
@@ -485,7 +485,7 @@ the list's rules: left out are perishables (fresh pitha, chhena sweets, siddu, h
 and frozen food: 45), fish and prawn pickles (US import rules: 8) and names too vague to search ("Namkeen", "Herb
 seasoning": 30); an item in four or more states, or made only of everyday words, is for all states.
 
-**D-123 · 2026-10-14 · founder: The bag's charges follow the bag; food carries its weight in Shipping, not in its price** · display and the free line amended by D-124
+**D-123 · 2026-10-14 · founder: The bag's charges follow the bag; food carries its weight in Shipping, not in its price** · SUPERSEDED by D-125 (the food weight)
 Founder, verbatim: "add new rule where the final shipping and retailer cost is not constant anymore, it changes with the
 total amount in the bag, doesn't matter if its strikethrough or not it will follow a rule so that the food can be cheaper
 because i feel like 8.49 and 20.49 is still very expensive for bhujia." Asked who pays for the food's flight, the founder
@@ -509,7 +509,7 @@ weight; it loses $8.27, as small bags did before); 4 × 400 g + 2 masalas $66.84
 the prices; the courier's rate card and the steps are settings. A lever if big food bags feel dear: 20% less per $50, up
 to 60% less, brings 12 × 1 kg to $244.33 (+$32.65).
 
-**D-124 · 2026-10-14 · founder: One Shipping number that grows with the bag, struck through and free from the line up**
+**D-124 · 2026-10-14 · founder: One Shipping number that grows with the bag, struck through and free from the line up** · SUPERSEDED by D-125 (one Shipping number stays)
 Founder, verbatim: "this is good but you didn't have to show the cutomer a new cost to pay, you just had to add it in the
 backend and in the frontend the shipping just increases. I asked the shipping for 18.79 on 0$ cart and then increase as
 the bag fills up. let's say (just an example) if it is 90$ for 140$ bag then it will still increase even after 149 it's
@@ -524,4 +524,34 @@ What it means for the build (no migration; `bagChargesAt()` in packages/shared, 
   the line nothing pays the 70% of the food's flight its price leaves out. Mixed bags past the line keep their profit.
 *Claude's choices in it:* the bag's hint is "Add $X more for free delivery" again. The loss on food-heavy bags past the
 line is the founder's to decide (see the reply of 2026-10-14).
+
+**D-125 · 2026-10-14 · founder: No bag ever loses: every cost in the price, heavy pieces on the founder's formula**
+Founder, verbatim: "Noooo we can't bear any loss, we have to add all the costs in margin including the weight cost, how
+are we going in loss in 14 piece order that is absurd, think deeply out of this logic, like in this whole cost logic
+where are we going wrong. we should be listing lighter orders and heavier orders should be following our initial
+formula."
+Where the logic went wrong (Claude's finding):
+1. **The flight was taken out of the prices.** D-120 (the shelf at 50%), D-122 (70%) and D-123 (30%) let food carry only
+   part of its courier, and Shipping was made free from $149.99 up (D-112, D-124). On a food-heavy bag past the line
+   nobody paid the rest: 14 × 1 kg bhujia lost $83.58. Free shipping is only safe when every price already carries its
+   flight; the founder's formula (D-119) did.
+2. **A parcel has a minimum cost the $18.79 never paid.** The courier bills at least 1 kg (₹2,242) plus the box and
+   customs clearance (₹1,050): about $34 for any parcel, even one 100 g masala whose price carries $1.82 of flight. So
+   one-or-two-piece food bags lost $4 – $12 since D-112.
+3. **Heavy, cheap food cannot fly cheaply.** 1 kg of bhujia costs ₹230 in India and about $17.50 to fly (1.4 kg billed
+   at ₹1,201 a kg); its price must carry that, so it is about $27.
+What it means for the build (migration `20261014200000_parcel_pays_its_way.sql`):
+- **Prices:** every piece carries its whole cost again (the founder's formula: shop price, its weight on the courier,
+  duty, card fee, margin, the guard). Food's share is back to all of its flight. Bhujia 200 g $5.99, 400 g $11.29, 1 kg
+  $27.49; a ₹90 masala of 100 g $3.99, ₹50 $3.49, ₹20 · 20 g $1.99. The small-food shelf only rounds a light, cheap
+  piece up to its step and never sells under cost (the ₹150 · 250 g masala goes back from $3.99 to $8.49).
+- **Shipping (one number, D-124):** below $149.99 at least $18.79, more when the bag's pieces cannot pay for its parcel
+  (one masala: $35.79; one 400 g bhujia: $29.79; one kurta stays $18.79); worked out per bag in the database from each
+  piece's shop price, duty, card fee and returns against the parcel's real courier. From $149.99 up it is struck
+  through and free; a bag that still could not pay its way past the line (none of the sample bags) pays the rest.
+- **The profit check:** every sample bag and the one-piece bags now leave a profit (the least: $2.49, one 400 g bhujia).
+- The food weight of D-123 is retired (its settings stay unused); the retailer charges stay 1.5%, at least $0.99.
+*Claude's choices in it:* the parcel model is the profit check's (2% returns, the card's 30¢, a shop's ₹40 / ₹60 fee for
+clothing / home); "lighter" is served by listing light pieces (they are cheap because they are light), heavy food stays
+on the formula.
 

@@ -72,55 +72,37 @@ export function bulkProgress(subtotalCents: number, freeMinCents: number | null,
   };
 }
 
-/** One parcel's extra shipping and the retailer charges, as store_bag_charges() works them out for a bag. */
+/** A bag's charges as store_bag_charges() works them out (D-111, D-123, D-125). */
 export interface SmallOrderCharges {
+  /** Shipping below the free-shipping line: at least the parcel's amount, more when the bag's pieces cannot pay it. */
   shippingCents: number;
+  /** D-125: what a bag past the line still pays as Shipping (0 for any bag whose prices pay its flight). */
+  pastLineCents?: number | null;
   /** The retailer charges; with `retailerPct`, their minimum (D-123). */
   retailerCents: number;
   /** D-123: the retailer charges are this % of the goods, at least `retailerCents`. */
   retailerPct?: number | null;
-  /** D-123, D-124: the food's weight in the bag: Shipping grows with it (less as the bag grows). */
-  foodWeight?: FoodWeightCharge | null;
-}
-
-/** D-123: the bag's food weight at the full rate, and how it comes down: `stepPct` less per `stepCents` of goods. */
-export interface FoodWeightCharge {
-  cents: number;
-  stepCents: number;
-  stepPct: number;
-  maxPct: number;
 }
 
 /**
- * A bag's charges at a goods amount (D-111, D-112, D-123, D-124), for the bag, the pill, checkout and the profit check
- * alike. Shipping is one number: the parcel's shipping plus the bag's food weight (`stepPct` less for each `stepCents` of
- * goods, up to `maxPct` less), so it starts at the parcel's amount and grows as food goes in. Below the free-shipping
- * line Shipping and the retailer charges are paid; from it up both are struck through (`waived*`) and free.
+ * A bag's charges at a goods amount (D-111, D-112, D-123, D-125), for the bag, the pill, checkout and the profit check
+ * alike. Below the free-shipping line Shipping and the retailer charges are paid; from it up both are struck through
+ * (`waived*`) and free, except what a bag past the line still needs to pay its way (`pastLineCents`, D-125).
  */
 export function bagChargesAt(goodsCents: number, freeMinCents: number | null, small: SmallOrderCharges | null) {
   const free = freeMinCents !== null && goodsCents >= freeMinCents;
   const shipping = small?.shippingCents ?? 0;
+  const past = small?.pastLineCents ?? 0;
   const retailer = small
     ? Math.max(small.retailerCents, small.retailerPct ? Math.round((goodsCents * small.retailerPct) / 100) : 0)
     : 0;
-  const food = small?.foodWeight;
-  const foodOffPct =
-    food && food.stepCents > 0
-      ? Math.min(food.maxPct, Math.floor(goodsCents / food.stepCents) * food.stepPct)
-      : 0;
-  const foodFullCents = food?.cents ?? 0;
-  const foodCents = Math.round((foodFullCents * (100 - foodOffPct)) / 100);
   return {
     free,
-    /** Shipping (the parcel + the food weight) as paid (0 when free) and as it would be (struck through when free). */
-    shippingCents: free ? 0 : shipping + foodCents,
-    waivedShippingCents: free ? shipping + foodCents : 0,
+    /** Shipping as paid, and as it would be (struck through) when free. */
+    shippingCents: free ? past : shipping,
+    waivedShippingCents: free && past === 0 ? shipping : 0,
     retailerCents: free ? 0 : retailer,
     waivedRetailerCents: free ? retailer : 0,
-    foodFullCents,
-    foodOffPct,
-    /** The food weight inside Shipping (also when struck through). */
-    foodCents,
   };
 }
 
@@ -141,9 +123,6 @@ export interface CheckoutBreakdown {
   retailerCents: number;
   /** D-111: what the small-order charges would have been, shown struck through once they are free. */
   waivedCents: { shipping: number; retailer: number };
-  /** D-123, D-124: the food weight inside Shipping (paid or struck through with it), and how much it came down (%). */
-  foodWeightCents: number;
-  foodWeightOffPct: number;
   taxCents: number;
   totalCents: number;
   promoApplied: boolean;
@@ -213,10 +192,9 @@ export function quoteCheckout(
   if (small) {
     assertCents(small.shippingCents, 'smallOrder.shippingCents');
     assertCents(small.retailerCents, 'smallOrder.retailerCents');
-    if (small.foodWeight) assertCents(small.foodWeight.cents, 'smallOrder.foodWeight.cents');
   }
   const charges = bagChargesAt(discounted, method === 'standard' ? shipping.freeMinCents : null, small);
-  const shippingCents = freeShipping ? 0 : price + charges.shippingCents;
+  const shippingCents = freeShipping ? charges.shippingCents : price + charges.shippingCents;
   const retailerCents = freeShipping ? 0 : charges.retailerCents;
   if (shipping.bulkSaving) {
     assertCents(shipping.bulkSaving.capCents, 'bulkSaving.capCents');
@@ -238,8 +216,6 @@ export function quoteCheckout(
     waivedCents: freeShipping && small
       ? { shipping: charges.waivedShippingCents, retailer: charges.waivedRetailerCents }
       : { shipping: 0, retailer: 0 },
-    foodWeightCents: charges.foodCents,
-    foodWeightOffPct: charges.foodOffPct,
     taxCents,
     totalCents: goods + shippingCents + retailerCents + taxCents,
     promoApplied,

@@ -152,6 +152,11 @@ Migration 31 (D-099, the second speed audit): `admin_order_counts()` (every orde
 send, shops owed for picked pieces) and `admin_cycle_totals(cycle)` (the cycle card's orders, pieces, shops and sales),
 admin only, counted in SQL because the API sends at most 1,000 rows; indexes for orders by status and newest, pickups
 by status, what each shop is owed, and a payout's pieces.
+Migration 54 (D-125): `store_bag_charges` works out Shipping per bag: the pieces' contribution (price less shop cost,
+duty, card fee, 2% returns) against the parcel's courier (first kg, each further half kg, box and clearance); below the
+line at least `small_order_shipping_cents`, past it `past_line_cents` (what a bag still needs, normally 0). The
+small-food shelf never prices under the guard on its whole cost. `food_ship_share_pct` empty again; the D-123 food
+weight columns are unused. Tests: `bag_charges.test.sql`, `pricing_engine.test.sql`.
 Migration 53 (D-123): `pricing_settings.retailer_pct`, `food_off_step_cents`, `food_off_step_pct`, `food_off_max_pct`;
 `store_bag_charges` also returns `retailer_pct`, `food_weight_cents` (the bag's food at the rate card × billed % × (1 −
 the food's share) ÷ the effective rate, by its weights) and the three food steps; checkout and the bag apply them with
