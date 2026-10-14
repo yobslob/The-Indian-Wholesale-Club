@@ -4,6 +4,7 @@ import { listingSlug } from '@repo/shared/domain';
 import {
   buildListing,
   pickCandidates,
+  shopsFor,
   targetMatcher,
   type Candidate,
   type Offer,
@@ -18,17 +19,19 @@ import { shopFor, type PageRead } from './shops';
 import type { SourcedProduct } from '@repo/shared/sourcing';
 
 /**
- * One target (D-118): search every shop that sells its type, side by side; keep the results that are the target, in
- * stock and fast enough; read the best pages until `listings_per_target` listings are made. Each listing carries all
+ * One target (D-118): search every shop that sells its type (or only its own shops, D-121), side by side; keep the
+ * results that are the target, in stock, fast enough and inside its price band; read the best pages until its number
+ * of listings (else `listings_per_target`) are made. Each listing carries all
  * of its items (flavours, packs, colours and sizes) and the same product on other shops as backups.
  */
 
-async function search(ctx: RunContext, target: SourcingTarget): Promise<Offer[]> {
-  const shops = ctx.plan.shops.filter((s) => s.product_types.includes(target.product_type));
+async function search(ctx: RunContext, target: SourcingTarget, want: number): Promise<Offer[]> {
+  const shops = shopsFor(target, ctx.plan.shops);
+  const hint = { minPaise: target.min_price_paise, maxPaise: target.max_price_paise, want };
   const found = await Promise.all(
     shops.map(async (shop) => {
       try {
-        const offers = await shopFor(shop.reader).search(ctx.lanes.of(shop.site), target.query);
+        const offers = await shopFor(shop.reader).search(ctx.lanes.of(shop.site), target.query, hint);
         ctx.stats.page(shop.site);
         log(`  ${shop.site}: ${offers.length} result${offers.length === 1 ? '' : 's'}`);
         return offers;
@@ -162,13 +165,18 @@ async function tryCandidate(
 
 export async function findForTarget(ctx: RunContext, target: SourcingTarget): Promise<number> {
   const s = ctx.plan.settings;
-  log(`target "${target.name}" (${target.region}, ${target.category})`);
-  const offers = await search(ctx, target);
+  const want = target.listings ?? s.listings_per_target;
+  const band =
+    target.min_price_paise || target.max_price_paise
+      ? `, ₹${(target.min_price_paise ?? 0) / 100}–${target.max_price_paise ? target.max_price_paise / 100 : 'any'}`
+      : '';
+  log(`target "${target.name}" (${target.region ?? 'all states'}, ${target.category}${band})`);
+  const offers = await search(ctx, target, want);
   const candidates = pickCandidates(target, offers, ctx.plan.shops, {
     maxDays: s.max_delivery_days,
     known: ctx.known,
     now: ctx.now,
-    limit: s.listings_per_target,
+    limit: want,
   });
   log(
     `  ${candidates.length} candidate${candidates.length === 1 ? '' : 's'} are the target, in stock and fast enough`,
@@ -176,7 +184,7 @@ export async function findForTarget(ctx: RunContext, target: SourcingTarget): Pr
   let added = 0;
   const reasons: string[] = [];
   for (const c of candidates) {
-    if (added >= s.listings_per_target) break;
+    if (added >= want) break;
     try {
       const why = await tryCandidate(ctx, target, c);
       if (why) reasons.push(why);

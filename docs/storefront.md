@@ -11,7 +11,8 @@ JSON sent to the browser.
 - **Product:** name, summary, description, story, craft/style name (e.g. "Kanjeevaram silk"), type, category, attributes
   (fibre and care, or ingredients, allergens and shelf life), photos, price, variants (one row of choices per option that differs: colour, flavour, type, pack, size;
   each variant can have its own price, D-118), availability count, and
-  **"Made in India" / "Imported"**.
+  **"Made in India" / "Imported"**, and its state when it has one (D-121: an all-India listing names no state; nothing
+  says "no state" either).
 - **Delivery:** the estimated delivery window, and "order by <date>" (D-035).
 - **Own orders:** number, items, totals, customer-facing status (`flows.md` §8), delivery window, US carrier + tracking link.
 
@@ -25,7 +26,7 @@ Enforcement: customer code reads catalog and order data only through `store_*` (
 | `/` | the full-screen photo hero (behind the nav bar too) with only the stacked brand name on the white wall and "Miss local market? Start here." (D-079, `design/pages/shell/`; otherwise D-050 – D-055), the album of all of India (the region pages' drifting mosaic: the states' album photos, then their newest pieces' main photos; it opens with the clip-and-scale reveal and a gentle parallax, D-113), Pick your home (India map + stamps, in pages of 6 from 7 open states, + names; D-080), then Just listed (D-113) | static, cached `store_home()` |
 | `/states` | Pick your home as its own page (D-083): all 36 regions, alphabetical, with no state/UT distinction (D-002) | static (same cached read as `/`) |
 | `/states/[region]` | **the core page:** greeting in the region's script, story, accent theme, Clothing · Food · Home & gifts sections | static per region (36 built at build time) |
-| `/states/[region]/[product]` | product page: gallery, options, price, availability (live), save, delivery window, origin line | static on first visit + live stock island |
+| `/states/[region]/[product]` | product page: gallery, options, price, availability (live), save, delivery window, origin line; an all-India listing lives at /states/india/<slug> (D-121; `india` is no state's slug and has no page of its own) | static on first visit + live stock island |
 | `/clothing`, `/food`, `/home-and-gifts` (D-106, D-110; the old /spices address redirects to /food) | the **See all** page behind every row (D-062): newest first, `?state=` and `?category=` pills, 24 cards then "Show more" (`?show=`). D-084: the state row pins under the header (a soft fade at its ends, no blur, D-098), the category row scrolls away (fade + a very light blur); phones get one Filter bar (a round icon once scrolled) and a side panel | dynamic render over one cached `store_browse()` read (the cards drawn, the total, the filter counts; D-068) |
 | `/search` | search products and regions; 24 results at a time with "Show more" (`?show=`, D-067), through `store_search`, which records the words (not who searched) for the admin's Insights. D-085: the count with the words ("24+ pieces" when Show more has more), matching open states as stamps (coming-soon ones by name), no words or no results → the open states and Just listed; phones: a round search icon in the box | dynamic (no auth) |
 | `/cart` | the bag ("Bag" in the UI; on-device state). D-111, D-112: under the subtotal, the fixed Shipping and Retailer charges (struck through at $0.00 from the free-shipping line up; checkout shows them from its first step) and how much more makes them free, from `GET /api/bag-charges`; every other store page shows the free-delivery bar once the bag has a piece. D-119: from the line up, the **bulk saving** (a % of the amount over the line, up to a cap) shows as its own line, and the bar refills with it ("Saving $5 · add more, save more" until "BIGGEST SAVING"); checkout takes it off the goods before tax. D-086: a photo on each line, − / number / + (1 – 10), an empty bag shows the open states as stamps and Just listed; the header's bag icon opens the same bag as a side panel (it stays a link to `/cart` for new tabs and without JavaScript) | static shell |
@@ -51,14 +52,18 @@ Framer Motion page transitions (speed, `engineering.md`).
    is a standard row of full-size cards; arrows for a mouse, swipe on a phone; the pills pin under the header). Jump pills at the top
    (New arrivals, each clothing category with its count, Food). One row per clothing category, biggest first, up to 12
    cards, with **See all** → `/clothing?state=<region>&category=<category>`.
-5. Regions with no live products show "Coming soon" (`regions.is_live = false`). Anything more, like a notify-me feature, needs founder approval.
+5. **All-India listings fill every state (D-121):** a listing without a state (a Myntra kurta from no state in
+   particular) shows on every state's page and under every state in See all, after the state's own pieces, with no
+   state on its card.
+6. Regions with no live products show "Coming soon" (`regions.is_live = false`). Anything more, like a notify-me feature, needs founder approval.
 **Target (D-051; built in C1 and C2; the lists are rows, D-062; the album shows once a region has three album photos):** below the hero (greeting, tagline, story, image): Clothing / Food filter pills, then
 **New arrivals → Most wanted → a photo album that scrolls sideways by itself (not interactive) → Curated for you (a card)
 → Leaving soon** (almost out of stock). Curated for you = admin picks per region, Leaving soon = 1–2 left (D-056); Most wanted = most pieces ordered in the last 30 days (D-058); the album has no pause control (founder, D-052).
 
 ## The product page
 Gallery → name, price → variant picker → availability (live) → **delivery window** → add to cart → details: description,
-craft, attributes, care or storage → origin line: "Made in India · from <Region> · Imported".
+craft, attributes, care or storage → origin line: "Made in India · from <Region> · Imported" ("Made in India · Imported"
+for an all-India listing, D-121).
 **D-100 (built):** clothing photos are Front, Back (worn by an AI-generated model, D-101) and the Material
 close-up, which is always the original photo; Details (above the Size chart) say how to wash it (Care), where it is
 from (Made in: India, from <Region>) and, when a photo is AI-generated, that the model photos are; one builder for the

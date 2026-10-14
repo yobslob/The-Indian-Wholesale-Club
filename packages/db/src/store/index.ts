@@ -124,12 +124,12 @@ export async function searchProducts(
 }
 
 /** The region and slug of every live product (the sitemap), read in pages: the API returns at most 1,000 rows. */
-export async function listProductPaths(client: IwcClient): Promise<{ region_slug: string; slug: string }[]> {
+export async function listProductPaths(client: IwcClient): Promise<{ region_slug: string | null; slug: string }[]> {
   const PAGE = 1000;
-  const paths: { region_slug: string; slug: string }[] = [];
+  const paths: { region_slug: string | null; slug: string }[] = [];
   for (let offset = 0; ; offset += PAGE) {
     const rows = z
-      .array(z.object({ region_slug: z.string(), slug: z.string() }))
+      .array(z.object({ region_slug: z.string().nullable(), slug: z.string() }))
       .parse(
         unwrap(
           await client

@@ -37,18 +37,25 @@ phase's sub-steps and every verification run) is in `docs/archive/status-log-to-
 - **Small food on $1.99 – $3.99, Publish all drafts (D-120, 2026-10-14):** food up to ₹200 and 250 g is priced on the
   steps $1.99 / $2.99 / $3.99 (half its shipping share; Settings → Small food shelf, with the profit check); Products →
   Drafts has **Publish all drafts** (every draft with a photo, an option and a piece to sell; it reports the rest).
+- **All-India listings, Myntra ₹600 – ₹1,600, home weights (D-121, 2026-10-14):** a listing's state is optional (none
+  shown; it fills every state's page after the state's own, at `/states/india/<slug>`); targets take shops, a price band
+  and their own number of listings; the Myntra clothing list (79 targets, `tools/sourcing-runner/targets/`); home &
+  gifts without a weight priced from its shop price (a ₹200 basket $17.99, not $62.29).
 
 ## Next for the founder
 1. Run `node scripts/check.mjs` (Docker Desktop and `npx supabase start` first), push, then the Deploy workflow: it
-   applies the new migrations (the latest is `20261014120100_publish_drafts`, D-120; it and D-119 reprice every
-   listing) to production.
+   applies the new migrations (the latest is `20261014140000_all_india_and_bands`, D-121; it, D-120 and D-119 reprice
+   every listing) to production.
 2. Then Admin → Products → Drafts → **Publish all drafts**; it says how many went live, what held the rest and how
    many still lack details customers see (fibre and care, ingredients and allergens).
 3. Replace the D-119 / D-120 estimates in Settings with real bills (one courier invoice, one duty bill): the per-parcel
    cost, US duty by type, the food fee, parcel kg, billed weight, the small-food limits and share; watch the profit
    check (a bag of only $2.99 packets past $149.99 loses money, D-120).
-4. Toward 3,000 listings: add more targets (Admin → Import → Auto-sourcing), raise targets per run and listings per
-   target, and keep `pnpm sourcing run` scheduled daily on the hub PC (`tools/sourcing-runner/README.md`).
+4. Toward 3,000 listings: Admin → Import → Auto-sourcing → Add targets from a CSV with
+   `tools/sourcing-runner/targets/myntra-600-1600.csv` (all states, Myntra, ₹600 – ₹1,600); check Myntra's delivery
+   days under Shops (3 or less, or nothing is added); try one first: `pnpm sourcing try "kurta set women" --type
+   clothing --shops myntra.com --min 600 --max 1600`; raise targets per run (79 targets) and keep `pnpm sourcing run`
+   daily on the hub PC.
 5. Clear the 2,880 placeholder listings: `pnpm demo:clear … --allow-remote`, then with `--apply` (`ops.md`).
 6. Decide: the name "Food" and 5 pieces per size by default (D-110 proposals); D-118's proposals (3 listings per
    target, the 60% rise / 50% fall guard, drafts until published, 40 targets a day); D-120's proposals (₹200, 250 g,
@@ -58,6 +65,7 @@ phase's sub-steps and every verification run) is in `docs/archive/status-log-to-
 ## Last verification
 | Date | Commit | Where | Result |
 |---|---|---|---|
+| 2026-10-14 | D-121 commit | Claude, cloud sandbox with the founder's `node_modules` (no Docker) | all 52 migrations + seeds applied on plain Postgres 16 with the Supabase stand-in: 42/42 SQL test files pass (new: `all_india`; mutation check: reordering the state's page fails it) · unit tests shared 122/122, web 37/37, app 10/10 · tsc shared, db, web and runner clean; the app shows no new errors against the sandbox's baseline (no React Native types there) · docs audit OK. **Not run:** ESLint with the Next plugin, `next build`, e2e, http, the app build, a run at the hub (Myntra's price filter in the search address is untested; results are checked against the band anyway). Run `node scripts/check.mjs` before pushing. |
 | 2026-10-14 | D-120 commit | Claude, cloud sandbox with the founder's `node_modules` (no Docker) | all 51 migrations + seeds applied on plain Postgres 16 with the Supabase stand-in: 41/41 SQL test files pass (new: `publish_drafts`; `pricing_engine` with the shelf) · shared unit tests 117/117 · tsc shared, db and web clean. **Not run:** ESLint (its Next plugin does not load in the sandbox), `next build`, e2e, http, the app. Run `node scripts/check.mjs` before pushing. |
 | 2026-10-14 | D-119 commit | Claude, cloud sandbox with the founder's sources and type definitions (no Docker, no npm) | all 49 migrations + seeds applied on plain Postgres 16 with the Supabase stand-in: 39/40 SQL test files pass (`customer_messages` needs Supabase Vault, absent there; it fails the same without D-119), `pricing_engine` fails as it should when the guard is removed (mutation check) · shared unit tests 113/113 · tsc shared clean; db, web and app show no new errors against the same sandbox's baseline (its missing Supabase and NativeWind types leave known errors in both) · docs audit OK. **Not run:** ESLint, `next build`, e2e, the app bundle, a real Supabase reset. Run `node scripts/check.mjs` before deploying. |
 | 2026-10-13 | D-118 commit | Claude, cloud sandbox with the founder's `node_modules` (no Docker, no shop access) | tsc web/db/shared/runner clean · unit tests shared 106/106 (auto-sourcing 20), web 37/37 · all 48 migrations + seeds applied and 40/40 SQL test files passed on plain Postgres 16 with a Supabase stand-in · the page readers run in the founder's browser on live Amazon, Flipkart, Myntra, Blinkit and BigBasket pages · `pnpm sourcing try` started and logged each shop (no shop reachable from the sandbox). **Not run:** `next build`, ESLint with the Next plugin, e2e, a full run at the hub, Zepto and Instamart pages. Run `node scripts/check.mjs` before pushing. |

@@ -5,6 +5,8 @@
 >   clothing 50% easing to 38% as the cost before margin goes from $20 to $150; home 60% easing to 45% from $15 to $100.
 > - **Food:** (shop ₹ + ₹15 fee) × 1.10 ÷ rate + billed kg (140% of the label) × the rate card over a 5 kg parcel
 >   (₹2,242 first kg, ₹678.50 each further kg, ₹1,050 per parcel: about ₹1,201/kg) ÷ rate, × 1.25.
+> - **Home & gifts without a weight (D-121):** priced at shop ₹ × 1.5 g (at least 200 g, at most the category's
+>   typical weight) instead of the category's 1.5 – 2 kg: a ₹200 basket is $17.99, not $62.29.
 > - **Small-food shelf (D-120):** food up to ₹200 and 250 g: goods × 1.25 + half its shipping share, up to the next of
 >   $1.99 / $2.99 / $3.99 (at most $3.99, at least the guard on its goods). ₹100 · 100 g $2.99, ₹100 · 200 g $3.99.
 > - **Profit guard, every piece:** lifted only if the margin cannot pay US duty on the price (clothing 22%, food 16%,

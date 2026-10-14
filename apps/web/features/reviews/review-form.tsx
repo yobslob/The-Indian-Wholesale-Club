@@ -3,6 +3,8 @@
 import Link from 'next/link';
 import { useEffect, useRef, useState } from 'react';
 
+import { productPath } from '@repo/shared/domain';
+
 import { LinePhoto } from '@/features/cart/bag-lines';
 
 import { submitReviewAction, type ReviewPiece } from './actions';
@@ -19,7 +21,7 @@ export function PieceLine({ piece }: { piece: ReviewPiece }): React.JSX.Element 
       <span className="min-w-0">
         <b className="font-display block text-lg font-normal leading-tight text-[#1D1A17]">{piece.name}</b>
         <small className="font-ui text-ink-muted text-[13px]">
-          {piece.category_name} · {piece.region_name}
+          {[piece.category_name, piece.region_name].filter(Boolean).join(' · ')}
         </small>
       </span>
     </div>
@@ -57,7 +59,7 @@ export function ReviewForm({
   const [error, setError] = useState<string | null>(null);
   const [sent, setSent] = useState<{ note?: string } | null>(null);
   const picker = useRef<HTMLInputElement>(null);
-  const back = `/states/${piece.region_slug}/${piece.slug}`;
+  const back = productPath(piece.region_slug, piece.slug);
 
   // Previews are object URLs: each one goes when its tile does, the rest when the form does.
   const shown = useRef(photos);

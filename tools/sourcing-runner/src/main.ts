@@ -139,10 +139,15 @@ async function run(args: string[]): Promise<number> {
 async function dryRun(args: string[]): Promise<void> {
   const flagValues = new Set(args.flatMap((a, i) => (a.startsWith('--') ? [i + 1] : [])));
   const query = args.find((a, i) => !a.startsWith('--') && !flagValues.has(i)) ?? '';
-  const match = args.includes('--match') ? (args[args.indexOf('--match') + 1] ?? null) : null;
+  const flag = (name: string): string | null =>
+    args.includes(name) ? (args[args.indexOf(name) + 1] ?? null) : null;
+  const match = flag('--match');
+  const rupees = (name: string): number | null => (flag(name) ? Math.round(Number(flag(name)) * 100) || null : null);
   const type = PRODUCT_TYPES.find((t) => args.includes(t)) ?? 'food';
   if (query.length < 2)
-    throw new Error('Usage: pnpm sourcing try "<what to find>" --type food|clothing|home');
+    throw new Error(
+      'Usage: pnpm sourcing try "<what to find>" --type food|clothing|home [--match words] [--shops myntra.com] [--min 600] [--max 1600] [--listings 3]',
+    );
   const env = loadEnv(false);
   const plan: SourcingPlan = {
     settings: {
@@ -180,8 +185,12 @@ async function dryRun(args: string[]): Promise<void> {
       must_match: match,
       product_type: type,
       category: 'dry-run',
-      region: 'dry-run',
+      region: null,
       tier: null,
+      sites: flag('--shops')?.split(',').filter(Boolean) ?? null,
+      min_price_paise: rupees('--min'),
+      max_price_paise: rupees('--max'),
+      listings: Number(flag('--listings')) || null,
     });
     log(`shops: ${JSON.stringify(ctx.stats.toJSON())}`);
   } finally {

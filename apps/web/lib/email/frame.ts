@@ -69,7 +69,7 @@ export function pieces(items: OrderDetail['items'], ctx: EmailContext, opts: { p
           : `<td style="padding:12px 0;vertical-align:middle;text-align:right;border-bottom:1px solid ${C.line};${TEXT};font-size:15px;color:${C.ink}">${formatUsd(item.total_price_cents)}</td>`;
       return `<tr>
   <td width="70" style="padding:12px 14px 12px 0;vertical-align:middle;border-bottom:1px solid ${C.line}">${photo}</td>
-  <td style="padding:12px 0;vertical-align:middle;border-bottom:1px solid ${C.line};${TEXT}"><div style="font-size:15px;font-weight:600;color:${C.ink}">${escapeHtml(item.product_name)}</div><div style="font-size:13px;color:${C.muted}">${escapeHtml(item.variant_label)} · ${escapeHtml(item.region_name)} × ${item.quantity}</div></td>
+  <td style="padding:12px 0;vertical-align:middle;border-bottom:1px solid ${C.line};${TEXT}"><div style="font-size:15px;font-weight:600;color:${C.ink}">${escapeHtml(item.product_name)}</div><div style="font-size:13px;color:${C.muted}">${escapeHtml([item.variant_label, item.region_name].filter(Boolean).join(' · '))} × ${item.quantity}</div></td>
   ${price}
 </tr>`;
     })

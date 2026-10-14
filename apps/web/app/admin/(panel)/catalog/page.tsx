@@ -99,7 +99,7 @@ export default async function CatalogPage({
             <Cell>
               <StatusChip map={PRODUCT_STATUS} status={p.status} />
             </Cell>
-            <Cell>{p.region?.name}</Cell>
+            <Cell>{p.region?.name ?? 'All states'}</Cell>
             <Cell>{p.vendor?.shop_name}</Cell>
             <Cell>{formatUsd(p.price_cents)}</Cell>
             <Cell>{rupees(p.shop_price_paise)}</Cell>

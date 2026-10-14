@@ -16,7 +16,8 @@ Rules cite decision IDs (`D-xxx`, index in `docs/decisions.md`).
 ## Non-negotiables (stop and ask before breaking one)
 1. **No operations info on any customer surface:** no shops, sources, pickups, payouts or India logistics in pages,
    the app, emails, API responses or page source. IWC is the seller. [D-003, D-017]
-2. **Honest origin:** show the region and "Made in India"; never invent or mask where goods come from. [D-004]
+2. **Honest origin:** show "Made in India" and the state when the listing has one (an all-India listing has none);
+   never invent or mask where goods come from. [D-004, D-121]
 3. **Invisible admin:** no links or hints; access checked on the server (role + email allowlist). [D-006]
 4. **Delivery dates come from cycle data**, or in the made-to-order pilot from its delivery days in Settings; never
    hard-coded. [D-008, D-115]

@@ -1,3 +1,5 @@
+import { productPath } from '@repo/shared/domain';
+
 import { getHomeCached, listProductPathsCached } from '@/features/catalog/data';
 import { siteUrl } from '@/lib/env';
 
@@ -22,6 +24,6 @@ export default async function sitemap(): Promise<MetadataRoute.Sitemap> {
   return [
     ...STATIC_PATHS.map((path) => ({ url: `${base}${path}` })),
     ...home.regions.map((r) => ({ url: `${base}/states/${r.slug}` })),
-    ...products.map((p) => ({ url: `${base}/states/${p.region_slug}/${p.slug}` })),
+    ...products.map((p) => ({ url: `${base}${productPath(p.region_slug, p.slug)}` })),
   ];
 }

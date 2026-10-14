@@ -1,0 +1,80 @@
+Product,Type,IWC category,IWC region slug,Tier,Search words,Must match,Shops,Min ₹,Max ₹,Listings
+Women's printed kurtas,clothing,kurtas,all,1,women printed kurta,^(?!.*\b(with|set|sets)\b).*\bkurtas?\b,myntra,600,1600,25
+Women's straight cotton kurtas,clothing,kurtas,all,1,women cotton straight kurta,^(?!.*\b(with|set|sets)\b).*\bkurtas?\b,myntra,600,1600,20
+Women's A-line kurtas,clothing,kurtas,all,2,women a-line kurta,^(?!.*\b(with|set|sets)\b).*\bkurtas?\b,myntra,600,1600,15
+Women's anarkali kurtas,clothing,kurtas,all,1,women anarkali kurta,anarkali,myntra,600,1600,20
+Women's embroidered kurtas,clothing,kurtas,all,1,women embroidered kurta,^(?!.*\b(with|set|sets)\b).*\bkurtas?\b,myntra,600,1600,20
+Women's chikankari kurtas,clothing,kurtas,all,1,women chikankari kurta,chikan,myntra,600,1600,15
+Women's short kurtis,clothing,kurtas,all,2,women kurti,kurti,myntra,600,1600,15
+Women's bandhani kurtas,clothing,kurtas,all,2,women bandhani kurta,bandhani|bandhej,myntra,600,1600,12
+Women's block print kurtas,clothing,kurtas,all,2,women block print kurta,block|hand ?print,myntra,600,1600,15
+Women's ikat kurtas,clothing,kurtas,all,2,women ikat kurta,ikat,myntra,600,1600,12
+Women's kalamkari kurtas,clothing,kurtas,all,2,women kalamkari kurta,kalamkari,myntra,600,1600,12
+Women's ajrakh kurtas,clothing,kurtas,all,2,women ajrakh kurta,ajrakh,myntra,600,1600,12
+Women's ethnic tunics,clothing,shirts-and-tops,all,3,women ethnic tunic,tunic,myntra,600,1600,10
+Kurta with palazzos,clothing,suits-and-sets,all,1,women kurta with palazzos,kurta.*palazzo,myntra,600,1600,25
+"Kurta, trousers and dupatta sets",clothing,suits-and-sets,all,1,women kurta with trousers and dupatta,kurta.*dupatta,myntra,600,1600,25
+Cotton kurta sets,clothing,suits-and-sets,all,1,women cotton kurta set trousers,kurta.*(trouser|pyjama|pant|salwar),myntra,600,1600,20
+Sharara sets,clothing,suits-and-sets,all,1,women kurta sharara set dupatta,sharara|gharara,myntra,600,1600,20
+Anarkali sets with dupatta,clothing,suits-and-sets,all,2,women anarkali kurta set dupatta,anarkali.*dupatta,myntra,600,1600,15
+Unstitched dress material,clothing,fabrics,all,2,women unstitched dress material,unstitched|dress material,myntra,600,1600,15
+Ethnic co-ord sets,clothing,co-ords-and-dresses,all,2,women ethnic co-ord set,co-?ord,myntra,600,1600,15
+Ethnic maxi dresses,clothing,co-ords-and-dresses,all,2,women ethnic maxi dress,\bdress\b,myntra,600,1600,15
+Ethnic A-line dresses,clothing,co-ords-and-dresses,all,3,women ethnic a-line dress,\bdress\b,myntra,600,1600,12
+Ethnic gowns,clothing,co-ords-and-dresses,all,2,women ethnic gown dress,gown,myntra,600,1600,12
+Ethnic kaftans,clothing,co-ords-and-dresses,all,3,women ethnic kaftan,kaftan,myntra,600,1600,10
+Printed sarees,clothing,sarees,all,1,printed saree,saree|sari\b,myntra,600,1600,25
+Cotton sarees,clothing,sarees,all,1,cotton saree,saree|sari\b,myntra,600,1600,20
+Georgette sarees,clothing,sarees,all,2,georgette saree,saree|sari\b,myntra,600,1600,15
+Chiffon sarees,clothing,sarees,all,2,chiffon saree,saree|sari\b,myntra,600,1600,15
+Bandhani sarees,clothing,sarees,all,2,bandhani saree,(bandhani|bandhej).*saree|saree.*(bandhani|bandhej),myntra,600,1600,12
+Banarasi-style sarees,clothing,sarees,all,1,banarasi saree,banarasi,myntra,600,1600,20
+Kanjeevaram-style silk sarees,clothing,sarees,all,1,kanjeevaram saree,kanjeevaram|kanchipuram,myntra,600,1600,15
+Chanderi sarees,clothing,sarees,all,2,chanderi saree,chanderi,myntra,600,1600,12
+Linen sarees,clothing,sarees,all,2,linen saree,linen,myntra,600,1600,12
+Leheriya sarees,clothing,sarees,all,3,leheriya saree,leheriya|lehariya,myntra,600,1600,10
+Sambalpuri sarees,clothing,sarees,all,3,sambalpuri saree,sambalpuri,myntra,600,1600,10
+Sequinned party sarees,clothing,sarees,all,2,sequinned saree,sequin,myntra,600,1600,12
+Ready-to-wear sarees,clothing,sarees,all,2,ready to wear saree,ready to wear|pre-?draped|pre-?stitched,myntra,600,1600,12
+Readymade saree blouses,clothing,shirts-and-tops,all,1,readymade saree blouse,blouse,myntra,600,1600,20
+Dupattas,clothing,dupattas-and-stoles,all,1,women dupatta,dupatta,myntra,600,1600,20
+Phulkari dupattas,clothing,dupattas-and-stoles,all,2,phulkari dupatta,phulkari,myntra,600,1600,12
+Bandhani dupattas,clothing,dupattas-and-stoles,all,2,bandhani dupatta,bandhani|bandhej,myntra,600,1600,12
+Ethnic stoles,clothing,dupattas-and-stoles,all,3,women ethnic stole,stole,myntra,600,1600,10
+Kantha stoles,clothing,dupattas-and-stoles,all,3,kantha stole,kantha,myntra,600,1600,10
+Women's woollen shawls,clothing,shawls,all,2,women woollen shawl,shawl,myntra,600,1600,15
+Pashmina-style shawls,clothing,shawls,all,3,women pashmina shawl,pashmina,myntra,600,1600,10
+Ethnic palazzos,clothing,jeans-and-trousers,all,2,women ethnic palazzos,palazzo,myntra,600,1600,15
+Churidars and salwars,clothing,jeans-and-trousers,all,2,women churidar salwar,churidar|salwar|leggings,myntra,600,1600,12
+Patiala salwars,clothing,jeans-and-trousers,all,3,women patiala salwar,patiala,myntra,600,1600,10
+Ethnic skirts,clothing,co-ords-and-dresses,all,3,women ethnic skirt,skirt,myntra,600,1600,10
+Women's ethnic jackets,clothing,jackets-and-knitwear,all,2,women ethnic jacket shrug,jacket|shrug,myntra,600,1600,12
+Lehenga cholis,clothing,lehengas,all,1,women lehenga choli dupatta,lehenga,myntra,600,1600,20
+Women's mojaris and juttis,clothing,footwear,all,1,women ethnic mojaris,mojari|jutti,myntra,600,1600,15
+Women's kolhapuris,clothing,footwear,all,2,women kolhapuri,kolhapuri,myntra,600,1600,12
+Potli bags,clothing,accessories,all,2,potli bag,potli,myntra,600,1600,12
+Jhumka earrings,clothing,accessories,all,2,jhumka earrings,jhumk,myntra,600,1600,15
+Men's cotton kurtas,clothing,kurtas,all,1,men cotton kurta,^(?!.*\b(with|set|sets)\b).*\bkurtas?\b,myntra,600,1600,25
+Men's printed kurtas,clothing,kurtas,all,1,men printed kurta,^(?!.*\b(with|set|sets)\b).*\bkurtas?\b,myntra,600,1600,20
+Men's short kurtas,clothing,kurtas,all,2,men short kurta,^(?!.*\b(with|set|sets)\b).*\bkurtas?\b,myntra,600,1600,15
+Men's chikankari kurtas,clothing,kurtas,all,2,men chikankari kurta,chikan,myntra,600,1600,12
+Men's kurta pyjama sets,clothing,suits-and-sets,all,1,men kurta pyjama set,kurta.*(pyjama|churidar|trouser|dhoti),myntra,600,1600,25
+Men's kurta sets with Nehru jacket,clothing,suits-and-sets,all,1,men kurta pyjama nehru jacket set,kurta.*jacket,myntra,600,1600,15
+Men's pathani suits,clothing,suits-and-sets,all,2,men pathani suit,pathani,myntra,600,1600,12
+Nehru jackets,clothing,jackets-and-knitwear,all,1,men nehru jacket,nehru|bandhgala|waistcoat,myntra,600,1600,20
+Men's bandhgalas,clothing,jackets-and-knitwear,all,3,men bandhgala jacket,bandhgala|jodhpuri,myntra,600,1600,10
+Men's dhotis,clothing,dhotis-and-mundus,all,2,men dhoti,dhoti,myntra,600,1600,12
+Mundus and veshtis,clothing,dhotis-and-mundus,all,2,men mundu veshti,mundu|veshti|dhoti,myntra,600,1600,12
+Men's lungis,clothing,dhotis-and-mundus,all,3,men lungi,lungi,myntra,600,1600,10
+Men's ethnic shirts,clothing,shirts-and-tops,all,2,men mandarin collar ethnic shirt,shirt,myntra,600,1600,15
+Men's mojaris,clothing,footwear,all,1,men mojaris,mojari|jutti,myntra,600,1600,15
+Men's kolhapuri chappals,clothing,footwear,all,2,men kolhapuri chappal,kolhapuri,myntra,600,1600,12
+Men's shawls,clothing,shawls,all,3,men shawl,shawl,myntra,600,1600,10
+Safa and pagdi,clothing,headwear,all,3,safa pagdi turban,safa|pagdi|turban,myntra,600,1600,10
+Boys' kurta pyjama sets,clothing,kids,all,1,boys kurta pyjama set,kurta,myntra,600,1600,20
+Boys' kurta sets with Nehru jacket,clothing,kids,all,2,boys kurta pyjama nehru jacket set,kurta.*jacket|jacket.*kurta,myntra,600,1600,12
+Boys' dhoti kurta sets,clothing,kids,all,3,boys dhoti kurta set,dhoti,myntra,600,1600,10
+Girls' kurta sets,clothing,kids,all,1,girls kurta set with dupatta,kurta,myntra,600,1600,20
+Girls' lehenga cholis,clothing,kids,all,1,girls lehenga choli dupatta,lehenga,myntra,600,1600,15
+Girls' ethnic dresses,clothing,kids,all,2,girls ethnic dress,\bdress\b|gown,myntra,600,1600,12
+Girls' pattu pavadai,clothing,kids,all,3,girls pattu pavadai,pavadai|langa|pattu,myntra,600,1600,10

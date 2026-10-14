@@ -86,13 +86,18 @@ export default function ProductScreen(): React.JSX.Element {
       {data ? (
         <>
           <View className="bg-surface gap-4 rounded-lg p-5">
-            <Link href={{ pathname: '/region/[slug]', params: { slug: data.product.region_slug } }} asChild>
-              <Pressable className="min-h-8 justify-center">
-                <Text className="font-ui text-ink-muted text-[13px]">
-                  <Text className="underline">{data.product.region_name}</Text> · {data.product.category_name}
-                </Text>
-              </Pressable>
-            </Link>
+            {data.product.region_slug ? (
+              <Link href={{ pathname: '/region/[slug]', params: { slug: data.product.region_slug } }} asChild>
+                <Pressable className="min-h-8 justify-center">
+                  <Text className="font-ui text-ink-muted text-[13px]">
+                    <Text className="underline">{data.product.region_name}</Text> · {data.product.category_name}
+                  </Text>
+                </Pressable>
+              </Link>
+            ) : (
+              // an all-India piece (D-121): no state shown
+              <Text className="font-ui text-ink-muted min-h-8 text-[13px]">{data.product.category_name}</Text>
+            )}
             <View className="flex-row items-start justify-between gap-3">
               <Text accessibilityRole="header" className="font-display flex-1 text-[32px] leading-[35px] text-[#1D1A17]">
                 {data.product.name}
@@ -126,7 +131,7 @@ export default function ProductScreen(): React.JSX.Element {
               ) : null}
             </View>
             <Text className="border-line font-display text-ink border-t pt-4 text-[18px]">
-              Made in India · from {data.product.region_name} · Imported
+              Made in India{data.product.region_name ? ` · from ${data.product.region_name}` : ''} · Imported
             </Text>
           </View>
 

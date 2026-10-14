@@ -25,6 +25,7 @@ const PIECES: [string, number, number, ProductType][] = [
   ['Kurta ₹1,299 · 450 g', 1299, 450, 'clothing'],
   ['Saree ₹7,500 · 900 g', 7500, 900, 'clothing'],
   ['Lehenga ₹12,000 · 2.5 kg', 12000, 2500, 'clothing'],
+  ['Basket ₹200 · 300 g', 200, 300, 'home'],
   ['Brass diya ₹650 · 400 g', 650, 400, 'home'],
   ['Brass decor ₹1,800 · 1.2 kg', 1800, 1200, 'home'],
 ];

@@ -115,7 +115,7 @@ export function OrderView({
             <View className="flex-1">
               <Text className="font-ui-semibold text-ink text-[15px]">{item.product_name}</Text>
               <Text className="font-ui text-ink-muted text-[13px]">
-                {item.variant_label} · {item.region_name} · × {item.quantity}
+                {[item.variant_label, item.region_name].filter(Boolean).join(' · ')} · × {item.quantity}
               </Text>
               {item.status !== 'active' ? (
                 <Text className="text-caution font-ui text-[13px]">{item.status === 'unavailable' ? 'No longer available, being refunded' : 'Refunded'}</Text>

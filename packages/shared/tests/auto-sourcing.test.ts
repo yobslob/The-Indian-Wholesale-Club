@@ -24,8 +24,10 @@ import {
   genericOffers,
   listingName,
   myntraSearchOffers,
+  inBand,
   parseTargetsCsv,
   pickCandidates,
+  shopsFor,
   sanitizeText,
   shopifySearchOffers,
   targetMatcher,
@@ -46,6 +48,10 @@ const target = (over: Partial<SourcingTarget> = {}): SourcingTarget => ({
   category: 'rice-flours-and-staples',
   region: 'himachal-pradesh',
   tier: 1,
+  sites: null,
+  min_price_paise: null,
+  max_price_paise: null,
+  listings: null,
   ...over,
 });
 const SHOPS: SourcingShop[] = [
@@ -725,5 +731,103 @@ describe('targets from the bestseller CSV', () => {
       ],
     );
     assert.equal(errors.length, 1);
+  });
+
+  it('D-121: all states, its shops, a price band in rupees and how many listings', () => {
+    const csv =
+      'Product,Type,IWC category,IWC region slug,Shops,Min ₹,Max ₹,Listings\n' +
+      "Women's printed kurtas,clothing,kurtas,all,myntra,₹600,\"1,600\",25\n" +
+      'Cotton sarees,clothing,sarees,,myntra.com; https://www.amazon.in/,600,,\n' +
+      'Odd,clothing,sarees,,myntra,abc,,\n';
+    const { rows, errors } = parseTargetsCsv(csv);
+    assert.deepEqual(
+      rows.map((r) => [r.name, r.region, r.shops, r.min_price_paise, r.max_price_paise, r.listings]),
+      [
+        ["Women's printed kurtas", null, ['myntra'], 60000, 160000, 25],
+        ['Cotton sarees', null, ['myntra.com', 'amazon.in'], 60000, null, null],
+      ],
+    );
+    assert.equal(errors.length, 1, 'a price that is not a number refuses the row');
+  });
+});
+
+describe('a target with its own shops and a price band (D-121)', () => {
+  const band = target({
+    name: 'Cotton kurtas',
+    query: 'cotton kurta',
+    must_match: 'kurta',
+    product_type: 'clothing',
+    region: null,
+    sites: ['amazon.in'],
+    min_price_paise: 60000,
+    max_price_paise: 160000,
+  });
+
+  it('searches only its shops and keeps prices inside the band', () => {
+    assert.deepEqual(
+      shopsFor(band, SHOPS).map((s) => s.site),
+      ['amazon.in'],
+    );
+    assert.deepEqual(
+      shopsFor(target(), SHOPS).map((s) => s.site),
+      ['blinkit.com', 'amazon.in', 'bigbasket.com'],
+    );
+    assert.ok(inBand(band, 60000) && inBand(band, 160000) && !inBand(band, 59900) && !inBand(band, 160100));
+    assert.ok(inBand(target(), 100) && !inBand(target(), null));
+    const picked = pickCandidates(
+      band,
+      [
+        offer({ key: 'A1', title: 'Cotton Kurta', pricePaise: 89900, brand: 'A' }),
+        offer({ key: 'A2', title: 'Cotton Kurta', pricePaise: 249900, brand: 'B' }),
+        offer({ key: 'A3', title: 'Cotton Kurta', pricePaise: 39900, brand: 'C' }),
+        offer({ site: 'blinkit.com', key: 'B1', title: 'Cotton Kurta', pricePaise: 89900, brand: 'D' }),
+      ],
+      SHOPS,
+      { maxDays: 3, known: new Set(), now: NOW, limit: 3 },
+    );
+    assert.deepEqual(
+      picked.map((c) => c.best.key),
+      ['A1'],
+    );
+  });
+
+  it('leaves out colours outside the band and pages made outside India', () => {
+    const kurta: SourcedProduct = {
+      url: 'https://www.amazon.in/dp/B0KURTA001',
+      site: 'amazon.in',
+      title: 'Anouk Women Cotton Kurta',
+      brand: 'Anouk',
+      description: '',
+      bullets: [],
+      specs: [['Country of Origin', 'India']],
+      images: ['https://m.media-amazon.com/images/I/k.jpg'],
+      pricePaise: 89900,
+      mrpPaise: null,
+      currency: 'INR',
+      inStock: true,
+      sizes: [],
+      hints: [],
+      variants: [
+        { key: 'B0KURTA001', url: 'https://www.amazon.in/dp/B0KURTA001', label: 'Blue', options: { colour: 'Blue' }, pricePaise: 89900, mrpPaise: null, inStock: true, weightG: null, image: null },
+        { key: 'B0KURTA002', url: 'https://www.amazon.in/dp/B0KURTA002', label: 'Silk red', options: { colour: 'Silk red' }, pricePaise: 259900, mrpPaise: null, inStock: true, weightG: null, image: null },
+      ],
+      deliveryText: null,
+    };
+    const base = { target: band, shop: SHOPS[1]!, pageDays: 2, family: [], others: [], shops: SHOPS, maxDays: 3, now: NOW };
+    const draft = buildListing({ ...base, product: kurta });
+    assert.ok(!('skip' in draft));
+    if ('skip' in draft) return;
+    assert.deepEqual(
+      draft.listing.variants.map((v) => v.label),
+      ['Blue'],
+    );
+    assert.deepEqual(
+      buildListing({ ...base, product: { ...kurta, specs: [['Country of Origin', 'China']] } }),
+      { skip: 'made in China, not India' },
+    );
+    assert.deepEqual(
+      buildListing({ ...base, product: { ...kurta, variants: [kurta.variants[1]!] } }),
+      { skip: 'price outside the band' },
+    );
   });
 });

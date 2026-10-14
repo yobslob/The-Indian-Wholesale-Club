@@ -3,6 +3,7 @@
 import { useEffect, useState, useTransition } from 'react';
 
 import {
+  fallbackWeightG,
   PRODUCT_TYPE_LABEL,
   PRODUCT_TYPES,
   type PricingSettings,
@@ -62,6 +63,10 @@ function firstSentence(text: string): string {
  * the state it comes from, the type and category, the details customers must see, the shop's price with our price
  * worked out live (D-109), and the sizes. Nothing is guessed silently: every guess is a pre-filled field.
  */
+
+/** The state picker's "All states": the listing gets no state (D-121). */
+const ALL = 'all';
+
 export function ReviewForm({
   product,
   data,
@@ -109,7 +114,10 @@ export function ReviewForm({
 
   const priced = product.variants.filter((v) => v.pricePaise);
   const category = data.categories.find((c) => c.id === categoryId);
-  const weight = Number(f.weight) > 0 ? Number(f.weight) : (category?.default_weight_g ?? null);
+  const weight =
+    Number(f.weight) > 0
+      ? Number(f.weight)
+      : fallbackWeightG(type, toPaise(f.shopPrice), category?.default_weight_g ?? null, data.pricing);
   const cents = livePrice(toPaise(f.shopPrice), weight, data.pricing, type);
   const toggle = (url: string): void =>
     setPhotos((list) =>
@@ -118,7 +126,7 @@ export function ReviewForm({
 
   const save = (publish: boolean): void => {
     setProblem(null);
-    if (!regionId) return setProblem('Pick the state it comes from.');
+    if (!regionId) return setProblem('Pick the state it comes from, or All states.');
     if (!categoryId) return setProblem('Pick a category.');
     if (!existing && photos.length === 0) return setProblem('Pick at least one photo.');
     const attributes =
@@ -137,7 +145,8 @@ export function ReviewForm({
     start(async () => {
       const result = await saveImportAction({
         product,
-        regionId,
+        // D-121: "All states" = no state tag; the piece shows on every state's page
+        regionId: regionId === ALL ? null : regionId,
         categoryId,
         productType: type,
         name: f.name.trim(),
@@ -258,6 +267,7 @@ export function ReviewForm({
               <option value="" disabled>
                 Choose…
               </option>
+              <option value={ALL}>All states (no state shown)</option>
               {data.regions.map((r) => (
                 <option key={r.id} value={r.id}>
                   {r.name}

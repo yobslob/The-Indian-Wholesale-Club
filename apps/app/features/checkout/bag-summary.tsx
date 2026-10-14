@@ -29,7 +29,7 @@ export function BagSummary({ title, lines, quote }: { title: string; lines: BagL
             <View className="flex-1">
               <Text className="font-ui-semibold text-ink text-sm">{l.productName}</Text>
               <Text className="font-ui text-ink-muted text-[13px]">
-                {l.variantLabel} · {l.regionName} · × {l.quantity}
+                {[l.variantLabel, l.regionName].filter(Boolean).join(' · ')} · × {l.quantity}
               </Text>
             </View>
             <Text className="font-ui text-ink text-sm">{formatUsd(priced)}</Text>

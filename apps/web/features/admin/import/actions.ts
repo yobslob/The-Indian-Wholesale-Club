@@ -77,7 +77,8 @@ export async function findImportedAction(sourceUrl: string): Promise<ExistingLis
 
 const importSchema = z.object({
   product: sourcedProductSchema,
-  regionId: z.string().uuid(),
+  /** Null: all states, no state tag (D-121). */
+  regionId: z.string().uuid().nullable(),
   categoryId: z.string().uuid(),
   productType: z.enum(PRODUCT_TYPES),
   name: z.string().trim().min(2, 'Give it a name.').max(120),

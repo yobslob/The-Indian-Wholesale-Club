@@ -2,7 +2,7 @@ import { Link, useRouter } from 'expo-router';
 import { Pressable, Text, View } from 'react-native';
 
 import { getHome } from '@repo/db/store';
-import { formatUsd } from '@repo/shared/domain';
+import { formatUsd, regionSegment } from '@repo/shared/domain';
 
 import { Photo } from '@/components/photo';
 import { Body, Button, Label, Screen } from '@/components/ui';
@@ -50,7 +50,7 @@ export default function BagScreen(): React.JSX.Element {
         <>
           <View className="border-line border-t">
             {lines.map((line) => {
-              const href = { pathname: '/product/[region]/[slug]' as const, params: { region: line.regionSlug, slug: line.productSlug } };
+              const href = { pathname: '/product/[region]/[slug]' as const, params: { region: regionSegment(line.regionSlug), slug: line.productSlug } };
               return (
                 <View key={line.variantId} className="border-line flex-row gap-3.5 border-b py-3.5">
                   <Link href={href} asChild>
@@ -64,7 +64,7 @@ export default function BagScreen(): React.JSX.Element {
                         <Pressable className="flex-1">
                           <Text className="font-ui-semibold text-ink text-[15px]">{line.productName}</Text>
                           <Text className="font-ui text-ink-muted text-[13px]">
-                            {line.variantLabel} · {line.regionName}
+                            {[line.variantLabel, line.regionName].filter(Boolean).join(' · ')}
                           </Text>
                         </Pressable>
                       </Link>

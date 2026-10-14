@@ -16,8 +16,8 @@ export interface ReviewPiece {
   id: string;
   name: string;
   slug: string;
-  region_slug: string;
-  region_name: string;
+  region_slug: string | null;
+  region_name: string | null;
   category_name: string;
   primary_image_path: string | null;
 }

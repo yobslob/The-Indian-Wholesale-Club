@@ -41,8 +41,16 @@ export interface PageRead {
   pageDays: number | null;
 }
 
+/** What a search may narrow by, where the shop's own filter supports it (D-121); results are checked again anyway. */
+export interface SearchHint {
+  minPaise: number | null;
+  maxPaise: number | null;
+  /** How many listings the target wants: a shop with pages reads a second one for a big number. */
+  want: number;
+}
+
 interface Shop {
-  search(lane: Lane, query: string): Promise<Offer[]>;
+  search(lane: Lane, query: string, hint?: SearchHint): Promise<Offer[]>;
   read(lane: Lane, url: string, now: Date): Promise<PageRead>;
 }
 
@@ -111,14 +119,25 @@ const SHOPS: Record<ShopReader, Shop> = {
     read: capturedRead(),
   },
   myntra: {
-    search: (lane, query) =>
+    search: (lane, query, hint) =>
       lane.run(async (page) => {
         const slug = query
           .trim()
           .toLowerCase()
           .replace(/[^a-z0-9]+/g, '-');
-        await open(page, `https://www.myntra.com/${slug}?rawQuery=${q(query)}`);
-        return myntraSearchOffers(await read.myntraProducts(page));
+        // Myntra's own price filter (D-121): "Price:600.0_1600.0_600.0 TO 1600.0"
+        const lo = hint?.minPaise ? hint.minPaise / 100 : null;
+        const hi = hint?.maxPaise ? hint.maxPaise / 100 : null;
+        const rf =
+          lo !== null || hi !== null
+            ? `&rf=${q(`Price:${(lo ?? 0).toFixed(1)}_${(hi ?? 100000).toFixed(1)}_${(lo ?? 0).toFixed(1)} TO ${(hi ?? 100000).toFixed(1)}`)}`
+            : '';
+        const base = `https://www.myntra.com/${slug}?rawQuery=${q(query)}${rf}`;
+        await open(page, base);
+        const offers = myntraSearchOffers(await read.myntraProducts(page));
+        if ((hint?.want ?? 0) <= 12 || offers.length < 40) return offers;
+        await open(page, `${base}&p=2`);
+        return [...offers, ...myntraSearchOffers(await read.myntraProducts(page))];
       }),
     read: capturedRead(),
   },

@@ -4,7 +4,7 @@ import { guessDetails } from '../guess';
 import { shorten } from '../text';
 import { cleanOptions, packGrams } from '../variants';
 
-import { offerDeliveryDays } from './cluster';
+import { inBand, offerDeliveryDays } from './cluster';
 
 import type { SourcedProduct, SourcedVariant } from '../capture';
 import type { ListingVariantPayload, Offer, SourcingShop, SourcingTarget } from './types';
@@ -177,7 +177,13 @@ export function buildListing(input: {
   }
   items = items.filter((v) => v.pricePaise).slice(0, 60);
   if (!items.length) return { skip: 'no price on the page' };
+  // D-121: a colour or size dearer or cheaper than the target's band is left out; none inside, no listing
+  items = items.filter((v) => inBand(target, v.pricePaise));
+  if (!items.length) return { skip: 'price outside the band' };
   if (!items.some((v) => v.inStock !== false)) return { skip: 'sold out' };
+  // D-004: the store says "Made in India"; a page that names another country of origin is not listed
+  const origin = product.specs.find(([k]) => /country of origin|origin country/i.test(k))?.[1] ?? '';
+  if (origin && !/india|bharat/i.test(origin)) return { skip: `made in ${origin.slice(0, 40)}, not India` };
 
   const labels = new Set<string>();
   const details = guessDetails(product);

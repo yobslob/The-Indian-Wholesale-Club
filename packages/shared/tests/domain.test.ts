@@ -13,6 +13,7 @@ import {
   choose,
   clothingAttributesSchema,
   contrastRatio,
+  fallbackWeightG,
   formatUsPhone,
   usPhoneDigits,
   findVariant,
@@ -583,3 +584,16 @@ describe('checkout phone (D-087)', () => {
     assert.equal(formatUsPhone('7325550142'), '+1 (732) 555-0142');
   });
 });
+
+describe('home & gifts without a weight (D-121), as all_india.test.sql', () => {
+  const s = { fxInrPerUsd: 96.3, fxBufferPct: 4, marginPct: 50, homeEstGPerRupee: 1.5, homeEstMinG: 200 };
+  it('is estimated from its shop price, between the minimum and the category\'s weight', () => {
+    assert.equal(fallbackWeightG('home', 20000, 1500, s), 300);
+    assert.equal(fallbackWeightG('home', 5000, 1500, s), 200);
+    assert.equal(fallbackWeightG('home', 300000, 1500, s), 1500);
+    assert.equal(fallbackWeightG('home', null, 1500, s), 1500);
+    assert.equal(fallbackWeightG('clothing', 20000, 450, s), 450);
+    assert.equal(fallbackWeightG('home', 20000, 1500, { ...s, homeEstGPerRupee: null }), 1500);
+  });
+});
+

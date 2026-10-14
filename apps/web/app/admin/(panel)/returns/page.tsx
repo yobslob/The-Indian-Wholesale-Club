@@ -61,7 +61,7 @@ export default async function ReturnsPage({
                 <Sub>{r.order?.email}</Sub>
               </Cell>
               <Cell>
-                {r.item ? `${r.item.product_name} (${r.item.variant_label}) · ${r.item.region_name}` : '—'}
+                {r.item ? `${r.item.product_name} (${r.item.variant_label})${r.item.region_name ? ` · ${r.item.region_name}` : ''}` : '—'}
               </Cell>
               <Cell>{REASON[r.reason] ?? r.reason}</Cell>
               <Cell>

@@ -47,7 +47,7 @@ writes refresh the website's store pages at once (`POST /admin/revalidate`, B-17
 | **Payouts** | payable per vendor, record payouts | India | ✓ | ✓ |
 | **Orders** | all orders, detail + internal timeline, pack & ship once arrived (carrier with tracking link, D-066), refunds, delay notices, move to another cycle (D-045) | US | ✓ | ✓ (pack & ship) |
 | **Regions** | edit and approve region content (greeting and its script, tagline, story, accent, image, `is_live`; changing approved text sends it back to draft, enforced in the database); the main photo uploads to `product-media/regions/<slug>/`; album photos (each with alt text, removable) to `regions/<slug>/album/` (`region_photos`, D-051); an accent below WCAG AA on the page backgrounds is refused | both | ✓ | — |
-| **Catalog** | products, categories, prices, bulk edits; **Publish all drafts** on the Drafts tab (every draft with a photo, an option and a piece to sell; it says how many went live, what held the rest and how many still lack details customers see, D-120); "Curated for you" picks per product (D-056); product photos (upload with alt text, main photo, remove) to `product-media/products/<id>/`; 50 to a page (D-067) | both | ✓ | — |
+| **Catalog** | products, categories, prices, bulk edits; a product's state may be empty (All states, D-121; the import form offers it); **Publish all drafts** on the Drafts tab (every draft with a photo, an option and a piece to sell; it says how many went live, what held the rest and how many still lack details customers see, D-120); "Curated for you" picks per product (D-056); product photos (upload with alt text, main photo, remove) to `product-media/products/<id>/`; 50 to a page (D-067) | both | ✓ | — |
 | **Reviews** | approve or reject customer reviews before they appear (D-052, D-056); "verified buyer" is set by the database | both | ✓ | — |
 | **Customers** | customer list, orders per customer | US | ✓ | — |
 | **Promotions** | promo codes (kept from the old admin) | US | ✓ | — |
@@ -145,8 +145,13 @@ in `packages/shared/src/sourcing/`, the reads and writes in `packages/db/src/adm
 `/admin/import/auto` (web only; linked from Import from shops). Code: `apps/web/features/admin/import/auto/`, the
 rules in `packages/shared/src/sourcing/auto/`, the reads and writes in `packages/db/src/admin/auto-sourcing.ts`, the
 runner in `tools/sourcing-runner/` (its README says how to set it up on the PC at the hub).
-- **Targets.** "Add targets from a CSV" takes the state bestseller list as it is (columns Product, Type, IWC category,
-  IWC region slug; optionally Tier, Search words, Must match); a row already there for that state is skipped. Each
+- **Targets.** "Add targets from a CSV" takes the state bestseller list as it is (columns Product, Type, IWC category;
+  optionally IWC region slug, Tier, Search words, Must match, Shops, Min ₹, Max ₹, Listings); a row already there for
+  that state is skipped. D-121: an empty state or "all" is **all states** (its listings carry no state and fill every
+  state's page); Shops limits it to those shops ("myntra"); Min ₹ / Max ₹ keep only shop prices inside the band (colours
+  outside it are left out); Listings is how many to make instead of the setting. A page that names another country of
+  origin is never listed (D-004). `tools/sourcing-runner/targets/myntra-600-1600.csv` is the Myntra ₹600 – ₹1,600
+  clothing list (79 targets, about 1,170 listings). Each
   target shows its state: waiting, being searched, found (how many listings), nothing fit (with why), paused; Search
   again, Pause, Remove.
 - **Found and waiting.** What the runner adds arrives as drafts (in Products → Drafts) unless "go live by themselves"

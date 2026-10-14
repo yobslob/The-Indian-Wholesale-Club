@@ -41,7 +41,7 @@ export function BagSummary({
             <span className="min-w-0">
               <b className="block text-sm font-semibold leading-snug">{l.productName}</b>
               <small className="text-ink-muted text-[13px]">
-                {l.variantLabel} · {l.regionName} · × {l.quantity}
+                {[l.variantLabel, l.regionName].filter(Boolean).join(' · ')} · × {l.quantity}
               </small>
             </span>
             <span className="text-sm font-medium">{formatUsd(l.totalCents)}</span>

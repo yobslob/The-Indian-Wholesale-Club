@@ -48,6 +48,24 @@ export function offerDeliveryDays(
   return parseDeliveryDays(offer.deliveryText, now) ?? shop?.delivery_days ?? null;
 }
 
+/** Whether a shop price is inside the target's band (D-121); a target without one takes any price. */
+export function inBand(target: SourcingTarget, paise: number | null): boolean {
+  if (paise === null) return false;
+  return (
+    (target.min_price_paise == null || paise >= target.min_price_paise) &&
+    (target.max_price_paise == null || paise <= target.max_price_paise)
+  );
+}
+
+/** The shops a target searches: its own list, else every enabled shop that sells its type (D-118, D-121). */
+export function shopsFor(target: SourcingTarget, shops: SourcingShop[]): SourcingShop[] {
+  return shops.filter(
+    (s) =>
+      s.product_types.includes(target.product_type) &&
+      (!target.sites?.length || target.sites.includes(s.site)),
+  );
+}
+
 export function pickCandidates(
   target: SourcingTarget,
   offers: Offer[],
@@ -57,7 +75,8 @@ export function pickCandidates(
   const matcher = targetMatcher(target);
   const shopOf = new Map(shops.map((s) => [s.site, s]));
   const usable = offers.filter((o) => {
-    if (!matcher.matches(o.title) || o.inStock === false || !o.pricePaise) return false;
+    if (!matcher.matches(o.title) || o.inStock === false || !inBand(target, o.pricePaise)) return false;
+    if (target.sites?.length && !target.sites.includes(o.site)) return false;
     if (opts.known.has(`${o.site}|${o.key}`)) return false;
     const days = offerDeliveryDays(o, shopOf.get(o.site), opts.now);
     // unknown here (Amazon, Flipkart search pages): the product page must show it before anything is added

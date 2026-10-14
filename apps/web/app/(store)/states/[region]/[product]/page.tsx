@@ -47,10 +47,14 @@ export default async function ProductPage({ params }: { params: Params }): Promi
         <ProductGallery media={media} name={product.name} />
         <aside aria-label="Buy" className="bg-surface rounded-lg p-[clamp(22px,2.6vw,44px)] md:sticky md:top-[calc(var(--top-h)+16px)]">
           <p className="font-ui text-ink-muted flex flex-wrap items-center gap-x-2 text-[13px] font-medium">
-            <Link href={`/states/${product.region_slug}`} className="hover:text-ink underline underline-offset-[3px]">
-              {product.region_name}
-            </Link>
-            <span aria-hidden="true">·</span>
+            {product.region_slug ? (
+              <>
+                <Link href={`/states/${product.region_slug}`} className="hover:text-ink underline underline-offset-[3px]">
+                  {product.region_name}
+                </Link>
+                <span aria-hidden="true">·</span>
+              </>
+            ) : null}
             <span>{PRODUCT_TYPE_LABEL[product.product_type]}</span>
             {product.category_name ? (
               <>
@@ -76,7 +80,7 @@ export default async function ProductPage({ params }: { params: Params }): Promi
             {chart ? <Disclosure title="Size chart">{chart}</Disclosure> : null}
           </div>
           <p className="border-line font-display mt-4 border-t pt-4 text-[17px]">
-            Made in India · from {product.region_name} · Imported
+            Made in India{product.region_name ? ` · from ${product.region_name}` : ''} · Imported
           </p>
         </aside>
       </div>

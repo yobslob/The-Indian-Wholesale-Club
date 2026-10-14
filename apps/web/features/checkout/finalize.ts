@@ -48,7 +48,7 @@ export const pendingCheckoutSchema = z.object({
   promoCodeId: z.string().uuid().nullable(),
   shippingMethod: z.enum(['standard', 'express']).default('standard'),
   /** The product pages to refresh after the sale; absent in checkouts stored before 2026-10-06. */
-  pages: z.array(z.object({ regionSlug: z.string(), productSlug: z.string() })).default([]),
+  pages: z.array(z.object({ regionSlug: z.string().nullable(), productSlug: z.string() })).default([]),
 });
 export type PendingCheckout = z.infer<typeof pendingCheckoutSchema>;
 

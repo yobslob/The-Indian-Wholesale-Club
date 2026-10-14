@@ -42,6 +42,8 @@ export const SETTING_GROUPS: SettingGroup[] = [
       { key: 'margin_home_min_pct', label: 'Home & gifts: lowest margin, on the dearest pieces (%)', kind: 'pct' },
       { key: 'taper_home_from_cents', label: 'Home & gifts: margin starts easing at a cost of ($)', kind: 'usd' },
       { key: 'taper_home_to_cents', label: 'Home & gifts: lowest margin from a cost of ($)', kind: 'usd' },
+      { key: 'home_est_g_per_rupee', label: 'Home & gifts without a weight: grams per shop rupee (D-121; at most the category\'s weight)', kind: 'number' },
+      { key: 'home_est_min_g', label: 'Home & gifts without a weight: at least (g)', kind: 'int' },
       { key: 'margin_pct', label: 'Margin for a type without its own (%)', kind: 'pct' },
     ],
   },

@@ -88,7 +88,7 @@ function Form({ productId, ready }: { productId: string; ready: Ready }): React.
         <View className="flex-1">
           <Text className="font-display text-[17px] text-[#1D1A17]">{ready.piece.name}</Text>
           <Text className="font-ui text-ink-muted text-xs">
-            {ready.piece.category_name} · {ready.piece.region_name}
+            {[ready.piece.category_name, ready.piece.region_name].filter(Boolean).join(' · ')}
           </Text>
         </View>
       </View>

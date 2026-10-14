@@ -3,7 +3,7 @@
 import Image from 'next/image';
 import Link from 'next/link';
 
-import { formatUsd } from '@repo/shared/domain';
+import { formatUsd, productPath } from '@repo/shared/domain';
 
 import { mediaUrl } from '@/lib/site';
 
@@ -58,7 +58,7 @@ export function BagLines({ compact = false }: { compact?: boolean }): React.JSX.
   return (
     <ul className={`border-line m-0 list-none p-0 ${compact ? '' : 'border-t'}`}>
       {lines.map((line) => {
-        const href = `/states/${line.regionSlug}/${line.productSlug}`;
+        const href = productPath(line.regionSlug, line.productSlug);
         return (
           <li key={line.variantId} className={`border-line font-ui grid items-center gap-x-5 gap-y-3 border-b py-4 ${grid}`}>
             <LinePhoto path={line.imagePath} href={href} className={`rounded-xl [grid-area:pic] ${compact ? 'w-16' : 'w-16 sm:w-[72px]'}`} />
@@ -67,7 +67,8 @@ export function BagLines({ compact = false }: { compact?: boolean }): React.JSX.
                 {line.productName}
               </Link>
               <span className="text-ink-muted mt-0.5 block text-sm">
-                {line.variantLabel} · {line.regionName}
+                {line.variantLabel}
+                {line.regionName ? ` · ${line.regionName}` : null}
               </span>
             </div>
             <div className="justify-self-start [grid-area:step]">

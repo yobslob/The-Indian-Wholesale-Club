@@ -24,7 +24,7 @@ export interface QuotedLine {
   variantId: string;
   productName: string;
   variantLabel: string;
-  regionName: string;
+  regionName: string | null;
   quantity: number;
   unitPriceCents: number;
   totalCents: number;

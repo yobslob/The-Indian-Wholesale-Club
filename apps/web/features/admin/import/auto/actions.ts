@@ -10,6 +10,7 @@ import {
   listCategories,
   listRegionsAdmin,
   listSourcedDrafts,
+  listSourcingShops,
   publishProducts,
   reviewSource,
   setTargetsStatus,
@@ -62,25 +63,40 @@ export async function setShopAction(site: string, form: FormData): Promise<void>
 
 export type UploadResult = { added: number; skipped: number; errors: string[] } | { error: string };
 
-/** A target list as CSV (the state bestseller list's columns): rows already there for that state are skipped. */
+/**
+ * A target list as CSV (the state bestseller list's columns): rows already there for that state are skipped. D-121:
+ * an empty state (or "all") is all states; shops are matched to the shop list by name or host ("myntra").
+ */
 export async function uploadTargetsAction(csv: string): Promise<UploadResult> {
   const { client, user } = await requireAdminAction();
   const text = z.string().max(2_000_000).parse(csv);
   const { rows, errors } = parseTargetsCsv(text);
   if (!rows.length) return { error: errors[0] ?? 'No rows found.' };
-  const [regions, categories] = await Promise.all([
+  const [regions, categories, shopList] = await Promise.all([
     listRegionsAdmin(client),
     listCategories(client),
+    listSourcingShops(client),
   ]);
+  const siteOf = (typed: string): string | undefined =>
+    shopList.find((s) => s.site === typed || s.site.split('.')[0] === typed || s.label.toLowerCase() === typed)?.site;
   const regionId = new Map(regions.map((r) => [r.slug, r.id]));
   const category = new Map(categories.map((c) => [c.slug, c]));
   const ready = rows.flatMap((r, i) => {
     const c = category.get(r.category);
-    const region = regionId.get(r.region);
-    if (!c || c.product_type !== r.product_type || !region) {
-      errors.push(
-        `${r.name}: ${!region ? `no state "${r.region}"` : `no ${r.product_type} category "${r.category}"`} (row ${i + 2}).`,
-      );
+    const region = r.region === null ? null : regionId.get(r.region);
+    const sites = r.shops?.map(siteOf);
+    const problem =
+      region === undefined
+        ? `no state "${r.region}"`
+        : !c || c.product_type !== r.product_type
+          ? `no ${r.product_type} category "${r.category}"`
+          : sites?.some((s) => !s)
+            ? `no shop "${r.shops![sites.indexOf(undefined)]}"`
+            : r.min_price_paise && r.max_price_paise && r.max_price_paise < r.min_price_paise
+              ? 'the price band runs high to low'
+              : null;
+    if (problem || !c || region === undefined) {
+      errors.push(`${r.name}: ${problem ?? 'not valid'} (row ${i + 2}).`);
       return [];
     }
     return [
@@ -92,6 +108,10 @@ export async function uploadTargetsAction(csv: string): Promise<UploadResult> {
         category_id: c.id,
         region_id: region,
         tier: r.tier,
+        sites: sites ? [...new Set(sites as string[])] : null,
+        min_price_paise: r.min_price_paise,
+        max_price_paise: r.max_price_paise,
+        listings: r.listings,
         created_by: user.id,
       },
     ];

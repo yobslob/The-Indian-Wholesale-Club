@@ -51,6 +51,9 @@ export interface PricingSettings {
   smallFoodShipSharePct?: N;
   smallFoodFloorCents?: N;
   smallFoodCeilingCents?: N;
+  /** Home & gifts without a weight (D-121): grams per shop rupee, and the least it is estimated at. */
+  homeEstGPerRupee?: N;
+  homeEstMinG?: N;
 }
 
 /** Which rule set a price: the type's recipe, its tapered margin, the guard (D-119) or the small-food shelf (D-120). */
@@ -108,6 +111,8 @@ export function pricingSettingsFrom(row: Record<string, unknown>): PricingSettin
     smallFoodShipSharePct: n('small_food_ship_share_pct'),
     smallFoodFloorCents: n('small_food_floor_cents'),
     smallFoodCeilingCents: n('small_food_ceiling_cents'),
+    homeEstGPerRupee: n('home_est_g_per_rupee'),
+    homeEstMinG: n('home_est_min_g'),
   };
 }
 
@@ -136,6 +141,22 @@ export function foodShippingPaisePerKg(s: PricingSettings): N {
   const { courierFirstKgPaise: first, courierNextKgPaise: next, foodParcelKg: kg } = s;
   if (first == null || next == null || kg == null || kg <= 0) return null;
   return (first + (kg - 1) * next + (s.parcelFixedPaise ?? 0)) / kg;
+}
+
+/**
+ * The weight a piece without its own is priced at (D-121), as the database's `_fallback_weight_g()`: home & gifts is
+ * estimated from its shop price (grams per rupee, at least the minimum, at most the category's typical weight), so a
+ * ₹200 basket is not priced as a 1.5 kg brass lamp; every other type takes its category's weight.
+ */
+export function fallbackWeightG(
+  type: ProductType | null | undefined,
+  shopPaise: number | null,
+  categoryG: number | null,
+  s: PricingSettings,
+): number | null {
+  if (type !== 'home' || s.homeEstGPerRupee == null || shopPaise === null) return categoryG;
+  const est = Math.max(s.homeEstMinG ?? 1, Math.round((shopPaise / 100) * s.homeEstGPerRupee));
+  return Math.min(categoryG ?? 50_000, est);
 }
 
 /**

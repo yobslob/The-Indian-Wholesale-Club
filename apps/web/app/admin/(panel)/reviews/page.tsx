@@ -2,6 +2,7 @@ import Image from 'next/image';
 import Link from 'next/link';
 
 import { listReviewsForModeration } from '@repo/db/admin';
+import { productPath } from '@repo/shared/domain';
 
 import { moderateReviewAction } from '@/features/admin/actions/reviews';
 import { requireAdminPage } from '@/features/admin/guard';
@@ -28,7 +29,7 @@ export default async function ReviewsPage(): Promise<React.JSX.Element> {
           <li key={r.id} className="border-line space-y-2 rounded-[14px] border bg-paper px-[18px] py-4">
             <p className="text-sm">
               {r.product ? (
-                <Link href={`/states/${r.product.region?.slug}/${r.product.slug}`} className="font-medium underline">
+                <Link href={productPath(r.product.region?.slug, r.product.slug)} className="font-medium underline">
                   {r.product.name}
                 </Link>
               ) : (

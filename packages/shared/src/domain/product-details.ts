@@ -9,7 +9,8 @@ import type { ProductType } from './product-types';
 export type DetailsInput = {
   product_type: ProductType;
   attributes: unknown;
-  region_name: string;
+  /** Empty for an all-India listing (D-121): "India", no state. */
+  region_name: string | null;
 };
 
 /** Whether any photo is AI-generated (D-101) and whether any is a real photo (the close-up). */
@@ -47,7 +48,7 @@ export function detailRows(product: DetailsInput, photos: PhotoNote): [string, s
       if (a.storage) rows.push(['Storage', a.storage]);
     }
   }
-  rows.push(['Made in', `India, from ${product.region_name}`]);
+  rows.push(['Made in', product.region_name ? `India, from ${product.region_name}` : 'India']);
   if (photos.ai) {
     rows.push([
       'Photos',

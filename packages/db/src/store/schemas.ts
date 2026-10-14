@@ -43,8 +43,9 @@ export const productCardSchema = z.object({
   slug: z.string(),
   name: z.string(),
   product_type: productType,
-  region_slug: z.string(),
-  region_name: z.string(),
+  /** Empty for an all-India listing (D-121): the store shows no state, never an invented one. */
+  region_slug: z.string().nullable(),
+  region_name: z.string().nullable(),
   category_slug: z.string(),
   category_name: z.string(),
   price_cents: z.number().int(),
@@ -66,7 +67,7 @@ export const regionProductCardSchema = productCardSchema.extend({
 });
 
 export const productSchema = productCardSchema.extend({
-  region_id: z.string().uuid(),
+  region_id: z.string().uuid().nullable(),
   category_id: z.string().uuid(),
   summary: z.string().nullable(),
   description: z.string().nullable(),
@@ -206,7 +207,7 @@ export const orderItemSchema = z.object({
   product_id: z.string().uuid().nullable(),
   product_name: z.string(),
   variant_label: z.string(),
-  region_name: z.string(),
+  region_name: z.string().nullable(),
   quantity: z.number().int(),
   unit_price_cents: z.number().int(),
   total_price_cents: z.number().int(),

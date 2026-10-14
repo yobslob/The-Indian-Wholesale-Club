@@ -85,7 +85,7 @@ export default function AdminOrderScreen(): React.JSX.Element {
                 <View className="min-w-0 flex-1 gap-1">
                   <Text className="font-ui-semibold text-ink text-[14px]">{item.product_name}</Text>
                   <Text className="font-body text-ink-muted text-[12.5px]">
-                    {item.variant_label} · {item.region_name} · × {item.quantity} · {formatUsd(item.total_price_cents)}
+                    {[item.variant_label, item.region_name].filter(Boolean).join(' · ')} · × {item.quantity} · {formatUsd(item.total_price_cents)}
                     {p?.vendor ? ` · ${p.vendor.shop_name} ${rupees(p.shop_price_paise)}` : ''}
                   </Text>
                   <View className="flex-row flex-wrap gap-1.5">

@@ -3,6 +3,7 @@ import 'server-only';
 import { revalidateTag } from 'next/cache';
 
 import { getNextDelivery } from '@repo/db/store';
+import { regionSegment } from '@repo/shared/domain';
 
 import { storeClient } from '@/lib/supabase/store';
 
@@ -10,7 +11,8 @@ import { getHomeCached, homeTag, productTag, regionTag, STORE_TAG } from './data
 
 /** A product page, by the slugs its URL and cache entry use. */
 export interface ProductPageRef {
-  regionSlug: string;
+  /** Null for an all-India piece (D-121): it sits on every state's page, which catch up within the 5-minute fallback. */
+  regionSlug: string | null;
   productSlug: string;
 }
 
@@ -26,8 +28,10 @@ export function revalidateAfterSale(pages: ProductPageRef[]): void {
     return;
   }
   revalidateTag(homeTag);
-  for (const regionSlug of new Set(pages.map((p) => p.regionSlug))) revalidateTag(regionTag(regionSlug));
-  for (const p of pages) revalidateTag(productTag(p.regionSlug, p.productSlug));
+  for (const regionSlug of new Set(pages.map((p) => p.regionSlug))) {
+    if (regionSlug) revalidateTag(regionTag(regionSlug));
+  }
+  for (const p of pages) revalidateTag(productTag(regionSegment(p.regionSlug), p.productSlug));
 }
 
 /** Pieces went back to stock (a cancel): rare, so everything. */

@@ -164,7 +164,7 @@ export function OrderView({ order }: { order: OrderDetail }): React.JSX.Element 
             <span className="min-w-0">
               <b className="block text-[15px] font-semibold leading-snug">{item.product_name}</b>
               <small className="text-ink-muted text-[13px]">
-                {item.variant_label} · {item.region_name} · × {item.quantity}
+                {[item.variant_label, item.region_name].filter(Boolean).join(' · ')} · × {item.quantity}
               </small>
               {item.status !== 'active' ? (
                 <span className="text-caution block text-[13px]">

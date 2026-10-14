@@ -98,7 +98,7 @@ export function invoiceRows(lines: ExportLine[], fxInrPerUsd: number | null, det
       p?.category?.name ?? '',
       attr(p?.attributes, 'fibre_content'),
       detail(details, p?.product_type === 'food' ? 'hs_food' : p?.product_type === 'home' ? 'hs_home' : 'hs_clothing'),
-      `India (${p?.region?.name ?? ''})`,
+      p?.region?.name ? `India (${p.region.name})` : 'India',
       pieces,
       line.variant?.weight_g ? line.variant.weight_g * pieces : '',
       (unitPaise / 100).toFixed(2),

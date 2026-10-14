@@ -1,7 +1,7 @@
 import Image from 'next/image';
 import Link from 'next/link';
 
-import { formatUsd } from '@repo/shared/domain';
+import { formatUsd, productPath } from '@repo/shared/domain';
 
 import { mediaUrl } from '@/lib/site';
 
@@ -51,7 +51,7 @@ export function ProductCard({
   /** The scroll reveal (D-049). Off for cards that start off to the side in a row: animating dozens made scrolling stutter. */
   reveal?: boolean;
 }): React.JSX.Element {
-  const href = `/states/${product.region_slug}/${product.slug}`;
+  const href = productPath(product.region_slug, product.slug);
   const small = size === 'sm';
   return (
     <article className="relative min-w-0">
@@ -88,7 +88,8 @@ export function ProductCard({
           {product.name}
         </Link>
         <span className={`text-ink-muted ${small ? 'text-[13px]' : 'text-sm'}`}>
-          {formatUsd(product.price_cents)} · {product.region_name}
+          {formatUsd(product.price_cents)}
+          {product.region_name ? ` · ${product.region_name}` : null}
         </span>
       </div>
     </article>

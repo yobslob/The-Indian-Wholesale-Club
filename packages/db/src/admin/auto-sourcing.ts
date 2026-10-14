@@ -49,7 +49,7 @@ export async function listTargets(
   let query = client
     .from('sourcing_targets')
     .select(
-      'id, name, query, must_match, product_type, tier, status, found_count, note, searched_at, region:regions(name), category:categories(name)',
+      'id, name, query, must_match, product_type, tier, status, found_count, note, searched_at, sites, min_price_paise, max_price_paise, listings, region:regions(name), category:categories(name)',
     )
     .order('tier', { ascending: true, nullsFirst: false })
     .order('created_at')
@@ -58,20 +58,25 @@ export async function listTargets(
   return unwrap(await query);
 }
 
-/** New targets; one already there for the same name and state is left as it is. Returns how many were added. */
+/**
+ * New targets; one already there for the same name and state (or for all states, region_id null, D-121) is left as it
+ * is. Returns how many were added.
+ */
 export async function addTargets(
   client: IwcClient,
   rows: Insert<'sourcing_targets'>[],
 ): Promise<number> {
   if (!rows.length) return 0;
+  const regions = [...new Set(rows.map((r) => r.region_id).filter((id): id is string => !!id))];
+  const filter = [
+    ...(regions.length ? [`region_id.in.(${regions.join(',')})`] : []),
+    ...(rows.some((r) => !r.region_id) ? ['region_id.is.null'] : []),
+  ].join(',');
   const existing = unwrap(
-    await client
-      .from('sourcing_targets')
-      .select('name, region_id')
-      .in('region_id', [...new Set(rows.map((r) => r.region_id))]),
+    await client.from('sourcing_targets').select('name, region_id').or(filter),
   );
-  const key = (r: { name: string; region_id: string }) =>
-    `${r.region_id}|${r.name.trim().toLowerCase()}`;
+  const key = (r: { name: string; region_id?: string | null }) =>
+    `${r.region_id ?? 'all'}|${r.name.trim().toLowerCase()}`;
   const seen = new Set(existing.map(key));
   const fresh = rows.filter((r) => !seen.has(key(r)) && !!seen.add(key(r)));
   if (!fresh.length) return 0;

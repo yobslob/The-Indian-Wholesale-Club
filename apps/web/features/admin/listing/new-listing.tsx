@@ -3,7 +3,7 @@
 import { useRouter } from 'next/navigation';
 import { useEffect, useState, useTransition } from 'react';
 
-import { listingSlug, PRODUCT_TYPE_LABEL, PRODUCT_TYPES, variantLabel, type PricingSettings, type ProductType } from '@repo/shared/domain';
+import { fallbackWeightG, listingSlug, PRODUCT_TYPE_LABEL, PRODUCT_TYPES, regionSegment, variantLabel, type PricingSettings, type ProductType } from '@repo/shared/domain';
 
 import { saveListingAction } from '../actions/listings';
 import { button, input, panel, secondaryButton } from '../styles';
@@ -50,7 +50,9 @@ export function NewListing({ data }: { data: ListingFormData }): React.JSX.Eleme
   const autoSlug = listingSlug(f.name || 'new listing', suffix);
   const webSlug = slug ?? autoSlug;
   const weights = options.map((o) => Number(o.weight)).filter((w) => w > 0);
-  const weight = weights.length ? Math.max(...weights) : (category?.default_weight_g ?? null);
+  const weight = weights.length
+    ? Math.max(...weights)
+    : fallbackWeightG(type, toPaise(f.shopPrice), category?.default_weight_g ?? null, data.pricing);
   const cents = livePrice(toPaise(f.shopPrice), weight, data.pricing, type);
 
   const save = (publish: boolean): void => {
@@ -158,7 +160,7 @@ export function NewListing({ data }: { data: ListingFormData }): React.JSX.Eleme
           <p className="text-ink-muted -mt-1 text-[12.5px] leading-[1.3]">
             {slug === null ? (
               <>
-                Web address: <b className="text-ink font-medium">/states/{vendor?.region?.slug ?? '…'}/{autoSlug}</b> (from the name) ·{' '}
+                Web address: <b className="text-ink font-medium">/states/{vendor ? regionSegment(vendor.region?.slug) : '…'}/{autoSlug}</b> (from the name) ·{' '}
                 <button type="button" onClick={() => setSlug(autoSlug)} className="text-ink underline">
                   Edit
                 </button>

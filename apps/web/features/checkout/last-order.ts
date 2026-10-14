@@ -5,7 +5,7 @@ export interface SummaryLine {
   variantId: string;
   productName: string;
   variantLabel: string;
-  regionName: string;
+  regionName: string | null;
   quantity: number;
   totalCents: number;
   imagePath: string | null;

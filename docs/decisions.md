@@ -13,7 +13,7 @@ To change a decision, add a new one (`Supersedes D-xxx`) and mark the old line `
 - **D-001** 2026-09-27 · founder: Users, emotion, competition
 - **D-002** 2026-09-27 · founder: Regions are the core concept, all 36 treated the same
 - **D-003** 2026-09-27 · founder: No operations info on the customer side
-- **D-004** 2026-09-27 · proposed: Honest origin labelling; the old "stealth origin" layer is removed forever
+- **D-004** 2026-09-27 · proposed: Honest origin labelling; the old "stealth origin" layer is removed forever · the state is optional since D-121
 - **D-005** 2026-09-27 · founder: Order-first supply in cycles
 - **D-006** 2026-09-27 · founder: Hidden admin on web and app
 - **D-007** 2026-09-27 · founder: Two operators
@@ -430,4 +430,28 @@ What it means for the build (migrations `20261014120000_small_food_shelf.sql`, `
 shipping share, the steps a dollar apart (the founder named $1.99, $2.99, $3.99), skipping drafts with no photo, no
 option or nothing to sell. The 3,000-listing goal is noted; the sourcing runner's targets and listings per target set
 how fast it is reached (D-118).
+
+**D-121 · 2026-10-14 · founder: Myntra ₹600 – ₹1,600 clothing for every state; the state tag optional; cheap home pieces priced right**
+Founder, verbatim: "Alright now we have to target the 600-1600rs market (myntra clothing) and fill the inventory list,
+keep the state tag optional on a product, if there is no tag, don't show it. And this  market should fill in all states
+Also you have literally capped the home and decor items minimum at 60$ now disposables, toilet rolls, basket, 15-20$
+things everything is listed around 60$ fix that."
+What it means for the build (migration `20261014140000_all_india_and_bands.sql`):
+- **The state is optional.** A listing may have no state (an *all-India listing*). The store never shows one for it:
+  no state on its card, its page, the bag, orders or emails; the origin line reads "Made in India · Imported". It is
+  never given an invented state (D-004).
+- **All-India listings fill every state:** each state's page and See all show them after the state's own pieces (the
+  counts include them); the page is `/states/india/<slug>`.
+- **Targets with shops, a price band and a number of listings:** a target may be for all states, limited to some shops,
+  kept to a shop price band (colours outside it are left out) and ask for its own number of listings. A page that names
+  another country of origin is not listed. `tools/sourcing-runner/targets/myntra-600-1600.csv`: 79 Myntra targets,
+  ₹600 – ₹1,600, all states (women's kurtas and sets, sarees, blouses, dupattas, lehengas, men's kurtas, sets, Nehru
+  jackets, dhotis, footwear, kids), 10 – 25 listings each, about 1,170 listings with their colours and sizes.
+- **Home & gifts without a weight** was priced at its category's typical weight (1.5 kg for decor, 2 kg for serveware),
+  so a ₹200 basket came out at $62.29. Now it is priced at its shop price × 1.5 g per rupee, at least 200 g and at most
+  the category's weight: ₹100 $10.99, ₹200 $17.99, ₹400 $35.79. A piece with its own weight is priced on it as before.
+*Claude's choices in it (proposed, the founder confirms or changes):* all-India pieces after the state's own; the
+address word `india`; the Myntra target list and its numbers; 1.5 g per rupee and 200 g (estimates in Settings);
+nothing made outside India is listed. Myntra's listings reach the hub only if its delivery days (Auto-sourcing → Shops)
+are within the limit (3 days).
 

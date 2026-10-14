@@ -92,6 +92,9 @@ function fromMyntra(p: Obj, out: Partial<SourcedProduct>): void {
       .map(([k, v]) => [oneLine(k), oneLine(str(v))] as [string, string])
       .filter(([k, v]) => k && v && v.toUpperCase() !== 'NA');
   }
+  // D-121: where it was made (the store says "Made in India"; the runner lists nothing made elsewhere)
+  if (str(p.countryOfOrigin))
+    out.specs = [...(out.specs ?? []), ['Country of origin', oneLine(str(p.countryOfOrigin))]];
   const care = details.find((d) => /material|care/i.test(str(d.title)));
   if (care)
     out.specs = [

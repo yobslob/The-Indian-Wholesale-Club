@@ -55,8 +55,16 @@ export const targetSchema = z.object({
   must_match: z.string().nullable(),
   product_type: z.enum(PRODUCT_TYPES),
   category: z.string(),
-  region: z.string(),
+  /** Null: all states (D-121), the listings carry no state. */
+  region: z.string().nullable(),
   tier: z.number().int().nullable(),
+  /** Only these shops (hosts, "myntra.com"); null: every shop of the type (D-121). */
+  sites: z.array(z.string()).nullable().default(null),
+  /** The shop's price band in paise, either end open (D-121). */
+  min_price_paise: z.number().int().positive().nullable().default(null),
+  max_price_paise: z.number().int().positive().nullable().default(null),
+  /** How many listings to make for it; null: the setting (listings per target). */
+  listings: z.number().int().min(1).max(40).nullable().default(null),
 });
 export type SourcingTarget = z.infer<typeof targetSchema>;
 

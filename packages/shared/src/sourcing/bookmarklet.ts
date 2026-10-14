@@ -19,7 +19,7 @@ qa('meta').forEach(function(m){var k=m.getAttribute('property')||m.getAttribute(
  if(k&&v&&/^(og:|product:|description$|price|pricecurrency)/i.test(k)){c.meta[k]=c.meta[k]||[];if(c.meta[k].length<20)c.meta[k].push(v.slice(0,1900));}});
 qa('script[type="application/ld+json"]').forEach(function(s){var x=s.textContent||'';if(/product/i.test(x)&&c.ld.length<12)c.ld.push(x.slice(0,79000));});
 try{var p=window.__myx&&window.__myx.pdpData;if(p){c.myntra={name:p.name,brand:p.brand&&{name:p.brand.name},mrp:p.mrp,price:p.price,media:p.media,
- productDetails:p.productDetails,articleAttributes:p.articleAttributes,analytics:p.analytics,baseColour:p.baseColour,
+ productDetails:p.productDetails,articleAttributes:p.articleAttributes,analytics:p.analytics,baseColour:p.baseColour,countryOfOrigin:p.countryOfOrigin,
  sizes:(p.sizes||[]).slice(0,40).map(function(s){var d=(s.sizeSellerData||[])[0]||{};return {label:s.label,available:s.available,skuId:s.skuId,
   sizeSellerData:[{discountedPrice:d.discountedPrice,mrp:d.mrp}]};})};}}catch(e){}
 try{var sp=window.ShopifyAnalytics&&window.ShopifyAnalytics.meta&&window.ShopifyAnalytics.meta.product;if(sp&&sp.variants)c.shopify={variants:sp.variants.slice(0,60)};}catch(e){}

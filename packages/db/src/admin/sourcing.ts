@@ -50,23 +50,20 @@ export async function updateSourcedProduct(
 }
 
 /**
- * The vendor that stands for an online shop in one state (pickups and the cycle's shop cards group by it), made the
- * first time a product of that shop and state is imported.
+ * The vendor that stands for an online shop in one state, or for all India (D-121) (pickups and the cycle's shop cards
+ * group by it), made the first time a product of that shop and state is imported.
  */
 export async function onlineVendorFor(
   client: IwcClient,
   site: string,
   label: string,
-  regionId: string,
+  /** Null: the shop's vendor for all-India listings (D-121). */
+  regionId: string | null,
   userId: string,
 ): Promise<string> {
+  const query = client.from('vendors').select('id, status').eq('online_site', site);
   const found = unwrap(
-    await client
-      .from('vendors')
-      .select('id, status')
-      .eq('online_site', site)
-      .eq('region_id', regionId)
-      .maybeSingle(),
+    await (regionId ? query.eq('region_id', regionId) : query.is('region_id', null)).maybeSingle(),
   );
   if (found) {
     if (found.status !== 'active')

@@ -13,7 +13,8 @@ export function CuratedCard({
 }: {
   id: string;
   products: RegionProductCard[];
-  regionName: string;
+  /** Null on an all-India piece's page (D-121): no state is named. */
+  regionName: string | null;
 }): React.JSX.Element | null {
   if (products.length === 0) return null;
   return (
@@ -23,7 +24,7 @@ export function CuratedCard({
         <h2 id={id} className="font-heading mt-2.5 text-[clamp(26px,2.2vw,38px)] font-medium leading-tight tracking-[-0.025em]">
           Picked for you
         </h2>
-        <p className="text-ink-muted mb-[clamp(16px,1.8vw,24px)] mt-2 text-sm">Chosen by us from {regionName}.</p>
+        <p className="text-ink-muted mb-[clamp(16px,1.8vw,24px)] mt-2 text-sm">{regionName ? `Chosen by us from ${regionName}.` : 'Chosen by us.'}</p>
         <ProductStrip products={products} label="Curated for you" />
       </div>
     </section>

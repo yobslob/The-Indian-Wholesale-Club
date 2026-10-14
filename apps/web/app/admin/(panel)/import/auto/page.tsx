@@ -130,8 +130,13 @@ export default async function AutoSourcingPage({
                   <Cell>
                     <b>{t.name}</b>
                     <Sub>
-                      {t.region?.name} · searched as “{t.query}”
+                      {t.region?.name ?? 'All states'} · searched as “{t.query}”
                       {t.must_match ? ` · must say ${t.must_match}` : ''}
+                      {t.sites?.length ? ` · on ${t.sites.join(', ')}` : ''}
+                      {t.min_price_paise || t.max_price_paise
+                        ? ` · ₹${t.min_price_paise ? t.min_price_paise / 100 : 0}–${t.max_price_paise ? `₹${t.max_price_paise / 100}` : 'any'}`
+                        : ''}
+                      {t.listings ? ` · ${t.listings} listings` : ''}
                     </Sub>
                   </Cell>
                   <Cell>

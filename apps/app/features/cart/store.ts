@@ -14,8 +14,9 @@ export interface BagLine {
   productId: string;
   productName: string;
   productSlug: string;
-  regionSlug: string;
-  regionName: string;
+  /** Null for an all-India piece (D-121). */
+  regionSlug: string | null;
+  regionName: string | null;
   variantLabel: string;
   unitPriceCents: number;
   imagePath: string | null;

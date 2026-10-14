@@ -152,6 +152,15 @@ Migration 31 (D-099, the second speed audit): `admin_order_counts()` (every orde
 send, shops owed for picked pieces) and `admin_cycle_totals(cycle)` (the cycle card's orders, pieces, shops and sales),
 admin only, counted in SQL because the API sends at most 1,000 rows; indexes for orders by status and newest, pickups
 by status, what each shop is owed, and a payout's pieces.
+Migration 50 (D-121): `products.region_id`, `order_items.region_name`, `sourcing_targets.region_id` and an online
+shop's `vendors.region_id` may be empty (an all-India listing; `vendors_region_or_online`: a shop in person still has
+its state; one all-India vendor per online shop). `store_products` left-joins the state; `store_region_page` and
+`store_browse` add the all-India pieces to every state after its own (counts too); `store_product_page` finds them under
+`india`; `create_order` and `admin_demand` keep them without a state. `sourcing_targets` gains `sites`,
+`min_price_paise`, `max_price_paise`, `listings` (and its name is unique per state or all states); the runner's plan
+returns them. `pricing_settings.home_est_g_per_rupee`, `home_est_min_g` and `_fallback_weight_g(type, shop, category)`:
+home & gifts without a weight is priced at shop ₹ × g per rupee (at least the minimum, at most the category's weight)
+in `_product_auto_price`, `_reprice_products` and `worker_sourcing_add`. Tests: `all_india.test.sql`.
 Migrations 48 – 49 (D-120): `pricing_settings` gains the small-food shelf, `small_food_max_shop_paise`,
 `small_food_max_g`, `small_food_ship_share_pct`, `small_food_floor_cents`, `small_food_ceiling_cents` (ceiling ≥
 floor); `_auto_price_cents` puts small food on whole-dollar steps from the floor to the ceiling (half its shipping

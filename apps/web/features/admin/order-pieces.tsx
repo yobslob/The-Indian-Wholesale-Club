@@ -42,7 +42,7 @@ export function OrderPieces({ order, refunds, expressInIndia }: { order: Order; 
               <Cell>
                 <b className="font-semibold">{item.product_name}</b>
                 <Sub>
-                  {item.variant_label} · {item.region_name}
+                  {[item.variant_label, item.region_name].filter(Boolean).join(' · ')}
                 </Sub>
               </Cell>
               <Cell className="text-right">{item.quantity}</Cell>

@@ -11,7 +11,7 @@ import Animated, {
   withTiming,
 } from 'react-native-reanimated';
 
-import { formatUsd } from '@repo/shared/domain';
+import { formatUsd, regionSegment } from '@repo/shared/domain';
 import tokens from '@repo/tokens';
 
 import type { ProductCard as ProductCardData, RegionProductCard } from '@repo/db/store';
@@ -48,7 +48,7 @@ function QuickAdd({ product }: { product: CardData }): React.JSX.Element {
       <Link
         href={{
           pathname: '/product/[region]/[slug]',
-          params: { region: product.region_slug, slug: product.slug },
+          params: { region: regionSegment(product.region_slug), slug: product.slug },
         }}
         asChild
       >
@@ -129,7 +129,7 @@ export const ProductCard = memo(function ProductCard({
         <Link
           href={{
             pathname: '/product/[region]/[slug]',
-            params: { region: product.region_slug, slug: product.slug },
+            params: { region: regionSegment(product.region_slug), slug: product.slug },
           }}
           asChild
         >
@@ -163,7 +163,8 @@ export const ProductCard = memo(function ProductCard({
           {product.name}
         </Text>
         <Text className="font-body text-ink-muted text-[12.5px]">
-          {formatUsd(product.price_cents)} · {product.region_name}
+          {formatUsd(product.price_cents)}
+          {product.region_name ? ` · ${product.region_name}` : null}
         </Text>
       </View>
     </View>
