@@ -3,7 +3,7 @@
 **Clothing is weighed by class (D-132):** `pnpm weights classes` gives every clothing option the founder's weight
 for its class: light 350 g (headwear, jewellery, kurtis, plain kurtas, tops, salwar, gamosas, kaftans, dresses,
 skirts), medium 750 g (light sarees, dupattas, potlis, heavier kurtas, dhotis, jackets, co-ords), pants, jeans and
-footwear 800 g, heavy 1.5 kg
+footwear 800 g, heavy 1.5 kg (a kids' or baby set is medium)
 (shawls, very heavy sarees, lehengas, sherwanis, any set). Name rules sort it
 (`packages/shared/src/sourcing/estimate/classes.ts`), then its category, then the local model for a name neither
 reads. Every listing goes in `clothing-classes.csv` (open it in Excel; "Look at it" marks the ones sorted by

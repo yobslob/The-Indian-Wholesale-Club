@@ -20,7 +20,11 @@ export async function sortNewClothing(db: Db): Promise<number> {
       after = page[page.length - 1]!.product_id;
       const writes: ClassWrite[] = [];
       for (const listing of page) {
-        const rule = classifyClothing({ name: listing.name, categorySlug: listing.category_slug });
+        const rule = classifyClothing({
+          name: listing.name,
+          categorySlug: listing.category_slug,
+          labels: listing.variants.map((v) => v.label),
+        });
         if (rule) writes.push(...classWrites(listing, rule.cls, rule.why));
         else unsorted += 1;
       }

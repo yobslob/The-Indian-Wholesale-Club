@@ -92,6 +92,7 @@ phase's sub-steps and every verification run) is in `docs/archive/status-log-to-
 2. Done 2026-10-16: all 339 live clothing listings (2,993 options) have their class weight (`pnpm weights classes` on
    production; none had a weight before; the old values are in `tools/weight-estimator/clothing-classes-before.jsonl`).
    New clothing is sorted by each `pnpm sourcing run`, or alone by `pnpm sourcing classes` (no shops, nothing added).
+   Kids' and baby sets are medium (750 g) since the founder's answer the same day (35 listings, 646 options).
    Clothing drafts held for a missing weight (D-129) can now be published (Products → Drafts → Publish all drafts). Then food and
    home: `pnpm weights run --dry --limit 20`, read the estimates, `pnpm weights run`. Decide whether a sure estimate may
    price a live food or home listing without an admin's look (D-131 lets it).

@@ -69,18 +69,25 @@ const cases: [string, ClothingClass, string?][] = [
   ['Paithani saree', 'heavy'],
   ['White silk bridal saree', 'heavy'],
   ['Bridal kasavu with brocade blouse', 'heavy'],
-  ['FASHION DREAM Girls Floral Printed Georgette Ready to Wear Lehenga & Choli', 'heavy'],
-  ['Sangria Girls Printed Cotton Round Neck Flared Lehenga Choli', 'heavy'],
-  ['joley poley Boys Sequin Embellished Mandarin Collar Sherwani', 'heavy'],
   ['Anouk Men Printed Regular Kurta with Pyjamas And Nehru jacket', 'heavy'],
   ['KJFAB Women Ethnic Motifs Printed Regular Pure Cotton Kurta with Trousers', 'heavy'],
-  ['Boys’ mini mundu and shirt', 'heavy'],
   ['Kurta and tehmat', 'heavy'],
   ['Cotton kurta-pajama', 'heavy'],
-  ['Sangria Boys Peach Kurta Sets', 'heavy'],
   ['Pathani suit', 'heavy'],
   ['KALINI Embroidered Pure Cotton Unstitched Dress Material', 'heavy'],
-  ['Lagorii Girls Embroidered Thread Work Puff Sleeves Ready to Wear Pattu Pavadai', 'heavy'],
+];
+
+// the founder, 2026-10-16: kids' and baby sets are medium (750 g)
+const kids: [string, ClothingClass][] = [
+  ['FASHION DREAM Girls Floral Printed Georgette Ready to Wear Lehenga & Choli', 'medium'],
+  ['Sangria Girls Printed Cotton Round Neck Flared Lehenga Choli', 'medium'],
+  ['joley poley Boys Sequin Embellished Mandarin Collar Sherwani', 'medium'],
+  ['Boys’ mini mundu and shirt', 'medium'],
+  ['Sangria Boys Peach Kurta Sets', 'medium'],
+  ['Lagorii Girls Embroidered Thread Work Puff Sleeves Ready to Wear Pattu Pavadai', 'medium'],
+  ['KISAH Men Black Self-Design Mandarin Collar Indowestern Sherwani Set', 'heavy'],
+  ['Pathani suit', 'heavy'],
+  ['Kids’ shawl', 'heavy'],
 ];
 
 describe('clothing classes (D-132)', () => {
@@ -88,6 +95,29 @@ describe('clothing classes (D-132)', () => {
     it(`${name} → ${cls}${because ? ` (${because})` : ''}`, () => {
       assert.equal(classifyClothing({ name, categorySlug: null })?.cls, cls);
     });
+
+  for (const [name, cls] of kids)
+    it(`${name} → ${cls} (a kids' set is medium, an adult's set and a shawl stay heavy)`, () => {
+      assert.equal(classifyClothing({ name, categorySlug: null })?.cls, cls);
+    });
+
+  it("reads a child's age sizes as kids', and the kids category", () => {
+    const set = 'Superminis Printed Pure Cotton Kurta with Dhoti Pants';
+    assert.equal(classifyClothing({ name: set, categorySlug: null })?.cls, 'heavy');
+    assert.equal(
+      classifyClothing({
+        name: set,
+        categorySlug: null,
+        labels: ['Yellow · 3-6M', 'Yellow · 6-12M'],
+      })?.cls,
+      'medium',
+    );
+    assert.equal(classifyClothing({ name: set, categorySlug: 'kids' })?.cls, 'medium');
+    assert.equal(
+      classifyClothing({ name: set, categorySlug: null, labels: ['S', 'M', 'L'] })?.cls,
+      'heavy',
+    );
+  });
 
   it('falls back to the category when the name says nothing, and to nobody when neither does', () => {
     assert.deepEqual(classifyClothing({ name: 'Dimasa rigu', categorySlug: 'sarees' }), {

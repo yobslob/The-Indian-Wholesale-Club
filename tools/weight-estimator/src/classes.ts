@@ -115,7 +115,11 @@ export async function sortClothing(
     if (!opts.dry) keepBefore(page);
     const writes: ClassWrite[] = [];
     await pool(page, opts.parallel, async (listing) => {
-      const rule = classifyClothing({ name: listing.name, categorySlug: listing.category_slug });
+      const rule = classifyClothing({
+        name: listing.name,
+        categorySlug: listing.category_slug,
+        labels: listing.variants.map((v) => v.label),
+      });
       const model = !rule && ollama ? await modelView(ollama, listing) : null;
       const cls = rule?.cls ?? model?.cls ?? null;
       const why = rule?.why ?? (model ? `the model: ${model.why}` : 'no rule reads its name');

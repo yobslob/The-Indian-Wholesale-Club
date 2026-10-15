@@ -743,6 +743,10 @@ What it means for the build (migration `20261016090000_clothing_classes.sql`, `p
   also sorts what neither reads), and each run sorts the clothing it adds. Weights stay for pricing only: no store
   page, app screen or `store_*` view or function sends a weight, its source or note (the SQL tests' forbidden keys
   now include all of them).
+- **Kids' sets (2026-10-16), verbatim:** "Make kids' and baby sets medium (750 g) instead of heavy." A set, lehenga,
+  sherwani or sharara is medium when it is for children: "boys", "girls", "kids", "baby" (and the like) in its name,
+  the kids category, or sizes by age ("3-6M", "2-3Y"); a kids' shawl stays heavy. Applied on production the same day
+  (35 listings, 646 options).
 *Claude's choices in it:* a kurta is in both of the founder's lists: a plain or short kurta is light, a kurta in silk,
 velvet, brocade, sequins or zari, or an Anarkali or long kurta, is medium; a kurti is always light. "Very heavy saree":
 Banarasi, Kanjivaram, Paithani, Patola, Baluchari, pattu, bridal or wedding, brocade, velvet, tissue, pure silk or

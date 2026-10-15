@@ -31,7 +31,7 @@ export const CLASS_MEANING: Record<ClothingClass, string> = {
     'a light saree (cotton, georgette, chiffon), a dupatta, stole or muffler, a potli or pouch, a silk, velvet, Anarkali or long kurta, a dhoti or mundu, jackets and knitwear, co-ord sets',
   bottoms: 'pants, jeans, trousers, palazzos, dhoti pants, and footwear (mojaris, juttis, sandals)',
   heavy:
-    'shawls, a very heavy saree (Banarasi or Kanjivaram silk, bridal, brocade), a lehenga, sherwani, sharara or gharara, and any set (a suit, a kurta with pyjama or dupatta, a 3-piece)',
+    "shawls, a very heavy saree (Banarasi or Kanjivaram silk, bridal, brocade), a lehenga, sherwani, sharara or gharara, and any set (a suit, a kurta with pyjama or dupatta, a 3-piece); a kids' or baby set is medium",
 };
 
 export interface ClassResult {
@@ -173,8 +173,39 @@ const clean = (text: string): string =>
 export function classifyClothing(listing: {
   name: string;
   categorySlug: string | null;
+  /** The options' labels ("Yellow · 3-6M"): a child's age sizes make it a kids' piece. */
+  labels?: string[];
 }): ClassResult | null {
-  const name = clean(listing.name);
+  const found = classifyByName(listing.name, listing.categorySlug);
+  // the founder, 2026-10-16: "Make kids' and baby sets medium (750 g) instead of heavy"
+  if (found?.cls === 'heavy' && SET_WHY.test(found.why) && isKids(listing))
+    return { cls: 'medium', why: `a kids' set: ${found.why}`, by: found.by };
+  return found;
+}
+
+/** Heavy for being a set (or a lehenga, sherwani, sharara, or the sets' categories), not a shawl or a heavy saree. */
+const SET_WHY =
+  /^(a set|a lehenga, sherwani or sharara|its category \((suits-and-sets|lehengas)\))/;
+const KIDS_NAME =
+  /\b(boys?|girls?|kids?|baby|babies|infants?|toddlers?|newborns?|child|children|juniors?)\b/;
+/** "3-6M", "2-3Y", "6-12 months", "4 yrs": sizes by age. */
+const AGE_SIZE =
+  /\b\d{1,2}\s*-\s*\d{1,2}\s*(m|y|mths?|months?|yrs?|years?)\b|\b\d{1,2}\s*(mths?|months?|yrs?|years?)\b/;
+
+function isKids(listing: {
+  name: string;
+  categorySlug: string | null;
+  labels?: string[];
+}): boolean {
+  return (
+    listing.categorySlug === 'kids' ||
+    KIDS_NAME.test(clean(listing.name)) ||
+    (listing.labels ?? []).some((l) => AGE_SIZE.test(l.toLowerCase()))
+  );
+}
+
+function classifyByName(rawName: string, categorySlug: string | null): ClassResult | null {
+  const name = clean(rawName);
   // a garment with a second garment is a set, unless it is a saree (with its blouse piece)
   if (!/\b(sarees?|saris?|kasavu)\b/.test(name)) {
     const second = name.match(SECOND_GARMENT);
@@ -208,9 +239,9 @@ export function classifyClothing(listing: {
     }
     return { cls, why: `${why} (${m[0]})`, by: 'name' };
   }
-  const byCategory = listing.categorySlug ? CATEGORY_CLASS[listing.categorySlug] : undefined;
+  const byCategory = categorySlug ? CATEGORY_CLASS[categorySlug] : undefined;
   return byCategory
-    ? { cls: byCategory, why: `its category (${listing.categorySlug})`, by: 'category' }
+    ? { cls: byCategory, why: `its category (${categorySlug})`, by: 'category' }
     : null;
 }
 
