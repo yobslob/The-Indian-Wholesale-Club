@@ -13,6 +13,7 @@ import {
   listSourcingShops,
   publishProducts,
   reviewSource,
+  requeueNothingFit,
   setTargetsStatus,
   updateSourcingSettings,
   updateSourcingShop,
@@ -78,7 +79,9 @@ export async function uploadTargetsAction(csv: string): Promise<UploadResult> {
     listSourcingShops(client),
   ]);
   const siteOf = (typed: string): string | undefined =>
-    shopList.find((s) => s.site === typed || s.site.split('.')[0] === typed || s.label.toLowerCase() === typed)?.site;
+    shopList.find(
+      (s) => s.site === typed || s.site.split('.')[0] === typed || s.label.toLowerCase() === typed,
+    )?.site;
   const regionId = new Map(regions.map((r) => [r.slug, r.id]));
   const category = new Map(categories.map((c) => [c.slug, c]));
   const ready = rows.flatMap((r, i) => {
@@ -133,6 +136,12 @@ export async function setTargetAction(
 ): Promise<void> {
   const { client } = await requireAdminAction();
   await setTargetsStatus(client, [id.parse(targetId)], status);
+  revalidatePath(PAGE);
+}
+
+export async function searchNothingFitAgainAction(): Promise<void> {
+  const { client } = await requireAdminAction();
+  await requeueNothingFit(client);
   revalidatePath(PAGE);
 }
 

@@ -84,6 +84,18 @@ export async function addTargets(
   return fresh.length;
 }
 
+/** Every target where nothing fit, back to the queue (a run the shops blocked marks them all, 2026-10-16). */
+export async function requeueNothingFit(client: IwcClient): Promise<number> {
+  const rows = unwrap(
+    await client
+      .from('sourcing_targets')
+      .update({ status: 'queued', claimed_at: null })
+      .eq('status', 'none')
+      .select('id'),
+  );
+  return rows.length;
+}
+
 export async function setTargetsStatus(
   client: IwcClient,
   ids: string[],

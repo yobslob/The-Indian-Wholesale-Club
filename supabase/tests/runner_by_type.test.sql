@@ -36,6 +36,23 @@ select tests.assert((select bool_and('food' = any(array(select jsonb_array_eleme
 select tests.assert(jsonb_array_length(public.worker_sourcing_plan(0) -> 'targets') = 1,
   'a runner without a type still takes what is left (Myntra''s saree)');
 
+-- A target whose search failed everywhere goes back to the queue, ready for the next run.
+reset role;
+select tests.assert((select status = 'searching' from public.sourcing_targets where id = tests.id('clothing_target')),
+  'the claimed target is being searched');
+set local role authenticated;
+select tests.act_as(tests.id('worker'));
+select public.worker_sourcing_target_release(tests.id('clothing_target'), 'nishorama.com: 429');
+reset role;
+select tests.assert((select status = 'queued' and claimed_at is null and note = 'nishorama.com: 429'
+                       from public.sourcing_targets where id = tests.id('clothing_target')),
+  'a released target is queued again, with why');
+set local role authenticated;
+select tests.act_as(tests.id('admin'));
+select tests.assert_fails(format('select public.worker_sourcing_target_release(%L)', tests.id('food_target')),
+  'worker_only', 'only the runner releases a target');
+select tests.act_as(tests.id('worker'));
+
 -- Checks: each runner re-reads only its type, and with a shop only listings sourced there alone.
 reset role;
 insert into public.products (slug, name, product_type, region_id, category_id, vendor_id, price_cents, status)

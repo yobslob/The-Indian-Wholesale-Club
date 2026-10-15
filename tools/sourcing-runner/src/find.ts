@@ -25,24 +25,35 @@ import type { SourcedProduct } from '@repo/shared/sourcing';
  * of its items (flavours, packs, colours and sizes) and the same product on other shops as backups.
  */
 
-async function search(ctx: RunContext, target: SourcingTarget, want: number): Promise<Offer[]> {
+/** The results of every shop the target names, and whether every search failed (blocked, down), not just empty. */
+async function search(
+  ctx: RunContext,
+  target: SourcingTarget,
+  want: number,
+): Promise<{ offers: Offer[]; failed: boolean }> {
   const shops = shopsFor(target, ctx.plan.shops);
+  let failures = 0;
   const hint = { minPaise: target.min_price_paise, maxPaise: target.max_price_paise, want };
   const found = await Promise.all(
     shops.map(async (shop) => {
       try {
-        const offers = await shopFor(shop.reader).search(ctx.lanes.of(shop.site), target.query, hint);
+        const offers = await shopFor(shop.reader).search(
+          ctx.lanes.of(shop.site),
+          target.query,
+          hint,
+        );
         ctx.stats.page(shop.site);
         log(`  ${shop.site}: ${offers.length} result${offers.length === 1 ? '' : 's'}`);
         return offers;
       } catch (error) {
         ctx.stats.page(shop.site, error);
         log(`  ${shop.site}: search failed: ${errorText(error)}`);
+        failures += 1;
         return [];
       }
     }),
   );
-  return found.flat();
+  return { offers: found.flat(), failed: shops.length > 0 && failures === shops.length };
 }
 
 export async function readPage(
@@ -175,7 +186,14 @@ export async function findForTarget(ctx: RunContext, target: SourcingTarget): Pr
       ? `, ₹${(target.min_price_paise ?? 0) / 100}–${target.max_price_paise ? target.max_price_paise / 100 : 'any'}`
       : '';
   log(`target "${target.name}" (${target.region ?? 'all states'}, ${target.category}${band})`);
-  const offers = await search(ctx, target, want);
+  const { offers, failed } = await search(ctx, target, want);
+  if (failed) {
+    // every shop failed to answer: not "nothing fit", so the target waits for the next run (Nishorama's 429s)
+    if (ctx.db)
+      await ctx.db.releaseTarget(target.id, 'every shop failed to answer; searched again next run');
+    log('  every shop failed to answer: the target goes back to the queue');
+    return 0;
+  }
   const candidates = pickCandidates(target, offers, ctx.plan.shops, {
     maxDays: s.max_delivery_days,
     known: ctx.known,

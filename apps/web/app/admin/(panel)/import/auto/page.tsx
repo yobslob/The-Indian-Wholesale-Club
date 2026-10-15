@@ -15,6 +15,7 @@ import { requireAdminPage } from '@/features/admin/guard';
 import {
   deleteTargetAction,
   publishReadyAction,
+  searchNothingFitAgainAction,
   setTargetAction,
 } from '@/features/admin/import/auto/actions';
 import {
@@ -121,6 +122,13 @@ export default async function AutoSourcingPage({
               })),
             ]}
           />
+          {status === 'none' && counts.none ? (
+            <form action={searchNothingFitAgainAction} className="mb-3">
+              <button type="submit" className={button}>
+                Search all {counts.none} again
+              </button>
+            </form>
+          ) : null}
           {targets.length === 0 ? (
             <p className="text-ink-muted">No targets here.</p>
           ) : (

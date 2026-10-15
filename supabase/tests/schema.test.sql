@@ -65,7 +65,7 @@ select tests.assert(
           'worker_claim_job', 'worker_clothing_plan', 'worker_estimate_plan', 'worker_finish_job', 'worker_may_add_photos', 'worker_set_class_weights',
           'worker_set_estimates', 'worker_set_weights', 'worker_sourcing_add',
           'worker_sourcing_checked', 'worker_sourcing_log', 'worker_sourcing_media', 'worker_sourcing_plan',
-          'worker_sourcing_target_done', 'worker_weight_plan', 'worker_weight_references'],
+          'worker_sourcing_target_done', 'worker_sourcing_target_release', 'worker_weight_plan', 'worker_weight_references'],
   'signed-in users can execute only store, admin-, vendor- and worker-checked functions (never create_order)');
 
 rollback;

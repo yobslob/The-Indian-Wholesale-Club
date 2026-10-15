@@ -91,6 +91,14 @@ export class Db {
     });
   }
 
+  /** Back to the queue: no shop answered, so nothing is known yet. Before the deploy (no such function) it stays
+   * claimed and the database queues it again after 6 hours. */
+  async releaseTarget(target: string, note: string): Promise<void> {
+    await this.rpc('worker_sourcing_target_release', { p_target: target, p_note: note }).catch(
+      () => undefined,
+    );
+  }
+
   targetDone(target: string, note: string | null): Promise<void> {
     return this.rpc('worker_sourcing_target_done', { p_target: target, p_note: note });
   }

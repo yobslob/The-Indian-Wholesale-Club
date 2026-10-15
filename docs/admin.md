@@ -159,7 +159,8 @@ runner in `tools/sourcing-runner/` (its README says how to set it up on the PC a
   state from the founder's list (753 targets, 6 listings each, D-122); `nishorama.csv` is Nishorama's whole catalogue
   (18 targets, 40 listings each). For a Shopify shop, Search words may name one of its collections, `collection:kurtis`:
   the whole collection (up to 250 pieces; Shopify's search stops at 10) is the target, every piece in it matches, and
-  several targets on one collection take the next 40 each (run one after another). Each
+  several targets on one collection take the next 40 each (run one after another). A target whose search failed on
+  every shop (blocked, "too many requests") goes back to the queue; the Nothing fit view has **Search all again**. Each
   target shows its state: waiting, being searched, found (how many listings), nothing fit (with why), paused; Search
   again, Pause, Remove.
 - **Found and waiting.** What the runner adds arrives as drafts (in Products → Drafts) unless "go live by themselves"

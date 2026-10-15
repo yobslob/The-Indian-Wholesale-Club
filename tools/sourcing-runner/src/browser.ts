@@ -3,6 +3,8 @@ import { join } from 'node:path';
 
 import { chromium, type BrowserContext, type Page } from 'playwright';
 
+import { log } from './log';
+
 import type { Env } from './env';
 
 /**
@@ -107,10 +109,15 @@ export async function openBrowser(
 
 const sleep = (ms: number) => new Promise((r) => setTimeout(r, ms));
 
+/** Waits after "429 Too Many Requests" (or 503) when the shop names none: 10 s, then 30 s, then 60 s. */
+const BACKOFF_MS = [10_000, 30_000, 60_000];
+
 export class Lane {
   private chain: Promise<unknown> = Promise.resolve();
   private page: Page | null = null;
   private last = 0;
+  /** Grows after a shop says "too many requests", for the rest of the run. */
+  private gapMs = GAP_MS;
 
   constructor(
     readonly site: string,
@@ -120,7 +127,7 @@ export class Lane {
   /** Runs `work` after everything queued on this shop, with this shop's tab. */
   run<T>(work: (page: Page) => Promise<T>): Promise<T> {
     const next = this.chain.then(async () => {
-      const wait = this.last + GAP_MS + Math.random() * JITTER_MS - Date.now();
+      const wait = this.last + this.gapMs + Math.random() * JITTER_MS - Date.now();
       if (wait > 0) await sleep(wait);
       try {
         if (!this.page || this.page.isClosed()) this.page = await this.context.newPage();
@@ -133,15 +140,29 @@ export class Lane {
     return next;
   }
 
-  /** The shop's JSON (Shopify's catalogue) with this browser's cookies, without a page. */
+  /**
+   * The shop's JSON (Shopify's catalogue), opened in the shop's tab. "Too many requests" (429, or
+   * 503) is waited out (the shop's Retry-After, else 10, 30, 60 s) and the shop is read more slowly from then on.
+   */
   async json(url: string): Promise<unknown> {
-    return this.run(async () => {
-      const res = await this.context.request.get(url, {
-        timeout: TIMEOUT_MS,
-        headers: { accept: 'application/json' },
-      });
-      if (!res.ok()) throw new Error(`${res.status()} for ${new URL(url).pathname}`);
-      return res.json();
+    return this.run(async (page) => {
+      for (let attempt = 0; ; attempt += 1) {
+        // opened in the shop's tab, through the browser itself: Shopify answered Node's own requests (the API
+        // request context) with 429 after the first, while the browser and other clients got 200 (2026-10-16)
+        const res = await page.goto(url, { timeout: TIMEOUT_MS, waitUntil: 'domcontentloaded' });
+        if (!res) throw new Error(`no answer for ${new URL(url).pathname}`);
+        if (res.ok()) return res.json();
+        const busy = res.status() === 429 || res.status() === 503;
+        if (!busy || attempt >= BACKOFF_MS.length)
+          throw new Error(`${res.status()} for ${new URL(url).pathname}`);
+        const asked = Number(res.headers()['retry-after']);
+        const wait = asked > 0 && asked <= 300 ? asked * 1000 : BACKOFF_MS[attempt]!;
+        this.gapMs = Math.min(this.gapMs * 2, 20_000);
+        log(
+          `  ${this.site}: too many requests (${res.status()}), waiting ${Math.round(wait / 1000)} s`,
+        );
+        await sleep(wait);
+      }
     });
   }
 }

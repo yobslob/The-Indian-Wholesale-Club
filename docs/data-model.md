@@ -152,6 +152,8 @@ Migration 31 (D-099, the second speed audit): `admin_order_counts()` (every orde
 send, shops owed for picked pieces) and `admin_cycle_totals(cycle)` (the cycle card's orders, pieces, shops and sales),
 admin only, counted in SQL because the API sends at most 1,000 rows; indexes for orders by status and newest, pickups
 by status, what each shop is owed, and a payout's pieces.
+Migration 66: `worker_sourcing_target_release(target, note)` (worker): a target whose search failed on every shop goes
+back to the queue instead of "nothing fit". Tests: `runner_by_type.test.sql`.
 Migration 65: `worker_sourcing_plan(checks, type, site)`: with a product type (and a shop) it claims only that type's
 queued targets (open to that shop), lists only that shop or the type's shops, and re-checks only that type's listings
 (with a shop: only those sourced there alone), so two runners share the work. Tests: `runner_by_type.test.sql`.

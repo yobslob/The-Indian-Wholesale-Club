@@ -86,7 +86,7 @@ phase's sub-steps and every verification run) is in `docs/archive/status-log-to-
 
 ## Next for the founder
 1. Run `node scripts/check.mjs` (Docker Desktop and `npx supabase start` first), push, then the Deploy workflow: it
-   applies the new migrations (the latest is `20261016120000_runner_by_type`; D-119 – D-128 reprice every listing)
+   applies the new migrations (the latest is `20261016140000_target_release`; D-119 – D-128 reprice every listing)
    to production. Confirm with the courier that ₹2,000 includes the box and clearance, and
    whether it bills by box size; correct Settings → Courier rate card if not.
 2. Done 2026-10-16: all 339 live clothing listings (2,993 options) have their class weight (`pnpm weights classes` on
@@ -97,7 +97,9 @@ phase's sub-steps and every verification run) is in `docs/archive/status-log-to-
    listings sourced on other shops (Myntra) are then re-checked only by a plain `pnpm sourcing run --checks`.
    The clothing runner needs Nishorama targets: Admin → Import → Auto-sourcing → Add targets from a CSV with
    `tools/sourcing-runner/targets/nishorama.csv` (18 targets reading its collections, about 450 pieces); raise
-   "targets per run" if a run should take more of them.
+   "targets per run" if a run should take more of them. The first try (2026-10-16) was refused by Nishorama (429) and
+   marked all 18 "nothing fit": after the deploy, Auto-sourcing → Nothing fit → **Search all again**, then run again
+   (the runner now reads Shopify through its browser tab, waits out a 429, and puts a failed target back).
    Kids' and baby sets are medium (750 g) since the founder's answer the same day (35 listings, 646 options).
    Clothing drafts held for a missing weight (D-129) can now be published (Products → Drafts → Publish all drafts). Then food and
    home: `pnpm weights run --dry --limit 20`, read the estimates, `pnpm weights run`. Decide whether a sure estimate may

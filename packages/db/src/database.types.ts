@@ -1997,9 +1997,12 @@ isOneToOne: false
 { Args: { "p_media": Json,"p_product": string,"p_publish": boolean }; Returns: Json
                            },
 "worker_sourcing_plan":
-{ Args: { "p_checks"?: number }; Returns: Json
+{ Args: { "p_checks"?: number,"p_site"?: string,"p_type"?: Database["public"]['Enums']["product_type"] }; Returns: Json
                            },
 "worker_sourcing_target_done":
+{ Args: { "p_note"?: string,"p_target": string }; Returns: undefined
+                           },
+"worker_sourcing_target_release":
 { Args: { "p_note"?: string,"p_target": string }; Returns: undefined
                            },
 "worker_weight_plan":
