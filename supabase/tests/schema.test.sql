@@ -51,7 +51,7 @@ select tests.assert(
    where n.nspname = 'public' and has_function_privilege('authenticated', p.oid, 'execute'))
   = array['admin_approve_submission', 'admin_attention', 'admin_cancel_after_export',
           'admin_cancel_after_export_cents', 'admin_create_listing', 'admin_cycle_totals',
-          'admin_decline_submission', 'admin_demand', 'admin_order_counts', 'admin_price_preview', 'admin_publish_drafts',
+          'admin_decline_submission', 'admin_demand', 'admin_order_counts', 'admin_price_preview', 'admin_price_sheet', 'admin_publish_drafts',
           'admin_request_retake', 'admin_rerun_photo_job', 'admin_return_received', 'admin_return_refunded',
           'admin_return_rejected', 'admin_sales', 'admin_set_listed_qty', 'admin_sourcing_review', 'admin_stale_variants',
           'admin_vendor_sign_in_code', 'advance_cycle', 'cancel_after_delay', 'cancel_order', 'cancel_refund_cents',

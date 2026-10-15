@@ -1923,6 +1923,9 @@ isOneToOne: false
 "admin_publish_drafts":
 { Args: Record<PropertyKey, never>; Returns: Json
                            },
+"admin_price_sheet":
+{ Args: { "p_status"?: Database["public"]["Enums"]["product_status"],"p_us_stock"?: boolean,"p_search"?: string }; Returns: { "name": string,"product_type": Database["public"]["Enums"]["product_type"],"shop_price_paise": number | null,"weight_g": number | null,"price_cents": number }[]
+                           },
 "admin_sourcing_review":
 { Args: { "p_accept": boolean,"p_source": string }; Returns: undefined
                            },

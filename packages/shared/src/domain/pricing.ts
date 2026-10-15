@@ -18,8 +18,8 @@
  * what a piece cannot (D-125).
  *
  * Beta (D-127, `betaPricing`): a fixed formula replaces all of the above (archived in
- * docs/archive/pricing-full-formula.md): (shop ₹ × 1.10 + kg × ₹2,000) ÷ ₹92 (fixed), food × 1.20, clothing ÷ 0.60,
- * home & gifts ÷ 0.50, to the cent (no price ending in the beta).
+ * docs/archive/pricing-full-formula.md): D-128, the founder's exact rules: (shop ₹ ÷ 0.90 + weight g × ₹2) ÷ the
+ * category's divisor (food 0.80, clothing 0.60, home & gifts 0.50) ÷ ₹92, to the cent (no price ending in the beta).
  */
 import type { ProductType } from './product-types';
 
@@ -73,15 +73,27 @@ export interface PricingSettings {
  * food's margin band (D-126). */
 export type PriceRule = 'recipe' | 'tapered' | 'guard' | 'small' | 'band' | 'beta';
 
-/** D-127: the beta formula's fixed numbers, as the database's `_auto_price_cents()` (migration 20261015120000). */
+/**
+ * D-128: the beta's fixed numbers (the founder's exact rules), as the database's `_auto_price_cents()` (migration
+ * 20261015150000): (shop ₹ ÷ 0.90 + weight g × ₹2) ÷ the category's divisor ÷ ₹92, to the cent.
+ */
 export const BETA_PRICING = {
-  /** D-127: converted last at a fixed ₹92 a dollar (the day's rate less the 4% buffer, rounded), not the day's rate */
+  shopDivisor: 0.9,
+  /** ₹2,000 a kg = ₹2 a gram = 200 paise a gram */
+  shipPaisePerGram: 200,
+  divisor: { food: 0.8, clothing: 0.6, home: 0.5 },
   inrPerUsd: 92,
-  indiaHandling: 0.1,
-  flightPaisePerKg: 200000,
-  /** food: on top of cost; clothing and home & gifts: of the price */
-  margin: { food: 0.2, clothing: 0.4, home: 0.5 },
 } as const;
+
+/** D-128: a piece's subtotal in rupees (adjusted cost + shipping), before the category's divisor. */
+export function betaSubtotalInr(shopPaise: number, weightG: number): number {
+  return (shopPaise / BETA_PRICING.shopDivisor + BETA_PRICING.shipPaisePerGram * weightG) / 100;
+}
+
+/** D-128: the category's divisor (clothing for anything else). */
+export function betaDivisor(type: ProductType | null | undefined): number {
+  return type === 'food' || type === 'home' ? BETA_PRICING.divisor[type] : BETA_PRICING.divisor.clothing;
+}
 
 export interface PriceBreakdown {
   /** The piece's cost before margin (cents). */
@@ -318,11 +330,8 @@ export function autoPrice(
   return { costCents: Math.round(cost), priceCents: recipe, rule };
 }
 
-/** D-127: the beta formula in rupees, converted last at ₹92 (no fee, no packing %, no guard, no ending). */
+/** D-128: the founder's exact rules (no fee, no packing %, no guard, no ending), to the cent. */
 function betaPrice(shop: number, g: number, t: ProductType | null | undefined): PriceBreakdown {
-  const { inrPerUsd, indiaHandling, flightPaisePerKg, margin } = BETA_PRICING;
-  const cost = (shop * (1 + indiaHandling) + (flightPaisePerKg * g) / 1000) / inrPerUsd;
-  const price =
-    t === 'food' ? cost * (1 + margin.food) : t === 'home' ? cost / (1 - margin.home) : cost / (1 - margin.clothing);
-  return { costCents: Math.round(cost), priceCents: Math.round(price), rule: 'beta' };
+  const cost = (betaSubtotalInr(shop, g) * 100) / BETA_PRICING.inrPerUsd;
+  return { costCents: Math.round(cost), priceCents: Math.round(cost / betaDivisor(t)), rule: 'beta' };
 }

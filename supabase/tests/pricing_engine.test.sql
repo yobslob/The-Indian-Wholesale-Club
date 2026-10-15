@@ -4,17 +4,18 @@
 begin;
 select tests.setup();
 
--- D-127: the beta formula, fixed in code: (shop ₹ × 1.10 + kg × ₹2,000) in rupees, converted last at a fixed ₹92; food
--- × 1.20, clothing ÷ 0.60, home & gifts ÷ 0.50, to the cent. The day's rate does not move a beta price.
+-- D-128: the beta by the founder's exact rules, fixed in code: (shop ₹ ÷ 0.90 + weight g × ₹2) ÷ the category's divisor
+-- (food 0.80, clothing 0.60, home & gifts 0.50) ÷ a fixed ₹92, to the cent. The day's rate does not move a beta price.
 update public.pricing_settings set beta_pricing = true, fx_inr_per_usd = 96.30, fx_buffer_pct = 4, fx_auto = false
  where id = 1;
-select tests.assert(public._auto_price_cents(9000, 100, 'food') = 390, 'D-127: ₹90 garam masala of 100 g: ₹299 + 20% = ₹358.80 ÷ 92 = $3.90');
-select tests.assert(public._auto_price_cents(23000, 1000, 'food') = 2939, 'D-127: ₹230 bhujia of 1 kg: ₹2,253 + 20% ÷ 92 = $29.39');
-select tests.assert(public._auto_price_cents(69900, 450, 'clothing') = 3023, 'D-127: ₹699 kurta of 450 g: ₹1,668.90 ÷ 0.60 ÷ 92 = $30.23');
-select tests.assert(public._auto_price_cents(35000, 525, 'home') = 3120, 'D-127: ₹350 brass diya of 525 g: ₹1,435 ÷ 0.50 ÷ 92 = $31.20');
+select tests.assert(public._auto_price_cents(10000, 100, 'food') = 423, 'D-128: the founder''s example: ₹100 · 100 g food: ₹111.11 + ₹200 = ₹311.11 ÷ 0.80 ÷ 92 = $4.23');
+select tests.assert(public._auto_price_cents(18000, 500, 'food') = 1630, 'D-128: ₹180 mango pickle of 500 g: ₹200 + ₹1,000 = ₹1,200 ÷ 0.80 ÷ 92 = $16.30');
+select tests.assert(public._auto_price_cents(23000, 1000, 'food') = 3065, 'D-128: ₹230 bhujia of 1 kg is $30.65');
+select tests.assert(public._auto_price_cents(69900, 450, 'clothing') = 3037, 'D-128: ₹699 kurta of 450 g: ₹1,676.67 ÷ 0.60 ÷ 92 = $30.37');
+select tests.assert(public._auto_price_cents(35000, 525, 'home') = 3128, 'D-128: ₹350 brass diya of 525 g: ₹1,438.89 ÷ 0.50 ÷ 92 = $31.28');
 select tests.assert(public._auto_price_cents(9000, null, 'food') is null, 'D-127: no weight, no price');
 update public.pricing_settings set fx_inr_per_usd = 80 where id = 1;
-select tests.assert(public._auto_price_cents(9000, 100, 'food') = 390, 'D-127: the day''s rate does not move a beta price (₹92 fixed)');
+select tests.assert(public._auto_price_cents(9000, 100, 'food') = 408, 'D-128: the day''s rate does not move a beta price (₹92 fixed; ₹90 · 100 g food $4.08)');
 update public.pricing_settings set fx_inr_per_usd = 96.30 where id = 1;
 select tests.assert((select price_cents from public.products where id = tests.id('p_live'))
                     is not distinct from (select price_cents from public.products where id = tests.id('p_live')),

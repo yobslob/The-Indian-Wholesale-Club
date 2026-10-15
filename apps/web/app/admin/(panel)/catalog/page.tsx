@@ -55,6 +55,13 @@ export default async function CatalogPage({
     return query.size ? `/admin/catalog?${query.toString()}` : '/admin/catalog';
   };
 
+  const exportQuery = new URLSearchParams({
+    ...(q ? { q } : {}),
+    ...(status ? { status } : {}),
+    ...(usStock ? { us: '1' } : {}),
+  });
+  const exportHref = `/admin/catalog/export${exportQuery.size ? `?${exportQuery.toString()}` : ''}`;
+
   return (
     <div className="space-y-4">
       <PageHead title="Products" />
@@ -73,6 +80,10 @@ export default async function CatalogPage({
         <button type="submit" className={linkButton}>
           Search
         </button>
+        {/* D-128: the six price columns of this view as an Excel sheet (a plain link: a file, not a page) */}
+        <a href={exportHref} className={linkButton} download>
+          Download Excel
+        </a>
       </form>
       <Table
         head={[

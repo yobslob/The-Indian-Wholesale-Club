@@ -245,6 +245,23 @@ export async function publishDrafts(client: IwcClient): Promise<PublishDraftsRes
   return unwrap(await client.rpc('admin_publish_drafts')) as unknown as PublishDraftsResult;
 }
 
+/**
+ * D-128: Products → Download Excel: one row per product in the page's view (status tab, US clearance, search) with the
+ * shop price and weight that gave it its price, and the price.
+ */
+export async function listPriceSheet(
+  client: IwcClient,
+  filter: { status?: Enum<'product_status'>; usStock?: boolean; search?: string } = {},
+) {
+  return unwrap(
+    await client.rpc('admin_price_sheet', {
+      ...(filter.status ? { p_status: filter.status } : {}),
+      p_us_stock: filter.usStock ?? false,
+      ...(filter.search?.trim() ? { p_search: filter.search.trim() } : {}),
+    }),
+  );
+}
+
 /** New variant; an initial qty_listed is logged as 'listed' in the stock ledger. */
 export async function createVariant(client: IwcClient, input: Insert<'product_variants'>) {
   return unwrap(await client.from('product_variants').insert(input).select('id').single());

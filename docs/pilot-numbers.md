@@ -1,7 +1,8 @@
 # Pilot numbers: every variable, its placeholder and where to change it
 
-> **Beta pricing today (D-127):** every automatic price = (shop ₹ × 1.10 + kg × ₹2,000) ÷ ₹92 (fixed: the day's
-> rate less the 4% buffer, converted last), then food × 1.20, clothing ÷ 0.60, home & gifts ÷ 0.50, to the cent (no price ending). Fixed in code; the numbers below are the
+> **Beta pricing today (D-128, the founder's exact rules):** every automatic price = (shop ₹ ÷ 0.90 + weight g × ₹2)
+> ÷ the category's divisor (food 0.80, clothing 0.60, home & gifts 0.50) ÷ ₹92 fixed, to the cent (no price ending).
+> ₹100 · 100 g food $4.23. Products → Download Excel gives name, Indian price, category, weight, US price and margin. Fixed in code; the numbers below are the
 > full formula's, archived in `docs/archive/pricing-full-formula.md` and unused for prices until the beta ends (the bag's
 > charges still use the courier, duty and Shipping numbers).
 >

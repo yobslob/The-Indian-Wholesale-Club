@@ -582,7 +582,7 @@ What it means for the build (migration `20261015090000_courier_2000_food_band.sq
 rate for heavier parcels); the taper's lowest margins (35%, 40%) and the 110% packing are from the table the founder
 approved; the band's tie rule.
 
-**D-127 · 2026-10-15 · founder: Beta pricing, fixed in code; the full formula archived**
+**D-127 · 2026-10-15 · founder: Beta pricing, fixed in code; the full formula archived** · beta formula SUPERSEDED by D-128 (the archive and the switch stay)
 Founder, verbatim: "1. Take all of this complete logic and put it in archive so we can use it later. 2. We are going to
 hardcode this system for a beta testing to see prices, Strictly put shop price, strict, then india handling 10%, then
 exchange rate, then flight 2000rs/kg strict, then margin strict 20% food, 40%clothing and 50% home n decor. 3. and then
@@ -608,3 +608,27 @@ formula: US duty and the card fee. Shipping makes up for them per bag, so no sam
 +$1.95; at ₹92 +$2.09), but food-heavy bags past $149.99 pay Shipping (at ₹92: 14 × 1 kg bhujia $77.29, 20 pantry
 pieces $30.49, 60 masala packets $47.29). Asked again how the margin counts, the founder answered "calculate after adding
 shipping": the margin is taken on the whole cost including the flight, as built.
+
+**D-128 · 2026-10-15 · founder: The beta prices by the founder's exact rules; Products → Download Excel**
+Founder, verbatim: "calculate the suggested selling price in US dollars using these exact rules: 1. Adjusted cost =
+product cost in INR ÷ 0.90. 2. Shipping = ₹2,000 per kg = ₹2 per gram. Shipping cost = weight in grams × ₹2. 3. Subtotal
+= adjusted cost + shipping cost. 4. Category divisor: Food & Beverages = 0.80; Clothing & Fashion = 0.60; Home Decor =
+0.50. 5. Price after category divisor = subtotal ÷ category divisor. 6. Final selling price in USD = price after category
+divisor ÷ 92 (fixed exchange rate ₹92 = US$1). … Example: cost ₹100, weight 100 g, Food & Beverages => adjusted cost
+₹111.11 + shipping ₹200 = subtotal ₹311.11; ÷ 0.80 = ₹388.89; ÷ 92 = US$4.23. final columns should be name indian
+price, category, weight, us price and then margin"; then "I want exactly by these numbers once done and then I want a
+button in the products section which creates a excel sheets output of these 6 columns only."
+What it means for the build:
+- **Prices** (migration `20261015150000_beta_exact_rules.sql`, `BETA_PRICING` in `packages/shared`): every automatic
+  price is (shop ₹ ÷ 0.90 + weight g × ₹2) ÷ 0.80 / 0.60 / 0.50 ÷ 92, to the cent. Supersedes D-127's × 1.10 and food
+  × 1.20. ₹100 · 100 g food $4.23; ₹180 mango pickle of 500 g $16.30; ₹230 bhujia of 1 kg $30.65; ₹699 kurta of 450 g
+  $30.37; ₹350 brass diya of 525 g $31.28. The full formula stays archived behind `beta_pricing` (D-127).
+- **Products → Download Excel** (`/admin/catalog/export`, admins only; `admin_price_sheet()` in migration
+  `20261015150100_price_sheet.sql`): an .xlsx of the page's view (its tab, the US clearance tab or a search), one row per
+  product: Name, Indian price (₹), Category (Food & Beverages, Clothing & Fashion, Home Decor), Weight (g), US price ($),
+  Margin. Indian price and weight are the ones that gave the product its price (its cheapest option with its own shop
+  price, else its own); margin = 1 − subtotal ÷ (US price × 92): 20%, 40%, 50% for automatic prices (within a cent's
+  rounding), a hand-set price shows its own. Built without a dependency (`apps/web/features/admin/xlsx.ts`).
+- **Unchanged:** the bag's charges (D-125); Shipping still covers duty and the card fee per bag.
+*Claude's choices in it:* one row per product (not per option); the margin as a share of the US price, as the founder's
+divisors give it; the file is named `iwc-prices-<tab>-<date>.xlsx`.
