@@ -36,6 +36,14 @@ export function browseParams(raw: RawParams): BrowseParams {
   };
 }
 
+/** The address customers see for a See all page and its filters: /clothing?state=kerala&category=sarees. */
+export function seeAllHref(productType: ProductType, next: BrowseParams): string {
+  const query = new URLSearchParams(
+    Object.entries(next).filter((e): e is [string, string] => typeof e[1] === 'string' && e[1] !== ''),
+  ).toString();
+  return query ? `${PRODUCT_TYPE_PATH[productType]}?${query}` : PRODUCT_TYPE_PATH[productType];
+}
+
 /**
  * /clothing, /food and /home-and-gifts (D-106), the "See all" pages behind every row (D-062): every live product of one type, newest
  * first, narrowed by state and category through the URL. One cached store_browse() read returns the cards drawn
@@ -68,12 +76,7 @@ export async function BrowseByType({
   const allCount = page.all_total ?? states.reduce((sum, s) => sum + s.count, 0);
   const shown = page.products;
   const count = shown.length;
-  const href = (next: BrowseParams): string => {
-    const query = new URLSearchParams(
-      Object.entries(next).filter((e): e is [string, string] => typeof e[1] === 'string' && e[1] !== ''),
-    ).toString();
-    return query ? `${base}?${query}` : base;
-  };
+  const href = (next: BrowseParams): string => seeAllHref(productType, next);
 
   const stateName = states.find((s) => s.slug === params.state)?.name;
   const categoryName = categories.find((c) => c.slug === params.category)?.name;

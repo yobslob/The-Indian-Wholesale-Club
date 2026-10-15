@@ -17,6 +17,27 @@ if (
   );
 }
 const supabaseOrigin = supabaseUrl ? supabaseUrl.origin : 'https://*.supabase.co';
+
+/**
+ * /clothing, /food and /home-and-gifts with any of ?state=, ?category=, ?show= → /see-all/<type>/<state>/<category>/<show>
+ * ("all" and 24 when absent). The rules with the most filters come first; a filter that is not a plain slug or number
+ * is left out, as the page always did (browseParams).
+ */
+function seeAllRewrites() {
+  const filters = { state: '[a-z0-9-]{1,80}', category: '[a-z0-9-]{1,80}', show: '[0-9]{1,4}' };
+  const keys = Object.keys(filters);
+  const sets = [];
+  for (let mask = 0; mask < 1 << keys.length; mask += 1) sets.push(keys.filter((_, i) => mask & (1 << i)));
+  return sets
+    .sort((a, b) => b.length - a.length)
+    .map((used) => ({
+      source: '/:type(clothing|food|home-and-gifts)',
+      ...(used.length
+        ? { has: used.map((k) => ({ type: 'query', key: k, value: `(?<${k}>${filters[k]})` })) }
+        : {}),
+      destination: `/see-all/:type/${keys.map((k) => (used.includes(k) ? `:${k}` : k === 'show' ? '24' : 'all')).join('/')}`,
+    }));
+}
 const supabaseWs = supabaseOrigin.replace(/^http/, 'ws');
 // React Fast Refresh needs eval in development only.
 const devEval = process.env.NODE_ENV === 'production' ? '' : " 'unsafe-eval'";
@@ -63,6 +84,11 @@ const nextConfig = {
             pathname: '/storage/v1/object/public/**',
           },
     ],
+  },
+  // The See all pages and their filters are served from one cached route (app/(store)/see-all), like the state pages,
+  // instead of rendering on every request; the address in the browser stays /clothing?state=kerala (D-011, PR-1).
+  async rewrites() {
+    return { beforeFiles: seeAllRewrites() };
   },
   // D-110: Spices became Food; old links keep working.
   async redirects() {

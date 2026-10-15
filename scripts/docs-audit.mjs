@@ -14,6 +14,7 @@
  * Dependency-free. Exits 1 with a list when something doesn't match.
  */
 import { existsSync, readdirSync, readFileSync, statSync } from 'node:fs';
+import { createRequire } from 'node:module';
 import path from 'node:path';
 
 const problems = [];
@@ -112,12 +113,25 @@ const webRoutes = storeDirs.flatMap((storeDir) =>
     );
   }),
 );
+// Addresses next.config.js rewrites to another route (the See all pages): the public address is the page; the route
+// it is served from is internal and need not be listed.
+const nextConfig = createRequire(import.meta.url)(path.resolve('apps/web/next.config.js'));
+const rewrites = nextConfig.rewrites ? await nextConfig.rewrites() : [];
+const rewriteRules = Array.isArray(rewrites) ? rewrites : [...(rewrites.beforeFiles ?? []), ...(rewrites.afterFiles ?? [])];
+const rewritten = new Set(
+  rewriteRules.flatMap((r) => {
+    const alt = r.source.match(/^\/:\w+\(([^)]+)\)$/);
+    return alt ? alt[1].split('|').map((s) => `/${s}`) : [r.source];
+  }),
+);
+const internal = rewriteRules.map((r) => '/' + r.destination.split('/')[1]);
 const documented = new Set(
   [...storefront.matchAll(/`(\/[^`\s]*)`/g)].map(
     (m) => m[1].replace(/\?.*$/, '').replace(/\/$/, '') || '/',
   ),
 );
 for (const route of webRoutes) {
+  if (internal.some((prefix) => route === prefix || route.startsWith(`${prefix}/`))) continue;
   if (!documented.has(route === '/' ? '/' : route))
     problems.push(`docs/storefront.md: page ${route} is not listed`);
 }
@@ -132,7 +146,7 @@ const tableRows = routeTable
 for (const [, r] of tableRows.matchAll(/`(\/[^`\s]*)`/g)) {
   const route = r.replace(/\/$/, '') || '/';
   if (route.startsWith('/api')) continue;
-  if (!webRoutes.includes(route))
+  if (!webRoutes.includes(route) && !rewritten.has(route.replace(/\?.*$/, '')))
     problems.push(`docs/storefront.md: lists ${route}, which has no page`);
 }
 
