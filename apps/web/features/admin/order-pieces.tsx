@@ -8,6 +8,7 @@ import { markExpressPickupAction } from './actions/orders';
 import { refundItemAction } from './actions/refunds';
 import { Chip, PICKUP_STATUS } from './chips';
 import { ConfirmButton } from './confirm';
+import { PickedWeightInput, WeighPicked } from './hub-weigh';
 import { button, Cell, Panel, rupees, secondaryButton, Sub, Table } from './ui';
 
 import type { getAdminOrder } from '@repo/db/admin';
@@ -17,9 +18,9 @@ type Order = NonNullable<Awaited<ReturnType<typeof getAdminOrder>>>;
 /**
  * The order's pieces (D-096): photo, piece, quantity, price, where its pickup stands (picked, paid to the shop, in the
  * US) and the shop with its price. An unavailable piece gets its refund here (it asks first); an express order's
- * pieces are marked picked here (D-070).
+ * pieces and the made-to-order pilot's are marked picked here (D-070, D-115), weighed if the desk types a weight (D-130).
  */
-export function OrderPieces({ order, refunds, expressInIndia }: { order: Order; refunds: Map<string, number>; expressInIndia: boolean }): React.JSX.Element {
+export function OrderPieces({ order, refunds, pickHere }: { order: Order; refunds: Map<string, number>; pickHere: boolean }): React.JSX.Element {
   const count = order.items.reduce((n, i) => n + i.quantity, 0);
   const arrived = order.items.filter((i) => i.pickup?.arrived_at).length;
   return (
@@ -56,6 +57,11 @@ export function OrderPieces({ order, refunds, expressInIndia }: { order: Order; 
                   {p?.arrived_at ? <Chip tone="brand">In the US</Chip> : null}
                   {!p && item.status === 'active' ? <span className="text-ink-muted text-[13px]">After cutoff</span> : null}
                 </span>
+                {p?.status === 'picked' ? (
+                  <span className="mt-1.5 block">
+                    <WeighPicked pickupId={p.id} weighedG={p.weighed_g} note={p.weigh_note} label={item.product_name} path={`/admin/orders/${order.id}`} />
+                  </span>
+                ) : null}
                 {refund !== undefined ? (
                   <span className="mt-2 block">
                     <ConfirmButton
@@ -73,9 +79,10 @@ export function OrderPieces({ order, refunds, expressInIndia }: { order: Order; 
                     </ConfirmButton>
                   </span>
                 ) : null}
-                {expressInIndia && p?.status === 'pending' ? (
+                {pickHere && p?.status === 'pending' ? (
                   <span className="mt-2 flex gap-2">
-                    <form action={markExpressPickupAction.bind(null, p.id, 'picked', order.id)}>
+                    <form action={markExpressPickupAction.bind(null, p.id, 'picked', order.id)} className="flex gap-1.5">
+                      <PickedWeightInput label={item.product_name} />
                       <button type="submit" className={button}>
                         Picked
                       </button>

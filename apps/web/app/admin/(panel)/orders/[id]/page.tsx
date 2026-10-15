@@ -49,6 +49,8 @@ export default async function AdminOrderPage({ params }: { params: Params }): Pr
   const events = [...order.events].sort((a, b) => a.created_at.localeCompare(b.created_at));
   const { canShip, express } = shipState(order);
   const expressInIndia = express && ['confirmed', 'collecting'].includes(order.status);
+  // Pieces without a cycle (express, and the made-to-order pilot, D-115) are marked picked, and weighed, here (D-130)
+  const pickHere = !order.cycle_id && ['confirmed', 'collecting'].includes(order.status);
   const cancelMail = (amount: number) => ({
     subject: `Order ${n} is cancelled`,
     text: `Your order is cancelled.${amount > 0 ? ` ${formatUsd(order.refunded_cents + amount)} is on its way back to your card. Banks usually take 5 to 10 days to show it.` : ''}`,
@@ -87,7 +89,7 @@ export default async function AdminOrderPage({ params }: { params: Params }): Pr
       />
       <div className="grid grid-cols-[minmax(0,1fr)] items-start gap-[18px] lg:grid-cols-[minmax(0,1fr)_340px]">
         <div className="grid min-w-0 grid-cols-[minmax(0,1fr)] gap-4">
-          <OrderPieces order={order} refunds={new Map(itemRefunds)} expressInIndia={expressInIndia} />
+          <OrderPieces order={order} refunds={new Map(itemRefunds)} pickHere={pickHere} />
           <Panel title="Customer">
             <dl className="grid grid-cols-[96px_1fr] gap-x-3 gap-y-1.5 text-[14px] leading-[1.4] md:grid-cols-[110px_1fr]">
               <dt className="text-ink-muted">Name</dt>

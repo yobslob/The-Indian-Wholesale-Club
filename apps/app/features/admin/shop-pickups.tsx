@@ -5,6 +5,7 @@ import { markPickup, type listPickups } from '@repo/db/admin';
 import { deskTime, type Desk } from '@repo/shared/admin';
 
 import { rupees } from './format';
+import { PickWithWeight, WeighPicked } from './hub-weigh';
 import { AdminButton, Chip, ConfirmSheet } from './ui';
 
 import { Photo } from '@/components/photo';
@@ -27,7 +28,7 @@ const digits = (n: string | null | undefined): string => (n ?? '').replace(/[^\d
 
 /**
  * One shop's pickups (D-097): Call, WhatsApp, Map, how far along, and a big Picked / Unavailable per piece (Unavailable
- * asks first: the customer is emailed). The database moves the stock and the order (flows.md §4).
+ * asks first: the customer is emailed), with the piece's weight from the hub's scale (D-130). The database moves the stock and the order (flows.md §4).
  */
 export function ShopCard({
   rows,
@@ -111,16 +112,12 @@ export function ShopCard({
               </View>
             </View>
             {p.status === 'pending' ? (
-              <View className="flex-row gap-2">
-                <View className="flex-1">
-                  <AdminButton big label="Picked" disabled={busy} onPress={() => void run(() => markPickup(supabase, p.id, 'picked'))} />
-                </View>
-                <View className="flex-1">
-                  <AdminButton big kind="secondary" label="Unavailable" disabled={busy} onPress={() => setAsking(p)} />
-                </View>
-              </View>
+              <PickWithWeight pickupId={p.id} name={p.item?.product_name ?? 'Piece'} big busy={busy} run={run} onUnavailable={() => setAsking(p)} />
             ) : p.status === 'picked' ? (
-              <Chip tone="ok">{`Picked${p.picked_at ? ` ${deskTime(p.picked_at, desk).main.split(', ')[1]}` : ''}`}</Chip>
+              <View className="items-start gap-1.5">
+                <Chip tone="ok">{`Picked${p.picked_at ? ` ${deskTime(p.picked_at, desk).main.split(', ')[1]}` : ''}`}</Chip>
+                <WeighPicked pickupId={p.id} weighedG={p.weighed_g} note={p.weigh_note} name={p.item?.product_name ?? 'Piece'} busy={busy} run={run} />
+              </View>
             ) : (
               <Chip tone="bad">Unavailable</Chip>
             )}

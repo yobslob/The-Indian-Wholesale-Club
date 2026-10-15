@@ -67,7 +67,12 @@ open ──cutoff──► collecting ──► packed ──► exported ──
 
 ## 4. Pickups (India desk)
 1. At cutoff, the system creates one `pickup` per ordered piece, grouped by vendor into a per-shop checklist.
-2. The COO visits each shop and marks every piece `picked` (optional photo) or `unavailable`.
+2. The COO visits each shop and marks every piece `picked` (optional photo) or `unavailable`. Pieces without a cycle
+   (express, D-070, and the made-to-order pilot, D-115) are marked on their order's page (web and app).
+2a. Weighing (D-130): with a piece in hand the desk may type its weight (one piece, packed) next to Picked, or under a
+   picked piece. `admin_weigh_pickup()` makes it the option's weight (`weighed`, D-129), the same piece's other sizes
+   that only guessed follow (`similar`, never a pack), the listing is repriced for the next customer (D-128; a hand-set
+   price stays), and the pickup keeps the note ("Weighed 310 g (listed 450 g, -31%): price now $25.30, was $17.33").
 3. `picked` → stock moves from reserved to picked, and the shop price is added to that vendor's payable.
 4. `unavailable` → the piece is written off (the shop no longer has it: `qty_listed` and the reservation both drop, ledger reason
    `unavailable`), the order item becomes `unavailable`, and the customer is refunded for that item and notified

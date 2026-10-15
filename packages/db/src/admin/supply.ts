@@ -56,9 +56,9 @@ export async function listPickups(client: IwcClient, cycleId: string) {
     await client
       .from('pickups')
       .select(
-        `id, status, quantity, shop_price_paise, picked_at, arrived_at, photo_path, note, payout_id,
+        `id, status, quantity, shop_price_paise, picked_at, arrived_at, photo_path, note, payout_id, weighed_g, weigh_note,
           vendor:vendors(id, shop_name, phone, whatsapp, town, address, payment_method, region:regions(name)),
-          variant:product_variants(id, label, sku, product:products(source_url, media:product_media(storage_path, is_primary, sort_order))),
+          variant:product_variants(id, label, sku, weight_g, weight_source, product:products(source_url, media:product_media(storage_path, is_primary, sort_order))),
           item:order_items(id, product_name, variant_label, order_id, order:orders(order_number))`,
       )
       .eq('cycle_id', cycleId)
@@ -80,6 +80,28 @@ export async function markPickup(
       ...(options.note ? { p_note: options.note } : {}),
     }),
   );
+}
+
+export interface WeighResult {
+  weighed_g: number;
+  listed_g: number | null;
+  change_pct: number | null;
+  old_cents: number | null;
+  new_cents: number | null;
+  /** "Weighed 310 g (listed 450 g, -31%): price now $25.30, was $17.33" */
+  note: string;
+  /** No weight before, or more than 10% off: the desk should see it. */
+  big_change: boolean;
+}
+
+/**
+ * D-130: a picked piece weighed at the hub (one piece, packed). Its option takes the weight (weighed, D-129), the
+ * listing is repriced (D-128), and the pickup keeps the note.
+ */
+export async function weighPickup(client: IwcClient, pickupId: string, grams: number): Promise<WeighResult> {
+  return unwrap(
+    await client.rpc('admin_weigh_pickup', { p_pickup: pickupId, p_grams: grams }),
+  ) as unknown as WeighResult;
 }
 
 /** Picked pieces of a vendor not yet covered by a payout. */

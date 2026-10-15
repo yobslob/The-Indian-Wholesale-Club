@@ -402,14 +402,14 @@ isOneToOne: false
                   ]
                 },"pickups": {
                   Row: {
-                    "arrived_at": string | null,"arrived_by": string | null,"created_at": string,"cycle_id": string | null,"id": string,"note": string | null,"order_item_id": string,"payout_id": string | null,"photo_path": string | null,"picked_at": string | null,"picked_by": string | null,"quantity": number,"shop_price_paise": number | null,"status": Database["public"]['Enums']["pickup_status"],"updated_at": string,"variant_id": string,"vendor_id": string
+                    "arrived_at": string | null,"arrived_by": string | null,"created_at": string,"cycle_id": string | null,"id": string,"note": string | null,"order_item_id": string,"payout_id": string | null,"photo_path": string | null,"picked_at": string | null,"picked_by": string | null,"quantity": number,"shop_price_paise": number | null,"status": Database["public"]['Enums']["pickup_status"],"updated_at": string,"variant_id": string,"vendor_id": string,"weigh_note": string | null,"weighed_g": number | null
                   }
                   ComputedFields: never
                   Insert: {
-                    "arrived_at"?: string | null,"arrived_by"?: string | null,"created_at"?: string,"cycle_id"?: string | null,"id"?: string,"note"?: string | null,"order_item_id": string,"payout_id"?: string | null,"photo_path"?: string | null,"picked_at"?: string | null,"picked_by"?: string | null,"quantity": number,"shop_price_paise"?: number | null,"status"?: Database["public"]['Enums']["pickup_status"],"updated_at"?: string,"variant_id": string,"vendor_id": string
+                    "arrived_at"?: string | null,"arrived_by"?: string | null,"created_at"?: string,"cycle_id"?: string | null,"id"?: string,"note"?: string | null,"order_item_id": string,"payout_id"?: string | null,"photo_path"?: string | null,"picked_at"?: string | null,"picked_by"?: string | null,"quantity": number,"shop_price_paise"?: number | null,"status"?: Database["public"]['Enums']["pickup_status"],"updated_at"?: string,"variant_id": string,"vendor_id": string,"weigh_note"?: string | null,"weighed_g"?: number | null
                   }
                   Update: {
-                    "arrived_at"?: string | null,"arrived_by"?: string | null,"created_at"?: string,"cycle_id"?: string | null,"id"?: string,"note"?: string | null,"order_item_id"?: string,"payout_id"?: string | null,"photo_path"?: string | null,"picked_at"?: string | null,"picked_by"?: string | null,"quantity"?: number,"shop_price_paise"?: number | null,"status"?: Database["public"]['Enums']["pickup_status"],"updated_at"?: string,"variant_id"?: string,"vendor_id"?: string
+                    "arrived_at"?: string | null,"arrived_by"?: string | null,"created_at"?: string,"cycle_id"?: string | null,"id"?: string,"note"?: string | null,"order_item_id"?: string,"payout_id"?: string | null,"photo_path"?: string | null,"picked_at"?: string | null,"picked_by"?: string | null,"quantity"?: number,"shop_price_paise"?: number | null,"status"?: Database["public"]['Enums']["pickup_status"],"updated_at"?: string,"variant_id"?: string,"vendor_id"?: string,"weigh_note"?: string | null,"weighed_g"?: number | null
                   }
                   Relationships: [
                     {
@@ -1674,6 +1674,9 @@ isOneToOne: false
 "_unwind_order_pieces":
 { Args: { "p_order": string,"p_why": string }; Returns: undefined
                            },
+"_usd":
+{ Args: { "p_cents": number }; Returns: string
+                           },
 "_vendor_or_raise":
 { Args: Record<PropertyKey, never>; Returns: string
                            },
@@ -1760,6 +1763,9 @@ isOneToOne: false
                            },
 "admin_vendor_sign_in_code":
 { Args: { "p_days"?: number,"p_user": string }; Returns: string
+                           },
+"admin_weigh_pickup":
+{ Args: { "p_grams": number,"p_pickup": string }; Returns: Json
                            },
 "admin_weights_to_check":
 { Args: { "p_limit"?: number,"p_offset"?: number }; Returns: Json

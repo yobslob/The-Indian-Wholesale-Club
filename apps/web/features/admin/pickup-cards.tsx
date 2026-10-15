@@ -7,6 +7,7 @@ import { mediaUrl } from '@/lib/site';
 import { markPickupAction } from './actions/cycles';
 import { Chip } from './chips';
 import { ConfirmButton } from './confirm';
+import { PickedWeightInput, WeighPicked } from './hub-weigh';
 import { button, myDesk, rupees, secondaryButton } from './ui';
 
 import type { listPickups } from '@repo/db/admin';
@@ -38,7 +39,10 @@ export function Progress({ done, gone, total }: { done: number; gone: number; to
   );
 }
 
-/** One shop's pickups (D-096): Call, WhatsApp, Map, how far along, and a big Picked / Unavailable per piece. */
+/**
+ * One shop's pickups (D-096): Call, WhatsApp, Map, how far along, and a big Picked / Unavailable per piece, with the
+ * piece's weight from the hub's scale (D-130).
+ */
 async function ShopCard({ rows, cycleId }: { rows: Pickup[]; cycleId: string }): Promise<React.JSX.Element> {
   const desk = await myDesk();
   const v = rows[0]?.vendor;
@@ -102,7 +106,9 @@ async function ShopCard({ rows, cycleId }: { rows: Pickup[]; cycleId: string }):
               <span className="col-span-2 flex gap-1.5 md:col-span-1 [&>*]:flex-1 md:[&>*]:flex-none">
                 {p.status === 'pending' ? (
                   <>
-                    <form action={markPickupAction.bind(null, p.id, 'picked', cycleId)} className="flex">
+                    <form action={markPickupAction.bind(null, p.id, 'picked', cycleId)} className="flex gap-1.5">
+                      {/* D-130: weighed as it is picked (optional): the listing is repriced on the scale's weight */}
+                      <PickedWeightInput label={name} />
                       <button type="submit" className={`${button} w-full md:h-10 md:w-auto`}>
                         Picked
                       </button>
@@ -122,8 +128,9 @@ async function ShopCard({ rows, cycleId }: { rows: Pickup[]; cycleId: string }):
                     </ConfirmButton>
                   </>
                 ) : p.status === 'picked' ? (
-                  <span className="flex-none">
+                  <span className="flex flex-none flex-col items-start gap-1">
                     <Chip tone="ok">Picked{p.picked_at ? ` ${deskTime(p.picked_at, desk).main.split(', ')[1]}` : ''}</Chip>
+                    <WeighPicked pickupId={p.id} weighedG={p.weighed_g} note={p.weigh_note} label={name} path={`/admin/cycles/${cycleId}`} />
                   </span>
                 ) : (
                   <span className="flex-none">

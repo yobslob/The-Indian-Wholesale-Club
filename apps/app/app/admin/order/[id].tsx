@@ -10,6 +10,7 @@ import { Photo } from '@/components/photo';
 import { Body, ErrorText, Loading, Screen } from '@/components/ui';
 import { DeliverSheet, ShipSheet } from '@/features/admin/bulk-ship';
 import { rupees } from '@/features/admin/format';
+import { PickWithWeight, WeighPicked } from '@/features/admin/hub-weigh';
 import { AdminButton, Chip, ConfirmSheet, Panel, StatusChip, useDesk } from '@/features/admin/ui';
 import { useAction } from '@/features/admin/use-action';
 import { supabase } from '@/lib/supabase';
@@ -42,7 +43,8 @@ export default function AdminOrderScreen(): React.JSX.Element {
   const a = order.shipping_address as Record<string, string | null>;
   const events = [...order.events].sort((x, y) => x.created_at.localeCompare(y.created_at));
   const { canShip, express } = shipState(order);
-  const expressInIndia = express && ['confirmed', 'collecting'].includes(order.status);
+  // Pieces without a cycle (express, and the made-to-order pilot, D-115) are marked picked, and weighed, here (D-130)
+  const pickHere = !order.cycle_id && ['confirmed', 'collecting'].includes(order.status);
   const target = [{ id: order.id, number: order.order_number, name: a.fullName ?? '' }];
   const phone = (a.phone ?? '').replace(/[^\d+]/g, '');
   const main = canShip ? (
@@ -95,14 +97,20 @@ export default function AdminOrderScreen(): React.JSX.Element {
                     {p?.status === 'picked' ? p.payout_id ? <Chip tone="ok">Paid to shop</Chip> : <Chip tone="warn">Not paid yet</Chip> : null}
                     {p?.arrived_at ? <Chip tone="brand">In the US</Chip> : null}
                   </View>
-                  {expressInIndia && p?.status === 'pending' ? (
-                    <View className="mt-1 flex-row gap-2">
-                      <View className="flex-1">
-                        <AdminButton label="Picked" disabled={action.busy} onPress={() => void action.run(() => markPickup(supabase, p.id, 'picked'))} />
-                      </View>
-                      <View className="flex-1">
-                        <AdminButton kind="secondary" label="Unavailable" onPress={() => setUnavailable({ id: p.id, name: item.product_name })} />
-                      </View>
+                  {pickHere && p?.status === 'pending' ? (
+                    <View className="mt-1">
+                      <PickWithWeight
+                        pickupId={p.id}
+                        name={item.product_name}
+                        busy={action.busy}
+                        run={action.run}
+                        onUnavailable={() => setUnavailable({ id: p.id, name: item.product_name })}
+                      />
+                    </View>
+                  ) : null}
+                  {p?.status === 'picked' ? (
+                    <View className="mt-1">
+                      <WeighPicked pickupId={p.id} weighedG={p.weighed_g} note={p.weigh_note} name={item.product_name} busy={action.busy} run={action.run} />
                     </View>
                   ) : null}
                 </View>

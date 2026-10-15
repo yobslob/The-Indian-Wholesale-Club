@@ -10,10 +10,12 @@ import {
   markOrderShipped,
   markPickup,
   moveOrder,
+  weighPickup,
 } from '@repo/db/admin';
 
 import { sendEmailsSoon } from '../emails-soon';
 import { requireAdminAction } from '../guard';
+import { gramsFrom } from '../hub-grams';
 
 const id = z.string().uuid();
 const isoDate = z.string().regex(/^\d{4}-\d{2}-\d{2}$/);
@@ -96,9 +98,13 @@ export async function markExpressPickupAction(
   pickupId: string,
   status: 'picked' | 'unavailable',
   orderId: string,
+  form?: FormData,
 ): Promise<void> {
   const { client } = await requireAdminAction();
   await markPickup(client, id.parse(pickupId), z.enum(['picked', 'unavailable']).parse(status));
+  // D-130: weighed as it is picked, when the desk typed a weight
+  const grams = status === 'picked' ? gramsFrom(form) : null;
+  if (grams !== null) await weighPickup(client, pickupId, grams);
   done(orderId);
 }
 

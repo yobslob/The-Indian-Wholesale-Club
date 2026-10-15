@@ -152,6 +152,9 @@ Migration 31 (D-099, the second speed audit): `admin_order_counts()` (every orde
 send, shops owed for picked pieces) and `admin_cycle_totals(cycle)` (the cycle card's orders, pieces, shops and sales),
 admin only, counted in SQL because the API sends at most 1,000 rows; indexes for orders by status and newest, pickups
 by status, what each shop is owed, and a payout's pieces.
+Migration 62 (D-130): `pickups.weighed_g` and `weigh_note`; `admin_weigh_pickup(pickup, grams)` (admin, a picked
+piece) sets the option's weight (weighed), fills the same piece's sizes that have none or a similar one, reprices,
+and returns and stores what changed. Tests: `weigh_at_hub.test.sql`.
 Migration 61 (D-129): `product_variants.weight_source` (weighed, admin, shop, similar) and `weight_note`; trigger
 `product_variants_weight` (`_variant_weight`): a weight changed without a source is the changer's (admin or worker),
 the worker never overwrites a weighed or typed weight, a new size or colour takes its sibling's weight (similar; never a

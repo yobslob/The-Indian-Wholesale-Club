@@ -94,6 +94,9 @@ Built 2026-10-09 from `design/pages/admin/` (code in `apps/web/features/admin/`)
   a return's refund, and Record payout) asks first in a box with the amount and, for the customer's, the email they get
   (`confirm.tsx`). Marking a piece Unavailable at pickup asks first too, since the customer is emailed.
 - **Cycle**: the progress bar with the next step as the main button; pickups as one card per shop (Call, WhatsApp, Map).
+- **Weighing at the hub (D-130)**: a weight box (g, one piece, packed; optional) next to every Picked (cycle cards and the
+  order page, web and app) and "Weigh it" under a picked piece not yet weighed; the card then shows what it changed
+  (the weight it replaced and the new price). The order page also shows Picked for pieces without a cycle (the pilot).
 - **New listing in one step** (`listing/`): photos shrink to 2400 px in the browser and upload as soon as they are
   dropped, with the admin's session, to `product-media/products/drafts/<batch>/`; saving records them on the product.
   Photos dropped on a form that is then abandoned stay in that folder (unused, not shown anywhere). **Add many**: one

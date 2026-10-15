@@ -3,11 +3,12 @@
 import { revalidatePath, revalidateTag } from 'next/cache';
 import { z } from 'zod';
 
-import { setVariantWeight } from '@repo/db/admin';
+import { setVariantWeight, weighPickup } from '@repo/db/admin';
 
 import { STORE_TAG } from '@/features/catalog/data';
 
 import { requireAdminAction } from '../guard';
+import { gramsFrom } from '../hub-grams';
 
 const id = z.string().uuid();
 const weightForm = z.object({
@@ -33,6 +34,16 @@ function done(productId: string): void {
   revalidateTag(STORE_TAG);
   revalidatePath(`/admin/catalog/${productId}`);
   revalidatePath('/admin/catalog');
+}
+
+/** D-130: a picked piece weighed at the hub; its option takes the weight and the listing is repriced. */
+export async function weighPickupAction(pickupId: string, path: string, form: FormData): Promise<void> {
+  const { client } = await requireAdminAction();
+  const grams = gramsFrom(form);
+  if (grams === null) return;
+  await weighPickup(client, id.parse(pickupId), grams);
+  revalidateTag(STORE_TAG);
+  revalidatePath(z.string().startsWith('/admin/').parse(path));
 }
 
 /** One option's weight (D-129): the database reprices the listing from it (D-128). */

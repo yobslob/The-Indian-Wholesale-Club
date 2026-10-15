@@ -667,3 +667,20 @@ courier bills the packed piece (a 500 g pickle in a 780 g jar is priced on 780 g
 the same weight for every size and colour of one piece (marked similar, never across packs); two agreeing pages
 before a matching item's weight is used; customers are not shown weights (food already shows its pack, D-122):
 whether the store should show a weight line is for the founder.
+
+**D-130 · 2026-10-15 · founder: The India desk weighs each piece when it reaches the hub**
+Founder, verbatim: "Do this task here: “Weigh pieces at the hub when they arrive”" (the follow-up D-129 proposed: the
+scale's weight becomes the option's weight, so the first sale of a product fixes its weight).
+What it means for the build (migration `20261015170000_weigh_at_hub.sql`):
+- **Picked with a weight:** next to every Picked (the cycle's pickup cards and the order page, web and app) a weight
+  box, grams of one piece packed, optional; "Weigh it" under a picked piece not yet weighed.
+- **What weighing does:** `admin_weigh_pickup()` makes it the option's weight (`weighed`, which the runner never
+  overwrites); other sizes and colours of the same piece that have no weight or only a matching item's take it too;
+  the listing is repriced for the next customer (D-128; the order already paid is unchanged; a hand-set price stays).
+- **What the desk sees:** the pickup keeps a note with the weight it replaced, the change in % and the price now and
+  before ("Weighed 310 g (listed 450 g, -31%): price now $25.30, was $17.33").
+- **Found on the way:** in the made-to-order pilot (D-115) a standard order's pieces have no cycle, so no cycle page
+  listed them and the order page offered Picked only for express orders: the desk could not mark them picked. The order
+  page (web and app) now offers Picked for every order without a cycle that is still in India.
+*Claude's choices in it:* the weight is optional (a busy desk is never blocked); one piece is weighed, not the whole
+quantity; the note is kept on the pickup instead of a pop-up, so the web, the app and later readers all see it.

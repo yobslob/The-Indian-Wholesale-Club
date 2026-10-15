@@ -12,6 +12,7 @@ import {
   markPickup,
   recordPayout,
   updateCycle,
+  weighPickup,
 } from '@repo/db/admin';
 import { zonedToIso } from '@repo/shared/admin';
 
@@ -19,6 +20,7 @@ import { STORE_TAG } from '@/features/catalog/data';
 
 import { sendEmailsSoon } from '../emails-soon';
 import { requireAdminAction } from '../guard';
+import { gramsFrom } from '../hub-grams';
 
 const id = z.string().uuid();
 const isoDate = z.string().regex(/^\d{4}-\d{2}-\d{2}$/);
@@ -140,9 +142,13 @@ export async function markPickupAction(
   pickupId: string,
   status: 'picked' | 'unavailable',
   cycleId: string,
+  form?: FormData,
 ): Promise<void> {
   const { client } = await requireAdminAction();
   await markPickup(client, id.parse(pickupId), z.enum(['picked', 'unavailable']).parse(status));
+  // D-130: weighed as it is picked, when the desk typed a weight
+  const grams = status === 'picked' ? gramsFrom(form) : null;
+  if (grams !== null) await weighPickup(client, pickupId, grams);
   sendEmailsSoon();
   revalidateTag(STORE_TAG); // stock changed
   revalidatePath(`/admin/cycles/${cycleId}`);
