@@ -1,8 +1,11 @@
 import { createClient, type SupabaseClient } from '@supabase/supabase-js';
 
 import {
+  clothingPlanSchema,
   estimatePlanSchema,
   referencesSchema,
+  type ClassWrite,
+  type ClothingListing,
   type EstimateListing,
   type EstimateMode,
   type EstimateWrite,
@@ -52,6 +55,17 @@ export class Db {
       if (page.length < 1000) return all;
       after = page[page.length - 1]!.variant_id;
     }
+  }
+
+  /** D-132: up to 200 clothing listings to sort by class, in id order after `after` (`all`: also sorted ones). */
+  async clothingPlan(after: string | null, all: boolean): Promise<ClothingListing[]> {
+    return clothingPlanSchema.parse(
+      await this.rpc('worker_clothing_plan', { p_after: after, p_limit: 200, p_all: all }),
+    );
+  }
+
+  setClassWeights(weights: ClassWrite[]): Promise<number> {
+    return this.rpc('worker_set_class_weights', { p_weights: weights });
   }
 
   setEstimates(estimates: EstimateWrite[]): Promise<{ estimates: number; weights: number }> {

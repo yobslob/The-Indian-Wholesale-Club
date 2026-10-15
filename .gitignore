@@ -87,6 +87,7 @@ tools/photo-worker/worker.log*
 # outside the repo)
 tools/sourcing-runner/sourcing.log
 
-# The weight estimator (tools/weight-estimator, D-131): its log and embeddings cache
+# The weight estimator (tools/weight-estimator, D-131): its log, embeddings cache and clothing sheet
 tools/weight-estimator/estimator.log
 tools/weight-estimator/.cache/
+tools/weight-estimator/clothing-classes.csv

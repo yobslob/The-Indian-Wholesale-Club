@@ -76,16 +76,24 @@ phase's sub-steps and every verification run) is in `docs/archive/status-log-to-
   the most similar known weights (weighed at the hub first); about 1 s a listing. Sure ones become weights (source
   "Estimated"), the rest are suggestions in Weights to check, filled in the weight box; `--audit` flags a shop's weight
   it doubts; shop pages and the hub's scale replace estimates; `pnpm weights eval` measures it against known weights.
+  Since D-132 it weighs food and home & gifts only.
+- **Clothing by class (D-132, 2026-10-16):** every clothing option gets the founder's weight for its class (light
+  350 g incl. gamosas, kaftans, dresses and skirts; medium 750 g; pants, jeans and footwear 800 g; heavy 1.5 kg;
+  source "Clothing class"), sorted by name rules (sets before single pieces), then the category, then the model.
+  The hub's scale wins, then an admin's weight, then the class. Every sourcing run sorts the clothing not yet sorted
+  (after the deploy: all of it); `pnpm weights classes` on the laptop also sorts the names no rule reads, with a CSV
+  to review. Weights are for pricing only: customers never see one.
 
 ## Next for the founder
 1. Run `node scripts/check.mjs` (Docker Desktop and `npx supabase start` first), push, then the Deploy workflow: it
-   applies the new migrations (the latest is `20261015180000_weight_estimates`, D-131; D-119 – D-128 reprice every listing)
+   applies the new migrations (the latest is `20261016090000_clothing_classes`, D-132; D-119 – D-128 reprice every listing)
    to production. Confirm with the courier that ₹2,000 includes the box and clearance, and
    whether it bills by box size; correct Settings → Courier rate card if not.
-2. On the laptop (Ollama and both models are installed): set the three Ollama settings in
-   `tools/weight-estimator/README.md` §Speed, then `pnpm weights doctor`, `pnpm weights run --dry --limit 20` (read
-   the estimates), `pnpm weights run`. It uses `tools/sourcing-runner/.env`, so it writes to **production**. Decide
-   whether a sure estimate may price a live listing without an admin's look (D-131 lets it).
+2. After the deploy, all clothing takes its class weight at the next `pnpm sourcing run` (or at once on the laptop:
+   `pnpm weights classes --dry`, open `tools/weight-estimator/clothing-classes.csv` in Excel, look at the rows marked
+   "Look at it", then `pnpm weights classes`; it writes to **production**). Every automatic clothing price follows. Then food and
+   home: `pnpm weights run --dry --limit 20`, read the estimates, `pnpm weights run`. Decide whether a sure estimate may
+   price a live food or home listing without an admin's look (D-131 lets it).
    At the hub, weigh each piece as it is marked picked (one piece, packed, in grams). On the hub PC: `pnpm sourcing run --weights` (repeat: 40 listings a run) to read the weights drafts lack; then
    Admin → Products → **Weights to check**: weigh what is left (tick "weighed"), starting with live listings. Decide
    whether customers should see a weight line on the product page (D-129 leaves it admin-only).
@@ -108,6 +116,7 @@ phase's sub-steps and every verification run) is in `docs/archive/status-log-to-
 ## Last verification
 | Date | Commit | Where | Result |
 |---|---|---|---|
+| 2026-10-16 | D-132 commit | Claude Code, founder's Windows machine with Docker | `check.mjs` all nine steps OK; after the founder's review (gamosa, kaftan, dresses and skirts light; all weight fields in the forbidden store keys) docs, typecheck, lint, test (class tests 58) and db (48/48) OK again (db from a fresh reset: 48/48 SQL test files incl. new `clothing_classes.test.sql`, 16 assertions: class weights, never on food or a weighed or typed option, repriced, not replaced by shop pages or estimates; e2e 23/23). Shared unit tests incl. new `clothing-classes.test.ts` (53: real Myntra and catalogue titles per class). The rules sorted 299 of 301 real Myntra titles (the other two, a Patiala and a pattu pavadai, after a fix); on the local database `pnpm weights classes` sorted all 278 demo clothing listings in 12 s (249 by name, 22 by category, 7 fabrics by the model) and wrote 4,374 options. **Not run:** against production. |
 | 2026-10-15 | D-131 commit | Claude Code, founder's Windows machine with Docker, RTX 4060 | `check.mjs` all nine steps OK (db from a fresh reset: 47/47 SQL test files; http `/clothing` 19 ms; e2e 23/23; bundle OK). Shared unit tests incl. new `estimate.test.ts` (14), db 47/47 SQL test files (new `weight_estimates.test.sql`, 22 assertions; `weigh_at_hub` now checks a second weighing keeps the sizes `similar`). The estimator on the local database (577 demo listings made real for the test): 120 listings in 121 s, 8 at once (3.4 s a listing with Ollama as installed), 97% of options sure, written and read back; Weights to check and the product page show the suggestion and a doubted shop weight in the browser. Its estimates look right for common pieces (kasavu saree 550 g, Pathani suit 480 g, kurta 230 g); it was wrong and sure on some regional sets (a Bikaner poshak 230 g, a bridal kasavu counted as its blouse only, Kota Doria fabric by the metre 1.55 kg). **Not run:** against production, `eval` (no weighed items yet), the app. |
 | 2026-10-15 | See all cached | Claude Code, founder's Windows machine with Docker | build OK (the three See all pages pre-built); http three runs in a row OK (`/clothing` 7, 8, 13 ms; was 61 – 169 ms); e2e 23/23 (incl. rows: See all by state and category, 24 then 48 cards; sold-out on cached pages); bundle OK. Filters, Show more, invalid filters, canonicals and a 404 for an unknown type checked with curl on `next start`. |
 | 2026-10-15 | D-130 commit | Claude Code, founder's Windows machine with Docker | typecheck (incl. the app), lint, test, docs: OK; db from a fresh reset: 46/46 SQL test files (new `weigh_at_hub.test.sql`: hand-set price kept, $34.62 → $41.87 on a reweigh, sizes follow, typed weights kept, admins only). In the browser on local e2e pilot orders: Picked with 820 g, then Picked and Weigh it 950 g ("listed 820 g, +16%"). Then build OK; http first `/clothing` 169 ms (budget 100; it renders on each request, unchanged since before D-129), e2e 22/23 (Stripe's test payment stalled after Pay, no error); re-run: http OK (`/clothing` 61 ms), e2e 23/23. **Not run:** the app on a phone (its screens only typechecked). |

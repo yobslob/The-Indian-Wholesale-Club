@@ -5,11 +5,13 @@ begin;
 select tests.setup();
 select tests.create_user('worker', 'worker@example.test');
 update public.profiles set role = 'worker' where id = tests.id('worker');
-update public.categories set default_weight_g = 450 where id = tests.id('cat_clothing');
+-- a home piece in two sizes: clothing is weighed by class since D-132, not by the estimator
+insert into public.categories (product_type, slug, name, default_weight_g) values ('home', 'est-home', 'Est home', 450);
+select tests.remember('cat_home', (select id from public.categories where slug = 'est-home'));
 update public.pricing_settings set food_cleared = true where id = 1;
 
 insert into public.products (slug, name, product_type, region_id, category_id, vendor_id, price_cents, status)
-values ('est-kurta', 'Estimate kurta', 'clothing', tests.id('region'), tests.id('cat_clothing'), tests.id('vendor'), 3000, 'draft'),
+values ('est-kurta', 'Estimate brass lamp', 'home', tests.id('region'), tests.id('cat_home'), tests.id('vendor'), 3000, 'draft'),
        ('est-pickle', 'Estimate pickle', 'food', tests.id('region'), tests.id('cat_food'), tests.id('vendor'), 900, 'draft'),
        ('est-saffron', 'Estimate saffron', 'food', tests.id('region'), tests.id('cat_food'), tests.id('vendor'), 900, 'draft');
 select tests.remember('kurta', (select id from public.products where slug = 'est-kurta'));

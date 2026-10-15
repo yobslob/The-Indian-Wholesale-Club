@@ -3,6 +3,11 @@ import { randomUUID } from 'node:crypto';
 import { createClient, type SupabaseClient } from '@supabase/supabase-js';
 
 import {
+  clothingPlanSchema,
+  type ClassWrite,
+  type ClothingListing,
+} from '@repo/shared/sourcing/estimate';
+import {
   planSchema,
   weightPlanSchema,
   type SourcingPlan,
@@ -87,6 +92,17 @@ export class Db {
 
   setWeights(weights: WeightWrite[]): Promise<number> {
     return this.rpc('worker_set_weights', { p_weights: weights });
+  }
+
+  /** D-132: clothing listings to sort by class (200 at most, in id order after `after`). */
+  async clothingPlan(after: string | null): Promise<ClothingListing[]> {
+    return clothingPlanSchema.parse(
+      await this.rpc('worker_clothing_plan', { p_after: after, p_limit: 200, p_all: false }),
+    );
+  }
+
+  setClassWeights(weights: ClassWrite[]): Promise<number> {
+    return this.rpc('worker_set_class_weights', { p_weights: weights });
   }
 
   logRun(run: Record<string, unknown>): Promise<void> {

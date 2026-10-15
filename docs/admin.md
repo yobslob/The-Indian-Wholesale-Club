@@ -174,7 +174,11 @@ runner in `tools/sourcing-runner/` (its README says how to set it up on the PC a
   that): the listing's own shop pages first, then the same item on Amazon and Flipkart (two pages must agree). It never
   overwrites a weighed or typed weight, and a shop's own page replaces an estimate; what it cannot find waits in
   Products → Weights to check.
-- **The weight estimator (D-131).** On the founder's laptop: `pnpm weights run` gives every option without a weight a
+- **Clothing classes (D-132).** Every run sorts new clothing by the name rules into the founder's classes (light
+  350 g, medium 750 g, pants and footwear 800 g, heavy 1.5 kg); on the laptop `pnpm weights classes` sorts all
+  clothing (the model sorts a name no rule reads) and writes `clothing-classes.csv` for review. A weighed or typed
+  weight stays; the product page shows "Clothing class (D-132)" and why.
+- **The weight estimator (D-131), food and home & gifts.** On the founder's laptop: `pnpm weights run` gives every option without a weight a
   packed weight from a local model on the GPU, checked against the most similar weights IWC knows (weighed at the hub
   first). A sure one becomes the weight (source "Estimated"); an unsure one is a suggestion in Weights to check.
   `--audit` compares the shops' weights, `--redo` re-estimates after many weighings, `eval` says how close it comes

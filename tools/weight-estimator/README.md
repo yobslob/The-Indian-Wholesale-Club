@@ -1,4 +1,15 @@
-# Weight estimator (D-131)
+# Weight estimator (D-131) and clothing classes (D-132)
+
+**Clothing is weighed by class (D-132):** `pnpm weights classes` gives every clothing option the founder's weight
+for its class: light 350 g (headwear, jewellery, kurtis, plain kurtas, tops, salwar, gamosas, kaftans, dresses,
+skirts), medium 750 g (light sarees, dupattas, potlis, heavier kurtas, dhotis, jackets, co-ords), pants, jeans and
+footwear 800 g, heavy 1.5 kg
+(shawls, very heavy sarees, lehengas, sherwanis, any set). Name rules sort it
+(`packages/shared/src/sourcing/estimate/classes.ts`), then its category, then the local model for a name neither
+reads. Every listing goes in `clothing-classes.csv` (open it in Excel; "Look at it" marks the ones sorted by
+category or by the model). Which weight wins: the hub's scale, then an admin's, then the class; the hub's scale
+later replaces a class weight. Customers never see any of it: the weights are for pricing only. About 278 listings in 12 s. The estimator below weighs **food and home & gifts** only.
+
 
 Gives every listing a realistic packed weight, on the founder's laptop GPU (RTX 4060, 8 GB), quickly enough for
 thousands of listings. The price is worked out from the weight (D-128), so a guessed weight is a guessed price.
@@ -43,8 +54,12 @@ weighed, so `eval` can say how close it came. The more pieces the hub weighs, th
 
 ## Run
 ```
+pnpm weights classes --dry          clothing: write the sheet only, nothing in the database
+pnpm weights classes                clothing: every option not yet sorted gets its class weight
+pnpm weights classes --all          clothing: sort them all again (after the rules change)
+pnpm weights classes --fast         clothing: rules and category only, no model
 pnpm weights run --dry --limit 20    look first: 20 listings, every estimate printed, nothing written
-pnpm weights run                     every option with no weight, never estimated before
+pnpm weights run                     food and home: every option with no weight, never estimated before
 pnpm weights run --redo              also re-estimate estimated weights (after many hub weighings)
 pnpm weights run --audit             also compare the shops' weights (kept as estimates; big differences listed)
 pnpm weights try "Banarasi silk saree with blouse piece" --type clothing --category Sarees

@@ -1963,6 +1963,9 @@ isOneToOne: false
 "worker_claim_job":
 { Args: Record<PropertyKey, never>; Returns: Json
                            },
+"worker_clothing_plan":
+{ Args: { "p_after"?: string,"p_all"?: boolean,"p_limit"?: number }; Returns: Json
+                           },
 "worker_estimate_plan":
 { Args: { "p_after"?: string,"p_limit"?: number,"p_mode"?: string }; Returns: Json
                            },
@@ -1971,6 +1974,9 @@ isOneToOne: false
                            },
 "worker_may_add_photos":
 { Args: { "p_product": string }; Returns: boolean
+                           },
+"worker_set_class_weights":
+{ Args: { "p_weights": Json }; Returns: number
                            },
 "worker_set_estimates":
 { Args: { "p_estimates": Json }; Returns: Json

@@ -78,7 +78,8 @@ language sql immutable as $$
   select array['vendor_id', 'shop_price_paise', 'origin_town', 'is_placeholder', 'qty_listed', 'qty_reserved',
                'qty_confirmed_at', 'sku', 'cycle_id', 'notes', 'internal_note', 'user_id', 'licences',
                'payment_intent_id', 'promo_code_id', 'content_status', 'visible_to_customer', 'created_by',
-               'has_origin_label', 'actor', 'shop_name', 'weight_g'];
+               'has_origin_label', 'actor', 'shop_name', 'weight_g', 'weight_source', 'weight_note',
+               'weight_estimate_g', 'weight_estimate_note'];
 $$;
 
 create function tests.act_as(p_user uuid) returns void

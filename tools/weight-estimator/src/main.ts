@@ -9,6 +9,7 @@ import {
   type EstimateWrite,
 } from '@repo/shared/sourcing/estimate';
 
+import { sortClothing } from './classes';
 import { Db } from './db';
 import { dbEnv, errorText, log, modelEnv, needDbEnv } from './env';
 import { estimateListing, groupText, pool, type Estimator } from './estimate';
@@ -20,7 +21,10 @@ import type { ProductType } from '@repo/shared/domain';
 
 /**
  * The weight estimator (D-131), on the founder's laptop with its GPU:
- *   pnpm weights run                  options with no weight, never estimated (sure ones become weights)
+ *   pnpm weights classes --dry        clothing by the founder's classes (D-132): the sheet clothing-classes.csv only
+ *   pnpm weights classes              … and write each option's class weight   (--all: sort sorted ones again;
+ *                                      --fast: rules only, no model)
+ *   pnpm weights run                  food and home: options with no weight, never estimated (sure ones become weights)
  *   pnpm weights run --redo           also re-estimate estimated weights (after many hub weighings)
  *   pnpm weights run --audit          also check the shops' weights (kept as estimates; big differences listed)
  *            --limit 50  at most 50 listings      --dry  write nothing, print every estimate
@@ -231,13 +235,30 @@ async function main(): Promise<number> {
   const [command, ...args] = process.argv.slice(2);
   if (command === 'run') return run(args);
   if (command === 'try') return tryOne(args);
+  if (command === 'classes') {
+    const env = modelEnv();
+    const ollama = new Ollama(env);
+    const useModel =
+      !args.includes('--fast') &&
+      (await ollama.models().then(
+        (m) => m.some((n) => n === env.IWC_WEIGHT_MODEL || n === `${env.IWC_WEIGHT_MODEL}:latest`),
+        () => false,
+      ));
+    if (!useModel && !args.includes('--fast'))
+      log('Ollama or its model is not there: sorting by the rules only');
+    return sortClothing(await Db.signIn(needDbEnv()), useModel ? ollama : null, {
+      dry: args.includes('--dry'),
+      all: args.includes('--all'),
+      parallel: env.IWC_WEIGHT_PARALLEL,
+    });
+  }
   if (command === 'doctor') return doctor();
   if (command === 'eval') {
     const db = await Db.signIn(needDbEnv());
     return evaluate(db, await estimator(db), Number(arg(args, '--limit') ?? 200));
   }
   console.log(
-    `pnpm weights run [--redo | --audit] [--limit N] [--dry] | try "<name>" | eval | doctor (modes: ${ESTIMATE_MODES.join(', ')})`,
+    `pnpm weights classes [--dry] [--all] [--fast] | run [--redo | --audit] [--limit N] [--dry] | try "<name>" | eval | doctor (modes: ${ESTIMATE_MODES.join(', ')})`,
   );
   return command ? 1 : 0;
 }

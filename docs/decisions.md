@@ -713,3 +713,43 @@ thumb in the model's question (fabric, containers, materials; `estimate/prompt.t
 the ±25% and 25% thresholds and the 0.80 / 0.93 similarity lines are starting points for `eval` to tune; a sure estimate
 counts as a weight for D-129's "no listing goes live on a guess" (the founder asked for weights to be assigned). Whether
 it may price live listings without an admin's look is the founder's to confirm.
+
+**D-132 · 2026-10-16 · founder: Clothing is weighed by class: light 350 g, medium 750 g, bottoms and footwear 800 g, heavy 1.5 kg**
+Founder, verbatim: "This crashes very badly not technically but logically because almost everything on the database
+does not have any correct weight. Literally every item came false weight on dry run. Therefore, in clothing let's do
+this first: classify category light350g(headwears, jhumka, kurti, kurta, tops, salwar), medium750g(light sarees,
+dupatta, potli pouch, kurta, dhoti, jackets, , coord and dresses) pants, jeans, footwear can be taken as 800gm and
+heavy1.5kg(shawls, very heavy saree,lehnga, set of suit or kurta basically any set) let's globalize this for all
+clothing and assign everything this weight accordingly but remember categorize them very very carefully and smartly."
+What it means for the build (migration `20261016090000_clothing_classes.sql`, `packages/shared/src/sourcing/estimate/classes.ts`):
+- **Every clothing option gets its class's weight**, source **class**: light 350 g, medium 750 g, bottoms and footwear
+  800 g, heavy 1,500 g (a "Pack of 3" three times). The D-128 price follows. Not changed: a weight weighed at the hub
+  or typed by an admin (they are the piece itself); the hub's scale later replaces a class weight (D-130). Shop pages
+  and the estimator no longer change a clothing weight once it has its class.
+- **Sorting:** rules on the listing's name first (sets before single pieces, so a kurta with pyjama is a set), then
+  its category, then the local model (D-131) for a name no rule reads; `pnpm weights classes --dry` writes every
+  listing's class and the reason to a CSV for the founder to look over before `pnpm weights classes` writes them. The
+  sourcing runner sorts new clothing by the rules at the end of each run.
+- **D-131's estimator now weighs food and home & gifts only.**
+- **The founder's review of the classes (2026-10-16), verbatim:** "Gamosa, Kaftan, dress or skirt should be in 350g
+  rest is good commit and push. the priority order should be Manually inserted at hub > updated from admin portal >
+  our current categories(Update everything in the current database's clothing according to these categories also when
+  I run the scraper which adds clothing products should put the products from now on into one of these categories
+  smartly) We have categorized these weights for the pricing logic only, The customer should not be seeing the
+  weights of clothing and home decore anywhere." So: gamosas, kaftans, dresses, gowns and skirts are light (350 g);
+  a clothing weight is the hub's scale, else an admin's, else its class (as built: shop pages and estimates never
+  replace a class); every clothing listing in the database takes its class at the first sourcing run after the
+  deploy (the runner sorts all clothing not yet sorted, by name and category; `pnpm weights classes` on the laptop
+  also sorts what neither reads), and each run sorts the clothing it adds. Weights stay for pricing only: no store
+  page, app screen or `store_*` view or function sends a weight, its source or note (the SQL tests' forbidden keys
+  now include all of them).
+*Claude's choices in it:* a kurta is in both of the founder's lists: a plain or short kurta is light, a kurta in silk,
+velvet, brocade, sequins or zari, or an Anarkali or long kurta, is medium; a kurti is always light. "Very heavy saree":
+Banarasi, Kanjivaram, Paithani, Patola, Baluchari, pattu, bridal or wedding, brocade, velvet, tissue, pure silk or
+"heavy" in the name; any other saree is medium. Sets: "set", "suit", "N-piece", kurta-pyjama and the like, or a garment
+"with" a second garment (with pyjama, dupatta, jacket, sharara…; not with a blouse piece); a co-ord set stays medium as
+the founder listed it. Shawls include pashmina, phiran and loi. Salwar, churidar, leggings and pyjama alone are light
+like salwar; palazzos, trousers, dhoti pants and joggers are pants (800 g); gowns, jumpsuits, maxis and frocks are
+dresses (light since the founder's review), a co-ord set stays medium; jewellery
+(jhumkas, bangles, necklaces, kamarbandh, paranda) and headwear are light; mufflers, stoles and scarves are medium like
+dupattas.

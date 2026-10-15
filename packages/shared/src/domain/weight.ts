@@ -9,8 +9,9 @@ import type { ProductType } from './product-types';
  *  - shop: stated on the shop's own page (its packed weight, item weight, net quantity, pack or title)
  *  - similar: the same or a matching item on another shop, or another size of the same piece
  *  - estimated: the weight estimator on the founder's laptop, when it is sure (D-131); a page or the scale replaces it
+ *  - class: clothing by the founder's four classes, light 350 g to heavy 1.5 kg (D-132); the scale replaces it
  */
-export const WEIGHT_SOURCES = ['weighed', 'admin', 'shop', 'similar', 'estimated'] as const;
+export const WEIGHT_SOURCES = ['weighed', 'admin', 'shop', 'similar', 'estimated', 'class'] as const;
 export type WeightSource = (typeof WEIGHT_SOURCES)[number];
 
 export const WEIGHT_SOURCE_LABEL: Record<WeightSource, string> = {
@@ -19,6 +20,7 @@ export const WEIGHT_SOURCE_LABEL: Record<WeightSource, string> = {
   shop: "From the shop's page",
   similar: 'From a matching item',
   estimated: 'Estimated (weight estimator)',
+  class: 'Clothing class (D-132)',
 };
 
 /** "450 g", "1.2 kg", "1 kg". */
@@ -39,7 +41,8 @@ export function weightState(
   unusual = false,
 ): WeightState {
   if (v.weight_g === null) return 'missing';
-  if (v.weight_source === 'weighed' || v.weight_source === 'admin') return 'confirmed';
+  // a class weight is the founder's rule (D-132): never "unusual" for its category
+  if (v.weight_source === 'weighed' || v.weight_source === 'admin' || v.weight_source === 'class') return 'confirmed';
   if (unusual || (v.weight_source !== 'shop' && v.weight_source !== 'estimated')) return 'check';
   return 'confirmed';
 }

@@ -2,6 +2,7 @@ import { PRODUCT_TYPES } from '@repo/shared/domain';
 
 import { Lanes, openBrowser } from './browser';
 import { runChecks } from './check';
+import { sortNewClothing } from './classes';
 import { DEFAULT_SHOPS, type RunContext } from './context';
 import { Db } from './db';
 import { loadEnv } from './env';
@@ -17,7 +18,8 @@ import type { SourcingPlan } from '@repo/shared/sourcing/auto';
  *   pnpm sourcing setup                  open every shop once to set the hub's delivery address (kept in the profile)
  *   pnpm sourcing run                    the weekly checks that are due, then the queued targets
  *   pnpm sourcing run --checks           only the checks      (--targets: only the targets)
- *   pnpm sourcing run --weights          only the weights listings lack (D-129; `run` ends with them too)
+ *   pnpm sourcing run --weights          only clothing by class (D-132) and the weights listings lack (D-129; `run`
+ *                                        ends with them too)
  *   pnpm sourcing try "kasuri methi" --type food    a dry run: what it would add, nothing written
  *   pnpm sourcing doctor                 tests the road to Supabase and the worker sign-in
  * Windows Task Scheduler runs `run` once a day (README.md).
@@ -119,9 +121,10 @@ async function run(args: string[]): Promise<number> {
       );
       added += batch.reduce((a, b) => a + b, 0);
     }
-    // D-129: the weights new and old listings lack (the price rests on them)
-    const weights =
-      args.includes('--checks') || args.includes('--targets') ? 0 : await fillWeights(ctx, 40);
+    // D-132: new clothing by class first (its weight is then settled); D-129: the weights the rest lack
+    const onlyOne = args.includes('--checks') || args.includes('--targets');
+    const classed = onlyOne ? 0 : await sortNewClothing(db);
+    const weights = onlyOne ? 0 : await fillWeights(ctx, 40);
     await db.logRun({
       started_at: started.toISOString(),
       targets_searched: targets.length,
@@ -134,7 +137,7 @@ async function run(args: string[]): Promise<number> {
       shops: ctx.stats.toJSON(),
     });
     log(
-      `done: ${checks.products} checked (${checks.prices} prices, ${checks.stock} stock, ${checks.held} held), ${added} listings added, ${weights} weights found`,
+      `done: ${checks.products} checked (${checks.prices} prices, ${checks.stock} stock, ${checks.held} held), ${added} listings added, ${classed} clothing options weighed by class, ${weights} weights found`,
     );
   } finally {
     await context.close();

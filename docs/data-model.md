@@ -152,6 +152,12 @@ Migration 31 (D-099, the second speed audit): `admin_order_counts()` (every orde
 send, shops owed for picked pieces) and `admin_cycle_totals(cycle)` (the cycle card's orders, pieces, shops and sales),
 admin only, counted in SQL because the API sends at most 1,000 rows; indexes for orders by status and newest, pickups
 by status, what each shop is owed, and a payout's pieces.
+Migration 64 (D-132): `weight_source` may be `class` (clothing by the founder's four classes, 350 / 750 / 800 /
+1,500 g). Worker only: `worker_clothing_plan(after, limit, all)` (clothing listings with an option not weighed, typed
+or already classed; `all` also classed ones) and `worker_set_class_weights(weights)` (never on food, a weighed or a
+typed option; returns how many changed). `worker_estimate_plan` leaves clothing out; `_weight_needs_check` never
+calls a class weight unusual; `admin_weigh_pickup` also replaces the other sizes' class weights. Shop pages
+(`worker_set_weights`) and estimates do not replace a class weight. Tests: `clothing_classes.test.sql`.
 Migration 63 (D-131): `weight_source` may be `estimated`; `product_variants.weight_estimate_g`, `weight_estimate_note`,
 `weight_estimated_at` (the weight estimator's latest, kept after weighing). Worker only: `worker_estimate_plan(after,
 limit, mode)` (missing / redo / audit; every option with `wanted`), `worker_weight_references(after, limit)` (weighed,
