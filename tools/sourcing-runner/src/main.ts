@@ -20,6 +20,7 @@ import type { SourcingPlan } from '@repo/shared/sourcing/auto';
  *   pnpm sourcing run --checks           only the checks      (--targets: only the targets)
  *   pnpm sourcing run --weights          only clothing by class (D-132) and the weights listings lack (D-129; `run`
  *                                        ends with them too)
+ *   pnpm sourcing classes                only clothing by class (D-132): no browser, no shops, no new listings
  *   pnpm sourcing try "kasuri methi" --type food    a dry run: what it would add, nothing written
  *   pnpm sourcing doctor                 tests the road to Supabase and the worker sign-in
  * Windows Task Scheduler runs `run` once a day (README.md).
@@ -104,9 +105,10 @@ async function run(args: string[]): Promise<number> {
   let added = 0;
   let errors = 0;
   try {
-    const checks = plan.checks.length && !weightsOnly
-      ? await runChecks(ctx)
-      : { products: 0, prices: 0, stock: 0, held: 0, errors: 0 };
+    const checks =
+      plan.checks.length && !weightsOnly
+        ? await runChecks(ctx)
+        : { products: 0, prices: 0, stock: 0, held: 0, errors: 0 };
     errors += checks.errors;
     // three targets at a time: each already spreads over every shop
     for (let i = 0; i < targets.length; i += 3) {
@@ -151,7 +153,8 @@ async function dryRun(args: string[]): Promise<void> {
   const flag = (name: string): string | null =>
     args.includes(name) ? (args[args.indexOf(name) + 1] ?? null) : null;
   const match = flag('--match');
-  const rupees = (name: string): number | null => (flag(name) ? Math.round(Number(flag(name)) * 100) || null : null);
+  const rupees = (name: string): number | null =>
+    flag(name) ? Math.round(Number(flag(name)) * 100) || null : null;
   const type = PRODUCT_TYPES.find((t) => args.includes(t)) ?? 'food';
   if (query.length < 2)
     throw new Error(
@@ -207,20 +210,29 @@ async function dryRun(args: string[]): Promise<void> {
   }
 }
 
+/** D-132: every clothing listing not yet sorted takes its class weight; nothing else runs. */
+async function classes(): Promise<number> {
+  const written = await sortNewClothing(await Db.signIn(loadEnv(true)));
+  log(`done: ${written} clothing options weighed by class`);
+  return 0;
+}
+
 const [command, ...args] = process.argv.slice(2);
 const main =
-  command === 'setup'
-    ? setup()
-    : command === 'run'
-      ? run(args)
-      : command === 'try'
-        ? dryRun(args)
-        : command === 'doctor'
-          ? doctor()
-          : null;
+  command === 'classes'
+    ? classes()
+    : command === 'setup'
+      ? setup()
+      : command === 'run'
+        ? run(args)
+        : command === 'try'
+          ? dryRun(args)
+          : command === 'doctor'
+            ? doctor()
+            : null;
 if (!main) {
   console.log(
-    'Usage: pnpm sourcing setup | doctor | run [--checks|--targets] | try "<query>" --type food|clothing|home [--match "regex"]',
+    'Usage: pnpm sourcing setup | doctor | classes | run [--checks|--targets] | try "<query>" --type food|clothing|home [--match "regex"]',
   );
   process.exit(2);
 }

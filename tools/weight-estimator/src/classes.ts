@@ -1,4 +1,4 @@
-import { writeFileSync } from 'node:fs';
+import { appendFileSync, writeFileSync } from 'node:fs';
 import { join } from 'node:path';
 
 import {
@@ -29,6 +29,7 @@ import type { Ollama } from './ollama';
  */
 
 export const SHEET = join(ROOT, 'clothing-classes.csv');
+const BEFORE = join(ROOT, 'clothing-classes-before.jsonl');
 
 interface Row {
   name: string;
@@ -59,6 +60,31 @@ function writeSheet(rows: Row[]): void {
   writeFileSync(SHEET, `﻿${[head.map(cell).join(','), ...lines].join('\r\n')}\r\n`, 'utf8');
 }
 
+/**
+ * Before writing, every option's weight as it was, one JSON line per listing in clothing-classes-before.jsonl (not in
+ * git): what an admin or a script needs to put a weight back.
+ */
+function keepBefore(page: ClothingListing[]): void {
+  appendFileSync(
+    BEFORE,
+    page
+      .map((l) =>
+        JSON.stringify({
+          at: new Date().toISOString(),
+          product_id: l.product_id,
+          name: l.name,
+          variants: l.variants.map((v) => ({
+            id: v.id,
+            label: v.label,
+            weight_g: v.weight_g,
+            weight_source: v.weight_source,
+          })),
+        }),
+      )
+      .join('\n') + '\n',
+  );
+}
+
 async function modelView(
   ollama: Ollama,
   listing: ClothingListing,
@@ -86,6 +112,7 @@ export async function sortClothing(
     const page = await db.clothingPlan(after, opts.all);
     if (!page.length) break;
     after = page[page.length - 1]!.product_id;
+    if (!opts.dry) keepBefore(page);
     const writes: ClassWrite[] = [];
     await pool(page, opts.parallel, async (listing) => {
       const rule = classifyClothing({ name: listing.name, categorySlug: listing.category_slug });
@@ -105,7 +132,8 @@ export async function sortClothing(
     log(`  ${rows.length} clothing listings read`);
   }
   rows.sort((a, b) => a.category.localeCompare(b.category) || a.name.localeCompare(b.name));
-  writeSheet(rows);
+  // nothing left to sort: keep the last sheet rather than an empty one (--all writes it again in full)
+  if (rows.length) writeSheet(rows);
   const look = rows.filter((r) => r.by !== 'rule (name)').length;
   log(
     `classes: ${rows.length} listings in ${((Date.now() - started) / 1000).toFixed(0)} s: ` +

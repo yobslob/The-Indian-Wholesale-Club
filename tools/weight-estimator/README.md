@@ -55,7 +55,8 @@ weighed, so `eval` can say how close it came. The more pieces the hub weighs, th
 ## Run
 ```
 pnpm weights classes --dry          clothing: write the sheet only, nothing in the database
-pnpm weights classes                clothing: every option not yet sorted gets its class weight
+pnpm weights classes                clothing: every option not yet sorted gets its class weight (the weights it
+                                    replaces are kept in clothing-classes-before.jsonl)
 pnpm weights classes --all          clothing: sort them all again (after the rules change)
 pnpm weights classes --fast         clothing: rules and category only, no model
 pnpm weights run --dry --limit 20    look first: 20 listings, every estimate printed, nothing written

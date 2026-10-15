@@ -89,9 +89,10 @@ phase's sub-steps and every verification run) is in `docs/archive/status-log-to-
    applies the new migrations (the latest is `20261016090000_clothing_classes`, D-132; D-119 – D-128 reprice every listing)
    to production. Confirm with the courier that ₹2,000 includes the box and clearance, and
    whether it bills by box size; correct Settings → Courier rate card if not.
-2. After the deploy, all clothing takes its class weight at the next `pnpm sourcing run` (or at once on the laptop:
-   `pnpm weights classes --dry`, open `tools/weight-estimator/clothing-classes.csv` in Excel, look at the rows marked
-   "Look at it", then `pnpm weights classes`; it writes to **production**). Every automatic clothing price follows. Then food and
+2. Done 2026-10-16: all 339 live clothing listings (2,993 options) have their class weight (`pnpm weights classes` on
+   production; none had a weight before; the old values are in `tools/weight-estimator/clothing-classes-before.jsonl`).
+   New clothing is sorted by each `pnpm sourcing run`, or alone by `pnpm sourcing classes` (no shops, nothing added).
+   Clothing drafts held for a missing weight (D-129) can now be published (Products → Drafts → Publish all drafts). Then food and
    home: `pnpm weights run --dry --limit 20`, read the estimates, `pnpm weights run`. Decide whether a sure estimate may
    price a live food or home listing without an admin's look (D-131 lets it).
    At the hub, weigh each piece as it is marked picked (one piece, packed, in grams). On the hub PC: `pnpm sourcing run --weights` (repeat: 40 listings a run) to read the weights drafts lack; then
