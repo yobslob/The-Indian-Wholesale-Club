@@ -12,6 +12,7 @@ import { errorText, log } from './log';
 import { shopFor } from './shops';
 
 import type { RunContext } from './context';
+import type { ProductType } from '@repo/shared/domain';
 import type { WeightReading } from '@repo/shared/sourcing';
 
 /**
@@ -38,7 +39,8 @@ async function ownPage(ctx: RunContext, listing: WeightPlanListing): Promise<Wei
     const site = listing.site ?? new URL(url).hostname.replace(/^www\./, '');
     const read = await readPage(ctx, site, url);
     if (!read?.product) continue;
-    for (const w of weightsFromOwnPage(listing, read.product)) if (!out.has(w.variant_id)) out.set(w.variant_id, w);
+    for (const w of weightsFromOwnPage(listing, read.product))
+      if (!out.has(w.variant_id)) out.set(w.variant_id, w);
   }
   return [...out.values()];
 }
@@ -50,9 +52,9 @@ async function elsewhere(ctx: RunContext, listing: WeightPlanListing): Promise<W
   const found: { site: string; title: string; reading: WeightReading }[] = [];
   for (const shop of shops) {
     try {
-      const offers = (await shopFor(shop.reader).search(ctx.lanes.of(shop.site), listing.name)).filter((o) =>
-        isSameItem(listing.name, o.title),
-      );
+      const offers = (
+        await shopFor(shop.reader).search(ctx.lanes.of(shop.site), listing.name)
+      ).filter((o) => isSameItem(listing.name, o.title));
       ctx.stats.page(shop.site);
       for (const offer of offers.slice(0, 2)) {
         const read = await readPage(ctx, shop.site, offer.url);
@@ -68,10 +70,15 @@ async function elsewhere(ctx: RunContext, listing: WeightPlanListing): Promise<W
 }
 
 /** Fills what it can; returns how many options got a weight. */
-export async function fillWeights(ctx: RunContext, limit: number): Promise<number> {
+export async function fillWeights(
+  ctx: RunContext,
+  limit: number,
+  type: ProductType | null = null,
+): Promise<number> {
   if (!ctx.db) return 0;
-  const plan = await ctx.db.weightPlan(limit);
-  if (plan.length) log(`weights: ${plan.length} listing${plan.length === 1 ? '' : 's'} without a sure weight`);
+  const plan = (await ctx.db.weightPlan(limit)).filter((l) => !type || l.product_type === type);
+  if (plan.length)
+    log(`weights: ${plan.length} listing${plan.length === 1 ? '' : 's'} without a sure weight`);
   let filled = 0;
   for (const listing of plan) {
     try {

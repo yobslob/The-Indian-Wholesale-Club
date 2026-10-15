@@ -3,9 +3,16 @@ import { join } from 'node:path';
 
 import { ROOT } from './env';
 
+let tag = '';
+
+/** Two runners at once (`--type`): each line says whose it is, "[clothing nishorama.com]". */
+export function setLogTag(value: string): void {
+  tag = value ? `[${value}] ` : '';
+}
+
 /** One line per event on the console and in sourcing.log (kept next to the runner, not in git). */
 export function log(message: string): void {
-  const line = `${new Date().toISOString()} ${message}`;
+  const line = `${new Date().toISOString()} ${tag}${message}`;
   console.log(line);
   try {
     appendFileSync(join(ROOT, 'sourcing.log'), `${line}\n`);

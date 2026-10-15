@@ -152,6 +152,9 @@ Migration 31 (D-099, the second speed audit): `admin_order_counts()` (every orde
 send, shops owed for picked pieces) and `admin_cycle_totals(cycle)` (the cycle card's orders, pieces, shops and sales),
 admin only, counted in SQL because the API sends at most 1,000 rows; indexes for orders by status and newest, pickups
 by status, what each shop is owed, and a payout's pieces.
+Migration 65: `worker_sourcing_plan(checks, type, site)`: with a product type (and a shop) it claims only that type's
+queued targets (open to that shop), lists only that shop or the type's shops, and re-checks only that type's listings
+(with a shop: only those sourced there alone), so two runners share the work. Tests: `runner_by_type.test.sql`.
 Migration 64 (D-132): `weight_source` may be `class` (clothing by the founder's four classes, 350 / 750 / 800 /
 1,500 g). Worker only: `worker_clothing_plan(after, limit, all)` (clothing listings with an option not weighed, typed
 or already classed; `all` also classed ones) and `worker_set_class_weights(weights)` (never on food, a weighed or a

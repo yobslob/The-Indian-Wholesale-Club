@@ -17,6 +17,8 @@ import {
 
 import { describeNetError, supabaseFetch } from './net';
 
+import type { ProductType } from '@repo/shared/domain';
+
 import type { Env } from './env';
 
 /**
@@ -54,8 +56,23 @@ export class Db {
     return data as T;
   }
 
-  async plan(checks: number): Promise<SourcingPlan> {
-    return planSchema.parse(await this.rpc('worker_sourcing_plan', { p_checks: checks }));
+  /** The work: all of it, or one product type's (and one shop's) when two runners share it. */
+  async plan(
+    checks: number,
+    only: { type: ProductType | null; site: string | null },
+  ): Promise<SourcingPlan> {
+    const args: Record<string, unknown> = { p_checks: checks };
+    if (only.type) args.p_type = only.type;
+    if (only.site) args.p_site = only.site;
+    try {
+      return planSchema.parse(await this.rpc('worker_sourcing_plan', args));
+    } catch (error) {
+      if (only.type && /function|p_type|schema cache/i.test(String(error)))
+        throw new Error(
+          `the database does not take --type yet: run the Deploy workflow (migration 20261016120000) (${String(error).slice(0, 120)})`,
+        );
+      throw error;
+    }
   }
 
   add(target: string, listing: unknown): Promise<{ product_id: string; created: boolean }> {

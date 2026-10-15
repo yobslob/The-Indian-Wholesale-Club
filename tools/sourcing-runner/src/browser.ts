@@ -1,3 +1,6 @@
+import { copyFileSync, existsSync, mkdirSync, readdirSync } from 'node:fs';
+import { join } from 'node:path';
+
 import { chromium, type BrowserContext, type Page } from 'playwright';
 
 import type { Env } from './env';
@@ -12,11 +15,56 @@ const GAP_MS = 2500;
 const JITTER_MS = 1500;
 const TIMEOUT_MS = 35_000;
 
+/**
+ * Two runners cannot share one Chrome profile (the second finds it locked), so a runner for one product type uses
+ * its own: the main profile copied once (it keeps the hub's addresses), without Chrome's lock files. A file the other
+ * runner's Chrome holds open (its cookies) is skipped, not fatal: Chrome makes a new one.
+ */
+export function profileFor(env: Env, name: string | null): string {
+  if (!name) return env.IWC_SOURCING_PROFILE;
+  const dir = `${env.IWC_SOURCING_PROFILE}-${name}`;
+  if (!existsSync(dir) && existsSync(env.IWC_SOURCING_PROFILE))
+    copyProfile(env.IWC_SOURCING_PROFILE, dir);
+  return dir;
+}
+
+/** Chrome's caches: most of a profile's size, and rebuilt as it browses. */
+const CACHES = new Set([
+  'Cache',
+  'Code Cache',
+  'GPUCache',
+  'GrShaderCache',
+  'ShaderCache',
+  'DawnCache',
+  'DawnGraphiteCache',
+  'DawnWebGPUCache',
+  'Service Worker',
+  'component_crx_cache',
+  'extensions_crx_cache',
+]);
+
+function copyProfile(from: string, to: string): void {
+  mkdirSync(to, { recursive: true });
+  for (const entry of readdirSync(from, { withFileTypes: true })) {
+    if (/Singleton|lockfile|\.lock$/i.test(entry.name) || CACHES.has(entry.name)) continue;
+    const src = join(from, entry.name);
+    const dst = join(to, entry.name);
+    if (entry.isDirectory()) copyProfile(src, dst);
+    else {
+      try {
+        copyFileSync(src, dst);
+      } catch {
+        // held open by the running browser
+      }
+    }
+  }
+}
+
 export async function openBrowser(
   env: Env,
-  opts: { headless: boolean; images: boolean },
+  opts: { headless: boolean; images: boolean; profile?: string },
 ): Promise<BrowserContext> {
-  const context = await chromium.launchPersistentContext(env.IWC_SOURCING_PROFILE, {
+  const context = await chromium.launchPersistentContext(opts.profile ?? env.IWC_SOURCING_PROFILE, {
     channel: env.IWC_SOURCING_CHANNEL === 'chromium' ? undefined : env.IWC_SOURCING_CHANNEL,
     headless: opts.headless,
     viewport: { width: 1366, height: 900 },

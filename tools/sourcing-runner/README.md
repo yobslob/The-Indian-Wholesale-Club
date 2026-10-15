@@ -43,6 +43,10 @@ pnpm sourcing run              the checks that are due, then the queued targets
 pnpm sourcing run --checks     only the checks
 pnpm sourcing run --targets    only the targets
 pnpm sourcing classes          only clothing by class (D-132): no browser, no shops, nothing added
+pnpm sourcing run --type clothing --shops nishorama.com    one type (and one shop) only; two terminals can run
+pnpm sourcing run --type food                              at once: each claims only its own targets and checks,
+                               uses its own browser profile (the main one copied the first time, so the hub's
+                               addresses carry over) and tags its lines in sourcing.log ([food], [clothing ...])
 pnpm sourcing run --weights    only new clothing by class (D-132, by the name rules) and the weights listings
                                lack (D-129); every full run ends with them too
 pnpm sourcing try "kasuri methi" --type food    a dry run: what it would add (nothing is written)
