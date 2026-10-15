@@ -11,6 +11,7 @@
     "db:types": "node scripts/gen-db-types.mjs",
     "db:test": "node scripts/db-test.mjs",
     "sourcing": "tsx --tsconfig tools/sourcing-runner/tsconfig.json tools/sourcing-runner/src/main.ts",
+    "weights": "tsx --tsconfig tools/weight-estimator/tsconfig.json tools/weight-estimator/src/main.ts",
     "script:connections": "tsx scripts/test-connections.ts",
     "format": "prettier --write \"**/*.{ts,tsx,js,jsx,json,md,css}\"",
     "format:check": "prettier --check \"**/*.{ts,tsx,js,jsx,json,md,css}\"",

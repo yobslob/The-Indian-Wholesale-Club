@@ -47,7 +47,7 @@ writes refresh the website's store pages at once (`POST /admin/revalidate`, B-17
 | **Payouts** | payable per vendor, record payouts | India | ✓ | ✓ |
 | **Orders** | all orders, detail + internal timeline, pack & ship once arrived (carrier with tracking link, D-066), refunds, delay notices, move to another cycle (D-045) | US | ✓ | ✓ (pack & ship) |
 | **Regions** | edit and approve region content (greeting and its script, tagline, story, accent, image, `is_live`; changing approved text sends it back to draft, enforced in the database); the main photo uploads to `product-media/regions/<slug>/`; album photos (each with alt text, removable) to `regions/<slug>/album/` (`region_photos`, D-051); an accent below WCAG AA on the page backgrounds is refused | both | ✓ | — |
-| **Catalog** | products, categories, prices, bulk edits; a product's state may be empty (All states, D-121; the import form offers it); **Download Excel** (every tab: name, Indian price, category, weight, US price and margin of that view, D-128); a **Weight** column and the **Weights to check** tab (options with no weight, a matching item's, one recorded before sources were kept, or an unusual one for the category; weigh it or type it per option or for all sizes at once; a listing goes live only when every option has its weight, D-129); **Publish all drafts** on the Drafts tab (every draft with a photo, an option and a piece to sell; it says how many went live, what held the rest and how many still lack details customers see, D-120); "Curated for you" picks per product (D-056); product photos (upload with alt text, main photo, remove) to `product-media/products/<id>/`; 50 to a page (D-067) | both | ✓ | — |
+| **Catalog** | products, categories, prices, bulk edits; a product's state may be empty (All states, D-121; the import form offers it); **Download Excel** (every tab: name, Indian price, category, weight, US price and margin of that view, D-128); a **Weight** column and the **Weights to check** tab (options with no weight, a matching item's, one recorded before sources were kept, an unusual one for the category, or a shop's weight the weight estimator doubts; weigh it or type it per option or for all sizes at once, the box already holding the estimator's suggestion; a listing goes live only when every option has its weight, D-129, D-131); **Publish all drafts** on the Drafts tab (every draft with a photo, an option and a piece to sell; it says how many went live, what held the rest and how many still lack details customers see, D-120); "Curated for you" picks per product (D-056); product photos (upload with alt text, main photo, remove) to `product-media/products/<id>/`; 50 to a page (D-067) | both | ✓ | — |
 | **Reviews** | approve or reject customer reviews before they appear (D-052, D-056); "verified buyer" is set by the database | both | ✓ | — |
 | **Customers** | customer list, orders per customer | US | ✓ | — |
 | **Promotions** | promo codes (kept from the old admin) | US | ✓ | — |
@@ -172,5 +172,11 @@ runner in `tools/sourcing-runner/` (its README says how to set it up on the PC a
   prices held, problems.
 - **Weights (D-129).** Each run ends by filling the weights listings lack (`pnpm sourcing run --weights` does only
   that): the listing's own shop pages first, then the same item on Amazon and Flipkart (two pages must agree). It never
-  overwrites a weighed or typed weight; what it cannot find waits in Products → Weights to check.
+  overwrites a weighed or typed weight, and a shop's own page replaces an estimate; what it cannot find waits in
+  Products → Weights to check.
+- **The weight estimator (D-131).** On the founder's laptop: `pnpm weights run` gives every option without a weight a
+  packed weight from a local model on the GPU, checked against the most similar weights IWC knows (weighed at the hub
+  first). A sure one becomes the weight (source "Estimated"); an unsure one is a suggestion in Weights to check.
+  `--audit` compares the shops' weights, `--redo` re-estimates after many weighings, `eval` says how close it comes
+  (`tools/weight-estimator/README.md`).
 

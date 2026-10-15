@@ -1,4 +1,5 @@
 import {
+  estimateDisagrees,
   formatGrams,
   unusualWeight,
   WEIGHT_SOURCE_LABEL,
@@ -20,6 +21,27 @@ import { Sub } from './ui';
 interface WeightRow {
   weight_g: number | null;
   weight_source: string | null;
+  /** D-131: the weight estimator's latest weight and note. */
+  weight_estimate_g?: number | null;
+  weight_estimate_note?: string | null;
+}
+
+/** What the estimator thinks, when it adds something: a suggestion for a missing weight, or a doubt. */
+function EstimateLine({ v }: { v: WeightRow }): React.JSX.Element | null {
+  if (v.weight_estimate_g == null || v.weight_source === 'estimated') return null;
+  const lead =
+    v.weight_g === null
+      ? `Estimator suggests ${formatGrams(v.weight_estimate_g)}`
+      : estimateDisagrees(v)
+        ? `The estimator says ${formatGrams(v.weight_estimate_g)}`
+        : null;
+  if (!lead) return null;
+  return (
+    <Sub>
+      {lead}
+      {v.weight_estimate_note ? `: ${v.weight_estimate_note}` : ''}
+    </Sub>
+  );
 }
 
 const isSource = (s: string | null): s is WeightSource => WEIGHT_SOURCES.includes(s as WeightSource);
@@ -42,10 +64,11 @@ export function WeightBadge({
         <Chip tone="bad">No weight</Chip>
         <Sub>its price is an estimate until it has one; it cannot go live</Sub>
         {note ? <Sub>{note}</Sub> : null}
+        <EstimateLine v={v} />
       </span>
     );
   const unusual = unusualWeight(v.weight_g, type, categoryWeightG);
-  const state = weightState(v, unusual);
+  const state = weightState(v, unusual || estimateDisagrees(v));
   const from = isSource(v.weight_source) ? WEIGHT_SOURCE_LABEL[v.weight_source] : 'Source not recorded';
   return (
     <span className="inline-flex flex-col gap-0.5">
@@ -55,6 +78,7 @@ export function WeightBadge({
         {unusual && categoryWeightG ? ` · unusual (its category is usually ${formatGrams(categoryWeightG)})` : ''}
       </Sub>
       {note ? <Sub>{note}</Sub> : null}
+      <EstimateLine v={v} />
     </span>
   );
 }

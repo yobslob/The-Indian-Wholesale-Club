@@ -11,7 +11,8 @@ import type { WeightToCheck } from '@repo/db/admin';
 /**
  * D-129: Products → Weights to check. Each listing with an option that has no weight (not sold until it has one), a
  * weight from a matching item, one recorded before sources were kept, or one unusual for its category; live ones
- * first. Weigh it or type it here: the price follows (D-128).
+ * first. A shop's weight the weight estimator doubts is listed too (D-131). Weigh it or type it here: the price
+ * follows (D-128); a missing weight's box holds the estimator's suggestion, so Save weight accepts it.
  */
 export function WeightsToCheck({ rows, missing }: { rows: WeightToCheck[]; missing: number }): React.JSX.Element {
   if (!rows.length) return <Empty>Every listing has a weight it can be priced on.</Empty>;
@@ -20,7 +21,8 @@ export function WeightsToCheck({ rows, missing }: { rows: WeightToCheck[]; missi
       <p className="text-ink-muted text-sm">
         {missing ? `${missing} listing${missing === 1 ? '' : 's'} without a weight cannot go live. ` : ''}
         The price comes from the weight, so a guessed weight is a guessed price. Weigh the piece packed (tick “weighed”),
-        or type the weight the shop states; the auto-sourcing runner fills what it can read from the shops.
+        or type the weight the shop states; the auto-sourcing runner fills what it can read from the shops, and the
+        weight estimator fills the ones it is sure of and suggests the rest.
       </p>
       <Table head={['Product', 'Option', 'Weight now', 'Set it']}>
         {rows.flatMap((p) => {
@@ -51,7 +53,12 @@ export function WeightsToCheck({ rows, missing }: { rows: WeightToCheck[]; missi
                   <WeightBadge v={v} type={p.product_type} categoryWeightG={p.category_weight_g} note={v.weight_note} />
                 </Cell>
                 <Cell>
-                  <WeightForm productId={p.id} variantId={v.id} grams={v.weight_g} label={`${p.name}, ${v.label}`} />
+                  <WeightForm
+                    productId={p.id}
+                    variantId={v.id}
+                    grams={v.weight_g ?? v.weight_estimate_g}
+                    label={`${p.name}, ${v.label}`}
+                  />
                 </Cell>
               </tr>
             )),

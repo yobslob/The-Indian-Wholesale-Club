@@ -136,6 +136,7 @@ packages/shared   pure domain logic + zod schemas (no I/O); shared/vendor: the p
 packages/tokens  design tokens → Tailwind + NativeWind
 supabase/migrations  one baseline (R3) + small increments          supabase/seed/  regions, categories, demo (dev only)
 scripts/build-india-map.mjs  regenerates packages/shared/src/india-map/india-map.json (web + app) from DataMeet's boundaries (D-052)
+tools/sourcing-runner/  auto-sourcing on the hub PC (D-118)     tools/weight-estimator/  packed weights on the laptop GPU (D-131)
 ```
 
 ## App specifics (since R6)

@@ -1,7 +1,6 @@
 import {
   isSameItem,
   pieceWeight,
-  wantsWeight,
   weightsFromOwnPage,
   weightsFromSimilar,
   type WeightPlanListing,
@@ -78,7 +77,8 @@ export async function fillWeights(ctx: RunContext, limit: number): Promise<numbe
     try {
       const own = await ownPage(ctx, listing);
       const covered = new Set(own.map((w) => w.variant_id));
-      const stillMissing = listing.variants.some((v) => wantsWeight(v) && !covered.has(v.id));
+      // other shops' matching items only fill an option with no weight (never over an estimate, D-131)
+      const stillMissing = listing.variants.some((v) => v.weight_g === null && !covered.has(v.id));
       const similar = stillMissing
         ? (await elsewhere(ctx, listing)).filter((w) => !covered.has(w.variant_id))
         : [];

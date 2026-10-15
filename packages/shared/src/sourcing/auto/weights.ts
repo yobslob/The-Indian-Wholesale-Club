@@ -51,9 +51,9 @@ export interface WeightWrite {
   note: string;
 }
 
-/** The options still wanting a weight: none, or only a matching item's. */
+/** The options still wanting a page's weight: none, a matching item's, or an estimate (D-131). */
 export const wantsWeight = (v: WeightPlanListing['variants'][number]): boolean =>
-  v.weight_g === null || v.weight_source === 'similar';
+  v.weight_g === null || v.weight_source === 'similar' || v.weight_source === 'estimated';
 
 /** A weight a page states for the whole piece (clothing never takes one from its title). */
 export function pieceWeight(product: Pick<SourcedProduct, 'title' | 'specs'>, type: ProductType): WeightReading | null {

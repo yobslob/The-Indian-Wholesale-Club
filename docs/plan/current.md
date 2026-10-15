@@ -71,12 +71,22 @@ phase's sub-steps and every verification run) is in `docs/archive/status-log-to-
   the cache like the state pages (rewrites to `app/(store)/see-all/…`; the addresses are unchanged); `/clothing` went
   from 61 – 169 ms (twice over the 100 ms budget) to 7 – 13 ms.
 
+- **Weight estimator (D-131, 2026-10-15):** `pnpm weights run` on the founder's laptop gives every option without a
+  weight a packed weight from a local model on the GPU (Ollama, `qwen2.5:7b`), part by part, with a second look and
+  the most similar known weights (weighed at the hub first); about 1 s a listing. Sure ones become weights (source
+  "Estimated"), the rest are suggestions in Weights to check, filled in the weight box; `--audit` flags a shop's weight
+  it doubts; shop pages and the hub's scale replace estimates; `pnpm weights eval` measures it against known weights.
+
 ## Next for the founder
 1. Run `node scripts/check.mjs` (Docker Desktop and `npx supabase start` first), push, then the Deploy workflow: it
-   applies the new migrations (the latest is `20261015160000_weights`, D-129; D-119 – D-128 reprice every listing)
+   applies the new migrations (the latest is `20261015180000_weight_estimates`, D-131; D-119 – D-128 reprice every listing)
    to production. Confirm with the courier that ₹2,000 includes the box and clearance, and
    whether it bills by box size; correct Settings → Courier rate card if not.
-2. At the hub, weigh each piece as it is marked picked (one piece, packed, in grams). On the hub PC: `pnpm sourcing run --weights` (repeat: 40 listings a run) to read the weights drafts lack; then
+2. On the laptop (Ollama and both models are installed): set the three Ollama settings in
+   `tools/weight-estimator/README.md` §Speed, then `pnpm weights doctor`, `pnpm weights run --dry --limit 20` (read
+   the estimates), `pnpm weights run`. It uses `tools/sourcing-runner/.env`, so it writes to **production**. Decide
+   whether a sure estimate may price a live listing without an admin's look (D-131 lets it).
+   At the hub, weigh each piece as it is marked picked (one piece, packed, in grams). On the hub PC: `pnpm sourcing run --weights` (repeat: 40 listings a run) to read the weights drafts lack; then
    Admin → Products → **Weights to check**: weigh what is left (tick "weighed"), starting with live listings. Decide
    whether customers should see a weight line on the product page (D-129 leaves it admin-only).
 3. Then Admin → Products → Drafts → **Publish all drafts**; it says how many went live, what held the rest and how
@@ -98,6 +108,7 @@ phase's sub-steps and every verification run) is in `docs/archive/status-log-to-
 ## Last verification
 | Date | Commit | Where | Result |
 |---|---|---|---|
+| 2026-10-15 | D-131 commit | Claude Code, founder's Windows machine with Docker, RTX 4060 | `check.mjs` all nine steps OK (db from a fresh reset: 47/47 SQL test files; http `/clothing` 19 ms; e2e 23/23; bundle OK). Shared unit tests incl. new `estimate.test.ts` (14), db 47/47 SQL test files (new `weight_estimates.test.sql`, 22 assertions; `weigh_at_hub` now checks a second weighing keeps the sizes `similar`). The estimator on the local database (577 demo listings made real for the test): 120 listings in 121 s, 8 at once (3.4 s a listing with Ollama as installed), 97% of options sure, written and read back; Weights to check and the product page show the suggestion and a doubted shop weight in the browser. Its estimates look right for common pieces (kasavu saree 550 g, Pathani suit 480 g, kurta 230 g); it was wrong and sure on some regional sets (a Bikaner poshak 230 g, a bridal kasavu counted as its blouse only, Kota Doria fabric by the metre 1.55 kg). **Not run:** against production, `eval` (no weighed items yet), the app. |
 | 2026-10-15 | See all cached | Claude Code, founder's Windows machine with Docker | build OK (the three See all pages pre-built); http three runs in a row OK (`/clothing` 7, 8, 13 ms; was 61 – 169 ms); e2e 23/23 (incl. rows: See all by state and category, 24 then 48 cards; sold-out on cached pages); bundle OK. Filters, Show more, invalid filters, canonicals and a 404 for an unknown type checked with curl on `next start`. |
 | 2026-10-15 | D-130 commit | Claude Code, founder's Windows machine with Docker | typecheck (incl. the app), lint, test, docs: OK; db from a fresh reset: 46/46 SQL test files (new `weigh_at_hub.test.sql`: hand-set price kept, $34.62 → $41.87 on a reweigh, sizes follow, typed weights kept, admins only). In the browser on local e2e pilot orders: Picked with 820 g, then Picked and Weigh it 950 g ("listed 820 g, +16%"). Then build OK; http first `/clothing` 169 ms (budget 100; it renders on each request, unchanged since before D-129), e2e 22/23 (Stripe's test payment stalled after Pay, no error); re-run: http OK (`/clothing` 61 ms), e2e 23/23. **Not run:** the app on a phone (its screens only typechecked). |
 | 2026-10-15 | D-129 commit | Claude Code, founder's Windows machine with Docker | docs, typecheck, lint, test (shared 150 incl. new `weight.test.ts`, and `pricing-band`/`pricing-beta`, which the test script had skipped), db (fresh reset, 45/45 SQL test files incl. new `weights.test.sql`), build, bundle: OK. http first 153 ms on `/clothing` (budget 100), e2e 21/23 (the admin flow published a listing without a weight, refused by design; fixed the test; checkout hung at "Checking your bag" once); re-run of http and e2e alone: OK, 23/23. The Weights to check tab, the Weight column, the weight forms (all sizes, weighed) and the publish refusal checked in the browser on two local test listings (removed). **Not run:** the runner's weight step against live shops, the app build. |

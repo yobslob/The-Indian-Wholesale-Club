@@ -8,8 +8,9 @@ import type { ProductType } from './product-types';
  *  - admin: typed by an admin
  *  - shop: stated on the shop's own page (its packed weight, item weight, net quantity, pack or title)
  *  - similar: the same or a matching item on another shop, or another size of the same piece
+ *  - estimated: the weight estimator on the founder's laptop, when it is sure (D-131); a page or the scale replaces it
  */
-export const WEIGHT_SOURCES = ['weighed', 'admin', 'shop', 'similar'] as const;
+export const WEIGHT_SOURCES = ['weighed', 'admin', 'shop', 'similar', 'estimated'] as const;
 export type WeightSource = (typeof WEIGHT_SOURCES)[number];
 
 export const WEIGHT_SOURCE_LABEL: Record<WeightSource, string> = {
@@ -17,6 +18,7 @@ export const WEIGHT_SOURCE_LABEL: Record<WeightSource, string> = {
   admin: 'Entered by an admin',
   shop: "From the shop's page",
   similar: 'From a matching item',
+  estimated: 'Estimated (weight estimator)',
 };
 
 /** "450 g", "1.2 kg", "1 kg". */
@@ -28,8 +30,9 @@ export function formatGrams(grams: number): string {
 export type WeightState = 'confirmed' | 'check' | 'missing';
 
 /**
- * How far an option's weight can be trusted: confirmed (weighed, entered, or the shop's page), check (from a
- * matching item, recorded before sources were kept, or unusual for its category), missing (priced on a guess).
+ * How far an option's weight can be trusted: confirmed (weighed, entered, the shop's page, or a sure estimate,
+ * D-131), check (from a matching item, recorded before sources were kept, unusual for its category, or a shop's
+ * weight the estimator disagrees with), missing (priced on a guess).
  */
 export function weightState(
   v: { weight_g: number | null; weight_source: string | null },
@@ -37,8 +40,25 @@ export function weightState(
 ): WeightState {
   if (v.weight_g === null) return 'missing';
   if (v.weight_source === 'weighed' || v.weight_source === 'admin') return 'confirmed';
-  if (unusual || v.weight_source !== 'shop') return 'check';
+  if (unusual || (v.weight_source !== 'shop' && v.weight_source !== 'estimated')) return 'check';
   return 'confirmed';
+}
+
+/**
+ * D-131: the estimator's weight is more than a third away from the shop's stated one (a saffron box the page calls
+ * 1 g), so an admin looks. The same rule as the database's Weights to check.
+ */
+export function estimateDisagrees(v: {
+  weight_g: number | null;
+  weight_source: string | null;
+  weight_estimate_g?: number | null;
+}): boolean {
+  return (
+    v.weight_source === 'shop' &&
+    v.weight_g !== null &&
+    v.weight_estimate_g != null &&
+    Math.abs(v.weight_estimate_g - v.weight_g) * 3 > v.weight_g
+  );
 }
 
 /**

@@ -239,7 +239,12 @@ export default async function AdminProductPage({
                   categoryWeightG={product.category?.default_weight_g ?? null}
                   note={v.weight_note}
                 />
-                <WeightForm productId={product.id} variantId={v.id} grams={v.weight_g} label={v.label} />
+                <WeightForm
+                  productId={product.id}
+                  variantId={v.id}
+                  grams={v.weight_g ?? v.weight_estimate_g}
+                  label={v.label}
+                />
               </Cell>
             </tr>
           ))}

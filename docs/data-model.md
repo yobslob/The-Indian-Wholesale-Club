@@ -35,7 +35,7 @@ operations data are never queried from customer code.
 | Places | `regions` | the 36 regions (D-002): slug, name, sort, `is_live`, greeting (native + ISO 15924 script + Latin + meaning), languages, tagline, story, hero image, accent colour, `content_status` (D-019) | store (text only if approved) / admin |
 | Catalog | `categories` | browse groups per product type. A child always has its parent's type | store / admin |
 | | `products` | region, category, `product_type`, name, slug, summary, description, story, craft, `attributes` (customer-safe JSON), `price_cents`, `status`, search vector; `vendor_id`*, `shop_price_paise`*, `origin_town`*, `has_origin_label`*, `is_placeholder`*. **Spices are `live` only while "Spices are cleared" is on** (`pricing_settings.spices_cleared`, D-074; on since D-107) | store (live only) / admin |
-| | `product_variants` | `options` JSON (colour, flavour, style = "Type", pack, size: D-118), SKU*, label, price override, `weight_g`* with `weight_source`* and `weight_note`* (D-129), `qty_listed`*, `qty_reserved`*, `qty_confirmed_at`*, `shop_price_paise`*, `source_id`* | store (`available` only) / admin |
+| | `product_variants` | `options` JSON (colour, flavour, style = "Type", pack, size: D-118), SKU*, label, price override, `weight_g`* with `weight_source`* and `weight_note`* (D-129), `weight_estimate_g`*, `weight_estimate_note`*, `weight_estimated_at`* (D-131), `qty_listed`*, `qty_reserved`*, `qty_confirmed_at`*, `shop_price_paise`*, `source_id`* | store (`available` only) / admin |
 | | `product_sources` | the shop items a variant can be ordered as, checked weekly (D-118) | admin / worker via functions |
 | | `variant_availability` | public mirror `variant_id → available`, trigger-maintained, in the Realtime publication (live "only 2 left", D-010) | store (visible products) |
 | | `product_media` | Storage paths (bucket `product-media`), alt text, one primary per product, `is_ai` (an AI-generated model photo, D-100: the product's Details say so) | store / admin |
@@ -152,6 +152,16 @@ Migration 31 (D-099, the second speed audit): `admin_order_counts()` (every orde
 send, shops owed for picked pieces) and `admin_cycle_totals(cycle)` (the cycle card's orders, pieces, shops and sales),
 admin only, counted in SQL because the API sends at most 1,000 rows; indexes for orders by status and newest, pickups
 by status, what each shop is owed, and a payout's pieces.
+Migration 63 (D-131): `weight_source` may be `estimated`; `product_variants.weight_estimate_g`, `weight_estimate_note`,
+`weight_estimated_at` (the weight estimator's latest, kept after weighing). Worker only: `worker_estimate_plan(after,
+limit, mode)` (missing / redo / audit; every option with `wanted`), `worker_weight_references(after, limit)` (weighed,
+typed and shop weights, with the estimate made before), `worker_set_estimates(estimates)` (keeps each estimate, never
+on a weighed or typed option; a sure one becomes the weight of an option with none or an estimate; returns
+`{estimates, weights}`). `_variant_weight` keeps the source when a weight is rewritten with a new note;
+`_weight_needs_check` also lists a shop weight the estimate is over a third away from; `admin_weights_to_check` returns
+the estimate; `worker_set_weights` lets a shop's page replace an estimate; `worker_weight_plan` reads estimated
+listings too (missing first); `admin_weigh_pickup` also replaces the other sizes' estimates. Tests:
+`weight_estimates.test.sql`.
 Migration 62 (D-130): `pickups.weighed_g` and `weigh_note`; `admin_weigh_pickup(pickup, grams)` (admin, a picked
 piece) sets the option's weight (weighed), fills the same piece's sizes that have none or a similar one, reprices,
 and returns and stores what changed. Tests: `weigh_at_hub.test.sql`.

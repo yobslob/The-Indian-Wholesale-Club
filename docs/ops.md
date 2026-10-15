@@ -183,6 +183,13 @@ setup and running). For production, once:
 4. Task Scheduler runs `pnpm sourcing run` daily (README). When the PC is off nothing is added or checked; listings keep
    their last checked price and stock, and the admin page shows the last run.
 
+## Weight estimator (D-131; the founder runs it on production)
+`tools/weight-estimator` gives listings a packed weight on the founder's laptop GPU (its README has setup and running).
+It uses the worker account and reads `tools/sourcing-runner/.env` when it has no `.env` of its own, so on a laptop with
+the runner's settings it works on **production** at once. Once: `winget install Ollama.Ollama`, `ollama pull
+qwen2.5:7b`, `ollama pull nomic-embed-text`, `pnpm weights doctor`. Then `pnpm weights run --dry --limit 20` to look,
+and `pnpm weights run` (any time; what it wrote stays if it is stopped). Nothing on the website depends on the laptop.
+
 ## Git
 GitHub `yobslob/The-Indian_Wholesale-Club`, branch `main` (D-014). Claude commits in `C:\kod\root` and the founder pushes.
 Baseline tag `pre-restructure` = the whole pre-IWC codebase (stealth layer included, for reference only).

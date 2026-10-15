@@ -684,3 +684,32 @@ What it means for the build (migration `20261015170000_weigh_at_hub.sql`):
   page (web and app) now offers Picked for every order without a cycle that is still in India.
 *Claude's choices in it:* the weight is optional (a busy desk is never blocked); one piece is weighed, not the whole
 quantity; the note is kept on the pickup instead of a pop-up, so the web, the app and later readers all see it.
+
+**D-131 · 2026-10-15 · founder: A weight estimator on the laptop gives every listing a realistic weight, fast**
+Founder, verbatim: "I need to build a very smart system on my laptop which goes through each product and assigns them
+a very realistic weight. If we build this system on website it will become heavy, I can even run my gpu if needed, but
+we have to build a very smart system when it runs it goes through each piece and gives it a very very realistic weight,
+now strict condition is it should take little time per product or there is no gain in running it on my system because
+there are thousands of product."
+What it means for the build (migration `20261015180000_weight_estimates.sql`, `tools/weight-estimator`, `pnpm weights`):
+- **On the laptop, not the website:** Ollama runs two local models on the GPU: one finds the items IWC already knows
+  that are most like the listing (weighed at the hub first, then typed, then a shop's page), the other weighs one unit
+  as shipped, part by part with its packing, with a 90% range. The code adds the parts. Three near-identical known
+  items that agree give the weight without the model. Listings are asked four at a time (`IWC_WEIGHT_PARALLEL`).
+- **Sure or not:** a weight is sure when its range is within ±25%, similar known items (if any) agree within 25%, it is
+  not below a pack's stated net weight and not far from its category's usual weight. A sure weight becomes the option's
+  weight, source **estimated**: the listing is priced on it and may go live. Any other weight is kept as a suggestion
+  (`weight_estimate_g`), shown in Products → Weights to check and filled in the weight box.
+- **What it never does:** change a weight a person weighed or typed, or a shop's page stated. A shop's page (the runner)
+  and the hub's scale replace an estimate; `--audit` compares the shops' weights and Weights to check lists one the
+  estimator puts more than a third away (a saffron box its page calls 1 g).
+- **It learns from the scale:** every hub weighing (D-130) becomes a reference for the next estimates (`--redo`
+  re-estimates), and the estimate made before a piece was weighed is kept, so `pnpm weights eval` reports how close it
+  came.
+- **Found on the way:** a weight rewritten with the same source turned into the changer's (a second weighing at the hub
+  made the other sizes "admin"); a new note now keeps the source.
+*Claude's choices in it:* `qwen2.5:7b` and `nomic-embed-text` (free, fit the RTX 4060's 8 GB together); the rules of
+thumb in the model's question (fabric, containers, materials; `estimate/prompt.ts`) are Claude's, not measurements;
+the ±25% and 25% thresholds and the 0.80 / 0.93 similarity lines are starting points for `eval` to tune; a sure estimate
+counts as a weight for D-129's "no listing goes live on a guess" (the founder asked for weights to be assigned). Whether
+it may price live listings without an admin's look is the founder's to confirm.

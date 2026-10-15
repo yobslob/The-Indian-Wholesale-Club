@@ -580,14 +580,14 @@ isOneToOne: false
                   ]
                 },"product_variants": {
                   Row: {
-                    "created_at": string,"id": string,"is_active": boolean,"label": string,"options": NonNullable<Json>,"price_cents": number | null,"product_id": string,"qty_confirmed_at": string | null,"qty_listed": number,"qty_reserved": number,"shop_price_paise": number | null,"sku": string,"sort_order": number,"source_id": string | null,"updated_at": string,"weight_g": number | null,"weight_note": string | null,"weight_source": string | null
+                    "created_at": string,"id": string,"is_active": boolean,"label": string,"options": NonNullable<Json>,"price_cents": number | null,"product_id": string,"qty_confirmed_at": string | null,"qty_listed": number,"qty_reserved": number,"shop_price_paise": number | null,"sku": string,"sort_order": number,"source_id": string | null,"updated_at": string,"weight_estimate_g": number | null,"weight_estimate_note": string | null,"weight_estimated_at": string | null,"weight_g": number | null,"weight_note": string | null,"weight_source": string | null
                   }
                   ComputedFields: never
                   Insert: {
-                    "created_at"?: string,"id"?: string,"is_active"?: boolean,"label": string,"options"?: NonNullable<Json>,"price_cents"?: number | null,"product_id": string,"qty_confirmed_at"?: string | null,"qty_listed"?: number,"qty_reserved"?: number,"shop_price_paise"?: number | null,"sku": string,"sort_order"?: number,"source_id"?: string | null,"updated_at"?: string,"weight_g"?: number | null,"weight_note"?: string | null,"weight_source"?: string | null
+                    "created_at"?: string,"id"?: string,"is_active"?: boolean,"label": string,"options"?: NonNullable<Json>,"price_cents"?: number | null,"product_id": string,"qty_confirmed_at"?: string | null,"qty_listed"?: number,"qty_reserved"?: number,"shop_price_paise"?: number | null,"sku": string,"sort_order"?: number,"source_id"?: string | null,"updated_at"?: string,"weight_estimate_g"?: number | null,"weight_estimate_note"?: string | null,"weight_estimated_at"?: string | null,"weight_g"?: number | null,"weight_note"?: string | null,"weight_source"?: string | null
                   }
                   Update: {
-                    "created_at"?: string,"id"?: string,"is_active"?: boolean,"label"?: string,"options"?: NonNullable<Json>,"price_cents"?: number | null,"product_id"?: string,"qty_confirmed_at"?: string | null,"qty_listed"?: number,"qty_reserved"?: number,"shop_price_paise"?: number | null,"sku"?: string,"sort_order"?: number,"source_id"?: string | null,"updated_at"?: string,"weight_g"?: number | null,"weight_note"?: string | null,"weight_source"?: string | null
+                    "created_at"?: string,"id"?: string,"is_active"?: boolean,"label"?: string,"options"?: NonNullable<Json>,"price_cents"?: number | null,"product_id"?: string,"qty_confirmed_at"?: string | null,"qty_listed"?: number,"qty_reserved"?: number,"shop_price_paise"?: number | null,"sku"?: string,"sort_order"?: number,"source_id"?: string | null,"updated_at"?: string,"weight_estimate_g"?: number | null,"weight_estimate_note"?: string | null,"weight_estimated_at"?: string | null,"weight_g"?: number | null,"weight_note"?: string | null,"weight_source"?: string | null
                   }
                   Relationships: [
                     {
@@ -1581,6 +1581,9 @@ isOneToOne: false
 "_delivered_at":
 { Args: { "p_order": string }; Returns: string
                            },
+"_estimate_wanted":
+{ Args: { "p_mode": string,"v": Omit<Database["public"]['Tables']["product_variants"]['Row'], Database["public"]['Tables']["product_variants"]['ComputedFields']> }; Returns: boolean
+                           },
 "_fallback_weight_g":
 { Args: { "p_category": string,"p_shop_paise": number,"p_type": Database["public"]['Enums']["product_type"] }; Returns: number
                            },
@@ -1960,11 +1963,17 @@ isOneToOne: false
 "worker_claim_job":
 { Args: Record<PropertyKey, never>; Returns: Json
                            },
+"worker_estimate_plan":
+{ Args: { "p_after"?: string,"p_limit"?: number,"p_mode"?: string }; Returns: Json
+                           },
 "worker_finish_job":
 { Args: { "p_candidates": (string)[],"p_error"?: string,"p_job": string }; Returns: undefined
                            },
 "worker_may_add_photos":
 { Args: { "p_product": string }; Returns: boolean
+                           },
+"worker_set_estimates":
+{ Args: { "p_estimates": Json }; Returns: Json
                            },
 "worker_set_weights":
 { Args: { "p_weights": Json }; Returns: number
@@ -1989,6 +1998,9 @@ isOneToOne: false
                            },
 "worker_weight_plan":
 { Args: { "p_limit"?: number }; Returns: Json
+                           },
+"worker_weight_references":
+{ Args: { "p_after"?: string,"p_limit"?: number }; Returns: Json
                            }
           }
           Enums: {

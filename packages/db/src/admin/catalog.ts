@@ -187,8 +187,8 @@ export async function getAdminProduct(client: IwcClient, id: string) {
           source_url, source_site, source_checked_at,
           created_at, updated_at,
           variants:product_variants!product_variants_product_id_fkey(id, sku, label, options, price_cents, weight_g,
-          weight_source, weight_note, qty_listed, qty_reserved, qty_confirmed_at, is_active, sort_order, shop_price_paise,
-          source_id),
+          weight_source, weight_note, weight_estimate_g, weight_estimate_note, qty_listed, qty_reserved, qty_confirmed_at,
+          is_active, sort_order, shop_price_paise, source_id),
           category:categories(name, default_weight_g),
           media:product_media(id, variant_id, storage_path, alt_text, sort_order, is_primary)`,
       )
@@ -283,12 +283,16 @@ export interface WeightToCheck {
     weight_source: WeightSource | null;
     weight_note: string | null;
     shop_price_paise: number | null;
+    /** D-131: the weight estimator's latest weight and how it got there. */
+    weight_estimate_g: number | null;
+    weight_estimate_note: string | null;
   }[];
 }
 
 /**
  * D-129: Products → Weights to check: listings with an option that has no weight, one from a matching item, one
- * recorded before sources were kept, or an unusual one for its category; live ones first, missing first.
+ * recorded before sources were kept, an unusual one for its category, or a shop's weight the estimator doubts
+ * (D-131); live ones first, missing first.
  */
 export async function listWeightsToCheck(
   client: IwcClient,

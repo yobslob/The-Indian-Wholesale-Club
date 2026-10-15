@@ -43,8 +43,8 @@ select tests.assert((select j ->> 'note' = 'Weighed 600 g (listed 400 g, +50%): 
                             and (j ->> 'big_change')::boolean from w),
   'weighing again reprices and says by how much the weight and the price moved');
 reset role;
-select tests.assert((select weight_g = 600 from public.product_variants where id = tests.id('v_live2')),
-  'a size that only had a matching item''s weight follows the new weighing');
+select tests.assert((select weight_g = 600 and weight_source = 'similar' from public.product_variants where id = tests.id('v_live2')),
+  'a size that only had a matching item''s weight follows the new weighing, still marked similar (D-131)');
 update public.product_variants set weight_g = 650, weight_source = 'admin' where id = tests.id('v_live2');
 set local role authenticated;
 select tests.act_as(tests.id('admin'));
