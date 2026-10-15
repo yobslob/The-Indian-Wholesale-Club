@@ -2,7 +2,13 @@ import { randomUUID } from 'node:crypto';
 
 import { createClient, type SupabaseClient } from '@supabase/supabase-js';
 
-import { planSchema, type SourcingPlan } from '@repo/shared/sourcing/auto';
+import {
+  planSchema,
+  weightPlanSchema,
+  type SourcingPlan,
+  type WeightPlan,
+  type WeightWrite,
+} from '@repo/shared/sourcing/auto';
 
 import { describeNetError, supabaseFetch } from './net';
 
@@ -72,6 +78,15 @@ export class Db {
       'worker_sourcing_checked',
       { p_product: product, p_results: results },
     );
+  }
+
+  /** D-129: listings whose options have no weight (or only a matching item's). */
+  async weightPlan(limit: number): Promise<WeightPlan> {
+    return weightPlanSchema.parse(await this.rpc('worker_weight_plan', { p_limit: limit }));
+  }
+
+  setWeights(weights: WeightWrite[]): Promise<number> {
+    return this.rpc('worker_set_weights', { p_weights: weights });
   }
 
   logRun(run: Record<string, unknown>): Promise<void> {

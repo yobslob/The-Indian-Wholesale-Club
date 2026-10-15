@@ -1,0 +1,136 @@
+import {
+  formatGrams,
+  unusualWeight,
+  WEIGHT_SOURCE_LABEL,
+  weightState,
+  WEIGHT_SOURCES,
+  type ProductType,
+  type WeightSource,
+} from '@repo/shared/domain';
+
+import { setWeightAction, setWeightForSizesAction } from './actions/weights';
+import { Chip } from './chips';
+import { Sub } from './ui';
+
+/**
+ * D-129: every option's weight on the admin screens, with where it came from. The price rests on it (D-128), so a
+ * missing one says what the listing is priced on until it has one, and a weight to check says why.
+ */
+
+interface WeightRow {
+  weight_g: number | null;
+  weight_source: string | null;
+}
+
+const isSource = (s: string | null): s is WeightSource => WEIGHT_SOURCES.includes(s as WeightSource);
+
+/** "450 g · Weighed", "No weight · its price is an estimate", "90 g · unusual for its category". */
+export function WeightBadge({
+  v,
+  type,
+  categoryWeightG,
+  note,
+}: {
+  v: WeightRow;
+  type: ProductType;
+  categoryWeightG: number | null;
+  note?: string | null;
+}): React.JSX.Element {
+  if (v.weight_g === null)
+    return (
+      <span className="inline-flex flex-col gap-0.5">
+        <Chip tone="bad">No weight</Chip>
+        <Sub>its price is an estimate until it has one; it cannot go live</Sub>
+        {note ? <Sub>{note}</Sub> : null}
+      </span>
+    );
+  const unusual = unusualWeight(v.weight_g, type, categoryWeightG);
+  const state = weightState(v, unusual);
+  const from = isSource(v.weight_source) ? WEIGHT_SOURCE_LABEL[v.weight_source] : 'Source not recorded';
+  return (
+    <span className="inline-flex flex-col gap-0.5">
+      <Chip tone={state === 'confirmed' ? 'ok' : 'warn'}>{formatGrams(v.weight_g)}</Chip>
+      <Sub>
+        {from}
+        {unusual && categoryWeightG ? ` · unusual (its category is usually ${formatGrams(categoryWeightG)})` : ''}
+      </Sub>
+      {note ? <Sub>{note}</Sub> : null}
+    </span>
+  );
+}
+
+/** One option's weight: grams, "weighed on a scale", an optional note. */
+export function WeightForm({
+  productId,
+  variantId,
+  grams,
+  label,
+}: {
+  productId: string;
+  variantId: string;
+  grams: number | null;
+  label: string;
+}): React.JSX.Element {
+  return (
+    <form action={setWeightAction.bind(null, productId, variantId)} className="flex flex-wrap items-center gap-2">
+      <WeightFields grams={grams} label={label} />
+    </form>
+  );
+}
+
+/** Every size and colour of one piece at once (packs keep their own). */
+export function SizesWeightForm({
+  productId,
+  variantIds,
+}: {
+  productId: string;
+  variantIds: string[];
+}): React.JSX.Element {
+  return (
+    <form
+      action={setWeightForSizesAction.bind(null, productId, variantIds)}
+      className="flex flex-wrap items-center gap-2"
+    >
+      <span className="text-sm font-semibold">All {variantIds.length} sizes and colours:</span>
+      <WeightFields grams={null} label="every size and colour" />
+    </form>
+  );
+}
+
+function WeightFields({ grams, label }: { grams: number | null; label: string }): React.JSX.Element {
+  return (
+    <>
+      <input
+        name="grams"
+        type="number"
+        min="1"
+        max="50000"
+        required
+        defaultValue={grams ?? undefined}
+        aria-label={`Weight in grams, ${label}`}
+        placeholder="g"
+        className="border-line min-h-11 w-24 rounded-sm border px-2 text-right"
+      />
+      <label className="flex min-h-11 items-center gap-1.5 text-sm">
+        <input type="checkbox" name="weighed" /> weighed on a scale
+      </label>
+      <input
+        name="note"
+        maxLength={200}
+        placeholder="note (packed in its box)"
+        aria-label={`Weight note, ${label}`}
+        className="border-line min-h-11 w-48 rounded-sm border px-2"
+      />
+      <button type="submit" className="min-h-11 underline">
+        Save weight
+      </button>
+    </>
+  );
+}
+
+/** A listing's options that share one weight: sizes and colours, never packs. */
+export function sizeOptions(variants: { id: string; options: unknown; is_active: boolean }[]): string[] {
+  return variants
+    .filter((v) => v.is_active && !(v.options && typeof v.options === 'object' && 'pack' in v.options))
+    .map((v) => v.id);
+}

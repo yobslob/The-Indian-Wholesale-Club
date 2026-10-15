@@ -1,3 +1,5 @@
+import { parseWeight } from './weight';
+
 const ENTITIES: Record<string, string> = {
   amp: '&',
   lt: '<',
@@ -68,12 +70,9 @@ export function parseShelfLifeDays(text: string): number | null {
   return days > 0 && days <= 3650 ? Math.round(days) : null;
 }
 
-/** A weight such as "500 g", "1 kg", "250gm", "1.2 Kilograms" in grams. */
+/** A weight such as "500 g", "1 kg", "250gm", "1.2 Kilograms", "1,000 g" in grams (weight.ts, D-129). */
 export function parseGrams(text: string): number | null {
-  const m = text.toLowerCase().match(/(\d+(?:\.\d+)?)\s*(kg|kilo|g\b|gm|gram)/);
-  if (!m) return null;
-  const grams = Number(m[1]) * (m[2]!.startsWith('k') ? 1000 : 1);
-  return grams > 0 && grams <= 50_000 ? Math.round(grams) : null;
+  return parseWeight(text)?.grams ?? null;
 }
 
 /** A name shortened to `max` characters at a word or separator, never mid-word. */

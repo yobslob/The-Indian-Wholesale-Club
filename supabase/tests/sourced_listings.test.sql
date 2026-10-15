@@ -20,7 +20,8 @@ select tests.remember('imported', public.admin_create_listing(jsonb_build_object
   'name', 'Woven Banarasi silk saree', 'slug', 'woven-banarasi-silk-saree-ab12', 'shop_price_paise', 174900,
   'price_cents', 9999,
   'attributes', jsonb_build_object('fibre_content', 'Silk blend', 'care', 'Dry clean'),
-  'variants', jsonb_build_array(jsonb_build_object('label', 'One size', 'options', '{}'::jsonb, 'qty', 5)))));
+  'variants', jsonb_build_array(jsonb_build_object('label', 'One size', 'options', '{}'::jsonb, 'qty', 5,
+                                                 'weight_g', 900)))));
 update public.products
    set source_url = 'https://www.myntra.com/sarees/x/y/123/buy', source_site = 'myntra.com',
        source_checked_at = now(), source_in_stock = true, status = 'live', published_at = now()

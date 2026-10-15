@@ -1,4 +1,5 @@
-import { parseGrams, parseShelfLifeDays } from './text';
+import { parseShelfLifeDays } from './text';
+import { bestWeight, readWeights } from './weight';
 
 import type { SourcedProduct } from './capture';
 import type { VariantOptions } from '../domain/listing';
@@ -301,8 +302,8 @@ const spec = (product: SourcedProduct, pattern: RegExp): string =>
 export function guessDetails(product: SourcedProduct) {
   const materialCare = spec(product, /^material\s*&\s*care$/i).split(/;\s*/);
   const ingredientsInText = product.description.match(/ingredients?\s*[:-]\s*([^\n]+)/i)?.[1] ?? '';
-  const weightText =
-    spec(product, /^(net quantity|net weight|item weight|weight|net qty)/i) || product.title;
+  // D-129: the strongest weight the page states (packed, item, net, title), with what it said
+  const weight = bestWeight(readWeights(product));
   return {
     fibre:
       spec(
@@ -319,7 +320,11 @@ export function guessDetails(product: SourcedProduct) {
     ingredients: spec(product, /^ingredients?$/i) || ingredientsInText.trim(),
     allergens: spec(product, /^allergen/i),
     shelfLifeDays: parseShelfLifeDays(spec(product, /shelf life|best before/i)),
-    weightG: parseGrams(weightText),
+    weightG: weight?.grams ?? null,
+    /** What the page said: "Package Dimensions: 30 x 20 x 3 cm; 320 g". */
+    weightNote: weight?.note ?? null,
+    /** A reading on the same page that contradicts it (the admin checks before it sells). */
+    weightDiffers: weight?.differs?.note ?? null,
   };
 }
 
@@ -354,47 +359,69 @@ export function sourcedVariants(
     }));
 }
 
+/** The weight the admin confirmed on the import form, and where it came from (D-129). */
+export interface FormWeight {
+  grams: number;
+  /** 'shop' while it is the page's own reading, 'admin' once typed. */
+  source: 'shop' | 'admin';
+  note: string | null;
+}
+
 /**
  * The listing's variants from an imported page (D-118): the page's own items when it shows several (flavours, packs,
  * colours with sizes), each with its own shop price and the shop's id for the weekly check; otherwise its sizes
- * (sourcedVariants). An item the shop has run out of gets 0 pieces.
+ * (sourcedVariants). An item the shop has run out of gets 0 pieces. Each weight says where it came from (D-129): an
+ * item's own pack ("500 g") is the shop's, the rest take the form's weight.
  */
 export function importVariants(
   product: SourcedProduct,
   qty: number,
-  weightG: number | null,
+  weight: FormWeight | null,
 ): {
   label: string;
   options: VariantOptions;
   qty: number;
   weight_g?: number;
+  weight_source?: 'shop' | 'admin';
+  weight_note?: string;
   shop_price_paise?: number;
   source: { key: string; url: string; inStock: boolean; pricePaise: number } | null;
 }[] {
+  const formWeight = weight
+    ? {
+        weight_g: weight.grams,
+        weight_source: weight.source,
+        ...(weight.note ? { weight_note: weight.note } : {}),
+      }
+    : {};
   const priced = product.variants.filter((v) => v.pricePaise);
   if (priced.length > 1 || (priced.length === 1 && Object.keys(priced[0]!.options).length > 0)) {
     const seen = new Set<string>();
     return priced
       .filter((v) => !seen.has(v.label.toLowerCase()) && !!seen.add(v.label.toLowerCase()))
-      .map((v) => {
-        const weight = v.weightG ?? weightG;
-        return {
-          label: v.label,
-          options: v.options,
-          qty: v.inStock === false ? 0 : qty,
-          ...(weight && weight > 0 ? { weight_g: Math.round(weight) } : {}),
-          shop_price_paise: v.pricePaise!,
-          source: {
-            key: v.key,
-            url: v.url,
-            inStock: v.inStock !== false,
-            pricePaise: v.pricePaise!,
-          },
-        };
-      });
+      .map((v) => ({
+        label: v.label,
+        options: v.options,
+        qty: v.inStock === false ? 0 : qty,
+        ...(v.weightG && v.weightG > 0
+          ? {
+              weight_g: Math.round(v.weightG),
+              weight_source: 'shop' as const,
+              weight_note: `${product.site} item: ${v.label}`.slice(0, 200),
+            }
+          : formWeight),
+        shop_price_paise: v.pricePaise!,
+        source: {
+          key: v.key,
+          url: v.url,
+          inStock: v.inStock !== false,
+          pricePaise: v.pricePaise!,
+        },
+      }));
   }
-  return sourcedVariants(product.sizes, qty, weightG, product.inStock).map((v) => ({
+  return sourcedVariants(product.sizes, qty, null, product.inStock).map((v) => ({
     ...v,
+    ...formWeight,
     source: null,
   }));
 }

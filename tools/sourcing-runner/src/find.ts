@@ -45,7 +45,11 @@ async function search(ctx: RunContext, target: SourcingTarget, want: number): Pr
   return found.flat();
 }
 
-async function readPage(ctx: RunContext, site: string, url: string): Promise<PageRead | null> {
+export async function readPage(
+  ctx: RunContext,
+  site: string,
+  url: string,
+): Promise<PageRead | null> {
   try {
     const read = await shopFor(shopOf(ctx, site)?.reader ?? null).read(
       ctx.lanes.of(site),

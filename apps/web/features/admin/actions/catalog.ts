@@ -178,11 +178,19 @@ export async function setProductStatusAction(
   status: 'draft' | 'live' | 'paused' | 'archived',
 ): Promise<void> {
   const { client } = await requireAdminAction();
-  await setProductStatus(
-    client,
-    id.parse(productId),
-    z.enum(['draft', 'live', 'paused', 'archived']).parse(status),
-  );
+  try {
+    await setProductStatus(
+      client,
+      id.parse(productId),
+      z.enum(['draft', 'live', 'paused', 'archived']).parse(status),
+    );
+  } catch (error) {
+    // the database's refusals, said on the page: an option without a weight (D-129), food not cleared (D-074)
+    const message = error instanceof Error ? error.message : '';
+    const why = /(weight_missing|products_food_not_live):\s*(.*)$/.exec(message)?.[2];
+    if (!why) throw error;
+    redirect(`/admin/catalog/${productId}?note=${encodeURIComponent(`Not published: ${why}`)}`);
+  }
   revalidateTag(STORE_TAG);
   revalidatePath(`/admin/catalog/${productId}`);
   revalidatePath('/admin/listings');

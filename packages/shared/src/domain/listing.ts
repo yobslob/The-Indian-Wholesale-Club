@@ -2,6 +2,7 @@ import { z } from 'zod';
 
 import { clothingAttributesSchema, homeAttributesSchema, foodAttributesSchema } from './attributes';
 import { OPTION_KEYS, type OptionKey } from './variant-options';
+import { WEIGHT_SOURCES } from './weight';
 
 const optionValue = z.string().trim().min(1).max(40).optional();
 /** What tells variants apart; nothing else may be stored there (customers see it). */
@@ -24,6 +25,9 @@ export const listingVariantSchema = z.object({
   /** Pieces the shop has now. */
   qty: z.number().int().min(0).max(9999),
   weight_g: z.number().int().positive().max(50_000).optional(),
+  /** Where the weight came from (D-129); the database counts a weight with none as typed by the admin. */
+  weight_source: z.enum(WEIGHT_SOURCES).optional(),
+  weight_note: z.string().trim().max(200).optional(),
   /** This variant's own shop price, when it costs its own amount (a flavour, a pack: D-118). */
   shop_price_paise: z.number().int().positive().optional(),
 });

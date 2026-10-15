@@ -7,14 +7,14 @@ select tests.setup();
 insert into public.products (slug, name, product_type, region_id, category_id, vendor_id, price_cents, status)
 values ('ready-draft', 'Ready draft', 'clothing', tests.id('region'), tests.id('cat_clothing'), tests.id('vendor'), 3000, 'draft');
 select tests.remember('ready', (select id from public.products where slug = 'ready-draft'));
-insert into public.product_variants (product_id, sku, label, qty_listed) values (tests.id('ready'), 'READY-1', 'M', 5);
+insert into public.product_variants (product_id, sku, label, qty_listed, weight_g) values (tests.id('ready'), 'READY-1', 'M', 5, 450);
 insert into public.product_media (product_id, storage_path, is_primary) values (tests.id('ready'), 'products/r/1.jpg', true);
 
 -- Sold out at the shop: a photo and an option, no piece to sell.
 insert into public.products (slug, name, product_type, region_id, category_id, vendor_id, price_cents, status)
 values ('empty-draft', 'Empty draft', 'clothing', tests.id('region'), tests.id('cat_clothing'), tests.id('vendor'), 3000, 'draft');
 select tests.remember('empty', (select id from public.products where slug = 'empty-draft'));
-insert into public.product_variants (product_id, sku, label, qty_listed) values (tests.id('empty'), 'EMPTY-1', 'M', 0);
+insert into public.product_variants (product_id, sku, label, qty_listed, weight_g) values (tests.id('empty'), 'EMPTY-1', 'M', 0, 450);
 insert into public.product_media (product_id, storage_path, is_primary) values (tests.id('empty'), 'products/e/1.jpg', true);
 
 -- A demo draft with everything (never touched). tests.setup()'s p_draft has no photo and no option.
@@ -48,7 +48,7 @@ update public.pricing_settings set food_cleared = false where id = 1;
 insert into public.products (slug, name, product_type, region_id, category_id, vendor_id, price_cents, status)
 values ('food-draft', 'Food draft', 'food', tests.id('region'), tests.id('cat_food'), tests.id('vendor'), 300, 'draft');
 select tests.remember('food', (select id from public.products where slug = 'food-draft'));
-insert into public.product_variants (product_id, sku, label, qty_listed) values (tests.id('food'), 'FOOD-1', '100 g', 5);
+insert into public.product_variants (product_id, sku, label, qty_listed, weight_g) values (tests.id('food'), 'FOOD-1', '100 g', 5, 100);
 insert into public.product_media (product_id, storage_path, is_primary) values (tests.id('food'), 'products/f/1.jpg', true);
 update public.product_variants set qty_listed = 3 where product_id = tests.id('empty');
 set local role authenticated;

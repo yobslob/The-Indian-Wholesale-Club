@@ -89,6 +89,8 @@ const importSchema = z.object({
   /** Pieces offered for each size the shop has (the shop's own stock is unknown). */
   qtyPerSize: z.number().int().min(0).max(99),
   weightG: z.number().int().positive().max(50_000).nullable(),
+  /** What the page said when the weight is the page's own reading (D-129); null = typed by the admin. */
+  weightNote: z.string().max(200).nullable().default(null),
   shopPricePaise: z.number().int().positive('Enter the price on the shop.').max(100_000_000),
   publish: z.boolean(),
   /** Only for a page imported before: also replace its name, words and photos (otherwise only price and sizes). */
@@ -98,6 +100,8 @@ export type ImportInput = z.input<typeof importSchema>;
 
 function plain(error: unknown): string {
   const message = error instanceof Error ? error.message : String(error);
+  if (message.includes('weight_missing'))
+    return 'It needs its weight first: weigh it, or type the weight the shop states (D-129).';
   if (message.includes('price_needed'))
     return 'The price could not be worked out: check the pricing numbers in Settings.';
   if (message.includes('products_food_not_live'))
@@ -136,7 +140,17 @@ export async function saveImportAction(raw: ImportInput): Promise<ImportResult> 
     };
   const photos = input.photos.filter((p) => input.product.images.includes(p));
   // the page's flavours, packs or colours with their own prices when it has them, else its sizes (D-118)
-  const variants = importVariants(input.product, input.qtyPerSize, input.weightG);
+  const variants = importVariants(
+    input.product,
+    input.qtyPerSize,
+    input.weightG
+      ? {
+          grams: input.weightG,
+          source: input.weightNote ? 'shop' : 'admin',
+          note: input.weightNote ? `${input.product.site}: ${input.weightNote}`.slice(0, 200) : null,
+        }
+      : null,
+  );
   const inStock = variants.some((v) => v.qty > 0);
   const checked = new Date().toISOString();
 
@@ -167,6 +181,13 @@ export async function saveImportAction(raw: ImportInput): Promise<ImportResult> 
             await setListedQty(client, current.id, target, `Checked on ${input.product.site}`);
           if (v.shop_price_paise)
             await updateVariant(client, current.id, { shop_price_paise: v.shop_price_paise });
+          // D-129: an option still without a weight takes the one read or typed now
+          if (current.weight_g === null && v.weight_g)
+            await updateVariant(client, current.id, {
+              weight_g: v.weight_g,
+              weight_source: v.weight_source ?? null,
+              weight_note: v.weight_note ?? null,
+            });
         } else {
           next += 1;
           await createVariant(client, {
@@ -176,6 +197,8 @@ export async function saveImportAction(raw: ImportInput): Promise<ImportResult> 
             options: v.options,
             qty_listed: v.qty,
             weight_g: v.weight_g ?? null,
+            weight_source: v.weight_source ?? null,
+            weight_note: v.weight_note ?? null,
             sort_order: next,
             qty_confirmed_at: checked,
             shop_price_paise: v.shop_price_paise ?? null,
@@ -234,6 +257,8 @@ export async function saveImportAction(raw: ImportInput): Promise<ImportResult> 
         options: v.options,
         qty: v.qty,
         weight_g: v.weight_g,
+        weight_source: v.weight_source,
+        weight_note: v.weight_note,
         shop_price_paise: v.shop_price_paise,
       })),
     } as ListingInput;

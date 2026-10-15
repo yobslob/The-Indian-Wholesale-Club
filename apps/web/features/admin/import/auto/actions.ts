@@ -155,7 +155,10 @@ export async function checkSoonAction(productId: string): Promise<void> {
   revalidatePath(`/admin/catalog/${productId}`);
 }
 
-/** Publishes every found draft that has a photo and every detail customers must see (food: once cleared, D-074). */
+/**
+ * Publishes every found draft that has a photo and every detail customers must see (food: once cleared, D-074); the
+ * database holds one with an option that has no weight (D-129), listed under Products → Weights to check.
+ */
 export async function publishReadyAction(): Promise<void> {
   const { client } = await requireAdminAction();
   const drafts = await listSourcedDrafts(client);

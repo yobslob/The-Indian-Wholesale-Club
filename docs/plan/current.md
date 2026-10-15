@@ -57,30 +57,40 @@ phase's sub-steps and every verification run) is in `docs/archive/status-log-to-
   (`docs/archive/pricing-full-formula.md`) and returns when `beta_pricing` is set false. Products → **Download Excel**
   exports name, Indian price, category, weight, US price and margin for the page's view.
 
+- **Weights you can trust (D-129, 2026-10-15):** every option's weight says where it came from (weighed, typed, the
+  shop's page, a matching item); a listing cannot go live while an option has no weight (its price would be a guess);
+  the importer and the runner read weights properly ("1,000 g", "Pack of 2", Amazon's packed weight) and clothing now
+  gets the weight its page states; `pnpm sourcing run` ends by finding missing weights on the listing's own pages,
+  then Amazon and Flipkart (two must agree); Products shows a Weight column and **Weights to check**.
+
 ## Next for the founder
 1. Run `node scripts/check.mjs` (Docker Desktop and `npx supabase start` first), push, then the Deploy workflow: it
-   applies the new migrations (the latest is `20261015150100_price_sheet`, D-128; it and D-119 – D-126
-   reprice every listing) to production. Confirm with the courier that ₹2,000 includes the box and clearance, and
+   applies the new migrations (the latest is `20261015160000_weights`, D-129; D-119 – D-128 reprice every listing)
+   to production. Confirm with the courier that ₹2,000 includes the box and clearance, and
    whether it bills by box size; correct Settings → Courier rate card if not.
-2. Then Admin → Products → Drafts → **Publish all drafts**; it says how many went live, what held the rest and how
+2. On the hub PC: `pnpm sourcing run --weights` (repeat: 40 listings a run) to read the weights drafts lack; then
+   Admin → Products → **Weights to check**: weigh what is left (tick "weighed"), starting with live listings. Decide
+   whether customers should see a weight line on the product page (D-129 leaves it admin-only).
+3. Then Admin → Products → Drafts → **Publish all drafts**; it says how many went live, what held the rest and how
    many still lack details customers see (fibre and care, ingredients and allergens).
-3. Replace the D-119 / D-120 estimates in Settings with real bills (one courier invoice, one duty bill): the per-parcel
+4. Replace the D-119 / D-120 estimates in Settings with real bills (one courier invoice, one duty bill): the per-parcel
    cost, US duty by type, the food fee, parcel kg, billed weight, the small-food limits and share; watch the profit
    check (a bag of only $2.99 packets past $149.99 loses money, D-120).
-4. Toward 3,000 listings: Admin → Import → Auto-sourcing → Add targets from a CSV with
+5. Toward 3,000 listings: Admin → Import → Auto-sourcing → Add targets from a CSV with
    `tools/sourcing-runner/targets/myntra-600-1600.csv` (all states, Myntra, ₹600 – ₹1,600); check Myntra's delivery
    days under Shops (3 or less, or nothing is added); try one first: `pnpm sourcing try "kurta set women" --type
    clothing --shops myntra.com --min 600 --max 1600`; raise targets per run (79 targets) and keep `pnpm sourcing run`
    daily on the hub PC. Then the same with `food-by-state.csv` (753 food targets, specialties first).
-5. Clear the 2,880 placeholder listings: `pnpm demo:clear … --allow-remote`, then with `--apply` (`ops.md`).
-6. Decide: the name "Food" and 5 pieces per size by default (D-110 proposals); D-118's proposals (3 listings per
+6. Clear the 2,880 placeholder listings: `pnpm demo:clear … --allow-remote`, then with `--apply` (`ops.md`).
+7. Decide: the name "Food" and 5 pieces per size by default (D-110 proposals); D-118's proposals (3 listings per
    target, the 60% rise / 50% fall guard, drafts until published, 40 targets a day); D-120's proposals (₹200, 250 g,
    half the shipping share); D-105's vendor-screen drafts; the four men house models (D-104); Q-35 (US stores).
-7. Before launch: Q-3 (US carrier), Q-9 (domain and support email), Q-32 (holding a piece while paying).
+8. Before launch: Q-3 (US carrier), Q-9 (domain and support email), Q-32 (holding a piece while paying).
 
 ## Last verification
 | Date | Commit | Where | Result |
 |---|---|---|---|
+| 2026-10-15 | D-129 commit | Claude Code, founder's Windows machine with Docker | docs, typecheck, lint, test (shared 150 incl. new `weight.test.ts`, and `pricing-band`/`pricing-beta`, which the test script had skipped), db (fresh reset, 45/45 SQL test files incl. new `weights.test.sql`), build, bundle: OK. http first 153 ms on `/clothing` (budget 100), e2e 21/23 (the admin flow published a listing without a weight, refused by design; fixed the test; checkout hung at "Checking your bag" once); re-run of http and e2e alone: OK, 23/23. The Weights to check tab, the Weight column, the weight forms (all sizes, weighed) and the publish refusal checked in the browser on two local test listings (removed). **Not run:** the runner's weight step against live shops, the app build. |
 | 2026-10-15 | D-128 commit | Claude, cloud sandbox | all 61 migrations + seeds on plain Postgres 16 with the Supabase stand-in: 44/44 SQL test files (`pricing_engine`: the founder's example $4.23 and table; new `price_sheet`: admins only, the cheapest option, tabs and search) · unit tests shared 133/133, web 40/40 (new `price-sheet`: the six columns, 20/40/50 margins, a valid zip) · a sample sheet opened in openpyxl and LibreOffice · tsc shared, db, web clean · docs audit OK. **Not run:** ESLint with the Next plugin, `next build`, e2e, http, the app build. |
 | 2026-10-15 | D-127 ₹92 | Claude, cloud sandbox | all 59 migrations + seeds on plain Postgres 16 with the Supabase stand-in: 43/43 SQL test files (`pricing_engine`: the beta at ₹92, unmoved by the day's rate) · unit tests shared 132/132 · tsc shared, db, web clean · every profit-check sample bag profitable (the least: one masala, +$2.09) · docs audit OK. **Not run:** ESLint with the Next plugin, `next build`, e2e, http, the app build. |
 | 2026-10-15 | D-127 exact cents | Claude, cloud sandbox | all 58 migrations + seeds on plain Postgres 16 with the Supabase stand-in: 43/43 SQL test files (`pricing_engine`: the beta to the cent) · unit tests shared 132/132 (`pricing-beta`: each type exactly at its margin) · tsc shared, db, web clean · docs audit OK. **Not run:** ESLint with the Next plugin, `next build`, e2e, http, the app build. |

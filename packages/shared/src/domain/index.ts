@@ -17,3 +17,4 @@ export * from './phone';
 export * from './product-details';
 export * from './product-path';
 export * from './product-types';
+export * from './weight';

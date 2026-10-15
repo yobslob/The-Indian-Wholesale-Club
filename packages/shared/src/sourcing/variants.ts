@@ -2,6 +2,7 @@ import { variantLabel, type VariantOptions } from '../domain/listing';
 import { OPTION_KEYS, type OptionKey } from '../domain/variant-options';
 
 import { oneLine, parseRupeesToPaise } from './text';
+import { parseWeight } from './weight';
 
 import type { RawCapture, SourcedVariant } from './capture';
 
@@ -33,17 +34,12 @@ export function optionKeyFor(name: string, values: string[] = []): OptionKey {
   return 'style';
 }
 
-/** Grams in a pack ("500 g", "1 kg", "2 x 200 g", "200 ml" counts as 200 g). Null when it says none. */
+/**
+ * Grams in a pack ("500 g", "1 kg", "2 x 200 g", "200 g (Pack of 2)", "200 ml" counts as 200 g). Null when it says
+ * none (weight.ts, D-129).
+ */
 export function packGrams(text: string): number | null {
-  const t = text.toLowerCase().replace(/,/g, '');
-  const m = t.match(
-    /(?:(\d+)\s*[x×]\s*)?(\d+(?:\.\d+)?)\s*(kg|kgs|kilo|g\b|gm|gms|gram|grams|ml|l\b|ltr|litre|liter)/,
-  );
-  if (!m) return null;
-  const unit = m[3]!;
-  const each = Number(m[2]) * (/^(kg|kgs|kilo|l|ltr|litre|liter)$/.test(unit) ? 1000 : 1);
-  const grams = each * (m[1] ? Number(m[1]) : 1);
-  return grams > 0 && grams <= 50_000 ? Math.round(grams) : null;
+  return parseWeight(text)?.grams ?? null;
 }
 
 /** Only IWC's option keys, trimmed and capped (anything else could reach customers: D-003). */

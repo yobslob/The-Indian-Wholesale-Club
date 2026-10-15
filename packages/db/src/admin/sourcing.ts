@@ -6,7 +6,7 @@ import { unwrap, type IwcClient, type Update } from '../client';
 
 const SOURCED_COLUMNS = `id, slug, name, status, product_type, price_cents, shop_price_paise, source_url, source_site,
   source_checked_at, source_in_stock, region:regions(slug, name),
-  variants:product_variants(id, label, options, qty_listed, qty_reserved, sort_order, is_active),
+  variants:product_variants(id, label, options, qty_listed, qty_reserved, sort_order, is_active, weight_g),
   media:product_media(id, storage_path, is_primary, sort_order)`;
 
 /** The listing made from this source page earlier, or null. */

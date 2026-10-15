@@ -127,5 +127,8 @@ export const listingVariantPayloadSchema = z.object({
   in_stock: z.boolean(),
   delivery_days: z.number().int().min(0).max(60).nullable(),
   weight_g: z.number().int().positive().max(50_000).nullable(),
+  /** Where the weight was read (D-129): the shop's own page, or a matching item elsewhere. */
+  weight_source: z.enum(['shop', 'similar']).optional(),
+  weight_note: z.string().max(200).optional(),
 });
 export type ListingVariantPayload = z.infer<typeof listingVariantPayloadSchema>;

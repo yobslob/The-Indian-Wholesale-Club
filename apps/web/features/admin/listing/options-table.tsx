@@ -111,8 +111,9 @@ export function OptionsTable({
         + Add an option
       </button>
       <small className="text-ink-muted block text-[12px]">
-        Leave colour and size empty for one size. An empty weight uses the category&apos;s usual
-        one.
+        Leave colour and size empty for one size. Weigh each option packed: the price comes from it, and
+        a listing goes live only when every option has its weight (the grey number is the category&apos;s
+        usual one, D-129).
       </small>
     </fieldset>
   );

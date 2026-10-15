@@ -3,6 +3,7 @@ import { variantLabel, type VariantOptions } from '../../domain/listing';
 import { guessDetails } from '../guess';
 import { shorten } from '../text';
 import { cleanOptions, packGrams } from '../variants';
+import { bestWeight, readWeights } from '../weight';
 
 import { inBand, offerDeliveryDays } from './cluster';
 
@@ -186,7 +187,12 @@ export function buildListing(input: {
   if (origin && !/india|bharat/i.test(origin)) return { skip: `made in ${origin.slice(0, 40)}, not India` };
 
   const labels = new Set<string>();
-  const details = guessDetails(product);
+  // D-129: an item's own pack is its weight; otherwise the page's stated weight, when it can only be this item's
+  // (one item, or sizes and colours of one piece). Clothing never takes a weight from its title.
+  const read = bestWeight(readWeights(product));
+  const pageWeight =
+    read && !(target.product_type === 'clothing' && read.kind === 'title') ? read : null;
+  const sharesPageWeight = items.length === 1 || items.every((v) => !v.weightG);
   const variants: ListingVariantPayload[] = items.map((v, i) => {
     let label = v.label;
     if (labels.has(label.toLowerCase())) label = `${label} (${i + 1})`.slice(0, 80);
@@ -201,7 +207,11 @@ export function buildListing(input: {
       mrp_paise: v.mrpPaise,
       in_stock: v.inStock !== false,
       delivery_days: input.pageDays,
-      weight_g: v.weightG ?? (target.product_type === 'clothing' ? null : details.weightG),
+      ...(v.weightG
+        ? { weight_g: v.weightG, weight_source: 'shop' as const, weight_note: `Pack: ${v.label}`.slice(0, 200) }
+        : pageWeight && sharesPageWeight
+          ? { weight_g: pageWeight.grams, weight_source: 'shop' as const, weight_note: pageWeight.note }
+          : { weight_g: null }),
     };
   });
 
@@ -254,7 +264,7 @@ export function buildListing(input: {
       summary: shorten(bullets[0] ?? description.split(/(?<=[.!?])\s/)[0] ?? '', 300),
       description: description.slice(0, 4000),
       attributes,
-      weight_g: details.weightG,
+      weight_g: pageWeight?.grams ?? null,
       variants,
       backups,
     },

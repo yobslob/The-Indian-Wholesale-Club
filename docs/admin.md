@@ -47,7 +47,7 @@ writes refresh the website's store pages at once (`POST /admin/revalidate`, B-17
 | **Payouts** | payable per vendor, record payouts | India | ✓ | ✓ |
 | **Orders** | all orders, detail + internal timeline, pack & ship once arrived (carrier with tracking link, D-066), refunds, delay notices, move to another cycle (D-045) | US | ✓ | ✓ (pack & ship) |
 | **Regions** | edit and approve region content (greeting and its script, tagline, story, accent, image, `is_live`; changing approved text sends it back to draft, enforced in the database); the main photo uploads to `product-media/regions/<slug>/`; album photos (each with alt text, removable) to `regions/<slug>/album/` (`region_photos`, D-051); an accent below WCAG AA on the page backgrounds is refused | both | ✓ | — |
-| **Catalog** | products, categories, prices, bulk edits; a product's state may be empty (All states, D-121; the import form offers it); **Download Excel** (every tab: name, Indian price, category, weight, US price and margin of that view, D-128); **Publish all drafts** on the Drafts tab (every draft with a photo, an option and a piece to sell; it says how many went live, what held the rest and how many still lack details customers see, D-120); "Curated for you" picks per product (D-056); product photos (upload with alt text, main photo, remove) to `product-media/products/<id>/`; 50 to a page (D-067) | both | ✓ | — |
+| **Catalog** | products, categories, prices, bulk edits; a product's state may be empty (All states, D-121; the import form offers it); **Download Excel** (every tab: name, Indian price, category, weight, US price and margin of that view, D-128); a **Weight** column and the **Weights to check** tab (options with no weight, a matching item's, one recorded before sources were kept, or an unusual one for the category; weigh it or type it per option or for all sizes at once; a listing goes live only when every option has its weight, D-129); **Publish all drafts** on the Drafts tab (every draft with a photo, an option and a piece to sell; it says how many went live, what held the rest and how many still lack details customers see, D-120); "Curated for you" picks per product (D-056); product photos (upload with alt text, main photo, remove) to `product-media/products/<id>/`; 50 to a page (D-067) | both | ✓ | — |
 | **Reviews** | approve or reject customer reviews before they appear (D-052, D-056); "verified buyer" is set by the database | both | ✓ | — |
 | **Customers** | customer list, orders per customer | US | ✓ | — |
 | **Promotions** | promo codes (kept from the old admin) | US | ✓ | — |
@@ -126,7 +126,8 @@ in `packages/shared/src/sourcing/`, the reads and writes in `packages/db/src/adm
   see (fabric and care; ingredients, allergens and shelf life; material), the photos (pick and order; copied into our
   storage on save, never loaded from the shop on a customer page, D-003), pieces per size (5 by default: a cap, the
   shop's stock is unknown), packed weight and the price on the shop in ₹, with the dollar price worked out live
-  (D-109, D-119). Save draft or Publish.
+  (D-109, D-119). The weight says where it came from (the page's packed, item or net weight, an item's pack, or typed)
+  and what on the page contradicts it; without one it saves as a draft (D-129). Save draft or Publish.
 - **Where it lives.** A listing of the shop's online vendor for that state (`vendors.online_site`, made on first use),
   with `products.source_url`, `source_site`, `source_checked_at`, `source_in_stock` (admin only).
 - **Keeping prices right.** Importing a page again finds its listing by the cleaned address: the price, the sizes in
@@ -166,4 +167,7 @@ runner in `tools/sourcing-runner/` (its README says how to set it up on the PC a
   targets per run, the price-jump guard, and whether new listings go live by themselves.
 - **Recent runs.** What each run did: targets searched, listings added, listings checked, prices and stock changed,
   prices held, problems.
+- **Weights (D-129).** Each run ends by filling the weights listings lack (`pnpm sourcing run --weights` does only
+  that): the listing's own shop pages first, then the same item on Amazon and Flipkart (two pages must agree). It never
+  overwrites a weighed or typed weight; what it cannot find waits in Products → Weights to check.
 

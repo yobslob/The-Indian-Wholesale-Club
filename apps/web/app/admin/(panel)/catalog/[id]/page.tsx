@@ -27,6 +27,7 @@ import {
   Table,
   When,
 } from '@/features/admin/ui';
+import { SizesWeightForm, sizeOptions, WeightBadge, WeightForm } from '@/features/admin/weight';
 
 type Params = Promise<{ id: string }>;
 type SearchParams = Promise<{ note?: string }>;
@@ -51,6 +52,7 @@ export default async function AdminProductPage({
   const estimated = estimates.some((e) => PRICE_SUGGESTION_SETTINGS.includes(e.setting));
   if (!product) notFound();
   const statuses = ['draft', 'live', 'paused', 'archived'] as const;
+  const sizes = sizeOptions(product.variants);
   // Why a new listing saved as a draft instead of publishing (listing/new-listing.tsx).
   const note = (await searchParams).note?.slice(0, 300);
 
@@ -195,6 +197,7 @@ export default async function AdminProductPage({
             'Reserved',
             'Confirmed with shop',
             'Correct listed qty',
+            'Weight (D-129)',
           ]}
         >
           {product.variants.map((v) => (
@@ -229,9 +232,19 @@ export default async function AdminProductPage({
                   </button>
                 </form>
               </Cell>
+              <Cell>
+                <WeightBadge
+                  v={v}
+                  type={product.product_type}
+                  categoryWeightG={product.category?.default_weight_g ?? null}
+                  note={v.weight_note}
+                />
+                <WeightForm productId={product.id} variantId={v.id} grams={v.weight_g} label={v.label} />
+              </Cell>
             </tr>
           ))}
         </Table>
+        {sizes.length > 1 ? <SizesWeightForm productId={product.id} variantIds={sizes} /> : null}
         <form
           action={addVariantAction.bind(null, product.id)}
           className="flex flex-wrap items-end gap-2"

@@ -632,3 +632,38 @@ What it means for the build:
 - **Unchanged:** the bag's charges (D-125); Shipping still covers duty and the card fee per bag.
 *Claude's choices in it:* one row per product (not per option); the margin as a share of the US price, as the founder's
 divisors give it; the file is named `iwc-prices-<tab>-<date>.xlsx`.
+
+**D-129 · 2026-10-15 · founder: Every price rests on a real weight, and every product shows its weight**
+Founder, verbatim: "The main point of selling all of this is pricing. Now pricing algorithm is set, it is not changing.
+Pricing heavily depends on weight. Now you have to make a system which makes sure that this product has/is showing
+correct weight and each product is showing it's weight. It is your choice how to make it, it can be intelligent as well
+which can search the item for it's price. wherever there is an assumption in price, the price will change and customer
+will be lost. so fix this problem very very smartly without changing the price algorithm."
+What it means for the build (migration `20261015160000_weights.sql`; the D-128 formula is untouched):
+- **Every weight says where it came from:** `product_variants.weight_source` = weighed (on a scale), admin (typed),
+  shop (the shop's own page: its packed weight, item weight, net quantity, pack or title) or similar (a matching item
+  on other shops, or another size of the same piece), with `weight_note` (what the page said). Admin and runner only;
+  customers never see a source (INV-1, D-003).
+- **No listing goes live on a guessed weight:** the database refuses to publish a listing while an active option has
+  no weight (before, such a price used the category's usual weight or the home estimate: a 1 kg bhujia priced as its
+  200 g sibling, $8.91 instead of $30.65). A live option cannot lose its weight; a new item the weekly check finds on a
+  live listing is held, not sold, until it has one. Publish all drafts counts them (`no_weight`). Demo rows and US
+  clearance pieces (priced by hand, D-072) are not held.
+- **Reading weights smartly** (`packages/shared/src/sourcing/weight.ts`): "1,000 g" (it read "2,500 g" as 500 g),
+  "200 g (Pack of 2)" = 400 g (it read 200 g), lb, oz, ml and litres; Amazon's "Package Dimensions: …; 320 g"; the
+  strongest statement wins (packed > item > net > pack > title) and a page that contradicts itself is flagged.
+  Auto-sourced clothing now takes the weight its page states (before: never, so every Myntra or Amazon garment was
+  priced on its category's weight); never from a garment's title.
+- **Finding the rest:** `pnpm sourcing run` ends by reading the listing's own shop pages for weights it lacks, then the
+  same item on Amazon and Flipkart, where at least two pages must agree within 30%; it never overwrites a weighed or
+  typed weight, and a shop's own weight replaces a matching item's.
+- **Every product shows its weight (admin):** Products has a Weight column (red: none; amber: to check), the tab
+  **Weights to check** (no weight, a matching item's, recorded before sources were kept, or under a quarter or over
+  four times its category's usual weight for clothing and home) with a weight form per option and one for all sizes
+  of a piece; the product page shows each option's weight, source and note with the same forms ("weighed on a
+  scale"). The importer says where its weight came from and what contradicts it.
+*Claude's choices in it:* the packed (shipping) weight wins over the net weight when a page states both, because the
+courier bills the packed piece (a 500 g pickle in a 780 g jar is priced on 780 g; D-127 had priced on the label);
+the same weight for every size and colour of one piece (marked similar, never across packs); two agreeing pages
+before a matching item's weight is used; customers are not shown weights (food already shows its pack, D-122):
+whether the store should show a weight line is for the founder.

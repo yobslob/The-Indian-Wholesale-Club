@@ -7,3 +7,4 @@ export * from './readers/marketplaces';
 export * from './readers/shopify';
 export * from './targets';
 export * from './types';
+export * from './weights';

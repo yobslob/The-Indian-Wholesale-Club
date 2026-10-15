@@ -12,7 +12,8 @@ select tests.remember('new', public.admin_create_listing(jsonb_build_object(
   'attributes', jsonb_build_object('fibre_content', '100% cotton', 'care', 'Hand wash'),
   'price_cents', 4900, 'shop_price_paise', 120000,
   'variants', jsonb_build_array(
-    jsonb_build_object('label', 'Red · M', 'options', jsonb_build_object('colour', 'Red', 'size', 'M'), 'qty', 3),
+    jsonb_build_object('label', 'Red · M', 'options', jsonb_build_object('colour', 'Red', 'size', 'M'), 'qty', 3,
+                       'weight_g', 380),
     jsonb_build_object('label', 'Red · L', 'options', jsonb_build_object('colour', 'Red', 'size', 'L'), 'qty', 2,
                        'weight_g', 400)))));
 

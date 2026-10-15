@@ -100,6 +100,11 @@ export function ReviewForm({
       qty: '5',
     };
   });
+  // D-129: what the page itself says the piece weighs, kept to tell the shop's weight from a typed one
+  const [pageWeight] = useState(() => {
+    const d = guessDetails(product);
+    return { grams: d.weightG, note: d.weightNote, differs: d.weightDiffers };
+  });
   const [photos, setPhotos] = useState<string[]>(() => product.images.slice(0, 10));
   const [existing, setExisting] = useState<ExistingListing | null | undefined>(undefined);
   const [replace, setReplace] = useState(false);
@@ -156,6 +161,7 @@ export function ReviewForm({
         photos,
         qtyPerSize: Math.max(0, Math.min(99, Math.round(Number(f.qty) || 0))),
         weightG: Number(f.weight) > 0 ? Math.round(Number(f.weight)) : null,
+        weightNote: Math.round(Number(f.weight)) === pageWeight.grams ? pageWeight.note : null,
         shopPricePaise: toPaise(f.shopPrice) ?? 0,
         publish,
         replaceDetails: replace,
@@ -361,12 +367,18 @@ export function ReviewForm({
         </p>
         <div className="grid grid-cols-2 gap-2.5">
           {field('qty', 'Pieces offered per size', { type: 'number', min: 0, max: 99 })}
-          {field(
-            'weight',
-            `Packed weight, g${category?.default_weight_g ? ` (empty = ${category.default_weight_g})` : ''}`,
-            { type: 'number', min: 1 },
-          )}
+          {field('weight', 'Packed weight, g', { type: 'number', min: 1 })}
         </div>
+        <p className="text-ink-muted text-[13px]">
+          {Number(f.weight) > 0 && Math.round(Number(f.weight)) === pageWeight.grams
+            ? `From the page: ${pageWeight.note}`
+            : Number(f.weight) > 0
+              ? 'Typed by you.'
+              : `No weight on the page: weigh it packed or type the shop's. Until it has one it is priced on ${category?.default_weight_g ? `about ${category.default_weight_g} g` : 'an estimate'} and stays a draft (D-129).`}
+          {pageWeight.differs ? (
+            <span className="text-caution block">The page also says {pageWeight.differs}: check which is right.</span>
+          ) : null}
+        </p>
         <div className="grid grid-cols-[1fr_auto_1fr] items-end gap-2.5">
           {field(
             'shopPrice',

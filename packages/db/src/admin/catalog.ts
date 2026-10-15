@@ -1,4 +1,4 @@
-import { listingInputSchema, type ListingInput } from '@repo/shared/domain';
+import { listingInputSchema, type ListingInput, type WeightSource } from '@repo/shared/domain';
 
 import { unwrap, type Enum, type Insert, type IwcClient, type Update } from '../client';
 
@@ -123,7 +123,8 @@ export async function updateCategory(client: IwcClient, id: string, patch: Updat
 
 const PRODUCT_LIST_COLUMNS = `id, slug, name, product_type, status, price_cents, shop_price_paise, is_placeholder, is_us_stock, updated_at,
   region:regions(slug, name), vendor:vendors(id, shop_name),
-  variants:product_variants(id, label, qty_listed, qty_reserved, qty_confirmed_at, is_active),
+  variants:product_variants(id, label, qty_listed, qty_reserved, qty_confirmed_at, is_active, weight_g, weight_source),
+  category:categories(default_weight_g),
   media:product_media(storage_path, is_primary, sort_order)`;
 
 export interface AdminProductFilter {
@@ -186,7 +187,9 @@ export async function getAdminProduct(client: IwcClient, id: string) {
           source_url, source_site, source_checked_at,
           created_at, updated_at,
           variants:product_variants!product_variants_product_id_fkey(id, sku, label, options, price_cents, weight_g,
-          qty_listed, qty_reserved, qty_confirmed_at, is_active, sort_order, shop_price_paise, source_id),
+          weight_source, weight_note, qty_listed, qty_reserved, qty_confirmed_at, is_active, sort_order, shop_price_paise,
+          source_id),
+          category:categories(name, default_weight_g),
           media:product_media(id, variant_id, storage_path, alt_text, sort_order, is_primary)`,
       )
       .eq('id', id)
@@ -234,6 +237,8 @@ export interface PublishDraftsResult {
   no_photo: number;
   no_option: number;
   no_stock: number;
+  /** D-129: an option without a weight (its price would rest on a guess). */
+  no_weight: number;
   refused: number;
   note: string | null;
   /** Published without every detail customers see (fibre and care, ingredients and allergens, material). */
@@ -259,6 +264,56 @@ export async function listPriceSheet(
       p_us_stock: filter.usStock ?? false,
       ...(filter.search?.trim() ? { p_search: filter.search.trim() } : {}),
     }),
+  );
+}
+
+export interface WeightToCheck {
+  id: string;
+  name: string;
+  status: Enum<'product_status'>;
+  product_type: Enum<'product_type'>;
+  category: string;
+  category_weight_g: number | null;
+  variants: {
+    id: string;
+    label: string;
+    options: Record<string, string>;
+    is_active: boolean;
+    weight_g: number | null;
+    weight_source: WeightSource | null;
+    weight_note: string | null;
+    shop_price_paise: number | null;
+  }[];
+}
+
+/**
+ * D-129: Products → Weights to check: listings with an option that has no weight, one from a matching item, one
+ * recorded before sources were kept, or an unusual one for its category; live ones first, missing first.
+ */
+export async function listWeightsToCheck(
+  client: IwcClient,
+  offset = 0,
+  limit = 50,
+): Promise<{ total: number; missing: number; rows: WeightToCheck[] }> {
+  return unwrap(
+    await client.rpc('admin_weights_to_check', { p_offset: offset, p_limit: limit }),
+  ) as unknown as { total: number; missing: number; rows: WeightToCheck[] };
+}
+
+/**
+ * An option's weight and where it came from (D-129). The database reprices the listing from it (D-128) and lets a
+ * held option sell again.
+ */
+export async function setVariantWeight(
+  client: IwcClient,
+  variantId: string,
+  weight: { grams: number; source: 'weighed' | 'admin'; note: string | null },
+) {
+  unwrap(
+    await client
+      .from('product_variants')
+      .update({ weight_g: weight.grams, weight_source: weight.source, weight_note: weight.note })
+      .eq('id', variantId),
   );
 }
 

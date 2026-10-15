@@ -54,7 +54,7 @@ select tests.assert(
           'admin_decline_submission', 'admin_demand', 'admin_order_counts', 'admin_price_preview', 'admin_price_sheet', 'admin_publish_drafts',
           'admin_request_retake', 'admin_rerun_photo_job', 'admin_return_received', 'admin_return_refunded',
           'admin_return_rejected', 'admin_sales', 'admin_set_listed_qty', 'admin_sourcing_review', 'admin_stale_variants',
-          'admin_vendor_sign_in_code', 'advance_cycle', 'cancel_after_delay', 'cancel_order', 'cancel_refund_cents',
+          'admin_vendor_sign_in_code', 'admin_weights_to_check', 'advance_cycle', 'cancel_after_delay', 'cancel_order', 'cancel_refund_cents',
           'change_delivery_window', 'check_off_arrival', 'confirm_move_shipped', 'cutoff_cycle', 'deliver_order',
           'dev_preview', 'is_admin', 'is_product_visible', 'is_vendor', 'is_worker', 'item_refund_cents',
           'keep_after_delay', 'mark_pickup', 'move_order', 'my_vendor_id', 'record_payout', 'refund_order_item',
@@ -62,9 +62,9 @@ select tests.assert(
           'store_policy', 'store_product_page', 'store_region_page', 'store_search', 'store_type_rows',
           'vendor_add_photo', 'vendor_delete_submission', 'vendor_keep_ready', 'vendor_may_upload', 'vendor_me',
           'vendor_money', 'vendor_new_submission', 'vendor_pieces', 'vendor_submission', 'vendor_submit',
-          'worker_claim_job', 'worker_finish_job', 'worker_may_add_photos', 'worker_sourcing_add',
+          'worker_claim_job', 'worker_finish_job', 'worker_may_add_photos', 'worker_set_weights', 'worker_sourcing_add',
           'worker_sourcing_checked', 'worker_sourcing_log', 'worker_sourcing_media', 'worker_sourcing_plan',
-          'worker_sourcing_target_done'],
+          'worker_sourcing_target_done', 'worker_weight_plan'],
   'signed-in users can execute only store, admin-, vendor- and worker-checked functions (never create_order)');
 
 rollback;

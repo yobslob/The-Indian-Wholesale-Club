@@ -3,8 +3,8 @@ import { expect, test } from '@playwright/test';
 import { E2E_ADMIN, E2E_SLUG_PREFIX } from './env';
 
 /**
- * Flow 2 (engineering.md §Testing): admin sign-in → new listing in one step (draft, with its option and
- * stock) → publish → the product is visible on the storefront.
+ * Flow 2 (engineering.md §Testing): admin sign-in → new listing in one step (draft, with its option, stock and
+ * weight) → publish → the product is visible on the storefront.
  */
 test('an admin lists a product and publishes it to the store', async ({ page }) => {
   const stamp = Date.now().toString(36);
@@ -42,6 +42,8 @@ test('an admin lists a product and publishes it to the store', async ({ page }) 
   await page.locator('input[name="fibre"]').fill('100% cotton');
   await page.locator('input[name="care"]').fill('Hand wash cold');
   await page.getByLabel('Pieces, option 1').fill('3');
+  // D-129: a listing goes live only when every option has its weight
+  await page.getByLabel('Weight in grams, option 1').fill('450');
   await page.locator('input[name="shopPrice"]').fill('1200');
   await page.getByRole('button', { name: 'set by hand' }).click();
   await page.locator('input[name="price"]').fill('49.00');

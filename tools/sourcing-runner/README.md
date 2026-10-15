@@ -42,6 +42,7 @@ The matching, delivery, variant and listing rules are in `packages/shared/src/so
 pnpm sourcing run              the checks that are due, then the queued targets
 pnpm sourcing run --checks     only the checks
 pnpm sourcing run --targets    only the targets
+pnpm sourcing run --weights    only the weights listings lack (D-129; every full run ends with them too)
 pnpm sourcing try "kasuri methi" --type food    a dry run: what it would add (nothing is written)
 pnpm sourcing try "kurta set women" --type clothing --shops myntra.com --min 600 --max 1600 --listings 10
                                                  the same for one shop and a price band (D-121)

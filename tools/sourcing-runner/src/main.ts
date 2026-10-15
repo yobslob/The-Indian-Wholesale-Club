@@ -8,6 +8,7 @@ import { loadEnv } from './env';
 import { findForTarget } from './find';
 import { errorText, log, ShopStats } from './log';
 import { describeNetError, resolveOverHttps } from './net';
+import { fillWeights } from './weights';
 
 import type { SourcingPlan } from '@repo/shared/sourcing/auto';
 
@@ -16,6 +17,7 @@ import type { SourcingPlan } from '@repo/shared/sourcing/auto';
  *   pnpm sourcing setup                  open every shop once to set the hub's delivery address (kept in the profile)
  *   pnpm sourcing run                    the weekly checks that are due, then the queued targets
  *   pnpm sourcing run --checks           only the checks      (--targets: only the targets)
+ *   pnpm sourcing run --weights          only the weights listings lack (D-129; `run` ends with them too)
  *   pnpm sourcing try "kasuri methi" --type food    a dry run: what it would add, nothing written
  *   pnpm sourcing doctor                 tests the road to Supabase and the worker sign-in
  * Windows Task Scheduler runs `run` once a day (README.md).
@@ -79,8 +81,9 @@ async function run(args: string[]): Promise<number> {
   const env = loadEnv(true);
   const started = new Date();
   const db = await Db.signIn(env);
-  const plan = await db.plan(args.includes('--targets') ? 0 : 400);
-  const targets = args.includes('--checks') ? [] : plan.targets;
+  const weightsOnly = args.includes('--weights');
+  const plan = await db.plan(args.includes('--targets') || weightsOnly ? 0 : 400);
+  const targets = args.includes('--checks') || weightsOnly ? [] : plan.targets;
   log(
     `run: ${plan.checks.length} checks due, ${targets.length} targets, ${plan.shops.length} shops`,
   );
@@ -99,7 +102,7 @@ async function run(args: string[]): Promise<number> {
   let added = 0;
   let errors = 0;
   try {
-    const checks = plan.checks.length
+    const checks = plan.checks.length && !weightsOnly
       ? await runChecks(ctx)
       : { products: 0, prices: 0, stock: 0, held: 0, errors: 0 };
     errors += checks.errors;
@@ -116,6 +119,9 @@ async function run(args: string[]): Promise<number> {
       );
       added += batch.reduce((a, b) => a + b, 0);
     }
+    // D-129: the weights new and old listings lack (the price rests on them)
+    const weights =
+      args.includes('--checks') || args.includes('--targets') ? 0 : await fillWeights(ctx, 40);
     await db.logRun({
       started_at: started.toISOString(),
       targets_searched: targets.length,
@@ -128,7 +134,7 @@ async function run(args: string[]): Promise<number> {
       shops: ctx.stats.toJSON(),
     });
     log(
-      `done: ${checks.products} checked (${checks.prices} prices, ${checks.stock} stock, ${checks.held} held), ${added} listings added`,
+      `done: ${checks.products} checked (${checks.prices} prices, ${checks.stock} stock, ${checks.held} held), ${added} listings added, ${weights} weights found`,
     );
   } finally {
     await context.close();

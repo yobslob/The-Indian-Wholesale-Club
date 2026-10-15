@@ -14,6 +14,9 @@ function summary(r: PublishDraftsResult): string {
     r.no_photo ? `${r.no_photo} without a photo` : '',
     r.no_option ? `${r.no_option} without an active option` : '',
     r.no_stock ? `${r.no_stock} with nothing to sell (sold out, or out of stock at the shop)` : '',
+    r.no_weight
+      ? `${r.no_weight} with an option that has no weight (Weights to check; its price would be a guess, D-129)`
+      : '',
     r.refused ? `${r.refused} refused by the store's checks${r.note ? ` (${r.note})` : ''}` : '',
   ].filter(Boolean);
   const lead =

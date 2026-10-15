@@ -35,7 +35,7 @@ operations data are never queried from customer code.
 | Places | `regions` | the 36 regions (D-002): slug, name, sort, `is_live`, greeting (native + ISO 15924 script + Latin + meaning), languages, tagline, story, hero image, accent colour, `content_status` (D-019) | store (text only if approved) / admin |
 | Catalog | `categories` | browse groups per product type. A child always has its parent's type | store / admin |
 | | `products` | region, category, `product_type`, name, slug, summary, description, story, craft, `attributes` (customer-safe JSON), `price_cents`, `status`, search vector; `vendor_id`*, `shop_price_paise`*, `origin_town`*, `has_origin_label`*, `is_placeholder`*. **Spices are `live` only while "Spices are cleared" is on** (`pricing_settings.spices_cleared`, D-074; on since D-107) | store (live only) / admin |
-| | `product_variants` | `options` JSON (colour, flavour, style = "Type", pack, size: D-118), SKU*, label, price override, `weight_g`*, `qty_listed`*, `qty_reserved`*, `qty_confirmed_at`*, `shop_price_paise`*, `source_id`* | store (`available` only) / admin |
+| | `product_variants` | `options` JSON (colour, flavour, style = "Type", pack, size: D-118), SKU*, label, price override, `weight_g`* with `weight_source`* and `weight_note`* (D-129), `qty_listed`*, `qty_reserved`*, `qty_confirmed_at`*, `shop_price_paise`*, `source_id`* | store (`available` only) / admin |
 | | `product_sources` | the shop items a variant can be ordered as, checked weekly (D-118) | admin / worker via functions |
 | | `variant_availability` | public mirror `variant_id → available`, trigger-maintained, in the Realtime publication (live "only 2 left", D-010) | store (visible products) |
 | | `product_media` | Storage paths (bucket `product-media`), alt text, one primary per product, `is_ai` (an AI-generated model photo, D-100: the product's Details say so) | store / admin |
@@ -152,6 +152,14 @@ Migration 31 (D-099, the second speed audit): `admin_order_counts()` (every orde
 send, shops owed for picked pieces) and `admin_cycle_totals(cycle)` (the cycle card's orders, pieces, shops and sales),
 admin only, counted in SQL because the API sends at most 1,000 rows; indexes for orders by status and newest, pickups
 by status, what each shop is owed, and a payout's pieces.
+Migration 61 (D-129): `product_variants.weight_source` (weighed, admin, shop, similar) and `weight_note`; trigger
+`product_variants_weight` (`_variant_weight`): a weight changed without a source is the changer's (admin or worker),
+the worker never overwrites a weighed or typed weight, a new size or colour takes its sibling's weight (similar; never a
+pack), a live option cannot lose its weight and a new worker item without one on a live listing is held inactive
+(`_weight_held_note()`) until it has one; trigger `products_weight_before_live` refuses `weight_missing` (23514) for a
+listing with an active option without a weight (not demo rows or US clearance pieces); `admin_publish_drafts` counts
+`no_weight`; `admin_create_listing` and `worker_sourcing_add` store the source and note; `admin_weights_to_check(offset,
+limit)` (admin), `worker_weight_plan(limit)` and `worker_set_weights(weights)` (worker). Tests: `weights.test.sql`.
 Migration 54 (D-125): `store_bag_charges` works out Shipping per bag: the pieces' contribution (price less shop cost,
 duty, card fee, 2% returns) against the parcel's courier (first kg, each further half kg, box and clearance); below the
 line at least `small_order_shipping_cents`, past it `past_line_cents` (what a bag still needs, normally 0). The
