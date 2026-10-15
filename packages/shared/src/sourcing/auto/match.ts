@@ -136,6 +136,9 @@ export interface TargetMatcher {
 
 export function targetMatcher(target: SourcingTarget): TargetMatcher {
   const pattern = mustMatch(target);
+  // a shop's own collection ("collection:kurtis", readers/shopify.ts) is the target: the shop chose what is in it
+  if (/^collection:/i.test(target.query.trim()))
+    return { matches: (title) => !pattern || pattern.test(title), relevance: () => 1 };
   const queryWords = [...new Set(words(target.query))];
   const nameWords = [...new Set(words(`${target.name} ${target.query}`))];
   const own = `${target.name} ${target.query} ${target.must_match ?? ''}`.toLowerCase();

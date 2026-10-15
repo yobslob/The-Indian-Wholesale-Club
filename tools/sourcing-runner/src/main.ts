@@ -129,10 +129,20 @@ async function run(args: string[]): Promise<number> {
         ? await runChecks(ctx)
         : { products: 0, prices: 0, stock: 0, held: 0, errors: 0 };
     errors += checks.errors;
-    // three targets at a time: each already spreads over every shop
-    for (let i = 0; i < targets.length; i += 3) {
-      const batch = await Promise.all(
-        targets.slice(i, i + 3).map((t) =>
+    // three targets at a time: each already spreads over every shop. A shop's collection ("collection:kurtis") goes
+    // alone: its copies (kurtis 1 of 6, 2 of 6…) would otherwise race for the same first pieces.
+    const lanes = (t: (typeof targets)[number]): string =>
+      /^collection:/i.test(t.query.trim()) ? `collection ${t.query.trim().toLowerCase()}` : t.id;
+    for (let i = 0; i < targets.length;) {
+      const batch: typeof targets = [];
+      while (
+        i < targets.length &&
+        batch.length < 3 &&
+        !batch.some((t) => lanes(t) === lanes(targets[i]!))
+      )
+        batch.push(targets[i++]!);
+      const found = await Promise.all(
+        batch.map((t) =>
           findForTarget(ctx, t).catch((error) => {
             errors += 1;
             log(`target "${t.name}" failed: ${errorText(error)}`);
@@ -140,7 +150,7 @@ async function run(args: string[]): Promise<number> {
           }),
         ),
       );
-      added += batch.reduce((a, b) => a + b, 0);
+      added += found.reduce((a, b) => a + b, 0);
     }
     // D-132: new clothing by class first (its weight is then settled); D-129: the weights the rest lack
     const onlyOne = args.includes('--checks') || args.includes('--targets');

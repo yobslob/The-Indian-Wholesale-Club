@@ -95,6 +95,9 @@ phase's sub-steps and every verification run) is in `docs/archive/status-log-to-
    Two runners at once (after the Deploy workflow, migration `20261016120000_runner_by_type`): one terminal
    `pnpm sourcing run --type clothing --shops nishorama.com`, another `pnpm sourcing run --type food`. Clothing
    listings sourced on other shops (Myntra) are then re-checked only by a plain `pnpm sourcing run --checks`.
+   The clothing runner needs Nishorama targets: Admin → Import → Auto-sourcing → Add targets from a CSV with
+   `tools/sourcing-runner/targets/nishorama.csv` (18 targets reading its collections, about 450 pieces); raise
+   "targets per run" if a run should take more of them.
    Kids' and baby sets are medium (750 g) since the founder's answer the same day (35 listings, 646 options).
    Clothing drafts held for a missing weight (D-129) can now be published (Products → Drafts → Publish all drafts). Then food and
    home: `pnpm weights run --dry --limit 20`, read the estimates, `pnpm weights run`. Decide whether a sure estimate may

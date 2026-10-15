@@ -156,7 +156,10 @@ runner in `tools/sourcing-runner/` (its README says how to set it up on the PC a
   outside it are left out); Listings is how many to make instead of the setting. A page that names another country of
   origin is never listed (D-004). `tools/sourcing-runner/targets/myntra-600-1600.csv` is the Myntra ₹600 – ₹1,600
   clothing list (79 targets, about 1,170 listings; footwear ₹400 – ₹900, D-122); `food-by-state.csv` is the food of every
-  state from the founder's list (753 targets, 6 listings each, D-122). Each
+  state from the founder's list (753 targets, 6 listings each, D-122); `nishorama.csv` is Nishorama's whole catalogue
+  (18 targets, 40 listings each). For a Shopify shop, Search words may name one of its collections, `collection:kurtis`:
+  the whole collection (up to 250 pieces; Shopify's search stops at 10) is the target, every piece in it matches, and
+  several targets on one collection take the next 40 each (run one after another). Each
   target shows its state: waiting, being searched, found (how many listings), nothing fit (with why), paused; Search
   again, Pause, Remove.
 - **Found and waiting.** What the runner adds arrives as drafts (in Products → Drafts) unless "go live by themselves"

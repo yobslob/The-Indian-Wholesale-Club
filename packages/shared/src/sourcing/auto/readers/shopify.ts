@@ -8,11 +8,24 @@ import type { Offer } from '../types';
 
 /**
  * Shopify shops (Oyela, Offduty, …; D-118) publish their catalogue as JSON, so no browser is needed: search with
- * /search/suggest.json, read a product with /products/<handle>.js (prices in paise there).
+ * /search/suggest.json, read a product with /products/<handle>.js (prices in paise there). Shopify's search stops at
+ * 10 results, so a target's search words may name a whole collection instead, "collection:kurtis":
+ * /collections/kurtis/products.json, up to 250 products (Nishorama's 216 kurtis, 2026-10-16).
  */
 
-export const shopifySearchUrl = (site: string, query: string): string =>
-  `https://${site}/search/suggest.json?q=${encodeURIComponent(query)}&resources[type]=product&resources[limit]=10`;
+/** "collection:short-kurti" → "short-kurti"; null for plain search words. */
+export const shopifyCollection = (query: string): string | null =>
+  query
+    .trim()
+    .match(/^collection:([a-z0-9][a-z0-9-]{0,120})$/i)?.[1]
+    ?.toLowerCase() ?? null;
+
+export const shopifySearchUrl = (site: string, query: string): string => {
+  const collection = shopifyCollection(query);
+  return collection
+    ? `https://${site}/collections/${collection}/products.json?limit=250`
+    : `https://${site}/search/suggest.json?q=${encodeURIComponent(query)}&resources[type]=product&resources[limit]=10`;
+};
 
 export const shopifyProductJsUrl = (pageUrl: string): string | null => {
   try {
@@ -25,6 +38,7 @@ export const shopifyProductJsUrl = (pageUrl: string): string | null => {
 };
 
 export function shopifySearchOffers(json: unknown, site: string): Offer[] {
+  if (isObj(json) && Array.isArray(json.products)) return collectionOffers(json.products, site);
   const products =
     isObj(json) &&
     isObj(json.resources) &&
@@ -46,6 +60,37 @@ export function shopifySearchOffers(json: unknown, site: string): Offer[] {
         mrpPaise: parseRupeesToPaise(str(p.compare_at_price_max) || str(p.compare_at_price)),
         inStock: typeof p.available === 'boolean' ? p.available : null,
         image: httpsImage(isObj(p.featured_image) ? p.featured_image.url : p.image),
+      });
+    }),
+  );
+}
+
+/** A collection's products.json: prices in rupees per variant; the cheapest one in stock is the offer's price. */
+function collectionOffers(products: unknown[], site: string): Offer[] {
+  return uniqueOffers(
+    products.filter(isObj).map((p) => {
+      const handle = str(p.handle);
+      if (!handle) return null;
+      const variants = (Array.isArray(p.variants) ? p.variants : []).filter(isObj);
+      const inStock = variants.filter((v) => v.available !== false);
+      const cheapest = (inStock.length ? inStock : variants)
+        .map((v) => ({
+          price: parseRupeesToPaise(str(v.price)),
+          mrp: parseRupeesToPaise(str(v.compare_at_price)),
+        }))
+        .filter((v) => v.price)
+        .sort((a, b) => a.price! - b.price!)[0];
+      const image = (Array.isArray(p.images) ? p.images : []).find(isObj);
+      return makeOffer({
+        site,
+        url: `https://${site}/products/${handle}`,
+        key: handle,
+        title: str(p.title),
+        brand: str(p.vendor) || null,
+        pricePaise: cheapest?.price ?? null,
+        mrpPaise: cheapest?.mrp ?? null,
+        inStock: variants.length ? inStock.length > 0 : null,
+        image: httpsImage(image ? image.src : null),
       });
     }),
   );
