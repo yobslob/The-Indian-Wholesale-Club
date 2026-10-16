@@ -183,7 +183,7 @@ setup and running). For production, once:
 4. Task Scheduler runs `pnpm sourcing run` daily (README). When the PC is off nothing is added or checked; listings keep
    their last checked price and stock, and the admin page shows the last run.
 
-## Weight estimator, clothing classes and food weights (D-131 – D-133; the founder runs them on production)
+## Weight estimator, clothing classes, food and home weights (D-131 – D-134; the founder runs them on production)
 `tools/weight-estimator` gives listings a packed weight on the founder's laptop GPU (its README has setup and running).
 It uses the worker account and reads `tools/sourcing-runner/.env` when it has no `.env` of its own, so on a laptop with
 the runner's settings it works on **production** at once. Once: `winget install Ollama.Ollama`, `ollama pull
@@ -192,7 +192,9 @@ and `pnpm weights run` (any time; what it wrote stays if it is stopped). Clothin
 `pnpm weights classes --dry` (open `tools/weight-estimator/clothing-classes.csv`), then `pnpm weights classes`. Food
 (D-133, no Ollama needed): `pnpm weights food --dry` (open `tools/weight-estimator/food-weights.csv`), then, after the
 Deploy workflow has applied migration `20261016160000_food_weights`, `pnpm weights food` (the replaced weights are kept
-in `food-weights-before.jsonl`); the runner does the same at the end of every `pnpm sourcing run`. Nothing on the
+in `food-weights-before.jsonl`); the runner does the same at the end of every `pnpm sourcing run`. Home (D-134)
+reads shop pages, so it runs in the sourcing runner's browser: `pnpm sourcing home --dry` (open
+`tools/sourcing-runner/home-weights.csv`), then `pnpm sourcing home` after the deploy. Nothing on the
 website depends on the laptop.
 
 ## Git

@@ -8,7 +8,7 @@ footwear 800 g, heavy 1.5 kg (a kids' or baby set is medium)
 (`packages/shared/src/sourcing/estimate/classes.ts`), then its category, then the local model for a name neither
 reads. Every listing goes in `clothing-classes.csv` (open it in Excel; "Look at it" marks the ones sorted by
 category or by the model). Which weight wins: the hub's scale, then an admin's, then the class; the hub's scale
-later replaces a class weight. Customers never see any of it: the weights are for pricing only. About 278 listings in 12 s. The estimator below weighs **food and home & gifts** only (food: what its label does not state, D-133).
+later replaces a class weight. Customers never see any of it: the weights are for pricing only. About 278 listings in 12 s. The estimator below weighs **food and home & gifts** only (food: what its label does not state, D-133; home: what no page states, D-134).
 
 **Food is weighed by its label and its pack (D-133):** `pnpm weights food` gives every food option its packed weight:
 the net quantity its label states (its option, its label, the shop page's reading, its name; "2 × 200 g" is two packs,

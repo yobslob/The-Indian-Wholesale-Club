@@ -27,6 +27,14 @@ import type { ProductType } from '@repo/shared/domain';
 
 import type { Env } from './env';
 
+/** D-134: one home option's weight read from its page (or another option's: similar). */
+export interface HomeWrite {
+  variant_id: string;
+  weight_g: number;
+  source: 'shop' | 'packed' | 'similar';
+  note: string;
+}
+
 /**
  * The runner's door to IWC: the worker account (role `worker`, never a service key) and the worker_sourcing_*
  * functions (D-118). Photos go to product-media under the new listing's folder, which the storage policy allows
@@ -145,6 +153,23 @@ export class Db implements FoodPassDb {
 
   setFoodWeights(weights: FoodWrite[]): Promise<number> {
     return this.rpc('worker_set_food_weights', { p_weights: weights });
+  }
+
+  /** D-134: up to `limit` home listings whose weights to read from their pages (`all`: also read ones). */
+  async homePlan(limit: number, all: boolean): Promise<WeightPlan> {
+    const { data, error } = await this.client.rpc('worker_home_plan', {
+      p_limit: limit,
+      p_all: all,
+    });
+    if (!error) return weightPlanSchema.parse(data);
+    // before the deploy that adds it, a dry run reads the listings missing a weight (D-129's plan)
+    if (!/worker_home_plan/.test(error.message))
+      throw new Error(`worker_home_plan: ${error.message}`);
+    return (await this.weightPlan(200)).filter((l) => l.product_type === 'home').slice(0, limit);
+  }
+
+  setHomeWeights(weights: HomeWrite[]): Promise<number> {
+    return this.rpc('worker_set_home_weights', { p_weights: weights });
   }
 
   /** Every weight IWC knows (weighed, typed, a shop's page): the hub's food weighings tune the pack weights. */

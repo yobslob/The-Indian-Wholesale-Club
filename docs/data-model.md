@@ -152,6 +152,11 @@ Migration 31 (D-099, the second speed audit): `admin_order_counts()` (every orde
 send, shops owed for picked pieces) and `admin_cycle_totals(cycle)` (the cycle card's orders, pieces, shops and sales),
 admin only, counted in SQL because the API sends at most 1,000 rows; indexes for orders by status and newest, pickups
 by status, what each shop is owed, and a payout's pieces.
+Migration 68 (D-134): worker only: `worker_home_plan(limit, all)` (home listings with an option whose weight is
+missing, unrecorded, a matching item's or an estimate; `all`: every one not weighed or typed; with every page each
+option is on) and `worker_set_home_weights(weights)` (home only; `shop`, `packed` or `similar`; never over a weighed or
+typed weight, a similar one never over a page's own; returns how many changed). `worker_sourcing_add` keeps a new home
+option's packed weight. No store change. Tests: `home_weights.test.sql`.
 Migration 67 (D-133): `weight_source` may be `packed` (food: the label's net quantity plus its pack, worked out by
 `packages/shared/src/sourcing/estimate/food.ts`); `product_variants.net_qty` (the net quantity as the label states it,
 "400 g", "2 × 200 g"; customers see it: `store_variants.net_qty` for food, and `_store_pack` falls back to it). Worker

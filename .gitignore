@@ -86,6 +86,7 @@ tools/photo-worker/worker.log*
 # The sourcing runner (tools/sourcing-runner, D-118): its log (its .env is covered above; the browser profile lives
 # outside the repo)
 tools/sourcing-runner/sourcing.log
+tools/sourcing-runner/home-weights.csv
 
 # The weight estimator (tools/weight-estimator, D-131): its log, embeddings cache and clothing sheet
 tools/weight-estimator/estimator.log

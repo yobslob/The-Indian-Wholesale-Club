@@ -31,9 +31,11 @@ if(q('#productTitle')){
   description:t(q('#productDescription')).slice(0,7900),size:t(q('#variation_size_name .selection')).slice(0,90),specs:[],images:[],
   asin:((q('#ASIN')||q('input[name="ASIN"]')||{}).value||(location.pathname.match(/\/dp\/([A-Z0-9]{10})/)||[])[1]||'').slice(0,20)};
  var imp=q('#important-information');if(imp)a.important=t(imp).slice(0,4900);
- qa('#productDetails_techSpec_section_1 tr,#productDetails_detailBullets_sections1 tr,#productOverview_feature_div tr,#technicalSpecifications_feature_div tr').forEach(function(r){
-  var k=t(r.querySelector('th,td'));var cells=r.querySelectorAll('td');var v=t(cells[cells.length-1]);if(k&&v&&k!==v&&a.specs.length<80)a.specs.push([k.slice(0,190),v.slice(0,990)]);});
- qa('#detailBullets_feature_div li').forEach(function(li){var x=t(li).split(/\s*:\s*/);if(x.length>1&&a.specs.length<80)a.specs.push([x[0].slice(0,190),x.slice(1).join(': ').slice(0,990)]);});
+ var seen={};function spec(k,v){k=(k||'').replace(/[‎‏]/g,'').replace(/\s*:\s*$/,'');if(k&&v&&k!==v&&!seen[k.toLowerCase()]&&a.specs.length<80){seen[k.toLowerCase()]=1;a.specs.push([k.slice(0,190),v.slice(0,990)]);}}
+ qa('#productDetails_techSpec_section_1 tr,#productDetails_detailBullets_sections1 tr,#productOverview_feature_div tr,#technicalSpecifications_feature_div tr,[id^="productDetails_expanderTables"] tr,#prodDetails tr,table.prodDetTable tr,#poExpander tr').forEach(function(r){
+  var k=t(r.querySelector('th,td'));var cells=r.querySelectorAll('td');spec(k,t(cells[cells.length-1]));});
+ qa('.product-facts-detail').forEach(function(f){spec(t(f.querySelector('.a-col-left')),t(f.querySelector('.a-col-right')));});
+ qa('#detailBullets_feature_div li').forEach(function(li){var x=t(li).split(/\s*:\s*/);if(x.length>1)spec(x[0],x.slice(1).join(': '));});
  var tw={};
  qa('script').forEach(function(s){var x=s.textContent||'';
   if(x.indexOf('colorImages')>=0){var re=/"hiRes":"(https:[^"]+)"|"large":"(https:[^"]+)"/g,m;while((m=re.exec(x))&&a.images.length<80)a.images.push(m[1]||m[2]);}

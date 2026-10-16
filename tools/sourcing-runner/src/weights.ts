@@ -76,7 +76,10 @@ export async function fillWeights(
   type: ProductType | null = null,
 ): Promise<number> {
   if (!ctx.db) return 0;
-  const plan = (await ctx.db.weightPlan(limit)).filter((l) => !type || l.product_type === type);
+  // home is read by weighHome (D-134), with its packing
+  const plan = (await ctx.db.weightPlan(limit)).filter(
+    (l) => (!type || l.product_type === type) && l.product_type !== 'home',
+  );
   if (plan.length)
     log(`weights: ${plan.length} listing${plan.length === 1 ? '' : 's'} without a sure weight`);
   let filled = 0;

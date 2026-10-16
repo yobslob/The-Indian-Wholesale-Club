@@ -194,7 +194,17 @@ runner in `tools/sourcing-runner/` (its README says how to set it up on the PC a
   out every food listing not yet done; `pnpm weights food --dry` on the laptop writes `food-weights.csv` (every
   option, its net quantity, pack, old and new weight). An option no label states keeps what it has (the page search
   above, then the hub). An admin's typed weight cannot replace one weighed at the hub: the weight box asks to weigh
-  it again. The product page shows the source "Net weight + its pack (D-133)" and the sum.
+  it again. The product page shows the source "Its weight + its packing (D-133, D-134)" and the sum.
+- **Home & gifts from their own pages (D-134).** Each run (and `pnpm sourcing home`, `--dry` for the sheet
+  `tools/sourcing-runner/home-weights.csv`) reads every home option's own page (on Amazon each size and colour is its
+  own item, with its "Item details" and "Measurements" dropdowns, now read by the capture too): the packed weight
+  (Item Package Weight, Package Dimensions "…; 640 g") as it is, else the piece's own weight (Item Weight, Product
+  Dimensions) plus its packing by what it is made of (glass, ceramic, terracotta, marble: a box with wrapping; art and
+  frames: a flat box; textiles: a poly bag; wood and metal: a box). Every reading is checked: a package lighter than
+  its piece, or a weight impossible for its box size (a "1 g" brass lamp), is not priced and is marked for the hub.
+  An option without its own page takes another option's (similar); a listing no page weighs is looked up on Amazon and
+  Flipkart (two must agree). The box's weight by size is kept in the note for Q-36. The hub's scale, then an admin's
+  weight, come first; customers never see a home weight.
 - **The weight estimator (D-131), food and home & gifts.** On the founder's laptop: `pnpm weights run` gives every option without a weight a
   packed weight from a local model on the GPU, checked against the most similar weights IWC knows (weighed at the hub
   first). A sure one becomes the weight (source "Estimated"); an unsure one is a suggestion in Weights to check.

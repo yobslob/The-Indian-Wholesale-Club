@@ -802,3 +802,34 @@ up to 5 g; units under 50 g share one pack; rules only, no model (D-132 found th
 rule (typed cannot replace weighed) reads the founder's order literally. On production (2026-10-16, a dry run before
 the deploy): 920 food listings, 1,635 options in 8 s; 1,059 get a packed weight, 576 state no net quantity anywhere
 (mostly listings whose names were cleaned of it; the page search fills them), 178 are marked glass or plastic.
+
+**D-134 · 2026-10-16 · founder: Home & gifts are priced on the weight their own page states, checked, never shown to customers**
+Founder, verbatim: "Similarly design a very smart system for home decor items which has a very large amount of range,
+although mostly is and will be from amazon and almost every item will definately have its weight listed in one of
+those dropdown abouts. but this weight will not be shown in frontend"
+What it means for the build (migration `20261016180000_home_weights.sql`, `packages/shared/src/sourcing/estimate/home.ts`,
+`tools/sourcing-runner/src/home.ts`; the D-128 formula is untouched):
+- **The dropdowns are read:** the capture (the "Add to IWC" button and the runner) now also reads Amazon's newer
+  "Product details" dropdown tables ("Item details", "Measurements", every `prodDetTable`) and fact rows, once each.
+- **Each option on its own page:** on Amazon every size and colour is its own item with its own weight; the runner
+  reads each option's own page (the end of every `pnpm sourcing run`, or `pnpm sourcing home`, 40 listings a go). A
+  new listing takes its page's weight for the page's own item; its other options read theirs at the end of the run.
+- **Which weight:** the packed weight the page states (Item Package Weight, Package Dimensions "…; 640 g") as it is,
+  source **shop**; else the piece's own weight (Item Weight, Product Dimensions "…; 450 g", or the option's size as
+  the shop sells it) plus its packing by what it is made of, source **packed**; else another option's page (similar),
+  else two matching items on Amazon and Flipkart that agree (similar).
+- **Checked, not trusted blindly:** a package lighter than its piece, a weight impossible for its box (under
+  0.01 g or over 4 g a cm³: a "30 g" piece in a 5-litre box), and an option holding more pieces that weighs no more
+  than a smaller one ("Pack of 5" as heavy as "Pack of 1") are marked; an impossible weight is not priced. Fragile
+  pieces are marked to weigh one packed at the hub.
+- **The order (D-133):** the hub's scale, then an admin's weight, then this; the runner never replaces either.
+- **Never shown to customers:** no store page, app screen or `store_*` view or function sends a home weight, its
+  source, note or a net quantity (D-132; tested).
+- **Bulky pieces:** the box's weight by size (litres ÷ 5) is kept in the note and in `home-weights.csv`; whether the
+  courier bills by size is Q-36. Prices use the real packed weight until the founder answers.
+*Claude's choices in it:* the packing weights (`HOME_PACKING`: fragile glass, ceramic, terracotta, marble or resin
+120 g + 25%; flat art and frames 80 g + 15%; textiles 20 g + 5% in a poly bag; wood, metal and the rest 60 g + 12%,
+also for textiles with wood or metal in them) are typical, not measurements, and the hub's scale replaces them piece
+by piece; the density bounds; weights round up to 5 g; ÷ 5,000 for the size weight (the usual courier divisor, for
+Q-36 only); a page's packed weight is used as stated when it holds the piece and fits its box; the `packed` source
+label is now "Its weight + its packing (D-133, D-134)".

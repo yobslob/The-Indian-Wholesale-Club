@@ -1975,6 +1975,9 @@ isOneToOne: false
 "worker_food_plan":
 { Args: { "p_after"?: string,"p_all"?: boolean,"p_limit"?: number }; Returns: Json
                            },
+"worker_home_plan":
+{ Args: { "p_all"?: boolean,"p_limit"?: number }; Returns: Json
+                           },
 "worker_may_add_photos":
 { Args: { "p_product": string }; Returns: boolean
                            },
@@ -1985,6 +1988,9 @@ isOneToOne: false
 { Args: { "p_estimates": Json }; Returns: Json
                            },
 "worker_set_food_weights":
+{ Args: { "p_weights": Json }; Returns: number
+                           },
+"worker_set_home_weights":
 { Args: { "p_weights": Json }; Returns: number
                            },
 "worker_set_weights":
