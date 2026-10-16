@@ -127,11 +127,22 @@ const PRODUCT_LIST_COLUMNS = `id, slug, name, product_type, status, coming_soon,
   category:categories(default_weight_g),
   media:product_media(storage_path, is_primary, sort_order)`;
 
+export const ADMIN_PRODUCT_SORTS = ['updated', 'newest', 'price-asc', 'price-desc', 'name'] as const;
+export type AdminProductSort = (typeof ADMIN_PRODUCT_SORTS)[number];
+
 export interface AdminProductFilter {
   status?: Enum<'product_status'>;
   productType?: Enum<'product_type'>;
   regionId?: string;
+  /** D-136: all-India listings only (no state). */
+  noRegion?: boolean;
+  categoryId?: string;
   vendorId?: string;
+  /** D-136: the customer price range, in cents. */
+  minCents?: number;
+  maxCents?: number;
+  /** D-136: recently updated first unless chosen. */
+  sort?: AdminProductSort;
   /** D-072: US clearance pieces only. */
   usStock?: boolean;
   search?: string;
@@ -145,7 +156,11 @@ export async function listAdminProducts(client: IwcClient, filter: AdminProductF
   if (filter.status) query = query.eq('status', filter.status);
   if (filter.productType) query = query.eq('product_type', filter.productType);
   if (filter.regionId) query = query.eq('region_id', filter.regionId);
+  if (filter.noRegion) query = query.is('region_id', null);
+  if (filter.categoryId) query = query.eq('category_id', filter.categoryId);
   if (filter.vendorId) query = query.eq('vendor_id', filter.vendorId);
+  if (filter.minCents !== undefined) query = query.gte('price_cents', filter.minCents);
+  if (filter.maxCents !== undefined) query = query.lte('price_cents', filter.maxCents);
   if (filter.usStock) query = query.eq('is_us_stock', true);
   if (filter.search && filter.search.trim()) {
     query = query.textSearch('search', filter.search.trim(), {
@@ -155,13 +170,17 @@ export async function listAdminProducts(client: IwcClient, filter: AdminProductF
   }
   const limit = filter.limit ?? 100;
   const offset = filter.offset ?? 0;
+  const [column, ascending] = (
+    {
+      updated: ['updated_at', false],
+      newest: ['created_at', false],
+      'price-asc': ['price_cents', true],
+      'price-desc': ['price_cents', false],
+      name: ['name', true],
+    } as const
+  )[filter.sort ?? 'updated'];
   // id breaks ties so pages never repeat or skip a product
-  return unwrap(
-    await query
-      .order('updated_at', { ascending: false })
-      .order('id')
-      .range(offset, offset + limit - 1),
-  );
+  return unwrap(await query.order(column, { ascending }).order('id').range(offset, offset + limit - 1));
 }
 
 /** How many products are in each status: the Listings tabs' counts (D-096). */
@@ -256,13 +275,21 @@ export async function publishDrafts(client: IwcClient): Promise<PublishDraftsRes
  */
 export async function listPriceSheet(
   client: IwcClient,
-  filter: { status?: Enum<'product_status'>; usStock?: boolean; search?: string } = {},
+  filter: AdminProductFilter = {}, // the order, limit and offset are the sheet's own
 ) {
   return unwrap(
     await client.rpc('admin_price_sheet', {
       ...(filter.status ? { p_status: filter.status } : {}),
       p_us_stock: filter.usStock ?? false,
       ...(filter.search?.trim() ? { p_search: filter.search.trim() } : {}),
+      // D-136: the Products page's filters
+      ...(filter.productType ? { p_type: filter.productType } : {}),
+      ...(filter.regionId ? { p_region: filter.regionId } : {}),
+      ...(filter.noRegion ? { p_no_region: true } : {}),
+      ...(filter.categoryId ? { p_category: filter.categoryId } : {}),
+      ...(filter.vendorId ? { p_vendor: filter.vendorId } : {}),
+      ...(filter.minCents !== undefined ? { p_min_cents: filter.minCents } : {}),
+      ...(filter.maxCents !== undefined ? { p_max_cents: filter.maxCents } : {}),
     }),
   );
 }

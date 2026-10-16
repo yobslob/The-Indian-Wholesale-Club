@@ -115,6 +115,8 @@ export const homeSchema = z.object({
   album: z.array(z.object({ storage_path: z.string(), alt_text: z.string() })).default([]),
   /** The twelve newest live products (Just listed, D-062). */
   just_listed: z.array(regionProductCardSchema),
+  /** D-136: the twelve newest of each product type (Home's Just listed switch); optional until migration 20261016210000. */
+  just_listed_types: z.record(z.array(regionProductCardSchema)).nullable().optional(),
   delivery: deliveryWindowSchema.nullable(),
 });
 
@@ -292,6 +294,15 @@ export const browsePageSchema = z.object({
   regions: z.array(filterCountSchema),
   /** The categories within the chosen state (the category filter), biggest first. */
   categories: z.array(filterCountSchema),
+  /** D-136 (optional until migration 20261016210000): pieces in all states with the price and size filters applied. */
+  states_total: z.number().int().optional(),
+  /** D-136: every size (or food pack) with its pieces, each counted with the other filters applied. */
+  sizes: z.array(z.object({ value: z.string(), count: z.number().int() })).default([]),
+  /** D-136: the card prices (cents) with the other filters applied, for the price slider and its ranges; null when none. */
+  prices: z
+    .object({ min: z.number().int(), max: z.number().int(), q1: z.number().int(), q2: z.number().int(), q3: z.number().int() })
+    .nullable()
+    .default(null),
   products: z.array(productCardSchema),
 });
 export type BrowsePage = z.infer<typeof browsePageSchema>;

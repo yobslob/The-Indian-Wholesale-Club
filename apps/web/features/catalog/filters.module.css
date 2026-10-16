@@ -1,0 +1,192 @@
+/* See all's filters (D-136): the left panel on wide screens, the same groups in the phone's Filter panel. */
+
+.group + .group {
+  margin-top: 22px;
+  padding-top: 18px;
+  border-top: 1px solid var(--line);
+}
+.head {
+  display: flex;
+  align-items: baseline;
+  justify-content: space-between;
+  gap: 8px;
+  margin: 0 0 8px;
+}
+.head h3 {
+  margin: 0;
+  font-size: 15px;
+  font-weight: 700;
+  color: var(--ink);
+}
+.clear {
+  font-size: 13px;
+  color: var(--muted);
+  text-decoration: underline;
+  text-underline-offset: 3px;
+}
+.list {
+  margin: 0;
+  padding: 0;
+  list-style: none;
+}
+.item {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  min-height: 34px;
+  padding: 4px 0;
+  font-size: 14.5px;
+  line-height: 1.25;
+  color: var(--ink);
+}
+.item:hover {
+  text-decoration: underline;
+  text-underline-offset: 3px;
+}
+.item[aria-current='true'] {
+  font-weight: 700;
+}
+.item span {
+  margin-left: auto;
+  font-size: 13px;
+  color: var(--muted);
+}
+/* the radio-like dot before a single choice */
+.item i {
+  width: 16px;
+  height: 16px;
+  flex: none;
+  border: 1.5px solid var(--line);
+  border-radius: 999px;
+  background: var(--paper);
+}
+.item[aria-current='true'] i {
+  border: 5px solid var(--ink);
+}
+.more {
+  margin-top: 4px;
+  font-size: 14px;
+  font-weight: 600;
+  color: var(--brand);
+}
+
+/* sizes and packs: boxes, as on any big store */
+.boxes {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 8px;
+}
+.box {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  min-width: 52px;
+  min-height: 38px;
+  padding: 0 12px;
+  border: 1px solid var(--line);
+  border-radius: 10px;
+  background: var(--paper);
+  font-size: 14px;
+  color: var(--ink);
+  transition: border-color 0.15s;
+}
+.box:hover {
+  border-color: var(--ink);
+}
+.box[aria-pressed='true'] {
+  border-color: var(--ink);
+  background: var(--ink);
+  color: var(--paper);
+}
+
+/* the price slider: two native ranges over one track */
+.slider {
+  margin: 2px 0 10px;
+}
+.range {
+  margin: 0 0 6px;
+  font-size: 15px;
+  font-weight: 700;
+}
+.track {
+  position: relative;
+  height: 32px;
+}
+.track::before,
+.track span {
+  content: '';
+  position: absolute;
+  top: 14px;
+  height: 4px;
+  border-radius: 4px;
+}
+.track::before {
+  left: 0;
+  right: 0;
+  background: var(--line);
+}
+.track span {
+  background: var(--ink);
+}
+.track input {
+  position: absolute;
+  inset: 0;
+  width: 100%;
+  margin: 0;
+  background: none;
+  pointer-events: none;
+  appearance: none;
+  -webkit-appearance: none;
+}
+.track input::-webkit-slider-thumb {
+  width: 22px;
+  height: 22px;
+  border: 5px solid var(--ink);
+  border-radius: 999px;
+  background: var(--paper);
+  cursor: pointer;
+  pointer-events: auto;
+  -webkit-appearance: none;
+}
+.track input::-moz-range-thumb {
+  width: 12px;
+  height: 12px;
+  border: 5px solid var(--ink);
+  border-radius: 999px;
+  background: var(--paper);
+  cursor: pointer;
+  pointer-events: auto;
+}
+.track input:focus-visible::-webkit-slider-thumb {
+  outline: 2px solid var(--brand);
+  outline-offset: 2px;
+}
+
+/* the chips of what is chosen, above the cards */
+.chips {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  gap: 8px;
+}
+.chip {
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
+  min-height: 34px;
+  padding: 0 12px 0 14px;
+  border: 1px solid var(--line);
+  border-radius: 999px;
+  background: var(--paper);
+  font-size: 13.5px;
+  font-weight: 500;
+}
+.chip:hover {
+  border-color: var(--ink);
+}
+.chip b {
+  font-size: 16px;
+  font-weight: 400;
+  line-height: 1;
+  color: var(--muted);
+}

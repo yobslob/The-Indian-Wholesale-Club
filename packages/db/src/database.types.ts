@@ -1728,7 +1728,7 @@ isOneToOne: false
 { Args: { "p_shop_paise": number,"p_type": Database["public"]['Enums']["product_type"],"p_weight_g": number }; Returns: number
                            },
 "admin_price_sheet":
-{ Args: { "p_search"?: string,"p_status"?: Database["public"]['Enums']["product_status"],"p_us_stock"?: boolean }; Returns: {
+{ Args: { "p_category"?: string,"p_max_cents"?: number,"p_min_cents"?: number,"p_no_region"?: boolean,"p_region"?: string,"p_search"?: string,"p_status"?: Database["public"]['Enums']["product_status"],"p_type"?: Database["public"]['Enums']["product_type"],"p_us_stock"?: boolean,"p_vendor"?: string }; Returns: {
               "name": string,"price_cents": number,"product_type": Database["public"]['Enums']["product_type"],"shop_price_paise": number,"weight_g": number
             }[]
                            },
@@ -1875,7 +1875,7 @@ isOneToOne: false
 { Args: { "p_items": Json }; Returns: Json
                            },
 "store_browse":
-{ Args: { "p_category"?: string,"p_limit"?: number,"p_offset"?: number,"p_region"?: string,"p_type": string }; Returns: Json
+{ Args: { "p_category"?: string,"p_limit"?: number,"p_max_cents"?: number,"p_min_cents"?: number,"p_offset"?: number,"p_region"?: string,"p_sizes"?: string,"p_sort"?: string,"p_type": string }; Returns: Json
                            },
 "store_home":
 { Args: Record<PropertyKey, never>; Returns: Json

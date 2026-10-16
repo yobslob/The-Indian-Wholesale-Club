@@ -1,6 +1,5 @@
 'use client';
 
-import Link from 'next/link';
 import { useEffect, useRef, useState } from 'react';
 
 import { HeaderIcon } from '@/features/shell/header-icons';
@@ -18,20 +17,21 @@ function FilterIcon(): React.JSX.Element {
 }
 
 /**
- * Phones (D-084): one Filter bar pinned under the header, with what is chosen and the count; once the page is scrolled
- * it shrinks to a round icon button in the same place. The button opens the menu's side panel (D-079 motion) with State
- * and Category as lists (server-rendered children); choosing one applies it, and the panel closes on the way.
+ * Phones and tablets (D-084): one Filter bar pinned under the header, with what is chosen and the count; once the page
+ * is scrolled it shrinks to a round icon button in the same place. The button opens the menu's side panel (D-079
+ * motion) with the filter groups (D-136); each choice applies at once behind the panel, which stays open until
+ * "Show n pieces".
  */
 export function PhoneFilter({
   chosen,
   count,
-  clearHref,
+  onClear,
   children,
 }: {
   chosen: string;
   count: string;
   /** Shown only when something is chosen. */
-  clearHref: string | null;
+  onClear: (() => void) | null;
   children: React.ReactNode;
 }): React.JSX.Element {
   const [open, setOpen] = useState(false);
@@ -65,7 +65,7 @@ export function PhoneFilter({
   }, [open]);
 
   return (
-    <div className="contents md:hidden">
+    <div className="contents lg:hidden">
       <div ref={sentinel} aria-hidden="true" className="h-px" />
       <div className={`${styles.bar} font-ui`} data-stuck={stuck || undefined}>
         <button
@@ -91,10 +91,10 @@ export function PhoneFilter({
       <aside id="filter-panel" className="site-panel font-ui" data-open={open || undefined} aria-label="Filter">
         <div className={styles.head}>
           <h2 className="font-heading">Filter</h2>
-          {clearHref ? (
-            <Link href={clearHref} onClick={() => setOpen(false)}>
+          {onClear ? (
+            <button type="button" className={styles.clearAll} onClick={onClear}>
               Clear
-            </Link>
+            </button>
           ) : null}
           <button
             ref={close}
@@ -109,13 +109,17 @@ export function PhoneFilter({
             <HeaderIcon name="close" />
           </button>
         </div>
-        {/* Any link chosen in the lists applies it; close the panel on the way. */}
-        <div
-          onClick={(e) => {
-            if (e.target instanceof Element && e.target.closest('a')) setOpen(false);
-          }}
-        >
-          {children}
+        <div className="pt-4">{children}</div>
+        <div className={styles.done}>
+          <button
+            type="button"
+            onClick={() => {
+              setOpen(false);
+              button.current?.focus();
+            }}
+          >
+            Show {count}
+          </button>
         </div>
       </aside>
     </div>

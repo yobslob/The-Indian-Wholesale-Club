@@ -1,28 +1,27 @@
 import Link from 'next/link';
 
-import { countProductsByStatus, listAdminProducts, listWeightsToCheck } from '@repo/db/admin';
-import { formatUsd } from '@repo/shared/domain';
+import {
+  countProductsByStatus,
+  listAdminProducts,
+  listCategories,
+  listRegionsAdmin,
+  listVendors,
+  listWeightsToCheck,
+} from '@repo/db/admin';
+import { formatUsd, PRODUCT_TYPE_LABEL } from '@repo/shared/domain';
 
 import { PRODUCT_STATUS, StatusChip } from '@/features/admin/chips';
 import { requireAdminPage } from '@/features/admin/guard';
 import { listingTabs } from '@/features/admin/listing-tabs';
+import { ProductFilterBar } from '@/features/admin/product-filter-bar';
+import { hasProductFilters, parseProductView, productViewQuery, toAdminFilter } from '@/features/admin/product-filters';
 import { PublishDrafts } from '@/features/admin/publish-drafts';
-import { Cell, input, linkButton, PageHead, rupees, Table, Tabs } from '@/features/admin/ui';
+import { Cell, linkButton, PageHead, rupees, Table, Tabs } from '@/features/admin/ui';
 import { WeightSummary, WeightsToCheck } from '@/features/admin/weights-to-check';
 
-type SearchParams = Promise<{
-  q?: string;
-  status?: string;
-  page?: string;
-  us?: string;
-  weights?: string;
-}>;
+type SearchParams = Promise<Record<string, string | string[] | undefined>>;
 
 const PAGE = 50;
-
-const STATUSES = ['draft', 'live', 'paused', 'archived'] as const;
-type Status = (typeof STATUSES)[number];
-const isStatus = (s: string | undefined): s is Status => STATUSES.includes(s as Status);
 
 /**
  * Catalog: every product with admin-only fields (shop, shop price, stock), optionally one status (the tabs), 50 to a
@@ -36,44 +35,37 @@ export default async function CatalogPage({
 }): Promise<React.JSX.Element> {
   const { client } = await requireAdminPage();
   const params = await searchParams;
-  const q = params.q?.trim().slice(0, 100) ?? '';
-  const status = isStatus(params.status) ? params.status : undefined;
-  const usStock = params.us === '1';
+  const view = parseProductView(params);
+  const { status, usStock } = view;
   const weightsView = params.weights === '1';
-  const page = Math.min(Math.max(Number.parseInt(params.page ?? '1', 10) || 1, 1), 1000);
+  const page = Math.min(Math.max(Number.parseInt(String(params.page ?? '1'), 10) || 1, 1), 1000);
   // One more than a page tells whether a next page exists.
-  const [rows, counts, weights] = await Promise.all([
+  const [rows, counts, weights, regions, categories, shops] = await Promise.all([
     weightsView
       ? Promise.resolve([])
-      : listAdminProducts(client, {
-          search: q || undefined,
-          status,
-          usStock,
-          offset: (page - 1) * PAGE,
-          limit: PAGE + 1,
-        }),
+      : listAdminProducts(client, { ...toAdminFilter(view), offset: (page - 1) * PAGE, limit: PAGE + 1 }),
     countProductsByStatus(client),
     // D-129: the count for the tab; the rows only on the Weights to check tab
     listWeightsToCheck(client, weightsView ? (page - 1) * PAGE : 0, weightsView ? PAGE : 0),
+    // D-136: the filters' choices
+    weightsView ? Promise.resolve([]) : listRegionsAdmin(client),
+    weightsView ? Promise.resolve([]) : listCategories(client),
+    weightsView ? Promise.resolve([]) : listVendors(client),
   ]);
   const products = rows.slice(0, PAGE);
   const pageHref = (n: number): string => {
-    const query = new URLSearchParams({
-      ...(q ? { q } : {}),
-      ...(status ? { status } : {}),
-      ...(usStock ? { us: '1' } : {}),
+    const query = productViewQuery(view, {
       ...(weightsView ? { weights: '1' } : {}),
       ...(n > 1 ? { page: String(n) } : {}),
     });
-    return query.size ? `/admin/catalog?${query.toString()}` : '/admin/catalog';
+    return query ? `/admin/catalog?${query}` : '/admin/catalog';
   };
 
-  const exportQuery = new URLSearchParams({
-    ...(q ? { q } : {}),
-    ...(status ? { status } : {}),
-    ...(usStock ? { us: '1' } : {}),
-  });
-  const exportHref = `/admin/catalog/export${exportQuery.size ? `?${exportQuery.toString()}` : ''}`;
+  const exportQuery = productViewQuery({ ...view, sort: 'updated' });
+  const exportHref = `/admin/catalog/export${exportQuery ? `?${exportQuery}` : ''}`;
+  const keep: Record<string, string> = { ...(status ? { status } : {}), ...(usStock ? { us: '1' } : {}) };
+  const tabQuery = new URLSearchParams(keep).toString();
+  const filtered = hasProductFilters(view) || view.q !== '';
 
   const tabs = listingTabs({ ...counts, weights: weights.total });
   if (weightsView)
@@ -109,23 +101,34 @@ export default async function CatalogPage({
           each piece in hand, then publish it: it ships at once, without a cycle.
         </p>
       ) : null}
-      <form className="flex gap-2">
-        {status ? <input type="hidden" name="status" value={status} /> : null}
-        {usStock ? <input type="hidden" name="us" value="1" /> : null}
-        <input
-          name="q"
-          defaultValue={q}
-          placeholder="Search products"
-          className={`${input} flex-1`}
-        />
-        <button type="submit" className={linkButton}>
-          Search
-        </button>
+      <ProductFilterBar
+        values={{
+          q: view.q,
+          type: view.type ?? '',
+          region: view.region ?? '',
+          category: view.category ?? '',
+          shop: view.shop ?? '',
+          min: view.min !== undefined ? String(view.min) : '',
+          max: view.max !== undefined ? String(view.max) : '',
+          sort: view.sort,
+        }}
+        keep={keep}
+        regions={regions.map((r) => ({ value: r.id, label: r.name }))}
+        categories={categories.map((c) => ({
+          value: c.id,
+          label: `${c.name} (${PRODUCT_TYPE_LABEL[c.product_type]})`,
+          type: c.product_type,
+        }))}
+        shops={shops.map((v) => ({ value: v.id, label: v.shop_name }))}
+        clearHref={filtered ? `/admin/catalog${tabQuery ? `?${tabQuery}` : ''}` : null}
+      />
+      <p className="text-ink-muted flex flex-wrap items-center gap-x-4 text-sm">
+        {filtered ? <span>{products.length === 0 && page === 1 ? 'No products match.' : 'Filtered view (the tab counts are every product).'}</span> : null}
         {/* D-128: the six price columns of this view as an Excel sheet (a plain link: a file, not a page) */}
-        <a href={exportHref} className={linkButton} download>
+        <a href={exportHref} className={`${linkButton} text-ink`} download>
           Download Excel
         </a>
-      </form>
+      </p>
       <Table
         head={[
           'Product',

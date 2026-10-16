@@ -152,6 +152,12 @@ Migration 31 (D-099, the second speed audit): `admin_order_counts()` (every orde
 send, shops owed for picked pieces) and `admin_cycle_totals(cycle)` (the cycle card's orders, pieces, shops and sales),
 admin only, counted in SQL because the API sends at most 1,000 rows; indexes for orders by status and newest, pickups
 by status, what each shop is owed, and a payout's pieces.
+Migration 70 (D-136): `store_browse()` takes `p_min_cents`, `p_max_cents` (pieces with a shown price), `p_sizes`
+('|'-separated option values; food's `pack` counts as a size) and `p_sort` ('price-asc', 'price-desc', else newest)
+and adds `states_total`, `sizes` (value, pieces) and `prices` (min, max, quartiles), each counted with the other
+filters applied (`regions` and `categories` keep their meaning, so the app reads as before); `store_home()` adds
+`just_listed_types` (the twelve newest of each type); `admin_price_sheet()` takes the Products filters (type, region
+or none, category, vendor, price). Tests: `browse_filters.test.sql`.
 Migration 69 (D-135): `products.coming_soon`, `coming_soon_note`, `liquid_checked_at`; trigger `products_coming_soon`
 (any status but archived ends it); `store_products` and `store_media` include archived coming-soon listings and
 `store_products` ends with `coming_soon`; `_store_product_card` and `store_browse` send it (no quick add for it).

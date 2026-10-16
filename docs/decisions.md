@@ -864,3 +864,33 @@ What it means for the build (migration `20261016200000_coming_soon.sql`, `packag
 *Claude's choices in it:* ghee and honey count as liquids only when sold by volume (ml, L) or when the page says so;
 no price is shown for a coming-soon piece; coming-soon pieces keep their place in the lists (by date); the copy
 "Save it with the heart to find it again." is Claude's, for the founder to change.
+
+**D-136 · 2026-10-16 · founder: Home's Just listed switches between the types; See all gets a proper filter panel; filters and Show more never reload the page; admin Products gets filters**
+Founder, verbatim: "Under the just listed on home page, I want the same pill which chooses clothing, food and home
+decor, which changes the grid and the see all should take them to the respective page. On the products page I want a
+proper filter on the left panel, and when filters are selected I dont want the whole page to refresh just products
+pane, similarly when someone goes down and clicks load more the whole page refreshes and the users gets scrolled up
+again instead the next products should be just appended while maintaining everything like that only, there are no
+proper filters in admin too." (with a screenshot of a big store's filter column: size boxes, a price slider with
+ready-made ranges, deals.)
+What it means for the build (migration `20261016210000_browse_filters.sql`):
+- **Home:** Just listed has the See all pages' Clothing · Food · Home & gifts switch under its heading; it swaps the
+  row in place (the twelve newest of each type, `store_home().just_listed_types`) and See all opens that type's page.
+  A type with nothing on sale says its See all line ("Food is coming soon.").
+- **See all (`/clothing`, `/food`, `/home-and-gifts`):** from 1024 px a filter panel on the left (it scrolls on its own
+  and stays beside the cards): Category, State, Price (a two-handle slider and four ready-made ranges from the prices
+  shown) and Size (Pack for food) as boxes that combine. Above the cards: the count, what is chosen as chips with ×
+  and Clear all, and Sort by (Newest, Price: low to high, Price: high to low). Below 1024 px the same groups sit in
+  the Filter bar's side panel (D-084), which stays open while choosing and closes with "Show n pieces". It replaces
+  D-084's state and category pill rows on wide screens.
+- **No page loads:** a filter fetches only the cards and counts (`GET /api/browse`, the same cached `store_browse()`
+  read) and writes the filters into the address (Back steps through them; every choice is still a real link). Show
+  more appends the next 24 where they are, the scroll untouched. Coming back from a product restores the cards and the
+  scroll exactly (a snapshot per history entry in the tab's sessionStorage).
+- **Admin Products:** filters for type, state (or All-India), category, shop, a US price range and a sort (recently
+  updated, newest added, price both ways, name), within every tab; a select applies at once (no page load), and
+  Download Excel exports the filtered view.
+*Claude's choices in it:* the price ranges are the quartiles of the prices shown, rounded ($5 steps under $50, $10
+under $200, else $25); the slider's scale is squared so cheap pieces get most of the track; a price filter leaves out
+coming-soon pieces (no price shown) and a price sort puts them last; choosing a state drops the category (as before);
+the state list shows 8 states and "Show all"; no "deals" filter (there are no discounts to filter by).

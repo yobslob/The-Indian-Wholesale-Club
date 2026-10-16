@@ -1,0 +1,62 @@
+import assert from 'node:assert/strict';
+import { describe, it } from 'node:test';
+
+import {
+  browseHref,
+  parseBrowseQuery,
+  priceRanges,
+  sortSizes,
+  toBrowseFilter,
+  withFilter,
+} from '../features/catalog/browse-query';
+
+describe("See all's filters in the address (D-136)", () => {
+  it('reads every filter and leaves out what is malformed', () => {
+    const q = parseBrowseQuery(new URLSearchParams('state=kerala&category=Bad!&min=60&max=20&size=M&size=XL&size=M&sort=price-asc&show=48'));
+    assert.deepEqual(q, { state: 'kerala', category: undefined, min: 20, max: 60, sizes: ['M', 'XL'], sort: 'price-asc', show: 48 });
+    assert.equal(parseBrowseQuery({ sort: 'cheapest', show: '24' }).sort, 'new');
+    assert.equal(parseBrowseQuery({ show: '24' }).show, undefined);
+  });
+
+  it('writes one address per filter set, in a fixed order', () => {
+    const q = parseBrowseQuery(new URLSearchParams('size=L&sort=price-desc&state=punjab'));
+    assert.equal(browseHref('clothing', q), '/clothing?state=punjab&size=L&sort=price-desc');
+    assert.equal(browseHref('food', parseBrowseQuery({})), '/food');
+  });
+
+  it('a new state drops the category and every change starts again at the first page', () => {
+    const q = parseBrowseQuery({ state: 'kerala', category: 'sarees', show: '72' });
+    assert.deepEqual(withFilter(q, { state: 'punjab' }), { ...q, state: 'punjab', category: undefined, show: undefined });
+    assert.equal(withFilter(q, { sizes: ['M'] }).category, 'sarees');
+  });
+
+  it('asks the database in cents, whole dollars inclusive', () => {
+    const f = toBrowseFilter('clothing', parseBrowseQuery({ min: '20', max: '30' }), 24, 24);
+    assert.equal(f.minCents, 2000);
+    assert.equal(f.maxCents, 3000);
+    assert.equal(f.offset, 24);
+  });
+});
+
+describe('sizes in wearing order', () => {
+  it('letters, then numbers of one kind together, then weights, free size last', () => {
+    const values = ['XL', 'Free size', '1 kg', 'S', 'W30', 'US 9', '250 g', 'M', 'US 10', 'W28', '10-12 Y', '2-3 Y', 'XXL'];
+    assert.deepEqual(
+      sortSizes(values.map((value) => ({ value }))).map((s) => s.value),
+      ['S', 'M', 'XL', 'XXL', '2-3 Y', '10-12 Y', 'US 9', 'US 10', 'W28', 'W30', '250 g', '1 kg', 'Free size'],
+    );
+  });
+});
+
+describe('ready-made price ranges', () => {
+  it('four ranges from the quartiles, rounded', () => {
+    assert.deepEqual(
+      priceRanges({ min: 1799, max: 80499, q1: 6499, q2: 8999, q3: 14299 }).map((r) => r.label),
+      ['Up to $60', '$60 to $90', '$90 to $140', '$140 & above'],
+    );
+  });
+  it('none when every price is about the same', () => {
+    assert.deepEqual(priceRanges({ min: 1999, max: 2199, q1: 1999, q2: 2099, q3: 2199 }), []);
+    assert.deepEqual(priceRanges(null), []);
+  });
+});

@@ -73,10 +73,20 @@ export async function getNextDelivery(client: IwcClient): Promise<DeliveryWindow
 const PRODUCT_CARD_COLUMNS =
   'id, slug, name, product_type, region_slug, region_name, category_slug, category_name, price_cents, primary_image_path';
 
+export const BROWSE_SORTS = ['new', 'price-asc', 'price-desc'] as const;
+export type BrowseSort = (typeof BROWSE_SORTS)[number];
+
 export interface BrowseFilter {
   productType: ProductType;
   regionSlug?: string;
   categorySlug?: string;
+  /** D-136: the card price range, in cents (pieces without a shown price drop out). */
+  minCents?: number;
+  maxCents?: number;
+  /** D-136: option values (size, or food's pack); a piece matches when any of its options is one. */
+  sizes?: string[];
+  /** D-136: newest first unless a price sort. */
+  sort?: BrowseSort;
   /** Skip this many (the next page of a See all list). */
   offset?: number;
   /** At most 500 (the database caps it). */
@@ -93,6 +103,10 @@ export async function browseProducts(client: IwcClient, filter: BrowseFilter): P
       p_type: filter.productType,
       ...(filter.regionSlug ? { p_region: filter.regionSlug } : {}),
       ...(filter.categorySlug ? { p_category: filter.categorySlug } : {}),
+      ...(filter.minCents !== undefined ? { p_min_cents: filter.minCents } : {}),
+      ...(filter.maxCents !== undefined ? { p_max_cents: filter.maxCents } : {}),
+      ...(filter.sizes?.length ? { p_sizes: filter.sizes.join('|') } : {}),
+      ...(filter.sort && filter.sort !== 'new' ? { p_sort: filter.sort } : {}),
       p_offset: filter.offset ?? 0,
       p_limit: filter.limit ?? 24,
     }, { get: true }),

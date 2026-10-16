@@ -58,3 +58,16 @@ export async function limitRequest(
     { status: 429, headers: { 'Retry-After': String(result.retryAfterSeconds) } },
   );
 }
+
+/**
+ * The in-memory limiter alone, for a busy read that must stay one round trip (See all's filters, D-136, PR-2): a
+ * per-server count, enough to stop a script hammering one instance. Returns a 429 response or null.
+ */
+export function limitRequestLocal(headers: Headers, name: keyof typeof RULES): NextResponse<{ error: string }> | null {
+  const result = rateLimit(`${callerKey(headers)}:${name}`, RULES[name]);
+  if (result.ok) return null;
+  return NextResponse.json(
+    { error: 'Too many requests. Please wait a moment and try again.' },
+    { status: 429, headers: { 'Retry-After': String(result.retryAfterSeconds) } },
+  );
+}

@@ -33,9 +33,9 @@ export const productTag = (regionSlug: string, productSlug: string): string =>
 /**
  * Part of every cache key. Bump it whenever a store_* result changes shape (a migration adds a field): cached
  * entries outlive deployments (Vercel's data cache, .next/cache locally), and an old entry would reach a page
- * that expects the new field. Last change: the AI-photo flag on product photos (migration 35, D-100).
+ * that expects the new field. Last change: store_browse's sizes and prices, store_home's just_listed_types (D-136).
  */
-const SHAPE = 'v14';
+const SHAPE = 'v15';
 
 const cached = <T>(key: string[], tags: string[], load: () => Promise<T>): Promise<T> =>
   unstable_cache(load, [...key, SHAPE], { tags: [STORE_TAG, ...tags], revalidate: STORE_REVALIDATE_SECONDS })();
@@ -53,10 +53,24 @@ export const getProductPageCached = (regionSlug: string, productSlug: string) =>
     getProductPage(storeClient(), regionSlug, productSlug),
   );
 
-/** See all pages: light cards without stock, so a sale never has to refresh them (only STORE_TAG). */
+/**
+ * See all pages and their filters (/api/browse, D-136): light cards without stock, so a sale never has to refresh
+ * them (only STORE_TAG). One entry per filter set and page.
+ */
 export const browseCached = (filter: BrowseFilter) =>
   cached(
-    ['store-browse', filter.productType, filter.regionSlug ?? '', filter.categorySlug ?? '', String(filter.limit ?? 24)],
+    [
+      'store-browse',
+      filter.productType,
+      filter.regionSlug ?? '',
+      filter.categorySlug ?? '',
+      String(filter.minCents ?? ''),
+      String(filter.maxCents ?? ''),
+      (filter.sizes ?? []).join('|'),
+      filter.sort ?? 'new',
+      String(filter.offset ?? 0),
+      String(filter.limit ?? 24),
+    ],
     [],
     () => browseProducts(storeClient(), filter),
   );

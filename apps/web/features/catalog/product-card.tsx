@@ -27,6 +27,11 @@ const SIZES = {
     md: '(min-width: 1280px) 25vw, 50vw',
     sm: '(min-width: 1280px) 20vw, (min-width: 768px) 34vw, 50vw',
   },
+  // See all's grid beside the filter panel (D-136): three columns from lg (1024), four from 2xl (1536)
+  side: {
+    md: '(min-width: 1536px) 20vw, (min-width: 1024px) 25vw, 50vw',
+    sm: '(min-width: 1536px) 20vw, (min-width: 1024px) 25vw, 50vw',
+  },
 } as const;
 
 /**
@@ -44,8 +49,8 @@ export function ProductCard({
 }: {
   product: CardData;
   size?: 'md' | 'sm';
-  /** In a sideways row (fixed width) or a grid (a column). */
-  layout?: 'row' | 'grid';
+  /** In a sideways row (fixed width), a grid (a column) or See all's grid beside the filters. */
+  layout?: 'row' | 'grid' | 'side';
   badge?: React.ReactNode;
   /** Top right of the photo: the profile's filled heart that removes a saved piece (D-089). */
   corner?: React.ReactNode;

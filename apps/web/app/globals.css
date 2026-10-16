@@ -1101,6 +1101,32 @@ html[data-free-bar] .site-footer {
       --k: 0.4;
     }
   }
+  /* See all's grid beside the filter panel (D-136): three columns from 1024 px, four from 1536 px. */
+  @media (min-width: 1024px) {
+    .drift-side > :nth-child(n) {
+      --k: 0;
+    }
+    .drift-side > :nth-child(3n + 2) {
+      --k: 0.7;
+    }
+    .drift-side > :nth-child(3n) {
+      --k: 0.35;
+    }
+  }
+  @media (min-width: 1536px) {
+    .drift-side > :nth-child(n) {
+      --k: 0;
+    }
+    .drift-side > :nth-child(4n + 2) {
+      --k: 0.7;
+    }
+    .drift-side > :nth-child(4n + 3) {
+      --k: 0.3;
+    }
+    .drift-side > :nth-child(4n) {
+      --k: 1;
+    }
+  }
   /* A sideways row: a slow wave along the cards. */
   .drift-row > :nth-child(n) {
     --k: 0;

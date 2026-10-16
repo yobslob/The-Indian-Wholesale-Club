@@ -31,3 +31,28 @@ test('See all pages draw 24 cards at a time', async ({ page }) => {
   await page.getByRole('link', { name: 'Show more' }).click();
   await expect(cards).toHaveCount(48);
 });
+
+test('filters and Show more change only the cards, never the page (D-136)', async ({ page }) => {
+  await page.setViewportSize({ width: 1280, height: 900 });
+  await page.goto('/clothing');
+  await page.evaluate(() => ((window as unknown as { kept: boolean }).kept = true));
+  const cards = page.locator('main article');
+  const panel = page.getByRole('complementary', { name: 'Filters' });
+  await panel.getByRole('link', { name: /^Kurtas/ }).click();
+  await expect(page).toHaveURL(/\/clothing\?category=kurtas$/);
+  await expect(page.getByRole('heading', { level: 1 })).toContainText('Kurtas');
+  await panel.getByRole('button', { name: 'M', exact: true }).click();
+  await expect(page).toHaveURL(/category=kurtas&size=M$/);
+  await page.getByLabel('Sort by').selectOption('price-asc');
+  await expect(page).toHaveURL(/sort=price-asc/);
+  await page.getByRole('link', { name: 'Clear all' }).click();
+  await page.getByLabel('Sort by').selectOption('new');
+  await expect(cards).toHaveCount(24);
+  const more = page.getByRole('link', { name: 'Show more' });
+  await more.scrollIntoViewIfNeeded();
+  const y = await page.evaluate(() => window.scrollY);
+  await more.click();
+  await expect(cards).toHaveCount(48);
+  expect(Math.abs((await page.evaluate(() => window.scrollY)) - y)).toBeLessThan(40);
+  expect(await page.evaluate(() => (window as unknown as { kept?: boolean }).kept)).toBe(true);
+});

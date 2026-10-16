@@ -15,6 +15,8 @@ export const RULES = {
   vendorSignIn: { limit: 10, windowMs: 60_000 },
   /** "Join as a vendor?" requests (D-102). */
   vendorJoin: { limit: 5, windowMs: 60_000 },
+  /** See all's filters and Show more (/api/browse, D-136): a person clicks a few a minute; this server only. */
+  browse: { limit: 120, windowMs: 60_000 },
 } satisfies Record<string, Rule>;
 
 const hits = new Map<string, number[]>();

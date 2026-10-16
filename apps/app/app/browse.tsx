@@ -32,7 +32,7 @@ export default function BrowseScreen(): React.JSX.Element {
   const region = slugOrNothing(params.region);
   const category = slugOrNothing(params.category);
   const key = `browse:${type}:${region ?? ''}:${category ?? ''}`;
-  const [meta, setMeta] = useState<Omit<BrowsePage, 'products'> | null>(null);
+  const [meta, setMeta] = useState<Pick<BrowsePage, 'total' | 'all_total' | 'regions' | 'categories'> | null>(null);
   const [open, setOpen] = useState(false);
   const [stuck, setStuck] = useState(false);
   const { items: data, error, loading, loadingMore, loadMore, reload } = usePagedQuery(key, async (offset, limit) => {
