@@ -894,3 +894,23 @@ What it means for the build (migration `20261016210000_browse_filters.sql`):
 under $200, else $25); the slider's scale is squared so cheap pieces get most of the track; a price filter leaves out
 coming-soon pieces (no price shown) and a price sort puts them last; choosing a state drops the category (as before);
 the state list shows 8 states and "Show all"; no "deals" filter (there are no discounts to filter by).
+
+**D-137 · 2026-10-16 · founder: Source in bulk: food ₹1–300 without liquids or dairy, all of Amazon and Flipkart's home & gifts, thousands of listings in as few runs as possible**
+Founder, verbatim: "In food, I want to run the sourcer to find all the items(snacks and literally everything except
+liquids and dairy) in 1-300rs range. In clothing, I suppose I will have to give different online store's csv In home
+and decore, literally scrape all of amazon and flipkart. I want everything scraped in minimum runs. I am talking about
+products inventory counts in thousands" and "Yes: make Amazon and Flipkart search read several result pages with the
+price band in the URL, and draft the food (1-300, no dairy) and home target CSVs for me to review."
+What it means for the build:
+- **Deeper searches:** Amazon and Flipkart searches use the shop's own price filter for a target's band (Amazon
+  `rh=p_36:<min>-<max>` in paise, Flipkart `facets.price_range` in rupees) and read up to four result pages (one per
+  10 listings the target wants, `searchPages`), each page its own turn on the shop's lane so the pause between pages
+  holds; a page that brings nothing new ends the search. A results page is read whole (Amazon up to 60 rows, Flipkart
+  48), no longer only its first 24.
+- **Draft target lists** (in `tools/sourcing-runner/targets/`, to review before uploading): `food-under-300.csv`
+  (172 searches, ₹1–300, every food category, all-India) and `home-amazon-flipkart.csv` (94 searches on Amazon and
+  Flipkart, no price band, the three home categories). Liquids are left to D-135's check.
+*Claude's choices in it:* "no dairy" is each food row's Must match: a title naming paneer, cheese, curd, dahi, yoghurt,
+khoya, mawa, ghee, milk, whitener, cream, lassi, chhena, kalakand, rasgulla, rasmalai or butter (peanut butter
+excepted) is left out, so ghee sweets and milk biscuits are left out too; dry fruits are filed under Snacks & Namkeen;
+listings per search are 10–40 by how broad the search is; up to four result pages.

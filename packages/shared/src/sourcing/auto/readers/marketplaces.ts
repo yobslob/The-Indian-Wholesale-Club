@@ -162,3 +162,38 @@ export function myntraSearchOffers(products: unknown): Offer[] {
     }),
   );
 }
+
+/** A target's price band in paise (D-121), for the shop's own price filter. */
+export interface PriceBand {
+  minPaise: number | null;
+  maxPaise: number | null;
+}
+
+/**
+ * D-137: how many result pages one search reads. A few listings need one page; a target that wants 40 reads four, so
+ * the results left after the price, match, stock and delivery checks are enough for them.
+ */
+export const searchPages = (want: number): number => Math.min(4, Math.max(1, Math.ceil(want / 10)));
+
+/** Amazon India's search, narrowed by its own price filter (`rh=p_36:<min>-<max>`, in paise) and paged. */
+export function amazonSearchUrl(query: string, band: PriceBand, page = 1): string {
+  const p = new URLSearchParams({ k: query });
+  if (band.minPaise || band.maxPaise)
+    p.set('rh', `p_36:${band.minPaise ?? ''}-${band.maxPaise ?? ''}`);
+  if (page > 1) p.set('page', String(page));
+  return `https://www.amazon.in/s?${p}`;
+}
+
+/** Flipkart's search, narrowed by its own price filter (in rupees; "Max" when the band has no top) and paged. */
+export function flipkartSearchUrl(query: string, band: PriceBand, page = 1): string {
+  const p = new URLSearchParams({ q: query });
+  if (band.minPaise || band.maxPaise) {
+    p.append('p[]', `facets.price_range.from=${Math.floor((band.minPaise ?? 0) / 100)}`);
+    p.append(
+      'p[]',
+      `facets.price_range.to=${band.maxPaise ? Math.ceil(band.maxPaise / 100) : 'Max'}`,
+    );
+  }
+  if (page > 1) p.set('page', String(page));
+  return `https://www.flipkart.com/search?${p}`;
+}

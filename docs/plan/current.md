@@ -139,11 +139,13 @@ phase's sub-steps and every verification run) is in `docs/archive/status-log-to-
 4. Replace the D-119 / D-120 estimates in Settings with real bills (one courier invoice, one duty bill): the per-parcel
    cost, US duty by type, the food fee, parcel kg, billed weight, the small-food limits and share; watch the profit
    check (a bag of only $2.99 packets past $149.99 loses money, D-120).
-5. Toward 3,000 listings: Admin → Import → Auto-sourcing → Add targets from a CSV with
-   `tools/sourcing-runner/targets/myntra-600-1600.csv` (all states, Myntra, ₹600 – ₹1,600); check Myntra's delivery
-   days under Shops (3 or less, or nothing is added); try one first: `pnpm sourcing try "kurta set women" --type
-   clothing --shops myntra.com --min 600 --max 1600`; raise targets per run (79 targets) and keep `pnpm sourcing run`
-   daily on the hub PC. Then the same with `food-by-state.csv` (753 food targets, specialties first).
+5. Bulk sourcing (D-137), one product type per machine (two runners of one type re-check the same listings): the
+   Windows PC in India `pnpm sourcing run --type food`, one Mac `--type home`, the other `--type clothing` (each Mac:
+   `git clone`, `pnpm install`, its own `.env`, `doctor`, `setup` with the hub's pincodes). Review, then Admin → Import
+   → Auto-sourcing → Add targets from a CSV with `tools/sourcing-runner/targets/food-under-300.csv` (172 targets) and
+   `home-amazon-flipkart.csv` (94); clothing: `myntra-600-1600.csv` and one CSV per shop. Try one first on each Mac
+   (`pnpm sourcing try "brass diya" --type home --shops amazon.in,flipkart.com`) to see the shops answer from the US.
+   Raise targets per run (up to 500). Turn off the hub PC's daily plain `run` while the three run.
 6. Clear the 2,880 placeholder listings: `pnpm demo:clear … --allow-remote`, then with `--apply` (`ops.md`).
 7. Decide: the name "Food" and 5 pieces per size by default (D-110 proposals); D-118's proposals (3 listings per
    target, the 60% rise / 50% fall guard, drafts until published, 40 targets a day); D-120's proposals (₹200, 250 g,

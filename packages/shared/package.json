@@ -7,7 +7,7 @@
   "sideEffects": false,
   "scripts": {
     "typecheck": "tsc --noEmit",
-    "test": "tsx --test tests/domain.test.ts tests/admin.test.ts tests/product-details.test.ts tests/vendor.test.ts tests/sourcing.test.ts tests/auto-sourcing.test.ts tests/pricing-band.test.ts tests/pricing-beta.test.ts tests/weight.test.ts tests/estimate.test.ts tests/clothing-classes.test.ts tests/food-weights.test.ts tests/home-weights.test.ts tests/liquids.test.ts tests/shopify-collections.test.ts"
+    "test": "tsx --test tests/domain.test.ts tests/admin.test.ts tests/product-details.test.ts tests/vendor.test.ts tests/sourcing.test.ts tests/auto-sourcing.test.ts tests/pricing-band.test.ts tests/pricing-beta.test.ts tests/weight.test.ts tests/estimate.test.ts tests/clothing-classes.test.ts tests/food-weights.test.ts tests/home-weights.test.ts tests/liquids.test.ts tests/shopify-collections.test.ts tests/marketplace-search.test.ts"
   },
   "exports": {
     "./domain": "./src/domain/index.ts",

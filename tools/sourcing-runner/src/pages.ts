@@ -13,7 +13,7 @@ export function amazonRows(page: Page): Promise<AmazonRow[]> {
     return Array.from(
       document.querySelectorAll('div[data-component-type="s-search-result"][data-asin]'),
     )
-      .slice(0, 24)
+      .slice(0, 60)
       .map((el) => ({
         asin: el.getAttribute('data-asin') ?? '',
         // the h2 alone: the title block also holds the "Sponsored" label
@@ -48,7 +48,7 @@ export function flipkartCards(page: Page): Promise<FlipkartCard[]> {
         href: link.getAttribute('href') ?? '',
         image: (card.querySelector('img') as HTMLImageElement | null)?.src ?? '',
       });
-      if (out.length >= 24) break;
+      if (out.length >= 48) break;
     }
     return out;
   });

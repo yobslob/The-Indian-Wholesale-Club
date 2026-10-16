@@ -1,0 +1,95 @@
+Product,Type,IWC category,IWC region slug,Tier,Search words,Must match,Shops,Min ₹,Max ₹,Listings
+Brass diya,home,pooja-and-spiritual,all,1,brass diya,^(?=.*(diya|deepak)),amazon;flipkart,,,40
+Clay diya,home,pooja-and-spiritual,all,1,clay diya,^(?=.*(diya|deepak)),amazon;flipkart,,,30
+Akhand diya,home,pooja-and-spiritual,all,2,akhand diya,^(?=.*akhand),amazon;flipkart,,,15
+Pooja thali set,home,pooja-and-spiritual,all,1,pooja thali set,^(?=.*thali),amazon;flipkart,,,40
+Brass kalash,home,pooja-and-spiritual,all,1,brass kalash,^(?=.*kalash),amazon;flipkart,,,20
+Pooja bell,home,pooja-and-spiritual,all,1,pooja bell brass,^(?=.*bell),amazon;flipkart,,,20
+Ganesh idol,home,pooja-and-spiritual,all,1,ganesh idol,^(?=.*ganesh),amazon;flipkart,,,40
+Lakshmi idol,home,pooja-and-spiritual,all,1,lakshmi idol,^(?=.*(laxmi|lakshmi)),amazon;flipkart,,,30
+Krishna idol,home,pooja-and-spiritual,all,1,krishna idol,^(?=.*krishna),amazon;flipkart,,,30
+Shiva idol,home,pooja-and-spiritual,all,1,shiva idol,^(?=.*(shiva|shiv|mahadev|nataraj)),amazon;flipkart,,,30
+Hanuman idol,home,pooja-and-spiritual,all,2,hanuman idol,^(?=.*hanuman),amazon;flipkart,,,20
+Durga idol,home,pooja-and-spiritual,all,2,durga idol,^(?=.*durga),amazon;flipkart,,,20
+Buddha statue,home,pooja-and-spiritual,all,1,buddha statue,^(?=.*buddha),amazon;flipkart,,,30
+Laddu Gopal accessories,home,pooja-and-spiritual,all,1,laddu gopal dress,^(?=.*(laddu gopal|kanha)),amazon;flipkart,,,30
+Pooja chowki,home,pooja-and-spiritual,all,2,pooja chowki,^(?=.*chowki),amazon;flipkart,,,20
+Wooden mandir,home,pooja-and-spiritual,all,1,wooden mandir for home,^(?=.*(mandir|temple)),amazon;flipkart,,,30
+Incense holder,home,pooja-and-spiritual,all,1,agarbatti stand,^(?=.*(agarbatti|incense|dhoop))(?=.*(stand|holder)),amazon;flipkart,,,20
+Dhoop and incense sticks,home,pooja-and-spiritual,all,1,dhoop sticks,^(?=.*(dhoop|incense|agarbatti)),amazon;flipkart,,,30
+Camphor,home,pooja-and-spiritual,all,2,bhimseni camphor,^(?=.*(camphor|kapoor)),amazon;flipkart,,,15
+Rudraksha mala,home,pooja-and-spiritual,all,1,rudraksha mala,^(?=.*rudraksh),amazon;flipkart,,,20
+Tulsi mala,home,pooja-and-spiritual,all,2,tulsi mala,^(?=.*tulsi),amazon;flipkart,,,15
+Japa mala,home,pooja-and-spiritual,all,2,jaap mala,^(?=.*mala),amazon;flipkart,,,15
+Shankh,home,pooja-and-spiritual,all,2,shankh conch,^(?=.*(shankh|conch)),amazon;flipkart,,,15
+Hawan kund,home,pooja-and-spiritual,all,2,hawan kund,^(?=.*(hawan|havan)),amazon;flipkart,,,10
+Pooja items set,home,pooja-and-spiritual,all,2,pooja samagri,^(?=.*(pooja|puja)),amazon;flipkart,,,30
+Kumkum and roli boxes,home,pooja-and-spiritual,all,2,kumkum box,^(?=.*(kumkum|roli|sindoor)),amazon;flipkart,,,15
+Brass aarti,home,pooja-and-spiritual,all,2,brass aarti,^(?=.*aarti),amazon;flipkart,,,15
+Panchpatra,home,pooja-and-spiritual,all,3,panchpatra,^(?=.*panchpatra),amazon;flipkart,,,10
+Gangajal lota,home,pooja-and-spiritual,all,2,brass lota,^(?=.*lota),amazon;flipkart,,,15
+Shri Yantra,home,pooja-and-spiritual,all,2,shri yantra,^(?=.*yantra),amazon;flipkart,,,15
+Om wall hanging,home,pooja-and-spiritual,all,2,om wall hanging,^(?=.*\bom\b),amazon;flipkart,,,15
+Brass thali set,home,thaali-and-serveware,all,1,brass thali set,^(?=.*thali),amazon;flipkart,,,30
+Kansa thali,home,thaali-and-serveware,all,1,kansa thali,^(?=.*(kansa|bronze)),amazon;flipkart,,,20
+Steel thali set,home,thaali-and-serveware,all,2,stainless steel thali set,^(?=.*thali),amazon;flipkart,,,20
+Copper water bottle,home,thaali-and-serveware,all,1,copper water bottle,^(?=.*copper)(?=.*bottle),amazon;flipkart,,,30
+Copper jug,home,thaali-and-serveware,all,1,copper jug,^(?=.*copper)(?=.*(jug|jar|matka)),amazon;flipkart,,,20
+Copper glasses,home,thaali-and-serveware,all,1,copper glass tumbler,^(?=.*copper)(?=.*(glass|tumbler)),amazon;flipkart,,,20
+Brass glasses,home,thaali-and-serveware,all,2,brass glass,^(?=.*brass)(?=.*(glass|tumbler)),amazon;flipkart,,,15
+Brass bowls,home,thaali-and-serveware,all,2,brass katori,^(?=.*(katori|bowl)),amazon;flipkart,,,20
+Copper handi,home,thaali-and-serveware,all,2,copper handi,^(?=.*handi),amazon;flipkart,,,15
+Clay cookware,home,thaali-and-serveware,all,1,clay handi,^(?=.*(clay|terracotta|mitti)),amazon;flipkart,,,20
+Brass urli,home,thaali-and-serveware,all,1,brass urli,^(?=.*urli),amazon;flipkart,,,20
+Kadai (iron),home,thaali-and-serveware,all,2,iron kadai,^(?=.*kadai),amazon;flipkart,,,15
+Tawa (iron),home,thaali-and-serveware,all,2,iron tawa,^(?=.*tawa),amazon;flipkart,,,15
+Masala dabba,home,thaali-and-serveware,all,1,masala dabba,^(?=.*(masala|spice) (dabba|box)),amazon;flipkart,,,30
+Tiffin box (steel),home,thaali-and-serveware,all,1,steel tiffin box,^(?=.*tiffin),amazon;flipkart,,,20
+Serving trays,home,thaali-and-serveware,all,1,wooden serving tray,^(?=.*tray),amazon;flipkart,,,30
+Wooden serveware,home,thaali-and-serveware,all,2,sheesham wood serving,^(?=.*(sheesham|mango wood|wooden)),amazon;flipkart,,,20
+Chakla belan,home,thaali-and-serveware,all,2,chakla belan,^(?=.*(chakla|belan)),amazon;flipkart,,,15
+Mortar and pestle,home,thaali-and-serveware,all,2,stone mortar pestle,^(?=.*(mortar|khal|imam dasta)),amazon;flipkart,,,15
+Brass tea set,home,thaali-and-serveware,all,2,brass tea set,^(?=.*brass)(?=.*(tea|kettle)),amazon;flipkart,,,10
+Kulhad cups,home,thaali-and-serveware,all,1,kulhad,^(?=.*kulhad),amazon;flipkart,,,15
+Pickle jars (ceramic),home,thaali-and-serveware,all,2,ceramic barni jar,^(?=.*(barni|jar)),amazon;flipkart,,,15
+Paan dan,home,thaali-and-serveware,all,3,paan dan,^(?=.*paan),amazon;flipkart,,,10
+Dinner set (ceramic),home,thaali-and-serveware,all,2,handpainted ceramic dinner set,^(?=.*(ceramic|stoneware)),amazon;flipkart,,,20
+Madhubani painting,home,handicrafts-and-decor,all,1,madhubani painting,^(?=.*madhubani),amazon;flipkart,,,30
+Warli painting,home,handicrafts-and-decor,all,1,warli painting,^(?=.*warli),amazon;flipkart,,,20
+Pattachitra,home,handicrafts-and-decor,all,1,pattachitra,^(?=.*pattachitra),amazon;flipkart,,,15
+Tanjore painting,home,handicrafts-and-decor,all,1,tanjore painting,^(?=.*(tanjore|thanjavur)),amazon;flipkart,,,20
+Kalamkari,home,handicrafts-and-decor,all,2,kalamkari wall hanging,^(?=.*kalamkari),amazon;flipkart,,,15
+Pichwai painting,home,handicrafts-and-decor,all,1,pichwai painting,^(?=.*pichwai),amazon;flipkart,,,20
+Gond painting,home,handicrafts-and-decor,all,2,gond painting,^(?=.*gond),amazon;flipkart,,,15
+Dhokra art,home,handicrafts-and-decor,all,1,dhokra,^(?=.*dhokra),amazon;flipkart,,,20
+Bidriware,home,handicrafts-and-decor,all,2,bidriware,^(?=.*bidri),amazon;flipkart,,,10
+Blue pottery,home,handicrafts-and-decor,all,1,jaipur blue pottery,^(?=.*blue pottery),amazon;flipkart,,,20
+Terracotta decor,home,handicrafts-and-decor,all,1,terracotta decor,^(?=.*terracotta),amazon;flipkart,,,30
+Channapatna toys,home,handicrafts-and-decor,all,1,channapatna toys,^(?=.*channapatna),amazon;flipkart,,,20
+Kondapalli toys,home,handicrafts-and-decor,all,2,kondapalli toys,^(?=.*kondapalli),amazon;flipkart,,,10
+Wooden elephant,home,handicrafts-and-decor,all,1,wooden elephant statue,^(?=.*elephant),amazon;flipkart,,,30
+Brass elephant,home,handicrafts-and-decor,all,2,brass elephant,^(?=.*brass)(?=.*elephant),amazon;flipkart,,,15
+Marble inlay,home,handicrafts-and-decor,all,2,marble inlay,^(?=.*marble),amazon;flipkart,,,15
+Brass decor,home,handicrafts-and-decor,all,1,brass showpiece,^(?=.*brass),amazon;flipkart,,,40
+Kathputli puppets,home,handicrafts-and-decor,all,2,rajasthani puppet kathputli,^(?=.*(kathputli|puppet)),amazon;flipkart,,,15
+Toran,home,handicrafts-and-decor,all,1,door toran,^(?=.*(toran|bandhanwar)),amazon;flipkart,,,30
+Wall hanging,home,handicrafts-and-decor,all,1,indian wall hanging,^(?=.*wall hanging),amazon;flipkart,,,40
+Wall plates,home,handicrafts-and-decor,all,2,decorative wall plate,^(?=.*wall plate),amazon;flipkart,,,15
+Jharokha frame,home,handicrafts-and-decor,all,2,jharokha,^(?=.*jharokha),amazon;flipkart,,,15
+Hanging lamp,home,handicrafts-and-decor,all,2,moroccan hanging lamp,^(?=.*lamp),amazon;flipkart,,,20
+Lantern,home,handicrafts-and-decor,all,2,decorative lantern,^(?=.*lantern),amazon;flipkart,,,20
+Tea light holder,home,handicrafts-and-decor,all,1,tea light holder,^(?=.*(tea ?light|t-light|candle holder)),amazon;flipkart,,,30
+Urli bowl decor,home,handicrafts-and-decor,all,2,urli bowl decor,^(?=.*urli),amazon;flipkart,,,15
+Rangoli,home,handicrafts-and-decor,all,1,rangoli,^(?=.*rangoli),amazon;flipkart,,,30
+Diwali decor,home,handicrafts-and-decor,all,1,diwali decoration items,^(?=.*(diwali|festive)),amazon;flipkart,,,40
+Cushion covers,home,handicrafts-and-decor,all,1,jaipuri cushion covers,^(?=.*cushion),amazon;flipkart,,,30
+Table runner,home,handicrafts-and-decor,all,2,block print table runner,^(?=.*runner),amazon;flipkart,,,20
+Bedsheet (Jaipuri),home,handicrafts-and-decor,all,2,jaipuri bedsheet,^(?=.*bedsheet),amazon;flipkart,,,20
+Dhurrie,home,handicrafts-and-decor,all,2,cotton dhurrie,^(?=.*(dhurrie|durrie|dari)),amazon;flipkart,,,15
+Jute decor,home,handicrafts-and-decor,all,2,jute decor,^(?=.*jute),amazon;flipkart,,,20
+Macrame,home,handicrafts-and-decor,all,2,macrame wall hanging,^(?=.*macrame),amazon;flipkart,,,15
+Key holder,home,handicrafts-and-decor,all,2,wooden key holder,^(?=.*key),amazon;flipkart,,,15
+Wooden boxes,home,handicrafts-and-decor,all,2,handcarved wooden box,^(?=.*box),amazon;flipkart,,,20
+Mirror work decor,home,handicrafts-and-decor,all,2,mirror work,^(?=.*mirror),amazon;flipkart,,,15
+Bells and chimes,home,handicrafts-and-decor,all,2,brass hanging bells,^(?=.*bell),amazon;flipkart,,,15
+Showpiece figurines,home,handicrafts-and-decor,all,2,indian showpiece,^(?=.*showpiece),amazon;flipkart,,,30

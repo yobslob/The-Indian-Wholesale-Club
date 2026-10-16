@@ -157,7 +157,11 @@ runner in `tools/sourcing-runner/` (its README says how to set it up on the PC a
   origin is never listed (D-004). `tools/sourcing-runner/targets/myntra-600-1600.csv` is the Myntra ₹600 – ₹1,600
   clothing list (79 targets, about 1,170 listings; footwear ₹400 – ₹900, D-122); `food-by-state.csv` is the food of every
   state from the founder's list (753 targets, 6 listings each, D-122); `nishorama.csv` is Nishorama's whole catalogue
-  (18 targets, 40 listings each). For a Shopify shop, Search words may name one of its collections, `collection:kurtis`:
+  (18 targets, 40 listings each). D-137 (drafts to review before uploading): `food-under-300.csv` is food ₹1 – ₹300
+  without dairy (172 targets, about 2,950 listings; Must match leaves out titles naming milk, ghee, paneer and the
+  like), `home-amazon-flipkart.csv` home & gifts on Amazon and Flipkart (94 targets, about 1,990 listings). Amazon and
+  Flipkart searches use the shop's own price filter and read one result page per 10 listings a target wants (up to
+  four). For a Shopify shop, Search words may name one of its collections, `collection:kurtis`:
   the whole collection (up to 250 pieces; Shopify's search stops at 10) is the target, every piece in it matches, and
   several targets on one collection take the next 40 each (run one after another). A target whose search failed on
   every shop (blocked, "too many requests") goes back to the queue; the Nothing fit view has **Search all again**. Each

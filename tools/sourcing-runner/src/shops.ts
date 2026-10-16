@@ -7,15 +7,18 @@ import {
 } from '@repo/shared/sourcing';
 import {
   amazonSearchOffers,
+  amazonSearchUrl,
   bigbasketFamily,
   bigbasketOffers,
   blinkitItem,
   blinkitOffers,
   flipkartSearchOffers,
+  flipkartSearchUrl,
   genericOffers,
   itemKeyOf,
   myntraSearchOffers,
   packVariants,
+  searchPages,
   shopifyProduct,
   shopifyProductJsUrl,
   shopifySearchOffers,
@@ -97,13 +100,39 @@ function groceryRead(
   };
 }
 
+const band = (hint?: SearchHint) => ({
+  minPaise: hint?.minPaise ?? null,
+  maxPaise: hint?.maxPaise ?? null,
+});
+
+/**
+ * D-137: a marketplace's results, page after page (each its own turn on the shop's lane, so the pause between pages
+ * holds), as many as the target wants (searchPages); stops at a page that brings nothing new.
+ */
+async function paged(
+  lane: Lane,
+  hint: SearchHint | undefined,
+  readPage: (page: Page, n: number) => Promise<Offer[]>,
+): Promise<Offer[]> {
+  const all: Offer[] = [];
+  const seen = new Set<string>();
+  for (let n = 1; n <= searchPages(hint?.want ?? 0); n += 1) {
+    const offers = await lane.run((page) => readPage(page, n));
+    const fresh = offers.filter((o) => !seen.has(o.key));
+    for (const o of fresh) seen.add(o.key);
+    all.push(...fresh);
+    if (!fresh.length) break;
+  }
+  return all;
+}
+
 const SHOPS: Record<ShopReader, Shop> = {
   amazon: {
-    search: (lane, query) =>
-      lane.run(async (page) => {
+    search: (lane, query, hint) =>
+      paged(lane, hint, async (page, n) => {
         await open(
           page,
-          `https://www.amazon.in/s?k=${q(query)}`,
+          amazonSearchUrl(query, band(hint), n),
           'div[data-component-type="s-search-result"]',
         );
         return amazonSearchOffers(await read.amazonRows(page));
@@ -111,9 +140,9 @@ const SHOPS: Record<ShopReader, Shop> = {
     read: capturedRead('#productTitle'),
   },
   flipkart: {
-    search: (lane, query) =>
-      lane.run(async (page) => {
-        await open(page, `https://www.flipkart.com/search?q=${q(query)}`, 'div[data-id]');
+    search: (lane, query, hint) =>
+      paged(lane, hint, async (page, n) => {
+        await open(page, flipkartSearchUrl(query, band(hint), n), 'div[data-id]');
         return flipkartSearchOffers(await read.flipkartCards(page));
       }),
     read: capturedRead(),
