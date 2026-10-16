@@ -83,21 +83,27 @@ export function WeightBadge({
   );
 }
 
-/** One option's weight: grams, "weighed on a scale", an optional note. */
+/**
+ * One option's weight: grams, "weighed on a scale", an optional note. One weighed at the hub is replaced only by a
+ * new weighing (D-133: the hub's scale first, then an admin's typed weight, then the system).
+ */
 export function WeightForm({
   productId,
   variantId,
   grams,
   label,
+  weighed = false,
 }: {
   productId: string;
   variantId: string;
   grams: number | null;
   label: string;
+  /** Its weight was weighed at the hub. */
+  weighed?: boolean;
 }): React.JSX.Element {
   return (
     <form action={setWeightAction.bind(null, productId, variantId)} className="flex flex-wrap items-center gap-2">
-      <WeightFields grams={grams} label={label} />
+      <WeightFields grams={grams} label={label} weighed={weighed} />
     </form>
   );
 }
@@ -121,7 +127,15 @@ export function SizesWeightForm({
   );
 }
 
-function WeightFields({ grams, label }: { grams: number | null; label: string }): React.JSX.Element {
+function WeightFields({
+  grams,
+  label,
+  weighed = false,
+}: {
+  grams: number | null;
+  label: string;
+  weighed?: boolean;
+}): React.JSX.Element {
   return (
     <>
       <input
@@ -136,7 +150,15 @@ function WeightFields({ grams, label }: { grams: number | null; label: string })
         className="border-line min-h-11 w-24 rounded-sm border px-2 text-right"
       />
       <label className="flex min-h-11 items-center gap-1.5 text-sm">
-        <input type="checkbox" name="weighed" /> weighed on a scale
+        {weighed ? (
+          <>
+            <input type="hidden" name="weighed" value="on" /> weighed again on a scale (a weighed weight is replaced only by a new weighing)
+          </>
+        ) : (
+          <>
+            <input type="checkbox" name="weighed" /> weighed on a scale
+          </>
+        )}
       </label>
       <input
         name="note"
@@ -152,9 +174,14 @@ function WeightFields({ grams, label }: { grams: number | null; label: string })
   );
 }
 
-/** A listing's options that share one weight: sizes and colours, never packs. */
-export function sizeOptions(variants: { id: string; options: unknown; is_active: boolean }[]): string[] {
+/** A listing's options that share one weight: sizes and colours, never packs, nor one weighed at the hub (D-133). */
+export function sizeOptions(
+  variants: { id: string; options: unknown; is_active: boolean; weight_source?: string | null }[],
+): string[] {
   return variants
-    .filter((v) => v.is_active && !(v.options && typeof v.options === 'object' && 'pack' in v.options))
+    .filter(
+      (v) =>
+        v.is_active && v.weight_source !== 'weighed' && !(v.options && typeof v.options === 'object' && 'pack' in v.options),
+    )
     .map((v) => v.id);
 }

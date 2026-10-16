@@ -1,15 +1,23 @@
-import { clothingAttributesSchema, detailRows, type PhotoNote } from '@repo/shared/domain';
+import { clothingAttributesSchema, detailRows, netQuantity, type PhotoNote } from '@repo/shared/domain';
 
 import type { Product, Variant } from '@repo/db/store';
 
 export { photoNote } from '@repo/shared/domain';
 
 /**
- * Description, craft, attributes, where it is from and what the photos are (D-100), then the story: the "Details"
- * section of the product page, above the Size chart.
+ * Description, craft, attributes (food: its net quantity first, D-133), where it is from and what the photos are
+ * (D-100), then the story: the "Details" section of the product page, above the Size chart.
  */
-export function ProductDetails({ product, photos }: { product: Product; photos: PhotoNote }): React.JSX.Element {
-  const rows = detailRows(product, photos);
+export function ProductDetails({
+  product,
+  photos,
+  variants,
+}: {
+  product: Product;
+  photos: PhotoNote;
+  variants: Variant[];
+}): React.JSX.Element {
+  const rows = detailRows({ ...product, net_quantity: netQuantity(variants) }, photos);
   return (
     <div className="space-y-3">
       {product.description ? <p className="whitespace-pre-line">{product.description}</p> : null}

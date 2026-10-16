@@ -120,7 +120,7 @@ export default function ProductScreen(): React.JSX.Element {
             )}
             <View>
               <Disclosure title="Details" defaultOpen>
-                <Details product={data.product} media={data.media} />
+                <Details product={data.product} media={data.media} variants={data.variants} />
               </Disclosure>
               {sizes.length > 0 ? (
                 <Disclosure title="Size chart">

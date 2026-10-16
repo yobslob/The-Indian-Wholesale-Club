@@ -75,7 +75,7 @@ export default async function ProductPage({ params }: { params: Params }): Promi
           )}
           <div className="mt-6">
             <Disclosure title="Details" defaultOpen>
-              <ProductDetails product={product} photos={photoNote(media)} />
+              <ProductDetails product={product} photos={photoNote(media)} variants={variants} />
             </Disclosure>
             {chart ? <Disclosure title="Size chart">{chart}</Disclosure> : null}
           </div>

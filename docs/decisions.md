@@ -757,3 +757,48 @@ like salwar; palazzos, trousers, dhoti pants and joggers are pants (800 g); gown
 dresses (light since the founder's review), a co-ord set stays medium; jewellery
 (jhumkas, bangles, necklaces, kamarbandh, paranda) and headwear are light; mufflers, stoles and scarves are medium like
 dupattas.
+
+**D-133 · 2026-10-16 · founder: Food is priced on its packed weight: the label's net quantity plus its pack; the hub's scale, then an admin, then the system**
+Founder, verbatim: "The main point of selling all of this is pricing. Now pricing algorithm is set, it is not changing.
+Pricing heavily depends on weight. Now you have to make a system which makes sure that this product has/is showing
+correct weight and each product is showing it's weight. It is your choice how to make it, it can be intelligent as well
+which can search the item for it's price. Now wherever there is an assumption in price, the price will change and
+customer will be lost. so fix this problem very very smartly without changing the price algorithm. the priority order
+should be Manually inserted at hub > updated from admin portal > the system you are going to produce(Update everything
+in the current database's food according to whatever system we make, also when I run the scraper which adds food
+products update there also smartly"
+What it means for the build (migration `20261016160000_food_weights.sql`, `packages/shared/src/sourcing/estimate/food.ts`
+and `food-packs.ts`; the D-128 formula is untouched):
+- **Every food option is priced on its packed weight**, source **packed**: the net quantity its label states (its
+  options, its label, the shop page's net quantity or title, matching items that agree on it, its name, a "Net weight:"
+  line), unit by unit ("200 g (Pack of 3)" is three packs; light units such as 16 g chikki bars share one), liquids
+  by density (a litre of ghee 910 g), plus the weight of its pack. Before, food was priced on the label alone (a 500 g
+  pickle in a glass jar ships at about 800 g) and many multi-packs on one unit ("100 g (Pack of 3)" priced as 100 g):
+  the hub's scale would have moved those prices.
+- **The pack:** the page's spec rows ("Package Information: Jar", "Material: Glass", read when the runner adds the
+  listing), then its name and options, then its description (never a line about storing it), then what such food
+  comes in, then its category's usual pack. A jar or bottle that names no material is plastic for dry food and between
+  glass and plastic otherwise, marked "glass or plastic? weigh one at the hub".
+- **It learns from the scale:** three or more food pieces of one pack weighed at the hub set that pack's factor (their
+  middle ratio, kept within half to twice the table).
+- **The order:** the hub's scale, then an admin's weight, then the system. The system never replaces a weighed or
+  typed weight, and shop pages and the estimator never replace a packed one. New in the database: an admin's typed
+  weight no longer replaces one weighed at the hub (the weight box offers "weighed again on a scale"); weighing a
+  flavour at the hub also gives the other flavours of the same net quantity its weight.
+- **Everything in the database, and every new listing:** each `pnpm sourcing run` (and `pnpm sourcing food`) works out
+  every food listing not yet done (after the deploy: all of them); the runner prices a new food listing on its packed
+  weight when it adds it; `pnpm weights food --dry` writes `food-weights.csv` for review. An option whose net quantity
+  nothing states keeps what it has: the runner's page search (D-129) reads the shop's page for it, then the hub weighs.
+- **Each product shows its weight:** customers see the net quantity (a "Net quantity" line in Details, web and app, and
+  the card's pack size), which is printed on the pack (D-122); never the packed weight or its source (INV-1). Admins see
+  the packed weight, its source "Net weight + its pack (D-133)" and the sum ("500 g net (its name) + glass jar,
+  wrapped 295 g: …").
+*Claude's choices in it:* the pack weights (`PACK_TARE`: pouch 6 g + 3%, box 15 g + 8%, sweet box 40 g + 12%, glass jar
+120 g + 35% with its wrapping, plastic jar 15 g + 6%, tin 40 g + 10%, glass bottle 150 g + 40%, plastic bottle 15 g +
+4%, bag 20 g + 1.5%; an unknown jar or bottle between glass and plastic) are typical Indian retail packs, not
+measurements, until the hub's scale tunes them; a shop page's packed weight is used when it fits its net quantity
+(at least the net plus a third of the usual pack, at most the net plus two and a half packs and 30 g); weights round
+up to 5 g; units under 50 g share one pack; rules only, no model (D-132 found the model's guesses wrong); the admin
+rule (typed cannot replace weighed) reads the founder's order literally. On production (2026-10-16, a dry run before
+the deploy): 920 food listings, 1,635 options in 8 s; 1,059 get a packed weight, 576 state no net quantity anywhere
+(mostly listings whose names were cleaned of it; the page search fills them), 178 are marked glass or plastic.

@@ -1,4 +1,4 @@
-# Weight estimator (D-131) and clothing classes (D-132)
+# Weight estimator (D-131), clothing classes (D-132) and food weights (D-133)
 
 **Clothing is weighed by class (D-132):** `pnpm weights classes` gives every clothing option the founder's weight
 for its class: light 350 g (headwear, jewellery, kurtis, plain kurtas, tops, salwar, gamosas, kaftans, dresses,
@@ -8,7 +8,24 @@ footwear 800 g, heavy 1.5 kg (a kids' or baby set is medium)
 (`packages/shared/src/sourcing/estimate/classes.ts`), then its category, then the local model for a name neither
 reads. Every listing goes in `clothing-classes.csv` (open it in Excel; "Look at it" marks the ones sorted by
 category or by the model). Which weight wins: the hub's scale, then an admin's, then the class; the hub's scale
-later replaces a class weight. Customers never see any of it: the weights are for pricing only. About 278 listings in 12 s. The estimator below weighs **food and home & gifts** only.
+later replaces a class weight. Customers never see any of it: the weights are for pricing only. About 278 listings in 12 s. The estimator below weighs **food and home & gifts** only (food: what its label does not state, D-133).
+
+**Food is weighed by its label and its pack (D-133):** `pnpm weights food` gives every food option its packed weight:
+the net quantity its label states (its option, its label, the shop page's reading, its name; "2 × 200 g" is two packs,
+light units such as 50 chikki bars share one) plus the weight of what it is packed in (pouch, box, sweet box, jar,
+tin, bottle, bag; `packages/shared/src/sourcing/estimate/food-packs.ts`), liquids by their density (a litre of ghee is
+910 g). No model, no Ollama: about 900 listings in 8 s. The pack weights are tuned by the hub's scale (three weighed
+pieces of one pack set its factor). Which weight wins: the hub's scale, then an admin's, then this. An option whose
+net quantity nothing states keeps what it has. Every option goes in `food-weights.csv` (net quantity, where it was
+read, the pack and why, the weight before and after); "Look at it" marks a jar or bottle that may be glass or plastic,
+a weight that moves by more than a third, and an option with no net quantity. Customers see the net quantity, never
+the packed weight.
+```
+pnpm weights food --dry     write the sheet only (works before the deploy too: it reads through the estimator's plan)
+pnpm weights food           write each option's packed weight and net quantity (the weights it replaces are kept in
+                            food-weights-before.jsonl; needs migration 20261016160000 on the database)
+pnpm weights food --all     work them all out again (after the pack table changes, or many hub weighings)
+```
 
 
 Gives every listing a realistic packed weight, on the founder's laptop GPU (RTX 4060, 8 GB), quickly enough for

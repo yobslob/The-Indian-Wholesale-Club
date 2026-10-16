@@ -8,3 +8,4 @@ export * from './readers/shopify';
 export * from './targets';
 export * from './types';
 export * from './weights';
+export * from './food-weights';

@@ -92,3 +92,5 @@ tools/weight-estimator/estimator.log
 tools/weight-estimator/.cache/
 tools/weight-estimator/clothing-classes.csv
 tools/weight-estimator/clothing-classes-before.jsonl
+tools/weight-estimator/food-weights.csv
+tools/weight-estimator/food-weights-before.jsonl

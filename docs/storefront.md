@@ -9,7 +9,8 @@ Anything not on this list stays off customer surfaces: pages, app, emails, API r
 JSON sent to the browser.
 - **Region:** name, greeting (approved text only, D-019), tagline, story, image, accent colour.
 - **Product:** name, summary, description, story, craft/style name (e.g. "Kanjeevaram silk"), type, category, attributes
-  (fibre and care, or ingredients, allergens and shelf life), photos, price, variants (one row of choices per option that differs: colour, flavour, type, pack, size;
+  (fibre and care, or food's net quantity as its label states it ("400 g", D-133), ingredients, allergens and shelf
+  life), photos, price, variants (one row of choices per option that differs: colour, flavour, type, pack, size;
   each variant can have its own price, D-118), availability count, and
   **"Made in India" / "Imported"**, and its state when it has one (D-121: an all-India listing names no state; nothing
   says "no state" either).

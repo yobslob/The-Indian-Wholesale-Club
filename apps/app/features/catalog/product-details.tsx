@@ -1,6 +1,6 @@
 import { Text, View } from 'react-native';
 
-import { clothingAttributesSchema, detailRows, photoNote } from '@repo/shared/domain';
+import { clothingAttributesSchema, detailRows, netQuantity, photoNote } from '@repo/shared/domain';
 
 import type { Media, Product, Variant } from '@repo/db/store';
 
@@ -10,8 +10,16 @@ import { Row } from '@/components/ui';
  * Description, craft, attributes, where it is from and what the photos are (D-100), then the story: the "Details"
  * section, above the Size chart. The rows are shared with the website (`@repo/shared/domain`).
  */
-export function Details({ product, media }: { product: Product; media: Media[] }): React.JSX.Element {
-  const rows = detailRows(product, photoNote(media));
+export function Details({
+  product,
+  media,
+  variants,
+}: {
+  product: Product;
+  media: Media[];
+  variants: Variant[];
+}): React.JSX.Element {
+  const rows = detailRows({ ...product, net_quantity: netQuantity(variants) }, photoNote(media));
   return (
     <View className="gap-2">
       {product.description ? <Text className="font-body text-ink text-sm leading-5">{product.description}</Text> : null}

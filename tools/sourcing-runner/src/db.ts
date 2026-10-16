@@ -4,8 +4,14 @@ import { createClient, type SupabaseClient } from '@supabase/supabase-js';
 
 import {
   clothingPlanSchema,
+  foodPlanSchema,
+  referencesSchema,
   type ClassWrite,
   type ClothingListing,
+  type FoodListing,
+  type FoodPassDb,
+  type FoodWrite,
+  type WeightReferenceRow,
 } from '@repo/shared/sourcing/estimate';
 import {
   planSchema,
@@ -26,7 +32,7 @@ import type { Env } from './env';
  * functions (D-118). Photos go to product-media under the new listing's folder, which the storage policy allows
  * only for a listing the runner made that has no photos yet.
  */
-export class Db {
+export class Db implements FoodPassDb {
   private constructor(private readonly client: SupabaseClient) {}
 
   static async signIn(env: Env): Promise<Db> {
@@ -128,6 +134,31 @@ export class Db {
 
   setClassWeights(weights: ClassWrite[]): Promise<number> {
     return this.rpc('worker_set_class_weights', { p_weights: weights });
+  }
+
+  /** D-133: up to 200 food listings to work out, in id order after `after` (`all`: every food listing). */
+  async foodPlan(after: string | null, all: boolean): Promise<FoodListing[]> {
+    return foodPlanSchema.parse(
+      await this.rpc('worker_food_plan', { p_after: after, p_limit: 200, p_all: all }),
+    );
+  }
+
+  setFoodWeights(weights: FoodWrite[]): Promise<number> {
+    return this.rpc('worker_set_food_weights', { p_weights: weights });
+  }
+
+  /** Every weight IWC knows (weighed, typed, a shop's page): the hub's food weighings tune the pack weights. */
+  async references(): Promise<WeightReferenceRow[]> {
+    const all: WeightReferenceRow[] = [];
+    let after: string | null = null;
+    for (;;) {
+      const page = referencesSchema.parse(
+        await this.rpc('worker_weight_references', { p_after: after, p_limit: 1000 }),
+      );
+      all.push(...page);
+      if (page.length < 1000) return all;
+      after = page[page.length - 1]!.variant_id;
+    }
   }
 
   logRun(run: Record<string, unknown>): Promise<void> {

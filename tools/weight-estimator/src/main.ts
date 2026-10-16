@@ -14,6 +14,7 @@ import { Db } from './db';
 import { dbEnv, errorText, log, modelEnv, needDbEnv } from './env';
 import { estimateListing, groupText, pool, type Estimator } from './estimate';
 import { evaluate } from './eval';
+import { weighFood } from './food';
 import { Ollama } from './ollama';
 import { Vectors } from './vectors';
 
@@ -24,6 +25,8 @@ import type { ProductType } from '@repo/shared/domain';
  *   pnpm weights classes --dry        clothing by the founder's classes (D-132): the sheet clothing-classes.csv only
  *   pnpm weights classes              … and write each option's class weight   (--all: sort sorted ones again;
  *                                      --fast: rules only, no model)
+ *   pnpm weights food --dry           food (D-133): net quantity + its pack, the sheet food-weights.csv only
+ *   pnpm weights food                 … and write each option's packed weight   (--all: work out worked-out ones again)
  *   pnpm weights run                  food and home: options with no weight, never estimated (sure ones become weights)
  *   pnpm weights run --redo           also re-estimate estimated weights (after many hub weighings)
  *   pnpm weights run --audit          also check the shops' weights (kept as estimates; big differences listed)
@@ -252,13 +255,18 @@ async function main(): Promise<number> {
       parallel: env.IWC_WEIGHT_PARALLEL,
     });
   }
+  if (command === 'food')
+    return weighFood(await Db.signIn(needDbEnv()), {
+      dry: args.includes('--dry'),
+      all: args.includes('--all'),
+    });
   if (command === 'doctor') return doctor();
   if (command === 'eval') {
     const db = await Db.signIn(needDbEnv());
     return evaluate(db, await estimator(db), Number(arg(args, '--limit') ?? 200));
   }
   console.log(
-    `pnpm weights classes [--dry] [--all] [--fast] | run [--redo | --audit] [--limit N] [--dry] | try "<name>" | eval | doctor (modes: ${ESTIMATE_MODES.join(', ')})`,
+    `pnpm weights food [--dry] [--all] | classes [--dry] [--all] [--fast] | run [--redo | --audit] [--limit N] [--dry] | try "<name>" | eval | doctor (modes: ${ESTIMATE_MODES.join(', ')})`,
   );
   return command ? 1 : 0;
 }

@@ -30,7 +30,9 @@ const AMOUNT = '(\\d+(?:\\.\\d+)?)';
 const WEIGHT_RE = new RegExp(`${AMOUNT}\\s*${UNIT}(?![a-z])`, 'g');
 const TIMES_BEFORE_RE = new RegExp(`(\\d{1,2})\\s*[x×*]\\s*${AMOUNT}\\s*${UNIT}(?![a-z])`);
 const TIMES_AFTER_RE = new RegExp(`${AMOUNT}\\s*${UNIT}\\s*[x×*]\\s*(\\d{1,2})(?![\\d.])`);
-const PACK_OF_RE = /\b(?:pack|set|combo|box) of (\d{1,2})\b|\b(\d{1,2})\s*(?:packs|pouches|jars|bottles)\b/;
+// "Pack of 100" tea bags counts; "box of 100 g" is a weight, not a count
+const PACK_OF_RE =
+  /\b(?:pack|set|combo|box) of (\d{1,3})\b(?!\s*(?:g|gms?|grams?|kgs?|ml|l|ltrs?|lit(?:er|re)s?)\b)|\b(\d{1,2})\s*(?:packs|pouches|jars|bottles)\b/;
 
 function toGrams(amount: number, unit: string): { grams: number; liquid: boolean } {
   if (/^k/.test(unit)) return { grams: amount * 1000, liquid: false };
@@ -56,18 +58,31 @@ function clean(text: string): string {
  * "1 L". Several different weights with nothing to say which (a combo "400 g + 200 g") give none.
  */
 export function parseWeight(text: string): ParsedWeight | null {
+  const parts = parseWeightParts(text);
+  if (!parts) return null;
+  const grams = ok(parts.unitGrams * parts.count);
+  return grams ? { grams, liquid: parts.liquid, multiplied: parts.count > 1 } : null;
+}
+
+/** One unit's weight and how many units: "2 x 200 g" is 200 g twice, each in its own pack (D-133). */
+export interface WeightParts {
+  unitGrams: number;
+  count: number;
+  liquid: boolean;
+}
+
+/** As parseWeight, kept as units: "200 g (Pack of 2)" is { unitGrams: 200, count: 2 }. */
+export function parseWeightParts(text: string): WeightParts | null {
   const t = clean(text);
   const before = t.match(TIMES_BEFORE_RE);
   if (before) {
     const one = toGrams(Number(before[2]), before[3]!);
-    const grams = ok(one.grams * Number(before[1]));
-    return grams ? { grams, liquid: one.liquid, multiplied: Number(before[1]) > 1 } : null;
+    return Number(before[1]) >= 1 ? { unitGrams: one.grams, count: Number(before[1]), liquid: one.liquid } : null;
   }
   const after = t.match(TIMES_AFTER_RE);
   if (after) {
     const one = toGrams(Number(after[1]), after[2]!);
-    const grams = ok(one.grams * Number(after[3]));
-    return grams ? { grams, liquid: one.liquid, multiplied: Number(after[3]) > 1 } : null;
+    return Number(after[3]) >= 1 ? { unitGrams: one.grams, count: Number(after[3]), liquid: one.liquid } : null;
   }
   const found = [...t.matchAll(WEIGHT_RE)].map((m) => toGrams(Number(m[1]), m[2]!));
   const distinct = [...new Set(found.map((f) => Math.round(f.grams)))];
@@ -75,10 +90,25 @@ export function parseWeight(text: string): ParsedWeight | null {
   const one = found[0]!;
   const pack = t.match(PACK_OF_RE);
   const n = pack ? Number(pack[1] ?? pack[2]) : 1;
+  if (n <= 1) return { unitGrams: one.grams, count: 1, liquid: one.liquid };
   // "400 g total (pack of 2)" is already the whole
-  const times = n > 1 && !/\btotal\b|\bin all\b/.test(t) ? n : 1;
-  const grams = ok(one.grams * times);
-  return grams ? { grams, liquid: one.liquid, multiplied: times > 1 } : null;
+  return /\btotal\b|\bin all\b/.test(t)
+    ? { unitGrams: one.grams / n, count: n, liquid: one.liquid }
+    : { unitGrams: one.grams, count: n, liquid: one.liquid };
+}
+
+const COMBO_JOIN = new RegExp(`${AMOUNT}\\s*${UNIT}(?![a-z])[^\\d+&]{0,40}?(?:\\+|&|\\band\\b)\\s*[^\\d]{0,40}?${AMOUNT}\\s*${UNIT}(?![a-z])`);
+
+/**
+ * A combo's parts, each in its own pack: "Recheado 100 g + Galouti 100 g + Frankie 50 g" (D-133). Only weights joined
+ * by "+", "&" or "and", two to six of them; null otherwise.
+ */
+export function parseComboParts(text: string): WeightParts[] | null {
+  const t = clean(text);
+  if (!COMBO_JOIN.test(t)) return null;
+  const parts = [...t.matchAll(WEIGHT_RE)].map((m) => toGrams(Number(m[1]), m[2]!));
+  if (parts.length < 2 || parts.length > 6) return null;
+  return parts.map((p) => ({ unitGrams: p.grams, count: 1, liquid: p.liquid }));
 }
 
 /** Which spec rows state a weight, and how strong each is. */
@@ -88,6 +118,14 @@ const SPEC_KINDS: [RegExp, WeightKind][] = [
   [/^net (quantity|weight|wt\.?|qty|content|contents)$|^quantity$|^net$/, 'net'],
 ];
 const DIMENSIONS = /dimensions/;
+
+/** What kind of weight a spec row's name states ("Net Quantity": net), or null: to reread a kept weight's note. */
+export function weightKindOf(key: string): WeightKind | null {
+  const k = specKey(key);
+  if (k === 'title') return 'title';
+  if (k === 'pack') return 'pack';
+  return SPEC_KINDS.find(([re]) => re.test(k))?.[1] ?? (DIMENSIONS.test(k) ? (/package|packaging/.test(k) ? 'package' : 'item') : null);
+}
 
 const specKey = (key: string): string =>
   clean(key)

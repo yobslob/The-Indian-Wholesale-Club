@@ -11,7 +11,23 @@ export type DetailsInput = {
   attributes: unknown;
   /** Empty for an all-India listing (D-121): "India", no state. */
   region_name: string | null;
+  /** D-133: food's net quantity (netQuantity), shown first among its rows. */
+  net_quantity?: string | null;
 };
+
+/**
+ * D-133: a food piece's net quantity as its label states it, for the Details rows: each option's ("400 g"), else its
+ * pack ("200 g"), each once ("200 g, 1 kg"); null when none is known. Never the packed weight (pricing only).
+ */
+export function netQuantity(
+  variants: { options: Record<string, unknown>; net_qty?: string | null }[],
+): string | null {
+  const all = variants
+    .map((v) => v.net_qty ?? (typeof v.options.pack === 'string' ? v.options.pack : null))
+    .filter((q): q is string => !!q);
+  const once = [...new Set(all)];
+  return once.length ? once.slice(0, 4).join(', ') : null;
+}
 
 /** Whether any photo is AI-generated (D-101) and whether any is a real photo (the close-up). */
 export type PhotoNote = { ai: boolean; real: boolean };
@@ -37,6 +53,7 @@ export function detailRows(product: DetailsInput, photos: PhotoNote): [string, s
       if (parsed.data.notes) rows.push(['Notes', parsed.data.notes]);
     }
   } else {
+    if (product.net_quantity) rows.push(['Net quantity', product.net_quantity]);
     const parsed = foodAttributesSchema.safeParse(product.attributes);
     if (parsed.success) {
       const a = parsed.data;

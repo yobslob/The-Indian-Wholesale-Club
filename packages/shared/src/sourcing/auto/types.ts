@@ -127,8 +127,10 @@ export const listingVariantPayloadSchema = z.object({
   in_stock: z.boolean(),
   delivery_days: z.number().int().min(0).max(60).nullable(),
   weight_g: z.number().int().positive().max(50_000).nullable(),
-  /** Where the weight was read (D-129): the shop's own page, or a matching item elsewhere. */
-  weight_source: z.enum(['shop', 'similar']).optional(),
+  /** Where the weight was read (D-129): the shop's own page, a matching item elsewhere, or food's net plus its pack (D-133). */
+  weight_source: z.enum(['shop', 'similar', 'packed']).optional(),
   weight_note: z.string().max(200).optional(),
+  /** D-133: a food option's net quantity as its label states it ("400 g"), shown to customers. */
+  net_qty: z.string().max(40).optional(),
 });
 export type ListingVariantPayload = z.infer<typeof listingVariantPayloadSchema>;

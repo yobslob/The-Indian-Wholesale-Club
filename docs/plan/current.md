@@ -83,11 +83,22 @@ phase's sub-steps and every verification run) is in `docs/archive/status-log-to-
   The hub's scale wins, then an admin's weight, then the class. Every sourcing run sorts the clothing not yet sorted
   (after the deploy: all of it); `pnpm weights classes` on the laptop also sorts the names no rule reads, with a CSV
   to review. Weights are for pricing only: customers never see one.
+- **Food by its packed weight (D-133, 2026-10-16):** every food option is priced on its label's net quantity plus its
+  pack (pouch, box, sweet box, jar, tin, bottle, bag; source "Net weight + its pack"), unit by unit ("100 g (Pack of 3)"
+  is three packs; many were priced as one), tuned by the food the hub weighs. The hub's scale wins, then an admin's
+  weight (a typed weight can no longer replace a weighed one), then this. The runner prices new food this way when it
+  adds it (the page's "Package Information" / "Material" rows name the pack) and each run works out the food not yet
+  done (after the deploy: all of it); `pnpm weights food --dry` on the laptop writes `food-weights.csv`. Customers see
+  the net quantity ("Net quantity" in Details, web and app; the card's pack size), never the packed weight.
 
 ## Next for the founder
 1. Run `node scripts/check.mjs` (Docker Desktop and `npx supabase start` first), push, then the Deploy workflow: it
-   applies the new migrations (the latest is `20261016140000_target_release`; D-119 – D-128 reprice every listing)
-   to production. Confirm with the courier that ₹2,000 includes the box and clearance, and
+   applies the new migrations (the latest is `20261016160000_food_weights`; D-119 – D-128 reprice every listing)
+   to production. Then food's packed weights (D-133): open `tools/weight-estimator/food-weights.csv` from
+   `pnpm weights food --dry` (every food option, its net quantity, pack, old and new weight), then `pnpm weights food`
+   on the laptop, or let the next `pnpm sourcing run` do it (both write all food not yet done; about 1,060 of 1,635
+   options on 2026-10-16, the rest state no net quantity and wait for the page search and the hub). At the hub, weigh
+   a few pickles and other jars first: three weighings of one pack tune that pack for every listing. Confirm with the courier that ₹2,000 includes the box and clearance, and
    whether it bills by box size; correct Settings → Courier rate card if not.
 2. Done 2026-10-16: all 339 live clothing listings (2,993 options) have their class weight (`pnpm weights classes` on
    production; none had a weight before; the old values are in `tools/weight-estimator/clothing-classes-before.jsonl`).
@@ -101,12 +112,13 @@ phase's sub-steps and every verification run) is in `docs/archive/status-log-to-
    marked all 18 "nothing fit": after the deploy, Auto-sourcing → Nothing fit → **Search all again**, then run again
    (the runner now reads Shopify through its browser tab, waits out a 429, and puts a failed target back).
    Kids' and baby sets are medium (750 g) since the founder's answer the same day (35 listings, 646 options).
-   Clothing drafts held for a missing weight (D-129) can now be published (Products → Drafts → Publish all drafts). Then food and
-   home: `pnpm weights run --dry --limit 20`, read the estimates, `pnpm weights run`. Decide whether a sure estimate may
-   price a live food or home listing without an admin's look (D-131 lets it).
-   At the hub, weigh each piece as it is marked picked (one piece, packed, in grams). On the hub PC: `pnpm sourcing run --weights` (repeat: 40 listings a run) to read the weights drafts lack; then
-   Admin → Products → **Weights to check**: weigh what is left (tick "weighed"), starting with live listings. Decide
-   whether customers should see a weight line on the product page (D-129 leaves it admin-only).
+   Clothing drafts held for a missing weight (D-129) can now be published (Products → Drafts → Publish all drafts). Then
+   home & gifts: `pnpm weights run --dry --limit 20`, read the estimates, `pnpm weights run` (food is D-133's now; the
+   estimator only suggests for food no label states). Decide whether a sure estimate may price a live home listing
+   without an admin's look (D-131 lets it).
+   At the hub, weigh each piece as it is marked picked (one piece, packed, in grams). On the hub PC: `pnpm sourcing run --weights` (repeat: 40 listings a run) to read the weights drafts lack (food's net quantity becomes its packed weight in the same run); then
+   Admin → Products → **Weights to check**: weigh what is left (tick "weighed"), starting with live listings.
+   Customers see food's net quantity (D-133); clothing and home weights stay admin-only (D-132).
 3. Then Admin → Products → Drafts → **Publish all drafts**; it says how many went live, what held the rest and how
    many still lack details customers see (fibre and care, ingredients and allergens).
 4. Replace the D-119 / D-120 estimates in Settings with real bills (one courier invoice, one duty bill): the per-parcel
@@ -126,6 +138,7 @@ phase's sub-steps and every verification run) is in `docs/archive/status-log-to-
 ## Last verification
 | Date | Commit | Where | Result |
 |---|---|---|---|
+| 2026-10-16 | D-133 commit | Claude Code, founder's Windows machine with Docker | `check.mjs` all nine steps OK (db from a fresh reset: 50/50 SQL test files incl. new `food_weights.test.sql`: worker only, food only, never over weighed or typed, net quantity kept, repriced, not replaced by shop pages or estimates, a typed weight refused over a weighed one, `net_qty` in the store without forbidden keys, the runner's packed weight kept; e2e OK; build, http, bundle OK); after a last fix docs, typecheck, lint, test (shared 257 incl. new `food-weights.test.ts`, 26) OK again. `pnpm weights food --dry` read production (before the deploy, through the estimator's plan; nothing written): 940 food listings, 1,684 options in 16 s; about 1,100 get a packed weight, 586 state no net quantity. **Not run:** writing on production (needs the migration), the app on a phone, the runner's add path on live shops, a hub weighing of food. |
 | 2026-10-16 | D-132 commit | Claude Code, founder's Windows machine with Docker | `check.mjs` all nine steps OK; after the founder's review (gamosa, kaftan, dresses and skirts light; all weight fields in the forbidden store keys) docs, typecheck, lint, test (class tests 58) and db (48/48) OK again (db from a fresh reset: 48/48 SQL test files incl. new `clothing_classes.test.sql`, 16 assertions: class weights, never on food or a weighed or typed option, repriced, not replaced by shop pages or estimates; e2e 23/23). Shared unit tests incl. new `clothing-classes.test.ts` (53: real Myntra and catalogue titles per class). The rules sorted 299 of 301 real Myntra titles (the other two, a Patiala and a pattu pavadai, after a fix); on the local database `pnpm weights classes` sorted all 278 demo clothing listings in 12 s (249 by name, 22 by category, 7 fabrics by the model) and wrote 4,374 options. **Not run:** against production. |
 | 2026-10-15 | D-131 commit | Claude Code, founder's Windows machine with Docker, RTX 4060 | `check.mjs` all nine steps OK (db from a fresh reset: 47/47 SQL test files; http `/clothing` 19 ms; e2e 23/23; bundle OK). Shared unit tests incl. new `estimate.test.ts` (14), db 47/47 SQL test files (new `weight_estimates.test.sql`, 22 assertions; `weigh_at_hub` now checks a second weighing keeps the sizes `similar`). The estimator on the local database (577 demo listings made real for the test): 120 listings in 121 s, 8 at once (3.4 s a listing with Ollama as installed), 97% of options sure, written and read back; Weights to check and the product page show the suggestion and a doubted shop weight in the browser. Its estimates look right for common pieces (kasavu saree 550 g, Pathani suit 480 g, kurta 230 g); it was wrong and sure on some regional sets (a Bikaner poshak 230 g, a bridal kasavu counted as its blouse only, Kota Doria fabric by the metre 1.55 kg). **Not run:** against production, `eval` (no weighed items yet), the app. |
 | 2026-10-15 | See all cached | Claude Code, founder's Windows machine with Docker | build OK (the three See all pages pre-built); http three runs in a row OK (`/clothing` 7, 8, 13 ms; was 61 – 169 ms); e2e 23/23 (incl. rows: See all by state and category, 24 then 48 cards; sold-out on cached pages); bundle OK. Filters, Show more, invalid filters, canonicals and a 404 for an unknown type checked with curl on `next start`. |

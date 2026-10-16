@@ -580,14 +580,14 @@ isOneToOne: false
                   ]
                 },"product_variants": {
                   Row: {
-                    "created_at": string,"id": string,"is_active": boolean,"label": string,"options": NonNullable<Json>,"price_cents": number | null,"product_id": string,"qty_confirmed_at": string | null,"qty_listed": number,"qty_reserved": number,"shop_price_paise": number | null,"sku": string,"sort_order": number,"source_id": string | null,"updated_at": string,"weight_estimate_g": number | null,"weight_estimate_note": string | null,"weight_estimated_at": string | null,"weight_g": number | null,"weight_note": string | null,"weight_source": string | null
+                    "created_at": string,"id": string,"is_active": boolean,"label": string,"net_qty": string | null,"options": NonNullable<Json>,"price_cents": number | null,"product_id": string,"qty_confirmed_at": string | null,"qty_listed": number,"qty_reserved": number,"shop_price_paise": number | null,"sku": string,"sort_order": number,"source_id": string | null,"updated_at": string,"weight_estimate_g": number | null,"weight_estimate_note": string | null,"weight_estimated_at": string | null,"weight_g": number | null,"weight_note": string | null,"weight_source": string | null
                   }
                   ComputedFields: never
                   Insert: {
-                    "created_at"?: string,"id"?: string,"is_active"?: boolean,"label": string,"options"?: NonNullable<Json>,"price_cents"?: number | null,"product_id": string,"qty_confirmed_at"?: string | null,"qty_listed"?: number,"qty_reserved"?: number,"shop_price_paise"?: number | null,"sku": string,"sort_order"?: number,"source_id"?: string | null,"updated_at"?: string,"weight_estimate_g"?: number | null,"weight_estimate_note"?: string | null,"weight_estimated_at"?: string | null,"weight_g"?: number | null,"weight_note"?: string | null,"weight_source"?: string | null
+                    "created_at"?: string,"id"?: string,"is_active"?: boolean,"label": string,"net_qty"?: string | null,"options"?: NonNullable<Json>,"price_cents"?: number | null,"product_id": string,"qty_confirmed_at"?: string | null,"qty_listed"?: number,"qty_reserved"?: number,"shop_price_paise"?: number | null,"sku": string,"sort_order"?: number,"source_id"?: string | null,"updated_at"?: string,"weight_estimate_g"?: number | null,"weight_estimate_note"?: string | null,"weight_estimated_at"?: string | null,"weight_g"?: number | null,"weight_note"?: string | null,"weight_source"?: string | null
                   }
                   Update: {
-                    "created_at"?: string,"id"?: string,"is_active"?: boolean,"label"?: string,"options"?: NonNullable<Json>,"price_cents"?: number | null,"product_id"?: string,"qty_confirmed_at"?: string | null,"qty_listed"?: number,"qty_reserved"?: number,"shop_price_paise"?: number | null,"sku"?: string,"sort_order"?: number,"source_id"?: string | null,"updated_at"?: string,"weight_estimate_g"?: number | null,"weight_estimate_note"?: string | null,"weight_estimated_at"?: string | null,"weight_g"?: number | null,"weight_note"?: string | null,"weight_source"?: string | null
+                    "created_at"?: string,"id"?: string,"is_active"?: boolean,"label"?: string,"net_qty"?: string | null,"options"?: NonNullable<Json>,"price_cents"?: number | null,"product_id"?: string,"qty_confirmed_at"?: string | null,"qty_listed"?: number,"qty_reserved"?: number,"shop_price_paise"?: number | null,"sku"?: string,"sort_order"?: number,"source_id"?: string | null,"updated_at"?: string,"weight_estimate_g"?: number | null,"weight_estimate_note"?: string | null,"weight_estimated_at"?: string | null,"weight_g"?: number | null,"weight_note"?: string | null,"weight_source"?: string | null
                   }
                   Relationships: [
                     {
@@ -1537,7 +1537,7 @@ isOneToOne: false
                   ]
                 },"store_variants": {
                   Row: {
-                    "available": number | null,"id": string | null,"label": string | null,"options": Json | null,"price_cents": number | null,"product_id": string | null,"sort_order": number | null
+                    "available": number | null,"id": string | null,"label": string | null,"net_qty": string | null,"options": Json | null,"price_cents": number | null,"product_id": string | null,"sort_order": number | null
                   }
                   ComputedFields: never
                   Relationships: [
@@ -1972,6 +1972,9 @@ isOneToOne: false
 "worker_finish_job":
 { Args: { "p_candidates": (string)[],"p_error"?: string,"p_job": string }; Returns: undefined
                            },
+"worker_food_plan":
+{ Args: { "p_after"?: string,"p_all"?: boolean,"p_limit"?: number }; Returns: Json
+                           },
 "worker_may_add_photos":
 { Args: { "p_product": string }; Returns: boolean
                            },
@@ -1980,6 +1983,9 @@ isOneToOne: false
                            },
 "worker_set_estimates":
 { Args: { "p_estimates": Json }; Returns: Json
+                           },
+"worker_set_food_weights":
+{ Args: { "p_weights": Json }; Returns: number
                            },
 "worker_set_weights":
 { Args: { "p_weights": Json }; Returns: number

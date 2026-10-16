@@ -62,8 +62,8 @@ select tests.assert(
           'store_policy', 'store_product_page', 'store_region_page', 'store_search', 'store_type_rows',
           'vendor_add_photo', 'vendor_delete_submission', 'vendor_keep_ready', 'vendor_may_upload', 'vendor_me',
           'vendor_money', 'vendor_new_submission', 'vendor_pieces', 'vendor_submission', 'vendor_submit',
-          'worker_claim_job', 'worker_clothing_plan', 'worker_estimate_plan', 'worker_finish_job', 'worker_may_add_photos', 'worker_set_class_weights',
-          'worker_set_estimates', 'worker_set_weights', 'worker_sourcing_add',
+          'worker_claim_job', 'worker_clothing_plan', 'worker_estimate_plan', 'worker_finish_job', 'worker_food_plan', 'worker_may_add_photos', 'worker_set_class_weights',
+          'worker_set_estimates', 'worker_set_food_weights', 'worker_set_weights', 'worker_sourcing_add',
           'worker_sourcing_checked', 'worker_sourcing_log', 'worker_sourcing_media', 'worker_sourcing_plan',
           'worker_sourcing_target_done', 'worker_sourcing_target_release', 'worker_weight_plan', 'worker_weight_references'],
   'signed-in users can execute only store, admin-, vendor- and worker-checked functions (never create_order)');

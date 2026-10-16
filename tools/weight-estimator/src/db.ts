@@ -2,10 +2,14 @@ import { createClient, type SupabaseClient } from '@supabase/supabase-js';
 
 import {
   clothingPlanSchema,
+  foodPlanSchema,
   estimatePlanSchema,
   referencesSchema,
   type ClassWrite,
   type ClothingListing,
+  type FoodListing,
+  type FoodPassDb,
+  type FoodWrite,
   type EstimateListing,
   type EstimateMode,
   type EstimateWrite,
@@ -15,7 +19,7 @@ import {
 import type { Env } from './env';
 
 /** The estimator's door to IWC: the worker account (never a service key) and the worker_* weight functions (D-131). */
-export class Db {
+export class Db implements FoodPassDb {
   private constructor(private readonly client: SupabaseClient) {}
 
   static async signIn(env: Env): Promise<Db> {
@@ -66,6 +70,43 @@ export class Db {
 
   setClassWeights(weights: ClassWrite[]): Promise<number> {
     return this.rpc('worker_set_class_weights', { p_weights: weights });
+  }
+
+  /**
+   * D-133: up to 200 food listings to work out, in id order after `after` (`all`: every food listing). Before the
+   * deploy that adds worker_food_plan(), a dry run reads them through the estimator's plan instead.
+   */
+  async foodPlan(after: string | null, all: boolean): Promise<FoodListing[]> {
+    const { data, error } = await this.client.rpc('worker_food_plan', {
+      p_after: after,
+      p_limit: 200,
+      p_all: all,
+    });
+    if (!error) return foodPlanSchema.parse(data);
+    if (
+      !/worker_food_plan/.test(error.message) ||
+      !/could not find|does not exist/i.test(error.message)
+    )
+      throw new Error(`worker_food_plan: ${error.message}`);
+    // the estimator's plan holds food and home: skip pages without food
+    for (let cursor = after; ;) {
+      const page = await this.plan(cursor, 200, 'audit');
+      if (!page.length) return [];
+      const food = page.filter((l) => l.product_type === 'food');
+      if (food.length)
+        return food.map((l) => ({
+          product_id: l.product_id,
+          name: l.name,
+          category: l.category,
+          description: [l.summary, l.description].filter(Boolean).join('\n'),
+          variants: l.variants.map((v) => ({ ...v, net_qty: null })),
+        }));
+      cursor = page[page.length - 1]!.product_id;
+    }
+  }
+
+  setFoodWeights(weights: FoodWrite[]): Promise<number> {
+    return this.rpc('worker_set_food_weights', { p_weights: weights });
   }
 
   setEstimates(estimates: EstimateWrite[]): Promise<{ estimates: number; weights: number }> {

@@ -243,6 +243,7 @@ export default async function AdminProductPage({
                   productId={product.id}
                   variantId={v.id}
                   grams={v.weight_g ?? v.weight_estimate_g}
+                  weighed={v.weight_source === 'weighed'}
                   label={v.label}
                 />
               </Cell>

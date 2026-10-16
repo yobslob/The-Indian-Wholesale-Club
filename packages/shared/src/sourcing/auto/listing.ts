@@ -6,6 +6,7 @@ import { cleanOptions, packGrams } from '../variants';
 import { bestWeight, readWeights } from '../weight';
 
 import { inBand, offerDeliveryDays } from './cluster';
+import { packedFoodVariants } from './food-weights';
 
 import type { SourcedProduct, SourcedVariant } from '../capture';
 import type { ListingVariantPayload, Offer, SourcingShop, SourcingTarget } from './types';
@@ -265,7 +266,11 @@ export function buildListing(input: {
       description: description.slice(0, 4000),
       attributes,
       weight_g: pageWeight?.grams ?? null,
-      variants,
+      // D-133: food on its net quantity plus its pack, read while the page's spec rows are at hand
+      variants:
+        target.product_type === 'food'
+          ? packedFoodVariants(variants, { name: product.title, description, category: target.category, specs: product.specs })
+          : variants,
       backups,
     },
     photos,

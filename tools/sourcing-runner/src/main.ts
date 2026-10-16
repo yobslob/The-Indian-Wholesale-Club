@@ -7,6 +7,7 @@ import { DEFAULT_SHOPS, type RunContext } from './context';
 import { Db } from './db';
 import { loadEnv } from './env';
 import { findForTarget } from './find';
+import { weighFood } from './food';
 import { errorText, log, setLogTag, ShopStats } from './log';
 import { describeNetError, resolveOverHttps } from './net';
 import { fillWeights } from './weights';
@@ -24,6 +25,7 @@ import type { SourcingPlan } from '@repo/shared/sourcing/auto';
  *   pnpm sourcing run --weights          only clothing by class (D-132) and the weights listings lack (D-129; `run`
  *                                        ends with them too)
  *   pnpm sourcing classes                only clothing by class (D-132): no browser, no shops, no new listings
+ *   pnpm sourcing food [--all]           only food's packed weights (D-133): no browser, no shops, no new listings
  *   pnpm sourcing try "kasuri methi" --type food    a dry run: what it would add, nothing written
  *   pnpm sourcing doctor                 tests the road to Supabase and the worker sign-in
  * Windows Task Scheduler runs `run` once a day (README.md).
@@ -152,10 +154,12 @@ async function run(args: string[]): Promise<number> {
       );
       added += found.reduce((a, b) => a + b, 0);
     }
-    // D-132: new clothing by class first (its weight is then settled); D-129: the weights the rest lack
+    // D-132: new clothing by class first (its weight is then settled); D-129: the weights the rest lack; D-133: then
+    // food's packed weights (also from the net quantities the page search found)
     const onlyOne = args.includes('--checks') || args.includes('--targets');
     const classed = onlyOne || (type && type !== 'clothing') ? 0 : await sortNewClothing(db);
     const weights = onlyOne ? 0 : await fillWeights(ctx, 40, type);
+    const packed = onlyOne || (type && type !== 'food') ? 0 : await weighFood(db);
     await db.logRun({
       started_at: started.toISOString(),
       targets_searched: targets.length,
@@ -168,7 +172,7 @@ async function run(args: string[]): Promise<number> {
       shops: ctx.stats.toJSON(),
     });
     log(
-      `done: ${checks.products} checked (${checks.prices} prices, ${checks.stock} stock, ${checks.held} held), ${added} listings added, ${classed} clothing options weighed by class, ${weights} weights found`,
+      `done: ${checks.products} checked (${checks.prices} prices, ${checks.stock} stock, ${checks.held} held), ${added} listings added, ${classed} clothing options weighed by class, ${packed} food options packed, ${weights} weights found`,
     );
   } finally {
     await context.close();
@@ -247,21 +251,30 @@ async function classes(): Promise<number> {
 }
 
 const [command, ...args] = process.argv.slice(2);
+
+/** D-133: every food listing not yet worked out takes its packed weight (`--all`: work them all out again). */
+async function food(): Promise<number> {
+  const written = await weighFood(await Db.signIn(loadEnv(true)), args.includes('--all'));
+  log(`done: ${written} food options packed`);
+  return 0;
+}
 const main =
-  command === 'classes'
-    ? classes()
-    : command === 'setup'
-      ? setup()
-      : command === 'run'
-        ? run(args)
-        : command === 'try'
-          ? dryRun(args)
-          : command === 'doctor'
-            ? doctor()
-            : null;
+  command === 'food'
+    ? food()
+    : command === 'classes'
+      ? classes()
+      : command === 'setup'
+        ? setup()
+        : command === 'run'
+          ? run(args)
+          : command === 'try'
+            ? dryRun(args)
+            : command === 'doctor'
+              ? doctor()
+              : null;
 if (!main) {
   console.log(
-    'Usage: pnpm sourcing setup | doctor | classes | run [--checks|--targets] [--type clothing|food|home [--shops nishorama.com]] | try "<query>" --type food|clothing|home [--match "regex"]',
+    'Usage: pnpm sourcing setup | doctor | classes | food [--all] | run [--checks|--targets] [--type clothing|food|home [--shops nishorama.com]] | try "<query>" --type food|clothing|home [--match "regex"]',
   );
   process.exit(2);
 }

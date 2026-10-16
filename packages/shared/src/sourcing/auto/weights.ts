@@ -109,7 +109,11 @@ export function weightsFromSimilar(
   const grams = agreedWeight(found.map((f) => f.reading.grams));
   if (!grams) return [];
   const sites = [...new Set(found.map((f) => f.site))].join(', ');
-  const note = `${found.length} matching items on ${sites} (${found.map((f) => f.reading.grams).join(', ')} g)`;
+  // D-133: food pages that agree on the label's net quantity say so, for the packed weight to read it
+  const net = listing.product_type === 'food' && found.every((f) => ['net', 'pack', 'title'].includes(f.reading.kind));
+  const note = net
+    ? `Net quantity: ${grams} g (${found.length} matching items on ${sites} agree)`
+    : `${found.length} matching items on ${sites} (${found.map((f) => f.reading.grams).join(', ')} g)`;
   return listing.variants
     .filter((v) => v.weight_g === null && !('pack' in v.options))
     .map((v) => ({ variant_id: v.id, weight_g: grams, source: 'similar' as const, note: note.slice(0, 200) }));

@@ -57,6 +57,7 @@ export function WeightsToCheck({ rows, missing }: { rows: WeightToCheck[]; missi
                     productId={p.id}
                     variantId={v.id}
                     grams={v.weight_g ?? v.weight_estimate_g}
+                    weighed={v.weight_source === 'weighed'}
                     label={`${p.name}, ${v.label}`}
                   />
                 </Cell>

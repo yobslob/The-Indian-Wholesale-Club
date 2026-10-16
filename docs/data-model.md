@@ -35,7 +35,7 @@ operations data are never queried from customer code.
 | Places | `regions` | the 36 regions (D-002): slug, name, sort, `is_live`, greeting (native + ISO 15924 script + Latin + meaning), languages, tagline, story, hero image, accent colour, `content_status` (D-019) | store (text only if approved) / admin |
 | Catalog | `categories` | browse groups per product type. A child always has its parent's type | store / admin |
 | | `products` | region, category, `product_type`, name, slug, summary, description, story, craft, `attributes` (customer-safe JSON), `price_cents`, `status`, search vector; `vendor_id`*, `shop_price_paise`*, `origin_town`*, `has_origin_label`*, `is_placeholder`*. **Spices are `live` only while "Spices are cleared" is on** (`pricing_settings.spices_cleared`, D-074; on since D-107) | store (live only) / admin |
-| | `product_variants` | `options` JSON (colour, flavour, style = "Type", pack, size: D-118), SKU*, label, price override, `weight_g`* with `weight_source`* and `weight_note`* (D-129), `weight_estimate_g`*, `weight_estimate_note`*, `weight_estimated_at`* (D-131), `qty_listed`*, `qty_reserved`*, `qty_confirmed_at`*, `shop_price_paise`*, `source_id`* | store (`available` only) / admin |
+| | `product_variants` | `options` JSON (colour, flavour, style = "Type", pack, size: D-118), SKU*, label, price override, `weight_g`* with `weight_source`* and `weight_note`* (D-129), `weight_estimate_g`*, `weight_estimate_note`*, `weight_estimated_at`* (D-131), `net_qty` (food, D-133), `qty_listed`*, `qty_reserved`*, `qty_confirmed_at`*, `shop_price_paise`*, `source_id`* | store (`available`, food's `net_qty`) / admin |
 | | `product_sources` | the shop items a variant can be ordered as, checked weekly (D-118) | admin / worker via functions |
 | | `variant_availability` | public mirror `variant_id → available`, trigger-maintained, in the Realtime publication (live "only 2 left", D-010) | store (visible products) |
 | | `product_media` | Storage paths (bucket `product-media`), alt text, one primary per product, `is_ai` (an AI-generated model photo, D-100: the product's Details say so) | store / admin |
@@ -152,6 +152,16 @@ Migration 31 (D-099, the second speed audit): `admin_order_counts()` (every orde
 send, shops owed for picked pieces) and `admin_cycle_totals(cycle)` (the cycle card's orders, pieces, shops and sales),
 admin only, counted in SQL because the API sends at most 1,000 rows; indexes for orders by status and newest, pickups
 by status, what each shop is owed, and a payout's pieces.
+Migration 67 (D-133): `weight_source` may be `packed` (food: the label's net quantity plus its pack, worked out by
+`packages/shared/src/sourcing/estimate/food.ts`); `product_variants.net_qty` (the net quantity as the label states it,
+"400 g", "2 × 200 g"; customers see it: `store_variants.net_qty` for food, and `_store_pack` falls back to it). Worker
+only: `worker_food_plan(after, limit, all)` (food listings with an option not weighed, typed or packed, or without a
+net quantity; `all`: every one) and `worker_set_food_weights(weights)` (food only; always keeps the net quantity, the
+weight never over a weighed or typed one; returns how many changed). `_variant_weight` refuses `weight_weighed` (23514)
+when an admin types a weight over one weighed at the hub (weighing it again replaces it); `admin_weigh_pickup` also
+replaces the other flavours' packed weights of the same net quantity; `worker_sourcing_add` keeps a new food option's
+packed weight and net quantity. Shop pages (`worker_set_weights`) and estimates do not replace a packed weight. Tests:
+`food_weights.test.sql`.
 Migration 66: `worker_sourcing_target_release(target, note)` (worker): a target whose search failed on every shop goes
 back to the queue instead of "nothing fit". Tests: `runner_by_type.test.sql`.
 Migration 65: `worker_sourcing_plan(checks, type, site)`: with a product type (and a shop) it claims only that type's

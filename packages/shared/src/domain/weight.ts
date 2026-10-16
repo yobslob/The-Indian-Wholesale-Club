@@ -10,8 +10,9 @@ import type { ProductType } from './product-types';
  *  - similar: the same or a matching item on another shop, or another size of the same piece
  *  - estimated: the weight estimator on the founder's laptop, when it is sure (D-131); a page or the scale replaces it
  *  - class: clothing by the founder's four classes, light 350 g to heavy 1.5 kg (D-132); the scale replaces it
+ *  - packed: food, its label's net quantity plus the weight of its pack (D-133); the scale or an admin replaces it
  */
-export const WEIGHT_SOURCES = ['weighed', 'admin', 'shop', 'similar', 'estimated', 'class'] as const;
+export const WEIGHT_SOURCES = ['weighed', 'admin', 'shop', 'similar', 'estimated', 'class', 'packed'] as const;
 export type WeightSource = (typeof WEIGHT_SOURCES)[number];
 
 export const WEIGHT_SOURCE_LABEL: Record<WeightSource, string> = {
@@ -21,6 +22,7 @@ export const WEIGHT_SOURCE_LABEL: Record<WeightSource, string> = {
   similar: 'From a matching item',
   estimated: 'Estimated (weight estimator)',
   class: 'Clothing class (D-132)',
+  packed: 'Net weight + its pack (D-133)',
 };
 
 /** "450 g", "1.2 kg", "1 kg". */
@@ -41,8 +43,8 @@ export function weightState(
   unusual = false,
 ): WeightState {
   if (v.weight_g === null) return 'missing';
-  // a class weight is the founder's rule (D-132): never "unusual" for its category
-  if (v.weight_source === 'weighed' || v.weight_source === 'admin' || v.weight_source === 'class') return 'confirmed';
+  // a class weight is the founder's rule (D-132), a packed one the label's net plus its pack (D-133)
+  if (['weighed', 'admin', 'class', 'packed'].includes(v.weight_source ?? '')) return 'confirmed';
   if (unusual || (v.weight_source !== 'shop' && v.weight_source !== 'estimated')) return 'check';
   return 'confirmed';
 }

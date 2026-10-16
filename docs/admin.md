@@ -182,6 +182,19 @@ runner in `tools/sourcing-runner/` (its README says how to set it up on the PC a
   350 g, medium 750 g, pants and footwear 800 g, heavy 1.5 kg); on the laptop `pnpm weights classes` sorts all
   clothing (the model sorts a name no rule reads) and writes `clothing-classes.csv` for review. A weighed or typed
   weight stays; the product page shows "Clothing class (D-132)" and why.
+- **Food's packed weight (D-133).** Every food option is priced on its label's net quantity plus the weight of its
+  pack: read from its options, label, the shop page's net quantity or its name ("2 × 200 g" is two packs; 50 chikki
+  bars of 16 g are one jar), the pack from the page's spec rows, its name or description (never a "store in a glass
+  jar" line), else what such food comes in (pickles a jar, masalas a pouch or box, sweets a sweet box, rasgullas a
+  tin, ghee a jar, oil a bottle). A jar or bottle that names no material is plastic for dry food and between glass
+  and plastic otherwise; those are marked "glass or plastic? weigh one at the hub". The pack weights are Claude's
+  table (`estimate/food-packs.ts`) and are tuned by the hub's scale: three or more weighed pieces of one pack set its
+  factor. The order: the hub's scale, then an admin's weight, then this; a shop page's packed weight that fits its
+  net quantity is used as it is. New food gets it when the runner adds it; each run (and `pnpm sourcing food`) works
+  out every food listing not yet done; `pnpm weights food --dry` on the laptop writes `food-weights.csv` (every
+  option, its net quantity, pack, old and new weight). An option no label states keeps what it has (the page search
+  above, then the hub). An admin's typed weight cannot replace one weighed at the hub: the weight box asks to weigh
+  it again. The product page shows the source "Net weight + its pack (D-133)" and the sum.
 - **The weight estimator (D-131), food and home & gifts.** On the founder's laptop: `pnpm weights run` gives every option without a weight a
   packed weight from a local model on the GPU, checked against the most similar weights IWC knows (weighed at the hub
   first). A sure one becomes the weight (source "Estimated"); an unsure one is a suggestion in Weights to check.
