@@ -14,7 +14,13 @@ import {
   updateProduct,
   type PublishDraftsResult,
 } from '@repo/db/admin';
-import { clothingAttributesSchema, homeAttributesSchema, PRODUCT_TYPES, foodAttributesSchema, type ListingInput } from '@repo/shared/domain';
+import {
+  clothingAttributesSchema,
+  homeAttributesSchema,
+  PRODUCT_TYPES,
+  foodAttributesSchema,
+  type ListingInput,
+} from '@repo/shared/domain';
 
 import { STORE_TAG } from '@/features/catalog/data';
 
@@ -113,13 +119,13 @@ export async function createProductAction(form: FormData): Promise<void> {
       : base.productType === 'home'
         ? homeAttributesSchema.parse({ material: field(form, 'material') })
         : foodAttributesSchema.parse({
-          ingredients: field(form, 'ingredients'),
-          allergens: field(form, 'allergens')
-            .split(',')
-            .map((a) => a.trim())
-            .filter(Boolean),
-          shelf_life_days: Number(field(form, 'shelfLifeDays')),
-        });
+            ingredients: field(form, 'ingredients'),
+            allergens: field(form, 'allergens')
+              .split(',')
+              .map((a) => a.trim())
+              .filter(Boolean),
+            shelf_life_days: Number(field(form, 'shelfLifeDays')),
+          });
   // One path for every new listing, web or phone: product + variants in one transaction (admin_create_listing).
   // Here the variants are added afterwards on the draft's page.
   const createdId = await createListing(client, {
@@ -153,7 +159,9 @@ export async function updateProductAction(productId: string, form: FormData): Pr
   await updateProduct(client, id.parse(productId), {
     name: input.name,
     // D-075: empty = automatic (the database prices it from the shop price and weight); a typed price = by hand.
-    ...(input.price === null ? { price_auto: true } : { price_auto: false, price_cents: input.price }),
+    ...(input.price === null
+      ? { price_auto: true }
+      : { price_auto: false, price_cents: input.price }),
     shop_price_paise: input.shopPrice,
     summary: input.summary,
     description: input.description,
@@ -168,6 +176,17 @@ export async function updateProductAction(productId: string, form: FormData): Pr
 export async function setProductCuratedAction(productId: string, curated: boolean): Promise<void> {
   const { client } = await requireAdminAction();
   await updateProduct(client, id.parse(productId), { is_curated: z.boolean().parse(curated) });
+  revalidateTag(STORE_TAG);
+  revalidatePath(`/admin/catalog/${productId}`);
+}
+
+/** D-135: an archived listing shown to customers as "Coming soon" (the heart, not sold), or hidden again. */
+export async function setProductComingSoonAction(
+  productId: string,
+  comingSoon: boolean,
+): Promise<void> {
+  const { client } = await requireAdminAction();
+  await updateProduct(client, id.parse(productId), { coming_soon: z.boolean().parse(comingSoon) });
   revalidateTag(STORE_TAG);
   revalidatePath(`/admin/catalog/${productId}`);
 }

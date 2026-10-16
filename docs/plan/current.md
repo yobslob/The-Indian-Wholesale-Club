@@ -83,13 +83,16 @@ phase's sub-steps and every verification run) is in `docs/archive/status-log-to-
   The hub's scale wins, then an admin's weight, then the class. Every sourcing run sorts the clothing not yet sorted
   (after the deploy: all of it); `pnpm weights classes` on the laptop also sorts the names no rule reads, with a CSV
   to review. Weights are for pricing only: customers never see one.
-- **Food by its packed weight (D-133, 2026-10-16):** every food option is priced on its label's net quantity plus its
-  pack (pouch, box, sweet box, jar, tin, bottle, bag; source "Its weight + its packing"), unit by unit ("100 g (Pack of 3)"
-  is three packs; many were priced as one), tuned by the food the hub weighs. The hub's scale wins, then an admin's
-  weight (a typed weight can no longer replace a weighed one), then this. The runner prices new food this way when it
-  adds it (the page's "Package Information" / "Material" rows name the pack) and each run works out the food not yet
-  done (after the deploy: all of it); `pnpm weights food --dry` on the laptop writes `food-weights.csv`. Customers see
-  the net quantity ("Net quantity" in Details, web and app; the card's pack size), never the packed weight.
+- **Food by its net weight (D-133, D-135, 2026-10-16):** every food option is priced on the net quantity its label
+  states, unit by unit ("100 g (Pack of 3)" is 300 g; many were priced as one), no packaging (D-135 removed D-133's
+  pack; source shown as "Net weight on its label"). The hub's scale wins, then an admin's weight (a typed weight can
+  no longer replace a weighed one), then this. The runner weighs new food this way when it adds it and each run works
+  out the food not yet done; on production all 1,146 options were rewritten to their net weight the same day.
+  Customers see the net quantity ("Net quantity" in Details, web and app; the card's pack size).
+- **Liquids are not sent (D-135, 2026-10-16):** the runner checks every food and home listing once (new ones as it
+  adds them, the rest at the end of each run, `pnpm sourcing liquids`); a liquid (juice, sharbat, soda, oil, syrup,
+  attar, anything sold by the ml; never pickles) is archived and shown to customers as **coming soon**: no price, the
+  heart instead of Add. Products → Archived marks it; its page can hide it or show it again.
 - **Home & gifts from their own pages (D-134, 2026-10-16):** the capture now reads Amazon's "Product details" dropdowns
   (Item details, Measurements); every run (and `pnpm sourcing home`) reads each home option's own page: the packed
   weight as stated, else the piece's weight plus its packing by material (fragile, flat art, textiles, the rest),
@@ -98,15 +101,15 @@ phase's sub-steps and every verification run) is in `docs/archive/status-log-to-
   kept for Q-36 (does the courier bill by size?).
 
 ## Next for the founder
-1. Run `node scripts/check.mjs` (Docker Desktop and `npx supabase start` first), push, then the Deploy workflow: it
-   applies the new migrations (the latest is `20261016180000_home_weights`; D-119 – D-128 reprice every listing)
-   to production. Home (D-134): `pnpm sourcing home --dry` writes `tools/sourcing-runner/home-weights.csv`; then
-   `pnpm sourcing home` (40 listings a go; repeat, or let each `pnpm sourcing run` do it). Answer Q-36 with the courier. Then food's packed weights (D-133): open `tools/weight-estimator/food-weights.csv` from
-   `pnpm weights food --dry` (every food option, its net quantity, pack, old and new weight), then `pnpm weights food`
-   on the laptop, or let the next `pnpm sourcing run` do it (both write all food not yet done; about 1,060 of 1,635
-   options on 2026-10-16, the rest state no net quantity and wait for the page search and the hub). At the hub, weigh
-   a few pickles and other jars first: three weighings of one pack tune that pack for every listing. Confirm with the courier that ₹2,000 includes the box and clearance, and
-   whether it bills by box size; correct Settings → Courier rate card if not.
+1. Run the Deploy workflow: it applies the new migrations (the latest is `20261016200000_coming_soon`) to
+   production. Then `pnpm sourcing liquids --dry` (the 16 liquids found on 2026-10-16: juices, sea buckthorn pulp, a
+   soda, coconut and kernel oils, a sharbat, kokum agal, three attars, two ghees sold by the ml) and
+   `pnpm sourcing liquids`; say whether ghee and honey sold by the litre count as liquids (D-135 says yes). Pull the
+   code on the hub PC before its next `pnpm sourcing run` (an older runner adds D-133's packaging to new food).
+   Home (D-134): `pnpm sourcing home --dry` writes `tools/sourcing-runner/home-weights.csv`; then
+   `pnpm sourcing home` (40 listings a go; repeat, or let each `pnpm sourcing run` do it). Answer Q-36 with the
+   courier. Food is done (D-135: every option on its net weight). Confirm with the courier that ₹2,000 includes the
+   box and clearance, and whether it bills by box size; correct Settings → Courier rate card if not.
 2. Done 2026-10-16: all 339 live clothing listings (2,993 options) have their class weight (`pnpm weights classes` on
    production; none had a weight before; the old values are in `tools/weight-estimator/clothing-classes-before.jsonl`).
    New clothing is sorted by each `pnpm sourcing run`, or alone by `pnpm sourcing classes` (no shops, nothing added).
@@ -145,6 +148,7 @@ phase's sub-steps and every verification run) is in `docs/archive/status-log-to-
 ## Last verification
 | Date | Commit | Where | Result |
 |---|---|---|---|
+| 2026-10-16 | D-135 commit | Claude Code, founder's Windows machine with Docker | `check.mjs` all nine steps OK (db from a fresh reset: 52/52 SQL test files incl. new `coming_soon.test.sql`: worker only, a liquid archived and shown as coming soon, no options to buy, its photos, card and See all marked, a checked listing not checked again, putting it on sale ends it, a plain archived listing hidden); shared unit tests 263 incl. new `liquids.test.ts`. In the browser on `next dev` with a local demo drink made coming soon: its page says "Coming soon" with the heart and no Add, its See all card the heart and "Coming soon" instead of the price, no console errors. On production: `pnpm weights food --all` wrote 1,146 food options to their net weight (a second dry run: nothing left); a read-only liquid preview found 16 liquids in 1,072 listings. **Not run:** the liquid check on production (needs the migration), the app on a phone. |
 | 2026-10-16 | D-134 commit | Claude Code, founder's Windows machine with Docker | `check.mjs` all nine steps OK (db from a fresh reset: 51/51 SQL test files incl. new `home_weights.test.sql`: worker only, home only, never over weighed or typed, a similar weight never over a page's own, repriced, no home weight or net quantity in the store, the runner's packed home weight kept; build, http, e2e, bundle OK); shared unit tests 266 incl. new `home-weights.test.ts`. `pnpm sourcing home --dry` against production (before the deploy, through D-129's plan; nothing written): 35 home listings missing a weight, 65 options, 147 pages read on Amazon, Flipkart and Blinkit with none failed; 42 options weighed (35 from their own page, 7 from another option's or two matching items), 23 state no weight (mostly Blinkit pooja items), the rest marked for the hub (fragile pieces, a weight impossible for its box, packs out of order). **Not run:** writing on production (needs the migration), the 66 unrecorded and 12 estimated home weights (read after the deploy), the importer with a real Amazon page. |
 | 2026-10-16 | D-133 commit | Claude Code, founder's Windows machine with Docker | `check.mjs` all nine steps OK (db from a fresh reset: 50/50 SQL test files incl. new `food_weights.test.sql`: worker only, food only, never over weighed or typed, net quantity kept, repriced, not replaced by shop pages or estimates, a typed weight refused over a weighed one, `net_qty` in the store without forbidden keys, the runner's packed weight kept; e2e OK; build, http, bundle OK); after a last fix docs, typecheck, lint, test (shared 257 incl. new `food-weights.test.ts`, 26) OK again. `pnpm weights food --dry` read production (before the deploy, through the estimator's plan; nothing written): 940 food listings, 1,684 options in 16 s; about 1,100 get a packed weight, 586 state no net quantity. **Not run:** writing on production (needs the migration), the app on a phone, the runner's add path on live shops, a hub weighing of food. |
 | 2026-10-16 | D-132 commit | Claude Code, founder's Windows machine with Docker | `check.mjs` all nine steps OK; after the founder's review (gamosa, kaftan, dresses and skirts light; all weight fields in the forbidden store keys) docs, typecheck, lint, test (class tests 58) and db (48/48) OK again (db from a fresh reset: 48/48 SQL test files incl. new `clothing_classes.test.sql`, 16 assertions: class weights, never on food or a weighed or typed option, repriced, not replaced by shop pages or estimates; e2e 23/23). Shared unit tests incl. new `clothing-classes.test.ts` (53: real Myntra and catalogue titles per class). The rules sorted 299 of 301 real Myntra titles (the other two, a Patiala and a pattu pavadai, after a fix); on the local database `pnpm weights classes` sorted all 278 demo clothing listings in 12 s (249 by name, 22 by category, 7 fabrics by the model) and wrote 4,374 options. **Not run:** against production. |

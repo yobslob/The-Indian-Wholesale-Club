@@ -121,7 +121,7 @@ export async function updateCategory(client: IwcClient, id: string, patch: Updat
 
 // ---------------------------------------------------------------- products + variants
 
-const PRODUCT_LIST_COLUMNS = `id, slug, name, product_type, status, price_cents, shop_price_paise, is_placeholder, is_us_stock, updated_at,
+const PRODUCT_LIST_COLUMNS = `id, slug, name, product_type, status, coming_soon, price_cents, shop_price_paise, is_placeholder, is_us_stock, updated_at,
   region:regions(slug, name), vendor:vendors(id, shop_name),
   variants:product_variants(id, label, qty_listed, qty_reserved, qty_confirmed_at, is_active, weight_g, weight_source),
   category:categories(default_weight_g),
@@ -183,7 +183,7 @@ export async function getAdminProduct(client: IwcClient, id: string) {
       .from('products')
       .select(
         `id, slug, name, product_type, region_id, category_id, vendor_id, summary, description, story, craft, attributes,
-          price_cents, price_auto, shop_price_paise, origin_town, has_origin_label, status, is_placeholder, published_at, is_curated,
+          price_cents, price_auto, shop_price_paise, origin_town, has_origin_label, status, coming_soon, coming_soon_note, is_placeholder, published_at, is_curated,
           source_url, source_site, source_checked_at,
           created_at, updated_at,
           variants:product_variants!product_variants_product_id_fkey(id, sku, label, options, price_cents, weight_g,

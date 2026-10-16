@@ -8,3 +8,4 @@ export * from './url';
 export * from './delivery';
 export * from './variants';
 export * from './weight';
+export * from './liquid';

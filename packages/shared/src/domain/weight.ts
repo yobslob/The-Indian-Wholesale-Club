@@ -10,10 +10,18 @@ import type { ProductType } from './product-types';
  *  - similar: the same or a matching item on another shop, or another size of the same piece
  *  - estimated: the weight estimator on the founder's laptop, when it is sure (D-131); a page or the scale replaces it
  *  - class: clothing by the founder's four classes, light 350 g to heavy 1.5 kg (D-132); the scale replaces it
- *  - packed: food's net quantity plus its pack (D-133), a home piece's own weight plus its packing (D-134); the scale
- *    or an admin replaces it
+ *  - packed: food's net quantity as its label states it (D-135; D-133 added its pack), a home piece's own weight plus
+ *    its packing (D-134); the scale or an admin replaces it
  */
-export const WEIGHT_SOURCES = ['weighed', 'admin', 'shop', 'similar', 'estimated', 'class', 'packed'] as const;
+export const WEIGHT_SOURCES = [
+  'weighed',
+  'admin',
+  'shop',
+  'similar',
+  'estimated',
+  'class',
+  'packed',
+] as const;
 export type WeightSource = (typeof WEIGHT_SOURCES)[number];
 
 export const WEIGHT_SOURCE_LABEL: Record<WeightSource, string> = {
@@ -23,8 +31,15 @@ export const WEIGHT_SOURCE_LABEL: Record<WeightSource, string> = {
   similar: 'From a matching item',
   estimated: 'Estimated (weight estimator)',
   class: 'Clothing class (D-132)',
-  packed: 'Its weight + its packing (D-133, D-134)',
+  packed: 'Its weight + its packing (D-134)',
 };
+
+/** The source as admins read it: food's "packed" weight is its label's net weight since D-135 (no packaging). */
+export function weightSourceLabel(source: WeightSource, type: ProductType): string {
+  return source === 'packed' && type === 'food'
+    ? 'Net weight on its label (D-135)'
+    : WEIGHT_SOURCE_LABEL[source];
+}
 
 /** "450 g", "1.2 kg", "1 kg". */
 export function formatGrams(grams: number): string {

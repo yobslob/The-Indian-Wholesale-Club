@@ -31,7 +31,9 @@ export default function ProductScreen(): React.JSX.Element {
   const router = useRouter();
   const { session } = useSession();
   const { region, slug } = useLocalSearchParams<{ region: string; slug: string }>();
-  const { data, error, loading, reload } = useQuery(`product:${region}/${slug}`, () => getProductPage(supabase, region, slug));
+  const { data, error, loading, reload } = useQuery(`product:${region}/${slug}`, () =>
+    getProductPage(supabase, region, slug),
+  );
   const [saved, setSaved] = useState(false);
   const productId = data?.product.id;
   const button = useRef<View>(null);
@@ -87,19 +89,28 @@ export default function ProductScreen(): React.JSX.Element {
         <>
           <View className="bg-surface gap-4 rounded-lg p-5">
             {data.product.region_slug ? (
-              <Link href={{ pathname: '/region/[slug]', params: { slug: data.product.region_slug } }} asChild>
+              <Link
+                href={{ pathname: '/region/[slug]', params: { slug: data.product.region_slug } }}
+                asChild
+              >
                 <Pressable className="min-h-8 justify-center">
                   <Text className="font-ui text-ink-muted text-[13px]">
-                    <Text className="underline">{data.product.region_name}</Text> · {data.product.category_name}
+                    <Text className="underline">{data.product.region_name}</Text> ·{' '}
+                    {data.product.category_name}
                   </Text>
                 </Pressable>
               </Link>
             ) : (
               // an all-India piece (D-121): no state shown
-              <Text className="font-ui text-ink-muted min-h-8 text-[13px]">{data.product.category_name}</Text>
+              <Text className="font-ui text-ink-muted min-h-8 text-[13px]">
+                {data.product.category_name}
+              </Text>
             )}
             <View className="flex-row items-start justify-between gap-3">
-              <Text accessibilityRole="header" className="font-display flex-1 text-[32px] leading-[35px] text-[#1D1A17]">
+              <Text
+                accessibilityRole="header"
+                className="font-display flex-1 text-[32px] leading-[35px] text-[#1D1A17]"
+              >
                 {data.product.name}
               </Text>
               <Pressable
@@ -109,12 +120,28 @@ export default function ProductScreen(): React.JSX.Element {
                 onPress={() => void toggleSave(data.product.id)}
                 className="border-line bg-paper h-12 w-12 items-center justify-center rounded-full border"
               >
-                <Ionicons name={saved ? 'heart' : 'heart-outline'} size={22} color={saved ? tokens.colors.brand : tokens.colors.ink} />
+                <Ionicons
+                  name={saved ? 'heart' : 'heart-outline'}
+                  size={22}
+                  color={saved ? tokens.colors.brand : tokens.colors.ink}
+                />
               </Pressable>
             </View>
             {data.product.summary ? <Body muted>{data.product.summary}</Body> : null}
-            {data.variants.length > 0 ? (
-              <AddToBag product={data.product} variants={data.variants} buttonRef={button} onBar={onBar} delivery={<DeliveryNote delivery={data.delivery} fromUs={data.ships_from_us} />} />
+            {data.product.coming_soon ? (
+              // D-135: shown, not sold yet: the heart above saves it
+              <View className="border-line gap-1 border-y py-4">
+                <Text className="font-display text-[22px] text-[#1D1A17]">Coming soon</Text>
+                <Body muted>Save it with the heart to find it again.</Body>
+              </View>
+            ) : data.variants.length > 0 ? (
+              <AddToBag
+                product={data.product}
+                variants={data.variants}
+                buttonRef={button}
+                onBar={onBar}
+                delivery={<DeliveryNote delivery={data.delivery} fromUs={data.ships_from_us} />}
+              />
             ) : (
               <Body muted>Not available right now.</Body>
             )}
@@ -131,7 +158,8 @@ export default function ProductScreen(): React.JSX.Element {
               ) : null}
             </View>
             <Text className="border-line font-display text-ink border-t pt-4 text-[18px]">
-              Made in India{data.product.region_name ? ` · from ${data.product.region_name}` : ''} · Imported
+              Made in India{data.product.region_name ? ` · from ${data.product.region_name}` : ''} ·
+              Imported
             </Text>
           </View>
 

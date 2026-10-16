@@ -1,6 +1,7 @@
 import { attributesSchemaFor } from '../../domain/attributes';
 import { variantLabel, type VariantOptions } from '../../domain/listing';
 import { guessDetails } from '../guess';
+import { liquidReason } from '../liquid';
 import { shorten } from '../text';
 import { cleanOptions, packGrams } from '../variants';
 import { bestWeight, readWeights } from '../weight';
@@ -122,6 +123,8 @@ export interface ListingDraft {
     })[];
   };
   photos: { url: string; itemKey: string | null; alt: string }[];
+  /** D-135: why it is a liquid (archived and shown as coming soon), or null. */
+  liquid: string | null;
   /** Every detail customers must see was found: it may go live by itself (when the founder turned that on). */
   complete: boolean;
 }
@@ -185,8 +188,10 @@ export function buildListing(input: {
   if (!items.length) return { skip: 'price outside the band' };
   if (!items.some((v) => v.inStock !== false)) return { skip: 'sold out' };
   // D-004: the store says "Made in India"; a page that names another country of origin is not listed
-  const origin = product.specs.find(([k]) => /country of origin|origin country/i.test(k))?.[1] ?? '';
-  if (origin && !/india|bharat/i.test(origin)) return { skip: `made in ${origin.slice(0, 40)}, not India` };
+  const origin =
+    product.specs.find(([k]) => /country of origin|origin country/i.test(k))?.[1] ?? '';
+  if (origin && !/india|bharat/i.test(origin))
+    return { skip: `made in ${origin.slice(0, 40)}, not India` };
 
   const labels = new Set<string>();
   // D-129: an item's own pack is its weight; otherwise the page's stated weight, when it can only be this item's
@@ -210,9 +215,17 @@ export function buildListing(input: {
       in_stock: v.inStock !== false,
       delivery_days: input.pageDays,
       ...(v.weightG
-        ? { weight_g: v.weightG, weight_source: 'shop' as const, weight_note: `Pack: ${v.label}`.slice(0, 200) }
+        ? {
+            weight_g: v.weightG,
+            weight_source: 'shop' as const,
+            weight_note: `Pack: ${v.label}`.slice(0, 200),
+          }
         : pageWeight && sharesPageWeight
-          ? { weight_g: pageWeight.grams, weight_source: 'shop' as const, weight_note: pageWeight.note }
+          ? {
+              weight_g: pageWeight.grams,
+              weight_source: 'shop' as const,
+              weight_note: pageWeight.note,
+            }
           : { weight_g: null }),
     };
   });
@@ -271,7 +284,12 @@ export function buildListing(input: {
       // (both read while the page's spec rows are at hand)
       variants:
         target.product_type === 'food'
-          ? packedFoodVariants(variants, { name: product.title, description, category: target.category, specs: product.specs })
+          ? packedFoodVariants(variants, {
+              name: product.title,
+              description,
+              category: target.category,
+              specs: product.specs,
+            })
           : target.product_type === 'home'
             ? homeVariants(variants, product)
             : variants,
@@ -279,5 +297,11 @@ export function buildListing(input: {
     },
     photos,
     complete: complete && photos.length > 0,
+    liquid: liquidReason({
+      type: target.product_type,
+      name: product.title,
+      labels: items.map((v) => v.label),
+      specs: product.specs,
+    }),
   };
 }

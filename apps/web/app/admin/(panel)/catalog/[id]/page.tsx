@@ -9,6 +9,7 @@ import {
   addVariantAction,
   setProductStatusAction,
   setQtyAction,
+  setProductComingSoonAction,
   setProductCuratedAction,
   updateProductAction,
 } from '@/features/admin/actions/catalog';
@@ -109,6 +110,21 @@ export default async function AdminProductPage({
             </form>
           ))}
       </div>
+      {product.status === 'archived' ? (
+        // D-135: archived, and still shown to customers as "Coming soon" (the heart, not sold)
+        <form
+          action={setProductComingSoonAction.bind(null, product.id, !product.coming_soon)}
+          className="flex flex-wrap items-center gap-3"
+        >
+          <span>
+            Shown on the store as coming soon: <strong>{product.coming_soon ? 'yes' : 'no'}</strong>
+            {product.coming_soon_note ? ` (${product.coming_soon_note})` : ''}
+          </span>
+          <button type="submit" className="min-h-11 underline">
+            {product.coming_soon ? 'Hide it from the store' : 'Show it as coming soon'}
+          </button>
+        </form>
+      ) : null}
       <form
         action={setProductCuratedAction.bind(null, product.id, !product.is_curated)}
         className="flex items-center gap-3"

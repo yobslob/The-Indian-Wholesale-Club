@@ -1,19 +1,17 @@
 /**
- * D-133: food is priced on its packed weight, the label's net quantity plus its pack, so the hub's scale confirms the
- * price instead of moving it. Real titles from the sourcing runner's log where there are some.
+ * D-133, D-135: food is priced on its real weight, the net quantity its label states, unit by unit, with no
+ * packaging added. Real titles from the sourcing runner's log where there are some.
  */
 import assert from 'node:assert/strict';
 import { describe, it } from 'node:test';
 
-import { weightState } from '../src/domain';
+import { weightSourceLabel, weightState } from '../src/domain';
 import { parseComboParts, parseWeight, parseWeightParts, weightKindOf } from '../src/sourcing';
 import { packedFoodVariants } from '../src/sourcing/auto';
 import {
   foodNet,
   foodWrites,
-  guessPack,
   noteReading,
-  tareFactors,
   weighFood,
   type FoodListing,
 } from '../src/sourcing/estimate';
@@ -62,6 +60,16 @@ describe('net quantities as units (D-133)', () => {
       count: 1,
       liquid: true,
     });
+    assert.deepEqual(parseWeightParts('2 g (Pack of 100)'), {
+      unitGrams: 2,
+      count: 100,
+      liquid: false,
+    });
+    assert.deepEqual(parseWeightParts('Kaju katli box of 100 g'), {
+      unitGrams: 100,
+      count: 1,
+      liquid: false,
+    });
   });
   it('totals as before', () => {
     assert.deepEqual(parseWeight('200 g (Pack of 2)'), {
@@ -77,7 +85,6 @@ describe('net quantities as units (D-133)', () => {
       [100, 100, 50],
     );
     assert.equal(parseComboParts('Bhujia 400 g'), null);
-    assert.equal(parseComboParts('Bhujia 400 g, makes a snack for 4'), null);
   });
   it('rereads a kept weight note', () => {
     assert.deepEqual(noteReading('amazon.in: Net Quantity: 400.0 Grams'), {
@@ -91,83 +98,33 @@ describe('net quantities as units (D-133)', () => {
   });
 });
 
-describe('what a food piece is packed in (D-133)', () => {
-  const pack = (
-    name: string,
-    category = 'snacks-and-namkeen',
-    extra: Partial<Parameters<typeof guessPack>[0]> = {},
-  ) => guessPack({ name, labels: [], category, netGrams: 400, ...extra }).pack;
-  it('takes the pack its name or page names', () => {
-    assert.equal(pack("KARMA'S Recheado Masala 400Gms Jar", 'masala-blends'), 'plastic_jar'); // dry food
-    assert.equal(pack('Homemade mango pickle 400 g jar', 'pickles-and-chutneys'), 'jar'); // glass or plastic
-    assert.equal(
-      pack('SARANZ Goan Recheado Masala 100 Grams-Bottle', 'masala-blends'),
-      'plastic_bottle',
-    );
-    assert.equal(
-      pack('Priya Avakaya Pickle in Glass Jar 300 g', 'pickles-and-chutneys'),
-      'glass_jar',
-    );
-    assert.equal(pack('Amul Pure Ghee 1 L Tin', 'rice-flours-and-staples'), 'tin');
-    assert.equal(
-      pack('Mango pickle 500 g', 'pickles-and-chutneys', {
-        specs: [
-          ['Package Information', 'Jar'],
-          ['Material', 'Glass'],
-        ],
-      }),
-      'glass_jar',
-    );
-  });
-  it('never takes a storage line for the pack', () => {
-    assert.equal(
-      pack('Kitchen King Masala 100 g', 'masala-blends', {
-        description: 'Store in an airtight glass jar after opening.',
-      }),
-      'pouch',
-    );
-    assert.equal(
-      pack('Mango pickle 500 g', 'pickles-and-chutneys', {
-        description: 'Packed in a food-grade PET jar.',
-      }),
-      'plastic_jar',
-    );
-  });
-  it('else the pack such a piece comes in, else its category', () => {
-    assert.equal(pack('Haldiram Rasgulla 1 kg', 'sweets'), 'tin');
-    assert.equal(pack('Gulab jamun mix 200 g', 'sweets'), 'pouch');
-    assert.equal(pack('Kaju katli 500 g', 'sweets'), 'sweet_box');
-    assert.equal(pack('Achar masala 100 g', 'masala-blends'), 'pouch');
-    assert.equal(pack('Cold pressed mustard oil 1 L', 'rice-flours-and-staples'), 'bottle');
-    assert.equal(pack('Bikaneri bhujia 400 g'), 'pouch');
-    assert.equal(
-      guessPack({
-        name: 'Sona masoori rice 5 kg',
-        labels: [],
-        category: 'Rice, Flours & Staples',
-        netGrams: 5000,
-      }).pack,
-      'sack',
-    );
-  });
-});
-
-describe('a food option’s packed weight (D-133)', () => {
-  it('adds the pack to the net quantity', () => {
+describe('a food option’s real weight: its net quantity, no packaging (D-135)', () => {
+  it('is the label’s net quantity, to the gram', () => {
     const r = one(listing("KARMA'S Recheado Masala 400Gms Jar", [{}], 'masala-blends'));
     assert.equal(r.net?.label, '400 g');
-    assert.equal(r.grams, 440); // 400 g + a plastic jar 39 g (a dry masala)
-    assert.match(
-      r.note,
-      /^400 g net \(its name\) \+ plastic jar 39 g: its name says "jar" \(dry food: plastic\) \(D-133\)$/,
+    assert.equal(r.grams, 400);
+    assert.equal(r.note, '400 g net (its name) (D-135)');
+  });
+  it('a pickle in a glass jar weighs what its label says', () => {
+    assert.equal(
+      one(listing('Priya Avakaya Pickle in Glass Jar 300 g', [{}], 'pickles-and-chutneys')).grams,
+      300,
     );
   });
-  it('a pickle in a jar that names no material is between glass and plastic, and marked to weigh', () => {
-    const r = one(listing('Homemade mango pickle 500 g jar', [{}], 'pickles-and-chutneys'));
-    assert.equal(r.grams, 665);
-    assert.match(r.look ?? '', /glass or plastic/);
-  });
-  it('light units share one pack; "Pack of 100" counts, "box of 100 g" weighs', () => {
+  it('every unit of a pack counts', () => {
+    const r = one(
+      listing(
+        'SHREE SHYAM TILPATTI UDYOG Premium Cardamom Tilpatti, 500 Grams (Pack of 2)',
+        [{}],
+        'sweets',
+      ),
+    );
+    assert.equal(r.net?.label, '2 × 500 g');
+    assert.equal(r.grams, 1000);
+    const p = one(
+      listing('Haldiram Bhujia 400 g', [{ label: 'Pack of 2', options: { pack: 'Pack of 2' } }]),
+    );
+    assert.deepEqual([p.net?.label, p.grams], ['2 × 400 g', 800]);
     const bars = one(
       listing(
         'Paper Boat Chikki Jar',
@@ -175,20 +132,33 @@ describe('a food option’s packed weight (D-133)', () => {
         'sweets',
       ),
     );
-    assert.equal(bars.net?.label, '50 × 16 g');
-    assert.equal(bars.grams, 865); // 800 g in one plastic jar (63 g), not fifty jars
-    assert.deepEqual(parseWeightParts('2 g (Pack of 100)'), {
-      unitGrams: 2,
-      count: 100,
-      liquid: false,
-    });
-    assert.deepEqual(parseWeightParts('Kaju katli box of 100 g'), {
-      unitGrams: 100,
-      count: 1,
-      liquid: false,
-    });
+    assert.equal(bars.grams, 800);
   });
-  it('reads the net quantity matching items agreed on', () => {
+  it('an option’s own pack comes before the name', () => {
+    const [small, big] = weighFood(
+      listing('Bikaneri bhujia 400 g', [
+        { label: '200 g', options: { pack: '200 g' } },
+        { label: '1 kg', options: { pack: '1 kg' } },
+      ]),
+    );
+    assert.deepEqual([small?.grams, big?.grams], [200, 1000]);
+  });
+  it('millilitres by density: a litre of ghee is 910 g', () => {
+    const r = one(listing('Amul Pure Ghee 1 L Tin', [{}], 'rice-flours-and-staples'));
+    assert.deepEqual([r.net?.label, r.grams], ['1 L', 910]);
+  });
+  it('a combo is each of its packs', () => {
+    const r = one(
+      listing('SARANZ Recheado 100 g + Galouti 100 g + Frankie 50 g', [{}], 'masala-blends'),
+    );
+    assert.deepEqual([r.net?.label, r.grams], ['100 g + 100 g + 50 g', 250]);
+  });
+  it('reads the description’s “Net weight” line and matching items’ agreed net quantity', () => {
+    assert.equal(
+      one(listing('Homemade Mysore Pak', [{}], 'sweets', 'Fresh ghee sweet.\nNet Weight: 250 g'))
+        .grams,
+      250,
+    );
     const r = one(
       listing('Haldiram Navratan Mixture', [
         {
@@ -198,92 +168,43 @@ describe('a food option’s packed weight (D-133)', () => {
         },
       ]),
     );
-    assert.equal(r.grams, 420);
+    assert.equal(r.grams, 400);
   });
-  it('a glass jar of pickle ships far heavier than its label', () => {
-    assert.equal(
-      one(listing('Priya Avakaya Pickle in Glass Jar 300 g', [{}], 'pickles-and-chutneys')).grams,
-      525,
-    );
-  });
-  it('each unit of a pack has its own pack', () => {
+  it('D-133’s packed weights go back to the net quantity', () => {
     const r = one(
-      listing(
-        'SHREE SHYAM TILPATTI UDYOG Premium Cardamom Tilpatti, 500 Grams (Pack of 2)',
-        [{}],
-        'sweets',
-      ),
-    );
-    assert.equal(r.net?.label, '2 × 500 g');
-    assert.equal(r.grams, 1200);
-    const p = one(
-      listing('Haldiram Bhujia 400 g', [{ label: 'Pack of 2', options: { pack: 'Pack of 2' } }]),
-    );
-    assert.equal(p.net?.label, '2 × 400 g');
-  });
-  it('an option’s own pack comes before the name', () => {
-    const [small, big] = weighFood(
-      listing('Bikaneri bhujia 400 g', [
-        { label: '200 g', options: { pack: '200 g' } },
-        { label: '1 kg', options: { pack: '1 kg' } },
-      ]),
-    );
-    assert.equal(small?.grams, 215);
-    assert.equal(big?.grams, 1040);
-  });
-  it('liquids by their weight: a litre of ghee is 910 g', () => {
-    const r = one(listing('Amul Pure Ghee 1 L Tin', [{}], 'rice-flours-and-staples'));
-    assert.equal(r.net?.label, '1 L');
-    assert.equal(r.grams, 1045);
-  });
-  it('a combo is each of its packs', () => {
-    const r = one(
-      listing('SARANZ Recheado 100 g + Galouti 100 g + Frankie 50 g', [{}], 'masala-blends'),
-    );
-    assert.equal(r.net?.label, '100 g + 100 g + 50 g');
-    assert.equal(r.grams, 315); // three boxes, as masala blends come
-  });
-  it('reads the label from the description’s “Net weight” line', () => {
-    assert.equal(
-      one(listing('Homemade Mysore Pak', [{}], 'sweets', 'Fresh ghee sweet.\nNet Weight: 250 g'))
-        .net?.label,
-      '250 g',
-    );
-  });
-  it('a shop’s believable packed weight is kept; one that is only the contents is not', () => {
-    const page = one(
       listing('Haldiram Bhujia 400 g', [
-        { weight_g: 450, weight_source: 'shop', weight_note: 'amazon.in: Item Weight: 450 g' },
+        {
+          weight_g: 420,
+          weight_source: 'packed',
+          weight_note: '400 g net (its name) + pouch 18 g: snacks usually come in a pouch (D-133)',
+          net_qty: '400 g',
+        },
       ]),
     );
-    assert.equal(page.grams, 450);
-    assert.match(page.note, /states it packed/);
-    const net = one(
-      listing('Haldiram Bhujia 400 g', [
-        { weight_g: 400, weight_source: 'shop', weight_note: 'Item Weight: 400 g' },
-      ]),
+    assert.equal(r.grams, 400);
+    assert.deepEqual(
+      foodWrites([r]).map((w) => w.weight_g),
+      [400],
     );
-    assert.equal(net.grams, 420);
   });
   it('never over the hub’s scale or an admin, but their net quantity is still shown', () => {
     const results = weighFood(
       listing('Haldiram Bhujia 400 g', [
         { weight_g: 433, weight_source: 'weighed' },
         { weight_g: 500, weight_source: 'admin' },
-        { weight_g: 400, weight_source: 'shop', weight_note: 'Pack: 400 g' },
+        { weight_g: 450, weight_source: 'shop', weight_note: 'Pack: 400 g' },
       ]),
     );
     assert.deepEqual(
       results.map((r) => r.grams),
-      [null, null, 420],
+      [null, null, 400],
     );
-    const writes = foodWrites(results);
     assert.deepEqual(
-      writes.map((w) => [w.weight_g, w.net_qty]),
+      foodWrites(results).map((w) => [w.weight_g, w.net_qty]),
       [
         [null, '400 g'],
         [null, '400 g'],
-        [420, '400 g'],
+        [400, '400 g'],
       ],
     );
   });
@@ -312,9 +233,6 @@ describe('a food option’s packed weight (D-133)', () => {
     };
     assert.equal(foodWrites(weighFood(again)).length, 0);
   });
-  it('a packed weight is a confirmed weight', () => {
-    assert.equal(weightState({ weight_g: 420, weight_source: 'packed' }), 'confirmed');
-  });
   it('a misread net quantity gives none', () => {
     assert.equal(
       foodNet(
@@ -324,33 +242,15 @@ describe('a food option’s packed weight (D-133)', () => {
       null,
     );
   });
-});
-
-describe('the hub’s scale tunes the packs (D-133)', () => {
-  const weighed = (grams: number) => ({
-    name: 'Mango pickle in glass jar 500 g',
-    category: 'Pickles & Chutneys',
-    label: 'One size',
-    options: {},
-    weight_g: grams,
-  });
-  it('three weighings of a pack set its factor', () => {
-    const f = tareFactors([weighed(700), weighed(690), weighed(720)]);
-    assert.ok(f.glass_jar && Math.abs(f.glass_jar - 200 / 295) < 0.01);
-    const tuned = weighFood(
-      listing('Lime pickle in glass jar 500 g', [{}], 'pickles-and-chutneys'),
-      { factors: f },
-    )[0]!;
-    assert.equal(tuned.grams, 700);
-  });
-  it('fewer than three, or a misread label, leave the table as it is', () => {
-    assert.deepEqual(tareFactors([weighed(700), weighed(690)]), {});
-    assert.deepEqual(tareFactors([weighed(400), weighed(5000), weighed(450)]), {});
+  it('admins read it as the label’s net weight, and it is confirmed', () => {
+    assert.equal(weightState({ weight_g: 400, weight_source: 'packed' }), 'confirmed');
+    assert.equal(weightSourceLabel('packed', 'food'), 'Net weight on its label (D-135)');
+    assert.equal(weightSourceLabel('packed', 'home'), 'Its weight + its packing (D-134)');
   });
 });
 
-describe('the runner prices new food on its packed weight (D-133)', () => {
-  it('uses the page’s spec rows for the pack', () => {
+describe('the runner prices new food on its net weight (D-135)', () => {
+  it('no packaging, whatever the page says it comes in', () => {
     const [v] = packedFoodVariants(
       [
         {
@@ -377,25 +277,6 @@ describe('the runner prices new food on its packed weight (D-133)', () => {
         ],
       },
     );
-    assert.equal(v?.weight_source, 'packed');
-    assert.equal(v?.net_qty, '500 g');
-    assert.equal(v?.weight_g, 795);
-  });
-});
-
-describe('a kept shop page weight stays on a second pass (D-133)', () => {
-  it('does not flip to the table weight', () => {
-    const l = listing('Haldiram Bhujia 400 g', [
-      { weight_g: 450, weight_source: 'shop', weight_note: 'Item Weight: 450 g' },
-    ]);
-    const [w] = foodWrites(weighFood(l));
-    assert.equal(w?.weight_g, 450);
-    const again = {
-      ...l,
-      variants: [
-        { ...l.variants[0]!, weight_source: 'packed', weight_note: w!.note, net_qty: w!.net_qty },
-      ],
-    };
-    assert.equal(foodWrites(weighFood(again)).length, 0);
+    assert.deepEqual([v?.weight_source, v?.net_qty, v?.weight_g], ['packed', '500 g', 500]);
   });
 });

@@ -182,19 +182,20 @@ runner in `tools/sourcing-runner/` (its README says how to set it up on the PC a
   350 g, medium 750 g, pants and footwear 800 g, heavy 1.5 kg); on the laptop `pnpm weights classes` sorts all
   clothing (the model sorts a name no rule reads) and writes `clothing-classes.csv` for review. A weighed or typed
   weight stays; the product page shows "Clothing class (D-132)" and why.
-- **Food's packed weight (D-133).** Every food option is priced on its label's net quantity plus the weight of its
-  pack: read from its options, label, the shop page's net quantity or its name ("2 × 200 g" is two packs; 50 chikki
-  bars of 16 g are one jar), the pack from the page's spec rows, its name or description (never a "store in a glass
-  jar" line), else what such food comes in (pickles a jar, masalas a pouch or box, sweets a sweet box, rasgullas a
-  tin, ghee a jar, oil a bottle). A jar or bottle that names no material is plastic for dry food and between glass
-  and plastic otherwise; those are marked "glass or plastic? weigh one at the hub". The pack weights are Claude's
-  table (`estimate/food-packs.ts`) and are tuned by the hub's scale: three or more weighed pieces of one pack set its
-  factor. The order: the hub's scale, then an admin's weight, then this; a shop page's packed weight that fits its
-  net quantity is used as it is. New food gets it when the runner adds it; each run (and `pnpm sourcing food`) works
-  out every food listing not yet done; `pnpm weights food --dry` on the laptop writes `food-weights.csv` (every
-  option, its net quantity, pack, old and new weight). An option no label states keeps what it has (the page search
-  above, then the hub). An admin's typed weight cannot replace one weighed at the hub: the weight box asks to weigh
-  it again. The product page shows the source "Its weight + its packing (D-133, D-134)" and the sum.
+- **Food's net weight (D-133, D-135).** Every food option is priced on the net quantity its label states, no
+  packaging: read from its options, label, the shop page's net quantity or its name, unit by unit ("2 × 200 g" is
+  400 g), millilitres by density. The order: the hub's scale, then an admin's weight, then this. New food gets it when
+  the runner adds it; each run (and `pnpm sourcing food`, `--all` to redo every one) works out every food listing not
+  yet done; `pnpm weights food --dry` on the laptop writes `food-weights.csv` (every option, its net quantity, old and
+  new weight). An option no label states keeps what it has (the page search above, then the hub). An admin's typed
+  weight cannot replace one weighed at the hub: the weight box asks to weigh it again. The product page shows the
+  source "Net weight on its label (D-135)" and where it was read.
+- **Liquids are not sent (D-135).** The runner checks every food and home listing once (each new one as it adds it,
+  the rest at the end of each run; alone: `pnpm sourcing liquids --dry`): a liquid (a juice, sharbat, soda, oil,
+  syrup, sauce, attar, rose water, anything sold by the ml or litre, or a page saying "Item Form: Liquid"; never
+  pickles, pastes or powders) is archived and shown to customers as **coming soon**: no price, no Add, the heart to
+  save it. Products → Archived marks it "coming soon on the store"; its page says why and has **Hide it from the
+  store** / **Show it as coming soon**. Publishing it again ends its coming soon, and the check never undoes that.
 - **Home & gifts from their own pages (D-134).** Each run (and `pnpm sourcing home`, `--dry` for the sheet
   `tools/sourcing-runner/home-weights.csv`) reads every home option's own page (on Amazon each size and colour is its
   own item, with its "Item details" and "Measurements" dropdowns, now read by the capture too): the packed weight

@@ -34,7 +34,11 @@ export async function generateMetadata({ params }: { params: Params }): Promise<
  * tablets, D-082), then Reviews, Similar items in smaller cards and Curated for you (D-051, D-056). One cached store_product_page() call; the
  * add-to-bag island refreshes availability live (PR-7).
  */
-export default async function ProductPage({ params }: { params: Params }): Promise<React.JSX.Element> {
+export default async function ProductPage({
+  params,
+}: {
+  params: Params;
+}): Promise<React.JSX.Element> {
   const { region, product: productSlug } = await params;
   const page = await getProductPageCached(region, productSlug);
   if (!page) notFound();
@@ -45,11 +49,17 @@ export default async function ProductPage({ params }: { params: Params }): Promi
     <>
       <div className="grid items-start gap-[var(--gap)] md:grid-cols-[minmax(0,1.05fr)_minmax(0,1fr)] min-[1100px]:grid-cols-[auto_minmax(0,1fr)]">
         <ProductGallery media={media} name={product.name} />
-        <aside aria-label="Buy" className="bg-surface rounded-lg p-[clamp(22px,2.6vw,44px)] md:sticky md:top-[calc(var(--top-h)+16px)]">
+        <aside
+          aria-label="Buy"
+          className="bg-surface rounded-lg p-[clamp(22px,2.6vw,44px)] md:sticky md:top-[calc(var(--top-h)+16px)]"
+        >
           <p className="font-ui text-ink-muted flex flex-wrap items-center gap-x-2 text-[13px] font-medium">
             {product.region_slug ? (
               <>
-                <Link href={`/states/${product.region_slug}`} className="hover:text-ink underline underline-offset-[3px]">
+                <Link
+                  href={`/states/${product.region_slug}`}
+                  className="hover:text-ink underline underline-offset-[3px]"
+                >
                   {product.region_name}
                 </Link>
                 <span aria-hidden="true">·</span>
@@ -64,12 +74,24 @@ export default async function ProductPage({ params }: { params: Params }): Promi
             ) : null}
           </p>
           <div className="my-3 flex items-start justify-between gap-4">
-            <h1 className="font-display text-[clamp(38px,3.6vw,64px)] leading-none tracking-[-0.02em]">{product.name}</h1>
+            <h1 className="font-display text-[clamp(38px,3.6vw,64px)] leading-none tracking-[-0.02em]">
+              {product.name}
+            </h1>
             <SaveButton productId={product.id} />
           </div>
           {product.summary ? <p className="text-ink-muted mb-5">{product.summary}</p> : null}
-          {variants.length > 0 ? (
-            <AddToCart product={product} variants={variants} delivery={<DeliveryNote delivery={delivery} fromUs={ships_from_us} />} />
+          {product.coming_soon ? (
+            // D-135: shown, not sold yet: the heart above saves it
+            <div className="border-line border-y py-4">
+              <p className="font-display text-[22px]">Coming soon</p>
+              <p className="text-ink-muted text-sm">Save it with the heart to find it again.</p>
+            </div>
+          ) : variants.length > 0 ? (
+            <AddToCart
+              product={product}
+              variants={variants}
+              delivery={<DeliveryNote delivery={delivery} fromUs={ships_from_us} />}
+            />
           ) : (
             <p className="text-ink-muted text-sm">Not available right now.</p>
           )}

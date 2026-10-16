@@ -35,6 +35,14 @@ function QuickAdd({ product }: { product: CardData }): React.JSX.Element {
   const pressStyle = useAnimatedStyle(() => ({ transform: [{ scale: scale.value }] }));
   const round =
     'bg-paper border-line absolute bottom-2.5 right-2.5 h-10 w-10 items-center justify-center rounded-full border';
+  if (product.coming_soon) {
+    // D-135: not on sale yet; its page has the heart
+    return (
+      <View className="bg-paper rounded-pill absolute bottom-2.5 right-2.5 px-3 py-1.5">
+        <Text className="font-ui text-ink-muted text-xs">Coming soon</Text>
+      </View>
+    );
+  }
   if (product.available === 0) {
     return (
       <View className="bg-paper rounded-pill absolute bottom-2.5 right-2.5 px-3 py-1.5">
@@ -169,7 +177,7 @@ export const ProductCard = memo(function ProductCard({
           {product.name}
         </Text>
         <Text className="font-body text-ink-muted text-[12.5px]">
-          {formatUsd(product.price_cents)}
+          {product.coming_soon ? 'Coming soon' : formatUsd(product.price_cents)}
           {product.region_name ? ` · ${product.region_name}` : null}
         </Text>
       </View>

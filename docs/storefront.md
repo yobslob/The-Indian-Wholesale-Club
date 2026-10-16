@@ -58,6 +58,7 @@ Framer Motion page transitions (speed, `engineering.md`).
    particular) shows on every state's page and under every state in See all, after the state's own pieces, with no
    state on its card. New arrivals, the first row, is the state's own pieces only (D-122).
 6. Regions with no live products show "Coming soon" (`regions.is_live = false`). Anything more, like a notify-me feature, needs founder approval.
+7. A **coming-soon** piece (D-135: a liquid, not sent; archived for admins) is shown like any other: its card says "Coming soon" instead of the price, with the heart instead of the + (the app card: a "Coming soon" pill), and its page says "Coming soon. Save it with the heart to find it again." instead of Add to bag. It cannot be bought (no options in `store_variants`).
 **Target (D-051; built in C1 and C2; the lists are rows, D-062; the album shows once a region has three album photos):** below the hero (greeting, tagline, story, image): Clothing / Food filter pills, then
 **New arrivals → Most wanted → a photo album that scrolls sideways by itself (not interactive) → Curated for you (a card)
 → Leaving soon** (almost out of stock). Curated for you = admin picks per region, Leaving soon = 1–2 left (D-056); Most wanted = most pieces ordered in the last 30 days (D-058); the album has no pause control (founder, D-052).

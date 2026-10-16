@@ -43,7 +43,8 @@ pnpm sourcing run              the checks that are due, then the queued targets
 pnpm sourcing run --checks     only the checks
 pnpm sourcing run --targets    only the targets
 pnpm sourcing classes          only clothing by class (D-132): no browser, no shops, nothing added
-pnpm sourcing food [--all]     only food's packed weights (D-133, net quantity + pack): no browser, nothing added
+pnpm sourcing food [--all]     only food's net weights (D-133, D-135: the label's net quantity): no browser, nothing added
+pnpm sourcing liquids [--dry]  only the liquid check (D-135): liquids archived and shown as coming soon; no browser
 pnpm sourcing home [--dry]     only home weights from each option's own page (D-134; --dry writes home-weights.csv,
                                --all reads weights already read, --limit 200 takes more listings than 40)
 pnpm sourcing run --type clothing --shops nishorama.com    one type (and one shop) only; two terminals can run
@@ -51,7 +52,8 @@ pnpm sourcing run --type food                              at once: each claims 
                                uses its own browser profile (the main one copied the first time, so the hub's
                                addresses carry over) and tags its lines in sourcing.log ([food], [clothing ...])
 pnpm sourcing run --weights    only new clothing by class (D-132, by the name rules) and the weights listings
-                               lack (D-129), home from its own pages (D-134), then food's packed weights (D-133);
+                               lack (D-129), home from its own pages (D-134), the liquid check (D-135), then food's
+                               net weights (D-135);
                                every full run ends with them too
 pnpm sourcing try "kasuri methi" --type food    a dry run: what it would add (nothing is written)
 pnpm sourcing try "kurta set women" --type clothing --shops myntra.com --min 600 --max 1600 --listings 10

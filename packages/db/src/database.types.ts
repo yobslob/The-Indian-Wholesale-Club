@@ -612,14 +612,14 @@ isOneToOne: false
                   ]
                 },"products": {
                   Row: {
-                    "attributes": NonNullable<Json>,"category_id": string,"craft": string | null,"created_at": string,"created_by": string | null,"description": string | null,"has_origin_label": boolean,"id": string,"is_curated": boolean,"is_placeholder": boolean,"is_us_stock": boolean,"name": string,"origin_town": string | null,"price_auto": boolean,"price_cents": number,"product_type": Database["public"]['Enums']["product_type"],"published_at": string | null,"region_id": string | null,"search": unknown,"shop_price_paise": number | null,"slug": string,"source_checked_at": string | null,"source_in_stock": boolean | null,"source_site": string | null,"source_url": string | null,"sourcing_target_id": string | null,"status": Database["public"]['Enums']["product_status"],"story": string | null,"summary": string | null,"updated_at": string,"vendor_id": string
+                    "attributes": NonNullable<Json>,"category_id": string,"coming_soon": boolean,"coming_soon_note": string | null,"craft": string | null,"created_at": string,"created_by": string | null,"description": string | null,"has_origin_label": boolean,"id": string,"is_curated": boolean,"is_placeholder": boolean,"is_us_stock": boolean,"liquid_checked_at": string | null,"name": string,"origin_town": string | null,"price_auto": boolean,"price_cents": number,"product_type": Database["public"]['Enums']["product_type"],"published_at": string | null,"region_id": string | null,"search": unknown,"shop_price_paise": number | null,"slug": string,"source_checked_at": string | null,"source_in_stock": boolean | null,"source_site": string | null,"source_url": string | null,"sourcing_target_id": string | null,"status": Database["public"]['Enums']["product_status"],"story": string | null,"summary": string | null,"updated_at": string,"vendor_id": string
                   }
                   ComputedFields: never
                   Insert: {
-                    "attributes"?: NonNullable<Json>,"category_id": string,"craft"?: string | null,"created_at"?: string,"created_by"?: string | null,"description"?: string | null,"has_origin_label"?: boolean,"id"?: string,"is_curated"?: boolean,"is_placeholder"?: boolean,"is_us_stock"?: boolean,"name": string,"origin_town"?: string | null,"price_auto"?: boolean,"price_cents": number,"product_type": Database["public"]['Enums']["product_type"],"published_at"?: string | null,"region_id"?: string | null,"search"?: never,"shop_price_paise"?: number | null,"slug": string,"source_checked_at"?: string | null,"source_in_stock"?: boolean | null,"source_site"?: string | null,"source_url"?: string | null,"sourcing_target_id"?: string | null,"status"?: Database["public"]['Enums']["product_status"],"story"?: string | null,"summary"?: string | null,"updated_at"?: string,"vendor_id": string
+                    "attributes"?: NonNullable<Json>,"category_id": string,"coming_soon"?: boolean,"coming_soon_note"?: string | null,"craft"?: string | null,"created_at"?: string,"created_by"?: string | null,"description"?: string | null,"has_origin_label"?: boolean,"id"?: string,"is_curated"?: boolean,"is_placeholder"?: boolean,"is_us_stock"?: boolean,"liquid_checked_at"?: string | null,"name": string,"origin_town"?: string | null,"price_auto"?: boolean,"price_cents": number,"product_type": Database["public"]['Enums']["product_type"],"published_at"?: string | null,"region_id"?: string | null,"search"?: never,"shop_price_paise"?: number | null,"slug": string,"source_checked_at"?: string | null,"source_in_stock"?: boolean | null,"source_site"?: string | null,"source_url"?: string | null,"sourcing_target_id"?: string | null,"status"?: Database["public"]['Enums']["product_status"],"story"?: string | null,"summary"?: string | null,"updated_at"?: string,"vendor_id": string
                   }
                   Update: {
-                    "attributes"?: NonNullable<Json>,"category_id"?: string,"craft"?: string | null,"created_at"?: string,"created_by"?: string | null,"description"?: string | null,"has_origin_label"?: boolean,"id"?: string,"is_curated"?: boolean,"is_placeholder"?: boolean,"is_us_stock"?: boolean,"name"?: string,"origin_town"?: string | null,"price_auto"?: boolean,"price_cents"?: number,"product_type"?: Database["public"]['Enums']["product_type"],"published_at"?: string | null,"region_id"?: string | null,"search"?: never,"shop_price_paise"?: number | null,"slug"?: string,"source_checked_at"?: string | null,"source_in_stock"?: boolean | null,"source_site"?: string | null,"source_url"?: string | null,"sourcing_target_id"?: string | null,"status"?: Database["public"]['Enums']["product_status"],"story"?: string | null,"summary"?: string | null,"updated_at"?: string,"vendor_id"?: string
+                    "attributes"?: NonNullable<Json>,"category_id"?: string,"coming_soon"?: boolean,"coming_soon_note"?: string | null,"craft"?: string | null,"created_at"?: string,"created_by"?: string | null,"description"?: string | null,"has_origin_label"?: boolean,"id"?: string,"is_curated"?: boolean,"is_placeholder"?: boolean,"is_us_stock"?: boolean,"liquid_checked_at"?: string | null,"name"?: string,"origin_town"?: string | null,"price_auto"?: boolean,"price_cents"?: number,"product_type"?: Database["public"]['Enums']["product_type"],"published_at"?: string | null,"region_id"?: string | null,"search"?: never,"shop_price_paise"?: number | null,"slug"?: string,"source_checked_at"?: string | null,"source_in_stock"?: boolean | null,"source_site"?: string | null,"source_url"?: string | null,"sourcing_target_id"?: string | null,"status"?: Database["public"]['Enums']["product_status"],"story"?: string | null,"summary"?: string | null,"updated_at"?: string,"vendor_id"?: string
                   }
                   Relationships: [
                     {
@@ -1445,7 +1445,7 @@ isOneToOne: false
                   ]
                 },"store_products": {
                   Row: {
-                    "attributes": Json | null,"category_id": string | null,"category_name": string | null,"category_slug": string | null,"craft": string | null,"description": string | null,"id": string | null,"is_curated": boolean | null,"is_us_stock": boolean | null,"name": string | null,"price_cents": number | null,"primary_image_path": string | null,"product_type": Database["public"]['Enums']["product_type"] | null,"published_at": string | null,"region_id": string | null,"region_name": string | null,"region_slug": string | null,"search": unknown,"slug": string | null,"story": string | null,"summary": string | null
+                    "attributes": Json | null,"category_id": string | null,"category_name": string | null,"category_slug": string | null,"coming_soon": boolean | null,"craft": string | null,"description": string | null,"id": string | null,"is_curated": boolean | null,"is_us_stock": boolean | null,"name": string | null,"price_cents": number | null,"primary_image_path": string | null,"product_type": Database["public"]['Enums']["product_type"] | null,"published_at": string | null,"region_id": string | null,"region_name": string | null,"region_slug": string | null,"search": unknown,"slug": string | null,"story": string | null,"summary": string | null
                   }
                   ComputedFields: never
                   Relationships: [
@@ -1903,6 +1903,7 @@ isOneToOne: false
 "category_id": string | null,
 "category_name": string | null,
 "category_slug": string | null,
+"coming_soon": boolean | null,
 "craft": string | null,
 "description": string | null,
 "id": string | null,
@@ -1978,6 +1979,9 @@ isOneToOne: false
 "worker_home_plan":
 { Args: { "p_all"?: boolean,"p_limit"?: number }; Returns: Json
                            },
+"worker_liquid_plan":
+{ Args: { "p_after"?: string,"p_all"?: boolean,"p_limit"?: number }; Returns: Json
+                           },
 "worker_may_add_photos":
 { Args: { "p_product": string }; Returns: boolean
                            },
@@ -1992,6 +1996,9 @@ isOneToOne: false
                            },
 "worker_set_home_weights":
 { Args: { "p_weights": Json }; Returns: number
+                           },
+"worker_set_liquids":
+{ Args: { "p_items": Json }; Returns: number
                            },
 "worker_set_weights":
 { Args: { "p_weights": Json }; Returns: number

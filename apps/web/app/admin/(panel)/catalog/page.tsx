@@ -10,7 +10,13 @@ import { PublishDrafts } from '@/features/admin/publish-drafts';
 import { Cell, input, linkButton, PageHead, rupees, Table, Tabs } from '@/features/admin/ui';
 import { WeightSummary, WeightsToCheck } from '@/features/admin/weights-to-check';
 
-type SearchParams = Promise<{ q?: string; status?: string; page?: string; us?: string; weights?: string }>;
+type SearchParams = Promise<{
+  q?: string;
+  status?: string;
+  page?: string;
+  us?: string;
+  weights?: string;
+}>;
 
 const PAGE = 50;
 
@@ -99,14 +105,19 @@ export default async function CatalogPage({
       {status === 'draft' && !usStock && counts.draft > 0 ? <PublishDrafts /> : null}
       {usStock ? (
         <p className="text-ink-muted text-sm">
-          Returned and cancelled pieces already in the US, as drafts at the clearance price. Check each piece in hand,
-          then publish it: it ships at once, without a cycle.
+          Returned and cancelled pieces already in the US, as drafts at the clearance price. Check
+          each piece in hand, then publish it: it ships at once, without a cycle.
         </p>
       ) : null}
       <form className="flex gap-2">
         {status ? <input type="hidden" name="status" value={status} /> : null}
         {usStock ? <input type="hidden" name="us" value="1" /> : null}
-        <input name="q" defaultValue={q} placeholder="Search products" className={`${input} flex-1`} />
+        <input
+          name="q"
+          defaultValue={q}
+          placeholder="Search products"
+          className={`${input} flex-1`}
+        />
         <button type="submit" className={linkButton}>
           Search
         </button>
@@ -135,11 +146,16 @@ export default async function CatalogPage({
                 {p.name}
               </Link>
               {p.is_placeholder ? <span className="text-caution ml-1 text-xs">(demo)</span> : null}
-              {p.is_us_stock ? <span className="text-ink-muted ml-1 text-xs">(in the US)</span> : null}
+              {p.is_us_stock ? (
+                <span className="text-ink-muted ml-1 text-xs">(in the US)</span>
+              ) : null}
             </Cell>
             <Cell>{p.product_type}</Cell>
             <Cell>
               <StatusChip map={PRODUCT_STATUS} status={p.status} />
+              {p.coming_soon ? (
+                <span className="text-ink-muted ml-1 text-xs">coming soon on the store</span>
+              ) : null}
             </Cell>
             <Cell>{p.region?.name ?? 'All states'}</Cell>
             <Cell>{p.vendor?.shop_name}</Cell>

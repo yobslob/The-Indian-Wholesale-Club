@@ -9,6 +9,7 @@ import { loadEnv } from './env';
 import { findForTarget } from './find';
 import { weighFood } from './food';
 import { weighHome } from './home';
+import { checkLiquids } from './liquids';
 import { errorText, log, setLogTag, ShopStats } from './log';
 import { describeNetError, resolveOverHttps } from './net';
 import { fillWeights } from './weights';
@@ -28,6 +29,7 @@ import type { SourcingPlan } from '@repo/shared/sourcing/auto';
  *   pnpm sourcing classes                only clothing by class (D-132): no browser, no shops, no new listings
  *   pnpm sourcing food [--all]           only food's packed weights (D-133): no browser, no shops, no new listings
  *   pnpm sourcing home [--dry] [--all]   only home weights from each option's own page (D-134; --dry: home-weights.csv)
+ *   pnpm sourcing liquids [--dry]        only the liquid check (D-135): liquids archived, shown as coming soon
  *   pnpm sourcing try "kasuri methi" --type food    a dry run: what it would add, nothing written
  *   pnpm sourcing doctor                 tests the road to Supabase and the worker sign-in
  * Windows Task Scheduler runs `run` once a day (README.md).
@@ -164,6 +166,8 @@ async function run(args: string[]): Promise<number> {
     const home =
       onlyOne || (type && type !== 'home') ? 0 : await weighHome(ctx, { limit: 40, dry: false });
     const weights = onlyOne ? 0 : await fillWeights(ctx, 40, type);
+    // D-135: liquids out of sale (shown as coming soon) before their weights matter
+    const liquid = onlyOne || type === 'clothing' ? 0 : await checkLiquids(db, { dry: false });
     const packed = onlyOne || (type && type !== 'food') ? 0 : await weighFood(db);
     await db.logRun({
       started_at: started.toISOString(),
@@ -177,7 +181,7 @@ async function run(args: string[]): Promise<number> {
       shops: ctx.stats.toJSON(),
     });
     log(
-      `done: ${checks.products} checked (${checks.prices} prices, ${checks.stock} stock, ${checks.held} held), ${added} listings added, ${classed} clothing options weighed by class, ${packed} food options packed, ${home} home options weighed, ${weights} weights found`,
+      `done: ${checks.products} checked (${checks.prices} prices, ${checks.stock} stock, ${checks.held} held), ${added} listings added, ${classed} clothing options weighed by class, ${liquid} liquids archived, ${packed} food options weighed, ${home} home options weighed, ${weights} weights found`,
     );
   } finally {
     await context.close();
@@ -311,25 +315,37 @@ async function home(): Promise<number> {
   }
   return 0;
 }
+
+/** D-135: the liquid check alone (`--dry`: lists them, writes nothing; `--all`: checks checked ones again). */
+async function liquids(): Promise<number> {
+  const n = await checkLiquids(await Db.signIn(loadEnv(true)), {
+    dry: args.includes('--dry'),
+    all: args.includes('--all'),
+  });
+  log(`done: ${n} liquid listings ${args.includes('--dry') ? 'found' : 'archived'}`);
+  return 0;
+}
 const main =
-  command === 'home'
-    ? home()
-    : command === 'food'
-      ? food()
-      : command === 'classes'
-        ? classes()
-        : command === 'setup'
-          ? setup()
-          : command === 'run'
-            ? run(args)
-            : command === 'try'
-              ? dryRun(args)
-              : command === 'doctor'
-                ? doctor()
-                : null;
+  command === 'liquids'
+    ? liquids()
+    : command === 'home'
+      ? home()
+      : command === 'food'
+        ? food()
+        : command === 'classes'
+          ? classes()
+          : command === 'setup'
+            ? setup()
+            : command === 'run'
+              ? run(args)
+              : command === 'try'
+                ? dryRun(args)
+                : command === 'doctor'
+                  ? doctor()
+                  : null;
 if (!main) {
   console.log(
-    'Usage: pnpm sourcing setup | doctor | classes | food [--all] | home [--dry] [--all] [--limit N] | run [--checks|--targets] [--type clothing|food|home [--shops nishorama.com]] | try "<query>" --type food|clothing|home [--match "regex"]',
+    'Usage: pnpm sourcing setup | doctor | classes | food [--all] | home [--dry] [--all] [--limit N] | liquids [--dry] [--all] | run [--checks|--targets] [--type clothing|food|home [--shops nishorama.com]] | try "<query>" --type food|clothing|home [--match "regex"]',
   );
   process.exit(2);
 }

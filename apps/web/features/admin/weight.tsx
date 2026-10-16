@@ -2,7 +2,7 @@ import {
   estimateDisagrees,
   formatGrams,
   unusualWeight,
-  WEIGHT_SOURCE_LABEL,
+  weightSourceLabel,
   weightState,
   WEIGHT_SOURCES,
   type ProductType,
@@ -69,7 +69,7 @@ export function WeightBadge({
     );
   const unusual = unusualWeight(v.weight_g, type, categoryWeightG);
   const state = weightState(v, unusual || estimateDisagrees(v));
-  const from = isSource(v.weight_source) ? WEIGHT_SOURCE_LABEL[v.weight_source] : 'Source not recorded';
+  const from = isSource(v.weight_source) ? weightSourceLabel(v.weight_source, type) : 'Source not recorded';
   return (
     <span className="inline-flex flex-col gap-0.5">
       <Chip tone={state === 'confirmed' ? 'ok' : 'warn'}>{formatGrams(v.weight_g)}</Chip>

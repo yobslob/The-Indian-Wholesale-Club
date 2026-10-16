@@ -11,7 +11,14 @@ import { saveProductAction, unsaveProductAction } from './actions';
  * (B-6). The client loads after the page, the chunk the live stock feed uses too, so the first load stays in budget
  * (engineering.md §Performance). A click saves, or removes it when already saved; signed-out visitors sign in first.
  */
-export function SaveButton({ productId }: { productId: string }): React.JSX.Element {
+export function SaveButton({
+  productId,
+  small = false,
+}: {
+  productId: string;
+  /** On a card's photo (D-135: a coming-soon piece's heart). */
+  small?: boolean;
+}): React.JSX.Element {
   const router = useRouter();
   const pathname = usePathname();
   const [saved, setSaved] = useState(false);
@@ -54,7 +61,7 @@ export function SaveButton({ productId }: { productId: string }): React.JSX.Elem
           else setSaved(true);
         });
       }}
-      className="border-line bg-paper hover:border-ink grid size-12 flex-none place-items-center rounded-full border disabled:opacity-60"
+      className={`border-line bg-paper hover:border-ink grid ${small ? 'size-10' : 'size-12'} flex-none place-items-center rounded-full border disabled:opacity-60`}
     >
       <svg
         viewBox="0 0 24 24"

@@ -3,6 +3,7 @@ import Link from 'next/link';
 
 import { formatUsd, productPath } from '@repo/shared/domain';
 
+import { SaveButton } from '@/features/account/save-button';
 import { mediaUrl } from '@/lib/site';
 
 import { QuickAdd } from './quick-add';
@@ -75,26 +76,41 @@ export function ProductCard({
             </span>
           )}
           {badge ? (
-            <span className="bg-paper font-ui absolute left-3.5 top-3.5 rounded-pill px-3 py-1.5 text-xs font-medium">
+            <span className="bg-paper font-ui rounded-pill absolute left-3.5 top-3.5 px-3 py-1.5 text-xs font-medium">
               {badge}
             </span>
           ) : null}
           {product.pack ? (
             // D-122: a food piece's pack size, so two prices read side by side make sense
-            <span className="bg-paper/75 font-ui absolute bottom-3.5 left-3.5 rounded-pill px-2.5 py-1 text-xs font-semibold backdrop-blur-md">
+            <span className="bg-paper/75 font-ui rounded-pill absolute bottom-3.5 left-3.5 px-2.5 py-1 text-xs font-semibold backdrop-blur-md">
               {product.pack}
             </span>
           ) : null}
         </Link>
-        <QuickAdd product={product} quickAdd={product.quick_add} available={product.available} href={href} />
+        {product.coming_soon ? (
+          // D-135: not on sale yet: the heart instead of the +
+          <div className="absolute bottom-2.5 right-2.5 z-[1]">
+            <SaveButton productId={product.id} small />
+          </div>
+        ) : (
+          <QuickAdd
+            product={product}
+            quickAdd={product.quick_add}
+            available={product.available}
+            href={href}
+          />
+        )}
         {corner ? <div className="absolute right-2.5 top-2.5 z-[2]">{corner}</div> : null}
       </div>
       <div className={small ? 'pl-2 pt-2.5' : 'pl-3.5 pr-1.5 pt-3.5'}>
-        <Link href={href} className={`font-ui block font-semibold leading-snug ${small ? 'text-[13.5px]' : 'text-[15px]'}`}>
+        <Link
+          href={href}
+          className={`font-ui block font-semibold leading-snug ${small ? 'text-[13.5px]' : 'text-[15px]'}`}
+        >
           {product.name}
         </Link>
         <span className={`text-ink-muted ${small ? 'text-[13px]' : 'text-sm'}`}>
-          {formatUsd(product.price_cents)}
+          {product.coming_soon ? 'Coming soon' : formatUsd(product.price_cents)}
           {product.region_name ? ` · ${product.region_name}` : null}
         </span>
       </div>

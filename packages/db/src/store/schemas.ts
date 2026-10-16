@@ -52,6 +52,8 @@ export const productCardSchema = z.object({
   primary_image_path: z.string().nullable(),
   /** A food piece's pack size ("200 g"), shown on its card (D-122); null otherwise. Optional until migration 52. */
   pack: z.string().nullable().optional(),
+  /** D-135: archived but shown as "Coming soon": the heart, no price, cannot be bought. Optional until migration 20261016200000. */
+  coming_soon: z.boolean().optional(),
 });
 
 /** Set only when the product has exactly one variant and it is in stock: a card's "Add" puts it in the bag. */

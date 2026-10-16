@@ -5,7 +5,6 @@ import { log } from './log';
 
 import type { LookupFunction } from 'node:net';
 
-
 /**
  * The runner's road to Supabase. Indian ISPs have answered `*.supabase.co` wrongly at the DNS level before (Jio,
  * Airtel and ACT, early 2026), which Node shows only as "fetch failed". So: the normal fetch first; if it cannot

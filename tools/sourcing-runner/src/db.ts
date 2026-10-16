@@ -1,6 +1,9 @@
 import { randomUUID } from 'node:crypto';
 
 import { createClient, type SupabaseClient } from '@supabase/supabase-js';
+import { z } from 'zod';
+
+import { PRODUCT_TYPES } from '@repo/shared/domain';
 
 import {
   clothingPlanSchema,
@@ -26,6 +29,18 @@ import { describeNetError, supabaseFetch } from './net';
 import type { ProductType } from '@repo/shared/domain';
 
 import type { Env } from './env';
+
+/** D-135: a listing for the liquid check. */
+const liquidPlanSchema = z.array(
+  z.object({
+    product_id: z.string().uuid(),
+    name: z.string(),
+    product_type: z.enum(PRODUCT_TYPES),
+    status: z.string(),
+    labels: z.array(z.string()),
+  }),
+);
+type LiquidListing = z.infer<typeof liquidPlanSchema>[number];
 
 /** D-134: one home option's weight read from its page (or another option's: similar). */
 export interface HomeWrite {
@@ -170,6 +185,19 @@ export class Db implements FoodPassDb {
 
   setHomeWeights(weights: HomeWrite[]): Promise<number> {
     return this.rpc('worker_set_home_weights', { p_weights: weights });
+  }
+
+  /** D-135: up to 200 food and home listings for the liquid check, in id order after `after`. */
+  async liquidPlan(after: string | null, all: boolean): Promise<LiquidListing[]> {
+    return liquidPlanSchema.parse(
+      await this.rpc('worker_liquid_plan', { p_after: after, p_limit: 200, p_all: all }),
+    );
+  }
+
+  setLiquids(
+    items: { product_id: string; liquid: boolean; note: string | null }[],
+  ): Promise<number> {
+    return this.rpc('worker_set_liquids', { p_items: items });
   }
 
   /** Every weight IWC knows (weighed, typed, a shop's page): the hub's food weighings tune the pack weights. */

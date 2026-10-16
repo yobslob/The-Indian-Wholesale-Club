@@ -3,16 +3,14 @@ import { z } from 'zod';
 import { formatGrams } from '../../domain/weight';
 import { parseComboParts, parseWeightParts, weightKindOf, type WeightParts } from '../weight';
 
-import { density, guessPack, PACK_TARE, type FoodPack, type PackGuess } from './food-packs';
-
 /**
- * D-133: every food option is priced on its packed weight: the net quantity its label states (every packaged food
- * in India prints one), unit by unit, plus the weight of what it is packed in (food-packs.ts). A weight weighed at
- * the hub or typed by an admin is never replaced (source "packed" ranks below both). A shop page that states the
- * packed weight, believable for its net quantity, is used as it is. An option whose net quantity nothing states keeps
- * what it has (the runner's page search, the estimator's suggestion, Weights to check, the hub's scale).
- * tools/weight-estimator (`pnpm weights food`) and the sourcing runner use it; worker_food_plan() names the listings
- * and worker_set_food_weights() writes them.
+ * D-135 (replaces D-133's packing): every food option is priced on its real weight, the net quantity its label
+ * states (every packaged food in India prints one), unit by unit ("200 g (Pack of 3)" is 600 g), millilitres by
+ * density; no packaging is added. The source stays "packed" in the database (D-133's value, so the deployed
+ * functions write it), shown to admins as the label's net weight. A weight weighed at the hub or typed by an admin is
+ * never replaced. An option whose net quantity nothing states keeps what it has (the runner's page search, the
+ * estimator's suggestion, Weights to check, the hub's scale). tools/weight-estimator (`pnpm weights food`) and the
+ * sourcing runner use it; worker_food_plan() names the listings and worker_set_food_weights() writes them.
  */
 
 export const foodPlanSchema = z.array(
@@ -129,108 +127,53 @@ function sane(parts: WeightParts[], from: string): FoodNet | null {
   return total >= 1 && total <= 30_000 ? { parts, from, label: netLabel(parts) } : null;
 }
 
-/** Learned from the hub's scale: how much heavier (or lighter) each pack weighs than food-packs.ts says. */
-export type TareFactors = Partial<Record<FoodPack, number>>;
+/** Grams a millilitre of it weighs: ghee 0.91, oil 0.92, honey 1.42, syrups 1.3, else water's. */
+export function density(name: string): number {
+  const t = name.toLowerCase();
+  if (/\bghee\b/.test(t)) return 0.91;
+  if (/\b(oil|tel)\b/.test(t)) return 0.92;
+  if (/\bhoney\b/.test(t)) return 1.42;
+  if (/\b(syrup|sharbat|sherbet|squash|rooh afza|molasses)\b/.test(t)) return 1.3;
+  return 1;
+}
 
-/** Units this light (bars, sachets, tea bags) come many to one pack; heavier ones each in their own. */
-const SHARED_UNIT_G = 50;
-
-/** Packed grams: each unit's contents (ml by its density) and its own packing, rounded up to 5 g. */
-export function packedGrams(
-  parts: WeightParts[],
-  pack: FoodPack,
-  name: string,
-  factors: TareFactors = {},
-): { grams: number; net: number; tare: number } {
-  const t = PACK_TARE[pack];
-  const one = (g: number): number => (t.base + t.per * g) * (factors[pack] ?? 1);
-  let net = 0;
-  let tare = 0;
-  for (const p of parts) {
-    const unit = p.liquid ? p.unitGrams * density(name) : p.unitGrams;
-    net += unit * p.count;
-    // "16 g (Pack of 50)" chikki bars are one jar of 800 g; "100 g (Pack of 7)" tea is seven boxes
-    tare += p.count > 1 && unit < SHARED_UNIT_G ? one(unit * p.count) : one(unit) * p.count;
-  }
-  return { grams: Math.ceil((net + tare) / 5) * 5, net: Math.round(net), tare: Math.round(tare) };
+/** The real weight of what the label states: every unit's net quantity (millilitres by density), to the gram. */
+export function netGrams(parts: WeightParts[], name: string): number {
+  return Math.round(
+    parts.reduce((g, p) => g + (p.liquid ? p.unitGrams * density(name) : p.unitGrams) * p.count, 0),
+  );
 }
 
 export interface FoodResult {
   variant: FoodVariant;
   net: FoodNet | null;
-  pack: PackGuess | null;
   /** The weight to price it on; null: keep what it has. */
   grams: number | null;
   note: string;
-  /** Why an admin should look: a jar or bottle that may be glass or plastic, a weight that moves by over a third. */
+  /** Why an admin should look: no net quantity stated, or a weight that moves by more than a third. */
   look: string | null;
 }
 
-const PAGE_NOTE = "The shop's page states it packed:";
-
-/** A page's stated packed weight is believable when it holds the contents and roughly the usual packing. */
-function believable(page: number, net: number, tare: number): boolean {
-  return page >= net + tare * 0.3 && page <= net + tare * 2.5 + 30;
-}
-
-/** Every option of one food listing: its packed weight and why, or why it keeps what it has. */
-export function weighFood(
-  listing: FoodListing,
-  opts: { factors?: TareFactors; specs?: [string, string][] } = {},
-): FoodResult[] {
+/** Every option of one food listing: the real weight its label states, or why it keeps what it has. */
+export function weighFood(listing: FoodListing): FoodResult[] {
   return listing.variants.map((v) => {
     const net = foodNet(listing, v);
     if (!net)
       return {
         variant: v,
         net,
-        pack: null,
         grams: null,
         note: 'no net quantity stated',
         look: 'no net quantity: weigh it at the hub',
       };
-    const total = net.parts.reduce((g, p) => g + p.unitGrams * p.count, 0);
-    const pack = guessPack({
-      name: listing.name,
-      labels: [v.label, ...Object.values(v.options)],
-      description: listing.description,
-      category: listing.category,
-      netGrams: total,
-      specs: opts.specs,
-    });
-    const w = packedGrams(net.parts, pack.pack, listing.name, opts.factors);
-    const kept =
-      v.weight_source === 'shop' && v.weight_g !== null ? noteReading(v.weight_note) : null;
-    // the shop page's packed weight, as read now or as kept by an earlier pass
-    const page =
-      v.weight_g !== null &&
-      ((kept &&
-        (kept.kind === 'package' || kept.kind === 'item') &&
-        believable(v.weight_g, w.net, w.tare)) ||
-        (v.weight_source === 'packed' && (v.weight_note ?? '').startsWith(PAGE_NOTE)))
-        ? v.weight_g
-        : null;
-    const grams = page ?? w.grams;
-    const note = page
-      ? `${PAGE_NOTE} ${formatGrams(page)} (${net.label} net) (D-133)`
-      : `${net.label} net (${net.from}) + ${PACK_TARE[pack.pack].label} ${w.tare} g: ${pack.why} (D-133)`;
+    const grams = netGrams(net.parts, listing.name);
     const moves = v.weight_g !== null && Math.abs(grams - v.weight_g) * 3 > v.weight_g;
-    // a pouch or box guessed wrong is a few grams; glass or plastic, a few hundred
-    const unsure = !page && (pack.pack === 'jar' || pack.pack === 'bottle');
-    const look = isPerson(v)
-      ? null
-      : unsure
-        ? 'glass or plastic? weigh one at the hub'
-        : moves
-          ? `was ${formatGrams(v.weight_g!)}`
-          : null;
     return {
       variant: v,
       net,
-      pack,
       grams: isPerson(v) ? null : grams,
-      note: note.slice(0, 200),
-      look,
+      note: `${net.label} net (${net.from}) (D-135)`.slice(0, 200),
+      look: isPerson(v) ? null : moves ? `was ${formatGrams(v.weight_g!)}` : null,
     };
   });
 }
@@ -262,46 +205,4 @@ export function foodWrites(results: FoodResult[]): FoodWrite[] {
       },
     ];
   });
-}
-
-/**
- * D-133: the hub's scale teaches the packing weights. For every food piece weighed at the hub whose net quantity its
- * name or option states, the packing it really had against the packing food-packs.ts gives it; a pack with three or
- * more such pieces gets their middle ratio (kept within half to twice the table's).
- */
-export function tareFactors(
-  weighed: {
-    name: string;
-    category: string;
-    label: string;
-    options: Record<string, string>;
-    weight_g: number;
-  }[],
-): TareFactors {
-  const ratios: Partial<Record<FoodPack, number[]>> = {};
-  for (const r of weighed) {
-    const net = foodNet(
-      { name: r.name, description: null },
-      { label: r.label, options: r.options, weight_source: null, weight_note: null },
-    );
-    if (!net) continue;
-    const total = net.parts.reduce((g, p) => g + p.unitGrams * p.count, 0);
-    const pack = guessPack({
-      name: r.name,
-      labels: [r.label],
-      category: r.category,
-      netGrams: total,
-    }).pack;
-    const w = packedGrams(net.parts, pack, r.name);
-    const real = r.weight_g - w.net;
-    if (w.tare <= 0 || real <= 0 || real > w.tare * 5) continue; // a misread label, not a pack
-    (ratios[pack] ??= []).push(real / w.tare);
-  }
-  const out: TareFactors = {};
-  for (const [pack, list] of Object.entries(ratios) as [FoodPack, number[]][]) {
-    if (list.length < 3) continue;
-    const sorted = list.sort((a, b) => a - b);
-    out[pack] = Math.min(2, Math.max(0.5, sorted[Math.floor(sorted.length / 2)]!));
-  }
-  return out;
 }

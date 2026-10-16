@@ -171,9 +171,12 @@ async function tryCandidate(
   const published = media.length
     ? await ctx.db.media(added.product_id, media, draft.complete)
     : { published: false, note: 'no photo could be copied' };
+  // D-135: a liquid is not sent: archived, shown to customers as coming soon
+  if (draft.liquid)
+    await ctx.db.setLiquids([{ product_id: added.product_id, liquid: true, note: draft.liquid }]);
   log(
     `  added "${listing.name}" (${listing.variants.length} variant${listing.variants.length === 1 ? '' : 's'}) from ${listing.site}` +
-      `${published.published ? ', live' : ', draft'}${published.note ? ` (${published.note})` : ''}`,
+      `${draft.liquid ? ', coming soon (a liquid)' : published.published ? ', live' : ', draft'}${published.note ? ` (${published.note})` : ''}`,
   );
   return null;
 }

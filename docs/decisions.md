@@ -833,3 +833,34 @@ also for textiles with wood or metal in them) are typical, not measurements, and
 by piece; the density bounds; weights round up to 5 g; ÷ 5,000 for the size weight (the usual courier divisor, for
 Q-36 only); a page's packed weight is used as stated when it holds the piece and fits its box; the `packed` source
 label is now "Its weight + its packing (D-133, D-134)".
+
+**D-135 · 2026-10-16 · founder: Food weighs its label's net weight, no packaging; liquids are not sent, shown as coming soon (supersedes D-133's packing)**
+Founder, verbatim: "In food I randomly opened 5 products each one was shown 20g heavier, I assume that is because of
+packaging. Don't consider packaging in food, show the real accurate weight. Also insert a check if the scraped item is
+liquid put it in coming soon(which has a like button instead of add) on frontend(in archives in backend) because we are
+not sending liquids but we are sending pickles. Also move every live liquid product to archives."
+What it means for the build (migration `20261016200000_coming_soon.sql`, `packages/shared/src/sourcing/estimate/food.ts`,
+`packages/shared/src/sourcing/liquid.ts`, `tools/sourcing-runner/src/liquids.ts`; the D-128 formula is untouched):
+- **Food weighs its net quantity:** the label's net quantity, unit by unit ("200 g (Pack of 3)" is 600 g),
+  millilitres by density, to the gram; D-133's pack table and its tuning by the hub are gone. The database value stays
+  `packed` (so the deployed functions write it), shown to admins as "Net weight on its label (D-135)". Done on
+  production the same day: `pnpm weights food --all` rewrote 1,146 options (D-133's weights are in
+  `food-weights-before.jsonl`); a second pass found nothing left to change. The hub's scale, then an admin, still
+  come first.
+- **Liquids:** a food listing whose page says "Item Form: Liquid", whose name or options are in millilitres or litres,
+  or that is a juice, sharbat, syrup, soda, oil, sauce or vinegar; a home listing that is an attar, perfume, rose
+  water or a body or hair oil (never a vessel by its size). Never pickles (even in oil), pastes, powders, sweets or
+  snacks, and "no palm oil", "oil free" or "in sunflower oil" say how it is made, not what it is.
+- **Coming soon:** a liquid is archived (admins find it under Archived, "coming soon on the store") and still shown to
+  customers: its card says "Coming soon" instead of a price, the web card has the heart instead of the +, the app card
+  a "Coming soon" pill, and its page says "Coming soon. Save it with the heart to find it again." instead of Add to bag.
+  It cannot be bought (no options in `store_variants`; `create_order` sells live listings only). An admin can hide it
+  or show it again (the archived product's page), and putting it back on sale ends its coming soon; the check looks at
+  each listing once, so it never undoes an admin.
+- **When:** the runner checks each new listing as it adds it (with the page's "Item Form" row) and every listing not
+  yet checked at the end of each run (after the deploy: all of them; alone: `pnpm sourcing liquids [--dry]`). On
+  production (2026-10-16, a dry preview before the deploy): 1,072 food and home listings, 16 liquids (juices, sea
+  buckthorn pulp, a soda, coconut and kernel oils, a sharbat, kokum agal, three attars, two ghees sold by the ml).
+*Claude's choices in it:* ghee and honey count as liquids only when sold by volume (ml, L) or when the page says so;
+no price is shown for a coming-soon piece; coming-soon pieces keep their place in the lists (by date); the copy
+"Save it with the heart to find it again." is Claude's, for the founder to change.

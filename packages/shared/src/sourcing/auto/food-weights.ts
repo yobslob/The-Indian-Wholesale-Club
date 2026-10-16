@@ -27,7 +27,7 @@ export function packedFoodVariants(
       net_qty: null,
     })),
   };
-  const results = weighFood(listing, { specs: page.specs });
+  const results = weighFood(listing);
   return variants.map((v, i) => {
     const r = results[i];
     if (!r?.net || r.grams === null) return v;
