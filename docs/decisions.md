@@ -907,6 +907,10 @@ What it means for the build:
   10 listings the target wants, `searchPages`), each page its own turn on the shop's lane so the pause between pages
   holds; a page that brings nothing new ends the search. A results page is read whole (Amazon up to 60 rows, Flipkart
   48), no longer only its first 24.
+- **A page that did not load is a failure, not "nothing found":** an Amazon or Flipkart first results page with no
+  rows that does not say "no results" fails that shop's search; a target that made nothing while half its shops or
+  more failed goes back to the queue (one flaky shop of food's six does not hold it). The run log names what a draft
+  lacks ("details to finish: material", "photos").
 - **Draft target lists** (in `tools/sourcing-runner/targets/`, to review before uploading): `food-under-300.csv`
   (172 searches, ₹1–300, every food category, all-India) and `home-amazon-flipkart.csv` (94 searches on Amazon and
   Flipkart, no price band, the three home categories). Liquids are left to D-135's check.

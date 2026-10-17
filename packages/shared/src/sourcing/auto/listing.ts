@@ -95,14 +95,17 @@ function attributesFor(product: SourcedProduct, type: SourcingTarget['product_ty
             shelf_life_days: d.shelfLifeDays ?? undefined,
           };
   const parsed = attributesSchemaFor(type).safeParse(raw);
-  if (parsed.success) return { attributes: parsed.data as Record<string, unknown>, complete: true };
+  if (parsed.success)
+    return { attributes: parsed.data as Record<string, unknown>, complete: true, missing: [] };
   // what the page had, for the admin to finish (the store shows details only once they are complete)
   const found = Object.fromEntries(
     Object.entries(raw).filter(
       ([, v]) => v !== undefined && v !== '' && !(Array.isArray(v) && !v.length),
     ),
   );
-  return { attributes: found, complete: false };
+  // D-137: what is missing, named in the run log ("material", "ingredients")
+  const missing = [...new Set(parsed.error.issues.map((i) => String(i.path[0] ?? 'details')))];
+  return { attributes: found, complete: false, missing };
 }
 
 export interface ListingDraft {
@@ -127,6 +130,8 @@ export interface ListingDraft {
   liquid: string | null;
   /** Every detail customers must see was found: it may go live by itself (when the founder turned that on). */
   complete: boolean;
+  /** D-137: what keeps it from complete ("material", "photos"), for the run log. */
+  missing: string[];
 }
 
 export function buildListing(input: {
@@ -259,7 +264,7 @@ export function buildListing(input: {
     [bullets.map((b) => `• ${b}`).join('\n'), product.description].join('\n\n'),
   );
   const name = listingName(product.title);
-  const { attributes, complete } = attributesFor(product, target.product_type);
+  const { attributes, complete, missing } = attributesFor(product, target.product_type);
   const seenPhotos = new Set(product.images.slice(0, 8));
   const photos = [
     ...product.images
@@ -297,6 +302,7 @@ export function buildListing(input: {
     },
     photos,
     complete: complete && photos.length > 0,
+    missing: [...missing, ...(photos.length ? [] : ['photos'])],
     liquid: liquidReason({
       type: target.product_type,
       name: product.title,

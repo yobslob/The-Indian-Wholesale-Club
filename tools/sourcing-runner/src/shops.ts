@@ -126,6 +126,22 @@ async function paged(
   return all;
 }
 
+const AMAZON_NONE = /no results for|did not match any products/i;
+const FLIPKART_NONE = /sorry, no results found|no results found/i;
+
+/**
+ * D-137: a first results page with no rows that does not say "no results" did not load (slow, or a page in between):
+ * a failed search, so the target is searched again, not marked as nothing found.
+ */
+async function loaded(page: Page, n: number, offers: Offer[], none: RegExp): Promise<Offer[]> {
+  if (offers.length || n > 1) return offers;
+  const shown = (await page.evaluate(
+    "document.body ? document.body.innerText.slice(0, 6000) : ''",
+  )) as string;
+  if (none.test(shown)) return offers;
+  throw new Error('the results page did not load');
+}
+
 const SHOPS: Record<ShopReader, Shop> = {
   amazon: {
     search: (lane, query, hint) =>
@@ -135,7 +151,7 @@ const SHOPS: Record<ShopReader, Shop> = {
           amazonSearchUrl(query, band(hint), n),
           'div[data-component-type="s-search-result"]',
         );
-        return amazonSearchOffers(await read.amazonRows(page));
+        return loaded(page, n, amazonSearchOffers(await read.amazonRows(page)), AMAZON_NONE);
       }),
     read: capturedRead('#productTitle'),
   },
@@ -143,7 +159,7 @@ const SHOPS: Record<ShopReader, Shop> = {
     search: (lane, query, hint) =>
       paged(lane, hint, async (page, n) => {
         await open(page, flipkartSearchUrl(query, band(hint), n), 'div[data-id]');
-        return flipkartSearchOffers(await read.flipkartCards(page));
+        return loaded(page, n, flipkartSearchOffers(await read.flipkartCards(page)), FLIPKART_NONE);
       }),
     read: capturedRead(),
   },

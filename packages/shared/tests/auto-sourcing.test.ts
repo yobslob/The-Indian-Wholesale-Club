@@ -403,6 +403,7 @@ describe('the listing the runner adds', () => {
       allergens: ['Peanuts'],
     });
     assert.equal(draft.complete, false, 'no shelf life on the page: it waits for an admin');
+    assert.deepEqual(draft.missing, ['shelf_life_days'], 'the run log names what is missing (D-137)');
   });
 
   it('skips a page that is too slow or promises nothing', () => {

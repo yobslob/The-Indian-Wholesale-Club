@@ -25,12 +25,12 @@ import type { SourcedProduct } from '@repo/shared/sourcing';
  * of its items (flavours, packs, colours and sizes) and the same product on other shops as backups.
  */
 
-/** The results of every shop the target names, and whether every search failed (blocked, down), not just empty. */
+/** The results of every shop the target names, and how many searches failed (blocked, down, not loaded), not just empty. */
 async function search(
   ctx: RunContext,
   target: SourcingTarget,
   want: number,
-): Promise<{ offers: Offer[]; failed: boolean }> {
+): Promise<{ offers: Offer[]; failed: boolean; failures: number; shops: number }> {
   const shops = shopsFor(target, ctx.plan.shops);
   let failures = 0;
   const hint = { minPaise: target.min_price_paise, maxPaise: target.max_price_paise, want };
@@ -53,7 +53,12 @@ async function search(
       }
     }),
   );
-  return { offers: found.flat(), failed: shops.length > 0 && failures === shops.length };
+  return {
+    offers: found.flat(),
+    failed: shops.length > 0 && failures === shops.length,
+    failures,
+    shops: shops.length,
+  };
 }
 
 export async function readPage(
@@ -160,7 +165,7 @@ async function tryCandidate(
   if (!ctx.db) {
     log(
       `  would add "${listing.name}" from ${listing.site}: ${listing.variants.map((v) => `${v.label} ₹${v.price_paise / 100}`).join(', ')}` +
-        `${listing.backups.length ? `; backups ${listing.backups.map((b) => b.site).join(', ')}` : ''}${draft.complete ? '' : ' (details to finish)'}`,
+        `${listing.backups.length ? `; backups ${listing.backups.map((b) => b.site).join(', ')}` : ''}${draft.complete ? '' : ` (details to finish: ${draft.missing.join(', ')})`}`,
     );
     return null;
   }
@@ -176,7 +181,8 @@ async function tryCandidate(
     await ctx.db.setLiquids([{ product_id: added.product_id, liquid: true, note: draft.liquid }]);
   log(
     `  added "${listing.name}" (${listing.variants.length} variant${listing.variants.length === 1 ? '' : 's'}) from ${listing.site}` +
-      `${draft.liquid ? ', coming soon (a liquid)' : published.published ? ', live' : ', draft'}${published.note ? ` (${published.note})` : ''}`,
+      `${draft.liquid ? ', coming soon (a liquid)' : published.published ? ', live' : ', draft'}${published.note ? ` (${published.note})` : ''}` +
+      (draft.complete ? '' : ` (missing: ${draft.missing.join(', ')})`),
   );
   return null;
 }
@@ -189,7 +195,7 @@ export async function findForTarget(ctx: RunContext, target: SourcingTarget): Pr
       ? `, ₹${(target.min_price_paise ?? 0) / 100}–${target.max_price_paise ? target.max_price_paise / 100 : 'any'}`
       : '';
   log(`target "${target.name}" (${target.region ?? 'all states'}, ${target.category}${band})`);
-  const { offers, failed } = await search(ctx, target, want);
+  const { offers, failed, failures, shops } = await search(ctx, target, want);
   if (failed) {
     // every shop failed to answer: not "nothing fit", so the target waits for the next run (Nishorama's 429s)
     if (ctx.db)
@@ -217,6 +223,19 @@ export async function findForTarget(ctx: RunContext, target: SourcingTarget): Pr
     } catch (error) {
       reasons.push(`${c.best.site}: ${errorText(error)}`);
     }
+  }
+  // D-137: nothing made while half its shops or more failed to answer (Amazon of home's two): not "nothing fit", the
+  // target waits for the next run. One flaky shop of food's six does not hold it.
+  if (!added && failures && failures * 2 >= shops) {
+    if (ctx.db)
+      await ctx.db.releaseTarget(
+        target.id,
+        'a shop failed to answer and nothing was added; searched again next run',
+      );
+    log(
+      `  0 listings while ${failures} shop${failures === 1 ? '' : 's'} failed to answer: the target goes back to the queue`,
+    );
+    return 0;
   }
   const note = added
     ? null

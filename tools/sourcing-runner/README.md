@@ -69,7 +69,8 @@ It logs to the console and `sourcing.log`. Each shop gets one page at a time wit
 pages; the shops run side by side. How long a full run takes is not measured yet (first run at the hub).
 Amazon and Flipkart searches use the shop's own price filter for a target's band and read one result page per 10
 listings it wants, up to four (D-137). Run one runner per product type across all machines: targets are shared out,
-but two runners of one type would both re-check the same listings.
+but two runners of one type would both re-check the same listings. A results page that did not load counts as a
+failed search (the target is searched again), and a draft's line names what it lacks ("details to finish: material").
 
 To run it every day: Task Scheduler → Create Task → "Daily" at a quiet hour, action `cmd.exe` with arguments
 `/c pnpm sourcing run` and "Start in" `C:\kod\root`, "Run only when user is logged on" (the browser opens
