@@ -918,3 +918,26 @@ What it means for the build:
 khoya, mawa, ghee, milk, whitener, cream, lassi, chhena, kalakand, rasgulla, rasmalai or butter (peanut butter
 excepted) is left out, so ghee sweets and milk biscuits are left out too; dry fruits are filed under Snacks & Namkeen;
 listings per search are 10–40 by how broad the search is; up to four result pages.
+
+**D-138 · 2026-10-18 · founder: Home & gifts next: fill it with festival pieces (dandiya, Navratri, Dussehra, Diwali) and the whole range of home decor, ₹0–900, Amazon only**
+Founder, verbatim: "Clothing and food sourcing are almost done, now let's start home decor and gifts sourcing, we want
+to fill it fully with festival related stuff dandiya navratri dusherra and diwali are around the corner, then also I
+want the whole range of home decor. The pricing I want is 0-900, make a very smart csv for amazon only"
+What it means for the build:
+- **A new target list,** `tools/sourcing-runner/targets/home-festive-amazon-900.csv`: 185 searches (up to 3,790
+  listings), all on Amazon, ₹1–900 (the upload takes no ₹0; Amazon's own price filter then reads the band), all-India,
+  the three home categories. Festivals first: Diwali, Dhanteras, Bhai Dooj and Chhath (48 rows: diyas of every kind,
+  candles and holders, lanterns and kandils, torans, garlands, rangoli, Lakshmi Ganesh, pooja thalis, kalash, return
+  gifts, shagun envelopes, dry fruit boxes), then Navratri, garba and dandiya, Durga Puja, Golu and Dussehra (17), then
+  pooja all year, serveware, paintings and wall art, figures and pottery, natural fibre, textiles and gifts.
+- It does not replace `home-amazon-flipkart.csv` (D-137); uploading both only overlaps on Amazon, and one Amazon item
+  is never listed twice (each shop item belongs to one listing), so a second search of the same thing finds the next
+  pieces.
+*Interpretation (proposed, confirm before uploading):* tier 1 for Diwali and Navratri rows and the broadest everyday
+searches, 2 for the rest, 3 for niche crafts (tier only orders a run; a run takes up to "targets per run" of them).
+Every row's Must match leaves out lit and battery pieces (LED, electric, USB, solar, string lights: Indian plugs, and
+batteries on the flight), cow dung (gobar) pieces, real peacock feathers, fireworks and camphor tablets (Q-37); gift
+rows leave out food hampers (dry fruit, chocolate, sweets, namkeen); loose powders (rangoli colours, kumkum) are left
+out by the matcher's form words. Kids' toys are not searched (US toy-safety rules). Dussehra is 2026-10-20 and
+Diwali 2026-11-08: with delivery at today + 12–18 days, a Navratri or Dussehra piece ordered now
+arrives after the festival, a Diwali piece ordered by about 2026-10-21 arrives before it.

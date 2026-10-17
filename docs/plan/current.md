@@ -146,6 +146,9 @@ phase's sub-steps and every verification run) is in `docs/archive/status-log-to-
    `home-amazon-flipkart.csv` (94); clothing: `myntra-600-1600.csv` and one CSV per shop. Try one first on each Mac
    (`pnpm sourcing try "brass diya" --type home --shops amazon.in,flipkart.com`) to see the shops answer from the US.
    Raise targets per run (up to 500). Turn off the hub PC's daily plain `run` while the three run.
+   Home & gifts next (D-138): review and upload `home-festive-amazon-900.csv` (185 targets, Amazon only, ₹1 – ₹900,
+   Diwali and Navratri first) by about 2026-10-21 so Diwali pieces (2026-11-08) arrive in time; Navratri and Dussehra
+   pieces arrive after the festival this year. Answer Q-37 (LED and battery lights, gobar, powders) to widen it.
 6. Clear the 2,880 placeholder listings: `pnpm demo:clear … --allow-remote`, then with `--apply` (`ops.md`).
 7. Decide: the name "Food" and 5 pieces per size by default (D-110 proposals); D-118's proposals (3 listings per
    target, the 60% rise / 50% fall guard, drafts until published, 40 targets a day); D-120's proposals (₹200, 250 g,
