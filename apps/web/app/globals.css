@@ -1137,6 +1137,69 @@ html[data-free-bar] .site-footer {
       opacity: 0;
     }
   }
+  /* D-140 (F9): the size ribbon unrolls from the + like a measuring tape, its chips arriving one after another. */
+  .card-ribbon {
+    background: color-mix(in srgb, theme('colors.paper') 82%, transparent);
+    backdrop-filter: blur(10px);
+    box-shadow: 0 8px 24px rgb(20 17 15 / 0.14);
+    transform-origin: right center;
+    animation: ribbon-unroll 250ms cubic-bezier(0.22, 1, 0.36, 1) backwards;
+  }
+  .card-ribbon .card-chip {
+    animation: chip-in 220ms cubic-bezier(0.22, 1, 0.36, 1) backwards;
+  }
+  .card-sheet {
+    animation: sheet-up 280ms cubic-bezier(0.22, 1, 0.36, 1) backwards;
+  }
+  /* D-140 (F6): the heart fills in the frame it is pressed, with a short pop */
+  .heart[data-on] svg {
+    animation: heart-pop 180ms cubic-bezier(0.34, 1.56, 0.64, 1);
+  }
+  @keyframes heart-pop {
+    50% {
+      transform: scale(1.25);
+    }
+  }
+  /* D-140 (L3): "Choose a size" points at the sizes with a short glow */
+  .choose-nudge {
+    animation: choose-nudge 0.9s ease;
+    border-radius: 14px;
+  }
+  @keyframes choose-nudge {
+    30% {
+      box-shadow: 0 0 0 6px color-mix(in srgb, theme('colors.brand') 18%, transparent);
+    }
+  }
+  /* L9: + refused at the stock left: the pill gives a short shake */
+  .card-refused {
+    animation: refused 0.4s ease;
+  }
+  @keyframes ribbon-unroll {
+    from {
+      transform: scaleX(0.08);
+      opacity: 0.4;
+    }
+  }
+  @keyframes chip-in {
+    from {
+      opacity: 0;
+      transform: translateX(10px) scale(0.92);
+    }
+  }
+  @keyframes sheet-up {
+    from {
+      transform: translateY(24px);
+      opacity: 0;
+    }
+  }
+  @keyframes refused {
+    25% {
+      transform: translateX(-4px);
+    }
+    75% {
+      transform: translateX(4px);
+    }
+  }
 }
 
 /*

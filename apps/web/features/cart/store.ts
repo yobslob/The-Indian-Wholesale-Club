@@ -80,3 +80,10 @@ export function cartCount(lines: CartLine[]): number {
 export function cartSubtotalCents(lines: CartLine[]): number {
   return lines.reduce((sum, l) => sum + l.unitPriceCents * l.quantity, 0);
 }
+
+// D-140 (F8): the cards' − n + follow the bag in every open tab (another tab's change arrives as a storage event).
+if (typeof window !== 'undefined') {
+  window.addEventListener('storage', (e) => {
+    if (e.key === 'iwc-cart') void useCart.persist.rehydrate();
+  });
+}

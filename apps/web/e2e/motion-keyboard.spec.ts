@@ -69,10 +69,11 @@ test.describe('keyboard', () => {
     await expect(sizeChart).toHaveAttribute('aria-expanded', 'true');
     await page.keyboard.press('Space');
     await expect(sizeChart).toHaveAttribute('aria-expanded', 'false');
-    const heart = page.getByRole('button', { name: 'Save for later' });
+    const heart = page.getByRole('button', { name: 'Save for later' }).first();
     await heart.focus();
     await expect(heart).toBeFocused();
     await page.keyboard.press('Enter');
-    await expect(page).toHaveURL(/\/login\?next=/); // signed out: saving asks to sign in first
+    // D-140 (F6): signed out, the piece is saved on this device at once (it joins the account after sign-in)
+    await expect(page.getByRole('button', { name: 'Saved. Remove from saved' }).first()).toHaveAttribute('aria-pressed', 'true');
   });
 });

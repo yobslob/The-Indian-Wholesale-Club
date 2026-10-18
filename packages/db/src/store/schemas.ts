@@ -38,6 +38,15 @@ export const regionSchema = regionCardSchema.extend({
   story: z.string().nullable(),
 });
 
+/** D-140 (F9): an option the card's + offers (a size, a pack, a flavour), its own price and what is left. */
+export const cardOptionSchema = z.object({
+  id: z.string().uuid(),
+  label: z.string(),
+  options: z.record(z.string()).default({}),
+  price_cents: z.number().int(),
+  available: z.number().int(),
+});
+
 export const productCardSchema = z.object({
   id: z.string().uuid(),
   slug: z.string(),
@@ -54,6 +63,8 @@ export const productCardSchema = z.object({
   pack: z.string().nullable().optional(),
   /** D-135: archived but shown as "Coming soon": the heart, no price, cannot be bought. Optional until migration 20261016200000. */
   coming_soon: z.boolean().optional(),
+  /** D-140 (F9): every option the card's + offers; optional until migration 20261018120000, null when coming soon. */
+  options: z.array(cardOptionSchema).nullable().optional(),
 });
 
 /** Set only when the product has exactly one variant and it is in stock: a card's "Add" puts it in the bag. */
@@ -309,6 +320,7 @@ export const browsePageSchema = z.object({
 });
 export type BrowsePage = z.infer<typeof browsePageSchema>;
 export type QuickAdd = z.infer<typeof quickAddSchema>;
+export type CardOption = z.infer<typeof cardOptionSchema>;
 export type Review = z.infer<typeof reviewSchema>;
 export type ReviewsSummary = z.infer<typeof reviewsSummarySchema>;
 export type Product = z.infer<typeof productSchema>;

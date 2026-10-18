@@ -1762,6 +1762,9 @@ isOneToOne: false
 "_sourcing_settle":
 { Args: { "p_product": string }; Returns: Json
                            },
+"_store_card_options":
+{ Args: { "p_product": string }; Returns: Json
+                           },
 "_store_cycle":
 { Args: Record<PropertyKey, never>; Returns: {
               "cutoff_at": string,"est_arrival_on": string

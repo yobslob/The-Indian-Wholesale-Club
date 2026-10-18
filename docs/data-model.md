@@ -180,6 +180,9 @@ first in Most wanted, Curated and Leaving soon too. Tests: `wears_and_rows.test.
 "Test" clothing switch the wears trigger off inside their own transaction).
 Migration 73 (D-140, L1): `products.shop_title` (admin only, backfilled from the names of imported listings);
 `tests.forbidden_keys()` adds it and the order line's cost snapshot keys.
+Migration 74 (D-140, F8, F9): `_store_card_options(product)` (up to 20 of a piece's variants: id, label, options, price,
+available, from `store_variants`); `_store_product_card()` and `store_browse()` cards add `options` (null when coming
+soon).
 Migration 69 (D-135): `products.coming_soon`, `coming_soon_note`, `liquid_checked_at`; trigger `products_coming_soon`
 (any status but archived ends it); `store_products` and `store_media` include archived coming-soon listings and
 `store_products` ends with `coming_soon`; `_store_product_card` and `store_browse` send it (no quick add for it).

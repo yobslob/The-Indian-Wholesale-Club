@@ -37,7 +37,7 @@ const SIZES = {
 /**
  * The founder's reference card (D-050): a rounded 3 : 4 photo with a round + on it (D-080), then the name and
  * price · region across the card's full width; a food piece's pack size sits on its photo (D-122). `size="sm"` is the smaller card of the product page grids (D-051).
- * Server component; the + is the only client island.
+ * Server component; the + and the heart (D-140) are its client islands.
  */
 export function ProductCard({
   product,
@@ -93,19 +93,30 @@ export function ProductCard({
           ) : null}
         </Link>
         {product.coming_soon ? (
-          // D-135: not on sale yet: the heart instead of the +
-          <div className="absolute bottom-2.5 right-2.5 z-[1]">
+          // D-135: not on sale yet: the heart instead of the +, and what saving does (D-140, S7)
+          <div className="absolute bottom-2.5 right-2.5 z-[1] flex items-center gap-2">
+            <span className="bg-paper/85 font-ui rounded-pill max-w-[150px] px-2.5 py-1 text-[11.5px] font-medium leading-tight">
+              Save it, we&apos;ll show it in Saved when it&apos;s back
+            </span>
             <SaveButton productId={product.id} small />
           </div>
         ) : (
           <QuickAdd
             product={product}
             quickAdd={product.quick_add}
+            options={product.options}
             available={product.available}
             href={href}
           />
         )}
-        {corner ? <div className="absolute right-2.5 top-2.5 z-[2]">{corner}</div> : null}
+        {corner ? (
+          <div className="absolute right-2.5 top-2.5 z-[2]">{corner}</div>
+        ) : !product.coming_soon ? (
+          // D-140 (F6): save from any card, top right of the photo
+          <div className="absolute right-2.5 top-2.5 z-[2]">
+            <SaveButton productId={product.id} small />
+          </div>
+        ) : null}
       </div>
       <div className={small ? 'pl-2 pt-2.5' : 'pl-3.5 pr-1.5 pt-3.5'}>
         <Link

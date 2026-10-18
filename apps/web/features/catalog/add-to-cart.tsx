@@ -36,6 +36,9 @@ const legendClass = 'font-ui text-ink-muted mb-2 text-[11px] font-semibold upper
  * Variant picker + live availability + add to bag, with the phone buy bar standing in for the button once it has
  * scrolled away (D-082). Colour and size
  * get a row each when the variants carry them (`optionAxes`); otherwise one button per variant.
+ * D-140 (L3): no size (or option) is chosen until the customer taps one, so a quick Add never buys the smallest size:
+ * until then the button says "Choose a size" and takes them to the sizes. A colour may start chosen. (F8) The chosen
+ * option says how many of it are already in the bag.
  */
 export function AddToCart({ product, variants, delivery }: Props): React.JSX.Element {
   const initial = useMemo(
@@ -44,9 +47,16 @@ export function AddToCart({ product, variants, delivery }: Props): React.JSX.Ele
   );
   const available = useLiveAvailability(product.id, initial);
   const add = useCart((s) => s.add);
+  const lines = useCart((s) => s.lines);
   const [variantId, setVariantId] = useState(
     () => variants.find((v) => v.available > 0)?.id ?? variants[0]?.id,
   );
+  // L3: picked by the customer (a piece with one option needs no pick)
+  const [picked, setPicked] = useState(variants.length <= 1);
+  const [nudge, setNudge] = useState(0);
+  const choices = useRef<HTMLDivElement>(null);
+  const [mounted, setMounted] = useState(false);
+  useEffect(() => setMounted(true), []);
   const [quantity, setQuantity] = useState(1);
   const [added, setAdded] = useState(false);
   // The button says "Added" for a moment after each add, then is ready for the next one (D-116).
@@ -65,14 +75,24 @@ export function AddToCart({ product, variants, delivery }: Props): React.JSX.Ele
   const selection = selectionOf(variant, axes);
   const select = (id: string): void => {
     setVariantId(id);
+    setPicked(true);
     setQuantity(1);
     setAdded(false);
   };
+  const sizeAxis = axes.find((a) => a.key === 'size');
+  // what a customer must still choose: the size when there is one, else the option
+  const mustChoose = !picked ? (sizeAxis ? 'a size' : 'one') : null;
+  const showChoices = (): void => {
+    choices.current?.scrollIntoView({ behavior: 'smooth', block: 'center' });
+    setNudge((n) => n + 1);
+  };
+  const inBagNow = mounted && picked ? (lines.find((l) => l.variantId === variant.id)?.quantity ?? 0) : 0;
 
   const left = available[variant.id] ?? 0;
   const soldOut = left <= 0;
   const maxQty = Math.max(1, Math.min(left, MAX_QTY_PER_LINE));
   const addToBag = (from: Element | null = button.current): void => {
+    if (mustChoose) return showChoices();
     add(
       {
         variantId: variant.id,
@@ -96,11 +116,15 @@ export function AddToCart({ product, variants, delivery }: Props): React.JSX.Ele
     <div className="space-y-4">
       <p className="font-ui text-[22px] font-semibold leading-none">{formatUsd(variant.price_cents)}</p>
 
+      <div ref={choices} key={nudge} className={`scroll-mt-28 space-y-4 ${nudge ? 'choose-nudge' : ''}`}>
       {axes.length > 0
-        ? axes.map((axis) => (
+        ? axes.map((axis) => {
+            const open = !picked && axis.key === (sizeAxis ? 'size' : axis.key);
+            return (
             <fieldset key={axis.key}>
               <legend className={legendClass}>
-                {axis.label}: <span className="text-ink normal-case tracking-normal">{selection[axis.key]}</span>
+                {axis.label}:{' '}
+                <span className={`normal-case tracking-normal ${open ? 'text-caution' : 'text-ink'}`}>{open ? 'choose one' : selection[axis.key]}</span>
               </legend>
               <div className="flex flex-wrap gap-2">
                 {axis.values.map((value) => (
@@ -111,9 +135,9 @@ export function AddToCart({ product, variants, delivery }: Props): React.JSX.Ele
                       const next = choose(variants, axes, selection, axis.key, value, inStock);
                       if (next) select(next.id);
                     }}
-                    aria-pressed={selection[axis.key] === value}
+                    aria-pressed={!open && selection[axis.key] === value}
                     className={pillClass(
-                      selection[axis.key] === value,
+                      !open && selection[axis.key] === value,
                       !isAvailable(variants, axes, selection, axis.key, value, inStock),
                     )}
                   >
@@ -122,7 +146,8 @@ export function AddToCart({ product, variants, delivery }: Props): React.JSX.Ele
                 ))}
               </div>
             </fieldset>
-          ))
+            );
+          })
         : null}
       {axes.length === 0 && variants.length > 1 ? (
         <fieldset>
@@ -133,8 +158,8 @@ export function AddToCart({ product, variants, delivery }: Props): React.JSX.Ele
                 key={v.id}
                 type="button"
                 onClick={() => select(v.id)}
-                aria-pressed={v.id === variantId}
-                className={pillClass(v.id === variantId, !inStock(v))}
+                aria-pressed={picked && v.id === variantId}
+                className={pillClass(picked && v.id === variantId, !inStock(v))}
               >
                 {v.label}
               </button>
@@ -142,10 +167,12 @@ export function AddToCart({ product, variants, delivery }: Props): React.JSX.Ele
           </div>
         </fieldset>
       ) : null}
+      </div>
 
       <p className={`flex items-center gap-2 text-sm ${soldOut ? 'text-caution' : ''}`} aria-live="polite">
         <span aria-hidden="true" className={`size-2 rounded-full ${soldOut ? 'bg-caution' : 'bg-region live-dot'}`} />
-        {soldOut ? 'Sold out' : left <= 3 ? `Only ${left} left` : 'In stock'}
+        {soldOut ? 'Sold out' : !picked ? 'In stock' : left <= 3 ? `Only ${left} left` : 'In stock'}
+        {inBagNow > 0 ? <span className="text-ink-muted"> · {inBagNow} in your bag</span> : null}
       </p>
 
       {delivery ? <div className="bg-paper rounded-md px-4 py-3.5">{delivery}</div> : null}
@@ -174,7 +201,9 @@ export function AddToCart({ product, variants, delivery }: Props): React.JSX.Ele
           onClick={() => addToBag()}
           className="bg-brand text-on-brand font-ui press relative min-h-14 flex-1 overflow-hidden rounded-pill px-5 text-[15px] font-medium disabled:opacity-50"
         >
-          <span className={`block transition-[transform,opacity] duration-300 ${flash ? '-translate-y-6 opacity-0' : ''}`}>Add to bag</span>
+          <span className={`block transition-[transform,opacity] duration-300 ${flash ? '-translate-y-6 opacity-0' : ''}`}>
+            {mustChoose ? `Choose ${mustChoose}` : 'Add to bag'}
+          </span>
           <span
             aria-hidden="true"
             className={`absolute inset-0 grid place-items-center transition-[transform,opacity] duration-300 ${flash ? '' : 'translate-y-6 opacity-0'}`}
@@ -200,7 +229,7 @@ export function AddToCart({ product, variants, delivery }: Props): React.JSX.Ele
       <BuyBar
         target={button}
         name={product.name}
-        detail={variants.length > 1 ? `${formatUsd(variant.price_cents)} · ${variant.label}` : formatUsd(variant.price_cents)}
+        detail={variants.length > 1 && picked ? `${formatUsd(variant.price_cents)} · ${variant.label}` : formatUsd(variant.price_cents)}
         disabled={soldOut}
         added={flash > 0}
         onAdd={addToBag}

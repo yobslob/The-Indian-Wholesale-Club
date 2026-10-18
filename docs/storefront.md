@@ -78,6 +78,28 @@ once Add to bag has scrolled away above the screen, and the review cards are a s
 **D-051:** from 1100 px one full-length photo no taller than the screen with three stacked photos beside it; a
 heart beside the name saves the product; Details and Size chart open and close with + / −; then Reviews (rating + text; photos only from verified buyers; an admin checks each, D-052, D-056), Similar
 items and Curated for you as rows of smaller cards (D-062; Similar items' See all opens its category).
+**D-140 (L3, F8):** no size (or option) is chosen until the customer taps one: the legend says "choose one", the
+button says "Choose a size" and takes them to the sizes with a short glow; a colour may start chosen. The chosen
+option says how many of it are already in the bag.
+
+## Cards (D-140, plan F6, F8, F9)
+- **Tap anywhere on a card but its buttons → the product page.**
+- **The +:** a piece with one choice is added at once and flies to the bag; one with sizes, packs or flavours opens a
+  ribbon across the bottom of the photo (frosted, unrolling from the +, chips arriving one after another; colours
+  first when there are several; sold-out chips struck; a dot for "only a few left"; one tap adds and rolls it back),
+  or a bottom sheet with the photo, the name and each option with its own − n + when a step has more than eight
+  chips or the card is narrower than 160 px. Escape, a tap outside or the card leaving the screen closes it; arrow
+  keys move between chips. Each card carries its options (`options`: variant, label, options, price, what is left;
+  See all's as fresh as its cached page, checkout re-checks stock).
+- **In the bag:** the + becomes − n + (n = every size of the piece in the bag, read from the bag on the device, in
+  every tab); with one size − and + change it (− at 1 takes it out; + past what is left shakes and says "Only n
+  left", L9), with several they open the sheet.
+- **The heart, top right of every card's photo** (the product page's too): it fills the moment it is pressed with a
+  short pop and is never disabled; the database follows a moment later (quick on/off sends only the last state) and
+  a refusal puts it back with "Couldn't save". The page reads a signed-in visitor's saved pieces once, not once per
+  card. Signed out, the piece is saved on this device ("Saved on this device. Sign in to keep them on every device",
+  once) and joins the account after sign-in. A coming-soon card says "Save it, we'll show it in Saved when it's back"
+  beside its heart (S7).
 
 ## Mobile app (customer side, `apps/app`, built in R6, redesigned in B6 on D-095)
 Tabs on the app's own cream tab bar (a brand bar over the active tab, the bag count as a brand pill): **Home** (the photo
