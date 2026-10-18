@@ -161,7 +161,9 @@ runner in `tools/sourcing-runner/` (its README says how to set it up on the PC a
   without dairy (172 targets, about 2,950 listings; Must match leaves out titles naming milk, ghee, paneer and the
   like), `home-amazon-flipkart.csv` home & gifts on Amazon and Flipkart (94 targets, about 1,990 listings). D-138:
   `home-festive-amazon-900.csv` is home & gifts on Amazon only, ₹1 – ₹900, festivals first (185 targets, up to 3,790
-  listings; Must match leaves out lit, battery, cow dung and feather pieces, fireworks and food hampers). Amazon and
+  listings; Must match leaves out lit, battery, cow dung and feather pieces, fireworks and food hampers). D-139:
+  `food-branded-200.csv` is branded snacks, biscuits, chocolates, instant food, masalas and tea, ₹1 – ₹200, every food
+  shop (119 targets, up to 1,410 listings; dairy products, meat, frozen food and liquids left out). Amazon and
   Flipkart searches use the shop's own price filter and read one result page per 10 listings a target wants (up to
   four). For a Shopify shop, Search words may name one of its collections, `collection:kurtis`:
   the whole collection (up to 250 pieces; Shopify's search stops at 10) is the target, every piece in it matches, and

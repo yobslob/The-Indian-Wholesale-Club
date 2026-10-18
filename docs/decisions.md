@@ -941,3 +941,23 @@ rows leave out food hampers (dry fruit, chocolate, sweets, namkeen); loose powde
 out by the matcher's form words. Kids' toys are not searched (US toy-safety rules). Dussehra is 2026-10-20 and
 Diwali 2026-11-08: with delivery at today + 12–18 days, a Navratri or Dussehra piece ordered now
 arrives after the festival, a Diwali piece ordered by about 2026-10-21 arrives before it.
+
+**D-139 · 2026-10-18 · founder: Food: every branded snack, munchie, biscuit and everyday food people order again and again, ₹1–200**
+Founder, verbatim: "In food, make the csv, I want all the branded snacks, munchies, buiscuits and food items in my
+inventory which are repeatedly ordered, most usually seen. prices 1-200"
+What it means for the build:
+- **A new target list,** `tools/sourcing-runner/targets/food-branded-200.csv`: 119 searches by brand or product line
+  (up to 1,410 listings, each with its packs as options), ₹1–200, every food shop (no Shops column: Blinkit, Zepto,
+  Instamart, BigBasket, Amazon, Flipkart), all-India. Chips and munchies (Lay's, Kurkure, Bingo, Balaji…), namkeen
+  brands (Haldiram's, Bikaji, Bikano, Prabhuji, Chheda's…), biscuits, rusk and cakes (Parle, Britannia, Sunfeast,
+  Oreo, Unibic, Karachi Bakery…), chocolates and candies (Cadbury, Nestle, Pulse, Parle candies…), instant food
+  (Maggi, Yippee, MTR, Gits…), masala brands (Everest, MDH, Catch…), branded pickles and papad, tea, coffee and drink
+  powders. It adds to `food-under-300.csv` (D-137), which searches by dish; one shop item is never listed twice.
+- A row's Product names the flavour words its titles carry ("masala", "cream", "chips"), because the matcher drops a
+  title with such a word when the target does not name it.
+*Interpretation (proposed, confirm before uploading):* "dairy" (D-137) here means dairy products, not everything with
+milk in it: titles naming paneer, curd, dahi, khoya, mawa, ghee, lassi, chhena, rasgulla, rasmalai, gulab jamun,
+whitener, milk powder, cheese slices or spreads, or ice cream are left out, while milk biscuits, butter cookies, cream
+biscuits and milk chocolate are kept (Milk Bikis, Good Day, Bourbon, Dairy Milk are among the most ordered). Every row
+also leaves out meat and fish (chicken noodles, prawn crackers), frozen food, bread, juice and anything sold by the
+ml. Chocolates can soften in transit. Tier 1 is the brands seen everywhere, 3 the regional ones.
