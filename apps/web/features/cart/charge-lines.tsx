@@ -2,7 +2,7 @@
 
 import { formatUsd } from '@repo/shared/domain';
 
-import { freeDelivery, useBagCharges } from './charges';
+import { bagSaving, freeDelivery, useBagCharges } from './charges';
 import { FreeMeter, useSurge } from './free-delivery-bar';
 import { useCart } from './store';
 
@@ -59,7 +59,19 @@ export function ChargeLines(): React.JSX.Element | null {
         </div>
       ) : null}
       {free ? <BulkHint bulk={bulk} /> : null}
+      <SavingLine cents={bagSaving(lines, charges)} />
     </div>
+  );
+}
+
+/** D-140 (F5): "You're saving $X" in the brand colour above the total, from the free-delivery line up. */
+export function SavingLine({ cents }: { cents: number }): React.JSX.Element | null {
+  if (cents <= 0) return null;
+  return (
+    <p className="text-brand rise-in font-ui m-0 mt-1 flex items-baseline justify-between gap-3 text-[14.5px] font-semibold">
+      <span>You&apos;re saving</span>
+      <span>{formatUsd(cents)}</span>
+    </p>
   );
 }
 
@@ -108,6 +120,12 @@ export function PendingChargeRows(): React.JSX.Element | null {
         <div className="flex justify-between">
           <dt className="text-ink-muted">Bulk saving</dt>
           <dd className="text-positive m-0">−{formatUsd(bulk.savingCents)}</dd>
+        </div>
+      ) : null}
+      {bagSaving(lines, charges) > 0 ? (
+        <div className="text-brand flex justify-between font-semibold">
+          <dt>You&apos;re saving</dt>
+          <dd className="m-0">{formatUsd(bagSaving(lines, charges))}</dd>
         </div>
       ) : null}
     </>

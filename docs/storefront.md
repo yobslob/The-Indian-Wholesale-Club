@@ -82,6 +82,23 @@ items and Curated for you as rows of smaller cards (D-062; Similar items' See al
 button says "Choose a size" and takes them to the sizes with a short glow; a colour may start chosen. The chosen
 option says how many of it are already in the bag.
 
+## Feel (D-140, plan F5, F7, L4 – L7)
+- **F5:** from the free-delivery line up, Shipping shows struck through at the Settings figure "Shipping shown when
+  free" × the bag's packed kg (never below the $18.79 it is below the line; empty = $18.79), and **You're saving $X**
+  (the struck Shipping and retailer charges and the bulk saving) shows in the brand colour above the total in the bag,
+  the bag panel, checkout and the thank-you page. Display only: what is charged, Express and every price are unchanged
+  (founder, D-140); the figure is never charged, stored or sent to Stripe; customers never see grams. Claude flagged
+  that a struck figure never charged can read as a fictitious former price (FTC 16 CFR 233.1); the founder chose it.
+- **F7:** the thank-you page sews a running stitch from India to the customer's state ending in a stitched check
+  (about 1.4 s, once; finished at once with reduced motion), the message on the left and the order on the right on
+  wide screens, "View your order" for everyone (guests still confirm their email there); confirming shows the stitch
+  running; the order page's progress track is the same stitch. Customers print invoice A from their order page.
+- **L4:** a summary that is the shop's run of specs, or the description again, is not shown; such specs read as a list
+  in Details; the importer and the runner pick a plain line. **L5:** the product title is 30 – 36 px, two lines at
+  most. **L6:** the bag panel adds "Goes well with" (four small cards of the last piece's type from its state, each with
+  its +) under its lines. **L7:** Home's band under Just listed: when an order placed today arrives, where delivery
+  turns free and the return window, from the store's data.
+
 ## Cards (D-140, plan F6, F8, F9)
 - **Tap anywhere on a card but its buttons → the product page.**
 - **The +:** a piece with one choice is added at once and flies to the bag; one with sizes, packs or flavours opens a

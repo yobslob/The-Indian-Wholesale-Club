@@ -17,6 +17,8 @@ export interface LastOrder {
   orderNumber: string | null;
   lines: SummaryLine[];
   quote: CheckoutQuote;
+  /** D-140 (F7): the US state it goes to (two letters), for the thank-you page's stitch. */
+  state?: string | null;
 }
 
 const KEY = 'iwc-last-order';

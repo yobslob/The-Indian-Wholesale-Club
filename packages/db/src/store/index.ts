@@ -245,6 +245,8 @@ export const bagChargesSchema = z.object({
   retailer_pct: z.number().min(0).default(0),
   /** D-125: what a bag past the free-shipping line still pays as Shipping (0 when its prices pay its flight). */
   past_line_cents: z.number().int().min(0).default(0),
+  /** D-140 (F5): the Shipping figure shown struck through once free; null = the small-order Shipping. Display only. */
+  shown_shipping_cents: z.number().int().min(0).nullable().optional(),
 });
 export type BagCharges = z.infer<typeof bagChargesSchema>;
 
@@ -255,6 +257,7 @@ export function smallOrderOf(c: BagCharges): SmallOrderCharges {
     pastLineCents: c.past_line_cents,
     retailerCents: c.retailer_cents,
     retailerPct: c.retailer_pct || null,
+    shownShippingCents: c.shown_shipping_cents ?? null,
   };
 }
 

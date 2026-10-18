@@ -84,6 +84,10 @@ region images, C2), mockups and dev pages use clearly marked placeholders, never
    `.draw-check`, `.quick-add`, `.live-dot`, `.write-in`, panel stagger) and `features/cart/fly-to-bag.ts` (Web Animations);
    the app uses Reanimated (`free-delivery-pill.tsx`, `meter-line.tsx`, the tab bar). Loops animate transform or opacity only.
 7. **Light only:** no dark mode on customer pages (D-050).
+8. **The running stitch (D-140, plan §3):** the brand's one motif, dashes like thread: the thank-you page's India-to-door
+   line (`features/checkout/stitch.tsx`), "Confirming your order…", the order page's progress track, the admin's
+   loading line (`.stitch-loading`). Tap feedback lands in the same frame (the heart, the card's +, − n +); micro
+   motion 150 – 250 ms, reveals 300 – 600 ms; everything off with reduced motion.
 
 ## Tokens (`packages/tokens`)
 One source for web (Tailwind preset) and app (NativeWind): `packages/tokens/tokens.js` → `preset.js`. Components use

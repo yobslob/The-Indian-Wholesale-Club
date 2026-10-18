@@ -21,6 +21,8 @@ export interface CartLine {
   unitPriceCents: number;
   imagePath: string | null;
   quantity: number;
+  /** D-140: clothing, food or home (lines added before it have none). */
+  productType?: string;
 }
 
 interface CartState {

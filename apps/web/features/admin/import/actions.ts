@@ -106,6 +106,7 @@ function plain(error: unknown): string {
   if (message.includes('wears_missing')) return 'Choose who it is for (Women, Men, Kids or Everyone) first.';
   if (message.includes('weight_missing'))
     return 'It needs its weight first: weigh it, or type the weight the shop states (D-129).';
+  if (message.includes('care_missing')) return 'Add its care (how to wash it) first: US customers are owed it (D-140).';
   if (message.includes('price_needed'))
     return 'The price could not be worked out: check the pricing numbers in Settings.';
   if (message.includes('products_food_not_live'))

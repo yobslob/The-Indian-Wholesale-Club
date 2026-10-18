@@ -149,9 +149,10 @@ begin
   perform tests.remember('vendor', v_id);
 
   insert into public.products (slug, name, product_type, region_id, category_id, vendor_id, price_cents,
-                               shop_price_paise, origin_town, status, wears)
+                               shop_price_paise, origin_town, status, wears, attributes)
   values ('test-live', 'Test live product', 'clothing', tests.id('region'), tests.id('cat_clothing'),
-          tests.id('vendor'), 5000, 100000, 'Secret Town', 'live', 'women')
+          tests.id('vendor'), 5000, 100000, 'Secret Town', 'live', 'women',
+          '{"fibre_content": "100% cotton", "care": "Hand wash"}')
   returning id into v_id;
   perform tests.remember('p_live', v_id);
 

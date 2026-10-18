@@ -20,8 +20,13 @@ select tests.assert(
   'the name says who it is for ("women''s" is not "men"), else the category (sarees: women); nothing guessed otherwise');
 insert into public.product_variants (product_id, sku, label, options, qty_listed, weight_g)
 select id, 'WR-' || slug, 'M', '{"size": "M"}', 2, 400 from public.products where slug like 'wr-%';
+update public.products set attributes = '{"fibre_content": "Cotton", "care": "Hand wash"}' where slug like 'wr-%';
 select tests.assert_fails('update public.products set status = ''live'' where slug = ''wr-n''', 'wears_missing',
   'clothing without who it is for cannot go live');
+update public.products set attributes = '{"fibre_content": "Cotton"}' where slug = 'wr-m';
+select tests.assert_fails('update public.products set status = ''live'' where slug = ''wr-m''', 'care_missing',
+  'nor without its care (L4)');
+update public.products set attributes = '{"fibre_content": "Cotton", "care": "Hand wash"}' where slug = 'wr-m';
 update public.products set wears = 'men', status = 'live', published_at = now() - interval '1 day' where slug = 'wr-n';
 update public.products set status = 'live', published_at = now() - interval '2 days' where slug like 'wr-%' and slug <> 'wr-n';
 
@@ -66,8 +71,9 @@ select tests.assert(
 
 -- L2: with a state, its own pieces come before newer all-India ones.
 reset role;
-insert into public.products (slug, name, product_type, region_id, category_id, vendor_id, price_cents, status, published_at, wears)
-values ('wr-all', 'All India newest shirt', 'clothing', null, tests.id('cat_clothing'), tests.id('vendor'), 3000, 'draft', now(), 'men');
+insert into public.products (slug, name, product_type, region_id, category_id, vendor_id, price_cents, status, published_at, wears, attributes)
+values ('wr-all', 'All India newest shirt', 'clothing', null, tests.id('cat_clothing'), tests.id('vendor'), 3000, 'draft', now(), 'men',
+        '{"fibre_content": "Cotton", "care": "Hand wash"}');
 insert into public.product_variants (product_id, sku, label, options, qty_listed, weight_g)
 select id, 'WR-all', 'M', '{"size": "M"}', 2, 400 from public.products where slug = 'wr-all';
 update public.products set status = 'live', published_at = now() where slug = 'wr-all';
@@ -84,9 +90,9 @@ reset role;
 
 -- L8: pieces published at the same moment take turns by shop instead of A-Z.
 insert into public.vendors (shop_name, region_id, status) values ('Second Shop', tests.id('region'), 'active');
-insert into public.products (slug, name, product_type, region_id, category_id, vendor_id, price_cents, status, wears)
+insert into public.products (slug, name, product_type, region_id, category_id, vendor_id, price_cents, status, wears, attributes)
 select 'wr-mix-' || v.n || '-' || i, chr(64 + i) || ' mix ' || v.n, 'clothing', tests.id('region'), tests.id('cat_clothing'),
-       v.id, 3000, 'draft', 'women'
+       v.id, 3000, 'draft', 'women', '{"fibre_content": "Cotton", "care": "Hand wash"}'
   from (select 1 as n, tests.id('vendor') as id union all
         select 2, (select id from public.vendors where shop_name = 'Second Shop')) v, generate_series(1, 4) i;
 insert into public.product_variants (product_id, sku, label, options, qty_listed, weight_g)

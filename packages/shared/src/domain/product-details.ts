@@ -76,3 +76,39 @@ export function detailRows(product: DetailsInput, photos: PhotoNote): [string, s
   }
   return rows;
 }
+
+// ---------------------------------------------------------------- the shop's specs (D-140, plan L4)
+
+/** Keys of more than one word that shops use; any other key is the last word before its colon. */
+const LONG_KEYS = /(technical details|wash care|material (?:&|and) care|sleeve length|sleeve type|neck type|pattern type|occasion type|size (?:&|and) fit|product details|country of origin|net quantity|shelf life|in the box)$/i;
+
+/**
+ * A shop's run-together specs ("Composition: 100% Cotton Gauze Fit: Fitted at bust Length: Calf"), as their pairs;
+ * null when the text is not mostly specs. The store lists them in Details instead of using them as the summary.
+ */
+export function specPairs(text: string | null | undefined): [string, string][] | null {
+  const t = (text ?? '').replace(/\s+/g, ' ').trim();
+  const colons = [...t.matchAll(/:\s+/g)].map((m) => m.index ?? 0);
+  if (colons.length < 2) return null;
+  const keys = colons.map((at) => {
+    const before = t.slice(0, at);
+    const long = LONG_KEYS.exec(before);
+    const word = /([A-Z][A-Za-z&/()-]*)$/.exec(before);
+    const key = long?.[1] ?? word?.[1] ?? null;
+    return key ? { key: key.trim(), start: at - key.length, end: at + (t.slice(at).match(/^:\s+/)?.[0].length ?? 1) } : null;
+  });
+  if (keys.some((k) => k === null) || (keys[0]!.start > 2)) return null;
+  const pairs: [string, string][] = keys.map((k, i) => {
+    const to = i + 1 < keys.length ? keys[i + 1]!.start : t.length;
+    return [k!.key.replace(/^./, (c) => c.toUpperCase()), t.slice(k!.end, to).trim().replace(/[;,.]\s*$/, '')];
+  });
+  return pairs.every(([, v]) => v.length > 0) ? pairs : null;
+}
+
+/** Whether a summary is worth showing: one plain line, not the shop's specs, not the description's start again. */
+export function usableSummary(summary: string | null | undefined, description: string | null | undefined): string | null {
+  const s = summary?.trim();
+  if (!s || specPairs(s)) return null;
+  const d = description?.replace(/\s+/g, ' ').trim() ?? '';
+  return d.startsWith(s.replace(/\s+/g, ' ').replace(/[.…]+$/, '')) ? null : s;
+}

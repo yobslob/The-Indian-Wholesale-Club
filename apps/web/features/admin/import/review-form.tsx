@@ -6,6 +6,7 @@ import {
   fallbackWeightG,
   PRODUCT_TYPE_LABEL,
   PRODUCT_TYPES,
+  specPairs,
   WEARS,
   WEARS_LABEL,
   wearsFromHints,
@@ -96,7 +97,8 @@ export function ReviewForm({
     return {
       // D-140 (L1): IWC's name, without the brand or shop; the shop's full title is kept for the admin
       name: shorten(cleanTitle(product.title, { brand: product.brand, productType: guessProductType(product) }), 120),
-      summary: shorten(product.bullets[0] ?? firstSentence(product.description), 300),
+      // D-140 (L4): one plain line, never the shop's run of specs
+      summary: shorten([...product.bullets, firstSentence(product.description)].find((b) => b && !specPairs(b)) ?? '', 300),
       description: [bullets, product.description].filter(Boolean).join('\n\n').slice(0, 4000),
       fibre: d.fibre,
       care: d.care,

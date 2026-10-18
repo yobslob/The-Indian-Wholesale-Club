@@ -103,7 +103,7 @@ export function CheckoutFlow({ saved }: { saved: SavedDetails | null }): React.J
     }
     setStarted(json);
     setAt(3);
-    saveLastOrder({ paymentIntentId: json.paymentIntentId, orderNumber: null, lines: summaryLines, quote: json.quote });
+    saveLastOrder({ paymentIntentId: json.paymentIntentId, orderNumber: null, lines: summaryLines, quote: json.quote, state: body.address.state });
   }
 
   function priceWith(d: Delivery): void {
@@ -132,7 +132,8 @@ export function CheckoutFlow({ saved }: { saved: SavedDetails | null }): React.J
     }
     const result = await confirmOrder(paymentIntentId);
     if (result.orderNumber) {
-      if (started) saveLastOrder({ paymentIntentId, orderNumber: result.orderNumber, lines: summaryLines, quote: started.quote });
+      if (started)
+        saveLastOrder({ paymentIntentId, orderNumber: result.orderNumber, lines: summaryLines, quote: started.quote, state: request?.address.state ?? null });
       clear();
       router.push(`/checkout/success?order=${encodeURIComponent(result.orderNumber)}`);
     } else {

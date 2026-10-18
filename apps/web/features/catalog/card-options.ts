@@ -33,7 +33,7 @@ export function showsPrices(options: CardOption[], type: ProductCard['product_ty
 
 /** The bag line for an option. */
 export function bagLine(
-  product: Pick<ProductCard, 'id' | 'name' | 'slug' | 'region_slug' | 'region_name' | 'primary_image_path'>,
+  product: Pick<ProductCard, 'id' | 'name' | 'slug' | 'region_slug' | 'region_name' | 'primary_image_path'> & { product_type?: string },
   o: Pick<CardOption, 'id' | 'label' | 'price_cents'>,
 ) {
   return {
@@ -46,5 +46,6 @@ export function bagLine(
     variantLabel: o.label,
     unitPriceCents: o.price_cents,
     imagePath: product.primary_image_path,
+    ...(product.product_type ? { productType: product.product_type } : {}),
   };
 }

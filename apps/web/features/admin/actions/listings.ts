@@ -21,6 +21,8 @@ export type SaveResult = { id: string; published: boolean; note?: string } | { e
 /** The database's refusals in the admin's words. */
 function plain(error: unknown): string {
   const message = error instanceof Error ? error.message : String(error);
+  if (message.includes('care_missing')) return 'Add its care (how to wash it) first: US customers are owed it (D-140).';
+  if (message.includes('wears_missing')) return 'Choose who it is for (Women, Men, Kids or Everyone) first.';
   if (message.includes('price_needed')) return 'Set the shop price (with every cost in Settings), or a price by hand.';
   if (message.includes('vendor_not_found')) return 'Pick an active shop.';
   if (message.includes('products_slug') || message.includes('duplicate key')) return 'That web address is taken: edit it.';

@@ -1,4 +1,5 @@
 import { attributesSchemaFor } from '../../domain/attributes';
+import { specPairs } from '../../domain/product-details';
 import { variantLabel, type VariantOptions } from '../../domain/listing';
 import { guessDetails } from '../guess';
 import { liquidReason } from '../liquid';
@@ -283,7 +284,8 @@ export function buildListing(input: {
       shop_label: shop.label,
       page_url: product.url,
       name,
-      summary: shorten(bullets[0] ?? description.split(/(?<=[.!?])\s/)[0] ?? '', 300),
+      // D-140 (L4): one plain line, never the shop's run of specs
+      summary: shorten([...bullets, description.split(/(?<=[.!?])\s/)[0] ?? ''].find((b) => b && !specPairs(b)) ?? '', 300),
       description: description.slice(0, 4000),
       attributes,
       weight_g: pageWeight?.grams ?? null,

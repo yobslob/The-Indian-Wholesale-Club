@@ -82,6 +82,11 @@ export interface SmallOrderCharges {
   retailerCents: number;
   /** D-123: the retailer charges are this % of the goods, at least `retailerCents`. */
   retailerPct?: number | null;
+  /**
+   * D-140 (F5): the Shipping figure shown struck through once free (the bag's packed kg × the founder's $ a kg, at least
+   * `shippingCents`). Display only: never charged, stored or sent to Stripe.
+   */
+  shownShippingCents?: number | null;
 }
 
 /**
@@ -100,7 +105,7 @@ export function bagChargesAt(goodsCents: number, freeMinCents: number | null, sm
     free,
     /** Shipping as paid, and as it would be (struck through) when free. */
     shippingCents: free ? past : shipping,
-    waivedShippingCents: free && past === 0 ? shipping : 0,
+    waivedShippingCents: free && past === 0 ? Math.max(shipping, small?.shownShippingCents ?? 0) : 0,
     retailerCents: free ? 0 : retailer,
     waivedRetailerCents: free ? retailer : 0,
   };
@@ -225,4 +230,12 @@ export function quoteCheckout(
 /** "$12.50" from cents. */
 export function formatUsd(cents: number): string {
   return new Intl.NumberFormat('en-US', { style: 'currency', currency: 'USD' }).format(cents / 100);
+}
+
+/**
+ * D-140 (F5): "You're saving $X": the struck Shipping and retailer charges and the bulk saving, from the free-delivery
+ * line up (0 below it). A note only: every total stays exact.
+ */
+export function bagSavingCents(at: { waivedShippingCents: number; waivedRetailerCents: number }, bulkSavingCents: number): number {
+  return at.waivedShippingCents + at.waivedRetailerCents + Math.max(bulkSavingCents, 0);
 }

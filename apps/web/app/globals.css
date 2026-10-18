@@ -1160,6 +1160,37 @@ html[data-free-bar] .site-footer {
       transform: scale(1.25);
     }
   }
+  /* D-140 (F7): the running stitch sews from India to the customer's state, then the check draws itself */
+  .order-stitch .stitch-reveal {
+    stroke-dasharray: 100;
+    animation: stitch-sew 1.1s cubic-bezier(0.65, 0, 0.35, 1) backwards;
+  }
+  .order-stitch .stitch-dot {
+    animation: rise-in 0.3s 1s ease backwards;
+  }
+  .order-stitch .stitch-check {
+    stroke-dasharray: 100;
+    animation: draw-check-long 0.35s 1.1s cubic-bezier(0.65, 0, 0.35, 1) backwards;
+  }
+  @keyframes stitch-sew {
+    from {
+      stroke-dashoffset: 100;
+    }
+  }
+  @keyframes draw-check-long {
+    from {
+      stroke-dashoffset: 100;
+    }
+  }
+  .stitch-running line {
+    stroke-dasharray: 6 5;
+    animation: stitch-run-line 0.7s linear infinite;
+  }
+  @keyframes stitch-run-line {
+    to {
+      stroke-dashoffset: -11;
+    }
+  }
   /* D-140 (L3): "Choose a size" points at the sizes with a short glow */
   .choose-nudge {
     animation: choose-nudge 0.9s ease;

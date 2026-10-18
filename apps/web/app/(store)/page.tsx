@@ -1,4 +1,5 @@
 import { getHomeCached } from '@/features/catalog/data';
+import { DeliveryBand } from '@/features/home/delivery-band';
 import { HomeHero } from '@/features/home/home-hero';
 import { JustListed } from '@/features/home/just-listed';
 import { PickHome } from '@/features/regions/pick-home';
@@ -34,6 +35,7 @@ export default async function HomePage(): Promise<React.JSX.Element> {
 
       <div className="px-[var(--gut)]">
         <JustListed home={home} />
+        <DeliveryBand delivery={home.delivery} band={home.band} />
       </div>
     </div>
   );

@@ -18,7 +18,7 @@ export function WhoTiles({
 }): React.JSX.Element {
   return (
     <nav aria-label="Clothing for" className="grid grid-cols-2 gap-[var(--gap)]">
-      {WHO.map((w) => {
+      {WHO.filter((w) => counts[w] > 0 || query.who === w).map((w) => {
         const on = query.who === w;
         const next = withFilter(query, { who: on ? undefined : w });
         return (

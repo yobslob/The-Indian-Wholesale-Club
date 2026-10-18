@@ -35,8 +35,8 @@ export const productTag = (regionSlug: string, productSlug: string): string =>
  * entries outlive deployments (Vercel's data cache, .next/cache locally), and an old entry would reach a page
  * that expects the new field. Last change: store_browse's sizes and prices, store_home's just_listed_types (D-136).
  */
-// v16: store_browse adds 'wears' and the For filter; v17: cards carry their options (D-140)
-const SHAPE = 'v17';
+// v16: store_browse adds 'wears' and the For filter; v17: cards carry their options; v18: Home's band (D-140)
+const SHAPE = 'v18';
 
 const cached = <T>(key: string[], tags: string[], load: () => Promise<T>): Promise<T> =>
   unstable_cache(load, [...key, SHAPE], { tags: [STORE_TAG, ...tags], revalidate: STORE_REVALIDATE_SECONDS })();

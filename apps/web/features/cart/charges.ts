@@ -3,7 +3,7 @@
 import { useEffect } from 'react';
 import { create } from 'zustand';
 
-import { bagChargesAt, bulkProgress, type BulkSaving, type SmallOrderCharges } from '@repo/shared/domain';
+import { bagChargesAt, bagSavingCents, bulkProgress, type BulkSaving, type SmallOrderCharges } from '@repo/shared/domain';
 
 import { cartSubtotalCents, useCart, type CartLine } from './store';
 
@@ -47,6 +47,8 @@ function parse(data: unknown): BagCharges | null {
       pastLineCents: int(d.past_line_cents) ?? 0,
       retailerCents,
       retailerPct: num(d.retailer_pct) || null,
+      // D-140 (F5): the struck figure once free (display only)
+      shownShippingCents: int(d.shown_shipping_cents),
     },
     bulk: pct > 0 && cap > 0 ? { pct, capCents: cap } : null,
   };
@@ -98,4 +100,10 @@ export function freeDelivery(lines: CartLine[], charges: BagCharges | null) {
     share: line ? Math.min(subtotal / line, 1) : 1,
     bulk: bulkProgress(subtotal, line, charges?.bulk),
   };
+}
+
+/** D-140 (F5): "You're saving $X" for this bag: the struck charges and the bulk saving (0 below the line). */
+export function bagSaving(lines: CartLine[], charges: BagCharges | null): number {
+  const f = freeDelivery(lines, charges);
+  return f.free ? bagSavingCents(f.at, f.bulk.savingCents) : 0;
 }

@@ -73,6 +73,13 @@ export function BagSummary({
               </>
             )}
             <Row label="Sales tax" value={formatUsd(b.taxCents)} />
+            {/* D-140 (F5): what the free delivery line saved, above the total (a note; the total is exact) */}
+            {quoteSaving(b) > 0 ? (
+              <div className="text-brand flex justify-between font-semibold">
+                <dt>You&apos;re saving</dt>
+                <dd className="m-0">{formatUsd(quoteSaving(b))}</dd>
+              </div>
+            ) : null}
             <Row label="Total" value={formatUsd(b.totalCents)} strong />
           </>
         ) : (
@@ -90,4 +97,11 @@ export function BagSummary({
       ) : null}
     </div>
   );
+}
+
+/** D-140 (F5): the struck charges and the bulk saving of a priced bag. */
+export function quoteSaving(b: { shippingCents: number; retailerCents: number; bulkSavingCents: number; waivedCents?: { shipping: number; retailer: number } }): number {
+  const shipping = b.shippingCents === 0 ? (b.waivedCents?.shipping ?? 0) : 0;
+  const retailer = b.retailerCents === 0 ? (b.waivedCents?.retailer ?? 0) : 0;
+  return shipping + retailer + b.bulkSavingCents;
 }

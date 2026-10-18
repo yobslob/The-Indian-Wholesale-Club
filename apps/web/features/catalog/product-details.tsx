@@ -1,4 +1,4 @@
-import { clothingAttributesSchema, detailRows, netQuantity, type PhotoNote } from '@repo/shared/domain';
+import { clothingAttributesSchema, detailRows, netQuantity, specPairs, type PhotoNote } from '@repo/shared/domain';
 
 import type { Product, Variant } from '@repo/db/store';
 
@@ -20,7 +20,7 @@ export function ProductDetails({
   const rows = detailRows({ ...product, net_quantity: netQuantity(variants) }, photos);
   return (
     <div className="space-y-3">
-      {product.description ? <p className="whitespace-pre-line">{product.description}</p> : null}
+      {product.description ? <Description text={product.description} /> : null}
       {product.craft || rows.length > 0 ? (
         <dl className="grid grid-cols-[max-content_1fr] gap-x-4 gap-y-1.5">
           {product.craft ? (
@@ -74,5 +74,36 @@ export function sizeChart(product: Product, variants: Variant[]): React.JSX.Elem
         ))}
       </tbody>
     </table>
+  );
+}
+
+/**
+ * The description, each paragraph as written; a paragraph that is a shop's run of specs ("Composition: … Fit: …")
+ * reads as a list instead (D-140, L4).
+ */
+function Description({ text }: { text: string }): React.JSX.Element {
+  return (
+    <div className="space-y-2">
+      {text
+        .split(/\n{2,}|\n(?=\s*[•-])/)
+        .map((para) => para.trim())
+        .filter(Boolean)
+        .map((para, i) => {
+          const pairs = specPairs(para);
+          return pairs ? (
+            <ul key={i} className="m-0 grid list-none gap-1 p-0">
+              {pairs.map(([k, v]) => (
+                <li key={k}>
+                  <span className="text-ink-muted">{k}:</span> {v}
+                </li>
+              ))}
+            </ul>
+          ) : (
+            <p key={i} className="m-0 whitespace-pre-line">
+              {para}
+            </p>
+          );
+        })}
+    </div>
   );
 }

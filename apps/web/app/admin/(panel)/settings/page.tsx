@@ -56,6 +56,7 @@ export default async function SettingsPage(): Promise<React.JSX.Element> {
                       className={input}
                     />
                   </Field>
+                  {f.hint ? <p className="text-ink-muted text-[12px] leading-snug">{f.hint}</p> : null}
                   <EstimateNote estimates={estimates} setting={f.key} />
                 </div>
               ))}

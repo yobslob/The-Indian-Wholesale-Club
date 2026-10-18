@@ -117,3 +117,20 @@ describe('names in brackets (D-140, L1)', async () => {
     assert.equal(cleanTitle('Phulkari Kurta (Men)', { productType: 'clothing' }), 'Phulkari Kurta');
   });
 });
+
+describe("the shop's specs (D-140, L4)", async () => {
+  const { specPairs, usableSummary } = await import('../src/domain');
+  it('reads a run of "Key: value" as pairs, and leaves a plain sentence alone', () => {
+    assert.deepEqual(specPairs('Composition: 100% Cotton Gauze Fit: Fitted at bust Technical Details: Lined, side zip'), [
+      ['Composition', '100% Cotton Gauze'],
+      ['Fit', 'Fitted at bust'],
+      ['Technical Details', 'Lined, side zip'],
+    ]);
+    assert.equal(specPairs('A light cotton kurti for hot days.'), null);
+  });
+  it('drops a summary that is specs or the description again', () => {
+    assert.equal(usableSummary('Composition: Cotton Fit: Regular', 'x'), null);
+    assert.equal(usableSummary('Soft cotton, block printed', 'Soft cotton, block printed by hand in Bagru.'), null);
+    assert.equal(usableSummary('Block printed by hand in Bagru', 'Composition: Cotton'), 'Block printed by hand in Bagru');
+  });
+});

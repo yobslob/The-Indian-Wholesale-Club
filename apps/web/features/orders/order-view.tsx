@@ -57,7 +57,8 @@ function Timeline({ order, step }: { order: OrderDetail; step: number }): React.
       />
       <span
         aria-hidden="true"
-        className="bg-ink absolute left-[12.5%] top-[9px] h-0.5 rounded-sm"
+        // D-140 (F7): the done part of the track is the brand's running stitch
+        className="absolute left-[12.5%] top-[9px] h-0.5 rounded-sm bg-[repeating-linear-gradient(90deg,theme(colors.ink)_0_7px,transparent_7px_12px)]"
         style={{ width: `${(75 * step) / last}%` }}
       />
       {CUSTOMER_TIMELINE.map((s, i) => {

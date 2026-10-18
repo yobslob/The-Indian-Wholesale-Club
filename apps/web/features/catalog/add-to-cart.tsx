@@ -18,7 +18,7 @@ import type { Product, Variant } from '@repo/db/store';
 interface Props {
   product: Pick<
     Product,
-    'id' | 'name' | 'slug' | 'region_slug' | 'region_name' | 'primary_image_path'
+    'id' | 'name' | 'slug' | 'region_slug' | 'region_name' | 'primary_image_path' | 'product_type'
   >;
   variants: Variant[];
   /** Shown just above the button (the delivery window, D-008). */
@@ -104,6 +104,7 @@ export function AddToCart({ product, variants, delivery }: Props): React.JSX.Ele
         variantLabel: variant.label,
         unitPriceCents: variant.price_cents,
         imagePath: product.primary_image_path,
+        productType: product.product_type,
       },
       quantity,
     );

@@ -8,6 +8,7 @@ import { HeaderIcon } from '@/features/shell/header-icons';
 
 import { BagLines } from './bag-lines';
 import { checkoutButton, EmptyLine, Subtotal } from './cart-view';
+import { GoesWellWith } from './goes-well';
 import { cartCount, useCart } from './store';
 
 /**
@@ -46,7 +47,10 @@ export function BagPanel({ open, onClose }: { open: boolean; onClose: (refocus: 
         </header>
         <div className="flex-1 overflow-y-auto px-5" data-lenis-prevent>
           {lines.length > 0 ? (
-            <BagLines compact />
+            <>
+              <BagLines compact />
+              {open ? <GoesWellWith /> : null}
+            </>
           ) : (
             <div className="py-6">
               <EmptyLine />

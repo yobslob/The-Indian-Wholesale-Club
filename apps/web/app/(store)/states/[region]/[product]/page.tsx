@@ -1,7 +1,7 @@
 import Link from 'next/link';
 import { notFound } from 'next/navigation';
 
-import { PRODUCT_TYPE_LABEL, PRODUCT_TYPE_PATH } from '@repo/shared/domain';
+import { PRODUCT_TYPE_LABEL, PRODUCT_TYPE_PATH, usableSummary } from '@repo/shared/domain';
 
 import { SaveButton } from '@/features/account/save-button';
 import { AddToCart } from '@/features/catalog/add-to-cart';
@@ -26,7 +26,7 @@ export async function generateStaticParams(): Promise<{ region: string; product:
 export async function generateMetadata({ params }: { params: Params }): Promise<Metadata> {
   const { region, product } = await params;
   const page = await getProductPageCached(region, product);
-  return page ? { title: page.product.name, description: page.product.summary ?? undefined } : {};
+  return page ? { title: page.product.name, description: usableSummary(page.product.summary, page.product.description) ?? undefined } : {};
 }
 
 /**
@@ -74,12 +74,16 @@ export default async function ProductPage({
             ) : null}
           </p>
           <div className="my-3 flex items-start justify-between gap-4">
-            <h1 className="font-display text-[clamp(38px,3.6vw,64px)] leading-none tracking-[-0.02em]">
+            {/* D-140 (L5): 32 – 36 px, two lines at most, so the price and the sizes stay above the fold */}
+            <h1 className="font-display line-clamp-2 text-[clamp(30px,2.5vw,36px)] leading-[1.08] tracking-[-0.01em]">
               {product.name}
             </h1>
             <SaveButton productId={product.id} />
           </div>
-          {product.summary ? <p className="text-ink-muted mb-5">{product.summary}</p> : null}
+          {/* D-140 (L4): one plain line; a shop's specs or the description again are not a summary */}
+          {usableSummary(product.summary, product.description) ? (
+            <p className="text-ink-muted mb-5">{usableSummary(product.summary, product.description)}</p>
+          ) : null}
           {product.coming_soon ? (
             // D-135: shown, not sold yet: the heart above saves it
             <div className="border-line border-y py-4">

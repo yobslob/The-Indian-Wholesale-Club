@@ -106,6 +106,12 @@ export const SETTING_GROUPS: SettingGroup[] = [
     fields: [
       { key: 'free_shipping_min_cents', label: 'Shipping and retailer charges come off from ($)', kind: 'usd' },
       { key: 'small_order_shipping_cents', label: 'Shipping below the line, at least ($)', kind: 'usd' },
+      {
+        key: 'shown_shipping_cents_per_kg',
+        label: 'Shipping shown when free: $ a kg of the bag (D-140)',
+        kind: 'usd',
+        hint: "Display only: from the line up, Shipping shows struck through at the bag's packed kg × this (never below the Shipping above). Nothing is charged, stored on an order or sent to Stripe. Empty = the Shipping above.",
+      },
       { key: 'small_order_retailer_cents', label: 'Retailer charges, at least ($)', kind: 'usd' },
       { key: 'retailer_pct', label: 'Retailer charges: % of the goods (D-123; empty = the fixed amount above)', kind: 'pct' },
       { key: 'bulk_saving_pct', label: 'Bulk saving: % of the amount over the line', kind: 'pct' },

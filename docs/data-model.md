@@ -183,6 +183,13 @@ Migration 73 (D-140, L1): `products.shop_title` (admin only, backfilled from the
 Migration 74 (D-140, F8, F9): `_store_card_options(product)` (up to 20 of a piece's variants: id, label, options, price,
 available, from `store_variants`); `_store_product_card()` and `store_browse()` cards add `options` (null when coming
 soon).
+Migration 75 (D-140, F5): `pricing_settings.shown_shipping_cents_per_kg` ("Shipping shown when free", $ a kg, the
+founder's number) and `store_bag_charges()`'s `shown_shipping_cents` (the bag's packed kg × it, at least the small-order
+Shipping; null while empty). Display only: never charged, stored or sent to Stripe.
+Migration 76 (D-140, L4): the `products_wears` trigger also raises `care_missing` when clothing goes live without its
+care (`attributes.care`), placeholders and US clearance exempt.
+Migration 77 (D-140, L7): `store_home()` adds `band` (`free_min_cents`, `return_claim_days` from `store_policy()`), so
+Home's band needs no second read.
 Migration 69 (D-135): `products.coming_soon`, `coming_soon_note`, `liquid_checked_at`; trigger `products_coming_soon`
 (any status but archived ends it); `store_products` and `store_media` include archived coming-soon listings and
 `store_products` ends with `coming_soon`; `_store_product_card` and `store_browse` send it (no quick add for it).

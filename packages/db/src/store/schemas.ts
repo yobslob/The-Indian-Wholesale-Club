@@ -129,6 +129,8 @@ export const homeSchema = z.object({
   /** D-136: the twelve newest of each product type (Home's Just listed switch); optional until migration 20261016210000. */
   just_listed_types: z.record(z.array(regionProductCardSchema)).nullable().optional(),
   delivery: deliveryWindowSchema.nullable(),
+  /** D-140 (L7, optional until migration 20261018150000): Home's band, from the store's policy. */
+  band: z.object({ free_min_cents: z.number().int().nullable(), return_claim_days: z.number().int().nullable() }).nullable().optional(),
 });
 
 /** A region album photo (D-051): only the file and what it shows. */
