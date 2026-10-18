@@ -12,6 +12,7 @@ import { DeliverSheet, ShipSheet } from '@/features/admin/bulk-ship';
 import { rupees } from '@/features/admin/format';
 import { PickWithWeight, WeighPicked } from '@/features/admin/hub-weigh';
 import { PieceOrder } from '@/features/admin/piece-order';
+import { RefundPiece } from '@/features/admin/refund-piece';
 import { AdminButton, Chip, ConfirmSheet, Panel, StatusChip, useDesk } from '@/features/admin/ui';
 import { useAction } from '@/features/admin/use-action';
 import { supabase } from '@/lib/supabase';
@@ -20,7 +21,7 @@ import { useQuery } from '@/lib/use-query';
 /**
  * An order (D-097): chips, the pieces with photos and where each pickup stands, the customer with Call / Text, the
  * timeline in plain words; the one main action at the bottom (Pack & ship opens a sheet; Mark delivered asks first).
- * Refunds and cancels need the Stripe key on the server, so they stay on the web panel (D-042).
+ * An unavailable piece is refunded here through the website's server (D-140, A5); cancels stay on the web panel (D-042).
  */
 const pieceCount = (n: number): string => `${n} piece${n === 1 ? '' : 's'}`;
 
@@ -94,12 +95,15 @@ export default function AdminOrderScreen(): React.JSX.Element {
                     {p?.vendor ? ` · ${p.vendor.shop_name} ${rupees(p.shop_price_paise)}` : ''}
                   </Text>
                   <View className="flex-row flex-wrap gap-1.5">
-                    {item.status === 'unavailable' ? <Chip tone="bad">Unavailable · refund on the web panel</Chip> : null}
+                    {item.status === 'unavailable' ? <Chip tone="bad">Unavailable · to refund</Chip> : null}
                     {item.status === 'refunded' ? <Chip tone="mute">Refunded</Chip> : null}
                     {stage && item.status === 'active' ? <StatusChip map={PIECE_STAGE} status={stage} /> : null}
                     {p?.status === 'picked' ? p.payout_id ? <Chip tone="ok">Paid to shop</Chip> : <Chip tone="warn">Not paid yet</Chip> : null}
                     {p?.arrived_at ? <Chip tone="brand">In the US</Chip> : null}
                   </View>
+                  {item.status === 'unavailable' && order.payment_intent_id ? (
+                    <RefundPiece orderId={order.id} itemId={item.id} name={item.product_name} onDone={reload} />
+                  ) : null}
                   {p?.status === 'pending' && item.status === 'active' && itemUrl ? (
                     <PieceOrder
                       pickupId={p.id}
@@ -185,7 +189,7 @@ export default function AdminOrderScreen(): React.JSX.Element {
               <Text className="font-body text-ink text-[14px]">−{formatUsd(order.refunded_cents)}</Text>
             </View>
           ) : null}
-          <Text className="font-body text-ink-muted text-[12.5px]">Refunds, cancels and new delivery dates are on the web panel.</Text>
+          <Text className="font-body text-ink-muted text-[12.5px]">Cancels and new delivery dates are on the web panel.</Text>
         </Panel>
         {main ? <View className="h-20" /> : null}
       </Screen>

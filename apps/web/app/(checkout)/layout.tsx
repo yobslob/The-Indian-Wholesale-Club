@@ -20,7 +20,7 @@ export default async function CheckoutLayout({ children }: { children: React.Rea
         {demo ? <DemoBanner /> : null}
         <header className="site-header">
           <div className="site-bar font-ui justify-between">
-            <Link href="/" className="site-logo font-logo text-[16px] font-normal leading-none tracking-normal md:text-[22px]">
+            <Link href="/" aria-label="Indian Wholesale Club, home" className="site-logo font-logo text-[16px] font-normal leading-none tracking-normal md:text-[22px]">
               <LogoText />
             </Link>
             <Link href="/cart" className="inline-flex min-h-11 items-center gap-1.5 text-sm font-medium">

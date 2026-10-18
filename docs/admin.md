@@ -76,8 +76,8 @@ order page (the page prints only the invoice).
 total, where it goes, a button to it); an open admin panel shows a toast with a short chime. App push notifications are
 not built (no `expo-notifications` yet).
 The order page refunds unavailable pieces and cancels orders before cutoff, with the amounts from the D-042 rules shown on
-the buttons (Stripe first, then the database). **Web only:** refunds need the Stripe secret key, which lives on the server;
-the app's order list marks unavailable pieces "to refund on the web panel".
+the buttons (Stripe first, then the database). Since D-140 (A5) the app's order screen refunds an unavailable piece too, through the website's `POST /admin/refund` (the
+admin's own token; the Stripe key stays on the server); cancels stay on the web panel.
 
 **App admin mode, what each screen does (B8, D-097, on the web's look):** five tabs with counts of what waits
 (Orders to ship, Pickups to do, Drafts, Shops owed) and a search button on each that opens **quick find**; times in the

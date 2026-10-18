@@ -37,7 +37,7 @@ export function SiteHeader(): React.JSX.Element {
         Skip to content
       </a>
       <div className="site-bar font-ui">
-        <Link href="/" className="site-logo font-logo mr-auto text-[16px] font-normal leading-none tracking-normal md:text-[22px]">
+        <Link href="/" aria-label="Indian Wholesale Club, home" className="site-logo font-logo mr-auto text-[16px] font-normal leading-none tracking-normal md:text-[22px]">
           <LogoText />
         </Link>
         <nav aria-label="Main" className="site-links">
