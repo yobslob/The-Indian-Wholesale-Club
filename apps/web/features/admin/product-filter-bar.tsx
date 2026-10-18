@@ -27,7 +27,7 @@ export function ProductFilterBar({
   shops,
   clearHref,
 }: {
-  values: Record<'q' | 'type' | 'region' | 'category' | 'shop' | 'min' | 'max' | 'sort', string>;
+  values: Record<'q' | 'type' | 'region' | 'category' | 'shop' | 'min' | 'max' | 'sort' | 'wears', string>;
   /** The tab (status, us) carried along. */
   keep: Record<string, string>;
   regions: FilterOption[];
@@ -95,6 +95,15 @@ export function ProductFilterBar({
               {c.label}
             </option>
           ))}
+        </select>
+        {/* D-140: who it is for; "Not set yet" lists the clothing still to sort */}
+        <select name="for" aria-label="For" defaultValue={values.wears} className={select} key={`w${values.wears}`}>
+          <option value="">For anyone</option>
+          <option value="none">For: not set yet</option>
+          <option value="women">Women</option>
+          <option value="men">Men</option>
+          <option value="unisex">Unisex</option>
+          <option value="kids">Kids</option>
         </select>
         <select name="shop" aria-label="Shop" defaultValue={values.shop} className={select} key={`s${values.shop}`}>
           <option value="">All shops</option>

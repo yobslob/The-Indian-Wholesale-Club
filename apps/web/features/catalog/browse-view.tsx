@@ -2,12 +2,13 @@
 
 import { useRef } from 'react';
 
-import { browseHref, MOST, priceLabel, SORTS, withFilter, type BrowseQuery } from './browse-query';
+import { browseHref, MOST, priceLabel, SORTS, WHO_LABEL, withFilter, type BrowseQuery } from './browse-query';
 import { FilterPanel } from './filter-panel';
 import styles from './filters.module.css';
 import { PhoneFilter } from './phone-filter';
 import { ProductCard } from './product-card';
 import { useBrowse } from './use-browse';
+import { WhoTiles } from './who-tiles';
 
 import type { BrowsePage, BrowseSort } from '@repo/db/store';
 import type { ProductType } from '@repo/shared/domain';
@@ -38,7 +39,8 @@ export function BrowseView({
   const stateName = meta.regions.find((s) => s.slug === query.state)?.name;
   const categoryName = meta.categories.find((c) => c.slug === query.category)?.name;
   const price = priceLabel(query);
-  const chosen = Boolean(query.state || query.category || price || query.sizes.length);
+  const whoName = query.who ? WHO_LABEL[query.who] : undefined;
+  const chosen = Boolean(query.state || query.category || price || query.sizes.length || query.who);
 
   /** A filter applied: the cards swap in place; if the reader is far down, back to the top of the cards. */
   const change = (next: BrowseQuery): void => {
@@ -66,17 +68,19 @@ export function BrowseView({
       </a>
     );
   };
-  const clearAll = withFilter(query, { state: undefined, category: undefined, min: undefined, max: undefined, sizes: [] });
+  const clearAll = withFilter(query, { state: undefined, category: undefined, who: undefined, min: undefined, max: undefined, sizes: [] });
   const panel = <FilterPanel productType={productType} query={query} meta={meta} onChange={change} />;
 
   return (
     <>
       <h1 className="font-heading text-ink text-[clamp(32px,3vw,52px)] font-medium leading-tight tracking-[-0.03em]">
         {categoryName ?? title}
+        {whoName ? <span className="text-ink-muted"> · {whoName}</span> : null}
         {stateName ? <span className="text-ink-muted"> · {stateName}</span> : null}
       </h1>
+      {productType === 'clothing' && meta.wears ? <WhoTiles query={query} counts={meta.wears} onChange={change} /> : null}
       <PhoneFilter
-        chosen={`${stateName ?? 'All states'} · ${categoryName ?? 'Everything'}${price ? ` · ${price}` : ''}`}
+        chosen={`${whoName ? `${whoName} · ` : ''}${stateName ?? 'All states'} · ${categoryName ?? 'Everything'}${price ? ` · ${price}` : ''}`}
         count={pieces(meta.total)}
         onClear={chosen ? () => change(clearAll) : null}
       >
@@ -98,6 +102,7 @@ export function BrowseView({
             </p>
             {chosen ? (
               <div className={`${styles.chips} order-last w-full md:order-none md:w-auto`}>
+                {whoName ? chip(whoName, { who: undefined }) : null}
                 {categoryName ? chip(categoryName, { category: undefined }) : null}
                 {stateName ? chip(stateName, { state: undefined }) : null}
                 {price ? chip(price, { min: undefined, max: undefined }) : null}

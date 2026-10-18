@@ -19,6 +19,7 @@ import {
   attributesSchemaFor,
   listingSlug,
   PRODUCT_TYPES,
+  WEARS,
   type ListingInput,
 } from '@repo/shared/domain';
 import {
@@ -81,6 +82,8 @@ const importSchema = z.object({
   regionId: z.string().uuid().nullable(),
   categoryId: z.string().uuid(),
   productType: z.enum(PRODUCT_TYPES),
+  /** D-140: who it is for (clothing must have it to go live). */
+  wears: z.enum(WEARS).nullable().default(null),
   name: z.string().trim().min(2, 'Give it a name.').max(120),
   summary: z.string().trim().max(300),
   description: z.string().trim().max(4000),
@@ -100,6 +103,7 @@ export type ImportInput = z.input<typeof importSchema>;
 
 function plain(error: unknown): string {
   const message = error instanceof Error ? error.message : String(error);
+  if (message.includes('wears_missing')) return 'Choose who it is for (Women, Men, Kids or Everyone) first.';
   if (message.includes('weight_missing'))
     return 'It needs its weight first: weigh it, or type the weight the shop states (D-129).';
   if (message.includes('price_needed'))
@@ -161,6 +165,8 @@ export async function saveImportAction(raw: ImportInput): Promise<ImportResult> 
         shop_price_paise: input.shopPricePaise,
         source_checked_at: checked,
         source_in_stock: inStock,
+        // who it is for is set when chosen, even without "Also replace" (it was never set before D-140)
+        ...(input.wears ? { wears: input.wears } : {}),
         ...(input.replaceDetails
           ? {
               name: input.name,
@@ -264,6 +270,7 @@ export async function saveImportAction(raw: ImportInput): Promise<ImportResult> 
     } as ListingInput;
     const id = await createListing(client, listing);
     await updateSourcedProduct(client, id, {
+      ...(input.wears ? { wears: input.wears } : {}),
       description: input.description || null,
       source_url: input.product.url,
       source_site: input.product.site,

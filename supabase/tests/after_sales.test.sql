@@ -2,6 +2,8 @@
 -- returns by reason and time, and US clearance stock.
 begin;
 select tests.setup();
+-- Generic test clothing: D-140's "who it is for" rule has its own test (wears_and_rows.test.sql).
+alter table public.products disable trigger products_wears;
 update public.pricing_settings set cancel_fee_pct = 5, export_cancel_deduction_pct = 25, return_claim_days = 7,
   return_tier1_days = 7, return_tier1_pct = 15, return_tier2_days = 14, return_tier2_pct = 30, return_tier3_days = 30,
   return_tier3_pct = 50, clearance_discount_pct = 30, domestic_days_min = 3, domestic_days_max = 7 where id = 1;

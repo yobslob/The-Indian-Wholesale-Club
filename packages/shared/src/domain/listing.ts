@@ -2,6 +2,7 @@ import { z } from 'zod';
 
 import { clothingAttributesSchema, homeAttributesSchema, foodAttributesSchema } from './attributes';
 import { OPTION_KEYS, type OptionKey } from './variant-options';
+import { WEARS } from './wears';
 import { WEIGHT_SOURCES } from './weight';
 
 const optionValue = z.string().trim().min(1).max(40).optional();
@@ -45,7 +46,13 @@ const common = {
 };
 
 export const listingInputSchema = z.discriminatedUnion('product_type', [
-  z.object({ ...common, product_type: z.literal('clothing'), attributes: clothingAttributesSchema }),
+  z.object({
+    ...common,
+    product_type: z.literal('clothing'),
+    attributes: clothingAttributesSchema,
+    /** D-140: who it is for; empty = from the name or category (a clothing listing needs one to go live). */
+    wears: z.enum(WEARS).optional(),
+  }),
   z.object({ ...common, product_type: z.literal('food'), attributes: foodAttributesSchema }),
   z.object({ ...common, product_type: z.literal('home'), attributes: homeAttributesSchema }),
 ]);

@@ -3,7 +3,7 @@
 import Link from 'next/link';
 import { useEffect, useMemo, useRef, useState, useTransition } from 'react';
 
-import { listingSlug } from '@repo/shared/domain';
+import { listingSlug, WEARS, WEARS_LABEL, type Wears } from '@repo/shared/domain';
 
 import { saveManyAction } from '../actions/listings';
 import { button, input } from '../styles';
@@ -34,7 +34,7 @@ const cell = `${input} md:h-[34px] text-[13px]`;
 export function AddMany({ data }: { data: ListingFormData }): React.JSX.Element {
   const { photos, add } = usePhotoUploads();
   const [rows, setRows] = useState<Row[]>([]);
-  const [batch, setBatch] = useState({ vendorId: '', fibre: '', care: '' });
+  const [batch, setBatch] = useState<{ vendorId: string; fibre: string; care: string; wears: Wears | '' }>({ vendorId: '', fibre: '', care: '', wears: '' });
   const [dragging, setDragging] = useState<string | null>(null);
   const [report, setReport] = useState<{ made: number; errors: string[] } | null>(null);
   const [pending, start] = useTransition();
@@ -73,6 +73,7 @@ export function AddMany({ data }: { data: ListingFormData }): React.JSX.Element 
             name: r.name.trim(),
             slug: listingSlug(r.name || 'listing', `${suffix}${i}`),
             shop_price_paise: toPaise(r.shopPrice) ?? undefined,
+            ...(batch.wears ? { wears: batch.wears } : {}),
             attributes: { fibre_content: batch.fibre.trim(), care: batch.care.trim() },
             variants: [{ label: 'One size', options: {}, qty: Math.max(0, Math.round(Number(r.pieces) || 0)), ...(cat?.default_weight_g ? { weight_g: cat.default_weight_g } : {}) }],
           },
@@ -101,7 +102,7 @@ export function AddMany({ data }: { data: ListingFormData }): React.JSX.Element 
           <b className="text-ink">Drop a batch of photos</b>: each photo starts its own draft. Drag a photo onto another row to keep them together.
         </span>
       </DropZone>
-      <div className="bg-surface my-3 grid gap-2.5 rounded-[10px] px-3 py-2.5 text-[13px] md:grid-cols-[1.4fr_1fr_1fr]">
+      <div className="bg-surface my-3 grid gap-2.5 rounded-[10px] px-3 py-2.5 text-[13px] md:grid-cols-[1.4fr_1fr_1fr_1fr]">
         <label className="block space-y-1">
           <span className="text-ink-muted font-semibold">Shop (every row unless changed)</span>
           <select value={batch.vendorId} onChange={(e) => setBatch((b) => ({ ...b, vendorId: e.target.value }))} className={cell}>
@@ -121,7 +122,18 @@ export function AddMany({ data }: { data: ListingFormData }): React.JSX.Element 
           <span className="text-ink-muted font-semibold">Care (every row)</span>
           <input value={batch.care} onChange={(e) => setBatch((b) => ({ ...b, care: e.target.value }))} placeholder="Hand wash, dry in shade" className={cell} />
         </label>
-        <small className="text-ink-muted md:col-span-3">
+        <label className="block space-y-1">
+          <span className="text-ink-muted font-semibold">For (every row)</span>
+          <select value={batch.wears} onChange={(e) => setBatch((b) => ({ ...b, wears: e.target.value as Wears | '' }))} className={cell}>
+            <option value="">From each name</option>
+            {WEARS.map((w) => (
+              <option key={w} value={w}>
+                {WEARS_LABEL[w]}
+              </option>
+            ))}
+          </select>
+        </label>
+        <small className="text-ink-muted md:col-span-4">
           {photos.length} photo{photos.length === 1 ? '' : 's'} → {rows.length} draft{rows.length === 1 ? '' : 's'}. Clothing; fill what you know now, the rest can wait in Drafts.
         </small>
       </div>

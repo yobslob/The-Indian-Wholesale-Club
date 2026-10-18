@@ -3,6 +3,8 @@
 -- vendor for all India, targets without a state; home & gifts priced from an estimated weight.
 begin;
 select tests.setup();
+-- Generic test clothing: D-140's "who it is for" rule has its own test (wears_and_rows.test.sql).
+alter table public.products disable trigger products_wears;
 
 insert into public.regions (slug, name) values ('test-other-region', 'Test other region');
 insert into public.products (slug, name, product_type, region_id, category_id, vendor_id, price_cents, status, published_at)

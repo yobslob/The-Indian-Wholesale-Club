@@ -19,7 +19,9 @@ const MORE = [
 ] as const;
 
 /**
- * Store header (D-079, D-113): Search (a pill that grows into a bar on scroll) · States · About us, then Saved, Bag and Profile as icons; on phones the
+ * Store header (D-079, D-113, D-140): Search (a pill that grows into a bar on scroll) · Clothing (Women · Men on hover
+ * or focus) · Food · Home & gifts · States, then Saved, Bag and Profile as icons (About us lives in the menu and the
+ * footer); below 1024 px the types move into the menu, which phones and tablets open from the menu button; on phones the
  * logo, the icons and a menu button that opens a side panel over the page. Server-rendered with
  * no session reads, so pages stay static (PR-1); the bag count, the search pill, the menu and the current-section mark are the only client
  * islands. Its look
@@ -40,8 +42,21 @@ export function SiteHeader(): React.JSX.Element {
         </Link>
         <nav aria-label="Main" className="site-links">
           <SearchPill />
+          {/* D-140 (S1): shopping by type from every page; no Kids at launch */}
+          <div className="site-drop site-type">
+            <NavLink href="/clothing">Clothing</NavLink>
+            <div className="site-drop-menu">
+              <Link href="/clothing?for=women">Women</Link>
+              <Link href="/clothing?for=men">Men</Link>
+            </div>
+          </div>
+          <span className="site-type">
+            <NavLink href="/food">Food</NavLink>
+          </span>
+          <span className="site-type">
+            <NavLink href="/home-and-gifts">Home &amp; gifts</NavLink>
+          </span>
           <NavLink href="/states">States</NavLink>
-          <NavLink href="/about">About us</NavLink>
         </nav>
         <div className="site-icons">
           {/* Phones: Search takes Saved's place (Saved is in the menu there, D-116). */}
@@ -59,6 +74,19 @@ export function SiteHeader(): React.JSX.Element {
               <input type="search" name="q" placeholder="Search" aria-label="Search" />
             </form>
             <ul className="site-panel-big">
+              <li>
+                <Link href="/clothing">Clothing</Link>
+                <span className="site-panel-sub">
+                  <Link href="/clothing?for=women">Women</Link>
+                  <Link href="/clothing?for=men">Men</Link>
+                </span>
+              </li>
+              <li>
+                <Link href="/food">Food</Link>
+              </li>
+              <li>
+                <Link href="/home-and-gifts">Home &amp; gifts</Link>
+              </li>
               <li>
                 <Link href="/states">States</Link>
               </li>

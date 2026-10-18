@@ -5,12 +5,14 @@ import { PRODUCT_TYPE_PATH, type ProductType } from '@repo/shared/domain';
 import type { BrowseFilter, BrowsePage, BrowseSort } from '@repo/db/store';
 
 /**
- * The See all pages' filters as the address carries them (D-136): ?state=, ?category=, ?min= and ?max= (whole
- * dollars), ?size= (repeated), ?sort=, ?show=. Pure: the page, the /api/browse route and the filter panel share it.
+ * The See all pages' filters as the address carries them (D-136): ?state=, ?category=, ?for= (women or men, clothing,
+ * D-140), ?min= and ?max= (whole dollars), ?size= (repeated), ?sort=, ?show=. Pure: the page, the /api/browse route and the filter panel share it.
  */
 export interface BrowseQuery {
   state?: string;
   category?: string;
+  /** D-140: clothing for women or men (unisex pieces show under both); no Kids at launch. */
+  who?: Who;
   min?: number;
   max?: number;
   sizes: string[];
@@ -18,6 +20,10 @@ export interface BrowseQuery {
   /** How many cards are drawn ("Show more", D-067); absent = the first page. */
   show?: number;
 }
+
+export const WHO = ['women', 'men'] as const;
+export type Who = (typeof WHO)[number];
+export const WHO_LABEL: Record<Who, string> = { women: 'Women', men: 'Men' };
 
 export const PAGE = 24;
 /** The most cards one page draws (20 pages of "Show more"; the database allows 500). */
@@ -50,9 +56,11 @@ export function parseBrowseQuery(raw: Raw): BrowseQuery {
   let min = dollars.parse(one(raw, 'min'));
   let max = dollars.parse(one(raw, 'max'));
   if (min !== undefined && max !== undefined && min > max) [min, max] = [max, min];
+  const who = WHO.find((w) => w === one(raw, 'for'));
   return {
     state: slug.parse(one(raw, 'state')),
     category: slug.parse(one(raw, 'category')),
+    ...(who ? { who } : {}),
     min,
     max,
     sizes,
@@ -66,6 +74,7 @@ export function browseSearch(q: BrowseQuery): string {
   const p = new URLSearchParams();
   if (q.state) p.set('state', q.state);
   if (q.category) p.set('category', q.category);
+  if (q.who) p.set('for', q.who);
   if (q.min !== undefined) p.set('min', String(q.min));
   if (q.max !== undefined) p.set('max', String(q.max));
   for (const s of q.sizes) p.append('size', s);
@@ -90,6 +99,7 @@ export const toBrowseFilter = (productType: ProductType, q: BrowseQuery, offset:
   maxCents: q.max !== undefined ? q.max * 100 : undefined,
   sizes: q.sizes,
   sort: q.sort,
+  forWho: q.who,
   offset,
   limit,
 });
@@ -171,3 +181,37 @@ export const priceLabel = (q: Pick<BrowseQuery, 'min' | 'max'>): string | null =
       : q.max !== undefined
         ? `Up to $${q.max}`
         : null;
+
+// ---------------------------------------------------------------- size groups (D-140)
+
+export interface SizeGroup<T> {
+  key: string;
+  label: string;
+  sizes: T[];
+}
+
+const SIZE_GROUPS: { key: string; label: string; test: (v: string) => boolean }[] = [
+  { key: 'letters', label: 'Tops & kurtas', test: (v) => /^(XXXS|XXS|XS|S|M|L|XL|XXL|XXXL|[2-8]XL)(\/(XXXS|XXS|XS|S|M|L|XL|XXL|XXXL|[2-8]XL))?$/.test(v) },
+  { key: 'waist', label: 'Waist', test: (v) => /^W?\s?(2[4-9]|[34]\d|5[0-2])$/.test(v) },
+  { key: 'feet', label: 'Footwear', test: (v) => /^(UK|US|EU)\s?\d{1,2}(\.5)?$/.test(v) },
+  { key: 'bangles', label: 'Bangles', test: (v) => /^2\.(1[0-4]|[0-9])$/.test(v) },
+  { key: 'ages', label: "Kids' ages", test: (v) => /^KIDS?\s?\d+$|^\d+(\s?-\s?\d+)?\s?(M|Y|YRS?|MONTHS?|YEARS?)$/.test(v) },
+  { key: 'one', label: 'One size', test: (v) => v === 'ONE SIZE' },
+];
+
+/**
+ * See all's sizes in groups (D-140, plan F2): letter sizes, waist, footwear, bangles, kids' ages, one size, then the
+ * rest; each group sorted in wearing order and shown only when the pieces in view use it (the server counts sizes with
+ * the other filters applied, so a category's sizes are its own).
+ */
+export function sizeGroups<T extends { value: string }>(sizes: T[]): SizeGroup<T>[] {
+  const groups = new Map<string, SizeGroup<T>>();
+  for (const s of sortSizes(sizes)) {
+    const v = s.value.trim().toUpperCase();
+    const g = SIZE_GROUPS.find((x) => x.test(v)) ?? { key: 'other', label: 'Other sizes' };
+    if (!groups.has(g.key)) groups.set(g.key, { key: g.key, label: g.label, sizes: [] });
+    groups.get(g.key)!.sizes.push(s);
+  }
+  const order = [...SIZE_GROUPS.map((g) => g.key), 'other'];
+  return [...groups.values()].sort((a, b) => order.indexOf(a.key) - order.indexOf(b.key));
+}

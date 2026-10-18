@@ -1,6 +1,8 @@
 -- Curated for you and Leaving soon (migration 20260930095920, D-056).
 begin;
 select tests.setup();
+-- Generic test clothing: D-140's "who it is for" rule has its own test (wears_and_rows.test.sql).
+alter table public.products disable trigger products_wears;
 
 -- Fixture: test-live has 1 piece left after the two setup orders (2 + 1 listed, 2 reserved).
 insert into public.products (slug, name, product_type, region_id, category_id, vendor_id, price_cents, status,

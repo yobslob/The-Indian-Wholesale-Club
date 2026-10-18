@@ -190,3 +190,16 @@
   line-height: 1;
   color: var(--muted);
 }
+
+/* D-140: sizes in groups (Tops & kurtas, Waist, Footwear…), each with a small label */
+.sizeGroup + .sizeGroup {
+  margin-top: 12px;
+}
+.sizeLabel {
+  margin: 0 0 6px;
+  font-size: 12px;
+  font-weight: 600;
+  letter-spacing: 0.04em;
+  text-transform: uppercase;
+  color: var(--muted);
+}

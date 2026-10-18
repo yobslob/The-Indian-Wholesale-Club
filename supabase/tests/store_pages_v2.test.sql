@@ -2,6 +2,8 @@
 -- quick add, similar items; INV-1 and INV-8 on the new fields.
 begin;
 select tests.setup();
+-- Generic test clothing: D-140's "who it is for" rule has its own test (wears_and_rows.test.sql).
+alter table public.products disable trigger products_wears;
 
 -- More products in the test region: the newest one (one variant, in stock), a sold-out one-variant product,
 -- and one in another clothing category.

@@ -121,7 +121,7 @@ export async function updateCategory(client: IwcClient, id: string, patch: Updat
 
 // ---------------------------------------------------------------- products + variants
 
-const PRODUCT_LIST_COLUMNS = `id, slug, name, product_type, status, coming_soon, price_cents, shop_price_paise, is_placeholder, is_us_stock, updated_at,
+const PRODUCT_LIST_COLUMNS = `id, slug, name, product_type, status, coming_soon, price_cents, shop_price_paise, is_placeholder, is_us_stock, updated_at, wears,
   region:regions(slug, name), vendor:vendors(id, shop_name),
   variants:product_variants(id, label, qty_listed, qty_reserved, qty_confirmed_at, is_active, weight_g, weight_source),
   category:categories(default_weight_g),
@@ -145,6 +145,8 @@ export interface AdminProductFilter {
   sort?: AdminProductSort;
   /** D-072: US clearance pieces only. */
   usStock?: boolean;
+  /** D-140: who it is for; 'none' = clothing without it. */
+  wears?: 'women' | 'men' | 'kids' | 'unisex' | 'none';
   search?: string;
   limit?: number;
   /** Skip this many (the next page). */
@@ -162,6 +164,8 @@ function adminProductQuery(client: IwcClient, filter: AdminProductFilter, count:
   if (filter.minCents !== undefined) query = query.gte('price_cents', filter.minCents);
   if (filter.maxCents !== undefined) query = query.lte('price_cents', filter.maxCents);
   if (filter.usStock) query = query.eq('is_us_stock', true);
+  if (filter.wears === 'none') query = query.eq('product_type', 'clothing').is('wears', null);
+  else if (filter.wears) query = query.eq('wears', filter.wears);
   if (filter.search && filter.search.trim()) {
     query = query.textSearch('search', filter.search.trim(), {
       type: 'websearch',
@@ -233,6 +237,9 @@ export async function createListing(client: IwcClient, input: ListingInput): Pro
   const listing = listingInputSchema.parse(input);
   const id = unwrap(await client.rpc('admin_create_listing', { p_listing: listing }));
   if (typeof id !== 'string') throw new Error('the listing was not created');
+  // D-140: who it is for, when the admin chose it (the database fills it from the name otherwise)
+  if (listing.product_type === 'clothing' && listing.wears)
+    unwrap(await client.from('products').update({ wears: listing.wears }).eq('id', id));
   return id;
 }
 
@@ -418,4 +425,9 @@ export async function getProductMedia(client: IwcClient, id: string) {
 export async function setPrimaryProductMedia(client: IwcClient, productId: string, mediaId: string) {
   unwrap(await client.from('product_media').update({ is_primary: false }).eq('product_id', productId).eq('is_primary', true));
   unwrap(await client.from('product_media').update({ is_primary: true }).eq('id', mediaId).eq('product_id', productId));
+}
+
+/** D-140: who a clothing piece is for, set by an admin (null clears it; a live piece then keeps its value). */
+export async function setProductWears(client: IwcClient, id: string, wears: 'women' | 'men' | 'kids' | 'unisex') {
+  unwrap(await client.from('products').update({ wears }).eq('id', id));
 }

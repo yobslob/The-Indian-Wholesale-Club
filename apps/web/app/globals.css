@@ -324,13 +324,15 @@
     gap: inherit;
   }
   /* The links' underline draws in from the left on hover and stays under the current page (D-116). */
-  .site-links > a {
+  .site-links > a,
+  .site-links > .site-type > a {
     position: relative;
     display: inline-flex;
     align-items: center;
     height: 44px;
   }
-  .site-links > a::after {
+  .site-links > a::after,
+  .site-links > .site-type > a::after {
     content: '';
     position: absolute;
     left: 0;
@@ -343,9 +345,82 @@
     transition: transform 0.45s cubic-bezier(0.65, 0, 0.35, 1);
   }
   .site-links > a:hover::after,
-  .site-links > a[aria-current='page']::after {
+  .site-links > a[aria-current='page']::after,
+  .site-links > .site-type > a:hover::after,
+  .site-links > .site-type > a[aria-current='page']::after {
     transform: scaleX(1);
     transform-origin: left center;
+  }
+  /* D-140 (S1): Clothing's Women · Men, shown on hover or keyboard focus under the link. */
+  .site-drop {
+    position: relative;
+  }
+  .site-drop-menu {
+    position: absolute;
+    top: calc(100% - 4px);
+    left: -14px;
+    z-index: 5;
+    display: grid;
+    min-width: 140px;
+    padding: 6px;
+    border: 1px solid theme('colors.line');
+    border-radius: 12px;
+    background: theme('colors.canvas');
+    color: theme('colors.ink');
+    box-shadow: 0 12px 28px rgb(20 17 15 / 0.12);
+    opacity: 0;
+    visibility: hidden;
+    transform: translateY(4px);
+    transition:
+      opacity 160ms ease,
+      transform 160ms ease,
+      visibility 0s 160ms;
+  }
+  .site-drop:hover .site-drop-menu,
+  .site-drop:focus-within .site-drop-menu {
+    opacity: 1;
+    visibility: visible;
+    transform: none;
+    transition:
+      opacity 160ms ease,
+      transform 160ms ease;
+  }
+  .site-drop-menu a {
+    display: flex;
+    align-items: center;
+    min-height: 40px;
+    padding: 0 10px;
+    border-radius: 8px;
+  }
+  .site-drop-menu a:hover,
+  .site-drop-menu a:focus-visible {
+    background: theme('colors.surface');
+  }
+  .site-panel-sub {
+    display: flex;
+    gap: 18px;
+    padding: 0 0 14px;
+    border-bottom: 1px solid theme('colors.line');
+  }
+  .site-panel-big .site-panel-sub a {
+    padding: 0;
+    border: 0;
+    font-family: inherit;
+    font-size: 16px;
+    text-decoration: underline;
+    text-underline-offset: 4px;
+  }
+  .site-panel-big li:has(> .site-panel-sub) > a {
+    border-bottom: 0;
+  }
+  @media (max-width: 1023px) {
+    .site-type {
+      display: none;
+    }
+    /* below 1024 px the types are in the menu, so tablets get the menu button too */
+    .site-bar .site-burger {
+      display: grid;
+    }
   }
   .site-icons {
     display: flex;

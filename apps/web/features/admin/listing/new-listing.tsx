@@ -3,7 +3,7 @@
 import { useRouter } from 'next/navigation';
 import { useEffect, useState, useTransition } from 'react';
 
-import { fallbackWeightG, listingSlug, PRODUCT_TYPE_LABEL, PRODUCT_TYPES, regionSegment, variantLabel, type PricingSettings, type ProductType } from '@repo/shared/domain';
+import { fallbackWeightG, listingSlug, PRODUCT_TYPE_LABEL, PRODUCT_TYPES, regionSegment, variantLabel, WEARS, WEARS_LABEL, wearsFromName, type PricingSettings, type ProductType, type Wears } from '@repo/shared/domain';
 
 import { saveListingAction } from '../actions/listings';
 import { button, input, panel, secondaryButton } from '../styles';
@@ -36,6 +36,8 @@ export function NewListing({ data }: { data: ListingFormData }): React.JSX.Eleme
   const [type, setType] = useState<ProductType>('clothing');
   const [vendorId, setVendorId] = useState('');
   const [categoryId, setCategoryId] = useState('');
+  // D-140: who it is for (clothing); empty = from the name or the category when saved
+  const [wears, setWears] = useState<Wears | ''>('');
   const [f, setF] = useState({ name: '', summary: '', fibre: '', care: '', ingredients: '', allergens: '', shelfLife: '', material: '', dimensions: '', shopPrice: '', price: '' });
   const [slug, setSlug] = useState<string | null>(null);
   const [byHand, setByHand] = useState(false);
@@ -67,6 +69,7 @@ export function NewListing({ data }: { data: ListingFormData }): React.JSX.Eleme
       summary: f.summary.trim() || undefined,
       price_cents: byHand && f.price.trim() ? Math.round(Number(f.price) * 100) : undefined,
       shop_price_paise: toPaise(f.shopPrice) ?? undefined,
+      ...(type === 'clothing' && wears ? { wears } : {}),
       attributes:
         type === 'clothing'
           ? { fibre_content: f.fibre.trim(), care: f.care.trim() }
@@ -176,6 +179,19 @@ export function NewListing({ data }: { data: ListingFormData }): React.JSX.Eleme
             <span className={label}>Summary</span>
             <input name="summary" value={f.summary} onChange={set('summary')} placeholder="One line for the product card" className={input} />
           </label>
+          {type === 'clothing' ? (
+            <label className="block space-y-[5px]">
+              <span className={label}>For</span>
+              <select name="wears" value={wears} onChange={(e) => setWears(e.target.value as Wears | '')} className={input}>
+                <option value="">{f.name && wearsFromName(f.name) ? `From the name: ${WEARS_LABEL[wearsFromName(f.name)!]}` : 'Choose…'}</option>
+                {WEARS.map((w) => (
+                  <option key={w} value={w}>
+                    {WEARS_LABEL[w]}
+                  </option>
+                ))}
+              </select>
+            </label>
+          ) : null}
           {type === 'clothing' ? (
             <div className="grid grid-cols-2 gap-2.5">
               <label className="block space-y-[5px]">

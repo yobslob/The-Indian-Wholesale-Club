@@ -298,6 +298,8 @@ export const browsePageSchema = z.object({
   states_total: z.number().int().optional(),
   /** D-136: every size (or food pack) with its pieces, each counted with the other filters applied. */
   sizes: z.array(z.object({ value: z.string(), count: z.number().int() })).default([]),
+  /** D-140 (optional until migration 20261018100000): clothing for women and for men, unisex counted under both. */
+  wears: z.object({ women: z.number().int(), men: z.number().int() }).nullable().optional(),
   /** D-136: the card prices (cents) with the other filters applied, for the price slider and its ranges; null when none. */
   prices: z
     .object({ min: z.number().int(), max: z.number().int(), q1: z.number().int(), q2: z.number().int(), q3: z.number().int() })

@@ -6,8 +6,13 @@ import {
   fallbackWeightG,
   PRODUCT_TYPE_LABEL,
   PRODUCT_TYPES,
+  WEARS,
+  WEARS_LABEL,
+  wearsFromHints,
+  wearsFromName,
   type PricingSettings,
   type ProductType,
+  type Wears,
 } from '@repo/shared/domain';
 import {
   guessCategory,
@@ -82,6 +87,8 @@ export function ReviewForm({
     () => data.regions.find((r) => r.slug === guessRegionSlug(product))?.id ?? '',
   );
   const [categoryId, setCategoryId] = useState(() => guessCategory(product, type, active) ?? '');
+  // D-140: who it is for, from the shop's own field (Myntra's gender), else the name; chosen by the admin otherwise
+  const [wears, setWears] = useState<Wears | ''>(() => wearsFromHints(product.hints) ?? wearsFromName(product.title) ?? '');
   const [f, setF] = useState(() => {
     const d = guessDetails(product);
     const bullets = product.bullets.map((b) => `• ${b}`).join('\n');
@@ -133,6 +140,7 @@ export function ReviewForm({
     setProblem(null);
     if (!regionId) return setProblem('Pick the state it comes from, or All states.');
     if (!categoryId) return setProblem('Pick a category.');
+    if (type === 'clothing' && !wears) return setProblem('Choose who it is for.');
     if (!existing && photos.length === 0) return setProblem('Pick at least one photo.');
     const attributes =
       type === 'clothing'
@@ -154,6 +162,7 @@ export function ReviewForm({
         regionId: regionId === ALL ? null : regionId,
         categoryId,
         productType: type,
+        wears: type === 'clothing' && wears ? wears : null,
         name: f.name.trim(),
         summary: f.summary.trim(),
         description: f.description.trim(),
@@ -323,6 +332,19 @@ export function ReviewForm({
             ))}
           </div>
         </fieldset>
+        {type === 'clothing' ? (
+          <fieldset>
+            <legend className={label}>For</legend>
+            <div className="border-line bg-canvas mt-[5px] grid grid-cols-2 rounded-[10px] border p-[3px] sm:grid-cols-4">
+              {WEARS.map((w) => (
+                <label key={w} className={seg(wears === w)}>
+                  <input type="radio" name="wears" value={w} checked={wears === w} onChange={() => setWears(w)} className="sr-only" />
+                  {WEARS_LABEL[w]}
+                </label>
+              ))}
+            </div>
+          </fieldset>
+        ) : null}
         {field('name', 'Name', { required: true, maxLength: 120 })}
         {field('summary', 'Summary (one line)', { maxLength: 300 })}
         <label className="block space-y-[5px]">

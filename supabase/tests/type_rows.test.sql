@@ -1,6 +1,8 @@
 -- store_type_rows (migration 18): one row per category with its total and at most 12 cards, customer-safe.
 begin;
 select tests.setup();
+-- Generic test clothing: D-140's "who it is for" rule has its own test (wears_and_rows.test.sql).
+alter table public.products disable trigger products_wears;
 
 -- 14 more live pieces in the test clothing category, so the row has more than 12.
 insert into public.products (slug, name, product_type, region_id, category_id, vendor_id, price_cents, status)

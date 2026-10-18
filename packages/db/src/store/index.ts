@@ -87,6 +87,8 @@ export interface BrowseFilter {
   sizes?: string[];
   /** D-136: newest first unless a price sort. */
   sort?: BrowseSort;
+  /** D-140: clothing for women or men (unisex pieces show under both). */
+  forWho?: 'women' | 'men';
   /** Skip this many (the next page of a See all list). */
   offset?: number;
   /** At most 500 (the database caps it). */
@@ -107,6 +109,7 @@ export async function browseProducts(client: IwcClient, filter: BrowseFilter): P
       ...(filter.maxCents !== undefined ? { p_max_cents: filter.maxCents } : {}),
       ...(filter.sizes?.length ? { p_sizes: filter.sizes.join('|') } : {}),
       ...(filter.sort && filter.sort !== 'new' ? { p_sort: filter.sort } : {}),
+      ...(filter.forWho ? { p_for: filter.forWho } : {}),
       p_offset: filter.offset ?? 0,
       p_limit: filter.limit ?? 24,
     }, { get: true }),

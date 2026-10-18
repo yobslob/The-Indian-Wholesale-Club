@@ -34,7 +34,7 @@ operations data are never queried from customer code.
 | | `vendor_applications` | "Join as a vendor?" requests (country IN or US, Q-35), status | admin |
 | Places | `regions` | the 36 regions (D-002): slug, name, sort, `is_live`, greeting (native + ISO 15924 script + Latin + meaning), languages, tagline, story, hero image, accent colour, `content_status` (D-019) | store (text only if approved) / admin |
 | Catalog | `categories` | browse groups per product type. A child always has its parent's type | store / admin |
-| | `products` | region, category, `product_type`, name, slug, summary, description, story, craft, `attributes` (customer-safe JSON), `price_cents`, `status`, search vector; `vendor_id`*, `shop_price_paise`*, `origin_town`*, `has_origin_label`*, `is_placeholder`*. **Spices are `live` only while "Spices are cleared" is on** (`pricing_settings.spices_cleared`, D-074; on since D-107) | store (live only) / admin |
+| | `products` | region, category, `product_type`, name, slug, summary, description, story, craft, `attributes` (customer-safe JSON), `price_cents`, `status`, search vector; `vendor_id`*, `shop_price_paise`*, `origin_town`*, `has_origin_label`*, `is_placeholder`*; `wears` (women, men, kids, unisex: who it is for, D-140; filled from the name or category on save, required for clothing to go live). **Spices are `live` only while "Spices are cleared" is on** (`pricing_settings.spices_cleared`, D-074; on since D-107) | store (live only) / admin |
 | | `product_variants` | `options` JSON (colour, flavour, style = "Type", pack, size: D-118), SKU*, label, price override, `weight_g`* with `weight_source`* and `weight_note`* (D-129), `weight_estimate_g`*, `weight_estimate_note`*, `weight_estimated_at`* (D-131), `net_qty` (food, D-133), `qty_listed`*, `qty_reserved`*, `qty_confirmed_at`*, `shop_price_paise`*, `source_id`* | store (`available`, food's `net_qty`) / admin |
 | | `product_sources` | the shop items a variant can be ordered as, checked weekly (D-118) | admin / worker via functions |
 | | `variant_availability` | public mirror `variant_id → available`, trigger-maintained, in the Realtime publication (live "only 2 left", D-010) | store (visible products) |
@@ -170,6 +170,14 @@ was paid defaults to the shop price × quantity; fills the order's shop bill row
 `shop_bill_reopened`). Raise `pickup_not_pending`, `shop_bill_final`, `nothing_to_order`, `amount_invalid`. Trigger
 `order_events_admin_new_order` queues an `admin_new_order` email to every address in `admin_emails` when an order is
 confirmed. Tests: `order_from_shop.test.sql`.
+Migration 72 (D-140, plan F2, L2, L8): `products.wears` with trigger `products_wears` (`_wears_from_name`,
+`_wears_from_category`; raises `wears_missing` when clothing goes live without it); `_size_norm(text)` and
+`_variant_size(options, type)` (one spelling per size; clothing without a size is One size); `store_browse()` takes
+`p_for` ('women' | 'men', unisex under both) and returns `wears` counts, matches sizes by their one spelling, puts a
+state's own pieces first in the newest order and mixes pieces published at the same moment by shop and category (never
+returning the shop); `store_home()` mixes the same way in Just listed; `store_region_page()` puts the state's own pieces
+first in Most wanted, Curated and Leaving soon too. Tests: `wears_and_rows.test.sql` (older test files that make generic
+"Test" clothing switch the wears trigger off inside their own transaction).
 Migration 69 (D-135): `products.coming_soon`, `coming_soon_note`, `liquid_checked_at`; trigger `products_coming_soon`
 (any status but archived ends it); `store_products` and `store_media` include archived coming-soon listings and
 `store_products` ends with `coming_soon`; `_store_product_card` and `store_browse` send it (no quick add for it).

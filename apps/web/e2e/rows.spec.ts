@@ -56,3 +56,13 @@ test('filters and Show more change only the cards, never the page (D-136)', asyn
   expect(Math.abs((await page.evaluate(() => window.scrollY)) - y)).toBeLessThan(40);
   expect(await page.evaluate(() => (window as unknown as { kept?: boolean }).kept)).toBe(true);
 });
+
+test("Home's Just listed is a row per type, each with its own See all (D-140)", async ({ page }) => {
+  await page.goto('/');
+  const section = page.locator('#just-listed');
+  await expect(section.getByRole('tab')).toHaveCount(0);
+  const clothing = section.getByRole('region', { name: 'Clothing' });
+  await expect(clothing.getByRole('list', { name: 'Just listed: Clothing' })).toBeVisible();
+  await clothing.getByRole('link', { name: /See all/ }).click();
+  await expect(page).toHaveURL(/\/clothing$/);
+});

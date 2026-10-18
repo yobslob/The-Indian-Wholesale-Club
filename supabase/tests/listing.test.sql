@@ -2,6 +2,8 @@
 -- admin_stale_variants().
 begin;
 select tests.setup();
+-- Generic test clothing: D-140's "who it is for" rule has its own test (wears_and_rows.test.sql).
+alter table public.products disable trigger products_wears;
 
 set local role authenticated;
 select tests.act_as(tests.id('admin'));

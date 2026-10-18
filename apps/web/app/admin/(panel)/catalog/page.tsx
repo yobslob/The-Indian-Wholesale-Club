@@ -8,7 +8,7 @@ import {
   listVendors,
   listWeightsToCheck,
 } from '@repo/db/admin';
-import { formatUsd, PRODUCT_TYPE_LABEL } from '@repo/shared/domain';
+import { formatUsd, PRODUCT_TYPE_LABEL, type Wears } from '@repo/shared/domain';
 
 import { PRODUCT_STATUS, StatusChip } from '@/features/admin/chips';
 import { requireAdminPage } from '@/features/admin/guard';
@@ -20,6 +20,7 @@ import { ProductFilterBar } from '@/features/admin/product-filter-bar';
 import { hasProductFilters, parseProductView, productViewQuery, toAdminFilter } from '@/features/admin/product-filters';
 import { PublishDrafts } from '@/features/admin/publish-drafts';
 import { Cell, linkButton, PageHead, rupees, Table, Tabs } from '@/features/admin/ui';
+import { WearsPicker } from '@/features/admin/wears-picker';
 import { WeightSummary, WeightsToCheck } from '@/features/admin/weights-to-check';
 
 type SearchParams = Promise<Record<string, string | string[] | undefined>>;
@@ -97,6 +98,7 @@ export default async function CatalogPage({
           min: view.min !== undefined ? String(view.min) : '',
           max: view.max !== undefined ? String(view.max) : '',
           sort: view.sort,
+          wears: view.wears ?? '',
         }}
         keep={{ ...keep, ...(pagerParams.size ? { size: pagerParams.size } : {}) }}
         regions={regions.map((r) => ({ value: r.id, label: r.name }))}
@@ -126,6 +128,7 @@ export default async function CatalogPage({
           'Price',
           'Shop price',
           'Weight',
+          'For',
           'Listed / reserved',
         ]}
       >
@@ -157,6 +160,9 @@ export default async function CatalogPage({
                 type={p.product_type}
                 categoryWeightG={p.category?.default_weight_g ?? null}
               />
+            </Cell>
+            <Cell>
+              {p.product_type === 'clothing' ? <WearsPicker productId={p.id} wears={p.wears as Wears | null} /> : null}
             </Cell>
             <Cell>
               {p.variants.reduce((n, v) => n + v.qty_listed, 0)} /{' '}

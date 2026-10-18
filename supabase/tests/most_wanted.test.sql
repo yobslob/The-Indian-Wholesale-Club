@@ -1,6 +1,8 @@
 -- Most wanted (migration 20260930160000, D-058): the region's live pieces ordered most in the last 30 days.
 begin;
 select tests.setup();
+-- Generic test clothing: D-140's "who it is for" rule has its own test (wears_and_rows.test.sql).
+alter table public.products disable trigger products_wears;
 
 -- Fixture. test-live already has 2 pieces ordered by the two setup orders (and 1 left).
 insert into public.products (slug, name, product_type, region_id, category_id, vendor_id, price_cents, status,

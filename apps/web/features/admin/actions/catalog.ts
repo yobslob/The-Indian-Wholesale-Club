@@ -11,6 +11,7 @@ import {
   publishDrafts,
   setListedQty,
   setProductStatus,
+  setProductWears,
   updateProduct,
   type PublishDraftsResult,
 } from '@repo/db/admin';
@@ -19,10 +20,12 @@ import {
   homeAttributesSchema,
   PRODUCT_TYPES,
   foodAttributesSchema,
+  WEARS,
   type ListingInput,
 } from '@repo/shared/domain';
 
 import { STORE_TAG } from '@/features/catalog/data';
+import { errorMessage, logger } from '@/lib/logger';
 
 import { requireAdminAction } from '../guard';
 
@@ -273,4 +276,17 @@ export async function setQtyAction(
   await setListedQty(client, id.parse(variantId), input.qty, input.note ?? undefined);
   revalidateTag(STORE_TAG);
   revalidatePath(`/admin/catalog/${productId}`);
+}
+
+/** D-140: who a clothing piece is for, from the Products list; false when it did not save (the picker goes back). */
+export async function setWearsAction(productId: string, wears: string): Promise<boolean> {
+  const { client } = await requireAdminAction();
+  try {
+    await setProductWears(client, id.parse(productId), z.enum(WEARS).parse(wears));
+    revalidateTag(STORE_TAG);
+    return true;
+  } catch (error) {
+    logger.error('admin.set_wears_failed', { productId, error: errorMessage(error) });
+    return false;
+  }
 }

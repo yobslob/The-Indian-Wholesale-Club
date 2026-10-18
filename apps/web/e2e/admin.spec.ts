@@ -39,6 +39,8 @@ test('an admin lists a product and publishes it to the store', async ({ page }) 
   await page.locator('input[name="name"]').fill(name);
   await page.getByRole('button', { name: 'Edit' }).click();
   await page.locator('input[name="slug"]').fill(slug);
+  // D-140: who it is for (a clothing listing needs it to go live)
+  await page.locator('select[name="wears"]').selectOption('men');
   await page.locator('input[name="fibre"]').fill('100% cotton');
   await page.locator('input[name="care"]').fill('Hand wash cold');
   await page.getByLabel('Pieces, option 1').fill('3');

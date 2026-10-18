@@ -86,6 +86,7 @@ export async function updateSourcedProduct(
     | 'summary'
     | 'attributes'
     | 'price_auto'
+    | 'wears'
   >,
 ) {
   unwrap(await client.from('products').update(patch).eq('id', id));

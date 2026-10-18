@@ -54,3 +54,21 @@ describe('ordering several pieces from one shop at once (D-140, F3)', () => {
     assert.equal(shopCartUrl([]), null);
   });
 });
+
+describe('who a piece is for (D-140, F2)', async () => {
+  const { wearsFromHints, wearsFromName } = await import('../src/domain');
+  it('reads the name as the database does: kids first, then unisex, women, men, then garments', () => {
+    assert.equal(wearsFromName("Women's Anarkali Kurta"), 'women');
+    assert.equal(wearsFromName('Men Pathani Suit'), 'men');
+    assert.equal(wearsFromName('Girls Lehenga Choli'), 'kids');
+    assert.equal(wearsFromName('Kanjivaram silk saree'), 'women');
+    assert.equal(wearsFromName('Silk Sherwani'), 'men');
+    assert.equal(wearsFromName('Unisex Nehru Jacket'), 'unisex');
+    assert.equal(wearsFromName('Bootcut jeans'), null);
+  });
+  it("takes a shop's own gender field", () => {
+    assert.equal(wearsFromHints(['Kurtas', 'Topwear', 'Apparel', 'Women']), 'women');
+    assert.equal(wearsFromHints(['Boys']), 'kids');
+    assert.equal(wearsFromHints(['Kurtas']), null);
+  });
+});

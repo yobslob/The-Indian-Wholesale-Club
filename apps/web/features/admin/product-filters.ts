@@ -22,7 +22,12 @@ export interface ProductView {
   min?: number;
   max?: number;
   sort: AdminProductSort;
+  /** D-140: who it is for, or 'none' (clothing without it). */
+  wears?: WearsFilter;
 }
+
+const WEARS_FILTERS = ['women', 'men', 'kids', 'unisex', 'none'] as const;
+export type WearsFilter = (typeof WEARS_FILTERS)[number];
 
 type Raw = URLSearchParams | Record<string, string | string[] | undefined>;
 const get = (raw: Raw, key: string): string | undefined => {
@@ -37,6 +42,7 @@ export function parseProductView(raw: Raw): ProductView {
   const type = get(raw, 'type');
   const sort = get(raw, 'sort');
   const region = get(raw, 'region');
+  const wears = get(raw, 'for');
   return {
     q: get(raw, 'q')?.trim().slice(0, 100) ?? '',
     status: STATUSES.includes(status as Status) ? (status as Status) : undefined,
@@ -48,6 +54,7 @@ export function parseProductView(raw: Raw): ProductView {
     min: dollars.parse(get(raw, 'min') || undefined),
     max: dollars.parse(get(raw, 'max') || undefined),
     sort: ADMIN_PRODUCT_SORTS.includes(sort as AdminProductSort) ? (sort as AdminProductSort) : 'updated',
+    ...(WEARS_FILTERS.includes(wears as WearsFilter) ? { wears: wears as WearsFilter } : {}),
   };
 }
 
@@ -64,6 +71,7 @@ export function toAdminFilter(v: ProductView): AdminProductFilter {
     minCents: v.min !== undefined ? Math.round(v.min * 100) : undefined,
     maxCents: v.max !== undefined ? Math.round(v.max * 100) : undefined,
     sort: v.sort,
+    wears: v.wears,
   };
 }
 
@@ -80,9 +88,10 @@ export function productViewQuery(v: ProductView, extra: Record<string, string> =
   if (v.min !== undefined) p.set('min', String(v.min));
   if (v.max !== undefined) p.set('max', String(v.max));
   if (v.sort !== 'updated') p.set('sort', v.sort);
+  if (v.wears) p.set('for', v.wears);
   for (const [k, val] of Object.entries(extra)) p.set(k, val);
   return p.toString();
 }
 
 export const hasProductFilters = (v: ProductView): boolean =>
-  Boolean(v.type || v.region || v.category || v.shop || v.min !== undefined || v.max !== undefined || v.sort !== 'updated');
+  Boolean(v.type || v.region || v.category || v.shop || v.wears || v.min !== undefined || v.max !== undefined || v.sort !== 'updated');

@@ -19,12 +19,12 @@ if (
 const supabaseOrigin = supabaseUrl ? supabaseUrl.origin : 'https://*.supabase.co';
 
 /**
- * /clothing, /food and /home-and-gifts with any of ?state=, ?category=, ?show= → /see-all/<type>/<state>/<category>/<show>
- * ("all" and 24 when absent). The rules with the most filters come first; a filter that is not a plain slug or number
+ * /clothing, /food and /home-and-gifts with any of ?state=, ?category=, ?show=, ?for= →
+ * /see-all/<type>/<state>/<category>/<show>/<for> ("all" and 24 when absent; ?for= is women or men, D-140). The rules with the most filters come first; a filter that is not a plain slug or number
  * is left out, as the page always did (browseParams).
  */
 function seeAllRewrites() {
-  const filters = { state: '[a-z0-9-]{1,80}', category: '[a-z0-9-]{1,80}', show: '[0-9]{1,4}' };
+  const filters = { state: '[a-z0-9-]{1,80}', category: '[a-z0-9-]{1,80}', show: '[0-9]{1,4}', for: 'women|men' };
   const keys = Object.keys(filters);
   const sets = [];
   for (let mask = 0; mask < 1 << keys.length; mask += 1) sets.push(keys.filter((_, i) => mask & (1 << i)));

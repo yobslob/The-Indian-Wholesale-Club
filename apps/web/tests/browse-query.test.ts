@@ -5,6 +5,7 @@ import {
   browseHref,
   parseBrowseQuery,
   priceRanges,
+  sizeGroups,
   sortSizes,
   toBrowseFilter,
   withFilter,
@@ -58,5 +59,33 @@ describe('ready-made price ranges', () => {
   it('none when every price is about the same', () => {
     assert.deepEqual(priceRanges({ min: 1999, max: 2199, q1: 1999, q2: 2099, q3: 2199 }), []);
     assert.deepEqual(priceRanges(null), []);
+  });
+});
+
+describe("See all's For and size groups (D-140)", () => {
+  it('reads ?for= as women or men only, and keeps it in the address after the category', () => {
+    const q = parseBrowseQuery(new URLSearchParams('for=women&category=kurtas'));
+    assert.equal(q.who, 'women');
+    assert.equal(parseBrowseQuery(new URLSearchParams('for=kids')).who, undefined);
+    assert.equal(browseHref('clothing', q), '/clothing?category=kurtas&for=women');
+    assert.equal(toBrowseFilter('clothing', q, 0, 24).forWho, 'women');
+  });
+
+  it('groups sizes the way people look for them, each group in wearing order', () => {
+    const groups = sizeGroups(
+      ['XL', 'W32', 'UK 7', '2.6', 'S', '2-3 Y', 'One size', 'L/XL', 'W28', '2.4', 'Kids 10', 'Custom'].map((value) => ({ value })),
+    );
+    assert.deepEqual(
+      groups.map((g) => [g.label, g.sizes.map((s) => s.value)]),
+      [
+        ['Tops & kurtas', ['S', 'XL', 'L/XL']],
+        ['Waist', ['W28', 'W32']],
+        ['Footwear', ['UK 7']],
+        ['Bangles', ['2.4', '2.6']],
+        ["Kids' ages", ['2-3 Y', 'Kids 10']],
+        ['One size', ['One size']],
+        ['Other sizes', ['Custom']],
+      ],
+    );
   });
 });

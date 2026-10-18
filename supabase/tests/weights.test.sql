@@ -4,6 +4,8 @@
 -- customers (INV-1).
 begin;
 select tests.setup();
+-- Generic test clothing: D-140's "who it is for" rule has its own test (wears_and_rows.test.sql).
+alter table public.products disable trigger products_wears;
 select tests.create_user('worker', 'worker@example.test');
 update public.profiles set role = 'worker' where id = tests.id('worker');
 update public.categories set default_weight_g = 450 where id = tests.id('cat_clothing');

@@ -19,3 +19,4 @@ export * from './product-path';
 export * from './product-types';
 export * from './weight';
 export * from './order-money';
+export * from './wears';

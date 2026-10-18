@@ -2,7 +2,7 @@
 
 import { useState } from 'react';
 
-import { browseHref, priceRanges, sortSizes, withFilter, type BrowseQuery } from './browse-query';
+import { browseHref, priceRanges, sizeGroups, withFilter, WHO, WHO_LABEL, type BrowseQuery } from './browse-query';
 import styles from './filters.module.css';
 import { PriceSlider } from './price-slider';
 
@@ -13,8 +13,8 @@ import type { ProductType } from '@repo/shared/domain';
 const FIRST_STATES = 8;
 
 /**
- * See all's filter groups (D-136): Category, State, Price (a slider and four ready-made ranges) and Size (Pack for
- * food) as boxes that combine. Every choice is a real link to its address (new tabs, no JavaScript, crawlers); a
+ * See all's filter groups (D-136): For (clothing: Women · Men, D-140), Category, State, Price (a slider and four
+ * ready-made ranges) and Size (Pack for food) as boxes that combine, grouped by kind (D-140). Every choice is a real link to its address (new tabs, no JavaScript, crawlers); a
  * plain click applies it in place through `onChange`, without loading the page.
  */
 export function FilterPanel({
@@ -49,11 +49,36 @@ export function FilterPanel({
   const prices = meta.prices;
   const bounds = prices ? { min: Math.floor(prices.min / 100), max: Math.ceil(prices.max / 100) } : null;
   const ranges = priceRanges(prices);
-  const sizes = sortSizes(meta.sizes);
+  const groups = sizeGroups(meta.sizes);
+  const sizeCount = meta.sizes.length;
   const priced = query.min !== undefined || query.max !== undefined;
 
   return (
     <div className="font-ui">
+      {productType === 'clothing' && meta.wears ? (
+        <section className={styles.group} aria-labelledby="f-for">
+          <div className={styles.head}>
+            <h3 id="f-for">For</h3>
+          </div>
+          <ul className={styles.list}>
+            <li>
+              <a {...link({ who: undefined })} className={styles.item} aria-current={!query.who}>
+                <i aria-hidden="true" />
+                Everyone
+              </a>
+            </li>
+            {WHO.map((w) => (
+              <li key={w}>
+                <a {...link({ who: w })} className={styles.item} aria-current={query.who === w}>
+                  <i aria-hidden="true" />
+                  {WHO_LABEL[w]}
+                  <span>{meta.wears?.[w]}</span>
+                </a>
+              </li>
+            ))}
+          </ul>
+        </section>
+      ) : null}
       {meta.categories.length > 1 || query.category ? (
         <section className={styles.group} aria-labelledby="f-category">
           <div className={styles.head}>
@@ -140,7 +165,7 @@ export function FilterPanel({
         </section>
       ) : null}
 
-      {sizes.length > 0 ? (
+      {sizeCount > 0 ? (
         <section className={styles.group} aria-labelledby="f-size">
           <div className={styles.head}>
             <h3 id="f-size">{productType === 'food' ? 'Pack' : 'Size'}</h3>
@@ -150,23 +175,28 @@ export function FilterPanel({
               </a>
             ) : null}
           </div>
-          <div className={styles.boxes}>
-            {sizes.map((s) => {
-              const on = query.sizes.includes(s.value);
-              return (
-                <a
-                  key={s.value}
-                  {...link({ sizes: on ? query.sizes.filter((x) => x !== s.value) : [...query.sizes, s.value] })}
-                  className={styles.box}
-                  role="button"
-                  aria-pressed={on}
-                  title={`${s.count} ${s.count === 1 ? 'piece' : 'pieces'}`}
-                >
-                  {s.value}
-                </a>
-              );
-            })}
-          </div>
+          {groups.map((g) => (
+            <div key={g.key} className={styles.sizeGroup}>
+              {groups.length > 1 ? <p className={styles.sizeLabel}>{g.label}</p> : null}
+              <div className={styles.boxes}>
+                {g.sizes.map((s) => {
+                  const on = query.sizes.includes(s.value);
+                  return (
+                    <a
+                      key={s.value}
+                      {...link({ sizes: on ? query.sizes.filter((x) => x !== s.value) : [...query.sizes, s.value] })}
+                      className={styles.box}
+                      role="button"
+                      aria-pressed={on}
+                      title={`${s.count} ${s.count === 1 ? 'piece' : 'pieces'}`}
+                    >
+                      {s.value}
+                    </a>
+                  );
+                })}
+              </div>
+            </div>
+          ))}
         </section>
       ) : null}
     </div>

@@ -3,6 +3,8 @@
 -- (Locking in create_order needs two sessions; it was checked by hand, see plan/current.md.)
 begin;
 select tests.setup();
+-- Generic test clothing: D-140's "who it is for" rule has its own test (wears_and_rows.test.sql).
+alter table public.products disable trigger products_wears;
 
 -- The live stock feed: an edit that does not touch stock leaves its row alone; a stock change moves it.
 select set_config('tests.feed_ctid', (select ctid::text from public.variant_availability

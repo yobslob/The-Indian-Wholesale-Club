@@ -148,15 +148,15 @@ begin
   perform tests.remember('vendor', v_id);
 
   insert into public.products (slug, name, product_type, region_id, category_id, vendor_id, price_cents,
-                               shop_price_paise, origin_town, status)
+                               shop_price_paise, origin_town, status, wears)
   values ('test-live', 'Test live product', 'clothing', tests.id('region'), tests.id('cat_clothing'),
-          tests.id('vendor'), 5000, 100000, 'Secret Town', 'live')
+          tests.id('vendor'), 5000, 100000, 'Secret Town', 'live', 'women')
   returning id into v_id;
   perform tests.remember('p_live', v_id);
 
-  insert into public.products (slug, name, product_type, region_id, category_id, vendor_id, price_cents, status)
+  insert into public.products (slug, name, product_type, region_id, category_id, vendor_id, price_cents, status, wears)
   values ('test-draft', 'Test draft product', 'clothing', tests.id('region'), tests.id('cat_clothing'),
-          tests.id('vendor'), 5000, 'draft')
+          tests.id('vendor'), 5000, 'draft', 'women')
   returning id into v_id;
   perform tests.remember('p_draft', v_id);
 
