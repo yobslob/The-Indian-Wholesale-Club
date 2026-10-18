@@ -14,3 +14,4 @@ export * from './reviews';
 export * from './sourcing';
 export * from './supply';
 export * from './vendor-pieces';
+export * from './shop-orders';

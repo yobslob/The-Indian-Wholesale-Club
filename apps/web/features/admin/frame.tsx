@@ -6,7 +6,7 @@ import { useEffect, useState } from 'react';
 
 import { ZONES, deskOrder, type Desk } from '@repo/shared/admin';
 
-import { LiveChannel, LiveDot } from './live-feed';
+import { LiveChannel, LiveDot, NewOrderToast } from './live-feed';
 import { QuickFind } from './quick-find';
 
 import type { WaitingCounts } from '@repo/db/admin';
@@ -21,6 +21,8 @@ function groups(c: WaitingCounts): [string, Item[]][] {
       [
         { href: '/admin', label: 'Today' },
         { href: '/admin/orders', label: 'Orders', count: c.ordersToShip, hint: 'Arrived · to ship' },
+        // D-140: sold pieces to order from their shops (the pilot's pickups have no cycle)
+        { href: '/admin/to-order', label: 'To order', count: c.toOrder, hint: 'Pieces to order from shops' },
         { href: '/admin/cycles', label: 'Cycle', count: c.pickupsToDo, hint: 'Pickups to do' },
         { href: '/admin/listings', label: 'Listings', count: c.drafts, hint: 'Drafts' },
         { href: '/admin/vendor-pieces', label: 'Vendor pieces', count: c.vendorPieces, hint: 'Photos ready to pick' },
@@ -163,6 +165,7 @@ export function AdminFrame({
   return (
     <>
       <LiveChannel />
+      <NewOrderToast />
       <div className="md:grid md:min-h-screen md:grid-cols-[228px_minmax(0,1fr)]">
         <aside className="border-line bg-surface sticky top-0 hidden h-screen overflow-auto border-r px-3 py-4 md:block print:hidden">{side}</aside>
         {menu ? (

@@ -5,6 +5,8 @@ const INTERNAL: Record<string, string> = {
   note: 'Note',
   delay_kept: 'The customer kept the order with the new date',
   moved_to_cycle: 'Moved to another cycle',
+  shop_ordered: 'Ordered from the shop',
+  shop_bill_reopened: 'The shop bill was reopened',
 };
 
 export function adminEventText(e: { kind: string; visible_to_customer: boolean; message: string | null; internal_note: string | null }): {

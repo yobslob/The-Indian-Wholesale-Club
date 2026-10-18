@@ -7,7 +7,7 @@
  * Every test file runs inside its own transaction and rolls back; the helper
  * schema `tests` is dropped at the end, so the database is left unchanged.
  *
- * Usage:  node scripts/db-test.mjs [--url=postgresql://…]
+ * Usage:  node scripts/db-test.mjs [--url=postgresql://…] [--only=name] (only the test files whose name contains it)
  * Default URL = local Supabase. Refuses non-local hosts unless --allow-remote.
  */
 import { readdirSync, readFileSync } from 'node:fs';
@@ -29,8 +29,9 @@ if (!['127.0.0.1', 'localhost', '::1'].includes(host) && !args.includes('--allow
 }
 
 const dir = join('supabase', 'tests');
+const only = args.find((a) => a.startsWith('--only='))?.slice(7);
 const files = readdirSync(dir)
-  .filter((f) => f.endsWith('.test.sql'))
+  .filter((f) => f.endsWith('.test.sql') && (!only || f.includes(only)))
   .sort();
 
 const client = new pg.Client({ connectionString: url });

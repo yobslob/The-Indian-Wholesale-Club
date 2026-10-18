@@ -99,14 +99,14 @@ export function ShopCard({
                 <Text className="font-body text-ink-muted text-[12.5px]">
                   {p.variant?.label ?? p.item?.variant_label} × {p.quantity} · {rupees(p.shop_price_paise)} · {p.item?.order?.order_number}
                 </Text>
-                {p.variant?.product?.source_url ? (
-                  // D-110: an imported piece is ordered on its shop's page, to the hub.
+                {p.source?.item_url ?? p.variant?.product?.source_url ? (
+                  // D-110, D-140: ordered to the hub from the shop item in use (the variant's source), not the page first imported.
                   <Text
                     accessibilityRole="link"
-                    onPress={() => void Linking.openURL(p.variant?.product?.source_url ?? '')}
+                    onPress={() => void Linking.openURL(p.source?.item_url ?? p.variant?.product?.source_url ?? '')}
                     className="font-ui-semibold text-ink text-[12.5px] underline"
                   >
-                    Order it online
+                    {p.ordered_at && p.status === 'pending' ? 'Ordered · open it' : 'Order it online'}
                   </Text>
                 ) : null}
               </View>

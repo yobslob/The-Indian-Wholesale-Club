@@ -9,10 +9,14 @@ import {
 } from '@repo/shared/domain';
 
 import { LinePhoto } from '@/features/cart/bag-lines';
+import { SITE_NAME } from '@/lib/site';
 
 import { FasterOffer } from './faster-offer';
+import { InvoiceA } from './invoice-a';
 import { OrderChoices } from './order-choices';
+import { PrintInvoiceButton } from './print-invoice';
 import { ReturnChoices } from './return-choices';
+
 
 import type { OrderDetail } from '@repo/db/store';
 
@@ -211,7 +215,40 @@ export function OrderView({ order }: { order: OrderDetail }): React.JSX.Element 
             <dd className="m-0">{formatUsd(o.refunded_cents)}</dd>
           </div>
         ) : null}
+        <div className="flex justify-end">
+          <PrintInvoiceButton />
+        </div>
       </dl>
+      {/* D-140 (F4): invoice A, shown only when the page is printed */}
+      <div className="invoice-print hidden print:block">
+        <InvoiceA
+          data={{
+            orderNumber: o.order_number,
+            placedAt: o.created_at,
+            email: o.email,
+            address: o.shipping_address,
+            express: o.shipping_method === 'express',
+            items: order.items.map((i) => ({
+              id: i.id,
+              name: i.product_name,
+              label: i.variant_label,
+              region: i.region_name,
+              quantity: i.quantity,
+              unitCents: i.unit_price_cents,
+              totalCents: i.total_price_cents,
+              status: i.status,
+            })),
+            subtotalCents: o.subtotal_cents,
+            discountCents: o.discount_cents,
+            shippingCents: o.shipping_cents,
+            taxCents: o.tax_cents,
+            totalCents: o.total_cents,
+            refundedCents: o.refunded_cents,
+            sellerName: SITE_NAME,
+            supportEmail: null,
+          }}
+        />
+      </div>
 
       {order.events.length > 0 ? (
         <section>

@@ -1,14 +1,17 @@
 import Image from 'next/image';
 
+import { PIECE_STAGE, pieceStage } from '@repo/shared/admin';
 import { formatUsd } from '@repo/shared/domain';
+import { siteLabel } from '@repo/shared/sourcing';
 
 import { mediaUrl } from '@/lib/site';
 
 import { markExpressPickupAction } from './actions/orders';
 import { refundItemAction } from './actions/refunds';
-import { Chip, PICKUP_STATUS } from './chips';
+import { Chip } from './chips';
 import { ConfirmButton } from './confirm';
 import { PickedWeightInput, WeighPicked } from './hub-weigh';
+import { PieceOrdering } from './piece-ordering';
 import { button, Cell, Panel, rupees, secondaryButton, Sub, Table } from './ui';
 
 import type { getAdminOrder } from '@repo/db/admin';
@@ -16,11 +19,23 @@ import type { getAdminOrder } from '@repo/db/admin';
 type Order = NonNullable<Awaited<ReturnType<typeof getAdminOrder>>>;
 
 /**
- * The order's pieces (D-096): photo, piece, quantity, price, where its pickup stands (picked, paid to the shop, in the
- * US) and the shop with its price. An unavailable piece gets its refund here (it asks first); an express order's
+ * The order's pieces (D-096): photo, piece, quantity, price, where it stands (to order, ordered, at the hub, paid to
+ * the shop, in the US, D-140) and the shop with its price. A piece from an online shop is ordered from here: Order it ↗
+ * opens the shop item in use and Mark ordered records it (F3). An unavailable piece gets its refund here (it asks first); an express order's
  * pieces and the made-to-order pilot's are marked picked here (D-070, D-115), weighed if the desk types a weight (D-130).
  */
-export function OrderPieces({ order, refunds, pickHere }: { order: Order; refunds: Map<string, number>; pickHere: boolean }): React.JSX.Element {
+export function OrderPieces({
+  order,
+  refunds,
+  pickHere,
+  costs,
+}: {
+  order: Order;
+  refunds: Map<string, number>;
+  pickHere: boolean;
+  /** D-140 (F4): each piece's landed cost and margin. */
+  costs?: Map<string, { costCents: number | null; marginPct: number | null }>;
+}): React.JSX.Element {
   const count = order.items.reduce((n, i) => n + i.quantity, 0);
   const arrived = order.items.filter((i) => i.pickup?.arrived_at).length;
   return (
@@ -33,6 +48,9 @@ export function OrderPieces({ order, refunds, pickHere }: { order: Order; refund
           const media = item.product?.media.slice().sort((a, b) => Number(b.is_primary) - Number(a.is_primary) || a.sort_order - b.sort_order)[0];
           const refund = refunds.get(item.id);
           const p = item.pickup;
+          const itemUrl = p?.source?.item_url ?? item.product?.source_url ?? null;
+          const site = p?.source?.site ?? item.product?.source_site ?? null;
+          const stage = p ? pieceStage(p, Boolean(itemUrl)) : null;
           return (
             <tr key={item.id}>
               <Cell className="w-14">
@@ -47,16 +65,38 @@ export function OrderPieces({ order, refunds, pickHere }: { order: Order; refund
                 </Sub>
               </Cell>
               <Cell className="text-right">{item.quantity}</Cell>
-              <Cell className="whitespace-nowrap text-right">{formatUsd(item.total_price_cents)}</Cell>
+              <Cell className="whitespace-nowrap text-right">
+                {formatUsd(item.total_price_cents)}
+                {costs?.get(item.id)?.costCents != null ? (
+                  <Sub>
+                    cost {formatUsd(costs.get(item.id)!.costCents!)}
+                    {costs.get(item.id)!.marginPct !== null ? ` · ${costs.get(item.id)!.marginPct}%` : ''}
+                  </Sub>
+                ) : null}
+              </Cell>
               <Cell>
                 <span className="flex flex-wrap gap-1">
                   {item.status === 'refunded' ? <Chip tone="mute">Refunded</Chip> : null}
                   {item.status === 'unavailable' ? <Chip tone="bad">Unavailable · to refund</Chip> : null}
-                  {p && item.status === 'active' ? <Chip tone={PICKUP_STATUS[p.status][1]}>{PICKUP_STATUS[p.status][0]}</Chip> : null}
+                  {stage && item.status === 'active' ? <Chip tone={PIECE_STAGE[stage][1]}>{PIECE_STAGE[stage][0]}</Chip> : null}
                   {p?.status === 'picked' ? p.payout_id ? <Chip tone="ok">Paid to shop</Chip> : <Chip tone="warn">Not paid yet</Chip> : null}
                   {p?.arrived_at ? <Chip tone="brand">In the US</Chip> : null}
                   {!p && item.status === 'active' ? <span className="text-ink-muted text-[13px]">After cutoff</span> : null}
                 </span>
+                {p && p.status === 'pending' && item.status === 'active' && itemUrl ? (
+                  <PieceOrdering
+                    pickupId={p.id}
+                    orderId={order.id}
+                    itemUrl={itemUrl}
+                    site={site ? siteLabel(site) : null}
+                    quantity={item.quantity}
+                    soldPaise={p.shop_price_paise ?? item.shop_price_paise}
+                    nowPaise={p.source?.price_paise ?? null}
+                    inStock={p.source?.in_stock ?? null}
+                    deliveryDays={p.source?.delivery_days ?? null}
+                    ordered={p.ordered_at ? { paidPaise: p.paid_paise, ref: p.shop_order_ref } : null}
+                  />
+                ) : null}
                 {p?.status === 'picked' ? (
                   <span className="mt-1.5 block">
                     <WeighPicked pickupId={p.id} weighedG={p.weighed_g} note={p.weigh_note} label={item.product_name} path={`/admin/orders/${order.id}`} />
@@ -96,8 +136,8 @@ export function OrderPieces({ order, refunds, pickHere }: { order: Order; refund
                 ) : null}
               </Cell>
               <Cell>
-                {p?.vendor?.shop_name ?? '—'}
-                {p ? <Sub>{rupees(p.shop_price_paise)}</Sub> : null}
+                {site ? siteLabel(site) : (p?.vendor?.shop_name ?? '—')}
+                {p ? <Sub>{p.paid_paise !== null ? `${rupees(p.paid_paise)} paid` : `${rupees(p.shop_price_paise)} a piece`}</Sub> : null}
               </Cell>
             </tr>
           );

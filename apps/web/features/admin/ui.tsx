@@ -1,6 +1,7 @@
 import Link from 'next/link';
 
 import { deskTime, type Desk } from '@repo/shared/admin';
+import { formatInr } from '@repo/shared/domain';
 
 import { adminAccess } from './guard';
 import { panel } from './styles';
@@ -215,7 +216,5 @@ export async function When({ iso, inline = false }: { iso: string | null | undef
   );
 }
 
-export function rupees(paise: number | null | undefined): string {
-  if (paise === null || paise === undefined) return '—';
-  return new Intl.NumberFormat('en-IN', { style: 'currency', currency: 'INR', minimumFractionDigits: paise % 100 ? 2 : 0, maximumFractionDigits: paise % 100 ? 2 : 0 }).format(paise / 100);
-}
+/** ₹ from paise (Indian grouping), "—" when unknown. */
+export const rupees = formatInr;

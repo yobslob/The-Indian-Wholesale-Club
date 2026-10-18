@@ -7,6 +7,9 @@ import {
   getOpenCycle,
   getPickupCycle,
   getTodaySummary,
+  isMadeToOrderPilot,
+  pilotPipelineCounts,
+  toOrderSummary,
 } from '@repo/db/admin';
 import { bothPlaces, deskOrder, greeting, timeLeft, type Desk } from '@repo/shared/admin';
 
@@ -16,6 +19,7 @@ import { CycleFlow } from '@/features/admin/cycle-flow';
 import { requireAdminPage } from '@/features/admin/guard';
 import { LiveFeed } from '@/features/admin/live-feed';
 import { Queue, type Job } from '@/features/admin/queue';
+import { waited } from '@/features/admin/to-order/group';
 import { PageHead, Panel, SectionTitle } from '@/features/admin/ui';
 
 const DESK_NAME: Record<Desk, string> = { us: 'US desk', india: 'India desk' };
@@ -25,43 +29,70 @@ const dollars = new Intl.NumberFormat('en-US', { style: 'currency', currency: 'U
  * Today (D-096, admin.md): the open cycle's countdown with its totals, what needs attention, then the admin's own desk
  * as a work queue (count, the job, one button to it; D-007: India picks up, lists and pays shops, the US ships) and
  * the other desk below. Live orders at the side. Every job links to the screen that does it.
+ * D-140 (A2): in the made-to-order pilot (D-115) no cycle is open and none is needed: the India desk orders each sold
+ * piece from its shop, marks it at the hub and weighs it; the US desk sends orders on. Cycle jobs show only while a
+ * cycle is open.
  */
 export default async function TodayPage(): Promise<React.JSX.Element> {
   const { client, desk } = await requireAdminPage();
-  const [summary, counts, cycle, attention, pickupCycle] = await Promise.all([
+  const [summary, counts, cycle, attention, pickupCycle, pilot, toOrder, pipeline] = await Promise.all([
     getTodaySummary(client),
     waitingCounts(client),
     getOpenCycle(client),
     getAttention(client),
     getPickupCycle(client),
+    isMadeToOrderPilot(client),
+    toOrderSummary(client),
+    pilotPipelineCounts(client),
   ]);
   const totals = cycle ? await getCycleTotals(client, cycle.id) : null;
   const alerts = attentionLines(attention);
   const now = new Date();
   const status = (s: keyof typeof summary.ordersByStatus): number => summary.ordersByStatus[s] ?? 0;
 
+  const cycleJobs = cycle !== null || pickupCycle !== null;
   const jobs: Record<Desk, Job[]> = {
     us: [
-      { n: status('arrived'), what: 'Orders arrived in the US, to pack and ship', go: 'Pack & ship', href: '/admin/orders?status=arrived', urgent: true },
-      {
-        n: status('confirmed'),
-        what: 'Orders confirmed in the open cycle',
-        sub: 'Nothing to do until cutoff; check for problems',
-        go: 'See orders',
-        href: '/admin/orders?status=confirmed',
-      },
+      { n: status('arrived'), what: 'Orders in the US to send on', sub: 'Pack and ship to the customer', go: 'Pack & ship', href: '/admin/orders?status=arrived', urgent: true },
+      ...(cycle
+        ? [
+            {
+              n: status('confirmed'),
+              what: 'Orders confirmed in the open cycle',
+              sub: 'Nothing to do until cutoff; check for problems',
+              go: 'See orders',
+              href: '/admin/orders?status=confirmed',
+            },
+          ]
+        : []),
       { n: counts.returns, what: 'Returns to collect', go: 'Open returns', href: '/admin/returns' },
     ],
     india: [
+      // D-140 (F3): the India desk's first job, cycle or not
       {
-        n: summary.pendingPickups,
-        what: 'Pickups still to do',
-        sub: pickupCycle ? `In cycle ${pickupCycle.code}` : undefined,
-        go: 'Start pickups',
-        href: pickupCycle ? `/admin/cycles/${pickupCycle.id}` : '/admin/cycles',
+        n: toOrder.count,
+        what: 'Pieces to order from their shops',
+        sub: toOrder.oldest ? `The oldest sold ${waited(toOrder.oldest)} ago` : undefined,
+        go: 'Order them',
+        href: '/admin/to-order',
         urgent: true,
       },
+      { n: pipeline.ordered, what: 'Ordered, on the way to the hub', sub: 'Mark each at the hub when it arrives', go: 'Open', href: '/admin/to-order?view=ordered' },
+      { n: pipeline.toWeigh, what: 'At the hub, to weigh', go: 'Weigh them', href: '/admin/to-order?view=weigh' },
+      ...(cycleJobs
+        ? [
+            {
+              n: counts.pickupsToDo,
+              what: 'Pickups still to do',
+              sub: pickupCycle ? `In cycle ${pickupCycle.code}` : undefined,
+              go: 'Start pickups',
+              href: pickupCycle ? `/admin/cycles/${pickupCycle.id}` : '/admin/cycles',
+              urgent: true,
+            },
+          ]
+        : []),
       { n: summary.expressToSend, what: 'Express orders to pick up and send by courier', go: 'Open orders', href: '/admin/orders?express=1', urgent: true },
+      { n: pipeline.held, what: 'Prices held for you', sub: "A shop's price jumped; accept it or stop using that shop", go: 'Review', href: '/admin/import/auto' },
       { n: summary.draftProducts, what: 'Draft listings to review', go: 'Review drafts', href: '/admin/catalog?status=draft' },
       {
         n: counts.shopsOwed,
@@ -70,9 +101,14 @@ export default async function TodayPage(): Promise<React.JSX.Element> {
         go: 'Pay shops',
         href: '/admin/payouts',
       },
-      summary.staleVariants === null
-        ? { n: null, what: 'Quantities to re-check with the shops', sub: 'Set "stale after" days in Settings to count them', go: 'Settings', href: '/admin/settings' }
-        : { n: summary.staleVariants, what: 'Quantities to re-check with the shops', go: 'Re-check', href: '/admin/listings?view=recheck' },
+      // Imported listings are re-checked by the sourcing runner (D-118); the hand re-check is for shops' own stock.
+      ...(pilot
+        ? []
+        : [
+            summary.staleVariants === null
+              ? { n: null, what: 'Quantities to re-check with the shops', sub: 'Set "stale after" days in Settings to count them', go: 'Settings', href: '/admin/settings' }
+              : { n: summary.staleVariants, what: 'Quantities to re-check with the shops', go: 'Re-check', href: '/admin/listings?view=recheck' },
+          ]),
     ],
   };
   const [own, other] = deskOrder(desk);
@@ -119,7 +155,7 @@ export default async function TodayPage(): Promise<React.JSX.Element> {
               </div>
               <CycleFlow cycle={cycle} desk={desk} />
             </Panel>
-          ) : (
+          ) : pilot ? null : (
             <div className="border-caution/25 bg-caution/[0.08] rounded-xl border px-3.5 py-3 text-[14px]">
               <b className="text-caution">No open cycle: customers cannot check out.</b>{' '}
               <Link href="/admin/cycles" className="underline">

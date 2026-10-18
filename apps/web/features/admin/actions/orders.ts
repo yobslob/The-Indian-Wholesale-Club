@@ -24,6 +24,8 @@ function done(orderId: string): void {
   sendEmailsSoon();
   revalidatePath(`/admin/orders/${orderId}`);
   revalidatePath('/admin/orders');
+  // D-140: the India desk's pipeline (to order, ordered, at the hub)
+  revalidatePath('/admin/to-order');
 }
 
 /**

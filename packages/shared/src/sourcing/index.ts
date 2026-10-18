@@ -9,3 +9,4 @@ export * from './delivery';
 export * from './variants';
 export * from './weight';
 export * from './liquid';
+export * from './cart';

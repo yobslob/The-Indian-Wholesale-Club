@@ -41,7 +41,8 @@ operations data are never queried from customer code.
 | | `product_media` | Storage paths (bucket `product-media`), alt text, one primary per product, `is_ai` (an AI-generated model photo, D-100: the product's Details say so) | store / admin |
 | Supply | `vendors` | shop + owner, phone/WhatsApp, address, town, region, payment method + reference (D-029), licences, status, notes, photo; `online_site` = an online shop's host for imported listings (one vendor per shop and state, D-110) | admin |
 | | `cycles` | code, status, `cutoff_at`, est. export/arrival, actual dates, AWB, forwarder, freight, duty, FX | admin |
-| | `pickups` | one per ordered piece: vendor, cycle, variant, qty, shop price, status, who/when, photo, payout | admin |
+| | `pickups` | one per ordered piece: vendor, cycle, variant, qty, shop price (the variant's own when it has one), status, who/when, photo, payout; `source_id` (the shop item in use), `ordered_at`, `ordered_by`, `paid_paise`, `shop_order_ref`, `shop_bill_path` (ordered from the shop, D-140) | admin |
+| | `shop_bills`, `shop_bill_lines`, `shop_bill_photos` | invoice C, one per order (D-140): the shop bill's rows (a piece at its price paid, delivery, extras such as a coupon as a minus), its photos in `vendor-docs/shop-bills/`, draft or final (a final bill's rows and photos are locked by trigger) | admin |
 | | `vendor_payouts` | INR paid to a vendor. The amount is computed from the pickups it covers | admin |
 | | `vendor_submissions` | a piece a vendor sent: category, who wears it (women / men / kids / unisex: picks the house model; kids are never shown on a model), details in their words, sizes, shop price in ₹, status (adding → waiting → photos_ready → approved, or needs_retake / declined), the product it became | vendor via `vendor_*` / admin |
 | | `vendor_submission_photos` | front, back, close-up in bucket `vendor-uploads` (`<vendor>/<submission>/<file>`) with the phone's checks | vendor via functions / admin |
@@ -51,7 +52,7 @@ operations data are never queried from customer code.
 | | `stock_movements` | append-only ledger, written by trigger only (INV-4) | admin (read) |
 | | `pricing_settings` | one row: FX, freight/kg, duty %, margin %, domestic delivery days, stale-listing days, standard shipping + free threshold, express shipping + express days. Price-suggestion values and days start NULL (Q-15, Q-18); shipping prices set by migration 4 (D-041) | admin |
 | Orders | `orders` | number `IWC-YYMMDD-<10 hex>`, email, internal `status`, `cycle_id`*, `fulfilment_mode` (`order_first`, D-024), `shipping_method` (D-041), `est_delivery_from/_to` (D-008), totals in cents (USD only, D-036), `refunded_cents` (D-042), Stripe ids, address snapshot, tracking, carrier, `notes`* | owner via `store_orders` / admin |
-| | `order_items` | snapshot (product, variant label, region name), qty, unit price, status (`active`/`unavailable`/`refunded`) | owner via `store_order_items` / admin |
+| | `order_items` | snapshot (product, variant label, region name), qty, unit price, status (`active`/`unavailable`/`refunded`); the cost snapshot taken when it is placed (D-140): `shop_price_paise`*, `weight_g`*, `weight_source`*, `inr_per_usd`*, `pricing_rule`* | owner via `store_order_items` / admin |
 | | `order_events` | timeline: `kind` + `visible_to_customer`. The app turns `kind` into copy (no customer text stored in SQL). `internal_note`* | owner (visible rows) / admin |
 | | `promo_codes` | codes, limits, validity. Redeemed via `increment_promo_uses()` | admin |
 | | `wishlists` | saved products | owner |
@@ -158,6 +159,17 @@ and adds `states_total`, `sizes` (value, pieces) and `prices` (min, max, quartil
 filters applied (`regions` and `categories` keep their meaning, so the app reads as before); `store_home()` adds
 `just_listed_types` (the twelve newest of each type); `admin_price_sheet()` takes the Products filters (type, region
 or none, category, vendor, price). Tests: `browse_filters.test.sql`.
+Migration 71 (D-140, plan F3, F4, A1): trigger `order_items_snapshot` keeps each order line's cost when it is placed
+(older lines backfilled from their pickup or today's listing); trigger `pickups_source` gives a pickup the variant's own
+shop price and its shop item in use; the pickup columns for ordering from the shop and the shop bill tables above.
+Admin functions: `admin_to_order()` (every piece of a paid, open order not yet ordered, oldest first, with the shop item
+in use, its price now, stock and delivery days), `admin_mark_ordered(lines, ref, bill_path)` (pending pieces only; what
+was paid defaults to the shop price × quantity; fills the order's shop bill rows; an internal `shop_ordered` event),
+`admin_unmark_ordered(pickup)`, `admin_shop_bill(order)` (made on first use with a row per piece and a Delivery row),
+`admin_save_shop_bill(bill, lines, note)`, `admin_set_shop_bill_final(bill, final)` (reopening is logged as
+`shop_bill_reopened`). Raise `pickup_not_pending`, `shop_bill_final`, `nothing_to_order`, `amount_invalid`. Trigger
+`order_events_admin_new_order` queues an `admin_new_order` email to every address in `admin_emails` when an order is
+confirmed. Tests: `order_from_shop.test.sql`.
 Migration 69 (D-135): `products.coming_soon`, `coming_soon_note`, `liquid_checked_at`; trigger `products_coming_soon`
 (any status but archived ends it); `store_products` and `store_media` include archived coming-soon listings and
 `store_products` ends with `coming_soon`; `_store_product_card` and `store_browse` send it (no quick add for it).

@@ -41,6 +41,7 @@ writes refresh the website's store pages at once (`POST /admin/revalidate`, B-17
 | Section | Job | Main desk | Web | App |
 |---|---|---|---|---|
 | **Today** | what needs doing now: pickups due, stale listings, payouts due / exports to receive, orders to ship, delay warnings | both | ✓ | ✓ |
+| **To order** (D-140) | `/admin/to-order`: every sold piece of a paid, open order not yet ordered from its shop, one card per shop, oldest first, with the shop item in use (the variant's source, D-118), its price at sale and now, stock and delivery days; **Order all from this shop** (Amazon's add-to-cart link, a Shopify shop's `/cart/` link; other shops open each piece) and **Mark all ordered** (one shop order number and one bill for the lot, what was paid per piece). Tabs **On the way to the hub** (At the hub with its weight, or Not ordered after all) and **At the hub, to weigh** (D-130). The card answers at once and comes back with a line if the server refuses | India | ✓ | ✓ (Order it online / Mark ordered on the order screen) |
 | **Vendors** | onboard a shop in about a minute (name, owner, phone/WhatsApp, region, payment method, licences, photo), history; its vendor accounts with the one-time QR / link, the screens' language, switch off (D-102); "Join as a vendor?" requests | India | ✓ | ✓ |
 | **Listings** | add products with the camera (`flows.md` §2), confirm quantities, drafts → live | India | ✓ (incl. the re-check list) | ✓ (new listing with the camera, publish, confirm qty; 50 with "Show more", D-067) |
 | **Cycles** | current cycle timeline and dates, cutoff, per-shop pickup checklists, packing list + commercial invoice export, export/arrival | both | ✓ (closes and opens by itself, D-045; dates corrected on the cycle; orders moved in, confirmed as shipped (D-064); export details; arrival check-off; packing list + commercial invoice (print/PDF and CSV; Q-30 fields marked)) | ✓ (pickups, cutoff, next step, arrival check-off) |
@@ -56,6 +57,20 @@ writes refresh the website's store pages at once (`POST /admin/revalidate`, B-17
 | **House models** | the founder's models (D-104): front and back pose each, switch on / off | both | ✓ | — |
 | **Settings** | pricing settings, each estimate labelled with its source and date until the founder saves their own (D-047); the pilot price's two recipes, the courier rate card, the profit guard, the bulk saving and the small-food shelf ($1.99 – $3.99, D-120), with a **profit check** under them that reprices sample pieces and bags as the numbers are typed (web, D-119) (admins are managed in the DB + `ADMIN_EMAILS`, `ops.md`) | both | ✓ | — |
 
+**The order page (D-140):** each piece says where it stands (To order → Ordered → At the hub → In the US; a shop's piece
+in a cycle reads To pick), with **Order it ↗** (the shop item in use) and **Mark ordered…** (paid ₹, the shop's order
+number, a bill photo or PDF; Undo while it is not at the hub), and its cost and margin under its price. **Shop bill ·
+invoice C** below the pieces: a row per piece at the price paid, Delivery, extra rows (a packing fee, a coupon as a
+minus), the total as it is typed, a note; photos of the bill dropped, picked, taken with the camera or pasted (Ctrl+V),
+kept in the private `vendor-docs` bucket; Save draft, Mark final (locked), Reopen (logged). **Money** adds our landed
+cost (invoice B: shop ₹ ÷ 0.90 + weight × ₹2 a gram, × quantity, from the cost snapshot; provisional until every piece
+is weighed at the hub), the shop bill, and the margins A − B (not shown until every piece has a cost) and A − C, on
+what was paid less tax and refunds. **Print A / B / C** (`/admin/orders/<id>/invoice/a|b|c`): numbered A-, B-, C- and
+the order number, to print or save as PDF; refunds show on A as a credit note. The customer prints invoice A from their
+order page (the page prints only the invoice).
+**New orders (D-140, A1):** every paid order emails each admin on the allowlist (`admin_new_order`: number, pieces,
+total, where it goes, a button to it); an open admin panel shows a toast with a short chime. App push notifications are
+not built (no `expo-notifications` yet).
 The order page refunds unavailable pieces and cancels orders before cutoff, with the amounts from the D-042 rules shown on
 the buttons (Stripe first, then the database). **Web only:** refunds need the Stripe secret key, which lives on the server;
 the app's order list marks unavailable pieces "to refund on the web panel".
@@ -86,6 +101,11 @@ Built 2026-10-09 from `design/pages/admin/` (code in `apps/web/features/admin/`)
   the top bar with **quick find** (Ctrl+K: `adminQuickFind`, five each of orders, products, customers, shops), the
   desk's clock in both zones and the live dot (one Realtime channel for the whole admin, `live-feed.tsx`). Phones: menu,
   title, find.
+- **Today in the made-to-order pilot (D-140, A2):** with no cycle open (D-115) there is no "customers cannot check out"
+  warning; the India desk's queue starts with Pieces to order (and how long the oldest has waited), Ordered on the way
+  to the hub, At the hub to weigh and Prices held for you; cycle pickups and the hand re-check of shop quantities show
+  only while a cycle is open (imported listings are re-checked by the runner, D-118); the US desk's first job is Orders
+  in the US to send on.
 - **Times** in the admin's desk zone (`profiles.desk`; none set → New Jersey first) with the other zone beside them,
   never UTC (`time.ts`); cycle cutoffs are typed in that zone.
 - **The pager (D-140, `pager/`)** on every list (Products and its tabs, Imported listings, Targets, Prices held,

@@ -37,6 +37,26 @@ export const PICKUP_STATUS: Record<PickupStatus, [string, Tone]> = {
   unavailable: ['Unavailable', 'bad'],
 };
 
+/**
+ * D-140 (F3): where a sold piece stands on its way to the hub. A piece from an online shop is ordered (To order →
+ * Ordered); a shop's piece in a cycle is picked up (To pick); either way Picked is At the hub.
+ */
+export type PieceStage = 'to_order' | 'ordered' | 'to_pick' | 'at_hub' | 'unavailable';
+export const PIECE_STAGE: Record<PieceStage, [string, Tone]> = {
+  to_order: ['To order', 'warn'],
+  ordered: ['Ordered', 'blue'],
+  to_pick: ['To pick', 'warn'],
+  at_hub: ['At the hub', 'ok'],
+  unavailable: ['Unavailable', 'bad'],
+};
+
+export function pieceStage(p: { status: PickupStatus; ordered_at: string | null }, online: boolean): PieceStage {
+  if (p.status === 'picked') return 'at_hub';
+  if (p.status === 'unavailable') return 'unavailable';
+  if (p.ordered_at) return 'ordered';
+  return online ? 'to_order' : 'to_pick';
+}
+
 export const CYCLE_STATUS: Record<CycleStatusName, [string, Tone]> = {
   open: ['Open', 'blue'],
   collecting: ['Collecting', 'warn'],

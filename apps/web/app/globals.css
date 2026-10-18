@@ -1158,3 +1158,18 @@ html[data-free-bar] .site-footer {
     }
   }
 }
+
+/* D-140 (F4): a page that holds an invoice prints only the invoice (the customer's order page, invoice A). */
+@media print {
+  body:has(.invoice-print) * {
+    visibility: hidden;
+  }
+  body:has(.invoice-print) .invoice-print,
+  body:has(.invoice-print) .invoice-print * {
+    visibility: visible;
+  }
+  body:has(.invoice-print) .invoice-print {
+    position: absolute;
+    inset: 0 0 auto 0;
+  }
+}

@@ -116,7 +116,10 @@ export async function getTodaySummary(client: IwcClient): Promise<TodaySummary> 
 /** D-096: what waits behind each section of the admin's sidebar. Head counts only, one round trip each, in parallel. */
 export interface WaitingCounts {
   ordersToShip: number;
+  /** A cycle's pickups still to do (the pilot's pieces have no cycle: see toOrder). */
   pickupsToDo: number;
+  /** D-140: sold pieces still to order from their shop (pending, not yet ordered). */
+  toOrder: number;
   drafts: number;
   shopsOwed: number;
   reviews: number;
@@ -129,9 +132,11 @@ export interface WaitingCounts {
 
 export async function getWaitingCounts(client: IwcClient): Promise<WaitingCounts> {
   const head = { count: 'exact', head: true } as const;
-  const [ordersToShip, pickupsToDo, drafts, owed, reviews, returns, vendorPieces, joinRequests] = await Promise.all([
+  const [ordersToShip, pickupsToDo, toOrder, drafts, owed, reviews, returns, vendorPieces, joinRequests] = await Promise.all([
     countRows(client.from('orders').select('id', head).eq('status', 'arrived')),
-    countRows(client.from('pickups').select('id', head).eq('status', 'pending')),
+    countRows(client.from('pickups').select('id', head).eq('status', 'pending').not('cycle_id', 'is', null)),
+    // the To order list's own rule (paid, open orders, active lines), so the sidebar and the list agree
+    client.rpc('admin_to_order', undefined, { get: true }).then((r) => unwrap(r).length),
     countRows(client.from('products').select('id', head).eq('status', 'draft')),
     getOrderCounts(client),
     countRows(client.from('reviews').select('id', head).eq('status', 'pending')),
@@ -139,7 +144,7 @@ export async function getWaitingCounts(client: IwcClient): Promise<WaitingCounts
     countRows(client.from('vendor_submissions').select('id', head).eq('status', 'photos_ready')),
     countRows(client.from('vendor_applications').select('id', head).eq('status', 'new')),
   ]);
-  return { ordersToShip, pickupsToDo, drafts, shopsOwed: owed.shopsOwed, reviews, returns, vendorPieces, joinRequests };
+  return { ordersToShip, pickupsToDo, toOrder, drafts, shopsOwed: owed.shopsOwed, reviews, returns, vendorPieces, joinRequests };
 }
 
 /**

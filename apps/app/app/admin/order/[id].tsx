@@ -3,7 +3,7 @@ import { useState } from 'react';
 import { Linking, Text, View } from 'react-native';
 
 import { getAdminOrder, markPickup } from '@repo/db/admin';
-import { adminEventText, dateRange, deskTime, ORDER_STATUS, PAYMENT_STATUS, PICKUP_STATUS, shipState } from '@repo/shared/admin';
+import { adminEventText, dateRange, deskTime, ORDER_STATUS, PAYMENT_STATUS, PIECE_STAGE, pieceStage, shipState } from '@repo/shared/admin';
 import { formatUsd } from '@repo/shared/domain';
 
 import { Photo } from '@/components/photo';
@@ -11,6 +11,7 @@ import { Body, ErrorText, Loading, Screen } from '@/components/ui';
 import { DeliverSheet, ShipSheet } from '@/features/admin/bulk-ship';
 import { rupees } from '@/features/admin/format';
 import { PickWithWeight, WeighPicked } from '@/features/admin/hub-weigh';
+import { PieceOrder } from '@/features/admin/piece-order';
 import { AdminButton, Chip, ConfirmSheet, Panel, StatusChip, useDesk } from '@/features/admin/ui';
 import { useAction } from '@/features/admin/use-action';
 import { supabase } from '@/lib/supabase';
@@ -81,6 +82,8 @@ export default function AdminOrderScreen(): React.JSX.Element {
           {order.items.map((item) => {
             const media = item.product?.media.slice().sort((x, y) => Number(y.is_primary) - Number(x.is_primary) || x.sort_order - y.sort_order)[0];
             const p = item.pickup;
+            const itemUrl = p?.source?.item_url ?? item.product?.source_url ?? null;
+            const stage = p ? pieceStage(p, Boolean(itemUrl)) : null;
             return (
               <View key={item.id} className="border-line flex-row gap-3 border-t pt-2.5">
                 <View className="bg-land h-[54px] w-10 overflow-hidden rounded-lg">{media ? <Photo path={media.storage_path} width={40} /> : null}</View>
@@ -93,10 +96,19 @@ export default function AdminOrderScreen(): React.JSX.Element {
                   <View className="flex-row flex-wrap gap-1.5">
                     {item.status === 'unavailable' ? <Chip tone="bad">Unavailable · refund on the web panel</Chip> : null}
                     {item.status === 'refunded' ? <Chip tone="mute">Refunded</Chip> : null}
-                    {p && item.status === 'active' ? <StatusChip map={PICKUP_STATUS} status={p.status} /> : null}
+                    {stage && item.status === 'active' ? <StatusChip map={PIECE_STAGE} status={stage} /> : null}
                     {p?.status === 'picked' ? p.payout_id ? <Chip tone="ok">Paid to shop</Chip> : <Chip tone="warn">Not paid yet</Chip> : null}
                     {p?.arrived_at ? <Chip tone="brand">In the US</Chip> : null}
                   </View>
+                  {p?.status === 'pending' && item.status === 'active' && itemUrl ? (
+                    <PieceOrder
+                      pickupId={p.id}
+                      itemUrl={itemUrl}
+                      quantity={item.quantity}
+                      pricePaise={p.source?.price_paise ?? p.shop_price_paise}
+                      ordered={Boolean(p.ordered_at)}
+                    />
+                  ) : null}
                   {pickHere && p?.status === 'pending' ? (
                     <View className="mt-1">
                       <PickWithWeight

@@ -1,5 +1,6 @@
 'use client';
 
+import Link from 'next/link';
 import { usePathname, useRouter } from 'next/navigation';
 import { useEffect, useRef, useSyncExternalStore } from 'react';
 
@@ -18,9 +19,9 @@ interface Entry {
   text: string;
 }
 
-/** The admin's one live state, shared by the top bar's dot and Today's feed (a tiny store, no context). */
-type LiveState = { live: boolean; entries: Entry[] };
-const OFFLINE: LiveState = { live: false, entries: [] };
+/** The admin's one live state, shared by the top bar's dot, Today's feed and the new-order toast (a tiny store, no context). */
+type LiveState = { live: boolean; entries: Entry[]; toast: { id: string; text: string } | null };
+const OFFLINE: LiveState = { live: false, entries: [], toast: null };
 let state = OFFLINE;
 const listeners = new Set<() => void>();
 function update(patch: (s: LiveState) => Partial<LiveState>): void {
@@ -67,6 +68,11 @@ export function LiveChannel(): null {
             ? `New order ${row.order_number}${typeof row.total_cents === 'number' ? ` · ${formatUsd(row.total_cents)}` : ''}`
             : `${row.order_number} is now ${row.status ? ORDER_STATUS[row.status][0] : 'updated'}`;
         update((s) => ({ entries: [{ key: `${row.id}:${Date.now()}`, at: new Date(), text }, ...s.entries].slice(0, 12) }));
+        // D-140 (A1): a new order is announced on every admin screen, with a short chime
+        if (payload.eventType === 'INSERT') {
+          update(() => ({ toast: { id: row.id!, text } }));
+          chime();
+        }
         refreshSoon();
       })
       .subscribe((status) => update(() => ({ live: status === 'SUBSCRIBED' })));
@@ -88,6 +94,52 @@ export function LiveDot(): React.JSX.Element {
       <i className={`h-2 w-2 rounded-full ${live ? 'bg-positive shadow-[0_0_0_3px_rgb(22_101_52/0.15)]' : 'bg-line'}`} />
       {live ? 'Live' : 'Connecting'}
     </span>
+  );
+}
+
+/** Two soft notes (Web Audio, no file to load). Browsers allow it once the admin has clicked on the page. */
+function chime(): void {
+  try {
+    const Ctx = window.AudioContext ?? (window as unknown as { webkitAudioContext?: typeof AudioContext }).webkitAudioContext;
+    if (!Ctx) return;
+    const ctx = new Ctx();
+    [659.25, 987.77].forEach((hz, i) => {
+      const osc = ctx.createOscillator();
+      const gain = ctx.createGain();
+      const t = ctx.currentTime + i * 0.16;
+      osc.frequency.value = hz;
+      gain.gain.setValueAtTime(0.0001, t);
+      gain.gain.exponentialRampToValueAtTime(0.12, t + 0.02);
+      gain.gain.exponentialRampToValueAtTime(0.0001, t + 0.45);
+      osc.connect(gain).connect(ctx.destination);
+      osc.start(t);
+      osc.stop(t + 0.5);
+    });
+    setTimeout(() => void ctx.close(), 1200);
+  } catch {
+    // no sound is fine: the toast still shows
+  }
+}
+
+/** "New order …" at the bottom of any admin screen for a few seconds, linking to the order (D-140, A1). */
+export function NewOrderToast(): React.JSX.Element | null {
+  const { toast } = useLive();
+  useEffect(() => {
+    if (!toast) return;
+    const t = setTimeout(() => update(() => ({ toast: null })), 9000);
+    return () => clearTimeout(t);
+  }, [toast]);
+  if (!toast) return null;
+  return (
+    <div role="status" className="bg-ink text-paper rise-in font-ui fixed bottom-4 right-4 z-50 flex max-w-[calc(100vw-2rem)] items-center gap-3 rounded-[12px] px-4 py-3 text-[14px] shadow-xl print:hidden">
+      <i className="bg-positive h-2 w-2 flex-none rounded-full" aria-hidden="true" />
+      <Link href={`/admin/orders/${toast.id}`} className="font-semibold underline" onClick={() => update(() => ({ toast: null }))}>
+        {toast.text}
+      </Link>
+      <button type="button" aria-label="Dismiss" onClick={() => update(() => ({ toast: null }))} className="grid h-11 w-11 place-items-center text-[18px] md:h-8 md:w-8">
+        ×
+      </button>
+    </div>
   );
 }
 

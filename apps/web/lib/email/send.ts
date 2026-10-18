@@ -14,6 +14,7 @@ import { siteUrl, supportEmail } from '@/lib/env';
 import { errorMessage, logger } from '@/lib/logger';
 import { mediaUrl, SITE_NAME } from '@/lib/site';
 
+import { adminNewOrderHtml, adminNewOrderSubject } from './admin-new-order';
 import { orderConfirmationHtml, orderConfirmationSubject } from './order-confirmation';
 import { orderUpdateEmail } from './order-update';
 import { isReservedAddress } from './reserved';
@@ -60,6 +61,7 @@ function compose(row: OutboxRow, order: OrderDetail): { subject: string; html: s
   if (row.kind === 'order_confirmation') {
     return { subject: orderConfirmationSubject(order, SITE_NAME), html: orderConfirmationHtml(order, ctx) };
   }
+  if (row.kind === 'admin_new_order') return { subject: adminNewOrderSubject(order), html: adminNewOrderHtml(order, ctx) };
   const kind = (row.payload as { kind?: unknown }).kind;
   if (row.kind !== 'order_update' || typeof kind !== 'string') throw new Error(`Unsupported outbox row (${row.kind})`);
   return orderUpdateEmail(kind, order, ctx);
@@ -86,9 +88,11 @@ export async function deliverOutboxRow(
     return 'skipped';
   }
   try {
-    const payload = row.payload as { orderNumber?: unknown };
+    const payload = row.payload as { orderNumber?: unknown; email?: unknown };
     if (typeof payload.orderNumber !== 'string') throw new Error(`Outbox row without an order (${row.kind})`);
-    const order = await lookupGuestOrder(service, payload.orderNumber, row.recipient);
+    // D-140: an admin's copy is looked up with the customer's email, which the row keeps
+    const orderEmail = row.kind === 'admin_new_order' && typeof payload.email === 'string' ? payload.email : row.recipient;
+    const order = await lookupGuestOrder(service, payload.orderNumber, orderEmail);
     if (!order) throw new Error('Order not found for outbox row');
     const email = compose(row, order);
     if (!email) {

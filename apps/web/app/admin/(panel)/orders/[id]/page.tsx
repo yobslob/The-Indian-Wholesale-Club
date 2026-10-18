@@ -1,7 +1,7 @@
 import Link from 'next/link';
 import { notFound } from 'next/navigation';
 
-import { cancelRefundCents, exportCancelCents, getAdminOrder, itemRefundCents, listCycles, listOrderMoves } from '@repo/db/admin';
+import { cancelRefundCents, exportCancelCents, getAdminOrder, getShopBill, itemRefundCents, listCycles, listOrderMoves } from '@repo/db/admin';
 import { dateRange } from '@repo/shared/admin';
 import { adminEventText } from '@repo/shared/admin';
 import { formatUsd } from '@repo/shared/domain';
@@ -15,6 +15,9 @@ import { requireAdminPage } from '@/features/admin/guard';
 import { canMove, MoveOrderButton, MovesList } from '@/features/admin/order-move-form';
 import { OrderPieces } from '@/features/admin/order-pieces';
 import { ShipForm, shipState } from '@/features/admin/ship-form';
+import { orderMoney } from '@/features/admin/shop-bill/money';
+import { MoneyLines } from '@/features/admin/shop-bill/money-lines';
+import { ShopBillPanel } from '@/features/admin/shop-bill/shop-bill-panel';
 import { dangerButton, Field, input, PageHead, Panel, rupees, When } from '@/features/admin/ui';
 
 type Params = Promise<{ id: string }>;
@@ -36,7 +39,7 @@ export default async function AdminOrderPage({ params }: { params: Params }): Pr
   const address = order.shipping_address as Record<string, string | null>;
   // Refund amounts come from the database rules (D-042), shown before anyone clicks.
   const unavailable = order.items.filter((i) => i.status === 'unavailable');
-  const [itemRefunds, cancelAmounts, exportCancel, cycles, moves] = await Promise.all([
+  const [itemRefunds, cancelAmounts, exportCancel, cycles, moves, bill] = await Promise.all([
     Promise.all(unavailable.map(async (i) => [i.id, await itemRefundCents(client, i.id)] as const)),
     order.status === 'confirmed'
       ? Promise.all([cancelRefundCents(client, order.id, 'customer_request'), cancelRefundCents(client, order.id, 'our_fault')])
@@ -45,7 +48,10 @@ export default async function AdminOrderPage({ params }: { params: Params }): Pr
     ['in_transit', 'arrived', 'shipped'].includes(order.status) ? exportCancelCents(client, order.id) : null,
     listCycles(client, 12),
     listOrderMoves(client, order.id),
+    getShopBill(client, order.id),
   ]);
+  // D-140 (F4): our landed cost (B), the shop bill (C) and the margins
+  const money = orderMoney(order, bill);
   const events = [...order.events].sort((a, b) => a.created_at.localeCompare(b.created_at));
   const { canShip, express } = shipState(order);
   const expressInIndia = express && ['confirmed', 'collecting'].includes(order.status);
@@ -89,7 +95,8 @@ export default async function AdminOrderPage({ params }: { params: Params }): Pr
       />
       <div className="grid grid-cols-[minmax(0,1fr)] items-start gap-[18px] lg:grid-cols-[minmax(0,1fr)_340px]">
         <div className="grid min-w-0 grid-cols-[minmax(0,1fr)] gap-4">
-          <OrderPieces order={order} refunds={new Map(itemRefunds)} pickHere={pickHere} />
+          <OrderPieces order={order} refunds={new Map(itemRefunds)} pickHere={pickHere} costs={money.pieces} />
+          {order.payment_status !== 'pending' ? <ShopBillPanel client={client} order={order} bill={bill} /> : null}
           <Panel title="Customer">
             <dl className="grid grid-cols-[96px_1fr] gap-x-3 gap-y-1.5 text-[14px] leading-[1.4] md:grid-cols-[110px_1fr]">
               <dt className="text-ink-muted">Name</dt>
@@ -288,6 +295,7 @@ export default async function AdminOrderPage({ params }: { params: Params }): Pr
                 </div>
               ) : null}
             </dl>
+            <MoneyLines money={money} />
           </Panel>
         </div>
       </div>

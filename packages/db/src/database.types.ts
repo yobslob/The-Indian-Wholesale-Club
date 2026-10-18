@@ -230,14 +230,14 @@ isOneToOne: false
                   ]
                 },"order_items": {
                   Row: {
-                    "created_at": string,"id": string,"order_id": string,"product_id": string | null,"product_name": string,"quantity": number,"region_name": string | null,"status": Database["public"]['Enums']["order_item_status"],"total_price_cents": number,"unit_price_cents": number,"variant_id": string | null,"variant_label": string
+                    "created_at": string,"id": string,"inr_per_usd": number | null,"order_id": string,"pricing_rule": string | null,"product_id": string | null,"product_name": string,"quantity": number,"region_name": string | null,"shop_price_paise": number | null,"status": Database["public"]['Enums']["order_item_status"],"total_price_cents": number,"unit_price_cents": number,"variant_id": string | null,"variant_label": string,"weight_g": number | null,"weight_source": string | null
                   }
                   ComputedFields: never
                   Insert: {
-                    "created_at"?: string,"id"?: string,"order_id": string,"product_id"?: string | null,"product_name": string,"quantity": number,"region_name"?: string | null,"status"?: Database["public"]['Enums']["order_item_status"],"total_price_cents": number,"unit_price_cents": number,"variant_id"?: string | null,"variant_label": string
+                    "created_at"?: string,"id"?: string,"inr_per_usd"?: number | null,"order_id": string,"pricing_rule"?: string | null,"product_id"?: string | null,"product_name": string,"quantity": number,"region_name"?: string | null,"shop_price_paise"?: number | null,"status"?: Database["public"]['Enums']["order_item_status"],"total_price_cents": number,"unit_price_cents": number,"variant_id"?: string | null,"variant_label": string,"weight_g"?: number | null,"weight_source"?: string | null
                   }
                   Update: {
-                    "created_at"?: string,"id"?: string,"order_id"?: string,"product_id"?: string | null,"product_name"?: string,"quantity"?: number,"region_name"?: string | null,"status"?: Database["public"]['Enums']["order_item_status"],"total_price_cents"?: number,"unit_price_cents"?: number,"variant_id"?: string | null,"variant_label"?: string
+                    "created_at"?: string,"id"?: string,"inr_per_usd"?: number | null,"order_id"?: string,"pricing_rule"?: string | null,"product_id"?: string | null,"product_name"?: string,"quantity"?: number,"region_name"?: string | null,"shop_price_paise"?: number | null,"status"?: Database["public"]['Enums']["order_item_status"],"total_price_cents"?: number,"unit_price_cents"?: number,"variant_id"?: string | null,"variant_label"?: string,"weight_g"?: number | null,"weight_source"?: string | null
                   }
                   Relationships: [
                     {
@@ -402,14 +402,14 @@ isOneToOne: false
                   ]
                 },"pickups": {
                   Row: {
-                    "arrived_at": string | null,"arrived_by": string | null,"created_at": string,"cycle_id": string | null,"id": string,"note": string | null,"order_item_id": string,"payout_id": string | null,"photo_path": string | null,"picked_at": string | null,"picked_by": string | null,"quantity": number,"shop_price_paise": number | null,"status": Database["public"]['Enums']["pickup_status"],"updated_at": string,"variant_id": string,"vendor_id": string,"weigh_note": string | null,"weighed_g": number | null
+                    "arrived_at": string | null,"arrived_by": string | null,"created_at": string,"cycle_id": string | null,"id": string,"note": string | null,"order_item_id": string,"ordered_at": string | null,"ordered_by": string | null,"paid_paise": number | null,"payout_id": string | null,"photo_path": string | null,"picked_at": string | null,"picked_by": string | null,"quantity": number,"shop_bill_path": string | null,"shop_order_ref": string | null,"shop_price_paise": number | null,"source_id": string | null,"status": Database["public"]['Enums']["pickup_status"],"updated_at": string,"variant_id": string,"vendor_id": string,"weigh_note": string | null,"weighed_g": number | null
                   }
                   ComputedFields: never
                   Insert: {
-                    "arrived_at"?: string | null,"arrived_by"?: string | null,"created_at"?: string,"cycle_id"?: string | null,"id"?: string,"note"?: string | null,"order_item_id": string,"payout_id"?: string | null,"photo_path"?: string | null,"picked_at"?: string | null,"picked_by"?: string | null,"quantity": number,"shop_price_paise"?: number | null,"status"?: Database["public"]['Enums']["pickup_status"],"updated_at"?: string,"variant_id": string,"vendor_id": string,"weigh_note"?: string | null,"weighed_g"?: number | null
+                    "arrived_at"?: string | null,"arrived_by"?: string | null,"created_at"?: string,"cycle_id"?: string | null,"id"?: string,"note"?: string | null,"order_item_id": string,"ordered_at"?: string | null,"ordered_by"?: string | null,"paid_paise"?: number | null,"payout_id"?: string | null,"photo_path"?: string | null,"picked_at"?: string | null,"picked_by"?: string | null,"quantity": number,"shop_bill_path"?: string | null,"shop_order_ref"?: string | null,"shop_price_paise"?: number | null,"source_id"?: string | null,"status"?: Database["public"]['Enums']["pickup_status"],"updated_at"?: string,"variant_id": string,"vendor_id": string,"weigh_note"?: string | null,"weighed_g"?: number | null
                   }
                   Update: {
-                    "arrived_at"?: string | null,"arrived_by"?: string | null,"created_at"?: string,"cycle_id"?: string | null,"id"?: string,"note"?: string | null,"order_item_id"?: string,"payout_id"?: string | null,"photo_path"?: string | null,"picked_at"?: string | null,"picked_by"?: string | null,"quantity"?: number,"shop_price_paise"?: number | null,"status"?: Database["public"]['Enums']["pickup_status"],"updated_at"?: string,"variant_id"?: string,"vendor_id"?: string,"weigh_note"?: string | null,"weighed_g"?: number | null
+                    "arrived_at"?: string | null,"arrived_by"?: string | null,"created_at"?: string,"cycle_id"?: string | null,"id"?: string,"note"?: string | null,"order_item_id"?: string,"ordered_at"?: string | null,"ordered_by"?: string | null,"paid_paise"?: number | null,"payout_id"?: string | null,"photo_path"?: string | null,"picked_at"?: string | null,"picked_by"?: string | null,"quantity"?: number,"shop_bill_path"?: string | null,"shop_order_ref"?: string | null,"shop_price_paise"?: number | null,"source_id"?: string | null,"status"?: Database["public"]['Enums']["pickup_status"],"updated_at"?: string,"variant_id"?: string,"vendor_id"?: string,"weigh_note"?: string | null,"weighed_g"?: number | null
                   }
                   Relationships: [
                     {
@@ -437,6 +437,12 @@ isOneToOne: true
       referencedRelation: "store_order_items"
       referencedColumns: ["id"]
     },{
+      foreignKeyName: "pickups_ordered_by_fkey"
+      columns: ["ordered_by"]
+isOneToOne: false
+      referencedRelation: "profiles"
+      referencedColumns: ["id"]
+    },{
       foreignKeyName: "pickups_payout_id_fkey"
       columns: ["payout_id"]
 isOneToOne: false
@@ -447,6 +453,12 @@ isOneToOne: false
       columns: ["picked_by"]
 isOneToOne: false
       referencedRelation: "profiles"
+      referencedColumns: ["id"]
+    },{
+      foreignKeyName: "pickups_source_id_fkey"
+      columns: ["source_id"]
+isOneToOne: false
+      referencedRelation: "product_sources"
       referencedColumns: ["id"]
     },{
       foreignKeyName: "pickups_variant_id_fkey"
@@ -863,6 +875,96 @@ isOneToOne: false
                   }
                   Relationships: [
                     
+                  ]
+                },"shop_bill_lines": {
+                  Row: {
+                    "bill_id": string,"id": string,"kind": string,"label": string,"order_item_id": string | null,"quantity": number,"shop": string | null,"shop_order_ref": string | null,"sort_order": number,"unit_paise": number
+                  }
+                  ComputedFields: never
+                  Insert: {
+                    "bill_id": string,"id"?: string,"kind": string,"label": string,"order_item_id"?: string | null,"quantity"?: number,"shop"?: string | null,"shop_order_ref"?: string | null,"sort_order"?: number,"unit_paise": number
+                  }
+                  Update: {
+                    "bill_id"?: string,"id"?: string,"kind"?: string,"label"?: string,"order_item_id"?: string | null,"quantity"?: number,"shop"?: string | null,"shop_order_ref"?: string | null,"sort_order"?: number,"unit_paise"?: number
+                  }
+                  Relationships: [
+                    {
+      foreignKeyName: "shop_bill_lines_bill_id_fkey"
+      columns: ["bill_id"]
+isOneToOne: false
+      referencedRelation: "shop_bills"
+      referencedColumns: ["id"]
+    },{
+      foreignKeyName: "shop_bill_lines_order_item_id_fkey"
+      columns: ["order_item_id"]
+isOneToOne: false
+      referencedRelation: "order_items"
+      referencedColumns: ["id"]
+    },{
+      foreignKeyName: "shop_bill_lines_order_item_id_fkey"
+      columns: ["order_item_id"]
+isOneToOne: false
+      referencedRelation: "store_order_items"
+      referencedColumns: ["id"]
+    }
+                  ]
+                },"shop_bill_photos": {
+                  Row: {
+                    "bill_id": string,"created_at": string,"created_by": string | null,"id": string,"storage_path": string
+                  }
+                  ComputedFields: never
+                  Insert: {
+                    "bill_id": string,"created_at"?: string,"created_by"?: string | null,"id"?: string,"storage_path": string
+                  }
+                  Update: {
+                    "bill_id"?: string,"created_at"?: string,"created_by"?: string | null,"id"?: string,"storage_path"?: string
+                  }
+                  Relationships: [
+                    {
+      foreignKeyName: "shop_bill_photos_bill_id_fkey"
+      columns: ["bill_id"]
+isOneToOne: false
+      referencedRelation: "shop_bills"
+      referencedColumns: ["id"]
+    },{
+      foreignKeyName: "shop_bill_photos_created_by_fkey"
+      columns: ["created_by"]
+isOneToOne: false
+      referencedRelation: "profiles"
+      referencedColumns: ["id"]
+    }
+                  ]
+                },"shop_bills": {
+                  Row: {
+                    "created_at": string,"finalized_at": string | null,"finalized_by": string | null,"id": string,"note": string | null,"order_id": string,"status": string,"updated_at": string
+                  }
+                  ComputedFields: never
+                  Insert: {
+                    "created_at"?: string,"finalized_at"?: string | null,"finalized_by"?: string | null,"id"?: string,"note"?: string | null,"order_id": string,"status"?: string,"updated_at"?: string
+                  }
+                  Update: {
+                    "created_at"?: string,"finalized_at"?: string | null,"finalized_by"?: string | null,"id"?: string,"note"?: string | null,"order_id"?: string,"status"?: string,"updated_at"?: string
+                  }
+                  Relationships: [
+                    {
+      foreignKeyName: "shop_bills_finalized_by_fkey"
+      columns: ["finalized_by"]
+isOneToOne: false
+      referencedRelation: "profiles"
+      referencedColumns: ["id"]
+    },{
+      foreignKeyName: "shop_bills_order_id_fkey"
+      columns: ["order_id"]
+isOneToOne: true
+      referencedRelation: "orders"
+      referencedColumns: ["id"]
+    },{
+      foreignKeyName: "shop_bills_order_id_fkey"
+      columns: ["order_id"]
+isOneToOne: true
+      referencedRelation: "store_orders"
+      referencedColumns: ["id"]
+    }
                   ]
                 },"sourcing_runs": {
                   Row: {
@@ -1721,6 +1823,9 @@ isOneToOne: false
 "admin_demand":
 { Args: { "p_since"?: string }; Returns: Json
                            },
+"admin_mark_ordered":
+{ Args: { "p_bill_path"?: string,"p_lines": Json,"p_shop_order_ref"?: string }; Returns: number
+                           },
 "admin_order_counts":
 { Args: Record<PropertyKey, never>; Returns: Json
                            },
@@ -1753,8 +1858,17 @@ isOneToOne: false
 "admin_sales":
 { Args: { "p_since"?: string }; Returns: Json
                            },
+"admin_save_shop_bill":
+{ Args: { "p_bill": string,"p_lines": Json,"p_note"?: string }; Returns: undefined
+                           },
 "admin_set_listed_qty":
 { Args: { "p_note"?: string,"p_qty_listed": number,"p_variant": string }; Returns: undefined
+                           },
+"admin_set_shop_bill_final":
+{ Args: { "p_bill": string,"p_final": boolean }; Returns: undefined
+                           },
+"admin_shop_bill":
+{ Args: { "p_order": string }; Returns: string
                            },
 "admin_sourcing_review":
 { Args: { "p_accept": boolean,"p_source": string }; Returns: undefined
@@ -1763,6 +1877,14 @@ isOneToOne: false
 { Args: Record<PropertyKey, never>; Returns: {
               "label": string,"product_id": string,"product_name": string,"qty_confirmed_at": string,"qty_listed": number,"shop_name": string,"variant_id": string
             }[]
+                           },
+"admin_to_order":
+{ Args: Record<PropertyKey, never>; Returns: {
+              "delivery_days": number,"image_path": string,"in_stock": boolean,"item_key": string,"item_url": string,"now_paise": number,"order_id": string,"order_number": string,"ordered_on": string,"pickup_id": string,"product_id": string,"product_name": string,"quantity": number,"site": string,"sold_paise": number,"variant_label": string,"vendor_name": string
+            }[]
+                           },
+"admin_unmark_ordered":
+{ Args: { "p_pickup": string }; Returns: undefined
                            },
 "admin_vendor_sign_in_code":
 { Args: { "p_days"?: number,"p_user": string }; Returns: string

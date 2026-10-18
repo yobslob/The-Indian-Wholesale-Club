@@ -1,6 +1,7 @@
 import assert from 'node:assert/strict';
 import { describe, it } from 'node:test';
 
+import { adminNewOrderHtml, adminNewOrderSubject } from '../lib/email/admin-new-order';
 import {
   escapeHtml,
   orderConfirmationHtml,
@@ -105,5 +106,15 @@ describe('order confirmation email (storefront.md §Emails)', () => {
       orderConfirmationSubject(order, 'The Indian Wholesale Club'),
       'Your The Indian Wholesale Club order IWC-260928-ABCDEF0123',
     );
+  });
+});
+
+describe("the admins' new-order email (D-140, A1)", () => {
+  it('says what was paid, where it goes and opens the order in the admin', () => {
+    assert.equal(adminNewOrderSubject(order), 'New order IWC-260928-ABCDEF0123: 1 piece, $58.32');
+    const html = adminNewOrderHtml(order, ctx);
+    assert.match(html, /going to Edison, NJ/);
+    assert.match(html, /Kasavu mundu/);
+    assert.ok(html.includes('https://iwc.example/admin/orders?q=IWC-260928-ABCDEF0123'));
   });
 });

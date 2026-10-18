@@ -96,10 +96,11 @@ async function ShopCard({ rows, cycleId }: { rows: Pickup[]; cycleId: string }):
                 <small className="text-ink-muted text-[12.5px]">
                   {p.variant?.label ?? p.item?.variant_label} × {p.quantity} · {rupees(p.shop_price_paise)} · {p.item?.order?.order_number}
                 </small>
-                {p.variant?.product?.source_url ? (
-                  // D-110: an imported piece is ordered on its shop's page, to the hub.
-                  <a href={p.variant.product.source_url} target="_blank" rel="noreferrer" className="block text-[12.5px] font-semibold underline">
-                    Order it online ↗
+                {p.source?.item_url ?? p.variant?.product?.source_url ? (
+                  // D-110, D-140: an imported piece is ordered to the hub from the shop item in use (its variant's source), not
+                  // the page first imported, which can be another size, a dearer shop or sold out.
+                  <a href={p.source?.item_url ?? p.variant?.product?.source_url ?? ''} target="_blank" rel="noreferrer" className="block text-[12.5px] font-semibold underline">
+                    {p.ordered_at && p.status === 'pending' ? 'Ordered · open it ↗' : 'Order it online ↗'}
                   </a>
                 ) : null}
               </span>
