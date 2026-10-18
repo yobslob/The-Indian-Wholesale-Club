@@ -962,3 +962,43 @@ biscuits and milk chocolate are kept (Milk Bikis, Good Day, Bourbon, Dairy Milk 
 also leaves out meat and fish (chicken noodles, prawn crackers), frozen food, bread, juice and anything sold by the
 ml. Chocolates can soften in transit.
 *Claude's choice in it (proposed):* tier 1 is the brands seen everywhere, 3 the regional ones.
+
+**D-140 · 2026-10-18 · founder: Design & ergonomics plan v5: Home's three Just listed rows, Women · Men, order from the shop in one tap, three invoices, the struck Shipping figure, instant taps, + picks the size, − n + on cards, admin pagination**
+The plan is `docs/plan/design-plan.md` (v5, written by Claude from the code and the live site, with the founder's
+answers of 05:31, 06:16 and 06:23 folded in). Founder, verbatim, the same day:
+- Product types: three, clothing, food, home & gifts (D-106, D-110 unchanged).
+- Invoice C: "shows only the ordered cart with delivery, all the costs are counted in margin"; "should be fillable like
+  a form with uploadable and pastable photos". Invoice B is the Indian cost + handling + shipping with no margin.
+- Like button: "the like button latency on the frontend should be very low of animation, let it take its time on the
+  backend".
+- Home's Just listed: three scrollable rows with their See all.
+- "keep the you're saving x and no we do need to show big numbers as struck through and that is an order."
+- "no kids at launch." · "the checkout steps are good."
+- "When a state is opened its own pieces should be top of the horizontal rows."
+- "If I added a piece in my bag and if I see it again somewhere while browsing I should see it as -1+ instead of add
+  button. not necessarily 1 but however many I've added."
+- "When + is clicked anywhere in clothing the sizes should pop up in a creative way in food the variants should [be]
+  see[n], if its a single item with no choice then it should be just added instead of opening the product page (this
+  should be opened whenever anything is clicked instead of + on the card)."
+- "don't mess with any pricing, it is fixed the express remains how it is, don't overcomplicate things I will balance
+  everything physically you put higher prices on shipping when its cut."
+- "do pagination in admin products and Import from shops, that is so badly designed, 1000 items on one page loading?"
+- To the whole plan: "These were all the problems that I could find, solve them mannerly and solve the additional
+  problems you find on your way."
+What it means for the build (each item's full change and its "done when" are in the plan):
+- **Rule 0.1:** every tap that changes state answers in the same frame and syncs after, rolling back if the server
+  refuses; never for money. **Rule 0.2:** no price, fee, margin or Express changes.
+- **Home:** three Just listed rows (Clothing, Food, Home & gifts), each with See all; a row under 4 pieces is left
+  out. Supersedes D-136's Home switch only (See all keeps its type switch).
+- **Clothing:** `products.wears` (women, men, kids, unisex); See all → Clothing filters by For (Women · Men; unisex
+  under both); no Kids tile, filter or menu entry at launch; sizes normalised and grouped.
+- **Admin:** each sold piece is ordered from its variant's shop item in use (D-118) from the order page and a To order
+  screen; three invoices (A the customer's, B our landed cost, C the shop bill as a form with photos); one pager for
+  every admin list, no silent caps.
+- **Cards:** + picks the size or variant on the card (one choice adds at once); a piece in the bag shows − n +; the
+  heart fills at once and is on every card.
+- **F5:** the struck Shipping figure at the free-delivery line is a display number: the bag's packed weight × a
+  Settings value in $ per kg the founder sets (empty: today's $18.79); never charged, stored or sent to Stripe.
+  Claude flagged that a struck figure never charged can read as a fictitious former price (FTC 16 CFR 233.1); the
+  founder chose to show it.
+Open: Q-38 (the live Kids listings), Q-39 (an interim size line). Supersedes D-136 in part (Home's switch).
