@@ -1,12 +1,12 @@
 'use client';
 
-import Image from 'next/image';
 import Link from 'next/link';
 import { usePathname } from 'next/navigation';
 import { useEffect, useRef, useState } from 'react';
 
 import { formatUsd } from '@repo/shared/domain';
 
+import { StorePhoto } from '@/features/catalog/store-photo';
 import { mediaUrl } from '@/lib/site';
 
 import { freeDelivery, useBagCharges } from './charges';
@@ -62,10 +62,9 @@ export function FreeDeliveryBar(): React.JSX.Element | null {
       <span className="bg-paper relative z-[1] grid size-10 flex-none place-items-center overflow-visible rounded-full">
         {newest?.imagePath ? (
           <span className="absolute inset-0 overflow-hidden rounded-full">
-            <Image
+            <StorePhoto
               src={mediaUrl(newest.imagePath)}
               alt=""
-              fill
               sizes="40px"
               className="object-cover"
             />

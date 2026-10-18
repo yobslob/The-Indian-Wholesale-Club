@@ -1,6 +1,5 @@
 'use client';
 
-import Image from 'next/image';
 import { useEffect, useRef, useState } from 'react';
 import { createPortal } from 'react-dom';
 
@@ -9,6 +8,7 @@ import { formatUsd } from '@repo/shared/domain';
 import { mediaUrl } from '@/lib/site';
 
 import { chipLabel, coloursOf, LOW_STOCK, showsPrices } from './card-options';
+import { StorePhoto } from './store-photo';
 
 /** The most chips the ribbon shows at one step: the colours, then one colour's sizes. */
 export function ribbonWidth(options: CardOption[]): number {
@@ -161,7 +161,7 @@ export function OptionSheet({
       <div className="card-sheet bg-canvas absolute inset-x-0 bottom-0 max-h-[80dvh] overflow-y-auto rounded-t-[22px] px-4 pb-[max(16px,env(safe-area-inset-bottom))] pt-4 md:inset-x-auto md:right-6 md:bottom-6 md:w-[380px] md:rounded-[22px]">
         <div className="mb-3 flex items-center gap-3">
           <span className="bg-land relative block h-16 w-12 flex-none overflow-hidden rounded-[10px]">
-            {product.primary_image_path ? <Image src={mediaUrl(product.primary_image_path)} alt="" fill sizes="48px" className="object-cover" /> : null}
+            {product.primary_image_path ? <StorePhoto src={mediaUrl(product.primary_image_path)} alt="" sizes="48px" className="object-cover" /> : null}
           </span>
           <b className="font-ui flex-1 text-[15px] leading-snug">{product.name}</b>
           <button ref={close} type="button" onClick={onClose} aria-label="Close" className="grid h-11 w-11 place-items-center rounded-full text-[20px]">

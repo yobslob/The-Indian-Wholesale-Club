@@ -149,6 +149,25 @@ async function firstLoadJsKb(base, html) {
   return Math.round(total);
 }
 
+/**
+ * D-140: with CHECK_LIVE_SITE set (the live site's address), the first photo on its /clothing page must answer 200:
+ * on 2026-10-18 Vercel's resizer answered 402 (its allowance used up) and cards showed alt text. Skipped otherwise.
+ */
+async function livePhotoCheck() {
+  const site = process.env.CHECK_LIVE_SITE?.replace(/\/$/, '');
+  if (!site) return undefined;
+  try {
+    const html = await (await fetch(`${site}/clothing`)).text();
+    const src = /<main[\s\S]*?<img[^>]+src="([^"]+)"/.exec(html)?.[1]?.replace(/&amp;/g, '&');
+    if (!src) return { ok: false, error: 'no photo found on /clothing' };
+    const url = src.startsWith('http') ? src : `${site}${src}`;
+    const res = await fetch(url);
+    return { ok: res.status === 200, url, status: res.status };
+  } catch (e) {
+    return { ok: false, error: String(e) };
+  }
+}
+
 async function httpStep() {
   const started = Date.now();
   const server = spawn(`pnpm --filter web exec next start -p ${PORT}`, {
@@ -189,8 +208,10 @@ async function httpStep() {
     }
   }
   killTree(server.pid);
+  const photo = await livePhotoCheck();
   return {
-    ok: ready && results.every((r) => !r.error && r.status < 500 && r.overBudget.length === 0),
+    ok: ready && results.every((r) => !r.error && r.status < 500 && r.overBudget.length === 0) && photo?.ok !== false,
+    livePhoto: photo,
     durationMs: Date.now() - started,
     serverReady: ready,
     note: `medianTotalMs of 3 requests after 1 warm-up, production build, local machine; budgets: cached pages ≤ ${BUDGET_MS} ms, first-load JS ≤ ${BUDGET_JS_KB} KB gzip`,

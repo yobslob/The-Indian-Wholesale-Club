@@ -1,11 +1,11 @@
 'use client';
 
 import dynamic from 'next/dynamic';
-import Image from 'next/image';
 import { useRef, useState } from 'react';
 
 import { mediaUrl } from '@/lib/site';
 
+import { StorePhoto } from './store-photo';
 // The viewer loads on the first click on a photo, not with the product page (engineering.md §Budgets).
 const loadViewer = () => import('./photo-viewer');
 const PhotoViewer = dynamic(() => loadViewer().then((m) => m.PhotoViewer));
@@ -48,10 +48,9 @@ export function ProductGallery({ media, name }: { media: Media[]; name: string }
           aria-label={`Open photo 1 of ${media.length}`}
           className="bg-surface focus-visible:outline-brand relative aspect-[3/4] w-full cursor-zoom-in overflow-hidden rounded-lg min-[1100px]:h-full min-[1100px]:w-auto"
         >
-          <Image
+          <StorePhoto
             src={mediaUrl(main.storage_path)}
             alt={main.alt_text || name}
-            fill
             priority
             sizes="(min-width: 1100px) 40vw, (min-width: 768px) 52vw, 100vw"
             className="object-cover"
@@ -67,7 +66,7 @@ export function ProductGallery({ media, name }: { media: Media[]; name: string }
                 aria-label={`Open photo ${i + 2} of ${media.length}`}
                 className="bg-surface focus-visible:outline-brand relative aspect-[3/4] cursor-zoom-in overflow-hidden rounded-md min-[1100px]:h-[calc((100%-2*var(--gap))/3)] min-[1100px]:w-auto"
               >
-                <Image src={mediaUrl(m.storage_path)} alt="" fill sizes="(min-width: 1100px) 12vw, (min-width: 768px) 17vw, 33vw" className="object-cover" />
+                <StorePhoto src={mediaUrl(m.storage_path)} alt="" sizes="(min-width: 1100px) 12vw, (min-width: 768px) 17vw, 33vw" className="object-cover" />
               </button>
             ))}
           </div>

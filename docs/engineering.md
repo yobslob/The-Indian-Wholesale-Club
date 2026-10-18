@@ -46,7 +46,13 @@ Baseline numbers come from the founder's first `node scripts/check.mjs` run and 
   `xl` 1280; rows use their `clamp()` widths, `features/catalog/product-card.tsx`), so photos are never upscaled and never
   oversized; quality stays Next's default 75. Uploaded photos get a new random path and are never overwritten, so they are
   uploaded with a one-year `Cache-Control` (`PHOTO_CACHE_CONTROL`, `packages/shared/src/domain/media.ts`) and resized copies
-  are kept a month (`images.minimumCacheTTL`, `apps/web/next.config.js`; it was the storage default of one hour). Fonts via
+  are kept a month (`images.minimumCacheTTL`, `apps/web/next.config.js`; it was the storage default of one hour).
+  **D-140 (2026-10-18, Vercel's resizer answered 402 once its allowance ran out):** `pnpm photos:copies`
+  (`scripts/photo-copies.mjs`) gives every product and album photo fixed WebP copies (320, 640, 1280 px, a year's cache)
+  in a `c/` folder beside it and points its row there; `StorePhoto` (`features/catalog/store-photo.tsx`) serves such a
+  photo as a plain responsive `<img srcset>` straight from Supabase's CDN, and anything else through next/image as
+  before (a global `images.loaderFile` breaks images under Turbopack's dev server). Emails use the 320 px copy. With
+  `CHECK_LIVE_SITE` set, the `http` step also fetches the live site's first /clothing photo and fails on anything but 200. Fonts via
   `next/font`, subset. Script fonts only on their region page. (D-068)
   The India map's paths are written compactly (each point relative to the one before, `scripts/build-india-map.mjs`):
   the same points in 44 KB instead of 76 KB, which counts twice on Home and States (the HTML and React's copy of it). (D-099)

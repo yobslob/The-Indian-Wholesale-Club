@@ -1,4 +1,3 @@
-import Image from 'next/image';
 import Link from 'next/link';
 import { notFound } from 'next/navigation';
 
@@ -8,6 +7,7 @@ import { CuratedCard } from '@/features/catalog/curated-card';
 import { getHomeCached, getRegionPageCached } from '@/features/catalog/data';
 import { ProductRow } from '@/features/catalog/product-row';
 import { RowScroller } from '@/features/catalog/row-scroller';
+import { StorePhoto } from '@/features/catalog/store-photo';
 import { RegionAlbum } from '@/features/regions/region-album';
 import { scriptFontClass } from '@/features/regions/script-fonts';
 import { SectionSpy } from '@/features/regions/section-spy';
@@ -102,7 +102,7 @@ export default async function RegionPage({ params }: { params: Params }): Promis
         <div className="bg-region relative aspect-[5/6] overflow-hidden rounded-lg">
           {region.hero_image_path ? (
             <div data-speed="0.06" className="absolute -inset-y-[6%] inset-x-0">
-              <Image src={mediaUrl(region.hero_image_path)} alt="" fill priority sizes="(min-width: 768px) 50vw, 100vw" className="object-cover" />
+              <StorePhoto src={mediaUrl(region.hero_image_path)} alt="" priority sizes="(min-width: 768px) 50vw, 100vw" className="object-cover" />
             </div>
           ) : null}
         </div>

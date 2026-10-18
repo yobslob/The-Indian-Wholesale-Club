@@ -13,6 +13,7 @@ Reading `process.env.X` for a variable not listed here = add it here in the same
 |---|---|---|
 | `NEXT_PUBLIC_SUPABASE_URL`, `NEXT_PUBLIC_SUPABASE_ANON_KEY` | web | Supabase client (public) |
 | `SUPABASE_SERVICE_ROLE_KEY` | web server only | service client for webhooks/jobs. Never in client code |
+| `CHECK_LIVE_SITE` | `scripts/check.mjs` (`http` step) | optional: the live site's address; the step then fails when its first /clothing photo does not answer 200 (D-140) |
 | `SUPABASE_TEST_DB_URL` | `scripts/db-test.mjs` | optional; defaults to local Supabase. Non-local hosts are refused unless `--allow-remote` is passed (never do that against production) |
 | `NEXT_PUBLIC_STRIPE_PUBLISHABLE_KEY`, `STRIPE_SECRET_KEY`, `STRIPE_WEBHOOK_SECRET` | web | payments (test-mode keys in dev) |
 | `RESEND_API_KEY`, `RESEND_FROM_EMAIL`, `EMAIL_OUTBOX_CRON_SECRET` | web | email + outbox job (`POST /api/internal/email-outbox` with `Authorization: Bearer <secret>`; without email keys, emails wait in the outbox). The sender's domain must be verified in Resend (Q-9). For local tests before that, Resend accepts `onboarding@resend.dev` as the sender, delivering only to the Resend account's own address |
@@ -212,3 +213,12 @@ Recorded because they shape the data model and flows. Each needs an owner before
 | Export from India | the exporting entity needs an IEC (Importer-Exporter Code) | cycle export documents |
 | Sales tax | US state sales tax obligations | charged per delivery state where IWC is registered (New Jersey now, `tax_rates`, D-073); every cancel refunds the tax. An accountant should confirm the rates and thresholds |
 | Privacy | privacy policy + terms for a US site | info pages (founder input needed) |
+
+## Photos without Vercel's resizer (D-140)
+On 2026-10-18 the live site's photos stopped loading: Vercel's image resizer answered 402 (the plan's allowance used up).
+Today: raise the allowance in Vercel (the founder's account). Lasting: run `pnpm photos:copies -- --dry` and then
+`pnpm photos:copies -- --allow-remote` with the production keys in `apps/web/.env.local` (repeat until it reports 0 to
+do; 200 photos per table a run). Each photo gets 320 / 640 / 1280 px WebP copies in a `c/` folder and its row points
+there; the store then serves it from Supabase's CDN. New photos (imports, the runner, admin uploads) use the resizer
+until the next run, so run it after each import day (or let the hub PC run it after `pnpm sourcing run`). The old
+originals stay; nothing is deleted. Needs `sharp` (installed with Next; `pnpm add -D -w sharp` makes it explicit).

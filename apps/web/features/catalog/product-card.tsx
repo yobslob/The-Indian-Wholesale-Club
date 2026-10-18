@@ -1,4 +1,3 @@
-import Image from 'next/image';
 import Link from 'next/link';
 
 import { formatUsd, productPath } from '@repo/shared/domain';
@@ -7,6 +6,7 @@ import { SaveButton } from '@/features/account/save-button';
 import { mediaUrl } from '@/lib/site';
 
 import { QuickAdd } from './quick-add';
+import { StorePhoto } from './store-photo';
 
 import type { ProductCard as ProductCardData, RegionProductCard } from '@repo/db/store';
 
@@ -68,10 +68,9 @@ export function ProductCard({
           data-reveal={reveal ? '' : undefined}
         >
           {product.primary_image_path ? (
-            <Image
+            <StorePhoto
               src={mediaUrl(product.primary_image_path)}
               alt={product.name}
-              fill
               sizes={SIZES[layout][size]}
               className="duration-slow object-cover transition-transform group-hover:scale-[1.025]"
             />

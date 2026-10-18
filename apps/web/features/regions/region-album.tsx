@@ -1,5 +1,5 @@
-import Image from 'next/image';
 
+import { StorePhoto } from '@/features/catalog/store-photo';
 import { mediaUrl } from '@/lib/site';
 
 import type { RegionPage } from '@repo/db/store';
@@ -42,10 +42,9 @@ function Mosaic({ photos, hidden }: { photos: Photo[]; hidden?: boolean }): Reac
           className="bg-land relative overflow-hidden rounded-[18px]"
           style={{ gridColumn: `${t.column} / span ${t.columns}`, gridRow: `${t.row} / span ${t.rows}` }}
         >
-          <Image
+          <StorePhoto
             src={mediaUrl(t.photo.storage_path)}
             alt={hidden ? '' : t.photo.alt_text}
-            fill
             sizes={`${t.columns * 110}px`}
             className="object-cover"
           />

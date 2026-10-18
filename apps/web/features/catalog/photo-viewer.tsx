@@ -1,9 +1,10 @@
 'use client';
 
-import Image from 'next/image';
 import { useCallback, useEffect, useRef, useState } from 'react';
 
 import { mediaUrl } from '@/lib/site';
+
+import { StorePhoto } from './store-photo';
 
 import type { Media } from '@repo/db/store';
 
@@ -77,13 +78,12 @@ export function PhotoViewer({
         {media.map((m, i) => (
           <figure key={m.id} className="relative m-0 h-full shrink-0 basis-full snap-center md:px-20">
             <div className="relative size-full">
-              <Image
+              <StorePhoto
                 src={mediaUrl(m.storage_path)}
                 alt={m.alt_text || `${name}, photo ${i + 1}`}
-                fill
                 sizes="100vw"
                 className="object-contain"
-                loading={Math.abs(i - start) <= 1 ? 'eager' : 'lazy'}
+                priority={Math.abs(i - start) <= 1}
               />
             </div>
           </figure>

@@ -1,10 +1,10 @@
 'use client';
 
-import Image from 'next/image';
 import Link from 'next/link';
 
 import { formatUsd, productPath } from '@repo/shared/domain';
 
+import { StorePhoto } from '@/features/catalog/store-photo';
 import { mediaUrl } from '@/lib/site';
 
 import { MAX_QTY_PER_LINE } from './limits';
@@ -32,7 +32,7 @@ function Stepper({ line }: { line: CartLine }): React.JSX.Element {
 
 export function LinePhoto({ path, href, className }: { path: string | null; href?: string; className: string }): React.JSX.Element {
   const box = `bg-land relative block aspect-[3/4] flex-none overflow-hidden ${className}`;
-  const img = path ? <Image src={mediaUrl(path)} alt="" fill sizes="72px" className="object-cover" /> : null;
+  const img = path ? <StorePhoto src={mediaUrl(path)} alt="" sizes="72px" className="object-cover" /> : null;
   return href ? (
     <Link href={href} className={box} tabIndex={-1} aria-hidden="true">
       {img}

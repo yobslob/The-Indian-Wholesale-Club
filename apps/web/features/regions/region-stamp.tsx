@@ -1,8 +1,8 @@
-import Image from 'next/image';
 import Link from 'next/link';
 
 import { formatDeliveryWindow } from '@repo/shared/domain';
 
+import { StorePhoto } from '@/features/catalog/store-photo';
 import { mediaUrl } from '@/lib/site';
 
 import { StampPager } from './stamp-pager';
@@ -42,7 +42,7 @@ export function RegionStamp({
     <Link href={`/states/${r.slug}`} className={styles.stamp} data-slug={r.slug} data-name={r.name} style={accent(r)}>
       <span className={styles.face}>
         {r.hero_image_path ? (
-          <Image src={mediaUrl(r.hero_image_path)} alt="" fill sizes="(min-width: 1100px) 12vw, 30vw" className="object-cover" />
+          <StorePhoto src={mediaUrl(r.hero_image_path)} alt="" sizes="(min-width: 1100px) 12vw, 30vw" className="object-cover" />
         ) : null}
       </span>
       <span className={styles.caption}>
