@@ -2,7 +2,7 @@ import Link from 'next/link';
 
 import {
   countProductsByStatus,
-  listAdminProducts,
+  pageAdminProducts,
   listCategories,
   listRegionsAdmin,
   listVendors,
@@ -13,6 +13,9 @@ import { formatUsd, PRODUCT_TYPE_LABEL } from '@repo/shared/domain';
 import { PRODUCT_STATUS, StatusChip } from '@/features/admin/chips';
 import { requireAdminPage } from '@/features/admin/guard';
 import { listingTabs } from '@/features/admin/listing-tabs';
+import { Pager } from '@/features/admin/pager/pager';
+import { plainParams } from '@/features/admin/pager/paging';
+import { readPaging } from '@/features/admin/pager/read-paging';
 import { ProductFilterBar } from '@/features/admin/product-filter-bar';
 import { hasProductFilters, parseProductView, productViewQuery, toAdminFilter } from '@/features/admin/product-filters';
 import { PublishDrafts } from '@/features/admin/publish-drafts';
@@ -21,11 +24,10 @@ import { WeightSummary, WeightsToCheck } from '@/features/admin/weights-to-check
 
 type SearchParams = Promise<Record<string, string | string[] | undefined>>;
 
-const PAGE = 50;
-
 /**
- * Catalog: every product with admin-only fields (shop, shop price, stock), optionally one status (the tabs), 50 to a
- * page with Previous / Next, so a catalogue of hundreds is never one long page and nothing is cut off. The US
+ * Catalog: every product with admin-only fields (shop, shop price, stock), optionally one status (the tabs), in pages
+ * with the total and page numbers (D-140), so a catalogue of thousands is never one long page and every row is
+ * reachable. The US
  * clearance tab lists pieces already in the US (D-072): drafts made from returns and cancels, published once checked.
  */
 export default async function CatalogPage({
@@ -38,28 +40,23 @@ export default async function CatalogPage({
   const view = parseProductView(params);
   const { status, usStock } = view;
   const weightsView = params.weights === '1';
-  const page = Math.min(Math.max(Number.parseInt(String(params.page ?? '1'), 10) || 1, 1), 1000);
-  // One more than a page tells whether a next page exists.
-  const [rows, counts, weights, regions, categories, shops] = await Promise.all([
+  const { page, size, offset } = await readPaging('products', params);
+  const [products, counts, weights, regions, categories, shops] = await Promise.all([
     weightsView
-      ? Promise.resolve([])
-      : listAdminProducts(client, { ...toAdminFilter(view), offset: (page - 1) * PAGE, limit: PAGE + 1 }),
+      ? Promise.resolve({ rows: [], total: 0 })
+      : pageAdminProducts(client, { ...toAdminFilter(view), offset, limit: size }),
     countProductsByStatus(client),
     // D-129: the count for the tab; the rows only on the Weights to check tab
-    listWeightsToCheck(client, weightsView ? (page - 1) * PAGE : 0, weightsView ? PAGE : 0),
+    listWeightsToCheck(client, weightsView ? offset : 0, weightsView ? size : 0),
     // D-136: the filters' choices
     weightsView ? Promise.resolve([]) : listRegionsAdmin(client),
     weightsView ? Promise.resolve([]) : listCategories(client),
     weightsView ? Promise.resolve([]) : listVendors(client),
   ]);
-  const products = rows.slice(0, PAGE);
-  const pageHref = (n: number): string => {
-    const query = productViewQuery(view, {
-      ...(weightsView ? { weights: '1' } : {}),
-      ...(n > 1 ? { page: String(n) } : {}),
-    });
-    return query ? `/admin/catalog?${query}` : '/admin/catalog';
-  };
+  const pagerParams = plainParams(params);
+  const pager = (keys: boolean, total: number): React.JSX.Element => (
+    <Pager list="products" path="/admin/catalog" params={pagerParams} page={page} size={size} total={total} keys={keys} />
+  );
 
   const exportQuery = productViewQuery({ ...view, sort: 'updated' });
   const exportHref = `/admin/catalog/export${exportQuery ? `?${exportQuery}` : ''}`;
@@ -73,20 +70,9 @@ export default async function CatalogPage({
       <div className="space-y-4">
         <PageHead title="Products" />
         <Tabs items={tabs} current="weights" />
+        {pager(false, weights.total)}
         <WeightsToCheck rows={weights.rows} missing={weights.missing} />
-        <nav aria-label="Pages" className="flex items-center gap-4">
-          {page > 1 ? (
-            <Link href={pageHref(page - 1)} className={linkButton}>
-              ← Previous
-            </Link>
-          ) : null}
-          <span className="text-ink-muted text-sm">Page {page}</span>
-          {weights.total > page * PAGE ? (
-            <Link href={pageHref(page + 1)} className={linkButton}>
-              Next →
-            </Link>
-          ) : null}
-        </nav>
+        {pager(true, weights.total)}
       </div>
     );
 
@@ -112,7 +98,7 @@ export default async function CatalogPage({
           max: view.max !== undefined ? String(view.max) : '',
           sort: view.sort,
         }}
-        keep={keep}
+        keep={{ ...keep, ...(pagerParams.size ? { size: pagerParams.size } : {}) }}
         regions={regions.map((r) => ({ value: r.id, label: r.name }))}
         categories={categories.map((c) => ({
           value: c.id,
@@ -123,12 +109,13 @@ export default async function CatalogPage({
         clearHref={filtered ? `/admin/catalog${tabQuery ? `?${tabQuery}` : ''}` : null}
       />
       <p className="text-ink-muted flex flex-wrap items-center gap-x-4 text-sm">
-        {filtered ? <span>{products.length === 0 && page === 1 ? 'No products match.' : 'Filtered view (the tab counts are every product).'}</span> : null}
+        {filtered ? <span>{products.total === 0 ? 'No products match.' : `${products.total.toLocaleString('en-US')} match (the tab counts are every product).`}</span> : null}
         {/* D-128: the six price columns of this view as an Excel sheet (a plain link: a file, not a page) */}
         <a href={exportHref} className={`${linkButton} text-ink`} download>
           Download Excel
         </a>
       </p>
+      {pager(false, products.total)}
       <Table
         head={[
           'Product',
@@ -142,7 +129,7 @@ export default async function CatalogPage({
           'Listed / reserved',
         ]}
       >
-        {products.map((p) => (
+        {products.rows.map((p) => (
           <tr key={p.id}>
             <Cell>
               <Link href={`/admin/catalog/${p.id}`} className="font-semibold">
@@ -178,19 +165,7 @@ export default async function CatalogPage({
           </tr>
         ))}
       </Table>
-      <nav aria-label="Pages" className="flex items-center gap-4">
-        {page > 1 ? (
-          <Link href={pageHref(page - 1)} className={linkButton}>
-            ← Previous
-          </Link>
-        ) : null}
-        <span className="text-ink-muted text-sm">Page {page}</span>
-        {rows.length > PAGE ? (
-          <Link href={pageHref(page + 1)} className={linkButton}>
-            Next →
-          </Link>
-        ) : null}
-      </nav>
+      {pager(true, products.total)}
     </div>
   );
 }

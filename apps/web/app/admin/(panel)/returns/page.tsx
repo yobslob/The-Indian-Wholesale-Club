@@ -7,9 +7,12 @@ import { returnReceivedAction, returnRefundAction, returnRejectAction } from '@/
 import { Chip } from '@/features/admin/chips';
 import { ConfirmButton } from '@/features/admin/confirm';
 import { requireAdminPage } from '@/features/admin/guard';
+import { Pager } from '@/features/admin/pager/pager';
+import { plainParams } from '@/features/admin/pager/paging';
+import { readPaging } from '@/features/admin/pager/read-paging';
 import { button, Cell, Empty, input, PageHead, secondaryButton, Sub, Table, Tabs, When } from '@/features/admin/ui';
 
-type SearchParams = Promise<{ status?: string }>;
+type SearchParams = Promise<Record<string, string | string[] | undefined>>;
 
 const REASON: Record<string, string> = {
   damaged: 'Damaged (check the handover photos)',
@@ -28,9 +31,10 @@ export default async function ReturnsPage({
   searchParams: SearchParams;
 }): Promise<React.JSX.Element> {
   const { client } = await requireAdminPage();
-  const requested = (await searchParams).status;
-  const status: ReturnStatus = RETURN_STATUSES.find((s) => s === requested) ?? 'requested';
-  const rows = await listReturns(client, status);
+  const params = plainParams(await searchParams);
+  const status: ReturnStatus = RETURN_STATUSES.find((s) => s === params.status) ?? 'requested';
+  const { page, size, offset } = await readPaging('returns', params);
+  const { rows, total } = await listReturns(client, status, offset, size);
 
   return (
     <div className="space-y-4">
@@ -116,6 +120,7 @@ export default async function ReturnsPage({
           ))}
         </Table>
       )}
+      <Pager list="returns" path="/admin/returns" params={params} page={page} size={size} total={total} keys />
     </div>
   );
 }

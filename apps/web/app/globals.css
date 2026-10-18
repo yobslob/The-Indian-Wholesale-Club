@@ -119,6 +119,21 @@
     stroke-dasharray: 24;
     animation: draw-check 0.45s 0.1s cubic-bezier(0.65, 0, 0.35, 1) backwards;
   }
+  /* The brand's running stitch (D-140, design plan §3): dashes like thread, sewing along the top while a list loads. */
+  .stitch-loading {
+    position: fixed;
+    inset: 0 0 auto;
+    z-index: 60;
+    height: 2px;
+    background: repeating-linear-gradient(90deg, theme('colors.brand') 0 10px, transparent 10px 16px);
+    animation: stitch-run 0.6s linear infinite;
+    pointer-events: none;
+  }
+  @keyframes stitch-run {
+    to {
+      background-position: 16px 0;
+    }
+  }
   @keyframes rise-in {
     from {
       opacity: 0;

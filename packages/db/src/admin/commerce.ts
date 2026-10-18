@@ -1,6 +1,6 @@
 import { z } from 'zod';
 
-import { unwrap, type Enum, type Insert, type IwcClient, type Update } from '../client';
+import { unwrap, unwrapPage, type Enum, type Insert, type IwcClient, type Update } from '../client';
 
 import { filterWords, getOrderCounts } from './operations';
 
@@ -30,14 +30,20 @@ export async function updatePromoCode(client: IwcClient, id: string, patch: Upda
 
 // ---------------------------------------------------------------- customers
 
-export async function listCustomers(client: IwcClient, limit = 200) {
-  return unwrap(
-    await client
-      .from('profiles')
-      .select('id, email, full_name, phone, created_at, orders(count)')
-      .eq('role', 'customer')
+/** A page of customer accounts, newest first, with how many orders each placed; search by email or name. */
+export async function pageCustomers(client: IwcClient, filter: { search?: string; offset?: number; limit?: number } = {}) {
+  let query = client
+    .from('profiles')
+    .select('id, email, full_name, phone, created_at, orders(count)', { count: 'exact' })
+    .eq('role', 'customer');
+  const q = filterWords(filter.search ?? '');
+  if (q.length >= 2) query = query.or(`email.ilike.%${q}%,full_name.ilike.%${q}%,phone.ilike.%${q}%`);
+  const offset = filter.offset ?? 0;
+  return unwrapPage(
+    await query
       .order('created_at', { ascending: false })
-      .limit(limit),
+      .order('id')
+      .range(offset, offset + (filter.limit ?? 50) - 1),
   );
 }
 

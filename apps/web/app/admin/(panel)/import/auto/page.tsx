@@ -3,11 +3,11 @@ import Link from 'next/link';
 import {
   countTargets,
   getSourcingSettings,
-  listHeldSources,
   listSourcedDrafts,
   listSourcingRuns,
   listSourcingShops,
-  listTargets,
+  pageHeldSources,
+  pageTargets,
 } from '@repo/db/admin';
 import { attributesSchemaFor, PRODUCT_TYPE_LABEL } from '@repo/shared/domain';
 
@@ -25,7 +25,12 @@ import {
   ShopsTable,
 } from '@/features/admin/import/auto/sections';
 import { TargetsUpload } from '@/features/admin/import/auto/targets-upload';
-import { button, Cell, FilterChips, PageHead, Panel, Sub, Table, When } from '@/features/admin/ui';
+import { importTabs } from '@/features/admin/import/import-tabs';
+import { ListFilters } from '@/features/admin/pager/list-filters';
+import { Pager } from '@/features/admin/pager/pager';
+import { pageHref, parsePage, plainParams } from '@/features/admin/pager/paging';
+import { readPaging } from '@/features/admin/pager/read-paging';
+import { button, Cell, FilterChips, PageHead, Panel, Sub, Table, Tabs, When } from '@/features/admin/ui';
 
 const STATUSES = ['queued', 'searching', 'found', 'none', 'paused'] as const;
 type Status = (typeof STATUSES)[number];
@@ -37,27 +42,41 @@ const STATUS_LABEL: Record<Status, string> = {
   paused: 'Paused',
 };
 
+const HELD_PAGE = 25;
+const PATH = '/admin/import/auto';
+
 /**
  * Auto-sourcing (D-118): the targets the runner finds listings for, the shops it searches, its rules, the prices it
- * held, and its runs. The runner itself works on a PC at the hub (tools/sourcing-runner).
+ * held, and its runs. The runner itself works on a PC at the hub (tools/sourcing-runner). Targets and held prices are
+ * paged with their real totals and the targets searchable (D-140: they stopped silently at 200 and 1,000).
  */
 export default async function AutoSourcingPage({
   searchParams,
 }: {
-  searchParams: Promise<{ status?: string }>;
+  searchParams: Promise<Record<string, string | string[] | undefined>>;
 }): Promise<React.JSX.Element> {
   const { client } = await requireAdminPage();
-  const wanted = (await searchParams).status;
-  const status = STATUSES.find((s) => s === wanted) ?? null;
+  const params = plainParams(await searchParams);
+  const status = STATUSES.find((s) => s === params.status) ?? null;
+  const q = (params.q ?? '').slice(0, 80);
+  const { page, size, offset } = await readPaging('targets', params);
+  const heldPage = parsePage(params.held);
   const [settings, shops, counts, targets, held, runs, drafts] = await Promise.all([
     getSourcingSettings(client),
     listSourcingShops(client),
     countTargets(client),
-    listTargets(client, status),
-    listHeldSources(client),
+    pageTargets(client, { status, search: q || undefined, offset, limit: size }),
+    pageHeldSources(client, (heldPage - 1) * HELD_PAGE, HELD_PAGE),
     listSourcingRuns(client),
     listSourcedDrafts(client),
   ]);
+  const chipHref = (s: Status | null): string => {
+    const keep: Record<string, string> = {};
+    if (s) keep.status = s;
+    if (q) keep.q = q;
+    if (params.size) keep.size = params.size;
+    return pageHref(PATH, keep, 1);
+  };
   const ready = drafts.filter(
     (d) =>
       d.media.length > 0 && attributesSchemaFor(d.product_type).safeParse(d.attributes).success,
@@ -68,10 +87,10 @@ export default async function AutoSourcingPage({
   return (
     <>
       <PageHead
-        title="Auto-sourcing"
-        back={{ href: '/admin/import', label: 'Import from shops' }}
+        title="Import from shops"
         sub={`Finds listings for each target on ${on.join(', ') || 'no shop yet'}, adds only pieces at the hub within ${settings.max_delivery_days} days, and checks every sourced listing's price and stock every ${settings.check_every_days} days.`}
       />
+      <Tabs items={importTabs()} current="auto" />
       <div className="space-y-5">
         <Panel
           title="Found and waiting"
@@ -102,7 +121,11 @@ export default async function AutoSourcingPage({
           ) : null}
         </Panel>
 
-        <HeldPrices held={held} />
+        <HeldPrices
+          held={held.rows}
+          total={held.total}
+          pager={<Pager list="held" path={PATH} params={params} param="held" page={heldPage} size={HELD_PAGE} total={held.total} />}
+        />
 
         <Panel
           title={`Targets (${total})`}
@@ -113,9 +136,9 @@ export default async function AutoSourcingPage({
           </div>
           <FilterChips
             items={[
-              { href: '/admin/import/auto', label: 'All', count: total, on: status === null },
+              { href: chipHref(null), label: 'All', count: total, on: status === null },
               ...STATUSES.map((s) => ({
-                href: `/admin/import/auto?status=${s}`,
+                href: chipHref(s),
                 label: STATUS_LABEL[s],
                 count: counts[s] ?? 0,
                 on: status === s,
@@ -129,11 +152,17 @@ export default async function AutoSourcingPage({
               </button>
             </form>
           ) : null}
-          {targets.length === 0 ? (
+          <ListFilters
+            q={q}
+            placeholder="Search targets by name or search words"
+            keep={{ ...(status ? { status } : {}), ...(params.size ? { size: params.size } : {}) }}
+          />
+          <Pager list="targets" path={PATH} params={params} page={page} size={size} total={targets.total} />
+          {targets.rows.length === 0 ? (
             <p className="text-ink-muted">No targets here.</p>
           ) : (
             <Table head={['Target', 'Category', 'Tier', 'State', 'Found', '']}>
-              {targets.map((t) => (
+              {targets.rows.map((t) => (
                 <tr key={t.id}>
                   <Cell>
                     <b>{t.name}</b>
@@ -191,6 +220,7 @@ export default async function AutoSourcingPage({
               ))}
             </Table>
           )}
+          <Pager list="targets" path={PATH} params={params} page={page} size={size} total={targets.total} keys />
         </Panel>
 
         <ShopsTable shops={shops} />

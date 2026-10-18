@@ -1,4 +1,4 @@
-import { unwrap, type Enum, type Insert, type IwcClient, type Update } from '../client';
+import { unwrap, unwrapPage, type Enum, type Insert, type IwcClient, type Update } from '../client';
 
 /**
  * Auto-sourcing (D-118): the runner's settings, the shops it searches, the targets it finds listings for, the sources
@@ -33,29 +33,48 @@ export async function updateSourcingShop(
   unwrap(await client.from('sourcing_shops').update(patch).eq('site', site));
 }
 
-/** How many targets are in each state (the page's filter chips). */
+const TARGET_STATUSES = ['queued', 'searching', 'found', 'none', 'paused'] as const;
+
+/**
+ * How many targets are in each state (the page's filter chips), counted in the database: fetching the rows stopped at
+ * the API's 1,000-row cap with 1,000+ targets loaded (PR-3).
+ */
 export async function countTargets(client: IwcClient) {
-  const rows = unwrap(await client.from('sourcing_targets').select('status'));
+  const head = { count: 'exact', head: true } as const;
+  const results = await Promise.all(
+    TARGET_STATUSES.map((s) => client.from('sourcing_targets').select('id', head).eq('status', s)),
+  );
   const counts: Partial<Record<Enum<'sourcing_target_status'>, number>> = {};
-  for (const r of rows) counts[r.status] = (counts[r.status] ?? 0) + 1;
+  TARGET_STATUSES.forEach((s, i) => {
+    const r = results[i]!;
+    if (r.error) throw new Error(r.error.message);
+    counts[s] = r.count ?? 0;
+  });
   return counts;
 }
 
-export async function listTargets(
+/** A page of targets, best tier first, and how many match in all (D-140: no silent cap at 200). */
+export async function pageTargets(
   client: IwcClient,
-  status: Enum<'sourcing_target_status'> | null,
-  limit = 200,
+  filter: { status?: Enum<'sourcing_target_status'> | null; search?: string; offset?: number; limit?: number } = {},
 ) {
   let query = client
     .from('sourcing_targets')
     .select(
       'id, name, query, must_match, product_type, tier, status, found_count, note, searched_at, sites, min_price_paise, max_price_paise, listings, region:regions(name), category:categories(name)',
-    )
-    .order('tier', { ascending: true, nullsFirst: false })
-    .order('created_at')
-    .limit(limit);
-  if (status) query = query.eq('status', status);
-  return unwrap(await query);
+      { count: 'exact' },
+    );
+  if (filter.status) query = query.eq('status', filter.status);
+  const words = (filter.search ?? '').replace(/[%,()*]/g, ' ').trim();
+  if (words) query = query.or(`name.ilike.%${words}%,query.ilike.%${words}%`);
+  const offset = filter.offset ?? 0;
+  return unwrapPage(
+    await query
+      .order('tier', { ascending: true, nullsFirst: false })
+      .order('created_at')
+      .order('id')
+      .range(offset, offset + (filter.limit ?? 50) - 1),
+  );
 }
 
 /**
@@ -115,15 +134,19 @@ export async function deleteTarget(client: IwcClient, id: string) {
 }
 
 /** Sources whose new price waits for an admin (the price-jump guard). */
-export async function listHeldSources(client: IwcClient) {
-  return unwrap(
+/** A page of the prices held for an admin (a jump past the guard), oldest check first, and how many in all. */
+export async function pageHeldSources(client: IwcClient, offset = 0, limit = 25) {
+  return unwrapPage(
     await client
       .from('product_sources')
       .select(
         'id, site, item_url, price_paise, review, review_price_paise, checked_at, product:products(id, name), variant:product_variants!product_sources_variant_id_fkey(label)',
+        { count: 'exact' },
       )
       .not('review', 'is', null)
-      .order('checked_at', { ascending: true }),
+      .order('checked_at', { ascending: true })
+      .order('id')
+      .range(offset, offset + limit - 1),
   );
 }
 
@@ -159,17 +182,26 @@ export async function listSourcingRuns(client: IwcClient, limit = 8) {
   );
 }
 
-/** Drafts the runner made, with what publishing needs to know (photos, type, details). */
-export async function listSourcedDrafts(client: IwcClient, limit = 200) {
-  return unwrap(
-    await client
-      .from('products')
-      .select('id, name, product_type, attributes, created_at, media:product_media(id)')
-      .eq('status', 'draft')
-      .not('sourcing_target_id', 'is', null)
-      .order('created_at')
-      .limit(limit),
-  );
+/**
+ * Every draft the runner made, with what publishing needs to know (photos, type, details), read 1,000 at a time so
+ * none is left out (it stopped at 200, D-140).
+ */
+export async function listSourcedDrafts(client: IwcClient) {
+  const all = [];
+  for (let from = 0; ; from += 1000) {
+    const rows = unwrap(
+      await client
+        .from('products')
+        .select('id, name, product_type, attributes, created_at, media:product_media(id)')
+        .eq('status', 'draft')
+        .not('sourcing_target_id', 'is', null)
+        .order('created_at')
+        .order('id')
+        .range(from, from + 999),
+    );
+    all.push(...rows);
+    if (rows.length < 1000) return all;
+  }
 }
 
 export async function publishProducts(client: IwcClient, ids: string[]) {

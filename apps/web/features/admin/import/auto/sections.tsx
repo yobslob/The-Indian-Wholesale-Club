@@ -12,7 +12,12 @@ import type { Row } from '@repo/db';
 
 export function HeldPrices({
   held,
+  total,
+  pager,
 }: {
+  /** How many are held in all (the page shows some of them). */
+  total: number;
+  pager: React.ReactNode;
   held: {
     id: string;
     site: string;
@@ -24,10 +29,10 @@ export function HeldPrices({
     variant: { label: string } | null;
   }[];
 }): React.JSX.Element | null {
-  if (!held.length) return null;
+  if (!total) return null;
   return (
     <Panel
-      title={`Prices held for you (${held.length})`}
+      title={`Prices held for you (${total})`}
       note="the shop's price jumped; the piece stopped selling from that shop"
     >
       <Table
@@ -67,6 +72,7 @@ export function HeldPrices({
           </tr>
         ))}
       </Table>
+      {pager}
     </Panel>
   );
 }

@@ -1,4 +1,4 @@
-import { unwrap, type IwcClient, type Update } from '../client';
+import { unwrap, unwrapPage, type Enum, type IwcClient, type Update } from '../client';
 
 /**
  * Listings imported from online shops (D-110). Admin only: the source columns never reach a store_* view (D-003).
@@ -16,17 +16,59 @@ export async function getSourcedProduct(client: IwcClient, sourceUrl: string) {
   );
 }
 
-/** Every imported listing, the one checked longest ago first (the importer's "check prices" list). */
-export async function listSourcedProducts(client: IwcClient, limit = 100) {
-  return unwrap(
-    await client
-      .from('products')
-      .select(SOURCED_COLUMNS)
-      .not('source_url', 'is', null)
-      .neq('status', 'archived')
-      .order('source_checked_at', { ascending: true, nullsFirst: true })
-      .limit(limit),
-  );
+export const SOURCED_SORTS = ['checked', 'newest', 'name', 'price-desc'] as const;
+export type SourcedSort = (typeof SOURCED_SORTS)[number];
+
+export interface SourcedFilter {
+  search?: string;
+  /** The shop's site, e.g. myntra.com. */
+  site?: string;
+  regionId?: string;
+  /** All-India listings only (D-121). */
+  noRegion?: boolean;
+  productType?: Enum<'product_type'>;
+  status?: Enum<'product_status'>;
+  /** Only listings whose price was last checked before this time (ISO). */
+  checkedBefore?: string;
+  /** The price checked longest ago first unless chosen. */
+  sort?: SourcedSort;
+  offset?: number;
+  limit?: number;
+}
+
+/**
+ * A page of imported listings (not archived) and how many match in all (D-140: the list used to stop at 100 while
+ * its heading said 100).
+ */
+export async function pageSourcedProducts(client: IwcClient, filter: SourcedFilter = {}) {
+  let query = client
+    .from('products')
+    .select(SOURCED_COLUMNS, { count: 'exact' })
+    .not('source_url', 'is', null)
+    .neq('status', 'archived');
+  if (filter.site) query = query.eq('source_site', filter.site);
+  if (filter.regionId) query = query.eq('region_id', filter.regionId);
+  if (filter.noRegion) query = query.is('region_id', null);
+  if (filter.productType) query = query.eq('product_type', filter.productType);
+  if (filter.status) query = query.eq('status', filter.status);
+  if (filter.checkedBefore) query = query.or(`source_checked_at.is.null,source_checked_at.lt.${filter.checkedBefore}`);
+  if (filter.search?.trim()) query = query.textSearch('search', filter.search.trim(), { type: 'websearch', config: 'simple' });
+  const ordered =
+    filter.sort === 'newest'
+      ? query.order('created_at', { ascending: false })
+      : filter.sort === 'name'
+        ? query.order('name')
+        : filter.sort === 'price-desc'
+          ? query.order('price_cents', { ascending: false })
+          : query.order('source_checked_at', { ascending: true, nullsFirst: true });
+  const offset = filter.offset ?? 0;
+  return unwrapPage(await ordered.order('id').range(offset, offset + (filter.limit ?? 50) - 1));
+}
+
+/** The shops imported listings come from (the Imported tab's Shop filter). */
+export async function listSourcedSites(client: IwcClient): Promise<string[]> {
+  const rows = unwrap(await client.from('sourcing_shops').select('site').order('site'));
+  return rows.map((r) => r.site);
 }
 
 export async function updateSourcedProduct(

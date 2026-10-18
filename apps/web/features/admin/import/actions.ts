@@ -317,7 +317,7 @@ async function recordSources(
 
 function done(id: string): void {
   revalidateTag(STORE_TAG);
-  revalidatePath('/admin/import');
+  revalidatePath('/admin/import/listings');
   revalidatePath('/admin/catalog');
   revalidatePath(`/admin/catalog/${id}`);
 }

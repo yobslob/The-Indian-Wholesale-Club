@@ -47,7 +47,7 @@ writes refresh the website's store pages at once (`POST /admin/revalidate`, B-17
 | **Payouts** | payable per vendor, record payouts | India | ✓ | ✓ |
 | **Orders** | all orders, detail + internal timeline, pack & ship once arrived (carrier with tracking link, D-066), refunds, delay notices, move to another cycle (D-045) | US | ✓ | ✓ (pack & ship) |
 | **Regions** | edit and approve region content (greeting and its script, tagline, story, accent, image, `is_live`; changing approved text sends it back to draft, enforced in the database); the main photo uploads to `product-media/regions/<slug>/`; album photos (each with alt text, removable) to `regions/<slug>/album/` (`region_photos`, D-051); an accent below WCAG AA on the page backgrounds is refused | both | ✓ | — |
-| **Catalog** | products, categories, prices, bulk edits; a product's state may be empty (All states, D-121; the import form offers it); **filters** within every tab (type, state or All-India, category, shop, a US price range, sort: recently updated, newest added, price both ways, name; a select applies at once without a page load, D-136); **Download Excel** (every tab: name, Indian price, category, weight, US price and margin of that view, its filters included, D-128, D-136); a **Weight** column and the **Weights to check** tab (options with no weight, a matching item's, one recorded before sources were kept, an unusual one for the category, or a shop's weight the weight estimator doubts; weigh it or type it per option or for all sizes at once, the box already holding the estimator's suggestion; a listing goes live only when every option has its weight, D-129, D-131); **Publish all drafts** on the Drafts tab (every draft with a photo, an option and a piece to sell; it says how many went live, what held the rest and how many still lack details customers see, D-120); "Curated for you" picks per product (D-056); product photos (upload with alt text, main photo, remove) to `product-media/products/<id>/`; 50 to a page (D-067) | both | ✓ | — |
+| **Catalog** | products, categories, prices, bulk edits; a product's state may be empty (All states, D-121; the import form offers it); **filters** within every tab (type, state or All-India, category, shop, a US price range, sort: recently updated, newest added, price both ways, name; a select applies at once without a page load, D-136); **Download Excel** (every tab: name, Indian price, category, weight, US price and margin of that view, its filters included, D-128, D-136); a **Weight** column and the **Weights to check** tab (options with no weight, a matching item's, one recorded before sources were kept, an unusual one for the category, or a shop's weight the weight estimator doubts; weigh it or type it per option or for all sizes at once, the box already holding the estimator's suggestion; a listing goes live only when every option has its weight, D-129, D-131); **Publish all drafts** on the Drafts tab (every draft with a photo, an option and a piece to sell; it says how many went live, what held the rest and how many still lack details customers see, D-120); "Curated for you" picks per product (D-056); product photos (upload with alt text, main photo, remove) to `product-media/products/<id>/`; the pager (D-140) | both | ✓ | — |
 | **Reviews** | approve or reject customer reviews before they appear (D-052, D-056); "verified buyer" is set by the database | both | ✓ | — |
 | **Customers** | customer list, orders per customer | US | ✓ | — |
 | **Promotions** | promo codes (kept from the old admin) | US | ✓ | — |
@@ -88,6 +88,13 @@ Built 2026-10-09 from `design/pages/admin/` (code in `apps/web/features/admin/`)
   title, find.
 - **Times** in the admin's desk zone (`profiles.desk`; none set → New Jersey first) with the other zone beside them,
   never UTC (`time.ts`); cycle cutoffs are typed in that zone.
+- **The pager (D-140, `pager/`)** on every list (Products and its tabs, Imported listings, Targets, Prices held,
+  Orders, Customers, Reviews, Returns, Vendor pieces): "1–50 of 3,412" from an exact count of the filtered rows, page
+  numbers with gaps, Previous / Next, Go to page, 25 / 50 / 100 a page (remembered per list in a cookie), ← / → turn
+  pages when no field has focus; `?page=` and `?size=` sit in the address with the filters, so Back and links work.
+  Paging is a soft navigation (the scroll stays) with the running stitch along the top while it loads; table headers
+  stay under the top bar on wide screens. Search runs on the server over every row. No list stops silently at a
+  limit (the API's 1,000-row cap included: target counts are head counts).
 - **Chips** in plain words (`chips.tsx`). **Today**: the open cycle's countdown, totals and progress, Needs attention,
   each desk's queue. **Orders**: search, chips with counts, ticked rows → Mark shipped… (one carrier and tracking
   number each) / Mark delivered, pages of 50. **Order page**: only the actions that apply; every refund and cancel (and
@@ -135,8 +142,9 @@ in `packages/shared/src/sourcing/`, the reads and writes in `packages/db/src/adm
   with `products.source_url`, `source_site`, `source_checked_at`, `source_in_stock` (admin only).
 - **Keeping prices right.** Importing a page again finds its listing by the cleaned address: the price, the sizes in
   stock and the check date are updated (sizes the shop no longer has stop selling; pieces already ordered stay); tick
-  "Also replace" to take the new name, words and photos too. The page lists every imported listing, the one checked
-  longest ago first, with a link to open it.
+  "Also replace" to take the new name, words and photos too. **Imported listings** (`/admin/import/listings`, its own
+  tab since D-140) lists every imported listing with the pager, search and filters (shop, state, type, status, not
+  checked for a week / a month), the one checked longest ago first unless sorted otherwise, with a link to open it.
 - **When one sells.** The cycle's pickup cards (web and app) show "Order it online" for an imported piece: the India
   desk orders it there to the hub, then marks it picked as usual. The product's page lists **Where to order it**: every
   shop item each variant can be ordered as, the one in use first ("ordered from here", D-118).

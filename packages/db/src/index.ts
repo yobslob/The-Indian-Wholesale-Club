@@ -6,6 +6,6 @@
  *   '@repo/db/server'  service-role operations (order creation) server code only
  * This root entry exports only types and error helpers.
  */
-export { DbError, toDbError, unwrap } from './client';
-export type { Enum, Insert, IwcClient, Row, TableName, Update } from './client';
+export { DbError, pageRange, toDbError, unwrap, unwrapPage } from './client';
+export type { Enum, Insert, IwcClient, Paged, Row, TableName, Update } from './client';
 export type { Database, Json } from './database.types';

@@ -6,6 +6,9 @@ import { productPath } from '@repo/shared/domain';
 
 import { moderateReviewAction } from '@/features/admin/actions/reviews';
 import { requireAdminPage } from '@/features/admin/guard';
+import { Pager } from '@/features/admin/pager/pager';
+import { plainParams } from '@/features/admin/pager/paging';
+import { readPaging } from '@/features/admin/pager/read-paging';
 import { button, PageHead } from '@/features/admin/ui';
 import { reviewPhotoUrl } from '@/lib/site';
 
@@ -13,15 +16,21 @@ import { reviewPhotoUrl } from '@/lib/site';
  * Reviews waiting for a decision (D-052, D-056): nothing a customer writes appears before an admin approves it.
  * "Verified buyer" was decided by the database from delivered orders; only verified reviews can carry photos.
  */
-export default async function ReviewsPage(): Promise<React.JSX.Element> {
+export default async function ReviewsPage({
+  searchParams,
+}: {
+  searchParams: Promise<Record<string, string | string[] | undefined>>;
+}): Promise<React.JSX.Element> {
   const { client } = await requireAdminPage();
-  const pending = await listReviewsForModeration(client, 'pending');
+  const params = plainParams(await searchParams);
+  const { page, size, offset } = await readPaging('reviews', params);
+  const { rows: pending, total } = await listReviewsForModeration(client, 'pending', offset, size);
 
   return (
     <div className="space-y-6">
       <PageHead title="Reviews" />
       <p className="text-ink-muted">
-        {pending.length === 0 ? 'Nothing waiting.' : `${pending.length} waiting, oldest first.`} Approved reviews show on the
+        {total === 0 ? 'Nothing waiting.' : `${total} waiting, oldest first.`} Approved reviews show on the
         product page within a few minutes.
       </p>
       <ul className="grid max-w-3xl gap-4">
@@ -66,6 +75,7 @@ export default async function ReviewsPage(): Promise<React.JSX.Element> {
           </li>
         ))}
       </ul>
+      <Pager list="reviews" path="/admin/reviews" params={params} page={page} size={size} total={total} keys />
     </div>
   );
 }

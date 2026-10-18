@@ -53,3 +53,24 @@ export function unwrap<R extends QueryResult>(result: R): SuccessData<R> {
   if (result.error) throw toDbError(result.error);
   return result.data as SuccessData<R>;
 }
+
+/** One page of an admin list and how many rows match in all, so a list never stops silently (D-140, F10). */
+export interface Paged<T> {
+  rows: T[];
+  total: number;
+}
+
+/** `unwrap` for a query made with `{ count: 'exact' }` and `.range()`: the page's rows and the filtered total. */
+type Item<R extends QueryResult> = SuccessData<R> extends (infer U)[] ? U : never;
+
+export function unwrapPage<R extends QueryResult & { count: number | null }>(result: R): Paged<Item<R>> {
+  if (result.error) throw toDbError(result.error);
+  const rows = (result.data ?? []) as Item<R>[];
+  return { rows, total: result.count ?? rows.length };
+}
+
+/** Offset and limit for a 1-based page. */
+export function pageRange(page: number, size: number): { from: number; to: number } {
+  const from = (Math.max(1, page) - 1) * size;
+  return { from, to: from + size - 1 };
+}

@@ -142,9 +142,13 @@ export function FilterChips({ items }: { items: { href: string; label: string; c
   );
 }
 
+/**
+ * A dense table. On wide screens (xl) its header stays under the top bar while a long page scrolls (D-140); phones keep
+ * the sideways scroll instead.
+ */
 export function Table({ head, children }: { head: (string | { label: string; right?: boolean })[]; children: React.ReactNode }): React.JSX.Element {
   return (
-    <div className="overflow-x-auto">
+    <div className="overflow-x-auto xl:overflow-x-visible">
       <table className="font-ui w-full border-collapse text-left text-[14px] leading-[1.3]">
         <thead>
           <tr>
@@ -153,7 +157,7 @@ export function Table({ head, children }: { head: (string | { label: string; rig
               return (
                 <th
                   key={`${label}-${i}`}
-                  className={`border-line text-ink-muted whitespace-nowrap border-b px-2.5 pb-2 text-[11.5px] font-semibold uppercase tracking-[0.06em] ${right ? 'text-right' : ''}`}
+                  className={`border-line text-ink-muted bg-canvas whitespace-nowrap border-b px-2.5 pb-2 pt-2 text-[11.5px] xl:sticky xl:top-14 xl:z-10 font-semibold uppercase tracking-[0.06em] ${right ? 'text-right' : ''}`}
                 >
                   {label}
                 </th>

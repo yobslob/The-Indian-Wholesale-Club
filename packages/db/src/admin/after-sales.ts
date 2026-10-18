@@ -3,7 +3,7 @@
  * amounts come from SQL, which re-checks them when the refund is recorded. As in refunds.ts, the caller refunds
  * through Stripe FIRST, then records it here.
  */
-import { unwrap, type IwcClient } from '../client';
+import { unwrap, unwrapPage, type IwcClient } from '../client';
 
 /** After it left India: all but the shipping deduction. Null while it is still in India, or when it is done. */
 export async function exportCancelCents(client: IwcClient, orderId: string): Promise<number | null> {
@@ -26,17 +26,18 @@ export async function recordCancelAfterExport(
 export const RETURN_STATUSES = ['requested', 'received', 'refunded', 'rejected'] as const;
 export type ReturnStatus = (typeof RETURN_STATUSES)[number];
 
-/** Returns, oldest first: the piece, its order, the reason and the refund fixed when it was asked for. */
-export async function listReturns(client: IwcClient, status?: ReturnStatus) {
+/** A page of returns, oldest first: the piece, its order, the reason and the refund fixed when it was asked for. */
+export async function listReturns(client: IwcClient, status?: ReturnStatus, offset = 0, limit = 50) {
   let query = client
     .from('returns')
     .select(
       `id, reason, status, refund_cents, kept_pct, requested_at, decided_at, refund_ref, note,
        order:orders(id, order_number, email, payment_intent_id, refunded_cents),
        item:order_items(product_name, variant_label, region_name)`,
+      { count: 'exact' },
     );
   if (status) query = query.eq('status', status);
-  return unwrap(await query.order('requested_at').limit(200));
+  return unwrapPage(await query.order('requested_at').order('id').range(offset, offset + limit - 1));
 }
 
 export async function getReturn(client: IwcClient, returnId: string) {

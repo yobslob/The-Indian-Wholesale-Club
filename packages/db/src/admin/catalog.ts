@@ -1,6 +1,6 @@
 import { listingInputSchema, type ListingInput, type WeightSource } from '@repo/shared/domain';
 
-import { unwrap, type Enum, type Insert, type IwcClient, type Update } from '../client';
+import { unwrap, unwrapPage, type Enum, type Insert, type IwcClient, type Update } from '../client';
 
 // ---------------------------------------------------------------- vendors (D-003: admin only)
 
@@ -151,8 +151,8 @@ export interface AdminProductFilter {
   offset?: number;
 }
 
-export async function listAdminProducts(client: IwcClient, filter: AdminProductFilter = {}) {
-  let query = client.from('products').select(PRODUCT_LIST_COLUMNS);
+function adminProductQuery(client: IwcClient, filter: AdminProductFilter, count: boolean) {
+  let query = client.from('products').select(PRODUCT_LIST_COLUMNS, count ? { count: 'exact' } : undefined);
   if (filter.status) query = query.eq('status', filter.status);
   if (filter.productType) query = query.eq('product_type', filter.productType);
   if (filter.regionId) query = query.eq('region_id', filter.regionId);
@@ -180,7 +180,16 @@ export async function listAdminProducts(client: IwcClient, filter: AdminProductF
     } as const
   )[filter.sort ?? 'updated'];
   // id breaks ties so pages never repeat or skip a product
-  return unwrap(await query.order(column, { ascending }).order('id').range(offset, offset + limit - 1));
+  return query.order(column, { ascending }).order('id').range(offset, offset + limit - 1);
+}
+
+export async function listAdminProducts(client: IwcClient, filter: AdminProductFilter = {}) {
+  return unwrap(await adminProductQuery(client, filter, false));
+}
+
+/** A page of products and how many match the filters in all (the pager's "1–50 of 3,412", D-140). */
+export async function pageAdminProducts(client: IwcClient, filter: AdminProductFilter = {}) {
+  return unwrapPage(await adminProductQuery(client, filter, true));
 }
 
 /** How many products are in each status: the Listings tabs' counts (D-096). */

@@ -1,4 +1,4 @@
-import { unwrap, type IwcClient, type Update } from '../client';
+import { unwrap, unwrapPage, type IwcClient, type Update } from '../client';
 
 /**
  * The admin's side of vendor accounts (D-102, D-103): the pieces vendors sent with their AI photo candidates, the
@@ -12,15 +12,21 @@ const SUBMISSION_COLUMNS = `id, status, product_type, details, variants, shop_pr
   photos:vendor_submission_photos(view, storage_path, checks),
   jobs:photo_jobs(id, view, status, candidates, error, attempts, house_model_id, finished_at)`;
 
-/** Pieces to look at: photos made first, then those still being made, then retakes asked for. */
-export async function listVendorSubmissions(client: IwcClient, statuses: string[] = ['photos_ready', 'waiting', 'needs_retake']) {
-  return unwrap(
+/** A page of pieces to look at (photos made first, then those still being made, then retakes asked for), and how many. */
+export async function listVendorSubmissions(
+  client: IwcClient,
+  statuses: string[] = ['photos_ready', 'waiting', 'needs_retake'],
+  offset = 0,
+  limit = 50,
+) {
+  return unwrapPage(
     await client
       .from('vendor_submissions')
-      .select(SUBMISSION_COLUMNS)
+      .select(SUBMISSION_COLUMNS, { count: 'exact' })
       .in('status', statuses as never)
       .order('submitted_at', { ascending: true, nullsFirst: false })
-      .limit(100),
+      .order('id')
+      .range(offset, offset + limit - 1),
   );
 }
 

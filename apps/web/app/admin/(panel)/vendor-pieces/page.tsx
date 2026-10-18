@@ -4,6 +4,9 @@ import { listVendorSubmissions } from '@repo/db/admin';
 
 import { Chip } from '@/features/admin/chips';
 import { requireAdminPage } from '@/features/admin/guard';
+import { Pager } from '@/features/admin/pager/pager';
+import { plainParams } from '@/features/admin/pager/paging';
+import { readPaging } from '@/features/admin/pager/read-paging';
 import { signedUrls } from '@/features/admin/signed';
 import { Cell, Empty, PageHead, rupees, Table, When } from '@/features/admin/ui';
 
@@ -13,10 +16,16 @@ const STATE: Record<string, [string, 'ok' | 'warn' | 'mute' | 'bad']> = {
   needs_retake: ['Retake asked', 'mute'],
 };
 
-/** Vendor pieces (D-103): what shops sent, photos made first; open one to pick the photos and publish. */
-export default async function VendorPiecesPage(): Promise<React.JSX.Element> {
+/** Vendor pieces (D-103): what shops sent, photos made first; open one to pick the photos and publish. Paged (D-140). */
+export default async function VendorPiecesPage({
+  searchParams,
+}: {
+  searchParams: Promise<Record<string, string | string[] | undefined>>;
+}): Promise<React.JSX.Element> {
   const { client } = await requireAdminPage();
-  const pieces = await listVendorSubmissions(client);
+  const params = plainParams(await searchParams);
+  const { page, size, offset } = await readPaging('vendor-pieces', params);
+  const { rows: pieces, total } = await listVendorSubmissions(client, undefined, offset, size);
   const fronts = await signedUrls(client, 'vendor-uploads', pieces.map((p) => p.photos?.find((ph) => ph.view === 'front')?.storage_path ?? ''));
   const order = ['photos_ready', 'waiting', 'needs_retake'];
   const sorted = [...pieces].sort((a, b) => order.indexOf(a.status) - order.indexOf(b.status));
@@ -53,6 +62,7 @@ export default async function VendorPiecesPage(): Promise<React.JSX.Element> {
           })}
         </Table>
       )}
+      <Pager list="vendor-pieces" path="/admin/vendor-pieces" params={params} page={page} size={size} total={total} keys />
     </div>
   );
 }
