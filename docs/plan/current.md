@@ -115,7 +115,9 @@ phase's sub-steps and every verification run) is in `docs/archive/status-log-to-
 
 ## Next for the founder
 0. **D-140 (2026-10-18), in this order:** raise Vercel's image allowance today (photos show alt text: the resizer
-   answers 402). Run the Deploy workflow (migrations `20261018090000` – `20261018150000`). Then
+   answers 402). Run the Deploy workflow again (it applies `20261018160000_fast_sizes`, which fixes the build's
+   statement timeouts, then starts Vercel's build; `20261018090000` – `20261018150000` are already applied). Its Android
+   job fails until 1 Nov: the Expo account used this month's free Android builds. Then
    `pnpm photos:copies -- --dry`, then `pnpm photos:copies -- --allow-remote` with the production keys, repeated until
    0 is left (photos then skip Vercel's resizer). Settings → Bag charges → "Shipping shown when free" ($ a kg; empty
    keeps $18.79 struck). Products → For: not set yet: pick Women / Men / Kids / Everyone for the clothing no name

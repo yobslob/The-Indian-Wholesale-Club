@@ -21,7 +21,10 @@ Baseline numbers come from the founder's first `node scripts/check.mjs` run and 
 - **PR-1 Cacheable storefront:** storefront reads use a cookie-less anon client with no `cookies()`. They are cached and tagged
   (§Caching). Only cart, checkout, account, order, search, login and signup pages are dynamic. *Web:* `lib/supabase/store.ts` +
   `features/catalog/data.ts` (`unstable_cache`, tag `store` plus one tag per page, 5-minute fallback). Region pages are built at build time,
-  product pages on first visit. So **`next build` reads the database** (the new schema must be there).
+  product pages on first visit. So **`next build` reads the database** (the new schema must be there). Since
+  2026-10-18 the build prerenders at most two pages at a time per worker and retries a failed page three times
+  (`experimental.staticGenerationMaxConcurrency`, `staticGenerationRetryCount`): many pages at once against the
+  production database hit the anon role's 3 s statement timeout and failed deploys.
 - **PR-2 One round trip per page:** each storefront page or endpoint gets its data from one `store_*` view or function returning exactly
   what it renders. Checkout allows at most 2.
   Read-only functions (STABLE) are called with `{ get: true }` (a GET): the API gateway retries a GET when PostgREST

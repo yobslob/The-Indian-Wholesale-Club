@@ -64,7 +64,13 @@ const nextConfig = {
   eslint: { ignoreDuringBuilds: true },
   typescript: { ignoreBuildErrors: true },
   // Admin photo uploads (region photos, up to 8 MB) go through server actions; the default limit is 1 MB.
-  experimental: { serverActions: { bodySizeLimit: '10mb' } },
+  experimental: {
+    serverActions: { bodySizeLimit: '10mb' },
+    // The build prerenders every state and See all page from the production database (PR-1). Fewer at once per worker
+    // and a retry keep a busy moment of the database (statement timeout, 2026-10-18) from failing the whole deploy.
+    staticGenerationMaxConcurrency: 2,
+    staticGenerationRetryCount: 3,
+  },
   images: {
     formats: ['image/avif', 'image/webp'],
     // Photos are never overwritten (every upload gets a new random path), so a resized copy stays right: keep it a
