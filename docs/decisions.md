@@ -955,9 +955,10 @@ What it means for the build:
   powders. It adds to `food-under-300.csv` (D-137), which searches by dish; one shop item is never listed twice.
 - A row's Product names the flavour words its titles carry ("masala", "cream", "chips"), because the matcher drops a
   title with such a word when the target does not name it.
-*Interpretation (proposed, confirm before uploading):* "dairy" (D-137) here means dairy products, not everything with
-milk in it: titles naming paneer, curd, dahi, khoya, mawa, ghee, lassi, chhena, rasgulla, rasmalai, gulab jamun,
+Founder, verbatim, the same day: "Yes, keep milk biscuits, butter cookies, cream biscuits and milk chocolate in the
+branded food list." So "dairy" (D-137) here means dairy products, not everything with milk in it: titles naming paneer, curd, dahi, khoya, mawa, ghee, lassi, chhena, rasgulla, rasmalai, gulab jamun,
 whitener, milk powder, cheese slices or spreads, or ice cream are left out, while milk biscuits, butter cookies, cream
 biscuits and milk chocolate are kept (Milk Bikis, Good Day, Bourbon, Dairy Milk are among the most ordered). Every row
 also leaves out meat and fish (chicken noodles, prawn crackers), frozen food, bread, juice and anything sold by the
-ml. Chocolates can soften in transit. Tier 1 is the brands seen everywhere, 3 the regional ones.
+ml. Chocolates can soften in transit.
+*Claude's choice in it (proposed):* tier 1 is the brands seen everywhere, 3 the regional ones.

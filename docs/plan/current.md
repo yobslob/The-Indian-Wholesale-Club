@@ -149,8 +149,8 @@ phase's sub-steps and every verification run) is in `docs/archive/status-log-to-
    Home & gifts next (D-138): review and upload `home-festive-amazon-900.csv` (185 targets, Amazon only, ₹1 – ₹900,
    Diwali and Navratri first) by about 2026-10-21 so Diwali pieces (2026-11-08) arrive in time; Navratri and Dussehra
    pieces arrive after the festival this year. Answer Q-37 (LED and battery lights, gobar, powders) to widen it.
-   Food brands (D-139): review and upload `food-branded-200.csv` (119 targets, ₹1 – ₹200, every food shop) and confirm
-   that milk biscuits, butter cookies and milk chocolate may be sold (D-139 keeps them; D-137 left them out).
+   Food brands (D-139): upload `food-branded-200.csv` (119 targets, ₹1 – ₹200, every food shop; milk biscuits, butter
+   cookies, cream biscuits and milk chocolate kept, as the founder confirmed).
 6. Clear the 2,880 placeholder listings: `pnpm demo:clear … --allow-remote`, then with `--apply` (`ops.md`).
 7. Decide: the name "Food" and 5 pieces per size by default (D-110 proposals); D-118's proposals (3 listings per
    target, the 60% rise / 50% fall guard, drafts until published, 40 targets a day); D-120's proposals (₹200, 250 g,
