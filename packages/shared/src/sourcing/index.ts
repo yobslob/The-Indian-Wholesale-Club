@@ -10,3 +10,4 @@ export * from './variants';
 export * from './weight';
 export * from './liquid';
 export * from './cart';
+export * from './title';

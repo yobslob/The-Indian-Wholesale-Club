@@ -79,7 +79,8 @@ language sql immutable as $$
                'qty_confirmed_at', 'sku', 'cycle_id', 'notes', 'internal_note', 'user_id', 'licences',
                'payment_intent_id', 'promo_code_id', 'content_status', 'visible_to_customer', 'created_by',
                'has_origin_label', 'actor', 'shop_name', 'weight_g', 'weight_source', 'weight_note',
-               'weight_estimate_g', 'weight_estimate_note'];
+               'weight_estimate_g', 'weight_estimate_note', 'shop_title', 'paid_paise', 'shop_order_ref',
+               'inr_per_usd', 'pricing_rule'];
 $$;
 
 create function tests.act_as(p_user uuid) returns void

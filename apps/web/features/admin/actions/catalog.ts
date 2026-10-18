@@ -9,6 +9,7 @@ import {
   createVariant,
   createVendor,
   publishDrafts,
+  renameListings,
   setListedQty,
   setProductStatus,
   setProductWears,
@@ -288,5 +289,22 @@ export async function setWearsAction(productId: string, wears: string): Promise<
   } catch (error) {
     logger.error('admin.set_wears_failed', { productId, error: errorMessage(error) });
     return false;
+  }
+}
+
+/** D-140 (L1): rename listings from Names to tidy; the old names are kept as each listing's shop title. */
+export async function renameListingsAction(
+  items: { id: string; name: string }[],
+): Promise<{ ok: true; renamed: number } | { ok: false; error: string }> {
+  const { client } = await requireAdminAction();
+  try {
+    const list = z.array(z.object({ id, name: z.string().trim().min(2).max(120) })).max(500).parse(items);
+    const renamed = await renameListings(client, list);
+    revalidateTag(STORE_TAG);
+    revalidatePath('/admin/catalog/names');
+    return { ok: true, renamed };
+  } catch (error) {
+    logger.error('admin.rename_listings_failed', { error: errorMessage(error) });
+    return { ok: false, error: 'The names did not save. Try again.' };
   }
 }

@@ -103,6 +103,15 @@ select public.admin_set_shop_bill_final(tests.id('bill'), false);
 select tests.assert((select count(*) = 1 from public.order_events where order_id = tests.id('order_c') and kind = 'shop_bill_reopened'),
   'reopening it is logged on the order');
 
+-- The customer's order (the email's and the order page's source) carries none of the cost snapshot or shop fields.
+reset role;
+select tests.assert(
+  not exists (select 1 from tests.json_keys(public.guest_order_lookup(
+                (select order_number from public.orders where id = tests.id('order_c')), 'cust.a@example.test')) k
+              where k = any (tests.forbidden_keys())),
+  'the customer''s order shows no shop price, weight, rate, rule or shop order number (D-003)');
+set local role authenticated;
+
 -- Customers never reach any of it.
 select tests.act_as(tests.id('cust_a'));
 select tests.assert_fails('select * from public.admin_to_order()', 'admin_only', 'customers cannot list pieces to order');

@@ -15,6 +15,7 @@ import {
   type Wears,
 } from '@repo/shared/domain';
 import {
+  cleanTitle,
   guessCategory,
   guessDetails,
   guessProductType,
@@ -93,7 +94,8 @@ export function ReviewForm({
     const d = guessDetails(product);
     const bullets = product.bullets.map((b) => `• ${b}`).join('\n');
     return {
-      name: shorten(product.title, 120),
+      // D-140 (L1): IWC's name, without the brand or shop; the shop's full title is kept for the admin
+      name: shorten(cleanTitle(product.title, { brand: product.brand, productType: guessProductType(product) }), 120),
       summary: shorten(product.bullets[0] ?? firstSentence(product.description), 300),
       description: [bullets, product.description].filter(Boolean).join('\n\n').slice(0, 4000),
       fibre: d.fibre,

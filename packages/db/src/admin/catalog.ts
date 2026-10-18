@@ -431,3 +431,43 @@ export async function setPrimaryProductMedia(client: IwcClient, productId: strin
 export async function setProductWears(client: IwcClient, id: string, wears: 'women' | 'men' | 'kids' | 'unisex') {
   unwrap(await client.from('products').update({ wears }).eq('id', id));
 }
+
+/** D-140 (L1): every imported clothing and home listing's name with its shop, for the names-to-tidy review (1,000 at a time). */
+export async function listNamesToReview(client: IwcClient) {
+  const all = [];
+  for (let from = 0; ; from += 1000) {
+    const rows = unwrap(
+      await client
+        .from('products')
+        .select('id, name, product_type, status, vendor_id, source_site, shop_title')
+        .in('product_type', ['clothing', 'home'])
+        // only names that came from a shop's page; names written for IWC are left alone
+        .not('source_url', 'is', null)
+        .neq('status', 'archived')
+        .order('created_at')
+        .order('id')
+        .range(from, from + 999),
+    );
+    all.push(...rows);
+    if (rows.length < 1000) return all;
+  }
+}
+
+/** D-140 (L1): new names for listings; the old one is kept as the shop's title when none was kept yet. */
+export async function renameListings(client: IwcClient, items: { id: string; name: string }[]): Promise<number> {
+  if (items.length === 0) return 0;
+  const current = unwrap(await client.from('products').select('id, name, shop_title').in('id', items.map((i) => i.id)));
+  let n = 0;
+  for (const item of items) {
+    const row = current.find((r) => r.id === item.id);
+    if (!row || row.name === item.name) continue;
+    unwrap(
+      await client
+        .from('products')
+        .update({ name: item.name, shop_title: row.shop_title ?? row.name.slice(0, 300) })
+        .eq('id', item.id),
+    );
+    n += 1;
+  }
+  return n;
+}

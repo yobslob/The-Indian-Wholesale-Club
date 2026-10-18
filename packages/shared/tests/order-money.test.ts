@@ -72,3 +72,48 @@ describe('who a piece is for (D-140, F2)', async () => {
     assert.equal(wearsFromHints(['Kurtas']), null);
   });
 });
+
+describe("IWC's name for a shop's title (D-140, L1)", async () => {
+  const { cleanTitle, startsWithBrand } = await import('../src/sourcing');
+  it('drops the brand, the shop-search words and "with", and keeps about six words', () => {
+    assert.equal(cleanTitle('House of Pataudi Embroidered Mandarin Collar Kurta', { brand: 'House of Pataudi', productType: 'clothing' }),
+      'Embroidered Mandarin Collar Kurta');
+    assert.equal(
+      cleanTitle('TWINS LADY Women Ethnic Motifs Embroidered Regular Thread Work Kurta with Trousers & With Dupatta', { brand: 'TWINS LADY', productType: 'clothing' }),
+      'Embroidered Thread Work Kurta, Trousers & Dupatta',
+    );
+    assert.equal(cleanTitle('The Wallet Store Ishq-E-Jhumka Gold Plated Jhumka Earrings for Women', { brand: 'The Wallet Store', productType: 'home' }),
+      'Ishq-E-Jhumka Gold Plated Jhumka Earrings');
+    assert.equal(cleanTitle('Aaliya Halterneck Kurti', { productType: 'clothing' }), 'Aaliya Halterneck Kurti');
+  });
+  it("keeps food's brand (D-139) and refuses nothing it cannot shorten", () => {
+    assert.equal(cleanTitle("Haldiram's Aloo Bhujia", { brand: "Haldiram's", productType: 'food' }), "Haldiram's Aloo Bhujia");
+    assert.equal(cleanTitle('Women', { productType: 'clothing' }), 'Women');
+    assert.equal(startsWithBrand('TWINS LADY Kurta', 'twins lady'), true);
+    assert.equal(startsWithBrand('Embroidered Kurta', 'TWINS LADY'), false);
+  });
+});
+
+describe('brands among old names (D-140, L1)', async () => {
+  const { guessBrands } = await import('../src/sourcing');
+  it('finds a start shared by three names, or a leading all-capital name, never a garment word', () => {
+    const b = guessBrands([
+      'House of Pataudi Embroidered Kurta',
+      'House of Pataudi Printed Kurta',
+      'House of Pataudi Silk Sherwani',
+      'TWINS LADY Women Kurta with Trousers',
+      'Embroidered Kurta',
+      'Embroidered Saree',
+      'Embroidered Dupatta',
+      'Aaliya Halterneck Kurti',
+    ]);
+    assert.deepEqual(b.sort(), ['house of pataudi', 'twins lady']);
+  });
+});
+
+describe('names in brackets (D-140, L1)', async () => {
+  const { cleanTitle } = await import('../src/sourcing');
+  it('drops "(Men)" without leaving brackets', () => {
+    assert.equal(cleanTitle('Phulkari Kurta (Men)', { productType: 'clothing' }), 'Phulkari Kurta');
+  });
+});

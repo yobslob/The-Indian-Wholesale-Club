@@ -3,6 +3,7 @@ import { variantLabel, type VariantOptions } from '../../domain/listing';
 import { guessDetails } from '../guess';
 import { liquidReason } from '../liquid';
 import { shorten } from '../text';
+import { cleanTitle } from '../title';
 import { cleanOptions, packGrams } from '../variants';
 import { bestWeight, readWeights } from '../weight';
 
@@ -263,7 +264,8 @@ export function buildListing(input: {
   const description = sanitizeText(
     [bullets.map((b) => `• ${b}`).join('\n'), product.description].join('\n\n'),
   );
-  const name = listingName(product.title);
+  // D-140 (L1): IWC's name, not the shop's title: no brand or shop, about six words (food keeps its brand, D-139)
+  const name = listingName(cleanTitle(product.title, { brand: product.brand, productType: target.product_type }));
   const { attributes, complete, missing } = attributesFor(product, target.product_type);
   const seenPhotos = new Set(product.images.slice(0, 8));
   const photos = [

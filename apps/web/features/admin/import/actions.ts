@@ -271,6 +271,7 @@ export async function saveImportAction(raw: ImportInput): Promise<ImportResult> 
     const id = await createListing(client, listing);
     await updateSourcedProduct(client, id, {
       ...(input.wears ? { wears: input.wears } : {}),
+      shop_title: input.product.title.slice(0, 300),
       description: input.description || null,
       source_url: input.product.url,
       source_site: input.product.site,
