@@ -63,6 +63,10 @@ test("Home's Just listed is a row per type, each with its own See all (D-140)", 
   await expect(section.getByRole('tab')).toHaveCount(0);
   const clothing = section.getByRole('region', { name: 'Clothing' });
   await expect(clothing.getByRole('list', { name: 'Just listed: Clothing' })).toBeVisible();
-  await clothing.getByRole('link', { name: /See all/ }).click();
+  const seeAll = clothing.getByRole('link', { name: /See all/ });
+  await expect(seeAll).toHaveAttribute('href', '/clothing');
+  // by keyboard: the Home hero's scroll effects can move the row under a mouse pointer mid-click
+  await seeAll.focus();
+  await page.keyboard.press('Enter');
   await expect(page).toHaveURL(/\/clothing$/);
 });

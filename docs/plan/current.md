@@ -99,6 +99,14 @@ phase's sub-steps and every verification run) is in `docs/archive/status-log-to-
   each checked against its box size and the listing's other packs; impossible readings go to the hub, not into a
   price. The hub's scale, then an admin, come first. Customers never see a home weight; each box's weight by size is
   kept for Q-36 (does the courier bill by size?).
+- **Design & ergonomics plan v5 (D-140, 2026-10-18, `docs/plan/design-plan.md`):** admin: one pager on every list,
+  Imported listings on its own tab, To order (order from the shop in one tap, cart links for Amazon and Shopify
+  shops, On the way, To weigh), the cost snapshot, invoices A / B / C (C as a form with pasted photos), margins, Today
+  for the pilot, a new-order email and toast, the For column, Names to tidy, app refunds. Store: three Just listed
+  rows, types in the header, Women · Men with grouped sizes, own pieces first, mixed Newest, + picks the size on the
+  card, − n + for pieces in the bag, the instant heart on every card, no pre-chosen size, the struck Shipping figure
+  and You're saving, the order stitch, plainer product pages, Goes well with, Home's band, photos from fixed copies.
+  Migrations `20261018090000` – `20261018150000` (local only until the Deploy workflow).
 - **Filters without page loads (D-136, 2026-10-16):** Home's Just listed has the Clothing · Food · Home & gifts
   switch (See all follows it); See all has a left filter panel (Category, State, Price slider and ranges, Size / Pack
   boxes), chips, Sort by; filters and Show more change only the cards (`/api/browse`), and Back from a product
@@ -106,6 +114,15 @@ phase's sub-steps and every verification run) is in `docs/archive/status-log-to-
   sort, and Download Excel follows them.
 
 ## Next for the founder
+0. **D-140 (2026-10-18), in this order:** raise Vercel's image allowance today (photos show alt text: the resizer
+   answers 402). Run the Deploy workflow (migrations `20261018090000` – `20261018150000`). Then
+   `pnpm photos:copies -- --dry`, then `pnpm photos:copies -- --allow-remote` with the production keys, repeated until
+   0 is left (photos then skip Vercel's resizer). Settings → Bag charges → "Shipping shown when free" ($ a kg; empty
+   keeps $18.79 struck). Products → For: not set yet: pick Women / Men / Kids / Everyone for the clothing no name
+   says (a clothing listing cannot go live without it, nor without its care). Products → Names to tidy: check and
+   rename. Answer Q-38 (the live Kids listings) and Q-39 (an interim size line). Optional: `pnpm add -D -w sharp`
+   (the photo script uses Next's copy today). Not built yet: app push notifications for new orders (needs
+   expo-notifications and EAS setup), the app's card − n + and For filter, size charts from the shops (S3).
 1. Run the Deploy workflow: it applies the new migrations (the latest is `20261016210000_browse_filters`, D-136) to
    production. Then `pnpm sourcing liquids --dry` (the 16 liquids found on 2026-10-16: juices, sea buckthorn pulp, a
    soda, coconut and kernel oils, a sharbat, kokum agal, three attars, two ghees sold by the ml) and
@@ -160,6 +177,7 @@ phase's sub-steps and every verification run) is in `docs/archive/status-log-to-
 ## Last verification
 | Date | Commit | Where | Result |
 |---|---|---|---|
+| 2026-10-18 | 887f3cf + e2e fix (D-140) | Claude Code, founder's Windows machine with Docker | `check.mjs` all steps: docs, typecheck, lint, test (shared, web incl. new paging, card-options, image-copies, order-money), db (fresh reset, 55/55 SQL files incl. new `order_from_shop`, `wears_and_rows`), build, http (`/` 26 ms 134 KB, `/clothing` 17 ms 149 KB, product 24 ms 138 KB), bundle: OK. e2e first 28/29 (the new Home row test's mouse click landed on the page while the hero scrolled; it now follows See all by keyboard), then 29/29 (incl. new card picker, − n +, one-choice add, no pre-chosen size, the heart before the network). In the browser on `next dev`: the pager (jump, Back, ← / →), Imported listings, To order with Amazon and Shopify cart links, Mark ordered at once and its undo, the order page's Order it / shop bill (rows, coupon, paste a photo, final), invoices A / B / C, customer invoice A print view, Today's pilot jobs, Women · Men tiles and For filter, header drop-down and phone menu, the size ribbon and sheet, the heart signed out and merged after sign-in, Choose a size, Goes well with, Home's band, the thank-you stitch, photos from copies. **Not run:** production (needs the Deploy workflow), the app on a phone (only typechecked and bundled), a real Stripe refund from the app, Amazon's add-to-cart link on amazon.in. |
 | 2026-10-16 | 7215a67 + uncommitted D-136 | Claude Code, founder's Windows machine with Docker | `check.mjs` all steps: docs OK 0.4 s, typecheck FAIL 23.7 s (the app's Browse typed its counts as the whole browse result; fixed, `check.mjs typecheck` then OK 29.2 s), lint OK 23.0 s, test OK 3.9 s (incl. new `browse-query.test.ts`, 7), db OK 57.4 s (fresh reset; incl. new `browse_filters.test.sql`), build OK 100.5 s, http OK 4.4 s, e2e OK 124.1 s (incl. the new filters-and-Show-more flow in `rows.spec.ts`), bundle OK 54.6 s; /clothing 11 ms, 147 KB first-load JS (budget 150 KB). In the browser on `next dev`: a filter, a size, Sort by, the price slider and Clear all change only the cards (no page load, the address follows); Show more 24 → 48 with the scroll unchanged; Back from a product: 48 cards and the same scroll; Back / Forward between filters; a shared link with price, size and sort; the phone Filter panel; Home's switch (Food's row, See all → /food); admin Products by type, sort, All-India, price, and Download Excel of that view. **Not run:** the app on a phone, production (needs the migration). |
 | 2026-10-16 | D-133 commit | Claude Code, founder's Windows machine with Docker | `check.mjs` all nine steps OK (db from a fresh reset: 50/50 SQL test files incl. new `food_weights.test.sql`: worker only, food only, never over weighed or typed, net quantity kept, repriced, not replaced by shop pages or estimates, a typed weight refused over a weighed one, `net_qty` in the store without forbidden keys, the runner's packed weight kept; e2e OK; build, http, bundle OK); after a last fix docs, typecheck, lint, test (shared 257 incl. new `food-weights.test.ts`, 26) OK again. `pnpm weights food --dry` read production (before the deploy, through the estimator's plan; nothing written): 940 food listings, 1,684 options in 16 s; about 1,100 get a packed weight, 586 state no net quantity. **Not run:** writing on production (needs the migration), the app on a phone, the runner's add path on live shops, a hub weighing of food. |
 | 2026-10-16 | D-132 commit | Claude Code, founder's Windows machine with Docker | `check.mjs` all nine steps OK; after the founder's review (gamosa, kaftan, dresses and skirts light; all weight fields in the forbidden store keys) docs, typecheck, lint, test (class tests 58) and db (48/48) OK again (db from a fresh reset: 48/48 SQL test files incl. new `clothing_classes.test.sql`, 16 assertions: class weights, never on food or a weighed or typed option, repriced, not replaced by shop pages or estimates; e2e 23/23). Shared unit tests incl. new `clothing-classes.test.ts` (53: real Myntra and catalogue titles per class). The rules sorted 299 of 301 real Myntra titles (the other two, a Patiala and a pattu pavadai, after a fix); on the local database `pnpm weights classes` sorted all 278 demo clothing listings in 12 s (249 by name, 22 by category, 7 fabrics by the model) and wrote 4,374 options. **Not run:** against production. |
