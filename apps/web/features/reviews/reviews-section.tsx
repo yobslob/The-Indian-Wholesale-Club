@@ -1,5 +1,4 @@
-import Image from 'next/image';
-
+import { StorePhoto } from '@/features/catalog/store-photo';
 import { reviewPhotoUrl } from '@/lib/site';
 
 import { WriteReview } from './write-review';
@@ -97,10 +96,9 @@ export function ReviewsSection({
                         key={path}
                         className="bg-land relative size-16 overflow-hidden rounded-md"
                       >
-                        <Image
+                        <StorePhoto
                           src={reviewPhotoUrl(path)}
                           alt={`Photo from ${r.display_name}`}
-                          fill
                           sizes="64px"
                           className="object-cover"
                         />

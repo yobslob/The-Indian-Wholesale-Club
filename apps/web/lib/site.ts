@@ -19,11 +19,14 @@ export const INFO_LINKS = [
  */
 export const isInfoPath = (href: string): boolean => INFO_LINKS.some((l) => l.href === href);
 
-/** Public URL of a file in a public storage bucket. */
+/**
+ * A file in a public storage bucket at the site's own address (D-140): `/media/<bucket>/<path>`, which next.config.js
+ * proxies to Supabase's storage and Vercel's CDN keeps for a year. Relative, like every link on the site; an email
+ * puts the site's address in front.
+ */
 function publicUrl(bucket: string, storagePath: string): string {
-  const base = process.env.NEXT_PUBLIC_SUPABASE_URL ?? '';
   const clean = storagePath.replace(/^\/+/, '').split('/').map(encodeURIComponent).join('/');
-  return `${base}/storage/v1/object/public/${bucket}/${clean}`;
+  return `/media/${bucket}/${clean}`;
 }
 
 /** Public URL of a product/region photo in the public `product-media` bucket. */

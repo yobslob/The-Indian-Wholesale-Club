@@ -1,11 +1,10 @@
-import Image from 'next/image';
-
 import {
   deleteProductPhotoAction,
   setMainPhotoAction,
   uploadProductPhotoAction,
 } from '@/features/admin/actions/product-photos';
 import { button, Field, input } from '@/features/admin/ui';
+import { StorePhoto } from '@/features/catalog/store-photo';
 import { mediaUrl } from '@/lib/site';
 
 interface Photo {
@@ -34,7 +33,7 @@ export function ProductPhotos({ productId, media }: { productId: string; media: 
           {photos.map((p) => (
             <li key={p.id} className="space-y-1.5 text-sm">
               <div className="bg-surface relative aspect-[3/4] overflow-hidden rounded-md">
-                <Image src={mediaUrl(p.storage_path)} alt={p.alt_text} fill sizes="180px" className="object-cover" />
+                <StorePhoto src={mediaUrl(p.storage_path)} alt={p.alt_text} sizes="180px" className="object-cover" />
               </div>
               <p className="line-clamp-2">{p.alt_text}</p>
               {p.is_primary ? (

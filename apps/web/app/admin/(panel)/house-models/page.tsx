@@ -1,11 +1,10 @@
-import Image from 'next/image';
-
 import { listHouseModels } from '@repo/db/admin';
 
 import { saveHouseModelAction, setHouseModelActiveAction } from '@/features/admin/actions/vendor-accounts';
 import { Chip } from '@/features/admin/chips';
 import { requireAdminPage } from '@/features/admin/guard';
 import { button, Field, input, PageHead, Panel, secondaryButton } from '@/features/admin/ui';
+import { StorePhoto } from '@/features/catalog/store-photo';
 import { mediaUrl } from '@/lib/site';
 
 /**
@@ -25,7 +24,7 @@ export default async function HouseModelsPage(): Promise<React.JSX.Element> {
             <div className="grid grid-cols-2 gap-2">
               {[m.front_path, m.back_path].map((path) => (
                 <div key={path} className="bg-surface relative aspect-[3/5] overflow-hidden rounded-md">
-                  <Image src={mediaUrl(path)} alt={m.label} fill sizes="200px" className="object-contain" />
+                  <StorePhoto src={mediaUrl(path)} alt={m.label} sizes="200px" className="object-contain" />
                 </div>
               ))}
             </div>

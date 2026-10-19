@@ -5,9 +5,10 @@ import { redirect } from 'next/navigation';
 import { z } from 'zod';
 
 import { approveSubmission, declineSubmission, getVendorSubmission, requestRetake, rerunPhotoJob, setProductStatus } from '@repo/db/admin';
-import { listingSlug, PHOTO_CACHE_CONTROL } from '@repo/shared/domain';
+import { listingSlug } from '@repo/shared/domain';
 
 import { STORE_TAG } from '@/features/catalog/data';
+import { storePhoto } from '@/lib/photo-copies';
 
 import { requireAdminAction } from '../guard';
 
@@ -25,16 +26,11 @@ const approveSchema = z.object({
   publish: z.enum(['draft', 'live']),
 });
 
-/** Copies a picked photo into product-media under a new random path (PR-6: never overwritten, cached a year). */
+/** Copies a picked photo into product-media under a new random path, with its fixed copies (PR-6, D-140). */
 async function copyToStore(client: IwcClient, bucket: 'photo-candidates' | 'vendor-uploads', path: string, folder: string): Promise<string> {
   const { data, error } = await client.storage.from(bucket).download(path);
   if (error || !data) throw new Error(`could not read ${path}`);
-  const target = `products/${folder}/${crypto.randomUUID()}.jpg`;
-  const { error: upError } = await client.storage
-    .from('product-media')
-    .upload(target, data, { contentType: 'image/jpeg', cacheControl: PHOTO_CACHE_CONTROL });
-  if (upError) throw new Error(upError.message);
-  return target;
+  return storePhoto(client, 'product-media', `products/${folder}/${crypto.randomUUID()}.jpg`, data, 'image/jpeg');
 }
 
 /**

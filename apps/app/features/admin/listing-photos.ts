@@ -3,6 +3,7 @@ import * as ImagePicker from 'expo-image-picker';
 import { addProductMedia } from '@repo/db/admin';
 import { PHOTO_CACHE_CONTROL } from '@repo/shared/domain';
 
+import { apiPost } from '@/lib/api';
 import { shrink, sniff } from '@/lib/photo-files';
 import { supabase } from '@/lib/supabase';
 
@@ -35,7 +36,8 @@ export async function takePhotos(source: 'camera' | 'library'): Promise<ListingP
 
 /**
  * Uploads a listing's photos with the admin's own session (storage policy "iwc admin insert") and records them
- * in product_media, in order, the first as the main photo. Returns the photos that failed, so they can be retried.
+ * in product_media, in order, the first as the main photo, then asks the website for their fixed copies (D-140: sharp
+ * runs there; a photo shows as it is until it has them). Returns the photos that failed, so they can be retried.
  */
 export async function uploadListingPhotos(
   productId: string,
@@ -63,5 +65,6 @@ export async function uploadListingPhotos(
       failed.push(photo);
     }
   }
+  if (failed.length < photos.length) void apiPost('/admin/photo-copies', { productId });
   return failed;
 }

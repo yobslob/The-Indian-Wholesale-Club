@@ -1,7 +1,6 @@
-import Image from 'next/image';
-
 import { deskTime } from '@repo/shared/admin';
 
+import { StorePhoto } from '@/features/catalog/store-photo';
 import { mediaUrl } from '@/lib/site';
 
 import { markPickupAction } from './actions/cycles';
@@ -89,7 +88,7 @@ async function ShopCard({ rows, cycleId }: { rows: Pickup[]; cycleId: string }):
               }`}
             >
               <span className="bg-land relative block h-[54px] w-10 overflow-hidden rounded-lg">
-                {media ? <Image src={mediaUrl(media.storage_path)} alt="" fill sizes="40px" className="object-cover" /> : null}
+                {media ? <StorePhoto src={mediaUrl(media.storage_path)} alt="" sizes="40px" className="object-cover" /> : null}
               </span>
               <span className="min-w-0">
                 <b className="block font-semibold">{name}</b>

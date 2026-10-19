@@ -10,9 +10,10 @@ import {
   getProductMedia,
   setPrimaryProductMedia,
 } from '@repo/db/admin';
-import { PHOTO_CACHE_CONTROL } from '@repo/shared/domain';
+import { photoFiles } from '@repo/shared/domain';
 
 import { STORE_TAG } from '@/features/catalog/data';
+import { storePhoto } from '@/lib/photo-copies';
 
 import { requireAdminAction } from '../guard';
 
@@ -52,9 +53,7 @@ export async function uploadProductPhotoAction(productId: string, form: FormData
 
   const product = await getAdminProduct(client, pid);
   if (!product) throw new Error('product not found');
-  const path = `products/${pid}/${crypto.randomUUID()}.${ext}`;
-  const { error } = await client.storage.from('product-media').upload(path, file, { contentType: file.type, cacheControl: PHOTO_CACHE_CONTROL });
-  if (error) throw new Error(`upload failed: ${error.message}`);
+  const path = await storePhoto(client, 'product-media', `products/${pid}/${crypto.randomUUID()}.${ext}`, file, file.type);
   const order = product.media.reduce((max, m) => Math.max(max, m.sort_order), -1) + 1;
   await addProductMedia(client, {
     product_id: pid,
@@ -78,7 +77,7 @@ export async function deleteProductPhotoAction(productId: string, mediaId: strin
   const media = await getProductMedia(client, id.parse(mediaId));
   if (!media || media.product_id !== id.parse(productId)) throw new Error('photo not found');
   await deleteProductMedia(client, media.id);
-  const { error } = await client.storage.from('product-media').remove([media.storage_path]);
+  const { error } = await client.storage.from('product-media').remove(photoFiles(media.storage_path));
   if (error) throw new Error(`the photo was removed from the product, but its file could not be deleted: ${error.message}`);
   if (media.is_primary) {
     const product = await getAdminProduct(client, productId);

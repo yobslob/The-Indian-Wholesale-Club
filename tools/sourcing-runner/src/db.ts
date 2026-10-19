@@ -1,10 +1,17 @@
 import { randomUUID } from 'node:crypto';
 
 import { createClient, type SupabaseClient } from '@supabase/supabase-js';
+import sharp from 'sharp';
 import { z } from 'zod';
 
-import { PRODUCT_TYPES } from '@repo/shared/domain';
-
+import { COPY_WIDTHS, copyFor, PRODUCT_TYPES } from '@repo/shared/domain';
+import {
+  planSchema,
+  weightPlanSchema,
+  type SourcingPlan,
+  type WeightPlan,
+  type WeightWrite,
+} from '@repo/shared/sourcing/auto';
 import {
   clothingPlanSchema,
   foodPlanSchema,
@@ -16,19 +23,13 @@ import {
   type FoodWrite,
   type WeightReferenceRow,
 } from '@repo/shared/sourcing/estimate';
-import {
-  planSchema,
-  weightPlanSchema,
-  type SourcingPlan,
-  type WeightPlan,
-  type WeightWrite,
-} from '@repo/shared/sourcing/auto';
 
+import { errorText, log } from './log';
 import { describeNetError, supabaseFetch } from './net';
 
+import type { Env } from './env';
 import type { ProductType } from '@repo/shared/domain';
 
-import type { Env } from './env';
 
 /** D-135: a listing for the liquid check. */
 const liquidPlanSchema = z.array(
@@ -218,13 +219,29 @@ export class Db implements FoodPassDb {
     return this.rpc('worker_sourcing_log', { p_run: run });
   }
 
-  /** Uploads one photo under products/<id>/ and returns its path. */
+  /**
+   * Uploads one photo under products/<id>/ and returns its path: with its fixed copies in products/<id>/c/ (D-140, the
+   * same settings as apps/web/lib/photo-copies.ts), so the store never resizes it per view. A photo sharp can't read
+   * is stored as it is; the admin panel gives it copies later if it can.
+   */
   async upload(product: string, bytes: Buffer, contentType: string): Promise<string> {
     const ext = contentType.includes('png') ? 'png' : contentType.includes('webp') ? 'webp' : 'jpg';
-    const path = `products/${product}/${randomUUID()}.${ext}`;
-    const { error } = await this.client.storage
-      .from('product-media')
-      .upload(path, bytes, { contentType, upsert: false, cacheControl: '31536000' });
+    const name = `${randomUUID()}.${ext}`;
+    const store = (path: string, body: Buffer, type: string) =>
+      this.client.storage.from('product-media').upload(path, body, { contentType: type, upsert: false, cacheControl: '31536000' });
+    let path = `products/${product}/${name}`;
+    try {
+      const image = sharp(bytes, { failOn: 'error' }).rotate();
+      for (const width of COPY_WIDTHS) {
+        const body = await image.clone().resize({ width, withoutEnlargement: true }).webp({ quality: 80, smartSubsample: true }).toBuffer();
+        const { error } = await store(copyFor(`products/${product}/c/${name}`, width), body, 'image/webp');
+        if (error) throw new Error(error.message);
+      }
+      path = `products/${product}/c/${name}`;
+    } catch (error) {
+      log(`  photo copies not made: ${errorText(error)}`);
+    }
+    const { error } = await store(path, bytes, contentType);
     if (error) throw new Error(`photo upload: ${error.message}`);
     return path;
   }

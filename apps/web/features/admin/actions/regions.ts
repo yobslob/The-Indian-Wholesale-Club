@@ -10,10 +10,11 @@ import {
   removeRegionPhoto,
   updateRegion,
 } from '@repo/db/admin';
-import { PHOTO_CACHE_CONTROL, worstContrast } from '@repo/shared/domain';
+import { photoFiles, worstContrast } from '@repo/shared/domain';
 import tokens from '@repo/tokens';
 
 import { STORE_TAG } from '@/features/catalog/data';
+import { storePhoto } from '@/lib/photo-copies';
 
 import { requireAdminAction } from '../guard';
 
@@ -107,9 +108,7 @@ export async function uploadRegionImageAction(regionId: string, form: FormData):
 
   const region = await getRegionAdmin(client, regionIdOk);
   if (!region) throw new Error('region not found');
-  const path = `regions/${region.slug}/${crypto.randomUUID()}.${ext}`;
-  const { error } = await client.storage.from('product-media').upload(path, file, { contentType: file.type, cacheControl: PHOTO_CACHE_CONTROL });
-  if (error) throw new Error(`upload failed: ${error.message}`);
+  const path = await storePhoto(client, 'product-media', `regions/${region.slug}/${crypto.randomUUID()}.${ext}`, file, file.type);
   await updateRegion(client, regionIdOk, { hero_image_path: path });
   revalidateTag(STORE_TAG);
   revalidatePath(`/admin/regions/${regionIdOk}`);
@@ -128,9 +127,7 @@ export async function uploadAlbumPhotoAction(regionId: string, form: FormData): 
 
   const region = await getRegionAdmin(client, regionIdOk);
   if (!region) throw new Error('region not found');
-  const path = `regions/${region.slug}/album/${crypto.randomUUID()}.${ext}`;
-  const { error } = await client.storage.from('product-media').upload(path, file, { contentType: file.type, cacheControl: PHOTO_CACHE_CONTROL });
-  if (error) throw new Error(`upload failed: ${error.message}`);
+  const path = await storePhoto(client, 'product-media', `regions/${region.slug}/album/${crypto.randomUUID()}.${ext}`, file, file.type);
   await addRegionPhoto(client, regionIdOk, path, alt);
   revalidateTag(STORE_TAG);
   revalidatePath(`/admin/regions/${regionIdOk}`);
@@ -139,7 +136,7 @@ export async function uploadAlbumPhotoAction(regionId: string, form: FormData): 
 export async function removeAlbumPhotoAction(regionId: string, photoId: string): Promise<void> {
   const { client } = await requireAdminAction();
   const path = await removeRegionPhoto(client, id.parse(photoId));
-  if (path) await client.storage.from('product-media').remove([path]);
+  if (path) await client.storage.from('product-media').remove(photoFiles(path));
   revalidateTag(STORE_TAG);
   revalidatePath(`/admin/regions/${id.parse(regionId)}`);
 }

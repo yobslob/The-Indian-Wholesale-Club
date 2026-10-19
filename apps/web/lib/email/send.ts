@@ -9,9 +9,9 @@ import {
   markEmailFailed,
   markEmailSent,
 } from '@repo/db/server';
+import { photoUrl } from '@repo/shared/domain';
 
 import { siteUrl, supportEmail } from '@/lib/env';
-import { copyFor, hasCopies } from '@/lib/image-copies';
 import { errorMessage, logger } from '@/lib/logger';
 import { mediaUrl, SITE_NAME } from '@/lib/site';
 
@@ -52,8 +52,8 @@ function emailContext(): EmailContext {
     siteName: SITE_NAME,
     siteUrl: site,
     supportEmail: supportEmail(),
-    // D-140: a photo's 320 px copy when it has one (no resizer), else the site's resizer at 128 px
-    photo: (path) => (hasCopies(path) ? copyFor(mediaUrl(path), 320) : `${site}/_next/image?url=${encodeURIComponent(mediaUrl(path))}&w=128&q=75`),
+    // D-140: a photo's 320 px copy when it has one, else the photo itself; never a resizer
+    photo: (path) => `${site}${photoUrl(mediaUrl(path), 320)}`,
   };
 }
 

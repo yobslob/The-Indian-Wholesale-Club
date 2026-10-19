@@ -1,8 +1,8 @@
-import Image from 'next/image';
 import Link from 'next/link';
 
 import { siteLabel } from '@repo/shared/sourcing';
 
+import { StorePhoto } from '@/features/catalog/store-photo';
 import { mediaUrl } from '@/lib/site';
 
 import { markExpressPickupAction } from '../actions/orders';
@@ -31,7 +31,7 @@ export function PipelineList({ rows, view }: { rows: PipelinePiece[]; view: 'ord
         return (
           <li key={p.id} className="grid grid-cols-[40px_minmax(0,1fr)] items-center gap-x-3 gap-y-2 px-4 py-2.5 text-[14px] md:grid-cols-[40px_minmax(0,1fr)_auto]">
             <span className="bg-land relative block h-[54px] w-10 overflow-hidden rounded-lg">
-              {media ? <Image src={mediaUrl(media.storage_path)} alt="" fill sizes="40px" className="object-cover" /> : null}
+              {media ? <StorePhoto src={mediaUrl(media.storage_path)} alt="" sizes="40px" className="object-cover" /> : null}
             </span>
             <span className="min-w-0">
               <b className="block font-semibold">{name}</b>

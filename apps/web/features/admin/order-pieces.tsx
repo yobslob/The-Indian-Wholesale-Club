@@ -1,9 +1,8 @@
-import Image from 'next/image';
-
 import { PIECE_STAGE, pieceStage } from '@repo/shared/admin';
 import { formatUsd } from '@repo/shared/domain';
 import { siteLabel } from '@repo/shared/sourcing';
 
+import { StorePhoto } from '@/features/catalog/store-photo';
 import { mediaUrl } from '@/lib/site';
 
 import { markExpressPickupAction } from './actions/orders';
@@ -55,7 +54,7 @@ export function OrderPieces({
             <tr key={item.id}>
               <Cell className="w-14">
                 <span className="bg-land relative block h-[58px] w-11 overflow-hidden rounded-lg">
-                  {media ? <Image src={mediaUrl(media.storage_path)} alt="" fill sizes="44px" className="object-cover" /> : null}
+                  {media ? <StorePhoto src={mediaUrl(media.storage_path)} alt="" sizes="44px" className="object-cover" /> : null}
                 </span>
               </Cell>
               <Cell>

@@ -1,7 +1,6 @@
 import 'server-only';
 
 import { addProductMedia } from '@repo/db/admin';
-import { PHOTO_CACHE_CONTROL } from '@repo/shared/domain';
 import {
   captureFromHtml,
   isPublicHttpsUrl,
@@ -9,6 +8,8 @@ import {
   normalizeCapture,
   type SourcedProduct,
 } from '@repo/shared/sourcing';
+
+import { storePhoto } from '@/lib/photo-copies';
 
 import type { IwcClient } from '@repo/db';
 
@@ -118,11 +119,9 @@ export async function copySourcePhotos(
         if (!response.ok || !ext || !isPublicHttpsUrl(response.url || url)) return null;
         const bytes = await readCapped(response, MAX_PHOTO_BYTES);
         if (!bytes || bytes.byteLength < 2_000) return null;
-        const path = `products/${productId}/${crypto.randomUUID()}.${ext}`;
-        const { error } = await client.storage
-          .from('product-media')
-          .upload(path, bytes, { contentType: type, cacheControl: PHOTO_CACHE_CONTROL });
-        return error ? null : { path, order: i };
+        // with its fixed copies (D-140): the store never resizes a photo per view
+        const path = await storePhoto(client, 'product-media', `products/${productId}/${crypto.randomUUID()}.${ext}`, bytes, type);
+        return { path, order: i };
       } catch {
         return null;
       }

@@ -7,6 +7,7 @@ import { addProductMedia, createListing, setProductStatus } from '@repo/db/admin
 import { listingInputSchema } from '@repo/shared/domain';
 
 import { STORE_TAG } from '@/features/catalog/data';
+import { withCopies } from '@/lib/photo-copies';
 
 import { requireAdminAction } from '../guard';
 
@@ -43,8 +44,10 @@ async function saveOne(input: unknown, photos: unknown, publish: boolean): Promi
   } catch (error) {
     return { error: plain(error) };
   }
+  // each photo moves into its c/ folder with its fixed copies (D-140); no page names it yet
+  const paths = await Promise.all(pics.data.map((p) => withCopies(client, 'product-media', p.path, true)));
   for (const [i, p] of pics.data.entries()) {
-    await addProductMedia(client, { product_id: id, storage_path: p.path, alt_text: p.alt, sort_order: i, is_primary: i === 0 });
+    await addProductMedia(client, { product_id: id, storage_path: paths[i]!, alt_text: p.alt, sort_order: i, is_primary: i === 0 });
   }
   if (!publish) return { id, published: false };
   try {

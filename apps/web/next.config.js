@@ -19,6 +19,23 @@ if (
 const supabaseOrigin = supabaseUrl ? supabaseUrl.origin : 'https://*.supabase.co';
 
 /**
+ * D-140, the photo fix: photos come from the site's own address, `/media/<bucket>/<path>`, proxied to Supabase's
+ * public storage and kept by Vercel's CDN for a year (headers below). Every photo path is new and never overwritten
+ * (PR-6), so a year is safe. Free on both sides: Vercel serves it from its CDN (no resizer, so no 5,000-a-month
+ * allowance), and Supabase sends each file about once per CDN region instead of once per view (its free plan allows
+ * 5 GB a month). Same origin as the page, so a photo needs no second connection. Only the two public photo buckets.
+ */
+function mediaRewrites() {
+  if (!supabaseUrl) return [];
+  return [
+    {
+      source: '/media/:bucket(product-media|review-media)/:path*',
+      destination: `${supabaseUrl.origin}/storage/v1/object/public/:bucket/:path*`,
+    },
+  ];
+}
+
+/**
  * /clothing, /food and /home-and-gifts with any of ?state=, ?category=, ?show=, ?for= →
  * /see-all/<type>/<state>/<category>/<show>/<for> ("all" and 24 when absent; ?for= is women or men, D-140). The rules with the most filters come first; a filter that is not a plain slug or number
  * is left out, as the page always did (browseParams).
@@ -71,30 +88,14 @@ const nextConfig = {
     staticGenerationMaxConcurrency: 2,
     staticGenerationRetryCount: 3,
   },
-  images: {
-    formats: ['image/avif', 'image/webp'],
-    // Photos are never overwritten (every upload gets a new random path), so a resized copy stays right: keep it a
-    // month instead of re-encoding it every hour (the storage default, max-age=3600). Same quality (75, the default).
-    minimumCacheTTL: 2678400,
-    remotePatterns: [
-      supabaseUrl
-        ? {
-            protocol: /** @type {'http' | 'https'} */ (supabaseUrl.protocol.replace(':', '')),
-            hostname: supabaseUrl.hostname,
-            port: supabaseUrl.port,
-            pathname: '/storage/v1/object/public/**',
-          }
-        : {
-            protocol: 'https',
-            hostname: '*.supabase.co',
-            pathname: '/storage/v1/object/public/**',
-          },
-    ],
-  },
+  // D-140: Vercel's image resizer is off. Its allowance (5,000 photos a month) ran out and photos answered 402
+  // (2026-10-18). Every photo is served as fixed copies made when it is stored (lib/photo-copies.ts), straight from
+  // Supabase's CDN; anything still drawn with next/image is served as it is, so the allowance can never run out again.
+  images: { unoptimized: true },
   // The See all pages and their filters are served from one cached route (app/(store)/see-all), like the state pages,
   // instead of rendering on every request; the address in the browser stays /clothing?state=kerala (D-011, PR-1).
   async rewrites() {
-    return { beforeFiles: seeAllRewrites() };
+    return { beforeFiles: [...mediaRewrites(), ...seeAllRewrites()] };
   },
   // D-110: Spices became Food; old links keep working.
   async redirects() {
@@ -102,6 +103,14 @@ const nextConfig = {
   },
   async headers() {
     return [
+      {
+        // D-140: photos from the site's own address, kept by Vercel's CDN for a year (mediaRewrites)
+        source: '/media/:path*',
+        headers: [
+          { key: 'x-vercel-enable-rewrite-caching', value: '1' },
+          { key: 'CDN-Cache-Control', value: 'max-age=31536000' },
+        ],
+      },
       {
         // Every page but the importer, whose preview shows the source site's photos before they are copied (D-110).
         source: '/((?!admin/import).*)',

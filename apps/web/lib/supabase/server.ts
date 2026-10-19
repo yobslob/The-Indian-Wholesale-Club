@@ -1,6 +1,7 @@
 import 'server-only';
 
 import { createServerClient, type CookieOptions } from '@supabase/ssr';
+import { createClient } from '@supabase/supabase-js';
 import { cookies } from 'next/headers';
 
 import { supabaseAnonKey, supabaseUrl } from '@/lib/env';
@@ -31,6 +32,17 @@ export async function sessionClient(): Promise<IwcClient> {
   });
   // @supabase/ssr types the client with an older generic signature; the runtime object is the same.
   return client as unknown as IwcClient;
+}
+
+/**
+ * A client that acts as the holder of `token` (an access token): the app's requests to the website's admin routes,
+ * and work that runs after a page was sent (`after()`), when the request's cookies are gone.
+ */
+export function tokenClient(token: string): IwcClient {
+  return createClient<Database>(supabaseUrl(), supabaseAnonKey(), {
+    auth: { persistSession: false, autoRefreshToken: false, detectSessionInUrl: false },
+    global: { headers: { Authorization: `Bearer ${token}` } },
+  });
 }
 
 /** The signed-in user's id and email, verified (getClaims checks the JWT). Null when signed out. */

@@ -28,8 +28,11 @@ import {
   optionAxes,
   orderEventLabel,
   quoteCheckout,
-  resizedPhotoUrl,
-  resizerWidth,
+  copiesPath,
+  copyFor,
+  hasCopies,
+  photoSrcSet,
+  photoUrl,
   selectionOf,
   shippingAddressSchema,
   foodAttributesSchema,
@@ -586,22 +589,29 @@ describe('tracking links (D-066)', () => {
   });
 });
 
-describe('resized photos for the app (engineering.md §App specifics)', () => {
-  it('picks the smallest served width that covers the pixels drawn, never upscaling', () => {
-    assert.equal(resizerWidth(492), 640); // a 164-point card on a 3x phone
-    assert.equal(resizerWidth(384), 384);
-    assert.equal(resizerWidth(385), 640);
-    assert.equal(resizerWidth(1), 16);
-    assert.equal(resizerWidth(9000), 3840); // the largest the resizer serves
+describe('photos from their fixed copies (D-140)', () => {
+  const base = 'https://x.supabase.co/storage/v1/object/public/product-media/products/p1';
+
+  it('serves a photo in a c/ folder from the copy the width asks for, never larger than the largest', () => {
+    assert.equal(hasCopies(`${base}/c/abc.jpg`), true);
+    assert.equal(hasCopies(`${base}/abc.jpg`), false);
+    assert.equal(copyFor(`${base}/c/abc.jpg`, 300), `${base}/c/abc.w320.webp`);
+    assert.equal(copyFor(`${base}/c/abc.jpg`, 492), `${base}/c/abc.w640.webp`); // a 164-point card on a 3x phone
+    assert.equal(copyFor(`${base}/c/abc.jpg`, 641), `${base}/c/abc.w1280.webp`);
+    assert.equal(copyFor(`${base}/c/abc.jpg`, 3840), `${base}/c/abc.w1280.webp`);
   });
 
-  it("asks the website's resizer for the photo at quality 75, the source encoded", () => {
-    const source = 'https://abc.supabase.co/storage/v1/object/public/product-media/products/p 1/a.jpg';
-    assert.equal(
-      resizedPhotoUrl('https://shop.example/', source, 164, 3),
-      `https://shop.example/_next/image?url=${encodeURIComponent(source)}&w=640&q=75`,
-    );
-    assert.equal(resizedPhotoUrl('https://shop.example', source, 390, 2).includes('&w=828&'), true);
+  it('draws a photo without copies as itself, never through a resizer', () => {
+    assert.equal(photoUrl(`${base}/abc.jpg`, 640), `${base}/abc.jpg`);
+    assert.equal(photoUrl(`${base}/c/abc.png`, 100), `${base}/c/abc.w320.webp`);
+    assert.equal(photoSrcSet(`${base}/abc.jpg`), '');
+    assert.equal(photoSrcSet(`${base}/c/a.jpg`), `${base}/c/a.w320.webp 320w, ${base}/c/a.w640.webp 640w, ${base}/c/a.w1280.webp 1280w`);
+  });
+
+  it('moves a photo into its c/ folder once', () => {
+    assert.equal(copiesPath('products/p1/abc.jpg'), 'products/p1/c/abc.jpg');
+    assert.equal(copiesPath('products/p1/c/abc.jpg'), 'products/p1/c/abc.jpg');
+    assert.equal(copiesPath('u1/r1/abc.webp'), 'u1/r1/c/abc.webp');
   });
 });
 

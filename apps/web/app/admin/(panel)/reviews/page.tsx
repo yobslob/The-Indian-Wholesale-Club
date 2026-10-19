@@ -1,4 +1,3 @@
-import Image from 'next/image';
 import Link from 'next/link';
 
 import { listReviewsForModeration } from '@repo/db/admin';
@@ -10,6 +9,7 @@ import { Pager } from '@/features/admin/pager/pager';
 import { plainParams } from '@/features/admin/pager/paging';
 import { readPaging } from '@/features/admin/pager/read-paging';
 import { button, PageHead } from '@/features/admin/ui';
+import { StorePhoto } from '@/features/catalog/store-photo';
 import { reviewPhotoUrl } from '@/lib/site';
 
 /**
@@ -55,7 +55,7 @@ export default async function ReviewsPage({
                   .sort((a, b) => a.sort_order - b.sort_order)
                   .map((p) => (
                     <a key={p.id} href={reviewPhotoUrl(p.storage_path)} target="_blank" rel="noreferrer" className="bg-surface relative block size-24 overflow-hidden rounded-md">
-                      <Image src={reviewPhotoUrl(p.storage_path)} alt="Customer photo" fill sizes="96px" className="object-cover" />
+                      <StorePhoto src={reviewPhotoUrl(p.storage_path)} alt="Customer photo" sizes="96px" className="object-cover" />
                     </a>
                   ))}
               </div>

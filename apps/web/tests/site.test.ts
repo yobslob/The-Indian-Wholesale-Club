@@ -29,11 +29,7 @@ describe('storefront links (D-006)', () => {
 });
 
 describe('mediaUrl', () => {
-  it('builds a public storage URL and encodes path segments', () => {
-    process.env.NEXT_PUBLIC_SUPABASE_URL = 'http://127.0.0.1:54321';
-    assert.equal(
-      mediaUrl('products/a b/1.jpg'),
-      'http://127.0.0.1:54321/storage/v1/object/public/product-media/products/a%20b/1.jpg',
-    );
+  it("builds the photo's address on the site (D-140) and encodes path segments", () => {
+    assert.equal(mediaUrl('products/a b/1.jpg'), '/media/product-media/products/a%20b/1.jpg');
   });
 });

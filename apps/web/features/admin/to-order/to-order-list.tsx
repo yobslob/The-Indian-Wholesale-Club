@@ -1,11 +1,11 @@
 'use client';
 
-import Image from 'next/image';
 import Link from 'next/link';
 import { useState, useTransition } from 'react';
 
 import { formatInr } from '@repo/shared/domain';
 
+import { StorePhoto } from '@/features/catalog/store-photo';
 import { mediaUrl } from '@/lib/site';
 
 import { markOrderedAction, unmarkOrderedAction } from '../actions/shop-orders';
@@ -159,7 +159,7 @@ function PieceRow({ row: r }: { row: ShopGroup['rows'][number] }): React.JSX.Ele
   return (
     <li className="grid grid-cols-[40px_minmax(0,1fr)] items-center gap-x-3 gap-y-2 py-2.5 text-[14px] md:grid-cols-[40px_minmax(0,1fr)_auto_140px]">
       <span className="bg-land relative block h-[54px] w-10 overflow-hidden rounded-lg">
-        {r.image_path ? <Image src={mediaUrl(r.image_path)} alt="" fill sizes="40px" className="object-cover" /> : null}
+        {r.image_path ? <StorePhoto src={mediaUrl(r.image_path)} alt="" sizes="40px" className="object-cover" /> : null}
       </span>
       <span className="min-w-0">
         <b className="block font-semibold">{r.product_name}</b>

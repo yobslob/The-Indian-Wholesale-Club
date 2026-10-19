@@ -1,4 +1,3 @@
-import Image from 'next/image';
 import { notFound } from 'next/navigation';
 
 import { getRegionAdmin, listRegionPhotos } from '@repo/db/admin';
@@ -12,6 +11,7 @@ import {
 } from '@/features/admin/actions/regions';
 import { requireAdminPage } from '@/features/admin/guard';
 import { button, Field, input, linkButton, PageHead } from '@/features/admin/ui';
+import { StorePhoto } from '@/features/catalog/store-photo';
 import { mediaUrl } from '@/lib/site';
 
 type Params = Promise<{ id: string }>;
@@ -56,7 +56,7 @@ export default async function RegionEditPage({
         </p>
         {region.hero_image_path ? (
           <div className="bg-surface relative aspect-[4/5] w-40 overflow-hidden rounded-md">
-            <Image src={mediaUrl(region.hero_image_path)} alt={`${region.name}: current photo`} fill sizes="160px" className="object-cover" />
+            <StorePhoto src={mediaUrl(region.hero_image_path)} alt={`${region.name}: current photo`} sizes="160px" className="object-cover" />
           </div>
         ) : (
           <p className="text-sm">No photo yet.</p>
@@ -80,7 +80,7 @@ export default async function RegionEditPage({
             {album.map((photo) => (
               <li key={photo.id} className="space-y-1.5">
                 <div className="bg-surface relative aspect-square overflow-hidden rounded-md">
-                  <Image src={mediaUrl(photo.storage_path)} alt={photo.alt_text} fill sizes="160px" className="object-cover" />
+                  <StorePhoto src={mediaUrl(photo.storage_path)} alt={photo.alt_text} sizes="160px" className="object-cover" />
                 </div>
                 <p className="text-ink-muted line-clamp-2 text-xs">{photo.alt_text}</p>
                 <form action={removeAlbumPhotoAction.bind(null, region.id, photo.id)}>

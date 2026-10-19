@@ -4,6 +4,7 @@ import { z } from 'zod';
 
 import { addReviewPhoto, createReview, getMyProfile, getReviewableProduct, getReviewEligibility } from '@repo/db/account';
 
+import { storePhoto } from '@/lib/photo-copies';
 import { currentUser, sessionClient } from '@/lib/supabase/server';
 
 import { MAX_REVIEW_PHOTOS } from './limits';
@@ -98,9 +99,13 @@ export async function submitReviewAction(productId: string, form: FormData): Pro
   }
   if (review.is_verified_buyer) {
     for (const [i, file] of photos.entries()) {
-      const storagePath = `${user.id}/${review.id}/${crypto.randomUUID()}.${IMAGE_TYPES[file.type]}`;
-      const { error } = await client.storage.from('review-media').upload(storagePath, file, { contentType: file.type });
-      if (error) return { ok: true, note: 'Your review is in, but a photo did not upload.' };
+      let storagePath: string;
+      try {
+        // with its fixed copies (D-140), in the customer's own folder as the storage policy asks
+        storagePath = await storePhoto(client, 'review-media', `${user.id}/${review.id}/${crypto.randomUUID()}.${IMAGE_TYPES[file.type]}`, file, file.type);
+      } catch {
+        return { ok: true, note: 'Your review is in, but a photo did not upload.' };
+      }
       await addReviewPhoto(client, review.id, storagePath, i);
     }
   }
