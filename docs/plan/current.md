@@ -105,8 +105,9 @@ phase's sub-steps and every verification run) is in `docs/archive/status-log-to-
   for the pilot, a new-order email and toast, the For column, Names to tidy, app refunds. Store: three Just listed
   rows, types in the header, Women · Men with grouped sizes, own pieces first, mixed Newest, + picks the size on the
   card, − n + for pieces in the bag, the instant heart on every card, no pre-chosen size, the struck Shipping figure
-  and You're saving, the order stitch, plainer product pages, Goes well with, Home's band, photos from fixed copies.
-  Migrations `20261018090000` – `20261018150000` (local only until the Deploy workflow).
+  and You're saving, the order stitch, plainer product pages, Goes well with, Home's band. Photos (2026-10-19): no
+  resizer anywhere; fixed WebP copies made when a photo is stored, served from `/media/` through Vercel's CDN.
+  Migrations `20261018090000` – `20261018150000` applied; `20261018160000`, `20261019090000` wait for the Deploy workflow.
 - **Filters without page loads (D-136, 2026-10-16):** Home's Just listed has the Clothing · Food · Home & gifts
   switch (See all follows it); See all has a left filter panel (Category, State, Price slider and ranges, Size / Pack
   boxes), chips, Sort by; filters and Show more change only the cards (`/api/browse`), and Back from a product
@@ -114,17 +115,18 @@ phase's sub-steps and every verification run) is in `docs/archive/status-log-to-
   sort, and Download Excel follows them.
 
 ## Next for the founder
-0. **D-140 (2026-10-18), in this order:** raise Vercel's image allowance today (photos show alt text: the resizer
-   answers 402). Run the Deploy workflow again (it applies `20261018160000_fast_sizes`, which fixes the build's
-   statement timeouts, then starts Vercel's build; `20261018090000` – `20261018150000` are already applied). Its Android
-   job fails until 1 Nov: the Expo account used this month's free Android builds. Then
-   `pnpm photos:copies -- --dry`, then `pnpm photos:copies -- --allow-remote` with the production keys, repeated until
-   0 is left (photos then skip Vercel's resizer). Settings → Bag charges → "Shipping shown when free" ($ a kg; empty
-   keeps $18.79 struck). Products → For: not set yet: pick Women / Men / Kids / Everyone for the clothing no name
+0. **D-140 (2026-10-19), in this order:** run the Deploy workflow (it applies `20261018160000_fast_sizes`, which fixes
+   the build's statement timeouts, and `20261019090000_album_copies`, then starts Vercel's build). Its Android job
+   fails until 1 Nov: the Expo account used this month's free Android builds. The site then uses no image resizer at
+   all, so there is no allowance to raise or pay for (ops.md §Photos): with the production keys,
+   `pnpm photos:copies -- --dry`, then `pnpm photos:copies -- --allow-remote` (every older photo in one go), and a day
+   later `pnpm photos:copies -- --clean --allow-remote`. Pull the code on the hub PC before its next
+   `pnpm sourcing run` (the runner now writes the copies). Settings → Bag charges → "Shipping shown when free" ($ a kg;
+   empty keeps $18.79 struck). Products → For: not set yet: pick Women / Men / Kids / Everyone for the clothing no name
    says (a clothing listing cannot go live without it, nor without its care). Products → Names to tidy: check and
-   rename. Answer Q-38 (the live Kids listings) and Q-39 (an interim size line). Optional: `pnpm add -D -w sharp`
-   (the photo script uses Next's copy today). Not built yet: app push notifications for new orders (needs
-   expo-notifications and EAS setup), the app's card − n + and For filter, size charts from the shops (S3).
+   rename. Answer Q-38 (the live Kids listings) and Q-39 (an interim size line). Not built yet: app push notifications
+   for new orders (needs expo-notifications and EAS setup), the app's card − n + and For filter, size charts from the
+   shops (S3).
 1. Run the Deploy workflow: it applies the new migrations (the latest is `20261016210000_browse_filters`, D-136) to
    production. Then `pnpm sourcing liquids --dry` (the 16 liquids found on 2026-10-16: juices, sea buckthorn pulp, a
    soda, coconut and kernel oils, a sharbat, kokum agal, three attars, two ghees sold by the ml) and

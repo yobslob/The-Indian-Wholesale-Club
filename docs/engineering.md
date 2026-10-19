@@ -45,16 +45,22 @@ Baseline numbers come from the founder's first `node scripts/check.mjs` run and 
   in all); Georgia as the system font for the logo text with Gelasio, loaded only where Georgia is missing.
   Click-only parts load on the click (`next/dynamic`), never with the page: the product page's photo viewer (its
   download starts when a photo is pointed at), the review panel's form and sign-in card (D-099).
-- **PR-6 Assets:** `next/image` with `sizes` that match the width the image really has at each breakpoint (Tailwind's `md` 768 and
-  `xl` 1280; rows use their `clamp()` widths, `features/catalog/product-card.tsx`), so photos are never upscaled and never
-  oversized; quality stays Next's default 75. Uploaded photos get a new random path and are never overwritten, so they are
-  uploaded with a one-year `Cache-Control` (`PHOTO_CACHE_CONTROL`, `packages/shared/src/domain/media.ts`) and resized copies
-  are kept a month (`images.minimumCacheTTL`, `apps/web/next.config.js`; it was the storage default of one hour).
-  **D-140 (2026-10-18, Vercel's resizer answered 402 once its allowance ran out):** `pnpm photos:copies`
-  (`scripts/photo-copies.mjs`) gives every product and album photo fixed WebP copies (320, 640, 1280 px, a year's cache)
-  in a `c/` folder beside it and points its row there; `StorePhoto` (`features/catalog/store-photo.tsx`) serves such a
-  photo as a plain responsive `<img srcset>` straight from Supabase's CDN, and anything else through next/image as
-  before (a global `images.loaderFile` breaks images under Turbopack's dev server). Emails use the 320 px copy. With
+- **PR-6 Assets (D-140, 2026-10-19):** no image resizer anywhere: Vercel's allows 5,000 photos a month, then answers 402
+  (it did on 2026-10-18), so `images.unoptimized` is on (`apps/web/next.config.js`). Every photo gets fixed WebP copies
+  when it is stored: 320, 640 and 1280 px wide, quality 80 with `smartSubsample` (sharp edges on weaves and prints),
+  never upscaled, in a `c/` folder beside it (`products/<id>/c/<name>.jpg` + `<name>.w640.webp`…; names in
+  `packages/shared/src/domain/media.ts`). The web's uploads (imports, admin photos, album and state photos, approved
+  vendor photos, review photos) use `storePhoto` / `withCopies` (`apps/web/lib/photo-copies.ts`); the sourcing runner
+  writes them itself; a photo uploaded from the phone gets them from `POST /admin/photo-copies`; any photo still
+  without them is caught up after admin pages are sent (`features/admin/photo-sweep.ts`, 24 at a time, at most every
+  5 minutes); `pnpm photos:copies` does a backlog at once. `StorePhoto` (`features/catalog/store-photo.tsx`) draws a
+  plain `<img srcset sizes>` (the browser picks the copy), and a photo without copies as it is. Photos come from the
+  site's own address, `/media/<bucket>/<path>`, an external rewrite to Supabase's storage that Vercel's CDN keeps for a
+  year (`x-vercel-enable-rewrite-caching`, `CDN-Cache-Control`): free on Vercel, Supabase sends each file about once
+  per CDN region (its free plan allows 5 GB of cached egress a month), and the page needs no second connection. Every
+  upload gets a new random path and is never overwritten, so a year's cache is always right (`PHOTO_CACHE_CONTROL`).
+  Removing a photo removes its copies (`photoFiles`). Emails use the 320 px copy; the home hero is a static AVIF
+  (120 KB) with the WebP as fallback. With
   `CHECK_LIVE_SITE` set, the `http` step also fetches the live site's first /clothing photo and fails on anything but 200. Fonts via
   `next/font`, subset. Script fonts only on their region page. (D-068)
   The India map's paths are written compactly (each point relative to the one before, `scripts/build-india-map.mjs`):
@@ -178,11 +184,9 @@ tools/sourcing-runner/  auto-sourcing on the hub PC (D-118)     tools/weight-est
   Icons are imported one set at a time (`@expo/vector-icons/Ionicons`, never the package root): the root brings every
   set's font file into the app package, 19 fonts where one is used (D-099).
   The India map is shared with the website (`@repo/shared/india-map`) and drawn with `react-native-svg`. Photos use
-  `expo-image` (cached in memory and on disk) through `components/photo.tsx`, which asks the website's image resizer
-  (`/_next/image`, quality 75 like the website) for the width the photo is drawn at times the screen's pixel ratio, and
-  falls back to the original if that fails (D-068): a 164-point card on a 3× phone downloads a 640-pixel copy instead of
-  the original (the local catalogue's originals average 412 KB, up to 2 MB). Development on a phone keeps originals (the
-  website resizes only photos from its own Supabase address); the web preview resizes. Product lists are
+  `expo-image` (cached in memory and on disk) through `components/photo.tsx`: the fixed copy for the width the photo
+  is drawn at times the screen's pixel ratio (D-140), from the website's `/media/` address, and the original straight
+  from Supabase if that fails (D-068): a 164-point card on a 3× phone downloads the 640-pixel copy. Product lists are
   horizontal `FlatList` rows (fixed-width cards, `getItemLayout`) and the Browse grid is a virtualized `FlatList`, so only
   the cards near the screen exist; cards are memoised. No entry animation on cards: dozens animating at once made scrolling stutter.
   The admin's camera flow (C3) uses `expo-image-picker` (camera and photo library) and `expo-image-manipulator`

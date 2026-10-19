@@ -215,10 +215,15 @@ Recorded because they shape the data model and flows. Each needs an owner before
 | Privacy | privacy policy + terms for a US site | info pages (founder input needed) |
 
 ## Photos without Vercel's resizer (D-140)
-On 2026-10-18 the live site's photos stopped loading: Vercel's image resizer answered 402 (the plan's allowance used up).
-Today: raise the allowance in Vercel (the founder's account). Lasting: run `pnpm photos:copies -- --dry` and then
-`pnpm photos:copies -- --allow-remote` with the production keys in `apps/web/.env.local` (repeat until it reports 0 to
-do; 200 photos per table a run). Each photo gets 320 / 640 / 1280 px WebP copies in a `c/` folder and its row points
-there; the store then serves it from Supabase's CDN. New photos (imports, the runner, admin uploads) use the resizer
-until the next run, so run it after each import day (or let the hub PC run it after `pnpm sourcing run`). The old
-originals stay; nothing is deleted. Needs `sharp` (installed with Next; `pnpm add -D -w sharp` makes it explicit).
+On 2026-10-18 the live site's photos stopped loading: Vercel's image resizer answered 402 (its 5,000 photos a month
+used up). Since 2026-10-19 the site uses no resizer at all (engineering.md PR-6): every photo gets 320 / 640 / 1280 px
+WebP copies when it is stored, and photos come from `/media/…` on the site's own address, kept by Vercel's CDN for a
+year. Nothing to pay and no allowance to raise. Once, for the photos stored before:
+1. After the Deploy workflow (it applies `20261019090000_album_copies`), with the production keys in
+   `apps/web/.env.local`: `pnpm photos:copies -- --dry`, then `pnpm photos:copies -- --allow-remote`. It does every
+   photo in one go (about 5 a second; stop and run again any time, it only takes what is left). Until then a photo
+   without copies shows as it is (larger, still free), and the admin panel catches up 24 at a time anyway.
+2. A day later: `pnpm photos:copies -- --clean --allow-remote` removes the old files of moved photos (store pages are
+   cached for 5 minutes; a day is generous). It never removes a file a row still names.
+Check: the live site's photos answer 200 from `/media/…/c/…w640.webp`, and a second request shows `x-vercel-cache: HIT`.
+Storage: copies add about the size of the photo again (Supabase's free plan holds 1 GB; Storage in its dashboard).

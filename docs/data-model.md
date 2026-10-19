@@ -194,6 +194,8 @@ Migration 78 (2026-10-18, the production build's statement timeouts): `_size_nor
 expressions with no SET clause, so Postgres inlines them; `store_browse()` reads the visible pieces' variants once and
 spells each distinct size once. At production volume (3,000 food, 2,800 clothing listings) food's See all went from
 1.3 s to about 0.11 s, clothing for men from 1.0 s to about 0.14 s, a state's See all from 0.33 s to 0.07 s.
+Migration 79 (D-140, the photo fix): an album photo may sit in its `c/` folder beside its fixed copies
+(`regions/<slug>/album/c/<name>`); listing photos and state photos had no path rule.
 Migration 69 (D-135): `products.coming_soon`, `coming_soon_note`, `liquid_checked_at`; trigger `products_coming_soon`
 (any status but archived ends it); `store_products` and `store_media` include archived coming-soon listings and
 `store_products` ends with `coming_soon`; `_store_product_card` and `store_browse` send it (no quick add for it).
