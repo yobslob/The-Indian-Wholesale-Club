@@ -245,7 +245,7 @@ run stops at `--max-gb`, default 2.5):
    (cached store pages may name them until then). Check Supabase → Usage → Egress before each run; run again (next
    month if needed) until it moves 0.
 8. `pnpm photos:move -- --env=C:\iwc\move.env --allow-remote --clean` downloads nothing: it removes Supabase files no
-   row names and older than a day (abandoned uploads, the WebP copies of 2026-10-19; about 140 MB on 2026-10-20).
+   row names and older than a day (abandoned uploads, the WebP copies of 2026-10-19; 40 files, 18 MB, on 2026-10-20; it lists 1,000 files a request, about a minute).
 **Check:** a store page's photos come from `/media/s/…avif`; `curl -I` the same photo twice shows
 `x-vercel-cache: HIT` the second time. If it stays MISS, turn on "honor Cache-Control for external rewrites" in the
 Vercel project's settings (projects older than 2026-04-06 have it off). Supabase answers set a cookie, so photos still

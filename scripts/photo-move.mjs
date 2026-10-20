@@ -298,17 +298,18 @@ async function move() {
   }
 }
 
-/** Every Supabase file under a folder, recursively. */
+/**
+ * Every Supabase file under a folder, 1,000 a request (a flat listing: one request a folder took 40 minutes and more
+ * for production's 8,000 listing folders from India).
+ */
 async function walk(bucket, prefix, out) {
-  for (let offset = 0; ; offset += 1000) {
-    const { data, error } = await db.storage.from(bucket).list(prefix, { limit: 1000, offset });
-    if (error) throw new Error(`list ${prefix}: ${error.message}`);
-    for (const f of data) {
-      const path = prefix ? `${prefix}/${f.name}` : f.name;
-      if (f.id === null) await walk(bucket, path, out);
-      else out.push({ path, size: f.metadata?.size ?? 0, at: Date.parse(f.created_at) });
-    }
-    if (data.length < 1000) return;
+  for (let cursor; ; ) {
+    const { data, error } = await db.storage.from(bucket).listV2({ prefix: prefix ? `${prefix}/` : '', limit: 1000, cursor });
+    if (error) throw new Error(`list ${bucket}/${prefix}: ${error.message}`);
+    for (const f of data.objects) out.push({ path: f.key ?? f.name, size: f.metadata?.size ?? 0, at: Date.parse(f.created_at) });
+    process.stdout.write(`\r${bucket}: ${out.length} files listed`);
+    if (!data.hasNext || !data.nextCursor) return;
+    cursor = data.nextCursor;
   }
 }
 
@@ -319,7 +320,7 @@ async function named(bucket) {
     : [['review_photos', 'storage_path']];
   for (const [table, col] of sources) {
     for (let from = 0; ; from += 1000) {
-      const { data, error } = await db.from(table).select(col).order(col).range(from, from + 999);
+      const { data, error } = await db.from(table).select(col).order('id').range(from, from + 999);
       if (error) throw new Error(`${table}: ${error.message}`);
       for (const r of data) if (r[col]) names.add(r[col]);
       if (data.length < 1000) break;
@@ -333,6 +334,7 @@ async function cleanUp() {
     const keep = await named(bucket);
     const files = [];
     for (const f of folders) await walk(bucket, f, files);
+    process.stdout.write('\n');
     const gone = files.filter((f) => !keep.has(f.path) && !STORED.test(f.path) && Date.now() - f.at > 86_400_000);
     const mb = Math.round(gone.reduce((n, f) => n + f.size, 0) / 1e6);
     console.log(`${bucket}: ${files.length} files, ${gone.length} that no row names (${mb} MB)${dry ? ' would go' : ' removed'}`);

@@ -35,6 +35,9 @@ supabase/.temp
 .env.test.local
 .env.production.local
 .env*.local
+# photos:move settings with production keys (ops.md §Photos), if kept in the repo folder
+move.env
+*.move.env
 
 # IDE
 .vscode/
