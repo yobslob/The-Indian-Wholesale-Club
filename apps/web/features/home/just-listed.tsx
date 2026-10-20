@@ -30,9 +30,11 @@ export function JustListed({ home }: { home: HomeData }): React.JSX.Element | nu
       {byType === undefined ? (
         <ProductStrip products={home.just_listed} label="Just listed" />
       ) : (
-        <div className="grid gap-[clamp(20px,2.4vw,32px)]">
+        // One column that may shrink below its content (minmax(0,1fr) + min-w-0): a plain `grid` sizes its column to the
+        // rows' full width, so each row grew past the screen, could not scroll and pushed See all off the page.
+        <div className="grid grid-cols-[minmax(0,1fr)] gap-[clamp(20px,2.4vw,32px)]">
           {rows.map(({ type, products }) => (
-            <section key={type} aria-labelledby={`just-listed-${type}`}>
+            <section key={type} aria-labelledby={`just-listed-${type}`} className="min-w-0">
               <div className="mb-3 flex items-center justify-between gap-4">
                 <h3 id={`just-listed-${type}`} className="font-heading text-[clamp(18px,1.5vw,22px)] font-medium tracking-[-0.01em]">
                   {PRODUCT_TYPE_LABEL[type]}

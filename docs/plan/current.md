@@ -131,8 +131,11 @@ phase's sub-steps and every verification run) is in `docs/archive/status-log-to-
    month's 5 GB was left on 2026-10-20, so the rest waits for next month's egress). Then: Settings → Bag charges →
    "Shipping shown when free" ($ a kg; empty keeps $18.79 struck). Products → For: not set yet: pick Women / Men /
    Kids / Everyone for the clothing no name says. Products → Names to tidy. Answer Q-38 (the live Kids listings),
-   Q-39 (an interim size line) and Q-40 (footwear in the jewellery drawer?). Not built yet: app push notifications for new orders, the app's card − n + and For
-   filter, size charts from the shops (S3).
+   Q-39 (an interim size line) and Q-40 (footwear in the jewellery drawer?). Not built yet (design plan audit 2026-10-21): app push notifications for new orders, the app's card − n + and For
+   filter and the jewellery drawer, size charts from the shops (S3, Q-39), admin "Select all n matching" bulk actions
+   and search on Reviews, Vendor pieces and Returns (F10), the stitch on the free-delivery meter and as section
+   dividers and the gap fillers (F7), invoice A sent with the confirmation email (F4), the empty-band test (§3) and
+   the production photo check in `check.mjs http`.
 1. Run the Deploy workflow: it applies the new migrations (the latest is `20261016210000_browse_filters`, D-136) to
    production. Then `pnpm sourcing liquids --dry` (the 16 liquids found on 2026-10-16: juices, sea buckthorn pulp, a
    soda, coconut and kernel oils, a sharbat, kokum agal, three attars, two ghees sold by the ml) and

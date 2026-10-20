@@ -66,6 +66,19 @@ test("Home's Just listed is a row per type, each with its own See all (D-140)", 
   await expect(clothing.getByRole('list', { name: 'Just listed: Clothing' })).toBeVisible();
   const seeAll = clothing.getByRole('link', { name: /See all/ });
   await expect(seeAll).toHaveAttribute('href', '/clothing');
+  // each row fits the page and scrolls inside it; See all sits on screen (a plain grid once made the rows 2,244 px
+  // wide on a phone: the page bled sideways, the rows could not scroll and See all was off the page)
+  for (const width of [375, 1280]) {
+    await page.setViewportSize({ width, height: 900 });
+    const list = clothing.getByRole('list', { name: 'Just listed: Clothing' });
+    const fit = await page.evaluate(() => document.documentElement.scrollWidth - document.documentElement.clientWidth);
+    expect(fit).toBeLessThanOrEqual(0);
+    const size = await list.evaluate((el) => ({ scroll: el.scrollWidth, box: el.clientWidth }));
+    expect(size.box).toBeLessThanOrEqual(width);
+    expect(size.scroll).toBeGreaterThan(size.box);
+    const box = await seeAll.boundingBox();
+    expect(box && box.x + box.width).toBeLessThanOrEqual(width);
+  }
   // by keyboard: the Home hero's scroll effects can move the row under a mouse pointer mid-click
   await seeAll.focus();
   await page.keyboard.press('Enter');
