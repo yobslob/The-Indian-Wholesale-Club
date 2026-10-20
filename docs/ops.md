@@ -215,7 +215,7 @@ Recorded because they shape the data model and flows. Each needs an owner before
 | Sales tax | US state sales tax obligations | charged per delivery state where IWC is registered (New Jersey now, `tax_rates`, D-073); every cancel refunds the tax. An accountant should confirm the rates and thresholds |
 | Privacy | privacy policy + terms for a US site | info pages (founder input needed) |
 
-## Photos: the photo store (D-140, D-141)
+## Photos: the photo store (D-140, D-141, D-142)
 Photos live in Cloudflare R2 as two AVIF copies each (640 and 1200 px; engineering.md PR-6), not in Supabase's storage
 (1 GB on the free plan; production held 7.9 GB on 2026-10-20) and not through Vercel's image resizer (5,000 a month,
 then 402 on 2026-10-18). R2 is free up to 10 GB stored, with no charge for traffic; the photos need about 4 GB.
@@ -236,10 +236,14 @@ run stops at `--max-gb`, default 2.5):
 6. A file outside the repo, e.g. `C:\iwc\move.env`, with `NEXT_PUBLIC_SUPABASE_URL` (production),
    `SUPABASE_SERVICE_ROLE_KEY` (Supabase → Project Settings → API keys) and the four `PHOTO_STORE_*` lines.
 7. `pnpm photos:move -- --env=C:\iwc\move.env --allow-remote --dry` (says which database and how many), then
-   `pnpm photos:move -- --env=C:\iwc\move.env --allow-remote`. Most needed first: live listings' main photos
-   (1.1 GB), their other photos (4.5 GB), drafts (2.0 GB), archived, album, state and review photos. It removes each
-   moved photo's Supabase file 10 minutes later (cached store pages may name it until then). Check Supabase → Usage →
-   Egress before each run; run again (next month if needed) until it moves 0.
+   `pnpm photos:move -- --env=C:\iwc\move.env --allow-remote --review=30` (D-142: reads 30 live listings, changes
+   nothing, and puts each photo it would drop beside the one it keeps in `.checks/photo-repeats/`; about 25 MB of
+   egress), then `pnpm photos:move -- --env=C:\iwc\move.env --allow-remote`. Most needed first: live listings' main
+   photos (1.1 GB), then each live listing whole (4.3 GB), drafts (1.9 GB), archived, album, state and review photos.
+   A listing's repeats (Amazon's 500-pixel previews, about a third of the photos) are dropped as it moves: the
+   full-size file stays, in the first one's place. It removes moved and dropped photos' old files 10 minutes later
+   (cached store pages may name them until then). Check Supabase → Usage → Egress before each run; run again (next
+   month if needed) until it moves 0.
 8. `pnpm photos:move -- --env=C:\iwc\move.env --allow-remote --clean` downloads nothing: it removes Supabase files no
    row names and older than a day (abandoned uploads, the WebP copies of 2026-10-19; about 140 MB on 2026-10-20).
 **Check:** a store page's photos come from `/media/s/…avif`; `curl -I` the same photo twice shows

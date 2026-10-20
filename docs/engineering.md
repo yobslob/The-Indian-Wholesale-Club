@@ -45,7 +45,7 @@ Baseline numbers come from the founder's first `node scripts/check.mjs` run and 
   in all); Georgia as the system font for the logo text with Gelasio, loaded only where Georgia is missing.
   Click-only parts load on the click (`next/dynamic`), never with the page: the product page's photo viewer (its
   download starts when a photo is pointed at), the review panel's form and sign-in card (D-099).
-- **PR-6 Assets (D-140, D-141):** no image resizer anywhere (`images.unoptimized`, `apps/web/next.config.js`):
+- **PR-6 Assets (D-140, D-141, D-142):** no image resizer anywhere (`images.unoptimized`, `apps/web/next.config.js`):
   Vercel's allows 5,000 photos a month, then answers 402. Photos live in the photo store, Cloudflare R2
   (`apps/web/lib/photo-store.ts`, any S3 bucket), as two AVIF copies, 640 and 1200 px wide (quality 60 / 55, effort 2:
   a third of the shops' JPEG bytes at the same look, checked on 60 live photos; never upscaled), recorded with an `s/`
@@ -53,7 +53,9 @@ Baseline numbers come from the founder's first `node scripts/check.mjs` run and 
   Writers: the web's uploads (`storePhoto` / `withCopies`, `apps/web/lib/photo-copies.ts`), the phone through
   `POST /admin/photo-copies`, the sourcing runner itself (`tools/sourcing-runner/src/photo-store.ts`); photos added in
   the last 3 days still in Supabase's storage move after admin pages are sent (`features/admin/photo-sweep.ts`, 24 at
-  a time, at most every 5 minutes); older ones with `pnpm photos:move` (ops.md §Photos). Pages draw
+  a time, at most every 5 minutes); older ones with `pnpm photos:move` (ops.md §Photos). A listing keeps each picture
+  once (D-142, `packages/shared/src/domain/same-picture.ts`): imports and the runner drop a shop's repeat before
+  storing it, `photos:move` while moving. Pages draw
   `/media/s/<bucket>/<path>`, rewritten to R2's public address and kept by Vercel's CDN a year; `StorePhoto`
   (`features/catalog/store-photo.tsx`) is a `<picture>` with the AVIF `srcset` and, for a browser without AVIF, the
   same copy as a JPEG from `app/media/jpeg` (made once, then cached); emails use that JPEG at 160 px. A photo still in

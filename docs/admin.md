@@ -158,7 +158,8 @@ in `packages/shared/src/sourcing/`, the reads and writes in `packages/db/src/adm
 - **Check and save.** Pre-filled, never silently decided: the state (a guess only from well-known craft and food
   names, D-004), type and category, name, summary and description (the shop's own words), the details customers must
   see (fabric and care; ingredients, allergens and shelf life; material), the photos (pick and order; copied into our
-  storage on save, never loaded from the shop on a customer page, D-003), pieces per size (5 by default: a cap, the
+  storage on save, never loaded from the shop on a customer page, D-003; a picture the shop shows twice is kept once,
+  full size, D-142), pieces per size (5 by default: a cap, the
   shop's stock is unknown), packed weight and the price on the shop in ₹, with the dollar price worked out live
   (D-109, D-119). The weight says where it came from (the page's packed, item or net weight, an item's pack, or typed)
   and what on the page contradicts it; without one it saves as a draft (D-129). Save draft or Publish.

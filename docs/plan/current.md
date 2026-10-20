@@ -107,8 +107,10 @@ phase's sub-steps and every verification run) is in `docs/archive/status-log-to-
   card, − n + for pieces in the bag, the instant heart on every card, no pre-chosen size, the struck Shipping figure
   and You're saving, the order stitch, plainer product pages, Goes well with, Home's band. Photos (D-141,
   2026-10-20): no resizer anywhere; two AVIF copies per photo in Cloudflare R2, from `/media/s/` on the site's own
-  address; `pnpm photos:move` moves the older ones within an egress budget. Migrations up to `20261019090000`
-  applied; `20261020090000_photo_store` waits for the Deploy workflow.
+  address; `pnpm photos:move` moves the older ones within an egress budget. A listing keeps each picture once
+  (D-142): Amazon's 500-pixel preview of every photo, a third of the listing photos, is no longer captured, never
+  stored by imports or the runner, and dropped by `photos:move`. Migrations up to `20261019090000` applied;
+  `20261020090000_photo_store` waits for the Deploy workflow.
 - **Filters without page loads (D-136, 2026-10-16):** Home's Just listed has the Clothing · Food · Home & gifts
   switch (See all follows it); See all has a left filter panel (Category, State, Price slider and ranges, Size / Pack
   boxes), chips, Sort by; filters and Show more change only the cards (`/api/browse`), and Back from a product
@@ -119,8 +121,9 @@ phase's sub-steps and every verification run) is in `docs/archive/status-log-to-
 0. **D-141 (2026-10-20), photos to Cloudflare R2, soon:** Supabase's storage holds 7.9 GB on a 1 GB free plan, and a
    project kept over quota can be restricted. Follow ops.md §Photos: create the R2 bucket and its token, add the four
    `PHOTO_STORE_*` variables in Vercel, run the Deploy workflow (applies `20261020090000_photo_store`), add
-   `IWC_PHOTO_STORE_*` on the hub PC and pull, then `pnpm photos:move -- --env=<file> --allow-remote --clean` (no
-   egress) and `pnpm photos:move -- --env=<file> --allow-remote` (2.5 GB of Supabase egress a run; about 3 GB of this
+   `IWC_PHOTO_STORE_*` on the hub PC and pull, re-add the Add to IWC bookmark from the importer page (D-142), then
+   `pnpm photos:move -- --env=<file> --allow-remote --clean` (no egress), `--review=30` (shows the repeats it would
+   drop) and `pnpm photos:move -- --env=<file> --allow-remote` (2.5 GB of Supabase egress a run; about 3 GB of this
    month's 5 GB was left on 2026-10-20, so the rest waits for next month's egress). Then: Settings → Bag charges →
    "Shipping shown when free" ($ a kg; empty keeps $18.79 struck). Products → For: not set yet: pick Women / Men /
    Kids / Everyone for the clothing no name says. Products → Names to tidy. Answer Q-38 (the live Kids listings) and

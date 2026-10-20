@@ -18,7 +18,7 @@ and the admin sees the last run's date in **Admin → Import → Auto-sourcing**
 | `src/shops.ts`   | how each shop is searched and read                                                      |
 | `src/pages.ts`   | what is read inside a shop's page                                                       |
 | `src/browser.ts` | the browser profile and one lane per shop (pages one after another, shops side by side) |
-| `src/photos.ts`  | copies a new listing's photos into IWC's storage                                        |
+| `src/photos.ts`  | copies a new listing's photos into IWC's storage, each picture once (D-142)             |
 | `src/db.ts`      | the worker's database functions and photo uploads                                       |
 
 The matching, delivery, variant and listing rules are in `packages/shared/src/sourcing/auto` (tested there).

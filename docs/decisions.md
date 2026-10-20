@@ -1018,3 +1018,24 @@ What it means for the build (engineering.md PR-6, ops.md §Photos):
   photo for the minutes between an upload and its move. `pnpm photos:move` moves older photos, most needed first,
   within a Supabase egress budget per run.
 Builds on D-140 (the photo fix). Supersedes the Supabase-stored WebP copies of 2026-10-19.
+
+**D-142 · 2026-10-20 · approved: a listing keeps each picture once (the shop's preview copies are dropped)**
+- The founder: "each product's each photo get's a duplicate in that gallery, so the photos were doubled … go through
+  every best way we can remove exact duplicates from the database … and then find the best one".
+- Why it happened: Amazon's page lists every photo full size (`hiRes`) and as a 500-pixel preview (`large`) under
+  another file name; the capture (the Add to IWC bookmark and the sourcing runner) took both. A sample of 40 listings
+  (268 photos) found 93 repeats, all Amazon (44% of its photos): about a third of production's 54,600 photos, but only
+  about 8% of the bytes, since the previews are small. Storage filled because of the full-size originals (D-141).
+- Ways weighed: a byte hash (Supabase's stored MD5) finds only byte-identical files, 329 in production; a perceptual
+  hash (dHash 64-bit, as imagededup, Czkawka and dupeGuru use) mixed real pairs with different photos (a jar's front
+  and back at distance 5, a real pair at 8); colour or gradient correlation of thumbnails took the same idols on
+  another background, or the jar's two sides, for one picture. Chosen: the same shape (within 2%) and a PSNR of at
+  least 27 dB between both photos at 256 × 256, softened (blur 1.5): on the sample every real pair scored 28.9 dB or
+  more, every different photo 25.3 or less. Compared only within one listing and one variant, never across listings.
+What it means for the build (packages/shared `same-picture.ts`, engineering.md PR-6, ops.md §Photos):
+- The capture takes each Amazon photo once, full size when Amazon has one. Re-add the Add to IWC bookmark from the
+  importer page after the deploy (the bookmark carries its own code).
+- Importing (the bookmark, pasted links) and the runner download a listing's photos, keep each picture once (the most
+  pixels, in its first place), then store them: a repeat never reaches the store, whatever the shop.
+- `pnpm photos:move` drops each listing's repeats while moving it (it downloads every photo once anyway), keeping the
+  full-size file in the first one's place (order, main photo, words); `--review=<n>` shows what it would drop.
