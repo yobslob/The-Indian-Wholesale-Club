@@ -1002,3 +1002,19 @@ What it means for the build (each item's full change and its "done when" are in 
   Claude flagged that a struck figure never charged can read as a fictitious former price (FTC 16 CFR 233.1); the
   founder chose to show it.
 Open: Q-38 (the live Kids listings), Q-39 (an interim size line). Supersedes D-136 in part (Home's switch).
+
+**D-141 · 2026-10-20 · approved: photos live in Cloudflare R2 as two AVIF copies; Supabase's storage keeps none**
+- The founder: "Also supabase is hitting the limits, let's research deeply through everything and solve this
+  bottleneck productively and efficiently(without any money) We want the fastest and clearest images." Asked where
+  the photos should live (R2, Backblaze B2 or Cloudinary), the founder chose "Cloudflare R2 (Recommended)".
+- Why: production held 54,627 photos, 7.9 GB, in Supabase's storage (free plan: 1 GB; a project kept over quota can
+  be restricted); even as AVIF they need about 4 GB. R2 holds 10 GB free and never charges for traffic (a card or
+  PayPal on file switches it on; nothing is charged under 10 GB).
+What it means for the build (engineering.md PR-6, ops.md §Photos):
+- Every photo is stored as AVIF copies 640 and 1200 px wide (about 70 KB together; never upscaled), recorded with an
+  `s/` path; the original is not kept. Pages draw them from `/media/s/…` on the site's own address, with a JPEG made
+  on demand for email and browsers without AVIF. Nothing resizes per view.
+- The website, the phone (through the website) and the sourcing runner write to R2; Supabase's storage only holds a
+  photo for the minutes between an upload and its move. `pnpm photos:move` moves older photos, most needed first,
+  within a Supabase egress budget per run.
+Builds on D-140 (the photo fix). Supersedes the Supabase-stored WebP copies of 2026-10-19.

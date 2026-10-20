@@ -17,6 +17,7 @@ Reading `process.env.X` for a variable not listed here = add it here in the same
 | `SUPABASE_TEST_DB_URL` | `scripts/db-test.mjs` | optional; defaults to local Supabase. Non-local hosts are refused unless `--allow-remote` is passed (never do that against production) |
 | `NEXT_PUBLIC_STRIPE_PUBLISHABLE_KEY`, `STRIPE_SECRET_KEY`, `STRIPE_WEBHOOK_SECRET` | web | payments (test-mode keys in dev) |
 | `RESEND_API_KEY`, `RESEND_FROM_EMAIL`, `EMAIL_OUTBOX_CRON_SECRET` | web | email + outbox job (`POST /api/internal/email-outbox` with `Authorization: Bearer <secret>`; without email keys, emails wait in the outbox). The sender's domain must be verified in Resend (Q-9). For local tests before that, Resend accepts `onboarding@resend.dev` as the sender, delivering only to the Resend account's own address |
+| `PHOTO_STORE_S3_URL`, `PHOTO_STORE_KEY_ID`, `PHOTO_STORE_SECRET`, `PHOTO_STORE_PUBLIC_URL` (`PHOTO_STORE_REGION`, default `auto`) | web (server only) | the photo store, Cloudflare R2 (D-141, §Photos). Without them photos stay in Supabase's storage (local development). Locally, Supabase's own S3 endpoint can stand in: the `web-photo-store` preview in `.claude/launch.json` |
 | `ADMIN_EMAILS` | web server | admin email allowlist (D-006, INV-7) |
 | `ADMIN_ALERT_WEBHOOK_URL` | web server | optional ops alerts |
 | `NEXT_PUBLIC_APP_URL`, `NEXT_PUBLIC_SITE_URL` | web | absolute URLs |
@@ -214,16 +215,35 @@ Recorded because they shape the data model and flows. Each needs an owner before
 | Sales tax | US state sales tax obligations | charged per delivery state where IWC is registered (New Jersey now, `tax_rates`, D-073); every cancel refunds the tax. An accountant should confirm the rates and thresholds |
 | Privacy | privacy policy + terms for a US site | info pages (founder input needed) |
 
-## Photos without Vercel's resizer (D-140)
-On 2026-10-18 the live site's photos stopped loading: Vercel's image resizer answered 402 (its 5,000 photos a month
-used up). Since 2026-10-19 the site uses no resizer at all (engineering.md PR-6): every photo gets 320 / 640 / 1280 px
-WebP copies when it is stored, and photos come from `/media/…` on the site's own address, kept by Vercel's CDN for a
-year. Nothing to pay and no allowance to raise. Once, for the photos stored before:
-1. After the Deploy workflow (it applies `20261019090000_album_copies`), with the production keys in
-   `apps/web/.env.local`: `pnpm photos:copies -- --dry`, then `pnpm photos:copies -- --allow-remote`. It does every
-   photo in one go (about 5 a second; stop and run again any time, it only takes what is left). Until then a photo
-   without copies shows as it is (larger, still free), and the admin panel catches up 24 at a time anyway.
-2. A day later: `pnpm photos:copies -- --clean --allow-remote` removes the old files of moved photos (store pages are
-   cached for 5 minutes; a day is generous). It never removes a file a row still names.
-Check: the live site's photos answer 200 from `/media/…/c/…w640.webp`, and a second request shows `x-vercel-cache: HIT`.
-Storage: copies add about the size of the photo again (Supabase's free plan holds 1 GB; Storage in its dashboard).
+## Photos: the photo store (D-140, D-141)
+Photos live in Cloudflare R2 as two AVIF copies each (640 and 1200 px; engineering.md PR-6), not in Supabase's storage
+(1 GB on the free plan; production held 7.9 GB on 2026-10-20) and not through Vercel's image resizer (5,000 a month,
+then 402 on 2026-10-18). R2 is free up to 10 GB stored, with no charge for traffic; the photos need about 4 GB.
+**Set up once (the founder):**
+1. Cloudflare dashboard → R2 → subscribe to the free plan (asks for a card or PayPal; nothing is charged under 10 GB
+   a month) → Create bucket `iwc-photos` (Standard storage).
+2. The bucket → Settings → Public access → R2.dev subdomain → Allow. Copy its address, `https://pub-<id>.r2.dev`.
+3. R2 → Manage API tokens → Create API token: Object Read & Write, this bucket only. Copy the Access Key ID, the
+   Secret Access Key and the S3 address, `https://<account-id>.r2.cloudflarestorage.com`.
+4. Vercel → the project → Settings → Environment Variables, Production: `PHOTO_STORE_S3_URL` =
+   `https://<account-id>.r2.cloudflarestorage.com/iwc-photos`, `PHOTO_STORE_KEY_ID`, `PHOTO_STORE_SECRET`,
+   `PHOTO_STORE_PUBLIC_URL` = the r2.dev address. Then run the Deploy workflow (it applies
+   `20261020090000_photo_store`). From then on every new photo from the website or the phone goes to R2.
+5. The hub PC: pull the code; in `tools/sourcing-runner/.env` add `IWC_PHOTO_STORE_S3_URL` (same value),
+   `IWC_PHOTO_STORE_KEY_ID`, `IWC_PHOTO_STORE_SECRET`. The runner then writes its photos to R2 itself.
+**Move the older photos** (from a computer; every download counts as Supabase egress, 5 GB a month free, so each
+run stops at `--max-gb`, default 2.5):
+6. A file outside the repo, e.g. `C:\iwc\move.env`, with `NEXT_PUBLIC_SUPABASE_URL` (production),
+   `SUPABASE_SERVICE_ROLE_KEY` (Supabase → Project Settings → API keys) and the four `PHOTO_STORE_*` lines.
+7. `pnpm photos:move -- --env=C:\iwc\move.env --allow-remote --dry` (says which database and how many), then
+   `pnpm photos:move -- --env=C:\iwc\move.env --allow-remote`. Most needed first: live listings' main photos
+   (1.1 GB), their other photos (4.5 GB), drafts (2.0 GB), archived, album, state and review photos. It removes each
+   moved photo's Supabase file 10 minutes later (cached store pages may name it until then). Check Supabase → Usage →
+   Egress before each run; run again (next month if needed) until it moves 0.
+8. `pnpm photos:move -- --env=C:\iwc\move.env --allow-remote --clean` downloads nothing: it removes Supabase files no
+   row names and older than a day (abandoned uploads, the WebP copies of 2026-10-19; about 140 MB on 2026-10-20).
+**Check:** a store page's photos come from `/media/s/…avif`; `curl -I` the same photo twice shows
+`x-vercel-cache: HIT` the second time. If it stays MISS, turn on "honor Cache-Control for external rewrites" in the
+Vercel project's settings (projects older than 2026-04-06 have it off). Supabase answers set a cookie, so photos still
+in Supabase's storage are never kept by Vercel's CDN. Supabase's "Storage Size" usage is averaged over the billing
+period, so it falls over days after the move.

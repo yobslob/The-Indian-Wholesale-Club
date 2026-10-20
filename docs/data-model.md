@@ -196,6 +196,9 @@ spells each distinct size once. At production volume (3,000 food, 2,800 clothing
 1.3 s to about 0.11 s, clothing for men from 1.0 s to about 0.14 s, a state's See all from 0.33 s to 0.07 s.
 Migration 79 (D-140, the photo fix): an album photo may sit in its `c/` folder beside its fixed copies
 (`regions/<slug>/album/c/<name>`); listing photos and state photos had no path rule.
+Migration 80 (D-141, the photo store): a photo in Cloudflare R2 is recorded with an `s/` path
+(`products/<id>/s/<name>.jpg`, packages/shared media.ts). `worker_sourcing_media` accepts `products/<id>/s/<name>` as
+well as `products/<id>/<name>`; album photos may be `regions/<slug>/album/s/<name>`.
 Migration 69 (D-135): `products.coming_soon`, `coming_soon_note`, `liquid_checked_at`; trigger `products_coming_soon`
 (any status but archived ends it); `store_products` and `store_media` include archived coming-soon listings and
 `store_products` ends with `coming_soon`; `_store_product_card` and `store_browse` send it (no quick add for it).

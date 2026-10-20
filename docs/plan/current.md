@@ -105,9 +105,10 @@ phase's sub-steps and every verification run) is in `docs/archive/status-log-to-
   for the pilot, a new-order email and toast, the For column, Names to tidy, app refunds. Store: three Just listed
   rows, types in the header, Women · Men with grouped sizes, own pieces first, mixed Newest, + picks the size on the
   card, − n + for pieces in the bag, the instant heart on every card, no pre-chosen size, the struck Shipping figure
-  and You're saving, the order stitch, plainer product pages, Goes well with, Home's band. Photos (2026-10-19): no
-  resizer anywhere; fixed WebP copies made when a photo is stored, served from `/media/` through Vercel's CDN.
-  Migrations `20261018090000` – `20261018150000` applied; `20261018160000`, `20261019090000` wait for the Deploy workflow.
+  and You're saving, the order stitch, plainer product pages, Goes well with, Home's band. Photos (D-141,
+  2026-10-20): no resizer anywhere; two AVIF copies per photo in Cloudflare R2, from `/media/s/` on the site's own
+  address; `pnpm photos:move` moves the older ones within an egress budget. Migrations up to `20261019090000`
+  applied; `20261020090000_photo_store` waits for the Deploy workflow.
 - **Filters without page loads (D-136, 2026-10-16):** Home's Just listed has the Clothing · Food · Home & gifts
   switch (See all follows it); See all has a left filter panel (Category, State, Price slider and ranges, Size / Pack
   boxes), chips, Sort by; filters and Show more change only the cards (`/api/browse`), and Back from a product
@@ -115,18 +116,16 @@ phase's sub-steps and every verification run) is in `docs/archive/status-log-to-
   sort, and Download Excel follows them.
 
 ## Next for the founder
-0. **D-140 (2026-10-19), in this order:** run the Deploy workflow (it applies `20261018160000_fast_sizes`, which fixes
-   the build's statement timeouts, and `20261019090000_album_copies`, then starts Vercel's build). Its Android job
-   fails until 1 Nov: the Expo account used this month's free Android builds. The site then uses no image resizer at
-   all, so there is no allowance to raise or pay for (ops.md §Photos): with the production keys,
-   `pnpm photos:copies -- --dry`, then `pnpm photos:copies -- --allow-remote` (every older photo in one go), and a day
-   later `pnpm photos:copies -- --clean --allow-remote`. Pull the code on the hub PC before its next
-   `pnpm sourcing run` (the runner now writes the copies). Settings → Bag charges → "Shipping shown when free" ($ a kg;
-   empty keeps $18.79 struck). Products → For: not set yet: pick Women / Men / Kids / Everyone for the clothing no name
-   says (a clothing listing cannot go live without it, nor without its care). Products → Names to tidy: check and
-   rename. Answer Q-38 (the live Kids listings) and Q-39 (an interim size line). Not built yet: app push notifications
-   for new orders (needs expo-notifications and EAS setup), the app's card − n + and For filter, size charts from the
-   shops (S3).
+0. **D-141 (2026-10-20), photos to Cloudflare R2, soon:** Supabase's storage holds 7.9 GB on a 1 GB free plan, and a
+   project kept over quota can be restricted. Follow ops.md §Photos: create the R2 bucket and its token, add the four
+   `PHOTO_STORE_*` variables in Vercel, run the Deploy workflow (applies `20261020090000_photo_store`), add
+   `IWC_PHOTO_STORE_*` on the hub PC and pull, then `pnpm photos:move -- --env=<file> --allow-remote --clean` (no
+   egress) and `pnpm photos:move -- --env=<file> --allow-remote` (2.5 GB of Supabase egress a run; about 3 GB of this
+   month's 5 GB was left on 2026-10-20, so the rest waits for next month's egress). Then: Settings → Bag charges →
+   "Shipping shown when free" ($ a kg; empty keeps $18.79 struck). Products → For: not set yet: pick Women / Men /
+   Kids / Everyone for the clothing no name says. Products → Names to tidy. Answer Q-38 (the live Kids listings) and
+   Q-39 (an interim size line). Not built yet: app push notifications for new orders, the app's card − n + and For
+   filter, size charts from the shops (S3).
 1. Run the Deploy workflow: it applies the new migrations (the latest is `20261016210000_browse_filters`, D-136) to
    production. Then `pnpm sourcing liquids --dry` (the 16 liquids found on 2026-10-16: juices, sea buckthorn pulp, a
    soda, coconut and kernel oils, a sharbat, kokum agal, three attars, two ghees sold by the ml) and
