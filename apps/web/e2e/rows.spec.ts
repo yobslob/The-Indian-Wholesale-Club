@@ -26,7 +26,8 @@ test('a row scrolls sideways and See all opens that category for that state', as
 
 test('See all pages draw 24 cards at a time', async ({ page }) => {
   await page.goto('/clothing');
-  const cards = page.locator('main article');
+  // the list's own cards, not the finishing-touches drawer's (D-144)
+  const cards = page.locator('[data-card-grid] > article');
   await expect(cards).toHaveCount(24);
   await page.getByRole('link', { name: 'Show more' }).click();
   await expect(cards).toHaveCount(48);

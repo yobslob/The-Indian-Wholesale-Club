@@ -2,9 +2,10 @@
 
 import { useRef } from 'react';
 
-import { browseHref, MOST, priceLabel, SORTS, WHO_LABEL, withFilter, type BrowseQuery } from './browse-query';
+import { browseHref, MOST, priceLabel, sortsFor, WHO_LABEL, withFilter, type BrowseQuery } from './browse-query';
 import { FilterPanel } from './filter-panel';
 import styles from './filters.module.css';
+import { DRAWER_EVERY, DRAWER_SIZE, FinishingDrawer } from './finishing-drawer';
 import { PhoneFilter } from './phone-filter';
 import { ProductCard } from './product-card';
 import { useBrowse } from './use-browse';
@@ -16,11 +17,17 @@ import type { ProductType } from '@repo/shared/domain';
 const pill =
   'font-ui border-line bg-paper hover:border-ink inline-flex min-h-11 shrink-0 items-center gap-2 rounded-pill border px-6 text-sm font-medium transition-colors disabled:opacity-60';
 const pieces = (n: number): string => `${n} ${n === 1 ? 'piece' : 'pieces'}`;
+/** The count, with Clothing's finishing touches when they are in a drawer (D-144): "652 pieces · 40 finishing touches". */
+const counted = (meta: { total: number; drawer_total: number }): string =>
+  meta.drawer_total > 0
+    ? `${pieces(meta.total)} · ${meta.drawer_total} finishing ${meta.drawer_total === 1 ? 'touch' : 'touches'}`
+    : pieces(meta.total);
 
 /**
  * A See all page's heading, filters and cards (D-136): the filter panel on the left from 1024 px (the Filter bar and
  * side panel below that), what is chosen as chips with ×, the sort, the grid and Show more. Choosing anything swaps
- * only the cards (use-browse.ts); the page around them stays as it is.
+ * only the cards (use-browse.ts); the page around them stays as it is. D-144: low to high by default, and on Clothing
+ * the finishing touches in a drawer after the second row of every 24 cards.
  */
 export function BrowseView({
   productType,
@@ -81,7 +88,7 @@ export function BrowseView({
       {productType === 'clothing' && meta.wears ? <WhoTiles query={query} counts={meta.wears} onChange={change} /> : null}
       <PhoneFilter
         chosen={`${whoName ? `${whoName} · ` : ''}${stateName ?? 'All states'} · ${categoryName ?? 'Everything'}${price ? ` · ${price}` : ''}`}
-        count={pieces(meta.total)}
+        count={counted(meta)}
         onClear={chosen ? () => change(clearAll) : null}
       >
         {panel}
@@ -98,7 +105,7 @@ export function BrowseView({
         <div ref={results} className="min-w-0 scroll-mt-24">
           <div className="mb-[clamp(18px,2vw,28px)] flex flex-wrap items-center gap-x-4 gap-y-3">
             <p className="font-ui text-ink-muted m-0 hidden text-sm lg:block" aria-live="polite">
-              {loading === 'replace' ? 'Finding pieces…' : pieces(meta.total)}
+              {loading === 'replace' ? 'Finding pieces…' : counted(meta)}
             </p>
             {chosen ? (
               <div className={`${styles.chips} order-last w-full md:order-none md:w-auto`}>
@@ -122,11 +129,11 @@ export function BrowseView({
             <label className="font-ui ml-auto inline-flex items-center gap-2 text-sm">
               <span className="text-ink-muted">Sort by</span>
               <select
-                value={query.sort}
+                value={productType !== 'clothing' && query.sort === 'price-asc' ? 'low' : query.sort}
                 onChange={(e) => change(withFilter(query, { sort: e.target.value as BrowseSort }))}
                 className="border-line bg-paper hover:border-ink min-h-10 rounded-pill border px-3 font-medium"
               >
-                {SORTS.map((s) => (
+                {sortsFor(productType).map((s) => (
                   <option key={s.value} value={s.value}>
                     {s.label}
                   </option>
@@ -134,7 +141,7 @@ export function BrowseView({
               </select>
             </label>
           </div>
-          {products.length === 0 && !loading ? (
+          {products.length === 0 && meta.drawer.length === 0 && !loading ? (
             <p className="text-ink-muted">
               Nothing matches all of these.{' '}
               {chosen ? (
@@ -145,6 +152,7 @@ export function BrowseView({
             </p>
           ) : (
             <div
+              data-card-grid=""
               aria-busy={loading === 'replace'}
               className={`drift drift-side grid grid-cols-2 gap-x-[var(--gap)] gap-y-[clamp(28px,3vw,44px)] transition-opacity duration-200 lg:grid-cols-3 2xl:grid-cols-4 ${
                 loading === 'replace' ? 'opacity-50' : ''
@@ -153,6 +161,20 @@ export function BrowseView({
               {products.map((p) => (
                 <ProductCard key={p.id} product={p} layout="side" />
               ))}
+              {Array.from({ length: Math.ceil(meta.drawer.length / DRAWER_SIZE) }, (_, k) => {
+                const cards = products.slice(k * DRAWER_EVERY, (k + 1) * DRAWER_EVERY).length;
+                return k > 0 && cards === 0 ? null : (
+                  <FinishingDrawer
+                    key={k}
+                    index={k}
+                    // two full rows at four columns
+                    placed={cards >= 8}
+                    items={meta.drawer.slice(k * DRAWER_SIZE, (k + 1) * DRAWER_SIZE)}
+                    query={query}
+                    onChange={change}
+                  />
+                );
+              })}
             </div>
           )}
           {products.length < meta.total && loading !== 'replace' ? (

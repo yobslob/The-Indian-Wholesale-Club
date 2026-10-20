@@ -319,6 +319,9 @@ export const browsePageSchema = z.object({
     .nullable()
     .default(null),
   products: z.array(productCardSchema),
+  /** D-144: Clothing's finishing touches (accessories, turbans) by price, 12 for every 24 cards; empty elsewhere. */
+  drawer: z.array(productCardSchema).default([]),
+  drawer_total: z.number().int().default(0),
 });
 export type BrowsePage = z.infer<typeof browsePageSchema>;
 export type QuickAdd = z.infer<typeof quickAddSchema>;

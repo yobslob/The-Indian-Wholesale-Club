@@ -119,7 +119,11 @@ export function useBrowse(productType: ProductType, initialQuery: BrowseQuery, i
     setLoading('append');
     const page = await load(query, products.length, PAGE).catch(() => null);
     if (!page) return;
-    setMeta(metaOf(page));
+    // D-144: each page brings the next drawer of finishing touches, after the ones already drawn
+    setMeta((prev) => {
+      const seen = new Set(prev.drawer.map((p) => p.id));
+      return { ...metaOf(page), drawer: [...prev.drawer, ...page.drawer.filter((p) => !seen.has(p.id))] };
+    });
     setProducts((prev) => {
       const seen = new Set(prev.map((p) => p.id));
       const next = [...prev, ...page.products.filter((p) => !seen.has(p.id))];

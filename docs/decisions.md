@@ -1039,3 +1039,19 @@ What it means for the build (packages/shared `same-picture.ts`, engineering.md P
   pixels, in its first place), then store them: a repeat never reaches the store, whatever the shop.
 - `pnpm photos:move` drops each listing's repeats while moving it (it downloads every photo once anyway), keeping the
   full-size file in the first one's place (order, main photo, words); `--review=<n>` shows what it would drop.
+
+**D-144 · 2026-10-21 · founder: See all opens low to high; Clothing's finishing touches in a jewellery drawer**
+- Founder, verbatim: "I want the customer to see low to high prices by default but in clothing only accessories comes up
+  first"; on Claude's proposal (design plan v6, F11): "I really like the jewellery drawer".
+What it means for the build (migration `20261021090000_low_to_high`, apps/web `features/catalog/finishing-drawer.tsx`):
+- See all (`/clothing`, `/food`, `/home-and-gifts`) opens low to high (`?sort=` absent; a state's own pieces still
+  first, D-140 L2; coming-soon pieces last). Newest, Price: low to high and high to low stay in Sort by. Supersedes
+  D-136's newest-first default.
+- Clothing's default view (no category chosen) is "one of each, then step up": each category's cheapest, then each
+  one's second cheapest; Price: low to high stays a strict list there.
+- On that view Accessories and Turbans & Headwear leave the list and open as a drawer after the second row of every
+  24 cards: a dark velvet band with a gold stitch, "Finishing touches · from $X", a sideways row of 12 smaller cards
+  with + and − n +, See all → the accessories. Inside any category, or with another sort, there is no drawer. The count
+  reads "252 pieces · 26 finishing touches".
+- *Interpretation (proposed, confirm when convenient):* footwear stays in the clothing order, not the drawer (Q-40);
+  the app's Browse stays newest first until it gets the drawer too.

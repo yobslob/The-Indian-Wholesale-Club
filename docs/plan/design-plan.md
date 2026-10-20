@@ -1,4 +1,4 @@
-# Design & ergonomics plan (storefront + admin), v5
+# Design & ergonomics plan (storefront + admin), v6
 
 **Status:** written by Claude on 2026-10-18 from the latest code, `main` at `b10bb8b` (the founder's machine; GitHub is
 2 sourcing commits behind), read file by file, and the live site (https://the-indian-wholesale-club.vercel.app) walked at 1440 px and 375 px on
@@ -247,6 +247,30 @@ Targets, Found drafts, Prices held, Orders, Customers, Reviews, Vendor pieces):
   total.
 **Done when:** Products, Imported and Targets open in under a second with 3,000+ rows on production data, every row is
 reachable, and e2e pages forward, jumps to a page and comes Back to the same page and filters.
+
+### F11 · Low to high by default, with the jewellery drawer 🟠 [F, 2026-10-21]
+Founder: "I want the customer to see low to high prices by default but in clothing only accessories comes up first";
+on Claude's proposal: "I really like the jewellery drawer".
+**Now:** See all defaults to Newest (`features/catalog/browse-query.ts`, `sort … .catch('new')`); a plain low-to-high
+on `/clothing` opens with four accessories and two turbans ($6 – $22.71) before the first kurta ($24.82), seen live.
+**Change:**
+- **Default sort = low to high** on every See all page and state page list (`?sort=` absent means it; "Newest" stays a
+  choice). On Clothing the default is **"one of each, then step up"**: each category's cheapest first, then each one's
+  second cheapest… (in `store_browse`'s `row_number()`: `rank() over (partition by category order by price)` before
+  the price), so the first screen shows the whole wardrobe climbing in price. Sort by → "Price: low to high" stays a
+  strict ascending list.
+- **The jewellery drawer:** on Clothing's default view, Accessories and Turbans & headwear leave the price order and
+  open as a drawer after the second row of the grid: a dark, velvet-toned band (the inside of a jewellery box), a
+  thin gold stitch along its top edge, "Finishing touches · from $6", a sideways row of smaller cards with + / − n +,
+  and See all → `/clothing?category=accessories`. Each "Show more" can bring the next drawer (the next 12 by price).
+  On a phone the drawer is full width between rows 2 and 3 (two cards and a peek). Reduced motion: no slide-in.
+- Inside the Accessories category, or with any category filter, there is no drawer and plain low to high applies.
+- Footwear: [Q] in the drawer or in the clothing order (proposed: clothing order; Q-40). Built 2026-10-21 as D-144.
+- Data: `store_browse` returns `drawer` (the 12 cheapest finishing touches in view, with options) beside `products`
+  when the type is clothing, no category is chosen and the sort is the default; the main list leaves those categories
+  out and its total says so ("652 pieces · 12 finishing touches").
+- Tests: SQL (one of each order, drawer only on the default, counts add up), e2e (drawer after row 2 at 375 and 1280,
+  its See all, + in the drawer adds to the bag).
 
 ## 2. Holes Claude found
 

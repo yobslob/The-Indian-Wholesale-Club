@@ -6,7 +6,8 @@ import type { BrowseFilter, BrowsePage, BrowseSort } from '@repo/db/store';
 
 /**
  * The See all pages' filters as the address carries them (D-136): ?state=, ?category=, ?for= (women or men, clothing,
- * D-140), ?min= and ?max= (whole dollars), ?size= (repeated), ?sort=, ?show=. Pure: the page, the /api/browse route and the filter panel share it.
+ * D-140), ?min= and ?max= (whole dollars), ?size= (repeated), ?sort= (absent: low to high, D-144), ?show=. Pure: the
+ * page, the /api/browse route and the filter panel share it.
  */
 export interface BrowseQuery {
   state?: string;
@@ -29,18 +30,26 @@ export const PAGE = 24;
 /** The most cards one page draws (20 pages of "Show more"; the database allows 500). */
 export const MOST = 480;
 
-export const SORTS: { value: BrowseSort; label: string }[] = [
-  { value: 'new', label: 'Newest' },
-  { value: 'price-asc', label: 'Price: low to high' },
-  { value: 'price-desc', label: 'Price: high to low' },
-];
+/**
+ * The Sort by choices (D-144). The default, 'low', is low to high; on Clothing it is one of each kind, then the next
+ * of each, with the finishing touches in a drawer, so a strict low to high stays a choice there. Elsewhere 'low' is
+ * that strict list, so 'price-asc' is not offered twice.
+ */
+export function sortsFor(productType: ProductType): { value: BrowseSort; label: string }[] {
+  return [
+    { value: 'low', label: productType === 'clothing' ? 'Low to high, every kind' : 'Price: low to high' },
+    ...(productType === 'clothing' ? [{ value: 'price-asc' as const, label: 'Price: low to high' }] : []),
+    { value: 'price-desc', label: 'Price: high to low' },
+    { value: 'new', label: 'Newest' },
+  ];
+}
 
 type Raw = URLSearchParams | Record<string, string | string[] | undefined>;
 
 const slug = z.string().regex(/^[a-z0-9-]{1,80}$/).optional().catch(undefined);
 const dollars = z.coerce.number().int().min(0).max(100_000).optional().catch(undefined);
 const size = z.string().trim().min(1).max(40);
-const sort = z.enum(['new', 'price-asc', 'price-desc']).catch('new');
+const sort = z.enum(['low', 'new', 'price-asc', 'price-desc']).catch('low');
 const show = z.coerce.number().int().min(PAGE + 1).max(MOST).optional().catch(undefined);
 
 const all = (raw: Raw, key: string): string[] => {
@@ -64,7 +73,7 @@ export function parseBrowseQuery(raw: Raw): BrowseQuery {
     min,
     max,
     sizes,
-    sort: sort.parse(one(raw, 'sort') ?? 'new'),
+    sort: sort.parse(one(raw, 'sort') ?? 'low'),
     show: show.parse(one(raw, 'show')),
   };
 }
@@ -78,7 +87,7 @@ export function browseSearch(q: BrowseQuery): string {
   if (q.min !== undefined) p.set('min', String(q.min));
   if (q.max !== undefined) p.set('max', String(q.max));
   for (const s of q.sizes) p.append('size', s);
-  if (q.sort !== 'new') p.set('sort', q.sort);
+  if (q.sort !== 'low') p.set('sort', q.sort);
   if (q.show) p.set('show', String(q.show));
   return p.toString();
 }
@@ -106,7 +115,7 @@ export const toBrowseFilter = (productType: ProductType, q: BrowseQuery, offset:
 
 /** True when any filter beyond the state and the category is set (those only the server's cached page knows). */
 export const hasExtraFilters = (q: BrowseQuery): boolean =>
-  q.min !== undefined || q.max !== undefined || q.sizes.length > 0 || q.sort !== 'new';
+  q.min !== undefined || q.max !== undefined || q.sizes.length > 0 || q.sort !== 'low';
 
 export const sameQuery = (a: BrowseQuery, b: BrowseQuery): boolean => browseSearch(a) === browseSearch(b);
 

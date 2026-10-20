@@ -7,6 +7,7 @@ import {
   priceRanges,
   sizeGroups,
   sortSizes,
+  sortsFor,
   toBrowseFilter,
   withFilter,
 } from '../features/catalog/browse-query';
@@ -15,7 +16,7 @@ describe("See all's filters in the address (D-136)", () => {
   it('reads every filter and leaves out what is malformed', () => {
     const q = parseBrowseQuery(new URLSearchParams('state=kerala&category=Bad!&min=60&max=20&size=M&size=XL&size=M&sort=price-asc&show=48'));
     assert.deepEqual(q, { state: 'kerala', category: undefined, min: 20, max: 60, sizes: ['M', 'XL'], sort: 'price-asc', show: 48 });
-    assert.equal(parseBrowseQuery({ sort: 'cheapest', show: '24' }).sort, 'new');
+    assert.equal(parseBrowseQuery({ sort: 'cheapest', show: '24' }).sort, 'low');
     assert.equal(parseBrowseQuery({ show: '24' }).show, undefined);
   });
 
@@ -23,6 +24,15 @@ describe("See all's filters in the address (D-136)", () => {
     const q = parseBrowseQuery(new URLSearchParams('size=L&sort=price-desc&state=punjab'));
     assert.equal(browseHref('clothing', q), '/clothing?state=punjab&size=L&sort=price-desc');
     assert.equal(browseHref('food', parseBrowseQuery({})), '/food');
+  });
+
+  it('opens low to high; Newest is a choice in the address (D-144)', () => {
+    assert.equal(parseBrowseQuery({}).sort, 'low');
+    assert.equal(browseHref('clothing', parseBrowseQuery({ sort: 'low' })), '/clothing');
+    assert.equal(browseHref('clothing', parseBrowseQuery({ sort: 'new' })), '/clothing?sort=new');
+    assert.equal(toBrowseFilter('food', parseBrowseQuery({}), 0, 24).sort, 'low');
+    assert.deepEqual(sortsFor('clothing').map((s) => s.value), ['low', 'price-asc', 'price-desc', 'new']);
+    assert.deepEqual(sortsFor('food').map((s) => s.value), ['low', 'price-desc', 'new']);
   });
 
   it('a new state drops the category and every change starts again at the first page', () => {

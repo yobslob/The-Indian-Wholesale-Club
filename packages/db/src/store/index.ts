@@ -73,7 +73,8 @@ export async function getNextDelivery(client: IwcClient): Promise<DeliveryWindow
 const PRODUCT_CARD_COLUMNS =
   'id, slug, name, product_type, region_slug, region_name, category_slug, category_name, price_cents, primary_image_path';
 
-export const BROWSE_SORTS = ['new', 'price-asc', 'price-desc'] as const;
+/** D-144: 'low' is the website's default (cheapest first; on Clothing one of each, then step up, with the drawer). */
+export const BROWSE_SORTS = ['low', 'new', 'price-asc', 'price-desc'] as const;
 export type BrowseSort = (typeof BROWSE_SORTS)[number];
 
 export interface BrowseFilter {
@@ -85,7 +86,7 @@ export interface BrowseFilter {
   maxCents?: number;
   /** D-136: option values (size, or food's pack); a piece matches when any of its options is one. */
   sizes?: string[];
-  /** D-136: newest first unless a price sort. */
+  /** D-136: newest first when absent (the app); D-144: the website sends 'low'. */
   sort?: BrowseSort;
   /** D-140: clothing for women or men (unisex pieces show under both). */
   forWho?: 'women' | 'men';

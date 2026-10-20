@@ -15,6 +15,7 @@
     --brand: theme('colors.brand');
     --land: theme('colors.land');
     --canvas: theme('colors.canvas');
+    --caution: theme('colors.caution');
     /* The sticky banner + header's height, kept exact by top-height.tsx; these are its values before that runs. */
     --top-h: 72px;
   }
