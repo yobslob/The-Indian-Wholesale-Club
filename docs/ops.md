@@ -229,6 +229,9 @@ then 402 on 2026-10-18). R2 is free up to 10 GB stored, with no charge for traff
    `https://<account-id>.r2.cloudflarestorage.com/iwc-photos`, `PHOTO_STORE_KEY_ID`, `PHOTO_STORE_SECRET`,
    `PHOTO_STORE_PUBLIC_URL` = the r2.dev address. Then run the Deploy workflow (it applies
    `20261020090000_photo_store`). From then on every new photo from the website or the phone goes to R2.
+   `PHOTO_STORE_PUBLIC_URL` is read when the site is built (the `/media/s/` route; `turbo.json` passes it to the
+   build, whose strict mode drops any variable not listed there): after changing it, deploy again. A production build
+   without it stops with an error (until 2026-10-21 it was dropped, and every moved photo answered 404).
 5. The hub PC: pull the code; in `tools/sourcing-runner/.env` add `IWC_PHOTO_STORE_S3_URL` (same value),
    `IWC_PHOTO_STORE_KEY_ID`, `IWC_PHOTO_STORE_SECRET`. The runner then writes its photos to R2 itself.
 **Move the older photos** (from a computer; every download counts as Supabase egress, 5 GB a month free, so each

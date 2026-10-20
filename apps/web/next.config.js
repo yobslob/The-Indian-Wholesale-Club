@@ -20,6 +20,11 @@ const supabaseOrigin = supabaseUrl ? supabaseUrl.origin : 'https://*.supabase.co
 
 /** The photo store's public address (lib/photo-store.ts), e.g. https://pub-<id>.r2.dev; null when not set up. */
 const photoStorePublic = process.env.PHOTO_STORE_PUBLIC_URL ? process.env.PHOTO_STORE_PUBLIC_URL.replace(/\/+$/, '') : null;
+// Read when the site is built (turbo.json passes it to the build): without it /media/s/ has no route and every stored
+// photo is a 404 (production, 2026-10-21), so a production build stops instead.
+if (process.env.VERCEL_ENV === 'production' && !photoStorePublic) {
+  throw new Error('PHOTO_STORE_PUBLIC_URL is not set for this build (docs/ops.md §Photos; turbo.json build env)');
+}
 
 /**
  * D-140, the photo fix: photos come from the site's own address, so a page never names a storage host and needs no

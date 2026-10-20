@@ -4,6 +4,7 @@
   "tasks": {
     "build": {
       "dependsOn": ["^build"],
+      "env": ["PHOTO_STORE_PUBLIC_URL", "VERCEL_ENV"],
       "outputs": [".next/**", "!.next/cache/**", "dist/**"]
     },
     "dev": {
