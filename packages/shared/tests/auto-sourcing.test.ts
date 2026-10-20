@@ -245,6 +245,27 @@ describe('variants: any option, any shop (D-118)', () => {
   it('has a capture the runner can evaluate', () => {
     assert.doesNotThrow(() => new Function(`return ${captureScript};`));
   });
+
+  it('takes each Amazon photo once, full size when there is one (D-142)', () => {
+    const I = 'https://m.media-amazon.com/images/I/';
+    // Amazon's page lists every photo full size ("hiRes") and as a preview under another name ("large")
+    const colorImages = `'colorImages': { 'initial': [{"hiRes":"${I}71a._SL1500_.jpg","thumb":"${I}41a._SS40_.jpg","large":"${I}41a.jpg","main":{"${I}71a._SX679_.jpg":[679,679]},"variant":"MAIN"},{"hiRes":null,"thumb":"${I}41b._SS40_.jpg","large":"${I}41b.jpg","main":{},"variant":"PT01"},{"hiRes":"${I}71c._SL1500_.jpg","thumb":"${I}41c._SS40_.jpg","large":"${I}41c.jpg","main":{},"variant":"PT02"}]}`;
+    const el = (text: string) => ({ innerText: text, textContent: text, getAttribute: () => null, querySelector: () => null });
+    const page = {
+      title: 'A product',
+      body: el(''),
+      querySelector: (s: string) =>
+        s === '#productTitle' ? el('Tata Sampann Rajma 500 g') : s === '#landingImage' ? { ...el(''), src: `${I}41a._SX679_.jpg` } : null,
+      querySelectorAll: (s: string) => (s === 'script' ? [el(colorImages), el(colorImages)] : []),
+    };
+    const run = new Function('document', 'location', 'window', `return ${captureScript};`) as (
+      d: unknown,
+      l: unknown,
+      w: unknown,
+    ) => RawCapture;
+    const raw = run(page, { href: 'https://www.amazon.in/dp/B0TEST1234', hostname: 'www.amazon.in', pathname: '/dp/B0TEST1234' }, {});
+    assert.deepEqual(raw.amazon?.images, [`${I}71a._SL1500_.jpg`, `${I}41b.jpg`, `${I}71c._SL1500_.jpg`]);
+  });
 });
 
 describe('matching a target', () => {

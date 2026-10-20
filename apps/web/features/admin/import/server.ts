@@ -1,6 +1,7 @@
 import 'server-only';
 
 import { addProductMedia } from '@repo/db/admin';
+import { pictureGroups, sharpest } from '@repo/shared/domain';
 import {
   captureFromHtml,
   isPublicHttpsUrl,
@@ -9,7 +10,7 @@ import {
   type SourcedProduct,
 } from '@repo/shared/sourcing';
 
-import { storePhoto } from '@/lib/photo-copies';
+import { photoPrint, storePhoto } from '@/lib/photo-copies';
 
 import type { IwcClient } from '@repo/db';
 
@@ -93,7 +94,8 @@ export async function readSourcePage(
 
 /**
  * Copies the chosen photos into our own storage (product-media/products/<product>/), so the store never loads a
- * shop's address (D-003) and a photo stays when the shop removes it. One that fails is skipped and counted.
+ * shop's address (D-003) and a photo stays when the shop removes it. One that fails is skipped and counted. A photo
+ * the shop shows twice (a full-size photo and its preview, D-142) is kept once, at full size, in its first place.
  */
 export async function copySourcePhotos(
   client: IwcClient,
@@ -101,41 +103,54 @@ export async function copySourcePhotos(
   urls: string[],
   altBase: string,
   firstOrder = 0,
-): Promise<{ copied: number; failed: number }> {
+): Promise<{ copied: number; failed: number; repeats: number }> {
+  const downloads = await Promise.all(urls.map(downloadPhoto));
+  const photos = downloads.filter((d): d is { bytes: Uint8Array; type: string; ext: string } => d !== null);
+  const prints = await Promise.all(photos.map((p) => photoPrint(p.bytes)));
+  const groups = pictureGroups(prints);
   const results = await Promise.all(
-    urls.map(async (url, i) => {
-      if (!isPublicHttpsUrl(url)) return null;
+    groups.map(async (group) => {
+      const photo = photos[sharpest(group, prints)]!;
       try {
-        const response = await fetch(url, {
-          headers: { 'user-agent': HEADERS['user-agent'], accept: 'image/avif,image/webp,image/*' },
-          cache: 'no-store',
-          signal: AbortSignal.timeout(20_000),
-        });
-        const type = (response.headers.get('content-type') ?? '')
-          .split(';')[0]!
-          .trim()
-          .toLowerCase();
-        const ext = PHOTO_TYPES[type];
-        if (!response.ok || !ext || !isPublicHttpsUrl(response.url || url)) return null;
-        const bytes = await readCapped(response, MAX_PHOTO_BYTES);
-        if (!bytes || bytes.byteLength < 2_000) return null;
         // with its fixed copies (D-140): the store never resizes a photo per view
-        const path = await storePhoto(client, 'product-media', `products/${productId}/${crypto.randomUUID()}.${ext}`, bytes, type);
-        return { path, order: i };
+        return await storePhoto(client, 'product-media', `products/${productId}/${crypto.randomUUID()}.${photo.ext}`, photo.bytes, photo.type);
       } catch {
         return null;
       }
     }),
   );
-  const saved = results.filter((r): r is { path: string; order: number } => r !== null);
-  for (const [n, photo] of saved.entries()) {
+  const saved = results.filter((path): path is string => path !== null);
+  for (const [n, path] of saved.entries()) {
     await addProductMedia(client, {
       product_id: productId,
-      storage_path: photo.path,
+      storage_path: path,
       alt_text: `${altBase}, photo ${n + 1}`,
       sort_order: firstOrder + n,
       is_primary: firstOrder === 0 && n === 0,
     });
   }
-  return { copied: saved.length, failed: urls.length - saved.length };
+  const repeats = photos.length - groups.length;
+  return { copied: saved.length, failed: urls.length - saved.length - repeats, repeats };
+}
+
+/** One shop photo's bytes, or null (not https, not a photo, too small or too large, no answer). */
+async function downloadPhoto(url: string): Promise<{ bytes: Uint8Array; type: string; ext: string } | null> {
+  if (!isPublicHttpsUrl(url)) return null;
+  try {
+    const response = await fetch(url, {
+      headers: { 'user-agent': HEADERS['user-agent'], accept: 'image/avif,image/webp,image/*' },
+      cache: 'no-store',
+      signal: AbortSignal.timeout(20_000),
+    });
+    const type = (response.headers.get('content-type') ?? '')
+      .split(';')[0]!
+      .trim()
+      .toLowerCase();
+    const ext = PHOTO_TYPES[type];
+    if (!response.ok || !ext || !isPublicHttpsUrl(response.url || url)) return null;
+    const bytes = await readCapped(response, MAX_PHOTO_BYTES);
+    return bytes && bytes.byteLength >= 2_000 ? { bytes, type, ext } : null;
+  } catch {
+    return null;
+  }
 }

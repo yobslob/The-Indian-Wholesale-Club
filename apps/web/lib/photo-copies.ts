@@ -2,7 +2,17 @@ import 'server-only';
 
 import sharp from 'sharp';
 
-import { canHaveCopies, COPY_WIDTHS, hasCopies, PHOTO_CACHE_CONTROL, storedPath, storeKeys } from '@repo/shared/domain';
+import {
+  canHaveCopies,
+  COPY_WIDTHS,
+  hasCopies,
+  PHOTO_CACHE_CONTROL,
+  PRINT_BLUR,
+  PRINT_SIZE,
+  storedPath,
+  storeKeys,
+  type PhotoPrint,
+} from '@repo/shared/domain';
 
 import { errorMessage, logger } from '@/lib/logger';
 import { photoStoreReady, putPhotoFile, removePhotoFiles } from '@/lib/photo-store';
@@ -31,6 +41,27 @@ export async function makeCopies(bytes: Uint8Array): Promise<Uint8Array<ArrayBuf
   return Promise.all(
     COPY_WIDTHS.map(async (width) => new Uint8Array(await image.clone().resize({ width, withoutEnlargement: true }).avif(AVIF[width]).toBuffer())),
   );
+}
+
+/** A photo's print, to spot the same picture saved twice (D-142, packages/shared same-picture.ts); null if unreadable. */
+export async function photoPrint(bytes: Uint8Array): Promise<PhotoPrint | null> {
+  try {
+    const image = sharp(bytes, { failOn: 'error' });
+    const { width, height, orientation } = await image.metadata();
+    if (!width || !height) return null;
+    const turned = (orientation ?? 1) >= 5;
+    const pixels = await image
+      .rotate()
+      .flatten({ background: '#fff' })
+      .resize(PRINT_SIZE, PRINT_SIZE, { fit: 'fill' })
+      .blur(PRINT_BLUR)
+      .removeAlpha()
+      .raw()
+      .toBuffer();
+    return { width: turned ? height : width, height: turned ? width : height, pixels: new Uint8Array(pixels) };
+  } catch {
+    return null;
+  }
 }
 
 async function putCopies(bucket: Bucket, path: string, bytes: Uint8Array): Promise<void> {

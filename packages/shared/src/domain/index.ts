@@ -7,6 +7,7 @@ export * from './cycles';
 export * from './delivery';
 export * from './listing';
 export * from './media';
+export * from './same-picture';
 export * from './order-status';
 export * from './pricing';
 export * from './profit-check';

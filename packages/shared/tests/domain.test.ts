@@ -3,6 +3,11 @@ import { describe, it } from 'node:test';
 
 import {
   CUSTOMER_STATUSES,
+  PRINT_SIZE,
+  pictureGroups,
+  samePicture,
+  sharpest,
+  type PhotoPrint,
   CUSTOMER_STATUS_LABEL,
   attributesSchemaFor,
   autoPrice,
@@ -655,3 +660,32 @@ describe('home & gifts without a weight (D-121), as all_india.test.sql', () => {
   });
 });
 
+describe('the same picture saved twice (D-142)', () => {
+  const n = PRINT_SIZE * PRINT_SIZE * 3;
+  /** A print of a pattern; `noise` adds what resizing and JPEG do to a copy (about ±noise per channel). */
+  const print = (width: number, height: number, pattern: (i: number) => number, noise = 0): PhotoPrint => ({
+    width,
+    height,
+    pixels: Uint8Array.from({ length: n }, (_, i) => Math.max(0, Math.min(255, pattern(i) + (noise ? ((i * 7919) % (2 * noise + 1)) - noise : 0)))),
+  });
+  const front = (i: number) => (Math.floor(i / 3 / PRINT_SIZE) * 2 + (i % 97)) % 256;
+  const back = (i: number) => (Math.floor(i / 3) % PRINT_SIZE) * 3 % 256;
+
+  it('finds a photo and its smaller copy, and nothing else', () => {
+    const full = print(1500, 1500, front);
+    assert.ok(samePicture(full, print(500, 500, front, 4)), 'a 500-pixel preview of the same photo');
+    assert.ok(samePicture(full, print(1500, 1500, front)), 'the same bytes');
+    assert.ok(!samePicture(full, print(500, 500, back)), 'another photo');
+    assert.ok(!samePicture(full, print(500, 600, front)), 'another shape');
+    assert.ok(!samePicture(full, print(500, 500, front, 40)), 'too far apart');
+  });
+
+  it('groups a listing’s photos by picture, never across variants, and keeps the full-size one', () => {
+    const prints = [print(1500, 1500, front), print(500, 500, front, 3), print(2000, 2000, back), print(500, 500, back, 3), null, print(500, 500, front, 2)];
+    assert.deepEqual(pictureGroups(prints), [[0, 1, 5], [2, 3], [4]]);
+    assert.deepEqual(pictureGroups(prints, [null, null, null, null, null, 'red']), [[0, 1], [2, 3], [4], [5]]);
+    assert.equal(sharpest([0, 1, 5], prints), 0);
+    assert.equal(sharpest([3, 2], prints), 2);
+    assert.equal(sharpest([1, 5], prints), 1, 'the earliest on a tie');
+  });
+});

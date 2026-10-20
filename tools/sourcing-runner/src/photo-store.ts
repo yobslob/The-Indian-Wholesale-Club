@@ -1,7 +1,7 @@
 import { AwsClient } from 'aws4fetch';
 import sharp from 'sharp';
 
-import { COPY_WIDTHS, storeKeys } from '@repo/shared/domain';
+import { COPY_WIDTHS, PRINT_BLUR, PRINT_SIZE, storeKeys, type PhotoPrint } from '@repo/shared/domain';
 
 import type { Env } from './env';
 
@@ -46,5 +46,26 @@ export class PhotoStore {
         if (!res.ok) throw new Error(`photo store: ${res.status}`);
       }),
     );
+  }
+}
+
+/** A photo's print, to spot the same picture saved twice (D-142; as apps/web/lib/photo-copies.ts); null if unreadable. */
+export async function photoPrint(bytes: Uint8Array): Promise<PhotoPrint | null> {
+  try {
+    const image = sharp(bytes, { failOn: 'error' });
+    const { width, height, orientation } = await image.metadata();
+    if (!width || !height) return null;
+    const turned = (orientation ?? 1) >= 5;
+    const pixels = await image
+      .rotate()
+      .flatten({ background: '#fff' })
+      .resize(PRINT_SIZE, PRINT_SIZE, { fit: 'fill' })
+      .blur(PRINT_BLUR)
+      .removeAlpha()
+      .raw()
+      .toBuffer();
+    return { width: turned ? height : width, height: turned ? width : height, pixels: new Uint8Array(pixels) };
+  } catch {
+    return null;
   }
 }

@@ -7,6 +7,9 @@
  * (Myntra, Amazon and Flipkart block data-centre requests). The sourcing runner (D-118) runs the same capture in its
  * own browser (`captureScript`).
  *
+ * Amazon lists each photo twice (full size, and a preview under another name): the capture takes each once, full size
+ * when Amazon has it (D-142).
+ *
  * Plain ES5 inside a string, so it runs as a bookmark on any site; capture.ts caps every field it reads.
  */
 const CAPTURE = String.raw`(function(){
@@ -38,7 +41,8 @@ if(q('#productTitle')){
  qa('#detailBullets_feature_div li').forEach(function(li){var x=t(li).split(/\s*:\s*/);if(x.length>1)spec(x[0],x.slice(1).join(': '));});
  var tw={};
  qa('script').forEach(function(s){var x=s.textContent||'';
-  if(x.indexOf('colorImages')>=0){var re=/"hiRes":"(https:[^"]+)"|"large":"(https:[^"]+)"/g,m;while((m=re.exec(x))&&a.images.length<80)a.images.push(m[1]||m[2]);}
+  if(x.indexOf('colorImages')>=0&&!a.images.length){var re=/"hiRes":(?:null|"(https:[^"]+)")[^{}]*?"large":"(https:[^"]+)"/g,m;while((m=re.exec(x))&&a.images.length<80)a.images.push(m[1]||m[2]);
+   if(!a.images.length){re=/"large":"(https:[^"]+)"/g;while((m=re.exec(x))&&a.images.length<80)a.images.push(m[1]);}}
   if(x.indexOf('dimensionValuesDisplayData')>=0){tw.values=js(x,/"dimensionValuesDisplayData"\s*:\s*(\{[^{}]*\})/);tw.dims=js(x,/"dimensions"\s*:\s*(\[[^\]]*\])/);tw.labels=js(x,/"variationDisplayLabels"\s*:\s*(\{[^{}]*\})/);}});
  tw.swatches=qa('#twister li[data-asin],[id^="inline-twister-row-"] li[data-asin],[id^="variation_"] li[data-asin]').slice(0,300).map(function(li){
   var row=li.closest('[id^="inline-twister-row-"],[id^="variation_"]');var id=row?row.id.replace(/^inline-twister-row-|^variation_/,''):'';
@@ -47,7 +51,7 @@ if(q('#productTitle')){
    mrp:t(li.querySelector('.apex-basisprice-value .a-offscreen,.a-text-price[data-a-strike="true"] .a-offscreen')).slice(0,90),
    available:!/unavailable|disabled/i.test(li.className)&&!/currently unavailable|out of stock/i.test(t(li))};}).filter(function(s){return /^[A-Z0-9]{10}$/.test(s.asin);});
  if(tw.values)a.twister=tw;
- var li=q('#landingImage');if(li&&a.images.length<80)a.images.push(li.getAttribute('data-old-hires')||li.src);
+ var li=q('#landingImage');if(li&&!a.images.length)a.images.push(li.getAttribute('data-old-hires')||li.src);
  c.delivery=t(q('#mir-layout-DELIVERY_BLOCK')||q('#deliveryBlockMessage')||q('#ddmDeliveryMessage')).slice(0,290);
  c.amazon=a;}
 if(/flipkart\.com$/.test(location.hostname.replace(/^www\./,''))){
