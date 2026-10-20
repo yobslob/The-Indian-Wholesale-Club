@@ -9,7 +9,7 @@ import {
   markEmailFailed,
   markEmailSent,
 } from '@repo/db/server';
-import { photoUrl } from '@repo/shared/domain';
+import { hasCopies, photoJpegUrl } from '@repo/shared/domain';
 
 import { siteUrl, supportEmail } from '@/lib/env';
 import { errorMessage, logger } from '@/lib/logger';
@@ -52,8 +52,8 @@ function emailContext(): EmailContext {
     siteName: SITE_NAME,
     siteUrl: site,
     supportEmail: supportEmail(),
-    // D-140: a photo's 320 px copy when it has one, else the photo itself; never a resizer
-    photo: (path) => `${site}${photoUrl(mediaUrl(path), 320)}`,
+    // D-140: a stored photo as a 160 px JPEG (every mail client shows JPEG, not all show AVIF), else the photo itself
+    photo: (path) => `${site}${hasCopies(path) ? photoJpegUrl(mediaUrl(path), 160) : mediaUrl(path)}`,
   };
 }
 

@@ -24,6 +24,11 @@ const schema = z.object({
   /** "chrome" (installed Google Chrome, shops trust it most), "msedge", or "chromium" (Playwright's own). */
   IWC_SOURCING_CHANNEL: z.enum(['chrome', 'msedge', 'chromium']).default('chrome'),
   IWC_SOURCING_HEADLESS: z.enum(['0', '1']).default('0'),
+  /** The photo store (D-140, src/photo-store.ts): the bucket's S3 address and an API token for it. Optional. */
+  IWC_PHOTO_STORE_S3_URL: z.string().url().optional(),
+  IWC_PHOTO_STORE_KEY_ID: z.string().min(1).optional(),
+  IWC_PHOTO_STORE_SECRET: z.string().min(1).optional(),
+  IWC_PHOTO_STORE_REGION: z.string().default('auto'),
 });
 
 export type Env = z.infer<typeof schema>;

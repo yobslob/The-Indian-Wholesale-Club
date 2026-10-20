@@ -18,20 +18,27 @@ if (
 }
 const supabaseOrigin = supabaseUrl ? supabaseUrl.origin : 'https://*.supabase.co';
 
+/** The photo store's public address (lib/photo-store.ts), e.g. https://pub-<id>.r2.dev; null when not set up. */
+const photoStorePublic = process.env.PHOTO_STORE_PUBLIC_URL ? process.env.PHOTO_STORE_PUBLIC_URL.replace(/\/+$/, '') : null;
+
 /**
- * D-140, the photo fix: photos come from the site's own address, `/media/<bucket>/<path>`, proxied to Supabase's
- * public storage and kept by Vercel's CDN for a year (headers below). Every photo path is new and never overwritten
- * (PR-6), so a year is safe. Free on both sides: Vercel serves it from its CDN (no resizer, so no 5,000-a-month
- * allowance), and Supabase sends each file about once per CDN region instead of once per view (its free plan allows
- * 5 GB a month). Same origin as the page, so a photo needs no second connection. Only the two public photo buckets.
+ * D-140, the photo fix: photos come from the site's own address, so a page never names a storage host and needs no
+ * second connection. `/media/s/<bucket>/<path>` is a stored photo's AVIF copy in the photo store (Cloudflare R2; no
+ * charge for its traffic); `/media/<bucket>/<path>` a photo still in Supabase's storage (only the two public photo
+ * buckets). Every photo path is new and never overwritten (PR-6), so the CDN may keep them a year (headers below).
+ * `/media/jpeg/...` is a route (app/media/jpeg), not a rewrite.
  */
 function mediaRewrites() {
-  if (!supabaseUrl) return [];
   return [
-    {
-      source: '/media/:bucket(product-media|review-media)/:path*',
-      destination: `${supabaseUrl.origin}/storage/v1/object/public/:bucket/:path*`,
-    },
+    ...(photoStorePublic ? [{ source: '/media/s/:path*', destination: `${photoStorePublic}/:path*` }] : []),
+    ...(supabaseUrl
+      ? [
+          {
+            source: '/media/:bucket(product-media|review-media)/:path*',
+            destination: `${supabaseUrl.origin}/storage/v1/object/public/:bucket/:path*`,
+          },
+        ]
+      : []),
   ];
 }
 
@@ -104,7 +111,8 @@ const nextConfig = {
   async headers() {
     return [
       {
-        // D-140: photos from the site's own address, kept by Vercel's CDN for a year (mediaRewrites)
+        // D-140: photos from the site's own address, kept by Vercel's CDN for a year (mediaRewrites). Supabase's answers
+        // set a cookie, which Vercel never caches (checked 2026-10-20); R2's public address sets none.
         source: '/media/:path*',
         headers: [
           { key: 'x-vercel-enable-rewrite-caching', value: '1' },

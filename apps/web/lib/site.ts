@@ -1,3 +1,5 @@
+import { mediaPath } from '@repo/shared/domain';
+
 /** Brand (D-009). The logo is not designed yet (design.md). */
 export const SITE_NAME = 'The Indian Wholesale Club';
 export const SITE_SHORT_NAME = 'IWC';
@@ -19,24 +21,14 @@ export const INFO_LINKS = [
  */
 export const isInfoPath = (href: string): boolean => INFO_LINKS.some((l) => l.href === href);
 
-/**
- * A file in a public storage bucket at the site's own address (D-140): `/media/<bucket>/<path>`, which next.config.js
- * proxies to Supabase's storage and Vercel's CDN keeps for a year. Relative, like every link on the site; an email
- * puts the site's address in front.
- */
-function publicUrl(bucket: string, storagePath: string): string {
-  const clean = storagePath.replace(/^\/+/, '').split('/').map(encodeURIComponent).join('/');
-  return `/media/${bucket}/${clean}`;
-}
-
-/** Public URL of a product/region photo in the public `product-media` bucket. */
+/** A product or region photo's address on the site (`product-media`; packages/shared `mediaPath`, D-140). */
 export function mediaUrl(storagePath: string): string {
-  return publicUrl('product-media', storagePath);
+  return mediaPath('product-media', storagePath);
 }
 
-/** Public URL of a review photo (`review-media`; only approved reviews' photos are ever linked, D-056). */
+/** A review photo's address on the site (`review-media`; only approved reviews' photos are ever linked, D-056). */
 export function reviewPhotoUrl(storagePath: string): string {
-  return publicUrl('review-media', storagePath);
+  return mediaPath('review-media', storagePath);
 }
 
 /**

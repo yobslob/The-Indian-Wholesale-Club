@@ -10,11 +10,11 @@ import {
   removeRegionPhoto,
   updateRegion,
 } from '@repo/db/admin';
-import { photoFiles, worstContrast } from '@repo/shared/domain';
+import { worstContrast } from '@repo/shared/domain';
 import tokens from '@repo/tokens';
 
 import { STORE_TAG } from '@/features/catalog/data';
-import { storePhoto } from '@/lib/photo-copies';
+import { removePhotos, storePhoto } from '@/lib/photo-copies';
 
 import { requireAdminAction } from '../guard';
 
@@ -136,7 +136,7 @@ export async function uploadAlbumPhotoAction(regionId: string, form: FormData): 
 export async function removeAlbumPhotoAction(regionId: string, photoId: string): Promise<void> {
   const { client } = await requireAdminAction();
   const path = await removeRegionPhoto(client, id.parse(photoId));
-  if (path) await client.storage.from('product-media').remove(photoFiles(path));
+  if (path) await removePhotos(client, 'product-media', [path]);
   revalidateTag(STORE_TAG);
   revalidatePath(`/admin/regions/${id.parse(regionId)}`);
 }

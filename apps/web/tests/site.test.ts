@@ -31,5 +31,6 @@ describe('storefront links (D-006)', () => {
 describe('mediaUrl', () => {
   it("builds the photo's address on the site (D-140) and encodes path segments", () => {
     assert.equal(mediaUrl('products/a b/1.jpg'), '/media/product-media/products/a%20b/1.jpg');
+    assert.equal(mediaUrl('products/a/s/1.jpg'), '/media/s/product-media/products/a/s/1.jpg');
   });
 });

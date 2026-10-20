@@ -18,7 +18,6 @@ import {
 import {
   attributesSchemaFor,
   listingSlug,
-  photoFiles,
   PRODUCT_TYPES,
   WEARS,
   type ListingInput,
@@ -31,6 +30,7 @@ import {
 } from '@repo/shared/sourcing';
 
 import { STORE_TAG } from '@/features/catalog/data';
+import { removePhotos } from '@/lib/photo-copies';
 
 import { requireAdminAction } from '../guard';
 
@@ -226,7 +226,7 @@ export async function saveImportAction(raw: ImportInput): Promise<ImportResult> 
       let note: string | undefined;
       if (input.replaceDetails && photos.length) {
         const old = await removeProductMedia(client, existing.id);
-        if (old.length) await client.storage.from('product-media').remove(old.flatMap(photoFiles));
+        if (old.length) await removePhotos(client, 'product-media', old);
         const { failed } = await copySourcePhotos(client, existing.id, photos, input.name);
         if (failed) note = `${failed} photo${failed === 1 ? '' : 's'} could not be copied.`;
       }

@@ -10,10 +10,9 @@ import {
   getProductMedia,
   setPrimaryProductMedia,
 } from '@repo/db/admin';
-import { photoFiles } from '@repo/shared/domain';
 
 import { STORE_TAG } from '@/features/catalog/data';
-import { storePhoto } from '@/lib/photo-copies';
+import { removePhotos, storePhoto } from '@/lib/photo-copies';
 
 import { requireAdminAction } from '../guard';
 
@@ -77,8 +76,11 @@ export async function deleteProductPhotoAction(productId: string, mediaId: strin
   const media = await getProductMedia(client, id.parse(mediaId));
   if (!media || media.product_id !== id.parse(productId)) throw new Error('photo not found');
   await deleteProductMedia(client, media.id);
-  const { error } = await client.storage.from('product-media').remove(photoFiles(media.storage_path));
-  if (error) throw new Error(`the photo was removed from the product, but its file could not be deleted: ${error.message}`);
+  try {
+    await removePhotos(client, 'product-media', [media.storage_path]);
+  } catch (error) {
+    throw new Error(`the photo was removed from the product, but its files could not be deleted: ${String(error)}`);
+  }
   if (media.is_primary) {
     const product = await getAdminProduct(client, productId);
     const next = product?.media.slice().sort((a, b) => a.sort_order - b.sort_order)[0];

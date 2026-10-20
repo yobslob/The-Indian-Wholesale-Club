@@ -98,9 +98,12 @@ select tests.assert_fails(format('select public.worker_sourcing_add(%L, %L)', te
 select tests.assert_fails(format('select public.worker_sourcing_media(%L, %L, true)', tests.id('product'),
   jsonb_build_array(jsonb_build_object('path', 'products/' || tests.id('p_live') || '/a.jpg'))),
   'media_invalid', 'photos go only to the listing''s own folder');
+select tests.assert_fails(format('select public.worker_sourcing_media(%L, %L, true)', tests.id('product'),
+  jsonb_build_array(jsonb_build_object('path', 'products/' || tests.id('product') || '/x/a.jpg'))),
+  'media_invalid', 'and no other folder in it than s/');
 select tests.assert((public.worker_sourcing_media(tests.id('product'), jsonb_build_array(
   jsonb_build_object('path', 'products/' || tests.id('product') || '/a.jpg', 'alt_text', 'Chikki'),
-  jsonb_build_object('path', 'products/' || tests.id('product') || '/b.jpg', 'item_key', 'B0TEST0002')), true)
+  jsonb_build_object('path', 'products/' || tests.id('product') || '/s/b.jpg', 'item_key', 'B0TEST0002')), true)
   ->> 'published')::boolean = false, 'auto-publish is off: it waits as a draft');
 select tests.assert_fails(format('select public.worker_sourcing_media(%L, %L, false)', tests.id('product'),
   jsonb_build_array(jsonb_build_object('path', 'products/' || tests.id('product') || '/c.jpg'))),

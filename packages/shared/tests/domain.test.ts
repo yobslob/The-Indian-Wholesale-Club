@@ -28,11 +28,14 @@ import {
   optionAxes,
   orderEventLabel,
   quoteCheckout,
-  copiesPath,
   copyFor,
   hasCopies,
+  mediaPath,
+  photoJpegUrl,
   photoSrcSet,
   photoUrl,
+  storedPath,
+  storeKeys,
   selectionOf,
   shippingAddressSchema,
   foodAttributesSchema,
@@ -589,29 +592,42 @@ describe('tracking links (D-066)', () => {
   });
 });
 
-describe('photos from their fixed copies (D-140)', () => {
-  const base = 'https://x.supabase.co/storage/v1/object/public/product-media/products/p1';
+describe('photos from the photo store (D-140)', () => {
+  const base = '/media/s/product-media/products/p1';
 
-  it('serves a photo in a c/ folder from the copy the width asks for, never larger than the largest', () => {
-    assert.equal(hasCopies(`${base}/c/abc.jpg`), true);
-    assert.equal(hasCopies(`${base}/abc.jpg`), false);
-    assert.equal(copyFor(`${base}/c/abc.jpg`, 300), `${base}/c/abc.w320.webp`);
-    assert.equal(copyFor(`${base}/c/abc.jpg`, 492), `${base}/c/abc.w640.webp`); // a 164-point card on a 3x phone
-    assert.equal(copyFor(`${base}/c/abc.jpg`, 641), `${base}/c/abc.w1280.webp`);
-    assert.equal(copyFor(`${base}/c/abc.jpg`, 3840), `${base}/c/abc.w1280.webp`);
+  it('draws a stored photo from the copy the width asks for, never larger than the largest', () => {
+    assert.equal(hasCopies(`${base}/s/abc.jpg`), true);
+    assert.equal(hasCopies('/media/product-media/products/p1/abc.jpg'), false);
+    assert.equal(copyFor(`${base}/s/abc.jpg`, 300), `${base}/s/abc.w640.avif`);
+    assert.equal(copyFor(`${base}/s/abc.jpg`, 492), `${base}/s/abc.w640.avif`); // a 164-point card on a 3x phone
+    assert.equal(copyFor(`${base}/s/abc.jpg`, 641), `${base}/s/abc.w1200.avif`);
+    assert.equal(copyFor(`${base}/s/abc.jpg`, 3840), `${base}/s/abc.w1200.avif`);
+    assert.equal(photoSrcSet(`${base}/s/a.png`), `${base}/s/a.w640.avif 640w, ${base}/s/a.w1200.avif 1200w`);
   });
 
-  it('draws a photo without copies as itself, never through a resizer', () => {
-    assert.equal(photoUrl(`${base}/abc.jpg`, 640), `${base}/abc.jpg`);
-    assert.equal(photoUrl(`${base}/c/abc.png`, 100), `${base}/c/abc.w320.webp`);
-    assert.equal(photoSrcSet(`${base}/abc.jpg`), '');
-    assert.equal(photoSrcSet(`${base}/c/a.jpg`), `${base}/c/a.w320.webp 320w, ${base}/c/a.w640.webp 640w, ${base}/c/a.w1280.webp 1280w`);
+  it('shows a photo still in Supabase as it is, never through a resizer', () => {
+    assert.equal(photoUrl('/media/product-media/products/p1/abc.jpg', 640), '/media/product-media/products/p1/abc.jpg');
+    assert.equal(photoSrcSet('/media/product-media/products/p1/abc.jpg'), '');
   });
 
-  it('moves a photo into its c/ folder once', () => {
-    assert.equal(copiesPath('products/p1/abc.jpg'), 'products/p1/c/abc.jpg');
-    assert.equal(copiesPath('products/p1/c/abc.jpg'), 'products/p1/c/abc.jpg');
-    assert.equal(copiesPath('u1/r1/abc.webp'), 'u1/r1/c/abc.webp');
+  it('names the site address by where the photo is, encoding each part', () => {
+    assert.equal(mediaPath('product-media', 'products/a b/s/1.jpg'), '/media/s/product-media/products/a%20b/s/1.jpg');
+    assert.equal(mediaPath('review-media', 'u1/r1/2.jpg'), '/media/review-media/u1/r1/2.jpg');
+  });
+
+  it('records a stored photo in its s/ folder, from a plain or a 2026-10-19 c/ path', () => {
+    assert.equal(storedPath('products/p1/abc.jpg'), 'products/p1/s/abc.jpg');
+    assert.equal(storedPath('products/p1/c/abc.jpg'), 'products/p1/s/abc.jpg');
+    assert.equal(storedPath('products/p1/s/abc.jpg'), 'products/p1/s/abc.jpg');
+    assert.deepEqual(storeKeys('product-media', 'products/p1/s/abc.jpg'), [
+      'product-media/products/p1/s/abc.w640.avif',
+      'product-media/products/p1/s/abc.w1200.avif',
+    ]);
+  });
+
+  it('gives an email or an old browser the same copy as a JPEG, at a width the route accepts', () => {
+    assert.equal(photoJpegUrl(`${base}/s/abc.jpg`, 160), '/media/jpeg/product-media/products/p1/s/abc.w640.avif?w=160');
+    assert.equal(photoJpegUrl(`${base}/s/abc.jpg`, 4000), '/media/jpeg/product-media/products/p1/s/abc.w1200.avif?w=1200');
   });
 });
 

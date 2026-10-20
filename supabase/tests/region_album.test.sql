@@ -16,14 +16,14 @@ select tests.assert_fails(
          tests.id('region'), 'products/x/y.jpg', 'Wrong folder'),
   '23514', 'album photos live under regions/<slug>/album/');
 insert into public.region_photos (region_id, storage_path, alt_text, sort_order)
-  values (tests.id('region'), 'regions/test-region/album/c/f.jpg', 'With its copies', 4);
-select tests.assert(exists (select 1 from public.region_photos where storage_path = 'regions/test-region/album/c/f.jpg'),
-  'D-140: an album photo may sit in its c/ folder beside its copies');
+  values (tests.id('region'), 'regions/test-region/album/s/f.jpg', 'In the photo store', 4);
+select tests.assert(exists (select 1 from public.region_photos where storage_path = 'regions/test-region/album/s/f.jpg'),
+  'D-140: an album photo may be recorded in the photo store''s s/ folder');
 select tests.assert_fails(
   format('insert into public.region_photos (region_id, storage_path, alt_text) values (%L, %L, %L)',
-         tests.id('region'), 'regions/test-region/album/c/x/y.jpg', 'Too deep'),
+         tests.id('region'), 'regions/test-region/album/s/x/y.jpg', 'Too deep'),
   '23514', 'but no deeper');
-delete from public.region_photos where storage_path = 'regions/test-region/album/c/f.jpg';
+delete from public.region_photos where storage_path = 'regions/test-region/album/s/f.jpg';
 select tests.assert_fails(
   format('insert into public.region_photos (region_id, storage_path, alt_text) values (%L, %L, %L)',
          tests.id('region'), 'regions/test-region/album/d.jpg', '  '),

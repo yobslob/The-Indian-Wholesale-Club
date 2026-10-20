@@ -1,10 +1,9 @@
 import { randomUUID } from 'node:crypto';
 
 import { createClient, type SupabaseClient } from '@supabase/supabase-js';
-import sharp from 'sharp';
 import { z } from 'zod';
 
-import { COPY_WIDTHS, copyFor, PRODUCT_TYPES } from '@repo/shared/domain';
+import { PRODUCT_TYPES } from '@repo/shared/domain';
 import {
   planSchema,
   weightPlanSchema,
@@ -26,6 +25,7 @@ import {
 
 import { errorText, log } from './log';
 import { describeNetError, supabaseFetch } from './net';
+import { PhotoStore } from './photo-store';
 
 import type { Env } from './env';
 import type { ProductType } from '@repo/shared/domain';
@@ -57,7 +57,10 @@ export interface HomeWrite {
  * only for a listing the runner made that has no photos yet.
  */
 export class Db implements FoodPassDb {
-  private constructor(private readonly client: SupabaseClient) {}
+  private constructor(
+    private readonly client: SupabaseClient,
+    private readonly photos: PhotoStore | null,
+  ) {}
 
   static async signIn(env: Env): Promise<Db> {
     const client = createClient(env.IWC_SUPABASE_URL, env.IWC_SUPABASE_ANON_KEY, {
@@ -77,7 +80,9 @@ export class Db implements FoodPassDb {
             : ` (check IWC_SUPABASE_URL and this PC's internet; \`pnpm sourcing doctor\` tests the road)`),
       );
     }
-    return new Db(client);
+    const photos = PhotoStore.from(env);
+    if (!photos) log('No photo store set (IWC_PHOTO_STORE_*): new photos go to Supabase storage and the admin panel moves them.');
+    return new Db(client, photos);
   }
 
   private async rpc<T>(fn: string, args: Record<string, unknown>): Promise<T> {
@@ -220,28 +225,25 @@ export class Db implements FoodPassDb {
   }
 
   /**
-   * Uploads one photo under products/<id>/ and returns its path: with its fixed copies in products/<id>/c/ (D-140, the
-   * same settings as apps/web/lib/photo-copies.ts), so the store never resizes it per view. A photo sharp can't read
-   * is stored as it is; the admin panel gives it copies later if it can.
+   * Stores one photo of a new listing and returns the path to record (D-140): with a photo store, its two AVIF copies go
+   * there and the path is products/<id>/s/<name>; without one, or if the copies can't be made, the photo goes to
+   * Supabase's storage under products/<id>/ as it is (the admin panel moves it later).
    */
   async upload(product: string, bytes: Buffer, contentType: string): Promise<string> {
     const ext = contentType.includes('png') ? 'png' : contentType.includes('webp') ? 'webp' : 'jpg';
     const name = `${randomUUID()}.${ext}`;
-    const store = (path: string, body: Buffer, type: string) =>
-      this.client.storage.from('product-media').upload(path, body, { contentType: type, upsert: false, cacheControl: '31536000' });
-    let path = `products/${product}/${name}`;
-    try {
-      const image = sharp(bytes, { failOn: 'error' }).rotate();
-      for (const width of COPY_WIDTHS) {
-        const body = await image.clone().resize({ width, withoutEnlargement: true }).webp({ quality: 80, smartSubsample: true }).toBuffer();
-        const { error } = await store(copyFor(`products/${product}/c/${name}`, width), body, 'image/webp');
-        if (error) throw new Error(error.message);
+    if (this.photos) {
+      try {
+        await this.photos.put(`products/${product}/s/${name}`, bytes);
+        return `products/${product}/s/${name}`;
+      } catch (error) {
+        log(`  photo store: ${errorText(error)}; stored in Supabase instead`);
       }
-      path = `products/${product}/c/${name}`;
-    } catch (error) {
-      log(`  photo copies not made: ${errorText(error)}`);
     }
-    const { error } = await store(path, bytes, contentType);
+    const path = `products/${product}/${name}`;
+    const { error } = await this.client.storage
+      .from('product-media')
+      .upload(path, bytes, { contentType, upsert: false, cacheControl: '31536000' });
     if (error) throw new Error(`photo upload: ${error.message}`);
     return path;
   }

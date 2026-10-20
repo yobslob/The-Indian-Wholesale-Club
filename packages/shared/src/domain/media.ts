@@ -1,56 +1,71 @@
 /**
  * Product, region and review photos (engineering.md PR-6). Every upload gets a new random path and is never
- * overwritten, so a photo's URL always shows the same file: browsers, the storage CDN and phones may keep it for a year.
+ * overwritten, so a photo's URL always shows the same file: browsers, CDNs and phones may keep it for a year.
  */
 export const PHOTO_CACHE_CONTROL = '31536000';
 
 /**
- * Fixed-size copies (D-140, the photo fix): a photo whose path sits in a `c/` folder (`products/<id>/c/<name>.jpg`) has
- * WebP copies beside it, `<name>.w320.webp`, `.w640.webp` and `.w1280.webp`, written when it is uploaded (or by
- * `pnpm photos:copies` for older photos). They come straight from Supabase's CDN at no cost per view: no resizer in
- * between (Vercel's allowed 5,000 a month and then answered 402, 2026-10-18). Never upscaled, so a 1080-pixel shop
- * photo's largest copy is 1080 pixels: as sharp as its source.
+ * The photo store (D-140, the photo fix, 2026-10-20): photos live in Cloudflare R2, not in Supabase's storage (whose
+ * free plan holds 1 GB; production had 54,600 photos, 7.9 GB). A stored photo is recorded with a path in an `s/` folder
+ * (`products/<id>/s/<name>.jpg`) and exists only as two AVIF copies, `<name>.w640.avif` and `<name>.w1200.avif`,
+ * under `<bucket>/` in the store (about 70 KB together; never upscaled, so a 500-pixel shop photo stays 500 pixels).
+ * The original is not kept. Any other path is a photo still in Supabase's storage (just uploaded, or not yet moved),
+ * shown as it is.
  */
-export const COPY_WIDTHS = [320, 640, 1280] as const;
+export const COPY_WIDTHS = [640, 1200] as const;
 
 const IMAGE_EXT = /\.(jpe?g|png|webp|avif)$/i;
-const COPY_PATH = /\/c\/[^/]+\.(jpe?g|png|webp|avif)$/i;
+const STORED = /\/s\/[^/]+\.(jpe?g|png|webp|avif)$/i;
 
-/** Whether a storage path or URL has its fixed copies. */
-export const hasCopies = (pathOrUrl: string): boolean => COPY_PATH.test(pathOrUrl.split('?')[0]!);
+/** Whether a storage path or URL is a stored photo (its copies are in the photo store). */
+export const hasCopies = (pathOrUrl: string): boolean => STORED.test(pathOrUrl.split('?')[0]!);
+
+/** Whether a file is a photo that can be stored (JPEG, PNG, WebP or AVIF). */
+export const canHaveCopies = (path: string): boolean => IMAGE_EXT.test(path);
 
 /** The copy for a width in pixels: the smallest that is at least as wide, else the largest. */
 export function copyFor(pathOrUrl: string, width: number): string {
   const w = COPY_WIDTHS.find((x) => x >= width) ?? COPY_WIDTHS[COPY_WIDTHS.length - 1];
-  return pathOrUrl.replace(IMAGE_EXT, `.w${w}.webp`);
+  return pathOrUrl.replace(IMAGE_EXT, `.w${w}.avif`);
 }
 
-/** The path a photo gets once it has copies: `products/p1/abc.jpg` → `products/p1/c/abc.jpg` (c/ paths stay). */
-export function copiesPath(path: string): string {
-  return COPY_PATH.test(path) ? path : path.replace(/\/([^/]+)$/, '/c/$1');
+/** The path a photo is recorded with once stored: `products/p1/abc.jpg` → `products/p1/s/abc.jpg` (s/ paths stay). */
+export function storedPath(path: string): string {
+  if (STORED.test(path)) return path;
+  // a copy made before 2026-10-20 sat in a c/ folder in Supabase's storage; it is stored like any other
+  return path.replace(/\/c\/([^/]+)$/, '/$1').replace(/\/([^/]+)$/, '/s/$1');
 }
 
-/** Whether a stored file is a photo that can have copies (JPEG, PNG, WebP or AVIF). */
-export const canHaveCopies = (path: string): boolean => IMAGE_EXT.test(path);
+/** The keys of a stored photo's copies in the photo store (each under its Supabase bucket's name). */
+export function storeKeys(bucket: string, path: string): string[] {
+  return COPY_WIDTHS.map((w) => `${bucket}/${copyFor(path, w)}`);
+}
+
+const encodePath = (path: string): string => path.replace(/^\/+/, '').split('/').map(encodeURIComponent).join('/');
 
 /**
- * The URL to draw a photo `pixels` wide: its copy when it has them, else the photo itself (a photo uploaded a moment
- * ago, before its copies; never the resizer, so a view never costs anything).
+ * A photo's address on the site: `/media/s/<bucket>/<path>` for a stored photo (its copies, from the photo store),
+ * `/media/<bucket>/<path>` for one still in Supabase's storage. next.config.js routes both; the page never names a
+ * storage host. `photoUrl` and `photoSrcSet` turn a stored photo's address into its copies'.
  */
+export function mediaPath(bucket: string, storagePath: string): string {
+  return hasCopies(storagePath) ? `/media/s/${bucket}/${encodePath(storagePath)}` : `/media/${bucket}/${encodePath(storagePath)}`;
+}
+
+/** The URL to draw a photo `pixels` wide: its copy when it is stored, else the photo itself. */
 export function photoUrl(url: string, pixels: number): string {
   return hasCopies(url) ? copyFor(url, pixels) : url;
 }
 
-/** The `srcset` of a photo with copies (the browser picks one for the `sizes` given); empty without copies. */
+/** The `srcset` of a stored photo (the browser picks a copy for the `sizes` given); empty for any other. */
 export function photoSrcSet(url: string): string {
   return hasCopies(url) ? COPY_WIDTHS.map((w) => `${copyFor(url, w)} ${w}w`).join(', ') : '';
 }
 
 /**
- * Every file a stored photo may have, to remove them together: the photo, its copies, and the file it was copied from
- * when it got them later (removing a file that isn't there is fine).
+ * The same copy as a JPEG, for the few places that can't show AVIF (an email client, an old browser): made on demand
+ * by the website (app/media/jpeg) and kept by the CDN. `url` is a stored photo's address from `mediaPath`.
  */
-export function photoFiles(path: string): string[] {
-  if (!hasCopies(path)) return [path];
-  return [path, ...COPY_WIDTHS.map((w) => copyFor(path, w)), path.replace(/\/c\/([^/]+)$/, '/$1')];
+export function photoJpegUrl(url: string, width: number): string {
+  return `${copyFor(url, width).replace('/media/s/', '/media/jpeg/')}?w=${Math.min(Math.max(Math.round(width), 80), 1200)}`;
 }
