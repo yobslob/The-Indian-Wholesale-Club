@@ -77,8 +77,8 @@ Baseline numbers come from the founder's first `node scripts/check.mjs` run and 
 ## Caching (D-068)
 | What | Cached? | Tags | Refreshed by |
 |---|---|---|---|
-| Home, region page, product page | yes (`unstable_cache` + the page's static render) | `store` + `store:home` / `store:region:<slug>` / `store:product:<region>/<slug>` | a sale (`revalidateAfterSale`: the products sold, their regions, Home), a cancel (everything), the automatic cutoff (everything), any admin change (everything), else 5 minutes |
-| See all (`/clothing`, `/food`, `/home-and-gifts`), sitemap | yes | `store` | admin changes, else 5 minutes. Light cards without stock, so a sale never changes them. Each address with its filters is a cached page (rewritten to `app/(store)/see-all/…`, not rendered per request: 61 – 169 ms before, 7 – 13 ms after, 2026-10-15); a filter combination nobody opened yet is built on its first visit. D-136: the filters and Show more fetch `GET /api/browse` (no response cache; each filter set and page is its own `store_browse()` entry in the data cache) and swap only the cards |
+| Home, region page, product page | yes (`unstable_cache` + the page's static render) | `store` + `store:home` / `store:region:<slug>` (and `store:regions` on every state page) / `store:product:<region>/<slug>` | a sale (`revalidateAfterSale`: the products sold, their regions, Home), an admin change to listings (D-145, `features/admin/refresh-listings.ts`: their own pages, their state pages, Home, See all; a draft's edit nothing; over 100 listings everything), a cancel, the automatic cutoff and any other admin change (everything), else 5 minutes |
+| See all (`/clothing`, `/food`, `/home-and-gifts`), sitemap | yes | `store` + `store:listings` | admin changes, else 5 minutes. Light cards without stock, so a sale never changes them. Each address with its filters is a cached page (rewritten to `app/(store)/see-all/…`, not rendered per request: 61 – 169 ms before, 7 – 13 ms after, 2026-10-15); a filter combination nobody opened yet is built on its first visit. D-136: the filters and Show more fetch `GET /api/browse` (no response cache; each filter set and page is its own `store_browse()` entry in the data cache) and swap only the cards |
 | Search | no (per query) | | |
 | Cart, checkout, orders, account, every API route, admin | **never** (session or service clients, `cookies()`, POST routes) | | |
 - A sale is refreshed from `features/checkout/finalize.ts` once the order exists (browser or webhook, whichever is first),
@@ -92,6 +92,11 @@ Baseline numbers come from the founder's first `node scripts/check.mjs` run and 
   once the cached "order by" time has passed (`revalidateIfCutoffPassed`). Needs the Vault settings (`ops.md`).
 - App admin writes go straight to the database and refresh the website through `POST /admin/revalidate` (B-17).
 - Bump `SHAPE` in `features/catalog/data.ts` whenever a cached store_* result changes shape.
+- D-145: Vercel counts page-cache writes by size (8 KB units, 200,000 a month free), and every page is stored twice
+  (its HTML and its data). Cached store reads keep a card's options out (`slim-cards.ts`: their number and whether all are
+  sold out; one option stays), and the + reads them from `GET /api/card-options` when pressed; ProductCard passes the + only
+  the fields it uses, not the whole card. The website deploys once a day (ops.md §Deploy): each deploy starts the page
+  cache afresh.
 
 **Budgets (targets. Verified only by `check.mjs` numbers, never by assumption):**
 DB round trips per page: storefront ≤ 1, checkout ≤ 2 · storefront first-load JS ≤ 150 KB gzip · cached storefront

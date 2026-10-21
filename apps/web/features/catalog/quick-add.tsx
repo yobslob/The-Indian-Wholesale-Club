@@ -8,7 +8,7 @@ import { MAX_QTY_PER_LINE } from '@/features/cart/limits';
 import { useCart } from '@/features/cart/store';
 import { mediaUrl } from '@/lib/site';
 
-import { bagLine } from './card-options';
+import { bagLine, loadCardOptions } from './card-options';
 import { OptionRibbon, OptionSheet, ribbonWidth } from './option-picker';
 
 import type { CardOption, ProductCard, QuickAdd as QuickAddData } from '@repo/db/store';
@@ -39,17 +39,24 @@ const useHydrated = (): boolean => useSyncExternalStore(noop, () => true, () => 
  * every size of it in the bag; with one size there − and + change it (− at 1 takes it out), with several they open the
  * sheet with each size's own count. All instant: the bag is on the device (rule 0.1). Prices are for display only:
  * checkout re-prices and re-checks stock on the server.
+ * D-145: a piece with several options comes with only their number (`choices`); they are read when the + is pressed
+ * (the read starts as the finger or mouse goes down), and a failed read opens the product page instead.
  */
 export function QuickAdd({
   product,
   quickAdd,
   options: given,
+  choices,
+  soldOut: allSoldOut,
   available,
   href,
 }: {
   product: Pick<ProductCard, 'id' | 'name' | 'slug' | 'region_slug' | 'region_name' | 'primary_image_path' | 'product_type'>;
   quickAdd: QuickAddData | null | undefined;
   options?: CardOption[] | null;
+  /** How many options there are when the page left them out (D-145). */
+  choices?: number;
+  soldOut?: boolean;
   available: number | undefined;
   href: string;
 }): React.JSX.Element {
@@ -59,12 +66,31 @@ export function QuickAdd({
   const setQuantity = useCart((s) => s.setQuantity);
   const [open, setOpen] = useState<false | 'ribbon' | 'sheet'>(false);
   const [refused, setRefused] = useState(false);
+  const [loaded, setLoaded] = useState<CardOption[] | null>(null);
   const self = useRef<HTMLDivElement>(null);
   const close = useCallback(() => setOpen(false), []);
 
   // older cached cards carry only quick_add (one choice)
   const options: CardOption[] =
-    given ?? (quickAdd ? [{ id: quickAdd.variant_id, label: quickAdd.label, options: {}, price_cents: quickAdd.price_cents, available: available ?? 1 }] : []);
+    loaded ??
+    given ??
+    (quickAdd ? [{ id: quickAdd.variant_id, label: quickAdd.label, options: {}, price_cents: quickAdd.price_cents, available: available ?? 1 }] : []);
+  const many = loaded ? loaded.length : (choices ?? options.length);
+  // the options, read first when the page left them out
+  const need = async (): Promise<CardOption[] | null> => {
+    if (loaded || !choices) return options;
+    try {
+      const list = await loadCardOptions(product.id);
+      setLoaded(list);
+      return list;
+    } catch {
+      window.location.assign(href);
+      return null;
+    }
+  };
+  const warm = (): void => {
+    if (choices && !loaded) loadCardOptions(product.id).catch(() => undefined);
+  };
   const inBag = hydrated ? lines.filter((l) => l.productId === product.id) : [];
   const count = inBag.reduce((n, l) => n + l.quantity, 0);
   const counts = new Map(inBag.map((l) => [l.variantId, l.quantity]));
@@ -84,7 +110,7 @@ export function QuickAdd({
     } else setQuantity(o.id, next);
   };
   const narrow = (): boolean => (self.current?.closest('article')?.clientWidth ?? 999) < 160;
-  const choose = (): void => setOpen(ribbonWidth(options) > 8 || narrow() ? 'sheet' : 'ribbon');
+  const choose = (list: CardOption[]): void => setOpen(ribbonWidth(list) > 8 || narrow() ? 'sheet' : 'ribbon');
 
   const picker =
     open === 'ribbon' ? (
@@ -101,11 +127,12 @@ export function QuickAdd({
       <OptionSheet product={product} options={options} counts={counts} onChange={(o, n, from) => put(o, n, from)} onClose={close} />
     ) : null;
 
-  const soldOut = available === 0 || (options.length > 0 && options.every((o) => o.available <= 0));
+  const soldOut =
+    available === 0 || (loaded || !choices ? options.length > 0 && options.every((o) => o.available <= 0) : allSoldOut === true);
   if (soldOut && count === 0) {
     return <span className={`${spot} bg-paper text-ink-muted rounded-pill px-3 py-1.5 text-xs font-medium`}>Sold out</span>;
   }
-  if (options.length === 0) {
+  if (many === 0) {
     // no options known (an old cached card): choose on the product page
     return (
       <Link href={href} className={round} aria-label={`Choose options for ${product.name}`}>
@@ -115,7 +142,16 @@ export function QuickAdd({
   }
 
   if (count > 0) {
-    const one = inBag.length === 1 ? options.find((o) => o.id === inBag[0]!.variantId) : undefined;
+    // one size of it in the bag: − and + change that one
+    const one = inBag.length === 1 ? inBag[0]! : undefined;
+    const more = async (from: HTMLElement): Promise<void> => {
+      const list = await need();
+      if (!list) return;
+      const o = one && list.find((x) => x.id === one.variantId);
+      if (o && list.length === 1) put(o, one.quantity + 1, from);
+      else if (one) choose(list);
+      else setOpen('sheet');
+    };
     return (
       <div ref={self}>
         <div
@@ -128,7 +164,8 @@ export function QuickAdd({
             type="button"
             className={pillButton}
             aria-label={one ? `One less ${product.name}` : `Change the sizes of ${product.name} in your bag`}
-            onClick={(e) => (one ? put(one, (counts.get(one.id) ?? 0) - 1, e.currentTarget) : setOpen('sheet'))}
+            onPointerDown={warm}
+            onClick={() => (one ? setQuantity(one.variantId, one.quantity - 1) : void need().then((l) => l && setOpen('sheet')))}
           >
             −
           </button>
@@ -138,8 +175,9 @@ export function QuickAdd({
           <button
             type="button"
             className={pillButton}
-            aria-label={one && options.length === 1 ? `One more ${product.name}` : `Add another size of ${product.name}`}
-            onClick={(e) => (one && options.length === 1 ? put(one, (counts.get(one.id) ?? 0) + 1, e.currentTarget) : one ? choose() : setOpen('sheet'))}
+            aria-label={one && many === 1 ? `One more ${product.name}` : `Add another size of ${product.name}`}
+            onPointerDown={warm}
+            onClick={(e) => void more(e.currentTarget)}
           >
             +
           </button>
@@ -161,11 +199,16 @@ export function QuickAdd({
         data-card-plus=""
         className={round}
         aria-expanded={open ? true : undefined}
-        aria-label={options.length === 1 ? `Add ${product.name} to your bag` : `Choose ${product.product_type === 'clothing' ? 'a size' : 'one'} of ${product.name}`}
-        onClick={(e) => {
+        aria-label={many === 1 ? `Add ${product.name} to your bag` : `Choose ${product.product_type === 'clothing' ? 'a size' : 'one'} of ${product.name}`}
+        onPointerDown={warm}
+        onFocus={warm}
+        onClick={async (e) => {
           if (open) return setOpen(false);
-          if (options.length === 1) return put(options[0]!, 1, e.currentTarget);
-          choose();
+          const from = e.currentTarget;
+          const list = await need();
+          if (!list) return;
+          if (list.length === 1) return put(list[0]!, 1, from);
+          choose(list);
         }}
       >
         <Icon d={PLUS} />

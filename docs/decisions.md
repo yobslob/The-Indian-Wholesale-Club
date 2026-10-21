@@ -1055,3 +1055,23 @@ What it means for the build (migration `20261021090000_low_to_high`, apps/web `f
   reads "252 pieces · 26 finishing touches".
 - *Interpretation (proposed, confirm when convenient):* footwear stays in the clothing order, not the drawer (Q-40);
   the app's Browse stays newest first until it gets the drawer too.
+
+**D-145 · 2026-10-21 · founder: stay on Vercel's free plan; fewer page-cache writes**
+- Founder, verbatim: "We won't be buying vercel pro anytime soon." Then, on Claude's three proposals: "Yes: publishing
+  refreshes only what changed, deploy once a day, and a card loads its choices on its +. Then I move Vercel."
+- Why: Vercel's free plan allows 200,000 page-cache writes a month, counted in 8 KB units of each page rebuilt with
+  new content; 208,000 were used by 2026-10-21. A state page was 2 MB (HTML plus the same data again), Home 0.9 MB, each
+  of the 5,852 product pages 0.23 MB, and every admin edit and import refreshed all of them, as did each of about 70
+  deploys.
+What it means for the build:
+- An admin change to listings refreshes only their own pages, their state page (every state page for an all-India
+  piece), Home, See all and the sitemap (`features/admin/refresh-listings.ts`); an edit to a draft refreshes nothing;
+  more than 100 listings at once, and changes to cycles, settings, states, refunds and reviews, still refresh the whole
+  store. Similar items on other product pages catch up within the 5-minute fallback, as after a sale.
+- The website deploys once a day at 09:00 UTC, when `main` changed and its CI run is green
+  (`.github/workflows/daily-deploy.yml` calls the Vercel deploy hook; `apps/web/vercel.json` turns off Vercel's
+  deploy on every push). "Run workflow" on it deploys at once. Migrations still go through the Deploy workflow.
+- A card with several options no longer carries them in the page: the cache keeps their number and whether all are
+  sold out (`features/catalog/slim-cards.ts`), and the + reads them when pressed from `GET /api/card-options` (the
+  store's variants view, kept by Vercel's CDN a minute; the read starts as the finger goes down). A card with one
+  option still adds at once.

@@ -41,8 +41,11 @@ test("+ in the drawer adds to the bag, and its See all opens the accessories wit
   const name = label.replace(/^Choose (a size|one) of /, '').replace(/^Add (.*) to your bag$/, '$1');
   await plus.click();
   const ribbon = page.getByRole('dialog', { name: `Choose for ${name}` });
+  const added = drawer.getByRole('group', { name: `${name}: 1 in your bag` });
+  // D-145: a piece with several options reads them first, so the ribbon opens a moment after the press
+  await expect(ribbon.or(added)).toBeVisible();
   if (await ribbon.isVisible()) await ribbon.getByRole('button').first().click();
-  await expect(drawer.getByRole('group', { name: `${name}: 1 in your bag` })).toBeVisible();
+  await expect(added).toBeVisible();
 
   await drawer.getByRole('link', { name: /See all/ }).click();
   await expect(page).toHaveURL(/\/clothing\?category=accessories$/);

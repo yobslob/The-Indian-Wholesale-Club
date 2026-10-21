@@ -49,3 +49,24 @@ export function bagLine(
     ...(product.product_type ? { productType: product.product_type } : {}),
   };
 }
+
+const loading = new Map<string, Promise<CardOption[]>>();
+
+/**
+ * A card's options when the page kept them out (D-145, slim-cards.ts): read once per piece from /api/card-options and
+ * kept for the visit; a failed read is forgotten, so the next press tries again.
+ */
+export function loadCardOptions(productId: string): Promise<CardOption[]> {
+  let pending = loading.get(productId);
+  if (!pending) {
+    pending = fetch(`/api/card-options?id=${encodeURIComponent(productId)}`)
+      .then((r) => (r.ok ? r.json() : Promise.reject(new Error(String(r.status)))))
+      .then((list: unknown) => {
+        if (!Array.isArray(list)) throw new Error('not a list');
+        return list as CardOption[];
+      });
+    pending.catch(() => loading.delete(productId));
+    loading.set(productId, pending);
+  }
+  return pending;
+}

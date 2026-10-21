@@ -29,6 +29,7 @@ import { STORE_TAG } from '@/features/catalog/data';
 import { errorMessage, logger } from '@/lib/logger';
 
 import { requireAdminAction } from '../guard';
+import { refreshListings } from '../refresh-listings';
 
 const id = z.string().uuid();
 const text = (max: number) => z.string().trim().max(max);
@@ -172,7 +173,7 @@ export async function updateProductAction(productId: string, form: FormData): Pr
     story: input.story,
     craft: input.craft,
   });
-  revalidateTag(STORE_TAG);
+  await refreshListings(client, [productId]);
   revalidatePath(`/admin/catalog/${productId}`);
 }
 
@@ -180,7 +181,7 @@ export async function updateProductAction(productId: string, form: FormData): Pr
 export async function setProductCuratedAction(productId: string, curated: boolean): Promise<void> {
   const { client } = await requireAdminAction();
   await updateProduct(client, id.parse(productId), { is_curated: z.boolean().parse(curated) });
-  revalidateTag(STORE_TAG);
+  await refreshListings(client, [productId]);
   revalidatePath(`/admin/catalog/${productId}`);
 }
 
@@ -191,7 +192,7 @@ export async function setProductComingSoonAction(
 ): Promise<void> {
   const { client } = await requireAdminAction();
   await updateProduct(client, id.parse(productId), { coming_soon: z.boolean().parse(comingSoon) });
-  revalidateTag(STORE_TAG);
+  await refreshListings(client, [productId], true);
   revalidatePath(`/admin/catalog/${productId}`);
 }
 
@@ -214,7 +215,7 @@ export async function setProductStatusAction(
     if (!why) throw error;
     redirect(`/admin/catalog/${productId}?note=${encodeURIComponent(`Not published: ${why}`)}`);
   }
-  revalidateTag(STORE_TAG);
+  await refreshListings(client, [productId], true);
   revalidatePath(`/admin/catalog/${productId}`);
   revalidatePath('/admin/listings');
 }
@@ -260,7 +261,7 @@ export async function addVariantAction(productId: string, form: FormData): Promi
     weight_g: input.weightG,
     qty_confirmed_at: new Date().toISOString(),
   });
-  revalidateTag(STORE_TAG);
+  await refreshListings(client, [productId]);
   revalidatePath(`/admin/catalog/${productId}`);
 }
 
@@ -275,7 +276,7 @@ export async function setQtyAction(
     .object({ qty: z.coerce.number().int().min(0).max(10000), note: optional(200) })
     .parse({ qty: form.get('qty'), note: form.get('note') ?? '' });
   await setListedQty(client, id.parse(variantId), input.qty, input.note ?? undefined);
-  revalidateTag(STORE_TAG);
+  await refreshListings(client, [productId]);
   revalidatePath(`/admin/catalog/${productId}`);
 }
 
@@ -284,7 +285,7 @@ export async function setWearsAction(productId: string, wears: string): Promise<
   const { client } = await requireAdminAction();
   try {
     await setProductWears(client, id.parse(productId), z.enum(WEARS).parse(wears));
-    revalidateTag(STORE_TAG);
+    await refreshListings(client, [productId]);
     return true;
   } catch (error) {
     logger.error('admin.set_wears_failed', { productId, error: errorMessage(error) });
@@ -300,7 +301,7 @@ export async function renameListingsAction(
   try {
     const list = z.array(z.object({ id, name: z.string().trim().min(2).max(120) })).max(500).parse(items);
     const renamed = await renameListings(client, list);
-    revalidateTag(STORE_TAG);
+    await refreshListings(client, list.map((l) => l.id));
     revalidatePath('/admin/catalog/names');
     return { ok: true, renamed };
   } catch (error) {

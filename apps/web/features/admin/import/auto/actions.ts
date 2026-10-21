@@ -24,6 +24,7 @@ import { parseTargetsCsv } from '@repo/shared/sourcing/auto';
 import { STORE_TAG } from '@/features/catalog/data';
 
 import { requireAdminAction } from '../../guard';
+import { refreshListings } from '../../refresh-listings';
 
 /** Auto-sourcing (D-118): the admin's side of the runner. Every write is checked again by RLS (is_admin()). */
 
@@ -179,6 +180,6 @@ export async function publishReadyAction(): Promise<void> {
   );
   // one at a time, so a food listing refused before food is cleared doesn't stop the others
   for (const d of ready) await publishProducts(client, [d.id]).catch(() => undefined);
-  revalidateTag(STORE_TAG);
+  await refreshListings(client, ready.map((d) => d.id), true);
   revalidatePath(PAGE);
 }

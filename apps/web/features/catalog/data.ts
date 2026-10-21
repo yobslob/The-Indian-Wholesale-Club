@@ -16,6 +16,8 @@ import {
 
 import { storeClient } from '@/lib/supabase/store';
 
+import { slimCards } from './slim-cards';
+
 /**
  * Cached storefront reads (engineering.md PR-1, PR-2): one store_* round trip per page, shared across visitors.
  * Every entry carries STORE_TAG (admin changes refresh everything) and the tag of its own page, so a sale refreshes
@@ -29,6 +31,10 @@ export const homeTag = 'store:home';
 export const regionTag = (regionSlug: string): string => `store:region:${regionSlug}`;
 export const productTag = (regionSlug: string, productSlug: string): string =>
   `store:product:${regionSlug}/${productSlug}`;
+/** Every state page, for an all-India piece that sits on all of them (D-121, D-145). */
+export const regionsTag = 'store:regions';
+/** The See all pages and the sitemap: whatever lists every listing (D-145). */
+export const listingsTag = 'store:listings';
 
 /**
  * Part of every cache key. Bump it whenever a store_* result changes shape (a migration adds a field): cached
@@ -36,17 +42,17 @@ export const productTag = (regionSlug: string, productSlug: string): string =>
  * that expects the new field. Last change: store_browse's sizes and prices, store_home's just_listed_types (D-136).
  */
 // v16: store_browse adds 'wears' and the For filter; v17: cards carry their options; v18: Home's band (D-140);
-// v19: store_browse's drawer (D-144)
-const SHAPE = 'v19';
+// v19: store_browse's drawer (D-144); v20: cards keep their options out of the cache and the page (D-145)
+const SHAPE = 'v20';
 
 const cached = <T>(key: string[], tags: string[], load: () => Promise<T>): Promise<T> =>
-  unstable_cache(load, [...key, SHAPE], { tags: [STORE_TAG, ...tags], revalidate: STORE_REVALIDATE_SECONDS })();
+  unstable_cache(async () => slimCards(await load()), [...key, SHAPE], { tags: [STORE_TAG, ...tags], revalidate: STORE_REVALIDATE_SECONDS })();
 
 // v2: Home's album (D-113); a new key so no entry cached before it (without the album) is read back.
 export const getHomeCached = () => cached(['store-home-v2'], [homeTag], () => getHome(storeClient()));
 
 export const getRegionPageCached = (regionSlug: string) =>
-  cached(['store-region-page', regionSlug], [regionTag(regionSlug)], () =>
+  cached(['store-region-page', regionSlug], [regionsTag, regionTag(regionSlug)], () =>
     getRegionPage(storeClient(), regionSlug),
   );
 
@@ -74,7 +80,7 @@ export const browseCached = (filter: BrowseFilter) =>
       String(filter.offset ?? 0),
       String(filter.limit ?? 24),
     ],
-    [],
+    [listingsTag],
     () => browseProducts(storeClient(), filter),
   );
 
@@ -85,7 +91,7 @@ export const isDemoStoreCached = () => cached(['store-demo'], [], () => isDemoSt
 export const getStorePolicyCached = () => cached(['store-policy'], [], () => getStorePolicy(storeClient()));
 
 export const listProductPathsCached = () =>
-  cached(['store-product-paths'], [], () => listProductPaths(storeClient()));
+  cached(['store-product-paths'], [listingsTag], () => listProductPaths(storeClient()));
 
 /**
  * Search is per query: not cached (dynamic page, still one round trip). `limit` grows with "Show more", which reads

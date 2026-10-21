@@ -115,6 +115,10 @@ phase's sub-steps and every verification run) is in `docs/archive/status-log-to-
   choice); Clothing with no category shows one of each category, then the next of each, and its accessories and turbans
   open as a velvet drawer after the second row of every 24 cards (12 a drawer, + and − n +, See all → accessories).
   Migration `20261021090000_low_to_high` waits for the Deploy workflow; the app's Browse stays newest first for now.
+- **Fewer page-cache writes (D-145, 2026-10-21):** an admin change to listings refreshes only their pages, their
+  state, Home and See all (a draft's edit nothing); the website deploys once a day at 09:00 UTC from a green `main`
+  (Actions → Daily website deploy; Vercel's deploy on every push is off); a card with several options reads them
+  when its + is pressed (`/api/card-options`), so pages carry only their number.
 - **Filters without page loads (D-136, 2026-10-16):** Home's Just listed has the Clothing · Food · Home & gifts
   switch (See all follows it); See all has a left filter panel (Category, State, Price slider and ranges, Size / Pack
   boxes), chips, Sort by; filters and Show more change only the cards (`/api/browse`), and Back from a product
@@ -122,13 +126,11 @@ phase's sub-steps and every verification run) is in `docs/archive/status-log-to-
   sort, and Download Excel follows them.
 
 ## Next for the founder
-0. **D-141 (2026-10-20), photos to Cloudflare R2, soon:** Supabase's storage holds 7.9 GB on a 1 GB free plan, and a
-   project kept over quota can be restricted. Follow ops.md §Photos: create the R2 bucket and its token, add the four
-   `PHOTO_STORE_*` variables in Vercel, run the Deploy workflow (applies `20261020090000_photo_store`), add
-   `IWC_PHOTO_STORE_*` on the hub PC and pull, re-add the Add to IWC bookmark from the importer page (D-142), then
-   `pnpm photos:move -- --env=<file> --allow-remote --clean` (no egress), `--review=30` (shows the repeats it would
-   drop) and `pnpm photos:move -- --env=<file> --allow-remote` (2.5 GB of Supabase egress a run; about 3 GB of this
-   month's 5 GB was left on 2026-10-20, so the rest waits for next month's egress). Then: Settings → Bag charges →
+0. **Vercel and Supabase limits (D-145, 2026-10-21):** the photos are in R2 (23,412 moved, 15,206 repeats dropped,
+   1 failed: run `photos:move` again next month); `pnpm photos:move -- --env=move.env --clean --allow-remote` removes the
+   114 MB Supabase still holds. Vercel's page-cache writes (208K of 200K) are cut by D-145; the move to a new Vercel
+   account is ops.md §Moving to new Vercel or Supabase accounts. Supabase's egress was this month's photo move; the
+   Supabase move there is only for if it would still be over when its grace period ends (2026-11-19). Then: Settings → Bag charges →
    "Shipping shown when free" ($ a kg; empty keeps $18.79 struck). Products → For: not set yet: pick Women / Men /
    Kids / Everyone for the clothing no name says. Products → Names to tidy. Answer Q-38 (the live Kids listings),
    Q-39 (an interim size line) and Q-40 (footwear in the jewellery drawer?). Not built yet (design plan audit 2026-10-21): app push notifications for new orders, the app's card − n + and For
@@ -190,6 +192,7 @@ phase's sub-steps and every verification run) is in `docs/archive/status-log-to-
 ## Last verification
 | Date | Commit | Where | Result |
 |---|---|---|---|
+| 2026-10-21 | D-145 commit (page-cache writes) | Claude Code, founder's Windows machine with Docker | typecheck, lint, test (web incl. new `slim-cards`), db (fresh reset, 56/56 SQL files), build, http (/states/kerala 14 ms, /clothing 15 ms, 146 KB first-load JS), e2e 32/32 (the drawer test now waits for the ribbon, which opens once the options are read), docs: OK. On a local production build: the Kerala page carries 4 one-option lists and 48 counts instead of every card's options; `/api/card-options` returns a 5-colour card's options with a 60 s CDN cache, 400 for a bad id. **Not run:** production (the daily deploy and the narrower refresh are checked there after the push; Vercel's write count only shows in its dashboard). |
 | 2026-10-21 | D-144 commit (F11) | Claude Code, founder's Windows machine with Docker | typecheck, lint, test (web incl. the new sort test), db (fresh reset, 56/56 SQL files incl. new `low_to_high`, 8 assertions), build, e2e 32/32 (incl. new `drawer.spec.ts`: the drawer between rows 2 and 3 at 375 and 1280 px, + in the drawer, its See all, Newest), http (`/clothing` 18 ms, 146 KB first-load JS), bundle, docs: OK. In the browser on `next dev`: the drawer at 1440 and 375 px (full width, two cards and a peek), Show more brings a second drawer after the next two rows, `?show=48` reloads with both, + opens the ribbon and the card shows − 1 +. **Not run:** production (needs the Deploy workflow), Food and Home & gifts in the browser (the local catalogue has only clothing; covered by the SQL and unit tests). |
 | 2026-10-18 | 887f3cf + e2e fix (D-140) | Claude Code, founder's Windows machine with Docker | `check.mjs` all steps: docs, typecheck, lint, test (shared, web incl. new paging, card-options, image-copies, order-money), db (fresh reset, 55/55 SQL files incl. new `order_from_shop`, `wears_and_rows`), build, http (`/` 26 ms 134 KB, `/clothing` 17 ms 149 KB, product 24 ms 138 KB), bundle: OK. e2e first 28/29 (the new Home row test's mouse click landed on the page while the hero scrolled; it now follows See all by keyboard), then 29/29 (incl. new card picker, − n +, one-choice add, no pre-chosen size, the heart before the network). In the browser on `next dev`: the pager (jump, Back, ← / →), Imported listings, To order with Amazon and Shopify cart links, Mark ordered at once and its undo, the order page's Order it / shop bill (rows, coupon, paste a photo, final), invoices A / B / C, customer invoice A print view, Today's pilot jobs, Women · Men tiles and For filter, header drop-down and phone menu, the size ribbon and sheet, the heart signed out and merged after sign-in, Choose a size, Goes well with, Home's band, the thank-you stitch, photos from copies. **Not run:** production (needs the Deploy workflow), the app on a phone (only typechecked and bundled), a real Stripe refund from the app, Amazon's add-to-cart link on amazon.in. |
 | 2026-10-16 | 7215a67 + uncommitted D-136 | Claude Code, founder's Windows machine with Docker | `check.mjs` all steps: docs OK 0.4 s, typecheck FAIL 23.7 s (the app's Browse typed its counts as the whole browse result; fixed, `check.mjs typecheck` then OK 29.2 s), lint OK 23.0 s, test OK 3.9 s (incl. new `browse-query.test.ts`, 7), db OK 57.4 s (fresh reset; incl. new `browse_filters.test.sql`), build OK 100.5 s, http OK 4.4 s, e2e OK 124.1 s (incl. the new filters-and-Show-more flow in `rows.spec.ts`), bundle OK 54.6 s; /clothing 11 ms, 147 KB first-load JS (budget 150 KB). In the browser on `next dev`: a filter, a size, Sort by, the price slider and Clear all change only the cards (no page load, the address follows); Show more 24 → 48 with the scroll unchanged; Back from a product: 48 cards and the same scroll; Back / Forward between filters; a shared link with price, size and sort; the phone Filter panel; Home's switch (Food's row, See all → /food); admin Products by type, sort, All-India, price, and Download Excel of that view. **Not run:** the app on a phone, production (needs the migration). |

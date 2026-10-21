@@ -1,15 +1,15 @@
 'use server';
 
-import { revalidatePath, revalidateTag } from 'next/cache';
+import { revalidatePath } from 'next/cache';
 import { z } from 'zod';
 
 import { addProductMedia, createListing, setProductStatus } from '@repo/db/admin';
 import { listingInputSchema } from '@repo/shared/domain';
 
-import { STORE_TAG } from '@/features/catalog/data';
 import { removeSupabaseFiles, withCopies } from '@/lib/photo-copies';
 
 import { requireAdminAction } from '../guard';
+import { refreshListings } from '../refresh-listings';
 
 /** A photo uploaded while the listing was being filled in (listing/upload.ts): only our own drafts folder. */
 const photoSchema = z.object({
@@ -54,7 +54,7 @@ async function saveOne(input: unknown, photos: unknown, publish: boolean): Promi
   if (!publish) return { id, published: false };
   try {
     await setProductStatus(client, id, 'live');
-    revalidateTag(STORE_TAG);
+    await refreshListings(client, [id], true);
     return { id, published: true };
   } catch (error) {
     return { id, published: false, note: `Saved as a draft, not published: ${plain(error)}` };

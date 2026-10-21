@@ -1,0 +1,48 @@
+name: Daily website deploy
+
+# D-145: the website is deployed once a day, not on every push (apps/web/vercel.json turns Vercel's own deploys off).
+# Every deploy starts the page cache afresh, and each page rebuilt counts against Vercel's free page-cache writes
+# (200,000 a month, used up on 2026-10-21 with about 70 deploys). At 09:00 UTC (2 am in California, 2:30 pm in India)
+# it calls the Vercel deploy hook, but only when main changed in the last day and that commit's CI run is green.
+# Run it by hand (Actions → Daily website deploy → Run workflow) to deploy now. The website only: new migrations still
+# go through the Deploy workflow (ops.md §Deploy), before the code that needs them.
+
+on:
+  schedule:
+    - cron: '0 9 * * *'
+  workflow_dispatch:
+
+permissions:
+  contents: read
+  actions: read
+
+jobs:
+  deploy:
+    name: Deploy the website if main changed
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v4
+        with:
+          fetch-depth: 50
+
+      - name: Changed in the last day, CI green
+        id: ready
+        env:
+          GH_TOKEN: ${{ github.token }}
+        run: |
+          sha=$(git rev-parse HEAD)
+          if [ "${{ github.event_name }}" = schedule ] && [ -z "$(git log -1 --since='25 hours ago' --format=%H)" ]; then
+            echo 'No change on main in the last day: nothing to deploy.'
+            exit 0
+          fi
+          ci=$(gh run list --workflow ci.yml --commit "$sha" -L 1 --json conclusion --jq '.[0].conclusion // ""')
+          if [ "$ci" != success ]; then
+            echo "Not deploying ${sha:0:7}: its CI run is '${ci:-not finished}'. The next run tries again."
+            exit 0
+          fi
+          echo go=1 >> "$GITHUB_OUTPUT"
+
+      - name: Trigger the Vercel deploy hook
+        if: steps.ready.outputs.go == '1'
+        run: curl -fsS -X POST "${{ secrets.VERCEL_DEPLOY_HOOK_URL }}" > /dev/null && echo 'Deploy started.'

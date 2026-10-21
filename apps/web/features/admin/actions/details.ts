@@ -1,14 +1,13 @@
 'use server';
 
-import { revalidatePath, revalidateTag } from 'next/cache';
+import { revalidatePath } from 'next/cache';
 import { z } from 'zod';
 
 import { updateSourcedProduct } from '@repo/db/admin';
 import { attributesSchemaFor, PRODUCT_TYPES } from '@repo/shared/domain';
 
-import { STORE_TAG } from '@/features/catalog/data';
-
 import { requireAdminAction } from '../guard';
+import { refreshListings } from '../refresh-listings';
 
 /**
  * The details customers must see (attributes.ts: fibre and care, ingredients, allergens and shelf life, material),
@@ -38,6 +37,6 @@ export async function updateDetailsAction(
           };
   const attributes = attributesSchemaFor(productType).parse(raw);
   await updateSourcedProduct(client, z.string().uuid().parse(productId), { attributes });
-  revalidateTag(STORE_TAG);
+  await refreshListings(client, [productId]);
   revalidatePath(`/admin/catalog/${productId}`);
 }

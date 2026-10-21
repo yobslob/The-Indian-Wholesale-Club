@@ -65,6 +65,12 @@ export const productCardSchema = z.object({
   coming_soon: z.boolean().optional(),
   /** D-140 (F9): every option the card's + offers; optional until migration 20261018120000, null when coming soon. */
   options: z.array(cardOptionSchema).nullable().optional(),
+  /**
+   * D-145: set by the website's cache (apps/web/features/catalog/slim-cards.ts) when it keeps a card's options out of
+   * the page: how many there are and whether every one is sold out; the + reads them when pressed (getCardOptions).
+   */
+  choices: z.number().int().optional(),
+  sold_out: z.boolean().optional(),
 });
 
 /** Set only when the product has exactly one variant and it is in stock: a card's "Add" puts it in the bag. */

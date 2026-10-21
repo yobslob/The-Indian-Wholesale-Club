@@ -16,3 +16,4 @@ export * from './supply';
 export * from './vendor-pieces';
 export * from './shop-orders';
 export * from './photos';
+export * from './store-pages';

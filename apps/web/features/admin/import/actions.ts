@@ -1,6 +1,6 @@
 'use server';
 
-import { revalidatePath, revalidateTag } from 'next/cache';
+import { revalidatePath } from 'next/cache';
 import { z } from 'zod';
 
 import {
@@ -29,10 +29,10 @@ import {
   type SourcedProduct,
 } from '@repo/shared/sourcing';
 
-import { STORE_TAG } from '@/features/catalog/data';
 import { removePhotos } from '@/lib/photo-copies';
 
 import { requireAdminAction } from '../guard';
+import { refreshListings } from '../refresh-listings';
 
 import { copySourcePhotos, readSourcePage } from './server';
 
@@ -234,7 +234,7 @@ export async function saveImportAction(raw: ImportInput): Promise<ImportResult> 
         input.publish && existing.status !== 'live'
           ? await publishOrNote(client, existing.id)
           : { published: existing.status === 'live' };
-      done(existing.id);
+      await done(client, existing.id);
       return {
         id: existing.id,
         updated: true,
@@ -283,7 +283,7 @@ export async function saveImportAction(raw: ImportInput): Promise<ImportResult> 
     await recordSources(client, id, input.product, variants);
     const { failed } = await copySourcePhotos(client, id, photos, input.name);
     const status = input.publish ? await publishOrNote(client, id) : { published: false };
-    done(id);
+    await done(client, id);
     const notes = [
       failed ? `${failed} photo${failed === 1 ? '' : 's'} could not be copied.` : '',
       'note' in status ? status.note : '',
@@ -325,8 +325,8 @@ async function recordSources(
   );
 }
 
-function done(id: string): void {
-  revalidateTag(STORE_TAG);
+async function done(client: Parameters<typeof refreshListings>[0], id: string): Promise<void> {
+  await refreshListings(client, [id]);
   revalidatePath('/admin/import/listings');
   revalidatePath('/admin/catalog');
   revalidatePath(`/admin/catalog/${id}`);

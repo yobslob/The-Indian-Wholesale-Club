@@ -1,16 +1,16 @@
 'use server';
 
-import { revalidatePath, revalidateTag } from 'next/cache';
+import { revalidatePath } from 'next/cache';
 import { redirect } from 'next/navigation';
 import { z } from 'zod';
 
 import { approveSubmission, declineSubmission, getVendorSubmission, requestRetake, rerunPhotoJob, setProductStatus } from '@repo/db/admin';
 import { listingSlug } from '@repo/shared/domain';
 
-import { STORE_TAG } from '@/features/catalog/data';
 import { storePhoto } from '@/lib/photo-copies';
 
 import { requireAdminAction } from '../guard';
+import { refreshListings } from '../refresh-listings';
 
 import type { IwcClient } from '@repo/db';
 
@@ -72,7 +72,7 @@ export async function approveVendorPieceAction(submissionId: string, form: FormD
   );
   if (input.publish === 'live') {
     await setProductStatus(client, productId, 'live');
-    revalidateTag(STORE_TAG);
+    await refreshListings(client, [productId], true);
   }
 
   // Copied above: the originals are no longer needed (D-103, storage kept small).

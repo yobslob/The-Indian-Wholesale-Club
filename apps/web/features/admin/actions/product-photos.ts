@@ -1,6 +1,6 @@
 'use server';
 
-import { revalidatePath, revalidateTag } from 'next/cache';
+import { revalidatePath } from 'next/cache';
 import { z } from 'zod';
 
 import {
@@ -11,10 +11,10 @@ import {
   setPrimaryProductMedia,
 } from '@repo/db/admin';
 
-import { STORE_TAG } from '@/features/catalog/data';
 import { removePhotos, storePhoto } from '@/lib/photo-copies';
 
 import { requireAdminAction } from '../guard';
+import { refreshListings } from '../refresh-listings';
 
 const id = z.string().uuid();
 const IMAGE_TYPES: Record<string, string> = {
@@ -25,8 +25,8 @@ const IMAGE_TYPES: Record<string, string> = {
 };
 const MAX_IMAGE_BYTES = 8 * 1024 * 1024;
 
-function done(productId: string): void {
-  revalidateTag(STORE_TAG);
+async function done(client: Parameters<typeof refreshListings>[0], productId: string): Promise<void> {
+  await refreshListings(client, [productId]);
   revalidatePath(`/admin/catalog/${productId}`);
 }
 
@@ -61,13 +61,13 @@ export async function uploadProductPhotoAction(productId: string, form: FormData
     sort_order: order,
     is_primary: product.media.length === 0,
   });
-  done(pid);
+  await done(client, pid);
 }
 
 export async function setMainPhotoAction(productId: string, mediaId: string): Promise<void> {
   const { client } = await requireAdminAction();
   await setPrimaryProductMedia(client, id.parse(productId), id.parse(mediaId));
-  done(productId);
+  await done(client, productId);
 }
 
 /** Removes the photo and its file. Removing the main photo makes the next one main. */
@@ -86,5 +86,5 @@ export async function deleteProductPhotoAction(productId: string, mediaId: strin
     const next = product?.media.slice().sort((a, b) => a.sort_order - b.sort_order)[0];
     if (next) await setPrimaryProductMedia(client, productId, next.id);
   }
-  done(productId);
+  await done(client, productId);
 }

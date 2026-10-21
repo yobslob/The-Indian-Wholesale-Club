@@ -9,6 +9,7 @@ import { STORE_TAG } from '@/features/catalog/data';
 
 import { requireAdminAction } from '../guard';
 import { gramsFrom } from '../hub-grams';
+import { refreshListings } from '../refresh-listings';
 
 const id = z.string().uuid();
 const weightForm = z.object({
@@ -30,8 +31,8 @@ function read(form: FormData) {
   });
 }
 
-function done(productId: string): void {
-  revalidateTag(STORE_TAG);
+async function done(client: Parameters<typeof refreshListings>[0], productId: string): Promise<void> {
+  await refreshListings(client, [productId]);
   revalidatePath(`/admin/catalog/${productId}`);
   revalidatePath('/admin/catalog');
 }
@@ -59,7 +60,7 @@ export async function setWeightAction(
     source: input.weighed ? 'weighed' : 'admin',
     note: input.note,
   });
-  done(id.parse(productId));
+  await done(client, id.parse(productId));
 }
 
 /**
@@ -80,5 +81,5 @@ export async function setWeightForSizesAction(
       note: input.note,
     });
   }
-  done(id.parse(productId));
+  await done(client, id.parse(productId));
 }

@@ -101,9 +101,20 @@ export function ProductCard({
           </div>
         ) : (
           <QuickAdd
-            product={product}
+            // only what the + uses: the page carries each card's props once more as data (D-145)
+            product={{
+              id: product.id,
+              name: product.name,
+              slug: product.slug,
+              region_slug: product.region_slug,
+              region_name: product.region_name,
+              primary_image_path: product.primary_image_path,
+              product_type: product.product_type,
+            }}
             quickAdd={product.quick_add}
             options={product.options}
+            choices={product.choices}
+            soldOut={product.sold_out}
             available={product.available}
             href={href}
           />

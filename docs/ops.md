@@ -86,7 +86,11 @@ by" time for up to 5 minutes after a cutoff (checkout itself always prices the r
 ## Deploy (to be finalised, Q-9)
 Manual only (D-044): Actions → **Deploy** → Run workflow, type `deploy`. It pushes new migrations to the production
 Supabase project (never the seeds), triggers the Vercel deploy hook and starts EAS builds (no store submission). Run it
-only on a commit whose CI run is green. Its secrets (`SUPABASE_PROJECT_REF`, `SUPABASE_ACCESS_TOKEN`,
+only on a commit whose CI run is green. **The website alone** deploys once a day (D-145): Actions → **Daily website
+deploy** runs at 09:00 UTC, and when `main` changed in the last day and that commit's CI run is green it calls the Vercel
+deploy hook (Run workflow on it deploys now). `apps/web/vercel.json` turns off Vercel's own deploy on every push, so a
+push to `main` reaches customers by the next morning. A change that needs a new migration still waits for the Deploy
+workflow, run first. The Deploy workflow's secrets (`SUPABASE_PROJECT_REF`, `SUPABASE_ACCESS_TOKEN`,
 `SUPABASE_DB_PASSWORD`, `VERCEL_DEPLOY_HOOK_URL`, `EXPO_TOKEN`) belong to production and are set only once it exists.
 **CI** (`ci.yml`) runs `node scripts/check.mjs` on every push and pull request to `main`, on a local Supabase inside the
 runner. Optional secrets: `STRIPE_TEST_PUBLISHABLE_KEY`, `STRIPE_TEST_SECRET_KEY` (test keys only, for the checkout flow).
@@ -136,8 +140,8 @@ The old `NEXT_PUBLIC_SUPABASE_*` / `NEXT_PUBLIC_APP_URL` CI secrets are no longe
 ## Moving to new Vercel or Supabase accounts (the founder runs every step)
 The code names no account: everything comes from the variables above, the GitHub secrets and the Vault. A move is
 those values, nothing in the repo. Both providers' free-plan terms apply to the new accounts too (Vercel's Hobby plan
-is for non-commercial use). Without fewer page-cache writes (2026-10-21: 208K of Vercel's 200K a month, mostly
-whole-store refreshes and deploys rewriting 2 MB state pages) a new Vercel account fills up the same way.
+is for non-commercial use). The old account used 208K of Vercel's 200K page-cache writes by 2026-10-21, mostly
+whole-store refreshes and deploys rewriting 2 MB state pages; D-145 cuts both, so a new account should stay under.
 **Vercel (about 30 minutes, a few minutes offline):**
 1. Old account: `vercel env pull C:\iwc\vercel-prod.env --environment=production` (outside the repo), or copy each
    Production variable from Settings → Environment Variables.

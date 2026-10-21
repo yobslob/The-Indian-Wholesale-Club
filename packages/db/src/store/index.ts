@@ -11,6 +11,7 @@ import { unwrap, type IwcClient } from '../client';
 
 import {
   browsePageSchema,
+  cardOptionSchema,
   deliveryWindowSchema,
   homeSchema,
   orderDetailSchema,
@@ -20,6 +21,7 @@ import {
   regionPageSchema,
   storePolicySchema,
   type BrowsePage,
+  type CardOption,
   type DeliveryWindow,
   type HomeData,
   type OrderDetail,
@@ -278,4 +280,21 @@ export async function getBagCharges(
     }),
   );
   return bagChargesSchema.parse(data);
+}
+
+/**
+ * The options a card's + offers (D-140, F9), read when the + is pressed instead of sent with every card (D-145): the
+ * same 20 the store's card functions list, in their order (migration 20261018120000).
+ */
+export async function getCardOptions(client: IwcClient, productId: string): Promise<CardOption[]> {
+  const rows = unwrap(
+    await client
+      .from('store_variants')
+      .select('id, label, options, price_cents, available')
+      .eq('product_id', productId)
+      .order('sort_order')
+      .order('label')
+      .limit(20),
+  );
+  return z.array(cardOptionSchema).parse(rows);
 }
