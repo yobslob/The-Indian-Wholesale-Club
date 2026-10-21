@@ -133,6 +133,47 @@ The old `NEXT_PUBLIC_SUPABASE_*` / `NEXT_PUBLIC_APP_URL` CI secrets are no longe
    EAS build page) or `production` (an AAB for Google Play). The app's id is `com.indianwholesaleclub.app` (`app.json`,
    set by the founder on 2026-10-07); Google Play never lets it change after the first upload.
 
+## Moving to new Vercel or Supabase accounts (the founder runs every step)
+The code names no account: everything comes from the variables above, the GitHub secrets and the Vault. A move is
+those values, nothing in the repo. Both providers' free-plan terms apply to the new accounts too (Vercel's Hobby plan
+is for non-commercial use). Without fewer page-cache writes (2026-10-21: 208K of Vercel's 200K a month, mostly
+whole-store refreshes and deploys rewriting 2 MB state pages) a new Vercel account fills up the same way.
+**Vercel (about 30 minutes, a few minutes offline):**
+1. Old account: `vercel env pull C:\iwc\vercel-prod.env --environment=production` (outside the repo), or copy each
+   Production variable from Settings → Environment Variables.
+2. New account (Hobby). Import the GitHub repo: root directory `apps/web`, framework Next.js. If Vercel says the
+   GitHub account is linked to another Vercel account, disconnect it in the old one (Account Settings →
+   Authentication) first. Paste every variable of step 1 as Production. Settings → Functions → region `iad1`.
+3. Settings → Git → Deploy Hooks → create one; put its URL in GitHub → Settings → Secrets → `VERCEL_DEPLOY_HOOK_URL`.
+4. Deploy. Check the new `*.vercel.app` address: Home, a state, a product page, a photo (`/media/s/…`), `/admin`.
+5. Keep the same address: delete the old project, then in the new one Settings → Domains → add
+   `the-indian-wholesale-club.vercel.app`. If the name is not free, the new address must replace the old one in:
+   `NEXT_PUBLIC_SITE_URL` and `NEXT_PUBLIC_APP_URL` (redeploy), the Stripe webhook endpoint, Supabase → Authentication
+   → URL configuration (site URL and Redirect URLs), the Vault's `iwc_site_url` (below), the EAS `EXPO_PUBLIC_API_URL`.
+**Supabase (1 – 2 hours; only if the old project would be restricted):** the photos are in R2, so its storage holds
+nothing to move. Supabase's guide "Backup and restore using the CLI" (Platform → Migrating within Supabase):
+1. New account and project, US East. Its database password and connection string (Connect → Session pooler).
+2. Stop changes: no imports, the sourcing runner off, for the hour.
+3. `npx supabase db dump --db-url <old> -f roles.sql --role-only`, then `-f schema.sql`, then
+   `-f data.sql --use-copy --data-only -x "storage.buckets_vectors" -x "storage.vector_indexes"`, and the migration
+   history: `npx supabase db dump --db-url <old> -f history.sql --data-only --schema supabase_migrations`.
+4. `psql --single-transaction --variable ON_ERROR_STOP=1 --file roles.sql --file schema.sql --command "SET session_replication_role = replica" --file data.sql --file history.sql --dbname <new>`
+   (if `history.sql` fails because the schema is missing, run `npx supabase migration repair --status applied`
+   with every version in `supabase/migrations/` on the linked new project instead).
+5. The Vault does not move (its key stays with the old project): SQL editor on the new project,
+   `delete from vault.secrets where name in ('iwc_site_url', 'iwc_outbox_secret');`, then the two
+   `vault.create_secret` lines of §Email timer.
+6. Authentication: site URL, Redirect URLs, the two email templates (step 8 of §Going live). Accounts and passwords
+   move with the data; everyone signs in again once. Database → Publications: `supabase_realtime` has the same tables
+   as in the old project (live stock, PR-7).
+7. New keys everywhere: Vercel `NEXT_PUBLIC_SUPABASE_URL`, `NEXT_PUBLIC_SUPABASE_ANON_KEY`,
+   `SUPABASE_SERVICE_ROLE_KEY` (redeploy); GitHub secrets `SUPABASE_PROJECT_REF`, `SUPABASE_ACCESS_TOKEN`,
+   `SUPABASE_DB_PASSWORD`; the hub PC's `tools/sourcing-runner/.env` (and the photo worker's, the weight estimator's)
+   `IWC_SUPABASE_URL`, `IWC_SUPABASE_ANON_KEY`; EAS `EXPO_PUBLIC_SUPABASE_URL`, `EXPO_PUBLIC_SUPABASE_ANON_KEY`, then a
+   new app build; `move.env`.
+8. Check: `pnpm launch:check --url=<new> --allow-remote`, then one real order (live keys refuse test cards), refunded
+   from the admin. Pause the old project a week later.
+
 ## Demo round (D-078)
 The first cycle runs as a demo on the placeholder catalogue of five states, then everything is removed again.
 1. **Photos (once, on the founder's machine):** `pnpm demo:photos` fills `catalogue/photos/` with public-domain
