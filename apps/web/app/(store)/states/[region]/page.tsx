@@ -49,7 +49,7 @@ function byCategory(
 const ROW = 12;
 
 /**
- * The core page (storefront.md §The region page, design.md §Direction). One cached store_region_page()
+ * The core page (storefront.md §The region page, storefront.md §Direction). One cached store_region_page()
  * call. Every list is a row that scrolls sideways with See all where there is more (D-062): New arrivals, Most wanted
  * (D-058), the album (D-051, once it has three photos), Curated for you and Leaving soon (D-056), then one row per
  * clothing category, then Food, then Home & gifts (D-106) when the state has some.

@@ -1,7 +1,7 @@
 const { platformSelect } = require('nativewind/theme');
 
 /**
- * Font roles for the app (docs/design.md). Native fonts are one weight per family, so weights are separate
+ * Font roles for the app (docs/storefront.md). Native fonts are one weight per family, so weights are separate
  * classes (font-ui-semibold, …) instead of font-semibold. The family names are the ones lib/fonts.ts loads (D-079,
  * D-080): Cinzel, Syne, Karla; Georgia (built into iOS; Gelasio on Android) for the logo text only.
  */
@@ -31,7 +31,7 @@ module.exports = {
     './components/**/*.{js,ts,jsx,tsx}',
     './features/**/*.{js,ts,jsx,tsx}',
   ],
-  // Design tokens only (docs/design.md): bg-canvas, text-ink, border-line, bg-brand, …
+  // Design tokens only (docs/storefront.md): bg-canvas, text-ink, border-line, bg-brand, …
   presets: [require('nativewind/preset'), require('@repo/tokens/preset')],
   theme: { extend: { fontFamily: fonts } },
   plugins: [],

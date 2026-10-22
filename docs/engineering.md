@@ -5,7 +5,7 @@ NativeWind · zustand · zod. Exact versions: each `package.json` (don't restate
 
 ## Diagnosis of the old code's slowness (D-011)
 From reading baseline `d5342ae` on 2026-09-27. **Timings are not measured yet** (npm is blocked for Claude, D-021).
-Baseline numbers come from the founder's first `node scripts/check.mjs` run and get recorded in `plan/current.md`.
+Baseline numbers come from the founder's first `node scripts/check.mjs` run and get recorded in `status.md`.
 | # | Cause | Where |
 |---|---|---|
 | P1 | Middleware runs on almost every request and calls `supabase.auth.getUser()`, a network call to Supabase Auth, for signed-in users on every page, API call and navigation | `apps/web/middleware.ts`, `apps/web/lib/supabase/middleware.ts:29` |
@@ -40,7 +40,7 @@ Baseline numbers come from the founder's first `node scripts/check.mjs` run and 
   legacy shared secret (local Supabase and old hosted projects use the shared secret). Rate limits run inside the routes.
 - **PR-5 Server-first:** Server Components by default. Client components only for real interaction (add to cart, variant
   picker, live stock). No animation libraries on the storefront (framer-motion removed in R5) except Lenis smooth scrolling,
-  which the founder asked for (D-049, `design.md` §Direction: one small client module, off for reduced motion). Fonts
+  which the founder asked for (D-049, `storefront.md` §Direction: one small client module, off for reduced motion). Fonts
   (D-079, D-080, since 2026-10-08): Cinzel, Syne and Karla via `next/font`, self-hosted Latin variable files (about 85 KB
   in all); Georgia as the system font for the logo text with Gelasio, loaded only where Georgia is missing.
   Click-only parts load on the click (`next/dynamic`), never with the page: the product page's photo viewer (its
@@ -72,7 +72,7 @@ Baseline numbers come from the founder's first `node scripts/check.mjs` run and 
 - **PR-9 Checkout concurrency (D-068):** `create_order` shares the open cycle's row lock (`FOR SHARE`: orders run side by
   side, a cutoff waits for them) and reserves pieces in variant-id order (no deadlocks between two bags holding the same
   pieces in a different order). INV-3 stays one conditional `UPDATE` per piece. Measured 2026-10-06: a second checkout
-  waited 2.6 s for a first one still open with the old exclusive lock, and not at all with the new one (`plan/current.md`).
+  waited 2.6 s for a first one still open with the old exclusive lock, and not at all with the new one (`status.md`).
 
 ## Caching (D-068)
 | What | Cached? | Tags | Refreshed by |
@@ -144,7 +144,7 @@ stays the evidence of record. After a migration, Claude patches `database.types.
 ## Layout (web: actual since R5; app: actual since R6)
 ```
 apps/web/app/(store)/…     customer routes (storefront.md)       apps/web/app/admin/…   hidden admin (admin.md)
-apps/web/app/vendor/…      vendor screens (vendor.md)            tools/photo-worker/    the Python GPU worker (D-103)
+apps/web/app/vendor/…      vendor screens (admin.md)            tools/photo-worker/    the Python GPU worker (D-103)
 apps/web/features/<name>/  shell (header, footer), home, catalog, regions (incl. the India map), cart, checkout,
                            orders, account, auth, info, admin (guard, actions, ui), vendor (guard, the add-a-piece steps)
 apps/web/lib/              infra: env, supabase (store / session / browser / service clients), stripe, email, logger, rate limit
@@ -206,7 +206,7 @@ tools/sourcing-runner/  auto-sourcing on the hub PC (D-118)     tools/weight-est
   web, so `tailwind.config.js` gives the web a plain font stack.
 
 ## Code conventions
-- Names come from `glossary.md`. One concept = one word across DB, code, routes.
+- Names come from `product.md`. One concept = one word across DB, code, routes.
 - **Import boundaries (lint-enforced):** storefront code and customer app screens can't import `features/admin`,
   `app/admin` or `@repo/db/admin` (`no-restricted-imports` overrides in `apps/web/.eslintrc.js` and
   `apps/app/.eslintrc.js`; the app also blocks `@repo/db/server`). Server-only modules

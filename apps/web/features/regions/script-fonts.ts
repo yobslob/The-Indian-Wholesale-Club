@@ -1,7 +1,7 @@
 import localFont from 'next/font/local';
 
 /**
- * Greeting fonts per script (design.md §Visual system 3): Noto Sans for the region's own script, the script's subset
+ * Greeting fonts per script (storefront.md §Visual system 3): Noto Sans for the region's own script, the script's subset
  * only, self-hosted from app/fonts (SIL Open Font License; see app/fonts/README.md). None is preloaded, so a region page
  * only downloads the one its greeting uses. Keys are regions.greeting_script (ISO 15924); Latin greetings use the
  * page's own font.

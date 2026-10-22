@@ -48,7 +48,7 @@ values
   ('west-bengal', 'West Bengal', 36, 'নমস্কার', 'Beng', 'Nomoshkar', 'A respectful greeting', '{Bengali}');
 
 -- The six launch regions (D-059): taglines and stories are DRAFTS written by Claude in the founder's voice rule
--- (design.md §Voice). content_status stays 'draft' (D-019): the storefront shows them only after approval.
+-- (storefront.md §Voice). content_status stays 'draft' (D-019): the storefront shows them only after approval.
 update public.regions r set tagline = t.tagline, story = t.story
 from (values
   ('delhi',

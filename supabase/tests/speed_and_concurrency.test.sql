@@ -1,6 +1,6 @@
 -- Speed and concurrency audit (migration 20261006230000): the stock feed only moves with stock, the region page
 -- carries only the cards it draws plus the counts, See all in one call, search records once per search, light cards.
--- (Locking in create_order needs two sessions; it was checked by hand, see plan/current.md.)
+-- (Locking in create_order needs two sessions; it was checked by hand, see docs/archive/status-log-to-2026-10-11.md.)
 begin;
 select tests.setup();
 -- Generic test clothing: D-140's "who it is for" rule has its own test (wears_and_rows.test.sql).

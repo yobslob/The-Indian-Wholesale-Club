@@ -38,7 +38,7 @@ describe('@repo/tokens', () => {
     for (const name of Object.keys(tokens.colors)) assert.ok(!LEGACY_COLOR_KEYS.includes(name), name);
   });
 
-  // design.md §Accessibility: WCAG 2.2 AA (4.5 : 1) for every text colour on every background it sits on.
+  // storefront.md §Accessibility: WCAG 2.2 AA (4.5 : 1) for every text colour on every background it sits on.
   it('text colours meet WCAG AA on the page backgrounds', () => {
     const text = ['ink', 'ink-muted', 'brand', 'region', 'positive', 'caution', 'danger'];
     for (const fg of text) {

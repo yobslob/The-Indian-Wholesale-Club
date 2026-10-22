@@ -1,5 +1,5 @@
 /**
- * Design tokens (docs/design.md). Final values from the approved mockup (C1, D-050 – D-055,
+ * Design tokens (docs/storefront.md). Final values from the approved mockup (C1, D-050 – D-055,
  * design/mockups/a-gallery.html). Components use the role names, never raw hex.
  * CommonJS on purpose: Tailwind and NativeWind configs `require()` it.
  */

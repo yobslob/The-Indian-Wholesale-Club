@@ -30,7 +30,7 @@ export async function generateMetadata({ params }: { params: Params }): Promise<
 }
 
 /**
- * storefront.md §The product page, design.md §Direction (D-051): the photos | the buying panel (two even columns on
+ * storefront.md §The product page, storefront.md §Direction (D-051): the photos | the buying panel (two even columns on
  * tablets, D-082), then Reviews, Similar items in smaller cards and Curated for you (D-051, D-056). One cached store_product_page() call; the
  * add-to-bag island refreshes availability live (PR-7).
  */

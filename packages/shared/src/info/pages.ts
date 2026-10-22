@@ -14,7 +14,7 @@ export interface InfoInputs {
   email?: string | null;
 }
 
-// TODO(founder): the About story (design.md voice). Claude-written text would be a draft (D-019).
+// TODO(founder): the About story (storefront.md voice). Claude-written text would be a draft (D-019).
 const about = (): Block[] => [{ kind: 'p', parts: ['This page is being written.'], muted: true }];
 
 // TODO(founder): approve this copy (draft, D-019). It speaks as the seller and never about operations (D-003).
@@ -32,7 +32,7 @@ const howItWorks = (): Block[] => [
 
 /**
  * FAQ: answers restate the decisions (D-001, D-002, D-004, D-008, D-036, D-066, D-070 – D-073, D-076) with the numbers
- * from store_policy(). TODO(founder): approve this draft (written by Claude; design.md voice).
+ * from store_policy(). TODO(founder): approve this draft (written by Claude; storefront.md voice).
  */
 function faq(policy: InfoPolicy): Block[] {
   const express = dayRange(policy.express_days_min, policy.express_days_max);
@@ -73,7 +73,7 @@ function faq(policy: InfoPolicy): Block[] {
 
 /**
  * Shipping & returns: every number from store_policy(), so a change in the admin changes this page too (D-008).
- * TODO(founder): approve this draft (written by Claude from D-070 – D-073, D-076 and D-008; design.md voice).
+ * TODO(founder): approve this draft (written by Claude from D-070 – D-073, D-076 and D-008; storefront.md voice).
  */
 function shippingReturns(policy: InfoPolicy): Block[] {
   const express = dayRange(policy.express_days_min, policy.express_days_max);

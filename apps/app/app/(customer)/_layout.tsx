@@ -11,7 +11,7 @@ export default function CustomerTabs(): React.JSX.Element {
   const count = useBag((s) => bagCount(s.lines));
   // A server-confirmed admin lands in admin mode (D-006); nothing here hints at it.
   if (ready && isAdmin && !viewingStore) return <Redirect href="/admin" />;
-  // A vendor account lands in vendor mode (D-102, vendor.md).
+  // A vendor account lands in vendor mode (D-102, admin.md).
   if (ready && isVendor) return <Redirect href="/vendor" />;
 
   return (

@@ -2,7 +2,7 @@
   "name": "@repo/tokens",
   "version": "0.0.0",
   "private": true,
-  "description": "Design tokens: one source for web (Tailwind) and app (NativeWind). See docs/design.md.",
+  "description": "Design tokens: one source for web (Tailwind) and app (NativeWind). See docs/storefront.md.",
   "main": "./tokens.js",
   "types": "./tokens.d.ts",
   "exports": {

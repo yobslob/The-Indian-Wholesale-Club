@@ -5,7 +5,7 @@
  * WHY: Claude's sandboxes cannot reach the npm registry, so Claude cannot
  * install, build or test. The founder runs this on their machine; it writes
  * machine-readable results to .checks/latest.json, which Claude reads.
- * Results are FACTS for docs/plan/current.md — nothing is "verified" without one.
+ * Results are FACTS for `docs/status.md` — nothing is "verified" without one.
  *
  * Usage (from repo root):
  *   node scripts/check.mjs                 # docs, typecheck, lint, test, db, build, http, e2e, bundle

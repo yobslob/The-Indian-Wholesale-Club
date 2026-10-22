@@ -1,6 +1,6 @@
 ---
 name: check
-description: Run the project's verification (scripts/check.mjs), read .checks/latest.json and record the result in docs/plan/current.md. Use before calling any work done, and when the user asks to check, verify or test.
+description: Run the project's verification (scripts/check.mjs), read .checks/latest.json and record the result in docs/status.md. Use before calling any work done, and when the user asks to check, verify or test.
 argument-hint: "[steps, e.g. docs typecheck lint test]"
 ---
 
@@ -13,7 +13,7 @@ argument-hint: "[steps, e.g. docs typecheck lint test]"
 3. Read `.checks/latest.json`. For each failing step, read its `outputTail`; E2E failures also leave a screenshot, a
    trace and `error-context.md` in `.checks/e2e-results/`. Fix the cause, not the test, unless the test is wrong, and
    say which it was.
-4. **Replace** the one row under "Last verification" in `docs/plan/current.md` (don't add rows; history is in git):
+4. **Replace** the one row under "Last verification" in `docs/status.md` (don't add rows; history is in git):
    date, commit (`git rev-parse --short HEAD`, note uncommitted changes), "Claude Code, <machine>", what ran, and the
    facts: each step OK/FAIL with seconds, route timings over budget only, E2E passed/total. Facts only; nothing is
    "done" or "fast" without it (D-012).

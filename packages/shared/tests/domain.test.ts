@@ -479,7 +479,7 @@ describe('cycle flow (flows.md §1)', () => {
   });
 });
 
-describe('contrast (design.md §Accessibility, region accents in the admin form)', () => {
+describe('contrast (storefront.md §Accessibility, region accents in the admin form)', () => {
   it('matches the WCAG reference values', () => {
     assert.equal(contrastRatio('#000000', '#FFFFFF').toFixed(1), '21.0');
     assert.equal(contrastRatio('#777777', '#FFFFFF').toFixed(2), '4.48');

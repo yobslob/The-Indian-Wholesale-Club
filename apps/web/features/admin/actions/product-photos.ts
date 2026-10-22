@@ -31,8 +31,8 @@ async function done(client: Parameters<typeof refreshListings>[0], productId: st
 }
 
 /**
- * Adds a product photo (design.md §Visual system 5; the phone camera flow comes in C3). Alt text is required
- * (design.md §Accessibility). Stored in product-media/products/<product>/ with the admin's own session; the
+ * Adds a product photo (storefront.md §Visual system 5; the phone camera flow comes in C3). Alt text is required
+ * (storefront.md §Accessibility). Stored in product-media/products/<product>/ with the admin's own session; the
  * first photo becomes the main one.
  */
 export async function uploadProductPhotoAction(productId: string, form: FormData): Promise<void> {

@@ -6,7 +6,7 @@ import { PickHome } from '@/features/regions/pick-home';
 import { RegionAlbum } from '@/features/regions/region-album';
 
 /**
- * Home (storefront.md, design.md §Direction, D-050 – D-055, D-113): the photo hero, the album of all of India (the
+ * Home (storefront.md, storefront.md §Direction, D-050 – D-055, D-113): the photo hero, the album of all of India (the
  * region pages' drifting mosaic), Pick your home, then Just listed (a row per type with its See all, D-062, D-140).
  * One cached store_home() call (PR-1, PR-2). Runs edge to edge (data-bleed); sections keep the gutter.
  */

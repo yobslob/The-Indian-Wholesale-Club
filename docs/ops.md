@@ -1,10 +1,30 @@
 # Ops: environments, env vars, database, deploy, compliance
 
+## Accounts and limits (D-147)
+| Service | What runs there | Plan and the limits that matter | Since |
+|---|---|---|---|
+| **Vercel** (new account, Hobby) | the website `apps/web`, region `iad1`; the deploy hook the daily deploy calls | a month: 200,000 page-cache (ISR) writes (8 KB units, as the dashboard counted them on 2026-10-21), 1M function invocations, 4 h active CPU, 360 GB-h memory, 100 GB fast data transfer, 10 GB origin transfer, 5,000 image transformations (unused: no resizer, D-140); runtime logs kept 1 hour. Vercel's terms keep Hobby to non-commercial use (a site taking payments is commercial): the founder chose to stay on it for now (D-145) | 2026-10-21 |
+| **Supabase** (new project, free) | Postgres (every listing, order, account), Auth, Realtime, pg_cron timers, Vault | 500 MB database, 1 GB storage (holds only uploads for the minutes before their move to R2), 5 GB egress, 50,000 monthly active users; a free project pauses after a week without requests | 2026-10-21 |
+| **Cloudflare R2** (bucket `iwc-photos`) | every photo as two AVIF copies, read through `/media/s/` on the site (D-141) | 10 GB stored, 1M writes and 10M reads a month free, no charge for traffic | 2026-10-20 |
+| **GitHub** `yobslob/The-Indian-Wholesale-Club` | the code, CI (`ci.yml`), the Deploy and Daily website deploy workflows | Actions minutes of the free plan | 2026-09-23 |
+| **Stripe**, **Resend**, **EAS** | payments (live keys), emails (test sender until Q-9), the Android build | per use | 2026-10-06 |
+
+**History (why there are new accounts):** production started on 2026-10-06 on the first Vercel account and Supabase
+project. Within two weeks the free limits ran out: Vercel's image optimisation (5,000 a month; photos answered 402 on
+2026-10-18), then its page-cache writes (208K of 200K by 2026-10-21: every admin edit and each of about 70 deploys
+rewrote all 5,852 product pages and the 2 MB state pages), and Supabase's storage (7.9 GB of photos against 1 GB) with
+its egress (the photo move). The fixes: no resizer, fixed AVIF copies (D-140); photos in Cloudflare R2 (D-141); each
+picture once (D-142); narrow refreshes, a daily deploy and card options on demand (D-145). Then the site moved to a new
+Vercel account and a new Supabase project (§Moving to new Vercel or Supabase accounts), both starting near zero. The
+old accounts are not used any more; keep their dumps outside the repo until the new ones have run a month.
+**This time, by design:** every limit has a monthly budget at about half the free plan and a weekly check
+(`monitoring.md`); a change that would add page-cache writes, egress or database size says so in its commit.
+
 ## Environments
 | Env | Web | DB | Notes |
 |---|---|---|---|
-| dev | `pnpm dev` on the founder's machine | **local Supabase** (Docker) via `apps/web/.env.local`; the hosted dev project has the same schema since 2026-09-29 (D-013) | `next build` reads the DB since R5 (static pages), so the DB it points at must have the new schema |
-| prod | Vercel (since 2026-10-06; the domain waits on Q-9) | a separate Supabase project in us-east-1 (North Virginia) | hosted in the US (D-003). The Android app is built by EAS; iOS waits for an Apple Developer account |
+| dev | `pnpm dev` on the founder's machine | **local Supabase** (Docker) via `apps/web/.env.local` | `next build` reads the DB (static pages), so the DB it points at must have the schema. `apps/web/.env` still points at the first hosted dev project (D-013), unused since local Supabase |
+| prod | the new Vercel account (`the-indian-wholesale-club.vercel.app`; the domain waits on Q-9) | the new Supabase project | hosted in the US (D-003). The Android app is built by EAS; iOS waits for an Apple Developer account |
 
 ## Environment variables
 Names only. Values live in `.env` files that are **never committed**. The templates are `apps/web/.env.example` and `apps/app/.env.example`.
@@ -137,13 +157,14 @@ The old `NEXT_PUBLIC_SUPABASE_*` / `NEXT_PUBLIC_APP_URL` CI secrets are no longe
    EAS build page) or `production` (an AAB for Google Play). The app's id is `com.indianwholesaleclub.app` (`app.json`,
    set by the founder on 2026-10-07); Google Play never lets it change after the first upload.
 
-## Moving to new Vercel or Supabase accounts (the founder runs every step)
+## Moving to new Vercel or Supabase accounts (the founder runs every step; done 2026-10-21/22)
 The code names no account: everything comes from the variables above, the GitHub secrets and the Vault. A move is
 those values, nothing in the repo. Both providers' free-plan terms apply to the new accounts too (Vercel's Hobby plan
 is for non-commercial use). The old account used 208K of Vercel's 200K page-cache writes by 2026-10-21, mostly
 whole-store refreshes and deploys rewriting 2 MB state pages; D-145 cuts both, so a new account should stay under.
 **Vercel (about 30 minutes, a few minutes offline):**
-1. Old account: `vercel env pull C:\iwc\vercel-prod.env --environment=production` (outside the repo), or copy each
+1. Old account: `vercel env pull C:\iwc\vercel-prod.env --environment=production` (outside the repo: the file holds
+   every production secret), or copy each
    Production variable from Settings → Environment Variables.
 2. New account (Hobby). Import the GitHub repo: root directory `apps/web`, framework Next.js. If Vercel says the
    GitHub account is linked to another Vercel account, disconnect it in the old one (Account Settings →
@@ -182,32 +203,15 @@ nothing to move. Supabase's guide "Backup and restore using the CLI" (Platform �
 8. Check: `pnpm launch:check --url=<new> --allow-remote`, then one real order (live keys refuse test cards), refunded
    from the admin. Pause the old project a week later.
 
-## Demo round (D-078)
-The first cycle runs as a demo on the placeholder catalogue of five states, then everything is removed again.
-1. **Photos (once, on the founder's machine):** `pnpm demo:photos` fills `catalogue/photos/` with public-domain
-   stand-ins (museum collections and stock product photos, Openverse; paced to its 200 searches a day and cached).
-   Look at them; put any photo to drop in `catalogue/demo-photo-exclude.txt` (its id is in the folder's `source.json`),
-   delete that folder and run it again.
-2. **Stripe test mode:** on Vercel set `NEXT_PUBLIC_STRIPE_PUBLISHABLE_KEY`, `STRIPE_SECRET_KEY` to the **test** keys and
-   `STRIPE_WEBHOOK_SECRET` to the signing secret of a **test-mode** webhook endpoint (`<site>/api/webhooks/stripe`,
-   `payment_intent.succeeded`), then redeploy. The app: the EAS variable `EXPO_PUBLIC_STRIPE_PUBLISHABLE_KEY` to the test
-   key, then a new build.
-3. **Load:** `pnpm demo:load --url=<production DB URL> --api=https://<ref>.supabase.co --service-key=<service role key>
-   --allow-remote` (a dry run), then again with `--apply`: the catalogue of Delhi, Maharashtra, Kerala, Assam and Punjab,
-   the photos, labelled demo reviews from eight demo reviewer accounts, demo mode on (the banner on every page).
-4. Run the demo cycle as usual (admin: open a cycle with real dates; testers pay with card 4242 4242 4242 4242).
-5. **Clear:** `pnpm demo:clear` with the same flags (a dry run counts what goes), then with `--apply`: every placeholder
-   product with its photos and reviews, every order containing one, the placeholder shops, the demo reviewers, the demo
-   state photos; demo mode off. Then switch Vercel and the app back to the **live** Stripe keys and webhook secret.
+## Demo round and placeholders (D-078, D-108; done)
+Production has no placeholder listings left (checked on the copy of 2026-10-21). The demo round and the placeholder
+clearing are in `docs/archive/ops-demo-round.md`; `pnpm demo:load` / `demo:clear` still work against a local database.
 
-## Clearing the placeholder catalogue (D-108, D-110)
-The 2,880 placeholder listings of the master catalogue (D-108) are removed with `pnpm demo:clear --url=<production DB
-URL> --api=https://<ref>.supabase.co --service-key=<service role key> --allow-remote` (a dry run that counts), then
-again with `--apply`. It removes every placeholder product with its photos, sizes and reviews, the orders that
-contain one, the placeholder shops, and turns demo mode off; real and imported listings stay. The loader itself was
-removed (D-110): pilot listings now come from **Import from shops** (`/admin/import`, `admin.md`).
+## Tools on the founder's machines
+Nothing on the website depends on them: when a machine is off, work waits in the database. Each uses the `worker`
+account, whose role can only run the `worker_*` functions (`data-model.md`).
 
-## Photo worker (D-101, D-103; the founder runs every step on production)
+### Photo worker (D-101, D-103; the founder runs every step on production)
 The AI product photos are made on the founder's laptop by `tools/photo-worker` (its README has setup and running).
 For production, once:
 1. Supabase dashboard (production) → Authentication → Add user: an email of your choice (e.g. a `+worker` alias)
@@ -221,7 +225,7 @@ For production, once:
 Locally, `pnpm dev:photo-e2e <front> <back> <close-up> --house=<front>,<back>` makes the worker account, signs in as a
 vendor, uploads a piece through the vendor's storage rules and queues its jobs.
 
-## Sourcing runner (D-118; the founder runs every step on production)
+### Sourcing runner (D-118; the founder runs every step on production)
 Auto-sourcing and the weekly price and stock check run on a PC **in India** by `tools/sourcing-runner` (its README has
 setup and running). For production, once:
 1. The worker account (above) works; the role `worker` can also run the `worker_sourcing_*` functions and add photos
@@ -235,7 +239,7 @@ setup and running). For production, once:
 4. Task Scheduler runs `pnpm sourcing run` daily (README). When the PC is off nothing is added or checked; listings keep
    their last checked price and stock, and the admin page shows the last run.
 
-## Weight estimator, clothing classes, food and home weights, liquids (D-131 – D-135; the founder runs them on production)
+### Weight estimator, clothing classes, food and home weights, liquids (D-131 – D-135; the founder runs them on production)
 `tools/weight-estimator` gives listings a packed weight on the founder's laptop GPU (its README has setup and running).
 It uses the worker account and reads `tools/sourcing-runner/.env` when it has no `.env` of its own, so on a laptop with
 the runner's settings it works on **production** at once. Once: `winget install Ollama.Ollama`, `ollama pull
@@ -251,7 +255,7 @@ reads shop pages, so it runs in the sourcing runner's browser: `pnpm sourcing ho
 website depends on the laptop.
 
 ## Git
-GitHub `yobslob/The-Indian_Wholesale-Club`, branch `main` (D-014). Claude commits in `C:\kod\root` and the founder pushes.
+GitHub `yobslob/The-Indian-Wholesale-Club`, branch `main` (D-014). Claude commits in `C:\kod\root` and the founder pushes.
 Baseline tag `pre-restructure` = the whole pre-IWC codebase (stealth layer included, for reference only).
 
 ## Compliance checklist (not legal advice. Confirm with a customs broker / US lawyer)
@@ -266,6 +270,8 @@ Recorded because they shape the data model and flows. Each needs an owner before
 | Privacy | privacy policy + terms for a US site | info pages (founder input needed) |
 
 ## Photos: the photo store (D-140, D-141, D-142)
+The move is finished (2026-10-21: 23,412 photos moved, 15,206 repeats dropped; on the copy of 2026-10-21 every listing,
+album and state photo has an `s/` path). The steps below stay for a new bucket or account.
 Photos live in Cloudflare R2 as two AVIF copies each (640 and 1200 px; engineering.md PR-6), not in Supabase's storage
 (1 GB on the free plan; production held 7.9 GB on 2026-10-20) and not through Vercel's image resizer (5,000 a month,
 then 402 on 2026-10-18). R2 is free up to 10 GB stored, with no charge for traffic; the photos need about 4 GB.

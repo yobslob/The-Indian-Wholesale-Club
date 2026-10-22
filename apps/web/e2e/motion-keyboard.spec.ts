@@ -3,7 +3,7 @@ import { expect, test } from '@playwright/test';
 import { DEMO_PRODUCT } from './env';
 
 /**
- * Flow 4 (coding plan C1 "done when", design.md §Accessibility, D-049 guard rails): motion is progressive
+ * Flow 4 (coding plan C1 "done when", storefront.md §Accessibility, D-049 guard rails): motion is progressive
  * enhancement (none with reduced motion, nothing hidden that is on screen) and the storefront works by keyboard.
  */
 const product = `/states/${DEMO_PRODUCT.region}/${DEMO_PRODUCT.slug}`;

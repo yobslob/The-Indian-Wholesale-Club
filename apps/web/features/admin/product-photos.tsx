@@ -17,7 +17,7 @@ interface Photo {
 
 /**
  * The product's photos on its admin page: the main one first, then in upload order (the store shows them the
- * same way). Every photo needs alt text. Photos are best at 3 : 4 portrait (design.md §Visual system 5).
+ * same way). Every photo needs alt text. Photos are best at 3 : 4 portrait (storefront.md §Visual system 5).
  */
 export function ProductPhotos({ productId, media }: { productId: string; media: Photo[] }): React.JSX.Element {
   const photos = media.slice().sort((a, b) => Number(b.is_primary) - Number(a.is_primary) || a.sort_order - b.sort_order);

@@ -3,7 +3,7 @@
 > **Status:** implemented in `supabase/migrations/` (R3 baseline, D-020; R4 store page functions; R5 checkout + cycle steps;
 > migration 4: shipping options + refunds, D-041/D-042).
 > Built and tested on local Supabase first (D-031). The web app uses it since R5, the mobile app since R6.
-> See `plan/current.md`. This doc lists tables, purpose, visibility and invariants. Column types and constraints live in the
+> See `status.md`. This doc lists tables, purpose, visibility and invariants. Column types and constraints live in the
 > migration, so read it for details and don't copy them here.
 
 ## Visibility levels (D-003, D-017)
@@ -35,7 +35,7 @@ operations data are never queried from customer code.
 | Places | `regions` | the 36 regions (D-002): slug, name, sort, `is_live`, greeting (native + ISO 15924 script + Latin + meaning), languages, tagline, story, hero image, accent colour, `content_status` (D-019) | store (text only if approved) / admin |
 | Catalog | `categories` | browse groups per product type. A child always has its parent's type | store / admin |
 | | `products` | region, category, `product_type`, name, slug, summary, description, story, craft, `attributes` (customer-safe JSON), `price_cents`, `status`, search vector; `vendor_id`*, `shop_price_paise`*, `origin_town`*, `has_origin_label`*, `is_placeholder`*; `wears` (women, men, kids, unisex: who it is for, D-140; filled from the name or category on save, required for clothing to go live); `shop_title`* (an imported piece's own title on the shop, D-140 L1). **Spices are `live` only while "Spices are cleared" is on** (`pricing_settings.spices_cleared`, D-074; on since D-107) | store (live only) / admin |
-| | `product_variants` | `options` JSON (colour, flavour, style = "Type", pack, size: D-118), SKU*, label, price override, `weight_g`* with `weight_source`* and `weight_note`* (D-129), `weight_estimate_g`*, `weight_estimate_note`*, `weight_estimated_at`* (D-131), `net_qty` (food, D-133), `qty_listed`*, `qty_reserved`*, `qty_confirmed_at`*, `shop_price_paise`*, `source_id`* | store (`available`, food's `net_qty`) / admin |
+| | `product_variants` | `options` JSON (colour, flavour, style = "Type", pack, size: D-118), SKU*, label, price override, `weight_g`* with `weight_source`* and `weight_note`* (D-129), `weight_estimate_g`*, `weight_estimate_note`*, `weight_estimated_at`* (D-131), `weight_checked_at`* (D-146), `net_qty` (food, D-133), `qty_listed`*, `qty_reserved`*, `qty_confirmed_at`*, `shop_price_paise`*, `source_id`* | store (`available`, food's `net_qty`) / admin |
 | | `product_sources` | the shop items a variant can be ordered as, checked weekly (D-118) | admin / worker via functions |
 | | `variant_availability` | public mirror `variant_id → available`, trigger-maintained, in the Realtime publication (live "only 2 left", D-010) | store (visible products) |
 | | `product_media` | Storage paths (bucket `product-media`), alt text, one primary per product, `is_ai` (an AI-generated model photo, D-100: the product's Details say so) | store / admin |
@@ -196,6 +196,18 @@ spells each distinct size once. At production volume (3,000 food, 2,800 clothing
 1.3 s to about 0.11 s, clothing for men from 1.0 s to about 0.14 s, a state's See all from 0.33 s to 0.07 s.
 Migration 79 (D-140, the photo fix): an album photo may sit in its `c/` folder beside its fixed copies
 (`regions/<slug>/album/c/<name>`); listing photos and state photos had no path rule.
+Migration `20261022090000_assign_weights` (D-146, admin only, every one checks `is_admin()`):
+`product_variants.weight_checked_at` (an admin accepted the weight Weights to check showed; trigger
+`product_variants_weight_checked` clears it when the weight changes; `_weight_needs_check` skips an accepted weight).
+`admin_weight_plan(limit)` (listings with an active or held option without a weight, live first, at most 200, and
+`left`); `admin_assign_weights(items)` (only options without a weight: the website's `class` weight for clothing or
+`packed` for food, else the middle weight of the 7 most similar pieces of the category weighed by a trusted source,
+same words in the name and the closest shop price, through `_weight_words`, else the category's `default_weight_g`,
+both `estimated`; returns `ruled`, `similar`, `usual`); `admin_accept_weights(limit)` (marks up to 5,000 shown weights
+accepted); `admin_publish_drafts(limit)` (now publishes at most `limit` a call, 500 by default, and returns `left`);
+`admin_rename_listings(items)` (up to 500 names in one statement, the old name kept as `shop_title`);
+`admin_archive_unready_drafts()` (drafts without a photo, an active option or stock become archived; counts by
+reason). Never placeholders or US clearance pieces. Tests: `assign_weights.test.sql`.
 Migration 80 (D-141, the photo store): a photo in Cloudflare R2 is recorded with an `s/` path
 (`products/<id>/s/<name>.jpg`, packages/shared media.ts). `worker_sourcing_media` accepts `products/<id>/s/<name>` as
 well as `products/<id>/<name>`; album photos may be `regions/<slug>/album/s/<name>`.
@@ -386,13 +398,13 @@ its grants explicitly. `schema.test.sql` fails if anon/customers can execute any
 
 ## Invariants
 Enforced by the DB, and each covered by a test that **fails when the rule breaks**. Each was checked by deliberately
-breaking it and watching the test fail ("mutation check", `current.md`).
+breaking it and watching the test fail ("mutation check", `status.md`).
 
 | ID | Invariant | Enforced by | Test (`supabase/tests/`) |
 |---|---|---|---|
 | INV-1 | anon/customers can't read admin-only tables or columns | grants + RLS + `store_*` | `rls_visibility.test.sql`, `schema.test.sql` |
 | INV-2 | customers can never create/update/delete orders, items, events. Only `create_order` (service) creates orders | RLS + grants | `rls_orders.test.sql` |
-| INV-3 | no overselling: conditional reservation + `qty_reserved ≤ qty_listed` CHECK. Reservations change only via functions. Concurrent orders run side by side and lock pieces in variant-id order (PR-9) | function + CHECK + guard trigger | `stock.test.sql` (concurrency checked by hand, `plan/current.md` 2026-10-06) |
+| INV-3 | no overselling: conditional reservation + `qty_reserved ≤ qty_listed` CHECK. Reservations change only via functions. Concurrent orders run side by side and lock pieces in variant-id order (PR-9) | function + CHECK + guard trigger | `stock.test.sql` (concurrency checked by hand, `status.md` 2026-10-06) |
 | INV-4 | every stock change writes one `stock_movements` row. The ledger sums to current stock | trigger | `stock.test.sql` |
 | INV-5 | at most one `open` cycle | partial unique index | `cycles.test.sql` (+ `cycle_advance.test.sql` for the later steps) |
 | INV-6 | a promised delivery window changes only via `change_delivery_window`, which adds a customer-visible event | guard trigger + function | `orders_window.test.sql` |

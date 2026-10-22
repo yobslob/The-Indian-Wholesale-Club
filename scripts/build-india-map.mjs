@@ -1,6 +1,6 @@
 #!/usr/bin/env node
 /**
- * scripts/build-india-map.mjs: builds the India map (design.md §Visual system 4) from DataMeet's state boundaries.
+ * scripts/build-india-map.mjs: builds the India map (storefront.md §Visual system 4) from DataMeet's state boundaries.
  *
  * Source: States/Admin2 (.shp + .dbf) from https://github.com/datameet/maps (DataMeet India community, CC BY 4.0;
  * J&K and Ladakh follow the Survey of India map since 2021, datameet/maps#70). Approved as the source in D-052.

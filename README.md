@@ -1,10 +1,11 @@
 # The Indian Wholesale Club (IWC)
 
-A US storefront (web + iOS/Android app) for the clothing, food and home goods of India's regions.
-Monorepo: Next.js web · Expo app · Supabase · Stripe.
+A US storefront (web + Android app) for the clothing, food and home goods of India's regions.
+Monorepo: Next.js web · Expo app · Supabase · Stripe · photos in Cloudflare R2. Live at
+https://the-indian-wholesale-club.vercel.app.
 
 - **Start here:** [`CLAUDE.md`](CLAUDE.md), the project rules, map and doc index (for people and for Claude).
-- **Docs:** [`docs/`](docs/) · status: [`docs/plan/current.md`](docs/plan/current.md)
+- **Status and next steps:** [`docs/status.md`](docs/status.md) · production checks: [`docs/monitoring.md`](docs/monitoring.md)
 
 ## Setup
 ```bash

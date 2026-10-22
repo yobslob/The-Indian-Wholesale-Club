@@ -16,7 +16,7 @@ import tokens from '@repo/tokens';
 import type { TextInputProps } from 'react-native';
 
 /**
- * Building blocks in the approved design (design.md, D-079, D-080, D-095): Syne titles and headings, Karla text and
+ * Building blocks in the approved design (storefront.md, D-079, D-080, D-095): Syne titles and headings, Karla text and
  * controls, Cinzel for names; pill buttons, rounded paper inputs and surface cards, on the shared tokens.
  */
 
@@ -138,7 +138,7 @@ export function Loading(): React.JSX.Element {
   );
 }
 
-/** 44 pt touch targets everywhere (design.md §Accessibility). */
+/** 44 pt touch targets everywhere (storefront.md §Accessibility). */
 export function Button({
   label,
   onPress,

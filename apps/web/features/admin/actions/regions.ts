@@ -29,7 +29,7 @@ const optional = (max: number) =>
     .max(max)
     .transform((v) => v || null);
 
-/** The backgrounds a region accent colours text on (design.md §Visual system 2). */
+/** The backgrounds a region accent colours text on (storefront.md §Visual system 2). */
 const ACCENT_BACKGROUNDS = [tokens.colors.canvas, tokens.colors.surface, tokens.colors.paper];
 
 const accentColor = z

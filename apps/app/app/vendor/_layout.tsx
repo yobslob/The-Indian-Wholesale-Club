@@ -7,7 +7,7 @@ import { VendorProvider } from '@/features/vendor/context';
 import { useSession } from '@/lib/session';
 
 /**
- * Vendor mode (D-102, vendor.md). Mounted only after the server confirms a vendor account (is_vendor()); anyone else
+ * Vendor mode (D-102, admin.md). Mounted only after the server confirms a vendor account (is_vendor()); anyone else
  * goes to the store. The screens ship in the binary, so every read and write is also limited by the database to the
  * vendor's own (vendor_* functions, INV-10).
  */

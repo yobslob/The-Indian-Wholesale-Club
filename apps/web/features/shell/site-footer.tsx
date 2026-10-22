@@ -56,7 +56,7 @@ export function SiteFooter(): React.JSX.Element {
         <div className="grid grid-cols-4 gap-x-[var(--gap)] gap-y-8">
           <div>
             <p className="text-canvas mb-2.5 text-lg">{SITE_NAME}</p>
-            {/* TODO(founder): approve the footer line (design.md voice, D-019). */}
+            {/* TODO(founder): approve the footer line (storefront.md voice, D-019). */}
             <p className="max-w-[30ch]">Clothing, food and gifts from all of India, delivered in the US.</p>
           </div>
           {COLUMNS.map((col) => (

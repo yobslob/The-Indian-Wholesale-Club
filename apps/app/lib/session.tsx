@@ -39,7 +39,7 @@ async function checkRole(session: Session | null): Promise<{ isAdmin: boolean; i
   return { isAdmin: !admin.error && admin.data === true, isVendor: !vendor.error && vendor.data === true };
 }
 
-/** One sign-in screen for everyone; admin mode and vendor mode appear only when the server says so (admin.md, vendor.md). */
+/** One sign-in screen for everyone; admin mode and vendor mode appear only when the server says so (admin.md, admin.md). */
 export function SessionProvider({ children }: { children: React.ReactNode }): React.JSX.Element {
   const [auth, setAuth] = useState<AuthState>({ ready: false, session: null, isAdmin: false, isVendor: false });
   const [viewingStore, setViewingStore] = useState(false);

@@ -13,11 +13,11 @@ argument-hint: "[Q-id or topic]"
    when <phase> starts):*`. Never turn an interpretation into a rule silently. If a part is still unclear, narrow the
    question in `docs/questions.md` instead of guessing.
 3. If it replaces an earlier rule, write `Supersedes D-xxx` and mark the old entry's index line `SUPERSEDED by D-yyy`
-   (the only edit allowed to an old entry). When "Recent" holds entries older than a month, move their full text to
+   (the only edit allowed to an old entry). When "Recent" holds more than about ten entries, move the oldest full text to
    the end of `docs/archive/decisions-full.md` and leave a one-line index entry each.
 4. **Close the question:** delete its row from `docs/questions.md` and add the id to the "answered" line at the top.
 5. **Update everything that cited it:** `grep -rn "Q-xx" docs apps packages supabase scripts` - docs that said "until
    Q-xx is answered", `TODO(founder): Q-xx` markers, code comments. Point them at the new D-entry. Update
-   `docs/plan/coding-plan.md` if a phase waited on it, and `docs/plan/backlog.md` if it resolves an item.
+   `docs/status.md` (Next for the founder, Not built yet) when a step waited on it.
 6. Run `node scripts/docs-audit.mjs` (every cited D-/Q- id must exist), then commit with a message that names the
    decision.

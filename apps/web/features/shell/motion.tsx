@@ -4,7 +4,7 @@ import { usePathname } from 'next/navigation';
 import { useEffect } from 'react';
 
 /**
- * The storefront's motion (design.md §Direction, D-049): Lenis smooth scrolling, images that reveal as they
+ * The storefront's motion (storefront.md §Direction, D-049): Lenis smooth scrolling, images that reveal as they
  * enter the viewport, a gentle parallax on [data-speed] elements, and the scroll's velocity as `--sv` on <html> (px per
  * frame, ±30) so grids and rows can float apart a little while the page moves fast and settle when it stops (D-116,
  * `.drift` in globals.css). Progressive enhancement only:

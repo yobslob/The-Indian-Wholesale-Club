@@ -1,7 +1,7 @@
-# Admin: hidden web panel + app admin mode
+# Admin: hidden web panel, app admin mode, vendor accounts
 
 Users: founder (US desk) and COO (India desk), both `role = 'admin'` with the same access (D-007, D-027).
-Vendors' owners have their own sign-in to upload their pieces (D-102, built V1 – V6, `vendor.md`); every vendor upload
+Vendors' owners have their own sign-in to upload their pieces (D-102, built V1 – V6, §Vendor screens); every vendor upload
 waits for an admin. Pilot listings are imported from online shops (D-110, §Import from shops).
 
 ## Access model (D-006)
@@ -51,14 +51,14 @@ writes refresh the website's store pages at once (`POST /admin/revalidate`, B-17
 | **Catalog** | products, categories, prices, bulk edits; a product's state may be empty (All states, D-121; the import form offers it); **filters** within every tab (type, state or All-India, category, shop, a US price range, sort: recently updated, newest added, price both ways, name; a select applies at once without a page load, D-136); **Names to tidy** (D-140, L1: `/admin/catalog/names`): imported clothing and home listings whose names still carry
 a brand or shop (guessed per shop from a start three names share, or a leading all-capital name; never a count, a
 material or a product word, nor words that also turn up inside other names), beside IWC's name for them, each editable
-and ticked; Rename keeps the old name as the shop title (admin only). D-143: only the brand or shop goes, every other
+and ticked; Rename keeps the old name as the shop title (admin only); **Rename all** (D-146) renames every proposal on every page, 250 a batch; a name that would be only a shop word ("Collections") is never proposed. D-143: only the brand or shop goes, every other
 word stays; a name the first D-140 rules cut down is made again from the shop's title. New imports and the runner name
-pieces this way from the start (`cleanTitle`); food keeps its brand (D-139). **For** (D-140): who a clothing piece is for, a filter (with "not set yet") and a picker in each row that saves at once; the new-listing form, Add many (per batch) and the importer (pre-filled from Myntra's gender or the name) ask for it, and a clothing listing cannot go live without it; **Download Excel** (every tab: name, Indian price, category, weight, US price and margin of that view, its filters included, D-128, D-136); a **Weight** column and the **Weights to check** tab (options with no weight, a matching item's, one recorded before sources were kept, an unusual one for the category, or a shop's weight the weight estimator doubts; weigh it or type it per option or for all sizes at once, the box already holding the estimator's suggestion; a listing goes live only when every option has its weight, D-129, D-131); **Publish all drafts** on the Drafts tab (every draft with a photo, an option and a piece to sell; it says how many went live, what held the rest and how many still lack details customers see, D-120); "Curated for you" picks per product (D-056); product photos (upload with alt text, main photo, remove) to `product-media/products/<id>/`; the pager (D-140) | both | ✓ | — |
+pieces this way from the start (`cleanTitle`); food keeps its brand (D-139). **For** (D-140): who a clothing piece is for, a filter (with "not set yet") and a picker in each row that saves at once; the new-listing form, Add many (per batch) and the importer (pre-filled from Myntra's gender or the name) ask for it, and a clothing listing cannot go live without it; **Download Excel** (every tab: name, Indian price, category, weight, US price and margin of that view, its filters included, D-128, D-136); a **Weight** column and the **Weights to check** tab (options with no weight, a matching item's, one recorded before sources were kept, an unusual one for the category, or a shop's weight the weight estimator doubts; weigh it or type it per option or for all sizes at once, the box already holding the estimator's suggestion; a listing goes live only when every option has its weight, D-129, D-131); **Publish all drafts** on the Drafts tab (D-120, D-146: first gives every option without a weight one, as Assign all does, then publishes every draft with a photo, an option and a piece to sell, 400 a batch; it says how many went live, what held the rest and how many still lack details customers see) and **Archive the drafts that can't go live** (no photo, no active option or nothing to sell; nothing is deleted), so Drafts holds only the next batch; **Assign all and publish** on Weights to check (D-146: clothing by class, food by its label, the rest the middle weight of the 7 most similar pieces weighed before, else the category's usual weight, marked Estimated; every weight the tab shows accepted; then Publish all drafts; batches of 40 listings with the count on screen); "Curated for you" picks per product (D-056); product photos (upload with alt text, main photo, remove) to `product-media/products/<id>/`; the pager (D-140) | both | ✓ | — |
 | **Reviews** | approve or reject customer reviews before they appear (D-052, D-056); "verified buyer" is set by the database | both | ✓ | — |
 | **Customers** | customer list, orders per customer | US | ✓ | — |
 | **Promotions** | promo codes (kept from the old admin) | US | ✓ | — |
 | **Insights** | sales by state, category and shop (with what the shops were paid), for 30 days, 90 days or all time; searches that found nothing (what to list next), top searches, most saved pieces. Real numbers only, computed in SQL (`admin_sales`, `admin_demand`) | both | ✓ | — |
-| **Vendor pieces** | pieces vendors sent (D-102, D-103): their real photos, the AI candidates per pose, pick, name, care, price (empty = from the shop price), publish; or make a pose again on another model, ask for new photos, decline (`vendor.md`) | both | ✓ | — |
+| **Vendor pieces** | pieces vendors sent (D-102, D-103): their real photos, the AI candidates per pose, pick, name, care, price (empty = from the shop price), publish; or make a pose again on another model, ask for new photos, decline (§Vendor screens) | both | ✓ | — |
 | **House models** | the founder's models (D-104): front and back pose each, switch on / off | both | ✓ | — |
 | **Settings** | pricing settings, each estimate labelled with its source and date until the founder saves their own (D-047); the pilot price's two recipes, the courier rate card, the profit guard, the bulk saving and the small-food shelf ($1.99 – $3.99, D-120), with a **profit check** under them that reprices sample pieces and bags as the numbers are typed (web, D-119) (admins are managed in the DB + `ADMIN_EMAILS`, `ops.md`) | both | ✓ | — |
 
@@ -254,3 +254,47 @@ runner in `tools/sourcing-runner/` (its README says how to set it up on the PC a
   `--audit` compares the shops' weights, `--redo` re-estimates after many weighings, `eval` says how close it comes
   (`tools/weight-estimator/README.md`).
 
+## Vendor screens: a shop's own sign-in (D-102, D-103; was §Vendor screens)
+
+Users: a vendor's owner (the founder's "retailer"; glossary: **vendor account**). They upload their own pieces and
+see only their own: never a customer, another vendor, the customer price or IWC's costs (INV-10). Every vendor read is
+a `vendor_*` database function filtered by the caller's vendor (`data-model.md`); the base tables stay admin-only.
+
+### Access
+- **Web** `/vendor` (`apps/web/app/vendor/`, code in `features/vendor/`): never linked from the store, `noindex`, its
+  own route group (its code loads only there). Lint keeps vendor code out of the storefront and admin code out of
+  vendor pages (`apps/web/.eslintrc.js`).
+- **Sign-in:** an admin makes the account on the Vendors page and shows its one-time QR code / link (works once, 7
+  days; a new one replaces the old). Opening it signs the phone in: the website's server redeems the code
+  (`/vendor/api/sign-in`, rate-limited, service role) and hands back a token the browser turns into a session. No
+  password, no SMS. Every page checks `is_vendor()` on the server (`features/vendor/guard.ts`).
+- **"Join as a vendor?"** only on the vendor sign-in page (`/vendor/join`, never on a customer surface, D-003): shops in
+  India pick their state; a US store's request waits for Q-35. Requests land on the admin's Vendors page.
+- **App** (`apps/app/app/vendor/`, `features/vendor/`): the same screens as a vendor mode, mounted only after the
+  server confirms `is_vendor()` (`lib/session.tsx`); the customer tabs send a vendor there. Sign-in by the code on
+  `vendor-login` (opened by the app link `iwc://vendor-login?code=…`, or typed), redeemed by the website's server
+  (D-043); never linked from a customer screen. Photos from the camera or the gallery, checked on the phone like the
+  website (`jpeg-js` reads the pixels). The language switch is kept on the phone. Lint keeps vendor and customer
+  code apart (`apps/app/.eslintrc.js`).
+
+### Screens (phone first: one job per screen, pictures before words, 44 px+ targets)
+| Screen | Route | What |
+|---|---|---|
+| Home | `/vendor` | four tiles: Add a piece, Keep ready (count), My pieces (retakes asked), Money (₹ owed) |
+| Add a piece | `/vendor/new` | what it is (category tiles) and who wears it → front, back, close-up photos one at a time with an outline, each checked at once on the phone (`@repo/shared/vendor` `checkPhoto`: size, light, blur) and sent as soon as it is taken → sizes with + / −, the shop price in ₹, optional fabric / care / colour → Send |
+| My pieces | `/vendor/pieces`, `/vendor/pieces/[id]` | what was sent and what is in the store, with a picture of its state; a piece IWC asked about opens the same steps with what it has, so only the needed photos are taken again |
+| Keep ready | `/vendor/ready` | ordered pieces IWC will collect: piece, size, how many, "after <cutoff>" (never who bought them) |
+| Money | `/vendor/money` | owed in ₹ for collected pieces, the latest collected pieces, payouts |
+
+**Languages (D-102, D-105):** English, Hindi, Bengali, Tamil, Telugu, Marathi, Gujarati, Kannada, Malayalam, Punjabi,
+Odia and Assamese (`@repo/shared/vendor` `messages/`); a region whose language is not among them gets Hindi. The
+switch on every screen offers English, Hindi and the shop's region language (kept in a cookie on the web, on the
+phone in the app). Every language but English is a Claude draft until someone fluent checks it; a unit test keeps
+every word and its {placeholders} in each.
+
+### Photos (D-100, D-101, D-104)
+The vendor's photos go to the private `vendor-uploads` bucket, shrunk to 2400 px on the phone. The GPU worker
+(`tools/photo-worker`) makes three candidates per pose on a house model; the admin picks on **Vendor pieces**
+(`/admin/vendor-pieces`), writes the English name and care, and publishes. The picked photos and the real close-up are
+copied to `product-media` (the AI ones flagged `is_ai`, so the product's Details say so); the candidates and the raw
+photos are then deleted.

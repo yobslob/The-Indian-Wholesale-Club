@@ -1,5 +1,5 @@
 /**
- * WCAG 2.2 contrast (design.md §Accessibility). A region's accent colour colours text on the page backgrounds,
+ * WCAG 2.2 contrast (storefront.md §Accessibility). A region's accent colour colours text on the page backgrounds,
  * so the admin form refuses one below AA (4.5 : 1) against every background it sits on.
  */
 export const AA_TEXT_CONTRAST = 4.5;

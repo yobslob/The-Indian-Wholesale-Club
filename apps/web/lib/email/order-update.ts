@@ -9,7 +9,7 @@ import type { OrderDetail } from '@repo/db/store';
  * the missing pieces' photos when one is unavailable, and the shipped email's button to our order page (where "Track
  * the parcel" goes on to the carrier, D-088). Built ONLY from the customer-safe order shape
  * (guest_order_lookup), so nothing operational can reach it (D-003): no shops, pickups, exports or cycles, and no
- * reason why a date moved. Every dynamic value is escaped. Copy follows design.md §Voice (D-059); the founder may
+ * reason why a date moved. Every dynamic value is escaped. Copy follows storefront.md §Voice (D-059); the founder may
  * rewrite any of it. Pure, so it has unit tests (tests/order-update.test.ts).
  */
 

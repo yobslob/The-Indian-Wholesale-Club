@@ -11,7 +11,7 @@ import { supabase } from '@/lib/supabase';
 export interface ListingPhoto {
   uri: string;
   width: number;
-  /** What the photo shows (alt text), required: screen readers read it (design.md §Accessibility). */
+  /** What the photo shows (alt text), required: screen readers read it (storefront.md §Accessibility). */
   alt: string;
 }
 
