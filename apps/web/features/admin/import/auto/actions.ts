@@ -63,10 +63,12 @@ export async function setShopAction(site: string, form: FormData): Promise<void>
   revalidatePath(PAGE);
 }
 
-export type UploadResult = { added: number; skipped: number; errors: string[] } | { error: string };
+export type UploadResult =
+  { added: number; skipped: number; widened: number; errors: string[] } | { error: string };
 
 /**
- * A target list as CSV (the state bestseller list's columns): rows already there for that state are skipped. D-121:
+ * A target list as CSV (the state bestseller list's columns): rows already there for that state are skipped, except
+ * that they take the row's shops they lacked (D-150). D-121:
  * an empty state (or "all") is all states; shops are matched to the shop list by name or host ("myntra").
  */
 export async function uploadTargetsAction(csv: string): Promise<UploadResult> {
@@ -121,9 +123,9 @@ export async function uploadTargetsAction(csv: string): Promise<UploadResult> {
     ];
   });
   try {
-    const added = await addTargets(client, ready);
+    const { added, widened } = await addTargets(client, ready);
     revalidatePath(PAGE);
-    return { added, skipped: ready.length - added, errors: errors.slice(0, 20) };
+    return { added, skipped: ready.length - added, widened, errors: errors.slice(0, 20) };
   } catch (error) {
     return {
       error: error instanceof Error ? error.message.slice(0, 200) : 'Could not save the targets.',
@@ -180,6 +182,10 @@ export async function publishReadyAction(): Promise<void> {
   );
   // one at a time, so a food listing refused before food is cleared doesn't stop the others
   for (const d of ready) await publishProducts(client, [d.id]).catch(() => undefined);
-  await refreshListings(client, ready.map((d) => d.id), true);
+  await refreshListings(
+    client,
+    ready.map((d) => d.id),
+    true,
+  );
   revalidatePath(PAGE);
 }

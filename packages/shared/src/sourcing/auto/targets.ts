@@ -15,10 +15,16 @@ export const targetRowSchema = z.object({
   must_match: z.string().trim().max(300).nullable(),
   product_type: z.enum(PRODUCT_TYPES),
   category: z.string().regex(/^[a-z0-9]+(-[a-z0-9]+)*$/),
-  region: z.string().regex(/^[a-z0-9]+(-[a-z0-9]+)*$/).nullable(),
+  region: z
+    .string()
+    .regex(/^[a-z0-9]+(-[a-z0-9]+)*$/)
+    .nullable(),
   tier: z.number().int().min(1).max(3).nullable(),
   /** Shop names or hosts as typed ("myntra", "amazon.in"); the upload matches them to the shops. */
-  shops: z.array(z.string().regex(/^[a-z0-9.-]{2,60}$/)).max(12).nullable(),
+  shops: z
+    .array(z.string().regex(/^[a-z0-9.-]{2,60}$/))
+    .max(12)
+    .nullable(),
   min_price_paise: z.number().int().positive().nullable(),
   max_price_paise: z.number().int().positive().nullable(),
   listings: z.number().int().min(1).max(40).nullable(),
@@ -89,9 +95,7 @@ export function parseTargetsCsv(text: string): { rows: TargetRow[]; errors: stri
   const at = Object.fromEntries(
     Object.entries(COLUMNS).map(([key, re]) => [key, head.findIndex((h) => re.test(h.trim()))]),
   ) as Record<keyof TargetRow, number>;
-  const missing = (['name', 'product_type', 'category'] as const).filter(
-    (k) => at[k] < 0,
-  );
+  const missing = (['name', 'product_type', 'category'] as const).filter((k) => at[k] < 0);
   if (missing.length) return { rows: [], errors: [`Missing column: ${missing.join(', ')}.`] };
   const rows: TargetRow[] = [];
   const errors: string[] = [];
@@ -115,7 +119,12 @@ export function parseTargetsCsv(text: string): { rows: TargetRow[]; errors: stri
         ? cell('shops')
             .toLowerCase()
             .split(/[;|\s]+/)
-            .map((x) => x.replace(/^https?:\/\//, '').replace(/^www\./, '').replace(/\/.*$/, ''))
+            .map((x) =>
+              x
+                .replace(/^https?:\/\//, '')
+                .replace(/^www\./, '')
+                .replace(/\/.*$/, ''),
+            )
             .filter(Boolean)
         : null,
       min_price_paise: rupees(cell('min_price_paise')),
@@ -129,4 +138,15 @@ export function parseTargetsCsv(text: string): { rows: TargetRow[]; errors: stri
       );
   });
   return { rows, errors };
+}
+
+/**
+ * D-150: a target uploaded again adds the row's shops to the one already there (the 7-day targets, Blinkit only,
+ * taking BigBasket, Zepto and Instamart). Never fewer shops: a target on every shop (null) stays so, and a row
+ * without Shops changes nothing. Returns the wider list, or null when nothing changes.
+ */
+export function widenedSites(had: string[] | null, row: string[] | null): string[] | null {
+  if (had === null || row === null) return null;
+  const more = row.filter((s) => !had.includes(s));
+  return more.length ? [...had, ...new Set(more)] : null;
 }

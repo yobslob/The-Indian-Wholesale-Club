@@ -26,6 +26,7 @@ import {
   myntraSearchOffers,
   inBand,
   parseTargetsCsv,
+  widenedSites,
   pickCandidates,
   shopsFor,
   sanitizeText,
@@ -250,12 +251,21 @@ describe('variants: any option, any shop (D-118)', () => {
     const I = 'https://m.media-amazon.com/images/I/';
     // Amazon's page lists every photo full size ("hiRes") and as a preview under another name ("large")
     const colorImages = `'colorImages': { 'initial': [{"hiRes":"${I}71a._SL1500_.jpg","thumb":"${I}41a._SS40_.jpg","large":"${I}41a.jpg","main":{"${I}71a._SX679_.jpg":[679,679]},"variant":"MAIN"},{"hiRes":null,"thumb":"${I}41b._SS40_.jpg","large":"${I}41b.jpg","main":{},"variant":"PT01"},{"hiRes":"${I}71c._SL1500_.jpg","thumb":"${I}41c._SS40_.jpg","large":"${I}41c.jpg","main":{},"variant":"PT02"}]}`;
-    const el = (text: string) => ({ innerText: text, textContent: text, getAttribute: () => null, querySelector: () => null });
+    const el = (text: string) => ({
+      innerText: text,
+      textContent: text,
+      getAttribute: () => null,
+      querySelector: () => null,
+    });
     const page = {
       title: 'A product',
       body: el(''),
       querySelector: (s: string) =>
-        s === '#productTitle' ? el('Tata Sampann Rajma 500 g') : s === '#landingImage' ? { ...el(''), src: `${I}41a._SX679_.jpg` } : null,
+        s === '#productTitle'
+          ? el('Tata Sampann Rajma 500 g')
+          : s === '#landingImage'
+            ? { ...el(''), src: `${I}41a._SX679_.jpg` }
+            : null,
       querySelectorAll: (s: string) => (s === 'script' ? [el(colorImages), el(colorImages)] : []),
     };
     const run = new Function('document', 'location', 'window', `return ${captureScript};`) as (
@@ -263,8 +273,20 @@ describe('variants: any option, any shop (D-118)', () => {
       l: unknown,
       w: unknown,
     ) => RawCapture;
-    const raw = run(page, { href: 'https://www.amazon.in/dp/B0TEST1234', hostname: 'www.amazon.in', pathname: '/dp/B0TEST1234' }, {});
-    assert.deepEqual(raw.amazon?.images, [`${I}71a._SL1500_.jpg`, `${I}41b.jpg`, `${I}71c._SL1500_.jpg`]);
+    const raw = run(
+      page,
+      {
+        href: 'https://www.amazon.in/dp/B0TEST1234',
+        hostname: 'www.amazon.in',
+        pathname: '/dp/B0TEST1234',
+      },
+      {},
+    );
+    assert.deepEqual(raw.amazon?.images, [
+      `${I}71a._SL1500_.jpg`,
+      `${I}41b.jpg`,
+      `${I}71c._SL1500_.jpg`,
+    ]);
   });
 });
 
@@ -424,7 +446,11 @@ describe('the listing the runner adds', () => {
       allergens: ['Peanuts'],
     });
     assert.equal(draft.complete, false, 'no shelf life on the page: it waits for an admin');
-    assert.deepEqual(draft.missing, ['shelf_life_days'], 'the run log names what is missing (D-137)');
+    assert.deepEqual(
+      draft.missing,
+      ['shelf_life_days'],
+      'the run log names what is missing (D-137)',
+    );
   });
 
   it('skips a page that is too slow or promises nothing', () => {
@@ -758,12 +784,19 @@ describe('targets from the bestseller CSV', () => {
   it('D-121: all states, its shops, a price band in rupees and how many listings', () => {
     const csv =
       'Product,Type,IWC category,IWC region slug,Shops,Min ₹,Max ₹,Listings\n' +
-      "Women's printed kurtas,clothing,kurtas,all,myntra,₹600,\"1,600\",25\n" +
+      'Women\'s printed kurtas,clothing,kurtas,all,myntra,₹600,"1,600",25\n' +
       'Cotton sarees,clothing,sarees,,myntra.com; https://www.amazon.in/,600,,\n' +
       'Odd,clothing,sarees,,myntra,abc,,\n';
     const { rows, errors } = parseTargetsCsv(csv);
     assert.deepEqual(
-      rows.map((r) => [r.name, r.region, r.shops, r.min_price_paise, r.max_price_paise, r.listings]),
+      rows.map((r) => [
+        r.name,
+        r.region,
+        r.shops,
+        r.min_price_paise,
+        r.max_price_paise,
+        r.listings,
+      ]),
       [
         ["Women's printed kurtas", null, ['myntra'], 60000, 160000, 25],
         ['Cotton sarees', null, ['myntra.com', 'amazon.in'], 60000, null, null],
@@ -794,7 +827,9 @@ describe('a target with its own shops and a price band (D-121)', () => {
       shopsFor(target(), SHOPS).map((s) => s.site),
       ['blinkit.com', 'amazon.in', 'bigbasket.com'],
     );
-    assert.ok(inBand(band, 60000) && inBand(band, 160000) && !inBand(band, 59900) && !inBand(band, 160100));
+    assert.ok(
+      inBand(band, 60000) && inBand(band, 160000) && !inBand(band, 59900) && !inBand(band, 160100),
+    );
     assert.ok(inBand(target(), 100) && !inBand(target(), null));
     const picked = pickCandidates(
       band,
@@ -802,7 +837,13 @@ describe('a target with its own shops and a price band (D-121)', () => {
         offer({ key: 'A1', title: 'Cotton Kurta', pricePaise: 89900, brand: 'A' }),
         offer({ key: 'A2', title: 'Cotton Kurta', pricePaise: 249900, brand: 'B' }),
         offer({ key: 'A3', title: 'Cotton Kurta', pricePaise: 39900, brand: 'C' }),
-        offer({ site: 'blinkit.com', key: 'B1', title: 'Cotton Kurta', pricePaise: 89900, brand: 'D' }),
+        offer({
+          site: 'blinkit.com',
+          key: 'B1',
+          title: 'Cotton Kurta',
+          pricePaise: 89900,
+          brand: 'D',
+        }),
       ],
       SHOPS,
       { maxDays: 3, known: new Set(), now: NOW, limit: 3 },
@@ -830,12 +871,41 @@ describe('a target with its own shops and a price band (D-121)', () => {
       sizes: [],
       hints: [],
       variants: [
-        { key: 'B0KURTA001', url: 'https://www.amazon.in/dp/B0KURTA001', label: 'Blue', options: { colour: 'Blue' }, pricePaise: 89900, mrpPaise: null, inStock: true, weightG: null, image: null },
-        { key: 'B0KURTA002', url: 'https://www.amazon.in/dp/B0KURTA002', label: 'Silk red', options: { colour: 'Silk red' }, pricePaise: 259900, mrpPaise: null, inStock: true, weightG: null, image: null },
+        {
+          key: 'B0KURTA001',
+          url: 'https://www.amazon.in/dp/B0KURTA001',
+          label: 'Blue',
+          options: { colour: 'Blue' },
+          pricePaise: 89900,
+          mrpPaise: null,
+          inStock: true,
+          weightG: null,
+          image: null,
+        },
+        {
+          key: 'B0KURTA002',
+          url: 'https://www.amazon.in/dp/B0KURTA002',
+          label: 'Silk red',
+          options: { colour: 'Silk red' },
+          pricePaise: 259900,
+          mrpPaise: null,
+          inStock: true,
+          weightG: null,
+          image: null,
+        },
       ],
       deliveryText: null,
     };
-    const base = { target: band, shop: SHOPS[1]!, pageDays: 2, family: [], others: [], shops: SHOPS, maxDays: 3, now: NOW };
+    const base = {
+      target: band,
+      shop: SHOPS[1]!,
+      pageDays: 2,
+      family: [],
+      others: [],
+      shops: SHOPS,
+      maxDays: 3,
+      now: NOW,
+    };
     const draft = buildListing({ ...base, product: kurta });
     assert.ok(!('skip' in draft));
     if ('skip' in draft) return;
@@ -851,5 +921,23 @@ describe('a target with its own shops and a price band (D-121)', () => {
       buildListing({ ...base, product: { ...kurta, variants: [kurta.variants[1]!] } }),
       { skip: 'price outside the band' },
     );
+  });
+});
+
+describe('a target uploaded again adds its shops (D-150)', () => {
+  it("gives a Blinkit-only target the row's other shops, in order, once each", () => {
+    assert.deepEqual(
+      widenedSites(
+        ['blinkit.com'],
+        ['blinkit.com', 'bigbasket.com', 'zepto.com', 'swiggy.com', 'zepto.com'],
+      ),
+      ['blinkit.com', 'bigbasket.com', 'zepto.com', 'swiggy.com'],
+    );
+  });
+
+  it('never narrows: every shop stays every shop, no Shops or the same shops change nothing', () => {
+    assert.equal(widenedSites(null, ['blinkit.com']), null);
+    assert.equal(widenedSites(['amazon.in'], null), null);
+    assert.equal(widenedSites(['amazon.in', 'flipkart.com'], ['flipkart.com']), null);
   });
 });

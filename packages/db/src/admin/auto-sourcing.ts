@@ -1,3 +1,5 @@
+import { widenedSites } from '@repo/shared/sourcing/auto';
+
 import { unwrap, unwrapPage, type Enum, type Insert, type IwcClient, type Update } from '../client';
 
 /**
@@ -56,7 +58,12 @@ export async function countTargets(client: IwcClient) {
 /** A page of targets, best tier first, and how many match in all (D-140: no silent cap at 200). */
 export async function pageTargets(
   client: IwcClient,
-  filter: { status?: Enum<'sourcing_target_status'> | null; search?: string; offset?: number; limit?: number } = {},
+  filter: {
+    status?: Enum<'sourcing_target_status'> | null;
+    search?: string;
+    offset?: number;
+    limit?: number;
+  } = {},
 ) {
   let query = client
     .from('sourcing_targets')
@@ -78,29 +85,44 @@ export async function pageTargets(
 }
 
 /**
- * New targets; one already there for the same name and state (or for all states, region_id null, D-121) is left as it
- * is. Returns how many were added.
+ * New targets; one already there for the same name and state (or for all states, region_id null, D-121) keeps
+ * everything but takes the row's shops it lacked (D-150, never fewer). Returns how many were added and widened.
  */
 export async function addTargets(
   client: IwcClient,
   rows: Insert<'sourcing_targets'>[],
-): Promise<number> {
-  if (!rows.length) return 0;
+): Promise<{ added: number; widened: number }> {
+  if (!rows.length) return { added: 0, widened: 0 };
   const regions = [...new Set(rows.map((r) => r.region_id).filter((id): id is string => !!id))];
   const filter = [
     ...(regions.length ? [`region_id.in.(${regions.join(',')})`] : []),
     ...(rows.some((r) => !r.region_id) ? ['region_id.is.null'] : []),
   ].join(',');
   const existing = unwrap(
-    await client.from('sourcing_targets').select('name, region_id').or(filter),
+    await client.from('sourcing_targets').select('id, name, region_id, sites').or(filter),
   );
   const key = (r: { name: string; region_id?: string | null }) =>
     `${r.region_id ?? 'all'}|${r.name.trim().toLowerCase()}`;
-  const seen = new Set(existing.map(key));
+  const had = new Map(existing.map((t) => [key(t), t]));
+  // one update per resulting shop list: a whole batch widened alike is one statement
+  const widen = new Map<string, string[]>();
+  for (const r of rows) {
+    const t = had.get(key(r));
+    const sites = t ? widenedSites(t.sites, r.sites ?? null) : null;
+    if (t && sites)
+      widen.set(JSON.stringify(sites), [...(widen.get(JSON.stringify(sites)) ?? []), t.id]);
+  }
+  for (const [sites, ids] of widen)
+    unwrap(
+      await client
+        .from('sourcing_targets')
+        .update({ sites: JSON.parse(sites) as string[] })
+        .in('id', ids),
+    );
+  const seen = new Set(had.keys());
   const fresh = rows.filter((r) => !seen.has(key(r)) && !!seen.add(key(r)));
-  if (!fresh.length) return 0;
-  unwrap(await client.from('sourcing_targets').insert(fresh));
-  return fresh.length;
+  if (fresh.length) unwrap(await client.from('sourcing_targets').insert(fresh));
+  return { added: fresh.length, widened: [...widen.values()].flat().length };
 }
 
 /** Every target where nothing fit, back to the queue (a run the shops blocked marks them all, 2026-10-16). */

@@ -9,7 +9,8 @@ import { uploadTargetsAction, type UploadResult } from './actions';
 /**
  * Adds targets from a CSV (D-118): the state bestseller list as it is, or any sheet with the columns Product, Type,
  * IWC category (and optionally IWC region slug, Tier, Search words, Must match, Shops, Min ₹, Max ₹, Listings). An
- * empty state or "all" is all states (D-121). Rows already there are skipped.
+ * empty state or "all" is all states (D-121). Rows already there are skipped but take the row's shops they lacked
+ * (D-150).
  */
 export function TargetsUpload(): React.JSX.Element {
   const [result, setResult] = useState<UploadResult | null>(null);
@@ -34,8 +35,9 @@ export function TargetsUpload(): React.JSX.Element {
         />
       </label>
       <p className="text-ink-muted text-[13px]">
-        Columns: Product, Type, IWC category; optional IWC region slug (empty or “all” = every state, no state shown),
-        Tier, Search words, Must match, Shops (“myntra”), Min ₹, Max ₹, Listings.
+        Columns: Product, Type, IWC category; optional IWC region slug (empty or “all” = every
+        state, no state shown), Tier, Search words, Must match, Shops (“myntra”), Min ₹, Max ₹,
+        Listings.
       </p>
       {result ? (
         'error' in result ? (
@@ -46,6 +48,7 @@ export function TargetsUpload(): React.JSX.Element {
           <div role="status" className="text-[14px]">
             <p>
               {result.added} added{result.skipped ? `, ${result.skipped} already there` : ''}
+              {result.widened ? ` (${result.widened} of them now search more shops)` : ''}
               {result.errors.length ? `, ${result.errors.length} not read:` : '.'}
             </p>
             {result.errors.length ? (
