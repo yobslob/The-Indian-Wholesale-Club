@@ -134,6 +134,8 @@ export const SETTING_GROUPS: SettingGroup[] = [
     fields: [
       { key: 'pilot_delivery_days_min', label: 'Pilot, made to order: delivery days from the order: from (empty = cycles)', kind: 'int' },
       { key: 'pilot_delivery_days_max', label: 'Pilot, made to order: delivery days from the order: to', kind: 'int' },
+      { key: 'quick_delivery_days_min', label: '7-day delivery: days from the order: from (empty = no 7-day page or tags, D-148)', kind: 'int' },
+      { key: 'quick_delivery_days_max', label: '7-day delivery: days from the order: to', kind: 'int' },
       { key: 'domestic_days_min', label: 'US delivery days after the export arrives: from', kind: 'int' },
       { key: 'domestic_days_max', label: 'US delivery days after the export arrives: to', kind: 'int' },
       { key: 'shipping_flat_cents', label: 'Standard shipping per order ($, 0 = free)', kind: 'usd' },

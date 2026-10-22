@@ -141,9 +141,9 @@ export async function priceCart(
   }
 
   // D-072: a bag of only US pieces ships from the warehouse at once, so its window is today + the US delivery days.
-  const standardWindow = context.us_delivery
-    ? { ...context.us_delivery, order_by: context.delivery.order_by }
-    : context.delivery;
+  // D-148: a bag of only 7-day pieces arrives in the 7-day days (create_order keeps the same window).
+  const fastWindow = context.quick_delivery ?? context.us_delivery;
+  const standardWindow = fastWindow ? { ...fastWindow, order_by: context.delivery.order_by } : context.delivery;
   const expressWindow = context.express
     ? {
         est_delivery_from: context.express.est_delivery_from,

@@ -14,6 +14,8 @@ export interface BagCharges {
   small: SmallOrderCharges;
   /** D-119: the bulk saving from the line up; null = none. */
   bulk: BulkSaving | null;
+  /** D-148: every piece is a 7-day piece: the bag arrives in these days (Settings); null = a normal bag. */
+  quickDays: { min: number; max: number } | null;
 }
 
 const useChargesStore = create<{ key: string; charges: BagCharges | null }>(() => ({
@@ -28,6 +30,12 @@ export const bagKey = (lines: CartLine[]): string =>
     .map((l) => `${l.variantId}:${Math.min(Math.max(l.quantity, 1), 99)}`)
     .sort()
     .join(',');
+
+function quickOf(q: unknown): BagCharges['quickDays'] {
+  if (typeof q !== 'object' || q === null) return null;
+  const { days_min: min, days_max: max } = q as Record<string, unknown>;
+  return typeof min === 'number' && typeof max === 'number' ? { min, max } : null;
+}
 
 function parse(data: unknown): BagCharges | null {
   if (typeof data !== 'object' || data === null) return null;
@@ -51,6 +59,7 @@ function parse(data: unknown): BagCharges | null {
       shownShippingCents: int(d.shown_shipping_cents),
     },
     bulk: pct > 0 && cap > 0 ? { pct, capCents: cap } : null,
+    quickDays: quickOf(d.quick),
   };
 }
 

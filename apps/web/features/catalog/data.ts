@@ -6,6 +6,7 @@ import {
   browseProducts,
   getHome,
   getProductPage,
+  getQuickPage,
   getRegionPage,
   getStorePolicy,
   isDemoStore,
@@ -82,6 +83,15 @@ export const browseCached = (filter: BrowseFilter) =>
     ],
     [listingsTag],
     () => browseProducts(storeClient(), filter),
+  );
+
+/**
+ * The 7-day page and its category pills and Show more (/api/seven-day, D-148): light cards like See all, refreshed with
+ * it (listingsTag) when listings change. One entry per category and page.
+ */
+export const quickPageCached = (category: string | null, offset: number, limit: number) =>
+  cached(['store-quick', category ?? '', String(offset), String(limit)], [listingsTag], () =>
+    getQuickPage(storeClient(), { category, offset, limit }),
   );
 
 /** Demo mode (D-078): the banner on every store page. Refreshed with STORE_TAG or within 5 minutes. */

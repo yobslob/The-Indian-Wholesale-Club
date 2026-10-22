@@ -13,6 +13,8 @@ const policy: StorePolicy = {
   express_days_max: 18,
   us_delivery_days_min: 3,
   us_delivery_days_max: 7,
+  quick_delivery_days_min: 7,
+  quick_delivery_days_max: 7,
   cancel_fee_pct: 0,
   return_claim_days: 7,
   return_tiers: [

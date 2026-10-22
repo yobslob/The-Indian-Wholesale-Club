@@ -32,8 +32,16 @@ export function ChargeLines(): React.JSX.Element | null {
   if (!charges) return null;
   const { free, leftCents, line, share, bulk, at } = freeDelivery(lines, charges);
   const row = 'flex items-baseline justify-between gap-3 text-[14px]';
+  const quick = charges.quickDays;
   return (
     <div className="font-ui grid gap-1" aria-live="polite">
+      {quick ? (
+        // D-148: only while every piece is a 7-day piece; one other piece and the bag comes in the normal window
+        <p className="text-brand m-0 mb-1 text-[13px] font-semibold">
+          Every piece here comes in {quick.min === quick.max ? quick.max : `${quick.min} – ${quick.max}`} days, so
+          your bag does too.
+        </p>
+      ) : null}
       <p className={row}>
         <span>Shipping</span>
         <ChargeValue cents={at.shippingCents || at.waivedShippingCents} free={free && at.shippingCents === 0} />

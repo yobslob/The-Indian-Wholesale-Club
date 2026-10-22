@@ -11,6 +11,7 @@ const STATIC_PATHS = [
   '/clothing',
   '/food',
   '/home-and-gifts',
+  '/7-day-delivery',
   '/how-it-works',
   '/about',
   '/faq',

@@ -1,4 +1,4 @@
-import { getHomeCached } from '@/features/catalog/data';
+import { getHomeCached, getStorePolicyCached } from '@/features/catalog/data';
 import { DeliveryBand } from '@/features/home/delivery-band';
 import { HomeHero } from '@/features/home/home-hero';
 import { JustListed } from '@/features/home/just-listed';
@@ -11,11 +11,12 @@ import { RegionAlbum } from '@/features/regions/region-album';
  * One cached store_home() call (PR-1, PR-2). Runs edge to edge (data-bleed); sections keep the gutter.
  */
 export default async function HomePage(): Promise<React.JSX.Element> {
-  const home = await getHomeCached();
+  const [home, policy] = await Promise.all([getHomeCached(), getStorePolicyCached()]);
 
   return (
     <div data-bleed>
-      <HomeHero />
+      {/* D-148: the hero's line opens the 7-day page while 7-day delivery is on (its days from Settings) */}
+      <HomeHero quickDays={policy.quick_delivery_days_max} />
 
       <div className="px-[var(--gut)]">
         <RegionAlbum photos={home.album} regionName="India" reveal />

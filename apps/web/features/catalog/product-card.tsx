@@ -83,6 +83,11 @@ export function ProductCard({
             <span className="bg-paper font-ui rounded-pill absolute left-3.5 top-3.5 px-3 py-1.5 text-xs font-medium">
               {badge}
             </span>
+          ) : product.quick_days ? (
+            // D-148: a 7-day piece (its days from Settings); the bag keeps the promise only while it holds 7-day pieces alone
+            <span className="bg-brand text-on-brand font-ui rounded-pill absolute left-3.5 top-3.5 px-2.5 py-1 text-xs font-semibold">
+              In {product.quick_days} days
+            </span>
           ) : null}
           {product.pack ? (
             // D-122: a food piece's pack size, so two prices read side by side make sense

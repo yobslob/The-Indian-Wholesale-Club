@@ -42,7 +42,7 @@ export default async function ProductPage({
   const { region, product: productSlug } = await params;
   const page = await getProductPageCached(region, productSlug);
   if (!page) notFound();
-  const { product, variants, media, similar, curated, reviews, delivery, ships_from_us } = page;
+  const { product, variants, media, similar, curated, reviews, delivery, ships_from_us, quick_delivery } = page;
   const chart = sizeChart(product, variants);
 
   return (
@@ -94,7 +94,7 @@ export default async function ProductPage({
             <AddToCart
               product={product}
               variants={variants}
-              delivery={<DeliveryNote delivery={delivery} fromUs={ships_from_us} />}
+              delivery={<DeliveryNote delivery={delivery} fromUs={ships_from_us} quick={quick_delivery} />}
             />
           ) : (
             <p className="text-ink-muted text-sm">Not available right now.</p>
