@@ -23,6 +23,7 @@ const schema = z.object({
   IWC_SOURCING_PROFILE: z.string().default(join(homedir(), 'iwc-sourcing-profile')),
   /** "chrome" (installed Google Chrome, shops trust it most), "msedge", or "chromium" (Playwright's own). */
   IWC_SOURCING_CHANNEL: z.enum(['chrome', 'msedge', 'chromium']).default('chrome'),
+  /** Ignored (D-151): shops block headless Chrome, so the runner always opens a window off-screen. */
   IWC_SOURCING_HEADLESS: z.enum(['0', '1']).default('0'),
   /** The photo store (D-140, src/photo-store.ts): the bucket's S3 address and an API token for it. Optional. */
   IWC_PHOTO_STORE_S3_URL: z.string().url().optional(),

@@ -52,7 +52,6 @@ async function setup(args: string[]): Promise<void> {
   const type = PRODUCT_TYPES.find((t) => t === flag(args, '--type')) ?? null;
   // a runner with --type browses with its own copy of the profile (profileFor): set up that one
   const context = await openBrowser(env, {
-    headless: false,
     images: true,
     profile: profileFor(env, type),
   });
@@ -139,7 +138,6 @@ async function run(args: string[]): Promise<number> {
   process.once('SIGINT', stop);
   process.once('SIGTERM', stop);
   const context = await openBrowser(env, {
-    headless: env.IWC_SOURCING_HEADLESS === '1',
     images: false,
     profile: profileFor(env, type),
   });
@@ -249,7 +247,6 @@ async function dryRun(args: string[]): Promise<void> {
     known: [],
   };
   const context = await openBrowser(env, {
-    headless: env.IWC_SOURCING_HEADLESS === '1',
     images: false,
   });
   const ctx: RunContext = {
@@ -306,7 +303,6 @@ async function home(): Promise<number> {
   const env = loadEnv(true);
   const db = await Db.signIn(env);
   const context = await openBrowser(env, {
-    headless: env.IWC_SOURCING_HEADLESS === '1',
     images: false,
     profile: profileFor(env, 'home'),
   });

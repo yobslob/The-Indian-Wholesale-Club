@@ -3,6 +3,8 @@ import { join } from 'node:path';
 
 import { chromium, type BrowserContext } from 'playwright';
 
+import { log } from './log';
+
 import type { Env } from './env';
 
 /**
@@ -55,40 +57,30 @@ function copyProfile(from: string, to: string): void {
   }
 }
 
+/**
+ * Chrome in a real window, placed off-screen. Never headless (D-151): Blinkit's Cloudflare answered every headless
+ * page with its block page on 2026-10-22, while the same profile in a window read it at once.
+ */
 export async function openBrowser(
   env: Env,
-  opts: { headless: boolean; images: boolean; profile?: string },
+  opts: { images: boolean; profile?: string },
 ): Promise<BrowserContext> {
+  if (env.IWC_SOURCING_HEADLESS === '1')
+    log(
+      'IWC_SOURCING_HEADLESS=1 is ignored: shops block headless Chrome (D-151). The window opens off-screen.',
+    );
   const context = await chromium.launchPersistentContext(opts.profile ?? env.IWC_SOURCING_PROFILE, {
     channel: env.IWC_SOURCING_CHANNEL === 'chromium' ? undefined : env.IWC_SOURCING_CHANNEL,
-    headless: opts.headless,
+    headless: false,
     viewport: { width: 1366, height: 900 },
     locale: 'en-IN',
     timezoneId: 'Asia/Kolkata',
     // the browser a person uses: no "controlled by automated software" flag for shops to refuse
     ignoreDefaultArgs: ['--enable-automation'],
-    args: [
-      '--disable-blink-features=AutomationControlled',
-      ...(opts.headless ? [] : ['--window-position=-2400,0']),
-    ],
+    args: ['--disable-blink-features=AutomationControlled', '--window-position=-2400,0'],
   });
   // The page readers are sent to the page as source; tsx names functions with a `__name` helper the page lacks.
   await context.addInitScript({ content: 'globalThis.__name = globalThis.__name || ((f) => f);' });
-  if (opts.headless) {
-    // headless Chrome says "HeadlessChrome" in its user agent, which some shops (Zepto) answer with an error
-    const probe = await context.newPage();
-    const agent = (await probe.evaluate('navigator.userAgent')) as string;
-    await probe.close();
-    if (/Headless/.test(agent)) {
-      const real = agent.replace('HeadlessChrome', 'Chrome');
-      context.on('page', (page) => {
-        void context
-          .newCDPSession(page)
-          .then((cdp) => cdp.send('Network.setUserAgentOverride', { userAgent: real }))
-          .catch(() => undefined);
-      });
-    }
-  }
   if (!opts.images) {
     // pages read faster without photos, fonts and video; photos are fetched on their own when a listing is made
     await context.route('**/*', (route) =>
