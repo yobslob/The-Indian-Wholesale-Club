@@ -19,7 +19,9 @@ Short on purpose: **replace** lines when something changes, don't append. Histor
   the runner** from 2026-10-22: the cause was headless Chrome (`IWC_SOURCING_HEADLESS=1` in its `.env`); the runner now
   always opens a window (D-151) and Blinkit reads again; a shop that still blocks rests (D-149). The 7-day targets
   search all four quick shops (D-150); Zepto and Instamart read again since D-152 (their readers had not matched the
-  shops' data; dry runs only so far).
+  shops' data; the food run of 22:13 UTC added 76 listings through them and BigBasket). The runner now keeps each quick shop to
+  60 – 90 pages an hour and believes a shop's Retry-After (D-153): Blinkit asked for about 20½ hours on 2026-10-22, so
+  it rests until about 18:46 UTC on 2026-10-23; BigBasket rests until 00:35 UTC.
 - **Catalogue (production copy of 2026-10-21):** 8,032 listings: 5,761 live (clothing 664, food 4,093, home 1,004),
   2,180 drafts, 91 archived; no placeholders left. 20,896 options, 34,915 photos (all in R2).
 - **Deploys:** the website once a day at 09:00 UTC from a green `main` (D-145); migrations only through the Deploy
@@ -51,7 +53,9 @@ Short on purpose: **replace** lines when something changes, don't append. Histor
 1. **The Blinkit 7-day batch (D-148 – D-151).** Upload `tools/sourcing-runner/out/7-day-four-shops.csv` again
    (Admin → Import → Auto-sourcing → Add targets from a CSV): the first upload ran before the new admin was live; the
    message should say "(102 of them now search more shops)". Then on this PC `pnpm sourcing run --targets --type food`
-   (and `--type home`), once a day, e.g. from Task Scheduler. The window opens off-screen; leave
+   (and `--type home`), once a day, e.g. from Task Scheduler; about 65 food targets claimed by the run stopped on
+   2026-10-22 come back to the queue at 02:37 UTC (08:07 in India) by themselves. At the hourly limits the batch fills
+   over several daily runs. The window opens off-screen; leave
    `IWC_SOURCING_HEADLESS=1` or delete the line, it is ignored. If a shop still blocks, each run asks it twice at most
    and rests it (2, 6, then 24 hours); its targets stay waiting and nothing is marked nothing fit or sold out
    (`out/blocks/` shows what it answered). The Deploy workflow's database and website steps succeed; it ends red
@@ -110,6 +114,7 @@ Short on purpose: **replace** lines when something changes, don't append. Histor
 ## Last verification
 | Date | Commit | Where | Result |
 |---|---|---|---|
+| 2026-10-23 | D-153 (hourly pace per quick shop, Retry-After believed, five-hour stop) | Claude Code, founder's Windows machine (`check.mjs docs typecheck lint test`) | docs 1.8 s, typecheck 41.7 s, lint 31.4 s, test 4.4 s: OK (`shop-rest.test.ts` 9, 3 new). With a stand-in browser: 60 pages counted in the hour from the pace file; a 429 with Retry-After 73,954 s rested Blinkit at once for 20½ h and the next ask was not sent (test files removed). **Not run:** a live run at the limits (Blinkit and BigBasket rest), a five-hour run. |
 | 2026-10-23 | D-152 (Zepto and Instamart readers) | Claude Code, founder's Windows machine (the India runner PC; `check.mjs docs typecheck lint test`) | docs 0.7 s, typecheck 24.5 s, lint 25.6 s, test 3.6 s: OK (4 new reader tests on fixtures trimmed from the shops' real answers). Live, dry runs only (nothing written), `--shops zepto.com,swiggy.com`: makhana Zepto 40 / Instamart 49 results, ghee 47 / 51, toor dal 29 / 40, basmati rice 49 / 55, haldi powder 23 / 60; each made 3 listings ready from item pages read back (Instamart with its pack sizes, Zepto as listings and backups). No block page from either. **Not run:** a full `run` against production, the weekly check of a listing already sourced from these shops. |
 | 2026-10-23 | D-151 (the runner never browses headless) | Claude Code, founder's Windows machine (the India runner PC; `check.mjs docs typecheck lint test`) | docs 1.0 s, typecheck 20.7 s, lint 28.5 s, test 3.7 s: OK. Live, dry runs only (nothing written): the runner headless (as its `.env` says) got Blinkit's block page 4 of 4 times; the same command in a window got 28 results and 2 listings ready; with the fix and the `.env` unchanged, Blinkit 28 results and a listing ready; all six food shops answered (Flipkart 38, Blinkit 24, Amazon 56, BigBasket 21, Zepto 0, Instamart 0; Zepto and Instamart 0 for makhana too). **Not run:** a full `run` against production. |
 | 2026-10-23 | D-150 (a re-uploaded target takes the row's shops) | Claude Code, founder's Windows machine (`check.mjs docs typecheck lint test`) | docs 0.9 s, typecheck 25.2 s, lint 44.8 s, test 4.3 s: OK (2 new `widenedSites` tests). `addTargets` on the **local** database: a Blinkit-only target uploaded again with four shops → 0 added, 1 widened, sites blinkit, bigbasket, zepto, swiggy, still waiting; the same or no shops change nothing (test row removed). `7-day-four-shops.csv` read by the importer's parser: 113 rows, 0 errors. **Not run:** the admin page's message in a browser, production (needs the push and the daily deploy). |

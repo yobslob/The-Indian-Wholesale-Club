@@ -455,3 +455,27 @@ What it means for the build (`packages/shared/src/sourcing/auto/readers/quick.ts
   "57 g"); Instamart's card pack keeps the item's id as its key (the id in its page address), its other packs their own.
 - Unchanged: the pace, the window (D-151), the robot-check rests (D-149); no disguise. Drafts from both still need
   ingredients and allergens (the capture does not read them on these pages), as BigBasket's do.
+
+**D-153 · 2026-10-23 · founder: the runner keeps each quick-commerce shop to the pace it took without trouble**
+- Founder, verbatim: "I did everything again this time it is working well, but the food run showed 0 checks due, 4
+  targets, 6 shops and added only some of the items while the home is still running and it showed 0 checks due, 100
+  targets, 6 shops, I also want all those food items too not just a little"
+- What was found: the food run's 4 targets made 76 listings (Zepto, Instamart and BigBasket read; D-152). Only 4 were
+  waiting because about 65 food targets were claimed by the run stopped at 20:37 UTC on 2026-10-22 (before Ctrl+C gave
+  them back, D-149); the database takes them back six hours after the claim, at 02:37 UTC (08:07 in India). Then
+  Blinkit answered **429 "too many requests" with Retry-After 73,954 s** (about 20½ hours) and BigBasket's Akamai
+  "Access Denied" after the home run asked it about 100 pages in 20 minutes, with the food runner on the same shops at
+  once. From 13 to 19 October these shops took up to 60 – 95 pages an hour with at most one robot check.
+What it means for the build (`PAGES_PER_HOUR`, `paceWaitMs`, `retryAfterMs` in
+`packages/shared/src/sourcing/auto/shop-rest.ts`; `tools/sourcing-runner/src/lanes.ts`, `rest.ts`, `robot.ts`):
+- **An hourly page limit per shop, both runners together:** Blinkit, BigBasket and Instamart 60, Zepto 90; Amazon,
+  Flipkart, Myntra and Shopify shops none (their own pace and 429s). A shop at its limit waits ("60 pages in the last
+  hour; the next in 4 min"); the others go on. Each runner writes its own `out/pace/<process>.json`, both read all.
+- **A shop's own Retry-After is believed:** a 429 rests the shop at once for as long as it asked (never past two days),
+  instead of two hours.
+- **A run stops starting targets after five hours** and gives the rest back, so a slow run never meets the six-hour
+  take-back.
+- At these limits a 7-day target (four searches and up to its Listings' page reads) takes about a quarter of an hour of
+  one shop's hour: the batch fills over several daily runs, not one evening.
+*Interpretation (proposed, confirm when convenient):* the limits are Claude's, from the log; they can be raised for a
+shop that keeps answering.

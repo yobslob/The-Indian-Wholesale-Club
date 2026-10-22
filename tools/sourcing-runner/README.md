@@ -86,6 +86,11 @@ never marks anything "nothing fit" or out of stock. The run's first line names r
 run is saved as the shop showed it in `out/blocks/` (a screenshot and the page's words). Ctrl+C puts the run's unsearched
 targets back in the queue at once.
 
+**Pace (D-153).** Blinkit, BigBasket and Instamart get at most 60 pages an hour and Zepto 90, both terminals' runners
+together (`out/pace/`): a shop at its limit waits and logs "the next in N min" while the other shops go on. A shop
+that answers "too many requests" with a Retry-After rests exactly that long (Blinkit asked about 20½ hours on
+2026-10-22). A run starts no new target after five hours and puts the rest back in the queue.
+
 To run it every day: Task Scheduler → Create Task → "Daily" at a quiet hour, action `cmd.exe` with arguments
 `/c pnpm sourcing run` and "Start in" `C:\kod\root`, "Run only when user is logged on" (the browser opens
 off-screen).
