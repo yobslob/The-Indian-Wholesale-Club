@@ -88,6 +88,9 @@ uses its category's typical packed weight (table below).
 | Courier minimum billed kg | 1 kg | Couriers bill at least 0.5–1 kg |
 | Express days from the order | 15–18 | D-048, D-070 |
 
+**7-day delivery** (Settings → Standard delivery and shipping, D-148): days from the order for a bag of only 7-day
+pieces, 7 – 7 (the founder's "Exactly 7 days"); empty switches 7-day delivery off. No price or charge of its own.
+
 ## 6. Cycles and offers (Settings → Cycles and offers)
 | Variable | Placeholder | Basis |
 |---|---|---|

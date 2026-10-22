@@ -13,13 +13,17 @@ Short on purpose: **replace** lines when something changes, don't append. Histor
   image optimisation and page-cache writes and Supabase's storage; they are no longer used. Each limit now has a budget
   and a weekly check: `monitoring.md`.
 - **Database:** every migration up to `20261021090000_low_to_high` is applied (restored with the data on the new
-  project). Waiting for the Deploy workflow: `20261022090000_assign_weights` (D-146).
+  project). Waiting for the Deploy workflow: `20261022090000_assign_weights` (D-146) and
+  `20261022120000_seven_day_delivery` (D-148).
 - **Catalogue (production copy of 2026-10-21):** 8,032 listings: 5,761 live (clothing 664, food 4,093, home 1,004),
   2,180 drafts, 91 archived; no placeholders left. 20,896 options, 34,915 photos (all in R2).
 - **Deploys:** the website once a day at 09:00 UTC from a green `main` (D-145); migrations only through the Deploy
   workflow, which the founder runs.
 
 ## What is built (details in the doc named; decisions in `decisions.md`)
+- **7-day delivery (D-148, built 2026-10-22, not deployed):** `/7-day-delivery` lists every piece bought from Blinkit,
+  BigBasket, Zepto or Instamart; cards say "In 7 days"; a bag of only such pieces gets the 7-day window (Settings, 7 – 7)
+  at checkout and on its order; Home's line reads "Want in 7 days? Click here." No shop is named anywhere.
 - **Storefront** (`storefront.md`): Home (hero, the album of all India, Pick your home, three Just listed rows), 36
   state pages, See all with filters and low-to-high (D-136, D-144), the jewellery drawer, product pages, bag with the
   free-delivery pill, checkout (phone → delivery → payment, saved addresses), order tracking, account, reviews,
@@ -39,8 +43,19 @@ Short on purpose: **replace** lines when something changes, don't append. Histor
   fixed AVIF copies from `/media/s/` (no resizer); narrow page refreshes (D-145).
 
 ## Next for the founder
-1. **Run the Deploy workflow** (applies `20261022090000_assign_weights`); the website follows the next morning, or
-   Actions → Daily website deploy → Run workflow at once.
+1. **Run the Deploy workflow** (applies `20261022090000_assign_weights` and `20261022120000_seven_day_delivery`); the
+   website follows the next morning, or Actions → Daily website deploy → Run workflow at once. The website must not go
+   out before the migration (its 7-day page and bag read the new functions).
+   **Then the first Blinkit 7-day batch (D-148):** Admin → Import → Auto-sourcing → Add targets from a CSV →
+   `tools/sourcing-runner/out/blinkit-7-day.csv` (113 targets, up to 2,972 listings), then on the India PC
+   `pnpm sourcing run --type food` and `--type home`. Against the limits (from production's 8,032 listings, 34,915
+   photos, about 4 – 5 GB in R2, 78 MB of catalogue): **R2** about 0.6 MB a listing → about 1.8 GB, to about 6 – 7 GB
+   of 10 (past the 6 GB budget, under the 9 GB line; about 26,000 writes of 1M); **database** about 10 KB a listing →
+   about 30 MB, to about 110 MB of 500; **Vercel** each new product page is a page-cache write when first visited
+   (about 20 units of 8 KB), up to about 60,000 of the 100,000 monthly budget if every page is crawled, plus one store
+   refresh per bulk publish: publish in three weekly batches of about 1,000 and read Usage → ISR each Monday;
+   **Supabase egress** small (photos go straight to R2). A whole-Blinkit copy (well over 10,000 items) would not fit
+   in R2's 10 GB.
 2. **Clear the admin's backlog (D-146), in this order:** Products → **Weights to check → Assign all and publish** (about
    2,600 listings, a minute or two; it reports what it did) · **Drafts → Archive the drafts that can't go live** (80 on
    the production copy, no photo) · **Names to tidy → Rename all** (about 770). Drafts are then empty for new batches.
@@ -50,7 +65,8 @@ Short on purpose: **replace** lines when something changes, don't append. Histor
 4. **Products → For: not set yet** (235 clothing listings on the production copy): Women / Men / Kids / Everyone.
 5. **Settings → Bag charges → "Shipping shown when free"** ($ a kg; empty keeps $18.79 struck).
 6. **Answer:** Q-36 (courier bills by size?), Q-37 (lights, gobar, powders), Q-38 (live Kids listings), Q-39 (interim
-   size line), Q-40 (footwear in the drawer); whether ghee and honey sold by the litre count as liquids (D-135 says
+   size line), Q-40 (footwear in the drawer), Q-41 (is 7 days true every day?), Q-42 (the Blinkit CSV's band and
+   leave-outs); approve D-148's drafted words (the 7-day page, the tag, the bag and product-page lines); whether ghee and honey sold by the litre count as liquids (D-135 says
    yes); confirm with the courier that ₹2,000 a kg includes the box and clearance.
 7. **Real bills for Settings** (D-069): one courier invoice and one duty bill, then the per-parcel cost, duty by type,
    parcel kg and the small-food limits; watch the profit check.
@@ -63,6 +79,8 @@ Short on purpose: **replace** lines when something changes, don't append. Histor
 10. **Before the launch proper:** Q-3 (US carrier), Q-9 (domain and support email), Q-32 (holding a piece while paying).
 
 ## Not built yet (known, in order of use)
+- App: the 7-day page, the card tag and Home's 7-day line (D-148; its checkout already gets the 7-day window through
+  the website's API); an admin switch for `sourcing_shops.quick_delivery`.
 - App: push notifications for new orders; the card's − n +, the For filter and the jewellery drawer.
 - Admin: "Select all n matching" bulk actions and search on Reviews, Vendor pieces and Returns (plan F10).
 - Size charts from the shops (plan S3, Q-39); invoice A sent with the confirmation email (F4); the stitch on the
@@ -83,4 +101,4 @@ Short on purpose: **replace** lines when something changes, don't append. Histor
 ## Last verification
 | Date | Commit | Where | Result |
 |---|---|---|---|
-| 2026-10-22 | 36843bb + the lint fix | Claude Code, founder's Windows machine with Docker (`check.mjs` all steps) | docs 1.0 s, typecheck 31.4 s, test 3.9 s, db 66.1 s (fresh reset, incl. new `assign_weights.test.sql`), build 72.5 s, http 3.8 s (/ 13 ms, /states/kerala 15 ms, /clothing 16 ms; /clothing 146 KB first-load JS, none over budget), e2e 106.2 s, bundle 37.6 s: OK. lint FAIL 48.8 s: one import/order warning in `apps/web/app/admin/(panel)/catalog/names/page.tsx`, fixed (the imports put in the order the rule asks); lint not re-run after the fix. Before that, the cloud sandbox ran the 83 migrations, the SQL tests and Assign all / Publish / Rename all on a copy of production's catalogue (8,032 listings): 4,224 options weighed, 2,100 drafts published, 80 archived. **Not run:** production (needs the Deploy workflow). |
+| 2026-10-22 | 9ae158b + D-148 (7-day delivery) | Claude Code, founder's Windows machine with Docker (`check.mjs` all steps) | docs 0.8 s, typecheck 31.4 s, lint 63.0 s, test 6.1 s, build 104.1 s, http 4.5 s (/ 15 ms, /states/kerala 13 ms, /clothing 11 ms; / 129 KB first-load JS, none over budget), e2e 127.1 s, bundle 49.7 s: OK. db FAIL on the first run: `schema.test.sql`'s list of functions customers may call lacked the two new `store_quick_*` functions; added, db re-run alone OK 56.7 s (58 files, incl. new `seven_day.test.sql`, 19 assertions). In the browser on a local dev server with six local Blinkit pieces: Home's line, the 7-day page and its pills, the tag on See all, the bag line and the product page's date; no shop name in the page source. **Not run:** production (needs the Deploy workflow), the app. |

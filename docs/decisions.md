@@ -334,3 +334,44 @@ What it means for the build:
 - Docs: one status page (`docs/status.md`, replacing the old plan folder), product with its glossary, storefront with design,
   admin with vendors; the plans, roadmap and backlog of the build phases and D-109 – D-139's full text are archived.
   No code path or behaviour changes.
+
+**D-148 · 2026-10-22 · founder: 7-day delivery: a page of the quick-delivery shops' pieces, Home's new line, and the first Blinkit batch**
+- Founder, verbatim: "Our website is complete, now we will be introducing a new feature called 7-day delivery: It will
+  be a new page with an aesthetic feel, It will have all the products from blinkit, bigbasket, zepto, instamart. Which I
+  can order in 1 hour and directly ship to USA, The restrictions will be same as normal delivery regarding liquids,
+  electronics, dairy etc etc. Instead of the subheading Miss local market on home page, write Want in 7 days? click
+  here. Also now that website is complete It is time that we add products efficiently (remember all the limits as R2
+  limit is 10 GB and vercel and supabase too) Firstly we have to copy the blinkit deliverables inventory into our 7 day
+  delivery so make a csv for that."
+- Asked how listings are marked: "Automatic (Recommended)". Asked the window: "Exactly 7 days". Asked about a mixed
+  bag and its cost: "The checkout remains same, It's just that as soon as a normal product is added, the
+  exclusivity(The product's card will have a tag) of the 7 day product is removed and it will also counted as normal
+  product, because if someone ordered 3 chips and 2 sets of kurtas then we can't just ship 3 chips in 7 days. So, until
+  the cart only has 7 day products show the exclusivity". Asked the first batch: "3000 but remember only the products
+  that can be shipped".
+What it means for the build (migration `20261022120000_seven_day_delivery`, apps/web `app/(store)/7-day-delivery`,
+`features/seven-day/`, Settings → Standard delivery):
+- **A 7-day piece** is worked out on every read: live, not already in the US, and every option on sale is bought from a
+  shop marked `sourcing_shops.quick_delivery` (Blinkit, BigBasket, Zepto, Instamart), its source in use or else the shop
+  it was imported from. A listing the weekly check moves to Amazon leaves the page by itself. Customers see only
+  "In 7 days", never the shop (D-003).
+- **The days** are Settings → `quick_delivery_days_min/_max` (7 and 7); empty = no tags, no page (404), and Home's old
+  line (non-negotiable 4).
+- **Cards** carry a brand-colour "In 7 days" tag (`quick_days`); the product page says the 7-day date "when your bag
+  holds only 7-day pieces" and the normal window with others; the bag says "Every piece here comes in 7 days, so your
+  bag does too." only while every piece is one (`store_quick_bag`, through `/api/bag-charges`).
+- **Checkout** prices and charges are unchanged; a bag of only 7-day pieces gets the 7-day window in checkout and on its
+  order (`create_order`, bought at once like the made-to-order pilot); one other piece makes it a normal order.
+- **The page** `/7-day-delivery`: a header in the brand's type with the days, category pills with counts and the cards
+  (one of each category, then step up, by price), Show more; cached with See all (`listingsTag`).
+- **Home's line** reads "Want in 7 days? Click here." and opens the page while 7-day delivery is on.
+- **The first Blinkit batch:** `tools/sourcing-runner/out/blinkit-7-day.csv` (gitignored), 113 auto-sourcing targets,
+  Blinkit only, all states, up to 2,972 listings; each row's Must match leaves out dairy, meat, eggs, frozen food,
+  liquids (and anything sold by the ml or litre), honey and oils (D-135), and in home & gifts electronics, lights,
+  batteries, cow dung, feathers, fireworks, camphor, loose powders (D-138, Q-37), lighters and matches. The runner
+  still archives any liquid it finds (D-135). Sized to the limits: about 1.8 GB of R2 (to about 6 – 7 GB of 10), about
+  30 MB of database, and up to about 60,000 page-cache writes if every new page is visited once (`status.md`).
+*Interpretation (proposed, confirm when convenient):* a bag of only 7-day pieces is not offered Express (15 – 18 days,
+slower and dearer); "click here" is written "Click here." like "Start here."; the page's words and the card, bag and
+product-page lines are Claude's draft (D-059) until approved; the CSV has no ₹ band and leaves out butter, lighters and
+matches (Q-42).

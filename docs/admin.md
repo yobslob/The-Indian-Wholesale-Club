@@ -210,6 +210,13 @@ runner in `tools/sourcing-runner/` (its README says how to set it up on the PC a
   once it is cleared, D-074); the product page has **Details customers see** to finish the others.
 - **Prices held for you.** A price that jumped beyond the rule stops that shop item and waits here: accept the new
   price, or stop using that shop (the next cheapest in-stock source takes over).
+- **7-day delivery (D-148).** `sourcing_shops.quick_delivery` marks the shops whose pieces reach the hub within the
+  hour (Blinkit, BigBasket, Zepto, Instamart; set by the migration, no screen yet); a live listing whose every option
+  on sale is bought there is a 7-day piece on the store. Settings → Standard delivery → "7-day delivery: days from the
+  order" holds the promise (7 and 7; empty switches it off). The first batch: `tools/sourcing-runner/out/blinkit-7-day.csv`
+  (gitignored; 113 Blinkit targets, up to 2,972 listings, only what can be sent: no dairy, meat, eggs, frozen food,
+  liquids, honey, oils, electronics, lights, batteries, cow dung, feathers, fireworks, camphor, loose powders, lighters
+  or matches), added through Add targets from a CSV and run with `pnpm sourcing run --type food` / `--type home`.
 - **Shops.** Each shop the runner searches, the types it sells, the delivery days used when its page shows none, on or
   off, its last good run and its last problem (a shop that changed its page shows up here first).
 - **Rules.** Delivery limit (days), listings per target, how often listings are checked, pieces on sale per variant,

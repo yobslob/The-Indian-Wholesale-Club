@@ -208,6 +208,15 @@ accepted); `admin_publish_drafts(limit)` (now publishes at most `limit` a call, 
 `admin_rename_listings(items)` (up to 500 names in one statement, the old name kept as `shop_title`);
 `admin_archive_unready_drafts()` (drafts without a photo, an active option or stock become archived; counts by
 reason). Never placeholders or US clearance pieces. Tests: `assign_weights.test.sql`.
+Migration `20261022120000_seven_day_delivery` (D-148): `pricing_settings.quick_delivery_days_min/_max` (7 and 7; empty
+= off) and `sourcing_shops.quick_delivery` (Blinkit, BigBasket, Zepto, Instamart). `_quick_listings()` (no SET clause,
+so it is inlined: live, not US stock, every active option's source in use, else the listing's `source_site`, on a
+quick-delivery shop) and `_quick_days(product)` (internal). Customers: `store_quick_bag(variant ids)` (`{days_min,
+days_max}` when every piece is a 7-day piece, else null) and `store_quick_browse(category, offset, limit)` (the 7-day
+page: days, totals, categories with counts, light cards). `_store_product_card` and `store_browse` add `quick_days`;
+`store_product_page` adds `quick_delivery`; `store_policy` the two days; `checkout_context` adds `quick_delivery` and
+gives such a bag no Express; `create_order` gives a standard 7-day bag that window, no cycle and its pickups at once.
+No answer names a shop or a source. Tests: `seven_day.test.sql`.
 Migration 80 (D-141, the photo store): a photo in Cloudflare R2 is recorded with an `s/` path
 (`products/<id>/s/<name>.jpg`, packages/shared media.ts). `worker_sourcing_media` accepts `products/<id>/s/<name>` as
 well as `products/<id>/<name>`; album photos may be `regions/<slug>/album/s/<name>`.
