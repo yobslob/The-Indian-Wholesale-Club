@@ -434,3 +434,24 @@ What it means for the build (`tools/sourcing-runner/src/browser.ts`):
 - Seen on the way, not fixed here: Instamart's search has returned 0 results on every run since 2026-10-13 and Zepto's
   on about four in five, so the 7-day targets (D-150) find pieces on Blinkit and BigBasket only until those readers are
   fixed.
+
+**D-152 · 2026-10-23 · proposed: Zepto and Instamart are read from their own search answer and item-page data**
+- Asked for: the readers D-151 left to fix (Instamart 0 results on every run since 2026-10-13, Zepto 0 on about four
+  runs in five), so the 7-day targets (D-150) fill from all four quick shops.
+- What was found (dry runs in the runner's window, 2026-10-23): neither shop blocks the window; both show results and
+  item pages as usual. The generic reader (D-118: any object with a name, a price and an id, the unit checked against
+  "₹" prices on the page) could not see them: Zepto's search answer (`bff-gateway.zepto.com/user-search-service/api/v3/search`)
+  keeps the name in `product`, the pack in `productVariant` and the price (paise) beside them; Instamart's
+  (`/api/instamart/search/v2`) keeps each pack in `variations`, prices as `{ units, nanos }`, and its page prints prices
+  without "₹". Zepto's few hits came from other answers its page loads. Instamart's 403s (2026-10-13 to 10-19) were
+  headless Chrome (D-151); in a window its AWS check clears by itself.
+What it means for the build (`packages/shared/src/sourcing/auto/readers/quick.ts`, `tools/sourcing-runner/src/shops.ts`):
+- **Search:** the reader waits up to 30 s after the page opens for the shop's own search answer and reads every pack
+  in it: price, MRP, stock (Zepto's available quantity or sold-out flag, Instamart's `inventory.inStock`), pack, rating,
+  photo, sponsored, and its page (`zepto.com/pn/x/pvid/<pack id>`, `swiggy.com/instamart/item/<item id>`). No answer in
+  time is a failed search, searched again (D-137); an answer with no products is nothing found. One page (30 – 60 packs).
+- **Item pages:** Zepto's from the page's Next.js flight data (its `self.__next_f` scripts), Instamart's from its page
+  state (`___INITIAL_STATE___.productV2`). A product's packs are one listing's variants (Instamart's "57 g x 2" beside
+  "57 g"); Instamart's card pack keeps the item's id as its key (the id in its page address), its other packs their own.
+- Unchanged: the pace, the window (D-151), the robot-check rests (D-149); no disguise. Drafts from both still need
+  ingredients and allergens (the capture does not read them on these pages), as BigBasket's do.

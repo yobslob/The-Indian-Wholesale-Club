@@ -199,7 +199,8 @@ runner in `tools/sourcing-runner/` (its README says how to set it up on the PC a
   `food-branded-200.csv` is branded snacks, biscuits, chocolates, instant food, masalas and tea, ₹1 – ₹200, every food
   shop (119 targets, up to 1,410 listings; dairy products, meat, frozen food and liquids left out). Amazon and
   Flipkart searches use the shop's own price filter and read one result page per 10 listings a target wants (up to
-  four). For a Shopify shop, Search words may name one of its collections, `collection:kurtis`:
+  four). Zepto and Instamart are read from their own search answer (one page) and their item pages' data, each pack an
+  option (D-152). For a Shopify shop, Search words may name one of its collections, `collection:kurtis`:
   the whole collection (up to 250 pieces; Shopify's search stops at 10) is the target, every piece in it matches, and
   several targets on one collection take the next 40 each (run one after another). A target whose search failed on
   every shop (blocked, "too many requests") goes back to the queue; the Nothing fit view has **Search all again**. A

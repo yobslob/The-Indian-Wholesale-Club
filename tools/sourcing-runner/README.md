@@ -95,4 +95,5 @@ off-screen).
 Shops change their pages. The run log shows each shop's pages and failures, and the admin page shows each shop's
 last good run and last error. A shop that fails can be switched off in the admin while its reader is fixed
 (`src/pages.ts`, `src/shops.ts`, or the parsers in `packages/shared/src/sourcing/auto/readers`). Zepto and Instamart
-are read by the shape of their data (unverified until the first run at the hub).
+are read from their search answer and their item pages' data (D-152, `readers/quick.ts`): a shop that renames those
+fields shows 0 results on every search, a sign to look there first.
