@@ -79,8 +79,8 @@ Short on purpose: **replace** lines when something changes, don't append. Histor
 10. **Before the launch proper:** Q-3 (US carrier), Q-9 (domain and support email), Q-32 (holding a piece while paying).
 
 ## Not built yet (known, in order of use)
-- App: the 7-day page, the card tag and Home's 7-day line (D-148; its checkout already gets the 7-day window through
-  the website's API); an admin switch for `sourcing_shops.quick_delivery`.
+- App: the product page's 7-day date (`store_product_page().quick_delivery`, D-148; the 7-day screen, tag, Home line
+  and Bag line are built); an admin switch for `sourcing_shops.quick_delivery`.
 - App: push notifications for new orders; the card's − n +, the For filter and the jewellery drawer.
 - Admin: "Select all n matching" bulk actions and search on Reviews, Vendor pieces and Returns (plan F10).
 - Size charts from the shops (plan S3, Q-39); invoice A sent with the confirmation email (F4); the stitch on the
@@ -101,4 +101,5 @@ Short on purpose: **replace** lines when something changes, don't append. Histor
 ## Last verification
 | Date | Commit | Where | Result |
 |---|---|---|---|
+| 2026-10-22 | app D-148 (7-day screen, tag, Home and Bag lines) | Claude Code, founder's Windows machine (`check.mjs typecheck lint test`) | typecheck 32.1 s, lint 56.1 s, test 5.6 s: OK (app tests 11, new `seven-day.test.ts`). In the app's web preview (`app-web`) on the local database with three local pieces briefly marked Blinkit (undone): Home's line, the 7-day screen and a pill, the tag on the region page, the Bag line, gone with one other piece. **Not run:** a phone or emulator (Android build), db, build, e2e. |
 | 2026-10-22 | 9ae158b + D-148 (7-day delivery) | Claude Code, founder's Windows machine with Docker (`check.mjs` all steps) | docs 0.8 s, typecheck 31.4 s, lint 63.0 s, test 6.1 s, build 104.1 s, http 4.5 s (/ 15 ms, /states/kerala 13 ms, /clothing 11 ms; / 129 KB first-load JS, none over budget), e2e 127.1 s, bundle 49.7 s: OK. db FAIL on the first run: `schema.test.sql`'s list of functions customers may call lacked the two new `store_quick_*` functions; added, db re-run alone OK 56.7 s (58 files, incl. new `seven_day.test.sql`, 19 assertions). In the browser on a local dev server with six local Blinkit pieces: Home's line, the 7-day page and its pills, the tag on See all, the bag line and the product page's date; no shop name in the page source. **Not run:** production (needs the Deploy workflow), the app. |

@@ -126,9 +126,11 @@ option says how many of it are already in the bag.
 
 ## Mobile app (customer side, `apps/app`, built in R6, redesigned in B6 on D-095)
 Tabs on the app's own cream tab bar (a brand bar over the active tab, the bag count as a brand pill): **Home** (the photo
-with "Indian Wholesale Club" on its wall and "Miss local market? Start here.", the demo strip on top, Just listed, Pick
+with "Indian Wholesale Club" on its wall and "Miss local market? Start here." (D-148: "Want in 7 days? Click here." to the
+7-day screen while 7-day delivery is on), the demo strip on top, Just listed, Pick
 your home with stamp pages from 7) · **Explore** (search with the count, States · Clothing · Food · Home & gifts; states as stamps) ·
-**Bag** (photos, − / + , the empty bag shows stamps and Just listed; the bag is a tab, so no bag panel) · **Saved** (cards
+**Bag** (photos, − / + , the empty bag shows stamps and Just listed; the bag is a tab, so no bag panel; the 7-day line
+while every piece is a 7-day piece, `store_quick_bag`) · **Saved** (cards
 with a filled heart that removes) · **Profile** (Orders · Addresses · Your details as pill tabs, Track an order, About us &
 help, Sign out; signed out, the sign-in card). Tab roots have a large Syne title, pushed screens a back bar. The screens
 follow the web pages above, read the same `store_*` data through `@repo/db/store` (one call per screen, D-017) and share
@@ -136,7 +138,8 @@ the tokens (§Design system). About us & help is the D-092 panel as a sheet with
 `packages/shared/src/info/` (one source with the website's info pages).
 | Screen | File (`apps/app/app/…`) | Data |
 |---|---|---|
-| Home, Explore, Bag, Saved, Profile | `(customer)/…` | `store_home()`, `store_type_rows()`, search, on-device bag, `wishlists` (signed in), own orders as cards (`listMyOrderCards`), `store_policy()` for the help sheet |
+| Home, Explore, Bag, Saved, Profile | `(customer)/…` | `store_home()`, `store_type_rows()`, search, on-device bag, `wishlists` (signed in), own orders as cards (`listMyOrderCards`), `store_policy()` for the help sheet and Home's 7-day line, `store_quick_bag()` for the Bag's |
+| 7-day delivery | `7-day-delivery` (D-148: the web page's header with the days, category pills with counts, a two-column grid 24 at a time like `browse`; the cards without the tag; nothing to show while the days are empty) | `store_quick_browse()` |
 | Region, product | `region/[slug]`, `product/[region]/[slug]` (same sections as the web pages above: the region photo first and jump pills; on the product page the photos edge to edge with a full-screen viewer, the buy bar, reviews as a row, and "Write a review" as a sheet with the D-090 form, D-095) | `store_region_page()`, `store_product_page()` + live availability |
 | Checkout | `checkout` | phone → delivery (the ZIP fills the city and state through the website's `GET /api/zip`) → payment, as on the web (D-087); the website's server API: `POST /api/checkout` (server-priced quote + Standard / Express, D-041) → Stripe PaymentSheet → `POST /api/orders` (D-038). The phone never sends prices |
 | Order | `order/[number]` (signed-in owner, `store_my_order`) · `order/lookup` (number + checkout email via `POST /api/orders/lookup`, rate-limited, one answer for any mismatch); the faster-delivery offer (D-064) through the same API as the website, paid with the PaymentSheet; cancel / keep through `POST /api/orders/choice` | |
