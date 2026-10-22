@@ -204,7 +204,9 @@ runner in `tools/sourcing-runner/` (its README says how to set it up on the PC a
   several targets on one collection take the next 40 each (run one after another). A target whose search failed on
   every shop (blocked, "too many requests") goes back to the queue; the Nothing fit view has **Search all again**. A
   shop that shows two robot checks in a row rests 2, 6, then 24 hours: its targets wait in the queue and its listings'
-  checks wait, nothing is marked nothing fit or out of stock (D-149, the runner's README). Each
+  checks wait, nothing is marked nothing fit or out of stock (D-149, the runner's README). A target uploaded again is
+  not added twice but takes the row's shops it lacked, never fewer (D-150: the 7-day targets, Blinkit only, then
+  `7-day-four-shops.csv`). Each
   target shows its state: waiting, being searched, found (how many listings), nothing fit (with why), paused; Search
   again, Pause, Remove.
 - **Found and waiting.** What the runner adds arrives as drafts (in Products → Drafts) unless "go live by themselves"

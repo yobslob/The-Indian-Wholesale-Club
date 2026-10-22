@@ -16,7 +16,8 @@ Short on purpose: **replace** lines when something changes, don't append. Histor
   Deploy workflow on 2026-10-22, per their message).
 - **Sourcing runner (India PC):** its `.env` pointed at the old Supabase project until 2026-10-22 (the move's step 7,
   `ops.md`); fixed by the founder. The Blinkit 7-day CSV is in (102 targets added, 11 already there). **Blinkit blocks
-  the runner** since 2026-10-22 (Cloudflare, "Verify you are human"): the runner now rests a blocking shop (D-149).
+  the runner** since 2026-10-22 (Cloudflare, "Verify you are human"): the runner now rests a blocking shop (D-149), and
+  the 7-day targets may search all four quick shops (D-150).
 - **Catalogue (production copy of 2026-10-21):** 8,032 listings: 5,761 live (clothing 664, food 4,093, home 1,004),
   2,180 drafts, 91 archived; no placeholders left. 20,896 options, 34,915 photos (all in R2).
 - **Deploys:** the website once a day at 09:00 UTC from a green `main` (D-145); migrations only through the Deploy
@@ -48,8 +49,10 @@ Short on purpose: **replace** lines when something changes, don't append. Histor
 1. **The Blinkit 7-day batch (D-148, D-149).** Pull the code on the India PC, then run
    `pnpm sourcing run --targets --type food` (and `--type home`) once a day, e.g. from Task Scheduler. While Blinkit
    blocks, each run asks it twice at most and rests it (2, 6, then 24 hours); its targets stay waiting and nothing is
-   marked nothing fit or sold out. `out/blocks/` shows what Blinkit answered. Answer **Q-43** (may these targets also
-   search BigBasket, Zepto and Instamart?) to keep the batch filling while Blinkit refuses. Ctrl+C now puts the run's
+   marked nothing fit or sold out. `out/blocks/` shows what Blinkit answered. **First, once the website has deployed
+   D-150:** Admin → Import → Auto-sourcing → Add targets from a CSV → `tools/sourcing-runner/out/7-day-four-shops.csv`
+   ("0 added, 113 already there (102 of them now search more shops)"): the targets then search BigBasket, Zepto and
+   Instamart too, so a Blinkit rest no longer stops the batch. Ctrl+C now puts the run's
    targets back at once; the 64 claimed by the stopped run of 2026-10-22 come back by themselves six hours after it.
    Against the limits (from production's 8,032 listings, 34,915
    photos, about 4 – 5 GB in R2, 78 MB of catalogue): **R2** about 0.6 MB a listing → about 1.8 GB, to about 6 – 7 GB
@@ -69,7 +72,7 @@ Short on purpose: **replace** lines when something changes, don't append. Histor
 5. **Settings → Bag charges → "Shipping shown when free"** ($ a kg; empty keeps $18.79 struck).
 6. **Answer:** Q-36 (courier bills by size?), Q-37 (lights, gobar, powders), Q-38 (live Kids listings), Q-39 (interim
    size line), Q-40 (footwear in the drawer), Q-41 (is 7 days true every day?), Q-42 (the Blinkit CSV's band and
-   leave-outs), Q-43 (the 7-day targets on all four quick shops); approve D-148's drafted words (the 7-day page, the tag, the bag and product-page lines); whether ghee and honey sold by the litre count as liquids (D-135 says
+   leave-outs); approve D-148's drafted words (the 7-day page, the tag, the bag and product-page lines); whether ghee and honey sold by the litre count as liquids (D-135 says
    yes); confirm with the courier that ₹2,000 a kg includes the box and clearance.
 7. **Real bills for Settings** (D-069): one courier invoice and one duty bill, then the per-parcel cost, duty by type,
    parcel kg and the small-food limits; watch the profit check.
@@ -104,6 +107,7 @@ Short on purpose: **replace** lines when something changes, don't append. Histor
 ## Last verification
 | Date | Commit | Where | Result |
 |---|---|---|---|
+| 2026-10-23 | D-150 (a re-uploaded target takes the row's shops) | Claude Code, founder's Windows machine (`check.mjs docs typecheck lint test`) | docs 0.9 s, typecheck 25.2 s, lint 44.8 s, test 4.3 s: OK (2 new `widenedSites` tests). `addTargets` on the **local** database: a Blinkit-only target uploaded again with four shops → 0 added, 1 widened, sites blinkit, bigbasket, zepto, swiggy, still waiting; the same or no shops change nothing (test row removed). `7-day-four-shops.csv` read by the importer's parser: 113 rows, 0 errors. **Not run:** the admin page's message in a browser, production (needs the push and the daily deploy). |
 | 2026-10-23 | D-149 (the runner rests a blocking shop) | Claude Code, founder's Windows machine (the India runner PC; `check.mjs docs typecheck lint test`) | docs 0.6 s, typecheck 24.2 s, lint 31.8 s, test 3.9 s: OK (new `shop-rest.test.ts`, 6). Live, dry runs only (nothing written): Blinkit answered 403 `cf-mitigated: challenge` with its "Verify you are human" page; the runner waited 22 s, called it a robot check and saved `out/blocks/` (screenshot + words); a stand-in browser showed two robot checks rest the shop (2 of 4 asks reached it) while another shop carried on; `shop-rest.json` written and read back (test file removed). **Not run:** a full `run` against production, `check.mjs` db/build/e2e (runner-only change). |
 | 2026-10-22 | app D-148 (7-day screen, tag, Home and Bag lines) | Claude Code, founder's Windows machine (`check.mjs typecheck lint test`) | typecheck 32.1 s, lint 56.1 s, test 5.6 s: OK (app tests 11, new `seven-day.test.ts`). In the app's web preview (`app-web`) on the local database with three local pieces briefly marked Blinkit (undone): Home's line, the 7-day screen and a pill, the tag on the region page, the Bag line, gone with one other piece. **Not run:** a phone or emulator (Android build), db, build, e2e. |
 | 2026-10-22 | 9ae158b + D-148 (7-day delivery) | Claude Code, founder's Windows machine with Docker (`check.mjs` all steps) | docs 0.8 s, typecheck 31.4 s, lint 63.0 s, test 6.1 s, build 104.1 s, http 4.5 s (/ 15 ms, /states/kerala 13 ms, /clothing 11 ms; / 129 KB first-load JS, none over budget), e2e 127.1 s, bundle 49.7 s: OK. db FAIL on the first run: `schema.test.sql`'s list of functions customers may call lacked the two new `store_quick_*` functions; added, db re-run alone OK 56.7 s (58 files, incl. new `seven_day.test.sql`, 19 assertions). In the browser on a local dev server with six local Blinkit pieces: Home's line, the 7-day page and its pills, the tag on See all, the bag line and the product page's date; no shop name in the page source. **Not run:** production (needs the Deploy workflow), the app. |

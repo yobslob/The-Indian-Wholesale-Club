@@ -402,4 +402,18 @@ What it means for the build (`tools/sourcing-runner/src/lanes.ts`, `rest.ts`, `p
 - **`pnpm sourcing setup --type food`** opens that runner's own profile: a plain `setup` reaches only the main one,
   which `--type` runners copied once.
 *Interpretation (proposed, confirm when convenient):* the numbers (two checks, 2 / 6 / 24 hours, 20 seconds) are
-Claude's; whether the 7-day targets may also search BigBasket, Zepto and Instamart while Blinkit refuses is Q-43.
+Claude's; the 7-day targets search BigBasket, Zepto and Instamart too (D-150).
+
+**D-150 · 2026-10-23 · founder: the 7-day targets search all four quick shops (answers Q-43)**
+- Founder, verbatim: "Q-43: yes, the 7-day targets may also search BigBasket, Zepto and Instamart. Update the targets'
+  shops."
+What it means for the build (`packages/db/src/admin/auto-sourcing.ts` `addTargets`, `widenedSites` in
+`packages/shared/src/sourcing/auto/targets.ts`):
+- **A target uploaded again takes the row's shops it lacked**, and keeps everything else; it never loses a shop (one on
+  every shop stays so, a row without Shops changes nothing). The upload says "n of them now search more shops". Before,
+  a target already there was skipped whole (D-118).
+- **The CSV:** `tools/sourcing-runner/out/7-day-four-shops.csv` (gitignored) is the Blinkit batch's 113 targets with
+  Shops "blinkit bigbasket zepto instamart"; uploading it widens the 102 Blinkit targets. All four are 7-day shops
+  (D-148), so whichever shop a piece comes from, it stays a 7-day piece. A Blinkit rest (D-149) no longer stops the
+  batch, and each shop is asked less.
+- Each target still makes up to its Listings; the same product on two shops is one listing with the other as its backup.
