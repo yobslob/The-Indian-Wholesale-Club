@@ -20,8 +20,10 @@ import {
   blinkitOffers,
   buildListing,
   checkPage,
+  flightRows,
   flipkartSearchOffers,
-  genericOffers,
+  instamartOffers,
+  itemKeyOf,
   listingName,
   myntraSearchOffers,
   inBand,
@@ -35,6 +37,7 @@ import {
   type Offer,
   type SourcingShop,
   type SourcingTarget,
+  zeptoOffers,
 } from '../src/sourcing/auto';
 
 // Tuesday 13 Oct 2026, 10:00 in India
@@ -723,7 +726,7 @@ describe('shop readers', () => {
       [89900, true, ['https://www.myntra.com/124']],
     );
   });
-  it('Shopify search, and a generic page whose prices are in paise', () => {
+  it('Shopify search', () => {
     const [s] = shopifySearchOffers(
       {
         resources: {
@@ -737,29 +740,77 @@ describe('shop readers', () => {
       'oyela.in',
     );
     assert.deepEqual([s!.url, s!.pricePaise], ['https://oyela.in/products/indigo-kurta', 189900]);
-    const blob = {
-      items: [
-        {
-          productVariantId: 'v1',
-          name: 'Rajma',
-          sellingPrice: 10700,
-          mrp: 11600,
-          formattedPacksize: '500 g',
-          outOfStock: false,
-        },
+  });
+});
+
+describe('Zepto and Instamart, as their pages loaded them on 23 Oct 2026 (D-152)', () => {
+  const fixture = async (name: string): Promise<string> => {
+    const { readFileSync } = await import('node:fs');
+    return readFileSync(new URL(`./fixtures/${name}`, `file://${__filename}`), 'utf8');
+  };
+
+  it('reads Zepto’s search answer: each pack, priced in paise, in its product’s group', async () => {
+    const offers = zeptoOffers(JSON.parse(await fixture('zepto-search.json')), '6 mins');
+    assert.deepEqual(
+      offers.map((o) => [o.key, o.pricePaise, o.mrpPaise, o.inStock, o.sponsored, o.pack]),
+      [
+        ['6ef0cad6-5a5b-4c09-b272-8f579c2789b2', 4300, 5000, true, true, '1 pack (20 g)'],
+        // set sold out in the fixture: no result that day was
+        ['9e39e969-a986-4081-a8a8-1af7d6527cd3', 17900, 23900, false, false, '1 pack (77 g)'],
       ],
-    };
-    const [g] = genericOffers(
-      [blob],
-      'Rajma 500 g ₹107 ₹116',
-      'zepto.com',
-      (id) => `https://www.zepto.com/pn/x/pvid/${id}`,
-      '10 mins',
+    );
+    const [a] = offers;
+    assert.deepEqual(
+      [a!.url, a!.group, a!.rating, a!.ratingCount, a!.deliveryText, a!.image],
+      [
+        'https://www.zepto.com/pn/x/pvid/6ef0cad6-5a5b-4c09-b272-8f579c2789b2',
+        '431d889c-2a44-4d33-a795-03292dcd5c27',
+        4.5,
+        22064,
+        '6 mins',
+        'https://cdn.zeptonow.com/production/cms/product_variant/34239801-190d-4b6c-92f3-34aece3ac4da.jpg',
+      ],
+    );
+  });
+
+  it('reads a Zepto item page’s flight data, past a text row that runs into the next', async () => {
+    const rows = flightRows(await fixture('zepto-item-flight.txt'));
+    assert.equal(rows.length, 2, 'the two JSON rows; the text, hint and module rows are skipped');
+    const url = 'https://www.zepto.com/pn/x/pvid/9089d753-f1b2-4771-99bf-f7b4edcd8598';
+    const own = zeptoOffers(rows, null).find((o) => o.key === itemKeyOf(url));
+    assert.deepEqual(
+      [own?.title, own?.pricePaise, own?.mrpPaise, own?.inStock],
+      ['Daily Good Makhana | Foxnuts / Phool Makhana 1 pack (100 g)', 14900, 29500, true],
+    );
+  });
+
+  it('reads Instamart’s search answer: one offer per pack, the card’s own pack keyed as its page', async () => {
+    const offers = instamartOffers(JSON.parse(await fixture('instamart-search.json')), '4 MINS');
+    assert.deepEqual(
+      offers.map((o) => [o.key, o.pricePaise, o.mrpPaise, o.inStock, o.group, o.pack]),
+      [
+        ['7NYI5JFU7L', 19000, 32000, true, '548B5ZKK4W', '57 g x 2'],
+        ['548B5ZKK4W', 9500, 16000, true, '548B5ZKK4W', '57 g'],
+        ['NMUO9H8YRC', 5900, 8900, false, 'NMUO9H8YRC', '30 g'],
+      ],
     );
     assert.deepEqual(
-      [g!.pricePaise, g!.mrpPaise, g!.inStock, g!.url],
-      [10700, 11600, true, 'https://www.zepto.com/pn/x/pvid/v1'],
+      [offers[1]!.url, offers[1]!.ratingCount, offers[1]!.brand, offers[1]!.deliveryText],
+      ['https://www.swiggy.com/instamart/item/548B5ZKK4W', 4100, "Let's Try", '4 MINS'],
     );
+  });
+
+  it('reads the same Instamart item from its page state, with the same keys', async () => {
+    const page = instamartOffers(JSON.parse(await fixture('instamart-item.json')), null);
+    const search = instamartOffers(JSON.parse(await fixture('instamart-search.json')), null);
+    assert.deepEqual(
+      page.map((o) => o.key),
+      search.filter((o) => o.group === '548B5ZKK4W').map((o) => o.key),
+    );
+    const own = page.find(
+      (o) => o.key === itemKeyOf('https://www.swiggy.com/instamart/item/548B5ZKK4W'),
+    );
+    assert.deepEqual([own?.pack, own?.pricePaise, own?.inStock], ['57 g', 9500, true]);
   });
 });
 

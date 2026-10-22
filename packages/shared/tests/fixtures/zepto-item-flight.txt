@@ -1,0 +1,6 @@
+0:["$","$L1",null,{"children":["$","$L2",null,{}]}]
+:HL["https://cdn.zeptonow.com/x.css","style"]
+4:I[92532,[],""]
+fc:T46,<h2>Is it fresh?</h2>
+<p>₹149 — about 1½ × the 50 g pack ✓</p>17:["$","div",null,{"children":[["$","$L8",null,{"data":{"product":{"id":"4802cbde-83b6-40f0-87c4-81171acd0068","name":"Daily Good Makhana | Foxnuts / Phool Makhana","brand":"Daily Good"},"productVariant":{"id":"9089d753-f1b2-4771-99bf-f7b4edcd8598","formattedPacksize":"1 pack (100 g)","ratingSummary":{"averageRating":4.6,"totalRatings":32978,"totalReviews":0},"images":[{"path":"cms/product_variant/62e23cfc-a0f6-4da5-baeb-7a55717a8ccb.jpg"}]},"storeProduct":{"availableQuantity":12,"discountedSellingPrice":14900,"mrp":29500,"id":"d5ba6dc0-aa1d-55e0-b0de-e9c8d20f0f3c"}}}]]}]
+18:"$Sreact.suspense"

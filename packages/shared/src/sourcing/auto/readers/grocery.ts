@@ -17,9 +17,8 @@ import type { SourcedVariant } from '../../capture';
 import type { Offer } from '../types';
 
 /**
- * Quick-commerce shops (D-118): Blinkit (its page state), BigBasket (its listing API and page data), and Zepto and
- * Instamart read generically: any product-like object in the page's data, its price unit checked against what the
- * page shows. They deliver to the hub's address set in the runner's browser, in minutes.
+ * Quick-commerce shops (D-118): Blinkit (its page state) and BigBasket (its listing API and page data); Zepto and
+ * Instamart are in quick.ts (D-152). They deliver to the hub's address set in the runner's browser, in minutes.
  */
 
 // ---------------------------------------------------------------- Blinkit (window.__reduxStore__ state)
@@ -138,107 +137,4 @@ export function packVariants(offers: Offer[]): SourcedVariant[] {
       image: o.image,
     };
   });
-}
-
-// ---------------------------------------------------------------- Zepto, Instamart: any product-like object
-
-const NAME = ['product_name', 'productName', 'display_name', 'displayName', 'name', 'title'];
-const PRICE = [
-  'selling_price',
-  'sellingPrice',
-  'discountedSellingPrice',
-  'offer_price',
-  'offerPrice',
-  'sp',
-  'price',
-];
-const MRP = ['mrp', 'MRP', 'marked_price', 'markedPrice', 'store_price'];
-const ID = [
-  'product_variant_id',
-  'productVariantId',
-  'variant_id',
-  'variantId',
-  'product_id',
-  'productId',
-  'item_id',
-  'id',
-];
-const PACK = [
-  'unit',
-  'pack_size',
-  'packSize',
-  'quantity',
-  'weight',
-  'formattedPacksize',
-  'sku_quantity_with_combo',
-];
-const first = (o: Obj, keys: string[]): unknown =>
-  keys.map((k) => o[k]).find((v) => v !== undefined && v !== null && v !== '');
-
-/**
- * Products in a page's data by shape: a name, a price and an id. Prices are rupees or paise depending on the shop;
- * the page's own text decides (a price shown as "₹107" means rupees; only "₹1.07"-sized amounts mean paise).
- */
-export function genericOffers(
-  blobs: unknown[],
-  pageText: string,
-  site: string,
-  urlFor: (id: string, name: string) => string,
-  eta: string | null,
-): Offer[] {
-  const shown = new Set(
-    [...pageText.matchAll(/₹\s?([\d,]+(?:\.\d{1,2})?)/g)].map((m) =>
-      Number(m[1]!.replace(/,/g, '')),
-    ),
-  );
-  const objects = blobs.flatMap((b) =>
-    collect(
-      b,
-      (o) =>
-        typeof first(o, NAME) === 'string' &&
-        num(first(o, PRICE)) !== null &&
-        first(o, ID) !== undefined,
-    ),
-  );
-  const unit = (() => {
-    let rupeeHits = 0;
-    let paiseHits = 0;
-    for (const o of objects.slice(0, 200)) {
-      const p = num(first(o, PRICE))!;
-      if (shown.has(p)) rupeeHits++;
-      if (shown.has(p / 100)) paiseHits++;
-    }
-    return paiseHits > rupeeHits ? 100 : 1;
-  })();
-  return uniqueOffers(
-    objects.map((o) => {
-      const id = str(first(o, ID));
-      const name = str(first(o, NAME));
-      const stockFlag = o.outOfStock ?? o.out_of_stock ?? o.is_sold_out ?? o.isSoldOut;
-      const qty = num(o.inventory ?? o.availableQuantity ?? o.available_quantity);
-      const pack = str(first(o, PACK));
-      const brand = isObj(o.brand) ? str(o.brand.name) : str(o.brand ?? o.brandName);
-      return makeOffer({
-        site,
-        url: urlFor(id, name),
-        key: id,
-        title: `${name} ${pack}`.trim(),
-        brand: brand || null,
-        pricePaise: rupees(num(first(o, PRICE))! / unit),
-        mrpPaise: rupees((num(first(o, MRP)) ?? 0) / unit),
-        inStock:
-          typeof stockFlag === 'boolean'
-            ? !stockFlag
-            : qty !== null
-              ? qty > 0
-              : o.available === false
-                ? false
-                : null,
-        deliveryText: eta,
-        pack: pack || null,
-        image: httpsImage(first(o, ['image_url', 'imageUrl', 'image', 'img'])),
-        group: str(o.group_id ?? o.groupId ?? o.product_id ?? '') || null,
-      });
-    }),
-  );
 }

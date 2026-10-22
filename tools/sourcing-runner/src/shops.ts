@@ -14,7 +14,8 @@ import {
   blinkitOffers,
   flipkartSearchOffers,
   flipkartSearchUrl,
-  genericOffers,
+  flightRows,
+  instamartOffers,
   itemKeyOf,
   myntraSearchOffers,
   packVariants,
@@ -25,6 +26,7 @@ import {
   shopifySearchUrl,
   type Offer,
   type ShopReader,
+  zeptoOffers,
 } from '@repo/shared/sourcing/auto';
 
 import { open, type Lane } from './lanes';
@@ -142,6 +144,26 @@ async function loaded(page: Page, n: number, offers: Offer[], none: RegExp): Pro
   throw new Error('the results page did not load');
 }
 
+const ZEPTO_SEARCH = /\/user-search-service\/api\/v\d+\/search(?:\?|$)/;
+const INSTAMART_SEARCH = /\/api\/instamart\/search\/v\d+\?/;
+
+/**
+ * D-152: Zepto's and Instamart's results come in the search's own answer after the page opens (Instamart's after its
+ * AWS check reloads the page by itself), so the reader waits for that answer. None in time: a failed search (D-137).
+ */
+async function answer(
+  page: Page,
+  url: string,
+  api: RegExp,
+): Promise<{ json: unknown; eta: string | null }> {
+  const arrived = page.waitForResponse((r) => api.test(r.url()) && r.ok(), { timeout: 30_000 });
+  arrived.catch(() => undefined);
+  await open(page, url);
+  const json: unknown = await arrived.then((r) => r.json()).catch(() => null);
+  if (json === null) throw new Error('the results page did not load');
+  return { json, eta: await read.etaText(page) };
+}
+
 const SHOPS: Record<ShopReader, Shop> = {
   amazon: {
     search: (lane, query, hint) =>
@@ -240,45 +262,43 @@ const SHOPS: Record<ShopReader, Shop> = {
         return groceryRead(url, bigbasketFamily(await read.nextData(page)), null, now, product);
       }),
   },
-  zepto: generic(
-    'zepto.com',
-    (query) => `https://www.zepto.com/search?query=${q(query)}`,
-    (id) => `https://www.zepto.com/pn/x/pvid/${id}`,
-  ),
-  instamart: generic(
-    'swiggy.com',
-    (query) => `https://www.swiggy.com/instamart/search?custom_back=true&query=${q(query)}`,
-    (id) => `https://www.swiggy.com/instamart/item/${id}`,
-  ),
-};
-
-/** A shop read by the shape of its data (genericOffers): its search page, its item pages. */
-function generic(
-  site: string,
-  searchUrl: (query: string) => string,
-  itemUrl: (id: string) => string,
-): Shop {
-  const offersOn = async (page: Page, url: string) => {
-    const json = read.collectJson(page, site);
-    await open(page, url);
-    await page.waitForTimeout(2500); // the results arrive after the page
-    const eta = await read.etaText(page);
-    return {
-      offers: genericOffers(await json.done(), await read.bodyText(page), site, itemUrl, eta),
-      eta,
-    };
-  };
-  return {
+  zepto: {
     search: (lane, query) =>
-      lane.run(async (page) => (await offersOn(page, searchUrl(query))).offers),
+      lane.run(async (page) => {
+        const { json, eta } = await answer(
+          page,
+          `https://www.zepto.com/search?query=${q(query)}`,
+          ZEPTO_SEARCH,
+        );
+        return zeptoOffers(json, eta);
+      }),
     read: (lane, url, now) =>
       lane.run(async (page) => {
-        const { offers, eta } = await offersOn(page, url);
-        const raw = rawCaptureSchema.safeParse(await page.evaluate(captureScript));
-        return groceryRead(url, offers, eta, now, raw.success ? normalizeCapture(raw.data) : null);
+        const product = await captured(page, url);
+        const eta = await read.etaText(page);
+        const offers = zeptoOffers(flightRows(await read.nextFlight(page)), eta);
+        return groceryRead(url, offers, eta, now, product);
       }),
-  };
-}
+  },
+  instamart: {
+    search: (lane, query) =>
+      lane.run(async (page) => {
+        const { json, eta } = await answer(
+          page,
+          `https://www.swiggy.com/instamart/search?custom_back=true&query=${q(query)}`,
+          INSTAMART_SEARCH,
+        );
+        return instamartOffers(json, eta);
+      }),
+    read: (lane, url, now) =>
+      lane.run(async (page) => {
+        const product = await captured(page, url);
+        const eta = await read.etaText(page);
+        const offers = instamartOffers(await read.instamartItem(page), eta);
+        return groceryRead(url, offers, eta, now, product);
+      }),
+  },
+};
 
 export const shopFor = (reader: ShopReader | null): Shop =>
   reader ? SHOPS[reader] : { search: async () => [], read: capturedRead() };

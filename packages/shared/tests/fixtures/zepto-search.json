@@ -1,0 +1,109 @@
+{
+  "layout": [
+    {
+      "widgetId": "TITLE_WIDGET",
+      "data": {
+        "resolver": {
+          "data": {
+            "title": "Showing results for \"makhana\""
+          }
+        }
+      }
+    },
+    {
+      "widgetId": "PRODUCT_GRID",
+      "widgetName": "SEARCHED_PRODUCTS_0",
+      "data": {
+        "resolver": {
+          "type": "product_grid",
+          "data": {
+            "items": [
+              {
+                "productResponse": {
+                  "id": "dfa094db-28dc-5428-a33a-585cbaaac46c",
+                  "product": {
+                    "id": "431d889c-2a44-4d33-a795-03292dcd5c27",
+                    "name": "Farmley Peri Peri Makhana Roasted In Olive Oil Healthy Snacks",
+                    "brand": "Farmley",
+                    "countryOfOrigin": "India"
+                  },
+                  "productVariant": {
+                    "id": "6ef0cad6-5a5b-4c09-b272-8f579c2789b2",
+                    "formattedPacksize": "1 pack (20 g)",
+                    "packsize": 20,
+                    "unitOfMeasure": "GRAM",
+                    "weightInGms": 20,
+                    "productId": "431d889c-2a44-4d33-a795-03292dcd5c27",
+                    "ratingSummary": {
+                      "averageRating": 4.5,
+                      "totalRatings": 22064
+                    },
+                    "images": [
+                      {
+                        "path": "cms/product_variant/34239801-190d-4b6c-92f3-34aece3ac4da.jpg",
+                        "mediaType": "IMAGE"
+                      }
+                    ]
+                  },
+                  "discountedSellingPrice": 4300,
+                  "sellingPrice": 4300,
+                  "mrp": 5000,
+                  "availableQuantity": 8,
+                  "outOfStock": false,
+                  "meta": {
+                    "tags": [
+                      {
+                        "type": "SPONSORED"
+                      }
+                    ]
+                  }
+                }
+              },
+              {
+                "productResponse": {
+                  "id": "f5996ac6-083d-59b6-bdad-ba67f22360e2",
+                  "product": {
+                    "id": "035868c4-a032-4983-8e04-13fcee8be548",
+                    "name": "Farmley Himalayan Salted Makhana Roasted In Olive Oil Healthy Snacks",
+                    "brand": "Farmley",
+                    "countryOfOrigin": "India"
+                  },
+                  "productVariant": {
+                    "id": "9e39e969-a986-4081-a8a8-1af7d6527cd3",
+                    "formattedPacksize": "1 pack (77 g)",
+                    "packsize": 77,
+                    "unitOfMeasure": "GRAM",
+                    "weightInGms": 77,
+                    "productId": "035868c4-a032-4983-8e04-13fcee8be548",
+                    "ratingSummary": {
+                      "averageRating": 4.7,
+                      "totalRatings": 6841
+                    },
+                    "images": [
+                      {
+                        "path": "cms/product_variant/4d8567f7-9986-438c-96f2-557b4a0721bb.jpg",
+                        "mediaType": "IMAGE"
+                      }
+                    ]
+                  },
+                  "discountedSellingPrice": 17900,
+                  "sellingPrice": 17900,
+                  "mrp": 23900,
+                  "availableQuantity": 0,
+                  "outOfStock": true,
+                  "meta": {
+                    "tags": [
+                      {
+                        "type": ""
+                      }
+                    ]
+                  }
+                }
+              }
+            ]
+          }
+        }
+      }
+    }
+  ]
+}

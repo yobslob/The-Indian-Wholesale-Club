@@ -1,0 +1,77 @@
+{
+  "inError": false,
+  "itemData": {
+    "displayName": "Let's Try Peri Peri Roasted Makhana",
+    "brand": "Let's Try",
+    "inStock": true,
+    "isAvail": true,
+    "productId": "548B5ZKK4W",
+    "parentProductId": "Q39HJAPP9S",
+    "variations": [
+      {
+        "skuId": "4LD0XGQ7KD",
+        "spinId": "7NYI5JFU7L",
+        "quantityDescription": "57 g x 2",
+        "displayName": "Let's Try Peri Peri Roasted Makhana",
+        "brandName": "Let's Try",
+        "listingVariant": false,
+        "price": {
+          "mrp": {
+            "currencyCode": "INR",
+            "units": "320",
+            "nanos": 0
+          },
+          "offerPrice": {
+            "currencyCode": "INR",
+            "units": "190",
+            "nanos": 0
+          }
+        },
+        "inventory": {
+          "inStock": true,
+          "lowStockText": ""
+        },
+        "weightInGrams": 114,
+        "rating": {
+          "value": "4.4",
+          "count": "4.1k"
+        },
+        "imageIds": [
+          "NI_CATALOG/IMAGES/CIW/2026/4/21/3ac716ff-08a5-4fdb-9a30-45f485d79061_23996_1.png"
+        ]
+      },
+      {
+        "skuId": "RXYSG3IKNW",
+        "spinId": "ABTNMJBLSC",
+        "quantityDescription": "57 g",
+        "displayName": "Let's Try Peri Peri Roasted Makhana",
+        "brandName": "Let's Try",
+        "listingVariant": true,
+        "price": {
+          "mrp": {
+            "currencyCode": "INR",
+            "units": "160",
+            "nanos": 0
+          },
+          "offerPrice": {
+            "currencyCode": "INR",
+            "units": "95",
+            "nanos": 0
+          }
+        },
+        "inventory": {
+          "inStock": true,
+          "lowStockText": ""
+        },
+        "weightInGrams": 57,
+        "rating": {
+          "value": "4.4",
+          "count": "4.1k"
+        },
+        "imageIds": [
+          "NI_CATALOG/IMAGES/CIW/2026/4/21/3ac716ff-08a5-4fdb-9a30-45f485d79061_23996_1.png"
+        ]
+      }
+    ]
+  }
+}

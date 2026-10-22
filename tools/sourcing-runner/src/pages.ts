@@ -118,29 +118,30 @@ export function nextData(page: Page): Promise<unknown> {
   });
 }
 
-export function bodyText(page: Page): Promise<string> {
-  return page.evaluate(() => (document.body?.innerText ?? '').slice(0, 50_000));
+/**
+ * Zepto's item page: its Next.js flight data, the strings of its `self.__next_f.push([1, "…"])` scripts joined
+ * (the array itself is emptied once the page has started); flightRows parses it.
+ */
+export function nextFlight(page: Page): Promise<string> {
+  return page.evaluate(() =>
+    Array.from(document.querySelectorAll('script:not([src])'))
+      .map((el) => {
+        const m = /^\s*self\.__next_f\.push\(([\s\S]*)\)\s*;?\s*$/.exec(el.textContent ?? '');
+        try {
+          const row: unknown = m ? JSON.parse(m[1]!) : null;
+          return Array.isArray(row) && typeof row[1] === 'string' ? row[1] : '';
+        } catch {
+          return '';
+        }
+      })
+      .join(''),
+  );
 }
 
-/**
- * JSON the page loads while it opens (Zepto, Instamart): every same-site JSON answer under 5 MB, plus the page's
- * embedded data. Call before opening the page; `done()` returns what arrived.
- */
-export function collectJson(page: Page, site: string): { done(): Promise<unknown[]> } {
-  const blobs: Promise<unknown>[] = [];
-  const onResponse = (res: import('playwright').Response) => {
-    const type = res.headers()['content-type'] ?? '';
-    const len = Number(res.headers()['content-length'] ?? 0);
-    if (!type.includes('json') || len > 5_000_000 || !new URL(res.url()).hostname.endsWith(site))
-      return;
-    blobs.push(res.json().catch(() => null));
-  };
-  page.on('response', onResponse);
-  return {
-    async done() {
-      page.off('response', onResponse);
-      const embedded = await nextData(page).catch(() => null);
-      return [...(await Promise.all(blobs)), embedded].filter(Boolean);
-    },
-  };
+/** Instamart's item page: the product part of its page state (`window.___INITIAL_STATE___.productV2`). */
+export function instamartItem(page: Page): Promise<unknown> {
+  return page.evaluate(() => {
+    const w = window as unknown as { ___INITIAL_STATE___?: { productV2?: unknown } };
+    return JSON.parse(JSON.stringify(w.___INITIAL_STATE___?.productV2 ?? null));
+  });
 }
