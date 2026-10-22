@@ -12,8 +12,8 @@ import { Empty, PageHead, Tabs } from '@/features/admin/ui';
 type SearchParams = Promise<Record<string, string | string[] | undefined>>;
 
 /**
- * Names to tidy (D-140, plan L1): clothing and home listings whose names still carry a brand or shop, the shop's search
- * words or "with", next to IWC's name for them. Nothing changes until an admin ticks and renames; the old name is kept
+ * Names to tidy (D-140, plan L1; D-143): clothing and home listings whose names still carry a brand or shop, or lost words
+ * from the shop's title, next to IWC's name for them. Nothing changes until an admin ticks and renames; the old name is kept
  * as the listing's shop title (admin only). Food keeps its brand (D-139).
  */
 export default async function NamesToTidyPage({ searchParams }: { searchParams: SearchParams }): Promise<React.JSX.Element> {
@@ -26,7 +26,7 @@ export default async function NamesToTidyPage({ searchParams }: { searchParams: 
     <div className="space-y-4">
       <PageHead
         title="Products"
-        sub="Names that still carry a brand or shop, or the shop's search words. Check IWC's name, change it if you like, then rename the ticked ones."
+        sub="Names that still carry a brand or shop, or lost words from the shop's title. Check IWC's name, change it if you like, then rename the ticked ones."
       />
       <Tabs items={listingTabs()} current="names" />
       {proposals.length === 0 ? (

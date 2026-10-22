@@ -1040,6 +1040,21 @@ What it means for the build (packages/shared `same-picture.ts`, engineering.md P
 - `pnpm photos:move` drops each listing's repeats while moving it (it downloads every photo once anyway), keeping the
   full-size file in the first one's place (order, main photo, words); `--review=<n>` shows what it would drop.
 
+**D-143 · 2026-10-21 · founder: a piece's name loses only the shop's or brand's name**
+- The founder: "I feel like the tidying tool is not so accurate right now because we just wanted to remove the shop's
+  name right? It is removing the important words like 3 in 1 Incense stick -> 1 Incense stick, 100% pure brass urli
+  bowl etc etc and many many more".
+- Why it happened: D-140's L1 rules also cut "search words" and kept about six words from the end, and the brand
+  guess for old names grouped all of Amazon as one shop, so any start three names shared ("3 in", "100% Pure") was
+  taken for a brand and cut.
+What it means for the build (packages/shared `sourcing/title.ts`, apps/web `features/admin/names/proposals.ts`):
+- `cleanTitle` removes the brand at the start, "by <brand>", a "| <brand>" or "- <shop>" tail and "Amazon Brand –";
+  nothing else. Supersedes D-140's search-word, "with" and six-word rules.
+- `guessBrands` never takes a word with a digit or sign, a count, material or product word, or words that also turn up
+  inside other names of that shop.
+- Names to tidy makes a name the first rules cut down again from its shop title (kept since D-140), so the lost words
+  come back; the admin still ticks every rename. Supersedes the L1 line of D-140 in that respect.
+
 **D-144 · 2026-10-21 · founder: See all opens low to high; Clothing's finishing touches in a jewellery drawer**
 - Founder, verbatim: "I want the customer to see low to high prices by default but in clothing only accessories comes up
   first"; on Claude's proposal (design plan v6, F11): "I really like the jewellery drawer".

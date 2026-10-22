@@ -73,22 +73,34 @@ describe('who a piece is for (D-140, F2)', async () => {
   });
 });
 
-describe("IWC's name for a shop's title (D-140, L1)", async () => {
+describe("IWC's name for a shop's title (D-140, L1; only the shop's name goes, 2026-10-21)", async () => {
   const { cleanTitle, startsWithBrand } = await import('../src/sourcing');
-  it('drops the brand, the shop-search words and "with", and keeps about six words', () => {
+  it('drops the brand or shop and keeps every other word', () => {
     assert.equal(cleanTitle('House of Pataudi Embroidered Mandarin Collar Kurta', { brand: 'House of Pataudi', productType: 'clothing' }),
       'Embroidered Mandarin Collar Kurta');
     assert.equal(
       cleanTitle('TWINS LADY Women Ethnic Motifs Embroidered Regular Thread Work Kurta with Trousers & With Dupatta', { brand: 'TWINS LADY', productType: 'clothing' }),
-      'Embroidered Thread Work Kurta, Trousers & Dupatta',
+      'Women Ethnic Motifs Embroidered Regular Thread Work Kurta with Trousers & With Dupatta',
     );
     assert.equal(cleanTitle('The Wallet Store Ishq-E-Jhumka Gold Plated Jhumka Earrings for Women', { brand: 'The Wallet Store', productType: 'home' }),
-      'Ishq-E-Jhumka Gold Plated Jhumka Earrings');
+      'Ishq-E-Jhumka Gold Plated Jhumka Earrings for Women');
     assert.equal(cleanTitle('Aaliya Halterneck Kurti', { productType: 'clothing' }), 'Aaliya Halterneck Kurti');
+    assert.equal(cleanTitle('Phulkari Kurta (Men)', { productType: 'clothing' }), 'Phulkari Kurta (Men)');
   });
-  it("keeps food's brand (D-139) and refuses nothing it cannot shorten", () => {
+  it('never cuts what the piece is: counts, sets, materials (the founder\'s examples)', () => {
+    assert.equal(cleanTitle('3 in 1 Incense Sticks for Pooja', { productType: 'home' }), '3 in 1 Incense Sticks for Pooja');
+    assert.equal(cleanTitle('100% Pure Brass Urli Bowl for Home Decor, Diwali Decoration', { productType: 'home' }),
+      '100% Pure Brass Urli Bowl for Home Decor, Diwali Decoration');
+    assert.equal(cleanTitle('Cycle 3 in 1 Agarbatti Combo Pack', { brand: 'Cycle', productType: 'home' }), '3 in 1 Agarbatti Combo Pack');
+    assert.equal(cleanTitle('Amazon Brand - Solimo Brass Diya, Set of 2', { brand: 'Solimo', productType: 'home' }), 'Brass Diya, Set of 2');
+    assert.equal(cleanTitle('Brass Kuber Diya by Ekhasa', { brand: 'Ekhasa', productType: 'home' }), 'Brass Kuber Diya');
+    assert.equal(cleanTitle('Brass Kuber Diya | Ekhasa', { brand: 'Ekhasa', productType: 'home' }), 'Brass Kuber Diya');
+    assert.equal(cleanTitle('Handwoven Ikat Dupatta - Myntra', { productType: 'clothing' }), 'Handwoven Ikat Dupatta');
+  });
+  it("keeps food's brand (D-139) and never empties a name", () => {
     assert.equal(cleanTitle("Haldiram's Aloo Bhujia", { brand: "Haldiram's", productType: 'food' }), "Haldiram's Aloo Bhujia");
     assert.equal(cleanTitle('Women', { productType: 'clothing' }), 'Women');
+    assert.equal(cleanTitle('Libas', { brand: 'Libas', productType: 'clothing' }), 'Libas');
     assert.equal(startsWithBrand('TWINS LADY Kurta', 'twins lady'), true);
     assert.equal(startsWithBrand('Embroidered Kurta', 'TWINS LADY'), false);
   });
@@ -109,12 +121,32 @@ describe('brands among old names (D-140, L1)', async () => {
     ]);
     assert.deepEqual(b.sort(), ['house of pataudi', 'twins lady']);
   });
-});
-
-describe('names in brackets (D-140, L1)', async () => {
-  const { cleanTitle } = await import('../src/sourcing');
-  it('drops "(Men)" without leaving brackets', () => {
-    assert.equal(cleanTitle('Phulkari Kurta (Men)', { productType: 'clothing' }), 'Phulkari Kurta');
+  it('never takes counts, materials or product words for a brand (one marketplace, many makers)', () => {
+    const b = guessBrands([
+      '3 in 1 Incense Sticks for Pooja',
+      '3 in 1 Dhoop Cones, Pack of 2',
+      '3 in 1 Agarbatti Stand',
+      '100% Pure Brass Urli Bowl',
+      '100% Pure Brass Diya',
+      '100% Pure Copper Kalash',
+      'Pure Brass Kuber Diya',
+      'Pure Brass Akhand Jyot',
+      'Pure Brass Pooja Thali',
+      'Handmade Terracotta Diya',
+      'Handmade Terracotta Urli',
+      'Handmade Terracotta Lamp',
+      'Peacock Wall Hanging',
+      'Peacock Brass Diya',
+      'Peacock Urli Bowl',
+      'Big Peacock Brass Diya',
+      'Brass Peacock Urli',
+      'Ekhasa Brass Kuber Diya',
+      'Ekhasa Copper Lota',
+      'Ekhasa Brass Bell',
+      'LED DIYA Lights',
+      'GOLD PLATED Jhumka',
+    ]);
+    assert.deepEqual(b.sort(), ['ekhasa']);
   });
 });
 
