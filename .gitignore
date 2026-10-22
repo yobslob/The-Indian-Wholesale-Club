@@ -98,3 +98,11 @@ tools/weight-estimator/clothing-classes.csv
 tools/weight-estimator/clothing-classes-before.jsonl
 tools/weight-estimator/food-weights.csv
 tools/weight-estimator/food-weights-before.jsonl
+
+.vercel
+
+# Database dumps from a Supabase move (ops.md): every account and address, never committed
+/roles.sql
+/schema.sql
+/data.sql
+/history.sql

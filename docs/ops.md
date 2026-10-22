@@ -161,15 +161,18 @@ nothing to move. Supabase's guide "Backup and restore using the CLI" (Platform �
 3. `npx supabase db dump --db-url <old> -f roles.sql --role-only`, then `-f schema.sql`, then
    `-f data.sql --use-copy --data-only -x "storage.buckets_vectors" -x "storage.vector_indexes"`, and the migration
    history: `npx supabase db dump --db-url <old> -f history.sql --data-only --schema supabase_migrations`.
-4. `psql --single-transaction --variable ON_ERROR_STOP=1 --file roles.sql --file schema.sql --command "SET session_replication_role = replica" --file data.sql --file history.sql --dbname <new>`
-   (if `history.sql` fails because the schema is missing, run `npx supabase migration repair --status applied`
-   with every version in `supabase/migrations/` on the linked new project instead).
-5. The Vault does not move (its key stays with the old project): SQL editor on the new project,
-   `delete from vault.secrets where name in ('iwc_site_url', 'iwc_outbox_secret');`, then the two
-   `vault.create_secret` lines of §Email timer.
+4. From the folder holding the four files (outside the repo: `data.sql` holds every account and address):
+   `psql --single-transaction --variable ON_ERROR_STOP=1 --file roles.sql --file schema.sql --command "SET session_replication_role = replica" --file data.sql --command "create schema if not exists supabase_migrations; create table if not exists supabase_migrations.schema_migrations (version text primary key, statements text[], name text)" --file history.sql --command "NOTIFY pgrst, 'reload schema'" --dbname <new>`.
+   One transaction: any error undoes it all and the new database stays empty (on 2026-10-21 `history.sql` alone
+   failed, its table does not exist in a new project, and the build then said `store_home` was missing). Checked on a
+   local Supabase 17 the same day: 8,032 listings, 82 migrations, the Realtime tables, about 5 seconds.
+5. What no dump carries, in the SQL editor of the new project: the three timers,
+   `select cron.schedule('iwc-roll-cycles', '* * * * *', 'select public.roll_cycles()');`,
+   `select cron.schedule('iwc-email-outbox', '* * * * *', 'select public._kick_email_outbox()');`,
+   `select cron.schedule('iwc-fx-refresh', '*/10 * * * *', 'select public._fx_refresh()');`; and the Vault (its key stays
+   with the old project): the two `vault.create_secret` lines of §Email timer, with the new site URL.
 6. Authentication: site URL, Redirect URLs, the two email templates (step 8 of §Going live). Accounts and passwords
-   move with the data; everyone signs in again once. Database → Publications: `supabase_realtime` has the same tables
-   as in the old project (live stock, PR-7).
+   move with the data; everyone signs in again once.
 7. New keys everywhere: Vercel `NEXT_PUBLIC_SUPABASE_URL`, `NEXT_PUBLIC_SUPABASE_ANON_KEY`,
    `SUPABASE_SERVICE_ROLE_KEY` (redeploy); GitHub secrets `SUPABASE_PROJECT_REF`, `SUPABASE_ACCESS_TOKEN`,
    `SUPABASE_DB_PASSWORD`; the hub PC's `tools/sourcing-runner/.env` (and the photo worker's, the weight estimator's)
