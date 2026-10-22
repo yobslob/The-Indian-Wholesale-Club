@@ -3,6 +3,7 @@ import { listNamesToReview } from '@repo/db/admin';
 import { requireAdminPage } from '@/features/admin/guard';
 import { listingTabs } from '@/features/admin/listing-tabs';
 import { NamesList } from '@/features/admin/names/names-list';
+import { RenameAll } from '@/features/admin/names/rename-all';
 import { nameProposals } from '@/features/admin/names/proposals';
 import { Pager } from '@/features/admin/pager/pager';
 import { plainParams } from '@/features/admin/pager/paging';
@@ -26,13 +27,15 @@ export default async function NamesToTidyPage({ searchParams }: { searchParams: 
     <div className="space-y-4">
       <PageHead
         title="Products"
-        sub="Names that still carry a brand or shop, or lost words from the shop's title. Check IWC's name, change it if you like, then rename the ticked ones."
+        sub="Names that still carry a brand or shop, or lost words from the shop's title. Check IWC's name, change it if you like, then rename the ticked ones, or all of them at once."
       />
       <Tabs items={listingTabs()} current="names" />
       {proposals.length === 0 ? (
         <Empty>Every name is tidy.</Empty>
       ) : (
         <>
+          {/* D-146: every proposal on every page in one press */}
+          <RenameAll total={proposals.length} />
           <Pager list="names" path="/admin/catalog/names" params={params} page={page} size={size} total={proposals.length} />
           <NamesList key={`${page}-${size}`} proposals={shown} />
           <Pager list="names" path="/admin/catalog/names" params={params} page={page} size={size} total={proposals.length} keys />

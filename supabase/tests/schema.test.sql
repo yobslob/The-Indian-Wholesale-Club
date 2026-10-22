@@ -49,13 +49,13 @@ select tests.assert(
   (select coalesce(array_agg(p.proname::text order by p.proname), '{}')
    from pg_proc p join pg_namespace n on n.oid = p.pronamespace
    where n.nspname = 'public' and has_function_privilege('authenticated', p.oid, 'execute'))
-  = array['admin_approve_submission', 'admin_attention', 'admin_cancel_after_export',
+  = array['admin_accept_weights', 'admin_approve_submission', 'admin_archive_unready_drafts', 'admin_assign_weights', 'admin_attention', 'admin_cancel_after_export',
           'admin_cancel_after_export_cents', 'admin_create_listing', 'admin_cycle_totals',
           'admin_decline_submission', 'admin_demand', 'admin_mark_ordered', 'admin_order_counts', 'admin_price_preview', 'admin_price_sheet', 'admin_publish_drafts',
-          'admin_request_retake', 'admin_rerun_photo_job', 'admin_return_received', 'admin_return_refunded',
+          'admin_rename_listings', 'admin_request_retake', 'admin_rerun_photo_job', 'admin_return_received', 'admin_return_refunded',
           'admin_return_rejected', 'admin_sales', 'admin_save_shop_bill', 'admin_set_listed_qty', 'admin_set_shop_bill_final',
           'admin_shop_bill', 'admin_sourcing_review', 'admin_stale_variants', 'admin_to_order', 'admin_unmark_ordered',
-          'admin_vendor_sign_in_code', 'admin_weigh_pickup', 'admin_weights_to_check', 'advance_cycle', 'cancel_after_delay', 'cancel_order', 'cancel_refund_cents',
+          'admin_vendor_sign_in_code', 'admin_weigh_pickup', 'admin_weight_plan', 'admin_weights_to_check', 'advance_cycle', 'cancel_after_delay', 'cancel_order', 'cancel_refund_cents',
           'change_delivery_window', 'check_off_arrival', 'confirm_move_shipped', 'cutoff_cycle', 'deliver_order',
           'dev_preview', 'is_admin', 'is_product_visible', 'is_vendor', 'is_worker', 'item_refund_cents',
           'keep_after_delay', 'mark_pickup', 'move_order', 'my_vendor_id', 'record_payout', 'refund_order_item',

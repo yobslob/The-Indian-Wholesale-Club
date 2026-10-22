@@ -6,3 +6,4 @@ export * from './prompt';
 export * from './food';
 export * from './food-run';
 export * from './home';
+export * from './assign';

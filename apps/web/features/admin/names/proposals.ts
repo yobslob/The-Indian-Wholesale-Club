@@ -20,6 +20,10 @@ function cutFrom(name: string, title: string): boolean {
   return i === n.length && t.length > n.length;
 }
 
+/** A name that is only what a shop calls itself ("ELVRIT Collections" → "Collections"): never proposed. */
+const SHOP_WORD =
+  /^(collections?|store|shop|official|fashions?|creations?|crafts?|handicrafts?|enterprises?|industries|international|india|traders?|world|house|studio|designs?|exports?|mart|bazaar)$/i;
+
 /**
  * Imported names that IWC's naming would change (L1): each shop's brands are guessed from its own names (guessBrands),
  * then each name is cleaned (cleanTitle: only the brand or shop goes, 2026-10-21). A name that is a cut-down of the
@@ -52,7 +56,7 @@ export function nameProposals(
     const brand = (brands.get(shopOf(r)) ?? []).filter((b) => lower.startsWith(`${b} `)).sort((a, b) => b.length - a.length)[0];
     const cleaned = cleanTitle(from, { brand: brand ?? null, productType: r.product_type as ProductType });
     const to = from === r.name ? cleaned : listingName(cleaned);
-    if (to !== r.name) out.push({ id: r.id, from: r.name, to, status: r.status });
+    if (to !== r.name && !SHOP_WORD.test(to.trim())) out.push({ id: r.id, from: r.name, to, status: r.status });
   }
   return out;
 }

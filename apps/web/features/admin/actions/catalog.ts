@@ -1,6 +1,6 @@
 'use server';
 
-import { revalidatePath, revalidateTag } from 'next/cache';
+import { revalidatePath } from 'next/cache';
 import { redirect } from 'next/navigation';
 import { z } from 'zod';
 
@@ -8,13 +8,11 @@ import {
   createListing,
   createVariant,
   createVendor,
-  publishDrafts,
   renameListings,
   setListedQty,
   setProductStatus,
   setProductWears,
   updateProduct,
-  type PublishDraftsResult,
 } from '@repo/db/admin';
 import {
   clothingAttributesSchema,
@@ -25,7 +23,6 @@ import {
   type ListingInput,
 } from '@repo/shared/domain';
 
-import { STORE_TAG } from '@/features/catalog/data';
 import { errorMessage, logger } from '@/lib/logger';
 
 import { requireAdminAction } from '../guard';
@@ -218,16 +215,6 @@ export async function setProductStatusAction(
   await refreshListings(client, [productId], true);
   revalidatePath(`/admin/catalog/${productId}`);
   revalidatePath('/admin/listings');
-}
-
-/** Products → Drafts: every ready draft goes live at once (D-120); the database says how many and what held the rest. */
-export async function publishDraftsAction(): Promise<PublishDraftsResult> {
-  const { client } = await requireAdminAction();
-  const result = await publishDrafts(client);
-  revalidateTag(STORE_TAG);
-  revalidatePath('/admin/catalog');
-  revalidatePath('/admin/listings');
-  return result;
 }
 
 export async function addVariantAction(productId: string, form: FormData): Promise<void> {

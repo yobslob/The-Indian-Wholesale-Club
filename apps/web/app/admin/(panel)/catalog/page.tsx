@@ -10,6 +10,7 @@ import {
 } from '@repo/db/admin';
 import { formatUsd, PRODUCT_TYPE_LABEL, type Wears } from '@repo/shared/domain';
 
+import { ArchiveUnready, AssignAndPublish } from '@/features/admin/bulk/assign-publish';
 import { PRODUCT_STATUS, StatusChip } from '@/features/admin/chips';
 import { requireAdminPage } from '@/features/admin/guard';
 import { listingTabs } from '@/features/admin/listing-tabs';
@@ -18,7 +19,6 @@ import { plainParams } from '@/features/admin/pager/paging';
 import { readPaging } from '@/features/admin/pager/read-paging';
 import { ProductFilterBar } from '@/features/admin/product-filter-bar';
 import { hasProductFilters, parseProductView, productViewQuery, toAdminFilter } from '@/features/admin/product-filters';
-import { PublishDrafts } from '@/features/admin/publish-drafts';
 import { Cell, linkButton, PageHead, rupees, Table, Tabs } from '@/features/admin/ui';
 import { WearsPicker } from '@/features/admin/wears-picker';
 import { WeightSummary, WeightsToCheck } from '@/features/admin/weights-to-check';
@@ -71,6 +71,8 @@ export default async function CatalogPage({
       <div className="space-y-4">
         <PageHead title="Products" />
         <Tabs items={tabs} current="weights" />
+        {/* D-146: every missing weight assigned, every shown weight accepted, every ready draft live */}
+        {weights.total > 0 ? <AssignAndPublish accept label="Assign all and publish" /> : null}
         {pager(false, weights.total)}
         <WeightsToCheck rows={weights.rows} missing={weights.missing} />
         {pager(true, weights.total)}
@@ -81,7 +83,13 @@ export default async function CatalogPage({
     <div className="space-y-4">
       <PageHead title="Products" />
       <Tabs items={tabs} current={usStock ? 'us' : (status ?? 'all')} />
-      {status === 'draft' && !usStock && counts.draft > 0 ? <PublishDrafts /> : null}
+      {status === 'draft' && !usStock && counts.draft > 0 ? (
+        <div className="flex flex-wrap items-center gap-3">
+          {/* D-120, D-146: weighs what has no weight, then publishes; the drafts that cannot go live can be archived */}
+          <AssignAndPublish accept={false} label="Publish all drafts" />
+          <ArchiveUnready />
+        </div>
+      ) : null}
       {usStock ? (
         <p className="text-ink-muted text-sm">
           Returned and cancelled pieces already in the US, as drafts at the clearance price. Check

@@ -269,6 +269,8 @@ export async function setProductStatus(
 
 export interface PublishDraftsResult {
   published: number;
+  /** D-146: ready drafts not published in this call (the next call takes them). */
+  left: number;
   no_photo: number;
   no_option: number;
   no_stock: number;
@@ -280,9 +282,12 @@ export interface PublishDraftsResult {
   live_missing_details: number;
 }
 
-/** Every draft that is ready goes live, each on its own (D-120); the rest are counted by what they lack. */
-export async function publishDrafts(client: IwcClient): Promise<PublishDraftsResult> {
-  return unwrap(await client.rpc('admin_publish_drafts')) as unknown as PublishDraftsResult;
+/**
+ * Every draft that is ready goes live, each on its own (D-120), up to `limit` a call (D-146: `left` says how many
+ * wait for the next); the rest are counted by what they lack.
+ */
+export async function publishDrafts(client: IwcClient, limit = 400): Promise<PublishDraftsResult> {
+  return unwrap(await client.rpc('admin_publish_drafts', { p_limit: limit })) as unknown as PublishDraftsResult;
 }
 
 /**
@@ -453,21 +458,11 @@ export async function listNamesToReview(client: IwcClient) {
   }
 }
 
-/** D-140 (L1): new names for listings; the old one is kept as the shop's title when none was kept yet. */
+/**
+ * D-140 (L1): new names for listings, up to 500 at once in one statement (D-146); the old one is kept as the shop's
+ * title when none was kept yet. Returns how many changed.
+ */
 export async function renameListings(client: IwcClient, items: { id: string; name: string }[]): Promise<number> {
   if (items.length === 0) return 0;
-  const current = unwrap(await client.from('products').select('id, name, shop_title').in('id', items.map((i) => i.id)));
-  let n = 0;
-  for (const item of items) {
-    const row = current.find((r) => r.id === item.id);
-    if (!row || row.name === item.name) continue;
-    unwrap(
-      await client
-        .from('products')
-        .update({ name: item.name, shop_title: row.shop_title ?? row.name.slice(0, 300) })
-        .eq('id', item.id),
-    );
-    n += 1;
-  }
-  return n;
+  return unwrap(await client.rpc('admin_rename_listings', { p_items: items }));
 }
