@@ -1,7 +1,14 @@
 import assert from 'node:assert/strict';
 import { describe, it } from 'node:test';
 
-import { isRobotCheck, mayClearByItself, nextRest, restingUntil } from '../src/sourcing/auto';
+import {
+  isRobotCheck,
+  mayClearByItself,
+  nextRest,
+  paceWaitMs,
+  restingUntil,
+  retryAfterMs,
+} from '../src/sourcing/auto';
 
 const page = (
   shown: string,
@@ -68,5 +75,43 @@ describe('shop rests (D-149)', () => {
     assert.ok(restingUntil(rest, new Date('2026-10-23T03:00:00Z')));
     assert.equal(restingUntil(rest, new Date('2026-10-23T04:00:01Z')), null);
     assert.equal(restingUntil(undefined, now), null);
+  });
+});
+
+describe("a shop's own Retry-After and an hourly pace (D-153)", () => {
+  const now = new Date('2026-10-22T22:13:23Z');
+  const hours = (iso: string) => (Date.parse(iso) - now.getTime()) / 3600_000;
+
+  it('rests as long as the shop asked, never past two days', () => {
+    const asked = retryAfterMs({ 'retry-after': '73954' }, now);
+    assert.equal(asked, 73_954_000);
+    assert.equal(
+      Math.round(hours(nextRest('blinkit.com', undefined, now, asked).until) * 10) / 10,
+      20.5,
+    );
+    assert.equal(hours(nextRest('blinkit.com', undefined, now, 9 * 24 * 3600_000).until), 48);
+    assert.equal(hours(nextRest('blinkit.com', undefined, now, 60_000).until), 2);
+  });
+
+  it('reads Retry-After as seconds or a date, and nothing else', () => {
+    assert.equal(retryAfterMs({ 'retry-after': 'Thu, 22 Oct 2026 22:23:23 GMT' }, now), 600_000);
+    assert.equal(retryAfterMs({}, now), null);
+    assert.equal(retryAfterMs({ 'retry-after': 'soon' }, now), null);
+  });
+
+  it('waits only once the last hour holds the limit, until the oldest of them ages out', () => {
+    const t = now.getTime();
+    const minutesAgo = (m: number) => t - m * 60_000;
+    assert.equal(paceWaitMs([minutesAgo(1), minutesAgo(2)], t, 3), 0);
+    assert.equal(paceWaitMs([minutesAgo(1), minutesAgo(2), minutesAgo(50)], t, 3), 10 * 60_000);
+    assert.equal(paceWaitMs([minutesAgo(1), minutesAgo(2), minutesAgo(61)], t, 3), 0);
+    assert.equal(
+      paceWaitMs(
+        Array.from({ length: 500 }, () => t),
+        t,
+        undefined,
+      ),
+      0,
+    );
   });
 });

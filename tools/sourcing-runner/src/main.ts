@@ -96,6 +96,8 @@ async function doctor(): Promise<number> {
   return signedIn ? 0 : 1;
 }
 
+const FIVE_HOURS_MS = 5 * 3600_000;
+
 const flag = (args: string[], name: string): string | null =>
   args.includes(name) ? (args[args.indexOf(name) + 1] ?? null) : null;
 
@@ -164,6 +166,18 @@ async function run(args: string[]): Promise<number> {
     const lanes = (t: (typeof targets)[number]): string =>
       /^collection:/i.test(t.query.trim()) ? `collection ${t.query.trim().toLowerCase()}` : t.id;
     for (let i = 0; i < targets.length;) {
+      // D-153: the hourly pace makes a long run slow; claims are taken back after six hours (worker_sourcing_plan),
+      // so after five no new target starts and the rest go back to the queue for the next run
+      if (Date.now() - started.getTime() > FIVE_HOURS_MS) {
+        log(`five hours: ${unsearched.size} targets back to the queue for the next run`);
+        await Promise.all(
+          [...unsearched].map((id) =>
+            db.releaseTarget(id, 'the run reached five hours; searched next run'),
+          ),
+        );
+        unsearched.clear();
+        break;
+      }
       const batch: typeof targets = [];
       while (
         i < targets.length &&

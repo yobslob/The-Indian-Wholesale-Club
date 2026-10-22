@@ -1,59 +1,33 @@
-import { mkdirSync, writeFileSync } from 'node:fs';
-import { join } from 'node:path';
-
 import {
-  isRobotCheck,
-  mayClearByItself,
   nextRest,
+  PAGES_PER_HOUR,
+  paceWaitMs,
   restingUntil,
   STRIKES_TO_REST,
   type ShopRest,
-  type ShownPage,
 } from '@repo/shared/sourcing/auto';
 
-import { ROOT } from './env';
 import { log } from './log';
-import { readRests, restShop } from './rest';
+import { PaceBook, readRests, restShop } from './rest';
+import { clock, RobotCheck, ShopResting, TIMEOUT_MS } from './robot';
 
-import type { BrowserContext, Page, Response } from 'playwright';
+import type { BrowserContext, Page } from 'playwright';
+
+export { isBlocked, open, RobotCheck, ShopResting } from './robot';
 
 /**
  * Each shop is a lane: its pages load one after another with a pause between them, while different shops run side
- * by side. This keeps every shop at a person's pace and the whole run fast. A shop that answers with robot checks
- * rests (D-149).
+ * by side. This keeps every shop at a person's pace and the whole run fast. A quick-commerce shop also gets no more
+ * pages an hour than it took without trouble (D-153), and a shop that answers with robot checks rests (D-149).
  */
 
 const GAP_MS = 2500;
 const JITTER_MS = 1500;
-const TIMEOUT_MS = 35_000;
 
 const sleep = (ms: number) => new Promise((r) => setTimeout(r, ms));
 
 /** Waits after "429 Too Many Requests" (or 503) when the shop names none: 10 s, then 30 s, then 60 s. */
 const BACKOFF_MS = [10_000, 30_000, 60_000];
-
-const clock = (d: Date): string => d.toTimeString().slice(0, 5);
-
-/** D-149: the shop answered with a robot check, after Cloudflare's own check had its time to clear. */
-export class RobotCheck extends Error {
-  constructor(readonly site: string) {
-    super('the shop showed a robot check');
-  }
-}
-
-/** D-149: the shop is resting after robot checks; nothing was asked of it. */
-export class ShopResting extends Error {
-  constructor(
-    readonly site: string,
-    readonly until: Date,
-  ) {
-    super(`resting until ${clock(until)} after robot checks`);
-  }
-}
-
-/** A shop refused the runner (now or earlier in its rest): says nothing about the piece, so nothing is changed. */
-export const isBlocked = (error: unknown): boolean =>
-  error instanceof RobotCheck || error instanceof ShopResting;
 
 export class Lane {
   private chain: Promise<unknown> = Promise.resolve();
@@ -82,6 +56,7 @@ export class Lane {
     const next = this.chain.then(async () => {
       const resting = this.lanes.restingUntil(this.site);
       if (resting) throw new ShopResting(this.site, resting);
+      await this.lanes.pace(this.site);
       const wait = this.last + this.gapMs + Math.random() * JITTER_MS - Date.now();
       if (wait > 0) await sleep(wait);
       try {
@@ -90,20 +65,23 @@ export class Lane {
         this.strikes = 0;
         return done;
       } catch (error) {
-        if (error instanceof RobotCheck) this.strike();
+        if (error instanceof RobotCheck) this.strike(error);
         throw error;
       } finally {
         this.last = Date.now();
+        this.lanes.asked(this.site);
       }
     });
     this.chain = next.catch(() => undefined);
     return next;
   }
 
-  private strike(): void {
+  private strike(check: RobotCheck): void {
     this.strikes += 1;
     this.gapMs = Math.min(this.gapMs * 2, 20_000);
-    if (this.strikes >= STRIKES_TO_REST) this.lanes.rest(this.site, this.strikes);
+    // a shop that says how long to wait is believed at once (D-153)
+    if (this.strikes >= STRIKES_TO_REST || check.retryAfterMs !== null)
+      this.lanes.rest(this.site, this.strikes, check.retryAfterMs);
   }
 
   /**
@@ -133,77 +111,6 @@ export class Lane {
   }
 }
 
-/** How long Cloudflare's own check ("Just a moment…") may take to clear by itself before it counts as a block. */
-const CLEAR_WAIT_MS = 20_000;
-
-async function shownOn(page: Page, res: Response | null): Promise<ShownPage> {
-  return {
-    status: res?.status() ?? null,
-    headers: res?.headers() ?? {},
-    shown: (await page.evaluate(
-      "document.title + ' ' + (document.body ? document.body.innerText : '').slice(0, 4000)",
-    )) as string,
-  };
-}
-
-/** The first block of each shop in a run, as the shop showed it (out/blocks/), to see what it was. */
-const kept = new Set<string>();
-async function keepEvidence(
-  page: Page,
-  site: string,
-  url: string,
-  shown: ShownPage,
-): Promise<void> {
-  if (kept.has(site)) return;
-  kept.add(site);
-  const dir = join(ROOT, 'out', 'blocks');
-  const name = `${site}-${new Date().toISOString().replace(/[:.]/g, '-')}`;
-  try {
-    mkdirSync(dir, { recursive: true });
-    writeFileSync(
-      join(dir, `${name}.txt`),
-      `${url}\n${shown.status ?? ''} ${JSON.stringify(shown.headers)}\n\n${shown.shown}\n`,
-    );
-    await page.screenshot({ path: join(dir, `${name}.png`) });
-  } catch {
-    // evidence only
-  }
-}
-
-/**
- * Opens a page and fails clearly (RobotCheck) when the shop shows a robot check instead. It looks at what the page
- * shows and Cloudflare's header, not the source: a normal shop page often loads a captcha script it never shows.
- * Cloudflare's own check runs in the page like in anyone's browser and often clears in a few seconds, so it gets
- * that time first (D-149).
- */
-export async function open(page: Page, url: string, waitFor?: string): Promise<void> {
-  const res = await page.goto(url, { waitUntil: 'domcontentloaded', timeout: TIMEOUT_MS });
-  if (waitFor) await page.waitForSelector(waitFor, { timeout: 15_000 }).catch(() => undefined);
-  else await page.waitForLoadState('load', { timeout: 15_000 }).catch(() => undefined);
-  let shown = await shownOn(page, res);
-  let cleared = false;
-  if (isRobotCheck(shown) && mayClearByItself(shown)) {
-    const until = Date.now() + CLEAR_WAIT_MS;
-    while (Date.now() < until && isRobotCheck(shown)) {
-      await page.waitForTimeout(1000);
-      // the first answer's header no longer applies: the page itself says whether it cleared
-      shown = await shownOn(page, null).catch(() => shown);
-    }
-    cleared = !isRobotCheck(shown);
-    if (cleared) {
-      if (waitFor) await page.waitForSelector(waitFor, { timeout: 15_000 }).catch(() => undefined);
-      else await page.waitForLoadState('load', { timeout: 15_000 }).catch(() => undefined);
-    }
-  }
-  if (isRobotCheck(shown)) {
-    const site = new URL(url).hostname.replace(/^www\./, '');
-    await keepEvidence(page, site, url, shown);
-    throw new RobotCheck(site);
-  }
-  if (!cleared && res && res.status() >= 400 && shown.shown.trim().length < 200)
-    throw new Error(`the shop answered ${res.status()}`);
-}
-
 /**
  * Every shop's lane, and which shops rest (D-149): this PC's shop-rest.json, read again at most once a minute so a
  * rest the other runner starts reaches this one. `remember: false` (a dry run) rests a shop for this run only.
@@ -212,6 +119,7 @@ export class Lanes {
   private readonly lanes = new Map<string, Lane>();
   private rests: Record<string, ShopRest> = {};
   private readAt = 0;
+  private readonly book = new PaceBook();
 
   constructor(
     private readonly context: BrowserContext,
@@ -250,14 +158,31 @@ export class Lanes {
     });
   }
 
-  rest(site: string, strikes: number): void {
+  rest(site: string, strikes: number, atLeastMs: number | null = null): void {
     if (this.restingUntil(site)) return;
-    const rest = this.remember ? restShop(site) : nextRest(site, this.rests[site], new Date());
+    const rest = this.remember
+      ? restShop(site, atLeastMs)
+      : nextRest(site, this.rests[site], new Date(), atLeastMs);
     this.rests[site] = rest;
     const hours = Math.round((Date.parse(rest.until) - Date.parse(rest.since)) / 3600_000);
+    const why = atLeastMs !== null ? 'said too many requests' : `${strikes} robot checks in a row`;
     log(
-      `  ${site}: ${strikes} robot checks in a row; left alone until ${clock(new Date(rest.until))} (${hours} h). ` +
+      `  ${site}: ${why}; left alone until ${clock(new Date(rest.until))} (${hours} h). ` +
         'Its targets go back to the queue and its listings are checked on a later run.',
     );
+  }
+
+  /** D-153: waits while the shop had its hourly pages (both runners together). */
+  async pace(site: string): Promise<void> {
+    const wait = paceWaitMs(this.book.pages(site), Date.now(), PAGES_PER_HOUR[site]);
+    if (wait <= 0) return;
+    log(
+      `  ${site}: ${PAGES_PER_HOUR[site]} pages in the last hour; the next in ${Math.ceil(wait / 60_000)} min (D-153)`,
+    );
+    await sleep(wait);
+  }
+
+  asked(site: string): void {
+    if (PAGES_PER_HOUR[site]) this.book.asked(site);
   }
 }

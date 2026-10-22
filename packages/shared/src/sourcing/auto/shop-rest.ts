@@ -51,17 +51,60 @@ export interface ShopRest {
   since: string;
 }
 
-/** The rest a shop takes after blocking now, longer when it blocked again soon after the last one. */
-export function nextRest(site: string, previous: ShopRest | undefined, now: Date): ShopRest {
+/** A rest never runs past two days, whatever a shop asks. */
+const LONGEST_REST_MS = 48 * 3600_000;
+
+/**
+ * The rest a shop takes after blocking now, longer when it blocked again soon after the last one, and at least as
+ * long as the shop itself asked (`atLeastMs`, its Retry-After: Blinkit's 429 said 73,954 s on 2026-10-22, D-153).
+ */
+export function nextRest(
+  site: string,
+  previous: ShopRest | undefined,
+  now: Date,
+  atLeastMs: number | null = null,
+): ShopRest {
   const repeat = previous && now.getTime() - Date.parse(previous.since) < REPEAT_WITHIN_MS;
   const times = repeat ? previous.times + 1 : 1;
   const hours = REST_HOURS[Math.min(times, REST_HOURS.length) - 1]!;
+  const ms = Math.min(Math.max(hours * 3600_000, atLeastMs ?? 0), LONGEST_REST_MS);
   return {
     site,
-    until: new Date(now.getTime() + hours * 3600_000).toISOString(),
+    until: new Date(now.getTime() + ms).toISOString(),
     times,
     since: now.toISOString(),
   };
+}
+
+/** A Retry-After header in milliseconds: seconds ("73954") or an HTTP date; null when absent or unreadable. */
+export function retryAfterMs(headers: Record<string, string>, now: Date): number | null {
+  const value = headers['retry-after']?.trim();
+  if (!value) return null;
+  if (/^\d+$/.test(value)) return Number(value) * 1000;
+  const at = Date.parse(value);
+  return Number.isNaN(at) ? null : Math.max(at - now.getTime(), 0);
+}
+
+/**
+ * D-153: pages a shop is asked for in any hour, both runners together. From the week the runner read these shops
+ * without trouble (13 – 19 October): Blinkit and BigBasket took up to 60 – 95 pages an hour with at most one robot
+ * check, then blocked at 100 pages in 20 minutes (BigBasket) and after a long day (Blinkit, 22 October); Zepto took up
+ * to 287. A shop not named here has no hourly limit (Amazon, Flipkart, Myntra, Shopify: their own pace and 429s).
+ */
+export const PAGES_PER_HOUR: Readonly<Record<string, number>> = {
+  'blinkit.com': 60,
+  'bigbasket.com': 60,
+  'swiggy.com': 60,
+  'zepto.com': 90,
+};
+
+/** How long to wait before the next page so the last hour holds fewer than `perHour` pages (`times`: ms epoch). */
+export function paceWaitMs(times: number[], now: number, perHour: number | undefined): number {
+  if (!perHour) return 0;
+  const recent = times.filter((t) => t > now - 3600_000).sort((a, b) => a - b);
+  if (recent.length < perHour) return 0;
+  // the page that must age out of the hour before another may go
+  return recent[recent.length - perHour]! + 3600_000 - now;
 }
 
 /** The rest still running for this shop, if any. */
