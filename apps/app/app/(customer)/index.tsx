@@ -1,9 +1,10 @@
+import { useRouter } from 'expo-router';
 import { useRef } from 'react';
 import { RefreshControl, View } from 'react-native';
 import Animated, { useAnimatedRef, useAnimatedScrollHandler, useSharedValue } from 'react-native-reanimated';
 import { useSafeAreaInsets } from 'react-native-safe-area-context';
 
-import { getHome } from '@repo/db/store';
+import { getHome, getStorePolicy } from '@repo/db/store';
 
 import { Body, ErrorText, Heading, Loading } from '@/components/ui';
 import { ProductRow } from '@/features/catalog/product-row';
@@ -14,10 +15,13 @@ import { useQuery } from '@/lib/use-query';
 
 /**
  * Home (storefront.md, D-079, D-080, D-095): the photo hero with the name on its wall, Just listed, Pick your home.
- * One store_home() call. The logo bar fades in as the hero words fade out.
+ * One store_home() call, and store_policy() for the hero's 7-day line (D-148; the help sheet's key, so it is read once).
+ * The logo bar fades in as the hero words fade out.
  */
 export default function HomeScreen(): React.JSX.Element {
   const { data, error, loading, reload } = useQuery('home', () => getHome(supabase));
+  const policy = useQuery('store-policy', () => getStorePolicy(supabase));
+  const router = useRouter();
   const insets = useSafeAreaInsets();
   const scrollY = useSharedValue(0);
   const onScroll = useAnimatedScrollHandler((e) => {
@@ -36,7 +40,12 @@ export default function HomeScreen(): React.JSX.Element {
         scrollEventThrottle={16}
         refreshControl={<RefreshControl refreshing={loading} onRefresh={reload} progressViewOffset={insets.top} />}
       >
-        <HomeHero scrollY={scrollY} onStart={() => scroller.current?.scrollTo({ y: blockY.current + pickY.current, animated: true })} />
+        <HomeHero
+          scrollY={scrollY}
+          onStart={() => scroller.current?.scrollTo({ y: blockY.current + pickY.current, animated: true })}
+          quickDays={policy.data?.quick_delivery_days_max ?? null}
+          onQuick={() => router.push('/7-day-delivery')}
+        />
         <View className="gap-6 px-4 pb-16 pt-8" onLayout={(e) => (blockY.current = e.nativeEvent.layout.y)}>
           {error ? <ErrorText>{error}</ErrorText> : null}
           {!data && loading ? <Loading /> : null}

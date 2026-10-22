@@ -52,9 +52,20 @@ function Word({ word, index, size, scrollY, heroHeight }: { word: string; index:
 /**
  * The Home hero (D-079, D-095): the founder's photo under the status bar, "Indian Wholesale Club" stacked on its white
  * wall in #1D1A17, and "Miss local market? Start here." under it; scrolling fades the words out one after another.
- * The demo banner rides on top of the photo. `onStart` goes to Pick your home.
+ * The demo banner rides on top of the photo. `onStart` goes to Pick your home. D-148: while 7-day delivery is on,
+ * the line reads "Want in {quickDays} days? Click here." (the days from Settings) and `onQuick` opens the 7-day screen.
  */
-export function HomeHero({ scrollY, onStart }: { scrollY: SharedValue<number>; onStart: () => void }): React.JSX.Element {
+export function HomeHero({
+  scrollY,
+  onStart,
+  quickDays = null,
+  onQuick,
+}: {
+  scrollY: SharedValue<number>;
+  onStart: () => void;
+  quickDays?: number | null;
+  onQuick?: () => void;
+}): React.JSX.Element {
   const { width, height } = useWindowDimensions();
   const insets = useSafeAreaInsets();
   const heroHeight = Math.round(height * 0.9);
@@ -81,9 +92,9 @@ export function HomeHero({ scrollY, onStart }: { scrollY: SharedValue<number>; o
           <Word key={word} word={word} index={i} size={w.size} scrollY={scrollY} heroHeight={heroHeight} />
         ))}
         <Text className="font-body text-right text-black" style={{ marginTop: w.size * 0.3, fontSize: lineSize, lineHeight: lineSize * 1.35 }}>
-          Miss local market?{' '}
-          <Text accessibilityRole="link" onPress={onStart} className="underline">
-            Start here.
+          {quickDays ? `Want in ${quickDays} days?` : 'Miss local market?'}{' '}
+          <Text accessibilityRole="link" onPress={quickDays ? onQuick : onStart} className="underline">
+            {quickDays ? 'Click here.' : 'Start here.'}
           </Text>
         </Text>
       </View>
