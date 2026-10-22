@@ -232,7 +232,8 @@ setup and running). For production, once:
    to a listing the runner made (`data-model.md`).
 2. `tools/sourcing-runner/.env` (you write it, never committed): `IWC_SUPABASE_URL`, `IWC_SUPABASE_ANON_KEY`,
    `IWC_WORKER_EMAIL`, `IWC_WORKER_PASSWORD`; optionally `IWC_SOURCING_PROFILE` (the browser profile folder),
-   `IWC_SOURCING_CHANNEL` (`chrome`, `msedge`, `chromium`) and `IWC_SOURCING_HEADLESS` (`1` = no window).
+   `IWC_SOURCING_CHANNEL` (`chrome`, `msedge`, `chromium`). `IWC_SOURCING_HEADLESS` is ignored (D-151): Blinkit's
+   Cloudflare blocks headless Chrome, so the runner always opens a window, off-screen.
 3. `pnpm sourcing setup`, then the hub's address on every shop that opens (Blinkit, Zepto, Instamart, BigBasket: the
    address; Amazon, Flipkart, Myntra: the pincode). Then the targets: Admin → Import → Auto-sourcing → Add targets from
    a CSV (the state bestseller list).

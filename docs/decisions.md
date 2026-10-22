@@ -417,3 +417,20 @@ What it means for the build (`packages/db/src/admin/auto-sourcing.ts` `addTarget
   (D-148), so whichever shop a piece comes from, it stays a 7-day piece. A Blinkit rest (D-149) no longer stops the
   batch, and each shop is asked less.
 - Each target still makes up to its Listings; the same product on two shops is one listing with the other as its backup.
+
+**D-151 · 2026-10-23 · founder: the runner never browses headless (the cause of D-149's Blinkit block)**
+- Founder, verbatim: "I deployed and uploaded on auto runner, still getting errors, Can you properly fix it? It was
+  working well before all the vercel supabase cloudflare R2 changes, why is it failing now, properly deeply fix it"
+- What was found: the runner's `.env` says `IWC_SOURCING_HEADLESS=1`. Blinkit's Cloudflare answers headless Chrome
+  with its block page every time, while the same code, profile, PC and minute in a window read Blinkit at once (28
+  results, product pages, listings ready; checked by switching only that setting). Blinkit last worked on 2026-10-19;
+  the `.env` was rewritten on 2026-10-20 (the R2 photo store's keys, D-140) and again on 2026-10-23 (the new Supabase
+  project), and no run went between 10-19 and the first failing one, which fits the founder's sense that it broke with
+  the account changes (the file's earlier contents can't be seen, so not proven).
+What it means for the build (`tools/sourcing-runner/src/browser.ts`):
+- **Chrome always opens a real window, off-screen** as before; `IWC_SOURCING_HEADLESS=1` is ignored with a line in the
+  log. The headless-only code that changed Chrome's user agent is gone.
+- D-149's rests stay as the safety net when a shop does block.
+- Seen on the way, not fixed here: Instamart's search has returned 0 results on every run since 2026-10-13 and Zepto's
+  on about four in five, so the 7-day targets (D-150) find pieces on Blinkit and BigBasket only until those readers are
+  fixed.

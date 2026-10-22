@@ -16,8 +16,9 @@ Short on purpose: **replace** lines when something changes, don't append. Histor
   Deploy workflow on 2026-10-22, per their message).
 - **Sourcing runner (India PC):** its `.env` pointed at the old Supabase project until 2026-10-22 (the move's step 7,
   `ops.md`); fixed by the founder. The Blinkit 7-day CSV is in (102 targets added, 11 already there). **Blinkit blocks
-  the runner** since 2026-10-22 (Cloudflare, "Verify you are human"): the runner now rests a blocking shop (D-149), and
-  the 7-day targets may search all four quick shops (D-150).
+  the runner** from 2026-10-22: the cause was headless Chrome (`IWC_SOURCING_HEADLESS=1` in its `.env`); the runner now
+  always opens a window (D-151) and Blinkit reads again; a shop that still blocks rests (D-149). The 7-day targets may
+  search all four quick shops (D-150), but Instamart's search finds nothing and Zepto's rarely (readers to fix).
 - **Catalogue (production copy of 2026-10-21):** 8,032 listings: 5,761 live (clothing 664, food 4,093, home 1,004),
   2,180 drafts, 91 archived; no placeholders left. 20,896 options, 34,915 photos (all in R2).
 - **Deploys:** the website once a day at 09:00 UTC from a green `main` (D-145); migrations only through the Deploy
@@ -46,13 +47,14 @@ Short on purpose: **replace** lines when something changes, don't append. Histor
   fixed AVIF copies from `/media/s/` (no resizer); narrow page refreshes (D-145).
 
 ## Next for the founder
-1. **The Blinkit 7-day batch (D-148, D-149).** Pull the code on the India PC, then run
-   `pnpm sourcing run --targets --type food` (and `--type home`) once a day, e.g. from Task Scheduler. While Blinkit
-   blocks, each run asks it twice at most and rests it (2, 6, then 24 hours); its targets stay waiting and nothing is
-   marked nothing fit or sold out. `out/blocks/` shows what Blinkit answered. **First, once the website has deployed
-   D-150:** Admin → Import → Auto-sourcing → Add targets from a CSV → `tools/sourcing-runner/out/7-day-four-shops.csv`
-   ("0 added, 113 already there (102 of them now search more shops)"): the targets then search BigBasket, Zepto and
-   Instamart too, so a Blinkit rest no longer stops the batch. Ctrl+C now puts the run's
+1. **The Blinkit 7-day batch (D-148 – D-151).** Upload `tools/sourcing-runner/out/7-day-four-shops.csv` again
+   (Admin → Import → Auto-sourcing → Add targets from a CSV): the first upload ran before the new admin was live; the
+   message should say "(102 of them now search more shops)". Then on this PC `pnpm sourcing run --targets --type food`
+   (and `--type home`), once a day, e.g. from Task Scheduler. The window opens off-screen; leave
+   `IWC_SOURCING_HEADLESS=1` or delete the line, it is ignored. If a shop still blocks, each run asks it twice at most
+   and rests it (2, 6, then 24 hours); its targets stay waiting and nothing is marked nothing fit or sold out
+   (`out/blocks/` shows what it answered). The Deploy workflow's database and website steps succeed; it ends red
+   only because Expo's free Android builds are used up until 2026-11-01. Ctrl+C now puts the run's
    targets back at once; the 64 claimed by the stopped run of 2026-10-22 come back by themselves six hours after it.
    Against the limits (from production's 8,032 listings, 34,915
    photos, about 4 – 5 GB in R2, 78 MB of catalogue): **R2** about 0.6 MB a listing → about 1.8 GB, to about 6 – 7 GB
@@ -107,6 +109,7 @@ Short on purpose: **replace** lines when something changes, don't append. Histor
 ## Last verification
 | Date | Commit | Where | Result |
 |---|---|---|---|
+| 2026-10-23 | D-151 (the runner never browses headless) | Claude Code, founder's Windows machine (the India runner PC; `check.mjs docs typecheck lint test`) | docs 1.0 s, typecheck 20.7 s, lint 28.5 s, test 3.7 s: OK. Live, dry runs only (nothing written): the runner headless (as its `.env` says) got Blinkit's block page 4 of 4 times; the same command in a window got 28 results and 2 listings ready; with the fix and the `.env` unchanged, Blinkit 28 results and a listing ready; all six food shops answered (Flipkart 38, Blinkit 24, Amazon 56, BigBasket 21, Zepto 0, Instamart 0; Zepto and Instamart 0 for makhana too). **Not run:** a full `run` against production. |
 | 2026-10-23 | D-150 (a re-uploaded target takes the row's shops) | Claude Code, founder's Windows machine (`check.mjs docs typecheck lint test`) | docs 0.9 s, typecheck 25.2 s, lint 44.8 s, test 4.3 s: OK (2 new `widenedSites` tests). `addTargets` on the **local** database: a Blinkit-only target uploaded again with four shops → 0 added, 1 widened, sites blinkit, bigbasket, zepto, swiggy, still waiting; the same or no shops change nothing (test row removed). `7-day-four-shops.csv` read by the importer's parser: 113 rows, 0 errors. **Not run:** the admin page's message in a browser, production (needs the push and the daily deploy). |
 | 2026-10-23 | D-149 (the runner rests a blocking shop) | Claude Code, founder's Windows machine (the India runner PC; `check.mjs docs typecheck lint test`) | docs 0.6 s, typecheck 24.2 s, lint 31.8 s, test 3.9 s: OK (new `shop-rest.test.ts`, 6). Live, dry runs only (nothing written): Blinkit answered 403 `cf-mitigated: challenge` with its "Verify you are human" page; the runner waited 22 s, called it a robot check and saved `out/blocks/` (screenshot + words); a stand-in browser showed two robot checks rest the shop (2 of 4 asks reached it) while another shop carried on; `shop-rest.json` written and read back (test file removed). **Not run:** a full `run` against production, `check.mjs` db/build/e2e (runner-only change). |
 | 2026-10-22 | app D-148 (7-day screen, tag, Home and Bag lines) | Claude Code, founder's Windows machine (`check.mjs typecheck lint test`) | typecheck 32.1 s, lint 56.1 s, test 5.6 s: OK (app tests 11, new `seven-day.test.ts`). In the app's web preview (`app-web`) on the local database with three local pieces briefly marked Blinkit (undone): Home's line, the 7-day screen and a pill, the tag on the region page, the Bag line, gone with one other piece. **Not run:** a phone or emulator (Android build), db, build, e2e. |

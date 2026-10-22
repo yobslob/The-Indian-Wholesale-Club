@@ -31,7 +31,8 @@ The matching, delivery, variant and listing rules are in `packages/shared/src/so
 3. **Settings** in `tools/sourcing-runner/.env` (not in git; the founder writes it): `IWC_SUPABASE_URL`,
    `IWC_SUPABASE_ANON_KEY` (the public anon key), `IWC_WORKER_EMAIL`, `IWC_WORKER_PASSWORD`; optionally
    `IWC_SOURCING_PROFILE` (the browser profile folder, default `%USERPROFILE%\iwc-sourcing-profile`),
-   `IWC_SOURCING_CHANNEL` (`chrome`, `msedge` or `chromium`) and `IWC_SOURCING_HEADLESS=1`. The photo store
+   `IWC_SOURCING_CHANNEL` (`chrome`, `msedge` or `chromium`). `IWC_SOURCING_HEADLESS=1` is ignored (D-151): Blinkit's
+   Cloudflare blocked every headless page on 2026-10-22, so the runner always opens a window, off-screen. The photo store
    (D-140, `docs/ops.md` §Photos): `IWC_PHOTO_STORE_S3_URL` (`https://<account>.r2.cloudflarestorage.com/<bucket>`),
    `IWC_PHOTO_STORE_KEY_ID`, `IWC_PHOTO_STORE_SECRET` (the same R2 token as the website's); the runner then writes
    each photo's two AVIF copies there itself. Without them photos go to Supabase's storage and wait to be moved.
