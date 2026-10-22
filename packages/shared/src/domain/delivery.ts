@@ -13,6 +13,8 @@ const monthDay = new Intl.DateTimeFormat('en-US', { month: 'short', day: 'numeri
 
 /** "Oct 30 – Nov 4" */
 export function formatDeliveryWindow(from: string, to: string): string {
+  // one day (7-day delivery is exactly 7, D-148): "Oct 29", not "Oct 29 – Oct 29"
+  if (from === to) return monthDay.format(parseDate(from));
   return `${monthDay.format(parseDate(from))} – ${monthDay.format(parseDate(to))}`;
 }
 

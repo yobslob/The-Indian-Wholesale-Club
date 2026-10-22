@@ -42,7 +42,8 @@ select tests.assert(
    from pg_proc p join pg_namespace n on n.oid = p.pronamespace
    where n.nspname = 'public' and has_function_privilege('anon', p.oid, 'execute'))
   = array['dev_preview', 'is_product_visible', 'store_bag_charges', 'store_browse', 'store_home', 'store_next_delivery', 'store_policy',
-          'store_product_page', 'store_region_page', 'store_search', 'store_type_rows'],
+          'store_product_page', 'store_quick_bag', 'store_quick_browse', 'store_region_page', 'store_search',
+          'store_type_rows'],
   'anon can execute only the store-facing functions');
 
 select tests.assert(
@@ -60,7 +61,8 @@ select tests.assert(
           'dev_preview', 'is_admin', 'is_product_visible', 'is_vendor', 'is_worker', 'item_refund_cents',
           'keep_after_delay', 'mark_pickup', 'move_order', 'my_vendor_id', 'record_payout', 'refund_order_item',
           'review_eligibility', 'ship_order', 'store_bag_charges', 'store_browse', 'store_home', 'store_my_order', 'store_next_delivery',
-          'store_policy', 'store_product_page', 'store_region_page', 'store_search', 'store_type_rows',
+          'store_policy', 'store_product_page', 'store_quick_bag', 'store_quick_browse', 'store_region_page',
+          'store_search', 'store_type_rows',
           'vendor_add_photo', 'vendor_delete_submission', 'vendor_keep_ready', 'vendor_may_upload', 'vendor_me',
           'vendor_money', 'vendor_new_submission', 'vendor_pieces', 'vendor_submission', 'vendor_submit',
           'worker_claim_job', 'worker_clothing_plan', 'worker_estimate_plan', 'worker_finish_job', 'worker_food_plan', 'worker_home_plan', 'worker_liquid_plan', 'worker_may_add_photos', 'worker_set_class_weights',

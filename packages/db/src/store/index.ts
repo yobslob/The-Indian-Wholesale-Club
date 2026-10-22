@@ -35,6 +35,7 @@ import {
 } from './schemas';
 
 export * from './schemas';
+export * from './quick';
 
 /** Home + /states: all 36 regions and the next delivery window (1 round trip). */
 export async function getHome(client: IwcClient): Promise<HomeData> {

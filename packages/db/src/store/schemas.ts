@@ -71,6 +71,8 @@ export const productCardSchema = z.object({
    */
   choices: z.number().int().optional(),
   sold_out: z.boolean().optional(),
+  /** D-148: a 7-day piece's days (Settings), for its tag; null otherwise. Optional until migration 20261022120000. */
+  quick_days: z.number().int().nullable().optional(),
 });
 
 /** Set only when the product has exactly one variant and it is in stock: a card's "Add" puts it in the bag. */
@@ -191,6 +193,8 @@ export const productPageSchema = z.object({
   curated: z.array(regionProductCardSchema),
   /** A US piece's window: today + the US delivery days (null for pieces coming from India). */
   ships_from_us: z.object({ est_delivery_from: isoDate, est_delivery_to: isoDate }).nullable().default(null),
+  /** D-148: a 7-day piece's window (today + the 7-day days) in a bag of only 7-day pieces. */
+  quick_delivery: z.object({ est_delivery_from: isoDate, est_delivery_to: isoDate }).nullable().default(null),
   /** Approved reviews: summary over all of them and the six newest (D-051, D-056). */
   reviews: reviewsSummarySchema,
   delivery: deliveryWindowSchema.nullable(),
@@ -358,6 +362,9 @@ export const storePolicySchema = z.object({
   express_days_max: z.number().int().nullable(),
   us_delivery_days_min: z.number().int().nullable(),
   us_delivery_days_max: z.number().int().nullable(),
+  /** D-148: 7-day delivery's days from the order; empty = no 7-day delivery. */
+  quick_delivery_days_min: z.number().int().nullable().default(null),
+  quick_delivery_days_max: z.number().int().nullable().default(null),
   cancel_fee_pct: z.coerce.number().nullable(),
   return_claim_days: z.number().int().nullable(),
   return_tiers: z.array(z.object({ days: z.number().int(), kept_pct: z.coerce.number() })),
