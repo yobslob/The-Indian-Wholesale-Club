@@ -12,16 +12,18 @@ Short on purpose: **replace** lines when something changes, don't append. Histor
   since 2026-10-21/22, both near zero; photos stay in **Cloudflare R2** (D-141). The first accounts ran out of Vercel's
   image optimisation and page-cache writes and Supabase's storage; they are no longer used. Each limit now has a budget
   and a weekly check: `monitoring.md`.
-- **Database:** every migration up to `20261021090000_low_to_high` is applied (restored with the data on the new
-  project). Waiting for the Deploy workflow: `20261022090000_assign_weights` (D-146) and
-  `20261022120000_seven_day_delivery` (D-148).
+- **Database:** every migration up to `20261022120000_seven_day_delivery` (D-148) is applied (the founder ran the
+  Deploy workflow on 2026-10-22, per their message).
+- **Sourcing runner (India PC):** its `.env` pointed at the old Supabase project until 2026-10-22 (the move's step 7,
+  `ops.md`); fixed by the founder. The Blinkit 7-day CSV is in (102 targets added, 11 already there). **Blinkit blocks
+  the runner** since 2026-10-22 (Cloudflare, "Verify you are human"): the runner now rests a blocking shop (D-149).
 - **Catalogue (production copy of 2026-10-21):** 8,032 listings: 5,761 live (clothing 664, food 4,093, home 1,004),
   2,180 drafts, 91 archived; no placeholders left. 20,896 options, 34,915 photos (all in R2).
 - **Deploys:** the website once a day at 09:00 UTC from a green `main` (D-145); migrations only through the Deploy
   workflow, which the founder runs.
 
 ## What is built (details in the doc named; decisions in `decisions.md`)
-- **7-day delivery (D-148, built 2026-10-22, not deployed):** `/7-day-delivery` lists every piece bought from Blinkit,
+- **7-day delivery (D-148, deployed 2026-10-22):** `/7-day-delivery` lists every piece bought from Blinkit,
   BigBasket, Zepto or Instamart; cards say "In 7 days"; a bag of only such pieces gets the 7-day window (Settings, 7 – 7)
   at checkout and on its order; Home's line reads "Want in 7 days? Click here." No shop is named anywhere.
 - **Storefront** (`storefront.md`): Home (hero, the album of all India, Pick your home, three Just listed rows), 36
@@ -43,12 +45,13 @@ Short on purpose: **replace** lines when something changes, don't append. Histor
   fixed AVIF copies from `/media/s/` (no resizer); narrow page refreshes (D-145).
 
 ## Next for the founder
-1. **Run the Deploy workflow** (applies `20261022090000_assign_weights` and `20261022120000_seven_day_delivery`); the
-   website follows the next morning, or Actions → Daily website deploy → Run workflow at once. The website must not go
-   out before the migration (its 7-day page and bag read the new functions).
-   **Then the first Blinkit 7-day batch (D-148):** Admin → Import → Auto-sourcing → Add targets from a CSV →
-   `tools/sourcing-runner/out/blinkit-7-day.csv` (113 targets, up to 2,972 listings), then on the India PC
-   `pnpm sourcing run --type food` and `--type home`. Against the limits (from production's 8,032 listings, 34,915
+1. **The Blinkit 7-day batch (D-148, D-149).** Pull the code on the India PC, then run
+   `pnpm sourcing run --targets --type food` (and `--type home`) once a day, e.g. from Task Scheduler. While Blinkit
+   blocks, each run asks it twice at most and rests it (2, 6, then 24 hours); its targets stay waiting and nothing is
+   marked nothing fit or sold out. `out/blocks/` shows what Blinkit answered. Answer **Q-43** (may these targets also
+   search BigBasket, Zepto and Instamart?) to keep the batch filling while Blinkit refuses. Ctrl+C now puts the run's
+   targets back at once; the 64 claimed by the stopped run of 2026-10-22 come back by themselves six hours after it.
+   Against the limits (from production's 8,032 listings, 34,915
    photos, about 4 – 5 GB in R2, 78 MB of catalogue): **R2** about 0.6 MB a listing → about 1.8 GB, to about 6 – 7 GB
    of 10 (past the 6 GB budget, under the 9 GB line; about 26,000 writes of 1M); **database** about 10 KB a listing →
    about 30 MB, to about 110 MB of 500; **Vercel** each new product page is a page-cache write when first visited
@@ -66,7 +69,7 @@ Short on purpose: **replace** lines when something changes, don't append. Histor
 5. **Settings → Bag charges → "Shipping shown when free"** ($ a kg; empty keeps $18.79 struck).
 6. **Answer:** Q-36 (courier bills by size?), Q-37 (lights, gobar, powders), Q-38 (live Kids listings), Q-39 (interim
    size line), Q-40 (footwear in the drawer), Q-41 (is 7 days true every day?), Q-42 (the Blinkit CSV's band and
-   leave-outs); approve D-148's drafted words (the 7-day page, the tag, the bag and product-page lines); whether ghee and honey sold by the litre count as liquids (D-135 says
+   leave-outs), Q-43 (the 7-day targets on all four quick shops); approve D-148's drafted words (the 7-day page, the tag, the bag and product-page lines); whether ghee and honey sold by the litre count as liquids (D-135 says
    yes); confirm with the courier that ₹2,000 a kg includes the box and clearance.
 7. **Real bills for Settings** (D-069): one courier invoice and one duty bill, then the per-parcel cost, duty by type,
    parcel kg and the small-food limits; watch the profit check.
@@ -101,5 +104,6 @@ Short on purpose: **replace** lines when something changes, don't append. Histor
 ## Last verification
 | Date | Commit | Where | Result |
 |---|---|---|---|
+| 2026-10-23 | D-149 (the runner rests a blocking shop) | Claude Code, founder's Windows machine (the India runner PC; `check.mjs docs typecheck lint test`) | docs 0.6 s, typecheck 24.2 s, lint 31.8 s, test 3.9 s: OK (new `shop-rest.test.ts`, 6). Live, dry runs only (nothing written): Blinkit answered 403 `cf-mitigated: challenge` with its "Verify you are human" page; the runner waited 22 s, called it a robot check and saved `out/blocks/` (screenshot + words); a stand-in browser showed two robot checks rest the shop (2 of 4 asks reached it) while another shop carried on; `shop-rest.json` written and read back (test file removed). **Not run:** a full `run` against production, `check.mjs` db/build/e2e (runner-only change). |
 | 2026-10-22 | app D-148 (7-day screen, tag, Home and Bag lines) | Claude Code, founder's Windows machine (`check.mjs typecheck lint test`) | typecheck 32.1 s, lint 56.1 s, test 5.6 s: OK (app tests 11, new `seven-day.test.ts`). In the app's web preview (`app-web`) on the local database with three local pieces briefly marked Blinkit (undone): Home's line, the 7-day screen and a pill, the tag on the region page, the Bag line, gone with one other piece. **Not run:** a phone or emulator (Android build), db, build, e2e. |
 | 2026-10-22 | 9ae158b + D-148 (7-day delivery) | Claude Code, founder's Windows machine with Docker (`check.mjs` all steps) | docs 0.8 s, typecheck 31.4 s, lint 63.0 s, test 6.1 s, build 104.1 s, http 4.5 s (/ 15 ms, /states/kerala 13 ms, /clothing 11 ms; / 129 KB first-load JS, none over budget), e2e 127.1 s, bundle 49.7 s: OK. db FAIL on the first run: `schema.test.sql`'s list of functions customers may call lacked the two new `store_quick_*` functions; added, db re-run alone OK 56.7 s (58 files, incl. new `seven_day.test.sql`, 19 assertions). In the browser on a local dev server with six local Blinkit pieces: Home's line, the 7-day page and its pills, the tag on See all, the bag line and the product page's date; no shop name in the page source. **Not run:** production (needs the Deploy workflow), the app. |

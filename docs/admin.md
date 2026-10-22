@@ -202,7 +202,9 @@ runner in `tools/sourcing-runner/` (its README says how to set it up on the PC a
   four). For a Shopify shop, Search words may name one of its collections, `collection:kurtis`:
   the whole collection (up to 250 pieces; Shopify's search stops at 10) is the target, every piece in it matches, and
   several targets on one collection take the next 40 each (run one after another). A target whose search failed on
-  every shop (blocked, "too many requests") goes back to the queue; the Nothing fit view has **Search all again**. Each
+  every shop (blocked, "too many requests") goes back to the queue; the Nothing fit view has **Search all again**. A
+  shop that shows two robot checks in a row rests 2, 6, then 24 hours: its targets wait in the queue and its listings'
+  checks wait, nothing is marked nothing fit or out of stock (D-149, the runner's README). Each
   target shows its state: waiting, being searched, found (how many listings), nothing fit (with why), paused; Search
   again, Pause, Remove.
 - **Found and waiting.** What the runner adds arrives as drafts (in Products → Drafts) unless "go live by themselves"

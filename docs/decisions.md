@@ -375,3 +375,31 @@ What it means for the build (migration `20261022120000_seven_day_delivery`, apps
 slower and dearer); "click here" is written "Click here." like "Start here."; the page's words and the card, bag and
 product-page lines are Claude's draft (D-059) until approved; the CSV has no ₹ band and leaves out butter, lighters and
 matches (Q-42).
+
+**D-149 · 2026-10-23 · founder: the sourcing runner rests a shop that blocks it**
+- Founder, verbatim (after every Blinkit search of the 7-day batch failed): "the env was the problem, i fixed it now I
+  ran it so it showed run: 0 checks due, 76 targets, 6 shops then on every item blinkit showed robot checked and
+  failed, then I stopped it, ran the setup again, signed in in every one and did address then ran again it now showed
+  0 checks due, 11 targets, 6 shops and same robot check failure. Research and design something resilient and strong."
+- What was found: Blinkit answers the runner with Cloudflare's block page (403, `cf-mitigated: challenge`, "access
+  denied, sorry, you have been blocked … your recent actions … might have led to this", a "Verify you are human" box).
+  A normal browser on the same connection still gets results, and the runner's own browser sometimes does: the block
+  follows the automated browsing (likely the 400-listing check earlier that day). From 13 to 19 October a robot check
+  came about once an hour and the next search passed; on 22 October every one failed. The runner then kept asking
+  Blinkit every few seconds, once per target, which strengthens such a block.
+What it means for the build (`tools/sourcing-runner/src/lanes.ts`, `rest.ts`, `packages/shared/src/sourcing/auto/shop-rest.ts`):
+- **Cloudflare's own check gets 20 seconds** to clear by itself in the page, as in anyone's browser; still there, it is
+  a robot check. The runner never clicks or solves one, and adds no disguise.
+- **Two robot checks in a row rest the shop**: nothing more is asked of it for 2 hours, 6 if it blocks again within two
+  days, then 24. The rest is kept on the PC (`tools/sourcing-runner/shop-rest.json`, not committed) so the next run
+  and the other terminal's runner leave the shop alone too; the run's first line names resting shops. The first block
+  of each run is saved as the shop showed it (`out/blocks/`).
+- **A block changes nothing in the catalogue:** a target whose shops rest, or that lost its pages to robot checks,
+  goes back to the queue (not "nothing fit"); a weekly check that met one writes nothing, so no source counts a failure
+  (two take it out of use) and the listing stays due.
+- **Ctrl+C puts the run's unsearched targets back in the queue** (before, they waited six hours as "being searched");
+  so does a target whose search crashed.
+- **`pnpm sourcing setup --type food`** opens that runner's own profile: a plain `setup` reaches only the main one,
+  which `--type` runners copied once.
+*Interpretation (proposed, confirm when convenient):* the numbers (two checks, 2 / 6 / 24 hours, 20 seconds) are
+Claude's; whether the 7-day targets may also search BigBasket, Zepto and Instamart while Blinkit refuses is Q-43.
