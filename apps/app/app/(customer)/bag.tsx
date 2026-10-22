@@ -6,10 +6,11 @@ import { formatUsd, regionSegment } from '@repo/shared/domain';
 
 import { Photo } from '@/components/photo';
 import { Body, Button, Label, Screen } from '@/components/ui';
-import { ChargeRows } from '@/features/cart/charges';
+import { ChargeRows, useQuickBag } from '@/features/cart/charges';
 import { bagSubtotalCents, MAX_QTY_PER_LINE, useBag } from '@/features/cart/store';
 import { ProductRow } from '@/features/catalog/product-row';
 import { StampGrid } from '@/features/regions/stamps';
+import { quickDaysLabel } from '@/features/seven-day/days';
 import { supabase } from '@/lib/supabase';
 import { useQuery } from '@/lib/use-query';
 
@@ -40,6 +41,7 @@ function EmptyBag(): React.JSX.Element {
 export default function BagScreen(): React.JSX.Element {
   const router = useRouter();
   const { lines, setQuantity } = useBag();
+  const quick = useQuickBag();
   const step = 'h-10 w-10 items-center justify-center';
 
   return (
@@ -96,6 +98,12 @@ export default function BagScreen(): React.JSX.Element {
             })}
           </View>
           <View className="gap-1">
+            {quick ? (
+              // D-148: only while every piece is a 7-day piece; one other piece and the bag comes in the normal window
+              <Text className="font-ui-semibold text-brand mb-1 text-[13px]">
+                Every piece here comes in {quickDaysLabel(quick.days_min, quick.days_max)} days, so your bag does too.
+              </Text>
+            ) : null}
             <View className="flex-row items-baseline justify-between gap-3">
               <Text className="font-ui text-ink text-base">Subtotal</Text>
               <Text className="font-ui-semibold text-ink text-base">{formatUsd(bagSubtotalCents(lines))}</Text>

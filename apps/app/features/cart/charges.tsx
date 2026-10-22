@@ -1,6 +1,6 @@
 import { Text, View } from 'react-native';
 
-import { getBagCharges, smallOrderOf, type BagCharges } from '@repo/db/store';
+import { getBagCharges, getQuickBag, smallOrderOf, type BagCharges, type QuickBag } from '@repo/db/store';
 import { bagChargesAt, bulkProgress, formatUsd } from '@repo/shared/domain';
 
 import { MeterLine } from './meter-line';
@@ -27,6 +27,18 @@ export function useBagCharges(): BagCharges | null {
         )
       : Promise.resolve(null),
   );
+  return key ? (data ?? null) : null;
+}
+
+/**
+ * D-148: the 7-day days while every piece in the bag is a 7-day piece, else null (the same store_quick_bag read as the
+ * website's /api/bag-charges `quick`). One query per set of pieces; quantities don't change it.
+ */
+export function useQuickBag(): QuickBag {
+  const lines = useBag((s) => s.lines);
+  const ids = lines.map((l) => l.variantId).sort();
+  const key = ids.join(',');
+  const { data } = useQuery(`quick-bag:${key}`, () => (key ? getQuickBag(supabase, ids) : Promise.resolve(null)));
   return key ? (data ?? null) : null;
 }
 

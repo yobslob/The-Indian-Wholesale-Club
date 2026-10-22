@@ -160,6 +160,11 @@ export const ProductCard = memo(function ProductCard({
               <View className="bg-paper rounded-pill absolute left-2.5 top-2.5 px-2.5 py-1">
                 <Text className="font-ui text-ink text-[11px]">{badge}</Text>
               </View>
+            ) : product.quick_days ? (
+              // D-148: a 7-day piece (its days from Settings); the bag keeps the promise only while it holds 7-day pieces alone
+              <View className="bg-brand rounded-pill absolute left-2.5 top-2.5 px-2.5 py-1">
+                <Text className="font-ui-semibold text-on-brand text-[11px]">In {product.quick_days} days</Text>
+              </View>
             ) : null}
             {product.pack ? (
               // D-122: a food piece's pack size on its photo
