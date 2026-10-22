@@ -12,6 +12,7 @@ import {
 } from '@repo/shared/sourcing/auto';
 
 import { shopOf, type RunContext } from './context';
+import { ShopResting } from './lanes';
 import { errorText, log } from './log';
 import { copyPhotos } from './photos';
 import { shopFor, type PageRead } from './shops';
@@ -46,7 +47,7 @@ async function search(
         log(`  ${shop.site}: ${offers.length} result${offers.length === 1 ? '' : 's'}`);
         return offers;
       } catch (error) {
-        ctx.stats.page(shop.site, error);
+        if (!(error instanceof ShopResting)) ctx.stats.page(shop.site, error);
         log(`  ${shop.site}: search failed: ${errorText(error)}`);
         failures += 1;
         return [];
@@ -75,7 +76,7 @@ export async function readPage(
     ctx.stats.page(site);
     return read;
   } catch (error) {
-    ctx.stats.page(site, error);
+    if (!(error instanceof ShopResting)) ctx.stats.page(site, error);
     log(`  ${site}: ${url} unread: ${errorText(error)}`);
     return null;
   }
@@ -195,6 +196,19 @@ export async function findForTarget(ctx: RunContext, target: SourcingTarget): Pr
       ? `, ₹${(target.min_price_paise ?? 0) / 100}–${target.max_price_paise ? target.max_price_paise / 100 : 'any'}`
       : '';
   log(`target "${target.name}" (${target.region ?? 'all states'}, ${target.category}${band})`);
+  // D-149: every shop it names is resting after robot checks: back to the queue without asking any of them
+  const resting = shopsFor(target, ctx.plan.shops).filter((shop) =>
+    ctx.lanes.restingUntil(shop.site),
+  );
+  if (resting.length && resting.length === shopsFor(target, ctx.plan.shops).length) {
+    if (ctx.db)
+      await ctx.db.releaseTarget(
+        target.id,
+        `${resting.map((s) => s.site).join(', ')} resting after robot checks`,
+      );
+    log(`  ${resting.map((s) => s.site).join(', ')} resting: the target goes back to the queue`);
+    return 0;
+  }
   const { offers, failed, failures, shops } = await search(ctx, target, want);
   if (failed) {
     // every shop failed to answer: not "nothing fit", so the target waits for the next run (Nishorama's 429s)
@@ -223,6 +237,17 @@ export async function findForTarget(ctx: RunContext, target: SourcingTarget): Pr
     } catch (error) {
       reasons.push(`${c.best.site}: ${errorText(error)}`);
     }
+  }
+  // D-149: nothing made while a shop it read showed robot checks: the pages were refused, not the target
+  const blocked = candidates.some((c) => ctx.lanes.of(c.best.site).troubled);
+  if (!added && blocked) {
+    if (ctx.db)
+      await ctx.db.releaseTarget(
+        target.id,
+        'a shop showed robot checks and nothing was added; searched again later',
+      );
+    log('  0 listings while a shop showed robot checks: the target goes back to the queue');
+    return 0;
   }
   // D-137: nothing made while half its shops or more failed to answer (Amazon of home's two): not "nothing fit", the
   // target waits for the next run. One flaky shop of food's six does not hold it.

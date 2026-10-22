@@ -1,5 +1,5 @@
-import type { Lanes } from './browser';
 import type { Db } from './db';
+import type { Lanes } from './lanes';
 import type { ShopStats } from './log';
 import type { SourcingPlan, SourcingShop } from '@repo/shared/sourcing/auto';
 

@@ -90,6 +90,8 @@ tools/photo-worker/worker.log*
 # outside the repo)
 tools/sourcing-runner/sourcing.log
 tools/sourcing-runner/home-weights.csv
+# the shops resting after robot checks (D-149), kept on the runner's PC
+tools/sourcing-runner/shop-rest.json
 
 # The weight estimator (tools/weight-estimator, D-131): its log, embeddings cache and clothing sheet
 tools/weight-estimator/estimator.log

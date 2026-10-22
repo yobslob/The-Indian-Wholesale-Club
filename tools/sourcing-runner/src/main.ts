@@ -1,6 +1,6 @@
 import { PRODUCT_TYPES } from '@repo/shared/domain';
 
-import { Lanes, openBrowser, profileFor } from './browser';
+import { openBrowser, profileFor } from './browser';
 import { runChecks } from './check';
 import { sortNewClothing } from './classes';
 import { DEFAULT_SHOPS, type RunContext } from './context';
@@ -9,6 +9,7 @@ import { loadEnv } from './env';
 import { findForTarget } from './find';
 import { weighFood } from './food';
 import { weighHome } from './home';
+import { Lanes } from './lanes';
 import { checkLiquids } from './liquids';
 import { errorText, log, setLogTag, ShopStats } from './log';
 import { describeNetError, resolveOverHttps } from './net';
@@ -19,7 +20,8 @@ import type { SourcingPlan } from '@repo/shared/sourcing/auto';
 
 /**
  * The sourcing runner (D-118). On a PC in India:
- *   pnpm sourcing setup                  open every shop once to set the hub's delivery address (kept in the profile)
+ *   pnpm sourcing setup [--type food]    open every shop once to set the hub's delivery address (kept in the profile;
+ *                                        --type: that runner's own profile, which a plain setup does not reach)
  *   pnpm sourcing run                    the weekly checks that are due, then the queued targets
  *   pnpm sourcing run --checks           only the checks      (--targets: only the targets)
  *   pnpm sourcing run --type clothing --shops nishorama.com    one product type (and shop) only, so two runners
@@ -45,9 +47,15 @@ const SETUP_PAGES = [
   'https://www.myntra.com/',
 ];
 
-async function setup(): Promise<void> {
+async function setup(args: string[]): Promise<void> {
   const env = loadEnv(false);
-  const context = await openBrowser(env, { headless: false, images: true });
+  const type = PRODUCT_TYPES.find((t) => t === flag(args, '--type')) ?? null;
+  // a runner with --type browses with its own copy of the profile (profileFor): set up that one
+  const context = await openBrowser(env, {
+    headless: false,
+    images: true,
+    profile: profileFor(env, type),
+  });
   for (const url of SETUP_PAGES) await (await context.newPage()).goto(url).catch(() => undefined);
   log(
     'Set the hub address (or its pincode) on each tab, then close the browser. The profile keeps it.',
@@ -114,6 +122,22 @@ async function run(args: string[]): Promise<number> {
   log(
     `run: ${plan.checks.length} checks due, ${targets.length} targets, ${plan.shops.length} shops`,
   );
+  // D-149: claimed targets not yet searched go back to the queue when the run is stopped (Ctrl+C), instead of
+  // waiting six hours as "being searched"
+  const unsearched = new Set(targets.map((t) => t.id));
+  let stopping = false;
+  const stop = (): void => {
+    if (stopping) process.exit(130);
+    stopping = true;
+    log(`stopping: ${unsearched.size} target${unsearched.size === 1 ? '' : 's'} back to the queue`);
+    void Promise.all(
+      [...unsearched].map((id) =>
+        db.releaseTarget(id, 'the run was stopped; searched again next run'),
+      ),
+    ).finally(() => process.exit(130));
+  };
+  process.once('SIGINT', stop);
+  process.once('SIGTERM', stop);
   const context = await openBrowser(env, {
     headless: env.IWC_SOURCING_HEADLESS === '1',
     images: false,
@@ -127,6 +151,8 @@ async function run(args: string[]): Promise<number> {
     known: new Set(plan.known),
     now: started,
   };
+  const resting = ctx.lanes.resting(plan.shops.map((s) => s.site));
+  if (resting.length) log(`resting after robot checks (D-149): ${resting.join(', ')}`);
   let added = 0;
   let errors = 0;
   try {
@@ -149,11 +175,14 @@ async function run(args: string[]): Promise<number> {
         batch.push(targets[i++]!);
       const found = await Promise.all(
         batch.map((t) =>
-          findForTarget(ctx, t).catch((error) => {
-            errors += 1;
-            log(`target "${t.name}" failed: ${errorText(error)}`);
-            return 0;
-          }),
+          findForTarget(ctx, t)
+            .catch(async (error) => {
+              errors += 1;
+              log(`target "${t.name}" failed: ${errorText(error)}`);
+              await db.releaseTarget(t.id, `the search stopped: ${errorText(error)}`);
+              return 0;
+            })
+            .finally(() => unsearched.delete(t.id)),
         ),
       );
       added += found.reduce((a, b) => a + b, 0);
@@ -226,7 +255,8 @@ async function dryRun(args: string[]): Promise<void> {
   const ctx: RunContext = {
     db: null,
     plan,
-    lanes: new Lanes(context),
+    // a dry run rests a shop for itself only
+    lanes: new Lanes(context, false),
     stats: new ShopStats(),
     known: new Set(),
     now: new Date(),
@@ -335,7 +365,7 @@ const main =
         : command === 'classes'
           ? classes()
           : command === 'setup'
-            ? setup()
+            ? setup(args)
             : command === 'run'
               ? run(args)
               : command === 'try'
@@ -345,7 +375,7 @@ const main =
                   : null;
 if (!main) {
   console.log(
-    'Usage: pnpm sourcing setup | doctor | classes | food [--all] | home [--dry] [--all] [--limit N] | liquids [--dry] [--all] | run [--checks|--targets] [--type clothing|food|home [--shops nishorama.com]] | try "<query>" --type food|clothing|home [--match "regex"]',
+    'Usage: pnpm sourcing setup [--type clothing|food|home] | doctor | classes | food [--all] | home [--dry] [--all] [--limit N] | liquids [--dry] [--all] | run [--checks|--targets] [--type clothing|food|home [--shops nishorama.com]] | try "<query>" --type food|clothing|home [--match "regex"]',
   );
   process.exit(2);
 }

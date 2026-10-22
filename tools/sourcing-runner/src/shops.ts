@@ -27,7 +27,7 @@ import {
   type ShopReader,
 } from '@repo/shared/sourcing/auto';
 
-import { open, type Lane } from './browser';
+import { open, type Lane } from './lanes';
 import * as read from './pages';
 
 import type { Page } from 'playwright';
