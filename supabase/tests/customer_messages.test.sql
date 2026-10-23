@@ -31,7 +31,8 @@ set local role authenticated;
 select tests.act_as(tests.id('cust_a'));
 select tests.assert(
   (select (public.store_my_order(o.order_number) -> 'actions') - 'returns' from public.store_orders o where o.id = tests.id('order_a'))
-  = '{"can_cancel": true, "cancel_refund_cents": 5400, "delay_open": true, "delay_refund_cents": 5400}'::jsonb,
+  = '{"can_cancel": true, "cancel_refund_cents": 5400, "delay_open": true, "delay_refund_cents": 5400,
+      "delay_shipment": null}'::jsonb,
   'D-073 / D-008: a cancel refunds everything, the tax included (it was the state''s money)');
 select tests.assert_fails(format('select public.keep_after_delay(%L)', tests.id('order_a')), 'admin_only',
   'customers decide through the website''s server, which checks the order email first');

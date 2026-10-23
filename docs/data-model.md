@@ -228,6 +228,25 @@ promo against the line, `quick_only` / `split` / `gap_cents`, `outside` (not the
 discount, state, line1)` returns Shipping at the $ a kg (else the fixed small-order Shipping), `past_line_cents` 0,
 `shown_shipping_cents` the same figure, `quick_free` and `shipments`; `create_order` stores the shipments it works
 out the same way (Express never splits). Tests: `shipments.test.sql`, `bag_charges.test.sql`.
+Migration `20261024090000_shipment_admin` (D-154, step 2): shipments run one at a time. `order_events.shipment_id`
+(the event is about that shipment; its `order_update` email row carries `shipment`, its seq). `ship_shipment(shipment,
+carrier, tracking)`: from the hub (a 7-day shipment; Express; any order without a cycle, the pilot) once its pieces
+are picked, else once the order's export has `arrived`; `deliver_shipment(shipment)`. The order follows its shipments
+(`_settle_order`, also after any piece's status changes): a shipment with nothing left to send is cancelled; the order
+is `shipped` once nothing is open, `delivered` once nothing is on its way, with the latest tracking. `ship_order` and
+`deliver_order` work on an order of one shipment (`order_has_two_shipments` otherwise), and so does
+`change_delivery_window`; an order of one shipment copies its window to it. `change_shipment_window(shipment, from,
+to, note)`: the delay notice for one shipment (the order's window spans its shipments); `_delay_shipment(order)` and
+`_delay_refund_cents(order)` (internal) scope `_delay_open` / `cancel_after_delay` to that shipment.
+`shipment_cancel_cents(shipment, reason)` and `admin_cancel_shipment(shipment, reason, amount, ref)`: one of two
+shipments cancelled (a 7-day one until its pieces are ordered or at the hub, the other until it leaves India): its
+pieces after their discount share, its Shipping share and their tax back (the cancel fee for the customer's own once at
+the hub). `customer_cancel` refuses (`quick_bought`), and `_order_actions.can_cancel` is false, once a 7-day shipment's
+pieces are bought; `_order_actions.delay_shipment`. `admin_to_order()` adds `buy_by` / `ship_by` (2 hours, 1 day) for a
+7-day piece; `admin_quick_watch()` counts open 7-day shipments, `not_bought` (2 hours) and `not_shipped` (a day).
+`_order_shipments_json(order)` (internal): `guest_order_lookup` and `store_my_order` add `shipments` (seq, kind,
+status, dates, Shipping share, carrier, tracking, `item_ids`); `store_order_events` and their events add `shipment`.
+Tests: `shipment_admin.test.sql`.
 Migration 80 (D-141, the photo store): a photo in Cloudflare R2 is recorded with an `s/` path
 (`products/<id>/s/<name>.jpg`, packages/shared media.ts). `worker_sourcing_media` accepts `products/<id>/s/<name>` as
 well as `products/<id>/<name>`; album photos may be `regions/<slug>/album/s/<name>`.

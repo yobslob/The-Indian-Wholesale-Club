@@ -198,14 +198,14 @@ isOneToOne: false
                   ]
                 },"order_events": {
                   Row: {
-                    "actor": string | null,"created_at": string,"id": string,"internal_note": string | null,"kind": string,"message": string | null,"order_id": string,"visible_to_customer": boolean
+                    "actor": string | null,"created_at": string,"id": string,"internal_note": string | null,"kind": string,"message": string | null,"order_id": string,"shipment_id": string | null,"visible_to_customer": boolean
                   }
                   ComputedFields: never
                   Insert: {
-                    "actor"?: string | null,"created_at"?: string,"id"?: string,"internal_note"?: string | null,"kind": string,"message"?: string | null,"order_id": string,"visible_to_customer"?: boolean
+                    "actor"?: string | null,"created_at"?: string,"id"?: string,"internal_note"?: string | null,"kind": string,"message"?: string | null,"order_id": string,"shipment_id"?: string | null,"visible_to_customer"?: boolean
                   }
                   Update: {
-                    "actor"?: string | null,"created_at"?: string,"id"?: string,"internal_note"?: string | null,"kind"?: string,"message"?: string | null,"order_id"?: string,"visible_to_customer"?: boolean
+                    "actor"?: string | null,"created_at"?: string,"id"?: string,"internal_note"?: string | null,"kind"?: string,"message"?: string | null,"order_id"?: string,"shipment_id"?: string | null,"visible_to_customer"?: boolean
                   }
                   Relationships: [
                     {
@@ -225,6 +225,12 @@ isOneToOne: false
       columns: ["order_id"]
 isOneToOne: false
       referencedRelation: "store_orders"
+      referencedColumns: ["id"]
+    },{
+      foreignKeyName: "order_events_shipment_id_fkey"
+      columns: ["shipment_id"]
+isOneToOne: false
+      referencedRelation: "order_shipments"
       referencedColumns: ["id"]
     }
                   ]
@@ -1513,7 +1519,7 @@ isOneToOne: false
                   ]
                 },"store_order_events": {
                   Row: {
-                    "created_at": string | null,"id": string | null,"kind": string | null,"message": string | null,"order_id": string | null
+                    "created_at": string | null,"id": string | null,"kind": string | null,"message": string | null,"order_id": string | null,"shipment": number | null
                   }
                   ComputedFields: never
                   Relationships: [
@@ -1706,6 +1712,9 @@ isOneToOne: false
 "_cancel_refund_cents":
 { Args: { "p_order": string,"p_reason": string }; Returns: number
                            },
+"_cancel_shipment":
+{ Args: { "p_amount": number,"p_note": string,"p_shipment": string,"p_why": string }; Returns: undefined
+                           },
 "_customer_cancel_cents":
 { Args: { "p_order": string }; Returns: number
                            },
@@ -1714,6 +1723,12 @@ isOneToOne: false
                            },
 "_delay_open":
 { Args: { "p_order": string }; Returns: boolean
+                           },
+"_delay_refund_cents":
+{ Args: { "p_order": string }; Returns: number
+                           },
+"_delay_shipment":
+{ Args: { "p_order": string }; Returns: string
                            },
 "_delivered_at":
 { Args: { "p_order": string }; Returns: string
@@ -1742,6 +1757,9 @@ isOneToOne: false
 "_link_vendor_account":
 { Args: { "p_by": string,"p_language": string,"p_user": string,"p_vendor": string }; Returns: undefined
                            },
+"_live_shipments":
+{ Args: { "p_order": string }; Returns: number
+                           },
 "_load_pricing_estimates":
 { Args: { "p_checked_on": string,"p_estimates": Json }; Returns: number
                            },
@@ -1762,6 +1780,9 @@ isOneToOne: false
 "_order_offer":
 { Args: { "p_order": string }; Returns: Json
                            },
+"_order_shipments_json":
+{ Args: { "p_order": string }; Returns: Json
+                           },
 "_price_ending":
 { Args: { "p_cents": number }; Returns: number
                            },
@@ -1770,6 +1791,9 @@ isOneToOne: false
                            },
 "_product_auto_price":
 { Args: { "p_category": string,"p_product": string,"p_shop_paise": number,"p_type": Database["public"]['Enums']["product_type"] }; Returns: number
+                           },
+"_quick_bought":
+{ Args: { "p_order": string }; Returns: boolean
                            },
 "_quick_days":
 { Args: { "p_product": string }; Returns: number
@@ -1798,6 +1822,18 @@ isOneToOne: false
                            },
 "_set_window":
 { Args: { "p_from": string,"p_kind": string,"p_note": string,"p_order": string,"p_to": string }; Returns: undefined
+                           },
+"_settle_order":
+{ Args: { "p_order": string }; Returns: undefined
+                           },
+"_shipment_bought":
+{ Args: { "p_shipment": string }; Returns: boolean
+                           },
+"_shipment_cancellable":
+{ Args: { "p_shipment": string }; Returns: boolean
+                           },
+"_shipment_refund_cents":
+{ Args: { "p_reason": string,"p_shipment": string }; Returns: number
                            },
 "_size_norm":
 { Args: { "p": string }; Returns: string
@@ -1881,6 +1917,9 @@ isOneToOne: false
 "admin_cancel_after_export_cents":
 { Args: { "p_order": string }; Returns: number
                            },
+"admin_cancel_shipment":
+{ Args: { "p_amount_cents": number,"p_reason": string,"p_refund_ref": string,"p_shipment": string }; Returns: undefined
+                           },
 "admin_create_listing":
 { Args: { "p_listing": Json }; Returns: string
                            },
@@ -1909,6 +1948,9 @@ isOneToOne: false
                            },
 "admin_publish_drafts":
 { Args: { "p_limit"?: number }; Returns: Json
+                           },
+"admin_quick_watch":
+{ Args: Record<PropertyKey, never>; Returns: Json
                            },
 "admin_rename_listings":
 { Args: { "p_items": Json }; Returns: number
@@ -1953,7 +1995,7 @@ isOneToOne: false
                            },
 "admin_to_order":
 { Args: Record<PropertyKey, never>; Returns: {
-              "delivery_days": number,"image_path": string,"in_stock": boolean,"item_key": string,"item_url": string,"now_paise": number,"order_id": string,"order_number": string,"ordered_on": string,"pickup_id": string,"product_id": string,"product_name": string,"quantity": number,"site": string,"sold_paise": number,"variant_label": string,"vendor_name": string
+              "buy_by": string,"delivery_days": number,"image_path": string,"in_stock": boolean,"item_key": string,"item_url": string,"now_paise": number,"order_id": string,"order_number": string,"ordered_on": string,"pickup_id": string,"product_id": string,"product_name": string,"quantity": number,"ship_by": string,"site": string,"sold_paise": number,"variant_label": string,"vendor_name": string
             }[]
                            },
 "admin_unmark_ordered":
@@ -1986,6 +2028,9 @@ isOneToOne: false
 "change_delivery_window":
 { Args: { "p_from": string,"p_note"?: string,"p_order": string,"p_to": string }; Returns: undefined
                            },
+"change_shipment_window":
+{ Args: { "p_from": string,"p_note"?: string,"p_shipment": string,"p_to": string }; Returns: undefined
+                           },
 "check_off_arrival":
 { Args: { "p_arrived"?: boolean,"p_pickup": string }; Returns: undefined
                            },
@@ -2008,6 +2053,9 @@ isOneToOne: false
                            },
 "deliver_order":
 { Args: { "p_order": string }; Returns: undefined
+                           },
+"deliver_shipment":
+{ Args: { "p_shipment": string }; Returns: undefined
                            },
 "dev_preview":
 { Args: Record<PropertyKey, never>; Returns: boolean
@@ -2068,6 +2116,12 @@ isOneToOne: false
                            },
 "ship_order":
 { Args: { "p_carrier": string,"p_order": string,"p_tracking": string }; Returns: undefined
+                           },
+"ship_shipment":
+{ Args: { "p_carrier": string,"p_shipment": string,"p_tracking": string }; Returns: undefined
+                           },
+"shipment_cancel_cents":
+{ Args: { "p_reason": string,"p_shipment": string }; Returns: number
                            },
 "store_bag_charges":
 { Args: { "p_discount_cents"?: number,"p_items": Json,"p_line1"?: string,"p_state"?: string }; Returns: Json
