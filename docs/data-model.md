@@ -257,6 +257,14 @@ whole type); `store_search(..., p_quick)` the same for search; `store_quick_fron
 or paused) gives the 7-day front page: days, the line (`min_cents`), the categories with a photo each, and the rows
 `most_ordered` (units in paid orders this week, never shown), `under_5` and `new_this_week` (light cards, 12 each);
 `store_policy()` adds `quick_delivery_min_cents` and `quick_delivery_on`. Tests: `seven_day_store.test.sql`.
+Migration `20261027090000_seven_day_insights` (D-154, step 5): `order_shipments.promised_to` (the last day promised when
+the order was placed, set by the `order_shipments_promise` trigger, `_shipment_promise()`; a delay moves
+`est_delivery_to`, never this). `admin_quick_insights(since)` (admin only): paid orders, those with a 7-day shipment and
+those split, the 7-day pieces after the promo against the line (within $5, $5 – $15, more), per kind of shipment due /
+on time / late / late with a delay notice sent before the promised day / open past it (delivered = its `delivered`
+event, on the US Eastern calendar), 7-day pieces refunded as unavailable, and the split's extra courier cost in paise
+(`_courier_paise(grams)`: Settings' first and next kg, at least 1 kg then by the half kg). Tests:
+`seven_day_insights.test.sql`.
 Migration 80 (D-141, the photo store): a photo in Cloudflare R2 is recorded with an `s/` path
 (`products/<id>/s/<name>.jpg`, packages/shared media.ts). `worker_sourcing_media` accepts `products/<id>/s/<name>` as
 well as `products/<id>/<name>`; album photos may be `regions/<slug>/album/s/<name>`.

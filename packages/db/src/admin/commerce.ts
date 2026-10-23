@@ -222,6 +222,36 @@ export async function getDemand(client: IwcClient, since: Date | null): Promise<
   return demandSchema.parse(data);
 }
 
+const quickShipmentsSchema = z.object({
+  kind: z.enum(['quick', 'standard', 'express']),
+  due: z.number(),
+  on_time: z.number(),
+  late: z.number(),
+  late_noticed: z.number(),
+  overdue: z.number(),
+});
+const quickInsightsSchema = z.object({
+  line_cents: z.number().nullable(),
+  orders: z.number(),
+  with_quick: z.number(),
+  split: z.number(),
+  past_line: z.object({ within_5: z.number(), within_15: z.number(), more: z.number() }),
+  shipments: z.array(quickShipmentsSchema),
+  unavailable: z.object({ pieces: z.number(), cents: z.number() }),
+  split_extra_paise: z.number(),
+});
+export type QuickInsights = z.infer<typeof quickInsightsSchema>;
+
+/**
+ * D-154 step 5: how the 7-day promise is kept, for paid orders placed since `since` (admin_quick_insights): orders with
+ * a 7-day shipment and split ones, 7-day pieces stopping just past the line, on time per kind of shipment (late ones
+ * with their notice), 7-day pieces refunded as unavailable, and the split's extra courier cost.
+ */
+export async function getQuickInsights(client: IwcClient, since: Date | null): Promise<QuickInsights> {
+  const data = unwrap(await client.rpc('admin_quick_insights', since ? { p_since: since.toISOString() } : {}, { get: true }));
+  return quickInsightsSchema.parse(data);
+}
+
 const attentionSchema = z.object({ errors_24h: z.number(), payments_to_check: z.number(), emails_stuck: z.number() });
 export type Attention = z.infer<typeof attentionSchema>;
 
