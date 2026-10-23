@@ -1,10 +1,11 @@
 'use client';
 
-import { useSearchParams } from 'next/navigation';
 import { useEffect, useRef, useState } from 'react';
 
 import { MOST, PAGE } from '@/features/catalog/browse-query';
 import { ProductCard } from '@/features/catalog/product-card';
+
+import { QUICK_CATEGORY_EVENT } from './category-link';
 
 import type { QuickPage } from '@repo/db/store';
 
@@ -19,12 +20,13 @@ const pillOf = (chosen: boolean): string =>
  * the cards, from /api/seven-day (the same cached read as the page); the page around them stays. D-154: the address
  * carries the category (?category=, from a tile or the header's links), and a pill writes it there without a reload.
  */
-export function QuickView({ initial, address = null }: { initial: QuickPage; address?: string | null }): React.JSX.Element {
+export function QuickView({ initial }: { initial: QuickPage }): React.JSX.Element {
   const [category, setCategory] = useState<string | null>(null);
   const [products, setProducts] = useState(initial.products);
   const [total, setTotal] = useState(initial.total);
   const [loading, setLoading] = useState<'replace' | 'append' | null>(null);
   const asked = useRef(0);
+  const chosen = useRef<string | null>(null);
 
   async function load(next: string | null, offset: number): Promise<void> {
     const ask = ++asked.current;
@@ -46,15 +48,24 @@ export function QuickView({ initial, address = null }: { initial: QuickPage; add
 
   const known = (slug: string | null): string | null => (initial.categories.some((c) => c.slug === slug) ? slug : null);
   const choose = (next: string | null): void => {
-    if (next === category) return;
+    if (next === chosen.current) return;
+    chosen.current = next;
     setCategory(next);
     void load(next, 0);
   };
-  // The address's category (a tile, the header, Back): Next keeps useSearchParams in step with replaceState.
+  // The address's category: on arrival, after a tile or a header link on this page (category-link.tsx), and on Back
+  // or Forward. Read from the address rather than useSearchParams, whose Suspense boundary the build's types refuse.
   useEffect(() => {
-    choose(known(address));
+    const read = (): void => choose(known(new URLSearchParams(window.location.search).get('category')));
+    read();
+    window.addEventListener(QUICK_CATEGORY_EVENT, read);
+    window.addEventListener('popstate', read);
+    return () => {
+      window.removeEventListener(QUICK_CATEGORY_EVENT, read);
+      window.removeEventListener('popstate', read);
+    };
     // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, [address]);
+  }, []);
   const pick = (next: string | null): void => {
     const url = new URL(window.location.href);
     if (next) url.searchParams.set('category', next);
@@ -103,9 +114,4 @@ export function QuickView({ initial, address = null }: { initial: QuickPage; add
       ) : null}
     </div>
   );
-}
-
-/** The list with the address's ?category= (inside a Suspense boundary, so the cached page still draws every card). */
-export function QuickViewFromAddress({ initial }: { initial: QuickPage }): React.JSX.Element {
-  return <QuickView initial={initial} address={useSearchParams().get('category')} />;
 }

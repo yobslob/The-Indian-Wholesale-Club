@@ -1,5 +1,4 @@
 import { notFound } from 'next/navigation';
-import { Suspense } from 'react';
 
 import { formatUsd, quickArrivesLine } from '@repo/shared/domain';
 
@@ -8,7 +7,7 @@ import { getQuickFrontCached, quickPageCached } from '@/features/catalog/data';
 import { ProductRow, sectionHeading } from '@/features/catalog/product-row';
 import { QuickArrives } from '@/features/seven-day/quick-arrives';
 import { QuickTiles } from '@/features/seven-day/quick-tiles';
-import { QuickView, QuickViewFromAddress } from '@/features/seven-day/quick-view';
+import { QuickView } from '@/features/seven-day/quick-view';
 
 import type { Metadata } from 'next';
 
@@ -73,9 +72,7 @@ export default async function SevenDayPage(): Promise<React.JSX.Element> {
               Everything in the 7-day store
             </h2>
             {/* The address's ?category= (a tile, the header) is read in the browser, so the page stays one cached page */}
-            <Suspense fallback={<QuickView initial={page} />}>
-              <QuickViewFromAddress initial={page} />
-            </Suspense>
+            <QuickView initial={page} />
           </section>
         </>
       )}

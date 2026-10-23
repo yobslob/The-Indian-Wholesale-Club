@@ -1,7 +1,7 @@
-import Link from 'next/link';
-
 import { StorePhoto } from '@/features/catalog/store-photo';
-import { mediaUrl, QUICK_HOME } from '@/lib/site';
+import { mediaUrl } from '@/lib/site';
+
+import { QuickCategoryLink } from './category-link';
 
 import type { QuickFront } from '@repo/db/store';
 
@@ -16,7 +16,7 @@ export function QuickTiles({ categories }: { categories: NonNullable<QuickFront>
       <ul className="m-0 grid list-none grid-cols-3 gap-[var(--gap)] p-0 sm:grid-cols-4 lg:grid-cols-6">
         {categories.map((c) => (
           <li key={c.slug}>
-            <Link href={`${QUICK_HOME}?category=${c.slug}#all`} className="group block">
+            <QuickCategoryLink slug={c.slug} className="group block">
               <span className="bg-land relative block aspect-square overflow-hidden rounded-lg">
                 {c.image_path ? (
                   <StorePhoto
@@ -31,7 +31,7 @@ export function QuickTiles({ categories }: { categories: NonNullable<QuickFront>
               <span className="text-ink-muted font-ui block text-xs">
                 {c.count} {c.count === 1 ? 'piece' : 'pieces'}
               </span>
-            </Link>
+            </QuickCategoryLink>
           </li>
         ))}
       </ul>
