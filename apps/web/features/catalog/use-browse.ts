@@ -2,7 +2,7 @@
 
 import { useCallback, useEffect, useLayoutEffect, useRef, useState } from 'react';
 
-import { browseHref, browseSearch, PAGE, parseBrowseQuery, sameQuery, type BrowseQuery } from './browse-query';
+import { browseHref, browseSearch, inQuickStore, PAGE, parseBrowseQuery, sameQuery, type BrowseQuery } from './browse-query';
 
 import type { BrowsePage } from '@repo/db/store';
 import type { ProductType } from '@repo/shared/domain';
@@ -35,6 +35,12 @@ function readSnapshot(): Snapshot | null {
   } catch {
     return null;
   }
+}
+
+/** The address's filters, inside the 7-day store when the page is one of its own (D-154). */
+function addressQuery(inQuick: boolean): BrowseQuery {
+  const q = parseBrowseQuery(new URLSearchParams(window.location.search));
+  return inQuick ? inQuickStore(q) : q;
 }
 
 interface Entry {
@@ -71,6 +77,7 @@ export function useBrowse(productType: ProductType, initialQuery: BrowseQuery, i
   const restoreTo = useRef<{ y: number; products: Cards } | null>(null);
   const settled = useRef(false);
   const saveRef = useRef<(y: number) => void>(() => undefined);
+  const inQuick = initialQuery.inQuick === true;
 
   const load = useCallback(
     async (q: BrowseQuery, offset: number, limit: number): Promise<BrowsePage | null> => {
@@ -148,7 +155,7 @@ export function useBrowse(productType: ProductType, initialQuery: BrowseQuery, i
     }
     settled.current = true;
     entry.current = tagEntry(null, false);
-    const fromUrl = parseBrowseQuery(new URLSearchParams(window.location.search));
+    const fromUrl = addressQuery(inQuick);
     if (!sameQuery(fromUrl, initialQuery)) void replace(fromUrl);
     // once, on arrival
     // eslint-disable-next-line react-hooks/exhaustive-deps
@@ -168,12 +175,12 @@ export function useBrowse(productType: ProductType, initialQuery: BrowseQuery, i
         restoreTo.current = { y: snap.scrollY, products: snap.products };
       } else {
         entry.current = tagEntry(null, false);
-        void replace(parseBrowseQuery(new URLSearchParams(window.location.search)));
+        void replace(addressQuery(inQuick));
       }
     };
     window.addEventListener('popstate', onPop);
     return () => window.removeEventListener('popstate', onPop);
-  }, [replace]);
+  }, [replace, inQuick]);
 
   // The scroll position, kept in a ref while reading (cheap) and written with the snapshot on the way out.
   useEffect(() => {

@@ -119,8 +119,9 @@ const rewrites = nextConfig.rewrites ? await nextConfig.rewrites() : [];
 const rewriteRules = Array.isArray(rewrites) ? rewrites : [...(rewrites.beforeFiles ?? []), ...(rewrites.afterFiles ?? [])];
 const rewritten = new Set(
   rewriteRules.flatMap((r) => {
-    const alt = r.source.match(/^\/:\w+\(([^)]+)\)$/);
-    return alt ? alt[1].split('|').map((s) => `/${s}`) : [r.source];
+    // /:type(clothing|food) and, inside the 7-day store (D-154), /7-day-delivery/:type(food|home-and-gifts)
+    const alt = r.source.match(/^(.*)\/:\w+\(([^)]+)\)$/);
+    return alt ? alt[2].split('|').map((s) => `${alt[1]}/${s}`) : [r.source];
   }),
 );
 const internal = rewriteRules.map((r) => '/' + r.destination.split('/')[1]);
@@ -130,7 +131,8 @@ const documented = new Set(
   ),
 );
 for (const route of webRoutes) {
-  if (internal.some((prefix) => route === prefix || route.startsWith(`${prefix}/`))) continue;
+  // the dynamic route a rewrite serves (/see-all/[type]/…, /7-day-delivery/[type]/[category]), not its plain pages
+  if (internal.some((prefix) => route.startsWith(`${prefix}/`) && route.includes('['))) continue;
   if (!documented.has(route === '/' ? '/' : route))
     problems.push(`docs/storefront.md: page ${route} is not listed`);
 }

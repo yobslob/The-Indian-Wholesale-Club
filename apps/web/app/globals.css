@@ -303,37 +303,43 @@
     opacity: 0;
   }
 
-  /* D-154: the store switch, a row at the top of the header on every page (full width on phones). One pill with a
+  /* D-154: the store switch, a small frosted pill floating just under the header on every page, centred, riding with
+     it as the page scrolls (it hangs below the header, so --top-h stays the header's own height). One pill with a
      thumb that slides to the store the shopper is in: light paper in the IWC store, the brand colour in the 7-day
      store, where the header's bottom edge turns to the jewellery drawer's gold stitch (D-144). The thumb glides in
      240 ms with a slight spring and glows once, like the free-delivery pill (D-116); at once with reduced motion. */
-  :root:has(.site-stores) {
-    --top-h: 124px;
-  }
-  @media (max-width: 767px) {
-    :root:has(.site-stores) {
-      --top-h: 108px;
-    }
-  }
   .site-stores {
+    position: absolute;
+    inset: 100% 0 auto;
     display: flex;
     justify-content: center;
-    padding: 8px var(--gut) 0;
+    padding-top: 10px;
+    pointer-events: none;
+  }
+  /* the page starts below the pill, so it covers nothing until the page scrolls under it */
+  :root:has(.site-stores) .store-main:not(:has(> [data-bleed])) {
+    padding-top: calc(2rem + 30px);
   }
   .store-switch {
     position: relative;
     display: grid;
     grid-template-columns: 1fr 1fr;
-    width: 100%;
-    height: 44px;
+    width: 224px;
+    height: 36px;
     padding: 3px;
     border-radius: 9999px;
-    background: color-mix(in srgb, var(--ink) 6%, var(--canvas));
-    box-shadow: inset 0 0 0 1px var(--line);
+    pointer-events: auto;
+    background: color-mix(in srgb, var(--paper) 72%, transparent);
+    box-shadow:
+      inset 0 0 0 1px color-mix(in srgb, var(--line) 80%, transparent),
+      0 6px 24px rgb(20 17 15 / 0.12);
+    -webkit-backdrop-filter: blur(20px) saturate(1.5);
+    backdrop-filter: blur(20px) saturate(1.5);
   }
   @media (min-width: 768px) {
     .store-switch {
-      width: 360px;
+      width: 272px;
+      height: 38px;
     }
   }
   .store-thumb {
@@ -366,9 +372,9 @@
     justify-content: center;
     border-radius: 9999px;
     color: var(--muted);
-    font-size: 13px;
+    font-size: 12px;
     font-weight: 600;
-    line-height: 1.15;
+    line-height: 1.1;
     letter-spacing: 0.01em;
     transition: color 0.24s;
   }
@@ -383,7 +389,7 @@
     outline-offset: 2px;
   }
   .store-tab-date {
-    font-size: 10.5px;
+    font-size: 9.5px;
     font-weight: 500;
     opacity: 0.85;
     white-space: nowrap;
@@ -1462,5 +1468,59 @@ html[data-free-bar] .site-footer {
   body:has(.invoice-print) .invoice-print {
     position: absolute;
     inset: 0 0 auto 0;
+  }
+}
+
+/* Phones (founder, 2026-10-24): smaller cards. Rows take 148 px cards (product-row.tsx); See all's food and home
+   grids (data-dense, browse-view.tsx) go three to a row, with a smaller heart, +, chips and words. Clothing keeps two:
+   its photos need the width. Outside the layers, so these win over the cards' own utility classes. */
+@media (max-width: 639px) {
+  [data-card-grid][data-dense] {
+    grid-template-columns: repeat(3, minmax(0, 1fr));
+    column-gap: 10px;
+    row-gap: 22px;
+  }
+  [data-dense] .product-card a.bg-land {
+    border-radius: 14px;
+  }
+  [data-dense] .product-card .heart,
+  [data-dense] .product-card .quick-add {
+    width: 32px;
+    height: 32px;
+  }
+  [data-dense] .product-card .heart svg,
+  [data-dense] .product-card .quick-add svg {
+    width: 16px;
+    height: 16px;
+  }
+  [data-dense] .product-card [data-card-plus] button {
+    width: 28px;
+    height: 28px;
+    font-size: 15px;
+  }
+  [data-dense] .product-card [data-card-plus] {
+    right: 6px;
+    bottom: 6px;
+  }
+  [data-dense] .product-card-chip {
+    left: 6px;
+    padding: 2px 6px;
+    font-size: 10px;
+  }
+  [data-dense] .product-card-chip.bottom-3\.5 {
+    bottom: 6px;
+  }
+  [data-dense] .product-card-chip.top-3\.5 {
+    top: 6px;
+  }
+  [data-dense] .product-card-text {
+    padding: 8px 2px 0 4px;
+  }
+  [data-dense] .product-card-name {
+    font-size: 12.5px;
+    line-height: 1.3;
+  }
+  [data-dense] .product-card-meta {
+    font-size: 11.5px;
   }
 }

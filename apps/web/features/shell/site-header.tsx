@@ -3,8 +3,7 @@ import Link from 'next/link';
 import { quickArrivesLine } from '@repo/shared/domain';
 
 import { CartLink } from '@/features/cart/cart-link';
-import { QuickCategoryLink } from '@/features/seven-day/category-link';
-import { isInfoPath } from '@/lib/site';
+import { isInfoPath, QUICK_HOME } from '@/lib/site';
 
 import { HeaderIcon } from './header-icons';
 import { LogoText } from './logo';
@@ -60,12 +59,14 @@ export function SiteHeader({ quick = null }: { quick?: QuickNav }): React.JSX.El
             quick={
               <>
                 <span className="site-type">
-                  <QuickCategoryLink slug={null}>All</QuickCategoryLink>
+                  <NavLink href={QUICK_HOME} exact>
+                    All
+                  </NavLink>
                 </span>
                 {/* the names are long ("Rice, Flours & Staples"): two fit beside the logo below 1280 px, four above */}
                 {quick?.categories.map((c, i) => (
                   <span key={c.slug} className={`site-type whitespace-nowrap ${i > 1 ? 'max-xl:hidden' : ''}`}>
-                    <QuickCategoryLink slug={c.slug}>{c.name}</QuickCategoryLink>
+                    <NavLink href={c.href}>{c.name}</NavLink>
                   </span>
                 ))}
               </>

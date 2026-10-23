@@ -67,6 +67,17 @@ function seeAllRewrites() {
       destination: `/see-all/:type/${keys.map((k) => (used.includes(k) ? `:${k}` : k === 'show' ? '24' : 'all')).join('/')}`,
     }));
 }
+/**
+ * D-154: the 7-day store's See all pages, /7-day-delivery/food and /7-day-delivery/home-and-gifts with ?category= →
+ * /7-day-delivery/<type>/<category> ("all" when absent). Its other filters are read in the browser.
+ */
+function quickRewrites() {
+  const source = '/7-day-delivery/:type(food|home-and-gifts)';
+  return [
+    { source, has: [{ type: 'query', key: 'category', value: '(?<category>[a-z0-9-]{1,80})' }], destination: '/7-day-delivery/:type/:category' },
+    { source, destination: '/7-day-delivery/:type/all' },
+  ];
+}
 const supabaseWs = supabaseOrigin.replace(/^http/, 'ws');
 // React Fast Refresh needs eval in development only.
 const devEval = process.env.NODE_ENV === 'production' ? '' : " 'unsafe-eval'";
@@ -107,7 +118,7 @@ const nextConfig = {
   // The See all pages and their filters are served from one cached route (app/(store)/see-all), like the state pages,
   // instead of rendering on every request; the address in the browser stays /clothing?state=kerala (D-011, PR-1).
   async rewrites() {
-    return { beforeFiles: [...mediaRewrites(), ...seeAllRewrites()] };
+    return { beforeFiles: [...mediaRewrites(), ...seeAllRewrites(), ...quickRewrites()] };
   },
   // D-110: Spices became Food; old links keep working.
   async redirects() {

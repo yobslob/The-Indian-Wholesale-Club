@@ -20,7 +20,7 @@ type CardData = ProductCardData & Partial<Pick<RegionProductCard, 'available' | 
  */
 const SIZES = {
   row: {
-    md: '(min-width: 1322px) 304px, (min-width: 766px) 23vw, 176px',
+    md: '(min-width: 1322px) 304px, (min-width: 766px) 23vw, (min-width: 640px) 176px, 148px',
     sm: '(min-width: 1318px) 224px, (min-width: 871px) 17vw, 148px',
   },
   grid: {
@@ -60,7 +60,7 @@ export function ProductCard({
   const href = productPath(product.region_slug, product.slug);
   const small = size === 'sm';
   return (
-    <article className="relative min-w-0">
+    <article className="product-card relative min-w-0">
       <div className="relative">
         <Link
           href={href}
@@ -75,7 +75,7 @@ export function ProductCard({
               className="duration-slow object-cover transition-transform group-hover:scale-[1.025]"
             />
           ) : (
-            <span className="text-ink-muted font-ui absolute inset-0 grid place-items-center text-xs">
+            <span className="text-ink-muted font-ui absolute inset-0 grid place-items-center px-2 text-center text-xs">
               Photo coming soon
             </span>
           )}
@@ -85,13 +85,13 @@ export function ProductCard({
             </span>
           ) : product.quick_days ? (
             // D-148: a 7-day piece (its days from Settings); the bag keeps the promise only while it holds 7-day pieces alone
-            <span className="bg-brand text-on-brand font-ui rounded-pill absolute left-3.5 top-3.5 px-2.5 py-1 text-xs font-semibold">
+            <span className="product-card-chip bg-brand text-on-brand font-ui rounded-pill absolute left-3.5 top-3.5 px-2.5 py-1 text-xs font-semibold">
               In {product.quick_days} days
             </span>
           ) : null}
           {product.pack ? (
             // D-122: a food piece's pack size, so two prices read side by side make sense
-            <span className="bg-paper/75 font-ui rounded-pill absolute bottom-3.5 left-3.5 px-2.5 py-1 text-xs font-semibold backdrop-blur-md">
+            <span className="product-card-chip bg-paper/75 font-ui rounded-pill absolute bottom-3.5 left-3.5 px-2.5 py-1 text-xs font-semibold backdrop-blur-md">
               {product.pack}
             </span>
           ) : null}
@@ -133,14 +133,14 @@ export function ProductCard({
           </div>
         ) : null}
       </div>
-      <div className={small ? 'pl-2 pt-2.5' : 'pl-3.5 pr-1.5 pt-3.5'}>
+      <div className={`product-card-text ${small ? 'pl-2 pt-2.5' : 'pl-3.5 pr-1.5 pt-3.5'}`}>
         <Link
           href={href}
-          className={`font-ui block font-semibold leading-snug ${small ? 'text-[13.5px]' : 'text-[15px]'}`}
+          className={`product-card-name font-ui block font-semibold leading-snug ${small ? 'text-[13.5px]' : 'text-[15px]'}`}
         >
           {product.name}
         </Link>
-        <span className={`text-ink-muted ${small ? 'text-[13px]' : 'text-sm'}`}>
+        <span className={`product-card-meta text-ink-muted ${small ? 'text-[13px]' : 'text-sm'}`}>
           {product.coming_soon ? 'Coming soon' : formatUsd(product.price_cents)}
           {product.region_name ? ` · ${product.region_name}` : null}
         </span>

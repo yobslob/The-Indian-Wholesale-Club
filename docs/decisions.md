@@ -468,3 +468,11 @@ What it means for the build:
   delivery-window change for it was sent on or before that day. The split's extra courier cost is the two parcels'
   courier charge less one parcel of both (Settings' ₹ a kg, at least 1 kg then by the half kg, food at its billed %).
   The app has no Insights screen, so this is web only.
+- Founder, 2026-10-24 (web): "I want the same aesthetics for 7-day store as the main one, when clicked on category it
+  should open up, filters all over"; "Design aesthetically for smaller screen viewers lower the size cards for them";
+  "The switch pill should be smaller, hovering over the page under the nav bar". Built as: the 7-day store's own See
+  all pages (`/7-day-delivery/food`, `/7-day-delivery/home-and-gifts`, `?category=`), the IWC store's See all with only
+  7-day pieces; tiles, the header's categories and the front page's new Food and Home & gifts rows open them (the front
+  page's pills and full list are gone, as is `/api/seven-day`). On phones row cards are 148 px and food and home See
+  all grids three to a row (clothing keeps two). The switch is a 272 × 38 px frosted pill under the header (224 × 36
+  on phones). The app is unchanged.

@@ -26,7 +26,8 @@ export function ProductStrip<T extends CardData>({
   size?: 'md' | 'sm';
   badge?: (p: T) => React.ReactNode;
 }): React.JSX.Element {
-  const width = size === 'sm' ? 'w-[clamp(148px,17vw,224px)]' : 'w-[clamp(176px,23vw,304px)]';
+  // phones: a smaller card, so more than two show at once (founder, 2026-10-24)
+  const width = size === 'sm' ? 'w-[clamp(148px,17vw,224px)]' : 'w-[148px] sm:w-[clamp(176px,23vw,304px)]';
   return (
     <RowScroller label={label}>
       {products.map((p, i) => (

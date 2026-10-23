@@ -50,8 +50,10 @@ export function BrowseView({
   const categoryName = meta.categories.find((c) => c.slug === query.category)?.name;
   const price = priceLabel(query);
   const whoName = query.who ? WHO_LABEL[query.who] : undefined;
-  const quickName = query.quick && quickDays ? `In ${quickDays} days` : undefined;
-  const chosen = Boolean(query.state || query.category || price || query.sizes.length || query.who || query.quick);
+  // D-154: on the 7-day store's own pages every piece is a 7-day piece: no Delivery filter, chip or tag on the cards
+  const inQuick = query.inQuick === true;
+  const quickName = query.quick && quickDays && !inQuick ? `In ${quickDays} days` : undefined;
+  const chosen = Boolean(query.state || query.category || price || query.sizes.length || query.who || quickName);
 
   /** A filter applied: the cards swap in place; if the reader is far down, back to the top of the cards. */
   const change = (next: BrowseQuery): void => {
@@ -79,8 +81,10 @@ export function BrowseView({
       </a>
     );
   };
-  const clearAll = withFilter(query, { state: undefined, category: undefined, who: undefined, min: undefined, max: undefined, sizes: [], quick: undefined });
-  const panel = <FilterPanel productType={productType} query={query} meta={meta} quickDays={quickDays} onChange={change} />;
+  const clearAll = withFilter(query, { state: undefined, category: undefined, who: undefined, min: undefined, max: undefined, sizes: [], quick: inQuick || undefined });
+  const panel = (
+    <FilterPanel productType={productType} query={query} meta={meta} quickDays={inQuick ? null : quickDays} onChange={change} />
+  );
 
   return (
     <>
@@ -158,13 +162,15 @@ export function BrowseView({
           ) : (
             <div
               data-card-grid=""
+              // food and home three to a row on phones (globals.css); clothing keeps two, its photos need the width
+              data-dense={productType === 'clothing' ? undefined : ''}
               aria-busy={loading === 'replace'}
               className={`drift drift-side grid grid-cols-2 gap-x-[var(--gap)] gap-y-[clamp(28px,3vw,44px)] transition-opacity duration-200 lg:grid-cols-3 2xl:grid-cols-4 ${
                 loading === 'replace' ? 'opacity-50' : ''
               }`}
             >
               {products.map((p) => (
-                <ProductCard key={p.id} product={p} layout="side" />
+                <ProductCard key={p.id} product={inQuick ? { ...p, quick_days: null } : p} layout="side" />
               ))}
               {Array.from({ length: Math.ceil(meta.drawer.length / DRAWER_SIZE) }, (_, k) => {
                 const cards = products.slice(k * DRAWER_EVERY, (k + 1) * DRAWER_EVERY).length;

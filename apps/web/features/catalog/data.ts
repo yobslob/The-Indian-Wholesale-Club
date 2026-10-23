@@ -16,6 +16,7 @@ import {
   type BrowseFilter,
 } from '@repo/db/store';
 
+import { quickCategories } from '@/features/seven-day/links';
 import { storeClient } from '@/lib/supabase/store';
 
 import { slimCards } from './slim-cards';
@@ -88,8 +89,8 @@ export const browseCached = (filter: BrowseFilter) =>
   );
 
 /**
- * The 7-day page and its category pills and Show more (/api/seven-day, D-148): light cards like See all, refreshed with
- * it (listingsTag) when listings change. One entry per category and page.
+ * The 7-day store's first cards and its categories with their types (D-148): Home's "Arrives in 7 days" row and the
+ * front page's tiles, refreshed with the listings (listingsTag). One entry per category and page.
  */
 export const quickPageCached = (category: string | null, offset: number, limit: number) =>
   cached(['store-quick', category ?? '', String(offset), String(limit)], [listingsTag], () =>
@@ -105,13 +106,16 @@ export const getQuickFrontCached = () => cached(['store-quick-front'], [listings
  */
 export const getQuickNavCached = () =>
   cached(['store-quick-nav'], [], async () => {
-    const front = await getQuickFront(storeClient());
-    // an empty 7-day store has no door
+    const [front, page] = await Promise.all([
+      getQuickFront(storeClient()),
+      getQuickPage(storeClient(), { offset: 0, limit: 1 }),
+    ]);
+    // an empty 7-day store has no door; a category's link needs its type (/7-day-delivery/food?category=sweets)
     return front && front.total > 0
       ? {
           daysMin: front.days_min,
           daysMax: front.days_max,
-          categories: front.categories.slice(0, 4).map((c) => ({ slug: c.slug, name: c.name })),
+          categories: quickCategories(front.categories, page.categories).slice(0, 4),
         }
       : null;
   });

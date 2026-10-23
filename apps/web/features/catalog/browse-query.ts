@@ -2,6 +2,8 @@ import { z } from 'zod';
 
 import { PRODUCT_TYPE_PATH, type ProductType } from '@repo/shared/domain';
 
+import { QUICK_HOME } from '@/lib/site';
+
 import type { BrowseFilter, BrowsePage, BrowseSort } from '@repo/db/store';
 
 /**
@@ -21,6 +23,11 @@ export interface BrowseQuery {
   sort: BrowseSort;
   /** D-154: "Delivery: in 7 days", only 7-day pieces. */
   quick?: boolean;
+  /**
+   * The 7-day store's own See all page (/7-day-delivery/food): only 7-day pieces, always, so the address leaves out
+   * ?delivery= and the page has no Delivery filter. Set by the page, never read from the address.
+   */
+  inQuick?: true;
   /** How many cards are drawn ("Show more", D-067); absent = the first page. */
   show?: number;
 }
@@ -97,11 +104,15 @@ export function browseSearch(q: BrowseQuery): string {
   return p.toString();
 }
 
-/** The address customers see: /clothing?state=kerala&category=sarees&size=M. */
+/** The address customers see: /clothing?state=kerala&category=sarees&size=M, or in the 7-day store /7-day-delivery/food. */
 export function browseHref(productType: ProductType, q: BrowseQuery): string {
-  const search = browseSearch(q);
-  return search ? `${PRODUCT_TYPE_PATH[productType]}?${search}` : PRODUCT_TYPE_PATH[productType];
+  const path = q.inQuick ? `${QUICK_HOME}${PRODUCT_TYPE_PATH[productType]}` : PRODUCT_TYPE_PATH[productType];
+  const search = browseSearch(q.inQuick ? { ...q, quick: undefined } : q);
+  return search ? `${path}?${search}` : path;
 }
+
+/** A query on the 7-day store's own pages: only 7-day pieces (D-154). */
+export const inQuickStore = (q: BrowseQuery): BrowseQuery => ({ ...q, quick: true, inQuick: true });
 
 /** The database read for a set of filters: cards offset … offset + limit. */
 export const toBrowseFilter = (productType: ProductType, q: BrowseQuery, offset: number, limit: number): BrowseFilter => ({
