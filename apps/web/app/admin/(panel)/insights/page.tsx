@@ -1,10 +1,11 @@
 import Link from 'next/link';
 
-import { getDemand, getSales, type Sales } from '@repo/db/admin';
+import { getDemand, getQuickInsights, getSales, type Sales } from '@repo/db/admin';
 import { formatUsd } from '@repo/shared/domain';
 
 import { PRODUCT_STATUS, StatusChip } from '@/features/admin/chips';
 import { requireAdminPage } from '@/features/admin/guard';
+import { QuickInsightsSection } from '@/features/admin/quick-insights';
 import { Cell, Empty, PageHead, rupees, SectionTitle, Table, Tabs } from '@/features/admin/ui';
 
 type SearchParams = Promise<{ period?: string }>;
@@ -40,14 +41,19 @@ function SalesTable({ title, rows, shop }: { title: string; rows: Sales['by_regi
 /**
  * Insights (admin.md): real numbers only, computed in SQL, never estimated or fabricated (C7). Sales by state, category
  * and shop; what customers search for, including searches that found nothing (what to list next), and what they save.
- * Revenue is the pieces' prices before tax and shipping, for paid orders that were not cancelled.
+ * Revenue is the pieces' prices before tax and shipping, for paid orders that were not cancelled. D-154: how the 7-day
+ * promise is kept (quick-insights.tsx).
  */
 export default async function InsightsPage({ searchParams }: { searchParams: SearchParams }): Promise<React.JSX.Element> {
   const { client } = await requireAdminPage();
   const wanted = (await searchParams).period;
   const period = PERIODS.find((p) => p.key === wanted) ?? PERIODS[0];
   const since = period.days === null ? null : new Date(Date.now() - period.days * 86_400_000);
-  const [sales, demand] = await Promise.all([getSales(client, since), getDemand(client, since)]);
+  const [sales, demand, quick] = await Promise.all([
+    getSales(client, since),
+    getDemand(client, since),
+    getQuickInsights(client, since),
+  ]);
 
   return (
     <div className="space-y-8">
@@ -65,6 +71,7 @@ export default async function InsightsPage({ searchParams }: { searchParams: Sea
         <SalesTable title="By category" rows={sales.by_category} />
       </div>
       <SalesTable title="By shop" rows={sales.by_shop} shop />
+      <QuickInsightsSection q={quick} />
 
       <div className="grid gap-8 lg:grid-cols-2">
         <section className="space-y-2">
