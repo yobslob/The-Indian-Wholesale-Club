@@ -182,6 +182,18 @@ export async function setProductCuratedAction(productId: string, curated: boolea
   revalidatePath(`/admin/catalog/${productId}`);
 }
 
+/**
+ * Heavy-item shipping (founder 2026-10-24): heavy cookware is priced on half its weight and the other half is charged
+ * in the bag. A home piece named a cooker is one when it is listed; this ticks or unticks any piece (the database
+ * reprices it at once).
+ */
+export async function setProductHeavyAction(productId: string, heavy: boolean): Promise<void> {
+  const { client } = await requireAdminAction();
+  await updateProduct(client, id.parse(productId), { heavy_item: z.boolean().parse(heavy) });
+  await refreshListings(client, [productId]);
+  revalidatePath(`/admin/catalog/${productId}`);
+}
+
 /** D-135: an archived listing shown to customers as "Coming soon" (the heart, not sold), or hidden again. */
 export async function setProductComingSoonAction(
   productId: string,

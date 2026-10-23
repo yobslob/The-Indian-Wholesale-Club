@@ -116,6 +116,13 @@ export function AddToCart({ product, variants, delivery }: Props): React.JSX.Ele
   return (
     <div className="space-y-4">
       <p className="font-ui text-[22px] font-semibold leading-none">{formatUsd(variant.price_cents)}</p>
+      {/* founder 2026-10-24: heavy cookware's other half, added in the bag and at checkout */}
+      {variant.heavy_cents > 0 ? (
+        <p className="font-ui -mt-1 flex flex-wrap items-center gap-2 text-sm">
+          <span className="bg-paper border-line text-ink rounded-pill border px-2.5 py-1 text-xs font-semibold">Heavy-item shipping</span>
+          <span className="text-ink-muted">+ {formatUsd(variant.heavy_cents)}, added at checkout</span>
+        </p>
+      ) : null}
 
       <div ref={choices} key={nudge} className={`scroll-mt-28 space-y-4 ${nudge ? 'choose-nudge' : ''}`}>
       {axes.length > 0

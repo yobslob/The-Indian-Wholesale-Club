@@ -5,7 +5,7 @@
  */
 import { z } from 'zod';
 
-import type { ProductType, SmallOrderCharges } from '@repo/shared/domain';
+import type { HeavyShipping, ProductType, SmallOrderCharges } from '@repo/shared/domain';
 
 import { unwrap, type IwcClient } from '../client';
 
@@ -307,6 +307,10 @@ export const bagChargesSchema = z.object({
   shipments: bagShipmentsSchema.nullable().optional(),
   /** D-154 step 3: which of the asked options are 7-day pieces, and each shipment's dates from today. */
   quick_ids: z.array(z.string().uuid()).default([]),
+  /** Heavy-item shipping (founder 2026-10-24): the bag's heavy pieces' charge, what the line takes off, which options. */
+  heavy_cents: z.number().int().min(0).default(0),
+  heavy_line_off_pct: z.number().min(0).max(100).default(0),
+  heavy_ids: z.array(z.string().uuid()).default([]),
   dates: z
     .object({
       quick_from: z.string().nullable(),
@@ -329,6 +333,11 @@ export function smallOrderOf(c: BagCharges): SmallOrderCharges {
     shownShippingCents: c.shown_shipping_cents ?? null,
     quickFree: c.quick_free,
   };
+}
+
+/** The bag's Heavy-item shipping in the shared checkout shape (null: no heavy piece in the bag). */
+export function heavyOf(c: BagCharges): HeavyShipping | null {
+  return c.heavy_cents > 0 ? { cents: c.heavy_cents, lineOffPct: c.heavy_line_off_pct } : null;
 }
 
 /**

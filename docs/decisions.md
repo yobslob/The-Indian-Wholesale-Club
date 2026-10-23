@@ -476,3 +476,35 @@ What it means for the build:
   page's pills and full list are gone, as is `/api/seven-day`). On phones row cards are 148 px and food and home See
   all grids three to a row (clothing keeps two). The switch is a 272 × 38 px frosted pill under the header (224 × 36
   on phones). The app is unchanged.
+
+**D-155 · 2026-10-24 · founder: a bottle's and a lunch box's real weights; heavy cookware priced on half its weight plus Heavy-item shipping**
+- Founder, verbatim (on tiffins, lunch boxes and bottles at $48 – $74 and a cooker over $110): "Tiffins/lunch boxes and
+  bottles are very very expensive for some reason as 73.55, 48.38,etc etc they should be $20-35 same goes for cooker it
+  should be around 90-110"; then "the bottles are 450-550gms, the lunch boxes are 600-800gms and on the heavy cookware
+  such as steel cooker show the price for half the weight considered and then add a new tag as heavy-item shipping
+  which will be added to it at checkout, it won't affect the pricing rules, they remain the same just a new charge will
+  be added as heavy-item shipping only when a heavy cookware which we can't really modify is added." Their answers the
+  same day: the charge is "The other half"; from the free-shipping line it is "dropped by 20% only(shown as
+  struck-through)"; heavy pieces are "Items like steel cooker".
+- What was found: a quick shop's bottle or lunch box page states no weight in grams, so its capacity ("1 L", "1.2 L")
+  was read as its weight (1 ml = 1 g) and its packing added: a 1 L bottle was priced on about 1.2 kg.
+What it means for the build (D-128's rules unchanged):
+- **Weights:** a bottle's or lunch box's ml and litres are never its weight (`vesselWeight`, `homeWeight`, `pieceWeight`
+  in packages/shared); with no weight in grams it is priced on the middle of the founder's range, 500 g or 700 g, packing
+  included. Migration `20261028090000_vessel_weights` corrects the listings already made: an option no person weighed
+  or typed, above the range (550 g, 800 g), goes to 500 g or 700 g.
+- **Heavy-item shipping** (migration `20261028100000_heavy_items`): `products.heavy_item`, set for a home piece named a
+  cooker when it is listed, ticked or unticked on the product's admin page. Its options are priced on half their weight;
+  the other half (the same rules on the whole weight, less the price) is `heavy_cents`, added in the bag and at checkout
+  as "Heavy-item shipping" on standard and express alike, taxed like Shipping, kept in the order's shipping with its
+  part beside it (`orders.heavy_shipping_cents`). From the free-shipping line or the 7-day line 20% comes off it
+  (`pricing_settings.heavy_line_off_pct`, Settings), the whole struck through. The product page tags it: "Heavy-item
+  shipping + $65.21, added at checkout". A heavy piece priced by hand has no charge.
+*Interpretation (proposed, confirm when convenient):*
+- "Items like steel cooker" is built as every home piece with "cooker" in its name, the admin ticking any other heavy
+  cookware (a kadai, a large handi); nothing else is found automatically.
+- A bottle's or lunch box's weight is the middle of the founder's range, whatever its size; a weight its page states in
+  grams still wins.
+- The cards (rows, See all) do not carry the tag; the product page, the bag and checkout do.
+- A heavy piece refunded as unavailable refunds its price and tax (D-042's item rule); its Heavy-item shipping stays
+  with the order's shipping, as Shipping does, unless the admin refunds it by hand (Q-44).

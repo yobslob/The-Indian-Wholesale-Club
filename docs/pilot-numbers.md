@@ -2,7 +2,12 @@
 
 > **Beta pricing today (D-128, the founder's exact rules):** every automatic price = (shop ₹ ÷ 0.90 + weight g × ₹2)
 > ÷ the category's divisor (food 0.80, clothing 0.60, home & gifts 0.50) ÷ ₹92 fixed, to the cent (no price ending).
-> ₹100 · 100 g food $4.23. Products → Download Excel gives name, Indian price, category, weight, US price and margin. Fixed in code; the numbers below are the
+> ₹100 · 100 g food $4.23. **Heavy cookware (D-155):** a piece ticked as a heavy item (every home piece named a cooker)
+> is priced on half its weight; the other half is **Heavy-item shipping** in the bag (₹1,800 · 3 kg cooker: $108.70
+> + $65.21 = the $173.91 the rules give on 3 kg), 20% off from the free-shipping or 7-day line (Settings → Bag charges).
+> A bottle or lunch box without a weight in grams on its page is priced on 500 g or 700 g (the founder's ranges,
+> 450 – 550 g and 600 – 800 g), never on its litres.
+> Products → Download Excel gives name, Indian price, category, weight, US price and margin. Fixed in code; the numbers below are the
 > full formula's, archived in `docs/archive/pricing-full-formula.md` and unused for prices until the beta ends (the bag's
 > charges still use the courier, duty and Shipping numbers).
 >

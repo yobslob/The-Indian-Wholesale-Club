@@ -43,6 +43,8 @@ export const pendingCheckoutSchema = z.object({
   retailerChargeCents: z.number().int().min(0).default(0),
   /** D-119: the part of discountCents that is the bulk saving (absent before 2026-10-14). */
   bulkSavingCents: z.number().int().min(0).default(0),
+  /** Heavy-item shipping: the part of shippingCents that is the heavy pieces' charge (absent before 2026-10-24). */
+  heavyShippingCents: z.number().int().min(0).default(0),
   taxCents: z.number().int(),
   totalCents: z.number().int(),
   promoCodeId: z.string().uuid().nullable(),

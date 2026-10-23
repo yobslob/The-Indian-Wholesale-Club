@@ -11,6 +11,7 @@ import {
   setQtyAction,
   setProductComingSoonAction,
   setProductCuratedAction,
+  setProductHeavyAction,
   updateProductAction,
 } from '@/features/admin/actions/catalog';
 import { PRODUCT_STATUS, StatusChip } from '@/features/admin/chips';
@@ -135,6 +136,18 @@ export default async function AdminProductPage({
         </span>
         <button type="submit" className="min-h-11 underline">
           {product.is_curated ? 'Remove from Curated for you' : 'Add to Curated for you'}
+        </button>
+      </form>
+      <form
+        action={setProductHeavyAction.bind(null, product.id, !product.heavy_item)}
+        className="flex items-center gap-3"
+      >
+        <span>
+          Heavy-item shipping: <strong>{product.heavy_item ? 'yes' : 'no'}</strong> (priced on half its weight; the
+          other half added in the bag)
+        </span>
+        <button type="submit" className="min-h-11 underline">
+          {product.heavy_item ? 'Price it on its whole weight' : 'Make it a heavy item'}
         </button>
       </form>
 

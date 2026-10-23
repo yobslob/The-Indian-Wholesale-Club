@@ -83,9 +83,11 @@ export async function POST(
       // D-119: the order's discount is the promo and the bulk saving; the saving's part is kept beside it.
       discountCents: quote.breakdown.discountCents + quote.breakdown.bulkSavingCents,
       bulkSavingCents: quote.breakdown.bulkSavingCents,
-      // D-111: the retailer charges travel inside the order's shipping; their part is kept beside it.
-      shippingCents: quote.breakdown.shippingCents + quote.breakdown.retailerCents,
+      // D-111: the retailer charges travel inside the order's shipping; their part is kept beside it. So does
+      // Heavy-item shipping (founder 2026-10-24).
+      shippingCents: quote.breakdown.shippingCents + quote.breakdown.retailerCents + quote.breakdown.heavyCents,
       retailerChargeCents: quote.breakdown.retailerCents,
+      heavyShippingCents: quote.breakdown.heavyCents,
       taxCents: quote.breakdown.taxCents,
       totalCents: quote.breakdown.totalCents,
       promoCodeId: priced.promoCodeId,

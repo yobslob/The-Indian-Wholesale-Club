@@ -112,6 +112,8 @@ export const variantSchema = z.object({
   sort_order: z.number().int(),
   /** D-133: a food option's net quantity as its label states it ("400 g"); optional until migration 20261016160000. */
   net_qty: z.string().nullable().optional(),
+  /** Heavy-item shipping for one, added in the bag (founder 2026-10-24; 0 = none); absent before 20261028100000. */
+  heavy_cents: z.number().int().min(0).default(0),
 });
 
 export const mediaSchema = z.object({

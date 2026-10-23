@@ -33,6 +33,7 @@ import {
   nextCycleStatus,
   optionAxes,
   orderEventLabel,
+  heavyShippingAt,
   quoteCheckout,
   copyFor,
   hasCopies,
@@ -363,6 +364,8 @@ describe('checkout quote (flows.md §3, D-041, D-070, D-073)', () => {
       shippingCents: 900,
       retailerCents: 0,
       waivedCents: { shipping: 0, retailer: 0 },
+      heavyCents: 0,
+      heavyShownCents: 0,
       taxCents: 0,
       totalCents: 5900,
       promoApplied: false,
@@ -727,5 +730,37 @@ describe('D-154: a bag of only 7-day pieces from the 7-day line ships free', () 
     assert.equal(promoDiscountCents(5000, { ...pct, discountType: 'fixed', discountValue: 700 }), 700);
     assert.equal(promoDiscountCents(5000, { ...pct, minOrderCents: 6000 }), 0);
     assert.equal(promoDiscountCents(5000, null), 0);
+  });
+});
+
+// Founder, 2026-10-24: heavy cookware priced on half its weight, the other half added as Heavy-item shipping; from the
+// line "dropped by 20% only (shown as struck-through)"
+describe('Heavy-item shipping', () => {
+  const heavy = { cents: 6522, lineOffPct: 20 };
+  const settings = { flatCents: 0, freeMinCents: 9999, express: null, smallOrder: { shippingCents: 1862, retailerCents: 99 } };
+
+  it('below the line the whole charge is paid and nothing is struck through', () => {
+    assert.deepEqual(heavyShippingAt(heavy, false), { cents: 6522, shownCents: 0 });
+    const q = quoteCheckout([{ unitPriceCents: 6000, quantity: 1 }], null, { ...settings, heavy })!;
+    assert.deepEqual([q.heavyCents, q.heavyShownCents, q.totalCents], [6522, 0, 6000 + 1862 + 99 + 6522]);
+  });
+
+  it('from the free-shipping line 20% comes off, the whole struck through', () => {
+    assert.deepEqual(heavyShippingAt(heavy, true), { cents: 5218, shownCents: 6522 });
+    const q = quoteCheckout([{ unitPriceCents: 10000, quantity: 1 }], null, { ...settings, heavy })!;
+    assert.deepEqual([q.shippingCents, q.heavyCents, q.heavyShownCents], [0, 5218, 6522]);
+  });
+
+  it('the 7-day line takes it off too; express never does; no heavy piece, no charge', () => {
+    const quick = { ...settings, smallOrder: { ...settings.smallOrder, quickFree: true }, heavy };
+    assert.equal(quoteCheckout([{ unitPriceCents: 6000, quantity: 1 }], null, quick)!.heavyCents, 5218);
+    const express = { ...settings, express: { baseCents: 2000, minCourierCents: 1000 }, heavy };
+    assert.equal(quoteCheckout([{ unitPriceCents: 10000, quantity: 1 }], null, express, 'express')!.heavyCents, 6522);
+    assert.deepEqual(heavyShippingAt(null, true), { cents: 0, shownCents: 0 });
+  });
+
+  it('is taxed like Shipping', () => {
+    const q = quoteCheckout([{ unitPriceCents: 6000, quantity: 1, taxable: true }], null, { ...settings, heavy }, 'standard', { ratePct: 10 })!;
+    assert.equal(q.taxCents, Math.round((6000 + 1862 + 99 + 6522) * 0.1));
   });
 });

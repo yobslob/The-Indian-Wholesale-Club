@@ -7,11 +7,13 @@ import {
   bagChargesAt,
   bagSavingCents,
   bulkProgress,
+  heavyShippingAt,
   parseBagShipments,
   shipmentNote,
   type BagMoment,
   type BagShipmentFacts,
   type BulkSaving,
+  type HeavyShipping,
   type SmallOrderCharges,
 } from '@repo/shared/domain';
 
@@ -26,6 +28,9 @@ export interface BagCharges {
   bulk: BulkSaving | null;
   /** D-154: which pieces are 7-day, the 7-day line and gap, a split, and each shipment's dates. */
   shipments: BagShipmentFacts | null;
+  /** Heavy-item shipping (founder 2026-10-24): the bag's heavy pieces' charge (null = none) and which options. */
+  heavy: HeavyShipping | null;
+  heavyIds: string[];
 }
 
 /** D-154: the pill's three-second note when a change moved the bag across a line; `prevKey` is the bag before it (Undo). */
@@ -79,6 +84,8 @@ function parse(data: unknown): BagCharges | null {
     },
     bulk: pct > 0 && cap > 0 ? { pct, capCents: cap } : null,
     shipments: parseBagShipments(d),
+    heavy: (int(d.heavy_cents) ?? 0) > 0 ? { cents: int(d.heavy_cents)!, lineOffPct: num(d.heavy_line_off_pct) } : null,
+    heavyIds: Array.isArray(d.heavy_ids) ? d.heavy_ids.filter((x): x is string => typeof x === 'string') : [],
   };
 }
 
@@ -167,12 +174,15 @@ export function freeDelivery(lines: CartLine[], charges: BagCharges | null) {
   const subtotal = cartSubtotalCents(lines);
   const line = charges?.freeMinCents ?? null;
   const free = line !== null && subtotal >= line;
+  const at = bagChargesAt(subtotal, line, charges?.small ?? null);
   return {
     subtotal,
     line,
     free,
     /** D-125: the charges at this bag's goods (Shipping and the retailer charges, paid or struck through). */
-    at: bagChargesAt(subtotal, line, charges?.small ?? null),
+    at,
+    /** Heavy-item shipping: paid, and its whole struck through once a line took its % off. */
+    heavy: heavyShippingAt(charges?.heavy, free || at.shippingFree),
     leftCents: line === null ? 0 : Math.max(line - subtotal, 0),
     share: line ? Math.min(subtotal / line, 1) : 1,
     bulk: bulkProgress(subtotal, line, charges?.bulk),
@@ -182,6 +192,7 @@ export function freeDelivery(lines: CartLine[], charges: BagCharges | null) {
 /** D-140 (F5): "You're saving $X" for this bag: the struck charges and the bulk saving (0 below the line). */
 export function bagSaving(lines: CartLine[], charges: BagCharges | null): number {
   const f = freeDelivery(lines, charges);
-  // D-154: a bag of only 7-day pieces from the 7-day line saves its Shipping too
-  return f.free || f.at.shippingFree ? bagSavingCents(f.at, f.bulk.savingCents) : 0;
+  // D-154: a bag of only 7-day pieces from the 7-day line saves its Shipping too, and the line's part of Heavy-item shipping
+  const heavyOff = f.heavy.shownCents ? f.heavy.shownCents - f.heavy.cents : 0;
+  return f.free || f.at.shippingFree ? bagSavingCents(f.at, f.bulk.savingCents) + heavyOff : 0;
 }

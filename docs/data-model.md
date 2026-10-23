@@ -265,6 +265,16 @@ on time / late / late with a delay notice sent before the promised day / open pa
 event, on the US Eastern calendar), 7-day pieces refunded as unavailable, and the split's extra courier cost in paise
 (`_courier_paise(grams)`: Settings' first and next kg, at least 1 kg then by the half kg). Tests:
 `seven_day_insights.test.sql`.
+Migration `20261028090000_vessel_weights` (D-155): a home bottle's or lunch box's option no person weighed or typed and
+above the founder's range (550 g, 800 g) is set to 500 g or 700 g (`packed`, its note saying so); the reprice trigger
+moves its price. Migration `20261028100000_heavy_items` (D-155): `products.heavy_item` (trigger `products_heavy_item`,
+`_heavy_item_default()`: a home piece named a cooker when it is inserted; `products_heavy_reprice`,
+`_reprice_on_heavy()`: ticking or unticking reprices it); `_priced_weight(g, heavy)` (half a heavy piece's weight,
+rounded up), used by `_product_auto_price` and `_reprice_products`, which also writes
+`product_variants.heavy_cents` (the price on the whole weight less the price on half; 0 for others);
+`store_variants.heavy_cents` (0 when the piece is priced by hand); `pricing_settings.heavy_line_off_pct` (20);
+`store_bag_charges` adds `heavy_cents` (the bag's), `heavy_line_off_pct` and `heavy_ids`; `orders.heavy_shipping_cents`
+(its part of `shipping_cents`, written beside it like `retailer_charge_cents`). Tests: `heavy_items.test.sql`.
 Migration 80 (D-141, the photo store): a photo in Cloudflare R2 is recorded with an `s/` path
 (`products/<id>/s/<name>.jpg`, packages/shared media.ts). `worker_sourcing_media` accepts `products/<id>/s/<name>` as
 well as `products/<id>/<name>`; album photos may be `regions/<slug>/album/s/<name>`.

@@ -69,6 +69,7 @@ export default async function OrderInvoicePage({ params }: { params: Params }): 
             bulkSavingCents: order.bulk_saving_cents,
             shippingCents: order.shipping_cents,
             retailerCents: order.retailer_charge_cents,
+            heavyCents: order.heavy_shipping_cents,
             taxCents: order.tax_cents,
             totalCents: order.total_cents,
             refundedCents: order.refunded_cents,

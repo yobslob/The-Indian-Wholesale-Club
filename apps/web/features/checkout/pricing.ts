@@ -3,7 +3,7 @@ import 'server-only';
 import { z } from 'zod';
 
 import { getCheckoutContext } from '@repo/db/server';
-import { getBagCharges, smallOrderOf } from '@repo/db/store';
+import { getBagCharges, heavyOf, smallOrderOf } from '@repo/db/store';
 import {
   emailSchema,
   promoDiscountCents,
@@ -144,6 +144,8 @@ export async function priceCart(
     freeMinCents: context.shipping.free_min_cents,
     // D-123: the retailer % and the bag's food weight travel with them (bagChargesAt, on the discounted goods)
     smallOrder: smallOrderOf(charges),
+    // Heavy-item shipping (founder 2026-10-24): standard and express alike; the line takes its % off on standard
+    heavy: heavyOf(charges),
     // D-119: from the line up, the bulk saving (worked out on the discounted subtotal, never from the browser).
     bulkSaving: { pct: charges.bulk_saving_pct, capCents: charges.bulk_saving_cap_cents },
     express: expressOffer

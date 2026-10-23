@@ -300,13 +300,21 @@ export default async function AdminOrderPage({ params }: { params: Params }): Pr
               <div>
                 <dt>Shipping</dt>
                 <dd>
-                  {order.shipping_cents === 0 ? 'Free' : formatUsd(order.shipping_cents - order.retailer_charge_cents)}
+                  {order.shipping_cents - order.retailer_charge_cents - order.heavy_shipping_cents === 0
+                    ? 'Free'
+                    : formatUsd(order.shipping_cents - order.retailer_charge_cents - order.heavy_shipping_cents)}
                 </dd>
               </div>
               {order.retailer_charge_cents > 0 ? (
                 <div>
                   <dt>Retailer charges (D-111)</dt>
                   <dd>{formatUsd(order.retailer_charge_cents)}</dd>
+                </div>
+              ) : null}
+              {order.heavy_shipping_cents > 0 ? (
+                <div>
+                  <dt>Heavy-item shipping</dt>
+                  <dd>{formatUsd(order.heavy_shipping_cents)}</dd>
                 </div>
               ) : null}
               <div>

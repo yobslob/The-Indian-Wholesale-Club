@@ -1,7 +1,7 @@
 import { Text, View } from 'react-native';
 
-import { getBagCharges, smallOrderOf, type BagCharges } from '@repo/db/store';
-import { bagChargesAt, bulkProgress, formatUsd, parseBagShipments, quickMeter } from '@repo/shared/domain';
+import { getBagCharges, heavyOf, smallOrderOf, type BagCharges } from '@repo/db/store';
+import { bagChargesAt, bulkProgress, formatUsd, heavyShippingAt, parseBagShipments, quickMeter } from '@repo/shared/domain';
 
 import { MeterLine } from './meter-line';
 import { bagSubtotalCents, useBag, type BagLine } from './store';
@@ -39,11 +39,14 @@ export function freeDelivery(lines: BagLine[], charges: BagCharges | null) {
     charges && charges.bulk_saving_pct > 0 && charges.bulk_saving_cap_cents > 0
       ? { pct: charges.bulk_saving_pct, capCents: charges.bulk_saving_cap_cents }
       : null;
+  const at = bagChargesAt(subtotal, line, charges ? smallOrderOf(charges) : null);
   return {
     free,
     line,
     /** D-125: the charges at this bag's goods (Shipping and the retailer charges, paid or struck through). */
-    at: bagChargesAt(subtotal, line, charges ? smallOrderOf(charges) : null),
+    at,
+    /** Heavy-item shipping (founder 2026-10-24): paid, and its whole struck through once a line took its % off. */
+    heavy: heavyShippingAt(charges ? heavyOf(charges) : null, free || at.shippingFree),
     leftCents: line === null ? 0 : Math.max(line - subtotal, 0),
     share: line ? Math.min(subtotal / line, 1) : 1,
     bulk: bulkProgress(subtotal, line, bulk),
@@ -56,6 +59,17 @@ export function ChargeValue({ cents, free }: { cents: number; free: boolean }): 
   return free ? (
     <Text className="font-body text-ink text-sm">
       <Text className="text-ink-muted line-through">{formatUsd(cents)}</Text> {formatUsd(0)}
+    </Text>
+  ) : (
+    <Text className="font-body text-ink text-sm">{formatUsd(cents)}</Text>
+  );
+}
+
+/** Heavy-item shipping: "$65.22", or struck through and "$52.18" once a line took its % off. */
+export function ReducedValue({ cents, shownCents }: { cents: number; shownCents: number }): React.JSX.Element {
+  return shownCents > cents ? (
+    <Text className="font-body text-ink text-sm">
+      <Text className="text-ink-muted line-through">{formatUsd(shownCents)}</Text> {formatUsd(cents)}
     </Text>
   ) : (
     <Text className="font-body text-ink text-sm">{formatUsd(cents)}</Text>
@@ -84,7 +98,7 @@ export function ChargeRows(): React.JSX.Element | null {
   const lines = useBag((s) => s.lines);
   const charges = useBagCharges();
   if (!charges) return null;
-  const { free, leftCents, line, share, bulk, at } = freeDelivery(lines, charges);
+  const { free, leftCents, line, share, bulk, at, heavy } = freeDelivery(lines, charges);
   // D-154: the 7-day meter (the 7-day pieces against the 7-day line) above the free-delivery one
   const facts = parseBagShipments(charges);
   const quick = quickMeter(facts);
@@ -101,6 +115,12 @@ export function ChargeRows(): React.JSX.Element | null {
           cents={at.retailerCents || at.waivedRetailerCents}
           free={free}
         />
+      ) : null}
+      {heavy.cents > 0 ? (
+        <View className="flex-row justify-between gap-3">
+          <Text className="font-body text-ink-muted flex-1 text-sm">Heavy-item shipping</Text>
+          <ReducedValue cents={heavy.cents} shownCents={heavy.shownCents} />
+        </View>
       ) : null}
       {bulk.savingCents > 0 ? (
         <View className="flex-row justify-between gap-3">

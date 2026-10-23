@@ -37,6 +37,28 @@ export interface ShippingSettings {
   smallOrder?: SmallOrderCharges | null;
   /** D-119: from `freeMinCents` up, the bulk saving (a % of the amount over the line, up to a cap). */
   bulkSaving?: BulkSaving | null;
+  /** Heavy-item shipping (store_bag_charges): standard and express alike. */
+  heavy?: HeavyShipping | null;
+}
+
+/**
+ * Heavy-item shipping (founder, 2026-10-24): heavy cookware (a steel cooker) is priced on half its weight and the other
+ * half is this charge, added whenever such a piece is in the bag (price + charge = the price on the whole weight).
+ */
+export interface HeavyShipping {
+  cents: number;
+  /** From the free-shipping line, or the 7-day line, this % comes off it (20, Settings), the whole struck through. */
+  lineOffPct: number;
+}
+
+/** What the bag pays as Heavy-item shipping, and the whole shown struck through when the line took some off. */
+export function heavyShippingAt(
+  heavy: HeavyShipping | null | undefined,
+  lineReached: boolean,
+): { cents: number; shownCents: number } {
+  if (!heavy || heavy.cents <= 0) return { cents: 0, shownCents: 0 };
+  const off = lineReached ? Math.round((heavy.cents * Math.min(Math.max(heavy.lineOffPct, 0), 100)) / 100) : 0;
+  return { cents: heavy.cents - off, shownCents: off > 0 ? heavy.cents : 0 };
 }
 
 /** D-119: the bulk saving's two numbers (store_bag_charges). */
@@ -160,6 +182,9 @@ export interface CheckoutBreakdown {
   retailerCents: number;
   /** D-111: what the small-order charges would have been, shown struck through once they are free. */
   waivedCents: { shipping: number; retailer: number };
+  /** Heavy-item shipping paid, and its whole shown struck through when the line took some off (0: not shown). */
+  heavyCents: number;
+  heavyShownCents: number;
   taxCents: number;
   totalCents: number;
   promoApplied: boolean;
@@ -237,9 +262,11 @@ export function quoteCheckout(
   }
   const bulkCents = bulkSavingCents(discounted, shipping.freeMinCents, shipping.bulkSaving);
   const goods = discounted - bulkCents;
+  // the line (free shipping, or the 7-day line) takes its % off Heavy-item shipping, on standard only
+  const heavy = heavyShippingAt(shipping.heavy, method === 'standard' && (freeShipping || charges.shippingFree));
   const taxableShare = subtotalCents === 0 ? 0 : taxableCents / subtotalCents;
   const taxCents = tax
-    ? Math.round(((goods + shippingCents + retailerCents) * taxableShare * tax.ratePct) / 100)
+    ? Math.round(((goods + shippingCents + retailerCents + heavy.cents) * taxableShare * tax.ratePct) / 100)
     : 0;
 
   return {
@@ -252,8 +279,10 @@ export function quoteCheckout(
       (freeShipping || charges.shippingFree) && small
         ? { shipping: charges.waivedShippingCents, retailer: charges.waivedRetailerCents }
         : { shipping: 0, retailer: 0 },
+    heavyCents: heavy.cents,
+    heavyShownCents: heavy.shownCents,
     taxCents,
-    totalCents: goods + shippingCents + retailerCents + taxCents,
+    totalCents: goods + shippingCents + retailerCents + heavy.cents + taxCents,
     promoApplied,
   };
 }

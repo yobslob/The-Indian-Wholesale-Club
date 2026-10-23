@@ -7,7 +7,7 @@ import type { CheckoutQuote } from '@repo/shared/domain';
 
 import { Photo } from '@/components/photo';
 import { Row } from '@/components/ui';
-import { ChargeRows, ChargeValue } from '@/features/cart/charges';
+import { ChargeRows, ChargeValue, ReducedValue } from '@/features/cart/charges';
 
 /**
  * The bag in checkout and on the thank-you screen (D-087): photos, lines and the subtotal; shipping, tax, the total
@@ -59,6 +59,13 @@ export function BagSummary({ title, lines, quote }: { title: string; lines: BagL
               ) : null}
             </>
           )}
+          {/* founder 2026-10-24: heavy cookware's other half, on standard and express alike */}
+          {(b.heavyCents ?? 0) > 0 ? (
+            <View className="flex-row justify-between gap-3">
+              <Text className="font-body text-ink-muted flex-1 text-sm">Heavy-item shipping</Text>
+              <ReducedValue cents={b.heavyCents} shownCents={b.heavyShownCents ?? 0} />
+            </View>
+          ) : null}
           <Row label="Sales tax" value={formatUsd(b.taxCents)} />
           <View className="border-line flex-row justify-between border-t pt-2">
             <Text className="font-ui-semibold text-ink text-base">Total</Text>

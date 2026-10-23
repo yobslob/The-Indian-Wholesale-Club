@@ -1,7 +1,7 @@
 import { arrivalLine, dayDate, formatDeliveryWindow, formatUsd } from '@repo/shared/domain';
 
 import { LinePhoto } from '@/features/cart/bag-lines';
-import { ChargeValue, PendingChargeRows } from '@/features/cart/charge-lines';
+import { ChargeValue, PendingChargeRows, ReducedValue } from '@/features/cart/charge-lines';
 
 import type { SummaryLine } from './last-order';
 import type { CheckoutQuote } from './types';
@@ -72,6 +72,10 @@ export function BagSummary({
                 ) : null}
               </>
             )}
+            {/* founder 2026-10-24: heavy cookware's other half, on standard and express alike */}
+            {b.heavyCents > 0 ? (
+              <Row label="Heavy-item shipping" value={<ReducedValue cents={b.heavyCents} shownCents={b.heavyShownCents} />} />
+            ) : null}
             <Row label="Sales tax" value={formatUsd(b.taxCents)} />
             {/* D-140 (F5): what the free delivery line saved, above the total (a note; the total is exact) */}
             {quoteSaving(b) > 0 ? (
@@ -140,9 +144,17 @@ function QuoteDelivery({ quote, lines }: { quote: CheckoutQuote; lines: SummaryL
   );
 }
 
-/** D-140 (F5): the struck charges and the bulk saving of a priced bag. */
-export function quoteSaving(b: { shippingCents: number; retailerCents: number; bulkSavingCents: number; waivedCents?: { shipping: number; retailer: number } }): number {
+/** D-140 (F5): the struck charges, the line's part of Heavy-item shipping and the bulk saving of a priced bag. */
+export function quoteSaving(b: {
+  shippingCents: number;
+  retailerCents: number;
+  bulkSavingCents: number;
+  waivedCents?: { shipping: number; retailer: number };
+  heavyCents?: number;
+  heavyShownCents?: number;
+}): number {
   const shipping = b.shippingCents === 0 ? (b.waivedCents?.shipping ?? 0) : 0;
   const retailer = b.retailerCents === 0 ? (b.waivedCents?.retailer ?? 0) : 0;
-  return shipping + retailer + b.bulkSavingCents;
+  const heavy = b.heavyShownCents ? b.heavyShownCents - (b.heavyCents ?? 0) : 0;
+  return shipping + retailer + heavy + b.bulkSavingCents;
 }

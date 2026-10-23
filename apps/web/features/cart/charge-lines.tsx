@@ -23,16 +23,31 @@ export function ChargeValue({ cents, free }: { cents: number; free: boolean }): 
   );
 }
 
+/** Heavy-item shipping: "$65.22", or "$65.22" struck through and "$52.18" once a line took its % off (founder 2026-10-24). */
+export function ReducedValue({ cents, shownCents }: { cents: number; shownCents: number }): React.JSX.Element {
+  return shownCents > cents ? (
+    <span>
+      <s className="text-ink-muted mr-1.5" aria-label={`was ${formatUsd(shownCents)}`}>
+        {formatUsd(shownCents)}
+      </s>
+      {formatUsd(cents)}
+    </span>
+  ) : (
+    <span>{formatUsd(cents)}</span>
+  );
+}
+
 /**
  * The bag's Shipping and Retailer charges under its subtotal (D-111, D-125): Shipping is at least the parcel's amount,
  * more when the bag's pieces cannot pay for the parcel; both are paid below the free-delivery line and struck through
- * above it. Checkout prices them again on the server.
+ * above it. Heavy-item shipping, when the bag has a heavy piece (founder 2026-10-24), is always paid, less its % from
+ * the line. Checkout prices them again on the server.
  */
 export function ChargeLines(): React.JSX.Element | null {
   const lines = useCart((s) => s.lines);
   const charges = useBagCharges();
   if (!charges) return null;
-  const { free, leftCents, line, share, bulk, at } = freeDelivery(lines, charges);
+  const { free, leftCents, line, share, bulk, at, heavy } = freeDelivery(lines, charges);
   const row = 'flex items-baseline justify-between gap-3 text-[14px]';
   // D-154: the 7-day meter (the 7-day pieces against the 7-day line) above the free-delivery one
   const quick = quickMeter(charges.shipments);
@@ -47,6 +62,12 @@ export function ChargeLines(): React.JSX.Element | null {
         <p className={row}>
           <span>Retailer charges</span>
           <ChargeValue cents={at.retailerCents || at.waivedRetailerCents} free={free} />
+        </p>
+      ) : null}
+      {heavy.cents > 0 ? (
+        <p className={row}>
+          <span>Heavy-item shipping</span>
+          <ReducedValue cents={heavy.cents} shownCents={heavy.shownCents} />
         </p>
       ) : null}
       {bulk.savingCents > 0 ? (
@@ -140,7 +161,7 @@ export function PendingChargeRows(): React.JSX.Element | null {
   const lines = useCart((s) => s.lines);
   const charges = useBagCharges();
   if (!charges) return null;
-  const { free, bulk, at } = freeDelivery(lines, charges);
+  const { free, bulk, at, heavy } = freeDelivery(lines, charges);
   const row = (label: string, cents: number, struck = free) => (
     <div className="flex justify-between">
       <dt className="text-ink-muted">{label}</dt>
@@ -155,6 +176,14 @@ export function PendingChargeRows(): React.JSX.Element | null {
       {at.retailerCents + at.waivedRetailerCents > 0
         ? row('Retailer charges', at.retailerCents || at.waivedRetailerCents)
         : null}
+      {heavy.cents > 0 ? (
+        <div className="flex justify-between">
+          <dt className="text-ink-muted">Heavy-item shipping</dt>
+          <dd className="m-0">
+            <ReducedValue cents={heavy.cents} shownCents={heavy.shownCents} />
+          </dd>
+        </div>
+      ) : null}
       {bulk.savingCents > 0 ? (
         <div className="flex justify-between">
           <dt className="text-ink-muted">Bulk saving</dt>

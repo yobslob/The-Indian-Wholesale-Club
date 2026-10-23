@@ -123,6 +123,15 @@ export function AddToBag({
   return (
     <View className="gap-3">
       <Text className="font-ui-semibold text-ink text-[22px]">{formatUsd(variant.price_cents)}</Text>
+      {/* founder 2026-10-24: heavy cookware's other half, added in the bag and at checkout */}
+      {variant.heavy_cents > 0 ? (
+        <View className="flex-row flex-wrap items-center gap-2">
+          <Text className="bg-paper border-line font-ui-semibold text-ink overflow-hidden rounded-full border px-2.5 py-1 text-xs">
+            Heavy-item shipping
+          </Text>
+          <Text className="font-body text-ink-muted text-sm">+ {formatUsd(variant.heavy_cents)}, added at checkout</Text>
+        </View>
+      ) : null}
       {axes.map((axis) => (
         <View key={axis.key} className="gap-2">
           <Text className="font-ui-semibold text-ink-muted text-[11px] uppercase tracking-[1.8px]">

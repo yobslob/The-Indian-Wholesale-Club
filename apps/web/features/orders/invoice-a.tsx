@@ -19,6 +19,8 @@ export interface InvoiceAData {
   shippingCents: number;
   /** Retailer charges when known apart; else they are inside shippingCents. */
   retailerCents?: number;
+  /** Heavy-item shipping, inside shippingCents (founder 2026-10-24; the admin's copy knows it apart). */
+  heavyCents?: number;
   taxCents: number;
   totalCents: number;
   refundedCents: number;
@@ -37,8 +39,10 @@ export function InvoiceA({ data: d }: { data: InvoiceAData }): React.JSX.Element
   if (promo > 0) lines.push(['Discount', `−${formatUsd(promo)}`]);
   if ((d.bulkSavingCents ?? 0) > 0) lines.push(['Bulk saving', `−${formatUsd(d.bulkSavingCents!)}`]);
   if (d.retailerCents !== undefined) {
-    lines.push([d.express ? 'Express shipping' : 'Shipping', d.shippingCents - d.retailerCents === 0 ? 'Free' : formatUsd(d.shippingCents - d.retailerCents)]);
+    const own = d.shippingCents - d.retailerCents - (d.heavyCents ?? 0);
+    lines.push([d.express ? 'Express shipping' : 'Shipping', own === 0 ? 'Free' : formatUsd(own)]);
     if (d.retailerCents > 0) lines.push(['Retailer charges', formatUsd(d.retailerCents)]);
+    if ((d.heavyCents ?? 0) > 0) lines.push(['Heavy-item shipping', formatUsd(d.heavyCents!)]);
   } else {
     lines.push([d.express ? 'Express shipping' : d.shippingCents > 0 ? 'Shipping & retailer charges' : 'Shipping', d.shippingCents === 0 ? 'Free' : formatUsd(d.shippingCents)]);
   }

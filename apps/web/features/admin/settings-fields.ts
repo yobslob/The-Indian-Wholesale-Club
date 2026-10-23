@@ -110,6 +110,7 @@ export const SETTING_GROUPS: SettingGroup[] = [
       { key: 'small_order_retailer_cents', label: 'Retailer charges, at least ($)', kind: 'usd' },
       { key: 'retailer_pct', label: 'Retailer charges: % of the goods (D-123; empty = the fixed amount above)', kind: 'pct' },
       { key: 'bulk_saving_pct', label: 'Bulk saving: % of the amount over the line', kind: 'pct' },
+      { key: 'heavy_line_off_pct', label: 'Heavy-item shipping: % off from the free-shipping or 7-day line (struck through; founder 2026-10-24: 20)', kind: 'pct' },
       { key: 'bulk_saving_cap_cents', label: 'Largest bulk saving ($)', kind: 'usd' },
       { key: 'min_order_cents', label: 'Smallest order that can check out ($, empty = none)', kind: 'usd' },
     ],
