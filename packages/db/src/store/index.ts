@@ -279,9 +279,7 @@ export const bagShipmentsSchema = z.object({
   split: z.boolean(),
   gap_cents: z.number().int().nullable(),
   outside: z.boolean(),
-  billed_grams: z.number().int(),
   shipping_cents: z.number().int(),
-  quick_shipping_cents: z.number().int(),
 });
 export type BagShipments = z.infer<typeof bagShipmentsSchema>;
 
@@ -303,6 +301,17 @@ export const bagChargesSchema = z.object({
   quick_free: z.boolean().default(false),
   /** D-154: the bag's shipments (_bag_shipments); absent before the migration. */
   shipments: bagShipmentsSchema.nullable().optional(),
+  /** D-154 step 3: which of the asked options are 7-day pieces, and each shipment's dates from today. */
+  quick_ids: z.array(z.string().uuid()).default([]),
+  dates: z
+    .object({
+      quick_from: z.string().nullable(),
+      quick_to: z.string().nullable(),
+      standard_from: z.string().nullable(),
+      standard_to: z.string().nullable(),
+    })
+    .nullable()
+    .optional(),
 });
 export type BagCharges = z.infer<typeof bagChargesSchema>;
 
