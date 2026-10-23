@@ -101,17 +101,12 @@ export const SETTING_GROUPS: SettingGroup[] = [
     ],
   },
   {
-    title: 'Bag charges: shipping, retailer charges, bulk saving (D-111, D-119, D-123, D-125)',
-    note: 'Below the free-shipping line a bag pays Shipping (at least the amount set; more when its pieces cannot pay for the parcel: the courier\'s first kg, box and clearance) and the retailer charges (a % of the goods, at least the amount set). From the line up both show struck through at $0.00. The bulk saving grows with every dollar over the line until its cap. No bag ever loses: the profit check below shows each one.',
+    title: 'Bag charges: shipping, retailer charges, bulk saving (D-111, D-119, D-123, D-154)',
+    note: 'Shipping is the $ a kg × the bag\'s billed kg (at least 1 kg, then by the half kg, food at its billed % above), one parcel for the whole bag even when it ships as two (D-154). Below the free-shipping line a bag pays it and the retailer charges (a % of the goods, at least the amount set); from the line up both show struck through at $0.00, the Shipping figure growing with the bag. A bag of only 7-day pieces worth the 7-day line (Standard delivery below) ships free too. The bulk saving grows with every dollar over the line until its cap.',
     fields: [
       { key: 'free_shipping_min_cents', label: 'Shipping and retailer charges come off from ($)', kind: 'usd' },
-      { key: 'small_order_shipping_cents', label: 'Shipping below the line, at least ($)', kind: 'usd' },
-      {
-        key: 'shown_shipping_cents_per_kg',
-        label: 'Shipping shown when free: $ a kg of the bag (D-140)',
-        kind: 'usd',
-        hint: "Display only: from the line up, Shipping shows struck through at the bag's packed kg × this (never below the Shipping above). Nothing is charged, stored on an order or sent to Stripe. Empty = the Shipping above.",
-      },
+      { key: 'shipping_cents_per_kg', label: 'Shipping per billed kg ($, D-154)', kind: 'usd', hint: 'Empty = the fixed Shipping below.' },
+      { key: 'small_order_shipping_cents', label: 'Shipping when no $ a kg is set ($)', kind: 'usd' },
       { key: 'small_order_retailer_cents', label: 'Retailer charges, at least ($)', kind: 'usd' },
       { key: 'retailer_pct', label: 'Retailer charges: % of the goods (D-123; empty = the fixed amount above)', kind: 'pct' },
       { key: 'bulk_saving_pct', label: 'Bulk saving: % of the amount over the line', kind: 'pct' },
@@ -134,8 +129,9 @@ export const SETTING_GROUPS: SettingGroup[] = [
     fields: [
       { key: 'pilot_delivery_days_min', label: 'Pilot, made to order: delivery days from the order: from (empty = cycles)', kind: 'int' },
       { key: 'pilot_delivery_days_max', label: 'Pilot, made to order: delivery days from the order: to', kind: 'int' },
-      { key: 'quick_delivery_days_min', label: '7-day delivery: days from the order: from (empty = no 7-day page or tags, D-148)', kind: 'int' },
+      { key: 'quick_delivery_days_min', label: '7-day delivery: days from the order: from (empty = no 7-day store or tags, D-148)', kind: 'int' },
       { key: 'quick_delivery_days_max', label: '7-day delivery: days from the order: to', kind: 'int' },
+      { key: 'quick_delivery_min_cents', label: '7-day line: 7-day pieces worth this ship in 7 days, and a bag of only them ships free ($, D-154)', kind: 'usd' },
       { key: 'domestic_days_min', label: 'US delivery days after the export arrives: from', kind: 'int' },
       { key: 'domestic_days_max', label: 'US delivery days after the export arrives: to', kind: 'int' },
       { key: 'shipping_flat_cents', label: 'Standard shipping per order ($, 0 = free)', kind: 'usd' },

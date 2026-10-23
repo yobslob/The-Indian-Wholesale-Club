@@ -1,6 +1,6 @@
 import { Text, View } from 'react-native';
 
-import { getBagCharges, getQuickBag, smallOrderOf, type BagCharges, type QuickBag } from '@repo/db/store';
+import { getBagCharges, smallOrderOf, type BagCharges, type QuickBag } from '@repo/db/store';
 import { bagChargesAt, bulkProgress, formatUsd } from '@repo/shared/domain';
 
 import { MeterLine } from './meter-line';
@@ -31,15 +31,14 @@ export function useBagCharges(): BagCharges | null {
 }
 
 /**
- * D-148: the 7-day days while every piece in the bag is a 7-day piece, else null (the same store_quick_bag read as the
- * website's /api/bag-charges `quick`). One query per set of pieces; quantities don't change it.
+ * D-148, D-154: the 7-day days while the whole bag is one 7-day shipment (only 7-day pieces, worth the 7-day line),
+ * else null: the bag's own charges answer says so (the website's /api/bag-charges `quick` reads the same).
  */
 export function useQuickBag(): QuickBag {
-  const lines = useBag((s) => s.lines);
-  const ids = lines.map((l) => l.variantId).sort();
-  const key = ids.join(',');
-  const { data } = useQuery(`quick-bag:${key}`, () => (key ? getQuickBag(supabase, ids) : Promise.resolve(null)));
-  return key ? (data ?? null) : null;
+  const s = useBagCharges()?.shipments;
+  return s?.quick_only && s.days_min !== null && s.days_max !== null
+    ? { days_min: s.days_min, days_max: s.days_max }
+    : null;
 }
 
 /** Where the bag stands against the free-delivery line (D-111) and, from it up, on the bulk saving (D-119). */
@@ -99,9 +98,17 @@ export function ChargeRows(): React.JSX.Element | null {
   const { free, leftCents, line, share, bulk, at } = freeDelivery(lines, charges);
   return (
     <View className="gap-1">
-      <ChargeRow label="Shipping" cents={at.shippingCents || at.waivedShippingCents} free={free && at.shippingCents === 0} />
+      <ChargeRow
+        label="Shipping"
+        cents={at.shippingCents || at.waivedShippingCents}
+        free={at.shippingFree}
+      />
       {at.retailerCents + at.waivedRetailerCents > 0 ? (
-        <ChargeRow label="Retailer charges" cents={at.retailerCents || at.waivedRetailerCents} free={free} />
+        <ChargeRow
+          label="Retailer charges"
+          cents={at.retailerCents || at.waivedRetailerCents}
+          free={free}
+        />
       ) : null}
       {bulk.savingCents > 0 ? (
         <View className="flex-row justify-between gap-3">

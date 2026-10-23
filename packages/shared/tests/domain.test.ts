@@ -13,6 +13,7 @@ import {
   autoPrice,
   bulkProgress,
   bagChargesAt,
+  promoDiscountCents,
   bulkSavingCents,
   checkBag,
   SAMPLE_BAGS,
@@ -687,5 +688,44 @@ describe('the same picture saved twice (D-142)', () => {
     assert.equal(sharpest([0, 1, 5], prints), 0);
     assert.equal(sharpest([3, 2], prints), 2);
     assert.equal(sharpest([1, 5], prints), 1, 'the earliest on a tie');
+  });
+});
+
+describe('D-154: a bag of only 7-day pieces from the 7-day line ships free', () => {
+  const small = { shippingCents: 3724, retailerCents: 99, quickFree: true };
+
+  it('strikes Shipping through and still charges Retailer charges below the free line', () => {
+    const at = bagChargesAt(5571, 9999, small);
+    assert.deepEqual(
+      [at.free, at.shippingFree, at.shippingCents, at.waivedShippingCents, at.retailerCents],
+      [false, true, 0, 3724, 99],
+    );
+  });
+
+  it('from the free line both are struck through, as for any bag; without the flag Shipping is paid', () => {
+    const at = bagChargesAt(10000, 9999, small);
+    assert.deepEqual([at.free, at.shippingFree, at.retailerCents, at.waivedRetailerCents], [true, true, 0, 99]);
+    assert.equal(bagChargesAt(5571, 9999, { ...small, quickFree: false }).shippingCents, 3724);
+  });
+
+  it('checkout prices the free 7-day bag the same way', () => {
+    const q = quoteCheckout([{ unitPriceCents: 5571, quantity: 1 }], null, {
+      flatCents: 0,
+      freeMinCents: 9999,
+      express: null,
+      smallOrder: small,
+    });
+    assert.deepEqual(
+      [q?.shippingCents, q?.retailerCents, q?.waivedCents.shipping, q?.totalCents],
+      [0, 99, 3724, 5670],
+    );
+  });
+
+  it("the promo's discount, which the 7-day line counts after", () => {
+    const pct = { discountType: 'percentage' as const, discountValue: 10, minOrderCents: 0 };
+    assert.equal(promoDiscountCents(5000, pct), 500);
+    assert.equal(promoDiscountCents(5000, { ...pct, discountType: 'fixed', discountValue: 700 }), 700);
+    assert.equal(promoDiscountCents(5000, { ...pct, minOrderCents: 6000 }), 0);
+    assert.equal(promoDiscountCents(5000, null), 0);
   });
 });

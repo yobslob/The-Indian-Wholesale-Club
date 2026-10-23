@@ -3,7 +3,13 @@
 import { useEffect } from 'react';
 import { create } from 'zustand';
 
-import { bagChargesAt, bagSavingCents, bulkProgress, type BulkSaving, type SmallOrderCharges } from '@repo/shared/domain';
+import {
+  bagChargesAt,
+  bagSavingCents,
+  bulkProgress,
+  type BulkSaving,
+  type SmallOrderCharges,
+} from '@repo/shared/domain';
 
 import { cartSubtotalCents, useCart, type CartLine } from './store';
 
@@ -14,7 +20,7 @@ export interface BagCharges {
   small: SmallOrderCharges;
   /** D-119: the bulk saving from the line up; null = none. */
   bulk: BulkSaving | null;
-  /** D-148: every piece is a 7-day piece: the bag arrives in these days (Settings); null = a normal bag. */
+  /** D-148, D-154: the whole bag is one 7-day shipment: it arrives in these days (Settings); null = otherwise. */
   quickDays: { min: number; max: number } | null;
 }
 
@@ -57,6 +63,8 @@ function parse(data: unknown): BagCharges | null {
       retailerPct: num(d.retailer_pct) || null,
       // D-140 (F5): the struck figure once free (display only)
       shownShippingCents: int(d.shown_shipping_cents),
+      // D-154: a bag of only 7-day pieces from the 7-day line ships free
+      quickFree: d.quick_free === true,
     },
     bulk: pct > 0 && cap > 0 ? { pct, capCents: cap } : null,
     quickDays: quickOf(d.quick),

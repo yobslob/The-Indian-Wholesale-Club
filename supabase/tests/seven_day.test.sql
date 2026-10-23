@@ -1,12 +1,13 @@
 -- D-148: 7-day delivery. A listing bought only from the quick-delivery shops is a 7-day piece: its card says so, the
 -- 7-day page lists it, and a bag of only such pieces gets the 7-day window at checkout and on its order (migration
--- 20261022120000). One other piece makes it a normal bag. No shop ever reaches the customer (D-003).
+-- 20261022120000). No shop ever reaches the customer (D-003). D-154's 7-day line is set to $0 here, so any bag of
+-- only 7-day pieces qualifies; the line itself, the split and Shipping are in shipments.test.sql.
 begin;
 select tests.setup();
 
 update public.pricing_settings
    set quick_delivery_days_min = 7, quick_delivery_days_max = 7, pilot_delivery_days_min = 12,
-       pilot_delivery_days_max = 18, food_cleared = true
+       pilot_delivery_days_max = 18, food_cleared = true, quick_delivery_min_cents = 0
  where id = 1;
 insert into public.categories (product_type, slug, name) values ('food', 'qd-snacks', 'Snacks')
   on conflict (slug) do nothing;
@@ -96,7 +97,7 @@ select tests.assert(
   'its piece is on the pickup list at once');
 select tests.assert(
   (select est_delivery_to = current_date + 18 from public.orders where id = tests.id('mixed_order')),
-  'a mixed order gets the normal window');
+  'a mixed order keeps the normal window for the order (its 7-day pieces are shipment 1, D-154)');
 
 -- 7-day delivery off: no tag, no page, no window (non-negotiable 4: the days come from Settings only).
 update public.pricing_settings set quick_delivery_days_min = null, quick_delivery_days_max = null where id = 1;

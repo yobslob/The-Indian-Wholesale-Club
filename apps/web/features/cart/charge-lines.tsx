@@ -36,15 +36,16 @@ export function ChargeLines(): React.JSX.Element | null {
   return (
     <div className="font-ui grid gap-1" aria-live="polite">
       {quick ? (
-        // D-148: only while every piece is a 7-day piece; one other piece and the bag comes in the normal window
+        // D-148, D-154: only while the whole bag is one 7-day shipment (only 7-day pieces, worth the 7-day line)
         <p className="text-brand m-0 mb-1 text-[13px] font-semibold">
-          Every piece here comes in {quick.min === quick.max ? quick.max : `${quick.min} – ${quick.max}`} days, so
-          your bag does too.
+          Every piece here comes in{' '}
+          {quick.min === quick.max ? quick.max : `${quick.min} – ${quick.max}`} days, so your bag
+          does too.
         </p>
       ) : null}
       <p className={row}>
         <span>Shipping</span>
-        <ChargeValue cents={at.shippingCents || at.waivedShippingCents} free={free && at.shippingCents === 0} />
+        <ChargeValue cents={at.shippingCents || at.waivedShippingCents} free={at.shippingFree} />
       </p>
       {at.retailerCents + at.waivedRetailerCents > 0 ? (
         <p className={row}>
@@ -84,7 +85,11 @@ export function SavingLine({ cents }: { cents: number }): React.JSX.Element | nu
 }
 
 /** D-119: from the line up, how the bulk saving grows and where it stops. */
-function BulkHint({ bulk }: { bulk: ReturnType<typeof freeDelivery>['bulk'] }): React.JSX.Element | null {
+function BulkHint({
+  bulk,
+}: {
+  bulk: ReturnType<typeof freeDelivery>['bulk'];
+}): React.JSX.Element | null {
   if (bulk.capCents === 0) return null;
   return (
     <div className="mt-1.5 grid gap-2">
@@ -122,8 +127,10 @@ export function PendingChargeRows(): React.JSX.Element | null {
   );
   return (
     <>
-      {row('Shipping', at.shippingCents || at.waivedShippingCents, free && at.shippingCents === 0)}
-      {at.retailerCents + at.waivedRetailerCents > 0 ? row('Retailer charges', at.retailerCents || at.waivedRetailerCents) : null}
+      {row('Shipping', at.shippingCents || at.waivedShippingCents, at.shippingFree)}
+      {at.retailerCents + at.waivedRetailerCents > 0
+        ? row('Retailer charges', at.retailerCents || at.waivedRetailerCents)
+        : null}
       {bulk.savingCents > 0 ? (
         <div className="flex justify-between">
           <dt className="text-ink-muted">Bulk saving</dt>

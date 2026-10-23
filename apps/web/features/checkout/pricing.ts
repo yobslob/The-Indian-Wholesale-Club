@@ -6,6 +6,7 @@ import { getCheckoutContext } from '@repo/db/server';
 import { getBagCharges, smallOrderOf } from '@repo/db/store';
 import {
   emailSchema,
+  promoDiscountCents,
   quoteCheckout,
   shippingAddressSchema,
   type ShippingAddress,
@@ -64,10 +65,12 @@ export async function priceCart(
     );
   }
   const ids = [...quantities.keys()];
-  const [context, charges] = await Promise.all([
-    getCheckoutContext(service, ids, request.promoCode ?? null, request.address.state),
-    getBagCharges(service, ids.map((variantId) => ({ variantId, quantity: quantities.get(variantId)! }))),
-  ]);
+  const context = await getCheckoutContext(
+    service,
+    ids,
+    request.promoCode ?? null,
+    request.address.state,
+  );
   const byId = new Map(context.variants.map((v) => [v.variant_id, v]));
 
   const unavailable = ids.filter((id) => !byId.has(id));
@@ -96,7 +99,14 @@ export async function priceCart(
   // D-073: taxed only where IWC is registered, and only the classes that state taxes.
   const tax = context.tax;
   const taxed = (cls: 'clothing' | 'food' | 'general'): boolean =>
-    Boolean(tax && (cls === 'clothing' ? tax.taxes_clothing : cls === 'food' ? tax.taxes_food : tax.taxes_general));
+    Boolean(
+      tax &&
+      (cls === 'clothing'
+        ? tax.taxes_clothing
+        : cls === 'food'
+          ? tax.taxes_food
+          : tax.taxes_general),
+    );
   const quoteLines = lines.map((l) => {
     const v = byId.get(l.variantId)!;
     return { ...l, taxable: taxed(v.tax_class), courierCents: v.courier_cents };
@@ -111,6 +121,21 @@ export async function priceCart(
         minOrderCents: promo.min_order_cents,
       }
     : null;
+  // D-154: the 7-day line counts the 7-day pieces after the promo, and the address decides last, so the bag's charges
+  // and shipments are asked for once both are known (one more round trip, at checkout only).
+  const subtotal = lines.reduce((n, l) => n + l.totalCents, 0);
+  const charges = await getBagCharges(
+    service,
+    ids.map((variantId) => ({ variantId, quantity: quantities.get(variantId)! })),
+    {
+      discountCents: promoDiscountCents(subtotal, quotePromo),
+      state: request.address.state,
+      line1: request.address.line1,
+    },
+  );
+  const shipments = charges.shipments ?? null;
+  // D-154: Express never carries a 7-day shipment (the plan's case 16): a bag with one is offered standard only.
+  const expressOffer = shipments?.split || shipments?.quick_only ? null : context.express;
   // D-041: standard is free (a setting). D-070: express is the courier from Mumbai to the door, priced per order +
   // per piece, offered once its settings exist. D-111: below the free-shipping line a standard parcel pays its own
   // shipping and the retailer charges.
@@ -121,14 +146,16 @@ export async function priceCart(
     smallOrder: smallOrderOf(charges),
     // D-119: from the line up, the bulk saving (worked out on the discounted subtotal, never from the browser).
     bulkSaving: { pct: charges.bulk_saving_pct, capCents: charges.bulk_saving_cap_cents },
-    express: context.express
-      ? { baseCents: context.express.base_cents, minCourierCents: context.express.min_courier_cents }
+    express: expressOffer
+      ? { baseCents: expressOffer.base_cents, minCourierCents: expressOffer.min_courier_cents }
       : null,
   };
   const standard = quoteCheckout(quoteLines, quotePromo, shipping, 'standard', quoteTax);
-  const express = context.express ? quoteCheckout(quoteLines, quotePromo, shipping, 'express', quoteTax) : null;
+  const express = expressOffer
+    ? quoteCheckout(quoteLines, quotePromo, shipping, 'express', quoteTax)
+    : null;
   const method = request.shippingMethod;
-  if (method === 'express' && (!express || !context.express)) {
+  if (method === 'express' && (!express || !expressOffer)) {
     return { ok: false, problem: { kind: 'express_unavailable' } };
   }
   const breakdown = method === 'express' ? express : standard;
@@ -137,17 +164,23 @@ export async function priceCart(
   // A smallest order is still a setting (D-109); since D-111 it is unset and small bags pay the charges instead.
   const minOrderCents = context.shipping.min_order_cents;
   if (minOrderCents !== null && breakdown.subtotalCents < minOrderCents) {
-    return { ok: false, problem: { kind: 'below_minimum', minOrderCents, subtotalCents: breakdown.subtotalCents } };
+    return {
+      ok: false,
+      problem: { kind: 'below_minimum', minOrderCents, subtotalCents: breakdown.subtotalCents },
+    };
   }
 
   // D-072: a bag of only US pieces ships from the warehouse at once, so its window is today + the US delivery days.
-  // D-148: a bag of only 7-day pieces arrives in the 7-day days (create_order keeps the same window).
-  const fastWindow = context.quick_delivery ?? context.us_delivery;
-  const standardWindow = fastWindow ? { ...fastWindow, order_by: context.delivery.order_by } : context.delivery;
-  const expressWindow = context.express
+  // D-154: a bag of only 7-day pieces worth the 7-day line arrives in the 7-day days; a split bag's order window is the
+  // normal one (its 7-day shipment's own date is shown with the shipments). create_order works out the same.
+  const fastWindow = (shipments?.quick_only ? context.quick_delivery : null) ?? context.us_delivery;
+  const standardWindow = fastWindow
+    ? { ...fastWindow, order_by: context.delivery.order_by }
+    : context.delivery;
+  const expressWindow = expressOffer
     ? {
-        est_delivery_from: context.express.est_delivery_from,
-        est_delivery_to: context.express.est_delivery_to,
+        est_delivery_from: expressOffer.est_delivery_from,
+        est_delivery_to: expressOffer.est_delivery_to,
         order_by: context.delivery.order_by,
       }
     : null;
@@ -166,7 +199,10 @@ export async function priceCart(
       shippingMethod: method,
       delivery: method === 'express' && expressWindow ? expressWindow : standardWindow,
       options: {
-        standard: { shippingCents: standard.shippingCents + standard.retailerCents, delivery: standardWindow },
+        standard: {
+          shippingCents: standard.shippingCents + standard.retailerCents,
+          delivery: standardWindow,
+        },
         express:
           express && expressWindow
             ? { shippingCents: express.shippingCents, delivery: expressWindow }

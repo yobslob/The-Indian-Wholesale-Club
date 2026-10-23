@@ -48,7 +48,9 @@ export async function getRegionPage(
   client: IwcClient,
   regionSlug: string,
 ): Promise<RegionPage | null> {
-  const data = unwrap(await client.rpc('store_region_page', { p_region_slug: regionSlug }, { get: true }));
+  const data = unwrap(
+    await client.rpc('store_region_page', { p_region_slug: regionSlug }, { get: true }),
+  );
   return data === null ? null : regionPageSchema.parse(data);
 }
 
@@ -59,10 +61,14 @@ export async function getProductPage(
   productSlug: string,
 ): Promise<ProductPage | null> {
   const data = unwrap(
-    await client.rpc('store_product_page', {
-      p_region_slug: regionSlug,
-      p_product_slug: productSlug,
-    }, { get: true }),
+    await client.rpc(
+      'store_product_page',
+      {
+        p_region_slug: regionSlug,
+        p_product_slug: productSlug,
+      },
+      { get: true },
+    ),
   );
   return data === null ? null : productPageSchema.parse(data);
 }
@@ -105,18 +111,22 @@ export interface BrowseFilter {
  */
 export async function browseProducts(client: IwcClient, filter: BrowseFilter): Promise<BrowsePage> {
   const data = unwrap(
-    await client.rpc('store_browse', {
-      p_type: filter.productType,
-      ...(filter.regionSlug ? { p_region: filter.regionSlug } : {}),
-      ...(filter.categorySlug ? { p_category: filter.categorySlug } : {}),
-      ...(filter.minCents !== undefined ? { p_min_cents: filter.minCents } : {}),
-      ...(filter.maxCents !== undefined ? { p_max_cents: filter.maxCents } : {}),
-      ...(filter.sizes?.length ? { p_sizes: filter.sizes.join('|') } : {}),
-      ...(filter.sort && filter.sort !== 'new' ? { p_sort: filter.sort } : {}),
-      ...(filter.forWho ? { p_for: filter.forWho } : {}),
-      p_offset: filter.offset ?? 0,
-      p_limit: filter.limit ?? 24,
-    }, { get: true }),
+    await client.rpc(
+      'store_browse',
+      {
+        p_type: filter.productType,
+        ...(filter.regionSlug ? { p_region: filter.regionSlug } : {}),
+        ...(filter.categorySlug ? { p_category: filter.categorySlug } : {}),
+        ...(filter.minCents !== undefined ? { p_min_cents: filter.minCents } : {}),
+        ...(filter.maxCents !== undefined ? { p_max_cents: filter.maxCents } : {}),
+        ...(filter.sizes?.length ? { p_sizes: filter.sizes.join('|') } : {}),
+        ...(filter.sort && filter.sort !== 'new' ? { p_sort: filter.sort } : {}),
+        ...(filter.forWho ? { p_for: filter.forWho } : {}),
+        p_offset: filter.offset ?? 0,
+        p_limit: filter.limit ?? 24,
+      },
+      { get: true },
+    ),
   );
   return browsePageSchema.parse(data);
 }
@@ -145,21 +155,21 @@ export async function searchProducts(
 }
 
 /** The region and slug of every live product (the sitemap), read in pages: the API returns at most 1,000 rows. */
-export async function listProductPaths(client: IwcClient): Promise<{ region_slug: string | null; slug: string }[]> {
+export async function listProductPaths(
+  client: IwcClient,
+): Promise<{ region_slug: string | null; slug: string }[]> {
   const PAGE = 1000;
   const paths: { region_slug: string | null; slug: string }[] = [];
   for (let offset = 0; ; offset += PAGE) {
-    const rows = z
-      .array(z.object({ region_slug: z.string().nullable(), slug: z.string() }))
-      .parse(
-        unwrap(
-          await client
-            .from('store_products')
-            .select('region_slug, slug')
-            .order('id')
-            .range(offset, offset + PAGE - 1),
-        ),
-      );
+    const rows = z.array(z.object({ region_slug: z.string().nullable(), slug: z.string() })).parse(
+      unwrap(
+        await client
+          .from('store_products')
+          .select('region_slug, slug')
+          .order('id')
+          .range(offset, offset + PAGE - 1),
+      ),
+    );
     paths.push(...rows);
     if (rows.length < PAGE) return paths;
   }
@@ -201,20 +211,34 @@ export async function listMyOrderCards(client: IwcClient): Promise<OrderCard[]> 
   const orders = await listMyOrders(client);
   if (orders.length === 0) return [];
   const items = z
-    .array(z.object({ order_id: z.string(), product_name: z.string(), quantity: z.number().int(), image_path: z.string().nullable() }))
+    .array(
+      z.object({
+        order_id: z.string(),
+        product_name: z.string(),
+        quantity: z.number().int(),
+        image_path: z.string().nullable(),
+      }),
+    )
     .parse(
       unwrap(
         await client
           .from('store_order_items')
           .select('order_id, product_name, quantity, image_path')
-          .in('order_id', orders.map((o) => o.id))
+          .in(
+            'order_id',
+            orders.map((o) => o.id),
+          )
           .order('product_name'),
       ),
     );
   return orders.map((o) => {
     const mine = items.filter((i) => i.order_id === o.id);
     const pieces = mine.reduce((n, i) => n + i.quantity, 0);
-    return { ...o, first_image_path: mine[0]?.image_path ?? null, more_pieces: Math.max(pieces - 1, 0) };
+    return {
+      ...o,
+      first_image_path: mine[0]?.image_path ?? null,
+      more_pieces: Math.max(pieces - 1, 0),
+    };
   });
 }
 
@@ -223,19 +247,43 @@ export async function getMyOrder(
   client: IwcClient,
   orderNumber: string,
 ): Promise<OrderDetail | null> {
-  const data = unwrap(await client.rpc('store_my_order', { p_order_number: orderNumber }, { get: true }));
+  const data = unwrap(
+    await client.rpc('store_my_order', { p_order_number: orderNumber }, { get: true }),
+  );
   return data === null ? null : orderDetailSchema.parse(data);
 }
 
 /** The Shipping & returns page's numbers (store_policy, migration 27). */
 export async function getStorePolicy(client: IwcClient): Promise<StorePolicy> {
-  return storePolicySchema.parse(unwrap(await client.rpc('store_policy', undefined, { get: true })));
+  return storePolicySchema.parse(
+    unwrap(await client.rpc('store_policy', undefined, { get: true })),
+  );
 }
 
 /** Whether the store is in demo mode (dev_preview: placeholder listings and demo reviews show, D-078). */
 export async function isDemoStore(client: IwcClient): Promise<boolean> {
   return unwrap(await client.rpc('dev_preview', undefined, { get: true })) === true;
 }
+
+/**
+ * D-154: a bag's shipments as store_bag_charges works them out: the 7-day line and how far the 7-day pieces are from it,
+ * whether they ship on their own (`split`) or are the whole bag (`quick_only`), and the one parcel's billed weight and
+ * Shipping (its 7-day shipment's share by weight). Never a shop or a source (D-003).
+ */
+export const bagShipmentsSchema = z.object({
+  days_min: z.number().int().nullable(),
+  days_max: z.number().int().nullable(),
+  min_cents: z.number().int().nullable(),
+  quick_cents: z.number().int(),
+  quick_only: z.boolean(),
+  split: z.boolean(),
+  gap_cents: z.number().int().nullable(),
+  outside: z.boolean(),
+  billed_grams: z.number().int(),
+  shipping_cents: z.number().int(),
+  quick_shipping_cents: z.number().int(),
+});
+export type BagShipments = z.infer<typeof bagShipmentsSchema>;
 
 export const bagChargesSchema = z.object({
   /** The free-shipping line (null = none). */
@@ -251,6 +299,10 @@ export const bagChargesSchema = z.object({
   past_line_cents: z.number().int().min(0).default(0),
   /** D-140 (F5): the Shipping figure shown struck through once free; null = the small-order Shipping. Display only. */
   shown_shipping_cents: z.number().int().min(0).nullable().optional(),
+  /** D-154: a bag of only 7-day pieces from the 7-day line ships free. */
+  quick_free: z.boolean().default(false),
+  /** D-154: the bag's shipments (_bag_shipments); absent before the migration. */
+  shipments: bagShipmentsSchema.nullable().optional(),
 });
 export type BagCharges = z.infer<typeof bagChargesSchema>;
 
@@ -262,6 +314,7 @@ export function smallOrderOf(c: BagCharges): SmallOrderCharges {
     retailerCents: c.retailer_cents,
     retailerPct: c.retailer_pct || null,
     shownShippingCents: c.shown_shipping_cents ?? null,
+    quickFree: c.quick_free,
   };
 }
 
@@ -274,10 +327,15 @@ export function smallOrderOf(c: BagCharges): SmallOrderCharges {
 export async function getBagCharges(
   client: IwcClient,
   items: { variantId: string; quantity: number }[],
+  /** D-154: at checkout, the promo's discount and the address decide the 7-day shipment too. */
+  at: { discountCents?: number; state?: string; line1?: string } = {},
 ): Promise<BagCharges> {
   const data = unwrap(
     await client.rpc('store_bag_charges', {
       p_items: items.slice(0, 50).map((i) => ({ variant_id: i.variantId, quantity: i.quantity })),
+      ...(at.discountCents ? { p_discount_cents: at.discountCents } : {}),
+      ...(at.state ? { p_state: at.state } : {}),
+      ...(at.line1 ? { p_line1: at.line1 } : {}),
     }),
   );
   return bagChargesSchema.parse(data);
