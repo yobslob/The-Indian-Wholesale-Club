@@ -447,3 +447,7 @@ What it means for the build:
   shipment refunds its pieces, its Shipping share and their tax; a 7-day piece refunded as unavailable refunds its
   price and tax only (the item rule of D-042), its Shipping share stays. A cancelled shipment's pieces already at the
   hub become US clearance drafts, as a whole-order cancel's do today (D-072).
+- Step 3 (the bag and checkout): words the plan does not give are Claude's draft (D-059): "Your 7-day pieces now travel
+  with the rest: …" (falling under the line), the meter's "7-day delivery: $37.59 of $49.99", checkout's line for an
+  address outside the 48 states and DC, and its line naming the promo code; the order page's "Keep it" / "Cancel
+  shipment 2". A note with Undo stays six seconds instead of three, so the button can be reached.
