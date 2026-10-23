@@ -1,6 +1,7 @@
 import { z } from 'zod';
 
 import { PRODUCT_TYPES, type ProductType } from '../../domain/product-types';
+import { vesselWeight } from '../estimate/home';
 import { agreedWeight, bestWeight, readWeights, type WeightReading } from '../weight';
 
 import { words } from './match';
@@ -55,9 +56,13 @@ export interface WeightWrite {
 export const wantsWeight = (v: WeightPlanListing['variants'][number]): boolean =>
   v.weight_g === null || v.weight_source === 'similar' || v.weight_source === 'estimated';
 
-/** A weight a page states for the whole piece (clothing never takes one from its title). */
+/**
+ * A weight a page states for the whole piece (clothing never takes one from its title; a bottle's or lunch box's
+ * litres are what it holds, never its weight: vesselWeight).
+ */
 export function pieceWeight(product: Pick<SourcedProduct, 'title' | 'specs'>, type: ProductType): WeightReading | null {
-  const best = bestWeight(readWeights(product));
+  const vessel = type === 'home' && vesselWeight(product.title) !== null;
+  const best = bestWeight(readWeights(product).filter((r) => !(vessel && r.liquid)));
   if (!best || (type === 'clothing' && best.kind === 'title')) return null;
   return best;
 }

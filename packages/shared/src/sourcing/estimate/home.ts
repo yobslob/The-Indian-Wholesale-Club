@@ -71,10 +71,30 @@ export function boxVolume(text: string): number | null {
   return v >= 1 && v <= 2_000_000 ? v : null;
 }
 
+/**
+ * Founder, 2026-10-24: "the bottles are 450-550gms, the lunch boxes are 600-800gms". A bottle's or a lunch box's
+ * litres are what it holds, not what it weighs (a "1 L" bottle was priced on 1 kg and its packing), so its ml and
+ * litres are never read as its weight; with no weight in grams on its page it is priced on the middle of the
+ * founder's range, packing included, its note saying so. Lunch boxes first: "tiffin with bottle".
+ */
+const VESSELS = [
+  { re: /\b(lunch ?box(es)?|tiffins?|tiffin box(es)?)\b/i, grams: 700, what: 'a lunch box' },
+  { re: /\b(bottles?|flasks?)\b/i, grams: 500, what: 'a bottle' },
+] as const;
+
+/** A bottle or lunch box by its name, with the founder's weight for it; null for anything else. */
+export function vesselWeight(name: string): { grams: number; what: string } | null {
+  const v = VESSELS.find((x) => x.re.test(name));
+  return v ? { grams: v.grams, what: v.what } : null;
+}
+
 export interface HomeWeight {
   /** The weight to price it on; null: none it can trust. */
   grams: number | null;
-  /** shop: the page states the packed weight; packed: the piece's own weight plus its packing. */
+  /**
+   * shop: the page states the packed weight; packed: the piece's own weight plus its packing, or a bottle's or lunch
+   * box's typical weight with its packing (the founder's, `vesselWeight`).
+   */
   source: 'shop' | 'packed' | null;
   note: string;
   /** Why the hub should weigh it before it sells widely. */
@@ -94,11 +114,13 @@ export function homeWeight(
   page: { title: string; specs: [string, string][] },
   hint: { name?: string; labels?: string[] } = {},
 ): HomeWeight {
-  const readings: WeightReading[] = readWeights(page);
+  const vessel = vesselWeight(`${page.title} ${hint.name ?? ''}`);
+  // a bottle's or lunch box's litres are what it holds (vesselWeight)
+  const readings: WeightReading[] = readWeights(page).filter((r) => !(vessel && r.liquid));
   // last: the option's own size as the shop sells it (Blinkit's "100 g"), the piece's weight without its packing
   for (const label of readings.length ? [] : (hint.labels ?? [])) {
     const w = parseWeight(label);
-    if (w) {
+    if (w && !(vessel && w.liquid)) {
       readings.push({
         grams: w.grams,
         kind: 'title',
@@ -137,6 +159,14 @@ export function homeWeight(
     };
   }
   const piece = item ?? pkg;
+  if (!piece && vessel)
+    return {
+      grams: vessel.grams,
+      source: 'packed',
+      note: `${vessel.what}: the founder's typical weight, packed (2026-10-24); its litres are what it holds`,
+      look: null,
+      sizeG,
+    };
   if (!piece)
     return {
       grams: null,

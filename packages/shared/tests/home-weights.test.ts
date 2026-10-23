@@ -5,8 +5,8 @@
 import assert from 'node:assert/strict';
 import { describe, it } from 'node:test';
 
-import { homeVariants } from '../src/sourcing/auto';
-import { boxVolume, homePacking, homeWeight } from '../src/sourcing/estimate';
+import { homeVariants, pieceWeight } from '../src/sourcing/auto';
+import { boxVolume, homePacking, homeWeight, vesselWeight } from '../src/sourcing/estimate';
 
 const page = (title: string, specs: [string, string][]) => ({ title, specs });
 
@@ -119,5 +119,30 @@ describe('the runner weighs a new home listing from its page (D-134)', () => {
     assert.deepEqual([small?.weight_g, small?.weight_source], [620, 'packed']);
     assert.equal(large?.weight_g, null);
     assert.equal(large?.weight_source, undefined);
+  });
+});
+
+// Founder, 2026-10-24: "the bottles are 450-550gms, the lunch boxes are 600-800gms"
+describe('a bottle or lunch box: its litres are what it holds, not its weight', () => {
+  it('a "1 L" bottle with no weight in grams: the founder\'s 500 g, not 1 kg and its packing', () => {
+    const w = homeWeight(page('Milton Thermosteel Flip Lid Bottle 1 L', []), { labels: ['1 L'] });
+    assert.equal(w.grams, 500);
+    assert.equal(w.source, 'packed');
+  });
+  it('a lunch box from its option "1.2 L": 700 g; a tiffin with a bottle is a lunch box', () => {
+    assert.equal(homeWeight(page('Steel Lunch Box, 3 containers', []), { labels: ['1.2 L'] }).grams, 700);
+    assert.equal(homeWeight(page('Tiffin with bottle', []), { labels: ['750 ml'] }).grams, 700);
+  });
+  it('a weight in grams on its page still wins', () => {
+    const w = homeWeight(page('Steel Water Bottle 1 L', [['Item Weight', '380 g']]));
+    assert.equal(w.source, 'packed');
+    assert.ok(w.grams! > 380 && w.grams! < 500);
+  });
+  it('anything else keeps its litres as before (a 1 L pooja kalash of water is not a bottle)', () => {
+    assert.equal(vesselWeight('Brass Kalash'), null);
+    assert.equal(vesselWeight('Copper water bottle')?.grams, 500);
+  });
+  it('the weights pass ignores a bottle\'s litres too', () => {
+    assert.equal(pieceWeight({ title: 'Cello Steel Bottle 1000 ml', specs: [] }, 'home'), null);
   });
 });
