@@ -451,3 +451,13 @@ What it means for the build:
   with the rest: …" (falling under the line), the meter's "7-day delivery: $37.59 of $49.99", checkout's line for an
   address outside the 48 states and DC, and its line naming the promo code; the order page's "Keep it" / "Cancel
   shipment 2". A note with Undo stays six seconds instead of three, so the button can be reached.
+- Step 4 (the 7-day store, migration `20261026090000`): the 7-day store is every page under `/7-day-delivery` (its
+  front page and its search). The header's categories are the database's own 7-day categories, biggest first ("Snacks &
+  Namkeen", "Rice, Flours & Staples"…), not the plan's short names (Snacks, Sweets, Masalas, Staples, Pickles, Tea,
+  Pooja and home), which no category has; two fit beside the logo below 1280 px, four above. "From your state (when
+  one is chosen)" is not built: the site keeps no chosen state. The switch shows only while the 7-day store has pieces
+  (an empty store has no door). Most ordered this week counts units in paid orders of the last 7 days; Under $5 is
+  under 500 cents. In the app, which has no shared header, the switch sits at the top of Home and of the 7-day screen.
+  Words the plan does not give are Claude's draft (D-059): "Search the 7-day store", "Everything in the 7-day store",
+  "Nothing in the 7-day store matches …" with "Search the whole IWC store", and See all's Delivery group ("Any" / "In
+  7 days").
