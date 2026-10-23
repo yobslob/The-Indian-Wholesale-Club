@@ -461,3 +461,10 @@ What it means for the build:
   Words the plan does not give are Claude's draft (D-059): "Search the 7-day store", "Everything in the 7-day store",
   "Nothing in the 7-day store matches …" with "Search the whole IWC store", and See all's Delivery group ("Any" / "In
   7 days").
+- Step 5 (Insights, migration `20261027090000`): "bags" are paid orders (a bag never checked out leaves no record);
+  "stopping just past $49.99" is 7-day pieces after the promo within $5 of the line (then $5 – $15, more). "On time"
+  is delivered (its delivered event, on the US Eastern calendar) by the date promised when the order was placed, kept
+  in `promised_to`, since a delay moves the date the customer sees; a late shipment "had its notice first" when a
+  delivery-window change for it was sent on or before that day. The split's extra courier cost is the two parcels'
+  courier charge less one parcel of both (Settings' ₹ a kg, at least 1 kg then by the half kg, food at its billed %).
+  The app has no Insights screen, so this is web only.
