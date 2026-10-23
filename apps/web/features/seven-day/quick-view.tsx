@@ -1,6 +1,7 @@
 'use client';
 
-import { useRef, useState } from 'react';
+import { useSearchParams } from 'next/navigation';
+import { useEffect, useRef, useState } from 'react';
 
 import { MOST, PAGE } from '@/features/catalog/browse-query';
 import { ProductCard } from '@/features/catalog/product-card';
@@ -15,9 +16,10 @@ const pillOf = (chosen: boolean): string =>
 
 /**
  * The 7-day page's pills (All and each category, biggest first) and its cards (D-148). A pill or Show more swaps only
- * the cards, from /api/seven-day (the same cached read as the page); the page around them stays.
+ * the cards, from /api/seven-day (the same cached read as the page); the page around them stays. D-154: the address
+ * carries the category (?category=, from a tile or the header's links), and a pill writes it there without a reload.
  */
-export function QuickView({ initial }: { initial: QuickPage }): React.JSX.Element {
+export function QuickView({ initial, address = null }: { initial: QuickPage; address?: string | null }): React.JSX.Element {
   const [category, setCategory] = useState<string | null>(null);
   const [products, setProducts] = useState(initial.products);
   const [total, setTotal] = useState(initial.total);
@@ -42,10 +44,23 @@ export function QuickView({ initial }: { initial: QuickPage }): React.JSX.Elemen
     }
   }
 
+  const known = (slug: string | null): string | null => (initial.categories.some((c) => c.slug === slug) ? slug : null);
   const choose = (next: string | null): void => {
     if (next === category) return;
     setCategory(next);
     void load(next, 0);
+  };
+  // The address's category (a tile, the header, Back): Next keeps useSearchParams in step with replaceState.
+  useEffect(() => {
+    choose(known(address));
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [address]);
+  const pick = (next: string | null): void => {
+    const url = new URL(window.location.href);
+    if (next) url.searchParams.set('category', next);
+    else url.searchParams.delete('category');
+    window.history.replaceState(window.history.state, '', url.pathname + url.search + url.hash);
+    choose(next);
   };
 
   return (
@@ -53,12 +68,12 @@ export function QuickView({ initial }: { initial: QuickPage }): React.JSX.Elemen
       <nav aria-label="Categories" className="-mx-[var(--gut)] overflow-x-auto px-[var(--gut)] pb-1">
         <div className="flex gap-2">
           <button type="button" className={pillOf(category === null)} aria-pressed={category === null}
-            onClick={() => choose(null)}>
+            onClick={() => pick(null)}>
             All <span className="opacity-60">{initial.all_total}</span>
           </button>
           {initial.categories.map((c) => (
             <button key={c.slug} type="button" className={pillOf(category === c.slug)}
-              aria-pressed={category === c.slug} onClick={() => choose(c.slug)}>
+              aria-pressed={category === c.slug} onClick={() => pick(c.slug)}>
               {c.name} <span className="opacity-60">{c.count}</span>
             </button>
           ))}
@@ -88,4 +103,9 @@ export function QuickView({ initial }: { initial: QuickPage }): React.JSX.Elemen
       ) : null}
     </div>
   );
+}
+
+/** The list with the address's ?category= (inside a Suspense boundary, so the cached page still draws every card). */
+export function QuickViewFromAddress({ initial }: { initial: QuickPage }): React.JSX.Element {
+  return <QuickView initial={initial} address={useSearchParams().get('category')} />;
 }

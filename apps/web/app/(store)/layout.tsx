@@ -1,5 +1,5 @@
 import { FreeDeliveryBar } from '@/features/cart/free-delivery-bar';
-import { isDemoStoreCached } from '@/features/catalog/data';
+import { getQuickNavCached, isDemoStoreCached } from '@/features/catalog/data';
 import { DemoBanner } from '@/features/shell/demo-banner';
 import { Motion } from '@/features/shell/motion';
 import { SiteFooter } from '@/features/shell/site-footer';
@@ -21,12 +21,16 @@ export default async function StoreLayout({
   children: React.ReactNode;
   info: React.ReactNode;
 }): Promise<React.JSX.Element> {
-  const demo = await isDemoStoreCached().catch(() => false);
+  // D-154: the store switch's days and the 7-day store's categories (null while 7-day delivery is off or paused)
+  const [demo, quick] = await Promise.all([
+    isDemoStoreCached().catch(() => false),
+    getQuickNavCached().catch(() => null),
+  ]);
   return (
     <>
       <div className="site-top">
         {demo ? <DemoBanner /> : null}
-        <SiteHeader />
+        <SiteHeader quick={quick} />
       </div>
       <main id="main" className="store-main">
         {children}

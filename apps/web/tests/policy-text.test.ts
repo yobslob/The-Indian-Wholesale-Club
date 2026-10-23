@@ -15,6 +15,8 @@ const policy: StorePolicy = {
   us_delivery_days_max: 7,
   quick_delivery_days_min: 7,
   quick_delivery_days_max: 7,
+  quick_delivery_min_cents: null,
+  quick_delivery_on: false,
   cancel_fee_pct: 0,
   return_claim_days: 7,
   return_tiers: [

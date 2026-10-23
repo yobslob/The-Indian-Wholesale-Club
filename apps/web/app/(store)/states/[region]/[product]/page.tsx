@@ -6,7 +6,7 @@ import { PRODUCT_TYPE_LABEL, PRODUCT_TYPE_PATH, usableSummary } from '@repo/shar
 import { SaveButton } from '@/features/account/save-button';
 import { AddToCart } from '@/features/catalog/add-to-cart';
 import { CuratedCard } from '@/features/catalog/curated-card';
-import { getProductPageCached } from '@/features/catalog/data';
+import { getProductPageCached, getStorePolicyCached } from '@/features/catalog/data';
 import { DeliveryNote } from '@/features/catalog/delivery-note';
 import { Disclosure } from '@/features/catalog/disclosure';
 import { photoNote, ProductDetails, sizeChart } from '@/features/catalog/product-details';
@@ -40,10 +40,17 @@ export default async function ProductPage({
   params: Params;
 }): Promise<React.JSX.Element> {
   const { region, product: productSlug } = await params;
-  const page = await getProductPageCached(region, productSlug);
+  // D-154: the policy (STORE_TAG only) carries the 7-day line for the delivery note
+  const [page, policy] = await Promise.all([getProductPageCached(region, productSlug), getStorePolicyCached()]);
   if (!page) notFound();
   const { product, variants, media, similar, curated, reviews, delivery, ships_from_us, quick_delivery } = page;
   const chart = sizeChart(product, variants);
+  const lo = policy.quick_delivery_days_min;
+  const hi = policy.quick_delivery_days_max;
+  const quickLine =
+    policy.quick_delivery_on && lo !== null && hi !== null && policy.quick_delivery_min_cents
+      ? { days: lo === hi ? `${hi}` : `${lo} – ${hi}`, minCents: policy.quick_delivery_min_cents }
+      : null;
 
   return (
     <>
@@ -94,7 +101,7 @@ export default async function ProductPage({
             <AddToCart
               product={product}
               variants={variants}
-              delivery={<DeliveryNote delivery={delivery} fromUs={ships_from_us} quick={quick_delivery} />}
+              delivery={<DeliveryNote delivery={delivery} fromUs={ships_from_us} quick={quick_delivery} quickLine={quickLine} />}
             />
           ) : (
             <p className="text-ink-muted text-sm">Not available right now.</p>

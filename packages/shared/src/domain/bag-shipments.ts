@@ -63,6 +63,23 @@ export function arrivalLine(from: string | null | undefined, to: string | null |
   return from === to ? `Arrives by ${dayDate(to)}` : `Arrives ${formatDeliveryWindow(from, to)}`;
 }
 
+/**
+ * The 7-day pieces' dates for an order placed now: today + the 7-day days (Settings), counted from the order, any hour
+ * (D-154), on the database's calendar (UTC), so the store switch and the 7-day front page say what the bag will.
+ */
+export function quickDates(daysMin: number, daysMax: number, now: Date = new Date()): { from: string; to: string } {
+  const day = (n: number): string =>
+    new Date(Date.UTC(now.getUTCFullYear(), now.getUTCMonth(), now.getUTCDate() + n)).toISOString().slice(0, 10);
+  return { from: day(daysMin), to: day(daysMax) };
+}
+
+/** "arrives by Fri, Oct 30" (or "arrives Nov 3 – Nov 5"): the switch's and the front page's line. */
+export function quickArrivesLine(daysMin: number, daysMax: number, now?: Date): string {
+  const { from, to } = quickDates(daysMin, daysMax, now);
+  const line = arrivalLine(from, to) ?? '';
+  return line.charAt(0).toLowerCase() + line.slice(1);
+}
+
 /** "Fri, Oct 30" for a calendar day (YYYY-MM-DD), whatever the device's zone. */
 export function dayDate(day: string): string {
   return formatOrderBy(`${day}T12:00:00Z`, 'UTC');

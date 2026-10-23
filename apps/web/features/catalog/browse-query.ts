@@ -6,7 +6,8 @@ import type { BrowseFilter, BrowsePage, BrowseSort } from '@repo/db/store';
 
 /**
  * The See all pages' filters as the address carries them (D-136): ?state=, ?category=, ?for= (women or men, clothing,
- * D-140), ?min= and ?max= (whole dollars), ?size= (repeated), ?sort= (absent: low to high, D-144), ?show=. Pure: the
+ * D-140), ?min= and ?max= (whole dollars), ?size= (repeated), ?sort= (absent: low to high, D-144), ?delivery=7-day
+ * (only 7-day pieces, D-154), ?show=. Pure: the
  * page, the /api/browse route and the filter panel share it.
  */
 export interface BrowseQuery {
@@ -18,6 +19,8 @@ export interface BrowseQuery {
   max?: number;
   sizes: string[];
   sort: BrowseSort;
+  /** D-154: "Delivery: in 7 days", only 7-day pieces. */
+  quick?: boolean;
   /** How many cards are drawn ("Show more", D-067); absent = the first page. */
   show?: number;
 }
@@ -74,6 +77,7 @@ export function parseBrowseQuery(raw: Raw): BrowseQuery {
     max,
     sizes,
     sort: sort.parse(one(raw, 'sort') ?? 'low'),
+    ...(one(raw, 'delivery') === '7-day' ? { quick: true } : {}),
     show: show.parse(one(raw, 'show')),
   };
 }
@@ -88,6 +92,7 @@ export function browseSearch(q: BrowseQuery): string {
   if (q.max !== undefined) p.set('max', String(q.max));
   for (const s of q.sizes) p.append('size', s);
   if (q.sort !== 'low') p.set('sort', q.sort);
+  if (q.quick) p.set('delivery', '7-day');
   if (q.show) p.set('show', String(q.show));
   return p.toString();
 }
@@ -109,13 +114,14 @@ export const toBrowseFilter = (productType: ProductType, q: BrowseQuery, offset:
   sizes: q.sizes,
   sort: q.sort,
   forWho: q.who,
+  quick: q.quick,
   offset,
   limit,
 });
 
 /** True when any filter beyond the state and the category is set (those only the server's cached page knows). */
 export const hasExtraFilters = (q: BrowseQuery): boolean =>
-  q.min !== undefined || q.max !== undefined || q.sizes.length > 0 || q.sort !== 'low';
+  q.min !== undefined || q.max !== undefined || q.sizes.length > 0 || q.sort !== 'low' || Boolean(q.quick);
 
 export const sameQuery = (a: BrowseQuery, b: BrowseQuery): boolean => browseSearch(a) === browseSearch(b);
 

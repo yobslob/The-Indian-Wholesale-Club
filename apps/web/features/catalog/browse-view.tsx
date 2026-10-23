@@ -34,11 +34,14 @@ export function BrowseView({
   title,
   initialQuery,
   initial,
+  quickDays = null,
 }: {
   productType: ProductType;
   title: string;
   initialQuery: BrowseQuery;
   initial: BrowsePage;
+  /** D-154: the 7-day days, for "Delivery: in 7 days"; null while 7-day delivery is off. */
+  quickDays?: number | null;
 }): React.JSX.Element {
   const { query, meta, products, loading, apply, showMore } = useBrowse(productType, initialQuery, initial);
   const results = useRef<HTMLDivElement>(null);
@@ -47,7 +50,8 @@ export function BrowseView({
   const categoryName = meta.categories.find((c) => c.slug === query.category)?.name;
   const price = priceLabel(query);
   const whoName = query.who ? WHO_LABEL[query.who] : undefined;
-  const chosen = Boolean(query.state || query.category || price || query.sizes.length || query.who);
+  const quickName = query.quick && quickDays ? `In ${quickDays} days` : undefined;
+  const chosen = Boolean(query.state || query.category || price || query.sizes.length || query.who || query.quick);
 
   /** A filter applied: the cards swap in place; if the reader is far down, back to the top of the cards. */
   const change = (next: BrowseQuery): void => {
@@ -75,8 +79,8 @@ export function BrowseView({
       </a>
     );
   };
-  const clearAll = withFilter(query, { state: undefined, category: undefined, who: undefined, min: undefined, max: undefined, sizes: [] });
-  const panel = <FilterPanel productType={productType} query={query} meta={meta} onChange={change} />;
+  const clearAll = withFilter(query, { state: undefined, category: undefined, who: undefined, min: undefined, max: undefined, sizes: [], quick: undefined });
+  const panel = <FilterPanel productType={productType} query={query} meta={meta} quickDays={quickDays} onChange={change} />;
 
   return (
     <>
@@ -87,7 +91,7 @@ export function BrowseView({
       </h1>
       {productType === 'clothing' && meta.wears ? <WhoTiles query={query} counts={meta.wears} onChange={change} /> : null}
       <PhoneFilter
-        chosen={`${whoName ? `${whoName} · ` : ''}${stateName ?? 'All states'} · ${categoryName ?? 'Everything'}${price ? ` · ${price}` : ''}`}
+        chosen={`${whoName ? `${whoName} · ` : ''}${stateName ?? 'All states'} · ${categoryName ?? 'Everything'}${price ? ` · ${price}` : ''}${quickName ? ` · ${quickName}` : ''}`}
         count={counted(meta)}
         onClear={chosen ? () => change(clearAll) : null}
       >
@@ -109,6 +113,7 @@ export function BrowseView({
             </p>
             {chosen ? (
               <div className={`${styles.chips} order-last w-full md:order-none md:w-auto`}>
+                {quickName ? chip(quickName, { quick: undefined }) : null}
                 {whoName ? chip(whoName, { who: undefined }) : null}
                 {categoryName ? chip(categoryName, { category: undefined }) : null}
                 {stateName ? chip(stateName, { state: undefined }) : null}

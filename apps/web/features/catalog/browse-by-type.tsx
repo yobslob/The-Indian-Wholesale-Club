@@ -2,7 +2,7 @@ import { type ProductType } from '@repo/shared/domain';
 
 import { PAGE, toBrowseFilter, type BrowseQuery } from './browse-query';
 import { BrowseView } from './browse-view';
-import { browseCached } from './data';
+import { browseCached, getStorePolicyCached } from './data';
 import { TypeToggle } from './type-toggle';
 
 /**
@@ -22,7 +22,11 @@ export async function BrowseByType({
   emptyText: string;
   query: BrowseQuery;
 }): Promise<React.JSX.Element> {
-  const page = await browseCached(toBrowseFilter(productType, query, 0, query.show ?? PAGE));
+  // D-154: the policy (STORE_TAG only, like every page's header) says whether "Delivery: in 7 days" is offered
+  const [page, policy] = await Promise.all([
+    browseCached(toBrowseFilter(productType, query, 0, query.show ?? PAGE)),
+    getStorePolicyCached(),
+  ]);
 
   return (
     <div className="space-y-6">
@@ -35,7 +39,13 @@ export async function BrowseByType({
           <p className="text-ink-muted">{emptyText}</p>
         </>
       ) : (
-        <BrowseView productType={productType} title={title} initialQuery={query} initial={page} />
+        <BrowseView
+          productType={productType}
+          title={title}
+          initialQuery={query}
+          initial={page}
+          quickDays={policy.quick_delivery_on ? policy.quick_delivery_days_max : null}
+        />
       )}
     </div>
   );

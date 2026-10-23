@@ -13,7 +13,8 @@ import type { ProductType } from '@repo/shared/domain';
 const FIRST_STATES = 8;
 
 /**
- * See all's filter groups (D-136): For (clothing: Women · Men, D-140), Category, State, Price (a slider and four
+ * See all's filter groups (D-136): Delivery (in 7 days, D-154, while there are 7-day pieces), For (clothing: Women ·
+ * Men, D-140), Category, State, Price (a slider and four
  * ready-made ranges) and Size (Pack for food) as boxes that combine, grouped by kind (D-140). Every choice is a real link to its address (new tabs, no JavaScript, crawlers); a
  * plain click applies it in place through `onChange`, without loading the page.
  */
@@ -21,11 +22,14 @@ export function FilterPanel({
   productType,
   query,
   meta,
+  quickDays = null,
   onChange,
 }: {
   productType: ProductType;
   query: BrowseQuery;
   meta: BrowseMeta;
+  /** D-154: the 7-day days (Settings); null while 7-day delivery is off. */
+  quickDays?: number | null;
   onChange: (next: BrowseQuery) => void;
 }): React.JSX.Element {
   const [allStates, setAllStates] = useState(false);
@@ -55,6 +59,28 @@ export function FilterPanel({
 
   return (
     <div className="font-ui">
+      {quickDays && (meta.quick_total > 0 || query.quick) ? (
+        <section className={styles.group} aria-labelledby="f-delivery">
+          <div className={styles.head}>
+            <h3 id="f-delivery">Delivery</h3>
+          </div>
+          <ul className={styles.list}>
+            <li>
+              <a {...link({ quick: undefined })} className={styles.item} aria-current={!query.quick}>
+                <i aria-hidden="true" />
+                Any
+              </a>
+            </li>
+            <li>
+              <a {...link({ quick: true })} className={styles.item} aria-current={Boolean(query.quick)}>
+                <i aria-hidden="true" />
+                In {quickDays} days
+                <span>{meta.quick_total}</span>
+              </a>
+            </li>
+          </ul>
+        </section>
+      ) : null}
       {productType === 'clothing' && meta.wears ? (
         <section className={styles.group} aria-labelledby="f-for">
           <div className={styles.head}>

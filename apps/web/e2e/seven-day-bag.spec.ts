@@ -1,4 +1,4 @@
-import { expect, test } from '@playwright/test';
+import { expect, test, type APIRequestContext } from '@playwright/test';
 
 import { DEMO_PRODUCT, E2E_ADMIN, E2E_CUSTOMER, E2E_SLUG_PREFIX, serviceClient, stripeTestKeysPresent } from './env';
 
@@ -7,6 +7,7 @@ import { DEMO_PRODUCT, E2E_ADMIN, E2E_CUSTOMER, E2E_SLUG_PREFIX, serviceClient, 
  * opens a second shipment; checkout, once the address is known, shows both with their dates. A local 7-day piece (a
  * Blinkit snack, placeholder, kept across runs and archived after each) is made for the test and food is cleared for it,
  * then put back.
+ * The second test walks the store switch (step 4).
  * It stops before paying: Stripe's test page challenges an automated browser with a captcha (docs/status.md), and
  * create_order's two shipments are covered in SQL (shipment_admin.test.sql).
  */
@@ -63,14 +64,18 @@ test.afterAll(async () => {
   await service.from('pricing_settings').update({ food_cleared: foodCleared }).eq('id', 1);
 });
 
-test('7-day pieces come alone; a saree opens a second shipment, shown in the bag and at checkout', async ({ page, request }) => {
-  test.skip(!stripeTestKeysPresent(), 'Stripe test keys are not set in apps/web/.env.local');
-  // The fixture was written straight to the database, so the store refreshes its pages as after an app admin's change (B-17)
+/** The fixture was written straight to the database, so the store refreshes its pages as after an app admin's change (B-17). */
+async function refreshStore(request: APIRequestContext): Promise<void> {
   const { createClient } = await import('@supabase/supabase-js');
   const auth = createClient(process.env.NEXT_PUBLIC_SUPABASE_URL ?? '', process.env.NEXT_PUBLIC_SUPABASE_ANON_KEY ?? '');
   const { data, error } = await auth.auth.signInWithPassword(E2E_ADMIN);
   if (error || !data.session) throw error ?? new Error('no admin session');
   expect((await request.post('/admin/revalidate', { headers: { authorization: `Bearer ${data.session.access_token}` } })).status()).toBe(200);
+}
+
+test('7-day pieces come alone; a saree opens a second shipment, shown in the bag and at checkout', async ({ page, request }) => {
+  test.skip(!stripeTestKeysPresent(), 'Stripe test keys are not set in apps/web/.env.local');
+  await refreshStore(request);
 
   await page.goto(`/states/india/${SNACK}`);
   await page.getByRole('button', { name: 'Add to bag' }).click();
@@ -101,4 +106,21 @@ test('7-day pieces come alone; a saree opens a second shipment, shown in the bag
   // After the address: both shipments with their dates, priced as one parcel
   await expect(page.getByText(/^Shipment 1 · Arrives by/).first()).toBeVisible();
   await expect(page.getByText(/^Shipment 2 · Arrives /).first()).toBeVisible();
+});
+
+// D-154 step 4: the store switch opens the 7-day store (its date, its search), and the IWC tab returns to the page left.
+test('the store switch opens the 7-day store and its search; IWC returns to the page left', async ({ page, request }) => {
+  await refreshStore(request);
+  await page.goto('/clothing');
+  const stores = page.getByRole('tablist', { name: 'Store' });
+  await expect(stores.getByRole('tab', { name: /IWC/ })).toHaveAttribute('aria-selected', 'true');
+  await stores.getByRole('tab', { name: /7-day/ }).click();
+  await expect(page).toHaveURL(/\/7-day-delivery$/);
+  await expect(stores.getByRole('tab', { name: /7-day/ })).toHaveAttribute('aria-selected', 'true');
+  await expect(page.getByText(/^Order today, arrives by \w{3}, \w{3} \d+\.$/)).toBeVisible();
+
+  await page.goto('/7-day-delivery/search?q=banana');
+  await expect(page.getByRole('main').getByText('E2E banana chips')).toBeVisible();
+  await stores.getByRole('tab', { name: /IWC/ }).click();
+  await expect(page).toHaveURL(/\/clothing$/);
 });

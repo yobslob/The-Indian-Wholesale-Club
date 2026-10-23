@@ -6,6 +6,7 @@ import {
   browseProducts,
   getHome,
   getProductPage,
+  getQuickFront,
   getQuickPage,
   getRegionPage,
   getStorePolicy,
@@ -78,6 +79,7 @@ export const browseCached = (filter: BrowseFilter) =>
       (filter.sizes ?? []).join('|'),
       filter.sort ?? 'new',
       filter.forWho ?? '',
+      filter.quick ? 'quick' : '',
       String(filter.offset ?? 0),
       String(filter.limit ?? 24),
     ],
@@ -94,6 +96,27 @@ export const quickPageCached = (category: string | null, offset: number, limit: 
     getQuickPage(storeClient(), { category, offset, limit }),
   );
 
+/** D-154: the 7-day store's front page (its tiles and rows), refreshed with the listings like its list. */
+export const getQuickFrontCached = () => cached(['store-quick-front'], [listingsTag], () => getQuickFront(storeClient()));
+
+/**
+ * D-154: what the header needs on every page for the store switch and the 7-day store's links: the days and the
+ * categories, nothing else; null while the 7-day store is off, paused or empty. Only STORE_TAG (like the demo flag), so a listing change never rebuilds every page.
+ */
+export const getQuickNavCached = () =>
+  cached(['store-quick-nav'], [], async () => {
+    const front = await getQuickFront(storeClient());
+    // an empty 7-day store has no door
+    return front && front.total > 0
+      ? {
+          daysMin: front.days_min,
+          daysMax: front.days_max,
+          categories: front.categories.slice(0, 4).map((c) => ({ slug: c.slug, name: c.name })),
+        }
+      : null;
+  });
+export type QuickNav = Awaited<ReturnType<typeof getQuickNavCached>>;
+
 /** Demo mode (D-078): the banner on every store page. Refreshed with STORE_TAG or within 5 minutes. */
 export const isDemoStoreCached = () => cached(['store-demo'], [], () => isDemoStore(storeClient()));
 
@@ -107,6 +130,6 @@ export const listProductPathsCached = () =>
  * Search is per query: not cached (dynamic page, still one round trip). `limit` grows with "Show more", which reads
  * from the first result again; only the first read is recorded for Insights (C7).
  */
-export function searchProducts(query: string, limit: number, record: boolean) {
-  return searchStore(storeClient(), query, { limit, record });
+export function searchProducts(query: string, limit: number, record: boolean, quick = false) {
+  return searchStore(storeClient(), query, { limit, record, quick });
 }

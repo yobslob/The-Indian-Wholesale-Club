@@ -3,18 +3,22 @@
 import { usePathname } from 'next/navigation';
 import { useEffect, useRef, useState } from 'react';
 
+import { isQuickPath, QUICK_HOME } from '@/lib/site';
+
 import { HeaderIcon } from './header-icons';
 
 /**
  * Phones only (D-116): a search icon in the header's icons (where Saved is on wider screens; Saved moves into the
  * menu). A tap grows a search bar over the whole header bar, the field focused; Enter opens /search, ×, Escape or
- * going to another page put the header back. Without JavaScript the icon is a plain link to /search.
+ * going to another page put the header back. Without JavaScript the icon is a plain link to /search. D-154: inside the
+ * 7-day store it searches only 7-day pieces.
  */
 export function PhoneSearch(): React.JSX.Element {
   const [open, setOpen] = useState(false);
   const input = useRef<HTMLInputElement>(null);
   const button = useRef<HTMLAnchorElement>(null);
   const path = usePathname();
+  const search = isQuickPath(path) ? `${QUICK_HOME}/search` : '/search';
 
   useEffect(() => setOpen(false), [path]);
   useEffect(() => {
@@ -33,7 +37,7 @@ export function PhoneSearch(): React.JSX.Element {
     <>
       <a
         ref={button}
-        href="/search"
+        href={search}
         className="site-icon md:hidden"
         aria-label="Search"
         aria-expanded={open}
@@ -47,7 +51,7 @@ export function PhoneSearch(): React.JSX.Element {
       </a>
       <form
         id="phone-search"
-        action="/search"
+        action={search}
         role="search"
         className="phone-search md:hidden"
         data-open={open || undefined}
@@ -55,7 +59,7 @@ export function PhoneSearch(): React.JSX.Element {
         aria-hidden={!open}
       >
         <HeaderIcon name="search" />
-        <input ref={input} type="search" name="q" placeholder="Search pieces, states…" aria-label="Search" enterKeyHint="search" />
+        <input ref={input} type="search" name="q" placeholder={search === '/search' ? 'Search pieces, states…' : 'Search the 7-day store'} aria-label="Search" enterKeyHint="search" />
         <button
           type="button"
           className="site-icon -mr-2.5 flex-none"

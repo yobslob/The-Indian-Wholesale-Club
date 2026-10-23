@@ -21,6 +21,10 @@ export const INFO_LINKS = [
  */
 export const isInfoPath = (href: string): boolean => INFO_LINKS.some((l) => l.href === href);
 
+/** D-154: the 7-day store's front page; every page under it is inside the 7-day store (its header and switch). */
+export const QUICK_HOME = '/7-day-delivery';
+export const isQuickPath = (path: string): boolean => path === QUICK_HOME || path.startsWith(`${QUICK_HOME}/`);
+
 /** A product or region photo's address on the site (`product-media`; packages/shared `mediaPath`, D-140). */
 export function mediaUrl(storagePath: string): string {
   return mediaPath('product-media', storagePath);
