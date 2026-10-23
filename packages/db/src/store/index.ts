@@ -99,6 +99,8 @@ export interface BrowseFilter {
   sort?: BrowseSort;
   /** D-140: clothing for women or men (unisex pieces show under both). */
   forWho?: 'women' | 'men';
+  /** D-154: only 7-day pieces ("Delivery: in 7 days"). */
+  quick?: boolean;
   /** Skip this many (the next page of a See all list). */
   offset?: number;
   /** At most 500 (the database caps it). */
@@ -122,6 +124,7 @@ export async function browseProducts(client: IwcClient, filter: BrowseFilter): P
         ...(filter.sizes?.length ? { p_sizes: filter.sizes.join('|') } : {}),
         ...(filter.sort && filter.sort !== 'new' ? { p_sort: filter.sort } : {}),
         ...(filter.forWho ? { p_for: filter.forWho } : {}),
+        ...(filter.quick ? { p_quick: true } : {}),
         p_offset: filter.offset ?? 0,
         p_limit: filter.limit ?? 24,
       },
@@ -139,7 +142,7 @@ export async function browseProducts(client: IwcClient, filter: BrowseFilter): P
 export async function searchProducts(
   client: IwcClient,
   query: string,
-  page: { offset?: number; limit?: number; record?: boolean } = {},
+  page: { offset?: number; limit?: number; record?: boolean; quick?: boolean } = {},
 ): Promise<ProductCard[]> {
   const data = unwrap(
     await client
@@ -148,6 +151,7 @@ export async function searchProducts(
         p_offset: page.offset ?? 0,
         p_limit: page.limit ?? 24,
         p_record: page.record ?? true,
+        ...(page.quick ? { p_quick: true } : {}),
       })
       .select(PRODUCT_CARD_COLUMNS),
   );

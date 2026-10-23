@@ -251,6 +251,12 @@ Migration `20261025090000_bag_shipments` (D-154, step 3): `store_bag_charges` ad
 are 7-day pieces) and `dates` (`quick_from` / `quick_to` from the 7-day days, `standard_from` / `standard_to` from
 `store_next_delivery()`), and its `shipments` no longer carries `billed_grams`, `quick_shipping_cents` or the option ids
 (step 1's answer had sent the bag's billed grams to the browser). Tests: `shipments.test.sql`.
+Migration `20261026090000_seven_day_store` (D-154, step 4): `store_browse(..., p_quick)` (last argument) keeps only
+7-day pieces and adds `quick_total` (the "Delivery: in 7 days" count, every other filter applied; `all_total` stays the
+whole type); `store_search(..., p_quick)` the same for search; `store_quick_front()` (null while 7-day delivery is off
+or paused) gives the 7-day front page: days, the line (`min_cents`), the categories with a photo each, and the rows
+`most_ordered` (units in paid orders this week, never shown), `under_5` and `new_this_week` (light cards, 12 each);
+`store_policy()` adds `quick_delivery_min_cents` and `quick_delivery_on`. Tests: `seven_day_store.test.sql`.
 Migration 80 (D-141, the photo store): a photo in Cloudflare R2 is recorded with an `s/` path
 (`products/<id>/s/<name>.jpg`, packages/shared media.ts). `worker_sourcing_media` accepts `products/<id>/s/<name>` as
 well as `products/<id>/<name>`; album photos may be `regions/<slug>/album/s/<name>`.

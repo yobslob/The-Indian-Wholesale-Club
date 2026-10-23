@@ -342,6 +342,8 @@ export const browsePageSchema = z.object({
   categories: z.array(filterCountSchema),
   /** D-136 (optional until migration 20261016210000): pieces in all states with the price and size filters applied. */
   states_total: z.number().int().optional(),
+  /** D-154 (0 until migration 20261026090000): the 7-day pieces among them, for "Delivery: in 7 days". */
+  quick_total: z.number().int().default(0),
   /** D-136: every size (or food pack) with its pieces, each counted with the other filters applied. */
   sizes: z.array(z.object({ value: z.string(), count: z.number().int() })).default([]),
   /** D-140 (optional until migration 20261018100000): clothing for women and for men, unisex counted under both. */
@@ -389,6 +391,9 @@ export const storePolicySchema = z.object({
   /** D-148: 7-day delivery's days from the order; empty = no 7-day delivery. */
   quick_delivery_days_min: z.number().int().nullable().default(null),
   quick_delivery_days_max: z.number().int().nullable().default(null),
+  /** D-154 (until migration 20261026090000: none, closed): the 7-day line, and whether the 7-day store is open. */
+  quick_delivery_min_cents: z.number().int().nullable().default(null),
+  quick_delivery_on: z.boolean().default(false),
   cancel_fee_pct: z.coerce.number().nullable(),
   return_claim_days: z.number().int().nullable(),
   return_tiers: z.array(z.object({ days: z.number().int(), kept_pct: z.coerce.number() })),

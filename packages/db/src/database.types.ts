@@ -2127,7 +2127,7 @@ isOneToOne: false
 { Args: { "p_discount_cents"?: number,"p_items": Json,"p_line1"?: string,"p_state"?: string }; Returns: Json
                            },
 "store_browse":
-{ Args: { "p_category"?: string,"p_for"?: string,"p_limit"?: number,"p_max_cents"?: number,"p_min_cents"?: number,"p_offset"?: number,"p_region"?: string,"p_sizes"?: string,"p_sort"?: string,"p_type": string }; Returns: Json
+{ Args: { "p_category"?: string,"p_for"?: string,"p_limit"?: number,"p_max_cents"?: number,"p_min_cents"?: number,"p_offset"?: number,"p_quick"?: boolean,"p_region"?: string,"p_sizes"?: string,"p_sort"?: string,"p_type": string }; Returns: Json
                            },
 "store_home":
 { Args: Record<PropertyKey, never>; Returns: Json
@@ -2152,11 +2152,14 @@ isOneToOne: false
 "store_quick_browse":
 { Args: { "p_category"?: string,"p_limit"?: number,"p_offset"?: number }; Returns: Json
                            },
+"store_quick_front":
+{ Args: Record<PropertyKey, never>; Returns: Json
+                           },
 "store_region_page":
 { Args: { "p_region_slug": string }; Returns: Json
                            },
 "store_search":
-{ Args: { "p_limit"?: number,"p_offset"?: number,"p_query": string,"p_record"?: boolean }; Returns: {
+{ Args: { "p_limit"?: number,"p_offset"?: number,"p_query": string,"p_quick"?: boolean,"p_record"?: boolean }; Returns: {
               "attributes": Json | null,
 "category_id": string | null,
 "category_name": string | null,

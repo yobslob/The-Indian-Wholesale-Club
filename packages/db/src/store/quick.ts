@@ -22,6 +22,24 @@ export const quickPageSchema = z.object({
 });
 export type QuickPage = z.infer<typeof quickPageSchema>;
 
+/** D-154: the 7-day store's front page (store_quick_front): null while 7-day delivery is off or paused. */
+export const quickFrontSchema = z
+  .object({
+    days_min: z.number().int(),
+    days_max: z.number().int(),
+    /** The 7-day line ($49.99, Settings): 7-day pieces worth it come in the 7-day days. */
+    min_cents: z.number().int().nullable(),
+    total: z.number().int(),
+    categories: z.array(
+      z.object({ slug: z.string(), name: z.string(), count: z.number().int(), image_path: z.string().nullable() }),
+    ),
+    most_ordered: z.array(productCardSchema),
+    under_5: z.array(productCardSchema),
+    new_this_week: z.array(productCardSchema),
+  })
+  .nullable();
+export type QuickFront = z.infer<typeof quickFrontSchema>;
+
 export const quickBagSchema = z.object({ days_min: z.number().int(), days_max: z.number().int() }).nullable();
 export type QuickBag = z.infer<typeof quickBagSchema>;
 
@@ -42,6 +60,11 @@ export async function getQuickPage(
     ),
   );
   return quickPageSchema.parse(data);
+}
+
+/** D-154: the 7-day store's front page in one round trip (its tiles and rows; the full list is getQuickPage). */
+export async function getQuickFront(client: IwcClient): Promise<QuickFront> {
+  return quickFrontSchema.parse(unwrap(await client.rpc('store_quick_front', undefined, { get: true })));
 }
 
 /** The 7-day days when every piece in the bag is a 7-day piece, else null (one other piece: a normal bag). */
