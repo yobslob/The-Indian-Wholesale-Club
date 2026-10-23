@@ -1,7 +1,7 @@
 import { Text, View } from 'react-native';
 
-import { getBagCharges, smallOrderOf, type BagCharges, type QuickBag } from '@repo/db/store';
-import { bagChargesAt, bulkProgress, formatUsd } from '@repo/shared/domain';
+import { getBagCharges, smallOrderOf, type BagCharges } from '@repo/db/store';
+import { bagChargesAt, bulkProgress, formatUsd, parseBagShipments, quickMeter } from '@repo/shared/domain';
 
 import { MeterLine } from './meter-line';
 import { bagSubtotalCents, useBag, type BagLine } from './store';
@@ -28,17 +28,6 @@ export function useBagCharges(): BagCharges | null {
       : Promise.resolve(null),
   );
   return key ? (data ?? null) : null;
-}
-
-/**
- * D-148, D-154: the 7-day days while the whole bag is one 7-day shipment (only 7-day pieces, worth the 7-day line),
- * else null: the bag's own charges answer says so (the website's /api/bag-charges `quick` reads the same).
- */
-export function useQuickBag(): QuickBag {
-  const s = useBagCharges()?.shipments;
-  return s?.quick_only && s.days_min !== null && s.days_max !== null
-    ? { days_min: s.days_min, days_max: s.days_max }
-    : null;
 }
 
 /** Where the bag stands against the free-delivery line (D-111) and, from it up, on the bulk saving (D-119). */
@@ -96,6 +85,9 @@ export function ChargeRows(): React.JSX.Element | null {
   const charges = useBagCharges();
   if (!charges) return null;
   const { free, leftCents, line, share, bulk, at } = freeDelivery(lines, charges);
+  // D-154: the 7-day meter (the 7-day pieces against the 7-day line) above the free-delivery one
+  const facts = parseBagShipments(charges);
+  const quick = quickMeter(facts);
   return (
     <View className="gap-1">
       <ChargeRow
@@ -114,6 +106,14 @@ export function ChargeRows(): React.JSX.Element | null {
         <View className="flex-row justify-between gap-3">
           <Text className="font-body text-ink-muted flex-1 text-sm">Bulk saving</Text>
           <Text className="font-body text-positive text-sm">−{formatUsd(bulk.savingCents)}</Text>
+        </View>
+      ) : null}
+      {quick ? (
+        <View className="mt-1 gap-2">
+          <Text className="font-ui-semibold text-brand text-[13px]">
+            7-day delivery: {formatUsd(quick.cents)} of {formatUsd(quick.minCents)}
+          </Text>
+          <MeterLine share={quick.share} />
         </View>
       ) : null}
       {line !== null && !free ? (

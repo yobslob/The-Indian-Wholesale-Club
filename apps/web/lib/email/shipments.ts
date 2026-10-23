@@ -1,4 +1,4 @@
-import { formatDeliveryWindow, formatOrderBy } from '@repo/shared/domain';
+import { arrivalLine } from '@repo/shared/domain';
 
 import type { OrderDetail, OrderShipment } from '@repo/db/store';
 
@@ -13,9 +13,7 @@ export function shipmentOf(order: OrderDetail, seq: number | null | undefined): 
 
 /** "Arrives by Fri, Oct 30" (one day), "Arrives Nov 3 – Nov 7"; null without dates. */
 export function arrives(sh: Pick<OrderShipment, 'est_delivery_from' | 'est_delivery_to'>): string | null {
-  const { est_delivery_from: from, est_delivery_to: to } = sh;
-  if (!from || !to) return null;
-  return from === to ? `Arrives by ${formatOrderBy(`${to}T12:00:00Z`, 'UTC')}` : `Arrives ${formatDeliveryWindow(from, to)}`;
+  return arrivalLine(sh.est_delivery_from, sh.est_delivery_to);
 }
 
 export function piecesOf(order: OrderDetail, sh: OrderShipment): OrderDetail['items'] {

@@ -51,6 +51,20 @@ export interface CheckoutQuote {
   promoCode: string | null;
   /** A code was entered but is not valid right now. */
   promoRejected: boolean;
+  /** D-154: two shipments when the 7-day pieces travel apart (each with its dates and pieces); absent for one. */
+  shipments?: QuotedShipment[] | null;
+  /** D-154: how much more of 7-day pieces brings them in 7 days, and the date they would arrive by. */
+  quickGapCents?: number | null;
+  quickBy?: string | null;
+  /** D-154: the address is outside the 48 states and DC (or a PO box, APO): the 7-day pieces travel with the rest. */
+  quickOutside?: boolean;
+}
+
+export interface QuotedShipment {
+  seq: 1 | 2;
+  kind: 'quick' | 'standard';
+  delivery: { est_delivery_from: string; est_delivery_to: string };
+  variantIds: string[];
 }
 
 export interface CheckoutStartResponse {

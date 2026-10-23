@@ -1,8 +1,10 @@
 'use client';
 
-import { formatUsd } from '@repo/shared/domain';
+import { usePathname } from 'next/navigation';
 
-import { bagSaving, freeDelivery, useBagCharges } from './charges';
+import { formatUsd, quickMeter } from '@repo/shared/domain';
+
+import { bagSaving, freeDelivery, undoBagChange, useBagCharges, useShipmentNote } from './charges';
 import { FreeMeter, useSurge } from './free-delivery-bar';
 import { useCart } from './store';
 
@@ -32,17 +34,11 @@ export function ChargeLines(): React.JSX.Element | null {
   if (!charges) return null;
   const { free, leftCents, line, share, bulk, at } = freeDelivery(lines, charges);
   const row = 'flex items-baseline justify-between gap-3 text-[14px]';
-  const quick = charges.quickDays;
+  // D-154: the 7-day meter (the 7-day pieces against the 7-day line) above the free-delivery one
+  const quick = quickMeter(charges.shipments);
   return (
     <div className="font-ui grid gap-1" aria-live="polite">
-      {quick ? (
-        // D-148, D-154: only while the whole bag is one 7-day shipment (only 7-day pieces, worth the 7-day line)
-        <p className="text-brand m-0 mb-1 text-[13px] font-semibold">
-          Every piece here comes in{' '}
-          {quick.min === quick.max ? quick.max : `${quick.min} – ${quick.max}`} days, so your bag
-          does too.
-        </p>
-      ) : null}
+      <BagNote />
       <p className={row}>
         <span>Shipping</span>
         <ChargeValue cents={at.shippingCents || at.waivedShippingCents} free={at.shippingFree} />
@@ -59,6 +55,14 @@ export function ChargeLines(): React.JSX.Element | null {
           <span className="text-positive font-semibold">−{formatUsd(bulk.savingCents)}</span>
         </p>
       ) : null}
+      {quick ? (
+        <div className="mt-1.5 grid gap-2">
+          <p className="text-brand m-0 text-[13px] font-semibold">
+            7-day delivery: {formatUsd(quick.cents)} of {formatUsd(quick.minCents)}
+          </p>
+          <Meter share={quick.share} />
+        </div>
+      ) : null}
       {line !== null && !free ? (
         <div className="mt-1.5 grid gap-2">
           <p className="text-brand m-0 text-[13px] font-semibold">
@@ -70,6 +74,26 @@ export function ChargeLines(): React.JSX.Element | null {
       {free ? <BulkHint bulk={bulk} /> : null}
       <SavingLine cents={bagSaving(lines, charges)} />
     </div>
+  );
+}
+
+/**
+ * D-154: the three-second note when a change moved the bag across a line, on the bag page (elsewhere the pill shows
+ * it): "Your 7-day pieces now arrive by Fri, Oct 30", "Shipping is now $46.55 until $99.99. Undo".
+ */
+function BagNote(): React.JSX.Element | null {
+  const note = useShipmentNote();
+  const path = usePathname();
+  if (!note || path !== '/cart') return null;
+  return (
+    <p className="text-brand rise-in m-0 mb-1 text-[13px] font-semibold">
+      {note.text}{' '}
+      {note.undo ? (
+        <button type="button" onClick={() => undoBagChange(note.prevKey)} className="min-h-11 underline underline-offset-[3px]">
+          Undo
+        </button>
+      ) : null}
+    </p>
   );
 }
 

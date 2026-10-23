@@ -1,4 +1,4 @@
-import { formatDeliveryWindow, formatUsd } from '@repo/shared/domain';
+import { arrivalLine, dayDate, formatDeliveryWindow, formatUsd } from '@repo/shared/domain';
 
 import { LinePhoto } from '@/features/cart/bag-lines';
 import { ChargeValue, PendingChargeRows } from '@/features/cart/charge-lines';
@@ -90,9 +90,50 @@ export function BagSummary({
         )}
       </dl>
       {quote?.promoRejected ? <p className="text-caution mt-3 text-sm">That promo code can&apos;t be used on this order.</p> : null}
-      {quote ? (
-        <p className="bg-paper font-body mt-3 rounded-xl px-3.5 py-3 text-sm font-medium">
+      {quote ? <QuoteDelivery quote={quote} lines={lines} /> : null}
+    </div>
+  );
+}
+
+/**
+ * The dates, once the address is known (D-008, D-154): one window, or Shipment 1 and Shipment 2 with their pieces;
+ * under the 7-day line how much more brings the 7-day pieces in 7 days (naming the promo code when it is the reason);
+ * for an address outside the 48 states and DC, the line saying why everything comes together.
+ */
+function QuoteDelivery({ quote, lines }: { quote: CheckoutQuote; lines: SummaryLine[] }): React.JSX.Element {
+  const names = (ids: string[]) =>
+    lines
+      .filter((l) => ids.includes(l.variantId))
+      .map((l) => l.productName)
+      .join(', ');
+  const gap = !quote.quickOutside && quote.quickGapCents && quote.quickBy ? quote.quickGapCents : null;
+  const byCode = gap !== null && quote.promoCode !== null && quote.breakdown.discountCents >= gap;
+  return (
+    <div className="bg-paper font-body mt-3 grid gap-2 rounded-xl px-3.5 py-3 text-sm font-medium">
+      {quote.shipments && quote.shipments.length > 1 ? (
+        quote.shipments.map((sh) => (
+          <p key={sh.seq} className="m-0">
+            <b className={sh.kind === 'quick' ? 'text-brand' : ''}>
+              Shipment {sh.seq} · {arrivalLine(sh.delivery.est_delivery_from, sh.delivery.est_delivery_to)}
+            </b>
+            <small className="text-ink-muted block text-[13px] font-normal">{names(sh.variantIds)}</small>
+          </p>
+        ))
+      ) : (
+        <p className="m-0">
           Estimated delivery: <b>{formatDeliveryWindow(quote.delivery.est_delivery_from, quote.delivery.est_delivery_to)}</b>
+        </p>
+      )}
+      {gap !== null && quote.quickBy ? (
+        <p className="text-brand m-0 text-[13px] font-semibold">
+          {byCode
+            ? `With the code ${quote.promoCode}, your 7-day pieces come to under the 7-day line, so they travel with the rest. Add ${formatUsd(gap)} of 7-day pieces and they arrive by ${dayDate(quote.quickBy)}.`
+            : `Add ${formatUsd(gap)} of 7-day pieces and they arrive by ${dayDate(quote.quickBy)}`}
+        </p>
+      ) : null}
+      {quote.quickOutside ? (
+        <p className="text-ink-muted m-0 text-[13px] font-normal">
+          7-day delivery reaches the 48 mainland states and DC, so everything here comes together in one shipment.
         </p>
       ) : null}
     </div>

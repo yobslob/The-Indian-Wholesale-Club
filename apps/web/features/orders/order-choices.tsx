@@ -20,6 +20,7 @@ export function OrderChoices({
   email,
   window,
   paidCents,
+  shipment = null,
 }: {
   actions: OrderActions;
   orderNumber: string;
@@ -27,6 +28,8 @@ export function OrderChoices({
   window: { from: string; to: string } | null;
   /** What the customer paid and has not had back yet. */
   paidCents: number;
+  /** D-154: the delay is about this shipment of two (its number and new dates); the choice is about it alone. */
+  shipment?: { seq: number; from: string | null; to: string | null } | null;
 }): React.JSX.Element | null {
   const router = useRouter();
   const [confirming, setConfirming] = useState(false);
@@ -46,13 +49,30 @@ export function OrderChoices({
     const data = (await res.json().catch(() => ({}))) as { error?: string };
     setBusy(false);
     if (!res.ok) return setMessage(data.error ?? 'Something went wrong. Please try again.');
-    setMessage(choice === 'keep' ? 'Thanks. Your order stays with the new date.' : 'Your order is cancelled. The refund is on its way.');
+    setMessage(
+      shipment && actions.delay_open
+        ? choice === 'keep'
+          ? `Thanks. Shipment ${shipment.seq} stays with the new date.`
+          : `Shipment ${shipment.seq} is cancelled. The refund is on its way.`
+        : choice === 'keep'
+          ? 'Thanks. Your order stays with the new date.'
+          : 'Your order is cancelled. The refund is on its way.',
+    );
     router.refresh();
   }
 
   return (
     <section className="border-line space-y-3 rounded-lg border p-4" aria-live="polite">
-      {actions.delay_open ? (
+      {actions.delay_open && shipment ? (
+        <>
+          <h2 className="text-ink font-medium">Shipment {shipment.seq}&apos;s delivery date moved</h2>
+          <p className="text-ink text-sm">
+            {shipment.from && shipment.to ? `It now arrives ${formatDeliveryWindow(shipment.from, shipment.to)}. ` : ''}
+            Keep it with the new date, or cancel just this shipment and get {formatUsd(refund ?? 0)} back. The rest of your
+            order keeps its date. Sorry about this.
+          </p>
+        </>
+      ) : actions.delay_open ? (
         <>
           <h2 className="text-ink font-medium">Your delivery date moved</h2>
           <p className="text-ink text-sm">
@@ -84,7 +104,7 @@ export function OrderChoices({
               onClick={() => void decide('keep')}
               className="bg-brand text-on-brand font-ui min-h-12 rounded-pill px-6 text-[15px] disabled:opacity-50"
             >
-              Keep my order
+              {shipment ? 'Keep it' : 'Keep my order'}
             </button>
           ) : null}
           {confirming ? (
@@ -103,7 +123,7 @@ export function OrderChoices({
               onClick={() => setConfirming(true)}
               className="text-ink font-ui min-h-12 px-2 text-[15px] underline disabled:opacity-50"
             >
-              Cancel my order
+              {shipment && actions.delay_open ? `Cancel shipment ${shipment.seq}` : 'Cancel my order'}
             </button>
           )}
         </div>

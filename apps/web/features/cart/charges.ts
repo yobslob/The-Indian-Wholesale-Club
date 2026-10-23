@@ -1,12 +1,16 @@
 'use client';
 
-import { useEffect } from 'react';
+import { useEffect, useState } from 'react';
 import { create } from 'zustand';
 
 import {
   bagChargesAt,
   bagSavingCents,
   bulkProgress,
+  parseBagShipments,
+  shipmentNote,
+  type BagMoment,
+  type BagShipmentFacts,
   type BulkSaving,
   type SmallOrderCharges,
 } from '@repo/shared/domain';
@@ -20,13 +24,26 @@ export interface BagCharges {
   small: SmallOrderCharges;
   /** D-119: the bulk saving from the line up; null = none. */
   bulk: BulkSaving | null;
-  /** D-148, D-154: the whole bag is one 7-day shipment: it arrives in these days (Settings); null = otherwise. */
-  quickDays: { min: number; max: number } | null;
+  /** D-154: which pieces are 7-day, the 7-day line and gap, a split, and each shipment's dates. */
+  shipments: BagShipmentFacts | null;
 }
 
-const useChargesStore = create<{ key: string; charges: BagCharges | null }>(() => ({
+/** D-154: the pill's three-second note when a change moved the bag across a line; `prevKey` is the bag before it (Undo). */
+export interface ShipmentNote {
+  text: string;
+  undo: boolean;
+  prevKey: string;
+  until: number;
+}
+
+// Three seconds (the plan); one with Undo stays twice as long, so the button can be reached
+const NOTE_MS = 3000;
+
+const useChargesStore = create<{ key: string; charges: BagCharges | null; moment: BagMoment | null; note: ShipmentNote | null }>(() => ({
   key: '',
   charges: null,
+  moment: null,
+  note: null,
 }));
 let requested = '';
 
@@ -36,12 +53,6 @@ export const bagKey = (lines: CartLine[]): string =>
     .map((l) => `${l.variantId}:${Math.min(Math.max(l.quantity, 1), 99)}`)
     .sort()
     .join(',');
-
-function quickOf(q: unknown): BagCharges['quickDays'] {
-  if (typeof q !== 'object' || q === null) return null;
-  const { days_min: min, days_max: max } = q as Record<string, unknown>;
-  return typeof min === 'number' && typeof max === 'number' ? { min, max } : null;
-}
 
 function parse(data: unknown): BagCharges | null {
   if (typeof data !== 'object' || data === null) return null;
@@ -67,8 +78,48 @@ function parse(data: unknown): BagCharges | null {
       quickFree: d.quick_free === true,
     },
     bulk: pct > 0 && cap > 0 ? { pct, capCents: cap } : null,
-    quickDays: quickOf(d.quick),
+    shipments: parseBagShipments(d),
   };
+}
+
+/** Where a bag stands for the notes: its shipments and whether Shipping is charged. */
+function momentOf(lines: CartLine[], charges: BagCharges): BagMoment {
+  const at = bagChargesAt(cartSubtotalCents(lines), charges.freeMinCents, charges.small);
+  return {
+    facts: charges.shipments,
+    shippingCents: at.shippingCents || at.waivedShippingCents,
+    shippingCharged: at.shippingCents > 0,
+    freeMinCents: charges.freeMinCents,
+  };
+}
+
+/** The note while it lasts (three seconds), then null. */
+export function useShipmentNote(): ShipmentNote | null {
+  const note = useChargesStore((s) => s.note);
+  const [, tick] = useState(0);
+  useEffect(() => {
+    if (!note) return;
+    const timer = setTimeout(() => tick((n) => n + 1), Math.max(note.until - Date.now(), 0) + 20);
+    return () => clearTimeout(timer);
+  }, [note]);
+  return note && note.until > Date.now() ? note : null;
+}
+
+/** Undo: the bag as it was before the change ("Shipping is now $46.55 until $99.99. Undo", the plan's case 35). */
+export function undoBagChange(prevKey: string): void {
+  const before = new Map(
+    prevKey
+      .split(',')
+      .filter(Boolean)
+      .map((part) => [part.slice(0, 36), Number(part.slice(37))] as const),
+  );
+  const { lines, setQuantity, remove } = useCart.getState();
+  for (const l of lines) {
+    const q = before.get(l.variantId);
+    if (q === undefined) remove(l.variantId);
+    else if (q !== l.quantity) setQuantity(l.variantId, q);
+  }
+  useChargesStore.setState({ note: null });
 }
 
 /**
@@ -87,7 +138,16 @@ export function useBagCharges(): BagCharges | null {
         .then((r) => (r.ok ? r.json() : null))
         .then((data: unknown) => {
           const parsed = parse(data);
-          if (parsed) useChargesStore.setState({ key, charges: parsed });
+          if (!parsed) return;
+          const state = useChargesStore.getState();
+          const moment = momentOf(useCart.getState().lines, parsed);
+          const note = shipmentNote(state.moment, moment);
+          useChargesStore.setState({
+            key,
+            charges: parsed,
+            moment,
+            ...(note ? { note: { ...note, prevKey: state.key, until: Date.now() + NOTE_MS * (note.undo ? 2 : 1) } } : {}),
+          });
         })
         .catch(() => undefined)
         .finally(() => {
@@ -122,5 +182,6 @@ export function freeDelivery(lines: CartLine[], charges: BagCharges | null) {
 /** D-140 (F5): "You're saving $X" for this bag: the struck charges and the bulk saving (0 below the line). */
 export function bagSaving(lines: CartLine[], charges: BagCharges | null): number {
   const f = freeDelivery(lines, charges);
-  return f.free ? bagSavingCents(f.at, f.bulk.savingCents) : 0;
+  // D-154: a bag of only 7-day pieces from the 7-day line saves its Shipping too
+  return f.free || f.at.shippingFree ? bagSavingCents(f.at, f.bulk.savingCents) : 0;
 }

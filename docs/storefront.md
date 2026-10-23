@@ -104,9 +104,22 @@ option says how many of it are already in the bag.
 - **Tap anywhere on a card but its buttons → the product page.**
 - **7-day tag (D-148):** a 7-day piece's card says "In 7 days" (brand colour, top left of the photo; the days from
   Settings, `quick_days`); not on the 7-day page itself, where every card is one. Its product page gives the 7-day date
-  "when your bag holds only 7-day pieces" and the normal window with others; the bag (page and panel) says "Every piece
-  here comes in 7 days, so your bag does too." only while every piece is a 7-day piece (`store_quick_bag` through
-  `/api/bag-charges`). Checkout gives such a bag the 7-day window and no Express; prices and charges are unchanged.
+  "when your bag holds only 7-day pieces" and the normal window with others.
+- **Two shipments (D-154, step 3):** once the bag holds 7-day pieces, the bag (page and panel, web and app) shows its
+  lines under their dates, from `/api/bag-charges` (`quick_ids`, `dates`, `shipments`; no weight leaves the database):
+  "Shipment 1 · Arrives by Fri, Oct 30" over the 7-day pieces and "Shipment 2 · Arrives Nov 3 – Nov 7" over the rest
+  when they are worth the 7-day line ($49.99), one "Arrives by …" group for a bag of only them (Shipping struck through,
+  "You're saving"), and under the line one group in the normal window with "Add $12.40 of 7-day pieces and they arrive
+  by Fri, Oct 30" and **Shop the 7-day store**; each date "for most US addresses". Two meters: "7-day delivery: $37.59
+  of $49.99" above the free-delivery one, in the summary and (web) in the pill. When a change crosses a line the pill (on
+  `/cart` the summary) says so for three seconds: "Your 7-day pieces now arrive by …", "That opened a second shipment:
+  …", "Your 7-day pieces now travel with the rest: …", or, when a normal piece ends a free 7-day bag's free Shipping,
+  "Shipping is now $46.55 until $99.99." with **Undo** beside the pill (six seconds; Undo puts the bag back). Checkout,
+  after the address: one window or Shipment 1 and Shipment 2 with their pieces, the "Add …" line (naming the promo code
+  when it is the reason), and for an address outside the 48 states and DC "7-day delivery reaches the 48 mainland states
+  and DC, so everything here comes together in one shipment." No Express with a 7-day shipment. The order page (and its
+  emails) shows each shipment's date, status, Track the parcel and pieces; a late shipment's notice offers to keep it or
+  cancel just that shipment. Shared logic: `packages/shared/src/domain/bag-shipments.ts`.
 - **The +:** a piece with one choice is added at once and flies to the bag; one with sizes, packs or flavours opens a
   ribbon across the bottom of the photo (frosted, unrolling from the +, chips arriving one after another; colours
   first when there are several; sold-out chips struck; a dot for "only a few left"; one tap adds and rolls it back),
@@ -129,8 +142,8 @@ Tabs on the app's own cream tab bar (a brand bar over the active tab, the bag co
 with "Indian Wholesale Club" on its wall and "Miss local market? Start here." (D-148: "Want in 7 days? Click here." to the
 7-day screen while 7-day delivery is on), the demo strip on top, Just listed, Pick
 your home with stamp pages from 7) · **Explore** (search with the count, States · Clothing · Food · Home & gifts; states as stamps) ·
-**Bag** (photos, − / + , the empty bag shows stamps and Just listed; the bag is a tab, so no bag panel; the 7-day line
-while every piece is a 7-day piece, `store_quick_bag`) · **Saved** (cards
+**Bag** (photos, − / + , the empty bag shows stamps and Just listed; the bag is a tab, so no bag panel; D-154: its lines
+under their shipments' dates and the 7-day meter, as on the website; not yet the pill's notes) · **Saved** (cards
 with a filled heart that removes) · **Profile** (Orders · Addresses · Your details as pill tabs, Track an order, About us &
 help, Sign out; signed out, the sign-in card). Tab roots have a large Syne title, pushed screens a back bar. The screens
 follow the web pages above, read the same `store_*` data through `@repo/db/store` (one call per screen, D-017) and share
@@ -138,7 +151,7 @@ the tokens (§Design system). About us & help is the D-092 panel as a sheet with
 `packages/shared/src/info/` (one source with the website's info pages).
 | Screen | File (`apps/app/app/…`) | Data |
 |---|---|---|
-| Home, Explore, Bag, Saved, Profile | `(customer)/…` | `store_home()`, `store_type_rows()`, search, on-device bag, `wishlists` (signed in), own orders as cards (`listMyOrderCards`), `store_policy()` for the help sheet and Home's 7-day line, `store_quick_bag()` for the Bag's |
+| Home, Explore, Bag, Saved, Profile | `(customer)/…` | `store_home()`, `store_type_rows()`, search, on-device bag, `wishlists` (signed in), own orders as cards (`listMyOrderCards`), `store_policy()` for the help sheet and Home's 7-day line, `store_bag_charges()` for the Bag's charges and shipments |
 | 7-day delivery | `7-day-delivery` (D-148: the web page's header with the days, category pills with counts, a two-column grid 24 at a time like `browse`; the cards without the tag; nothing to show while the days are empty) | `store_quick_browse()` |
 | Region, product | `region/[slug]`, `product/[region]/[slug]` (same sections as the web pages above: the region photo first and jump pills; on the product page the photos edge to edge with a full-screen viewer, the buy bar, reviews as a row, and "Write a review" as a sheet with the D-090 form, D-095) | `store_region_page()`, `store_product_page()` + live availability |
 | Checkout | `checkout` | phone → delivery (the ZIP fills the city and state through the website's `GET /api/zip`) → payment, as on the web (D-087); the website's server API: `POST /api/checkout` (server-priced quote + Standard / Express, D-041) → Stripe PaymentSheet → `POST /api/orders` (D-038). The phone never sends prices |

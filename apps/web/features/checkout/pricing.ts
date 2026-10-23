@@ -184,6 +184,26 @@ export async function priceCart(
         order_by: context.delivery.order_by,
       }
     : null;
+  // D-154: the shipments the order will have (create_order works them out the same way), each with its pieces
+  const dates = charges.dates;
+  const quickIds = new Set(charges.quick_ids);
+  const split =
+    method === 'standard' && shipments?.split && dates?.quick_from && dates.quick_to
+      ? ([
+          {
+            seq: 1,
+            kind: 'quick',
+            delivery: { est_delivery_from: dates.quick_from, est_delivery_to: dates.quick_to },
+            variantIds: ids.filter((id) => quickIds.has(id)),
+          },
+          {
+            seq: 2,
+            kind: 'standard',
+            delivery: { est_delivery_from: context.delivery.est_delivery_from, est_delivery_to: context.delivery.est_delivery_to },
+            variantIds: ids.filter((id) => !quickIds.has(id)),
+          },
+        ] as const)
+      : null;
   const entered = request.promoCode?.trim() ? request.promoCode.trim().toUpperCase() : null;
   return {
     ok: true,
@@ -210,6 +230,10 @@ export async function priceCart(
       },
       promoCode: promo && breakdown.promoApplied ? promo.code : null,
       promoRejected: entered !== null && !(promo && breakdown.promoApplied),
+      shipments: split ? split.map((sh) => ({ ...sh, variantIds: [...sh.variantIds] })) : null,
+      quickGapCents: shipments?.gap_cents ?? null,
+      quickBy: dates?.quick_to ?? null,
+      quickOutside: shipments?.outside ?? false,
     },
   };
 }

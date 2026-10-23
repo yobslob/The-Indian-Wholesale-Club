@@ -21,3 +21,4 @@ export * from './product-types';
 export * from './weight';
 export * from './order-money';
 export * from './wears';
+export * from './bag-shipments';

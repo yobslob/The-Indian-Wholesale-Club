@@ -66,7 +66,8 @@ export async function POST(request: Request): Promise<NextResponse<{ ok: true } 
       if (!order.payment_intent_id) throw new Error('order has no card payment');
       const refund = await stripeServer().refunds.create(
         { payment_intent: order.payment_intent_id, amount },
-        { idempotencyKey: `iwc-cancel-${order.id}` },
+        // D-154: a delay cancel of one shipment refunds that shipment only, once
+        { idempotencyKey: `iwc-cancel-${order.id}${delay && actions.delay_shipment ? `-s${actions.delay_shipment}` : ''}` },
       );
       refundRef = refund.id;
     }

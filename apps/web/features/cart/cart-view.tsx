@@ -3,10 +3,11 @@
 import Link from 'next/link';
 import { useEffect, useState } from 'react';
 
-import { formatUsd } from '@repo/shared/domain';
+import { bagShipmentState, formatUsd } from '@repo/shared/domain';
 
 import { BagLines } from './bag-lines';
 import { ChargeLines } from './charge-lines';
+import { useBagCharges } from './charges';
 import { cartSubtotalCents, useCart } from './store';
 
 export const checkoutButton = 'bg-brand text-on-brand font-ui inline-grid h-[52px] place-items-center rounded-pill px-7 text-base font-semibold';
@@ -30,13 +31,17 @@ export function EmptyLine(): React.JSX.Element {
  */
 export function Subtotal(): React.JSX.Element {
   const lines = useCart((s) => s.lines);
+  // D-154: a bag with 7-day pieces already shows its dates; the address confirms them at checkout
+  const dated = bagShipmentState(useBagCharges()?.shipments ?? null) !== 'none';
   return (
     <div className="grid min-w-[240px] gap-2">
       <p className="font-ui m-0 flex items-baseline justify-between gap-3 text-base font-medium">
         Subtotal <b className="font-bold">{formatUsd(cartSubtotalCents(lines))}</b>
       </p>
       <ChargeLines />
-      <small className="text-ink-muted font-body block text-[13px] font-normal">Tax and delivery dates are shown at checkout.</small>
+      <small className="text-ink-muted font-body block text-[13px] font-normal">
+        {dated ? 'Tax is added at checkout, where your address confirms the dates.' : 'Tax and delivery dates are shown at checkout.'}
+      </small>
     </div>
   );
 }

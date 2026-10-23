@@ -14,6 +14,7 @@ import { SITE_NAME } from '@/lib/site';
 import { FasterOffer } from './faster-offer';
 import { InvoiceA } from './invoice-a';
 import { OrderChoices } from './order-choices';
+import { OrderShipments } from './order-shipments';
 import { PrintInvoiceButton } from './print-invoice';
 import { ReturnChoices } from './return-choices';
 
@@ -96,7 +97,32 @@ function Timeline({ order, step }: { order: OrderDetail; step: number }): React.
 export function OrderView({ order }: { order: OrderDetail }): React.JSX.Element {
   const o = order.order;
   const step = timelineIndex(o.customer_status);
-  const tracking = trackingUrl(o.carrier, o.tracking_number);
+  // D-154: an order of two shipments shows each with its date, tracking and pieces
+  const split = order.shipments.length > 1;
+  const tracking = split ? null : trackingUrl(o.carrier, o.tracking_number);
+  const delayed = order.actions?.delay_shipment ? order.shipments.find((sh) => sh.seq === order.actions?.delay_shipment) : undefined;
+  const itemRow = (item: OrderDetail['items'][number]): React.JSX.Element => (
+    <li
+      key={item.id}
+      className="border-line font-ui grid grid-cols-[56px_minmax(0,1fr)_auto] items-center gap-3.5 border-b py-3"
+    >
+      <LinePhoto path={item.image_path ?? null} className="w-14 rounded-[10px]" />
+      <span className="min-w-0">
+        <b className="block text-[15px] font-semibold leading-snug">{item.product_name}</b>
+        <small className="text-ink-muted text-[13px]">
+          {[item.variant_label, item.region_name].filter(Boolean).join(' · ')} · × {item.quantity}
+        </small>
+        {item.status !== 'active' ? (
+          <span className="text-caution block text-[13px]">
+            {item.status === 'unavailable'
+              ? 'No longer available, being refunded'
+              : 'Refunded'}
+          </span>
+        ) : null}
+      </span>
+      <span className="text-[15px] font-medium">{formatUsd(item.total_price_cents)}</span>
+    </li>
+  );
   return (
     <div className="max-w-[860px] space-y-6">
       <section className="bg-surface rounded-lg p-[clamp(22px,2.6vw,36px)]">
@@ -112,7 +138,7 @@ export function OrderView({ order }: { order: OrderDetail }): React.JSX.Element 
             </b>
           </p>
         ) : null}
-        {o.carrier || o.tracking_number ? (
+        {!split && (o.carrier || o.tracking_number) ? (
           // D-066: a button for USPS, UPS and FedEx; any other carrier shows its number.
           <div className="mt-[18px] flex flex-wrap items-center gap-x-4 gap-y-2.5">
             {tracking ? (
@@ -148,6 +174,7 @@ export function OrderView({ order }: { order: OrderDetail }): React.JSX.Element 
               : null
           }
           paidCents={o.total_cents - o.refunded_cents}
+          shipment={delayed ? { seq: delayed.seq, from: delayed.est_delivery_from, to: delayed.est_delivery_to } : null}
         />
       ) : null}
       {order.actions && order.actions.returns.length > 0 ? (
@@ -159,30 +186,11 @@ export function OrderView({ order }: { order: OrderDetail }): React.JSX.Element 
         />
       ) : null}
 
-      <ul className="border-line m-0 list-none border-t p-0">
-        {order.items.map((item) => (
-          <li
-            key={item.id}
-            className="border-line font-ui grid grid-cols-[56px_minmax(0,1fr)_auto] items-center gap-3.5 border-b py-3"
-          >
-            <LinePhoto path={item.image_path ?? null} className="w-14 rounded-[10px]" />
-            <span className="min-w-0">
-              <b className="block text-[15px] font-semibold leading-snug">{item.product_name}</b>
-              <small className="text-ink-muted text-[13px]">
-                {[item.variant_label, item.region_name].filter(Boolean).join(' · ')} · × {item.quantity}
-              </small>
-              {item.status !== 'active' ? (
-                <span className="text-caution block text-[13px]">
-                  {item.status === 'unavailable'
-                    ? 'No longer available, being refunded'
-                    : 'Refunded'}
-                </span>
-              ) : null}
-            </span>
-            <span className="text-[15px] font-medium">{formatUsd(item.total_price_cents)}</span>
-          </li>
-        ))}
-      </ul>
+      {split ? (
+        <OrderShipments order={order} renderItem={itemRow} />
+      ) : (
+        <ul className="border-line m-0 list-none border-t p-0">{order.items.map(itemRow)}</ul>
+      )}
 
       <dl className="font-ui ml-auto grid max-w-[360px] gap-1.5 text-sm">
         <div className="flex justify-between">
