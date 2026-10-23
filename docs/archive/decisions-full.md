@@ -1961,3 +1961,95 @@ biscuits and milk chocolate are kept (Milk Bikis, Good Day, Bourbon, Dairy Milk 
 also leaves out meat and fish (chicken noodles, prawn crackers), frozen food, bread, juice and anything sold by the
 ml. Chocolates can soften in transit.
 *Claude's choice in it (proposed):* tier 1 is the brands seen everywhere, 3 the regional ones.
+
+**D-140 · 2026-10-18 · founder: Design & ergonomics plan v5: Home's three Just listed rows, Women · Men, order from the shop in one tap, three invoices, the struck Shipping figure, instant taps, + picks the size, − n + on cards, admin pagination**
+The plan is `docs/archive/plan-design-v6.md` (v5, written by Claude from the code and the live site, with the founder's
+answers of 05:31, 06:16 and 06:23 folded in). Founder, verbatim, the same day:
+- Product types: three, clothing, food, home & gifts (D-106, D-110 unchanged).
+- Invoice C: "shows only the ordered cart with delivery, all the costs are counted in margin"; "should be fillable like
+  a form with uploadable and pastable photos". Invoice B is the Indian cost + handling + shipping with no margin.
+- Like button: "the like button latency on the frontend should be very low of animation, let it take its time on the
+  backend".
+- Home's Just listed: three scrollable rows with their See all.
+- "keep the you're saving x and no we do need to show big numbers as struck through and that is an order."
+- "no kids at launch." · "the checkout steps are good."
+- "When a state is opened its own pieces should be top of the horizontal rows."
+- "If I added a piece in my bag and if I see it again somewhere while browsing I should see it as -1+ instead of add
+  button. not necessarily 1 but however many I've added."
+- "When + is clicked anywhere in clothing the sizes should pop up in a creative way in food the variants should [be]
+  see[n], if its a single item with no choice then it should be just added instead of opening the product page (this
+  should be opened whenever anything is clicked instead of + on the card)."
+- "don't mess with any pricing, it is fixed the express remains how it is, don't overcomplicate things I will balance
+  everything physically you put higher prices on shipping when its cut."
+- "do pagination in admin products and Import from shops, that is so badly designed, 1000 items on one page loading?"
+- To the whole plan: "These were all the problems that I could find, solve them mannerly and solve the additional
+  problems you find on your way."
+What it means for the build (each item's full change and its "done when" are in the plan):
+- **Rule 0.1:** every tap that changes state answers in the same frame and syncs after, rolling back if the server
+  refuses; never for money. **Rule 0.2:** no price, fee, margin or Express changes.
+- **Home:** three Just listed rows (Clothing, Food, Home & gifts), each with See all; a row under 4 pieces is left
+  out. Supersedes D-136's Home switch only (See all keeps its type switch).
+- **Clothing:** `products.wears` (women, men, kids, unisex); See all → Clothing filters by For (Women · Men; unisex
+  under both); no Kids tile, filter or menu entry at launch; sizes normalised and grouped.
+- **Admin:** each sold piece is ordered from its variant's shop item in use (D-118) from the order page and a To order
+  screen; three invoices (A the customer's, B our landed cost, C the shop bill as a form with photos); one pager for
+  every admin list, no silent caps.
+- **Cards:** + picks the size or variant on the card (one choice adds at once); a piece in the bag shows − n +; the
+  heart fills at once and is on every card.
+- **F5:** the struck Shipping figure at the free-delivery line is a display number: the bag's packed weight × a
+  Settings value in $ per kg the founder sets (empty: today's $18.79); never charged, stored or sent to Stripe.
+  Claude flagged that a struck figure never charged can read as a fictitious former price (FTC 16 CFR 233.1); the
+  founder chose to show it.
+Open: Q-38 (the live Kids listings), Q-39 (an interim size line). Supersedes D-136 in part (Home's switch).
+
+**D-141 · 2026-10-20 · approved: photos live in Cloudflare R2 as two AVIF copies; Supabase's storage keeps none**
+- The founder: "Also supabase is hitting the limits, let's research deeply through everything and solve this
+  bottleneck productively and efficiently(without any money) We want the fastest and clearest images." Asked where
+  the photos should live (R2, Backblaze B2 or Cloudinary), the founder chose "Cloudflare R2 (Recommended)".
+- Why: production held 54,627 photos, 7.9 GB, in Supabase's storage (free plan: 1 GB; a project kept over quota can
+  be restricted); even as AVIF they need about 4 GB. R2 holds 10 GB free and never charges for traffic (a card or
+  PayPal on file switches it on; nothing is charged under 10 GB).
+What it means for the build (engineering.md PR-6, ops.md §Photos):
+- Every photo is stored as AVIF copies 640 and 1200 px wide (about 70 KB together; never upscaled), recorded with an
+  `s/` path; the original is not kept. Pages draw them from `/media/s/…` on the site's own address, with a JPEG made
+  on demand for email and browsers without AVIF. Nothing resizes per view.
+- The website, the phone (through the website) and the sourcing runner write to R2; Supabase's storage only holds a
+  photo for the minutes between an upload and its move. `pnpm photos:move` moves older photos, most needed first,
+  within a Supabase egress budget per run.
+Builds on D-140 (the photo fix). Supersedes the Supabase-stored WebP copies of 2026-10-19.
+
+**D-142 · 2026-10-20 · approved: a listing keeps each picture once (the shop's preview copies are dropped)**
+- The founder: "each product's each photo get's a duplicate in that gallery, so the photos were doubled … go through
+  every best way we can remove exact duplicates from the database … and then find the best one".
+- Why it happened: Amazon's page lists every photo full size (`hiRes`) and as a 500-pixel preview (`large`) under
+  another file name; the capture (the Add to IWC bookmark and the sourcing runner) took both. A sample of 40 listings
+  (268 photos) found 93 repeats, all Amazon (44% of its photos): about a third of production's 54,600 photos, but only
+  about 8% of the bytes, since the previews are small. Storage filled because of the full-size originals (D-141).
+- Ways weighed: a byte hash (Supabase's stored MD5) finds only byte-identical files, 329 in production; a perceptual
+  hash (dHash 64-bit, as imagededup, Czkawka and dupeGuru use) mixed real pairs with different photos (a jar's front
+  and back at distance 5, a real pair at 8); colour or gradient correlation of thumbnails took the same idols on
+  another background, or the jar's two sides, for one picture. Chosen: the same shape (within 2%) and a PSNR of at
+  least 27 dB between both photos at 256 × 256, softened (blur 1.5): on the sample every real pair scored 28.9 dB or
+  more, every different photo 25.3 or less. Compared only within one listing and one variant, never across listings.
+What it means for the build (packages/shared `same-picture.ts`, engineering.md PR-6, ops.md §Photos):
+- The capture takes each Amazon photo once, full size when Amazon has one. Re-add the Add to IWC bookmark from the
+  importer page after the deploy (the bookmark carries its own code).
+- Importing (the bookmark, pasted links) and the runner download a listing's photos, keep each picture once (the most
+  pixels, in its first place), then store them: a repeat never reaches the store, whatever the shop.
+- `pnpm photos:move` drops each listing's repeats while moving it (it downloads every photo once anyway), keeping the
+  full-size file in the first one's place (order, main photo, words); `--review=<n>` shows what it would drop.
+
+**D-143 · 2026-10-21 · founder: a piece's name loses only the shop's or brand's name**
+- The founder: "I feel like the tidying tool is not so accurate right now because we just wanted to remove the shop's
+  name right? It is removing the important words like 3 in 1 Incense stick -> 1 Incense stick, 100% pure brass urli
+  bowl etc etc and many many more".
+- Why it happened: D-140's L1 rules also cut "search words" and kept about six words from the end, and the brand
+  guess for old names grouped all of Amazon as one shop, so any start three names shared ("3 in", "100% Pure") was
+  taken for a brand and cut.
+What it means for the build (packages/shared `sourcing/title.ts`, apps/web `features/admin/names/proposals.ts`):
+- `cleanTitle` removes the brand at the start, "by <brand>", a "| <brand>" or "- <shop>" tail and "Amazon Brand –";
+  nothing else. Supersedes D-140's search-word, "with" and six-word rules.
+- `guessBrands` never takes a word with a digit or sign, a count, material or product word, or words that also turn up
+  inside other names of that shop.
+- Names to tidy makes a name the first rules cut down again from its shop title (kept since D-140), so the lost words
+  come back; the admin still ticks every rename. Supersedes the L1 line of D-140 in that respect.

@@ -28,6 +28,9 @@ Short on purpose: **replace** lines when something changes, don't append. Histor
   workflow, which the founder runs.
 
 ## What is built (details in the doc named; decisions in `decisions.md`)
+- **7-day store and two shipments (D-154, approved 2026-10-23, being built in five steps):** 1 database (shipments, Shipping
+  at $18.62 a billed kg, the $49.99 line), 2 admin, 3 bag and checkout, 4 the store switch and front page, 5 Insights.
+  Not started yet; D-148's one-normal-piece rule and the Shipping top-up still apply until step 1 is deployed.
 - **7-day delivery (D-148, deployed 2026-10-22):** `/7-day-delivery` lists every piece bought from Blinkit,
   BigBasket, Zepto or Instamart; cards say "In 7 days"; a bag of only such pieces gets the 7-day window (Settings, 7 – 7)
   at checkout and on its order; Home's line reads "Want in 7 days? Click here." No shop is named anywhere.
@@ -78,7 +81,7 @@ Short on purpose: **replace** lines when something changes, don't append. Histor
 4. **Products → For: not set yet** (235 clothing listings on the production copy): Women / Men / Kids / Everyone.
 5. **Settings → Bag charges → "Shipping shown when free"** ($ a kg; empty keeps $18.79 struck).
 6. **Answer:** Q-36 (courier bills by size?), Q-37 (lights, gobar, powders), Q-38 (live Kids listings), Q-39 (interim
-   size line), Q-40 (footwear in the drawer), Q-41 (is 7 days true every day?), Q-42 (the Blinkit CSV's band and
+   size line), Q-40 (footwear in the drawer), Q-42 (the Blinkit CSV's band and
    leave-outs); approve D-148's drafted words (the 7-day page, the tag, the bag and product-page lines); whether ghee and honey sold by the litre count as liquids (D-135 says
    yes); confirm with the courier that ₹2,000 a kg includes the box and clearance.
 7. **Real bills for Settings** (D-069): one courier invoice and one duty bill, then the per-parcel cost, duty by type,

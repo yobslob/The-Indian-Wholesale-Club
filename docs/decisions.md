@@ -1,10 +1,10 @@
 # Decisions
 
-Every rule in the docs cites one of these IDs. **This file is the index**; the full text of D-001 – D-139 (the
+Every rule in the docs cites one of these IDs. **This file is the index**; the full text of D-001 – D-143 (the
 founder's verbatim words and what each means for the build) is in `docs/archive/decisions-full.md`: open it only for
 the entry you need (search for its ID). New entries go at the end of this file in full, with the founder's words
 verbatim (typos kept). When Recent holds more than about ten entries, the oldest move to the archive in full and
-leave a one-line index entry here (done for D-109 – D-139 on 2026-10-22).
+leave a one-line index entry here (done for D-109 – D-139 on 2026-10-22, D-140 – D-143 on 2026-10-23).
 
 **By:** `founder` = binding · `approved` = Claude's proposal the founder approved · `proposed` = awaiting the founder.
 To change a decision, add a new one (`Supersedes D-xxx`) and mark the old line `SUPERSEDED by D-yyy`.
@@ -135,7 +135,7 @@ To change a decision, add a new one (`Supersedes D-xxx`) and mark the old line `
 - **D-122** 2026-10-14 · founder: Food priced in step with its weight, footwear like Amazon US, the pack on food cards, See all for every type, each state's own first row, food for every state
 - **D-123** 2026-10-14 · founder: The bag's charges follow the bag; food carries its weight in Shipping, not in its price · SUPERSEDED by D-125 (the food weight)
 - **D-124** 2026-10-14 · founder: One Shipping number that grows with the bag, struck through and free from the line up · SUPERSEDED by D-125 (one Shipping number stays)
-- **D-125** 2026-10-14 · founder: No bag ever loses: every cost in the price, heavy pieces on the founder's formula · food's price amended by D-126 (the band; Shipping still keeps every bag whole)
+- **D-125** 2026-10-14 · founder: No bag ever loses: every cost in the price, heavy pieces on the founder's formula · food's price amended by D-126 (the band; Shipping still keeps every bag whole) · its Shipping top-up SUPERSEDED by D-154
 - **D-126** 2026-10-15 · founder: The courier at ₹2,000 a kg; food in a strict 17–20% band, packed tighter; prices end in .69 too · paused by D-127 (beta pricing; archived)
 - **D-127** 2026-10-15 · founder: Beta pricing, fixed in code; the full formula archived · beta formula SUPERSEDED by D-128 (the archive and the switch stay)
 - **D-128** 2026-10-15 · founder: The beta prices by the founder's exact rules; Products → Download Excel
@@ -150,100 +150,12 @@ To change a decision, add a new one (`Supersedes D-xxx`) and mark the old line `
 - **D-137** 2026-10-16 · founder: Source in bulk: food ₹1–300 without liquids or dairy, all of Amazon and Flipkart's home & gifts, thousands of listings in as few runs as possible
 - **D-138** 2026-10-18 · founder: Home & gifts next: fill it with festival pieces (dandiya, Navratri, Dussehra, Diwali) and the whole range of home decor, ₹0–900, Amazon only
 - **D-139** 2026-10-18 · founder: Food: every branded snack, munchie, biscuit and everyday food people order again and again, ₹1–200
+- **D-140** 2026-10-18 · founder: Design & ergonomics plan v5: Home's three Just listed rows, Women · Men, order from the shop in one tap, three invoices, the struck Shipping figure, instant taps, + picks the size, − n + on cards, admin pagination
+- **D-141** 2026-10-20 · approved: photos live in Cloudflare R2 as two AVIF copies; Supabase's storage keeps none
+- **D-142** 2026-10-20 · approved: a listing keeps each picture once (the shop's preview copies are dropped)
+- **D-143** 2026-10-21 · founder: a piece's name loses only the shop's or brand's name
 
 ## Recent (full text)
-
-**D-140 · 2026-10-18 · founder: Design & ergonomics plan v5: Home's three Just listed rows, Women · Men, order from the shop in one tap, three invoices, the struck Shipping figure, instant taps, + picks the size, − n + on cards, admin pagination**
-The plan is `docs/archive/plan-design-v6.md` (v5, written by Claude from the code and the live site, with the founder's
-answers of 05:31, 06:16 and 06:23 folded in). Founder, verbatim, the same day:
-- Product types: three, clothing, food, home & gifts (D-106, D-110 unchanged).
-- Invoice C: "shows only the ordered cart with delivery, all the costs are counted in margin"; "should be fillable like
-  a form with uploadable and pastable photos". Invoice B is the Indian cost + handling + shipping with no margin.
-- Like button: "the like button latency on the frontend should be very low of animation, let it take its time on the
-  backend".
-- Home's Just listed: three scrollable rows with their See all.
-- "keep the you're saving x and no we do need to show big numbers as struck through and that is an order."
-- "no kids at launch." · "the checkout steps are good."
-- "When a state is opened its own pieces should be top of the horizontal rows."
-- "If I added a piece in my bag and if I see it again somewhere while browsing I should see it as -1+ instead of add
-  button. not necessarily 1 but however many I've added."
-- "When + is clicked anywhere in clothing the sizes should pop up in a creative way in food the variants should [be]
-  see[n], if its a single item with no choice then it should be just added instead of opening the product page (this
-  should be opened whenever anything is clicked instead of + on the card)."
-- "don't mess with any pricing, it is fixed the express remains how it is, don't overcomplicate things I will balance
-  everything physically you put higher prices on shipping when its cut."
-- "do pagination in admin products and Import from shops, that is so badly designed, 1000 items on one page loading?"
-- To the whole plan: "These were all the problems that I could find, solve them mannerly and solve the additional
-  problems you find on your way."
-What it means for the build (each item's full change and its "done when" are in the plan):
-- **Rule 0.1:** every tap that changes state answers in the same frame and syncs after, rolling back if the server
-  refuses; never for money. **Rule 0.2:** no price, fee, margin or Express changes.
-- **Home:** three Just listed rows (Clothing, Food, Home & gifts), each with See all; a row under 4 pieces is left
-  out. Supersedes D-136's Home switch only (See all keeps its type switch).
-- **Clothing:** `products.wears` (women, men, kids, unisex); See all → Clothing filters by For (Women · Men; unisex
-  under both); no Kids tile, filter or menu entry at launch; sizes normalised and grouped.
-- **Admin:** each sold piece is ordered from its variant's shop item in use (D-118) from the order page and a To order
-  screen; three invoices (A the customer's, B our landed cost, C the shop bill as a form with photos); one pager for
-  every admin list, no silent caps.
-- **Cards:** + picks the size or variant on the card (one choice adds at once); a piece in the bag shows − n +; the
-  heart fills at once and is on every card.
-- **F5:** the struck Shipping figure at the free-delivery line is a display number: the bag's packed weight × a
-  Settings value in $ per kg the founder sets (empty: today's $18.79); never charged, stored or sent to Stripe.
-  Claude flagged that a struck figure never charged can read as a fictitious former price (FTC 16 CFR 233.1); the
-  founder chose to show it.
-Open: Q-38 (the live Kids listings), Q-39 (an interim size line). Supersedes D-136 in part (Home's switch).
-
-**D-141 · 2026-10-20 · approved: photos live in Cloudflare R2 as two AVIF copies; Supabase's storage keeps none**
-- The founder: "Also supabase is hitting the limits, let's research deeply through everything and solve this
-  bottleneck productively and efficiently(without any money) We want the fastest and clearest images." Asked where
-  the photos should live (R2, Backblaze B2 or Cloudinary), the founder chose "Cloudflare R2 (Recommended)".
-- Why: production held 54,627 photos, 7.9 GB, in Supabase's storage (free plan: 1 GB; a project kept over quota can
-  be restricted); even as AVIF they need about 4 GB. R2 holds 10 GB free and never charges for traffic (a card or
-  PayPal on file switches it on; nothing is charged under 10 GB).
-What it means for the build (engineering.md PR-6, ops.md §Photos):
-- Every photo is stored as AVIF copies 640 and 1200 px wide (about 70 KB together; never upscaled), recorded with an
-  `s/` path; the original is not kept. Pages draw them from `/media/s/…` on the site's own address, with a JPEG made
-  on demand for email and browsers without AVIF. Nothing resizes per view.
-- The website, the phone (through the website) and the sourcing runner write to R2; Supabase's storage only holds a
-  photo for the minutes between an upload and its move. `pnpm photos:move` moves older photos, most needed first,
-  within a Supabase egress budget per run.
-Builds on D-140 (the photo fix). Supersedes the Supabase-stored WebP copies of 2026-10-19.
-
-**D-142 · 2026-10-20 · approved: a listing keeps each picture once (the shop's preview copies are dropped)**
-- The founder: "each product's each photo get's a duplicate in that gallery, so the photos were doubled … go through
-  every best way we can remove exact duplicates from the database … and then find the best one".
-- Why it happened: Amazon's page lists every photo full size (`hiRes`) and as a 500-pixel preview (`large`) under
-  another file name; the capture (the Add to IWC bookmark and the sourcing runner) took both. A sample of 40 listings
-  (268 photos) found 93 repeats, all Amazon (44% of its photos): about a third of production's 54,600 photos, but only
-  about 8% of the bytes, since the previews are small. Storage filled because of the full-size originals (D-141).
-- Ways weighed: a byte hash (Supabase's stored MD5) finds only byte-identical files, 329 in production; a perceptual
-  hash (dHash 64-bit, as imagededup, Czkawka and dupeGuru use) mixed real pairs with different photos (a jar's front
-  and back at distance 5, a real pair at 8); colour or gradient correlation of thumbnails took the same idols on
-  another background, or the jar's two sides, for one picture. Chosen: the same shape (within 2%) and a PSNR of at
-  least 27 dB between both photos at 256 × 256, softened (blur 1.5): on the sample every real pair scored 28.9 dB or
-  more, every different photo 25.3 or less. Compared only within one listing and one variant, never across listings.
-What it means for the build (packages/shared `same-picture.ts`, engineering.md PR-6, ops.md §Photos):
-- The capture takes each Amazon photo once, full size when Amazon has one. Re-add the Add to IWC bookmark from the
-  importer page after the deploy (the bookmark carries its own code).
-- Importing (the bookmark, pasted links) and the runner download a listing's photos, keep each picture once (the most
-  pixels, in its first place), then store them: a repeat never reaches the store, whatever the shop.
-- `pnpm photos:move` drops each listing's repeats while moving it (it downloads every photo once anyway), keeping the
-  full-size file in the first one's place (order, main photo, words); `--review=<n>` shows what it would drop.
-
-**D-143 · 2026-10-21 · founder: a piece's name loses only the shop's or brand's name**
-- The founder: "I feel like the tidying tool is not so accurate right now because we just wanted to remove the shop's
-  name right? It is removing the important words like 3 in 1 Incense stick -> 1 Incense stick, 100% pure brass urli
-  bowl etc etc and many many more".
-- Why it happened: D-140's L1 rules also cut "search words" and kept about six words from the end, and the brand
-  guess for old names grouped all of Amazon as one shop, so any start three names shared ("3 in", "100% Pure") was
-  taken for a brand and cut.
-What it means for the build (packages/shared `sourcing/title.ts`, apps/web `features/admin/names/proposals.ts`):
-- `cleanTitle` removes the brand at the start, "by <brand>", a "| <brand>" or "- <shop>" tail and "Amazon Brand –";
-  nothing else. Supersedes D-140's search-word, "with" and six-word rules.
-- `guessBrands` never takes a word with a digit or sign, a count, material or product word, or words that also turn up
-  inside other names of that shop.
-- Names to tidy makes a name the first rules cut down again from its shop title (kept since D-140), so the lost words
-  come back; the admin still ticks every rename. Supersedes the L1 line of D-140 in that respect.
 
 **D-144 · 2026-10-21 · founder: See all opens low to high; Clothing's finishing touches in a jewellery drawer**
 - Founder, verbatim: "I want the customer to see low to high prices by default but in clothing only accessories comes up
@@ -335,7 +247,7 @@ What it means for the build:
   admin with vendors; the plans, roadmap and backlog of the build phases and D-109 – D-139's full text are archived.
   No code path or behaviour changes.
 
-**D-148 · 2026-10-22 · founder: 7-day delivery: a page of the quick-delivery shops' pieces, Home's new line, and the first Blinkit batch**
+**D-148 · 2026-10-22 · founder: 7-day delivery: a page of the quick-delivery shops' pieces, Home's new line, and the first Blinkit batch** · its mixed-bag rule (one normal piece makes the whole bag normal) SUPERSEDED by D-154
 - Founder, verbatim: "Our website is complete, now we will be introducing a new feature called 7-day delivery: It will
   be a new page with an aesthetic feel, It will have all the products from blinkit, bigbasket, zepto, instamart. Which I
   can order in 1 hour and directly ship to USA, The restrictions will be same as normal delivery regarding liquids,
@@ -479,3 +391,53 @@ What it means for the build (`PAGES_PER_HOUR`, `paceWaitMs`, `retryAfterMs` in
   one shop's hour: the batch fills over several daily runs, not one evening.
 *Interpretation (proposed, confirm when convenient):* the limits are Claude's, from the log; they can be raised for a
 shop that keeps answering.
+
+**D-154 · 2026-10-23 · founder (was Q-41): 7-day delivery is its own store; one bag, two shipments from $49.99; Shipping at $18.62 a billed kg**
+Supersedes D-148's mixed-bag rule and the Shipping top-up of D-125 / D-126 (and D-140's display-only struck figure).
+- Founder, verbatim (approving `7-day delivery study and build plan.md`, 23 Oct 2026, by @Jollwin): "Now read this
+  design carefully and design this into our existing website without breaking any code."
+- The plan's own words for the rules, in the order the site applies them: "**The 7-day store** has its own entrance (a
+  sliding store switch), front page, categories and search, holding only 7-day pieces. One account and one bag serve
+  both stores." · "**7-day pieces worth $49.99 or more** ship in 7 days as the first shipment. Everything else in the
+  bag ships in 12 – 16 days as the second." · "**7-day pieces under $49.99** travel with the rest in 12 – 16 days, and
+  the bag says how much more brings them in 7." · "**Shipping is free** for a bag of only 7-day pieces from $49.99 and
+  for any bag from $99.99, shown struck through at its growing figure; otherwise it is charged at $18.62 a billed kg,
+  and a split bag pays what one parcel would."
+- Decided in the plan: "The $49.99 counts the 7-day pieces after any promo code, before Shipping and the bulk saving."
+  · "The 7 days count from the order, any hour, any day: the courier collects door to door every day, 24 × 7, and
+  delivers in 7 days (your answer of 23 Oct; this closes Q-41)." · "7 days for the 48 contiguous states and DC;
+  elsewhere the 7-day pieces travel with the rest." · "Cancel: free until the hub buys the 7-day pieces; after that the
+  7-day shipment cannot be cancelled (food cannot go back). The second shipment can be cancelled until it leaves India
+  (D-072)." · "Late: the usual delay notice with the choice to cancel that shipment (D-008)." · "Food shipped with at
+  least 3 months of shelf life." · "The normal window becomes 12 – 16 days (Settings → Standard delivery; it reads 12 –
+  18 today)." · "The drafted words are approved (23 Oct)."
+- Shipping: "**Shipping = $18.62 × the bag's billed kg**: its packed weight (food at 110% of its label, as today)
+  rounded up to the half kg, at least 1 kg." · "**A split bag is priced as one parcel:** the whole bag's weight, not
+  each shipment's. On the receipt, shipment 1 carries its own weight's share and shipment 2 the rest, so the two always
+  add up to the one-parcel figure." · "**Settings:** "Shipping per kg" ($18.62), the free line ($99.99) and the 7-day
+  free line ($49.99)." · "The pricing formula's margins carry US duty and the other costs, so Shipping only follows the
+  weight" (the top-up of D-125 / D-126 is "Gone with this plan").
+- The plan's 35 cases, the store switch's design, the bag's shipment groups and two meters, the admin's two shipments
+  and the five-step build plan are in the plan itself; the build follows its order (1 database, 2 admin, 3 bag and
+  checkout, 4 the store switch and front page, 5 Insights). Express stays off for the 7-day shipment and may apply to
+  the second as today.
+What it means for the build:
+- **Settings** gain `quick_delivery_min_cents` (4999: the 7-day line and the 7-day free-Shipping line),
+  `shipping_cents_per_kg` (1862) and a 7-day pause switch; the normal window is set to 12 – 16. The fixed small-order
+  Shipping ($18.79), the shown-Shipping $ a kg (D-140) and the top-up stop deciding Shipping.
+- **`order_shipments`:** an order has one or two shipments, each with its pieces, promised dates, tracking, status and
+  delay notice; existing orders get one each (their tracking becomes shipment 1's).
+- **The server decides** the shipments and Shipping in `store_quick_bag`, `store_bag_charges`, `checkout_context` and
+  `create_order`; the browser only shows them (`/api/bag-charges`), so no page is rebuilt per visitor (D-145).
+- **Price, retailer charges, bulk saving and Express** are not changed by this plan.
+*Interpretation (proposed, confirm when convenient):*
+- **One parcel, not per shipment.** The plan's rules, money section and worked tables price a split bag as one parcel
+  ("7-day pieces ($55.71) + a kurta (two shipments) … $46.55 (as two parcels it would be $55.86)"), while its build
+  plan says "Shipping becomes $18.62 a billed kg per shipment" and "Shipping as $18.62 a billed kg per shipment". Built
+  as one parcel, split between the shipments by weight on the receipt.
+- **Retailer charges** ($0.99 on production) are not named by the plan: an all-7-day bag from $49.99 gets free
+  Shipping and still pays Retailer charges until $99.99, as today below the line.
+- The docs still say the free line is $149.99 and Retailer charges $1.99 while production has $99.99 and $0.99 (the
+  plan, from the production copy of 21 Oct): Settings values, read from Settings, nothing hard-coded.
+- "48 contiguous states and DC" is the address's state code; a PO box or APO/FPO/DPO address line or a non-contiguous
+  state (AK, HI, territories, AA/AE/AP) keeps the 7-day pieces with the rest.
