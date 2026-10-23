@@ -441,3 +441,9 @@ What it means for the build:
   plan, from the production copy of 21 Oct): Settings values, read from Settings, nothing hard-coded.
 - "48 contiguous states and DC" is the address's state code; a PO box or APO/FPO/DPO address line or a non-contiguous
   state (AK, HI, territories, AA/AE/AP) keeps the 7-day pieces with the rest.
+- Step 2 (the admin, migration `20261024090000`): a shipment of an order without a cycle (the pilot) ships from the hub
+  once its pieces are there, as the plan says the second shipment leaves "when its pieces have reached the hub";
+  until now `ship_order` wanted an arrived cycle, so a pilot order could not be marked shipped at all. A cancelled
+  shipment refunds its pieces, its Shipping share and their tax; a 7-day piece refunded as unavailable refunds its
+  price and tax only (the item rule of D-042), its Shipping share stays. A cancelled shipment's pieces already at the
+  hub become US clearance drafts, as a whole-order cancel's do today (D-072).
