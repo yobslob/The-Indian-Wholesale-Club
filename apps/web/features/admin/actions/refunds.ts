@@ -9,6 +9,8 @@ import {
   itemRefundCents,
   recordCancellation,
   recordItemRefund,
+  recordShipmentCancel,
+  shipmentCancelCents,
   type CancelReason,
 } from '@repo/db/admin';
 
@@ -67,5 +69,28 @@ export async function cancelOrderAction(orderId: string, reason: CancelReason): 
   }
   await recordCancellation(client, { orderId, reason: why, amountCents: amount, refundRef });
   revalidateTag(STORE_TAG); // the pieces are available again
+  done(orderId);
+}
+
+/**
+ * D-154: one of two shipments is cancelled (the customer asked, or because of us): its pieces, its Shipping share and
+ * their tax back; the other shipment goes on. A 7-day shipment only until its pieces are bought, the other until it
+ * leaves India. Stripe first, then the database (which re-checks the amount).
+ */
+export async function cancelShipmentAction(orderId: string, shipmentId: string, reason: CancelReason): Promise<void> {
+  const { client } = await requireAdminAction();
+  const why = z.enum(['customer_request', 'our_fault']).parse(reason);
+  const amount = await shipmentCancelCents(client, id.parse(shipmentId), why);
+  if (amount === null) throw new Error('This shipment cannot be cancelled on its own now');
+  let refundRef = 'no refund due';
+  if (amount > 0) {
+    const refund = await stripeServer().refunds.create(
+      { payment_intent: await paymentIntentOf(orderId), amount },
+      { idempotencyKey: `iwc-shipment-cancel-${shipmentId}` },
+    );
+    refundRef = refund.id;
+  }
+  await recordShipmentCancel(client, { shipmentId, reason: why, amountCents: amount, refundRef });
+  revalidateTag(STORE_TAG); // its pieces are available again
   done(orderId);
 }

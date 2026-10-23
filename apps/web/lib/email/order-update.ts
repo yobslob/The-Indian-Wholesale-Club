@@ -1,6 +1,7 @@
 import { formatDeliveryWindow, formatUsd } from '@repo/shared/domain';
 
 import { button, escapeHtml, frame, paragraph, pieces, type EmailContext } from './frame';
+import { arrives, piecesOf, shipmentOf } from './shipments';
 
 import type { OrderDetail } from '@repo/db/store';
 
@@ -27,6 +28,67 @@ interface Parts {
 }
 
 const strong = (text: string): string => `<strong>${escapeHtml(text)}</strong>`;
+
+/** D-154: the update is about one of two shipments; it names it and shows its pieces. */
+function shipmentParts(kind: string, order: OrderDetail, orderUrl: string, seq: number | null | undefined): Parts | null {
+  const sh = shipmentOf(order, seq);
+  if (!sh) return null;
+  const n = order.order.order_number;
+  const view = { href: orderUrl, label: 'See your order' };
+  const show = piecesOf(order, sh);
+  const other = order.shipments.find((s) => s.seq !== sh.seq);
+  const actions = order.actions;
+  switch (kind) {
+    case 'shipped':
+      return {
+        subject: `Shipment ${sh.seq} of order ${n} is on its way`,
+        show,
+        paragraphs: [
+          `This part of your order has left us and is on its way to you.`,
+          other?.status === 'open' ? `The rest travels on its own; we'll email you when it ships.` : '',
+        ],
+        link: { href: orderUrl, label: 'Track your order' },
+      };
+    case 'delivered':
+      return {
+        subject: `Shipment ${sh.seq} of order ${n} is delivered`,
+        show,
+        paragraphs: [`This part of your order has been delivered. We hope it feels a little like home.`],
+        link: view,
+      };
+    case 'delivery_window_changed': {
+      const when = arrives(sh);
+      const open = actions?.delay_open && actions.delay_shipment === sh.seq && actions.delay_refund_cents !== null;
+      return {
+        subject: `New delivery date for shipment ${sh.seq} of order ${n}`,
+        show,
+        paragraphs: [
+          when ? `This part of your order now ${strong(when.replace(/^Arrives/, 'arrives'))}, later than we first said. We're sorry.` : `Its delivery date has changed.`,
+          open
+            ? `If that doesn't work for you, you can cancel this part and get ${strong(formatUsd(actions.delay_refund_cents!))} back, or keep it with the new date. It's your call, on your order page.`
+            : '',
+          `The rest of your order keeps its date.`,
+        ],
+        link: open ? { href: orderUrl, label: 'Keep it or cancel' } : view,
+      };
+    }
+    case 'shipment_cancelled':
+      return {
+        subject: `Shipment ${sh.seq} of order ${n} is cancelled`,
+        show,
+        paragraphs: [
+          `This part of your order is cancelled.`,
+          order.order.refunded_cents > 0
+            ? `We've refunded ${strong(formatUsd(order.order.refunded_cents))} to your card so far. Banks usually take 5 to 10 days to show it.`
+            : '',
+          other && other.status !== 'cancelled' ? `The rest of your order is still coming.` : '',
+        ],
+        link: view,
+      };
+    default:
+      return null;
+  }
+}
 
 function parts(kind: string, order: OrderDetail, orderUrl: string): Parts | null {
   const o = order.order;
@@ -145,11 +207,11 @@ function parts(kind: string, order: OrderDetail, orderUrl: string): Parts | null
   }
 }
 
-/** Null for kinds that send no email. */
-export function orderUpdateEmail(kind: string, order: OrderDetail, ctx: EmailContext): OrderUpdateEmail | null {
+/** Null for kinds that send no email. `shipment`: the update is about that shipment (D-154). */
+export function orderUpdateEmail(kind: string, order: OrderDetail, ctx: EmailContext, shipment?: number | null): OrderUpdateEmail | null {
   const n = order.order.order_number;
   const orderUrl = `${ctx.siteUrl}/orders/${encodeURIComponent(n)}`;
-  const p = parts(kind, order, orderUrl);
+  const p = shipmentParts(kind, order, orderUrl, shipment) ?? parts(kind, order, orderUrl);
   if (!p) return null;
   const body = [
     p.show && p.show.length > 0 ? `${pieces(p.show, ctx)}<div style="height:14px"></div>` : '',

@@ -6,10 +6,13 @@ import { z } from 'zod';
 import {
   addOrderEvent,
   changeDeliveryWindow,
+  changeShipmentWindow,
+  deliverShipment,
   markOrderDelivered,
   markOrderShipped,
   markPickup,
   moveOrder,
+  shipShipment,
   weighPickup,
 } from '@repo/db/admin';
 
@@ -28,12 +31,8 @@ function done(orderId: string): void {
   revalidatePath('/admin/to-order');
 }
 
-/**
- * US desk: the order leaves in a domestic parcel (flows.md §6.4). The carrier is picked (USPS, UPS, FedEx get a
- * tracking link, D-066) or typed as "Other" while Q-3 is open.
- */
-export async function markShippedAction(orderId: string, form: FormData): Promise<void> {
-  const { client } = await requireAdminAction();
+/** The carrier picked (USPS, UPS, FedEx get a tracking link, D-066) or typed as "Other" while Q-3 is open. */
+function carrierFrom(form: FormData): { carrier: string; tracking: string } {
   const input = z
     .object({
       carrier: z.string().trim().min(2).max(40),
@@ -46,13 +45,44 @@ export async function markShippedAction(orderId: string, form: FormData): Promis
       tracking: form.get('tracking'),
     });
   const carrier = input.carrier === 'Other' ? z.string().min(2).parse(input.otherCarrier) : input.carrier;
-  await markOrderShipped(client, id.parse(orderId), carrier, input.tracking);
+  return { carrier, tracking: input.tracking };
+}
+
+/** US desk: the order leaves in a domestic parcel (flows.md §6.4). */
+export async function markShippedAction(orderId: string, form: FormData): Promise<void> {
+  const { client } = await requireAdminAction();
+  const { carrier, tracking } = carrierFrom(form);
+  await markOrderShipped(client, id.parse(orderId), carrier, tracking);
   done(orderId);
 }
 
 export async function markDeliveredAction(orderId: string): Promise<void> {
   const { client } = await requireAdminAction();
   await markOrderDelivered(client, id.parse(orderId));
+  done(orderId);
+}
+
+/** D-154: one of an order's two shipments leaves, with its own tracking number and email. */
+export async function markShipmentShippedAction(orderId: string, shipmentId: string, form: FormData): Promise<void> {
+  const { client } = await requireAdminAction();
+  const { carrier, tracking } = carrierFrom(form);
+  await shipShipment(client, id.parse(shipmentId), carrier, tracking);
+  done(orderId);
+}
+
+export async function markShipmentDeliveredAction(orderId: string, shipmentId: string): Promise<void> {
+  const { client } = await requireAdminAction();
+  await deliverShipment(client, id.parse(shipmentId));
+  done(orderId);
+}
+
+/** D-008 for one shipment (D-154): the customer may keep it with the new dates or cancel that shipment. */
+export async function changeShipmentWindowAction(orderId: string, shipmentId: string, form: FormData): Promise<void> {
+  const { client } = await requireAdminAction();
+  const input = z
+    .object({ from: isoDate, to: isoDate, note: z.string().trim().max(500) })
+    .parse({ from: form.get('from'), to: form.get('to'), note: form.get('note') ?? '' });
+  await changeShipmentWindow(client, { shipmentId: id.parse(shipmentId), from: input.from, to: input.to, note: input.note || undefined });
   done(orderId);
 }
 

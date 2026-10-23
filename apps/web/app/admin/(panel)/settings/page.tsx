@@ -1,6 +1,11 @@
 import { getPricingSettings, listBusinessDetails, listPricingEstimates } from '@repo/db/admin';
 
-import { updateBusinessDetailsAction, updatePricingSettingsAction, updateFoodClearedAction } from '@/features/admin/actions/settings';
+import {
+  updateBusinessDetailsAction,
+  updateFoodClearedAction,
+  updatePricingSettingsAction,
+  updateQuickPausedAction,
+} from '@/features/admin/actions/settings';
 import { EstimateNote } from '@/features/admin/estimate-note';
 import { requireAdminPage } from '@/features/admin/guard';
 import { ProfitCheck } from '@/features/admin/profit-check';
@@ -80,6 +85,20 @@ export default async function SettingsPage(): Promise<React.JSX.Element> {
         <form action={updateFoodClearedAction.bind(null, !s.food_cleared)}>
           <button type="submit" className={s.food_cleared ? 'min-h-11 underline' : button}>
             {s.food_cleared ? 'Stop publishing food' : 'Food is cleared: allow publishing'}
+          </button>
+        </form>
+      </section>
+
+      <section className="max-w-3xl space-y-3">
+        <SectionTitle>7-day delivery (D-154)</SectionTitle>
+        <p className="text-sm">
+          {s.quick_delivery_paused
+            ? 'Paused: no piece is tagged "In 7 days", the 7-day page is empty and no bag splits. Orders already placed keep their dates.'
+            : 'On: 7-day pieces worth the 7-day line ship in their own shipment. Pause it for a day the hub cannot buy.'}
+        </p>
+        <form action={updateQuickPausedAction.bind(null, !s.quick_delivery_paused)}>
+          <button type="submit" className={s.quick_delivery_paused ? button : 'min-h-11 underline'}>
+            {s.quick_delivery_paused ? 'Switch 7-day delivery back on' : 'Pause 7-day delivery'}
           </button>
         </form>
       </section>

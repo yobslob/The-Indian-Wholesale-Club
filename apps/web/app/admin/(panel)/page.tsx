@@ -9,6 +9,7 @@ import {
   getTodaySummary,
   isMadeToOrderPilot,
   pilotPipelineCounts,
+  quickWatch,
   toOrderSummary,
 } from '@repo/db/admin';
 import { bothPlaces, deskOrder, greeting, timeLeft, type Desk } from '@repo/shared/admin';
@@ -31,11 +32,11 @@ const dollars = new Intl.NumberFormat('en-US', { style: 'currency', currency: 'U
  * the other desk below. Live orders at the side. Every job links to the screen that does it.
  * D-140 (A2): in the made-to-order pilot (D-115) no cycle is open and none is needed: the India desk orders each sold
  * piece from its shop, marks it at the hub and weighs it; the US desk sends orders on. Cycle jobs show only while a
- * cycle is open.
+ * cycle is open. D-154: the 7-day shipments open, and those at risk, come first on the India desk.
  */
 export default async function TodayPage(): Promise<React.JSX.Element> {
   const { client, desk } = await requireAdminPage();
-  const [summary, counts, cycle, attention, pickupCycle, pilot, toOrder, pipeline] = await Promise.all([
+  const [summary, counts, cycle, attention, pickupCycle, pilot, toOrder, pipeline, quick] = await Promise.all([
     getTodaySummary(client),
     waitingCounts(client),
     getOpenCycle(client),
@@ -44,7 +45,9 @@ export default async function TodayPage(): Promise<React.JSX.Element> {
     isMadeToOrderPilot(client),
     toOrderSummary(client),
     pilotPipelineCounts(client),
+    quickWatch(client),
   ]);
+  const atRisk = quick.not_bought + quick.not_shipped;
   const totals = cycle ? await getCycleTotals(client, cycle.id) : null;
   const alerts = attentionLines(attention);
   const now = new Date();
@@ -68,6 +71,21 @@ export default async function TodayPage(): Promise<React.JSX.Element> {
       { n: counts.returns, what: 'Returns to collect', go: 'Open returns', href: '/admin/returns' },
     ],
     india: [
+      // D-154: a 7-day piece is bought within 2 hours and ships the next day
+      {
+        n: quick.open,
+        what: '7-day shipments to send',
+        sub: atRisk
+          ? [quick.not_bought ? `${quick.not_bought} not bought within 2 hours` : '', quick.not_shipped ? `${quick.not_shipped} not shipped by the next day` : '']
+              .filter(Boolean)
+              .join(' · ')
+          : quick.open
+            ? 'All on time'
+            : undefined,
+        go: 'Order them',
+        href: '/admin/to-order',
+        urgent: atRisk > 0,
+      },
       // D-140 (F3): the India desk's first job, cycle or not
       {
         n: toOrder.count,

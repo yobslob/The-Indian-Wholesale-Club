@@ -1,7 +1,16 @@
 import Link from 'next/link';
 import { notFound } from 'next/navigation';
 
-import { cancelRefundCents, exportCancelCents, getAdminOrder, getShopBill, itemRefundCents, listCycles, listOrderMoves } from '@repo/db/admin';
+import {
+  cancelRefundCents,
+  exportCancelCents,
+  getAdminOrder,
+  getShopBill,
+  itemRefundCents,
+  listCycles,
+  listOrderMoves,
+  shipmentCancelCents,
+} from '@repo/db/admin';
 import { dateRange } from '@repo/shared/admin';
 import { adminEventText } from '@repo/shared/admin';
 import { formatUsd } from '@repo/shared/domain';
@@ -15,6 +24,7 @@ import { requireAdminPage } from '@/features/admin/guard';
 import { canMove, MoveOrderButton, MovesList } from '@/features/admin/order-move-form';
 import { OrderPieces } from '@/features/admin/order-pieces';
 import { ShipForm, shipState } from '@/features/admin/ship-form';
+import { ShipmentsPanel } from '@/features/admin/shipments-panel';
 import { orderMoney } from '@/features/admin/shop-bill/money';
 import { MoneyLines } from '@/features/admin/shop-bill/money-lines';
 import { ShopBillPanel } from '@/features/admin/shop-bill/shop-bill-panel';
@@ -39,7 +49,14 @@ export default async function AdminOrderPage({ params }: { params: Params }): Pr
   const address = order.shipping_address as Record<string, string | null>;
   // Refund amounts come from the database rules (D-042), shown before anyone clicks.
   const unavailable = order.items.filter((i) => i.status === 'unavailable');
-  const [itemRefunds, cancelAmounts, exportCancel, cycles, moves, bill] = await Promise.all([
+  // D-154: an order of two shipments runs each on its own; once its 7-day pieces are bought it is not cancelled whole.
+  const split = order.shipments.length > 1;
+  const live = order.shipments.filter((sh) => sh.status !== 'cancelled');
+  const quick = new Set(live.filter((sh) => sh.kind === 'quick').map((sh) => sh.id));
+  const quickBought = order.items.some(
+    (i) => i.status === 'active' && quick.has(i.shipment_id ?? '') && (i.pickup?.ordered_at || (i.pickup && i.pickup.status !== 'pending')),
+  );
+  const [itemRefunds, cancelAmounts, exportCancel, cycles, moves, bill, shipmentCancels] = await Promise.all([
     Promise.all(unavailable.map(async (i) => [i.id, await itemRefundCents(client, i.id)] as const)),
     order.status === 'confirmed'
       ? Promise.all([cancelRefundCents(client, order.id, 'customer_request'), cancelRefundCents(client, order.id, 'our_fault')])
@@ -49,6 +66,20 @@ export default async function AdminOrderPage({ params }: { params: Params }): Pr
     listCycles(client, 12),
     listOrderMoves(client, order.id),
     getShopBill(client, order.id),
+    // D-154: what cancelling each open shipment on its own refunds (none while only one is left)
+    live.length > 1
+      ? Promise.all(
+          live
+            .filter((sh) => sh.status === 'open')
+            .map(async (sh) => {
+              const [customer, ours] = await Promise.all([
+                shipmentCancelCents(client, sh.id, 'customer_request'),
+                shipmentCancelCents(client, sh.id, 'our_fault'),
+              ]);
+              return [sh.id, { customer, ours }] as const;
+            }),
+        )
+      : [],
   ]);
   // D-140 (F4): our landed cost (B), the shop bill (C) and the margins
   const money = orderMoney(order, bill);
@@ -65,7 +96,7 @@ export default async function AdminOrderPage({ params }: { params: Params }): Pr
   const picked = order.items.flatMap((i) => (i.pickup && i.pickup.status === 'picked' ? [{ ...i.pickup, owed: i.quantity * (i.pickup.shop_price_paise ?? 0) }] : []));
   const shopTotal = picked.reduce((s, p) => s + p.owed, 0);
   const shopPaid = picked.filter((p) => p.payout_id).reduce((s, p) => s + p.owed, 0);
-  const main = canShip || order.status === 'shipped';
+  const main = !split && (canShip || order.status === 'shipped');
 
   return (
     <>
@@ -78,6 +109,7 @@ export default async function AdminOrderPage({ params }: { params: Params }): Pr
             <Chip tone={ORDER_STATUS[order.status][1]}>{ORDER_STATUS[order.status][0]}</Chip>
             <Chip tone={PAYMENT_STATUS[order.payment_status][1]}>{PAYMENT_STATUS[order.payment_status][0]}</Chip>
             <Chip tone={order.shipping_method === 'express' ? 'brand' : 'mute'}>{order.shipping_method === 'express' ? 'Express' : 'Standard'}</Chip>
+            {quick.size > 0 ? <Chip tone="brand">7-day</Chip> : null}
             <span>
               · placed <When iso={order.created_at} inline />
               {order.cycle ? (
@@ -142,6 +174,7 @@ export default async function AdminOrderPage({ params }: { params: Params }): Pr
             <ul>
               {events.map((e) => {
                 const { text, note } = adminEventText(e);
+                const seq = split ? order.shipments.find((sh) => sh.id === e.shipment_id)?.seq : undefined;
                 return (
                   <li key={e.id} className="border-line grid grid-cols-[1fr] gap-1 border-b py-2 text-[13.5px] leading-[1.4] last:border-0 md:grid-cols-[190px_18px_1fr] md:gap-2">
                     <time className="text-ink-muted text-[12.5px]">
@@ -153,6 +186,7 @@ export default async function AdminOrderPage({ params }: { params: Params }): Pr
                     <span>
                       {e.visible_to_customer ? <span className="text-brand md:hidden">● </span> : null}
                       {text}
+                      {seq ? ` · shipment ${seq}` : ''}
                       {note ? <span className="text-caution block">{note}</span> : null}
                     </span>
                   </li>
@@ -164,6 +198,7 @@ export default async function AdminOrderPage({ params }: { params: Params }): Pr
         </div>
 
         <div className="grid gap-4 lg:sticky lg:top-[78px]">
+          {split ? <ShipmentsPanel order={order} cancels={new Map(shipmentCancels)} /> : null}
           <Panel>
             {main ? <ShipForm order={order} /> : null}
             {!main && expressInIndia ? (
@@ -172,7 +207,7 @@ export default async function AdminOrderPage({ params }: { params: Params }): Pr
             <div className={main || expressInIndia ? 'border-line mt-4 border-t pt-4' : ''}>
               <h3 className="mb-2.5 text-[14px] font-semibold">{main || expressInIndia ? 'More' : 'Actions'}</h3>
               <div className="grid gap-2">
-                {WINDOW_CAN_MOVE.includes(order.status) ? (
+                {WINDOW_CAN_MOVE.includes(order.status) && live.length <= 1 ? (
                   <FormButton
                     label="New delivery date…"
                     title="New delivery date"
@@ -204,16 +239,18 @@ export default async function AdminOrderPage({ params }: { params: Params }): Pr
                 {canMove(order, cycles) ? <MoveOrderButton order={order} cycles={cycles} /> : null}
                 {cancelAmounts ? (
                   <>
-                    <ConfirmButton
-                      label={`Cancel, the customer asked: refund ${formatUsd(cancelAmounts[0])}…`}
-                      className={`${dangerButton} w-full whitespace-normal py-2 text-left md:h-auto`}
-                      title={`Cancel and refund ${formatUsd(cancelAmounts[0])}?`}
-                      confirm={`Cancel and refund ${formatUsd(cancelAmounts[0])}`}
-                      action={cancelOrderAction.bind(null, order.id, 'customer_request')}
-                      mail={cancelMail(cancelAmounts[0])}
-                    >
-                      Order {n}, before cutoff, because the customer asked: everything back except the tax. Its pieces go back on sale.
-                    </ConfirmButton>
+                    {quickBought ? null : (
+                      <ConfirmButton
+                        label={`Cancel, the customer asked: refund ${formatUsd(cancelAmounts[0])}…`}
+                        className={`${dangerButton} w-full whitespace-normal py-2 text-left md:h-auto`}
+                        title={`Cancel and refund ${formatUsd(cancelAmounts[0])}?`}
+                        confirm={`Cancel and refund ${formatUsd(cancelAmounts[0])}`}
+                        action={cancelOrderAction.bind(null, order.id, 'customer_request')}
+                        mail={cancelMail(cancelAmounts[0])}
+                      >
+                        Order {n}, before cutoff, because the customer asked: everything back except the tax. Its pieces go back on sale.
+                      </ConfirmButton>
+                    )}
                     <ConfirmButton
                       label={`Cancel because of us: refund ${formatUsd(cancelAmounts[1])}…`}
                       className={`${dangerButton} w-full whitespace-normal py-2 text-left md:h-auto`}

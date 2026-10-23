@@ -1,6 +1,7 @@
 import { CUSTOMER_STATUS_LABEL, formatDeliveryWindow, formatUsd } from '@repo/shared/domain';
 
 import { button, escapeHtml, frame, paragraph, pieces, small, totals, type EmailContext } from './frame';
+import { arrives, piecesOf } from './shipments';
 
 import type { OrderDetail } from '@repo/db/store';
 
@@ -39,8 +40,14 @@ export function orderConfirmationHtml(order: OrderDetail, ctx: EmailContext): st
     paragraph(
       `Thank you. Your order <strong>${escapeHtml(o.order_number)}</strong> is ${escapeHtml(CUSTOMER_STATUS_LABEL[o.customer_status].toLowerCase())}.`,
     ),
-    window ? paragraph(`Estimated delivery: <strong>${escapeHtml(window)}</strong>`) : '',
-    pieces(order.items, ctx),
+    // D-154: two shipments, each with its date and its pieces
+    ...(order.shipments.length > 1
+      ? order.shipments.flatMap((sh) => [
+          paragraph(`<strong>Shipment ${sh.seq}</strong>${arrives(sh) ? ` · ${escapeHtml(arrives(sh)!)}` : ''}`),
+          pieces(piecesOf(order, sh), ctx),
+          '<div style="height:14px"></div>',
+        ])
+      : [window ? paragraph(`Estimated delivery: <strong>${escapeHtml(window)}</strong>`) : '', pieces(order.items, ctx)]),
     totals(rows),
     small(`Shipping to:<br>${addressLines(o.shipping_address).map(escapeHtml).join('<br>')}`),
     button(`${ctx.siteUrl}/orders/${encodeURIComponent(o.order_number)}`, 'See your order'),

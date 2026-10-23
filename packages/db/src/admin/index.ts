@@ -18,3 +18,4 @@ export * from './shop-orders';
 export * from './photos';
 export * from './store-pages';
 export * from './bulk';
+export * from './shipments';

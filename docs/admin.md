@@ -41,7 +41,7 @@ writes refresh the website's store pages at once (`POST /admin/revalidate`, B-17
 | Section | Job | Main desk | Web | App |
 |---|---|---|---|---|
 | **Today** | what needs doing now: pickups due, stale listings, payouts due / exports to receive, orders to ship, delay warnings | both | ✓ | ✓ |
-| **To order** (D-140) | `/admin/to-order`: every sold piece of a paid, open order not yet ordered from its shop, one card per shop, oldest first, with the shop item in use (the variant's source, D-118), its price at sale and now, stock and delivery days; **Order all from this shop** (Amazon's add-to-cart link, a Shopify shop's `/cart/` link; other shops open each piece) and **Mark all ordered** (one shop order number and one bill for the lot, what was paid per piece). Tabs **On the way to the hub** (At the hub with its weight, or Not ordered after all) and **At the hub, to weigh** (D-130). The card answers at once and comes back with a line if the server refuses | India | ✓ | ✓ (Order it online / Mark ordered on the order screen) |
+| **To order** (D-140) | `/admin/to-order`: every sold piece of a paid, open order not yet ordered from its shop, one card per shop, oldest first, with the shop item in use (the variant's source, D-118), its price at sale and now, stock and delivery days; **Order all from this shop** (Amazon's add-to-cart link, a Shopify shop's `/cart/` link; other shops open each piece) and **Mark all ordered** (one shop order number and one bill for the lot, what was paid per piece). Tabs **On the way to the hub** (At the hub with its weight, or Not ordered after all) and **At the hub, to weigh** (D-130). **7-day pieces come first** in their own lane, each with "buy in …" (2 hours from the order, red once late) and "ship in …" (the next day) (D-154). The card answers at once and comes back with a line if the server refuses | India | ✓ | ✓ (Order it online / Mark ordered on the order screen) |
 | **Vendors** | onboard a shop in about a minute (name, owner, phone/WhatsApp, region, payment method, licences, photo), history; its vendor accounts with the one-time QR / link, the screens' language, switch off (D-102); "Join as a vendor?" requests | India | ✓ | ✓ |
 | **Listings** | add products with the camera (`flows.md` §2), confirm quantities, drafts → live | India | ✓ (incl. the re-check list) | ✓ (new listing with the camera, publish, confirm qty; 50 with "Show more", D-067) |
 | **Cycles** | current cycle timeline and dates, cutoff, per-shop pickup checklists, packing list + commercial invoice export, export/arrival | both | ✓ (closes and opens by itself, D-045; dates corrected on the cycle; orders moved in, confirmed as shipped (D-064); export details; arrival check-off; packing list + commercial invoice (print/PDF and CSV; Q-30 fields marked)) | ✓ (pickups, cutoff, next step, arrival check-off) |
@@ -60,7 +60,7 @@ pieces this way from the start (`cleanTitle`); food keeps its brand (D-139). **F
 | **Insights** | sales by state, category and shop (with what the shops were paid), for 30 days, 90 days or all time; searches that found nothing (what to list next), top searches, most saved pieces. Real numbers only, computed in SQL (`admin_sales`, `admin_demand`) | both | ✓ | — |
 | **Vendor pieces** | pieces vendors sent (D-102, D-103): their real photos, the AI candidates per pose, pick, name, care, price (empty = from the shop price), publish; or make a pose again on another model, ask for new photos, decline (§Vendor screens) | both | ✓ | — |
 | **House models** | the founder's models (D-104): front and back pose each, switch on / off | both | ✓ | — |
-| **Settings** | pricing settings, each estimate labelled with its source and date until the founder saves their own (D-047); the pilot price's two recipes, the courier rate card, the profit guard, the bulk saving and the small-food shelf ($1.99 – $3.99, D-120), with a **profit check** under them that reprices sample pieces and bags as the numbers are typed (web, D-119) (admins are managed in the DB + `ADMIN_EMAILS`, `ops.md`) | both | ✓ | — |
+| **Settings** | pricing settings, each estimate labelled with its source and date until the founder saves their own (D-047); the pilot price's two recipes, the courier rate card, the profit guard, the bulk saving and the small-food shelf ($1.99 – $3.99, D-120), with a **profit check** under them that reprices sample pieces and bags as the numbers are typed (web, D-119); **7-day delivery: Pause / Switch back on** (D-154: paused, no 7-day tags, page or split; placed orders keep their dates) (admins are managed in the DB + `ADMIN_EMAILS`, `ops.md`) | both | ✓ | — |
 
 **The order page (D-140):** each piece says where it stands (To order → Ordered → At the hub → In the US; a shop's piece
 in a cycle reads To pick), with **Order it ↗** (the shop item in use) and **Mark ordered…** (paid ₹, the shop's order
@@ -73,6 +73,16 @@ is weighed at the hub), the shop bill, and the margins A − B (not shown until 
 what was paid less tax and refunds. **Print A / B / C** (`/admin/orders/<id>/invoice/a|b|c`): numbered A-, B-, C- and
 the order number, to print or save as PDF; refunds show on A as a credit note. The customer prints invoice A from their
 order page (the page prints only the invoice).
+**Two shipments (D-154):** an order whose 7-day pieces travel apart carries a **7-day** chip (Orders list and page) and,
+on its page, a **Shipments** panel: each shipment with its pieces, promised dates and the days left, its Shipping share,
+the 7-day one's buy-by and ship-by while open, its own **Pack & ship** (from the hub once its pieces are there) and
+**Mark delivered**, its own **New dates…** (the delay notice) and its own **Cancel shipment N…** (the customer asked,
+or because of us, with the amount first; a 7-day shipment only until its pieces are bought). The order-wide date
+change and the bulk ship stop for such an order; the whole-order cancel "because the customer asked" disappears once
+the 7-day pieces are bought. The timeline names the shipment. **Today** (India desk, first): 7-day shipments to send,
+with how many were not bought within 2 hours or not shipped by the next day. The app's order screen sends an order of
+two shipments to the web admin. Emails: the confirmation lists Shipment 1 and Shipment 2 with their dates and pieces;
+each shipment's shipped, delivered, new-date and cancelled email names it and shows its pieces.
 **New orders (D-140, A1):** every paid order emails each admin on the allowlist (`admin_new_order`: number, pieces,
 total, where it goes, a button to it); an open admin panel shows a toast with a short chime. App push notifications are
 not built (no `expo-notifications` yet).

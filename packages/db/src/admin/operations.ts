@@ -25,7 +25,8 @@ export function filterWords(words: string): string {
 export async function listAdminOrders(client: IwcClient, filter: AdminOrderFilter = {}) {
   let query = client.from('orders').select(
     `id, order_number, email, status, payment_status, cycle_id, shipping_method, shipping_address, est_delivery_from,
-        est_delivery_to, total_cents, tracking_number, carrier, created_at, items:order_items(id, status, quantity)`,
+        est_delivery_to, total_cents, tracking_number, carrier, created_at, items:order_items(id, status, quantity),
+        shipments:order_shipments!order_shipments_order_id_fkey(kind, status)`,
     { count: 'exact' },
   );
   if (filter.status) query = query.eq('status', filter.status);
@@ -82,7 +83,9 @@ export async function getAdminOrder(client: IwcClient, id: string) {
               ordered_at, paid_paise, shop_order_ref, shop_bill_path,
               source:product_sources(site, item_url, price_paise, in_stock, delivery_days),
               vendor:vendors(id, shop_name, town))),
-          events:order_events(id, kind, visible_to_customer, message, internal_note, actor, created_at)`,
+          events:order_events(id, kind, visible_to_customer, message, internal_note, actor, created_at, shipment_id),
+          shipments:order_shipments!order_shipments_order_id_fkey(id, seq, kind, status, est_delivery_from, est_delivery_to,
+            shipping_cents, carrier, tracking_number, shipped_at)`,
       )
       .eq('id', id)
       .maybeSingle(),
@@ -165,7 +168,8 @@ export async function getPricingSettings(client: IwcClient) {
           bulk_saving_cap_cents, small_food_max_shop_paise, small_food_max_g, small_food_ship_share_pct,
           small_food_floor_cents, small_food_ceiling_cents, home_est_g_per_rupee, home_est_min_g,
           food_ship_share_pct, retailer_pct, food_off_step_cents, food_off_step_pct, food_off_max_pct,
-          food_margin_max_pct, beta_pricing, shown_shipping_cents_per_kg, updated_at`,
+          food_margin_max_pct, beta_pricing, shown_shipping_cents_per_kg, shipping_cents_per_kg,
+          quick_delivery_min_cents, quick_delivery_paused, updated_at`,
       )
       .eq('id', 1)
       .single(),
@@ -222,6 +226,11 @@ export async function updateBusinessDetails(client: IwcClient, values: Record<st
         .eq('key', d.key),
     );
   }
+}
+
+/** D-154: a day the hub cannot buy: no 7-day tags, store or split; placed orders keep their dates. */
+export async function setQuickPaused(client: IwcClient, paused: boolean) {
+  unwrap(await client.from('pricing_settings').update({ quick_delivery_paused: paused }).eq('id', 1));
 }
 
 /** D-074: food may be published once the founder clears them. */

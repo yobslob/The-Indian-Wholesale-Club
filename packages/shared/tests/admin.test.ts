@@ -1,7 +1,7 @@
 import assert from 'node:assert/strict';
 import { describe, it } from 'node:test';
 
-import { dateRange, deskTime, isoToZoned, zonedToIso } from '../src/admin';
+import { dateRange, deskTime, isoToZoned, shipmentShipState, shipState, zonedToIso } from '../src/admin';
 
 describe('admin times in the desk zone (D-096)', () => {
   // 2026-10-08 13:38 UTC = 9:38 AM in New Jersey (EDT) = 7:08 PM in India.
@@ -34,5 +34,37 @@ describe('admin times in the desk zone (D-096)', () => {
   it('writes delivery windows as calendar days', () => {
     assert.equal(dateRange('2026-10-30', '2026-11-04'), 'Oct 30 – Nov 4');
     assert.equal(dateRange(null, null), '—');
+  });
+});
+
+describe('what a shipment can do now (D-154, as ship_shipment checks it)', () => {
+  const at = (status: string) => ({ status, arrived_at: null });
+  const order = {
+    status: 'confirmed',
+    shipping_method: 'standard',
+    cycle_id: null,
+    items: [
+      { status: 'active', shipment_id: 'quick', pickup: at('picked') },
+      { status: 'active', shipment_id: 'rest', pickup: at('pending') },
+    ],
+  };
+  const quick = { id: 'quick', kind: 'quick', status: 'open' };
+  const rest = { id: 'rest', kind: 'standard', status: 'open' };
+
+  it('a 7-day shipment leaves the hub once its own pieces are there', () => {
+    assert.equal(shipmentShipState(order, quick).canShip, true);
+    assert.equal(shipmentShipState(order, rest).canShip, false);
+    assert.equal(shipmentShipState(order, { ...quick, status: 'shipped' }).canShip, false);
+  });
+
+  it('an order in a cycle ships the other shipment once its export has arrived', () => {
+    const cycled = { ...order, cycle_id: 'c1', items: [{ status: 'active', shipment_id: 'rest', pickup: at('picked') }] };
+    assert.equal(shipmentShipState(cycled, rest).canShip, false);
+    assert.equal(shipmentShipState({ ...cycled, status: 'arrived' }, rest).canShip, true);
+  });
+
+  it('the whole order, as before: a pilot order (no cycle) ships once every piece is at the hub', () => {
+    assert.equal(shipState(order).canShip, false);
+    assert.equal(shipState({ ...order, items: order.items.map((i) => ({ ...i, pickup: at('picked') })) }).canShip, true);
   });
 });

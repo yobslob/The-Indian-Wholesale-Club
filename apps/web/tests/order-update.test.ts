@@ -44,6 +44,7 @@ const base: OrderDetail = {
     },
   ],
   events: [],
+  shipments: [],
   offer: null,
   actions: { can_cancel: false, cancel_refund_cents: null, delay_open: true, delay_refund_cents: 5400, returns: [] },
 };
@@ -119,6 +120,62 @@ describe('order update emails (B-20)', () => {
   it('no email for internal or unknown kinds, or an offer that is gone', () => {
     assert.equal(mail('note'), null);
     assert.equal(mail('faster_delivery_offer'), null);
+  });
+});
+
+// D-154: an order of two shipments, the 7-day snack apart from the kurta
+const SNACK = '00000000-0000-4000-8000-000000000003';
+const split: OrderDetail = {
+  ...base,
+  items: [
+    { ...base.items[0]!, status: 'active' },
+    { ...base.items[0]!, id: SNACK, product_name: 'Banana chips', variant_label: '200 g', status: 'active' },
+  ],
+  shipments: [
+    { seq: 1, kind: 'quick', status: 'shipped', est_delivery_from: '2026-10-30', est_delivery_to: '2026-10-30', shipping_cents: 931,
+      carrier: 'DHL', tracking_number: '1234567890', shipped_at: '2026-10-24T10:00:00Z', item_ids: [SNACK] },
+    { seq: 2, kind: 'standard', status: 'open', est_delivery_from: '2026-11-03', est_delivery_to: '2026-11-07', shipping_cents: 1862,
+      carrier: null, tracking_number: null, shipped_at: null, item_ids: [base.items[0]!.id] },
+  ],
+  actions: { can_cancel: false, cancel_refund_cents: null, delay_open: true, delay_refund_cents: 6862, delay_shipment: 2, returns: [] },
+};
+
+describe('two shipments (D-154)', () => {
+  it('each shipped email names its shipment and shows only its pieces', () => {
+    const first = orderUpdateEmail('shipped', split, ctx, 1);
+    assert.ok(first);
+    assert.ok(first.subject.startsWith('Shipment 1 of order'));
+    assert.ok(first.html.includes('Banana chips'));
+    assert.ok(!first.html.includes('Kasavu'));
+    assert.ok(first.html.includes('The rest travels on its own'));
+  });
+
+  it("a delay names the shipment, its new dates and its share back; the rest keeps its date", () => {
+    const html = orderUpdateEmail('delivery_window_changed', split, ctx, 2)?.html ?? '';
+    assert.ok(html.includes('arrives Nov 3 – Nov 7'));
+    assert.ok(html.includes('$68.62'));
+    assert.ok(html.includes('The rest of your order keeps its date.'));
+  });
+
+  it('a cancelled shipment says the rest is still coming', () => {
+    const email = orderUpdateEmail('shipment_cancelled', split, ctx, 2);
+    assert.ok(email);
+    assert.ok(email.subject.startsWith('Shipment 2 of order'));
+    assert.ok(email.html.includes('still coming'));
+  });
+
+  it('an order of one shipment is spoken of as an order', () => {
+    assert.ok(orderUpdateEmail('shipped', base, ctx, 1)?.subject.startsWith('Order '));
+  });
+
+  it('D-003: no shipment email mentions shops or weights', () => {
+    for (const kind of ['shipped', 'delivered', 'delivery_window_changed', 'shipment_cancelled'])
+      for (const seq of [1, 2])
+        assert.doesNotMatch(
+          (orderUpdateEmail(kind, split, ctx, seq)?.html ?? '').replace(/<style[\s\S]*?<\/style>|<[^>]+>/g, ' '),
+          /shop|pickup|export|cycle|vendor|weigh|\bkg\b/i,
+          kind,
+        );
   });
 });
 

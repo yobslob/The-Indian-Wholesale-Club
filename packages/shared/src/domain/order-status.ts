@@ -51,6 +51,7 @@ export const ORDER_EVENT_LABEL: Record<string, string> = {
   faster_delivery_accepted: 'Faster delivery added. New delivery estimate', // D-064
   arriving_sooner: 'Good news: it is coming sooner than we said', // D-064
   order_cancelled: 'Order cancelled', // D-072
+  shipment_cancelled: 'Part of your order was cancelled and refunded', // D-154
   return_requested: 'Return requested', // D-071
   return_rejected: 'Return not accepted. Reply to your order email and we will talk it through.', // D-071
   shipped: 'Shipped',

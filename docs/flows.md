@@ -94,6 +94,12 @@ open ──cutoff──► collecting ──► packed ──► exported ──
 4. `fulfilling`: for each arrived order, the founder packs it, picks the carrier (USPS, UPS or FedEx give the customer
    a tracking link, D-066; another carrier is typed) and enters the tracking number: `ship_order()`, the order becomes
    `shipped` (the admin is warned while a piece is not checked off as arrived). Then `deliver_order()`: `delivered`.
+4a. **Two shipments (D-154):** an order whose 7-day pieces travel apart has two, each shipped from the order page with
+   its own carrier, tracking number and email (`ship_shipment`, `deliver_shipment`). The 7-day one leaves the hub by
+   courier once its pieces are there (bought within 2 hours, shipped the next day); so does any shipment of an order
+   without a cycle (the made-to-order pilot, D-115; until 2026-10-24 such an order could not be marked shipped). The
+   order is Shipped once nothing is left to send and Delivered once everything sent has arrived; a shipment whose
+   pieces all became unavailable is cancelled by itself and the other goes on.
 5. `closed`: all orders in the cycle are delivered, refunded or cancelled.
 
 ## 6b. Moving an order to another cycle (D-045, D-064)
@@ -118,6 +124,8 @@ gets an email with the new estimate, and their order page (website and app) offe
 full refund** until it ships in the US (`keep_after_delay`, `cancel_after_delay`, through `POST /api/orders/choice`).
 The choice is recorded as an `order_event`. The old window is never silently overwritten (INV-6). Pieces already
 collected for an order cancelled this way become US clearance drafts (D-072).
+An order of two shipments (D-154) gets new dates per shipment (`change_shipment_window`): the customer may keep that
+shipment or cancel only it, for its pieces, its Shipping share and their tax.
 
 ## 7b. Cancelling (D-042, D-072)
 - **Until the order leaves India** (`confirmed`, `collecting`, `packed`; an express order until its courier leaves), the
@@ -126,6 +134,9 @@ collected for an order cancelled this way become US clearance drafts (D-072).
   Stripe, then `customer_cancel()` records it and re-checks the amount. Pieces not collected go back to the shop's stock
   (`released` in the ledger); collected ones become US clearance drafts (§7d).
 - Before cutoff an admin can also cancel (`cancel_order()`, on the customer's request or because of IWC: everything back).
+- **Two shipments (D-154):** once the hub has bought a 7-day shipment's pieces (ordered from the shop, or at the hub)
+  the order cannot be cancelled as a whole (food cannot go back). Customer care can cancel the other shipment alone
+  until it leaves India (`admin_cancel_shipment`): its pieces, its Shipping share and their tax back.
 - **After it left India** the button is gone. Only customer care cancels (the admin order page,
   `admin_cancel_after_export()`): everything back except `export_cancel_deduction_pct` of the goods, and every piece
   becomes a US clearance draft.

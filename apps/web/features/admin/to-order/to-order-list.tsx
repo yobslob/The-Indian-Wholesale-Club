@@ -11,7 +11,7 @@ import { mediaUrl } from '@/lib/site';
 import { markOrderedAction, unmarkOrderedAction } from '../actions/shop-orders';
 import { button, input, panel, secondaryButton } from '../styles';
 
-import { waited, type ShopGroup } from './group';
+import { dueIn, waited, type ShopGroup } from './group';
 
 /**
  * The India desk's To order list (D-140, F3): one card per shop, its pieces oldest first. **Order all from this
@@ -171,6 +171,7 @@ function PieceRow({ row: r }: { row: ShopGroup['rows'][number] }): React.JSX.Ele
           · waiting {waited(r.ordered_on)}
           {r.delivery_days !== null ? ` · at the hub in ${r.delivery_days} day${r.delivery_days === 1 ? '' : 's'}` : ''}
         </small>
+        {r.buy_by && r.ship_by ? <QuickDue buyBy={r.buy_by} shipBy={r.ship_by} /> : null}
         {r.in_stock === false ? <small className="text-danger block text-[12.5px] font-semibold">Sold out at the shop at the last check</small> : null}
       </span>
       <span className="col-start-2 text-[13px] md:col-start-auto md:text-right">
@@ -199,5 +200,16 @@ function PieceRow({ row: r }: { row: ShopGroup['rows'][number] }): React.JSX.Ele
         </small>
       </label>
     </li>
+  );
+}
+
+/** D-154: a 7-day piece is bought within 2 hours of the order and leaves the hub the next day. */
+function QuickDue({ buyBy, shipBy }: { buyBy: string; shipBy: string }): React.JSX.Element {
+  const buy = dueIn(buyBy);
+  const ship = dueIn(shipBy);
+  return (
+    <small className={`block text-[12.5px] font-semibold ${buy.late ? 'text-danger' : 'text-brand'}`}>
+      7-day · buy {buy.text} · ship {ship.text}
+    </small>
   );
 }

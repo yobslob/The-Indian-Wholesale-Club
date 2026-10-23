@@ -64,9 +64,10 @@ function compose(row: OutboxRow, order: OrderDetail): { subject: string; html: s
     return { subject: orderConfirmationSubject(order, SITE_NAME), html: orderConfirmationHtml(order, ctx) };
   }
   if (row.kind === 'admin_new_order') return { subject: adminNewOrderSubject(order), html: adminNewOrderHtml(order, ctx) };
-  const kind = (row.payload as { kind?: unknown }).kind;
+  const { kind, shipment } = row.payload as { kind?: unknown; shipment?: unknown };
   if (row.kind !== 'order_update' || typeof kind !== 'string') throw new Error(`Unsupported outbox row (${row.kind})`);
-  return orderUpdateEmail(kind, order, ctx);
+  // D-154: an update about one of two shipments names it
+  return orderUpdateEmail(kind, order, ctx, typeof shipment === 'number' ? shipment : null);
 }
 
 /**

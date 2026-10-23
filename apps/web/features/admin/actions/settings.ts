@@ -6,6 +6,7 @@ import { z } from 'zod';
 import {
   createPromoCode,
   setFoodCleared,
+  setQuickPaused,
   updateBusinessDetails,
   updatePricingSettings,
   updatePromoCode,
@@ -98,5 +99,13 @@ export async function updateBusinessDetailsAction(form: FormData): Promise<void>
 export async function updateFoodClearedAction(cleared: boolean): Promise<void> {
   const { client } = await requireAdminAction();
   await setFoodCleared(client, z.boolean().parse(cleared));
+  revalidatePath('/admin/settings');
+}
+
+/** D-154: pause 7-day delivery (a day the hub cannot buy) or switch it back on; the store's pages follow. */
+export async function updateQuickPausedAction(paused: boolean): Promise<void> {
+  const { client } = await requireAdminAction();
+  await setQuickPaused(client, z.boolean().parse(paused));
+  revalidateTag(STORE_TAG); // the 7-day tags, page and bag split
   revalidatePath('/admin/settings');
 }

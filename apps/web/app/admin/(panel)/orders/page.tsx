@@ -54,8 +54,11 @@ export default async function AdminOrdersPage({ searchParams }: { searchParams: 
       pieces: o.items.reduce((n, i) => n + i.quantity, 0),
       total: formatUsd(o.total_cents),
       window: dateRange(o.est_delivery_from, o.est_delivery_to),
+      // D-154: an order of two shipments is shipped one shipment at a time, from its page
       canShip:
-        o.status === 'arrived' || (o.shipping_method === 'express' && !o.cycle_id && ['confirmed', 'collecting'].includes(o.status)),
+        o.shipments.filter((sh) => sh.status === 'open').length <= 1 &&
+        (o.status === 'arrived' || (o.shipping_method === 'express' && !o.cycle_id && ['confirmed', 'collecting'].includes(o.status))),
+      quick: o.shipments.some((sh) => sh.kind === 'quick' && sh.status !== 'cancelled'),
     };
   });
   const [own, other] = deskOrder(desk).map((d) => ZONES[d].place);

@@ -46,3 +46,10 @@ export function waited(iso: string, now = Date.now()): string {
   const days = Math.floor(hours / 24);
   return `${days} day${days === 1 ? '' : 's'}`;
 }
+
+/** D-154: a 7-day piece's buy-by or ship-by time from now: "in 1 hour", "2 hours late". */
+export function dueIn(iso: string, now = Date.now()): { text: string; late: boolean } {
+  const ms = Date.parse(iso) - now;
+  const span = waited(new Date(now - Math.abs(ms)).toISOString(), now);
+  return ms >= 0 ? { text: `in ${span}`, late: false } : { text: `${span} late`, late: true };
+}

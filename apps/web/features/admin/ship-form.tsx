@@ -17,17 +17,36 @@ export interface ShipOrder {
 }
 
 /**
- * flows.md §6.4: pack and ship once the export has arrived, then mark delivered. USPS, UPS and FedEx give the customer
- * a tracking link (D-066); any other carrier is typed and its number shown as is. Shown only when it applies (D-096).
+ * flows.md §6.4: pack and ship once its pieces are ready, then mark delivered. USPS, UPS and FedEx give the customer a
+ * tracking link (D-066); any other carrier is typed and its number shown as is. Shown only when it applies (D-096).
+ * One order, or one of its two shipments (D-154): the caller passes the actions bound to it.
  */
-export function ShipForm({ order }: { order: ShipOrder }): React.JSX.Element | null {
-  const { canShip, unchecked } = shipState(order);
-  const link = trackingUrl(order.carrier, order.tracking_number);
+export function ShipControls({
+  title = 'Pack & ship',
+  canShip,
+  unchecked,
+  shipped,
+  carrier,
+  trackingNumber,
+  ship,
+  deliver,
+}: {
+  title?: string;
+  canShip: boolean;
+  unchecked: number;
+  /** On its way: the tracking and Mark delivered. */
+  shipped: boolean;
+  carrier: string | null;
+  trackingNumber: string | null;
+  ship: (form: FormData) => Promise<void>;
+  deliver: () => Promise<void>;
+}): React.JSX.Element | null {
+  const link = trackingUrl(carrier, trackingNumber);
 
   if (canShip)
     return (
-      <form action={markShippedAction.bind(null, order.id)} className="space-y-2.5">
-        <h3 className="text-[14px] font-semibold">Pack &amp; ship</h3>
+      <form action={ship} className="space-y-2.5">
+        <h3 className="text-[14px] font-semibold">{title}</h3>
         {unchecked > 0 ? (
           <p className="text-caution text-[13px]">
             {unchecked} piece{unchecked === 1 ? ' is' : 's are'} not checked off as arrived yet.
@@ -57,21 +76,21 @@ export function ShipForm({ order }: { order: ShipOrder }): React.JSX.Element | n
         <p className="text-ink-muted text-[12.5px]">Emails the customer a link to their order page.</p>
       </form>
     );
-  if (order.status === 'shipped')
+  if (shipped)
     return (
       <div className="space-y-2.5">
         <h3 className="text-[14px] font-semibold">On its way</h3>
         <p className="text-[14px]">
-          {order.carrier} ·{' '}
+          {carrier} ·{' '}
           {link ? (
             <a href={link} target="_blank" rel="noreferrer" className="font-semibold underline">
-              {order.tracking_number}
+              {trackingNumber}
             </a>
           ) : (
-            order.tracking_number
+            trackingNumber
           )}
         </p>
-        <form action={markDeliveredAction.bind(null, order.id)}>
+        <form action={deliver}>
           <button type="submit" className={`${button} w-full md:h-12 md:text-[15px]`}>
             Mark delivered
           </button>
@@ -80,4 +99,19 @@ export function ShipForm({ order }: { order: ShipOrder }): React.JSX.Element | n
       </div>
     );
   return null;
+}
+
+export function ShipForm({ order }: { order: ShipOrder }): React.JSX.Element | null {
+  const { canShip, unchecked } = shipState(order);
+  return (
+    <ShipControls
+      canShip={canShip}
+      unchecked={unchecked}
+      shipped={order.status === 'shipped'}
+      carrier={order.carrier}
+      trackingNumber={order.tracking_number}
+      ship={markShippedAction.bind(null, order.id)}
+      deliver={markDeliveredAction.bind(null, order.id)}
+    />
+  );
 }

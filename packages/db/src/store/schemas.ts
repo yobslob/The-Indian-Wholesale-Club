@@ -253,6 +253,25 @@ export const orderEventSchema = z.object({
   kind: z.string(),
   message: z.string().nullable(),
   created_at: isoDateTime,
+  /** D-154: the shipment it is about (1 or 2), null for the whole order. Optional until migration 20261024090000. */
+  shipment: z.number().int().nullable().optional(),
+});
+
+/**
+ * D-154: one of the order's shipments (one, or two when its 7-day pieces travel apart): its speed, dates, status,
+ * tracking and which pieces. Nothing operational (D-003).
+ */
+export const orderShipmentSchema = z.object({
+  seq: z.number().int(),
+  kind: z.enum(['quick', 'standard', 'express']),
+  status: z.enum(['open', 'shipped', 'delivered', 'cancelled']),
+  est_delivery_from: z.string().nullable(),
+  est_delivery_to: z.string().nullable(),
+  shipping_cents: z.number().int(),
+  carrier: z.string().nullable(),
+  tracking_number: z.string().nullable(),
+  shipped_at: isoDateTime.nullable(),
+  item_ids: z.array(z.string().uuid()),
 });
 
 /** D-064: an earlier delivery the customer can pay for. Price and window only (D-003). */
@@ -281,6 +300,8 @@ export const orderActionsSchema = z.object({
   cancel_refund_cents: z.number().int().nullable(),
   delay_open: z.boolean(),
   delay_refund_cents: z.number().int().nullable(),
+  /** D-154: the delay is about this shipment only (1 or 2); null for the whole order. */
+  delay_shipment: z.number().int().nullable().optional(),
   returns: z.array(orderReturnOptionSchema).default([]),
 });
 
@@ -288,6 +309,8 @@ export const orderDetailSchema = z.object({
   order: orderSummarySchema,
   items: z.array(orderItemSchema),
   events: z.array(orderEventSchema),
+  /** D-154 (optional until migration 20261024090000): one or two shipments. */
+  shipments: z.array(orderShipmentSchema).default([]),
   offer: orderOfferSchema.nullable().default(null),
   actions: orderActionsSchema.nullable().default(null),
 });
@@ -348,6 +371,7 @@ export type CustomerStatus = z.infer<typeof customerStatusSchema>;
 export type OrderSummary = z.infer<typeof orderSummarySchema>;
 export type OrderItem = z.infer<typeof orderItemSchema>;
 export type OrderEvent = z.infer<typeof orderEventSchema>;
+export type OrderShipment = z.infer<typeof orderShipmentSchema>;
 export type OrderDetail = z.infer<typeof orderDetailSchema>;
 export type OrderOffer = z.infer<typeof orderOfferSchema>;
 export type OrderActions = z.infer<typeof orderActionsSchema>;

@@ -49,7 +49,11 @@ export default function AdminOrderScreen(): React.JSX.Element {
   const pickHere = !order.cycle_id && ['confirmed', 'collecting'].includes(order.status);
   const target = [{ id: order.id, number: order.order_number, name: a.fullName ?? '' }];
   const phone = (a.phone ?? '').replace(/[^\d+]/g, '');
-  const main = canShip ? (
+  // D-154: an order of two shipments ships each on its own, from the web admin's order page
+  const split = order.shipments.filter((sh) => sh.status !== 'cancelled').length > 1;
+  const main = split ? (
+    <Body>Two shipments: ship and deliver each from the order page in the web admin.</Body>
+  ) : canShip ? (
     <AdminButton big label="Pack & ship" onPress={() => setSheet('ship')} />
   ) : order.status === 'shipped' ? (
     <AdminButton big label="Mark delivered" onPress={() => setSheet('deliver')} />
