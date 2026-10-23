@@ -19,6 +19,7 @@ import {
   itemKeyOf,
   myntraSearchOffers,
   packVariants,
+  refusedWith,
   searchPages,
   shopifyProduct,
   shopifyProductJsUrl,
@@ -29,7 +30,7 @@ import {
   zeptoOffers,
 } from '@repo/shared/sourcing/auto';
 
-import { open, type Lane } from './lanes';
+import { open, RobotCheck, type Lane } from './lanes';
 import * as read from './pages';
 
 import type { Page } from 'playwright';
@@ -161,6 +162,8 @@ async function answer(
   await open(page, url);
   const json: unknown = await arrived.then((r) => r.json()).catch(() => null);
   if (json === null) throw new Error('the results page did not load');
+  // Instamart's "too many requests" comes inside a 200 answer, behind "Log in to continue": a 429 (D-153)
+  if (refusedWith(json)) throw new RobotCheck(new URL(url).hostname.replace(/^www\./, ''), 0);
   return { json, eta: await read.etaText(page) };
 }
 

@@ -86,8 +86,19 @@ select tests.assert(
   and public.store_bag_charges((select items from bag where name = 'five snacks and a kurta')) @> '{"quick_free": false}'::jsonb,
   'case 4 of the money: only 7-day pieces from the line ship free; a kurta brings Shipping back (case 35)');
 select tests.assert(
-  public.store_bag_charges((select items from bag where name = 'five snacks')) -> 'shipments' -> 'quick_variant_ids' is null,
-  'the bag answer names no option ids beyond what it was asked (and never a shop)');
+  public.store_bag_charges((select items from bag where name = 'five snacks and a kurta')) -> 'quick_ids'
+    = jsonb_build_array(tests.id('v_snack'))
+  and public.store_bag_charges((select items from bag where name = 'a kurta')) -> 'quick_ids' = '[]'::jsonb,
+  'step 3: the bag answer names which of the options it was asked are 7-day pieces (never a shop)');
+select tests.assert(
+  public.store_bag_charges((select items from bag where name = 'five snacks')) -> 'dates'
+    = jsonb_build_object('quick_from', current_date + 7, 'quick_to', current_date + 7,
+                         'standard_from', current_date + 12, 'standard_to', current_date + 16),
+  'and the dates each shipment would arrive by from today');
+select tests.assert(
+  not (public.store_bag_charges((select items from bag where name = 'five snacks and a kurta')) -> 'shipments'
+       ?| array['billed_grams', 'quick_shipping_cents', 'quick_variant_ids']),
+  'no weight leaves the database with the bag''s answer (non-negotiable 1)');
 
 -- Orders: the same rule, the shipments stored.
 set local role service_role;

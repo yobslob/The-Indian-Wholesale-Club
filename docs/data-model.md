@@ -247,6 +247,10 @@ pieces are bought; `_order_actions.delay_shipment`. `admin_to_order()` adds `buy
 `_order_shipments_json(order)` (internal): `guest_order_lookup` and `store_my_order` add `shipments` (seq, kind,
 status, dates, Shipping share, carrier, tracking, `item_ids`); `store_order_events` and their events add `shipment`.
 Tests: `shipment_admin.test.sql`.
+Migration `20261025090000_bag_shipments` (D-154, step 3): `store_bag_charges` adds `quick_ids` (the asked options that
+are 7-day pieces) and `dates` (`quick_from` / `quick_to` from the 7-day days, `standard_from` / `standard_to` from
+`store_next_delivery()`), and its `shipments` no longer carries `billed_grams`, `quick_shipping_cents` or the option ids
+(step 1's answer had sent the bag's billed grams to the browser). Tests: `shipments.test.sql`.
 Migration 80 (D-141, the photo store): a photo in Cloudflare R2 is recorded with an `s/` path
 (`products/<id>/s/<name>.jpg`, packages/shared media.ts). `worker_sourcing_media` accepts `products/<id>/s/<name>` as
 well as `products/<id>/<name>`; album photos may be `regions/<slug>/album/s/<name>`.

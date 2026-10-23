@@ -62,6 +62,16 @@ export function flightRows(text: string): unknown[] {
   return rows;
 }
 
+/**
+ * The status a search answer refused with (Instamart's `{"stack":null,"statusCode":429}` while its page asks to log
+ * in), or null for an answer with data. Counted as a block, never as "0 results".
+ */
+export function refusedWith(answer: unknown): number | null {
+  if (!isObj(answer) || 'data' in answer) return null;
+  const status = num(answer.statusCode);
+  return status !== null && status >= 400 ? status : null;
+}
+
 // ---------------------------------------------------------------- Zepto
 
 /**

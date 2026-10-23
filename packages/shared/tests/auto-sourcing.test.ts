@@ -30,6 +30,7 @@ import {
   parseTargetsCsv,
   widenedSites,
   pickCandidates,
+  refusedWith,
   shopsFor,
   sanitizeText,
   shopifySearchOffers,
@@ -797,6 +798,16 @@ describe('Zepto and Instamart, as their pages loaded them on 23 Oct 2026 (D-152)
     assert.deepEqual(
       [offers[1]!.url, offers[1]!.ratingCount, offers[1]!.brand, offers[1]!.deliveryText],
       ['https://www.swiggy.com/instamart/item/548B5ZKK4W', 4100, "Let's Try", '4 MINS'],
+    );
+  });
+
+  it('knows Instamart refusing a search from a search that found nothing', async () => {
+    assert.equal(refusedWith({ stack: null, statusCode: 429 }), 429);
+    assert.equal(refusedWith(JSON.parse(await fixture('instamart-search.json'))), null);
+    assert.equal(
+      refusedWith({ data: { cards: [] }, statusCode: 0 }),
+      null,
+      'no results is not a refusal',
     );
   });
 
