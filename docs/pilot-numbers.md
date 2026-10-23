@@ -16,16 +16,19 @@
 >   piece that cannot pay its duty and card fee (D-125). ₹90 masala $4.29, bhujia 400 g $12.79, 1 kg $31.29.
 > - **Home & gifts without a weight (D-121):** priced at shop ₹ × 1.5 g (at least 200 g, at most the category's
 >   typical weight) instead of the category's 1.5 – 2 kg: a ₹200 basket is $17.99, not $62.29.
-> - **No bag loses (D-125):** every piece carries its whole cost (food its whole flight again); Shipping below $149.99 is
->   at least $18.79 and more when a bag's pieces cannot pay for its parcel (~$34 for any parcel); free from the line up.
->   Bhujia 200 g $5.99, 400 g $11.29, 1 kg $27.49; footwear without a weight: 600 g (D-122).
+> - **Shipping (D-154, replacing D-125's top-up):** $18.62 × the bag's billed kg (its packed weight, food at 110% of its
+>   label, at least 1 kg, then by the half kg), one parcel for the whole bag even when it ships as two; struck through
+>   at $0.00 (the figure growing with the bag) from the free line ($99.99 on production) and, for a bag of only 7-day
+>   pieces, from the 7-day line ($49.99). 1 kg $18.62, 1.5 kg $27.93, 2.5 kg $46.55. Settings → Bag charges and
+>   Standard delivery. Footwear without a weight: 600 g (D-122).
 > - **Small-food shelf (D-120, D-125):** food up to ₹200 and 250 g with its whole cost, rounded up to the next of
 >   $1.99 / $2.99 / $3.99 (at most $3.99, at least the guard on its goods). ₹100 · 100 g $2.99, ₹100 · 200 g $3.99.
 > - **Profit guard, every piece:** lifted only if the margin cannot pay US duty on the price (clothing 22%, food 16%,
 >   home 13%) and the 2.9% card fee and leave $4 (clothing, home) and 8% (food: 4%, no dollar minimum).
-> - Rate = the day's ₹ per $ less the 4% buffer; up to .29/.49/.69/.79/.99 (D-126). Below $149.99 a bag pays Shipping $18.79 and
->   Retailer charges $1.99; from $149.99 up they show struck through at $0.00 and 10% of the amount over the line comes
->   off as the bulk saving, up to $25.
+> - Rate = the day's ₹ per $ less the 4% buffer; up to .29/.49/.69/.79/.99 (D-126). Below the free line a bag pays
+>   Shipping (above) and Retailer charges ($0.99 on production, Settings); from the line up both show struck through at
+>   $0.00 and 10% of the amount over the line comes off as the bulk saving, up to $25. The docs' older $149.99 and $1.99
+>   are Settings values; production has $99.99 and $0.99 (D-154).
 > - Worked examples at ₹96.30 (the shelf off; on, the snack and the masala are $2.99 and $3.99): snack ₹90 · 100 g $3.99, masala ₹150 · 250 g $8.49, namkeen ₹220 · 400 g $13.29, kurta
 >   ₹1,299 · 450 g $45.29, saree ₹7,500 · 900 g $180.79, lehenga ₹12,000 · 2.5 kg $296.49, brass ₹1,800 · 1.2 kg $91.29.
 > - Estimates (labelled in Settings until a real bill replaces them): duty %, ₹1,050 per parcel, the food fee, parcel kg

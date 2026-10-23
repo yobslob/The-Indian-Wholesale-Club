@@ -217,6 +217,17 @@ page: days, totals, categories with counts, light cards). `_store_product_card` 
 `store_product_page` adds `quick_delivery`; `store_policy` the two days; `checkout_context` adds `quick_delivery` and
 gives such a bag no Express; `create_order` gives a standard 7-day bag that window, no cycle and its pickups at once.
 No answer names a shop or a source. Tests: `seven_day.test.sql`.
+Migration `20261023120000_seven_day_shipments` (D-154, step 1): `pricing_settings.quick_delivery_min_cents` (4999, the
+7-day line), `shipping_cents_per_kg` (1862) and `quick_delivery_paused` (no 7-day pieces while true; `_quick_listings`
+reads it); the pilot window set to 12 – 16. `order_shipments` (an order's one or two shipments: `seq` 1 | 2, `kind`
+quick | standard | express, dates, `shipping_cents` its share, `status` open | shipped | delivered | cancelled, carrier,
+tracking, `shipped_at`; admin read, written by `create_order`; every older order got one, carrying its tracking) and
+`order_items.shipment_id`. `_bag_shipments(items, discount, state, line1)` (internal): the 7-day pieces after the
+promo against the line, `quick_only` / `split` / `gap_cents`, `outside` (not the 48 states or DC, or a PO box / APO),
+`billed_grams`, `shipping_cents` (one parcel) and `quick_shipping_cents` (its share by weight). `store_bag_charges(items,
+discount, state, line1)` returns Shipping at the $ a kg (else the fixed small-order Shipping), `past_line_cents` 0,
+`shown_shipping_cents` the same figure, `quick_free` and `shipments`; `create_order` stores the shipments it works
+out the same way (Express never splits). Tests: `shipments.test.sql`, `bag_charges.test.sql`.
 Migration 80 (D-141, the photo store): a photo in Cloudflare R2 is recorded with an `s/` path
 (`products/<id>/s/<name>.jpg`, packages/shared media.ts). `worker_sourcing_media` accepts `products/<id>/s/<name>` as
 well as `products/<id>/<name>`; album photos may be `regions/<slug>/album/s/<name>`.
