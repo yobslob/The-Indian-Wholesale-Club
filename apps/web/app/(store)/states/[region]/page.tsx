@@ -1,7 +1,7 @@
 import Link from 'next/link';
 import { notFound } from 'next/navigation';
 
-import { PRODUCT_TYPE_LABEL, PRODUCT_TYPE_PATH, type ProductType } from '@repo/shared/domain';
+import { PRODUCT_TYPE_LABEL, PRODUCT_TYPE_PATH, PRODUCT_TYPES, type ProductType } from '@repo/shared/domain';
 
 import { CuratedCard } from '@/features/catalog/curated-card';
 import { getHomeCached, getRegionPageCached } from '@/features/catalog/data';
@@ -10,7 +10,7 @@ import { RowScroller } from '@/features/catalog/row-scroller';
 import { StorePhoto } from '@/features/catalog/store-photo';
 import { RegionAlbum } from '@/features/regions/region-album';
 import { scriptFontClass } from '@/features/regions/script-fonts';
-import { SectionSpy } from '@/features/regions/section-spy';
+import { RegionTypeTabs } from '@/features/regions/region-type-tabs';
 import { mediaUrl } from '@/lib/site';
 
 import type { RegionPage, RegionProductCard } from '@repo/db/store';
@@ -30,43 +30,104 @@ export async function generateMetadata({ params }: { params: Params }): Promise<
 }
 
 const heading = 'font-heading text-[clamp(26px,2.2vw,38px)] font-medium leading-tight tracking-[-0.025em]';
-// aria-current: the section being read (SectionSpy, D-116).
-const pill =
-  'font-ui border-line bg-paper hover:border-ink inline-flex min-h-11 items-center gap-2 rounded-pill border px-5 text-sm font-medium transition-colors duration-300 aria-[current]:border-ink aria-[current]:bg-ink aria-[current]:text-paper [&[aria-current]>span]:text-paper/70';
-
-/**
- * Clothing grouped by category, the biggest first: one row each (D-062). The page data carries each category's first
- * 12 cards and its real total (category_counts, biggest first).
- */
-function byCategory(
-  page: RegionPage,
-): { slug: string; name: string; count: number; items: RegionProductCard[] }[] {
-  return page.category_counts
-    .filter((c) => c.product_type === 'clothing')
-    .map((c) => ({ ...c, items: page.products.filter((p) => p.category_slug === c.slug) }));
-}
+const chip =
+  'font-ui border-line bg-paper hover:border-ink inline-flex min-h-11 items-center gap-2 rounded-pill border px-5 text-sm font-medium transition-colors duration-300';
+const pieces = (n: number): string => `${n.toLocaleString('en-US')} ${n === 1 ? 'piece' : 'pieces'}`;
 
 const ROW = 12;
 
-/**
- * The core page (storefront.md §The region page, storefront.md §Direction). One cached store_region_page()
- * call. Every list is a row that scrolls sideways with See all where there is more (D-062): New arrivals, Most wanted
- * (D-058), the album (D-051, once it has three photos), Curated for you and Leaving soon (D-056), then one row per
- * clothing category, then Food, then Home & gifts (D-106) when the state has some.
- */
+/** A type's categories, the biggest first, each with its first 12 cards and its real total (category_counts). */
+function byCategory(
+  page: RegionPage,
+  type: ProductType,
+): { slug: string; name: string; count: number; items: RegionProductCard[] }[] {
+  return page.category_counts
+    .filter((c) => c.product_type === type)
+    .map((c) => ({ ...c, items: page.products.filter((p) => p.category_slug === c.slug && p.product_type === type) }))
+    .filter((c) => c.items.length > 0);
+}
+
 export default async function RegionPage({ params }: { params: Params }): Promise<React.JSX.Element> {
   const page = await getRegionPageCached((await params).region);
   if (!page) notFound();
   const { region, album, products, most_wanted: mostWanted, curated, leaving_soon: leavingSoon } = page;
-  const food = products.filter((p) => p.product_type === 'food');
-  const foodCount = page.category_counts.filter((c) => c.product_type === 'food').reduce((n, c) => n + c.count, 0);
-  const home = products.filter((p) => p.product_type === 'home');
-  const homeCount = page.category_counts.filter((c) => c.product_type === 'home').reduce((n, c) => n + c.count, 0);
-  const categories = byCategory(page);
-  // D-122: the first row is the state's own pieces, newest first; all-India pieces fill the rows below
-  const newest = products.filter((p) => p.region_slug === region.slug).slice(0, ROW);
   const browse = (type: ProductType, category?: string): string =>
     `${PRODUCT_TYPE_PATH[type]}?state=${region.slug}${category ? `&category=${category}` : ''}`;
+  const slugOf = (type: ProductType): string => PRODUCT_TYPE_PATH[type].slice(1);
+  const countOf = (type: ProductType): number =>
+    page.category_counts.filter((c) => c.product_type === type).reduce((n, c) => n + c.count, 0);
+  const tabs = PRODUCT_TYPES.map((t) => ({ slug: slugOf(t), label: PRODUCT_TYPE_LABEL[t], count: countOf(t) }));
+
+  /**
+   * One type's rows, as Home and the 7-day store draw theirs (a heading, its count, See all): the state's newest, Most
+   * wanted, Picked for you, Leaving soon, then a row per category, the biggest first. Clothing keeps the ids links
+   * and tests use (#new-arrivals, #c-kurtas).
+   */
+  const panel = (type: ProductType): React.ReactNode => {
+    const label = PRODUCT_TYPE_LABEL[type];
+    const own = (p: RegionProductCard): boolean => p.product_type === type;
+    const id = (name: string): string => (type === 'clothing' ? name : `${name}-${slugOf(type)}`);
+    const categories = byCategory(page, type);
+    // D-122: the first row is the state's own pieces, newest first; all-India pieces fill the rows below
+    const newest = products.filter((p) => own(p) && p.region_slug === region.slug).slice(0, ROW);
+    if (countOf(type) === 0)
+      return (
+        <section className="py-[clamp(24px,3vw,48px)]">
+          <h2 className={heading}>{label}</h2>
+          <p className="bg-surface font-body mt-[clamp(16px,1.8vw,24px)] rounded-lg p-[clamp(18px,2vw,32px)] text-[clamp(20px,1.8vw,28px)]">
+            {type === 'clothing' ? 'New pieces are on their way.' : `${label} from ${region.name} ${type === 'food' ? 'is' : 'are'} coming soon.`}
+          </p>
+        </section>
+      );
+    return (
+      <>
+        {categories.length > 1 ? (
+          <nav aria-label={`${label} by category`} className="pt-[clamp(8px,1vw,16px)]">
+            <RowScroller label={`${label} by category`} pills>
+              {categories.map((c) => (
+                <li key={c.slug} className="shrink-0">
+                  <a href={`#c-${c.slug}`} className={chip}>
+                    {c.name} <span className="text-ink-muted">{c.count.toLocaleString('en-US')}</span>
+                  </a>
+                </li>
+              ))}
+            </RowScroller>
+          </nav>
+        ) : null}
+        <ProductRow
+          id={id('new-arrivals')}
+          title="New arrivals"
+          sub={`Newest ${type === 'home' ? 'home & gifts' : label.toLowerCase()} from ${region.name}.`}
+          products={newest}
+          href={browse(type)}
+        />
+        <ProductRow
+          id={id('most-wanted')}
+          title="Most wanted"
+          sub={`Most ordered from ${region.name} in the last 30 days.`}
+          products={mostWanted.filter(own)}
+        />
+        <CuratedCard id={id('curated')} products={curated.filter(own)} regionName={region.name} />
+        <ProductRow
+          id={id('leaving-soon')}
+          title="Leaving soon"
+          sub="Only a few pieces left of these."
+          products={leavingSoon.filter(own)}
+          badge={(p) => `${p.available} left`}
+        />
+        {categories.map((c) => (
+          <ProductRow
+            key={c.slug}
+            id={`c-${c.slug}`}
+            title={c.name}
+            sub={pieces(c.count)}
+            products={c.items.slice(0, ROW)}
+            href={browse(type, c.slug)}
+          />
+        ))}
+      </>
+    );
+  };
 
   return (
     <div
@@ -114,94 +175,12 @@ export default async function RegionPage({ params }: { params: Params }): Promis
         </p>
       ) : (
         <>
-          <nav aria-label="Sections" className="bg-canvas sticky top-[var(--top-h)] z-10 -mx-[var(--gut)] px-[var(--gut)] py-3">
-            <RowScroller label="Sections" pills>
-              <li className="shrink-0">
-                <a href="#new-arrivals" className={pill}>
-                  New arrivals
-                </a>
-              </li>
-              {categories.map((c) => (
-                <li key={c.slug} className="shrink-0">
-                  <a href={`#c-${c.slug}`} className={pill}>
-                    {c.name} <span className="text-ink-muted">{c.count}</span>
-                  </a>
-                </li>
-              ))}
-              <li className="shrink-0">
-                <a href="#food" className={pill}>
-                  Food <span className="text-ink-muted">{foodCount}</span>
-                </a>
-              </li>
-              {homeCount > 0 ? (
-                <li className="shrink-0">
-                  <a href="#home-and-gifts" className={pill}>
-                    {PRODUCT_TYPE_LABEL.home} <span className="text-ink-muted">{homeCount}</span>
-                  </a>
-                </li>
-              ) : null}
-            </RowScroller>
-            <SectionSpy />
-          </nav>
-          {newest.length > 0 ? (
-            <ProductRow
-              id="new-arrivals"
-              title="New arrivals"
-              sub={`Newest pieces from ${region.name}.`}
-              products={newest}
-              href={browse('clothing')}
-            />
-          ) : (
-            <section id="new-arrivals" className="py-[clamp(24px,3vw,48px)]">
-              <p className="bg-surface font-body rounded-lg p-[clamp(18px,2vw,32px)] text-[clamp(20px,1.8vw,28px)]">
-                New pieces are on their way.
-              </p>
-            </section>
-          )}
-          <ProductRow
-            id="most-wanted"
-            title="Most wanted"
-            sub={`Most ordered from ${region.name} in the last 30 days.`}
-            products={mostWanted}
-          />
           <RegionAlbum photos={album} regionName={region.name} />
-          <CuratedCard id="curated" products={curated} regionName={region.name} />
-          <ProductRow
-            id="leaving-soon"
-            title="Leaving soon"
-            sub="Only a few pieces left of these."
-            products={leavingSoon}
-            badge={(p) => `${p.available} left`}
+          <RegionTypeTabs
+            tabs={tabs}
+            first={(tabs.find((t) => t.count > 0) ?? tabs[0])?.slug ?? 'clothing'}
+            panels={Object.fromEntries(PRODUCT_TYPES.map((t) => [slugOf(t), panel(t)]))}
           />
-          {categories.map((c) => (
-            <ProductRow
-              key={c.slug}
-              id={`c-${c.slug}`}
-              title={c.name}
-              products={c.items.slice(0, ROW)}
-              href={browse('clothing', c.slug)}
-            />
-          ))}
-          {food.length > 0 ? (
-            <ProductRow id="food" title="Food" products={food.slice(0, ROW)} href={browse('food')} />
-          ) : (
-            <section id="food" aria-labelledby="food-h" className="scroll-mt-20 py-[clamp(24px,3vw,48px)]">
-              <h2 id="food-h" className={heading}>
-                Food
-              </h2>
-              <p className="bg-surface font-body mt-[clamp(16px,1.8vw,24px)] rounded-lg p-[clamp(18px,2vw,32px)] text-[clamp(20px,1.8vw,28px)]">
-                Food from {region.name} is coming soon.
-              </p>
-            </section>
-          )}
-          {home.length > 0 ? (
-            <ProductRow
-              id="home-and-gifts"
-              title={PRODUCT_TYPE_LABEL.home}
-              products={home.slice(0, ROW)}
-              href={browse('home')}
-            />
-          ) : null}
         </>
       )}
     </div>
