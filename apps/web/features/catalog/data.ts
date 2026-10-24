@@ -68,23 +68,32 @@ export const getProductPageCached = (regionSlug: string, productSlug: string) =>
  * See all pages and their filters (/api/browse, D-136): light cards without stock, so a sale never has to refresh
  * them (only STORE_TAG). One entry per filter set and page.
  */
+const browseKey = (filter: BrowseFilter): string[] => [
+  filter.productType,
+  filter.regionSlug ?? '',
+  filter.categorySlug ?? '',
+  String(filter.minCents ?? ''),
+  String(filter.maxCents ?? ''),
+  (filter.sizes ?? []).join('|'),
+  filter.sort ?? 'new',
+  filter.forWho ?? '',
+  filter.quick ? 'quick' : '',
+  String(filter.offset ?? 0),
+  String(filter.limit ?? 24),
+];
+
 export const browseCached = (filter: BrowseFilter) =>
+  cached(['store-browse', ...browseKey(filter)], [listingsTag], () => browseProducts(storeClient(), filter));
+
+/**
+ * D-157: a state page's own inventory (each type's first cards): refreshed with its state, like the state page was
+ * before, so a sale shows "Sold out" on the state's page at once (revalidate.ts). Its own entries: See all's stay as
+ * they are. One more data-cache entry per type when a state's piece sells; no extra page.
+ */
+export const browseStateCached = (filter: BrowseFilter & { regionSlug: string }) =>
   cached(
-    [
-      'store-browse',
-      filter.productType,
-      filter.regionSlug ?? '',
-      filter.categorySlug ?? '',
-      String(filter.minCents ?? ''),
-      String(filter.maxCents ?? ''),
-      (filter.sizes ?? []).join('|'),
-      filter.sort ?? 'new',
-      filter.forWho ?? '',
-      filter.quick ? 'quick' : '',
-      String(filter.offset ?? 0),
-      String(filter.limit ?? 24),
-    ],
-    [listingsTag],
+    ['store-browse-state', ...browseKey(filter)],
+    [listingsTag, regionsTag, regionTag(filter.regionSlug)],
     () => browseProducts(storeClient(), filter),
   );
 

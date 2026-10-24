@@ -6,7 +6,7 @@ import { PRODUCT_TYPE_LABEL, PRODUCT_TYPE_PATH, PRODUCT_TYPES, type ProductType 
 import { inStatePage, PAGE, parseBrowseQuery, toBrowseFilter } from '@/features/catalog/browse-query';
 import { BrowseView } from '@/features/catalog/browse-view';
 import { CuratedCard } from '@/features/catalog/curated-card';
-import { browseCached, getHomeCached, getRegionPageCached, getStorePolicyCached } from '@/features/catalog/data';
+import { browseStateCached, getHomeCached, getRegionPageCached, getStorePolicyCached } from '@/features/catalog/data';
 import { ProductRow } from '@/features/catalog/product-row';
 import { StorePhoto } from '@/features/catalog/store-photo';
 import { RegionAlbum } from '@/features/regions/region-album';
@@ -33,12 +33,12 @@ export default async function RegionPage({ params }: { params: Params }): Promis
   const page = await getRegionPageCached((await params).region);
   if (!page) notFound();
   const { region, album, most_wanted: mostWanted, curated } = page;
-  // D-157: each type's inventory as See all draws it, the state fixed: its first 24 cards and filter counts, from the
-  // same cached store_browse() entries as /clothing?state=… (one read per type, shared with See all)
+  // D-157: each type's inventory as See all draws it, the state fixed: its first 24 cards and filter counts, one cached
+  // store_browse() read per type, refreshed with the state (a sale shows Sold out here at once)
   const query = inStatePage(parseBrowseQuery({}), region.slug);
   const [policy, ...pages] = await Promise.all([
     getStorePolicyCached(),
-    ...PRODUCT_TYPES.map((t) => browseCached(toBrowseFilter(t, query, 0, PAGE))),
+    ...PRODUCT_TYPES.map((t) => browseStateCached({ ...toBrowseFilter(t, query, 0, PAGE), regionSlug: region.slug })),
   ]);
   const slugOf = (type: ProductType): string => PRODUCT_TYPE_PATH[type].slice(1);
   const tabs = PRODUCT_TYPES.map((t, i) => ({ slug: slugOf(t), label: PRODUCT_TYPE_LABEL[t], count: pages[i]?.total ?? 0 }));
