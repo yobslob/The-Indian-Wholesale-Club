@@ -1,5 +1,3 @@
-import { z } from 'zod';
-
 import { PRODUCT_TYPE_PATH, type ProductType } from '@repo/shared/domain';
 
 import { QUICK_HOME } from '@/lib/site';
@@ -61,11 +59,23 @@ export function sortsFor(productType: ProductType): { value: BrowseSort; label: 
 
 type Raw = URLSearchParams | Record<string, string | string[] | undefined>;
 
-const slug = z.string().regex(/^[a-z0-9-]{1,80}$/).optional().catch(undefined);
-const dollars = z.coerce.number().int().min(0).max(100_000).optional().catch(undefined);
-const size = z.string().trim().min(1).max(40);
-const sort = z.enum(['low', 'new', 'price-asc', 'price-desc']).catch('low');
-const show = z.coerce.number().int().min(PAGE + 1).max(MOST).optional().catch(undefined);
+// Checked by hand, not with zod: this file runs in the browser on every See all and state page, and zod alone was
+// about 13 KB of their first-load JS (D-011's 150 KB budget). Same rules as the zod schemas it replaced.
+const SLUG = /^[a-z0-9-]{1,80}$/;
+const slug = { parse: (v: unknown): string | undefined => (typeof v === 'string' && SLUG.test(v) ? v : undefined) };
+/** A whole number in [min, max] from the address ("" reads as 0, as zod's coerce did); anything else is dropped. */
+const whole = (min: number, max: number) => ({
+  parse: (v: unknown): number | undefined => {
+    if (v === undefined) return undefined;
+    const n = Number(v);
+    return Number.isInteger(n) && n >= min && n <= max ? n : undefined;
+  },
+});
+const dollars = whole(0, 100_000);
+const size = { safeParse: (v: string) => ({ success: v.trim().length >= 1 && v.trim().length <= 40 }) };
+const SORTS: BrowseSort[] = ['low', 'new', 'price-asc', 'price-desc'];
+const sort = { parse: (v: string): BrowseSort => SORTS.find((x) => x === v) ?? 'low' };
+const show = whole(PAGE + 1, MOST);
 
 const all = (raw: Raw, key: string): string[] => {
   if (raw instanceof URLSearchParams) return raw.getAll(key);

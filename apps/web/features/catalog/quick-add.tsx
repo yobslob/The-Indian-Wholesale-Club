@@ -1,5 +1,6 @@
 'use client';
 
+import dynamic from 'next/dynamic';
 import Link from 'next/link';
 import { useCallback, useRef, useState, useSyncExternalStore } from 'react';
 
@@ -8,10 +9,15 @@ import { MAX_QTY_PER_LINE } from '@/features/cart/limits';
 import { useCart } from '@/features/cart/store';
 import { mediaUrl } from '@/lib/site';
 
-import { bagLine, loadCardOptions } from './card-options';
-import { OptionRibbon, OptionSheet, ribbonWidth } from './option-picker';
+import { bagLine, loadCardOptions, ribbonWidth } from './card-options';
 
 import type { CardOption, ProductCard, QuickAdd as QuickAddData } from '@repo/db/store';
+
+// The ribbon and the sheet come with the first touch of a +, as its options do (warm below), not with every page:
+// they kept the state pages' first-load JS over its 150 KB budget (D-011, check.mjs http).
+const loadPicker = () => import('./option-picker');
+const OptionRibbon = dynamic(() => loadPicker().then((m) => m.OptionRibbon), { ssr: false });
+const OptionSheet = dynamic(() => loadPicker().then((m) => m.OptionSheet), { ssr: false });
 
 /** On the card's photo, bottom right (D-080): a round + so the name keeps the card's full width. */
 const spot = 'font-ui absolute bottom-2.5 right-2.5 z-[2]';
@@ -90,6 +96,7 @@ export function QuickAdd({
   };
   const warm = (): void => {
     if (choices && !loaded) loadCardOptions(product.id).catch(() => undefined);
+    if (choices) void loadPicker();
   };
   const inBag = hydrated ? lines.filter((l) => l.productId === product.id) : [];
   const count = inBag.reduce((n, l) => n + l.quantity, 0);
@@ -118,13 +125,13 @@ export function QuickAdd({
         product={product}
         options={options}
         onClose={close}
-        onPick={(o, from) => {
+        onPick={(o: CardOption, from: HTMLElement) => {
           put(o, (counts.get(o.id) ?? 0) + 1, from);
           setOpen(false);
         }}
       />
     ) : open === 'sheet' ? (
-      <OptionSheet product={product} options={options} counts={counts} onChange={(o, n, from) => put(o, n, from)} onClose={close} />
+      <OptionSheet product={product} options={options} counts={counts} onChange={(o: CardOption, n: number, from: HTMLElement) => put(o, n, from)} onClose={close} />
     ) : null;
 
   const soldOut =

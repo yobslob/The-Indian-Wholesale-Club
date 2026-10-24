@@ -10,13 +10,6 @@ import { mediaUrl } from '@/lib/site';
 import { chipLabel, coloursOf, LOW_STOCK, showsPrices } from './card-options';
 import { StorePhoto } from './store-photo';
 
-/** The most chips the ribbon shows at one step: the colours, then one colour's sizes. */
-export function ribbonWidth(options: CardOption[]): number {
-  const colours = coloursOf(options);
-  if (colours.length === 0) return options.length;
-  return Math.max(colours.length, ...colours.map((c) => options.filter((o) => o.options?.colour === c).length));
-}
-
 import type { CardOption, ProductCard } from '@repo/db/store';
 
 type Product = Pick<ProductCard, 'id' | 'name' | 'product_type' | 'primary_image_path'>;

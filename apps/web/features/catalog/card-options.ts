@@ -70,3 +70,10 @@ export function loadCardOptions(productId: string): Promise<CardOption[]> {
   }
   return pending;
 }
+
+/** The most chips the ribbon shows at one step: the colours, then one colour's sizes. */
+export function ribbonWidth(options: CardOption[]): number {
+  const colours = coloursOf(options);
+  if (colours.length === 0) return options.length;
+  return Math.max(colours.length, ...colours.map((c) => options.filter((o) => o.options?.colour === c).length));
+}

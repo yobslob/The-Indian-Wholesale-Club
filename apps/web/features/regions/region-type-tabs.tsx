@@ -2,7 +2,7 @@
 
 import { useEffect, useRef, useState } from 'react';
 
-import { typeSwitch, typeSwitchItem } from '@/features/catalog/type-toggle';
+import { typeSwitch, typeSwitchItem } from '@/features/catalog/type-switch-style';
 
 export interface RegionTab {
   /** The address's ?type= (none for Clothing): clothing, food, home-and-gifts. */

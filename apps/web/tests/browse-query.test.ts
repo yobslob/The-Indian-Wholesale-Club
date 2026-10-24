@@ -3,6 +3,7 @@ import { describe, it } from 'node:test';
 
 import {
   browseHref,
+  inStatePage,
   parseBrowseQuery,
   priceRanges,
   sizeGroups,
@@ -97,5 +98,30 @@ describe("See all's For and size groups (D-140)", () => {
         ['Other sizes', ['Custom']],
       ],
     );
+  });
+});
+
+describe('the checks that replaced zod in the browser (D-157)', () => {
+  it('keeps the same rules: whole numbers in range, a size of 1 – 40 letters, a known sort', () => {
+    const q = parseBrowseQuery({ min: '1.5', max: '100001', size: ['  ', 'x'.repeat(41), ' L '], sort: 'new', show: '480' });
+    assert.equal(q.min, undefined);
+    assert.equal(q.max, undefined);
+    assert.deepEqual(q.sizes, ['L']);
+    assert.equal(q.sort, 'new');
+    assert.equal(q.show, 480);
+    assert.equal(parseBrowseQuery({ show: '481' }).show, undefined);
+    assert.equal(parseBrowseQuery({ min: '' }).min, 0);
+    assert.equal(parseBrowseQuery({ state: 'Kerala' }).state, undefined);
+  });
+});
+
+describe("a state's own inventory (D-157)", () => {
+  it("writes the state's address: its type (none for Clothing), then the filters without the state", () => {
+    const q = inStatePage(parseBrowseQuery({}), 'punjab');
+    assert.equal(browseHref('clothing', q), '/states/punjab');
+    assert.equal(browseHref('food', { ...q, category: 'sweets' }), '/states/punjab?type=food&category=sweets');
+    assert.equal(browseHref('home', withFilter(q, { sort: 'price-desc' })), '/states/punjab?type=home-and-gifts&sort=price-desc');
+    // the database still reads the state
+    assert.equal(toBrowseFilter('food', q, 0, 24).regionSlug, 'punjab');
   });
 });
