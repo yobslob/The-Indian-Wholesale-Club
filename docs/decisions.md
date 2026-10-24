@@ -525,6 +525,11 @@ What it means for the build:
   state's page at once as before; the other filters are read in the browser from `/api/browse`.
 - The category pills, New arrivals, Leaving soon and the rows per category are gone from the state page (See all's
   Newest sort and "In 7 days" cover them).
+- The page reads only its head (`store_region_head()`, migration `20261029090000`) and its first type's first page; the
+  other types are read when opened, from See all's cached `/api/browse` answer. The website build of 2026-10-24 ran
+  past the database's 8 s statement limit ("canceling statement due to statement timeout") with every state page
+  reading `store_region_page()`'s card lists (Punjab: about 380 KB, 3.6 s cold on a production copy) and three
+  inventories; the head takes about 40 ms. The build prerenders one page at a time per worker.
 *Interpretation (proposed, confirm when convenient):* Most wanted and Picked for you stay above the switch (the state's
 own picks); Leaving soon is dropped.
 

@@ -13,7 +13,8 @@ Short on purpose: **replace** lines when something changes, don't append. Histor
   image optimisation and page-cache writes and Supabase's storage; they are no longer used. Each limit now has a budget
   and a weekly check: `monitoring.md`.
 - **Database:** every migration up to `20261022120000_seven_day_delivery` (D-148) is applied (the founder ran the
-  Deploy workflow on 2026-10-22, per their message).
+  Deploy workflow on 2026-10-22, per their message; the live site shows the 7-day store, so later ones may be in
+  too); waiting for the Deploy workflow: `20261029090000_region_head` (D-157).
 - **Sourcing runner (India PC):** its `.env` pointed at the old Supabase project until 2026-10-22 (the move's step 7,
   `ops.md`); fixed by the founder. The Blinkit 7-day CSV is in (102 targets added, 11 already there). **Blinkit blocks
   the runner** from 2026-10-22: the cause was headless Chrome (`IWC_SOURCING_HEADLESS=1` in its `.env`); the runner now
@@ -71,7 +72,12 @@ Short on purpose: **replace** lines when something changes, don't append. Histor
   fixed AVIF copies from `/media/s/` (no resizer); narrow page refreshes (D-145).
 
 ## Next for the founder
-1. **The Blinkit 7-day batch (D-148 – D-151).** Upload `tools/sourcing-runner/out/7-day-four-shops.csv` again
+1. **Run the Deploy workflow** (Actions → Deploy): it applies the waiting migrations, `20261029090000_region_head`
+   (D-157) among them, then deploys the website. The website build of 2026-10-24 stopped at the database's statement
+   limit prerendering `/7-day-delivery/home-and-gifts/all`; the state pages now read a light head and one inventory
+   each. Until the migration is applied the website falls back to the old heavy read, so run Deploy rather than waiting
+   for the daily website deploy.
+2. **The Blinkit 7-day batch (D-148 – D-151).** Upload `tools/sourcing-runner/out/7-day-four-shops.csv` again
    (Admin → Import → Auto-sourcing → Add targets from a CSV): the first upload ran before the new admin was live; the
    message should say "(102 of them now search more shops)". Then on this PC `pnpm sourcing run --targets --type food`
    (and `--type home`) once: since D-158 one run takes every queued target, claim after claim, with no hourly limit
@@ -89,27 +95,27 @@ Short on purpose: **replace** lines when something changes, don't append. Histor
    refresh per bulk publish: publish in three weekly batches of about 1,000 and read Usage → ISR each Monday;
    **Supabase egress** small (photos go straight to R2). A whole-Blinkit copy (well over 10,000 items) would not fit
    in R2's 10 GB.
-2. **Clear the admin's backlog (D-146), in this order:** Products → **Weights to check → Assign all and publish** (about
+3. **Clear the admin's backlog (D-146), in this order:** Products → **Weights to check → Assign all and publish** (about
    2,600 listings, a minute or two; it reports what it did) · **Drafts → Archive the drafts that can't go live** (80 on
    the production copy, no photo) · **Names to tidy → Rename all** (about 770). Drafts are then empty for new batches.
    Estimated weights are marked "Estimated": weigh pieces at the hub as they are picked and they are replaced.
-3. **Monitoring:** set up the weekly check once (`monitoring.md` §Set-up: usage alerts in Vercel and Supabase,
+4. **Monitoring:** set up the weekly check once (`monitoring.md` §Set-up: usage alerts in Vercel and Supabase,
    `CHECK_LIVE_SITE`, a free uptime ping), then the Monday 15 minutes it lists.
-4. **Products → For: not set yet** (235 clothing listings on the production copy): Women / Men / Kids / Everyone.
-5. **Settings → Bag charges → "Shipping shown when free"** ($ a kg; empty keeps $18.79 struck).
-6. **Answer:** Q-36 (courier bills by size?), Q-37 (lights, gobar, powders), Q-38 (live Kids listings), Q-39 (interim
+5. **Products → For: not set yet** (235 clothing listings on the production copy): Women / Men / Kids / Everyone.
+6. **Settings → Bag charges → "Shipping shown when free"** ($ a kg; empty keeps $18.79 struck).
+7. **Answer:** Q-36 (courier bills by size?), Q-37 (lights, gobar, powders), Q-38 (live Kids listings), Q-39 (interim
    size line), Q-40 (footwear in the drawer), Q-42 (the Blinkit CSV's band and
    leave-outs); approve D-148's drafted words (the 7-day page, the tag, the bag and product-page lines); whether ghee and honey sold by the litre count as liquids (D-135 says
    yes); confirm with the courier that ₹2,000 a kg includes the box and clearance.
-7. **Real bills for Settings** (D-069): one courier invoice and one duty bill, then the per-parcel cost, duty by type,
+8. **Real bills for Settings** (D-069): one courier invoice and one duty bill, then the per-parcel cost, duty by type,
    parcel kg and the small-food limits; watch the profit check.
-8. **Bulk sourcing** (D-137 – D-139): one product type per machine (`pnpm sourcing run --type food|home|clothing`);
+9. **Bulk sourcing** (D-137 – D-139): one product type per machine (`pnpm sourcing run --type food|home|clothing`);
    pull the code on the hub PC first; the target CSVs in `tools/sourcing-runner/targets/` go in through Admin → Import
    → Auto-sourcing → Add targets from a CSV.
-9. **Decide when convenient:** the name "Food" and 5 pieces per size by default (D-110); D-118's proposals (3 listings
+10. **Decide when convenient:** the name "Food" and 5 pieces per size by default (D-110); D-118's proposals (3 listings
    per target, the 60% rise / 50% fall guard, drafts until published, 40 targets a day); D-120's (₹200, 250 g, half the
    shipping share); D-105's vendor-screen drafts; the four men house models (D-104); Q-35 (US stores).
-10. **Before the launch proper:** Q-3 (US carrier), Q-9 (domain and support email), Q-32 (holding a piece while paying).
+11. **Before the launch proper:** Q-3 (US carrier), Q-9 (domain and support email), Q-32 (holding a piece while paying).
 
 ## Not built yet (known, in order of use)
 - App: the product page's 7-day date (`store_product_page().quick_delivery`, D-148; the 7-day screen, tag, Home line
@@ -134,6 +140,7 @@ Short on purpose: **replace** lines when something changes, don't append. Histor
 ## Last verification
 | Date | Commit | Where | Result |
 |---|---|---|---|
+| 2026-10-24 | The website build's statement timeout (prerendering `/7-day-delivery/home-and-gifts/all`) | Claude, cloud sandbox: Postgres 16 with every migration and a copy of production's catalogue (8,032 listings), no `next build` | Cause: the build prerenders the 36 state pages, each reading `store_region_page()` (Punjab: 380 KB, 3.6 s cold, 0.45 s warm on the copy) and, since D-157, three `store_browse()` inventories (up to 1.2 s cold each), with the 7-day pages: the database ran past its 8 s limit. Fix: `store_region_head()` (migration `20261029090000`, 40 ms for Punjab; its region, album, Most wanted and Picked for you equal `store_region_page()`'s on Kerala), only the first type read at build, the others when opened (`/api/browse`), one prerender at a time per worker. 64/64 SQL test files on a fresh database (new `region_head.test.sql` 9, `schema.test.sql` with the new function); tsc clean (web but the sandbox's 3 known, db); in Chromium from the real components with the copy's data: Clothing from the page, Food and Home & gifts read when opened (the page's shape meanwhile; a failed read says "Try again" and asks once; Try again reads it), filters, Back and a refreshed `?type=home-and-gifts&sort=price-desc` as before. **Not run:** `next build`, http, e2e, the migration on production (the Deploy workflow). |
 | 2026-10-24 | Fixes for the founder's check run on 7e9310b (http, e2e) | Claude, cloud sandbox (no Docker, no `next build`) | The founder's run: `/states/kerala` 152 KB of first-load JS (the state page now carries See all's filters), `sold-out.spec.ts` failed (the state page's cards came from See all's cache entry, which a sale does not refresh). Fixed: the address checks in `browse-query.ts` by hand instead of zod (about 13 KB of zod off every See all and state page), the card's option ribbon and sheet loaded on the first touch of a + (about 3 KB); the state page's inventory read through `browseStateCached` (its own entries, refreshed with the state like the old state page). web tests (browse-query with the new checks, card-options, slim-cards, site, paging) 26/26; tsc clean but the sandbox's 3 known; in Chromium from the real components: a + on a several-option card opens the ribbon (colours, then sizes) at 375 and 1280 px and adds "White · S/M"; a one-option + adds at once. **Not run:** `next build`, http, e2e. Run `node scripts/check.mjs` before pushing. |
 | 2026-10-24 | Fixes for the founder's check run (lint, http, e2e), D-157 (a state's inventory with See all's filters), D-158 (the runner without rests or pace) | Claude, cloud sandbox (no Docker, no `next build`) | The founder's `check.mjs` on f55a491: lint 1 warning (an import's order), http `/clothing` 152 KB of first-load JS (over 150), e2e 1 failed (`seven-day-bag.spec.ts` expected the 7-day gap line D-156 moved into the goal); all fixed: the import, the bag panel now fetched on the first hover, focus or touch of the bag icon (about 6 KB of the panel's code off every page's first load) and the India outline drawn on the server, the test reads the new goal ("Add $39.99 more for free 7-day delivery", "Free 7-day delivery: arrives by …", never "for free delivery"). tsc clean (web but the sandbox's 3 known; shared; the runner); shared tests 327 / 333 (shop-rest's rest and pace tests removed with them; the 6 failures are the sandbox's `__filename`); docs audit OK; ESLint only without its resolver (no rule but import/order's resolver noise). In Chromium from the real components, with Punjab's data and `/api/browse` answered by `store_browse()` on a production catalogue copy: the filters on Clothing (no State group), a category → `/states/punjab?category=kurtas` with its chip and 24 cards, Food → `?type=food`, a Food category, Back to Food then to Clothing, a refresh of `?type=home-and-gifts&sort=price-desc` opening Home & gifts sorted high to low, Show more and Back to 48 cards; phones: the switch and the Filter bar; the bag panel opening on a tap with and without a hover first. **Not run:** ESLint with its resolver, `next build`, http, e2e (rows.spec rewritten for the state's filters), a live runner. Run `node scripts/check.mjs` before pushing. |
 | 2026-10-24 | D-156: one free-delivery bar, instant categories, a state's types in a switch, the store tabs | Claude, cloud sandbox (no Docker, no `next build`: Next's compiler cannot be installed there) and the live site in the browser pane | **Before, on the live site:** a 7-day category click 1.7 s with nothing on screen (its page built on that click; 2.4 s for `/food?category=sweets`), 35 – 270 ms once built; four `/api/bag-charges` requests per page for one bag; the switch over the state page's pills. **After:** web tsc clean but for the sandbox's 3 known implicit-any errors; shared tests 332 / 338 (new `bag-goal.test.ts` 6: the founder's five cases; the 6 failures are the sandbox's `__filename`, as before); docs audit OK. The pages drawn from the real components in Chromium (React rendered without Next, Tailwind built from globals.css, Punjab's data from a production catalogue copy) at 375 px and 1280 px: the store tabs in both stores and on Home's photo, the 7-day header tint and stitch, the tab moving on tap; the state page's switch (three cells on phones), Food's rows, the hash, the jump back to the rows' top, ← →, a chip landing below the pinned switch; the pill and the bag summary at $37.59 and $52 of 7-day pieces, $60 mixed and $125.55: one bar each, "FREE 7-DAY DELIVERY · by Sat, Oct 31" at $52. **Not run:** ESLint, `next build`, http (first-load JS was 150.2 KB of 150 before: check it), e2e (the store-tabs test was rewritten for the new links), the app (no React Native here), the deployed site. Run `node scripts/check.mjs` on the Windows machine before pushing. |

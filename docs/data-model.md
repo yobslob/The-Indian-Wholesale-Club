@@ -275,6 +275,10 @@ rounded up), used by `_product_auto_price` and `_reprice_products`, which also w
 `store_variants.heavy_cents` (0 when the piece is priced by hand); `pricing_settings.heavy_line_off_pct` (20);
 `store_bag_charges` adds `heavy_cents` (the bag's), `heavy_line_off_pct` and `heavy_ids`; `orders.heavy_shipping_cents`
 (its part of `shipping_cents`, written beside it like `retailer_charge_cents`). Tests: `heavy_items.test.sql`.
+Migration `20261029090000_region_head` (D-157): `store_region_head(slug)`, a state page's head without card lists
+(`region`, `album`, `most_wanted`, `curated` as `store_region_page()` gives them, and `type_counts`: each type's own and
+all-India pieces); the state page reads it and one `store_browse()` (the website falls back to `store_region_page()`
+while the function is missing). `store_region_page()` is unchanged. Tests: `region_head.test.sql`.
 Migration 80 (D-141, the photo store): a photo in Cloudflare R2 is recorded with an `s/` path
 (`products/<id>/s/<name>.jpg`, packages/shared media.ts). `worker_sourcing_media` accepts `products/<id>/s/<name>` as
 well as `products/<id>/<name>`; album photos may be `regions/<slug>/album/s/<name>`.
