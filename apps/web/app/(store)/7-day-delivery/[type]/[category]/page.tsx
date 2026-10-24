@@ -19,8 +19,20 @@ type Params = Promise<{ type: string; category: string }>;
  * page is built once per type and category and served from the cache (PR-1); every other filter is read in the
  * browser, as on See all.
  */
-export function generateStaticParams(): { type: string; category: string }[] {
-  return QUICK_TYPES.map((t) => ({ type: PRODUCT_TYPE_PATH[t].slice(1), category: 'all' }));
+export async function generateStaticParams(): Promise<{ type: string; category: string }[]> {
+  const all = QUICK_TYPES.map((t) => ({ type: PRODUCT_TYPE_PATH[t].slice(1), category: 'all' }));
+  // Every 7-day category too (about a dozen pages a deploy): built on the first click instead, a category took 1.7 –
+  // 2.4 s to open after each deploy (measured 2026-10-24); built ahead, its click is a cached answer.
+  try {
+    const { categories } = await quickPageCached(null, 0, PAGE);
+    const byType = categories.flatMap((c) => {
+      const t = QUICK_TYPES.find((q) => q === c.product_type);
+      return t ? [{ type: PRODUCT_TYPE_PATH[t].slice(1), category: c.slug }] : [];
+    });
+    return [...all, ...byType];
+  } catch {
+    return all;
+  }
 }
 
 async function read(params: Params): Promise<{ productType: ProductType; category: string | undefined }> {
