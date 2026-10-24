@@ -279,6 +279,10 @@ Migration `20261029090000_region_head` (D-157): `store_region_head(slug)`, a sta
 (`region`, `album`, `most_wanted`, `curated` as `store_region_page()` gives them, and `type_counts`: each type's own and
 all-India pieces); the state page reads it and one `store_browse()` (the website falls back to `store_region_page()`
 while the function is missing). `store_region_page()` is unchanged. Tests: `region_head.test.sql`.
+Migration `20261029100000_quick_speed`: `store_quick_browse()` and `store_quick_front()` read the 7-day listings once
+into their own list before they meet `store_products` (joined straight to the view, the planner multiplied options by
+categories: 1.3 – 1.7 s with 5,100 7-day pieces on a production copy, now about 0.2 s), and the front page builds the
+cards of its three rows only. Same answers (checked against the old functions on the copy).
 Migration 80 (D-141, the photo store): a photo in Cloudflare R2 is recorded with an `s/` path
 (`products/<id>/s/<name>.jpg`, packages/shared media.ts). `worker_sourcing_media` accepts `products/<id>/s/<name>` as
 well as `products/<id>/<name>`; album photos may be `regions/<slug>/album/s/<name>`.
