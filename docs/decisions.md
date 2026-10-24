@@ -254,7 +254,7 @@ slower and dearer); "click here" is written "Click here." like "Start here."; th
 product-page lines are Claude's draft (D-059) until approved; the CSV has no ₹ band and leaves out butter, lighters and
 matches (Q-42).
 
-**D-149 · 2026-10-23 · founder: the sourcing runner rests a shop that blocks it**
+**D-149 · 2026-10-23 · founder: the sourcing runner rests a shop that blocks it** · its rests SUPERSEDED by D-158 (knowing a robot check stays)
 - Founder, verbatim (after every Blinkit search of the 7-day batch failed): "the env was the problem, i fixed it now I
   ran it so it showed run: 0 checks due, 76 targets, 6 shops then on every item blinkit showed robot checked and
   failed, then I stopped it, ran the setup again, signed in in every one and did address then ran again it now showed
@@ -334,7 +334,7 @@ What it means for the build (`packages/shared/src/sourcing/auto/readers/quick.ts
 - Unchanged: the pace, the window (D-151), the robot-check rests (D-149); no disguise. Drafts from both still need
   ingredients and allergens (the capture does not read them on these pages), as BigBasket's do.
 
-**D-153 · 2026-10-23 · founder: the runner keeps each quick-commerce shop to the pace it took without trouble**
+**D-153 · 2026-10-23 · founder: the runner keeps each quick-commerce shop to the pace it took without trouble** · SUPERSEDED by D-158
 - Founder, verbatim: "I did everything again this time it is working well, but the food run showed 0 checks due, 4
   targets, 6 shops and added only some of the items while the home is still running and it showed 0 checks due, 100
   targets, 6 shops, I also want all those food items too not just a little"
@@ -475,7 +475,7 @@ What it means for the build (D-128's rules unchanged):
 - A heavy piece refunded as unavailable refunds its price and tax (D-042's item rule); its Heavy-item shipping stays
   with the order's shipping, as Shipping does, unless the admin refunds it by hand (Q-44).
 
-**D-156 · 2026-10-24 · founder: ergonomics: one free-delivery bar, instant categories, a state's types in a switch, the store tabs**
+**D-156 · 2026-10-24 · founder: ergonomics: one free-delivery bar, instant categories, a state's types in a switch, the store tabs** · the state page's rows SUPERSEDED by D-157
 Founder, verbatim: "The website currently has a lot of bad ergonomics choices made while designing such as: 1. two
 bars while showing that the customer is approaching free delivery, They should only focus on one. When $50 delivery is
 unlocked I am seeing add more for free delivery at bottom while at checkout it is already free. 2. In 7 day store when I
@@ -510,3 +510,32 @@ What it means for the build (prices, lines and charges unchanged):
 the 7-day line (one bar, and the bigger saving); the IWC tab's line "All 36 states"; the 7-day header tint (12% of the
 brand colour on ivory); a state opens on Clothing, or the first type it has. The app's Bag and pill use the same goal; its
 store switch is unchanged.
+
+**D-157 · 2026-10-24 · founder: a state's inventory has See all's filters, not pills**
+Founder, verbatim: "need filters instead of pills on a state's inventory."
+What it means for the build:
+- Under the hero, the album, Most wanted and Picked for you, the state's Clothing · Food · Home & gifts switch (D-156)
+  opens each type as See all draws it (`browse-view.tsx`): the filter panel from 1024 px and the Filter bar below it
+  (For, Category, Price, Size or Pack, and Delivery while there are 7-day pieces), the chips, Sort by, the grid and Show
+  more. The state is the page's: no State filter or chip, Clear all keeps it, the heading is the type or category.
+- The address stays the state's and carries the filters: `/states/punjab?type=food&category=sweets` (Clothing has no
+  `type`); Back steps through them, a refresh or a shared link opens the same view (`BrowseQuery.inState`,
+  `use-browse.ts`). The page stays one cached build: each type's first 24 cards and counts come from the same cached
+  `store_browse()` entries as `/food?state=punjab`; the other filters are read in the browser from `/api/browse`.
+- The category pills, New arrivals, Leaving soon and the rows per category are gone from the state page (See all's
+  Newest sort and "In 7 days" cover them).
+*Interpretation (proposed, confirm when convenient):* Most wanted and Picked for you stay above the switch (the state's
+own picks); Leaving soon is dropped.
+
+**D-158 · 2026-10-24 · founder: the sourcing runner has no rests and no hourly limits; one run takes every target**
+Founder, verbatim: "remove these limits that you've put on the sourcing runners, I will just add the csv and run it
+one time, remove the resters for these bot checks". Supersedes D-153 and D-149's rests.
+What it means for the build (`tools/sourcing-runner`):
+- No shop rests after robot checks or a "too many requests" (`shop-rest.json` is gone) and no shop is paced (D-153's
+  60 – 90 pages an hour, `out/pace/`, are gone); a refused page only fails and the run goes on. The robot check is still
+  recognised, so a refusal never marks a target "nothing fit" or a listing out of stock: an empty target goes back to
+  the queue, a refused listing keeps its price and stock. The pause between one shop's pages (2.5 s and a little) and
+  the Shopify catalogue's short 429 waits stay: they are how a page loads, not a limit.
+- One run takes every queued target: it claims Settings' Targets per run at a time and claims again until none is
+  left; no five-hour stop. Targets handed back during the run wait until it ends, so the run never takes one twice.
+

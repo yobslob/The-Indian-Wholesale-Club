@@ -17,11 +17,10 @@ Short on purpose: **replace** lines when something changes, don't append. Histor
 - **Sourcing runner (India PC):** its `.env` pointed at the old Supabase project until 2026-10-22 (the move's step 7,
   `ops.md`); fixed by the founder. The Blinkit 7-day CSV is in (102 targets added, 11 already there). **Blinkit blocks
   the runner** from 2026-10-22: the cause was headless Chrome (`IWC_SOURCING_HEADLESS=1` in its `.env`); the runner now
-  always opens a window (D-151) and Blinkit reads again; a shop that still blocks rests (D-149). The 7-day targets
+  always opens a window (D-151) and Blinkit reads again. The 7-day targets
   search all four quick shops (D-150); Zepto and Instamart read again since D-152 (their readers had not matched the
-  shops' data; the food run of 22:13 UTC added 76 listings through them and BigBasket). The runner now keeps each quick shop to
-  60 – 90 pages an hour and believes a shop's Retry-After (D-153): Blinkit asked for about 20½ hours on 2026-10-22, so
-  it rests until about 18:46 UTC on 2026-10-23; BigBasket rests until 00:35 UTC.
+  shops' data; the food run of 22:13 UTC added 76 listings through them and BigBasket). Since D-158 nothing rests or is paced: a refused page only fails, and one run takes
+  every queued target, claim after claim.
 - **Catalogue (production copy of 2026-10-21):** 8,032 listings: 5,761 live (clothing 664, food 4,093, home 1,004),
   2,180 drafts, 91 archived; no placeholders left. 20,896 options, 34,915 photos (all in R2).
 - **Deploys:** the website once a day at 09:00 UTC from a green `main` (D-145); migrations only through the Deploy
@@ -44,10 +43,12 @@ Short on purpose: **replace** lines when something changes, don't append. Histor
   7-day section (orders with a 7-day shipment and split, just past the line, on time per shipment against the date
   promised, late ones with their notice, 7-day pieces refunded as unavailable, the split's extra courier cost). All
   five steps are built; until the Deploy workflow runs, production keeps D-148 and the top-up.
+- **A state's inventory (D-157, not deployed):** Clothing · Food · Home & gifts, each as See all with its filters, on the
+  state's own address (`/states/punjab?type=food&category=sweets`).
 - **Ergonomics pass (D-156, 2026-10-24, not deployed):** one free-delivery goal and bar (a bag of only 7-day pieces from
   $49.99 says FREE 7-DAY DELIVERY, as checkout does), one bag-charges request per bag instead of four, every 7-day
   category built with the deploy and every See all page's shape shown the moment it is tapped, a state's Clothing · Food
-  · Home & gifts as a switch with Home's rows, and the store tabs along the top instead of the floating pill.
+  · Home & gifts as a switch, and the store tabs along the top instead of the floating pill.
 - **7-day delivery (D-148, deployed 2026-10-22):** `/7-day-delivery` lists every piece bought from Blinkit,
   BigBasket, Zepto or Instamart; cards say "In 7 days"; a bag of only such pieces gets the 7-day window (Settings, 7 – 7)
   at checkout and on its order; Home's line reads "Want in 7 days? Click here." No shop is named anywhere.
@@ -73,12 +74,11 @@ Short on purpose: **replace** lines when something changes, don't append. Histor
 1. **The Blinkit 7-day batch (D-148 – D-151).** Upload `tools/sourcing-runner/out/7-day-four-shops.csv` again
    (Admin → Import → Auto-sourcing → Add targets from a CSV): the first upload ran before the new admin was live; the
    message should say "(102 of them now search more shops)". Then on this PC `pnpm sourcing run --targets --type food`
-   (and `--type home`), once a day, e.g. from Task Scheduler; about 65 food targets claimed by the run stopped on
-   2026-10-22 come back to the queue at 02:37 UTC (08:07 in India) by themselves. At the hourly limits the batch fills
-   over several daily runs. The window opens off-screen; leave
-   `IWC_SOURCING_HEADLESS=1` or delete the line, it is ignored. If a shop still blocks, each run asks it twice at most
-   and rests it (2, 6, then 24 hours); its targets stay waiting and nothing is marked nothing fit or sold out
-   (`out/blocks/` shows what it answered). The Deploy workflow's database and website steps succeed; it ends red
+   (and `--type home`) once: since D-158 one run takes every queued target, claim after claim, with no hourly limit
+   and no rests (a refused page only fails; a target left empty by a refusal goes back to the queue at the end, and
+   nothing is marked nothing fit or sold out; `out/blocks/` shows what a shop answered). Delete `shop-rest.json` and
+   `out/pace/` in `tools/sourcing-runner` (no longer read). The window opens off-screen; leave
+   `IWC_SOURCING_HEADLESS=1` or delete the line, it is ignored. The Deploy workflow's database and website steps succeed; it ends red
    only because Expo's free Android builds are used up until 2026-11-01. Ctrl+C now puts the run's
    targets back at once; the 64 claimed by the stopped run of 2026-10-22 come back by themselves six hours after it.
    Against the limits (from production's 8,032 listings, 34,915
@@ -134,6 +134,7 @@ Short on purpose: **replace** lines when something changes, don't append. Histor
 ## Last verification
 | Date | Commit | Where | Result |
 |---|---|---|---|
+| 2026-10-24 | Fixes for the founder's check run (lint, http, e2e), D-157 (a state's inventory with See all's filters), D-158 (the runner without rests or pace) | Claude, cloud sandbox (no Docker, no `next build`) | The founder's `check.mjs` on f55a491: lint 1 warning (an import's order), http `/clothing` 152 KB of first-load JS (over 150), e2e 1 failed (`seven-day-bag.spec.ts` expected the 7-day gap line D-156 moved into the goal); all fixed: the import, the bag panel now fetched on the first hover, focus or touch of the bag icon (about 6 KB of the panel's code off every page's first load) and the India outline drawn on the server, the test reads the new goal ("Add $39.99 more for free 7-day delivery", "Free 7-day delivery: arrives by …", never "for free delivery"). tsc clean (web but the sandbox's 3 known; shared; the runner); shared tests 327 / 333 (shop-rest's rest and pace tests removed with them; the 6 failures are the sandbox's `__filename`); docs audit OK; ESLint only without its resolver (no rule but import/order's resolver noise). In Chromium from the real components, with Punjab's data and `/api/browse` answered by `store_browse()` on a production catalogue copy: the filters on Clothing (no State group), a category → `/states/punjab?category=kurtas` with its chip and 24 cards, Food → `?type=food`, a Food category, Back to Food then to Clothing, a refresh of `?type=home-and-gifts&sort=price-desc` opening Home & gifts sorted high to low, Show more and Back to 48 cards; phones: the switch and the Filter bar; the bag panel opening on a tap with and without a hover first. **Not run:** ESLint with its resolver, `next build`, http, e2e (rows.spec rewritten for the state's filters), a live runner. Run `node scripts/check.mjs` before pushing. |
 | 2026-10-24 | D-156: one free-delivery bar, instant categories, a state's types in a switch, the store tabs | Claude, cloud sandbox (no Docker, no `next build`: Next's compiler cannot be installed there) and the live site in the browser pane | **Before, on the live site:** a 7-day category click 1.7 s with nothing on screen (its page built on that click; 2.4 s for `/food?category=sweets`), 35 – 270 ms once built; four `/api/bag-charges` requests per page for one bag; the switch over the state page's pills. **After:** web tsc clean but for the sandbox's 3 known implicit-any errors; shared tests 332 / 338 (new `bag-goal.test.ts` 6: the founder's five cases; the 6 failures are the sandbox's `__filename`, as before); docs audit OK. The pages drawn from the real components in Chromium (React rendered without Next, Tailwind built from globals.css, Punjab's data from a production catalogue copy) at 375 px and 1280 px: the store tabs in both stores and on Home's photo, the 7-day header tint and stitch, the tab moving on tap; the state page's switch (three cells on phones), Food's rows, the hash, the jump back to the rows' top, ← →, a chip landing below the pinned switch; the pill and the bag summary at $37.59 and $52 of 7-day pieces, $60 mixed and $125.55: one bar each, "FREE 7-DAY DELIVERY · by Sat, Oct 31" at $52. **Not run:** ESLint, `next build`, http (first-load JS was 150.2 KB of 150 before: check it), e2e (the store-tabs test was rewritten for the new links), the app (no React Native here), the deployed site. Run `node scripts/check.mjs` on the Windows machine before pushing. |
 | 2026-10-24 | D-155: bottles' and lunch boxes' weights; heavy cookware on half its weight + Heavy-item shipping | Claude Code, founder's Windows machine with Docker (`check.mjs` db, typecheck, lint; the shared tests) | db OK (every SQL test on a reset database, `heavy_items.test.sql` 8 assertions), typecheck and lint OK, shared tests OK (home weights 14, domain 74). In the browser with a local placeholder 3 kg ₹1,800 cooker: product page $108.70 with "Heavy-item shipping + $65.21, added at checkout"; the bag $65.21, two cookers past $99.99: $130.42 struck, $104.34; the server's checkout quote the same (totals $231.40 and $315.00). Not seen: the admin's toggle (no local admin sign-in), the app. Migrations `20261028090000`, `20261028100000` wait for the Deploy workflow. |
 | 2026-10-24 | The 7-day store looks like the IWC store; smaller phone cards; a floating switch | Claude Code, founder's Windows machine with Docker (`check.mjs` docs, typecheck, lint, test, build, http, bundle) | All OK; /clothing 9 ms 150 KB (unchanged). e2e not run. In the browser with local placeholder 7-day pieces (food and home): a tile and a header category open `/7-day-delivery/food?category=…` with the filter panel; a category in the panel and Clear all keep the address in the 7-day store (no `?delivery=`); no 7-day tag on its cards; Everything · Food · Home & gifts; the front page's Food and Home & gifts rows with See all; /food keeps its Delivery filter. Phones (375 px): row cards 148 px, food See all three to a row; the switch a 224 px pill under the header, floating over the page as it scrolls. The app is unchanged. |
