@@ -69,7 +69,12 @@ Short on purpose: **replace** lines when something changes, don't append. Histor
   stock check, weights, liquids), the weight estimator (laptop GPU), the photo worker (vendor AI photos),
   `pnpm photos:move` (the R2 move, finished).
 - **Speed and limits:** store pages from Vercel's cache (`/clothing` 7 – 18 ms on a local production build); photos as
-  fixed AVIF copies from `/media/s/` (no resizer); narrow page refreshes (D-145).
+  fixed AVIF copies from `/media/s/` (no resizer); narrow page refreshes (D-145). QA pass of 2026-10-24 (not deployed):
+  See all's Size / Pack list kept to its 60 biggest past 100 (/food's HTML was 685 KB, 540 KB of it 1,687 packs; each
+  /api/browse answer 75 KB, 60 KB of packs), `/api/browse` and `/api/goes-well` kept a minute by the CDN, Supabase's
+  browser client (about 70 KB of script) no longer downloaded for signed-out visitors, `/media/jpeg` only at six widths
+  (a cached redirect for any other), CSP `object-src 'none'`, `base-uri`, `frame-ancestors`, no `X-Powered-By`, the
+  email job's secret compared in constant time.
 
 ## Next for the founder
 1. **Run the Deploy workflow** (Actions → Deploy), not the daily website deploy: it applies the waiting migrations
@@ -95,27 +100,32 @@ Short on purpose: **replace** lines when something changes, don't append. Histor
    refresh per bulk publish: publish in three weekly batches of about 1,000 and read Usage → ISR each Monday;
    **Supabase egress** small (photos go straight to R2). A whole-Blinkit copy (well over 10,000 items) would not fit
    in R2's 10 GB.
-3. **Clear the admin's backlog (D-146), in this order:** Products → **Weights to check → Assign all and publish** (about
+3. **Categories to check (D-159, after the next deploy):** Products → Categories to check: look down the list (about
+   224 listings on the live store of 2026-10-24 whose names say another category: chutneys under Masala blends, kahwa,
+   bhakarwadi under Papad & wadi…), untick or change any you disagree with, Move the ticked; then the 27 that are not
+   their type at all (dog chews, hair oil, rakhi packs, dhoop sticks, Mysore pak under Home & gifts): archive or fix.
+   Moving more than 100 at once refreshes the whole store once (page-cache writes, as a bulk publish).
+4. **Clear the admin's backlog (D-146), in this order:** Products → **Weights to check → Assign all and publish** (about
    2,600 listings, a minute or two; it reports what it did) · **Drafts → Archive the drafts that can't go live** (80 on
    the production copy, no photo) · **Names to tidy → Rename all** (about 770). Drafts are then empty for new batches.
    Estimated weights are marked "Estimated": weigh pieces at the hub as they are picked and they are replaced.
-4. **Monitoring:** set up the weekly check once (`monitoring.md` §Set-up: usage alerts in Vercel and Supabase,
+5. **Monitoring:** set up the weekly check once (`monitoring.md` §Set-up: usage alerts in Vercel and Supabase,
    `CHECK_LIVE_SITE`, a free uptime ping), then the Monday 15 minutes it lists.
-5. **Products → For: not set yet** (235 clothing listings on the production copy): Women / Men / Kids / Everyone.
-6. **Settings → Bag charges → "Shipping shown when free"** ($ a kg; empty keeps $18.79 struck).
-7. **Answer:** Q-36 (courier bills by size?), Q-37 (lights, gobar, powders), Q-38 (live Kids listings), Q-39 (interim
+6. **Products → For: not set yet** (235 clothing listings on the production copy): Women / Men / Kids / Everyone.
+7. **Settings → Bag charges → "Shipping shown when free"** ($ a kg; empty keeps $18.79 struck).
+8. **Answer:** Q-36 (courier bills by size?), Q-37 (lights, gobar, powders), Q-38 (live Kids listings), Q-39 (interim
    size line), Q-40 (footwear in the drawer), Q-42 (the Blinkit CSV's band and
    leave-outs); approve D-148's drafted words (the 7-day page, the tag, the bag and product-page lines); whether ghee and honey sold by the litre count as liquids (D-135 says
    yes); confirm with the courier that ₹2,000 a kg includes the box and clearance.
-8. **Real bills for Settings** (D-069): one courier invoice and one duty bill, then the per-parcel cost, duty by type,
+9. **Real bills for Settings** (D-069): one courier invoice and one duty bill, then the per-parcel cost, duty by type,
    parcel kg and the small-food limits; watch the profit check.
-9. **Bulk sourcing** (D-137 – D-139): one product type per machine (`pnpm sourcing run --type food|home|clothing`);
+10. **Bulk sourcing** (D-137 – D-139): one product type per machine (`pnpm sourcing run --type food|home|clothing`);
    pull the code on the hub PC first; the target CSVs in `tools/sourcing-runner/targets/` go in through Admin → Import
    → Auto-sourcing → Add targets from a CSV.
-10. **Decide when convenient:** the name "Food" and 5 pieces per size by default (D-110); D-118's proposals (3 listings
+11. **Decide when convenient:** the name "Food" and 5 pieces per size by default (D-110); D-118's proposals (3 listings
    per target, the 60% rise / 50% fall guard, drafts until published, 40 targets a day); D-120's (₹200, 250 g, half the
    shipping share); D-105's vendor-screen drafts; the four men house models (D-104); Q-35 (US stores).
-11. **Before the launch proper:** Q-3 (US carrier), Q-9 (domain and support email), Q-32 (holding a piece while paying).
+12. **Before the launch proper:** Q-3 (US carrier), Q-9 (domain and support email), Q-32 (holding a piece while paying).
 
 ## Not built yet (known, in order of use)
 - App: the product page's 7-day date (`store_product_page().quick_delivery`, D-148; the 7-day screen, tag, Home line
@@ -132,6 +142,14 @@ Short on purpose: **replace** lines when something changes, don't append. Histor
   notify-me, gift boxes (F-6).
 
 ## Known leftovers
+- **Found in the QA pass of 2026-10-24, for the founder:** the GitHub repo `yobslob/The-Indian-Wholesale-Club` is
+  **public** (every doc: the shops, the pricing rules, margins, the admin's design; no secrets found in its 310
+  commits); production dumps (`data.sql` with every account and address, `schema.sql`, `history.sql`, `roles.sql`) and
+  pulled env files (`vercel-prod.env`, `move.env`) sit in the repo folder (gitignored, against CLAUDE.md); food and home
+  packs come as the shops write them (1,687 different food packs: "200 g", "200g", "200 g (Pack of 1)", "400.0 Grams");
+  many food photos are the shops' thumbnails (187 – 344 px wide on /food and product pages, drawn up to 750 px on phones);
+  search has no plurals or prefixes ("kurtis" finds 11, "kurti" 24+); the bag shows the price saved when a piece was
+  added (checkout re-prices), so a weekly price change can move the free-delivery goal between bag and checkout.
 - App bundle ids are still `com.indianwholesaleclub.app` (`apps/app/app.json`); they change with the domain (Q-9).
 - `supabase/config.toml` uses the deprecated `[inbucket]` section (a harmless CLI warning).
 - Some imported listings are not homesick goods (dog chews, toilet rolls, skewers seen on the production copy):
@@ -140,6 +158,8 @@ Short on purpose: **replace** lines when something changes, don't append. Histor
 ## Last verification
 | Date | Commit | Where | Result |
 |---|---|---|---|
+| 2026-10-24 | D-159 (Categories to check) and the founder's check run of the QA pass (e2e: `saved.spec.ts`, `customer-choices.spec.ts`) | Claude, cloud sandbox and the live site in the browser pane | The founder's `check.mjs` on the QA pass: docs, typecheck, lint, test, db, build, http (/ 33 ms 127 KB, /clothing 135 KB), bundle OK; e2e 33 passed, 2 failed. `saved.spec.ts` found a real bug, older than the QA pass: a heart tapped while the page was still checking the session (a signed-in customer's first second) was saved on the device only, then the check cleared the device's list: the save was lost and the heart said "Saved on this device". Fixed (`saved-store.ts`: where a save goes waits for the session check); in a stand-in store run under node, the early tap now saves to the account (before: no save, the device hint). `customer-choices.spec.ts` stopped at Stripe's captcha after Pay (the known test-mode flake). D-159: the live catalogue read through the public store views (9,887 listings): no category of another type; the rules propose 224 moves and 27 not-their-type, each group read by eye; `category-check.test.ts` 4/4 (mutation-checked), shared tests 331/337 (the sandbox's 6 `__filename` failures; `bag-goal.test.ts` was not in the test script and now is). **Not run:** web tsc, ESLint, `next build`, e2e, the new admin page in a browser (no local admin here). |
+| 2026-10-24 | QA pass: speed, leaks and bugs across the live site | Claude, cloud sandbox (Postgres 16 with every migration; no npm, no `next build`) and the live site in the browser pane (from India: times include the bom1 → iad1 hop) | **Live, before:** Home 56 KB brotli / 660 KB HTML, `/food` 685 KB, `/home-and-gifts` 514 KB (the Size / Pack panel: 3,370 and 2,242 links); after load every store page fetched Supabase's client and zod (~85 KB compressed) for the hearts; `/api/browse` never served from the CDN (250 ms each from India); a cold `/search` answered 500 after 8.5 s once (fine on retry). RLS on every table, every definer function with a search_path, anon may call only `store_*` reads, no ops words (shops, weights) in 24 product pages' HTML, security headers present. **After (in code):** see Speed and limits. `size-facet.test.ts` 3/3 (mutation-checked), shared `domain.test.ts` 74/74 with node's own TypeScript, the pure files strict-typechecked; CSP built from `next.config.js`. **Not run:** web tsc and ESLint (no npm here), `next build`, http, e2e, bundle. Run `node scripts/check.mjs` before pushing. |
 | 2026-10-24 | The website build's second statement timeout (prerendering `/7-day-delivery`) | Claude, cloud sandbox: Postgres 16 with every migration and a copy of production's catalogue, its 7-day shops widened to 5,106 7-day pieces | Cause: `store_quick_browse()` and `store_quick_front()` joined `_quick_listings()` straight to `store_products`; the plan multiplied 8,032 listings' options by 28 categories (224,896 rows) and checked shops 161,308 times: 1.3 – 1.7 s whatever the limit (`_quick_listings()` alone 0.13 s), and the front page built cards for every 7-day piece. Migration `20261029100000_quick_speed`: the list read once, the front page's cards for its rows only; same JSON as before for the front page and four `store_quick_browse()` calls on the copy; 0.27 s and 0.21 s. 64/64 SQL test files on a fresh database. **Not run:** the migration on production, `next build`. |
 | 2026-10-24 | The website build's statement timeout (prerendering `/7-day-delivery/home-and-gifts/all`) | Claude, cloud sandbox: Postgres 16 with every migration and a copy of production's catalogue (8,032 listings), no `next build` | Cause: the build prerenders the 36 state pages, each reading `store_region_page()` (Punjab: 380 KB, 3.6 s cold, 0.45 s warm on the copy) and, since D-157, three `store_browse()` inventories (up to 1.2 s cold each), with the 7-day pages: the database ran past its 8 s limit. Fix: `store_region_head()` (migration `20261029090000`, 40 ms for Punjab; its region, album, Most wanted and Picked for you equal `store_region_page()`'s on Kerala), only the first type read at build, the others when opened (`/api/browse`), one prerender at a time per worker. 64/64 SQL test files on a fresh database (new `region_head.test.sql` 9, `schema.test.sql` with the new function); tsc clean (web but the sandbox's 3 known, db); in Chromium from the real components with the copy's data: Clothing from the page, Food and Home & gifts read when opened (the page's shape meanwhile; a failed read says "Try again" and asks once; Try again reads it), filters, Back and a refreshed `?type=home-and-gifts&sort=price-desc` as before. **Not run:** `next build`, http, e2e, the migration on production (the Deploy workflow). |
 | 2026-10-24 | Fixes for the founder's check run on 7e9310b (http, e2e) | Claude, cloud sandbox (no Docker, no `next build`) | The founder's run: `/states/kerala` 152 KB of first-load JS (the state page now carries See all's filters), `sold-out.spec.ts` failed (the state page's cards came from See all's cache entry, which a sale does not refresh). Fixed: the address checks in `browse-query.ts` by hand instead of zod (about 13 KB of zod off every See all and state page), the card's option ribbon and sheet loaded on the first touch of a + (about 3 KB); the state page's inventory read through `browseStateCached` (its own entries, refreshed with the state like the old state page). web tests (browse-query with the new checks, card-options, slim-cards, site, paging) 26/26; tsc clean but the sandbox's 3 known; in Chromium from the real components: a + on a several-option card opens the ribbon (colours, then sizes) at 375 and 1280 px and adds "White · S/M"; a one-option + adds at once. **Not run:** `next build`, http, e2e. Run `node scripts/check.mjs` before pushing. |

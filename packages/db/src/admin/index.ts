@@ -7,6 +7,7 @@
 export * from './after-sales';
 export * from './auto-sourcing';
 export * from './catalog';
+export * from './categories';
 export * from './commerce';
 export * from './operations';
 export * from './refunds';

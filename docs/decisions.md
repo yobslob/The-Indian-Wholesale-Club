@@ -545,3 +545,23 @@ What it means for the build (`tools/sourcing-runner`):
 - One run takes every queued target: it claims Settings' Targets per run at a time and claims again until none is
   left; no five-hour stop. Targets handed back during the run wait until it ends, so the run never takes one twice.
 
+**D-159 · 2026-10-24 · founder: every listing in its own category, never shown in another's**
+Founder, verbatim: "make sure everything is in their category and not getting shown in someone else's".
+Found on the live store (9,887 listings read 2026-10-24): the sourcing runner files a listing under its target's
+category (`worker_sourcing_add`), so a search's stray results landed under it: chutneys and pickles under Masala
+blends, kahwa under Masala blends, black cardamom under Papad & wadi, bhakarwadi under Papad & wadi, soan papdi under
+Snacks; and some are not food or home at all: dog chews and dog food under Snacks and Staples, hair oil, rakhis under
+Sweets, dhoop sticks under Whole spices, Mysore pak under Home & gifts. No listing's category was of another type.
+What it means for the build:
+- One set of rules reads a listing's own name (`packages/shared/src/sourcing/category-check.ts`): a category is
+  proposed only when the name plainly says it and nothing else ("masala cashew" stays a snack, "laddu gopal" is
+  Krishna, "jaggery balls" stay a sweet); names that fit their category, two or none are left alone. Clothing is not
+  checked.
+- Admin → Products → **Categories to check** (`/admin/catalog/categories`): each food and home listing whose name says
+  another category, with that category picked and ticked (changeable); "Move the ticked" moves them. Below, the ones
+  not their type at all, to archive or fix by hand. Nothing changes until an admin presses. A moved listing is repriced
+  by the database, which only changes a price where an option has no weight yet.
+- The sourcing runner skips a result whose name says another category of the target's type (it waits for that
+  category's targets) or not the type at all, so new stray listings are not made.
+*Interpretation (proposed, confirm when convenient):* rakhi gift packs with sweets count as gifts, not food; jaggery,
+sattu and poha count as staples; chutney powders (podi) as chutneys; whole garam masala as whole spices.

@@ -1,6 +1,7 @@
 import { randomUUID } from 'node:crypto';
 
 import { listingSlug } from '@repo/shared/domain';
+import { checkCategory } from '@repo/shared/sourcing';
 import {
   buildListing,
   pickCandidates,
@@ -144,6 +145,11 @@ async function tryCandidate(
   if (!read?.product) return `${c.best.site}: page unreadable`;
   if (!targetMatcher(target).matches(read.product.title))
     return `${c.best.site}: page is not the target`;
+  // founder 2026-10-24: nothing filed under a category it isn't. A result that reads as another category of the type
+  // waits for that category's targets; one that is not the type at all (dog chews, hair oil, a rakhi) is never added.
+  const fit = checkCategory(read.product.title, target.product_type, target.category);
+  if (fit.kind === 'not_type') return `${c.best.site}: ${fit.reason}`;
+  if (fit.kind === 'move') return `${c.best.site}: reads as ${fit.to}, not ${target.category}`;
   const { product, pageOf } = await withSiblings(ctx, read.product, c.best, s.max_delivery_days);
   const draft = buildListing({
     product,

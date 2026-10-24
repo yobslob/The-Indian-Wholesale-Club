@@ -26,6 +26,8 @@ export function listingTabs(counts?: {
     { key: 'weights', href: '/admin/catalog?weights=1', label: 'Weights to check', count: counts?.weights },
     // D-140 (L1): names with a brand, shop or search words, to rename
     { key: 'names', href: '/admin/catalog/names', label: 'Names to tidy' },
+    // founder 2026-10-24: listings filed under a category (or type) their names don't fit
+    { key: 'categories', href: '/admin/catalog/categories', label: 'Categories to check' },
     { key: 'us', href: '/admin/catalog?us=1', label: 'US clearance' },
     { key: 'all', href: '/admin/catalog', label: 'All' },
   ];
