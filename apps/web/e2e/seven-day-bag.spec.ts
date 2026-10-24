@@ -108,19 +108,20 @@ test('7-day pieces come alone; a saree opens a second shipment, shown in the bag
   await expect(page.getByText(/^Shipment 2 · Arrives /).first()).toBeVisible();
 });
 
-// D-154 step 4: the store switch opens the 7-day store (its date, its search), and the IWC tab returns to the page left.
-test('the store switch opens the 7-day store and its search; IWC returns to the page left', async ({ page, request }) => {
+// D-154 step 4: the store tabs open the 7-day store (its date, its search), and the IWC tab returns to the page left.
+test('the store tabs open the 7-day store and its search; IWC returns to the page left', async ({ page, request }) => {
   await refreshStore(request);
   await page.goto('/clothing');
-  const stores = page.getByRole('tablist', { name: 'Store' });
-  await expect(stores.getByRole('tab', { name: /IWC/ })).toHaveAttribute('aria-selected', 'true');
-  await stores.getByRole('tab', { name: /7-day/ }).click();
+  const stores = page.getByRole('navigation', { name: 'Store' });
+  await expect(stores.getByRole('link', { name: /IWC store/ })).toHaveAttribute('aria-current', 'page');
+  await expect(stores.getByRole('link', { name: /7-day store/ })).toContainText(/arrives /);
+  await stores.getByRole('link', { name: /7-day store/ }).click();
   await expect(page).toHaveURL(/\/7-day-delivery$/);
-  await expect(stores.getByRole('tab', { name: /7-day/ })).toHaveAttribute('aria-selected', 'true');
+  await expect(stores.getByRole('link', { name: /7-day store/ })).toHaveAttribute('aria-current', 'page');
   await expect(page.getByText(/^Order today, arrives by \w{3}, \w{3} \d+\.$/)).toBeVisible();
 
   await page.goto('/7-day-delivery/search?q=banana');
   await expect(page.getByRole('main').getByText('E2E banana chips')).toBeVisible();
-  await stores.getByRole('tab', { name: /IWC/ }).click();
+  await stores.getByRole('link', { name: /IWC store/ }).click();
   await expect(page).toHaveURL(/\/clothing$/);
 });

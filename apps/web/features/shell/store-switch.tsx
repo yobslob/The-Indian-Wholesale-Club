@@ -5,6 +5,7 @@ import { usePathname } from 'next/navigation';
 import { useEffect, useRef, useState } from 'react';
 
 import { quickArrivesLine } from '@repo/shared/domain';
+import { INDIA_MARK } from '@repo/shared/india-map/mark';
 
 import { isQuickPath, QUICK_HOME } from '@/lib/site';
 
@@ -12,11 +13,15 @@ import { isQuickPath, QUICK_HOME } from '@/lib/site';
 const LAST_IWC = 'iwc-last-store-page';
 
 /**
- * The store switch (D-154): one pill, "IWC store" and "7-day store", with a thumb that slides to the store the shopper
- * is in: light paper in the IWC store, the brand colour in the 7-day store (and the header's bottom edge turns to the
- * gold stitch, CSS in globals.css). Under "7-day store", the live date ("arrives by Fri, Oct 30") from the 7-day days
- * in Settings, worked out in the browser so a cached page never shows yesterday's. A tap opens the other store's front
- * page; the IWC tab returns to the page left. Keyboard: one tab list, ← and → move. Phones: "IWC" and "7-day".
+ * The store tabs (D-154; founder 2026-10-24: the floating pill "looks so badly placed, do something creative with it"):
+ * the two stores as two tabs on a dark strip along the very top of the page, like a browser's tabs. The store the
+ * shopper is in is the open tab: it is the header's own colour and runs into it, so the header reads as the inside of
+ * that store (ivory in the IWC store, a warm brand tint in the 7-day store, where the header's bottom edge turns to the
+ * jewellery drawer's gold stitch, D-144). Each tab says what its store promises: "All 36 states", and the live date
+ * ("arrives by Fri, Oct 30") from the 7-day days in Settings, worked out in the browser so a cached page never shows
+ * yesterday's. The strip is in the page, never over it: it scrolls away with the first 40 px and the header stays
+ * (globals.css, `--strip-h`); on Home it slides up as the hero's words fade. A tap opens the other store's front page
+ * (the open tab moves at once, before the page arrives); the IWC tab returns to the page left. Plain links in a nav.
  */
 export function StoreSwitch({
   daysMin,
@@ -30,13 +35,12 @@ export function StoreSwitch({
 }): React.JSX.Element {
   const path = usePathname();
   const inQuick = isQuickPath(path);
-  // The thumb moves on the tap, before the next page arrives.
+  // The open tab moves on the tap, before the next page arrives.
   const [going, setGoing] = useState<boolean | null>(null);
   const [line, setLine] = useState(arrives);
   const [back, setBack] = useState('/');
-  // Each change of store glows the thumb once (two names, so the animation restarts); none on the first paint.
-  const [glow, setGlow] = useState(0);
-  const tabs = useRef<(HTMLAnchorElement | null)[]>([]);
+  // Each change of store pops the 7 once (two names, so the animation restarts); none on the first paint.
+  const [pop, setPop] = useState(0);
   const quick = going ?? inQuick;
   const shown = useRef(quick);
 
@@ -53,50 +57,51 @@ export function StoreSwitch({
   useEffect(() => {
     if (shown.current === quick) return;
     shown.current = quick;
-    setGlow((g) => g + 1);
+    setPop((g) => g + 1);
   }, [quick]);
 
-  const tab = (toQuick: boolean, i: number, long: string, short: string): React.JSX.Element => {
-    const selected = quick === toQuick;
+  const tab = (toQuick: boolean): React.JSX.Element => {
+    const open = quick === toQuick;
     return (
       <Link
-        ref={(el) => {
-          tabs.current[i] = el;
-        }}
         href={toQuick ? QUICK_HOME : inQuick ? back : path}
-        role="tab"
-        aria-selected={selected}
-        tabIndex={selected ? 0 : -1}
+        aria-current={open ? 'page' : undefined}
         className="store-tab"
         onClick={() => {
           if (toQuick !== inQuick) setGoing(toQuick);
         }}
       >
-        <span className="store-tab-name">
-          <span className="hidden md:inline">{long}</span>
-          <span className="md:hidden">{short}</span>
+        {toQuick ? (
+          <span className="store-tab-mark" aria-hidden="true">
+            7
+          </span>
+        ) : (
+          <span className="store-tab-mark" data-iwc="" aria-hidden="true">
+            <svg viewBox={INDIA_MARK.viewBox} focusable="false">
+              <path d={INDIA_MARK.path} vectorEffect="non-scaling-stroke" />
+            </svg>
+          </span>
+        )}
+        <span className="store-tab-words">
+          <span className="store-tab-name">{toQuick ? '7-day store' : 'IWC store'}</span>
+          <span className="store-tab-line">{toQuick ? line : 'All 36 states'}</span>
         </span>
-        {toQuick ? <small className="store-tab-date">{line}</small> : null}
       </Link>
     );
   };
 
   return (
-    <div
-      role="tablist"
+    <nav
       aria-label="Store"
-      className="store-switch font-ui"
+      className="store-strip font-ui"
       data-store={quick ? 'quick' : 'iwc'}
-      data-glow={glow === 0 ? undefined : glow % 2 ? 'a' : 'b'}
-      onKeyDown={(e) => {
-        if (e.key !== 'ArrowLeft' && e.key !== 'ArrowRight') return;
-        e.preventDefault();
-        tabs.current[e.key === 'ArrowRight' ? 1 : 0]?.focus();
-      }}
+      data-pop={pop === 0 ? undefined : pop % 2 ? 'a' : 'b'}
     >
-      <span className="store-thumb" aria-hidden="true" />
-      {tab(false, 0, 'IWC store', 'IWC')}
-      {tab(true, 1, '7-day store', '7-day')}
-    </div>
+      <div className="store-tabs">
+        <span className="store-open" aria-hidden="true" />
+        {tab(false)}
+        {tab(true)}
+      </div>
+    </nav>
   );
 }

@@ -1,7 +1,5 @@
 import Link from 'next/link';
 
-import { quickArrivesLine } from '@repo/shared/domain';
-
 import { CartLink } from '@/features/cart/cart-link';
 import { isInfoPath, QUICK_HOME } from '@/lib/site';
 
@@ -12,7 +10,6 @@ import { PhoneSearch } from './phone-search';
 import { SearchPill } from './search-pill';
 import { SiteMenu } from './site-menu';
 import { StoreLinks } from './store-links';
-import { StoreSwitch } from './store-switch';
 
 import type { QuickNav } from '@/features/catalog/data';
 
@@ -29,8 +26,8 @@ const MORE = [
  * or focus) · Food · Home & gifts · States, then Saved, Bag and Profile as icons (About us lives in the menu and the
  * footer); below 1024 px the types move into the menu, which phones and tablets open from the menu button; on phones the
  * logo, the icons and a menu button that opens a side panel over the page. D-154: while 7-day delivery is on, the store
- * switch sits above (store-switch.tsx), and inside the 7-day store the type links become its categories and Search
- * finds only 7-day pieces. Server-rendered with
+ * tabs sit above it (store-switch.tsx, drawn by the store layout), and inside the 7-day store the type links become its
+ * categories and Search finds only 7-day pieces. Server-rendered with
  * no session reads, so pages stay static (PR-1); the bag count, the search pill, the menu and the current-section mark are the only client
  * islands. Its look
  * on Home (on the photo, logo fading in on scroll) is CSS in app/globals.css. No admin link anywhere (D-006).
@@ -44,11 +41,6 @@ export function SiteHeader({ quick = null }: { quick?: QuickNav }): React.JSX.El
       >
         Skip to content
       </a>
-      {quick ? (
-        <div className="site-stores">
-          <StoreSwitch daysMin={quick.daysMin} daysMax={quick.daysMax} arrives={quickArrivesLine(quick.daysMin, quick.daysMax)} />
-        </div>
-      ) : null}
       <div className="site-bar font-ui">
         <Link href="/" aria-label="Indian Wholesale Club, home" className="site-logo font-logo mr-auto text-[16px] font-normal leading-none tracking-normal md:text-[22px]">
           <LogoText />

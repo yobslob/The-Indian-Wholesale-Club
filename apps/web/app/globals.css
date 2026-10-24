@@ -261,7 +261,7 @@
   }
   .site-header {
     position: relative;
-    background-color: theme('colors.canvas');
+    background-color: var(--hdr, theme('colors.canvas'));
     color: theme('colors.ink');
     box-shadow: 0 1px 0 theme('colors.line');
     transition:
@@ -303,98 +303,188 @@
     opacity: 0;
   }
 
-  /* D-154: the store switch, a small frosted pill floating just under the header on every page, centred, riding with
-     it as the page scrolls (it hangs below the header, so --top-h stays the header's own height). One pill with a
-     thumb that slides to the store the shopper is in: light paper in the IWC store, the brand colour in the 7-day
-     store, where the header's bottom edge turns to the jewellery drawer's gold stitch (D-144). The thumb glides in
-     240 ms with a slight spring and glows once, like the free-delivery pill (D-116); at once with reduced motion. */
-  .site-stores {
-    position: absolute;
-    inset: 100% 0 auto;
+  /* D-154 (founder 2026-10-24: the floating pill "looks so badly placed, do something creative with it"): the store
+     tabs, store-switch.tsx. A dark strip along the very top with the two stores as tabs; the open one is the header's
+     own colour (--hdr) and flows into it through curved feet, like a browser's tab, so the header reads as the inside
+     of that store: ivory in the IWC store, a warm brand tint in the 7-day store (with the gold stitch along its bottom
+     edge, D-144). The strip is part of the page, never over it: .site-top sticks 1 strip-height up, so the strip
+     scrolls away and the header stays; on Home it slides up with the hero's fade (--hero-p). The open tab glides over
+     in 320 ms with a slight spring and its mark pops once; at once with reduced motion. */
+  :root:has(.store-strip) {
+    --strip-h: 46px;
+  }
+  @media (min-width: 768px) {
+    :root:has(.store-strip) {
+      --strip-h: 42px;
+    }
+  }
+  .site-top {
+    --hdr: theme('colors.canvas');
+  }
+  .site-top:has(.store-strip[data-store='quick']) {
+    --hdr: color-mix(in srgb, var(--brand) 12%, var(--canvas));
+  }
+  .site-top:has(.store-strip) {
+    top: calc(-1 * var(--strip-h));
+  }
+  /* Home: the header is clear over the photo, so the open tab is a pane of light glass instead */
+  body:has([data-home-hero]) .site-top:has(.store-strip) {
+    --hdr: transparent;
+    --tab: rgb(255 255 255 / 0.18);
+    top: calc(var(--hero-p, 0) * -1 * var(--strip-h));
+  }
+  .store-strip {
     display: flex;
-    justify-content: center;
-    padding-top: 10px;
-    pointer-events: none;
+    align-items: flex-end;
+    height: var(--strip-h);
+    padding: 0 var(--gut);
+    background: theme('colors.ink');
+    color: var(--paper);
   }
-  /* the page starts below the pill, so it covers nothing until the page scrolls under it */
-  :root:has(.site-stores) .store-main:not(:has(> [data-bleed])) {
-    padding-top: calc(2rem + 30px);
+  body:has([data-home-hero]) .store-strip {
+    background: rgb(20 17 15 / 0.5);
+    -webkit-backdrop-filter: blur(14px);
+    backdrop-filter: blur(14px);
   }
-  .store-switch {
+  .store-tabs {
     position: relative;
     display: grid;
     grid-template-columns: 1fr 1fr;
-    width: 224px;
-    height: 36px;
-    padding: 3px;
-    border-radius: 9999px;
-    pointer-events: auto;
-    background: color-mix(in srgb, var(--paper) 72%, transparent);
-    box-shadow:
-      inset 0 0 0 1px color-mix(in srgb, var(--line) 80%, transparent),
-      0 6px 24px rgb(20 17 15 / 0.12);
-    -webkit-backdrop-filter: blur(20px) saturate(1.5);
-    backdrop-filter: blur(20px) saturate(1.5);
+    width: 100%;
+    height: calc(100% - 6px);
   }
   @media (min-width: 768px) {
-    .store-switch {
-      width: 272px;
-      height: 38px;
+    .store-tabs {
+      width: 500px;
     }
   }
-  .store-thumb {
+  .store-open {
     position: absolute;
-    inset: 3px auto 3px 3px;
-    width: calc(50% - 3px);
-    border-radius: 9999px;
-    background: var(--paper);
-    box-shadow: 0 1px 3px rgb(20 17 15 / 0.14);
+    inset: 0 auto 0 0;
+    width: 50%;
+    border-radius: 12px 12px 0 0;
+    background: var(--tab, var(--hdr));
     transition:
-      transform 0.24s cubic-bezier(0.34, 1.45, 0.64, 1),
-      background-color 0.24s;
+      transform 0.32s cubic-bezier(0.34, 1.3, 0.64, 1),
+      background-color 0.35s;
   }
-  .store-switch[data-store='quick'] .store-thumb {
+  .store-strip[data-store='quick'] .store-open {
     transform: translateX(100%);
-    background: var(--brand);
   }
-  .store-switch[data-glow='a'] .store-thumb {
-    animation: store-glow-a 0.9s ease-out;
+  /* the feet: the strip's colour curving into the open tab at its two bottom corners */
+  .store-open::before,
+  .store-open::after {
+    content: '';
+    position: absolute;
+    bottom: 0;
+    width: 12px;
+    height: 12px;
+    transition: background 0.35s;
   }
-  .store-switch[data-glow='b'] .store-thumb {
-    animation: store-glow-b 0.9s ease-out;
+  .store-open::before {
+    left: -12px;
+    background: radial-gradient(circle at 0 0, transparent 11.5px, var(--tab, var(--hdr)) 12px);
+  }
+  .store-open::after {
+    right: -12px;
+    background: radial-gradient(circle at 100% 0, transparent 11.5px, var(--tab, var(--hdr)) 12px);
   }
   .store-tab {
     position: relative;
     z-index: 1;
     display: flex;
-    flex-direction: column;
+    min-width: 0;
     align-items: center;
     justify-content: center;
-    border-radius: 9999px;
-    color: var(--muted);
-    font-size: 12px;
+    gap: 8px;
+    padding: 0 10px;
+    border-radius: 12px 12px 0 0;
+    color: color-mix(in srgb, var(--paper) 70%, transparent);
+    font-size: 13px;
     font-weight: 600;
-    line-height: 1.1;
-    letter-spacing: 0.01em;
-    transition: color 0.24s;
+    line-height: 1.15;
+    transition: color 0.3s;
   }
-  .store-tab[aria-selected='true'] {
+  .store-tab:hover {
+    color: var(--paper);
+  }
+  .store-tab[aria-current] {
     color: var(--ink);
   }
-  .store-switch[data-store='quick'] .store-tab[aria-selected='true'] {
-    color: theme('colors.on-brand');
+  body:has([data-home-hero]) .store-tab[aria-current] {
+    color: #fff;
   }
   .store-tab:focus-visible {
-    outline: 2px solid var(--ink);
-    outline-offset: 2px;
+    outline: 2px solid currentColor;
+    outline-offset: -5px;
   }
-  .store-tab-date {
-    font-size: 9.5px;
+  .store-tab-words {
+    display: flex;
+    min-width: 0;
+    flex-direction: column;
+  }
+  .store-tab-line {
+    overflow: hidden;
+    font-size: 10.5px;
     font-weight: 500;
-    opacity: 0.85;
+    text-overflow: ellipsis;
     white-space: nowrap;
+    opacity: 0.8;
   }
-  .site-header:has(.store-switch[data-store='quick'])::after {
+  @media (min-width: 768px) {
+    .store-tab-words {
+      flex-direction: row;
+      align-items: baseline;
+      gap: 6px;
+    }
+    .store-tab-line {
+      font-size: 12px;
+    }
+    .store-tab-line::before {
+      content: '· ';
+    }
+  }
+  .store-tab-mark {
+    display: grid;
+    flex: none;
+    place-items: center;
+    width: 20px;
+    height: 20px;
+    border-radius: 9999px;
+    background: var(--brand);
+    color: theme('colors.on-brand');
+    font-size: 11.5px;
+    font-weight: 800;
+  }
+  .store-tab-mark[data-iwc] {
+    background: transparent;
+  }
+  .store-tab-mark svg {
+    height: 22px;
+    aspect-ratio: 440 / 1076;
+    fill: none;
+    stroke: #c9962f;
+    stroke-width: 1.5px;
+    stroke-linejoin: round;
+    stroke-linecap: round;
+  }
+  .store-strip[data-pop='a'] .store-tab[aria-current] .store-tab-mark {
+    animation: store-pop-a 0.6s cubic-bezier(0.34, 1.5, 0.64, 1);
+  }
+  .store-strip[data-pop='b'] .store-tab[aria-current] .store-tab-mark {
+    animation: store-pop-b 0.6s cubic-bezier(0.34, 1.5, 0.64, 1);
+  }
+  @keyframes store-pop-a {
+    from {
+      transform: scale(0.55) rotate(-120deg);
+    }
+  }
+  @keyframes store-pop-b {
+    from {
+      transform: scale(0.55) rotate(-120deg);
+    }
+  }
+  .site-top:has(.store-strip[data-store='quick']) .site-header::after {
     content: '';
     position: absolute;
     inset: auto 0 -1px;
@@ -406,26 +496,12 @@
       transparent 10px 16px
     );
   }
-  @keyframes store-glow-a {
-    40% {
-      box-shadow:
-        0 0 0 2px var(--paper),
-        0 0 12px 4px color-mix(in srgb, var(--brand) 45%, transparent);
-    }
-  }
-  @keyframes store-glow-b {
-    40% {
-      box-shadow:
-        0 0 0 2px var(--paper),
-        0 0 12px 4px color-mix(in srgb, var(--brand) 45%, transparent);
-    }
-  }
   @media (prefers-reduced-motion: reduce) {
-    .store-thumb,
+    .store-open,
     .store-tab {
       transition: none;
     }
-    .store-switch[data-glow] .store-thumb {
+    .store-strip[data-pop] .store-tab[aria-current] .store-tab-mark {
       animation: none;
     }
   }
