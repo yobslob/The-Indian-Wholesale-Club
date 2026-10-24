@@ -8,7 +8,7 @@ import {
   getProductPage,
   getQuickFront,
   getQuickPage,
-  getRegionPage,
+  getRegionHead,
   getStorePolicy,
   isDemoStore,
   listProductPaths,
@@ -54,9 +54,10 @@ const cached = <T>(key: string[], tags: string[], load: () => Promise<T>): Promi
 // v2: Home's album (D-113); a new key so no entry cached before it (without the album) is read back.
 export const getHomeCached = () => cached(['store-home-v2'], [homeTag], () => getHome(storeClient()));
 
-export const getRegionPageCached = (regionSlug: string) =>
-  cached(['store-region-page', regionSlug], [regionsTag, regionTag(regionSlug)], () =>
-    getRegionPage(storeClient(), regionSlug),
+/** D-157: a state's page head (no card lists), refreshed like the region page with the state. */
+export const getRegionHeadCached = (regionSlug: string) =>
+  cached(['store-region-head', regionSlug], [regionsTag, regionTag(regionSlug)], () =>
+    getRegionHead(storeClient(), regionSlug),
   );
 
 export const getProductPageCached = (regionSlug: string, productSlug: string) =>

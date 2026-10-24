@@ -108,7 +108,7 @@ const nextConfig = {
     serverActions: { bodySizeLimit: '10mb' },
     // The build prerenders every state and See all page from the production database (PR-1). Fewer at once per worker
     // and a retry keep a busy moment of the database (statement timeout, 2026-10-18) from failing the whole deploy.
-    staticGenerationMaxConcurrency: 2,
+    staticGenerationMaxConcurrency: 1,
     staticGenerationRetryCount: 3,
   },
   // D-140: Vercel's image resizer is off. Its allowance (5,000 photos a month) ran out and photos answered 402

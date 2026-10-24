@@ -6,11 +6,11 @@ import { PRODUCT_TYPE_LABEL, PRODUCT_TYPE_PATH, PRODUCT_TYPES, type ProductType 
 import { inStatePage, PAGE, parseBrowseQuery, toBrowseFilter } from '@/features/catalog/browse-query';
 import { BrowseView } from '@/features/catalog/browse-view';
 import { CuratedCard } from '@/features/catalog/curated-card';
-import { browseStateCached, getHomeCached, getRegionPageCached, getStorePolicyCached } from '@/features/catalog/data';
+import { browseStateCached, getHomeCached, getRegionHeadCached, getStorePolicyCached } from '@/features/catalog/data';
 import { ProductRow } from '@/features/catalog/product-row';
 import { StorePhoto } from '@/features/catalog/store-photo';
 import { RegionAlbum } from '@/features/regions/region-album';
-import { RegionTypeTabs } from '@/features/regions/region-type-tabs';
+import { ComingSoon, RegionTypeTabs } from '@/features/regions/region-type-tabs';
 import { scriptFontClass } from '@/features/regions/script-fonts';
 import { mediaUrl } from '@/lib/site';
 
@@ -25,39 +25,35 @@ export async function generateStaticParams(): Promise<{ region: string }[]> {
 }
 
 export async function generateMetadata({ params }: { params: Params }): Promise<Metadata> {
-  const page = await getRegionPageCached((await params).region);
+  const page = await getRegionHeadCached((await params).region);
   return page ? { title: page.region.name } : {};
 }
 
 export default async function RegionPage({ params }: { params: Params }): Promise<React.JSX.Element> {
-  const page = await getRegionPageCached((await params).region);
+  const page = await getRegionHeadCached((await params).region);
   if (!page) notFound();
-  const { region, album, most_wanted: mostWanted, curated } = page;
-  // D-157: each type's inventory as See all draws it, the state fixed: its first 24 cards and filter counts, one cached
-  // store_browse() read per type, refreshed with the state (a sale shows Sold out here at once)
-  const query = inStatePage(parseBrowseQuery({}), region.slug);
-  const [policy, ...pages] = await Promise.all([
-    getStorePolicyCached(),
-    ...PRODUCT_TYPES.map((t) => browseStateCached({ ...toBrowseFilter(t, query, 0, PAGE), regionSlug: region.slug })),
-  ]);
+  const { region, album, most_wanted: mostWanted, curated, type_counts: counts } = page;
   const slugOf = (type: ProductType): string => PRODUCT_TYPE_PATH[type].slice(1);
-  const tabs = PRODUCT_TYPES.map((t, i) => ({ slug: slugOf(t), label: PRODUCT_TYPE_LABEL[t], count: pages[i]?.total ?? 0 }));
+  const tabs = PRODUCT_TYPES.map((t) => ({ slug: slugOf(t), label: PRODUCT_TYPE_LABEL[t], count: counts[t] }));
+  // Clothing, or the first type the state has
+  const firstType = PRODUCT_TYPES.find((t) => counts[t] > 0) ?? 'clothing';
+  // D-157: the first type's inventory as See all draws it, the state fixed: its first 24 cards and filter counts, one
+  // cached store_browse() read refreshed with the state (a sale shows Sold out here at once); the other types are read
+  // when opened (region-type-tabs.tsx), so building the 36 state pages reads one inventory each
+  const query = inStatePage(parseBrowseQuery({}), region.slug);
+  const [policy, initial] = await Promise.all([
+    getStorePolicyCached(),
+    region.is_live && counts[firstType] > 0
+      ? browseStateCached({ ...toBrowseFilter(firstType, query, 0, PAGE), regionSlug: region.slug })
+      : null,
+  ]);
   const quickDays = policy.quick_delivery_on ? policy.quick_delivery_days_max : null;
-  const views = Object.fromEntries(
-    PRODUCT_TYPES.map((t, i) => {
-      const initial = pages[i];
-      return [
-        slugOf(t),
-        initial && initial.total > 0 ? (
-          <BrowseView productType={t} title={PRODUCT_TYPE_LABEL[t]} initialQuery={query} initial={initial} quickDays={quickDays} />
-        ) : (
-          <p className="bg-surface font-body rounded-lg p-[clamp(18px,2vw,32px)] text-[clamp(20px,1.8vw,28px)]">
-            {t === 'clothing' ? 'New pieces are on their way.' : `${PRODUCT_TYPE_LABEL[t]} from ${region.name} ${t === 'food' ? 'is' : 'are'} coming soon.`}
-          </p>
-        ),
-      ];
-    }),
-  );
+  const firstView =
+    initial && initial.total > 0 ? (
+      <BrowseView productType={firstType} title={PRODUCT_TYPE_LABEL[firstType]} initialQuery={query} initial={initial} quickDays={quickDays} />
+    ) : (
+      <ComingSoon type={firstType} regionName={region.name} />
+    );
 
   return (
     <div
@@ -115,9 +111,11 @@ export default async function RegionPage({ params }: { params: Params }): Promis
           <CuratedCard id="curated" products={curated} regionName={region.name} />
           <RegionTypeTabs
             tabs={tabs}
-            first={(tabs.find((t) => t.count > 0) ?? tabs[0])?.slug ?? 'clothing'}
+            first={slugOf(firstType)}
             region={region.slug}
-            views={views}
+            regionName={region.name}
+            firstView={firstView}
+            quickDays={quickDays}
           />
         </>
       )}
