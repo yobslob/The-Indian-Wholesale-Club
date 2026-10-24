@@ -2,15 +2,18 @@
 
 import { useCallback, useEffect, useLayoutEffect, useRef, useState } from 'react';
 
-import { browseHref, browseSearch, inQuickStore, PAGE, parseBrowseQuery, sameQuery, type BrowseQuery } from './browse-query';
+import { PRODUCT_TYPE_PATH, type ProductType } from '@repo/shared/domain';
+
+import { browseHref, browseSearch, inQuickStore, inStatePage, PAGE, parseBrowseQuery, sameQuery, type BrowseQuery } from './browse-query';
 
 import type { BrowsePage } from '@repo/db/store';
-import type { ProductType } from '@repo/shared/domain';
 
 export type BrowseMeta = Omit<BrowsePage, 'products'>;
 type Cards = BrowsePage['products'];
 interface Snapshot {
   href: string;
+  /** D-157: a state's page draws three types at one address; a snapshot is only its own type's. */
+  type?: ProductType;
   query: BrowseQuery;
   meta: BrowseMeta;
   products: Cards;
@@ -26,21 +29,32 @@ const here = (): string => window.location.pathname + window.location.search;
 const KEY = 'iwc-browse';
 const store = (id: string): string => `${KEY}:${id}`;
 
-function readSnapshot(): Snapshot | null {
+function readSnapshot(type: ProductType): Snapshot | null {
   try {
     const id = (window.history.state as Record<string, unknown> | null)?.[KEY];
     if (typeof id !== 'string') return null;
     const snap = JSON.parse(sessionStorage.getItem(store(id)) ?? 'null') as Snapshot | null;
-    return snap && snap.href === here() ? snap : null;
+    return snap && snap.href === here() && (snap.type ?? type) === type ? snap : null;
   } catch {
     return null;
   }
 }
 
-/** The address's filters, inside the 7-day store when the page is one of its own (D-154). */
-function addressQuery(inQuick: boolean): BrowseQuery {
+/**
+ * The address's filters, inside the 7-day store when the page is one of its own (D-154), or within the state when the
+ * page is the state's (D-157: the state is the page's, never the address's).
+ */
+function addressQuery(initial: BrowseQuery): BrowseQuery {
   const q = parseBrowseQuery(new URLSearchParams(window.location.search));
-  return inQuick ? inQuickStore(q) : q;
+  if (initial.inState) return inStatePage(q, initial.inState);
+  return initial.inQuick ? inQuickStore(q) : q;
+}
+
+/** D-157: on a state's page, whether the address is this type's (?type=, none for Clothing). */
+function addressIsType(initial: BrowseQuery, productType: ProductType): boolean {
+  if (!initial.inState) return true;
+  const type = new URLSearchParams(window.location.search).get('type');
+  return productType === 'clothing' ? !type || type === 'clothing' : type === PRODUCT_TYPE_PATH[productType].slice(1);
 }
 
 interface Entry {
@@ -77,7 +91,6 @@ export function useBrowse(productType: ProductType, initialQuery: BrowseQuery, i
   const restoreTo = useRef<{ y: number; products: Cards } | null>(null);
   const settled = useRef(false);
   const saveRef = useRef<(y: number) => void>(() => undefined);
-  const inQuick = initialQuery.inQuick === true;
 
   const load = useCallback(
     async (q: BrowseQuery, offset: number, limit: number): Promise<BrowsePage | null> => {
@@ -144,7 +157,9 @@ export function useBrowse(productType: ProductType, initialQuery: BrowseQuery, i
   // On arrival: a snapshot of this entry (Back from a product) wins; else filters only the address has (the cached
   // page knows the state and category only) are read now.
   useLayoutEffect(() => {
-    const snap = readSnapshot();
+    // D-157: a state's page draws its first type before it reads the address's: that view leaves the entry alone
+    if (!addressIsType(initialQuery, productType)) return;
+    const snap = readSnapshot(productType);
     if (snap) {
       entry.current = entryOf(snap);
       setQuery(snap.query);
@@ -155,7 +170,7 @@ export function useBrowse(productType: ProductType, initialQuery: BrowseQuery, i
     }
     settled.current = true;
     entry.current = tagEntry(null, false);
-    const fromUrl = addressQuery(inQuick);
+    const fromUrl = addressQuery(initialQuery);
     if (!sameQuery(fromUrl, initialQuery)) void replace(fromUrl);
     // once, on arrival
     // eslint-disable-next-line react-hooks/exhaustive-deps
@@ -164,8 +179,10 @@ export function useBrowse(productType: ProductType, initialQuery: BrowseQuery, i
   // Back / Forward between filter sets on this page: Next keeps the page mounted, so read the entry here.
   useEffect(() => {
     const onPop = (): void => {
+      // D-157: Back to another type's entry on a state's page: the page's switch shows that type instead
+      if (!addressIsType(initialQuery, productType)) return;
       saveRef.current(scrollY.current); // the entry being left
-      const snap = readSnapshot();
+      const snap = readSnapshot(productType);
       if (snap) {
         entry.current = entryOf(snap);
         setQuery(snap.query);
@@ -175,12 +192,12 @@ export function useBrowse(productType: ProductType, initialQuery: BrowseQuery, i
         restoreTo.current = { y: snap.scrollY, products: snap.products };
       } else {
         entry.current = tagEntry(null, false);
-        void replace(addressQuery(inQuick));
+        void replace(addressQuery(initialQuery));
       }
     };
     window.addEventListener('popstate', onPop);
     return () => window.removeEventListener('popstate', onPop);
-  }, [replace, inQuick]);
+  }, [replace, initialQuery, productType]);
 
   // The scroll position, kept in a ref while reading (cheap) and written with the snapshot on the way out.
   useEffect(() => {
@@ -196,13 +213,13 @@ export function useBrowse(productType: ProductType, initialQuery: BrowseQuery, i
     (y: number): void => {
       if (!entry.current || !settled.current) return;
       try {
-        const snap: Snapshot = { href: entry.current.href, query, meta, products, scrollY: y };
+        const snap: Snapshot = { href: entry.current.href, type: productType, query, meta, products, scrollY: y };
         sessionStorage.setItem(store(entry.current.id), JSON.stringify(snap));
       } catch {
         // storage full or blocked: Back simply reloads the first page
       }
     },
-    [meta, products, query],
+    [meta, products, query, productType],
   );
 
   useEffect(() => {

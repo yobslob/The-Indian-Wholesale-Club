@@ -46,14 +46,16 @@ export function BrowseView({
   const { query, meta, products, loading, apply, showMore } = useBrowse(productType, initialQuery, initial);
   const results = useRef<HTMLDivElement>(null);
 
-  const stateName = meta.regions.find((s) => s.slug === query.state)?.name;
+  // D-157: on a state's own page the state is the page's: no State filter, chip or name in the heading
+  const inState = Boolean(query.inState);
+  const stateName = inState ? undefined : meta.regions.find((s) => s.slug === query.state)?.name;
   const categoryName = meta.categories.find((c) => c.slug === query.category)?.name;
   const price = priceLabel(query);
   const whoName = query.who ? WHO_LABEL[query.who] : undefined;
   // D-154: on the 7-day store's own pages every piece is a 7-day piece: no Delivery filter, chip or tag on the cards
   const inQuick = query.inQuick === true;
   const quickName = query.quick && quickDays && !inQuick ? `In ${quickDays} days` : undefined;
-  const chosen = Boolean(query.state || query.category || price || query.sizes.length || query.who || quickName);
+  const chosen = Boolean((query.state && !inState) || query.category || price || query.sizes.length || query.who || quickName);
 
   /** A filter applied: the cards swap in place; if the reader is far down, back to the top of the cards. */
   const change = (next: BrowseQuery): void => {
@@ -62,6 +64,8 @@ export function BrowseView({
     const header = parseFloat(getComputedStyle(document.documentElement).getPropertyValue('--top-h')) || 56;
     if (top < header) window.scrollTo({ top: window.scrollY + top - header - 16, behavior: 'smooth' });
   };
+  // the state page has its own h1 (the state's name)
+  const Heading = inState ? 'h2' : 'h1';
   const chip = (label: string, change_: Partial<BrowseQuery>) => {
     const next = withFilter(query, change_);
     return (
@@ -81,21 +85,21 @@ export function BrowseView({
       </a>
     );
   };
-  const clearAll = withFilter(query, { state: undefined, category: undefined, who: undefined, min: undefined, max: undefined, sizes: [], quick: inQuick || undefined });
+  const clearAll = withFilter(query, { state: query.inState, category: undefined, who: undefined, min: undefined, max: undefined, sizes: [], quick: inQuick || undefined });
   const panel = (
-    <FilterPanel productType={productType} query={query} meta={meta} quickDays={inQuick ? null : quickDays} onChange={change} />
+    <FilterPanel productType={productType} query={query} meta={meta} quickDays={inQuick ? null : quickDays} onChange={change} states={!inState} />
   );
 
   return (
     <>
-      <h1 className="font-heading text-ink text-[clamp(32px,3vw,52px)] font-medium leading-tight tracking-[-0.03em]">
+      <Heading className="font-heading text-ink text-[clamp(32px,3vw,52px)] font-medium leading-tight tracking-[-0.03em]">
         {categoryName ?? title}
         {whoName ? <span className="text-ink-muted"> · {whoName}</span> : null}
         {stateName ? <span className="text-ink-muted"> · {stateName}</span> : null}
-      </h1>
+      </Heading>
       {productType === 'clothing' && meta.wears ? <WhoTiles query={query} counts={meta.wears} onChange={change} /> : null}
       <PhoneFilter
-        chosen={`${whoName ? `${whoName} · ` : ''}${stateName ?? 'All states'} · ${categoryName ?? 'Everything'}${price ? ` · ${price}` : ''}${quickName ? ` · ${quickName}` : ''}`}
+        chosen={`${whoName ? `${whoName} · ` : ''}${inState ? '' : `${stateName ?? 'All states'} · `}${categoryName ?? 'Everything'}${price ? ` · ${price}` : ''}${quickName ? ` · ${quickName}` : ''}`}
         count={counted(meta)}
         onClear={chosen ? () => change(clearAll) : null}
       >

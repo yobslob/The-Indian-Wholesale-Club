@@ -7,21 +7,35 @@ import { expect, test } from '@playwright/test';
  */
 test.use({ reducedMotion: 'reduce' });
 
-test('a row scrolls sideways and See all opens that category for that state', async ({ page }) => {
-  await page.goto('/states/delhi');
-  const row = page.locator('#new-arrivals');
-  const list = row.getByRole('list', { name: 'New arrivals' });
+test('a row scrolls sideways; See all opens its list', async ({ page }) => {
+  await page.goto('/');
+  const list = page.getByRole('list', { name: 'Just listed: Clothing' });
   const size = await list.evaluate((el) => ({ scroll: el.scrollWidth, box: el.clientWidth }));
   expect(size.scroll).toBeGreaterThan(size.box);
-  await row.getByRole('button', { name: 'Scroll New arrivals on' }).click();
+  await page.getByRole('button', { name: 'Scroll Just listed: Clothing on' }).click();
   await expect.poll(() => list.evaluate((el) => el.scrollLeft)).toBeGreaterThan(0);
+});
 
-  await page.locator('#c-kurtas').getByRole('link', { name: /See all/ }).click();
-  await expect(page).toHaveURL(/\/clothing\?state=delhi&category=kurtas$/);
-  await expect(page.getByRole('heading', { level: 1 })).toContainText('Kurtas');
-  const cards = page.locator('main article');
-  expect(await cards.count()).toBeGreaterThan(0);
+// D-157: a state's inventory is See all with the state fixed: its filters change the cards on the state's own address
+test("a state's inventory has See all's filters and keeps the state's address", async ({ page }) => {
+  await page.setViewportSize({ width: 1280, height: 900 });
+  await page.goto('/states/delhi');
+  const filters = page.getByRole('complementary', { name: 'Filters' });
+  await expect(filters.getByRole('heading', { name: 'State' })).toHaveCount(0);
+  await filters.getByRole('link', { name: /^Kurtas/ }).click();
+  await expect(page).toHaveURL(/\/states\/delhi\?category=kurtas$/);
+  await expect(page.getByRole('heading', { level: 2, name: /Kurtas/ })).toBeVisible();
+  const cards = page.locator('[data-card-grid] > article');
+  await expect(cards.first()).toBeVisible();
   for (const text of await cards.allInnerTexts()) expect(text).toContain('Delhi');
+
+  await page.getByRole('tab', { name: /^Food/ }).click();
+  await expect(page).toHaveURL(/\/states\/delhi\?type=food$/);
+  await expect(page.getByRole('tab', { name: /^Food/ })).toHaveAttribute('aria-selected', 'true');
+  // the switch replaces the entry (a type starts without the other type's filters); Back returns to Clothing
+  await page.goBack();
+  await expect(page).toHaveURL(/\/states\/delhi$/);
+  await expect(page.getByRole('tab', { name: /^Clothing/ })).toHaveAttribute('aria-selected', 'true');
 });
 
 test('See all pages draw 24 cards at a time', async ({ page }) => {

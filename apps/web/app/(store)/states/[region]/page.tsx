@@ -3,17 +3,17 @@ import { notFound } from 'next/navigation';
 
 import { PRODUCT_TYPE_LABEL, PRODUCT_TYPE_PATH, PRODUCT_TYPES, type ProductType } from '@repo/shared/domain';
 
+import { inStatePage, PAGE, parseBrowseQuery, toBrowseFilter } from '@/features/catalog/browse-query';
+import { BrowseView } from '@/features/catalog/browse-view';
 import { CuratedCard } from '@/features/catalog/curated-card';
-import { getHomeCached, getRegionPageCached } from '@/features/catalog/data';
+import { browseCached, getHomeCached, getRegionPageCached, getStorePolicyCached } from '@/features/catalog/data';
 import { ProductRow } from '@/features/catalog/product-row';
-import { RowScroller } from '@/features/catalog/row-scroller';
 import { StorePhoto } from '@/features/catalog/store-photo';
 import { RegionAlbum } from '@/features/regions/region-album';
-import { scriptFontClass } from '@/features/regions/script-fonts';
 import { RegionTypeTabs } from '@/features/regions/region-type-tabs';
+import { scriptFontClass } from '@/features/regions/script-fonts';
 import { mediaUrl } from '@/lib/site';
 
-import type { RegionPage, RegionProductCard } from '@repo/db/store';
 import type { Metadata } from 'next';
 
 type Params = Promise<{ region: string }>;
@@ -29,105 +29,35 @@ export async function generateMetadata({ params }: { params: Params }): Promise<
   return page ? { title: page.region.name } : {};
 }
 
-const heading = 'font-heading text-[clamp(26px,2.2vw,38px)] font-medium leading-tight tracking-[-0.025em]';
-const chip =
-  'font-ui border-line bg-paper hover:border-ink inline-flex min-h-11 items-center gap-2 rounded-pill border px-5 text-sm font-medium transition-colors duration-300';
-const pieces = (n: number): string => `${n.toLocaleString('en-US')} ${n === 1 ? 'piece' : 'pieces'}`;
-
-const ROW = 12;
-
-/** A type's categories, the biggest first, each with its first 12 cards and its real total (category_counts). */
-function byCategory(
-  page: RegionPage,
-  type: ProductType,
-): { slug: string; name: string; count: number; items: RegionProductCard[] }[] {
-  return page.category_counts
-    .filter((c) => c.product_type === type)
-    .map((c) => ({ ...c, items: page.products.filter((p) => p.category_slug === c.slug && p.product_type === type) }))
-    .filter((c) => c.items.length > 0);
-}
-
 export default async function RegionPage({ params }: { params: Params }): Promise<React.JSX.Element> {
   const page = await getRegionPageCached((await params).region);
   if (!page) notFound();
-  const { region, album, products, most_wanted: mostWanted, curated, leaving_soon: leavingSoon } = page;
-  const browse = (type: ProductType, category?: string): string =>
-    `${PRODUCT_TYPE_PATH[type]}?state=${region.slug}${category ? `&category=${category}` : ''}`;
+  const { region, album, most_wanted: mostWanted, curated } = page;
+  // D-157: each type's inventory as See all draws it, the state fixed: its first 24 cards and filter counts, from the
+  // same cached store_browse() entries as /clothing?state=… (one read per type, shared with See all)
+  const query = inStatePage(parseBrowseQuery({}), region.slug);
+  const [policy, ...pages] = await Promise.all([
+    getStorePolicyCached(),
+    ...PRODUCT_TYPES.map((t) => browseCached(toBrowseFilter(t, query, 0, PAGE))),
+  ]);
   const slugOf = (type: ProductType): string => PRODUCT_TYPE_PATH[type].slice(1);
-  const countOf = (type: ProductType): number =>
-    page.category_counts.filter((c) => c.product_type === type).reduce((n, c) => n + c.count, 0);
-  const tabs = PRODUCT_TYPES.map((t) => ({ slug: slugOf(t), label: PRODUCT_TYPE_LABEL[t], count: countOf(t) }));
-
-  /**
-   * One type's rows, as Home and the 7-day store draw theirs (a heading, its count, See all): the state's newest, Most
-   * wanted, Picked for you, Leaving soon, then a row per category, the biggest first. Clothing keeps the ids links
-   * and tests use (#new-arrivals, #c-kurtas).
-   */
-  const panel = (type: ProductType): React.ReactNode => {
-    const label = PRODUCT_TYPE_LABEL[type];
-    const own = (p: RegionProductCard): boolean => p.product_type === type;
-    const id = (name: string): string => (type === 'clothing' ? name : `${name}-${slugOf(type)}`);
-    const categories = byCategory(page, type);
-    // D-122: the first row is the state's own pieces, newest first; all-India pieces fill the rows below
-    const newest = products.filter((p) => own(p) && p.region_slug === region.slug).slice(0, ROW);
-    if (countOf(type) === 0)
-      return (
-        <section className="py-[clamp(24px,3vw,48px)]">
-          <h2 className={heading}>{label}</h2>
-          <p className="bg-surface font-body mt-[clamp(16px,1.8vw,24px)] rounded-lg p-[clamp(18px,2vw,32px)] text-[clamp(20px,1.8vw,28px)]">
-            {type === 'clothing' ? 'New pieces are on their way.' : `${label} from ${region.name} ${type === 'food' ? 'is' : 'are'} coming soon.`}
+  const tabs = PRODUCT_TYPES.map((t, i) => ({ slug: slugOf(t), label: PRODUCT_TYPE_LABEL[t], count: pages[i]?.total ?? 0 }));
+  const quickDays = policy.quick_delivery_on ? policy.quick_delivery_days_max : null;
+  const views = Object.fromEntries(
+    PRODUCT_TYPES.map((t, i) => {
+      const initial = pages[i];
+      return [
+        slugOf(t),
+        initial && initial.total > 0 ? (
+          <BrowseView productType={t} title={PRODUCT_TYPE_LABEL[t]} initialQuery={query} initial={initial} quickDays={quickDays} />
+        ) : (
+          <p className="bg-surface font-body rounded-lg p-[clamp(18px,2vw,32px)] text-[clamp(20px,1.8vw,28px)]">
+            {t === 'clothing' ? 'New pieces are on their way.' : `${PRODUCT_TYPE_LABEL[t]} from ${region.name} ${t === 'food' ? 'is' : 'are'} coming soon.`}
           </p>
-        </section>
-      );
-    return (
-      <>
-        {categories.length > 1 ? (
-          <nav aria-label={`${label} by category`} className="pt-[clamp(8px,1vw,16px)]">
-            <RowScroller label={`${label} by category`} pills>
-              {categories.map((c) => (
-                <li key={c.slug} className="shrink-0">
-                  <a href={`#c-${c.slug}`} className={chip}>
-                    {c.name} <span className="text-ink-muted">{c.count.toLocaleString('en-US')}</span>
-                  </a>
-                </li>
-              ))}
-            </RowScroller>
-          </nav>
-        ) : null}
-        <ProductRow
-          id={id('new-arrivals')}
-          title="New arrivals"
-          sub={`Newest ${type === 'home' ? 'home & gifts' : label.toLowerCase()} from ${region.name}.`}
-          products={newest}
-          href={browse(type)}
-        />
-        <ProductRow
-          id={id('most-wanted')}
-          title="Most wanted"
-          sub={`Most ordered from ${region.name} in the last 30 days.`}
-          products={mostWanted.filter(own)}
-        />
-        <CuratedCard id={id('curated')} products={curated.filter(own)} regionName={region.name} />
-        <ProductRow
-          id={id('leaving-soon')}
-          title="Leaving soon"
-          sub="Only a few pieces left of these."
-          products={leavingSoon.filter(own)}
-          badge={(p) => `${p.available} left`}
-        />
-        {categories.map((c) => (
-          <ProductRow
-            key={c.slug}
-            id={`c-${c.slug}`}
-            title={c.name}
-            sub={pieces(c.count)}
-            products={c.items.slice(0, ROW)}
-            href={browse(type, c.slug)}
-          />
-        ))}
-      </>
-    );
-  };
+        ),
+      ];
+    }),
+  );
 
   return (
     <div
@@ -176,10 +106,18 @@ export default async function RegionPage({ params }: { params: Params }): Promis
       ) : (
         <>
           <RegionAlbum photos={album} regionName={region.name} />
+          <ProductRow
+            id="most-wanted"
+            title="Most wanted"
+            sub={`Most ordered from ${region.name} in the last 30 days.`}
+            products={mostWanted}
+          />
+          <CuratedCard id="curated" products={curated} regionName={region.name} />
           <RegionTypeTabs
             tabs={tabs}
             first={(tabs.find((t) => t.count > 0) ?? tabs[0])?.slug ?? 'clothing'}
-            panels={Object.fromEntries(PRODUCT_TYPES.map((t) => [slugOf(t), panel(t)]))}
+            region={region.slug}
+            views={views}
           />
         </>
       )}

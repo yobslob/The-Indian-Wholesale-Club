@@ -28,6 +28,11 @@ export interface BrowseQuery {
    * ?delivery= and the page has no Delivery filter. Set by the page, never read from the address.
    */
   inQuick?: true;
+  /**
+   * D-157: a state's own page (/states/punjab): its inventory as See all with the state fixed, so the address stays the
+   * state page's (/states/punjab?type=food&category=sweets) and there is no State filter. Set by the page, with `state`.
+   */
+  inState?: string;
   /** How many cards are drawn ("Show more", D-067); absent = the first page. */
   show?: number;
 }
@@ -106,10 +111,20 @@ export function browseSearch(q: BrowseQuery): string {
 
 /** The address customers see: /clothing?state=kerala&category=sarees&size=M, or in the 7-day store /7-day-delivery/food. */
 export function browseHref(productType: ProductType, q: BrowseQuery): string {
+  if (q.inState) {
+    // the state page's own address: its type (Clothing has none) before the filters, the state in the path
+    const rest = browseSearch({ ...q, state: undefined });
+    const type = productType === 'clothing' ? '' : `type=${PRODUCT_TYPE_PATH[productType].slice(1)}`;
+    const search = [type, rest].filter(Boolean).join('&');
+    return search ? `/states/${q.inState}?${search}` : `/states/${q.inState}`;
+  }
   const path = q.inQuick ? `${QUICK_HOME}${PRODUCT_TYPE_PATH[productType]}` : PRODUCT_TYPE_PATH[productType];
   const search = browseSearch(q.inQuick ? { ...q, quick: undefined } : q);
   return search ? `${path}?${search}` : path;
 }
+
+/** D-157: a query on a state's own page: that state, always, and the state page's address. */
+export const inStatePage = (q: BrowseQuery, region: string): BrowseQuery => ({ ...q, state: region, inState: region });
 
 /** A query on the 7-day store's own pages: only 7-day pieces (D-154). */
 export const inQuickStore = (q: BrowseQuery): BrowseQuery => ({ ...q, quick: true, inQuick: true });

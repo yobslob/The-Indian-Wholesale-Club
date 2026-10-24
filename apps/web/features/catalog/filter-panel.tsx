@@ -24,6 +24,7 @@ export function FilterPanel({
   meta,
   quickDays = null,
   onChange,
+  states = true,
 }: {
   productType: ProductType;
   query: BrowseQuery;
@@ -31,6 +32,8 @@ export function FilterPanel({
   /** D-154: the 7-day days (Settings); null while 7-day delivery is off. */
   quickDays?: number | null;
   onChange: (next: BrowseQuery) => void;
+  /** D-157: false on a state's own page, where the state is fixed. */
+  states?: boolean;
 }): React.JSX.Element {
   const [allStates, setAllStates] = useState(false);
   const link = (change: Partial<BrowseQuery>) => {
@@ -45,11 +48,11 @@ export function FilterPanel({
     };
   };
 
-  const states = meta.regions;
+  const regions = meta.regions;
   const shownStates =
-    allStates || states.length <= FIRST_STATES + 2
-      ? states
-      : states.filter((s, i) => i < FIRST_STATES || s.slug === query.state);
+    allStates || regions.length <= FIRST_STATES + 2
+      ? regions
+      : regions.filter((s, i) => i < FIRST_STATES || s.slug === query.state);
   const prices = meta.prices;
   const bounds = prices ? { min: Math.floor(prices.min / 100), max: Math.ceil(prices.max / 100) } : null;
   const ranges = priceRanges(prices);
@@ -130,34 +133,36 @@ export function FilterPanel({
         </section>
       ) : null}
 
-      <section className={styles.group} aria-labelledby="f-state">
-        <div className={styles.head}>
-          <h3 id="f-state">State</h3>
-        </div>
-        <ul className={styles.list}>
-          <li>
-            <a {...link({ state: undefined })} className={styles.item} aria-current={!query.state}>
-              <i aria-hidden="true" />
-              All states
-              <span>{meta.states_total ?? meta.all_total}</span>
-            </a>
-          </li>
-          {shownStates.map((s) => (
-            <li key={s.slug}>
-              <a {...link({ state: s.slug })} className={styles.item} aria-current={query.state === s.slug}>
+      {states ? (
+        <section className={styles.group} aria-labelledby="f-state">
+          <div className={styles.head}>
+            <h3 id="f-state">State</h3>
+          </div>
+          <ul className={styles.list}>
+            <li>
+              <a {...link({ state: undefined })} className={styles.item} aria-current={!query.state}>
                 <i aria-hidden="true" />
-                {s.name}
-                <span>{s.count}</span>
+                All states
+                <span>{meta.states_total ?? meta.all_total}</span>
               </a>
             </li>
-          ))}
-        </ul>
-        {shownStates.length < states.length || allStates ? (
-          <button type="button" className={styles.more} onClick={() => setAllStates((v) => !v)}>
-            {allStates ? 'Show fewer' : `Show all ${states.length} states`}
-          </button>
-        ) : null}
-      </section>
+            {shownStates.map((s) => (
+              <li key={s.slug}>
+                <a {...link({ state: s.slug })} className={styles.item} aria-current={query.state === s.slug}>
+                  <i aria-hidden="true" />
+                  {s.name}
+                  <span>{s.count}</span>
+                </a>
+              </li>
+            ))}
+          </ul>
+          {shownStates.length < regions.length || allStates ? (
+            <button type="button" className={styles.more} onClick={() => setAllStates((v) => !v)}>
+              {allStates ? 'Show fewer' : `Show all ${regions.length} states`}
+            </button>
+          ) : null}
+        </section>
+      ) : null}
 
       {bounds && bounds.max > bounds.min ? (
         <section className={styles.group} aria-labelledby="f-price">
