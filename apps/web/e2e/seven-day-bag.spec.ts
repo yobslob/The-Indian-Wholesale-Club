@@ -80,12 +80,16 @@ test('7-day pieces come alone; a saree opens a second shipment, shown in the bag
   await page.goto(`/states/india/${SNACK}`);
   await page.getByRole('button', { name: 'Add to bag' }).click();
   await page.goto('/cart');
-  // $10 of 7-day pieces: under the line, one group in the normal window and how much more brings them in 7 days
-  await expect(page.getByRole('main').getByText(/Add \$39\.99 of 7-day pieces and they arrive by/)).toBeVisible();
+  // $10 of 7-day pieces: under the line, one group in the normal window and one goal: free 7-day delivery (D-156)
+  await expect(page.getByRole('main').getByText('Add $39.99 more for free 7-day delivery')).toBeVisible();
+  await expect(page.getByRole('main').getByText(/for free delivery$/)).toHaveCount(0);
   for (let i = 0; i < 4; i += 1) await page.getByRole('button', { name: 'One more' }).click();
   // $50: one 7-day shipment, Shipping struck through
   await expect(page.getByRole('heading', { name: /^Arrives by \w{3}, \w{3} \d+/ })).toBeVisible();
   await expect(page.getByRole('main').getByText('Your 7-day pieces now arrive by', { exact: false })).toBeVisible();
+  // the bag says it is free, as checkout does, and never asks for more for free delivery (D-156)
+  await expect(page.getByRole('main').getByText(/^Free 7-day delivery: arrives by/)).toBeVisible();
+  await expect(page.getByRole('main').getByText(/more for free delivery/)).toHaveCount(0);
 
   await page.goto(`/states/${DEMO_PRODUCT.region}/${DEMO_PRODUCT.slug}`);
   await page.getByRole('button', { name: 'Add to bag' }).click();

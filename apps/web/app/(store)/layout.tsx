@@ -3,6 +3,7 @@ import { quickArrivesLine } from '@repo/shared/domain';
 import { FreeDeliveryBar } from '@/features/cart/free-delivery-bar';
 import { getQuickNavCached, isDemoStoreCached } from '@/features/catalog/data';
 import { DemoBanner } from '@/features/shell/demo-banner';
+import { IndiaMark } from '@/features/shell/india-mark';
 import { Motion } from '@/features/shell/motion';
 import { SiteFooter } from '@/features/shell/site-footer';
 import { SiteHeader } from '@/features/shell/site-header';
@@ -34,7 +35,7 @@ export default async function StoreLayout({
       <div className="site-top">
         {/* first in .site-top: it scrolls away and the header stays (globals.css, --strip-h) */}
         {quick ? (
-          <StoreSwitch daysMin={quick.daysMin} daysMax={quick.daysMax} arrives={quickArrivesLine(quick.daysMin, quick.daysMax)} />
+          <StoreSwitch daysMin={quick.daysMin} daysMax={quick.daysMax} arrives={quickArrivesLine(quick.daysMin, quick.daysMax)} mark={<IndiaMark />} />
         ) : null}
         {demo ? <DemoBanner /> : null}
         <SiteHeader quick={quick} />

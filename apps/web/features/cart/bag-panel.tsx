@@ -22,7 +22,14 @@ export function BagPanel({ open, onClose }: { open: boolean; onClose: (refocus: 
   const close = useRef<HTMLButtonElement>(null);
   const count = cartCount(lines);
 
-  useEffect(() => onClose(false), [path, onClose]);
+  // going to another page closes it; not its first draw, which may come with the tap that opens it (cart-link.tsx
+  // fetches the panel on that first sign of intent)
+  const shownPath = useRef(path);
+  useEffect(() => {
+    if (shownPath.current === path) return;
+    shownPath.current = path;
+    onClose(false);
+  }, [path, onClose]);
   useEffect(() => {
     if (!open) return;
     close.current?.focus();

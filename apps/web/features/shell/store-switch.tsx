@@ -5,7 +5,6 @@ import { usePathname } from 'next/navigation';
 import { useEffect, useRef, useState } from 'react';
 
 import { quickArrivesLine } from '@repo/shared/domain';
-import { INDIA_MARK } from '@repo/shared/india-map/mark';
 
 import { isQuickPath, QUICK_HOME } from '@/lib/site';
 
@@ -27,11 +26,14 @@ export function StoreSwitch({
   daysMin,
   daysMax,
   arrives,
+  mark,
 }: {
   daysMin: number;
   daysMax: number;
   /** The line as the server wrote it; replaced once the browser knows today's date. */
   arrives: string;
+  /** The IWC tab's India outline, drawn on the server (india-mark.tsx). */
+  mark: React.ReactNode;
 }): React.JSX.Element {
   const path = usePathname();
   const inQuick = isQuickPath(path);
@@ -77,9 +79,7 @@ export function StoreSwitch({
           </span>
         ) : (
           <span className="store-tab-mark" data-iwc="" aria-hidden="true">
-            <svg viewBox={INDIA_MARK.viewBox} focusable="false">
-              <path d={INDIA_MARK.path} vectorEffect="non-scaling-stroke" />
-            </svg>
+            {mark}
           </span>
         )}
         <span className="store-tab-words">
