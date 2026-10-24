@@ -48,6 +48,19 @@ let loading: Promise<void> | null = null;
 const timers = new Map<string, ReturnType<typeof setTimeout>>();
 const synced = new Map<string, boolean>();
 
+/**
+ * Whether the browser holds a Supabase session cookie (`sb-<project>-auth-token`, in chunks `.0`, `.1` when long; not
+ * HttpOnly, @supabase/ssr). Without one the visitor is signed out, so Supabase's client (about 70 KB of script, which
+ * every store page downloaded and ran after loading just to learn that) is never fetched for them.
+ */
+function mayHaveSession(): boolean {
+  try {
+    return /(?:^|;\s*)sb-[^=;]+-auth-token(?:\.\d+)?=/.test(document.cookie);
+  } catch {
+    return true;
+  }
+}
+
 async function deps(): Promise<{ client: ReturnType<typeof import('@/lib/supabase/browser')['browserClient']>; account: Account }> {
   const [{ browserClient }, account] = await Promise.all([import('@/lib/supabase/browser'), import('@repo/db/account')]);
   return { client: browserClient(), account };
@@ -63,6 +76,7 @@ export const useSaved = create<SavedState>()((set, get) => ({
     loading ??= (async () => {
       const device = readDevice();
       set({ ids: new Set(device) });
+      if (!mayHaveSession()) return set({ userId: null });
       const { client, account } = await deps();
       const { data } = await client.auth.getSession();
       const userId = data.session?.user.id ?? null;
@@ -81,37 +95,48 @@ export const useSaved = create<SavedState>()((set, get) => ({
     if (on) ids.add(productId);
     else ids.delete(productId);
     set({ ids, failed: null });
-    const userId = get().userId;
-    if (!userId) {
-      writeDevice([...ids]);
-      if (on && !get().hinted) {
-        set({ deviceHint: true, hinted: true });
-        setTimeout(() => set({ deviceHint: false }), 6000);
-      }
-      return;
-    }
-    clearTimeout(timers.get(productId));
-    timers.set(
-      productId,
-      setTimeout(() => {
-        timers.delete(productId);
-        const want = get().ids.has(productId);
-        if (synced.get(productId) === want) return;
-        void (async () => {
-          try {
-            const { client, account } = await deps();
-            if (want) await account.saveProduct(client, userId, productId);
-            else await account.unsaveProduct(client, productId);
-            synced.set(productId, want);
-          } catch {
-            // put the heart back as the database has it, and say so
-            const back = new Set(get().ids);
-            if (want) back.delete(productId);
-            else back.add(productId);
-            set({ ids: back, failed: productId });
-          }
-        })();
-      }, SYNC_MS),
-    );
+    // The heart answers at once; where the save goes waits for the session check. A tap while it is still running
+    // (a signed-in customer's first second on a page) was kept on the device and then lost when the check cleared the
+    // device's list (found 2026-10-24: saved.spec.ts).
+    void (loading ?? Promise.resolve())
+      .catch(() => undefined)
+      .then(() => keep(productId, on));
   },
 }));
+
+/** Where a tap's save goes once the session is known: this device when signed out, else the account a moment later. */
+function keep(productId: string, on: boolean): void {
+  const { getState: get, setState: set } = useSaved;
+  const userId = get().userId;
+  if (!userId) {
+    writeDevice([...get().ids]);
+    if (on && !get().hinted) {
+      set({ deviceHint: true, hinted: true });
+      setTimeout(() => set({ deviceHint: false }), 6000);
+    }
+    return;
+  }
+  clearTimeout(timers.get(productId));
+  timers.set(
+    productId,
+    setTimeout(() => {
+      timers.delete(productId);
+      const want = get().ids.has(productId);
+      if (synced.get(productId) === want) return;
+      void (async () => {
+        try {
+          const { client, account } = await deps();
+          if (want) await account.saveProduct(client, userId, productId);
+          else await account.unsaveProduct(client, productId);
+          synced.set(productId, want);
+        } catch {
+          // put the heart back as the database has it, and say so
+          const back = new Set(get().ids);
+          if (want) back.delete(productId);
+          else back.add(productId);
+          set({ ids: back, failed: productId });
+        }
+      })();
+    }, SYNC_MS),
+  );
+}
