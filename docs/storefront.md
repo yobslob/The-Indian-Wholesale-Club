@@ -26,12 +26,12 @@ Enforcement: customer code reads catalog and order data only through `store_*` (
 |---|---|---|
 | `/` | the full-screen photo hero (behind the nav bar too) with only the stacked brand name on the white wall and "Miss local market? Start here." (D-079, `design/pages/shell/`; otherwise D-050 – D-055; since D-148, while 7-day delivery is on, "Want in 7 days? Click here." to `/7-day-delivery`, the days from Settings), the album of all of India (the region pages' drifting mosaic: the states' album photos, then their newest pieces' main photos; it opens with the clip-and-scale reveal and a gentle parallax, D-113), Pick your home (India map + stamps, in pages of 6 from 7 open states, + names; D-080), then Just listed (D-113): since D-140 one heading and a row per type (Clothing, Food, Home & gifts), each with its own See all, a type with fewer than four pieces left out; pieces published at the same moment take turns by shop and category (D-140, L8). D-154: while the 7-day store is open, one row "Arrives in 7 days" (the days from Settings; See all → `/7-day-delivery`) just before Just listed, its cards without the tag | static, cached `store_home()` |
 | `/states` | Pick your home as its own page (D-083): all 36 regions, alphabetical, with no state/UT distinction (D-002) | static (same cached read as `/`) |
-| `/states/[region]` | **the core page:** greeting in the region's script, story, accent theme, Clothing · Food · Home & gifts sections | static per region (36 built at build time) |
+| `/states/[region]` | **the core page:** greeting in the region's script, story, accent theme, the album, then Clothing · Food · Home & gifts as a switch (D-156) | static per region (36 built at build time) |
 | See all (`/clothing`, `/food`, `/home-and-gifts`) | D-122: a frosted-glass switch between the three types at the top, keeping the chosen state; a food card shows its pack size on its photo. D-136: the filter panel on the left from 1024 px (D-140: For first on clothing, Women · Men with counts, unisex under both, no Kids at launch; Category, State, Price with a slider and four ranges, Size / Pack boxes grouped as Tops & kurtas, Waist, Footwear, Bangles, Kids' ages, One size, each shown only when the pieces in view use it; "One Size", "Free size" and a piece without a size read One size, "L-XL" reads L/XL), /clothing's two large Women · Men tiles under the heading, chips with × and Clear all, Sort by; filters and Show more change only the cards (`GET /api/browse`), never load the page, and Back from a product restores the cards and the scroll | cached `store_browse()` |
 | `/states/[region]/[product]` | product page: gallery, options, price (D-155: a heavy piece's option adds the tag "Heavy-item shipping" and "+ $65.21, added at checkout"), availability (live), save, delivery window, origin line; an all-India listing lives at /states/india/<slug> (D-121; `india` is no state's slug and has no page of its own) | static on first visit + live stock island |
 | `/clothing`, `/food`, `/home-and-gifts` (D-106, D-110; the old /spices address redirects to /food) | the **See all** page behind every row (D-062): low to high (D-144; with a state, its own pieces before the all-India ones, D-140 L2); on Clothing with no category one of each category, then the next of each, with Accessories and Turbans & Headwear in a velvet drawer after the second row of every 24 cards (12 a drawer, See all → accessories), filters in the address (`?state=`, `?category=`, `?for=women|men` (D-140), `?delivery=7-day` (D-154: "Delivery: in 7 days", the first filter group while the type has 7-day pieces, with their count), `?min=` / `?max=` in dollars, `?size=` repeated, `?sort=price-asc|price-desc|new`), 24 cards then "Show more" (`?show=`), which appends in place (D-136). D-136 replaced D-084's state and category pill rows with the left filter panel; below 1024 px one Filter bar (a round icon once scrolled) opens the same groups in a side panel that stays open until "Show n pieces" | built once per address and served from the cache like the state pages: `next.config.js` rewrites each address and its filters to `app/(store)/see-all/[type]/[state]/[category]/[show]/[for]` (the browser keeps `/clothing?state=…`; canonical is the public address); one cached `store_browse()` read (the cards drawn, the total, the filter counts; D-068). Price, size and sort are read in the browser (`features/catalog/use-browse.ts`), from `GET /api/browse` (the same cached read; in-memory rate limit) |
 | `/7-day-delivery` | D-154: **the 7-day store's front page** (D-148's page, kept): "Order today, arrives by Fri, Oct 30" (the real next date: today + the 7-day days from Settings, worked out again in the browser so a cached page never shows yesterday's) and "Comes in 7 days with $49.99 of 7-day pieces", the category tiles (a photo each; a tile opens its category's 7-day See all page), the rows Most ordered this week (by units ordered, never shown), Under $5 and New this week, then a row per type (Food, Home & gifts: "11 pieces in 7 days") with See all, as the IWC store's Home ends (founder, 2026-10-24: "the same aesthetics for 7-day store as the main one"). "From your state" is not built: the site keeps no chosen state. No shop is ever named. 404 while 7-day delivery is off or paused | cached `store_quick_front()`, `store_quick_browse()` (the categories' types) and each type's first `store_browse(p_quick)` page (the same entries as its See all page) |
-| `/7-day-delivery/food`, `/7-day-delivery/home-and-gifts` (`?category=`) | the 7-day store's **See all** pages (founder, 2026-10-24): the IWC store's See all (`browse-view.tsx`: the filter panel with Category, State, Price and Pack or Size, chips, Sort by, Show more, the Filter bar on phones) with only 7-day pieces, always: no Delivery filter or chip, no tag on the cards, the address without `?delivery=` (`BrowseQuery.inQuick`). At the top the same frosted switch as the IWC store's types: Everything (the front page) · Food · Home & gifts. The tiles and the header's 7-day categories open them. `next.config.js` rewrites the address to the route `7-day-delivery/[type]/[category]` (cached per type and category; the other filters are read in the browser). 404 while 7-day delivery is off | cached `store_browse(..., p_quick)` |
+| `/7-day-delivery/food`, `/7-day-delivery/home-and-gifts` (`?category=`) | the 7-day store's **See all** pages (founder, 2026-10-24): the IWC store's See all (`browse-view.tsx`: the filter panel with Category, State, Price and Pack or Size, chips, Sort by, Show more, the Filter bar on phones) with only 7-day pieces, always: no Delivery filter or chip, no tag on the cards, the address without `?delivery=` (`BrowseQuery.inQuick`). At the top the same frosted switch as the IWC store's types: Everything (the front page) · Food · Home & gifts. The tiles and the header's 7-day categories open them. `next.config.js` rewrites the address to the route `7-day-delivery/[type]/[category]` (cached per type and category, every category built with the deploy, D-156; the other filters are read in the browser). A tap shows the page's shape and the running stitch at once (`loading.tsx`, as every See all page does). 404 while 7-day delivery is off | cached `store_browse(..., p_quick)` |
 | `/7-day-delivery/search` | D-154: the 7-day store's search: only 7-day pieces, no states; nothing found → "Search the whole IWC store" | dynamic (no auth), `store_search(..., p_quick)` |
 | `/search` | search products and regions; 24 results at a time with "Show more" (`?show=`, D-067), through `store_search`, which records the words (not who searched) for the admin's Insights. D-085: the count with the words ("24+ pieces" when Show more has more), matching open states as stamps (coming-soon ones by name), no words or no results → the open states and Just listed; phones: a round search icon in the box. D-154: while 7-day delivery is on, a "Delivery: in 7 days" pill under the box (`?delivery=7-day`, only 7-day pieces, no states) | dynamic (no auth) |
 | `/cart` | the bag ("Bag" in the UI; on-device state). D-111, D-112: under the subtotal, the fixed Shipping and Retailer charges (struck through at $0.00 from the free-shipping line up; checkout shows them from its first step); D-155: with a heavy piece, **Heavy-item shipping** (paid below the line; from the free-shipping or 7-day line 20% off, the whole struck through, its saving in "You're saving"; checkout the same, on express too) and how much more makes them free, from `GET /api/bag-charges`; every other store page shows the free-delivery bar once the bag has a piece. D-119: from the line up, the **bulk saving** (a % of the amount over the line, up to a cap) shows as its own line, and the bar refills with it ("Saving $5 · add more, save more" until "BIGGEST SAVING"); checkout takes it off the goods before tax. D-125: Shipping is one number, at least $18.79 and more when the bag's pieces cannot pay for its parcel (one masala), struck through and free from the line up; the Retailer charges are 1.5% of the goods, at least $0.99. D-086: a photo on each line, − / number / + (1 – 10), an empty bag shows the open states as stamps and Just listed; the header's bag icon opens the same bag as a side panel (it stays a link to `/cart` for new tabs and without JavaScript) | static shell |
@@ -53,10 +53,15 @@ Framer Motion page transitions (speed, `engineering.md`).
 1. Greeting in the region's own script, large, with its Latin transliteration and meaning beneath.
 2. Tagline and a short story: why this place feels like home.
 3. The accent colour re-themes the page (one CSS variable from `regions.accent_color`).
-4. **Every list is a row that scrolls sideways** (D-062; since D-081 the jump pills get the same arrows and Picked for you
-   is a standard row of full-size cards; arrows for a mouse, swipe on a phone; the pills pin under the header). Jump pills at the top
-   (New arrivals, each clothing category with its count, Food). One row per clothing category, biggest first, up to 12
-   cards, with **See all** → `/clothing?state=<region>&category=<category>`.
+4. **Every list is a row that scrolls sideways** (D-062; arrows for a mouse, swipe on a phone). D-156: under the hero
+   and the album, **Clothing · Food · Home & gifts** as the See all pages' frosted switch with each type's count, pinned
+   under the header (`features/regions/region-type-tabs.tsx`; three equal cells with the count under the name on
+   phones). Each type shows its own rows as Home and the 7-day store draw theirs: its categories as chips (each jumps to
+   its row), New arrivals (the state's own pieces), Most wanted, Picked for you, Leaving soon, then one row per category,
+   biggest first, up to 12 cards, "200 pieces" and **See all** → `/clothing?state=<region>&category=<category>`. All
+   three types are in the one cached page; the switch only shows one, at once (`#food` in the address keeps it for Back
+   and shared links), and brings a reader who had scrolled down back to the top of the type's rows. It opens on Clothing,
+   or the first type the state has; ← and → move between the types.
 5. **All-India listings fill every state (D-121):** a listing without a state (a Myntra kurta from no state in
    particular) shows on every state's page and under every state in See all, after the state's own pieces, with no
    state on its card. New arrivals, the first row, is the state's own pieces only (D-122).
@@ -113,8 +118,10 @@ option says how many of it are already in the bag.
   "Shipment 1 · Arrives by Fri, Oct 30" over the 7-day pieces and "Shipment 2 · Arrives Nov 3 – Nov 7" over the rest
   when they are worth the 7-day line ($49.99), one "Arrives by …" group for a bag of only them (Shipping struck through,
   "You're saving"), and under the line one group in the normal window with "Add $12.40 of 7-day pieces and they arrive
-  by Fri, Oct 30" and **Shop the 7-day store**; each date "for most US addresses". Two meters: "7-day delivery: $37.59
-  of $49.99" above the free-delivery one, in the summary and (web) in the pill. When a change crosses a line the pill (on
+  by Fri, Oct 30" and **Shop the 7-day store** (a bag of only 7-day pieces says it once, in its summary's goal); each date
+  "for most US addresses". **One goal, one bar (D-156, `bag-goal.ts`)** in the pill, the summary and the app: only 7-day
+  pieces under $49.99 → "Add $12.40 more for FREE 7-DAY DELIVERY"; only 7-day pieces from $49.99 → "FREE 7-DAY DELIVERY ·
+  by Fri, Oct 30", the bar full; any other bag → "Add $X more for FREE DELIVERY", then the bulk saving. When a change crosses a line the pill (on
   `/cart` the summary) says so for three seconds: "Your 7-day pieces now arrive by …", "That opened a second shipment:
   …", "Your 7-day pieces now travel with the rest: …", or, when a normal piece ends a free 7-day bag's free Shipping,
   "Shipping is now $46.55 until $99.99." with **Undo** beside the pill (six seconds; Undo puts the bag back). Checkout,
@@ -123,18 +130,21 @@ option says how many of it are already in the bag.
   and DC, so everything here comes together in one shipment." No Express with a 7-day shipment. The order page (and its
   emails) shows each shipment's date, status, Track the parcel and pieces; a late shipment's notice offers to keep it or
   cancel just that shipment. Shared logic: `packages/shared/src/domain/bag-shipments.ts`.
-- **The store switch (D-154, step 4):** while the 7-day store is open (days in Settings, not paused, at least one piece),
-  a small frosted pill floating just under the header, centred, on every page (`features/shell/store-switch.tsx`; founder,
-  2026-10-24: "smaller, hovering over the page under the nav bar"): 272 × 38 px (224 × 36 on phones), "IWC store" and
-  "7-day store" ("IWC" and "7-day" on phones), the live date under "7-day store" ("arrives by Fri, Oct 30", worked out
-  in the browser). It rides with the header as the page scrolls; the page starts 30 px lower so it covers nothing until
-  then. The thumb is paper with ink words in the IWC store; in the 7-day store (every
-  page under `/7-day-delivery`) it fills with the brand colour, the words turn white and the header's bottom edge becomes
-  the jewellery drawer's gold stitch. It glides in 240 ms with a slight spring and glows once (at once with reduced
-  motion). A tap opens the other store's front page; the IWC tab returns to the page left (this tab's sessionStorage).
-  One tab list: ← and → move, a visible focus ring. Inside the 7-day store the header's type links become All and its
-  biggest categories (two below 1280 px, four above; each opens its 7-day See all page) and Search finds only 7-day
-  pieces (`/7-day-delivery/search`). The header keeps its height.
+- **The store tabs (D-154 step 4; D-156 replaced the floating pill):** while the 7-day store is open (days in Settings, not
+  paused, at least one piece), a dark strip along the very top of every store page with the two stores as tabs, like a
+  browser's (`features/shell/store-switch.tsx`, CSS `.store-*` in globals.css): "IWC store · All 36 states" with the gold
+  India outline, and "7-day store · arrives by Fri, Oct 30" with a brand-colour 7 (the date worked out in the browser).
+  Phones: the line under the name, the strip 46 px (42 px from 768 px), the tabs sharing the width; from 768 px 500 px
+  from the left gutter. The open tab is the header's own colour and runs into it through curved feet: ivory in the IWC
+  store; in the 7-day store (every page under `/7-day-delivery`) the header takes a warm brand tint (12% of the brand
+  colour) and its bottom edge becomes the jewellery drawer's gold stitch. On Home the open tab is light glass over the
+  photo. The strip is part of the page: `.site-top` sticks one strip-height up, so it scrolls away and the header stays
+  (`--top-h` is the header's height alone); on Home it slides up as the hero's words fade. A tap moves the open tab at
+  once (320 ms with a slight spring, the mark pops once; at once with reduced motion) and opens the other store's front
+  page; the IWC tab returns to the page left (this tab's sessionStorage). Plain links in a "Store" nav, the open one
+  `aria-current="page"`. Inside the 7-day store the header's type links become All and its biggest categories (two
+  below 1280 px, four above; each opens its 7-day See all page) and Search finds only 7-day pieces
+  (`/7-day-delivery/search`).
 - **Phones, smaller cards (founder, 2026-10-24):** below 640 px a row's cards are 148 px wide (176 px above), and See
   all's food and home grids (both stores) show three to a row with a 32 px heart and +, smaller chips and words
   (`data-dense`, globals.css); clothing keeps two to a row, its photos need the width.
@@ -162,7 +172,7 @@ with "Indian Wholesale Club" on its wall and "Miss local market? Start here." (D
 row while the 7-day store is open), the demo strip on top, Just listed, Pick
 your home with stamp pages from 7) · **Explore** (search with the count, States · Clothing · Food · Home & gifts; states as stamps) ·
 **Bag** (photos, − / + , the empty bag shows stamps and Just listed; the bag is a tab, so no bag panel; D-154: its lines
-under their shipments' dates and the 7-day meter, as on the website; not yet the pill's notes) · **Saved** (cards
+under their shipments' dates with the one goal and bar (D-156), as on the website; not yet the pill's notes) · **Saved** (cards
 with a filled heart that removes) · **Profile** (Orders · Addresses · Your details as pill tabs, Track an order, About us &
 help, Sign out; signed out, the sign-in card). Tab roots have a large Syne title, pushed screens a back bar. The screens
 follow the web pages above, read the same `store_*` data through `@repo/db/store` (one call per screen, D-017) and share

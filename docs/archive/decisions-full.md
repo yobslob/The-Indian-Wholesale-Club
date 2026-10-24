@@ -2053,3 +2053,39 @@ What it means for the build (packages/shared `sourcing/title.ts`, apps/web `feat
   inside other names of that shop.
 - Names to tidy makes a name the first rules cut down again from its shop title (kept since D-140), so the lost words
   come back; the admin still ticks every rename. Supersedes the L1 line of D-140 in that respect.
+
+**D-144 · 2026-10-21 · founder: See all opens low to high; Clothing's finishing touches in a jewellery drawer**
+- Founder, verbatim: "I want the customer to see low to high prices by default but in clothing only accessories comes up
+  first"; on Claude's proposal (design plan v6, F11): "I really like the jewellery drawer".
+What it means for the build (migration `20261021090000_low_to_high`, apps/web `features/catalog/finishing-drawer.tsx`):
+- See all (`/clothing`, `/food`, `/home-and-gifts`) opens low to high (`?sort=` absent; a state's own pieces still
+  first, D-140 L2; coming-soon pieces last). Newest, Price: low to high and high to low stay in Sort by. Supersedes
+  D-136's newest-first default.
+- Clothing's default view (no category chosen) is "one of each, then step up": each category's cheapest, then each
+  one's second cheapest; Price: low to high stays a strict list there.
+- On that view Accessories and Turbans & Headwear leave the list and open as a drawer after the second row of every
+  24 cards: a dark velvet band with a gold stitch, "Finishing touches · from $X", a sideways row of 12 smaller cards
+  with + and − n +, See all → the accessories. Inside any category, or with another sort, there is no drawer. The count
+  reads "252 pieces · 26 finishing touches".
+- *Interpretation (proposed, confirm when convenient):* footwear stays in the clothing order, not the drawer (Q-40);
+  the app's Browse stays newest first until it gets the drawer too.
+
+**D-145 · 2026-10-21 · founder: stay on Vercel's free plan; fewer page-cache writes**
+- Founder, verbatim: "We won't be buying vercel pro anytime soon." Then, on Claude's three proposals: "Yes: publishing
+  refreshes only what changed, deploy once a day, and a card loads its choices on its +. Then I move Vercel."
+- Why: Vercel's free plan allows 200,000 page-cache writes a month, counted in 8 KB units of each page rebuilt with
+  new content; 208,000 were used by 2026-10-21. A state page was 2 MB (HTML plus the same data again), Home 0.9 MB, each
+  of the 5,852 product pages 0.23 MB, and every admin edit and import refreshed all of them, as did each of about 70
+  deploys.
+What it means for the build:
+- An admin change to listings refreshes only their own pages, their state page (every state page for an all-India
+  piece), Home, See all and the sitemap (`features/admin/refresh-listings.ts`); an edit to a draft refreshes nothing;
+  more than 100 listings at once, and changes to cycles, settings, states, refunds and reviews, still refresh the whole
+  store. Similar items on other product pages catch up within the 5-minute fallback, as after a sale.
+- The website deploys once a day at 09:00 UTC, when `main` changed and its CI run is green
+  (`.github/workflows/daily-deploy.yml` calls the Vercel deploy hook; `apps/web/vercel.json` turns off Vercel's
+  deploy on every push). "Run workflow" on it deploys at once. Migrations still go through the Deploy workflow.
+- A card with several options no longer carries them in the page: the cache keeps their number and whether all are
+  sold out (`features/catalog/slim-cards.ts`), and the + reads them when pressed from `GET /api/card-options` (the
+  store's variants view, kept by Vercel's CDN a minute; the read starts as the finger goes down). A card with one
+  option still adds at once.

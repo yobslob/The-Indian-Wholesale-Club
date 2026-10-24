@@ -1,10 +1,10 @@
 # Decisions
 
-Every rule in the docs cites one of these IDs. **This file is the index**; the full text of D-001 – D-143 (the
+Every rule in the docs cites one of these IDs. **This file is the index**; the full text of D-001 – D-145 (the
 founder's verbatim words and what each means for the build) is in `docs/archive/decisions-full.md`: open it only for
 the entry you need (search for its ID). New entries go at the end of this file in full, with the founder's words
 verbatim (typos kept). When Recent holds more than about ten entries, the oldest move to the archive in full and
-leave a one-line index entry here (done for D-109 – D-139 on 2026-10-22, D-140 – D-143 on 2026-10-23).
+leave a one-line index entry here (done for D-109 – D-139 on 2026-10-22, D-140 – D-143 on 2026-10-23, D-144 – D-145 on 2026-10-24).
 
 **By:** `founder` = binding · `approved` = Claude's proposal the founder approved · `proposed` = awaiting the founder.
 To change a decision, add a new one (`Supersedes D-xxx`) and mark the old line `SUPERSEDED by D-yyy`.
@@ -154,44 +154,10 @@ To change a decision, add a new one (`Supersedes D-xxx`) and mark the old line `
 - **D-141** 2026-10-20 · approved: photos live in Cloudflare R2 as two AVIF copies; Supabase's storage keeps none
 - **D-142** 2026-10-20 · approved: a listing keeps each picture once (the shop's preview copies are dropped)
 - **D-143** 2026-10-21 · founder: a piece's name loses only the shop's or brand's name
+- **D-144** 2026-10-21 · founder: See all opens low to high; Clothing's finishing touches in a jewellery drawer
+- **D-145** 2026-10-21 · founder: stay on Vercel's free plan; fewer page-cache writes
 
 ## Recent (full text)
-
-**D-144 · 2026-10-21 · founder: See all opens low to high; Clothing's finishing touches in a jewellery drawer**
-- Founder, verbatim: "I want the customer to see low to high prices by default but in clothing only accessories comes up
-  first"; on Claude's proposal (design plan v6, F11): "I really like the jewellery drawer".
-What it means for the build (migration `20261021090000_low_to_high`, apps/web `features/catalog/finishing-drawer.tsx`):
-- See all (`/clothing`, `/food`, `/home-and-gifts`) opens low to high (`?sort=` absent; a state's own pieces still
-  first, D-140 L2; coming-soon pieces last). Newest, Price: low to high and high to low stay in Sort by. Supersedes
-  D-136's newest-first default.
-- Clothing's default view (no category chosen) is "one of each, then step up": each category's cheapest, then each
-  one's second cheapest; Price: low to high stays a strict list there.
-- On that view Accessories and Turbans & Headwear leave the list and open as a drawer after the second row of every
-  24 cards: a dark velvet band with a gold stitch, "Finishing touches · from $X", a sideways row of 12 smaller cards
-  with + and − n +, See all → the accessories. Inside any category, or with another sort, there is no drawer. The count
-  reads "252 pieces · 26 finishing touches".
-- *Interpretation (proposed, confirm when convenient):* footwear stays in the clothing order, not the drawer (Q-40);
-  the app's Browse stays newest first until it gets the drawer too.
-
-**D-145 · 2026-10-21 · founder: stay on Vercel's free plan; fewer page-cache writes**
-- Founder, verbatim: "We won't be buying vercel pro anytime soon." Then, on Claude's three proposals: "Yes: publishing
-  refreshes only what changed, deploy once a day, and a card loads its choices on its +. Then I move Vercel."
-- Why: Vercel's free plan allows 200,000 page-cache writes a month, counted in 8 KB units of each page rebuilt with
-  new content; 208,000 were used by 2026-10-21. A state page was 2 MB (HTML plus the same data again), Home 0.9 MB, each
-  of the 5,852 product pages 0.23 MB, and every admin edit and import refreshed all of them, as did each of about 70
-  deploys.
-What it means for the build:
-- An admin change to listings refreshes only their own pages, their state page (every state page for an all-India
-  piece), Home, See all and the sitemap (`features/admin/refresh-listings.ts`); an edit to a draft refreshes nothing;
-  more than 100 listings at once, and changes to cycles, settings, states, refunds and reviews, still refresh the whole
-  store. Similar items on other product pages catch up within the 5-minute fallback, as after a sale.
-- The website deploys once a day at 09:00 UTC, when `main` changed and its CI run is green
-  (`.github/workflows/daily-deploy.yml` calls the Vercel deploy hook; `apps/web/vercel.json` turns off Vercel's
-  deploy on every push). "Run workflow" on it deploys at once. Migrations still go through the Deploy workflow.
-- A card with several options no longer carries them in the page: the cache keeps their number and whether all are
-  sold out (`features/catalog/slim-cards.ts`), and the + reads them when pressed from `GET /api/card-options` (the
-  store's variants view, kept by Vercel's CDN a minute; the read starts as the finger goes down). A card with one
-  option still adds at once.
 
 **D-146 · 2026-10-22 · founder: every listing gets a weight, then everything is published; one press each for Weights to check, Drafts and Names to tidy**
 - Founder, verbatim: "Then finally our admin panel comes which stucks at huge numbers(not talking about live). The
@@ -508,3 +474,39 @@ What it means for the build (D-128's rules unchanged):
 - The cards (rows, See all) do not carry the tag; the product page, the bag and checkout do.
 - A heavy piece refunded as unavailable refunds its price and tax (D-042's item rule); its Heavy-item shipping stays
   with the order's shipping, as Shipping does, unless the admin refunds it by hand (Q-44).
+
+**D-156 · 2026-10-24 · founder: ergonomics: one free-delivery bar, instant categories, a state's types in a switch, the store tabs**
+Founder, verbatim: "The website currently has a lot of bad ergonomics choices made while designing such as: 1. two
+bars while showing that the customer is approaching free delivery, They should only focus on one. When $50 delivery is
+unlocked I am seeing add more for free delivery at bottom while at checkout it is already free. 2. In 7 day store when I
+click on a category it waits for a long time before opening the category. 3. In states I want the same consistency in
+design as normal pages while distributing clothing, food and home n gift in a toggle. 4. I still don't like the 7 day
+toggle it looks so badly placed, do something creative with it. 5. Look all these issues from a user's perspective, use
+psychology, designing and ergonomics. All these things show that test's haven't been done properly."
+What was found: the pill and the bag counted "free" only from $99.99, so a bag of only 7-day pieces from $49.99 (free
+Shipping at checkout, D-154) still read "Add $X more for FREE DELIVERY", under a second 7-day meter; every open page asked
+`/api/bag-charges` four times for one bag; a 7-day category was built on its first click after each deploy (1.7 – 2.4 s
+with nothing on screen, measured on the live site; 35 – 270 ms once built); the state page ran every type into one long
+page under jump pills; the store switch floated over the page's content.
+What it means for the build (prices, lines and charges unchanged):
+- **One goal, one bar** (`packages/shared/src/domain/bag-goal.ts`, used by the pill, the bag's summary and the app): a bag
+  of only 7-day pieces under $49.99 → "Add $12.40 more for FREE 7-DAY DELIVERY" (the bar on the 7-day line); from $49.99
+  → "FREE 7-DAY DELIVERY · by Fri, Oct 30", the bar full; any other bag under $99.99 → "Add $X more for FREE DELIVERY";
+  from $99.99 the bar refills with the bulk saving (D-119). The 7-day meter is gone; a mixed bag under the 7-day line
+  keeps "Add $12.40 of 7-day pieces and they arrive by …" as words under its shipment. One `/api/bag-charges` request per
+  bag, whichever components ask.
+- **Instant categories:** every 7-day category's page is built with the deploy (about a dozen more page writes a day,
+  well inside `monitoring.md` §1), and a See all page (both stores) shows its own shape and the running stitch the moment
+  its link is tapped (`loading.tsx`, `browse-skeleton.tsx`).
+- **A state's types in a switch:** under the hero and the album, the See all pages' frosted Clothing · Food · Home & gifts
+  switch with each type's count, pinned under the header; each type's rows as Home and the 7-day store draw theirs (New
+  arrivals, Most wanted, Picked for you, Leaving soon, then a row per category with "200 pieces" and See all), its
+  categories as chips above them. All three are in the cached page; the switch only shows one (`#food` in the address).
+- **The store tabs** (`store-switch.tsx`): the two stores as two tabs on a dark strip along the very top, like a
+  browser's; the open tab is the header's own colour and runs into it (ivory in the IWC store, a warm brand tint in the
+  7-day store), each says its promise ("All 36 states", "arrives by Fri, Oct 30"). The strip scrolls away with the page
+  and the header stays; nothing floats over content.
+*Interpretation (proposed, confirm when convenient):* the goal for a bag with both kinds is free delivery ($99.99), never
+the 7-day line (one bar, and the bigger saving); the IWC tab's line "All 36 states"; the 7-day header tint (12% of the
+brand colour on ivory); a state opens on Clothing, or the first type it has. The app's Bag and pill use the same goal; its
+store switch is unchanged.
