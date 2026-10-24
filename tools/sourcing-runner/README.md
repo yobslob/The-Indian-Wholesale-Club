@@ -77,19 +77,19 @@ listings it wants, up to four (D-137). Run one runner per product type across al
 but two runners of one type would both re-check the same listings. A results page that did not load counts as a
 failed search (the target is searched again), and a draft's line names what it lacks ("details to finish: material").
 
-**When a shop blocks the runner (D-149).** A shop behind Cloudflare may answer with "Just a moment…" or a block page
-("access denied … Verify you are human"). The runner gives Cloudflare's own check 20 seconds to clear by itself; it
-never clicks or solves one. Two robot checks in a row rest that shop: nothing more is asked of it for 2 hours (6 if it
-blocks again within two days, then 24), and both terminals' runners leave it alone (`shop-rest.json` next to this
-README; delete it to end every rest at once). Its targets go back to the queue and its listings' checks wait, so a block
-never marks anything "nothing fit" or out of stock. The run's first line names resting shops; the first block of each
-run is saved as the shop showed it in `out/blocks/` (a screenshot and the page's words). Ctrl+C puts the run's unsearched
-targets back in the queue at once.
+**When a shop blocks the runner (D-149, D-158).** A shop behind Cloudflare may answer with "Just a moment…" or a block
+page ("access denied … Verify you are human"). The runner gives Cloudflare's own check 20 seconds to clear by itself; it
+never clicks or solves one. A refused page only fails: the run goes on, nothing rests and nothing is paced (founder,
+2026-10-24: "remove the resters for these bot checks"). A target that came back empty while a shop refused goes back to
+the queue at the end of the run, and a listing whose page was refused keeps its price and stock, so a block never marks
+anything "nothing fit" or out of stock. The first block of each run is saved as the shop showed it in `out/blocks/` (a
+screenshot and the page's words). Ctrl+C puts the run's unsearched targets back in the queue at once.
 
-**Pace (D-153).** Blinkit, BigBasket and Instamart get at most 60 pages an hour and Zepto 90, both terminals' runners
-together (`out/pace/`): a shop at its limit waits and logs "the next in N min" while the other shops go on. A shop
-that answers "too many requests" with a Retry-After rests exactly that long (Blinkit asked about 20½ hours on
-2026-10-22). A run starts no new target after five hours and puts the rest back in the queue.
+**One run takes every target (D-158).** Add the CSV (Admin → Import → Auto-sourcing), then `pnpm sourcing run
+--targets --type food` once: the run claims Settings' "Targets per run" at a time and claims again until no queued
+target is left, however long that takes. A target handed back during the run (a refused or failed search) waits until
+the run ends, so it is not taken again in the same run. A `shop-rest.json` or `out/pace/` left from before is no longer
+read: delete them.
 
 To run it every day: Task Scheduler → Create Task → "Daily" at a quiet hour, action `cmd.exe` with arguments
 `/c pnpm sourcing run` and "Start in" `C:\kod\root`, "Run only when user is logged on" (the browser opens

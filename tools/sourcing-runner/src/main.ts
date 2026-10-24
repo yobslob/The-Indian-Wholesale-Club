@@ -96,8 +96,6 @@ async function doctor(): Promise<number> {
   return signedIn ? 0 : 1;
 }
 
-const FIVE_HOURS_MS = 5 * 3600_000;
-
 const flag = (args: string[], name: string): string | null =>
   args.includes(name) ? (args[args.indexOf(name) + 1] ?? null) : null;
 
@@ -131,11 +129,15 @@ async function run(args: string[]): Promise<number> {
     if (stopping) process.exit(130);
     stopping = true;
     log(`stopping: ${unsearched.size} target${unsearched.size === 1 ? '' : 's'} back to the queue`);
-    void Promise.all(
-      [...unsearched].map((id) =>
-        db.releaseTarget(id, 'the run was stopped; searched again next run'),
-      ),
-    ).finally(() => process.exit(130));
+    // the targets handed back so far first (flushReleases ends the holding), then the ones not reached
+    void db
+      .flushReleases()
+      .then(() =>
+        Promise.all(
+          [...unsearched].map((id) => db.releaseTarget(id, 'the run was stopped; searched again next run')),
+        ),
+      )
+      .finally(() => process.exit(130));
   };
   process.once('SIGINT', stop);
   process.once('SIGTERM', stop);
@@ -151,8 +153,6 @@ async function run(args: string[]): Promise<number> {
     known: new Set(plan.known),
     now: started,
   };
-  const resting = ctx.lanes.resting(plan.shops.map((s) => s.site));
-  if (resting.length) log(`resting after robot checks (D-149): ${resting.join(', ')}`);
   let added = 0;
   let errors = 0;
   try {
@@ -165,39 +165,49 @@ async function run(args: string[]): Promise<number> {
     // alone: its copies (kurtis 1 of 6, 2 of 6…) would otherwise race for the same first pieces.
     const lanes = (t: (typeof targets)[number]): string =>
       /^collection:/i.test(t.query.trim()) ? `collection ${t.query.trim().toLowerCase()}` : t.id;
-    for (let i = 0; i < targets.length;) {
-      // D-153: the hourly pace makes a long run slow; claims are taken back after six hours (worker_sourcing_plan),
-      // so after five no new target starts and the rest go back to the queue for the next run
-      if (Date.now() - started.getTime() > FIVE_HOURS_MS) {
-        log(`five hours: ${unsearched.size} targets back to the queue for the next run`);
-        await Promise.all(
-          [...unsearched].map((id) =>
-            db.releaseTarget(id, 'the run reached five hours; searched next run'),
+    const searchAll = async (list: typeof targets): Promise<void> => {
+      for (let i = 0; i < list.length && !stopping;) {
+        const batch: typeof targets = [];
+        while (i < list.length && batch.length < 3 && !batch.some((t) => lanes(t) === lanes(list[i]!)))
+          batch.push(list[i++]!);
+        const found = await Promise.all(
+          batch.map((t) =>
+            findForTarget(ctx, t)
+              .catch(async (error) => {
+                errors += 1;
+                log(`target "${t.name}" failed: ${errorText(error)}`);
+                await db.releaseTarget(t.id, `the search stopped: ${errorText(error)}`);
+                return 0;
+              })
+              .finally(() => unsearched.delete(t.id)),
           ),
         );
-        unsearched.clear();
-        break;
+        added += found.reduce((a, b) => a + b, 0);
       }
-      const batch: typeof targets = [];
-      while (
-        i < targets.length &&
-        batch.length < 3 &&
-        !batch.some((t) => lanes(t) === lanes(targets[i]!))
-      )
-        batch.push(targets[i++]!);
-      const found = await Promise.all(
-        batch.map((t) =>
-          findForTarget(ctx, t)
-            .catch(async (error) => {
-              errors += 1;
-              log(`target "${t.name}" failed: ${errorText(error)}`);
-              await db.releaseTarget(t.id, `the search stopped: ${errorText(error)}`);
-              return 0;
-            })
-            .finally(() => unsearched.delete(t.id)),
-        ),
-      );
-      added += found.reduce((a, b) => a + b, 0);
+    };
+    // D-158 (founder 2026-10-24: "I will just add the csv and run it one time"): one run takes every queued target,
+    // claim after claim (Settings' targets per run is the size of each claim), until none is left. A target handed
+    // back during the run waits until it ends (db.holdReleases), so the next claim does not take it again at once.
+    db.holdReleases();
+    const seen = new Set(targets.map((t) => t.id));
+    let searched = targets.length;
+    try {
+      await searchAll(targets);
+      while (targets.length && !stopping) {
+        const next = await db.plan(0, { type, site });
+        for (const key of next.known) ctx.known.add(key);
+        const fresh = next.targets.filter((t) => !seen.has(t.id));
+        if (!fresh.length) break;
+        for (const t of fresh) {
+          seen.add(t.id);
+          unsearched.add(t.id);
+        }
+        searched += fresh.length;
+        log(`next claim: ${fresh.length} more targets (${searched} this run)`);
+        await searchAll(fresh);
+      }
+    } finally {
+      await db.flushReleases();
     }
     // D-132: new clothing by class first (its weight is then settled); D-129: the weights the rest lack; D-133: then
     // food's packed weights (also from the net quantities the page search found)
@@ -212,7 +222,7 @@ async function run(args: string[]): Promise<number> {
     const packed = onlyOne || (type && type !== 'food') ? 0 : await weighFood(db);
     await db.logRun({
       started_at: started.toISOString(),
-      targets_searched: targets.length,
+      targets_searched: searched,
       listings_added: added,
       products_checked: checks.products,
       prices_changed: checks.prices,
@@ -267,7 +277,7 @@ async function dryRun(args: string[]): Promise<void> {
     db: null,
     plan,
     // a dry run rests a shop for itself only
-    lanes: new Lanes(context, false),
+    lanes: new Lanes(context),
     stats: new ShopStats(),
     known: new Set(),
     now: new Date(),

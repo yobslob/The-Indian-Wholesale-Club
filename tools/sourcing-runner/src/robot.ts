@@ -13,19 +13,15 @@ import { ROOT } from './env';
 import type { Page, Response } from 'playwright';
 
 /**
- * Opening a shop page and knowing a refusal when one comes (D-149, D-153): a robot check, a block page or "too many
- * requests", told apart from a page that only failed to load.
+ * Opening a shop page and knowing a refusal when one comes (D-149): a robot check, a block page or "too many
+ * requests", told apart from a page that only failed to load. A refused page fails alone; nothing rests (D-158).
  */
 
 export const TIMEOUT_MS = 35_000;
 
-/** "14:05", or "Fri 14:05" when it is not today (a shop's own wait can be 20 hours, D-153). */
-export const clock = (d: Date): string =>
-  `${d.toDateString() === new Date().toDateString() ? '' : `${d.toDateString().slice(0, 3)} `}${d.toTimeString().slice(0, 5)}`;
-
 /**
  * D-149: the shop answered with a robot check, after Cloudflare's own check had its time to clear, or with "too many
- * requests" (429). `retryAfterMs`: how long the shop itself asked to be left alone (D-153).
+ * requests" (429). `retryAfterMs`: how long the shop itself asked to wait, for the log only (D-158).
  */
 export class RobotCheck extends Error {
   constructor(
@@ -38,19 +34,8 @@ export class RobotCheck extends Error {
   }
 }
 
-/** D-149: the shop is resting after robot checks; nothing was asked of it. */
-export class ShopResting extends Error {
-  constructor(
-    readonly site: string,
-    readonly until: Date,
-  ) {
-    super(`resting until ${clock(until)} after robot checks`);
-  }
-}
-
-/** A shop refused the runner (now or earlier in its rest): says nothing about the piece, so nothing is changed. */
-export const isBlocked = (error: unknown): boolean =>
-  error instanceof RobotCheck || error instanceof ShopResting;
+/** A shop refused the runner: says nothing about the piece, so nothing is changed. */
+export const isBlocked = (error: unknown): boolean => error instanceof RobotCheck;
 
 /** How long Cloudflare's own check ("Just a moment…") may take to clear by itself before it counts as a block. */
 const CLEAR_WAIT_MS = 20_000;
@@ -99,7 +84,7 @@ export async function open(page: Page, url: string, waitFor?: string): Promise<v
   const res = await page.goto(url, { waitUntil: 'domcontentloaded', timeout: TIMEOUT_MS });
   const site = new URL(url).hostname.replace(/^www\./, '');
   if (res?.status() === 429) {
-    // "too many requests" (Blinkit's said 73,954 s on 2026-10-22, D-153): a block with the shop's own wait
+    // "too many requests": this page fails; the run goes on (D-158)
     const asked = await shownOn(page, res);
     await keepEvidence(page, site, url, asked);
     throw new RobotCheck(site, retryAfterMs(asked.headers, new Date()) ?? 0);

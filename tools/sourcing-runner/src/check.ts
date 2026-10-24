@@ -6,7 +6,7 @@ import {
 } from '@repo/shared/sourcing/auto';
 
 import { shopOf, type RunContext } from './context';
-import { isBlocked, ShopResting } from './lanes';
+import { isBlocked } from './lanes';
 import { errorText, log } from './log';
 import { shopFor, type PageRead } from './shops';
 
@@ -38,7 +38,7 @@ async function readPage(
     ctx.stats.page(site);
     return { read };
   } catch (error) {
-    if (!(error instanceof ShopResting)) ctx.stats.page(site, error);
+    ctx.stats.page(site, error);
     return { read: null, error: errorText(error), blocked: isBlocked(error) };
   }
 }
