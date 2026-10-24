@@ -19,6 +19,7 @@ import {
 import { quickCategories } from '@/features/seven-day/links';
 import { storeClient } from '@/lib/supabase/store';
 
+import { usefulSizes } from './size-facet';
 import { slimCards } from './slim-cards';
 
 /**
@@ -83,8 +84,12 @@ const browseKey = (filter: BrowseFilter): string[] => [
   String(filter.limit ?? 24),
 ];
 
+/** store_browse() with its Size / Pack list kept to the sizes worth a filter (size-facet.ts), before it is cached. */
+const browseRead = async (filter: BrowseFilter) =>
+  usefulSizes(await browseProducts(storeClient(), filter), filter.sizes);
+
 export const browseCached = (filter: BrowseFilter) =>
-  cached(['store-browse', ...browseKey(filter)], [listingsTag], () => browseProducts(storeClient(), filter));
+  cached(['store-browse', ...browseKey(filter)], [listingsTag], () => browseRead(filter));
 
 /**
  * D-157: a state page's own inventory (each type's first cards): refreshed with its state, like the state page was
@@ -95,7 +100,7 @@ export const browseStateCached = (filter: BrowseFilter & { regionSlug: string })
   cached(
     ['store-browse-state', ...browseKey(filter)],
     [listingsTag, regionsTag, regionTag(filter.regionSlug)],
-    () => browseProducts(storeClient(), filter),
+    () => browseRead(filter),
   );
 
 /**

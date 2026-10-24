@@ -67,5 +67,16 @@ export function photoSrcSet(url: string): string {
  * by the website (app/media/jpeg) and kept by the CDN. `url` is a stored photo's address from `mediaPath`.
  */
 export function photoJpegUrl(url: string, width: number): string {
-  return `${copyFor(url, width).replace('/media/s/', '/media/jpeg/')}?w=${Math.min(Math.max(Math.round(width), 80), 1200)}`;
+  return `${copyFor(url, width).replace('/media/s/', '/media/jpeg/')}?w=${jpegWidth(width)}`;
+}
+
+/**
+ * The widths a JPEG copy is made at. Each one is a conversion on the website's server (sharp, counted against the
+ * hosting's monthly CPU), so only these few exist per photo: the route sends any other width to the next one up.
+ */
+export const JPEG_WIDTHS = [160, 320, 480, 640, 960, 1200] as const;
+
+/** The JPEG width that serves `width` pixels: the next one up, at most 1200. */
+export function jpegWidth(width: number): number {
+  return JPEG_WIDTHS.find((w) => w >= width) ?? 1200;
 }

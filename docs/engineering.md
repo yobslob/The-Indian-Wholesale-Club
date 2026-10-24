@@ -58,7 +58,7 @@ Baseline numbers come from the founder's first `node scripts/check.mjs` run and 
   storing it, `photos:move` while moving. Pages draw
   `/media/s/<bucket>/<path>`, rewritten to R2's public address and kept by Vercel's CDN a year; `StorePhoto`
   (`features/catalog/store-photo.tsx`) is a `<picture>` with the AVIF `srcset` and, for a browser without AVIF, the
-  same copy as a JPEG from `app/media/jpeg` (made once, then cached); emails use that JPEG at 160 px. A photo still in
+  same copy as a JPEG from `app/media/jpeg` (made once, then cached; only at the widths in `JPEG_WIDTHS`, 160 – 1200, any other width or query is a cached redirect to the next one up, so a script can't make the server convert one photo at a thousand widths); emails use that JPEG at 160 px. A photo still in
   Supabase's storage shows as it is from `/media/<bucket>/…` (Supabase sets a cookie, so the CDN never keeps those).
   Every upload gets a new random path and is never overwritten, so a year's cache is always right. Removing a photo
   removes its copies (`removePhotos`). The home hero is a static AVIF (120 KB) with the WebP as fallback. With
@@ -96,7 +96,13 @@ Baseline numbers come from the founder's first `node scripts/check.mjs` run and 
   (its HTML and its data). Cached store reads keep a card's options out (`slim-cards.ts`: their number and whether all are
   sold out; one option stays), and the + reads them from `GET /api/card-options` when pressed; ProductCard passes the + only
   the fields it uses, not the whole card. The website deploys once a day (ops.md §Deploy): each deploy starts the page
-  cache afresh.
+  cache afresh. The same for every See all read: its Size / Pack list is kept to the 60 biggest when it runs past 100
+  (`size-facet.ts`: Food's 1,687 packs were 540 KB of /food's HTML).
+- Public, visitor-free JSON answers carry `s-maxage` so Vercel's CDN answers repeats without running a function (free;
+  not the page cache): `/api/card-options`, `/api/browse` and `/api/goes-well` a minute, `/api/bag-charges` a minute,
+  `/api/zip` a year. Never on an answer that depends on the session or carries personal data.
+- The saved hearts (`features/account/saved-store.ts`) load Supabase's browser client only when a session cookie is
+  there: a signed-out visitor (most of them) never downloads it (about 70 KB of script on every store page before).
 
 **Budgets (targets. Verified only by `check.mjs` numbers, never by assumption):**
 DB round trips per page: storefront ≤ 1, checkout ≤ 2 · storefront first-load JS ≤ 150 KB gzip · cached storefront

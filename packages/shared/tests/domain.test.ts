@@ -38,6 +38,7 @@ import {
   copyFor,
   hasCopies,
   mediaPath,
+  jpegWidth,
   photoJpegUrl,
   photoSrcSet,
   photoUrl,
@@ -637,6 +638,10 @@ describe('photos from the photo store (D-140)', () => {
   it('gives an email or an old browser the same copy as a JPEG, at a width the route accepts', () => {
     assert.equal(photoJpegUrl(`${base}/s/abc.jpg`, 160), '/media/jpeg/product-media/products/p1/s/abc.w640.avif?w=160');
     assert.equal(photoJpegUrl(`${base}/s/abc.jpg`, 4000), '/media/jpeg/product-media/products/p1/s/abc.w1200.avif?w=1200');
+    // a phone's own pixel width snaps to one of the few made (a conversion each)
+    assert.equal(photoJpegUrl(`${base}/s/abc.jpg`, 393), '/media/jpeg/product-media/products/p1/s/abc.w640.avif?w=480');
+    assert.equal(photoJpegUrl(`${base}/s/abc.jpg`, 1100), '/media/jpeg/product-media/products/p1/s/abc.w1200.avif?w=1200');
+    assert.deepEqual([1, 160, 161, 640, 641, 5000].map(jpegWidth), [160, 160, 320, 640, 960, 1200]);
   });
 });
 

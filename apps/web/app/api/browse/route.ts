@@ -26,5 +26,10 @@ export async function GET(request: Request): Promise<NextResponse> {
   const count = Math.min(limit.parse(params.get('limit') ?? PAGE), MOST - from);
   if (count <= 0) return NextResponse.json({ error: 'No more pieces on one page.' }, { status: 400 });
   const page = await browseCached(toBrowseFilter(productType.data, parseBrowseQuery(params), from, count));
-  return NextResponse.json(page);
+  // The same answer for everyone (light cards, no stock): Vercel's CDN keeps it a minute, like /api/card-options, so a
+  // filter or Show more someone opened before answers from the edge (about 20 ms, no function run) instead of a
+  // function and a data-cache read (about 250 ms). Free: CDN caching is not the page cache (monitoring.md).
+  return NextResponse.json(page, {
+    headers: { 'Cache-Control': 'public, max-age=0, s-maxage=60, stale-while-revalidate=60' },
+  });
 }

@@ -96,8 +96,14 @@ const SECURITY_HEADERS = [
   },
 ];
 
+// No plugins (<object>/<embed>), no <base> pointing scripts elsewhere, and no framing by another site (the modern form
+// of X-Frame-Options).
+const LOCKED_DOWN = ["object-src 'none'", "base-uri 'self'", "frame-ancestors 'self'"];
+
 /** @type {import('next').NextConfig} */
 const nextConfig = {
+  // No "X-Powered-By: Next.js" on every answer: it only tells a scanner what to try.
+  poweredByHeader: false,
   transpilePackages: ['@repo/db', '@repo/shared'],
   // Lint and typecheck run once, before the build (check.mjs, CI); `next build` repeating
   // them cost time on every build (engineering.md P7). Never deploy without CI passing.
@@ -149,6 +155,7 @@ const nextConfig = {
               "font-src 'self' data:",
               `img-src 'self' data: blob: ${supabaseOrigin}`,
               `connect-src 'self' ${supabaseOrigin} ${supabaseWs} https://api.stripe.com`,
+              ...LOCKED_DOWN,
             ].join('; '),
           },
           ...SECURITY_HEADERS,
@@ -166,6 +173,7 @@ const nextConfig = {
               "font-src 'self' data:",
               `img-src 'self' data: blob: https: ${supabaseOrigin}`,
               `connect-src 'self' ${supabaseOrigin} ${supabaseWs}`,
+              ...LOCKED_DOWN,
             ].join('; '),
           },
           ...SECURITY_HEADERS,

@@ -8,7 +8,7 @@
     "start": "next start",
     "lint": "eslint . --ext .ts,.tsx --max-warnings 0",
     "typecheck": "node -e \"require('fs').rmSync('.next/types',{recursive:true,force:true})\" && next typegen && tsc --noEmit",
-    "test": "tsx --test tests/order-email.test.ts tests/site.test.ts tests/rate-limit.test.ts tests/payment-check.test.ts tests/faster-decision.test.ts tests/export-documents.test.ts tests/order-update.test.ts tests/policy-text.test.ts tests/browse-query.test.ts tests/price-sheet.test.ts tests/paging.test.ts tests/card-options.test.ts tests/image-copies.test.ts tests/slim-cards.test.ts",
+    "test": "tsx --test tests/order-email.test.ts tests/site.test.ts tests/rate-limit.test.ts tests/payment-check.test.ts tests/faster-decision.test.ts tests/export-documents.test.ts tests/order-update.test.ts tests/policy-text.test.ts tests/browse-query.test.ts tests/price-sheet.test.ts tests/paging.test.ts tests/card-options.test.ts tests/image-copies.test.ts tests/slim-cards.test.ts tests/size-facet.test.ts",
     "e2e": "playwright test"
   },
   "dependencies": {
