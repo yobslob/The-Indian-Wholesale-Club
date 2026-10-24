@@ -61,7 +61,9 @@ Framer Motion page transitions (speed, `engineering.md`).
    it; the heading is the type or the chosen category). The address stays the state's and carries the type and the
    filters (`/states/punjab?type=food&category=sweets`; Clothing has no `type`), so Back, a refresh and a shared link
    open the same view (`BrowseQuery.inState`). The page is one cached build: each type's first 24 cards and counts
-   from the cached `store_browse()` entries See all uses; the other filters read in the browser (`/api/browse`). A
+   from one cached `store_browse()` read per type, refreshed with the state (a sale shows "Sold out" there at once);
+   the other filters read in the browser (`/api/browse`). Its option picker (the + ribbon and sheet) loads on the
+   first touch of a +, as on every page. A
    switch is instant and brings a reader who had scrolled down back to the top of the inventory. It opens on Clothing,
    or the first type the state has.
 5. **All-India listings fill every state (D-121):** a listing without a state (a Myntra kurta from no state in

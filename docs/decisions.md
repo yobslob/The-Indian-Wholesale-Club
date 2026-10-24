@@ -520,8 +520,9 @@ What it means for the build:
   more. The state is the page's: no State filter or chip, Clear all keeps it, the heading is the type or category.
 - The address stays the state's and carries the filters: `/states/punjab?type=food&category=sweets` (Clothing has no
   `type`); Back steps through them, a refresh or a shared link opens the same view (`BrowseQuery.inState`,
-  `use-browse.ts`). The page stays one cached build: each type's first 24 cards and counts come from the same cached
-  `store_browse()` entries as `/food?state=punjab`; the other filters are read in the browser from `/api/browse`.
+  `use-browse.ts`). The page stays one cached build: each type's first 24 cards and counts come from one cached
+  `store_browse()` read per type, refreshed with the state (`browseStateCached`), so a sale shows "Sold out" on the
+  state's page at once as before; the other filters are read in the browser from `/api/browse`.
 - The category pills, New arrivals, Leaving soon and the rows per category are gone from the state page (See all's
   Newest sort and "In 7 days" cover them).
 *Interpretation (proposed, confirm when convenient):* Most wanted and Picked for you stay above the switch (the state's
