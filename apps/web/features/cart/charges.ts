@@ -5,6 +5,7 @@ import { create } from 'zustand';
 
 import {
   bagChargesAt,
+  bagGoal,
   bagSavingCents,
   bulkProgress,
   heavyShippingAt,
@@ -50,7 +51,9 @@ const useChargesStore = create<{ key: string; charges: BagCharges | null; moment
   moment: null,
   note: null,
 }));
+// The bag key asked for (or about to be): every component calling useBagCharges shares one request per bag.
 let requested = '';
+let pending: ReturnType<typeof setTimeout> | null = null;
 
 /** The bag as the charges endpoint reads it: "<variant id>:<quantity>,…", sorted so one bag is one key (and one cache entry). */
 export const bagKey = (lines: CartLine[]): string =>
@@ -139,8 +142,11 @@ export function useBagCharges(): BagCharges | null {
   const { key: have, charges } = useChargesStore();
   useEffect(() => {
     if (!key || key === have || key === requested) return;
-    const timer = setTimeout(() => {
-      requested = key;
+    // Claimed before the wait, so the pill, the bag and the count mounting together send one request, not four
+    requested = key;
+    if (pending) clearTimeout(pending);
+    pending = setTimeout(() => {
+      pending = null;
       fetch(`/api/bag-charges?items=${encodeURIComponent(key)}`)
         .then((r) => (r.ok ? r.json() : null))
         .then((data: unknown) => {
@@ -161,7 +167,6 @@ export function useBagCharges(): BagCharges | null {
           if (requested === key) requested = '';
         });
     }, 250);
-    return () => clearTimeout(timer);
   }, [key, have]);
   return key ? charges : null;
 }
@@ -175,6 +180,7 @@ export function freeDelivery(lines: CartLine[], charges: BagCharges | null) {
   const line = charges?.freeMinCents ?? null;
   const free = line !== null && subtotal >= line;
   const at = bagChargesAt(subtotal, line, charges?.small ?? null);
+  const bulk = bulkProgress(subtotal, line, charges?.bulk);
   return {
     subtotal,
     line,
@@ -185,7 +191,16 @@ export function freeDelivery(lines: CartLine[], charges: BagCharges | null) {
     heavy: heavyShippingAt(charges?.heavy, free || at.shippingFree),
     leftCents: line === null ? 0 : Math.max(line - subtotal, 0),
     share: line ? Math.min(subtotal / line, 1) : 1,
-    bulk: bulkProgress(subtotal, line, charges?.bulk),
+    bulk,
+    /** The one goal the pill and the bag show (bag-goal.ts): never two bars. */
+    goal: bagGoal({
+      subtotalCents: subtotal,
+      freeMinCents: line,
+      at,
+      bulk,
+      facts: charges?.shipments ?? null,
+      variantIds: lines.map((l) => l.variantId),
+    }),
   };
 }
 

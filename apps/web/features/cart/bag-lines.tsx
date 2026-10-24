@@ -57,7 +57,9 @@ export function BagLines({ compact = false }: { compact?: boolean }): React.JSX.
   const facts = useBagCharges()?.shipments ?? null;
   const state = bagShipmentState(facts);
   if (state === 'none') return <LineList lines={lines} compact={compact} top={!compact} />;
-  const gap = state === 'under' ? quickGapLine(facts) : null;
+  // a bag of only 7-day pieces under the line: its summary's one goal says it (bag-goal.ts), not a second line here
+  const onlyQuick = facts !== null && lines.every((l) => facts.quickIds.includes(l.variantId));
+  const gap = state === 'under' && !onlyQuick ? quickGapLine(facts) : null;
   return (
     <div className="font-ui">
       {bagGroups(lines, facts).map((g) => {

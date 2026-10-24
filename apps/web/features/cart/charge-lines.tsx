@@ -1,8 +1,9 @@
 'use client';
 
+import Link from 'next/link';
 import { usePathname } from 'next/navigation';
 
-import { formatUsd, quickMeter } from '@repo/shared/domain';
+import { formatUsd, type BagGoal } from '@repo/shared/domain';
 
 import { bagSaving, freeDelivery, undoBagChange, useBagCharges, useShipmentNote } from './charges';
 import { FreeMeter, useSurge } from './free-delivery-bar';
@@ -47,10 +48,8 @@ export function ChargeLines(): React.JSX.Element | null {
   const lines = useCart((s) => s.lines);
   const charges = useBagCharges();
   if (!charges) return null;
-  const { free, leftCents, line, share, bulk, at, heavy } = freeDelivery(lines, charges);
+  const { free, bulk, at, heavy, goal } = freeDelivery(lines, charges);
   const row = 'flex items-baseline justify-between gap-3 text-[14px]';
-  // D-154: the 7-day meter (the 7-day pieces against the 7-day line) above the free-delivery one
-  const quick = quickMeter(charges.shipments);
   return (
     <div className="font-ui grid gap-1" aria-live="polite">
       <BagNote />
@@ -76,23 +75,7 @@ export function ChargeLines(): React.JSX.Element | null {
           <span className="text-positive font-semibold">−{formatUsd(bulk.savingCents)}</span>
         </p>
       ) : null}
-      {quick ? (
-        <div className="mt-1.5 grid gap-2">
-          <p className="text-brand m-0 text-[13px] font-semibold">
-            7-day delivery: {formatUsd(quick.cents)} of {formatUsd(quick.minCents)}
-          </p>
-          <Meter share={quick.share} />
-        </div>
-      ) : null}
-      {line !== null && !free ? (
-        <div className="mt-1.5 grid gap-2">
-          <p className="text-brand m-0 text-[13px] font-semibold">
-            Add {formatUsd(leftCents)} more for free delivery
-          </p>
-          <Meter share={share} />
-        </div>
-      ) : null}
-      {free ? <BulkHint bulk={bulk} /> : null}
+      <GoalMeter goal={goal} />
       <SavingLine cents={bagSaving(lines, charges)} />
     </div>
   );
@@ -129,21 +112,35 @@ export function SavingLine({ cents }: { cents: number }): React.JSX.Element | nu
   );
 }
 
-/** D-119: from the line up, how the bulk saving grows and where it stops. */
-function BulkHint({
-  bulk,
-}: {
-  bulk: ReturnType<typeof freeDelivery>['bulk'];
-}): React.JSX.Element | null {
-  if (bulk.capCents === 0) return null;
+/**
+ * The bag's one goal under its charges, as the pill says it (bag-goal.ts; founder 2026-10-24: one bar, never two). From
+ * the line up (D-119), how the bulk saving grows and where it stops.
+ */
+function GoalMeter({ goal }: { goal: BagGoal }): React.JSX.Element | null {
+  const words =
+    goal.kind === 'quick-gap'
+      ? `Add ${formatUsd(goal.leftCents)} more for free 7-day delivery`
+      : goal.kind === 'quick-free'
+        ? `Free 7-day delivery${goal.arrivesBy ? `: arrives by ${goal.arrivesBy}` : ' unlocked'}`
+        : goal.kind === 'free-gap'
+          ? `Add ${formatUsd(goal.leftCents)} more for free delivery`
+          : goal.kind === 'free' && goal.bulk.capCents > 0
+            ? goal.bulk.capped
+              ? `You've unlocked the biggest bulk saving: ${formatUsd(goal.bulk.capCents)}`
+              : `Every ${formatUsd(goal.bulk.perDollarCents ?? 0)} more saves $1 more, up to ${formatUsd(goal.bulk.capCents)}`
+            : null;
+  if (!words || goal.kind === 'none') return null;
   return (
     <div className="mt-1.5 grid gap-2">
-      <p className="text-brand m-0 text-[13px] font-semibold">
-        {bulk.capped
-          ? `You've unlocked the biggest bulk saving: ${formatUsd(bulk.capCents)}`
-          : `Every ${formatUsd(bulk.perDollarCents ?? 0)} more saves $1 more, up to ${formatUsd(bulk.capCents)}`}
+      <p className="m-0 flex flex-wrap items-baseline justify-between gap-x-3 gap-y-1 text-[13px]">
+        <span className="text-brand font-semibold">{words}</span>
+        {goal.kind === 'quick-gap' ? (
+          <Link href="/7-day-delivery" className="font-medium underline underline-offset-[3px]">
+            Shop the 7-day store
+          </Link>
+        ) : null}
       </p>
-      <Meter share={bulk.share} />
+      <Meter share={goal.kind === 'free' ? goal.bulk.share : goal.share} />
     </div>
   );
 }

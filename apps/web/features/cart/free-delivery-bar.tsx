@@ -4,7 +4,7 @@ import Link from 'next/link';
 import { usePathname } from 'next/navigation';
 import { useEffect, useRef, useState } from 'react';
 
-import { formatUsd, quickMeter } from '@repo/shared/domain';
+import { formatUsd, type BagGoal } from '@repo/shared/domain';
 
 import { StorePhoto } from '@/features/catalog/store-photo';
 import { mediaUrl } from '@/lib/site';
@@ -18,9 +18,10 @@ import { cartCount, useCart } from './store';
  * that fills with light: a glowing head, a shimmer running through the filled part, a flare each time the bag grows.
  * At the line the bar is full and a sheen runs across the pill once; from there the bar fills again with the bulk
  * saving until its cap (D-119). A tap opens the bag. Not on the bag page, which shows the same bars in its summary.
- * D-154: while the bag holds 7-day pieces under the 7-day line, a second meter (theirs) sits above the free-delivery
- * one; when a change moves the bag across a line the pill says so for three seconds, with Undo beside it when a normal
- * piece brought Shipping back.
+ * One goal, one bar (founder, 2026-10-24; bag-goal.ts): a bag of only 7-day pieces works towards free 7-day delivery
+ * ($49.99) and, there, says it is free as checkout does; every other bag towards free delivery. D-154: when a change
+ * moves the bag across a line the pill says so for three seconds, with Undo beside it when a normal piece brought
+ * Shipping back.
  * The look is `.fd-*` in globals.css.
  */
 export function FreeDeliveryBar(): React.JSX.Element | null {
@@ -41,15 +42,9 @@ export function FreeDeliveryBar(): React.JSX.Element | null {
     };
   }, [visible]);
 
-  const { free, leftCents, share, bulk } = visible
-    ? freeDelivery(lines, charges)
-    : { free: false, leftCents: 0, share: 0, bulk: null };
-  // D-119: past the line the bar shows the bulk saving filling up to its cap.
-  const bulkOn = free && bulk !== null && bulk.capCents > 0;
-  const meter = bulkOn && bulk.savingCents > 0 ? bulk.share : free ? 1 : share;
-  const surge = useSurge(meter);
-  const quick = visible ? quickMeter(charges.shipments) : null;
-  const quickSurge = useSurge(quick?.share ?? 0);
+  const goal: BagGoal = visible ? freeDelivery(lines, charges).goal : { kind: 'none' };
+  const free = goal.kind === 'free' || goal.kind === 'quick-free';
+  const surge = useSurge(goal.kind === 'none' ? 0 : goal.share);
   const note = useShipmentNote();
   if (!visible) return null;
 
@@ -60,7 +55,7 @@ export function FreeDeliveryBar(): React.JSX.Element | null {
       <Link
         href="/cart"
         aria-live="polite"
-        className={`fd-pill bg-brand text-on-brand font-ui rounded-pill fixed inset-x-3 bottom-[max(12px,env(safe-area-inset-bottom))] z-[44] mx-auto flex ${quick ? 'h-[66px]' : 'h-14'} max-w-[440px] items-center gap-3 pl-2 pr-4 [html[data-buy-bar]_&]:bottom-[84px] md:[html[data-buy-bar]_&]:bottom-[max(12px,env(safe-area-inset-bottom))] ${
+        className={`fd-pill bg-brand text-on-brand font-ui rounded-pill fixed inset-x-3 bottom-[max(12px,env(safe-area-inset-bottom))] z-[44] mx-auto flex h-14 max-w-[440px] items-center gap-3 pl-2 pr-4 [html[data-buy-bar]_&]:bottom-[84px] md:[html[data-buy-bar]_&]:bottom-[max(12px,env(safe-area-inset-bottom))] ${
           shown ? 'translate-y-0 scale-100 opacity-100' : 'translate-y-5 scale-[.96] opacity-0'
         }`}
         data-free={free || undefined}
@@ -105,43 +100,14 @@ export function FreeDeliveryBar(): React.JSX.Element | null {
               <span key={note.until} className="rise-in inline-block">
                 {note.text}
               </span>
-            ) : bulkOn && bulk.capped ? (
-              <>
-                <b className="font-bold">{formatUsd(bulk.capCents)}</b> off:{' '}
-                <b className="font-bold tracking-[0.02em]">BIGGEST SAVING</b>
-              </>
-            ) : bulkOn && bulk.savingCents > 0 ? (
-              <>
-                Saving <b className="font-bold">{formatUsd(bulk.savingCents)}</b>
-                <span className="hidden sm:inline"> · add more, save more</span>
-              </>
-            ) : free ? (
-              <>
-                <b className="font-bold tracking-[0.02em]">FREE DELIVERY</b> unlocked
-              </>
             ) : (
-              <>
-                Add <b className="font-bold">{formatUsd(leftCents)}</b> more{' '}
-                <span className="sm:hidden">for</span>
-                <span className="hidden sm:inline">to unlock</span>{' '}
-                <b className="font-bold tracking-[0.02em]">FREE DELIVERY</b>
-              </>
+              <GoalWords goal={goal} />
             )}
             <span className="sr-only">
               . Bag, {count} {count === 1 ? 'item' : 'items'}
             </span>
           </span>
-          {quick ? (
-            <span className="flex items-center gap-1.5">
-              <span className="text-[10px] font-semibold uppercase leading-none tracking-[0.06em] opacity-85">
-                7-day
-              </span>
-              <span className="min-w-0 flex-1">
-                <FreeMeter share={quick.share} surge={quickSurge} />
-              </span>
-            </span>
-          ) : null}
-          <FreeMeter share={meter} surge={surge} />
+          <FreeMeter share={goal.kind === 'none' ? 0 : goal.share} surge={surge} />
         </span>
         <svg
           viewBox="0 0 24 24"
@@ -163,6 +129,52 @@ export function FreeDeliveryBar(): React.JSX.Element | null {
       ) : null}
     </>
   );
+}
+
+/** The pill's one line for the bag's goal ("Add $12.40 more for FREE 7-DAY DELIVERY", "FREE DELIVERY unlocked", …). */
+function GoalWords({ goal }: { goal: BagGoal }): React.JSX.Element | null {
+  const big = (words: string) => <b className="font-bold tracking-[0.02em]">{words}</b>;
+  switch (goal.kind) {
+    case 'quick-gap':
+      return (
+        <>
+          Add <b className="font-bold">{formatUsd(goal.leftCents)}</b> <span className="hidden sm:inline">more </span>for{' '}
+          {big('FREE 7-DAY DELIVERY')}
+        </>
+      );
+    case 'quick-free':
+      return (
+        <>
+          {big('FREE 7-DAY DELIVERY')}
+          {goal.arrivesBy ? <> · by {goal.arrivesBy}</> : ' unlocked'}
+        </>
+      );
+    case 'free-gap':
+      return (
+        <>
+          Add <b className="font-bold">{formatUsd(goal.leftCents)}</b> more <span className="sm:hidden">for</span>
+          <span className="hidden sm:inline">to unlock</span> {big('FREE DELIVERY')}
+        </>
+      );
+    case 'free':
+      // D-119: past the line the bar shows the bulk saving filling up to its cap
+      if (goal.bulk.capped)
+        return (
+          <>
+            <b className="font-bold">{formatUsd(goal.bulk.capCents)}</b> off: {big('BIGGEST SAVING')}
+          </>
+        );
+      if (goal.bulk.savingCents > 0)
+        return (
+          <>
+            Saving <b className="font-bold">{formatUsd(goal.bulk.savingCents)}</b>
+            <span className="hidden sm:inline"> · add more, save more</span>
+          </>
+        );
+      return <>{big('FREE DELIVERY')} unlocked</>;
+    default:
+      return null;
+  }
 }
 
 /**

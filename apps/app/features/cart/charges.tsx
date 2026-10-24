@@ -1,7 +1,7 @@
 import { Text, View } from 'react-native';
 
 import { getBagCharges, heavyOf, smallOrderOf, type BagCharges } from '@repo/db/store';
-import { bagChargesAt, bulkProgress, formatUsd, heavyShippingAt, parseBagShipments, quickMeter } from '@repo/shared/domain';
+import { bagChargesAt, bagGoal, bulkProgress, formatUsd, heavyShippingAt, parseBagShipments } from '@repo/shared/domain';
 
 import { MeterLine } from './meter-line';
 import { bagSubtotalCents, useBag, type BagLine } from './store';
@@ -40,6 +40,7 @@ export function freeDelivery(lines: BagLine[], charges: BagCharges | null) {
       ? { pct: charges.bulk_saving_pct, capCents: charges.bulk_saving_cap_cents }
       : null;
   const at = bagChargesAt(subtotal, line, charges ? smallOrderOf(charges) : null);
+  const progress = bulkProgress(subtotal, line, bulk);
   return {
     free,
     line,
@@ -49,7 +50,16 @@ export function freeDelivery(lines: BagLine[], charges: BagCharges | null) {
     heavy: heavyShippingAt(charges ? heavyOf(charges) : null, free || at.shippingFree),
     leftCents: line === null ? 0 : Math.max(line - subtotal, 0),
     share: line ? Math.min(subtotal / line, 1) : 1,
-    bulk: bulkProgress(subtotal, line, bulk),
+    bulk: progress,
+    /** The one goal the pill and the Bag show (bag-goal.ts, founder 2026-10-24): never two bars. */
+    goal: bagGoal({
+      subtotalCents: subtotal,
+      freeMinCents: line,
+      at,
+      bulk: progress,
+      facts: charges ? parseBagShipments(charges) : null,
+      variantIds: lines.map((l) => l.variantId),
+    }),
   };
 }
 
@@ -93,15 +103,24 @@ function ChargeRow({
   );
 }
 
-/** The bag's Shipping and Retailer charges under its subtotal (D-111), with how much more makes them free. */
+/** The bag's Shipping and Retailer charges under its subtotal (D-111), with its one goal and bar (bag-goal.ts). */
 export function ChargeRows(): React.JSX.Element | null {
   const lines = useBag((s) => s.lines);
   const charges = useBagCharges();
   if (!charges) return null;
-  const { free, leftCents, line, share, bulk, at, heavy } = freeDelivery(lines, charges);
-  // D-154: the 7-day meter (the 7-day pieces against the 7-day line) above the free-delivery one
-  const facts = parseBagShipments(charges);
-  const quick = quickMeter(facts);
+  const { free, bulk, at, heavy, goal } = freeDelivery(lines, charges);
+  const words =
+    goal.kind === 'quick-gap'
+      ? `Add ${formatUsd(goal.leftCents)} more for free 7-day delivery`
+      : goal.kind === 'quick-free'
+        ? `Free 7-day delivery${goal.arrivesBy ? `: arrives by ${goal.arrivesBy}` : ' unlocked'}`
+        : goal.kind === 'free-gap'
+          ? `Add ${formatUsd(goal.leftCents)} more for free delivery`
+          : goal.kind === 'free' && bulk.capCents > 0
+            ? bulk.capped
+              ? `You've unlocked the biggest bulk saving: ${formatUsd(bulk.capCents)}`
+              : `Every ${formatUsd(bulk.perDollarCents ?? 0)} more saves $1 more, up to ${formatUsd(bulk.capCents)}`
+            : null;
   return (
     <View className="gap-1">
       <ChargeRow
@@ -128,31 +147,10 @@ export function ChargeRows(): React.JSX.Element | null {
           <Text className="font-body text-positive text-sm">−{formatUsd(bulk.savingCents)}</Text>
         </View>
       ) : null}
-      {quick ? (
+      {words && goal.kind !== 'none' ? (
         <View className="mt-1 gap-2">
-          <Text className="font-ui-semibold text-brand text-[13px]">
-            7-day delivery: {formatUsd(quick.cents)} of {formatUsd(quick.minCents)}
-          </Text>
-          <MeterLine share={quick.share} />
-        </View>
-      ) : null}
-      {line !== null && !free ? (
-        <View className="mt-1 gap-2">
-          <Text className="font-ui-semibold text-brand text-[13px]">
-            Add {formatUsd(leftCents)} more for free delivery
-          </Text>
-          <MeterLine share={share} />
-        </View>
-      ) : null}
-      {/* D-119: from the line up, how the bulk saving grows and where it stops. */}
-      {free && bulk.capCents > 0 ? (
-        <View className="mt-1 gap-2">
-          <Text className="font-ui-semibold text-brand text-[13px]">
-            {bulk.capped
-              ? `You've unlocked the biggest bulk saving: ${formatUsd(bulk.capCents)}`
-              : `Every ${formatUsd(bulk.perDollarCents ?? 0)} more saves $1 more, up to ${formatUsd(bulk.capCents)}`}
-          </Text>
-          <MeterLine share={bulk.share} />
+          <Text className="font-ui-semibold text-brand text-[13px]">{words}</Text>
+          <MeterLine share={goal.kind === 'free' ? bulk.share : goal.share} />
         </View>
       ) : null}
     </View>
