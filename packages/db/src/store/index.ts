@@ -18,6 +18,7 @@ import {
   orderSummarySchema,
   productCardSchema,
   productPageSchema,
+  regionHeadSchema,
   regionPageSchema,
   storePolicySchema,
   type BrowsePage,
@@ -28,6 +29,7 @@ import {
   type OrderSummary,
   type ProductCard,
   type ProductPage,
+  type RegionHead,
   type RegionPage,
   type StorePolicy,
   type TypeRow,
@@ -52,6 +54,29 @@ export async function getRegionPage(
     await client.rpc('store_region_page', { p_region_slug: regionSlug }, { get: true }),
   );
   return data === null ? null : regionPageSchema.parse(data);
+}
+
+/**
+ * D-157: /states/[region]'s head, without the card lists: null when the slug does not exist (1 round trip). Until
+ * migration 20261029090000 is applied (PostgREST: no such function) it is cut from store_region_page() as before.
+ */
+export async function getRegionHead(client: IwcClient, regionSlug: string): Promise<RegionHead | null> {
+  const res = await client.rpc('store_region_head', { p_region_slug: regionSlug }, { get: true });
+  if (res.error?.code === 'PGRST202' || res.error?.code === '42883') {
+    const page = await getRegionPage(client, regionSlug);
+    if (!page) return null;
+    const count = (t: string): number =>
+      page.category_counts.filter((c) => c.product_type === t).reduce((n, c) => n + c.count, 0);
+    return {
+      region: page.region,
+      album: page.album,
+      most_wanted: page.most_wanted,
+      curated: page.curated,
+      type_counts: { clothing: count('clothing'), food: count('food'), home: count('home') },
+    };
+  }
+  const data = unwrap(res);
+  return data === null ? null : regionHeadSchema.parse(data);
 }
 
 /** /states/[region]/[product]: null when not found or not live (1 round trip). */

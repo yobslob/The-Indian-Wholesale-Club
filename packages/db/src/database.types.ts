@@ -2164,6 +2164,9 @@ isOneToOne: false
 "store_quick_front":
 { Args: Record<PropertyKey, never>; Returns: Json
                            },
+"store_region_head":
+{ Args: { "p_region_slug": string }; Returns: Json
+                           },
 "store_region_page":
 { Args: { "p_region_slug": string }; Returns: Json
                            },

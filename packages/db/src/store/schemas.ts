@@ -164,6 +164,14 @@ export const regionPageSchema = z.object({
   leaving_soon: z.array(regionProductCardSchema),
 });
 
+/**
+ * D-157: a state's page head (store_region_head): the region, its album, Most wanted, Picked for you and each type's
+ * count (its own pieces and the all-India ones). The inventory is read per type with store_browse().
+ */
+export const regionHeadSchema = regionPageSchema.pick({ region: true, album: true, most_wanted: true, curated: true }).extend({
+  type_counts: z.object({ clothing: z.number().int(), food: z.number().int(), home: z.number().int() }),
+});
+
 /** Approved reviews only (store_reviews): never who wrote them beyond the chosen display name (INV-1). */
 export const reviewSchema = z.object({
   id: z.string().uuid(),
@@ -370,6 +378,7 @@ export type Variant = z.infer<typeof variantSchema>;
 export type Media = z.infer<typeof mediaSchema>;
 export type HomeData = z.infer<typeof homeSchema>;
 export type RegionPage = z.infer<typeof regionPageSchema>;
+export type RegionHead = z.infer<typeof regionHeadSchema>;
 export type ProductPage = z.infer<typeof productPageSchema>;
 export type CustomerStatus = z.infer<typeof customerStatusSchema>;
 export type OrderSummary = z.infer<typeof orderSummarySchema>;
