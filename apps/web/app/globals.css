@@ -769,6 +769,49 @@
     }
   }
 
+  /* D-160 (features/search/search-suggest.tsx): suggestions under any search box, in a layer of their own (fixed,
+     placed under the box by the script) so the header's clipping never cuts them. */
+  .search-suggest {
+    position: fixed;
+    z-index: 60;
+    margin: 0;
+    padding: 6px;
+    list-style: none;
+    max-height: min(420px, 60vh);
+    overflow-y: auto;
+    border: 1px solid theme('colors.line');
+    border-radius: theme('borderRadius.md');
+    background: theme('colors.paper');
+    color: theme('colors.ink');
+    box-shadow: 0 12px 32px rgb(29 26 23 / 0.14);
+    font-family: theme('fontFamily.ui');
+    font-size: 15px;
+  }
+  .search-suggest[hidden] {
+    display: none;
+  }
+  .search-suggest-item {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    gap: 12px;
+    min-height: 44px;
+    padding: 0 12px;
+    border-radius: theme('borderRadius.sm');
+    cursor: pointer;
+  }
+  .search-suggest-item[aria-selected='true'] {
+    background: theme('colors.canvas');
+    outline: 2px solid theme('colors.ink');
+    outline-offset: -2px;
+  }
+  .search-suggest-kind {
+    flex: none;
+    color: theme('colors.ink-muted');
+    font-size: 12px;
+    letter-spacing: 0.04em;
+  }
+
   /* Phones (D-116, phone-search.tsx): the search bar grows over the whole header bar in a circle from its icon. */
   .phone-search {
     position: absolute;

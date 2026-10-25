@@ -59,6 +59,11 @@ export async function limitRequest(
   );
 }
 
+/** The in-memory limiter for a page (no response to return): true when this caller is over the rule (D-160: search). */
+export function isLimitedLocal(headers: Headers, name: keyof typeof RULES): boolean {
+  return !rateLimit(`${callerKey(headers)}:${name}`, RULES[name]).ok;
+}
+
 /**
  * The in-memory limiter alone, for a busy read that must stay one round trip (See all's filters, D-136, PR-2): a
  * per-server count, enough to stop a script hammering one instance. Returns a 429 response or null.

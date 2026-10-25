@@ -11,7 +11,8 @@ export default function robots(): MetadataRoute.Robots {
     rules: {
       userAgent: '*',
       allow: '/',
-      disallow: ['/account', '/checkout', '/cart', '/orders', '/api/'],
+      // D-160: search results are per visitor; a crawler following every word would run the database for nothing
+      disallow: ['/account', '/checkout', '/cart', '/orders', '/api/', '/search', '/7-day-delivery/search'],
     },
     sitemap: `${siteUrl()}/sitemap.xml`,
   };

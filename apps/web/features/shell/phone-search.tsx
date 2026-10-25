@@ -3,6 +3,7 @@
 import { usePathname } from 'next/navigation';
 import { useEffect, useRef, useState } from 'react';
 
+import { SuggestFor } from '@/features/search/suggest-for';
 import { isQuickPath, QUICK_HOME } from '@/lib/site';
 
 import { HeaderIcon } from './header-icons';
@@ -11,7 +12,7 @@ import { HeaderIcon } from './header-icons';
  * Phones only (D-116): a search icon in the header's icons (where Saved is on wider screens; Saved moves into the
  * menu). A tap grows a search bar over the whole header bar, the field focused; Enter opens /search, ×, Escape or
  * going to another page put the header back. Without JavaScript the icon is a plain link to /search. D-154: inside the
- * 7-day store it searches only 7-day pieces.
+ * 7-day store it searches only 7-day pieces. D-160: suggestions while typing (Escape closes them first).
  */
 export function PhoneSearch(): React.JSX.Element {
   const [open, setOpen] = useState(false);
@@ -59,7 +60,8 @@ export function PhoneSearch(): React.JSX.Element {
         aria-hidden={!open}
       >
         <HeaderIcon name="search" />
-        <input ref={input} type="search" name="q" placeholder={search === '/search' ? 'Search pieces, states…' : 'Search the 7-day store'} aria-label="Search" enterKeyHint="search" />
+        <input ref={input} type="search" name="q" maxLength={100} placeholder={search === '/search' ? 'Search pieces, states…' : 'Search the 7-day store'} aria-label="Search" enterKeyHint="search" />
+        <SuggestFor input={input} quick={search !== '/search'} />
         <button
           type="button"
           className="site-icon -mr-2.5 flex-none"

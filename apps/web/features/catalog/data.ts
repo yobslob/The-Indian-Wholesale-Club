@@ -12,8 +12,9 @@ import {
   getStorePolicy,
   isDemoStore,
   listProductPaths,
-  searchProducts as searchStore,
+  searchPage,
   type BrowseFilter,
+  type SearchFilter,
 } from '@repo/db/store';
 
 import { quickCategories } from '@/features/seven-day/links';
@@ -146,9 +147,10 @@ export const listProductPathsCached = () =>
   cached(['store-product-paths'], [listingsTag], () => listProductPaths(storeClient()));
 
 /**
- * Search is per query: not cached (dynamic page, still one round trip). `limit` grows with "Show more", which reads
- * from the first result again; only the first read is recorded for Insights (C7).
+ * Search is per query: not cached (dynamic page, still one round trip, D-160's store_search_page with its counts).
+ * `limit` grows with "Show more", which reads from the first result again; only the first unfiltered read is
+ * recorded for Insights (C7).
  */
-export function searchProducts(query: string, limit: number, record: boolean, quick = false) {
-  return searchStore(storeClient(), query, { limit, record, quick });
+export function searchStorePage(query: string, filter: SearchFilter) {
+  return searchPage(storeClient(), query, filter);
 }

@@ -19,6 +19,10 @@ export const RULES = {
   browse: { limit: 120, windowMs: 60_000 },
   /** A card's + reading its options (/api/card-options, D-145): one per piece pressed; this server only. */
   cardOptions: { limit: 240, windowMs: 60_000 },
+  /** The search boxes' suggestions list (/api/search/hints, D-160): one per visitor, then the CDN's; this server only. */
+  searchHints: { limit: 60, windowMs: 60_000 },
+  /** A search (the search pages, D-160): a person searches a few times a minute; this server only. */
+  search: { limit: 60, windowMs: 60_000 },
 } satisfies Record<string, Rule>;
 
 const hits = new Map<string, number[]>();

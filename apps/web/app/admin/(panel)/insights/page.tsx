@@ -1,11 +1,13 @@
 import Link from 'next/link';
 
-import { getDemand, getQuickInsights, getSales, type Sales } from '@repo/db/admin';
+import { getDemand, getQuickInsights, getSales, getSearchFixes, type Sales } from '@repo/db/admin';
 import { formatUsd } from '@repo/shared/domain';
 
+import { addSynonymAction } from '@/features/admin/actions/search';
 import { PRODUCT_STATUS, StatusChip } from '@/features/admin/chips';
 import { requireAdminPage } from '@/features/admin/guard';
 import { QuickInsightsSection } from '@/features/admin/quick-insights';
+import { secondaryButton } from '@/features/admin/styles';
 import { Cell, Empty, PageHead, rupees, SectionTitle, Table, Tabs } from '@/features/admin/ui';
 
 type SearchParams = Promise<{ period?: string }>;
@@ -42,17 +44,18 @@ function SalesTable({ title, rows, shop }: { title: string; rows: Sales['by_regi
  * Insights (admin.md): real numbers only, computed in SQL, never estimated or fabricated (C7). Sales by state, category
  * and shop; what customers search for, including searches that found nothing (what to list next), and what they save.
  * Revenue is the pieces' prices before tax and shipping, for paid orders that were not cancelled. D-154: how the 7-day
- * promise is kept (quick-insights.tsx).
+ * promise is kept (quick-insights.tsx). D-160: searches found only after a spelling fix (a word to add as a synonym).
  */
 export default async function InsightsPage({ searchParams }: { searchParams: SearchParams }): Promise<React.JSX.Element> {
   const { client } = await requireAdminPage();
   const wanted = (await searchParams).period;
   const period = PERIODS.find((p) => p.key === wanted) ?? PERIODS[0];
   const since = period.days === null ? null : new Date(Date.now() - period.days * 86_400_000);
-  const [sales, demand, quick] = await Promise.all([
+  const [sales, demand, quick, fixes] = await Promise.all([
     getSales(client, since),
     getDemand(client, since),
     getQuickInsights(client, since),
+    getSearchFixes(client, since),
   ]);
 
   return (
@@ -107,6 +110,42 @@ export default async function InsightsPage({ searchParams }: { searchParams: Sea
           )}
         </section>
       </div>
+
+      {fixes.length > 0 ? (
+        <section className="space-y-2">
+          <SectionTitle>Found after a spelling fix</SectionTitle>
+          <p className="text-ink-muted text-sm">
+            Customers&apos; words the listings don&apos;t use; search read them as the nearest listed word. A common one is
+            worth adding as a synonym (search_synonyms) or to a listing&apos;s name.
+          </p>
+          <Table head={['Search', 'Read as', 'Times', 'Synonym']}>
+            {fixes.map((s) => (
+              <tr key={`${s.query}:${s.fixed}`}>
+                <Cell>{s.query}</Cell>
+                <Cell>{s.fixed}</Cell>
+                <Cell>{s.count}</Cell>
+                <Cell>
+                  {s.pairs.map(([term, means, added]) =>
+                    added ? (
+                      <span key={term} className="text-ink-muted mr-3 text-sm">
+                        {term} = {means}: added
+                      </span>
+                    ) : (
+                      <form key={term} action={addSynonymAction} className="mr-2 inline-block">
+                        <input type="hidden" name="term" value={term} />
+                        <input type="hidden" name="means" value={means} />
+                        <button type="submit" className={secondaryButton}>
+                          Add {term} = {means}
+                        </button>
+                      </form>
+                    ),
+                  )}
+                </Cell>
+              </tr>
+            ))}
+          </Table>
+        </section>
+      ) : null}
 
       <section className="space-y-2">
         <SectionTitle>Most saved</SectionTitle>

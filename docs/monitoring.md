@@ -10,11 +10,11 @@ A number past its **budget** is a warning (look for the cause that week); past t
 | Service | What to read (where) | Budget a month | Line (act) | Usual causes when it climbs |
 |---|---|---|---|---|
 | Vercel | ISR writes (Usage → ISR) | 100,000 | 150,000 | bulk edits of many live listings, many deploys in a day, a page that changes on every request; check that D-145's narrow refreshes still hold (`features/admin/refresh-listings.ts`) |
-| Vercel | Function invocations (Usage → Functions) | 500,000 | 750,000 | a bot crawling search or `/api/browse` (rate limits), an uncached page, the uptime ping set too often |
+| Vercel | Function invocations (Usage → Functions) | 500,000 | 750,000 | a bot crawling search or `/api/browse` (rate limits; robots.txt keeps polite ones off `/search` since D-160), an uncached page, the uptime ping set too often |
 | Vercel | Active CPU | 2 h | 3 h | a slow server render (see §3), image work on the server (there should be none) |
 | Vercel | Fast data transfer / origin transfer | 50 GB / 5 GB | 75 GB / 7.5 GB | photos served without the CDN (`x-vercel-cache` should say HIT, `ops.md` §Photos) |
 | Vercel | Image transformations | 0 | 1,000 | someone added `next/image` with Vercel's loader (D-140 forbids it) |
-| Supabase | Database size (Reports → Database) | 250 MB (78 MB of catalogue on 2026-10-21) | 400 MB | `stock_movements`, `search_queries` (B-23) or `rate_limit_hits` growing without a clean-up |
+| Supabase | Database size (Reports → Database) | 250 MB (78 MB of catalogue on 2026-10-21) | 400 MB | `stock_movements`, `search_queries` (B-23) or `rate_limit_hits` growing without a clean-up; search's `product_search` grows with the catalogue (about 0.5 KB a listing with its index, D-160) |
 | Supabase | Egress (Usage) | 2.5 GB | 4 GB | photos read from Supabase instead of R2, the photo move or the weight tools reading everything at once, big admin exports |
 | Supabase | Storage | 100 MB | 500 MB | uploads not moved to R2 (`pnpm photos:move -- --clean` lists and removes them) |
 | Supabase | Monthly active users | 25,000 | 40,000 | real growth: good news, plan the paid tier |
@@ -94,6 +94,14 @@ select event, count(*), max(created_at) from public.admin_error_events where cre
 select status, count(*) from public.products where not is_placeholder group by status;
 select count(*) as live_options_without_weight from public.product_variants v join public.products p on p.id = v.product_id
  where p.status = 'live' and v.is_active and v.weight_g is null;
+-- H. search (D-160): how fast (aim: under 100 ms on average), how it answered this week, and the size of its tables
+-- (the timer iwc-search-words in C refreshes the vocabulary every 6 hours; a crawl shows as one word searched a lot)
+select calls, round(mean_exec_time::numeric, 1) as avg_ms from pg_stat_statements where query ilike '%store_search_page%';
+select count(*) as searches, count(*) filter (where results = 0) as found_nothing, count(*) filter (where partial) as some_words,
+       count(*) filter (where fixed is not null) as fixed
+  from public.search_queries where created_at > now() - interval '7 days';
+select pg_size_pretty(pg_total_relation_size('public.product_search')) as product_search,
+       pg_size_pretty(pg_total_relation_size('public.search_words')) as words, (select count(*) from public.search_words) as n;
 ```
 
 ## 7. Fixing what is found

@@ -79,7 +79,7 @@ Baseline numbers come from the founder's first `node scripts/check.mjs` run and 
 |---|---|---|---|
 | Home, region page, product page | yes (`unstable_cache` + the page's static render) | `store` + `store:home` / `store:region:<slug>` (and `store:regions` on every state page) / `store:product:<region>/<slug>` | a sale (`revalidateAfterSale`: the products sold, their regions, Home), an admin change to listings (D-145, `features/admin/refresh-listings.ts`: their own pages, their state pages, Home, See all; a draft's edit nothing; over 100 listings everything), a cancel, the automatic cutoff and any other admin change (everything), else 5 minutes |
 | See all (`/clothing`, `/food`, `/home-and-gifts`), sitemap | yes | `store` + `store:listings` | admin changes, else 5 minutes. Light cards without stock, so a sale never changes them. Each address with its filters is a cached page (rewritten to `app/(store)/see-all/…`, not rendered per request: 61 – 169 ms before, 7 – 13 ms after, 2026-10-15); a filter combination nobody opened yet is built on its first visit. D-136: the filters and Show more fetch `GET /api/browse` (no response cache; each filter set and page is its own `store_browse()` entry in the data cache) and swap only the cards |
-| Search | no (per query) | | |
+| Search | no (per query; one `store_search_page()` read, 6 – 40 ms on 7,200 listings, D-160). Its suggestions' list (`/api/search/hints`) is CDN-kept an hour, never per keystroke | | |
 | Cart, checkout, orders, account, every API route, admin | **never** (session or service clients, `cookies()`, POST routes) | | |
 - A sale is refreshed from `features/checkout/finalize.ts` once the order exists (browser or webhook, whichever is first),
   from the product pages stored with the priced checkout (`features/checkout/pricing.ts` → `pending_orders`). On-demand
@@ -100,7 +100,7 @@ Baseline numbers come from the founder's first `node scripts/check.mjs` run and 
   (`size-facet.ts`: Food's 1,687 packs were 540 KB of /food's HTML).
 - Public, visitor-free JSON answers carry `s-maxage` so Vercel's CDN answers repeats without running a function (free;
   not the page cache): `/api/card-options`, `/api/browse` and `/api/goes-well` a minute, `/api/bag-charges` a minute,
-  `/api/zip` a year. Never on an answer that depends on the session or carries personal data.
+  `/api/search/hints` an hour (D-160), `/api/zip` a year. Never on an answer that depends on the session or carries personal data.
 - The saved hearts (`features/account/saved-store.ts`) load Supabase's browser client only when a session cookie is
   there: a signed-out visitor (most of them) never downloads it (about 70 KB of script on every store page before).
 
