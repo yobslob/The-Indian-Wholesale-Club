@@ -232,13 +232,16 @@ from (values
 on conflict (term) do nothing;
 
 -- -----------------------------------------------------------------------------
--- 4. search_words: every word of a live listing's name, category, craft and state, with how many listings use it
---    (the spelling fixes and the suggestions), plus each one-word synonym whose group is in the listings.
+-- 4. search_words: the words of live listings' names, categories, crafts and states, with how many listings use
+--    them (the spelling fixes and the suggestions), one spelling per stem ("kurta", not also "kurtas"),
+--    no stop words, plus each one-word synonym whose group is in the listings.
 -- -----------------------------------------------------------------------------
 create table public.search_words (
   word text primary key,
+  word_key text generated always as (public._search_key(word)) stored,
   ndoc integer not null check (ndoc > 0)
 );
+create index search_words_key_idx on public.search_words (word_key);
 alter table public.search_words enable row level security;
 create policy admin_read on public.search_words for select to authenticated using (public.is_admin());
 revoke all on public.search_words from anon, authenticated;
@@ -256,17 +259,23 @@ begin
                                    || coalesce(p.region_name, ''))
       from public.store_products p where not p.coming_soon $q$)
     where word ~ '^[a-z]{3,24}$'),
-  -- a synonym counts as often as the most-used word of its group (a group the listings never use is left out)
   keyed as materialized (select word, ndoc, public._search_key(word) as k from listed),
+  -- one spelling per stem, the shortest (mostly the singular: "saree", not "sarees" from "Sarees & Drapes"), counted
+  -- as its most used spelling; stop words have no stem and are left out
+  spelt as (
+    select distinct on (k) word, max(ndoc) over (partition by k) as ndoc
+    from keyed where k is not null order by k, length(word), ndoc desc, word),
+  -- a synonym counts as often as the most-used word of its group (a group the listings never use is left out)
   synonyms as (
     select s.term as word, max(l.ndoc)::integer as ndoc
     from public.search_synonyms s
     join public.search_synonyms g on g.grp = s.grp
     join keyed l on l.k = g.term_key
     where s.term ~ '^[a-z]{3,24}$'
+      and not exists (select 1 from spelt x where public._search_key(x.word) = s.term_key)
     group by s.term),
   fresh as (
-    select word, max(ndoc)::integer as ndoc from (select * from listed union all select * from synonyms) a group by word),
+    select word, max(ndoc)::integer as ndoc from (select * from spelt union all select * from synonyms) a group by word),
   gone as (delete from public.search_words w where not exists (select 1 from fresh f where f.word = w.word) returning 1),
   put as (
     insert into public.search_words (word, ndoc) select word, ndoc from fresh
@@ -311,7 +320,7 @@ begin
     v_q := v_q || phraseto_tsquery('english', v_alt);
   end loop;
   if p_prefix and p_words ~ '^[[:alnum:]]{3,}$'
-     and not exists (select 1 from public.search_words w where w.word = p_words)
+     and not exists (select 1 from public.search_words w where w.word_key = v_key)
      and not exists (select 1 from public.search_synonyms s where s.term_key = v_key) then
     v_q := v_q || to_tsquery('english', p_words || ':*');
   end if;
@@ -363,7 +372,7 @@ begin
   foreach v_word in array coalesce(p_words, '{}') loop
     v_best := null;
     if v_word ~ '^[a-z]{4,}$'
-       and not exists (select 1 from public.search_words w where w.word = v_word)
+       and not exists (select 1 from public.search_words w where w.word_key = public._search_key(v_word))
        and not exists (select 1 from public.search_synonyms s where s.term_key = public._search_key(v_word)) then
       select w.word into v_best
       from public.search_words w
@@ -624,7 +633,7 @@ language sql stable security definer set search_path = public, pg_temp as $$
     'synonyms', coalesce((
       select jsonb_agg(g.terms order by g.grp)
       from (select s.grp, jsonb_agg(s.term order by s.term) as terms from public.search_synonyms s
-            where exists (select 1 from public.search_synonyms t join public.search_words w on w.word = t.term
+            where exists (select 1 from public.search_synonyms t join public.search_words w on w.word_key = t.term_key
                           where t.grp = s.grp)
             group by s.grp) g), '[]'::jsonb),
     'categories', coalesce((
@@ -644,7 +653,8 @@ language sql stable security definer set search_path = public, pg_temp as $$
               and sq.query ~ '^[a-z ]{3,40}$'
               and not exists (select 1 from regexp_split_to_table(sq.query, ' ') x(word)
                               where length(x.word) >= 2
-                                and not exists (select 1 from public.search_words w where w.word = x.word))
+                                and not exists (select 1 from public.search_words w
+                                                where w.word_key = public._search_key(x.word)))
             group by sq.query having count(*) >= 3
             order by count(*) desc, sq.query limit 12) q), '[]'::jsonb))
 $$;
@@ -654,8 +664,8 @@ grant execute on function public.store_search_hints() to anon, authenticated, se
 
 -- -----------------------------------------------------------------------------
 -- 10. Insights: the searches answered only through a spelling fix, with the words they were answered with (a synonym
---     or a word to add). Searches that found only some of their words are recorded with 0 results, so they already
---     show among admin_demand()'s empty searches.
+--     or a word to add), and adding one as a synonym. Searches that found only some of their words are recorded with
+--     0 results, so they already show among admin_demand()'s empty searches.
 -- -----------------------------------------------------------------------------
 create function public.admin_search_fixes(p_since timestamptz default null)
 returns jsonb
@@ -665,10 +675,44 @@ begin
     raise exception 'admin_only' using errcode = '42501';
   end if;
   return coalesce((
-    select jsonb_agg(jsonb_build_object('query', query, 'fixed', fixed, 'count', n) order by n desc, query)
+    select jsonb_agg(jsonb_build_object(
+             'query', t.query, 'fixed', t.fixed, 'count', t.n,
+             -- the words that changed, each with whether it is a synonym by now: [typed, read as, added]
+             'pairs', (select coalesce(jsonb_agg(jsonb_build_array(a.w, b.w,
+                                                   exists (select 1 from public.search_synonyms s where s.term = a.w))
+                                                 order by a.n), '[]'::jsonb)
+                       from unnest(public._search_split(t.query)) with ordinality a(w, n)
+                       join unnest(string_to_array(t.fixed, ' ')) with ordinality b(w, n) on b.n = a.n
+                       where a.w <> b.w))
+           order by t.n desc, t.query)
     from (select query, fixed, count(*) as n from public.search_queries
           where fixed is not null and (p_since is null or created_at >= p_since)
           group by query, fixed order by count(*) desc, query limit 20) t), '[]'::jsonb);
 end $$;
 revoke all on function public.admin_search_fixes(timestamptz) from public, anon, authenticated;
 grant execute on function public.admin_search_fixes(timestamptz) to authenticated, service_role;
+
+-- Insights' "Add as a synonym": the customer's word joins the group of the word it was read as (a new group when that
+-- word has none), and the vocabulary is refreshed so the suggestions know it at once.
+create function public.admin_add_synonym(p_term text, p_means text) returns void
+language plpgsql security definer set search_path = public, pg_temp as $$
+declare
+  v_grp text;
+begin
+  if not public.is_admin() then
+    raise exception 'admin_only' using errcode = '42501';
+  end if;
+  if coalesce(p_term, '') !~ '^[a-z]{2,30}$' or coalesce(p_means, '') !~ '^[a-z]{2,30}$' or p_term = p_means then
+    raise exception 'bad_synonym' using errcode = '22023';
+  end if;
+  select grp into v_grp from public.search_synonyms where term = p_means;
+  if v_grp is null then
+    v_grp := p_means;
+    insert into public.search_synonyms (term, grp) values (p_means, v_grp);
+  end if;
+  insert into public.search_synonyms (term, grp) values (p_term, v_grp)
+  on conflict (term) do update set grp = excluded.grp;
+  perform public.refresh_search_words();
+end $$;
+revoke all on function public.admin_add_synonym(text, text) from public, anon, authenticated;
+grant execute on function public.admin_add_synonym(text, text) to authenticated, service_role;

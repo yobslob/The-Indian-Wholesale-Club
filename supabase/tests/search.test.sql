@@ -154,8 +154,23 @@ select tests.act_as(tests.id('admin'));
 select tests.assert(
   public.admin_search_fixes(now()) @> '[{"query": "zarvele saree", "fixed": "zarvelle saree", "count": 1}]'::jsonb,
   'the admin sees searches answered through a fix');
+select tests.assert(
+  public.admin_search_fixes(now()) -> 0 -> 'pairs' = '[["zarvele", "zarvelle", false]]'::jsonb,
+  'with the word that changed, not yet a synonym');
+select public.admin_add_synonym('zarvele', 'zarvelle');
+select tests.assert(public.admin_search_fixes(now()) -> 0 -> 'pairs' -> 0 ->> 2 = 'true', 'added as a synonym');
+select tests.assert_fails('select public.admin_add_synonym(''two words'', ''zarvelle'')', 'bad_synonym',
+  'one word of letters each');
 select tests.act_as(tests.id('cust_a'));
 select tests.assert_fails('select public.admin_search_fixes()', 'admin_only', 'customers do not');
+select tests.assert_fails('select public.admin_add_synonym(''abc'', ''zarvelle'')', 'admin_only', 'nor add synonyms');
+reset role;
+set local role anon;
+select tests.assert(
+  (select r ->> 'mode' = 'all' and pg_temp.names(r) = array['Zarvelle saree']
+   from (select public.store_search_page('zarvele saree', p_record => false) r) x),
+  'a synonym added from Insights is a whole word now, no fix needed');
+select tests.assert(public.store_search_hints() -> 'words' ? 'zarvele', 'and is suggested');
 reset role;
 
 -- The triggers: a renamed listing and a renamed state are found by their new names.

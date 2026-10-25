@@ -288,9 +288,10 @@ cards of its three rows only. Same answers (checked against the old functions on
 Migration `20261030090000_search` (D-160): search that reads words as customers write them, at no running cost.
 `product_search` (one row per listing: `doc`, a weighted English tsvector of name A; category, craft and state B;
 summary C; type D; GIN-indexed; kept by triggers on `products`, `regions` and `categories` renames), `search_synonyms`
-(`term`, `grp`, `term_key` = `_search_key(term)`, the sorted English stems), `search_words` (`word`, `ndoc`: live
-listings' name, category, craft and state words, plus one-word synonyms of groups in use; `refresh_search_words()`,
-pg_cron `iwc-search-words` every 6 hours, writes only what changed). `_search_match(q, quick)` reads a search: its
+(`term`, `grp`, `term_key` = `_search_key(term)`, the sorted English stems), `search_words` (`word`, `word_key`,
+`ndoc`: live listings' name, category, craft and state words, one spelling per stem (the shortest), no stop words, plus
+one-word synonyms of groups in use; `refresh_search_words()`, pg_cron `iwc-search-words` every 6 hours, writes only
+what changed). `_search_match(q, quick)` reads a search: its
 words (`_search_split`: at most 8), one tsquery per word with its synonyms and, for a last word no listing uses, its
 beginning (`_search_term`, `_search_groups`; a two-word synonym such as "gram flour" counts as one); every word, else
 the words spelled as the nearest vocabulary word (`_search_fix`: one change up to five letters or a swap, two from six,
@@ -305,7 +306,9 @@ pieces that cannot be bought (coming soon, sold out) last, the listing's own wor
 answered only by some words as 0 results with `partial`. `store_search(...)` keeps its arguments and rows and answers
 from it. `store_search_hints()` (anon): the 1,500 most used words, synonym groups in use, categories and states with
 their counts, and popular searches (30 days, 3 or more, results, only vocabulary words). `admin_search_fixes(since)`:
-searches answered through a fix. Tests: `search.test.sql`.
+searches answered through a fix, with `pairs` (each changed word: typed, read as, already a synonym);
+`admin_add_synonym(term, means)` puts the typed word in the group of the word it was read as (Insights' button) and
+refreshes the vocabulary. Tests: `search.test.sql`.
 Migration 80 (D-141, the photo store): a photo in Cloudflare R2 is recorded with an `s/` path
 (`products/<id>/s/<name>.jpg`, packages/shared media.ts). `worker_sourcing_media` accepts `products/<id>/s/<name>` as
 well as `products/<id>/<name>`; album photos may be `regions/<slug>/album/s/<name>`.
@@ -524,3 +527,5 @@ breaking it and watching the test fail ("mutation check", `status.md`).
   `catalogue/README.md`). The launch regions' items as listings: clothing live with colour × size variants, pantry as
   drafts (D-032); prices, pieces and the per-region placeholder shop are placeholders (`is_placeholder = true`). Product
   ids are `md5('iwc-catalogue:' || slug)`, so `pnpm catalogue:apply` can reload it into a running local DB without a reset.
+- `search.sql`: builds search's vocabulary from the seeded listings (`refresh_search_words()`, D-160; migrations run
+  before the seed). After `pnpm catalogue:apply` or `demo:load`, run it again (or wait for the 6-hourly job).

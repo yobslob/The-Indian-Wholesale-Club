@@ -956,14 +956,14 @@ isOneToOne: false
                   ]
                 },"search_words": {
                   Row: {
-                    "ndoc": number,"word": string
+                    "ndoc": number,"word": string,"word_key": string | null
                   }
                   ComputedFields: never
                   Insert: {
-                    "ndoc": number,"word": string
+                    "ndoc": number,"word": string,"word_key"?: never
                   }
                   Update: {
-                    "ndoc"?: number,"word"?: string
+                    "ndoc"?: number,"word"?: string,"word_key"?: never
                   }
                   Relationships: [
                     
@@ -1987,6 +1987,9 @@ isOneToOne: false
                            },
 "admin_accept_weights":
 { Args: { "p_limit"?: number }; Returns: Json
+                           },
+"admin_add_synonym":
+{ Args: { "p_means": string,"p_term": string }; Returns: undefined
                            },
 "admin_approve_submission":
 { Args: { "p_listing": Json,"p_media": Json,"p_submission": string }; Returns: string

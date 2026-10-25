@@ -50,7 +50,7 @@ select tests.assert(
   (select coalesce(array_agg(p.proname::text order by p.proname), '{}')
    from pg_proc p join pg_namespace n on n.oid = p.pronamespace
    where n.nspname = 'public' and has_function_privilege('authenticated', p.oid, 'execute'))
-  = array['admin_accept_weights', 'admin_approve_submission', 'admin_archive_unready_drafts', 'admin_assign_weights', 'admin_attention', 'admin_cancel_after_export',
+  = array['admin_accept_weights', 'admin_add_synonym', 'admin_approve_submission', 'admin_archive_unready_drafts', 'admin_assign_weights', 'admin_attention', 'admin_cancel_after_export',
           'admin_cancel_after_export_cents', 'admin_cancel_shipment', 'admin_create_listing', 'admin_cycle_totals',
           'admin_decline_submission', 'admin_demand', 'admin_mark_ordered', 'admin_order_counts', 'admin_price_preview', 'admin_price_sheet', 'admin_publish_drafts', 'admin_quick_insights', 'admin_quick_watch',
           'admin_rename_listings', 'admin_request_retake', 'admin_rerun_photo_job', 'admin_return_received', 'admin_return_refunded',

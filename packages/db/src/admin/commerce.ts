@@ -222,6 +222,32 @@ export async function getDemand(client: IwcClient, since: Date | null): Promise<
   return demandSchema.parse(data);
 }
 
+const searchFixesSchema = z.array(
+  z.object({
+    query: z.string(),
+    fixed: z.string(),
+    count: z.number(),
+    /** The words that changed: [typed, read as, already a synonym]. */
+    pairs: z.array(z.tuple([z.string(), z.string(), z.boolean()])).default([]),
+  }),
+);
+export type SearchFixes = z.infer<typeof searchFixesSchema>;
+
+/**
+ * D-160: searches answered only after a spelling fix ("kurtha" → "kurta"), since `since`: words customers use that the
+ * listings do not (a synonym to add, a name to write differently). Empty until migration 20261030090000 is applied.
+ */
+export async function getSearchFixes(client: IwcClient, since: Date | null): Promise<SearchFixes> {
+  const res = await client.rpc('admin_search_fixes', since ? { p_since: since.toISOString() } : {}, { get: true });
+  if (res.error?.code === 'PGRST202' || res.error?.code === '42883') return [];
+  return searchFixesSchema.parse(unwrap(res));
+}
+
+/** D-160: a customer's word joins the synonyms of the word search read it as (Insights' "Add as a synonym"). */
+export async function addSearchSynonym(client: IwcClient, term: string, means: string): Promise<void> {
+  unwrap(await client.rpc('admin_add_synonym', { p_term: term, p_means: means }));
+}
+
 const quickShipmentsSchema = z.object({
   kind: z.enum(['quick', 'standard', 'express']),
   due: z.number(),
