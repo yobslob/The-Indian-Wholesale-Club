@@ -1,10 +1,11 @@
 import Ionicons from '@expo/vector-icons/Ionicons';
-import { Link } from 'expo-router';
+import { Link, useRouter } from 'expo-router';
 import { useState } from 'react';
 import { Pressable, Text, TextInput, View } from 'react-native';
 
-import { getHome, getTypeRows, searchProducts } from '@repo/db/store';
+import { getHome, getTypeRows, searchPage, type SearchPage } from '@repo/db/store';
 import { PRODUCT_TYPE_LABEL, PRODUCT_TYPES, type ProductType } from '@repo/shared/domain';
+import { cleanSearch, type Suggestion } from '@repo/shared/search';
 import tokens from '@repo/tokens';
 
 import type { RegionCard } from '@repo/db/store';
@@ -13,6 +14,8 @@ import { Body, Button, ErrorText, Heading, Label, Loading, Screen } from '@/comp
 import { Grid, ProductCard } from '@/features/catalog/cards';
 import { ProductRow } from '@/features/catalog/product-row';
 import { StampGrid } from '@/features/regions/stamps';
+import { SearchSuggestions, useSearchHints } from '@/features/search/search-suggestions';
+import { SearchTypePills } from '@/features/search/search-type-pills';
 import { supabase } from '@/lib/supabase';
 import { usePagedQuery } from '@/lib/use-paged-query';
 import { useQuery } from '@/lib/use-query';
@@ -43,25 +46,53 @@ function SoonNames({ regions }: { regions: RegionCard[] }): React.JSX.Element {
  * Explore (storefront.md, D-083 – D-085, D-095): search, then States · Clothing · Food · Home & gifts (D-106, D-110). States are the open ones as
  * stamps and every other by name; Clothing and Food are one sideways row per category with See all (D-062). A search
  * shows the count with the words, matching open states as stamps, the pieces 24 at a time, and on no results the open
- * states, so it is never a dead end. A tab reads only each category's first 12 cards (store_type_rows).
+ * states, so it is never a dead end. A tab reads only each category's first 12 cards (store_type_rows). D-160: the
+ * website's search (store_search_page: synonyms, spelling fixes, "some of the words"), its suggestions while typing and
+ * its type filter with counts.
  */
 export default function ExploreScreen(): React.JSX.Element {
   const [tab, setTab] = useState<Tab>('states');
   const [query, setQuery] = useState('');
   const [submitted, setSubmitted] = useState('');
+  const [type, setType] = useState<ProductType | null>(null);
+  const [meta, setMeta] = useState<SearchPage | null>(null);
+  const [focused, setFocused] = useState(false);
+  const router = useRouter();
+  const hints = useSearchHints();
   const home = useQuery('home', () => getHome(supabase));
   const rows = useQuery(`explore:${tab}`, async () => (tab === 'states' ? [] : getTypeRows(supabase, tab)));
-  const search = usePagedQuery(`explore:search:${submitted}`, (offset, limit) =>
-    submitted ? searchProducts(supabase, submitted, { offset, limit }) : Promise.resolve([]),
-  );
+  // only the first page of an unfiltered search counts for Insights, as on the website
+  const search = usePagedQuery(`explore:search:${submitted}:${type ?? ''}`, async (offset, limit) => {
+    if (!submitted) return [];
+    const page = await searchPage(supabase, submitted, { offset, limit, type: type ?? undefined, record: offset === 0 && !type });
+    if (offset === 0) setMeta(page);
+    return page.products;
+  });
   const regions = [...(home.data?.regions ?? [])].sort((a, b) => a.name.localeCompare(b.name, 'en'));
   const open = regions.filter((r) => r.is_live);
   const needle = submitted.toLowerCase();
-  const matched = submitted ? regions.filter((r) => r.name.toLowerCase().includes(needle)) : [];
+  const matched = submitted
+    ? regions.filter((r) => r.name.toLowerCase().includes(needle) || meta?.named_regions.includes(r.slug))
+    : [];
   const pieces = search.items ?? [];
+  const found = meta?.mode === 'all' || meta?.mode === 'fixed';
+  const total = found ? (meta?.total ?? pieces.length) : 0;
   const loading = home.loading || rows.loading || (Boolean(submitted) && search.loading);
-  const nothing = submitted && !search.loading && pieces.length === 0 && matched.length === 0;
-  const submit = (): void => setSubmitted(query.trim().slice(0, 100));
+  const nothing = submitted && !search.loading && !found && matched.length === 0;
+  // a blur never hides the list under a finger: it stays while the words differ from the last search
+  const typing = (focused || query.trim().length > 0) && cleanSearch(query) !== submitted;
+  const run = (words: string): void => {
+    setQuery(words);
+    setType(null);
+    setMeta(null);
+    setSubmitted(cleanSearch(words));
+  };
+  const submit = (): void => run(query);
+  const pick = (s: Suggestion): void => {
+    if (s.kind === 'search') run(s.query);
+    else if (s.kind === 'state') router.push({ pathname: '/region/[slug]', params: { slug: s.slug } });
+    else router.push({ pathname: '/browse', params: { type: s.type, category: s.slug } });
+  };
   const reload = (): void => {
     home.reload();
     rows.reload();
@@ -79,6 +110,9 @@ export default function ExploreScreen(): React.JSX.Element {
           placeholderTextColor={tokens.colors['ink-muted']}
           accessibilityLabel="Search"
           returnKeyType="search"
+          maxLength={100}
+          onFocus={() => setFocused(true)}
+          onBlur={() => setFocused(false)}
           onSubmitEditing={submit}
           className="font-ui text-ink min-h-11 flex-1 text-[15px]"
         />
@@ -89,6 +123,8 @@ export default function ExploreScreen(): React.JSX.Element {
             onPress={() => {
               setSubmitted('');
               setQuery('');
+              setType(null);
+              setMeta(null);
             }}
             className="h-10 w-10 items-center justify-center"
           >
@@ -97,15 +133,23 @@ export default function ExploreScreen(): React.JSX.Element {
         ) : null}
       </View>
 
+      {typing ? <SearchSuggestions text={query} hints={hints} onPick={pick} /> : null}
+
       {submitted ? (
-        <Text className="font-body text-ink-muted -mt-2 text-[15px]" accessibilityLiveRegion="polite">
-          {matched.length > 0 ? <Text className="font-ui text-ink">{plural(matched.length, 'state')}</Text> : null}
-          {matched.length > 0 && pieces.length > 0 ? ' and ' : null}
-          {pieces.length > 0 || matched.length === 0 ? (
-            <Text className="font-ui text-ink">{search.hasMore ? `${pieces.length}+ pieces` : plural(pieces.length, 'piece')}</Text>
-          ) : null}{' '}
-          for “{submitted}”
-        </Text>
+        <View className="-mt-2 gap-2">
+          {meta?.mode === 'fixed' && meta.fixed ? (
+            <Text className="font-body text-ink-muted text-[15px]">
+              No pieces match “{submitted}”. Showing pieces for <Text className="font-ui text-ink">“{meta.fixed}”</Text>.
+            </Text>
+          ) : null}
+          <Text className="font-body text-ink-muted text-[15px]" accessibilityLiveRegion="polite">
+            {matched.length > 0 ? <Text className="font-ui text-ink">{plural(matched.length, 'state')}</Text> : null}
+            {matched.length > 0 && found ? ' and ' : null}
+            {found || matched.length === 0 ? <Text className="font-ui text-ink">{plural(total, 'piece')}</Text> : null}
+            {` for “${meta?.fixed ?? submitted}”`}
+          </Text>
+          {found && meta ? <SearchTypePills counts={meta.types} type={type} onChange={setType} /> : null}
+        </View>
       ) : (
         <View className="bg-surface flex-row rounded-pill p-1">
           {TABS.map((t) => (
@@ -153,7 +197,10 @@ export default function ExploreScreen(): React.JSX.Element {
           ) : null}
           {nothing ? (
             <View className="gap-3">
-              <Body muted>No products match “{submitted}”.</Body>
+              <Body muted>
+                {`No products match “${submitted}”.`}
+                {meta?.mode === 'some' && pieces.length > 0 ? ' The pieces above have some of its words.' : ''}
+              </Body>
               <Label>Open now</Label>
               <StampGrid regions={open} delivery={home.data?.delivery ?? null} />
             </View>
