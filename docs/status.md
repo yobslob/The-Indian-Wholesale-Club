@@ -14,7 +14,8 @@ Short on purpose: **replace** lines when something changes, don't append. Histor
   and a weekly check: `monitoring.md`.
 - **Database:** every migration up to `20261022120000_seven_day_delivery` (D-148) is applied (the founder ran the
   Deploy workflow on 2026-10-22, per their message; the live site shows the 7-day store, so later ones may be in
-  too); waiting for the Deploy workflow: `20261029090000_region_head` (D-157), `20261029100000_quick_speed`.
+  too); waiting for the Deploy workflow: `20261029090000_region_head` (D-157), `20261029100000_quick_speed`,
+  `20261030090000_search` (D-160; the website falls back to the old search until it is applied).
 - **Sourcing runner (India PC):** its `.env` pointed at the old Supabase project until 2026-10-22 (the move's step 7,
   `ops.md`); fixed by the founder. The Blinkit 7-day CSV is in (102 targets added, 11 already there). **Blinkit blocks
   the runner** from 2026-10-22: the cause was headless Chrome (`IWC_SOURCING_HEADLESS=1` in its `.env`); the runner now
@@ -28,6 +29,16 @@ Short on purpose: **replace** lines when something changes, don't append. Histor
   workflow, which the founder runs.
 
 ## What is built (details in the doc named; decisions in `decisions.md`)
+- **Search (D-160, 2026-10-26, proposed, not deployed):** one `store_search_page()` read: English stems ("kurtis" finds
+  kurti), a synonym list (Claude's draft: sari = saree, haldi = turmeric, punjabi = Punjab), spelling fixes from the
+  listings' own words ("kurtha" → "Showing pieces for kurta"), "some of the words" instead of nothing, buyable pieces
+  first; type, category and state filters with counts and Sort by on `/search` (and the 7-day search); suggestions
+  while typing in every search box, web and app, from one CDN-kept list (no request per keystroke, nothing on a
+  page's first load); `noindex` and robots.txt; the app's Explore on the same function (the app already on phones
+  gets the same results through `store_search`); Insights' "Found after a spelling fix" with "Add … = …" (a
+  synonym in one click). Data: `data-model.md`; pages: `storefront.md`. Left out (would cost): embeddings / a model
+  per search, results while typing (a database read per keystroke), a synonyms page in the admin (Insights' button
+  and SQL for now).
 - **7-day store and two shipments (D-154, approved 2026-10-23, being built in five steps):** 1 database (shipments, Shipping
   at $18.62 a billed kg, the $49.99 line), 2 admin, 3 bag and checkout, 4 the store switch and front page, 5 Insights.
   Step 1 built (migration `20261023120000_seven_day_shipments`, not deployed): Shipping $18.62 a billed kg, the $49.99
@@ -78,7 +89,8 @@ Short on purpose: **replace** lines when something changes, don't append. Histor
 
 ## Next for the founder
 1. **Run the Deploy workflow** (Actions → Deploy), not the daily website deploy: it applies the waiting migrations
-   first (`20261029090000_region_head`, `20261029100000_quick_speed`), then deploys the website. The website builds of
+   first (`20261029090000_region_head`, `20261029100000_quick_speed`, `20261030090000_search`), then deploys the
+   website. The website builds of
    2026-10-24 stopped at the database's statement limit prerendering `/7-day-delivery/home-and-gifts/all`, then
    `/7-day-delivery`: the 7-day store's reads took 1.3 – 1.7 s each on a production copy and grew with every 7-day
    piece; with the migration about 0.2 s. A website build before the migration hits the same limit.
@@ -148,7 +160,7 @@ Short on purpose: **replace** lines when something changes, don't append. Histor
   pulled env files (`vercel-prod.env`, `move.env`) sit in the repo folder (gitignored, against CLAUDE.md); food and home
   packs come as the shops write them (1,687 different food packs: "200 g", "200g", "200 g (Pack of 1)", "400.0 Grams");
   many food photos are the shops' thumbnails (187 – 344 px wide on /food and product pages, drawn up to 750 px on phones);
-  search has no plurals or prefixes ("kurtis" finds 11, "kurti" 24+); the bag shows the price saved when a piece was
+  the bag shows the price saved when a piece was
   added (checkout re-prices), so a weekly price change can move the free-delivery goal between bag and checkout.
 - App bundle ids are still `com.indianwholesaleclub.app` (`apps/app/app.json`); they change with the domain (Q-9).
 - `supabase/config.toml` uses the deprecated `[inbucket]` section (a harmless CLI warning).
@@ -158,6 +170,7 @@ Short on purpose: **replace** lines when something changes, don't append. Histor
 ## Last verification
 | Date | Commit | Where | Result |
 |---|---|---|---|
+| 2026-10-26 | D-160 search (a2338c7 – 08d0653) | Claude Code, founder's Windows machine with Docker (`check.mjs` docs, typecheck, lint, test, db, build, http, bundle; e2e subset) | docs 0.5 s, typecheck 24.5 s, lint 29.3 s, test 4.1 s (shared 346, new `search.test.ts` 9), db 51.6 s (65 files, new `search.test.sql` 41; insights / seven_day_store now check a draft or non-7-day piece is never among a partial match), build 74.6 s, http (/ 15 ms 128 KB, /clothing 14 ms 136 KB: +1 KB for the header's suggestions, /search?q=saree 81 ms), bundle OK. e2e: `search.spec.ts` (new, 3), `insights-live`, `seven-day-bag`, `motion-keyboard`: 12 passed, 1 skipped; the rest of e2e not run. Measured on a local catalogue scaled to 7,228 live listings (rolled back): 6 – 40 ms a search, `product_search` 4 MB with its index, hints 7 – 8 KB. In the browser on a local dev server: kurtha → "Showing pieces for kurta" (42), "kerala sari" → Kerala's 14, filters and Sort by as links, the header pill's suggestions by keyboard (↓, Enter → /search?q=kasavu+saree), the phone bar at 375 px (Escape closes the list, then the bar), noindex and robots.txt; the app's web build: Explore's suggestions, "kerala saree" 14 like the website, kurtha's fix line. **Not run:** the migration on production (the Deploy workflow), the app on a phone, Insights' "Add … = …" in a browser (SQL-tested; no local admin sign-in), the full e2e suite. |
 | 2026-10-24 | D-159 (Categories to check) and the founder's check run of the QA pass (e2e: `saved.spec.ts`, `customer-choices.spec.ts`) | Claude, cloud sandbox and the live site in the browser pane | The founder's `check.mjs` on the QA pass: docs, typecheck, lint, test, db, build, http (/ 33 ms 127 KB, /clothing 135 KB), bundle OK; e2e 33 passed, 2 failed. `saved.spec.ts` found a real bug, older than the QA pass: a heart tapped while the page was still checking the session (a signed-in customer's first second) was saved on the device only, then the check cleared the device's list: the save was lost and the heart said "Saved on this device". Fixed (`saved-store.ts`: where a save goes waits for the session check); in a stand-in store run under node, the early tap now saves to the account (before: no save, the device hint). `customer-choices.spec.ts` stopped at Stripe's captcha after Pay (the known test-mode flake). D-159: the live catalogue read through the public store views (9,887 listings): no category of another type; the rules propose 224 moves and 27 not-their-type, each group read by eye; `category-check.test.ts` 4/4 (mutation-checked), shared tests 331/337 (the sandbox's 6 `__filename` failures; `bag-goal.test.ts` was not in the test script and now is). **Not run:** web tsc, ESLint, `next build`, e2e, the new admin page in a browser (no local admin here). |
 | 2026-10-24 | QA pass: speed, leaks and bugs across the live site | Claude, cloud sandbox (Postgres 16 with every migration; no npm, no `next build`) and the live site in the browser pane (from India: times include the bom1 → iad1 hop) | **Live, before:** Home 56 KB brotli / 660 KB HTML, `/food` 685 KB, `/home-and-gifts` 514 KB (the Size / Pack panel: 3,370 and 2,242 links); after load every store page fetched Supabase's client and zod (~85 KB compressed) for the hearts; `/api/browse` never served from the CDN (250 ms each from India); a cold `/search` answered 500 after 8.5 s once (fine on retry). RLS on every table, every definer function with a search_path, anon may call only `store_*` reads, no ops words (shops, weights) in 24 product pages' HTML, security headers present. **After (in code):** see Speed and limits. `size-facet.test.ts` 3/3 (mutation-checked), shared `domain.test.ts` 74/74 with node's own TypeScript, the pure files strict-typechecked; CSP built from `next.config.js`. **Not run:** web tsc and ESLint (no npm here), `next build`, http, e2e, bundle. Run `node scripts/check.mjs` before pushing. |
 | 2026-10-24 | The website build's second statement timeout (prerendering `/7-day-delivery`) | Claude, cloud sandbox: Postgres 16 with every migration and a copy of production's catalogue, its 7-day shops widened to 5,106 7-day pieces | Cause: `store_quick_browse()` and `store_quick_front()` joined `_quick_listings()` straight to `store_products`; the plan multiplied 8,032 listings' options by 28 categories (224,896 rows) and checked shops 161,308 times: 1.3 – 1.7 s whatever the limit (`_quick_listings()` alone 0.13 s), and the front page built cards for every 7-day piece. Migration `20261029100000_quick_speed`: the list read once, the front page's cards for its rows only; same JSON as before for the front page and four `store_quick_browse()` calls on the copy; 0.27 s and 0.21 s. 64/64 SQL test files on a fresh database. **Not run:** the migration on production, `next build`. |
