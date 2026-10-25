@@ -590,6 +590,32 @@ isOneToOne: false
       referencedColumns: ["id"]
     }
                   ]
+                },"product_search": {
+                  Row: {
+                    "doc": unknown,"product_id": string
+                  }
+                  ComputedFields: never
+                  Insert: {
+                    "doc": unknown,"product_id": string
+                  }
+                  Update: {
+                    "doc"?: unknown,"product_id"?: string
+                  }
+                  Relationships: [
+                    {
+      foreignKeyName: "product_search_product_id_fkey"
+      columns: ["product_id"]
+isOneToOne: true
+      referencedRelation: "products"
+      referencedColumns: ["id"]
+    },{
+      foreignKeyName: "product_search_product_id_fkey"
+      columns: ["product_id"]
+isOneToOne: true
+      referencedRelation: "store_products"
+      referencedColumns: ["id"]
+    }
+                  ]
                 },"product_sources": {
                   Row: {
                     "checked_at": string | null,"created_at": string,"delivery_days": number | null,"fail_count": number,"id": string,"in_stock": boolean | null,"item_key": string | null,"item_url": string,"last_error": string | null,"mrp_paise": number | null,"page_url": string,"price_paise": number | null,"product_id": string,"review": string | null,"review_price_paise": number | null,"site": string,"variant_id": string
@@ -902,14 +928,42 @@ isOneToOne: false
                   ]
                 },"search_queries": {
                   Row: {
-                    "created_at": string,"id": number,"query": string,"results": number
+                    "created_at": string,"fixed": string | null,"id": number,"partial": boolean,"query": string,"results": number
                   }
                   ComputedFields: never
                   Insert: {
-                    "created_at"?: string,"id"?: never,"query": string,"results": number
+                    "created_at"?: string,"fixed"?: string | null,"id"?: never,"partial"?: boolean,"query": string,"results": number
                   }
                   Update: {
-                    "created_at"?: string,"id"?: never,"query"?: string,"results"?: number
+                    "created_at"?: string,"fixed"?: string | null,"id"?: never,"partial"?: boolean,"query"?: string,"results"?: number
+                  }
+                  Relationships: [
+                    
+                  ]
+                },"search_synonyms": {
+                  Row: {
+                    "grp": string,"term": string,"term_key": string | null
+                  }
+                  ComputedFields: never
+                  Insert: {
+                    "grp": string,"term": string,"term_key"?: never
+                  }
+                  Update: {
+                    "grp"?: string,"term"?: string,"term_key"?: never
+                  }
+                  Relationships: [
+                    
+                  ]
+                },"search_words": {
+                  Row: {
+                    "ndoc": number,"word": string
+                  }
+                  ComputedFields: never
+                  Insert: {
+                    "ndoc": number,"word": string
+                  }
+                  Update: {
+                    "ndoc"?: number,"word"?: string
                   }
                   Relationships: [
                     
@@ -1798,6 +1852,9 @@ isOneToOne: false
 "_product_auto_price":
 { Args: { "p_category": string,"p_product": string,"p_shop_paise": number,"p_type": Database["public"]['Enums']["product_type"] }; Returns: number
                            },
+"_product_search_doc":
+{ Args: { "p_product": string }; Returns: unknown
+                           },
 "_quick_bought":
 { Args: { "p_order": string }; Returns: boolean
                            },
@@ -1822,6 +1879,32 @@ isOneToOne: false
 { Args: { "p_item": string,"p_reason": string }; Returns: {
               "kept_pct": number,"refund_cents": number
             }[]
+                           },
+"_search_fix":
+{ Args: { "p_words": (string)[] }; Returns: (string)[]
+                           },
+"_search_groups":
+{ Args: { "p_words": (string)[] }; Returns: (unknown)[]
+                           },
+"_search_hits":
+{ Args: { "p_quick": boolean,"p_simple": unknown,"p_ts": unknown }; Returns: {
+              "id": string
+            }[]
+                           },
+"_search_key":
+{ Args: { "p_text": string }; Returns: string
+                           },
+"_search_letters":
+{ Args: { "p_word": string }; Returns: string
+                           },
+"_search_match":
+{ Args: { "p_query": string,"p_quick": boolean }; Returns: Record<string, unknown>
+                           },
+"_search_split":
+{ Args: { "p_query": string }; Returns: (string)[]
+                           },
+"_search_term":
+{ Args: { "p_prefix": boolean,"p_words": string }; Returns: unknown
                            },
 "_set_stock_context":
 { Args: { "p_note": string,"p_reason": Database["public"]['Enums']["stock_reason"],"p_ref_id": string,"p_ref_type": string }; Returns: undefined
@@ -1985,6 +2068,9 @@ isOneToOne: false
 "admin_save_shop_bill":
 { Args: { "p_bill": string,"p_lines": Json,"p_note"?: string }; Returns: undefined
                            },
+"admin_search_fixes":
+{ Args: { "p_since"?: string }; Returns: Json
+                           },
 "admin_set_listed_qty":
 { Args: { "p_note"?: string,"p_qty_listed": number,"p_variant": string }; Returns: undefined
                            },
@@ -2111,6 +2197,9 @@ isOneToOne: false
 "record_payout":
 { Args: { "p_method": string,"p_note"?: string,"p_pickups": (string)[],"p_receipt_path"?: string,"p_reference"?: string,"p_vendor": string }; Returns: string
                            },
+"refresh_search_words":
+{ Args: Record<PropertyKey, never>; Returns: number
+                           },
 "refund_order_item":
 { Args: { "p_amount_cents": number,"p_item": string,"p_refund_ref": string }; Returns: undefined
                            },
@@ -2201,6 +2290,12 @@ isOneToOne: false
         isOneToOne: false
         isSetofReturn: true
       } },
+"store_search_hints":
+{ Args: Record<PropertyKey, never>; Returns: Json
+                           },
+"store_search_page":
+{ Args: { "p_category"?: string,"p_limit"?: number,"p_offset"?: number,"p_query": string,"p_quick"?: boolean,"p_record"?: boolean,"p_region"?: string,"p_sort"?: string,"p_type"?: string }; Returns: Json
+                           },
 "store_type_rows":
 { Args: { "p_type": string }; Returns: Json
                            },

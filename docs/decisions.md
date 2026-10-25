@@ -565,3 +565,22 @@ What it means for the build:
   category's targets) or not the type at all, so new stray listings are not made.
 *Interpretation (proposed, confirm when convenient):* rakhi gift packs with sweets count as gifts, not food; jaggery,
 sattu and poha count as staples; chutney powders (podi) as chutneys; whole garam masala as whole spices.
+
+**D-160 · 2026-10-26 · proposed: search reads words as customers write them, and costs nothing to run**
+The request (the founder's session brief, as relayed): build the storefront's search "the way a properly built
+production website does it: fast, smart, efficient, productive and semantic, but only where it costs nothing".
+What it means for the build (Claude's design, awaiting the founder's look):
+- **In the database only** (migration `20261030090000_search`): Postgres full-text search with English stems ("kurtis"
+  finds "kurti"), a synonym list (spellings and Hindi/English names of one thing: sari = saree, haldi = turmeric,
+  punjabi = Punjab; **Claude's draft**, `search_synonyms`), spelling fixes from the live listings' own words ("kurtha"
+  → "kurta", said on the page) and, when no piece has every word, the pieces with some of them. A listing is found by
+  its name, category, craft, state, summary and type; its description only as the last resort. No paid service, no
+  model call per search, no embeddings (they would need a model to read every search).
+- **Order:** what can be bought first (coming soon and sold out last), then how well it matches, then the newest.
+- **Suggestions while typing** come from one small list (words, categories, states, popular searches) the CDN keeps for
+  an hour: typing never reaches the database. Popular searches are suggested only when made of the listings' own words,
+  so nobody's name or address typed into search is ever shown to another customer.
+- **Search pages are not for search engines:** `noindex` and kept out of robots.txt's crawl, so bots do not run the
+  database for random words.
+- What is recorded stays as before (the words and the number found, no person); in addition the words a search was
+  answered with after a fix, and whether only some words matched (counted with the searches that found nothing).

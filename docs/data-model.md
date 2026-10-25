@@ -38,6 +38,8 @@ operations data are never queried from customer code.
 | | `product_variants` | `options` JSON (colour, flavour, style = "Type", pack, size: D-118), SKU*, label, price override, `weight_g`* with `weight_source`* and `weight_note`* (D-129), `weight_estimate_g`*, `weight_estimate_note`*, `weight_estimated_at`* (D-131), `weight_checked_at`* (D-146), `net_qty` (food, D-133), `qty_listed`*, `qty_reserved`*, `qty_confirmed_at`*, `shop_price_paise`*, `source_id`* | store (`available`, food's `net_qty`) / admin |
 | | `product_sources` | the shop items a variant can be ordered as, checked weekly (D-118) | admin / worker via functions |
 | | `variant_availability` | public mirror `variant_id → available`, trigger-maintained, in the Realtime publication (live "only 2 left", D-010) | store (visible products) |
+| | `product_search` | each listing's search words with English stems (name; category, craft, state; summary; type), trigger-maintained (D-160) | functions only |
+| | `search_synonyms`, `search_words` | search's synonym groups (Claude's draft, D-160) and the vocabulary of live listings' words (pg_cron every 6 hours) for spelling fixes and suggestions | admin (read) |
 | | `product_media` | Storage paths (bucket `product-media`), alt text, one primary per product, `is_ai` (an AI-generated model photo, D-100: the product's Details say so) | store / admin |
 | Supply | `vendors` | shop + owner, phone/WhatsApp, address, town, region, payment method + reference (D-029), licences, status, notes, photo; `online_site` = an online shop's host for imported listings (one vendor per shop and state, D-110) | admin |
 | | `cycles` | code, status, `cutoff_at`, est. export/arrival, actual dates, AWB, forwarder, freight, duty, FX | admin |
@@ -283,6 +285,27 @@ Migration `20261029100000_quick_speed`: `store_quick_browse()` and `store_quick_
 into their own list before they meet `store_products` (joined straight to the view, the planner multiplied options by
 categories: 1.3 – 1.7 s with 5,100 7-day pieces on a production copy, now about 0.2 s), and the front page builds the
 cards of its three rows only. Same answers (checked against the old functions on the copy).
+Migration `20261030090000_search` (D-160): search that reads words as customers write them, at no running cost.
+`product_search` (one row per listing: `doc`, a weighted English tsvector of name A; category, craft and state B;
+summary C; type D; GIN-indexed; kept by triggers on `products`, `regions` and `categories` renames), `search_synonyms`
+(`term`, `grp`, `term_key` = `_search_key(term)`, the sorted English stems), `search_words` (`word`, `ndoc`: live
+listings' name, category, craft and state words, plus one-word synonyms of groups in use; `refresh_search_words()`,
+pg_cron `iwc-search-words` every 6 hours, writes only what changed). `_search_match(q, quick)` reads a search: its
+words (`_search_split`: at most 8), one tsquery per word with its synonyms and, for a last word no listing uses, its
+beginning (`_search_term`, `_search_groups`; a two-word synonym such as "gram flour" counts as one); every word, else
+the words spelled as the nearest vocabulary word (`_search_fix`: one change up to five letters or a swap, two from six,
+fuzzystrmatch's levenshtein), else some of the words; hits are listings whose `doc` matches or whose old
+`products.search` (simple words with the description) has every word (`_search_hits`). `store_search_page(q, type,
+category, region, sort, offset, limit, record, quick)` returns one jsonb: `query`, `fixed`, `mode` (`all` · `fixed` ·
+`some` · `none`), `total`, `all_total`, `types` (counts with the state filter), `categories` and `regions` (top 12 with
+the other filters), `named_regions` (states the words name), `products` (cards as `store_browse`'s); best match puts
+pieces that cannot be bought (coming soon, sold out) last, the listing's own words before its description, then
+`ts_rank` + 0.5 per word matched + whole words over synonyms + the words in the name in order + a named state + new in
+14 days. It records only the first page of an unfiltered search, a fix's words in `search_queries.fixed`, and a search
+answered only by some words as 0 results with `partial`. `store_search(...)` keeps its arguments and rows and answers
+from it. `store_search_hints()` (anon): the 1,500 most used words, synonym groups in use, categories and states with
+their counts, and popular searches (30 days, 3 or more, results, only vocabulary words). `admin_search_fixes(since)`:
+searches answered through a fix. Tests: `search.test.sql`.
 Migration 80 (D-141, the photo store): a photo in Cloudflare R2 is recorded with an `s/` path
 (`products/<id>/s/<name>.jpg`, packages/shared media.ts). `worker_sourcing_media` accepts `products/<id>/s/<name>` as
 well as `products/<id>/<name>`; album photos may be `regions/<slug>/album/s/<name>`.

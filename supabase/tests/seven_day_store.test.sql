@@ -56,7 +56,8 @@ select tests.assert(
 -- Search
 select tests.assert((select count(*) from public.store_search('qsearch', 0, 24, false)) = 4
   and (select count(*) from public.store_search('qsearch', 0, 24, false, true)) = 3
-  and not exists (select 1 from public.store_search('qsearch halwa', 0, 24, false, true)),
+  -- D-160: with some of the words it finds the other 7-day pieces, never the halwa
+  and not exists (select 1 from public.store_search('qsearch halwa', 0, 24, false, true) where name = 'Qsearch halwa'),
   'the 7-day store''s search finds only 7-day pieces');
 
 -- The front page

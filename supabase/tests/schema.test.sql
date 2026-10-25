@@ -43,7 +43,7 @@ select tests.assert(
    where n.nspname = 'public' and has_function_privilege('anon', p.oid, 'execute'))
   = array['dev_preview', 'is_product_visible', 'store_bag_charges', 'store_browse', 'store_home', 'store_next_delivery', 'store_policy',
           'store_product_page', 'store_quick_bag', 'store_quick_browse', 'store_quick_front', 'store_region_head', 'store_region_page',
-          'store_search', 'store_type_rows'],
+          'store_search', 'store_search_hints', 'store_search_page', 'store_type_rows'],
   'anon can execute only the store-facing functions');
 
 select tests.assert(
@@ -54,7 +54,7 @@ select tests.assert(
           'admin_cancel_after_export_cents', 'admin_cancel_shipment', 'admin_create_listing', 'admin_cycle_totals',
           'admin_decline_submission', 'admin_demand', 'admin_mark_ordered', 'admin_order_counts', 'admin_price_preview', 'admin_price_sheet', 'admin_publish_drafts', 'admin_quick_insights', 'admin_quick_watch',
           'admin_rename_listings', 'admin_request_retake', 'admin_rerun_photo_job', 'admin_return_received', 'admin_return_refunded',
-          'admin_return_rejected', 'admin_sales', 'admin_save_shop_bill', 'admin_set_listed_qty', 'admin_set_shop_bill_final',
+          'admin_return_rejected', 'admin_sales', 'admin_save_shop_bill', 'admin_search_fixes', 'admin_set_listed_qty', 'admin_set_shop_bill_final',
           'admin_shop_bill', 'admin_sourcing_review', 'admin_stale_variants', 'admin_to_order', 'admin_unmark_ordered',
           'admin_vendor_sign_in_code', 'admin_weigh_pickup', 'admin_weight_plan', 'admin_weights_to_check', 'advance_cycle', 'cancel_after_delay', 'cancel_order', 'cancel_refund_cents',
           'change_delivery_window', 'change_shipment_window', 'check_off_arrival', 'confirm_move_shipped', 'cutoff_cycle', 'deliver_order', 'deliver_shipment',
@@ -62,7 +62,7 @@ select tests.assert(
           'keep_after_delay', 'mark_pickup', 'move_order', 'my_vendor_id', 'record_payout', 'refund_order_item',
           'review_eligibility', 'ship_order', 'ship_shipment', 'shipment_cancel_cents', 'store_bag_charges', 'store_browse', 'store_home', 'store_my_order', 'store_next_delivery',
           'store_policy', 'store_product_page', 'store_quick_bag', 'store_quick_browse', 'store_quick_front', 'store_region_head',
-          'store_region_page', 'store_search', 'store_type_rows',
+          'store_region_page', 'store_search', 'store_search_hints', 'store_search_page', 'store_type_rows',
           'vendor_add_photo', 'vendor_delete_submission', 'vendor_keep_ready', 'vendor_may_upload', 'vendor_me',
           'vendor_money', 'vendor_new_submission', 'vendor_pieces', 'vendor_submission', 'vendor_submit',
           'worker_claim_job', 'worker_clothing_plan', 'worker_estimate_plan', 'worker_finish_job', 'worker_food_plan', 'worker_home_plan', 'worker_liquid_plan', 'worker_may_add_photos', 'worker_set_class_weights',

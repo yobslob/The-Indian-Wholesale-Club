@@ -34,7 +34,9 @@ set local role anon;
 select tests.assert((select count(*) from public.store_search('  Test   LIVE ')) = 1, 'the live test product is found');
 select tests.assert((select count(*) from public.store_search('test live', 24)) = 0, 'the second page is empty');
 select tests.assert((select count(*) from public.store_search('zzzunlisted')) = 0, 'nothing matches this');
-select tests.assert((select count(*) from public.store_search('Test draft product')) = 0, 'drafts are never found');
+-- D-160: a search with several words finds pieces with some of them; the draft is never among them.
+select tests.assert(not exists (select 1 from public.store_search('Test draft product') where name = 'Test draft product'),
+  'drafts are never found');
 select tests.assert_fails('select count(*) from public.search_queries', '42501', 'visitors cannot read the search log');
 reset role;
 select tests.assert(
