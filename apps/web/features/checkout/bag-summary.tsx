@@ -1,7 +1,8 @@
-import { arrivalLine, dayDate, formatDeliveryWindow, formatUsd } from '@repo/shared/domain';
+import { arrivalLine, dayDate, DUTIES_PAID, formatDeliveryWindow, formatUsd } from '@repo/shared/domain';
 
 import { LinePhoto } from '@/features/cart/bag-lines';
 import { ChargeValue, PendingChargeRows, ReducedValue } from '@/features/cart/charge-lines';
+import { PostmarkLine } from '@/features/cart/postmarks';
 
 import type { SummaryLine } from './last-order';
 import type { CheckoutQuote } from './types';
@@ -48,6 +49,9 @@ export function BagSummary({
           </li>
         ))}
       </ul>
+      <div className="mt-3">
+        <PostmarkLine names={lines.map((l) => l.regionName)} />
+      </div>
       <dl className="font-ui mt-3 grid gap-2 text-sm">
         <Row label="Subtotal" value={formatUsd(b?.subtotalCents ?? subtotalCents)} />
         {b ? (
@@ -85,6 +89,10 @@ export function BagSummary({
               </div>
             ) : null}
             <Row label="Total" value={formatUsd(b.totalCents)} strong />
+            {/* D-161: the plan's quiet line under the total */}
+            {DUTIES_PAID ? (
+              <p className="text-ink-muted m-0 text-[13px]">That&rsquo;s everything. Duties are paid, nothing to pay at your door.</p>
+            ) : null}
           </>
         ) : (
           <>

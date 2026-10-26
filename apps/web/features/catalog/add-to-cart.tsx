@@ -59,7 +59,7 @@ export function AddToCart({ product, variants, delivery }: Props): React.JSX.Ele
   useEffect(() => setMounted(true), []);
   const [quantity, setQuantity] = useState(1);
   const [added, setAdded] = useState(false);
-  // The button says "Added" for a moment after each add, then is ready for the next one (D-116).
+  // The button says "Packed" (D-161; "Added" until then) for a moment after each add, then is ready for the next one (D-116).
   const [flash, setFlash] = useState(0);
   const button = useRef<HTMLButtonElement>(null);
   useEffect(() => {
@@ -179,7 +179,7 @@ export function AddToCart({ product, variants, delivery }: Props): React.JSX.Ele
 
       <p className={`flex items-center gap-2 text-sm ${soldOut ? 'text-caution' : ''}`} aria-live="polite">
         <span aria-hidden="true" className={`size-2 rounded-full ${soldOut ? 'bg-caution' : 'bg-region live-dot'}`} />
-        {soldOut ? 'Sold out' : !picked ? 'In stock' : left <= 3 ? `Only ${left} left` : 'In stock'}
+        {soldOut ? 'Sold out. Someone missed home faster than you.' : !picked ? 'In stock' : left <= 3 ? `Only ${left} left` : 'In stock'}
         {inBagNow > 0 ? <span className="text-ink-muted"> · {inBagNow} in your bag</span> : null}
       </p>
 
@@ -220,14 +220,14 @@ export function AddToCart({ product, variants, delivery }: Props): React.JSX.Ele
               <svg viewBox="0 0 24 24" className="size-[18px]" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
                 <path d="M5 12.5l4.5 4.5L19 7.5" className="draw-check" />
               </svg>
-              Added
+              Packed
             </span>
           </span>
         </button>
       </div>
       {added ? (
         <p className="rise-in text-positive m-0 text-sm" role="status">
-          Added.{' '}
+          Packed for home.{' '}
           <Link href="/cart" className="group text-ink inline-flex items-center gap-1 font-medium underline underline-offset-[3px]">
             View bag
             <span aria-hidden="true" className="transition-transform group-hover:translate-x-0.5">→</span>

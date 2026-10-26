@@ -61,7 +61,7 @@ function emailContext(): EmailContext {
 function compose(row: OutboxRow, order: OrderDetail): { subject: string; html: string } | null {
   const ctx = emailContext();
   if (row.kind === 'order_confirmation') {
-    return { subject: orderConfirmationSubject(order, SITE_NAME), html: orderConfirmationHtml(order, ctx) };
+    return { subject: orderConfirmationSubject(order), html: orderConfirmationHtml(order, ctx) };
   }
   if (row.kind === 'admin_new_order') return { subject: adminNewOrderSubject(order), html: adminNewOrderHtml(order, ctx) };
   const { kind, shipment } = row.payload as { kind?: unknown; shipment?: unknown };

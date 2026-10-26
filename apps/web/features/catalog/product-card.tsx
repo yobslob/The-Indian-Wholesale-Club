@@ -84,9 +84,10 @@ export function ProductCard({
               {badge}
             </span>
           ) : product.quick_days ? (
-            // D-148: a 7-day piece (its days from Settings); the bag keeps the promise only while it holds 7-day pieces alone
-            <span className="product-card-chip bg-brand text-on-brand font-ui rounded-pill absolute left-3.5 top-3.5 px-2.5 py-1 text-xs font-semibold">
-              In {product.quick_days} days
+            // D-148: a 7-day piece (its days from Settings); the bag keeps the promise only while it holds 7-day pieces alone.
+            // D-161: once the browser knows today, "Sat at your door" (`.door-tag`, the weekday from days.tsx)
+            <span className="door-tag product-card-chip bg-brand text-on-brand font-ui rounded-pill absolute left-3.5 top-3.5 px-2.5 py-1 text-xs font-semibold">
+              <span className="door-tag-n">In {product.quick_days} days</span>
             </span>
           ) : null}
           {product.pack ? (

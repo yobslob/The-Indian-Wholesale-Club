@@ -23,3 +23,4 @@ export * from './order-money';
 export * from './wears';
 export * from './bag-shipments';
 export * from './bag-goal';
+export * from './homesick';

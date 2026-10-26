@@ -397,6 +397,9 @@ export const storePolicySchema = z.object({
   min_order_cents: z.number().int().nullable().default(null),
   express_days_min: z.number().int().nullable(),
   express_days_max: z.number().int().nullable(),
+  /** D-161 (until migration 20261031090000: none): the pilot's standard days, for the browser's dates. */
+  delivery_days_min: z.number().int().nullable().default(null),
+  delivery_days_max: z.number().int().nullable().default(null),
   us_delivery_days_min: z.number().int().nullable(),
   us_delivery_days_max: z.number().int().nullable(),
   /** D-148: 7-day delivery's days from the order; empty = no 7-day delivery. */

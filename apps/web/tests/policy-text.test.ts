@@ -11,6 +11,8 @@ const policy: StorePolicy = {
   min_order_cents: null,
   express_days_min: 15,
   express_days_max: 18,
+  delivery_days_min: null,
+  delivery_days_max: null,
   us_delivery_days_min: 3,
   us_delivery_days_max: 7,
   quick_delivery_days_min: 7,

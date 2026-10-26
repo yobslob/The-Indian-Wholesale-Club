@@ -115,6 +115,11 @@ export default async function ProductPage({
           <p className="border-line font-display mt-4 border-t pt-4 text-[17px]">
             Made in India{product.region_name ? ` · from ${product.region_name}` : ''} · Imported
           </p>
+          {/* D-161: where it was bought, said in general (never a shop, D-003), and for food the India pack itself */}
+          <p className="text-ink-muted mt-1.5 text-[13.5px]">
+            Bought in India&rsquo;s own shops and sent from India to your door.
+            {product.product_type === 'food' ? ' The pack sold in India, label and all.' : null}
+          </p>
         </aside>
       </div>
 

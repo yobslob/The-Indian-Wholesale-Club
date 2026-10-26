@@ -11,3 +11,17 @@ export function IndiaMark(): React.JSX.Element {
     </svg>
   );
 }
+
+/**
+ * The same outline once per page as a symbol (D-161), for client parts that draw it with `<use href="#india-mark">`
+ * (the free-delivery pill's flight path), so the path rides in the HTML once and never in their JavaScript.
+ */
+export function IndiaSymbol(): React.JSX.Element {
+  return (
+    <svg width="0" height="0" aria-hidden="true" focusable="false" className="absolute">
+      <symbol id="india-mark" viewBox={INDIA_MARK.viewBox}>
+        <path d={INDIA_MARK.path} vectorEffect="non-scaling-stroke" />
+      </symbol>
+    </svg>
+  );
+}

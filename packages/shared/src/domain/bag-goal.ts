@@ -15,7 +15,7 @@ import { bagChargesAt, bulkProgress } from './checkout';
 export type BagGoal =
   | { kind: 'none' }
   | { kind: 'quick-gap'; leftCents: number; share: number }
-  | { kind: 'quick-free'; share: 1; arrivesBy: string | null }
+  | { kind: 'quick-free'; share: 1; arrivesBy: string | null; arrivesByDay: string | null }
   | { kind: 'free-gap'; leftCents: number; share: number }
   | { kind: 'free'; share: number; bulk: ReturnType<typeof bulkProgress> };
 
@@ -42,7 +42,9 @@ export function bagGoal({
     return { kind: 'free', share, bulk };
   }
   if (at.shippingFree) {
-    return { kind: 'quick-free', share: 1, arrivesBy: facts?.dates.quickTo ? dayDate(facts.dates.quickTo) : null };
+    const day = facts?.dates.quickTo ?? null;
+    // arrivesByDay: the calendar day itself, for "home by Saturday" (D-161)
+    return { kind: 'quick-free', share: 1, arrivesBy: day ? dayDate(day) : null, arrivesByDay: day };
   }
   const quick = new Set(facts?.quickIds ?? []);
   const onlyQuick = variantIds.length > 0 && variantIds.every((id) => quick.has(id));

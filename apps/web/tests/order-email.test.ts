@@ -124,10 +124,7 @@ describe('order confirmation email (storefront.md §Emails)', () => {
   });
 
   it('has a subject with the order number', () => {
-    assert.equal(
-      orderConfirmationSubject(order, 'The Indian Wholesale Club'),
-      'Your The Indian Wholesale Club order IWC-260928-ABCDEF0123',
-    );
+    assert.equal(orderConfirmationSubject(order), "Home's on the way: order IWC-260928-ABCDEF0123");
   });
 });
 

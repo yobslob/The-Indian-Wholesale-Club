@@ -118,11 +118,11 @@ test('the store tabs open the 7-day store and its search; IWC returns to the pag
   await page.goto('/clothing');
   const stores = page.getByRole('navigation', { name: 'Store' });
   await expect(stores.getByRole('link', { name: /IWC store/ })).toHaveAttribute('aria-current', 'page');
-  await expect(stores.getByRole('link', { name: /7-day store/ })).toContainText(/arrives /);
+  await expect(stores.getByRole('link', { name: /7-day store/ })).toContainText(/at your door/);
   await stores.getByRole('link', { name: /7-day store/ }).click();
   await expect(page).toHaveURL(/\/7-day-delivery$/);
   await expect(stores.getByRole('link', { name: /7-day store/ })).toHaveAttribute('aria-current', 'page');
-  await expect(page.getByText(/^Order today, arrives by \w{3}, \w{3} \d+\.$/)).toBeVisible();
+  await expect(page.getByText(/^Order today, open it \w{3}, \w{3} \d+\.$/)).toBeVisible();
 
   await page.goto('/7-day-delivery/search?q=banana');
   await expect(page.getByRole('main').getByText('E2E banana chips')).toBeVisible();

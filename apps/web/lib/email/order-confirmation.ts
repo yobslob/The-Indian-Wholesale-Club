@@ -22,8 +22,9 @@ function addressLines(address: Record<string, unknown>): string[] {
   ].filter(Boolean);
 }
 
-export function orderConfirmationSubject(order: OrderDetail, siteName: string): string {
-  return `Your ${siteName} order ${order.order.order_number}`;
+/** D-161: the homesick plan's subject (the site's name is the sender's). */
+export function orderConfirmationSubject(order: OrderDetail): string {
+  return `Home's on the way: order ${order.order.order_number}`;
 }
 
 export function orderConfirmationHtml(order: OrderDetail, ctx: EmailContext): string {
@@ -38,7 +39,9 @@ export function orderConfirmationHtml(order: OrderDetail, ctx: EmailContext): st
   );
   const body = [
     paragraph(
-      `Thank you. Your order <strong>${escapeHtml(o.order_number)}</strong> is ${escapeHtml(CUSTOMER_STATUS_LABEL[o.customer_status].toLowerCase())}.`,
+      `Thank you. Your order <strong>${escapeHtml(o.order_number)}</strong> is ${escapeHtml(CUSTOMER_STATUS_LABEL[o.customer_status].toLowerCase())}.${
+        window ? ` It lands <strong>${escapeHtml(window)}</strong>.` : ''
+      } We'll write once more when it's on its way.`,
     ),
     // D-154: two shipments, each with its date and its pieces
     ...(order.shipments.length > 1

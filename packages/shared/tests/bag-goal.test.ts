@@ -47,7 +47,7 @@ describe('one goal for the bag (founder 2026-10-24: one bar, never two)', () => 
 
   it('case 4: only 7-day pieces from $49.99 → free 7-day delivery, the bar full, no "add more for free delivery"', () => {
     const g = goal(5200, ['snack', 'tea'], ['snack', 'tea']);
-    assert.deepEqual(g, { kind: 'quick-free', share: 1, arrivesBy: 'Fri, Oct 30' });
+    assert.deepEqual(g, { kind: 'quick-free', share: 1, arrivesBy: 'Fri, Oct 30', arrivesByDay: '2026-10-30' });
   });
 
   it('case 2: normal pieces under $99.99 → add the rest for free delivery', () => {

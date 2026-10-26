@@ -116,7 +116,7 @@ export async function SearchView({ searchParams, store }: { searchParams: Search
           <SearchField
             defaultValue={q}
             quick={quick}
-            placeholder={inQuick ? 'Search snacks, masalas, sweets…' : 'Search a state, a saree, a masala…'}
+            placeholder={inQuick ? 'Search snacks, masalas, sweets…' : 'Parle-G? Kasuri methi? That one pickle?'}
           />
           <button type="submit" className="bg-brand text-on-brand font-ui hidden min-h-12 rounded-pill px-6 text-[15px] font-medium md:block">
             Search
@@ -185,6 +185,16 @@ export async function SearchView({ searchParams, store }: { searchParams: Search
             <p className="text-ink-muted text-[15px]">
               {inQuick ? `Nothing in the 7-day store matches “${q}”. ` : `No products match “${q}”. `}
               {page.mode === 'some' ? 'These have some of its words. ' : null}
+              {/* D-161: the plan's words for a search that found nothing at all */}
+              {page.mode !== 'some' && !quick ? (
+                <>
+                  Not on our shelf yet.{' '}
+                  <Link href="/contact" prefetch={false} className={link}>
+                    Tell us what you miss
+                  </Link>{' '}
+                  and we&rsquo;ll go looking.
+                </>
+              ) : null}
               {quick ? (
                 <Link href={`/search?${new URLSearchParams({ q }).toString()}`} className={link}>
                   Search the whole IWC store

@@ -4,13 +4,16 @@ import Link from 'next/link';
 import { usePathname } from 'next/navigation';
 import { useEffect, useRef, useState } from 'react';
 
-import { formatUsd, type BagGoal } from '@repo/shared/domain';
+import { bagShipmentState, datesIn, dayName, doorDate, formatUsd, type BagGoal } from '@repo/shared/domain';
 
 import { StorePhoto } from '@/features/catalog/store-photo';
+import { useDays } from '@/features/shell/days';
 import { mediaUrl } from '@/lib/site';
 
 import { freeDelivery, undoBagChange, useBagCharges, useShipmentNote } from './charges';
-import { cartCount, useCart } from './store';
+import { cartCount, useCart, type CartLine } from './store';
+
+import type { BagCharges } from './charges';
 
 /**
  * The free-delivery pill (D-111, D-116): once a piece is in the bag, a slim pill floats at the bottom of every store
@@ -22,7 +25,8 @@ import { cartCount, useCart } from './store';
  * ($49.99) and, there, says it is free as checkout does; every other bag towards free delivery. D-154: when a change
  * moves the bag across a line the pill says so for three seconds, with Undo beside it when a normal piece brought
  * Shipping back.
- * The look is `.fd-*` in globals.css.
+ * D-161 (the homesick plan): the bar is a flight path, India to a little house, "$12.40 more and the flight's on us",
+ * and each add says "Coming home Sat, Oct 31" for three seconds. The look is `.fd-*` in globals.css.
  */
 export function FreeDeliveryBar(): React.JSX.Element | null {
   const lines = useCart((s) => s.lines);
@@ -46,10 +50,11 @@ export function FreeDeliveryBar(): React.JSX.Element | null {
   const free = goal.kind === 'free' || goal.kind === 'quick-free';
   const surge = useSurge(goal.kind === 'none' ? 0 : goal.share);
   const note = useShipmentNote();
-  if (!visible) return null;
-
   const count = cartCount(lines);
   const newest = lines[lines.length - 1];
+  const home = useComingHome(count, newest, charges);
+  if (!visible) return null;
+
   return (
     <>
       <Link
@@ -100,6 +105,10 @@ export function FreeDeliveryBar(): React.JSX.Element | null {
               <span key={note.until} className="rise-in inline-block">
                 {note.text}
               </span>
+            ) : home ? (
+              <span key={home.key} className="rise-in inline-block">
+                Coming home <b className="font-bold">{home.date}</b>
+              </span>
             ) : (
               <GoalWords goal={goal} />
             )}
@@ -138,22 +147,22 @@ function GoalWords({ goal }: { goal: BagGoal }): React.JSX.Element | null {
     case 'quick-gap':
       return (
         <>
-          Add <b className="font-bold">{formatUsd(goal.leftCents)}</b> <span className="hidden sm:inline">more </span>for{' '}
-          {big('FREE 7-DAY DELIVERY')}
+          <b className="font-bold">{formatUsd(goal.leftCents)}</b> more for {big('FREE 7-DAY DELIVERY')}
         </>
       );
     case 'quick-free':
       return (
         <>
           {big('FREE 7-DAY DELIVERY')}
-          {goal.arrivesBy ? <> · by {goal.arrivesBy}</> : ' unlocked'}
+          {goal.arrivesByDay ? <> · home by {dayName(goal.arrivesByDay)}</> : ' unlocked'}
         </>
       );
     case 'free-gap':
       return (
+        // D-161: the homesick plan's words; "free delivery" stays for screen readers and the bag's own line
         <>
-          Add <b className="font-bold">{formatUsd(goal.leftCents)}</b> more <span className="sm:hidden">for</span>
-          <span className="hidden sm:inline">to unlock</span> {big('FREE DELIVERY')}
+          <b className="font-bold">{formatUsd(goal.leftCents)}</b> more and the flight&rsquo;s on us
+          <span className="sr-only"> (free delivery)</span>
         </>
       );
     case 'free':
@@ -171,7 +180,11 @@ function GoalWords({ goal }: { goal: BagGoal }): React.JSX.Element | null {
             <span className="hidden sm:inline"> · add more, save more</span>
           </>
         );
-      return <>{big('FREE DELIVERY')} unlocked</>;
+      return (
+        <>
+          {big('FREE DELIVERY')} · the flight&rsquo;s on us
+        </>
+      );
     default:
       return null;
   }
@@ -186,13 +199,16 @@ export function FreeMeter({
   share,
   surge,
   tone = 'brand',
+  route = true,
 }: {
   share: number;
   surge: number;
   tone?: 'brand' | 'canvas';
+  /** The flight path's ends: India and the house (D-161). */
+  route?: boolean;
 }): React.JSX.Element {
   const full = share >= 1;
-  return (
+  const bar = (
     <span
       className="fd-bar"
       data-tone={tone}
@@ -204,6 +220,51 @@ export function FreeMeter({
       <i key={surge} className="fd-head" data-surge={surge > 0 || undefined} />
     </span>
   );
+  if (!route) return bar;
+  // D-161 (the plan's flight path): from the India outline (the layout's #india-mark) along the stitch to a house
+  return (
+    <span className="fd-route" data-tone={tone} data-full={full || undefined} aria-hidden="true">
+      <svg viewBox="0 0 24 24" className="fd-end">
+        <use href="#india-mark" />
+      </svg>
+      {bar}
+      <svg viewBox="0 0 24 24" className="fd-end" data-house="">
+        <path d="M4 11.5 12 4l8 7.5M6.5 9.5V20h11V9.5M10 20v-5h4v5" />
+      </svg>
+    </span>
+  );
+}
+
+/**
+ * "Coming home Sat, Oct 31" for three seconds after each add (the plan's toast, D-161): the newest piece's date as the
+ * bag's own answer says it (its 7-day date when it travels in the 7-day shipment, else the standard window), or the
+ * standard days from Settings before that answer is in. Nothing on the first draw.
+ */
+function useComingHome(count: number, newest: CartLine | undefined, charges: BagCharges | null): { key: number; date: string } | null {
+  const { standard } = useDays();
+  const last = useRef<number | null>(null);
+  const [key, setKey] = useState(0);
+  const [on, setOn] = useState(false);
+  useEffect(() => {
+    if (last.current !== null && count > last.current) {
+      setKey((k) => k + 1);
+      setOn(true);
+      const t = setTimeout(() => setOn(false), 3200);
+      last.current = count;
+      return () => clearTimeout(t);
+    }
+    last.current = count;
+  }, [count]);
+  if (!on || !newest) return null;
+  const f = charges?.shipments ?? null;
+  const state = bagShipmentState(f);
+  const inQuick = f !== null && (state === 'quick' || state === 'split') && f.quickIds.includes(newest.variantId);
+  const from = inQuick ? f.dates.quickFrom : f?.dates.standardFrom;
+  const to = inQuick ? f.dates.quickTo : f?.dates.standardTo;
+  if (from && to) return { key, date: doorDate(from, to) };
+  if (!standard) return null;
+  const d = datesIn(standard.min, standard.max);
+  return { key, date: doorDate(d.from, d.to) };
 }
 
 /** A number that goes up each time `share` grows, so the meter's edge can flare once per add (not on the first draw). */

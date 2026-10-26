@@ -1,10 +1,11 @@
 import { notFound } from 'next/navigation';
 
-import { formatUsd, PRODUCT_TYPE_LABEL, quickArrivesLine } from '@repo/shared/domain';
+import { DUTIES_PAID, formatUsd, PRODUCT_TYPE_LABEL, quickOpenLine } from '@repo/shared/domain';
 
 import { inQuickStore, PAGE, toBrowseFilter } from '@/features/catalog/browse-query';
 import { browseCached, getQuickFrontCached, quickPageCached } from '@/features/catalog/data';
 import { ProductRow } from '@/features/catalog/product-row';
+import { FestivalLine } from '@/features/seven-day/festival-line';
 import { QUICK_TYPES, quickCategories, quickHref } from '@/features/seven-day/links';
 import { QuickArrives } from '@/features/seven-day/quick-arrives';
 import { QuickTiles } from '@/features/seven-day/quick-tiles';
@@ -17,7 +18,8 @@ export const metadata: Metadata = {
 };
 
 /**
- * The 7-day store's front page (D-148, D-154): "Order today, arrives by Fri, Oct 30" (the real next date, from the
+ * The 7-day store's front page (D-148, D-154; D-161: "Home is 7 days away. Order today, open it Sat, Oct 31.", the
+ * festival clock or the weekend line, the kirana counter): the real next date, from the
  * 7-day days in Settings: non-negotiable 4), the category tiles, the rows Most ordered this week, Under $5 and New this
  * week, then a row per type with See all, as the IWC store's Home ends. A tile and See all open the 7-day store's own
  * See all pages (/7-day-delivery/food, with the filters). Cached reads only (store_quick_front, store_quick_browse for
@@ -42,21 +44,25 @@ export default async function SevenDayPage(): Promise<React.JSX.Element> {
       <header className="border-line relative overflow-hidden rounded-lg border bg-paper px-[clamp(20px,4vw,64px)] py-[clamp(36px,6vw,88px)]">
         <p className="text-brand font-ui text-xs font-semibold uppercase tracking-[0.18em]">The 7-day store</p>
         <h1 className="font-display text-ink mt-4 max-w-[14ch] text-[clamp(40px,6vw,92px)] leading-[1.02] tracking-[-0.01em]">
-          Home, in {days} days.
+          Home is {days} days away.
         </h1>
+        {/* D-161: the day you open it, as the plan's heading 2 says it */}
         <p className="font-heading text-ink mt-5 text-[clamp(20px,1.8vw,28px)] font-medium tracking-[-0.015em]">
-          Order today,{' '}
+          Order today, open it{' '}
           <QuickArrives
             daysMin={front.days_min}
             daysMax={front.days_max}
-            initial={quickArrivesLine(front.days_min, front.days_max)}
+            initial={quickOpenLine(front.days_min, front.days_max)}
+            open
           />
           .
         </p>
         <p className="text-ink-muted mt-3 max-w-[56ch] text-[clamp(15px,1.2vw,18px)] leading-relaxed">
-          The snacks, masalas and sweets you grew up with.
-          {front.min_cents ? ` Comes in ${days} days with ${formatUsd(front.min_cents)} of 7-day pieces.` : null}
+          The snacks, masalas and sweets you grew up with, straight from India to your door.
+          {front.min_cents ? ` Free 7-day delivery from ${formatUsd(front.min_cents)} of 7-day pieces.` : null}
+          {DUTIES_PAID ? ' Duties paid, nothing to pay at your door.' : null}
         </p>
+        <FestivalLine weekend className="text-brand font-ui mt-4 flex items-center gap-2 text-[15px] font-semibold" />
         {/* the brand's running stitch (storefront.md §Visual system 8), here as a still thread under the words */}
         <div aria-hidden className="border-brand/60 mt-8 w-[min(420px,70%)] border-t-2 border-dashed" />
         <p className="text-ink font-ui mt-4 text-sm font-medium">
@@ -69,8 +75,9 @@ export default async function SevenDayPage(): Promise<React.JSX.Element> {
         <>
           <QuickTiles categories={quickCategories(front.categories, page.categories)} />
           <div>
-            <ProductRow id="most-ordered" title="Most ordered this week" products={rows(front.most_ordered)} />
-            <ProductRow id="under-5" title="Under $5" products={rows(front.under_5)} />
+            <ProductRow id="most-ordered" title="What everyone missed this week" products={rows(front.most_ordered)} />
+            {/* D-161: Under $5 as the kirana counter, the small treats that top a bag up to the line */}
+            <ProductRow id="under-5" title="The kirana counter" sub="Under $5, and no toffees for change." products={rows(front.under_5)} />
             <ProductRow id="new-this-week" title="New this week" products={rows(front.new_this_week)} />
             {QUICK_TYPES.map((t, i) => (
               <ProductRow

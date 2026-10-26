@@ -3,7 +3,7 @@ import { ActivityIndicator, FlatList, Pressable, ScrollView, Text, View } from '
 import { SafeAreaView } from 'react-native-safe-area-context';
 
 import { getQuickFront, getQuickPage, type ProductCard as ProductCardData, type QuickPage } from '@repo/db/store';
-import { formatUsd, quickArrivesLine } from '@repo/shared/domain';
+import { DUTIES_PAID, formatUsd, quickOpenLine } from '@repo/shared/domain';
 import tokens from '@repo/tokens';
 
 import { BackBar, Body, ErrorText, Loading } from '@/components/ui';
@@ -86,16 +86,17 @@ export default function SevenDayScreen(): React.JSX.Element {
               <View className="border-line bg-paper gap-4 overflow-hidden rounded-[18px] border px-5 py-9">
                 <Text className="font-ui-semibold text-brand text-xs uppercase tracking-[2px]">{days}-day delivery</Text>
                 <Text accessibilityRole="header" className="font-display text-ink text-[40px] leading-[42px]">
-                  Home, in {days} days.
+                  Home is {days} days away.
                 </Text>
                 {front.data ? (
                   <Text className="font-heading text-ink text-xl">
-                    Order today, {quickArrivesLine(front.data.days_min, front.data.days_max)}.
+                    Order today, open it {quickOpenLine(front.data.days_min, front.data.days_max)}.
                   </Text>
                 ) : null}
                 <Body muted>
-                  The snacks, masalas and sweets you grew up with.
-                  {front.data?.min_cents ? ` Comes in ${days} days with ${formatUsd(front.data.min_cents)} of 7-day pieces.` : ''}
+                  The snacks, masalas and sweets you grew up with, straight from India to your door.
+                  {front.data?.min_cents ? ` Free 7-day delivery from ${formatUsd(front.data.min_cents)} of 7-day pieces.` : ''}
+                  {DUTIES_PAID ? ' Duties paid, nothing to pay at your door.' : ''}
                 </Body>
                 {/* the brand's running stitch (storefront.md §Visual system 8), a still thread under the words; a whole
                     dashed border, as Android draws no dashes on one side alone */}
@@ -107,8 +108,8 @@ export default function SevenDayScreen(): React.JSX.Element {
             ) : null}
             {front.data && category === null ? (
               <>
-                <ProductRow title="Most ordered this week" products={untagged(front.data.most_ordered)} />
-                <ProductRow title="Under $5" products={untagged(front.data.under_5)} />
+                <ProductRow title="What everyone missed this week" products={untagged(front.data.most_ordered)} />
+                <ProductRow title="The kirana counter" products={untagged(front.data.under_5)} />
                 <ProductRow title="New this week" products={untagged(front.data.new_this_week)} />
               </>
             ) : null}

@@ -12,6 +12,7 @@ import { StorePhoto } from '@/features/catalog/store-photo';
 import { RegionAlbum } from '@/features/regions/region-album';
 import { ComingSoon, RegionTypeTabs } from '@/features/regions/region-type-tabs';
 import { scriptFontClass } from '@/features/regions/script-fonts';
+import { RememberHome } from '@/features/regions/where-home';
 import { mediaUrl } from '@/lib/site';
 
 import type { Metadata } from 'next';
@@ -67,6 +68,7 @@ export default async function RegionPage({ params }: { params: Params }): Promis
             </Link>
             &nbsp;/&nbsp; {region.name}
           </p>
+          <RememberHome slug={region.slug} name={region.name} greeting={region.greeting_latin} />
           {region.greeting_native ? (
             <p
               className={`write-in text-region m-0 text-[clamp(56px,8vw,128px)] font-light leading-[1.15] ${scriptFontClass(region.greeting_script)}`}

@@ -156,10 +156,10 @@ export function BrowseView({
           </div>
           {products.length === 0 && meta.drawer.length === 0 && !loading ? (
             <p className="text-ink-muted">
-              Nothing matches all of these.{' '}
+              Nothing matches. Even Mumbai traffic moves more than this.{' '}
               {chosen ? (
                 <button type="button" className="underline underline-offset-4" onClick={() => change(clearAll)}>
-                  Clear the filters
+                  Loosen the filters
                 </button>
               ) : null}
             </p>

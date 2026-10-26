@@ -52,7 +52,7 @@ export async function buyDemoProduct(page: Page): Promise<string> {
   await page.getByRole('button', { name: /^Pay \$/ }).click();
 
   await expect(page).toHaveURL(/\/checkout\/success\?order=/, { timeout: 45_000 });
-  await expect(page.getByRole('heading', { name: 'Thank you!' })).toBeVisible();
+  await expect(page.getByRole('heading', { name: /Clear a shelf|Thank you!/ })).toBeVisible();
   // The fuller thank-you (D-087): the pieces and the total from this tab's priced bag.
   await expect(page.getByRole('heading', { name: 'Your order' })).toBeVisible();
   const orderNumber = (await page.locator('strong').filter({ hasText: ORDER_NUMBER }).textContent())?.trim() ?? '';

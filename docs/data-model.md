@@ -216,7 +216,7 @@ so it is inlined: live, not US stock, every active option's source in use, else 
 quick-delivery shop) and `_quick_days(product)` (internal). Customers: `store_quick_bag(variant ids)` (`{days_min,
 days_max}` when every piece is a 7-day piece, else null) and `store_quick_browse(category, offset, limit)` (the 7-day
 page: days, totals, categories with counts, light cards). `_store_product_card` and `store_browse` add `quick_days`;
-`store_product_page` adds `quick_delivery`; `store_policy` the two days; `checkout_context` adds `quick_delivery` and
+`store_product_page` adds `quick_delivery`; `store_policy` the two days (D-161, migration `20261031090000_policy_days`: also `delivery_days_min` / `_max`, the pilot's standard days, null in cycle mode); `checkout_context` adds `quick_delivery` and
 gives such a bag no Express; `create_order` gives a standard 7-day bag that window, no cycle and its pickups at once.
 No answer names a shop or a source. Tests: `seven_day.test.sql`.
 Migration `20261023120000_seven_day_shipments` (D-154, step 1): `pricing_settings.quick_delivery_min_cents` (4999, the

@@ -65,6 +65,19 @@
   color: #000;
 }
 
+.lead {
+  font-weight: 600;
+  letter-spacing: -0.005em;
+}
+
+.sub {
+  margin: 0.2em 0 0;
+  font-size: clamp(12px, calc(var(--fs) * 0.2), 18px);
+  line-height: 1.35;
+  color: #000;
+}
+
+.sub a,
 .line a {
   white-space: nowrap;
   text-decoration: underline;

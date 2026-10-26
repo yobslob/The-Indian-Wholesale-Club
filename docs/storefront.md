@@ -24,7 +24,7 @@ Enforcement: customer code reads catalog and order data only through `store_*` (
 ## Web routes (`apps/web/app/(store)/…`, built in R5)
 | Route | Purpose | Rendering (see `engineering.md`) |
 |---|---|---|
-| `/` | the full-screen photo hero (behind the nav bar too) with only the stacked brand name on the white wall and "Miss local market? Start here." (D-079, `design/pages/shell/`; otherwise D-050 – D-055; since D-148, while 7-day delivery is on, "Want in 7 days? Click here." to `/7-day-delivery`, the days from Settings), the album of all of India (the region pages' drifting mosaic: the states' album photos, then their newest pieces' main photos; it opens with the clip-and-scale reveal and a gentle parallax, D-113), Pick your home (India map + stamps, in pages of 6 from 7 open states, + names; D-080), then Just listed (D-113): since D-140 one heading and a row per type (Clothing, Food, Home & gifts), each with its own See all, a type with fewer than four pieces left out; pieces published at the same moment take turns by shop and category (D-140, L8). D-154: while the 7-day store is open, one row "Arrives in 7 days" (the days from Settings; See all → `/7-day-delivery`) just before Just listed, its cards without the tag | static, cached `store_home()` |
+| `/` | the full-screen photo hero (behind the nav bar too) with only the stacked brand name on the white wall and, since D-161, "We go home so you don't have to." with "India's shelves, at your door." (to Pick your home; D-079's and D-148's lines gave way; `design/pages/shell/`; otherwise D-050 – D-055), the album of all of India (the region pages' drifting mosaic: the states' album photos, then their newest pieces' main photos; it opens with the clip-and-scale reveal and a gentle parallax, D-113), Pick your home (India map + stamps, in pages of 6 from 7 open states, + names; D-080), then Just listed (D-113): since D-140 one heading and a row per type (Clothing, Food, Home & gifts), each with its own See all, a type with fewer than four pieces left out; pieces published at the same moment take turns by shop and category (D-140, L8). D-154: while the 7-day store is open, one row "Arrives in 7 days" (the days from Settings; See all → `/7-day-delivery`) just before Just listed, its cards without the tag | static, cached `store_home()` |
 | `/states` | Pick your home as its own page (D-083): all 36 regions, alphabetical, with no state/UT distinction (D-002) | static (same cached read as `/`) |
 | `/states/[region]` | **the core page:** greeting in the region's script, story, accent theme, the album, Most wanted and Picked for you, then the state's inventory: Clothing · Food · Home & gifts as a switch, each with See all's filters (D-157) | static per region (36 built at build time): cached `store_region_head()` and the first type's `store_browse()` page |
 | See all (`/clothing`, `/food`, `/home-and-gifts`) | D-122: a frosted-glass switch between the three types at the top, keeping the chosen state; a food card shows its pack size on its photo. D-136: the filter panel on the left from 1024 px (D-140: For first on clothing, Women · Men with counts, unisex under both, no Kids at launch; Category, State, Price with a slider and four ranges, Size / Pack boxes grouped as Tops & kurtas, Waist, Footwear, Bangles, Kids' ages, One size, each shown only when the pieces in view use it; a list of more than 100 sizes or packs (Food and Home & gifts, whose packs come as the shops write them) shows the 60 with the most pieces plus any chosen, `size-facet.ts`, 2026-10-24; "One Size", "Free size" and a piece without a size read One size, "L-XL" reads L/XL), /clothing's two large Women · Men tiles under the heading, chips with × and Clear all, Sort by; filters and Show more change only the cards (`GET /api/browse`), never load the page, and Back from a product restores the cards and the scroll | cached `store_browse()` |
@@ -288,6 +288,19 @@ region images, C2), mockups and dev pages use clearly marked placeholders, never
   be relateable, be creative, be out of the box, be frank, be natural." In practice: short sentences, plain words, a
   joke where a person would make one; no "vibrant", "rich heritage", "timeless", "curated with love", no stacked
   adjectives, no "whether you're…", no em-dash asides. Read it aloud; if it sounds like an ad, rewrite it.
+
+### The homesick promises (D-161, `docs/archive/plan-homesick.md`)
+- **The wait is the proof:** a date and a day name, never an apology and never "fast". The seven promises (7 days
+  from India to your door, the 12 – 16 day window, free 7-day delivery from $49.99, free delivery from $99.99, duties
+  paid and nothing to pay at your door, right to your door, the pack from back home) each come from Settings or the
+  order, worked out in the browser for cached pages (`packages/shared/src/domain/homesick.ts`,
+  `apps/web/features/shell/days.tsx`).
+- **One promise per screen, inside something the page already has** (a header line, a card tag, the pill, a summary
+  line): no banners, pop-ups or tickers, no countdown, no blog. Where each one sits: D-161.
+- Say "Duties paid. Nothing to pay at your door.", never "no tariffs"; every such line follows `DUTIES_PAID` (Q-46).
+  Shops are "India's own shops", never named (D-003). The festival clock shows only while an order can arrive the
+  day before (Q-45). Where's home and India time run in the browser; nothing is sent.
+- The words are Claude's drafts until the founder approves them (D-019, D-059).
 
 ### Visual system (principles)
 1. **Neutral, warm base with one brand colour.** Content and photos carry the colour.

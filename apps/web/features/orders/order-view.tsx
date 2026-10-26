@@ -18,7 +18,6 @@ import { OrderShipments } from './order-shipments';
 import { PrintInvoiceButton } from './print-invoice';
 import { ReturnChoices } from './return-choices';
 
-
 import type { OrderDetail } from '@repo/db/store';
 
 const dateTime = new Intl.DateTimeFormat('en-US', {
@@ -38,8 +37,21 @@ const STEP_EVENT: Record<string, string> = {
 };
 
 /**
+ * The parcel diary (the homesick plan's idea 2, D-161): one line for the step the order has really reached, no places,
+ * no hubs, no customs (decision 2). Claude's drafts until the founder approves them.
+ */
+const DIARY: Record<string, string> = {
+  confirmed: 'Your list is with us.',
+  preparing: 'Getting everything together for you.',
+  shipped: 'On its way. Your parcel’s somewhere between here and home.',
+  delivered:
+    'Home has landed. Keep the scissors near. How did it taste? Be honest, we can take it.',
+};
+
+/**
  * Confirmed → Preparing your order → Shipped → Delivered as a line that fills to the current step, each reached step
- * with the date of its update (D-088). Not drawn for cancelled or refunded orders (step -1).
+ * with the date of its update (D-088), and the diary's line for the current step under it (D-161). Not drawn for
+ * cancelled or refunded orders (step -1).
  */
 function Timeline({ order, step }: { order: OrderDetail; step: number }): React.JSX.Element {
   const when = (status: string): string | null => {
@@ -47,44 +59,52 @@ function Timeline({ order, step }: { order: OrderDetail; step: number }): React.
     return event ? shortDate.format(new Date(event.created_at)) : null;
   };
   const last = CUSTOMER_TIMELINE.length - 1;
+  const diary = DIARY[CUSTOMER_TIMELINE[step] ?? ''];
   return (
-    <ol
-      className="relative m-0 mt-[clamp(22px,2.4vw,32px)] grid list-none grid-cols-4 p-0"
-      aria-label="Order progress"
-    >
-      <span
-        aria-hidden="true"
-        className="bg-line absolute left-[12.5%] right-[12.5%] top-[9px] h-0.5 rounded-sm"
-      />
-      <span
-        aria-hidden="true"
-        // D-140 (F7): the done part of the track is the brand's running stitch
-        className="absolute left-[12.5%] top-[9px] h-0.5 rounded-sm bg-[repeating-linear-gradient(90deg,theme(colors.ink)_0_7px,transparent_7px_12px)]"
-        style={{ width: `${(75 * step) / last}%` }}
-      />
-      {CUSTOMER_TIMELINE.map((s, i) => {
-        const reached = i <= step;
-        const date = reached ? when(s) : null;
-        return (
-          <li
-            key={s}
-            className={`font-ui relative z-[1] text-center text-[13px] font-medium leading-snug ${reached ? 'text-black' : 'text-ink-muted'}`}
-            aria-current={i === step ? 'step' : undefined}
-          >
-            <i
-              aria-hidden="true"
-              className={`mx-auto mb-2 block size-5 rounded-full border-2 ${reached ? 'border-ink bg-ink' : 'border-line bg-canvas'} ${
-                i === step ? 'shadow-[0_0_0_5px_rgb(30_27_22/0.12)]' : ''
-              }`}
-            />
-            {CUSTOMER_STATUS_LABEL[s]}
-            {date ? (
-              <small className="text-ink-muted mt-0.5 block text-xs font-normal">{date}</small>
-            ) : null}
-          </li>
-        );
-      })}
-    </ol>
+    <>
+      <ol
+        className="relative m-0 mt-[clamp(22px,2.4vw,32px)] grid list-none grid-cols-4 p-0"
+        aria-label="Order progress"
+      >
+        <span
+          aria-hidden="true"
+          className="bg-line absolute left-[12.5%] right-[12.5%] top-[9px] h-0.5 rounded-sm"
+        />
+        <span
+          aria-hidden="true"
+          // D-140 (F7): the done part of the track is the brand's running stitch
+          className="absolute left-[12.5%] top-[9px] h-0.5 rounded-sm bg-[repeating-linear-gradient(90deg,theme(colors.ink)_0_7px,transparent_7px_12px)]"
+          style={{ width: `${(75 * step) / last}%` }}
+        />
+        {CUSTOMER_TIMELINE.map((s, i) => {
+          const reached = i <= step;
+          const date = reached ? when(s) : null;
+          return (
+            <li
+              key={s}
+              className={`font-ui relative z-[1] text-center text-[13px] font-medium leading-snug ${reached ? 'text-black' : 'text-ink-muted'}`}
+              aria-current={i === step ? 'step' : undefined}
+            >
+              <i
+                aria-hidden="true"
+                className={`mx-auto mb-2 block size-5 rounded-full border-2 ${reached ? 'border-ink bg-ink' : 'border-line bg-canvas'} ${
+                  i === step ? 'shadow-[0_0_0_5px_rgb(30_27_22/0.12)]' : ''
+                }`}
+              />
+              {CUSTOMER_STATUS_LABEL[s]}
+              {date ? (
+                <small className="text-ink-muted mt-0.5 block text-xs font-normal">{date}</small>
+              ) : null}
+            </li>
+          );
+        })}
+      </ol>
+      {diary ? (
+        <p className="font-display text-ink m-0 mt-5 text-center text-[17px] italic" key={step}>
+          <span className="rise-in inline-block">{diary}</span>
+        </p>
+      ) : null}
+    </>
   );
 }
 
@@ -100,7 +120,9 @@ export function OrderView({ order }: { order: OrderDetail }): React.JSX.Element 
   // D-154: an order of two shipments shows each with its date, tracking and pieces
   const split = order.shipments.length > 1;
   const tracking = split ? null : trackingUrl(o.carrier, o.tracking_number);
-  const delayed = order.actions?.delay_shipment ? order.shipments.find((sh) => sh.seq === order.actions?.delay_shipment) : undefined;
+  const delayed = order.actions?.delay_shipment
+    ? order.shipments.find((sh) => sh.seq === order.actions?.delay_shipment)
+    : undefined;
   const itemRow = (item: OrderDetail['items'][number]): React.JSX.Element => (
     <li
       key={item.id}
@@ -114,9 +136,7 @@ export function OrderView({ order }: { order: OrderDetail }): React.JSX.Element 
         </small>
         {item.status !== 'active' ? (
           <span className="text-caution block text-[13px]">
-            {item.status === 'unavailable'
-              ? 'No longer available, being refunded'
-              : 'Refunded'}
+            {item.status === 'unavailable' ? 'No longer available, being refunded' : 'Refunded'}
           </span>
         ) : null}
       </span>
@@ -174,7 +194,11 @@ export function OrderView({ order }: { order: OrderDetail }): React.JSX.Element 
               : null
           }
           paidCents={o.total_cents - o.refunded_cents}
-          shipment={delayed ? { seq: delayed.seq, from: delayed.est_delivery_from, to: delayed.est_delivery_to } : null}
+          shipment={
+            delayed
+              ? { seq: delayed.seq, from: delayed.est_delivery_from, to: delayed.est_delivery_to }
+              : null
+          }
         />
       ) : null}
       {order.actions && order.actions.returns.length > 0 ? (
@@ -206,7 +230,11 @@ export function OrderView({ order }: { order: OrderDetail }): React.JSX.Element 
         <div className="flex justify-between">
           <dt className="text-ink-muted">
             {/* D-111: a small order's shipping includes its retailer charges. */}
-            {o.shipping_method === 'express' ? 'Express shipping' : o.shipping_cents > 0 ? 'Shipping & retailer charges' : 'Shipping'}
+            {o.shipping_method === 'express'
+              ? 'Express shipping'
+              : o.shipping_cents > 0
+                ? 'Shipping & retailer charges'
+                : 'Shipping'}
           </dt>
           <dd className="m-0">{formatUsd(o.shipping_cents)}</dd>
         </div>

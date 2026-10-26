@@ -1,10 +1,10 @@
 # Decisions
 
-Every rule in the docs cites one of these IDs. **This file is the index**; the full text of D-001 – D-145 (the
+Every rule in the docs cites one of these IDs. **This file is the index**; the full text of D-001 – D-150 (the
 founder's verbatim words and what each means for the build) is in `docs/archive/decisions-full.md`: open it only for
 the entry you need (search for its ID). New entries go at the end of this file in full, with the founder's words
 verbatim (typos kept). When Recent holds more than about ten entries, the oldest move to the archive in full and
-leave a one-line index entry here (done for D-109 – D-139 on 2026-10-22, D-140 – D-143 on 2026-10-23, D-144 – D-145 on 2026-10-24).
+leave a one-line index entry here (done for D-109 – D-139 on 2026-10-22, D-140 – D-143 on 2026-10-23, D-144 – D-145 on 2026-10-24, D-146 – D-150 on 2026-10-26).
 
 **By:** `founder` = binding · `approved` = Claude's proposal the founder approved · `proposed` = awaiting the founder.
 To change a decision, add a new one (`Supersedes D-xxx`) and mark the old line `SUPERSEDED by D-yyy`.
@@ -89,7 +89,7 @@ To change a decision, add a new one (`Supersedes D-xxx`) and mark the old line `
 - **D-076** 2026-10-06 · founder (was Q-33): A return is collected from the customer's door, the way it was delivered
 - **D-077** 2026-10-07 · founder: The logo text: the I of "Indian" inside an outline of India; "Indian Wholesale Club"
 - **D-078** 2026-10-07 · founder: The first cycle is a demo round on the placeholder catalogue, then cleared
-- **D-079** 2026-10-08 · founder: The shell (header, banner, footer, app tab bar) and the Home hero, from the design pass; Cinzel and Karla · header colour, "no blur" and heading font amended by D-080
+- **D-079** 2026-10-08 · founder: The shell (header, banner, footer, app tab bar) and the Home hero, from the design pass; Cinzel and Karla · header colour, "no blur" and heading font amended by D-080 · the hero's line SUPERSEDED by D-161
 - **D-080** 2026-10-08 · founder: Home below the hero, the header on the photo as before, Syne for headings, stamp pages
 - **D-081** 2026-10-08 · founder: The region page, from the design pass
 - **D-082** 2026-10-08 · founder: The product page, from the design pass
@@ -156,145 +156,13 @@ To change a decision, add a new one (`Supersedes D-xxx`) and mark the old line `
 - **D-143** 2026-10-21 · founder: a piece's name loses only the shop's or brand's name
 - **D-144** 2026-10-21 · founder: See all opens low to high; Clothing's finishing touches in a jewellery drawer
 - **D-145** 2026-10-21 · founder: stay on Vercel's free plan; fewer page-cache writes
+- **D-146** 2026-10-22 · founder: every listing gets a weight, then everything is published; one press each for Weights to check, Drafts and Names to tidy
+- **D-147** 2026-10-22 · founder: new Vercel and Supabase accounts, used within their free limits; a production metrics plan; one tidy set of docs
+- **D-148** 2026-10-22 · founder: 7-day delivery: a page of the quick-delivery shops' pieces, Home's new line, and the first Blinkit batch · its mixed-bag rule (one normal piece makes the whole bag normal) SUPERSEDED by D-154 · Home's line SUPERSEDED by D-161
+- **D-149** 2026-10-23 · founder: the sourcing runner rests a shop that blocks it · its rests SUPERSEDED by D-158 (knowing a robot check stays)
+- **D-150** 2026-10-23 · founder: the 7-day targets search all four quick shops (answers Q-43)
 
 ## Recent (full text)
-
-**D-146 · 2026-10-22 · founder: every listing gets a weight, then everything is published; one press each for Weights to check, Drafts and Names to tidy**
-- Founder, verbatim: "Then finally our admin panel comes which stucks at huge numbers(not talking about live). The
-  listings are messed in between these migrations between platforms now its time to assign all the "check the
-  weights" what weight they've been assigned and if some aren't assigned then make a better system which can assign
-  them, I want everything assigned and then published, also add a button similar to publish all in "check weights" and
-  "tidy names". Also we will have to handle all drafts so that we can start new batches."
-- What was there (production copy of 2026-10-21): 2,180 drafts, 1,793 of them held only by an option without a weight
-  (D-129), 80 without a photo; Weights to check 2,600 listings (1,883 with a missing weight, the rest a matching
-  item's, an unrecorded or an unusual weight); Names to tidy 774 proposals. Publish all drafts did everything in one
-  database call, about 3.5 s for 2,100 listings locally: near the hosted database's 8 s limit.
-What it means for the build (migration `20261022090000_assign_weights`, apps/web `features/admin/actions/bulk.ts`):
-- **Assign all and publish** (Weights to check): every option without a weight gets one: clothing by its class (D-132),
-  food by the net quantity on its label (D-135), anything else the middle weight of the 7 most similar pieces of its
-  category already weighed by a trusted source (the same words in the name, the closest shop price), else the
-  category's usual weight; source "Estimated", with a note saying which. Measured on the production copy against
-  known weights: home & gifts within 34 – 37% (median), against 266% for the category's usual weight. Then every weight
-  the tab shows is accepted as it is (`weight_checked_at`; a new weight clears it), then every ready draft goes live.
-  Weights weighed at the hub or typed by an admin are never changed; the runner's page reads (D-134) and the hub's
-  scale (D-130) still replace an estimate. Supersedes D-129's "a listing cannot go live on a guessed weight" only in
-  that an estimate now counts as a weight.
-- **Publish all drafts** (Drafts) does the same without accepting, then publishes; **Archive the drafts that can't go
-  live** archives those without a photo, an active option or a piece to sell (nothing is deleted), so Drafts holds
-  only the next batch.
-- **Rename all** (Names to tidy): every proposal on every page, as proposed (D-143's rules); old names stay as the shop
-  title. A name that would be only a shop word ("ELVRIT Collections" → "Collections") is not proposed.
-- Every bulk step runs in batches (40 listings, 2,000 options, 400 drafts, 250 names a call) the page repeats until
-  nothing is left, then refreshes the store once (D-145).
-*Interpretation (proposed, confirm when convenient):* "stucks at huge numbers" is read as these lists' counts staying
-high and the one-call publish being too slow at that size; no admin page was found slow on the production copy
-(Weights to check 45 ms, Products 50 rows in one request).
-
-**D-147 · 2026-10-22 · founder: new Vercel and Supabase accounts, used within their free limits; a production metrics plan; one tidy set of docs**
-- Founder, verbatim: "Update everywhere that we initially set up a vercel and supabase account, but then vercel's image
-  optimization hit and supabase storage limit hit, we tried saving those by putting up our own Cloudflare R2 but
-  finally we set up a new vercel and new supabase which are currently at base limits(mostly near 0) so this time we
-  will be using them efficiently and productively. Then a fully production organized plan for checking our websites
-  metrics that it is behaving efficiently and productively with a resilient architecture or not, as soon as a bug or
-  weak behaviour is noticed, we fix that." And: "we need to clean-up the mess that different claude accounts and my
-  work has left, so that we end up with a clean working repo as context for a new claude account. (without changing
-  any working or operation) Clean the docs, remove the extra useless things, archive the archivable things, and then
-  put up the rest of it in a more structured manner in less documents."
-What it means for the build:
-- The history (`ops.md` §Accounts and limits): the first Vercel and Supabase accounts (2026-10-06) hit Vercel's image
-  optimisation limit (5,000 a month, 402 on 2026-10-18), then its page-cache writes (208K of 200K), and Supabase's 1 GB
-  storage (7.9 GB of photos). Photos went to Cloudflare R2 (D-141, still where they live), page refreshes were narrowed
-  (D-145), and on 2026-10-21/22 the site moved to a new Vercel account and a new Supabase project that start near
-  zero. The old accounts are not used.
-- Each limit has a monthly budget well under the free plan and a check (`docs/monitoring.md`): weekly the dashboards'
-  numbers, daily the site's own health checks; a bug or a weak spot found becomes a fix the same week, recorded in
-  `docs/status.md`.
-- Docs: one status page (`docs/status.md`, replacing the old plan folder), product with its glossary, storefront with design,
-  admin with vendors; the plans, roadmap and backlog of the build phases and D-109 – D-139's full text are archived.
-  No code path or behaviour changes.
-
-**D-148 · 2026-10-22 · founder: 7-day delivery: a page of the quick-delivery shops' pieces, Home's new line, and the first Blinkit batch** · its mixed-bag rule (one normal piece makes the whole bag normal) SUPERSEDED by D-154
-- Founder, verbatim: "Our website is complete, now we will be introducing a new feature called 7-day delivery: It will
-  be a new page with an aesthetic feel, It will have all the products from blinkit, bigbasket, zepto, instamart. Which I
-  can order in 1 hour and directly ship to USA, The restrictions will be same as normal delivery regarding liquids,
-  electronics, dairy etc etc. Instead of the subheading Miss local market on home page, write Want in 7 days? click
-  here. Also now that website is complete It is time that we add products efficiently (remember all the limits as R2
-  limit is 10 GB and vercel and supabase too) Firstly we have to copy the blinkit deliverables inventory into our 7 day
-  delivery so make a csv for that."
-- Asked how listings are marked: "Automatic (Recommended)". Asked the window: "Exactly 7 days". Asked about a mixed
-  bag and its cost: "The checkout remains same, It's just that as soon as a normal product is added, the
-  exclusivity(The product's card will have a tag) of the 7 day product is removed and it will also counted as normal
-  product, because if someone ordered 3 chips and 2 sets of kurtas then we can't just ship 3 chips in 7 days. So, until
-  the cart only has 7 day products show the exclusivity". Asked the first batch: "3000 but remember only the products
-  that can be shipped".
-What it means for the build (migration `20261022120000_seven_day_delivery`, apps/web `app/(store)/7-day-delivery`,
-`features/seven-day/`, Settings → Standard delivery):
-- **A 7-day piece** is worked out on every read: live, not already in the US, and every option on sale is bought from a
-  shop marked `sourcing_shops.quick_delivery` (Blinkit, BigBasket, Zepto, Instamart), its source in use or else the shop
-  it was imported from. A listing the weekly check moves to Amazon leaves the page by itself. Customers see only
-  "In 7 days", never the shop (D-003).
-- **The days** are Settings → `quick_delivery_days_min/_max` (7 and 7); empty = no tags, no page (404), and Home's old
-  line (non-negotiable 4).
-- **Cards** carry a brand-colour "In 7 days" tag (`quick_days`); the product page says the 7-day date "when your bag
-  holds only 7-day pieces" and the normal window with others; the bag says "Every piece here comes in 7 days, so your
-  bag does too." only while every piece is one (`store_quick_bag`, through `/api/bag-charges`).
-- **Checkout** prices and charges are unchanged; a bag of only 7-day pieces gets the 7-day window in checkout and on its
-  order (`create_order`, bought at once like the made-to-order pilot); one other piece makes it a normal order.
-- **The page** `/7-day-delivery`: a header in the brand's type with the days, category pills with counts and the cards
-  (one of each category, then step up, by price), Show more; cached with See all (`listingsTag`).
-- **Home's line** reads "Want in 7 days? Click here." and opens the page while 7-day delivery is on.
-- **The first Blinkit batch:** `tools/sourcing-runner/out/blinkit-7-day.csv` (gitignored), 113 auto-sourcing targets,
-  Blinkit only, all states, up to 2,972 listings; each row's Must match leaves out dairy, meat, eggs, frozen food,
-  liquids (and anything sold by the ml or litre), honey and oils (D-135), and in home & gifts electronics, lights,
-  batteries, cow dung, feathers, fireworks, camphor, loose powders (D-138, Q-37), lighters and matches. The runner
-  still archives any liquid it finds (D-135). Sized to the limits: about 1.8 GB of R2 (to about 6 – 7 GB of 10), about
-  30 MB of database, and up to about 60,000 page-cache writes if every new page is visited once (`status.md`).
-*Interpretation (proposed, confirm when convenient):* a bag of only 7-day pieces is not offered Express (15 – 18 days,
-slower and dearer); "click here" is written "Click here." like "Start here."; the page's words and the card, bag and
-product-page lines are Claude's draft (D-059) until approved; the CSV has no ₹ band and leaves out butter, lighters and
-matches (Q-42).
-
-**D-149 · 2026-10-23 · founder: the sourcing runner rests a shop that blocks it** · its rests SUPERSEDED by D-158 (knowing a robot check stays)
-- Founder, verbatim (after every Blinkit search of the 7-day batch failed): "the env was the problem, i fixed it now I
-  ran it so it showed run: 0 checks due, 76 targets, 6 shops then on every item blinkit showed robot checked and
-  failed, then I stopped it, ran the setup again, signed in in every one and did address then ran again it now showed
-  0 checks due, 11 targets, 6 shops and same robot check failure. Research and design something resilient and strong."
-- What was found: Blinkit answers the runner with Cloudflare's block page (403, `cf-mitigated: challenge`, "access
-  denied, sorry, you have been blocked … your recent actions … might have led to this", a "Verify you are human" box).
-  A normal browser on the same connection still gets results, and the runner's own browser sometimes does: the block
-  follows the automated browsing (likely the 400-listing check earlier that day). From 13 to 19 October a robot check
-  came about once an hour and the next search passed; on 22 October every one failed. The runner then kept asking
-  Blinkit every few seconds, once per target, which strengthens such a block.
-What it means for the build (`tools/sourcing-runner/src/lanes.ts`, `rest.ts`, `packages/shared/src/sourcing/auto/shop-rest.ts`):
-- **Cloudflare's own check gets 20 seconds** to clear by itself in the page, as in anyone's browser; still there, it is
-  a robot check. The runner never clicks or solves one, and adds no disguise.
-- **Two robot checks in a row rest the shop**: nothing more is asked of it for 2 hours, 6 if it blocks again within two
-  days, then 24. The rest is kept on the PC (`tools/sourcing-runner/shop-rest.json`, not committed) so the next run
-  and the other terminal's runner leave the shop alone too; the run's first line names resting shops. The first block
-  of each run is saved as the shop showed it (`out/blocks/`).
-- **A block changes nothing in the catalogue:** a target whose shops rest, or that lost its pages to robot checks,
-  goes back to the queue (not "nothing fit"); a weekly check that met one writes nothing, so no source counts a failure
-  (two take it out of use) and the listing stays due.
-- **Ctrl+C puts the run's unsearched targets back in the queue** (before, they waited six hours as "being searched");
-  so does a target whose search crashed.
-- **`pnpm sourcing setup --type food`** opens that runner's own profile: a plain `setup` reaches only the main one,
-  which `--type` runners copied once.
-*Interpretation (proposed, confirm when convenient):* the numbers (two checks, 2 / 6 / 24 hours, 20 seconds) are
-Claude's; the 7-day targets search BigBasket, Zepto and Instamart too (D-150).
-
-**D-150 · 2026-10-23 · founder: the 7-day targets search all four quick shops (answers Q-43)**
-- Founder, verbatim: "Q-43: yes, the 7-day targets may also search BigBasket, Zepto and Instamart. Update the targets'
-  shops."
-What it means for the build (`packages/db/src/admin/auto-sourcing.ts` `addTargets`, `widenedSites` in
-`packages/shared/src/sourcing/auto/targets.ts`):
-- **A target uploaded again takes the row's shops it lacked**, and keeps everything else; it never loses a shop (one on
-  every shop stays so, a row without Shops changes nothing). The upload says "n of them now search more shops". Before,
-  a target already there was skipped whole (D-118).
-- **The CSV:** `tools/sourcing-runner/out/7-day-four-shops.csv` (gitignored) is the Blinkit batch's 113 targets with
-  Shops "blinkit bigbasket zepto instamart"; uploading it widens the 102 Blinkit targets. All four are 7-day shops
-  (D-148), so whichever shop a piece comes from, it stays a 7-day piece. A Blinkit rest (D-149) no longer stops the
-  batch, and each shop is asked less.
-- Each target still makes up to its Listings; the same product on two shops is one listing with the other as its backup.
 
 **D-151 · 2026-10-23 · founder: the runner never browses headless (the cause of D-149's Blinkit block)**
 - Founder, verbatim: "I deployed and uploaded on auto runner, still getting errors, Can you properly fix it? It was
@@ -584,3 +452,42 @@ What it means for the build (Claude's design, awaiting the founder's look):
   database for random words.
 - What is recorded stays as before (the words and the number found, no person); in addition the words a search was
   answered with after a fix, and whether only some words matched (counted with the searches that found nothing).
+
+**D-161 · 2026-10-26 · founder: the homesick design: the wait becomes the proof; every promise rides on what the page already has** · Supersedes D-079's and D-148's Home line
+Founder, verbatim: "If we don't standout then why will people use our website, providers are already selling to people there in 1 hour delivery, 1 day delivery but we are selling in 7-day or 12-16 days. So we have to target the homesickness emotion, we have to show them the product is coming directly from indian shops directly to their door, so that they buy on monday and they will know it that it is coming on the weekend so that they won't have to go out. We don't have to overkill or fill the whole website or distract the user or make it a blogging page but We have to fill their subconscious with these thing like 7 days shipping from india directly to your door, no tariffs, no shipping over 49.99 in 7 day store, no shipping over 99.99 and door delivery. Introduce new ideas, be very creative about these things, we have to fight with these static website, think outside of the box, not just these points but generate your own new points and be very creative about them. I am giving you the whole plan for this whole design."
+With it the founder handed over "IWC: the homesick design plan" (Oct 26, kept as `docs/archive/plan-homesick.md`): its
+seven settled decisions (shops said in general, never named; the diary in plain steps; "Duties paid. Nothing to pay
+at your door.", never "no tariffs"; the real weekday, no weekend promise; a state postcard in every parcel; the rupee
+price on a pack never mentioned; no new emails) and its words, which stay **Claude's drafts** until the founder
+approves them line by line (D-019, D-059).
+What it means for the build (built 2026-10-26, website and app; not deployed):
+- **Every date from Settings and today** (`packages/shared/src/domain/homesick.ts`, tested): the 7-day and the
+  standard days reach every page through the cached store policy (migration `20261031090000_policy_days` adds the
+  pilot's days to `store_policy()`; no new read), and the browser works the dates out, so a cached page never shows
+  yesterday's (`features/shell/days.tsx`).
+- **The promises ride on what exists** (no banner, pop-up or ticker): Home's heading "We go home so you don't have to."
+  with "India's shelves, at your door." (the plan's pick 1; the 7-day line moved to the store tabs, which already link
+  there); the store tabs "At your door by Nov 11" and "Saturday at your door"; 7-day cards "Sat at your door" (CSS,
+  no script per card); the 7-day front page "Home is 7 days away. Order today, open it Sat, Oct 31." with "Free 7-day
+  delivery from $49.99" and duties paid; Home's band adds the 7-day free line and duties paid; the product page "At
+  your door … if you order today", "Duties paid. Nothing to pay at your door." and the India pack line for food; the
+  pill "$12.40 more and the flight's on us", its bar a flight path from India to a house, "Coming home Sat, Oct 31"
+  after each add; checkout "Where should we bring home?", "That's everything. Duties are paid…", "Packing your
+  parcel…"; the thank-you page "It lands Sat, Oct 31. Clear a shelf." with Add to calendar (an .ics made in the
+  browser); the order page's diary line per reached step; every customer email's subject and first line, and the
+  sign-off "From our home to yours, the IWC team"; the small moments (404, error, search, sold out, filters, the
+  empty bag); the footer "Bought in India. Duties paid. At your door."
+- **The plan's ideas built:** 1 day names, 2 the diary's lines (on the existing timeline), 3 Where's home (the state
+  opened most, from its second visit, greets the shopper on Home in its greeting; on the device only), 4 the
+  flight-path bar, 5 India time (footer and phone menu), 6 the festival clock (Diwali only, the date the plan cites;
+  a 7-day order must arrive the day **before** the festival, so the last day is Sat, Oct 31, one day earlier than the
+  plan's Nov 1), 8 postmarks in the bag and checkout, 9 the kirana counter, 11 the India pack line, 12 the emails. Not
+  built: 7 the postcard (printed in India), 10 recipe baskets (the founder picks them).
+- **Claude's own ideas (proposed):** the week strip (today to the door as a row of days, the stitch drawn across, on a
+  7-day product page and a one-day thank-you page); the duties-paid rubber stamp in the product page's delivery box;
+  the tab that says "Your chai's going cold · your bag is waiting" while the shopper is away with pieces in the bag.
+- One switch, `DUTIES_PAID` in `homesick.ts`, turns off every duties line if the courier ever charges at the door.
+*Interpretation (proposed, confirm when convenient):* "Bought there, sent from there" became "Bought in India's own shops
+and sent from India to your door" (a listing's state is where it was made, not always where it was bought, D-004);
+"Made in India" stays on the footer only as "Bought in India" (some listings say Imported); the pill keeps "FREE
+DELIVERY" once past the line so the word itself is never lost.

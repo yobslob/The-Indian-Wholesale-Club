@@ -101,6 +101,7 @@ function footer(ctx: EmailContext): string {
     `<a href="${escapeHtml(ctx.siteUrl + path)}" style="color:${C.ink};font-weight:600">${label}</a>`;
   return `<tr><td style="padding:22px 32px 30px">
   <p style="margin:0 0 10px;${TEXT};font-size:14px">${link('/orders/lookup', 'Track your order')}&nbsp;&nbsp;·&nbsp;&nbsp;${link('/shipping-returns', 'Shipping &amp; returns')}&nbsp;&nbsp;·&nbsp;&nbsp;${link('/contact', 'Contact')}</p>
+  <p style="margin:0 0 12px;${TEXT};font-size:14px;font-style:italic">From our home to yours, the IWC team</p>
   <p style="margin:0 0 6px;${TEXT};font-size:12px;line-height:1.5;color:${C.muted}">You're getting this because you ordered from ${escapeHtml(ctx.siteName)}. These emails are about your order only.</p>
   ${ctx.supportEmail ? `<p style="margin:0;${TEXT};font-size:12px;color:${C.muted}">Questions? <a href="mailto:${escapeHtml(ctx.supportEmail)}" style="color:${C.muted}">${escapeHtml(ctx.supportEmail)}</a></p>` : ''}
 </td></tr>`;

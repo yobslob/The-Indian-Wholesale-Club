@@ -6,6 +6,7 @@ import { HomeHero } from '@/features/home/home-hero';
 import { JustListed } from '@/features/home/just-listed';
 import { PickHome } from '@/features/regions/pick-home';
 import { RegionAlbum } from '@/features/regions/region-album';
+import { WelcomeBack } from '@/features/regions/where-home';
 import { QUICK_HOME } from '@/lib/site';
 
 /**
@@ -22,8 +23,7 @@ export default async function HomePage(): Promise<React.JSX.Element> {
 
   return (
     <div data-bleed>
-      {/* D-148: the hero's line opens the 7-day page while 7-day delivery is on (its days from Settings) */}
-      <HomeHero quickDays={quickDays} />
+      <HomeHero />
 
       <div className="px-[var(--gut)]">
         <RegionAlbum photos={home.album} regionName="India" reveal />
@@ -35,8 +35,9 @@ export default async function HomePage(): Promise<React.JSX.Element> {
             Pick your home
           </h2>
           <p className="text-ink-muted mt-1.5 text-sm">
-            All 28 states and 8 union territories. Find yours on the map or by name.
+            Where&rsquo;s home? All 28 states and 8 union territories, on the map or by name.
           </p>
+          <WelcomeBack />
         </div>
         <PickHome regions={home.regions} delivery={home.delivery} />
       </section>
@@ -52,7 +53,7 @@ export default async function HomePage(): Promise<React.JSX.Element> {
           />
         ) : null}
         <JustListed home={home} />
-        <DeliveryBand delivery={home.delivery} band={home.band} />
+        <DeliveryBand delivery={home.delivery} band={home.band} policy={policy} />
       </div>
     </div>
   );

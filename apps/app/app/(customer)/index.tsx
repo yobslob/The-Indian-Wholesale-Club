@@ -1,4 +1,3 @@
-import { useRouter } from 'expo-router';
 import { useRef } from 'react';
 import { RefreshControl, View } from 'react-native';
 import Animated, { useAnimatedRef, useAnimatedScrollHandler, useSharedValue } from 'react-native-reanimated';
@@ -23,7 +22,6 @@ import { useQuery } from '@/lib/use-query';
 export default function HomeScreen(): React.JSX.Element {
   const { data, error, loading, reload } = useQuery('home', () => getHome(supabase));
   const policy = useQuery('store-policy', () => getStorePolicy(supabase));
-  const router = useRouter();
   const lo = policy.data?.quick_delivery_on ? policy.data.quick_delivery_days_min : null;
   const hi = policy.data?.quick_delivery_on ? policy.data.quick_delivery_days_max : null;
   const quick = useQuery(`quick-home:${hi ?? ''}`, () => (hi ? getQuickPage(supabase, { limit: 12 }) : Promise.resolve(null)));
@@ -48,8 +46,6 @@ export default function HomeScreen(): React.JSX.Element {
         <HomeHero
           scrollY={scrollY}
           onStart={() => scroller.current?.scrollTo({ y: blockY.current + pickY.current, animated: true })}
-          quickDays={hi}
-          onQuick={() => router.push('/7-day-delivery')}
         />
         <View className="gap-6 px-4 pb-16 pt-8" onLayout={(e) => (blockY.current = e.nativeEvent.layout.y)}>
           {error ? <ErrorText>{error}</ErrorText> : null}

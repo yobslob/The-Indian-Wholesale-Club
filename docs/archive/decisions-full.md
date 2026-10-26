@@ -2089,3 +2089,140 @@ What it means for the build:
   sold out (`features/catalog/slim-cards.ts`), and the + reads them when pressed from `GET /api/card-options` (the
   store's variants view, kept by Vercel's CDN a minute; the read starts as the finger goes down). A card with one
   option still adds at once.
+
+**D-146 · 2026-10-22 · founder: every listing gets a weight, then everything is published; one press each for Weights to check, Drafts and Names to tidy**
+- Founder, verbatim: "Then finally our admin panel comes which stucks at huge numbers(not talking about live). The
+  listings are messed in between these migrations between platforms now its time to assign all the "check the
+  weights" what weight they've been assigned and if some aren't assigned then make a better system which can assign
+  them, I want everything assigned and then published, also add a button similar to publish all in "check weights" and
+  "tidy names". Also we will have to handle all drafts so that we can start new batches."
+- What was there (production copy of 2026-10-21): 2,180 drafts, 1,793 of them held only by an option without a weight
+  (D-129), 80 without a photo; Weights to check 2,600 listings (1,883 with a missing weight, the rest a matching
+  item's, an unrecorded or an unusual weight); Names to tidy 774 proposals. Publish all drafts did everything in one
+  database call, about 3.5 s for 2,100 listings locally: near the hosted database's 8 s limit.
+What it means for the build (migration `20261022090000_assign_weights`, apps/web `features/admin/actions/bulk.ts`):
+- **Assign all and publish** (Weights to check): every option without a weight gets one: clothing by its class (D-132),
+  food by the net quantity on its label (D-135), anything else the middle weight of the 7 most similar pieces of its
+  category already weighed by a trusted source (the same words in the name, the closest shop price), else the
+  category's usual weight; source "Estimated", with a note saying which. Measured on the production copy against
+  known weights: home & gifts within 34 – 37% (median), against 266% for the category's usual weight. Then every weight
+  the tab shows is accepted as it is (`weight_checked_at`; a new weight clears it), then every ready draft goes live.
+  Weights weighed at the hub or typed by an admin are never changed; the runner's page reads (D-134) and the hub's
+  scale (D-130) still replace an estimate. Supersedes D-129's "a listing cannot go live on a guessed weight" only in
+  that an estimate now counts as a weight.
+- **Publish all drafts** (Drafts) does the same without accepting, then publishes; **Archive the drafts that can't go
+  live** archives those without a photo, an active option or a piece to sell (nothing is deleted), so Drafts holds
+  only the next batch.
+- **Rename all** (Names to tidy): every proposal on every page, as proposed (D-143's rules); old names stay as the shop
+  title. A name that would be only a shop word ("ELVRIT Collections" → "Collections") is not proposed.
+- Every bulk step runs in batches (40 listings, 2,000 options, 400 drafts, 250 names a call) the page repeats until
+  nothing is left, then refreshes the store once (D-145).
+*Interpretation (proposed, confirm when convenient):* "stucks at huge numbers" is read as these lists' counts staying
+high and the one-call publish being too slow at that size; no admin page was found slow on the production copy
+(Weights to check 45 ms, Products 50 rows in one request).
+
+**D-147 · 2026-10-22 · founder: new Vercel and Supabase accounts, used within their free limits; a production metrics plan; one tidy set of docs**
+- Founder, verbatim: "Update everywhere that we initially set up a vercel and supabase account, but then vercel's image
+  optimization hit and supabase storage limit hit, we tried saving those by putting up our own Cloudflare R2 but
+  finally we set up a new vercel and new supabase which are currently at base limits(mostly near 0) so this time we
+  will be using them efficiently and productively. Then a fully production organized plan for checking our websites
+  metrics that it is behaving efficiently and productively with a resilient architecture or not, as soon as a bug or
+  weak behaviour is noticed, we fix that." And: "we need to clean-up the mess that different claude accounts and my
+  work has left, so that we end up with a clean working repo as context for a new claude account. (without changing
+  any working or operation) Clean the docs, remove the extra useless things, archive the archivable things, and then
+  put up the rest of it in a more structured manner in less documents."
+What it means for the build:
+- The history (`ops.md` §Accounts and limits): the first Vercel and Supabase accounts (2026-10-06) hit Vercel's image
+  optimisation limit (5,000 a month, 402 on 2026-10-18), then its page-cache writes (208K of 200K), and Supabase's 1 GB
+  storage (7.9 GB of photos). Photos went to Cloudflare R2 (D-141, still where they live), page refreshes were narrowed
+  (D-145), and on 2026-10-21/22 the site moved to a new Vercel account and a new Supabase project that start near
+  zero. The old accounts are not used.
+- Each limit has a monthly budget well under the free plan and a check (`docs/monitoring.md`): weekly the dashboards'
+  numbers, daily the site's own health checks; a bug or a weak spot found becomes a fix the same week, recorded in
+  `docs/status.md`.
+- Docs: one status page (`docs/status.md`, replacing the old plan folder), product with its glossary, storefront with design,
+  admin with vendors; the plans, roadmap and backlog of the build phases and D-109 – D-139's full text are archived.
+  No code path or behaviour changes.
+
+**D-148 · 2026-10-22 · founder: 7-day delivery: a page of the quick-delivery shops' pieces, Home's new line, and the first Blinkit batch** · its mixed-bag rule (one normal piece makes the whole bag normal) SUPERSEDED by D-154
+- Founder, verbatim: "Our website is complete, now we will be introducing a new feature called 7-day delivery: It will
+  be a new page with an aesthetic feel, It will have all the products from blinkit, bigbasket, zepto, instamart. Which I
+  can order in 1 hour and directly ship to USA, The restrictions will be same as normal delivery regarding liquids,
+  electronics, dairy etc etc. Instead of the subheading Miss local market on home page, write Want in 7 days? click
+  here. Also now that website is complete It is time that we add products efficiently (remember all the limits as R2
+  limit is 10 GB and vercel and supabase too) Firstly we have to copy the blinkit deliverables inventory into our 7 day
+  delivery so make a csv for that."
+- Asked how listings are marked: "Automatic (Recommended)". Asked the window: "Exactly 7 days". Asked about a mixed
+  bag and its cost: "The checkout remains same, It's just that as soon as a normal product is added, the
+  exclusivity(The product's card will have a tag) of the 7 day product is removed and it will also counted as normal
+  product, because if someone ordered 3 chips and 2 sets of kurtas then we can't just ship 3 chips in 7 days. So, until
+  the cart only has 7 day products show the exclusivity". Asked the first batch: "3000 but remember only the products
+  that can be shipped".
+What it means for the build (migration `20261022120000_seven_day_delivery`, apps/web `app/(store)/7-day-delivery`,
+`features/seven-day/`, Settings → Standard delivery):
+- **A 7-day piece** is worked out on every read: live, not already in the US, and every option on sale is bought from a
+  shop marked `sourcing_shops.quick_delivery` (Blinkit, BigBasket, Zepto, Instamart), its source in use or else the shop
+  it was imported from. A listing the weekly check moves to Amazon leaves the page by itself. Customers see only
+  "In 7 days", never the shop (D-003).
+- **The days** are Settings → `quick_delivery_days_min/_max` (7 and 7); empty = no tags, no page (404), and Home's old
+  line (non-negotiable 4).
+- **Cards** carry a brand-colour "In 7 days" tag (`quick_days`); the product page says the 7-day date "when your bag
+  holds only 7-day pieces" and the normal window with others; the bag says "Every piece here comes in 7 days, so your
+  bag does too." only while every piece is one (`store_quick_bag`, through `/api/bag-charges`).
+- **Checkout** prices and charges are unchanged; a bag of only 7-day pieces gets the 7-day window in checkout and on its
+  order (`create_order`, bought at once like the made-to-order pilot); one other piece makes it a normal order.
+- **The page** `/7-day-delivery`: a header in the brand's type with the days, category pills with counts and the cards
+  (one of each category, then step up, by price), Show more; cached with See all (`listingsTag`).
+- **Home's line** reads "Want in 7 days? Click here." and opens the page while 7-day delivery is on.
+- **The first Blinkit batch:** `tools/sourcing-runner/out/blinkit-7-day.csv` (gitignored), 113 auto-sourcing targets,
+  Blinkit only, all states, up to 2,972 listings; each row's Must match leaves out dairy, meat, eggs, frozen food,
+  liquids (and anything sold by the ml or litre), honey and oils (D-135), and in home & gifts electronics, lights,
+  batteries, cow dung, feathers, fireworks, camphor, loose powders (D-138, Q-37), lighters and matches. The runner
+  still archives any liquid it finds (D-135). Sized to the limits: about 1.8 GB of R2 (to about 6 – 7 GB of 10), about
+  30 MB of database, and up to about 60,000 page-cache writes if every new page is visited once (`status.md`).
+*Interpretation (proposed, confirm when convenient):* a bag of only 7-day pieces is not offered Express (15 – 18 days,
+slower and dearer); "click here" is written "Click here." like "Start here."; the page's words and the card, bag and
+product-page lines are Claude's draft (D-059) until approved; the CSV has no ₹ band and leaves out butter, lighters and
+matches (Q-42).
+
+**D-149 · 2026-10-23 · founder: the sourcing runner rests a shop that blocks it** · its rests SUPERSEDED by D-158 (knowing a robot check stays)
+- Founder, verbatim (after every Blinkit search of the 7-day batch failed): "the env was the problem, i fixed it now I
+  ran it so it showed run: 0 checks due, 76 targets, 6 shops then on every item blinkit showed robot checked and
+  failed, then I stopped it, ran the setup again, signed in in every one and did address then ran again it now showed
+  0 checks due, 11 targets, 6 shops and same robot check failure. Research and design something resilient and strong."
+- What was found: Blinkit answers the runner with Cloudflare's block page (403, `cf-mitigated: challenge`, "access
+  denied, sorry, you have been blocked … your recent actions … might have led to this", a "Verify you are human" box).
+  A normal browser on the same connection still gets results, and the runner's own browser sometimes does: the block
+  follows the automated browsing (likely the 400-listing check earlier that day). From 13 to 19 October a robot check
+  came about once an hour and the next search passed; on 22 October every one failed. The runner then kept asking
+  Blinkit every few seconds, once per target, which strengthens such a block.
+What it means for the build (`tools/sourcing-runner/src/lanes.ts`, `rest.ts`, `packages/shared/src/sourcing/auto/shop-rest.ts`):
+- **Cloudflare's own check gets 20 seconds** to clear by itself in the page, as in anyone's browser; still there, it is
+  a robot check. The runner never clicks or solves one, and adds no disguise.
+- **Two robot checks in a row rest the shop**: nothing more is asked of it for 2 hours, 6 if it blocks again within two
+  days, then 24. The rest is kept on the PC (`tools/sourcing-runner/shop-rest.json`, not committed) so the next run
+  and the other terminal's runner leave the shop alone too; the run's first line names resting shops. The first block
+  of each run is saved as the shop showed it (`out/blocks/`).
+- **A block changes nothing in the catalogue:** a target whose shops rest, or that lost its pages to robot checks,
+  goes back to the queue (not "nothing fit"); a weekly check that met one writes nothing, so no source counts a failure
+  (two take it out of use) and the listing stays due.
+- **Ctrl+C puts the run's unsearched targets back in the queue** (before, they waited six hours as "being searched");
+  so does a target whose search crashed.
+- **`pnpm sourcing setup --type food`** opens that runner's own profile: a plain `setup` reaches only the main one,
+  which `--type` runners copied once.
+*Interpretation (proposed, confirm when convenient):* the numbers (two checks, 2 / 6 / 24 hours, 20 seconds) are
+Claude's; the 7-day targets search BigBasket, Zepto and Instamart too (D-150).
+
+**D-150 · 2026-10-23 · founder: the 7-day targets search all four quick shops (answers Q-43)**
+- Founder, verbatim: "Q-43: yes, the 7-day targets may also search BigBasket, Zepto and Instamart. Update the targets'
+  shops."
+What it means for the build (`packages/db/src/admin/auto-sourcing.ts` `addTargets`, `widenedSites` in
+`packages/shared/src/sourcing/auto/targets.ts`):
+- **A target uploaded again takes the row's shops it lacked**, and keeps everything else; it never loses a shop (one on
+  every shop stays so, a row without Shops changes nothing). The upload says "n of them now search more shops". Before,
+  a target already there was skipped whole (D-118).
+- **The CSV:** `tools/sourcing-runner/out/7-day-four-shops.csv` (gitignored) is the Blinkit batch's 113 targets with
+  Shops "blinkit bigbasket zepto instamart"; uploading it widens the 102 Blinkit targets. All four are 7-day shops
+  (D-148), so whichever shop a piece comes from, it stays a 7-day piece. A Blinkit rest (D-149) no longer stops the
+  batch, and each shop is asked less.
+- Each target still makes up to its Listings; the same product on two shops is one listing with the other as its backup.

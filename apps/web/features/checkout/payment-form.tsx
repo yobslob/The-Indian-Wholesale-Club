@@ -87,7 +87,7 @@ export function PaymentForm({
         disabled={!elements || busy}
         className="bg-brand text-on-brand font-ui min-h-14 w-full rounded-pill px-6 text-[15px] font-medium disabled:opacity-50"
       >
-        {busy ? 'Paying…' : `Pay ${totalLabel}`}
+        {busy ? 'Packing your parcel…' : `Pay ${totalLabel}`}
       </button>
     </div>
   );

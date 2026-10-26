@@ -52,19 +52,15 @@ function Word({ word, index, size, scrollY, heroHeight }: { word: string; index:
 /**
  * The Home hero (D-079, D-095): the founder's photo under the status bar, "Indian Wholesale Club" stacked on its white
  * wall in #1D1A17, and "Miss local market? Start here." under it; scrolling fades the words out one after another.
- * The demo banner rides on top of the photo. `onStart` goes to Pick your home. D-148: while 7-day delivery is on,
- * the line reads "Want in {quickDays} days? Click here." (the days from Settings) and `onQuick` opens the 7-day screen.
+ * The demo banner rides on top of the photo. `onStart` goes to Pick your home. D-161: "We go home so you don't have
+ * to." with "India's shelves, at your door." (D-148's 7-day line gave way; the store switch carries the 7-day store).
  */
 export function HomeHero({
   scrollY,
   onStart,
-  quickDays = null,
-  onQuick,
 }: {
   scrollY: SharedValue<number>;
   onStart: () => void;
-  quickDays?: number | null;
-  onQuick?: () => void;
 }): React.JSX.Element {
   const { width, height } = useWindowDimensions();
   const insets = useSafeAreaInsets();
@@ -92,9 +88,11 @@ export function HomeHero({
           <Word key={word} word={word} index={i} size={w.size} scrollY={scrollY} heroHeight={heroHeight} />
         ))}
         <Text className="font-body text-right text-black" style={{ marginTop: w.size * 0.3, fontSize: lineSize, lineHeight: lineSize * 1.35 }}>
-          {quickDays ? `Want in ${quickDays} days?` : 'Miss local market?'}{' '}
-          <Text accessibilityRole="link" onPress={quickDays ? onQuick : onStart} className="underline">
-            {quickDays ? 'Click here.' : 'Start here.'}
+          {/* D-161: the homesick plan's heading and its line, to Pick your home */}
+          <Text className="font-ui-semibold">We go home so you don&rsquo;t have to.</Text>
+          {'\n'}
+          <Text accessibilityRole="link" onPress={onStart} className="underline">
+            India&rsquo;s shelves, at your door.
           </Text>
         </Text>
       </View>

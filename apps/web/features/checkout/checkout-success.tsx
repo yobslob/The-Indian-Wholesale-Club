@@ -3,9 +3,13 @@
 import Link from 'next/link';
 import { useEffect, useState } from 'react';
 
+import { doorDate } from '@repo/shared/domain';
+
 import { useCart } from '@/features/cart/store';
+import { WeekStrip } from '@/features/catalog/week-strip';
 
 import { BagSummary } from './bag-summary';
+import { CalendarLink } from './calendar-link';
 import { confirmOrder } from './checkout-flow';
 import { readLastOrder, type LastOrder } from './last-order';
 import { OrderStitch, StitchRunning } from './stitch';
@@ -17,6 +21,7 @@ import { OrderStitch, StitchRunning } from './stitch';
  * D-140 (F7): the running stitch sews from India to the customer's state while the number, the window and the buttons
  * are there from the first frame; on wide screens the message and the stitch on the left, the order on the right; a
  * signed-in customer gets "View your order" instead of the email note; confirming shows the same stitch running.
+ * D-161 (the homesick plan): "It lands Sat, Oct 31. Clear a shelf.", Add to calendar, and one arrival day's week strip.
  */
 export function CheckoutSuccess({
   orderNumber,
@@ -54,22 +59,47 @@ export function CheckoutSuccess({
     });
   }, [number, paymentIntentId, clear]);
 
+  // D-161: the day it lands, from the priced bag (two shipments: both dates; the calendar spans them)
+  const ships = order?.quote.shipments;
+  const door = order
+    ? ships && ships.length > 1
+      ? { from: ships[0]!.delivery.est_delivery_from, to: ships[ships.length - 1]!.delivery.est_delivery_to }
+      : { from: order.quote.delivery.est_delivery_from, to: order.quote.delivery.est_delivery_to }
+    : null;
+  const lands =
+    ships && ships.length > 1
+      ? `in two parcels, ${ships.map((sh) => doorDate(sh.delivery.est_delivery_from, sh.delivery.est_delivery_to)).join(' and ')}`
+      : door
+        ? doorDate(door.from, door.to)
+        : null;
+
   if (!number) {
     return message ? <p className="text-ink">{message}</p> : <StitchRunning label="Confirming your order…" />;
   }
   return (
     <div className="grid items-start gap-[clamp(24px,4vw,64px)] lg:grid-cols-[minmax(0,1fr)_minmax(0,460px)]">
       <div className="space-y-4">
-        <h1 className="font-heading text-[clamp(32px,3vw,52px)] font-medium leading-tight tracking-[-0.03em] text-[#1D1A17]">Thank you!</h1>
+        <h1 className="font-heading text-[clamp(32px,3vw,52px)] font-medium leading-tight tracking-[-0.03em] text-[#1D1A17]">
+          {lands ? (
+            <>
+              It lands {lands}. <span className="text-brand">Clear a shelf.</span>
+            </>
+          ) : (
+            'Thank you!'
+          )}
+        </h1>
         <p className="text-ink">
           Your order number is <strong>{number}</strong>.{' '}
-          {signedIn ? 'Your confirmation is in your email too.' : 'We have emailed your confirmation with the estimated delivery window.'}
+          {signedIn ? 'Your confirmation is in your email too.' : 'We have emailed your confirmation with the estimated delivery window.'}{' '}
+          We&rsquo;ll write when it&rsquo;s on its way. No spam, promise.
         </p>
+        {door && door.from === door.to ? <WeekStrip day={door.to} /> : null}
         <OrderStitch state={order?.state ?? null} />
         <div className="flex flex-wrap items-center gap-3">
           <Link href={`/orders/${encodeURIComponent(number)}`} className="bg-brand text-on-brand font-ui press rounded-pill inline-flex min-h-12 items-center px-6 text-[15px] font-medium">
             View your order
           </Link>
+          {door ? <CalendarLink number={number} from={door.from} to={door.to} /> : null}
           <Link href="/states" className="text-ink-muted font-ui text-sm underline">
             Keep browsing
           </Link>

@@ -13,7 +13,7 @@ import Animated, {
   withTiming,
 } from 'react-native-reanimated';
 
-import { formatUsd } from '@repo/shared/domain';
+import { dayName, formatUsd } from '@repo/shared/domain';
 import tokens from '@repo/tokens';
 
 import { freeDelivery, useBagCharges } from './charges';
@@ -163,16 +163,23 @@ export function FreeDeliveryBar({ onPress }: { onPress: () => void }): React.JSX
           ) : goal.kind === 'quick-free' ? (
             <>
               <Text className="font-ui-semibold">FREE 7-DAY DELIVERY</Text>
-              {goal.arrivesBy ? ` · by ${goal.arrivesBy}` : ' unlocked'}
+              {goal.arrivesByDay ? ` · home by ${dayName(goal.arrivesByDay)}` : ' unlocked'}
             </>
           ) : free ? (
             <>
-              <Text className="font-ui-semibold">FREE DELIVERY</Text> unlocked
+              <Text className="font-ui-semibold">FREE DELIVERY</Text> · the flight&rsquo;s on us
             </>
           ) : (
             <>
-              Add <Text className="font-ui-semibold">{formatUsd(leftCents)}</Text> more for{' '}
-              <Text className="font-ui-semibold">{goal.kind === 'quick-gap' ? 'FREE 7-DAY DELIVERY' : 'FREE DELIVERY'}</Text>
+              {/* D-161: the homesick plan's words */}
+              <Text className="font-ui-semibold">{formatUsd(leftCents)}</Text>
+              {goal.kind === 'quick-gap' ? (
+                <>
+                  {' '}more for <Text className="font-ui-semibold">FREE 7-DAY DELIVERY</Text>
+                </>
+              ) : (
+                ' more and the flight’s on us'
+              )}
             </>
           )}
         </Text>

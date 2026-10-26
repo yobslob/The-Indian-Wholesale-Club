@@ -10,8 +10,8 @@ import type { OrderDetail } from '@repo/db/store';
  * the missing pieces' photos when one is unavailable, and the shipped email's button to our order page (where "Track
  * the parcel" goes on to the carrier, D-088). Built ONLY from the customer-safe order shape
  * (guest_order_lookup), so nothing operational can reach it (D-003): no shops, pickups, exports or cycles, and no
- * reason why a date moved. Every dynamic value is escaped. Copy follows storefront.md §Voice (D-059); the founder may
- * rewrite any of it. Pure, so it has unit tests (tests/order-update.test.ts).
+ * reason why a date moved. Every dynamic value is escaped. Copy follows storefront.md §Voice (D-059); D-161 rewrote it
+ * in the homesick plan's words (no new emails); the founder may rewrite any of it. Pure, so it has unit tests (tests/order-update.test.ts).
  */
 
 export interface OrderUpdateEmail {
@@ -41,19 +41,19 @@ function shipmentParts(kind: string, order: OrderDetail, orderUrl: string, seq: 
   switch (kind) {
     case 'shipped':
       return {
-        subject: `Shipment ${sh.seq} of order ${n} is on its way`,
+        subject: `Shipment ${sh.seq} of order ${n} is on its way home`,
         show,
         paragraphs: [
-          `This part of your order has left us and is on its way to you.`,
+          `Out the door and headed to yours.${arrives(sh) ? ` It ${strong(arrives(sh)!.replace(/^Arrives/, 'arrives'))}.` : ''}`,
           other?.status === 'open' ? `The rest travels on its own; we'll email you when it ships.` : '',
         ],
         link: { href: orderUrl, label: 'Track your order' },
       };
     case 'delivered':
       return {
-        subject: `Shipment ${sh.seq} of order ${n} is delivered`,
+        subject: `Shipment ${sh.seq} of order ${n} has landed`,
         show,
-        paragraphs: [`This part of your order has been delivered. We hope it feels a little like home.`],
+        paragraphs: [`This part of your order is at your door. We hope it smells right.`],
         link: view,
       };
     case 'delivery_window_changed': {
@@ -63,7 +63,7 @@ function shipmentParts(kind: string, order: OrderDetail, orderUrl: string, seq: 
         subject: `New delivery date for shipment ${sh.seq} of order ${n}`,
         show,
         paragraphs: [
-          when ? `This part of your order now ${strong(when.replace(/^Arrives/, 'arrives'))}, later than we first said. We're sorry.` : `Its delivery date has changed.`,
+          when ? `This part of your order now ${strong(when.replace(/^Arrives/, 'arrives'))}, later than we said. That's on us.` : `Its delivery date has changed. That's on us.`,
           open
             ? `If that doesn't work for you, you can cancel this part and get ${strong(formatUsd(actions.delay_refund_cents!))} back, or keep it with the new date. It's your call, on your order page.`
             : '',
@@ -101,31 +101,28 @@ function parts(kind: string, order: OrderDetail, orderUrl: string): Parts | null
   switch (kind) {
     case 'preparing':
       return {
-        subject: `We're getting order ${n} ready`,
-        paragraphs: [
-          `Your order is with us now and we're getting it ready to come over.`,
-          window ? `It should reach you ${strong(window)}.` : '',
-        ],
+        subject: `We're packing order ${n}`,
+        paragraphs: [`Your list is with us, and we're getting everything together.`, window ? `Still landing ${strong(window)}.` : ''],
         link: view,
       };
     case 'item_unavailable': {
       const gone = order.items.filter((i) => i.status === 'unavailable').map((i) => `${i.product_name} (${i.variant_label})`);
       return {
-        subject: `Sorry, part of order ${n} isn't coming`,
+        subject: `One piece of order ${n} couldn't make the trip`,
         show: order.items.filter((i) => i.status === 'unavailable'),
         paragraphs: [
-          `${gone.length ? strong(gone.join(', ')) : 'One of your pieces'} is no longer available. We're sorry.`,
-          `You don't pay for it: we're refunding it, and you'll get an email when the money is on its way.`,
-          `Everything else in your order is still coming.`,
+          `${gone.length ? strong(gone.join(', ')) : 'One of your pieces'} has sold out. We're sorry.`,
+          `You won't pay for it: we're refunding it, and you'll get an email when the money is on its way.`,
+          `Everything else is still coming.`,
         ],
         link: view,
       };
     }
     case 'item_refunded':
       return {
-        subject: `Your refund for order ${n}`,
+        subject: `Order ${n}: your money's on its way back`,
         paragraphs: [
-          `We've refunded ${strong(formatUsd(o.refunded_cents))} to your card so far. Banks usually take 5 to 10 days to show it.`,
+          `${strong(formatUsd(o.refunded_cents))} is going back to your card. Banks take 5 to 10 days to show it. We wish they didn't.`,
         ],
         link: view,
       };
@@ -133,18 +130,18 @@ function parts(kind: string, order: OrderDetail, orderUrl: string): Parts | null
       return {
         subject: `Order ${n} is cancelled`,
         paragraphs: [
-          `Your order is cancelled.`,
           o.refunded_cents > 0
-            ? `${strong(formatUsd(o.refunded_cents))} is on its way back to your card. Banks usually take 5 to 10 days to show it.`
-            : '',
+            ? `Done, and ${strong(formatUsd(o.refunded_cents))} is on its way back to your card. Banks take 5 to 10 days to show it.`
+            : `Done. Your order is cancelled.`,
+          `We'll be here next time you miss home.`,
         ],
         link: view,
       };
     case 'return_requested':
       return {
-        subject: `Your return for order ${n}`,
+        subject: `Your return for order ${n}: we'll come to your door for it`,
         paragraphs: [
-          `We got your return request. We'll be in touch to collect it from your door, just like the delivery.`,
+          `We got your return request. We'll collect it from your door, just like the delivery.`,
           `Your refund goes out once it reaches us. Banks usually take 5 to 10 days to show it.`,
         ],
         link: view,
@@ -157,9 +154,9 @@ function parts(kind: string, order: OrderDetail, orderUrl: string): Parts | null
       };
     case 'delivery_window_changed':
       return {
-        subject: `New delivery date for order ${n}`,
+        subject: `New date for order ${n}. Sorry.`,
         paragraphs: [
-          window ? `Your order now arrives ${strong(window)}, later than we first said. We're sorry.` : `Your delivery date has changed.`,
+          window ? `It now lands ${strong(window)}, later than we said. That's on us.` : `Your delivery date has changed. That's on us.`,
           actions?.delay_open && actions.delay_refund_cents !== null
             ? `If that doesn't work for you, you can cancel and get all ${strong(formatUsd(actions.delay_refund_cents))} back, or keep it with the new date. It's your call, on your order page.`
             : '',
@@ -185,21 +182,21 @@ function parts(kind: string, order: OrderDetail, orderUrl: string): Parts | null
       };
     case 'arriving_sooner':
       return {
-        subject: `Order ${n} is coming sooner than we said`,
-        paragraphs: [`Nice surprise: your order is already on its way, ahead of the date we gave you.`],
+        subject: `Plot twist: order ${n} is early`,
+        paragraphs: [`It's already on its way, arriving ahead of the date we gave you.`],
         link: view,
       };
     case 'shipped':
       // D-094: the button opens our order page, which links on to the carrier (D-066, D-088).
       return {
-        subject: `Order ${n} is on its way`,
-        paragraphs: [`Your order has left us and is on its way to you.`],
+        subject: `Order ${n} is on its way home`,
+        paragraphs: [`Out the door and headed to yours.${window ? ` At your door ${strong(window)}.` : ''}`],
         link: { href: orderUrl, label: 'Track your order' },
       };
     case 'delivered':
       return {
-        subject: `Order ${n} is delivered`,
-        paragraphs: [`Your order has been delivered. We hope it feels a little like home.`],
+        subject: `Home has landed: order ${n}`,
+        paragraphs: [`Your parcel is at your door. We hope it smells right.`],
         link: view,
       };
     default:
