@@ -239,6 +239,12 @@ setup and running). For production, once:
    a CSV (the state bestseller list).
 4. Task Scheduler runs `pnpm sourcing run` daily (README). When the PC is off nothing is added or checked; listings keep
    their last checked price and stock, and the admin page shows the last run.
+5. **7-day sources (D-162), once after the Deploy workflow has applied `20261101090000_quick_sources`:** on any PC with
+   the repo, `pnpm quick:sources -- --env=C:iwcmove.env --allow-remote` (the same file as `photos:move`:
+   `NEXT_PUBLIC_SUPABASE_URL` and `SUPABASE_SERVICE_ROLE_KEY` of production; it writes nothing and lists how many
+   listings would be bought from the quick shops instead of a cheaper backup, a sample with both prices, and sites that
+   look like a quick shop but are not marked one), then the same with `--apply` (batches of 100 until none is left;
+   safe to run again). New and re-checked listings need nothing: the runner's database functions choose the quick shop.
 
 ### Weight estimator, clothing classes, food and home weights, liquids (D-131 – D-135; the founder runs them on production)
 `tools/weight-estimator` gives listings a packed weight on the founder's laptop GPU (its README has setup and running).

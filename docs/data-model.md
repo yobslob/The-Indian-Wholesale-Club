@@ -219,6 +219,11 @@ page: days, totals, categories with counts, light cards). `_store_product_card` 
 `store_product_page` adds `quick_delivery`; `store_policy` the two days (D-161, migration `20261031090000_policy_days`: also `delivery_days_min` / `_max`, the pilot's standard days, null in cycle mode); `checkout_context` adds `quick_delivery` and
 gives such a bag no Express; `create_order` gives a standard 7-day bag that window, no cycle and its pickups at once.
 No answer names a shop or a source. Tests: `seven_day.test.sql`.
+Migration `20261101090000_quick_sources` (D-162): `_quick_sourceable(product)` (internal: 7-day days set and every
+active option with a usable source has one on a quick-delivery shop); `_sourcing_settle` then picks the quick shop's
+source first, else the cheapest. `ops_quick_sources(apply, limit)` (service role only: the listings bought elsewhere
+that would switch, then the switch in batches, each listing's `source_checked_at` kept; `pnpm quick:sources`). Tests:
+`quick_sources.test.sql`.
 Migration `20261023120000_seven_day_shipments` (D-154, step 1): `pricing_settings.quick_delivery_min_cents` (4999, the
 7-day line), `shipping_cents_per_kg` (1862) and `quick_delivery_paused` (no 7-day pieces while true; `_quick_listings`
 reads it); the pilot window set to 12 – 16. `order_shipments` (an order's one or two shipments: `seq` 1 | 2, `kind`

@@ -29,6 +29,11 @@ Short on purpose: **replace** lines when something changes, don't append. Histor
   workflow, which the founder runs.
 
 ## What is built (details in the doc named; decisions in `decisions.md`)
+- **Diwali list and 7-day sources (D-162, 2026-10-26, proposed, not deployed):** `targets/diwali-home-gifts.csv` (100
+  home targets, up to 1,515 listings: 25 on the four quick shops, 36 all-India and 39 state crafts on Amazon and
+  Flipkart at ₹1 – ₹900; nothing lit, battery-run, flammable, loose-powdered, cow-dung, feathered or edible). A listing
+  that can be bought whole from the quick shops is bought there (its 7-day tag), when added and at every check
+  (migration `20261101090000_quick_sources`); `pnpm quick:sources` switches the ones settled before it.
 - **The homesick design (D-161, 2026-10-26, words are drafts, not deployed):** the founder's plan
   (`docs/archive/plan-homesick.md`) on the website and app: Home's "We go home so you don't have to.", the store tabs'
   dates ("At your door by Nov 11", "Monday at your door"), 7-day cards "Mon at your door", the 7-day front page "Home is
@@ -99,12 +104,19 @@ Short on purpose: **replace** lines when something changes, don't append. Histor
 ## Next for the founder
 1. **Run the Deploy workflow** (Actions → Deploy), not the daily website deploy: it applies the waiting migrations
    first (`20261029090000_region_head`, `20261029100000_quick_speed`, `20261030090000_search`,
-   `20261031090000_policy_days`), then deploys the
+   `20261031090000_policy_days`, `20261101090000_quick_sources`), then deploys the
    website. The website builds of
    2026-10-24 stopped at the database's statement limit prerendering `/7-day-delivery/home-and-gifts/all`, then
    `/7-day-delivery`: the 7-day store's reads took 1.3 – 1.7 s each on a production copy and grew with every 7-day
    piece; with the migration about 0.2 s. A website build before the migration hits the same limit.
-2. **The Blinkit 7-day batch (D-148 – D-151).** Upload `tools/sourcing-runner/out/7-day-four-shops.csv` again
+2. **Diwali home & gifts (D-162), soon: only a 7-day piece ordered by Sat, Oct 31 reaches a US door before Diwali.**
+   Read Q-47 and D-162's choices, then Admin → Import → Auto-sourcing → Add targets from a CSV with
+   `tools/sourcing-runner/targets/diwali-home-gifts.csv` (100 targets; pull the code on the India PC first), and on that
+   PC `pnpm sourcing run --targets --type home` (the quick-shop rows are tier 1, so they go first). After the Deploy
+   workflow (step 1): `pnpm quick:sources -- --env=C:iwcmove.env --allow-remote` (a dry run: how many listings would be
+   bought from the quick shops instead of a cheaper backup, with both prices), then the same with `--apply`
+   (`ops.md` §Sourcing runner, step 5). Publish the new drafts in batches (Products → Drafts).
+3. **The Blinkit 7-day batch (D-148 – D-151).** Upload `tools/sourcing-runner/out/7-day-four-shops.csv` again
    (Admin → Import → Auto-sourcing → Add targets from a CSV): the first upload ran before the new admin was live; the
    message should say "(102 of them now search more shops)". Then on this PC `pnpm sourcing run --targets --type food`
    (and `--type home`) once: since D-158 one run takes every queued target, claim after claim, with no hourly limit
@@ -122,33 +134,33 @@ Short on purpose: **replace** lines when something changes, don't append. Histor
    refresh per bulk publish: publish in three weekly batches of about 1,000 and read Usage → ISR each Monday;
    **Supabase egress** small (photos go straight to R2). A whole-Blinkit copy (well over 10,000 items) would not fit
    in R2's 10 GB.
-3. **Categories to check (D-159, after the next deploy):** Products → Categories to check: look down the list (about
+4. **Categories to check (D-159, after the next deploy):** Products → Categories to check: look down the list (about
    224 listings on the live store of 2026-10-24 whose names say another category: chutneys under Masala blends, kahwa,
    bhakarwadi under Papad & wadi…), untick or change any you disagree with, Move the ticked; then the 27 that are not
    their type at all (dog chews, hair oil, rakhi packs, dhoop sticks, Mysore pak under Home & gifts): archive or fix.
    Moving more than 100 at once refreshes the whole store once (page-cache writes, as a bulk publish).
-4. **Clear the admin's backlog (D-146), in this order:** Products → **Weights to check → Assign all and publish** (about
+5. **Clear the admin's backlog (D-146), in this order:** Products → **Weights to check → Assign all and publish** (about
    2,600 listings, a minute or two; it reports what it did) · **Drafts → Archive the drafts that can't go live** (80 on
    the production copy, no photo) · **Names to tidy → Rename all** (about 770). Drafts are then empty for new batches.
    Estimated weights are marked "Estimated": weigh pieces at the hub as they are picked and they are replaced.
-5. **Monitoring:** set up the weekly check once (`monitoring.md` §Set-up: usage alerts in Vercel and Supabase,
+6. **Monitoring:** set up the weekly check once (`monitoring.md` §Set-up: usage alerts in Vercel and Supabase,
    `CHECK_LIVE_SITE`, a free uptime ping), then the Monday 15 minutes it lists.
-6. **Products → For: not set yet** (235 clothing listings on the production copy): Women / Men / Kids / Everyone.
-7. **Settings → Bag charges → "Shipping shown when free"** ($ a kg; empty keeps $18.79 struck).
-8. **Answer:** Q-45 (festivals for the clock), Q-46 (the courier: nothing to pay at the door?); read D-161's words and
+7. **Products → For: not set yet** (235 clothing listings on the production copy): Women / Men / Kids / Everyone.
+8. **Settings → Bag charges → "Shipping shown when free"** ($ a kg; empty keeps $18.79 struck).
+9. **Answer:** Q-47 (the Diwali list's bands, coins, dry-fruit boxes, quick shop over a cheaper backup), Q-45 (festivals for the clock), Q-46 (the courier: nothing to pay at the door?); read D-161's words and
    change any line you would say differently; Q-36 (courier bills by size?), Q-37 (lights, gobar, powders), Q-38 (live Kids listings), Q-39 (interim
    size line), Q-40 (footwear in the drawer), Q-42 (the Blinkit CSV's band and
    leave-outs); approve D-148's drafted words (the 7-day page, the tag, the bag and product-page lines); whether ghee and honey sold by the litre count as liquids (D-135 says
    yes); confirm with the courier that ₹2,000 a kg includes the box and clearance.
-9. **Real bills for Settings** (D-069): one courier invoice and one duty bill, then the per-parcel cost, duty by type,
+10. **Real bills for Settings** (D-069): one courier invoice and one duty bill, then the per-parcel cost, duty by type,
    parcel kg and the small-food limits; watch the profit check.
-10. **Bulk sourcing** (D-137 – D-139): one product type per machine (`pnpm sourcing run --type food|home|clothing`);
+11. **Bulk sourcing** (D-137 – D-139): one product type per machine (`pnpm sourcing run --type food|home|clothing`);
    pull the code on the hub PC first; the target CSVs in `tools/sourcing-runner/targets/` go in through Admin → Import
    → Auto-sourcing → Add targets from a CSV.
-11. **Decide when convenient:** the name "Food" and 5 pieces per size by default (D-110); D-118's proposals (3 listings
+12. **Decide when convenient:** the name "Food" and 5 pieces per size by default (D-110); D-118's proposals (3 listings
    per target, the 60% rise / 50% fall guard, drafts until published, 40 targets a day); D-120's (₹200, 250 g, half the
    shipping share); D-105's vendor-screen drafts; the four men house models (D-104); Q-35 (US stores).
-12. **Before the launch proper:** Q-3 (US carrier), Q-9 (domain and support email), Q-32 (holding a piece while paying).
+13. **Before the launch proper:** Q-3 (US carrier), Q-9 (domain and support email), Q-32 (holding a piece while paying).
 
 ## Not built yet (known, in order of use)
 - App: the product page's 7-day date (`store_product_page().quick_delivery`, D-148; the 7-day screen, tag, Home line
@@ -181,6 +193,7 @@ Short on purpose: **replace** lines when something changes, don't append. Histor
 ## Last verification
 | Date | Commit | Where | Result |
 |---|---|---|---|
+| 2026-10-26 | D-162 Diwali list and 7-day sources | Claude Code, founder's Windows machine with Docker (`check.mjs docs typecheck lint test db`) | docs, typecheck, lint OK; test OK (shared 355 pass, incl. the new `diwali-targets.test.ts`: all 100 rows upload, sample titles in and out); db OK after a reset: 67/67 SQL files incl. `quick_sources.test.sql` (13 assertions); `pnpm quick:sources` dry run on the local database (0 to switch, as expected on the seed). Seen: `seven_day_insights.test.sql` fails when `db-test.mjs` is run again without a reset (passes after one). **Not run:** the migration and the backfill on production, the CSV upload and a runner search, `build`, `e2e`. |
 | 2026-10-26 | D-161 the homesick design | Claude Code, founder's Windows machine with Docker (`check.mjs` all steps) | docs, typecheck, lint (2 import-order warnings fixed), test (new `homesick.test.ts` 5), db (new `policy_days.test.sql` 2), build, http (/ 13 ms 131 KB, /states/kerala 141 KB, /clothing 139 KB; none over budget), bundle: OK. e2e 32 passed, 6 failed: the store-tab test expected the old words (updated; passes); every paid checkout (`checkout`, `customer-choices` ×2, `sold-out`) stops at Pay with no request reaching Stripe's confirm, and **the same test fails on main without D-161** (rebuilt and run alone), as on 2026-10-23; `search.spec.ts`'s "kasavu" suggestion is missing from the local word list (D-160's, untouched here). On a local production build: product page, pill, 7-day page, Home band, footer and phone Home screenshotted, no page errors. |
 | 2026-10-26 | D-160 search (a2338c7 – 08d0653) | Claude Code, founder's Windows machine with Docker (`check.mjs` docs, typecheck, lint, test, db, build, http, bundle; e2e subset) | docs 0.5 s, typecheck 24.5 s, lint 29.3 s, test 4.1 s (shared 346, new `search.test.ts` 9), db 51.6 s (65 files, new `search.test.sql` 41; insights / seven_day_store now check a draft or non-7-day piece is never among a partial match), build 74.6 s, http (/ 15 ms 128 KB, /clothing 14 ms 136 KB: +1 KB for the header's suggestions, /search?q=saree 81 ms), bundle OK. e2e: `search.spec.ts` (new, 3), `insights-live`, `seven-day-bag`, `motion-keyboard`: 12 passed, 1 skipped; the rest of e2e not run. Measured on a local catalogue scaled to 7,228 live listings (rolled back): 6 – 40 ms a search, `product_search` 4 MB with its index, hints 7 – 8 KB. In the browser on a local dev server: kurtha → "Showing pieces for kurta" (42), "kerala sari" → Kerala's 14, filters and Sort by as links, the header pill's suggestions by keyboard (↓, Enter → /search?q=kasavu+saree), the phone bar at 375 px (Escape closes the list, then the bar), noindex and robots.txt; the app's web build: Explore's suggestions, "kerala saree" 14 like the website, kurtha's fix line. **Not run:** the migration on production (the Deploy workflow), the app on a phone, Insights' "Add … = …" in a browser (SQL-tested; no local admin sign-in), the full e2e suite. |
 | 2026-10-24 | D-159 (Categories to check) and the founder's check run of the QA pass (e2e: `saved.spec.ts`, `customer-choices.spec.ts`) | Claude, cloud sandbox and the live site in the browser pane | The founder's `check.mjs` on the QA pass: docs, typecheck, lint, test, db, build, http (/ 33 ms 127 KB, /clothing 135 KB), bundle OK; e2e 33 passed, 2 failed. `saved.spec.ts` found a real bug, older than the QA pass: a heart tapped while the page was still checking the session (a signed-in customer's first second) was saved on the device only, then the check cleared the device's list: the save was lost and the heart said "Saved on this device". Fixed (`saved-store.ts`: where a save goes waits for the session check); in a stand-in store run under node, the early tap now saves to the account (before: no save, the device hint). `customer-choices.spec.ts` stopped at Stripe's captcha after Pay (the known test-mode flake). D-159: the live catalogue read through the public store views (9,887 listings): no category of another type; the rules propose 224 moves and 27 not-their-type, each group read by eye; `category-check.test.ts` 4/4 (mutation-checked), shared tests 331/337 (the sandbox's 6 `__filename` failures; `bag-goal.test.ts` was not in the test script and now is). **Not run:** web tsc, ESLint, `next build`, e2e, the new admin page in a browser (no local admin here). |

@@ -491,3 +491,44 @@ What it means for the build (built 2026-10-26, website and app; not deployed):
 and sent from India to your door" (a listing's state is where it was made, not always where it was bought, D-004);
 "Made in India" stays on the footer only as "Bought in India" (some listings say Imported); the pill keeps "FREE
 DELIVERY" once past the line so the word itself is never lost.
+
+**D-162 · 2026-10-26 · proposed: the Diwali home & gifts list, and every listing that can be bought whole from the quick shops is bought there (its 7-day tag)**
+- Asked for (the founder's request, relayed by the session that started this work): a targets CSV of everything
+  shippable people buy for Diwali (diyas, kandils, torans, rangoli, lights, pooja thalis and items, idols, candles, gift
+  boxes, brass and copper, wall hangings, cushion covers, urlis, incense), state crafts where a state is known for them,
+  all-India otherwise, nothing that cannot fly; and "every product currently sourced from Zepto, Blinkit, BigBasket or
+  Instamart carries the 7 days tag", for new and re-checked listings and those already in production.
+- What was found: the 7-day tag is not stored. It is worked out on every read (`_quick_listings()`, D-148): a live
+  listing whose every active option's source in use is on a quick-delivery shop. But `_sourcing_settle` chose each
+  option's source by price alone, so a piece found on Blinkit with a cheaper Amazon or Flipkart backup was bought from
+  the backup and had no tag, from the day it was added and at every weekly check.
+What it means for the build (migration `20261101090000_quick_sources`, not deployed):
+- **The source chosen:** when 7-day delivery has its days in Settings and every active option with a usable source has
+  a usable quick-shop source (in stock, no price held, read without failing, inside the delivery limit), the quick
+  shop's source comes first, even when a backup elsewhere is cheaper; otherwise the cheapest, as before. A listing with
+  one option sold only elsewhere keeps the cheapest prices (it could not be a 7-day piece anyway). The pause (D-154)
+  changes no source. A quick shop sold out or its price held: the backup takes over and the tag goes, so the promise
+  stays true. The price follows the shop actually used (D-128's rules unchanged).
+- **Already listed:** `pnpm quick:sources` (`scripts/quick-sources.mjs`, the service key; dry run first, then
+  `--apply`) switches the listings settled before the migration, in batches, as the weekly check would; each listing
+  keeps its check date. It also names sites that look like a quick shop but are not marked as one.
+- **The list:** `tools/sourcing-runner/targets/diwali-home-gifts.csv`, 100 home targets (up to 1,515 listings), every
+  name starting "Diwali:" so none is skipped as a target already there: 25 on the four quick shops (7-day pieces, no
+  ₹ band, as the 7-day CSVs), 36 all-India on Amazon and Flipkart and 39 state crafts on Amazon and Flipkart (both
+  ₹1 – ₹900, D-138's band). Tested in `packages/shared/tests/diwali-targets.test.ts`.
+*Claude's choices in it (proposed, confirm before uploading, Q-47):* Must match leaves out lit and battery pieces (LED,
+electric, USB, solar, string lights: Indian plugs and batteries on the flight, D-138 and Q-37), fireworks, camphor,
+lighters and matches, cow dung, feathers, loose colours (kumkum, sindoor, gulal, rangoli colours; powders are the
+matcher's form word), pooja samagri kits, hampers and food (dry fruit, sweets, chocolate; food filed under Home & gifts
+is skipped by D-159's check), pure silver and gold coins (plated ones only), and liquids are left to D-135's check;
+glass and ceramic stay (the hub packs them in a box with wrapping, D-134). Dry-fruit gift boxes are listed only empty
+(a box with nuts is food, not home & gifts). A state is given only to a craft the shop's title names and that one
+state makes (Moradabad brass, Khurja pottery, Saharanpur wood, chikankari and Banarasi cushion covers, Agra inlay,
+Jaipur blue pottery, Pichwai, Jaipuri block print, Kutch torans, Ajrakh, Warli, Madhubani, Sikki, Pattachitra, Pipli,
+Bankura horses, Bengal and Bastar dokra, Sohrai, Gond, Kalamkari, Cheriyal, Nirmal, Pembarthi, Bidri, Mysore inlay,
+Tanjore paintings and dolls, nettipattam, Kathakali, Kashmiri papier mache and walnut wood, Kangra, Aipan, Phulkari,
+Assamese xorai, Majuli masks, Longpi pottery); paintings must say handpainted or handmade and not print or "style".
+Children's toys are not searched (D-138). Tiers: 1 the quick-shop rows (only a 7-day piece ordered by Sat, Oct 31
+reaches a US door before Diwali on 8 Nov, D-161), 2 the broad Amazon and Flipkart rows, 3 the niche ones; one run takes
+every target anyway (D-158). Size: about 10 KB a listing in the database (up to 15 MB) and 0.6 MB in R2 (up to 0.9 GB),
+inside the budgets (`monitoring.md`); a bulk publish refreshes the store once.

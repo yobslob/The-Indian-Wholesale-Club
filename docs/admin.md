@@ -207,7 +207,11 @@ runner in `tools/sourcing-runner/` (its README says how to set it up on the PC a
   `home-festive-amazon-900.csv` is home & gifts on Amazon only, ₹1 – ₹900, festivals first (185 targets, up to 3,790
   listings; Must match leaves out lit, battery, cow dung and feather pieces, fireworks and food hampers). D-139:
   `food-branded-200.csv` is branded snacks, biscuits, chocolates, instant food, masalas and tea, ₹1 – ₹200, every food
-  shop (119 targets, up to 1,410 listings; dairy products, meat, frozen food and liquids left out). Amazon and
+  shop (119 targets, up to 1,410 listings; dairy products, meat, frozen food and liquids left out). D-162:
+  `diwali-home-gifts.csv` is Diwali's home & gifts (100 targets, up to 1,515 listings, every name "Diwali: …"): 25 on
+  the four quick shops (7-day pieces, no band), 36 all-India and 39 state crafts on Amazon and Flipkart (₹1 – ₹900); Must
+  match leaves out lit, battery and plug pieces, fireworks, camphor, matches, cow dung, feathers, loose colours, samagri
+  kits, hampers, food and pure silver coins; a state only for a handmade craft the title names (Q-47). Amazon and
   Flipkart searches use the shop's own price filter and read one result page per 10 listings a target wants (up to
   four). Zepto and Instamart are read from their own search answer (one page) and their item pages' data, each pack an
   option (D-152). For a Shopify shop, Search words may name one of its collections, `collection:kurtis`:
@@ -233,6 +237,10 @@ runner in `tools/sourcing-runner/` (its README says how to set it up on the PC a
   (gitignored; 113 Blinkit targets, up to 2,972 listings, only what can be sent: no dairy, meat, eggs, frozen food,
   liquids, honey, oils, electronics, lights, batteries, cow dung, feathers, fireworks, camphor, loose powders, lighters
   or matches), added through Add targets from a CSV and run with `pnpm sourcing run --type food` / `--type home`.
+  **Bought there (D-162):** a listing that can be bought whole from the quick shops (every option with a usable source
+  has one there: in stock, no price held, inside the delivery limit) is bought there, even when a backup elsewhere is
+  cheaper, when it is added and at every weekly check (`_sourcing_settle`); a quick shop sold out or held hands the
+  piece to its backup and the tag goes. Listings settled before: `pnpm quick:sources` (`ops.md` §Sourcing runner).
 - **Shops.** Each shop the runner searches, the types it sells, the delivery days used when its page shows none, on or
   off, its last good run and its last problem (a shop that changed its page shows up here first).
 - **Rules.** Delivery limit (days), listings per target, how often listings are checked, pieces on sale per variant,

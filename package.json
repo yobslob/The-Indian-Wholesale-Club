@@ -28,7 +28,8 @@
     "catalogue": "node scripts/build-catalogue.mjs",
     "catalogue:apply": "node scripts/build-catalogue.mjs --apply",
     "catalogue:folders": "node scripts/build-catalogue.mjs --folders",
-    "photos:move": "node scripts/photo-move.mjs"
+    "photos:move": "node scripts/photo-move.mjs",
+    "quick:sources": "node scripts/quick-sources.mjs"
   },
   "devDependencies": {
     "@repo/eslint-config": "workspace:*",

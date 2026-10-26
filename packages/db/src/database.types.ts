@@ -1866,6 +1866,9 @@ isOneToOne: false
               "id": string
             }[]
                            },
+"_quick_sourceable":
+{ Args: { "p_product": string }; Returns: boolean
+                           },
 "_record_cancel":
 { Args: { "p_amount": number,"p_note": string,"p_order": string }; Returns: undefined
                            },
@@ -2193,6 +2196,9 @@ isOneToOne: false
                            },
 "my_vendor_id":
 { Args: Record<PropertyKey, never>; Returns: string
+                           },
+"ops_quick_sources":
+{ Args: { "p_apply"?: boolean,"p_limit"?: number }; Returns: Json
                            },
 "rate_limit_hit":
 { Args: { "p_key": string,"p_limit": number,"p_window_seconds": number }; Returns: Json
