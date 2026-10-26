@@ -18,7 +18,7 @@ A number past its **budget** is a warning (look for the cause that week); past t
 | Supabase | Egress (Usage) | 2.5 GB | 4 GB | photos read from Supabase instead of R2, the photo move or the weight tools reading everything at once, big admin exports |
 | Supabase | Storage | 100 MB | 500 MB | uploads not moved to R2 (`pnpm photos:move -- --clean` lists and removes them) |
 | Supabase | Monthly active users | 25,000 | 40,000 | real growth: good news, plan the paid tier |
-| Cloudflare R2 | Storage (R2 → bucket → Metrics) | 6 GB (about 4 GB in use) | 9 GB | repeats kept (D-142), originals stored |
+| Cloudflare R2 | Storage (R2 → bucket → Metrics) | 6 GB (about 4 GB in use) | 9 GB | repeats kept (D-142), originals stored, copies of deleted listings or photos (`pnpm photos:redo audit` lists them; `--delete` removes them) |
 | Cloudflare R2 | Class A (writes) / Class B (reads) | 500K / 5M | 900K / 9M | reads that miss Vercel's CDN |
 | GitHub | Actions minutes (Settings → Billing) | 1,000 | 1,600 | CI runs the full `check.mjs` on every push to `main` (up to 45 min allowed, usually far less; a private repository gets 2,000 free minutes): batch commits, push once a day |
 

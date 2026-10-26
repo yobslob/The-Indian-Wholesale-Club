@@ -29,7 +29,7 @@ const COMMANDS = {
   // Do the docs still match the code (paths, decisions, routes, schema, env vars)? A few seconds.
   // …and is the generated catalogue seed in step with catalogue/data (D-059)?
   docs: 'node scripts/docs-audit.mjs && node scripts/build-catalogue.mjs --check',
-  typecheck: 'pnpm turbo typecheck --force --continue && pnpm exec tsc -p tools/sourcing-runner/tsconfig.json && pnpm exec tsc -p tools/weight-estimator/tsconfig.json',
+  typecheck: 'pnpm turbo typecheck --force --continue && pnpm exec tsc -p tools/sourcing-runner/tsconfig.json && pnpm exec tsc -p tools/weight-estimator/tsconfig.json && pnpm exec tsc -p tools/photo-redo/tsconfig.json',
   lint: 'pnpm turbo lint --force --continue',
   test: 'pnpm turbo test --force --continue',
   build: 'pnpm turbo build --filter=web --force',

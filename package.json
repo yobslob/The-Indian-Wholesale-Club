@@ -29,6 +29,7 @@
     "catalogue:apply": "node scripts/build-catalogue.mjs --apply",
     "catalogue:folders": "node scripts/build-catalogue.mjs --folders",
     "photos:move": "node scripts/photo-move.mjs",
+    "photos:redo": "tsx --tsconfig tools/photo-redo/tsconfig.json tools/photo-redo/src/main.ts",
     "quick:sources": "node scripts/quick-sources.mjs"
   },
   "devDependencies": {

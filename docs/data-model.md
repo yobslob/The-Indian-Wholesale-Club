@@ -40,7 +40,7 @@ operations data are never queried from customer code.
 | | `variant_availability` | public mirror `variant_id → available`, trigger-maintained, in the Realtime publication (live "only 2 left", D-010) | store (visible products) |
 | | `product_search` | each listing's search words with English stems (name; category, craft, state; summary; type), trigger-maintained (D-160) | functions only |
 | | `search_synonyms`, `search_words` | search's synonym groups (Claude's draft, D-160) and the vocabulary of live listings' words (pg_cron every 6 hours) for spelling fixes and suggestions | admin (read) |
-| | `product_media` | Storage paths (bucket `product-media`), alt text, one primary per product, `is_ai` (an AI-generated model photo, D-100: the product's Details say so) | store / admin |
+| | `product_media` | Storage paths (bucket `product-media`), alt text, one primary per product, `is_ai` (an AI-generated model photo, D-100: the product's Details say so), `redo` (what the photo redo did, D-163) | store / admin |
 | Supply | `vendors` | shop + owner, phone/WhatsApp, address, town, region, payment method + reference (D-029), licences, status, notes, photo; `online_site` = an online shop's host for imported listings (one vendor per shop and state, D-110) | admin |
 | | `cycles` | code, status, `cutoff_at`, est. export/arrival, actual dates, AWB, forwarder, freight, duty, FX | admin |
 | | `pickups` | one per ordered piece: vendor, cycle, variant, qty, shop price (the variant's own when it has one), status, who/when, photo, payout; `source_id` (the shop item in use), `ordered_at`, `ordered_by`, `paid_paise`, `shop_order_ref`, `shop_bill_path` (ordered from the shop, D-140) | admin |
@@ -290,6 +290,14 @@ Migration `20261029100000_quick_speed`: `store_quick_browse()` and `store_quick_
 into their own list before they meet `store_products` (joined straight to the view, the planner multiplied options by
 categories: 1.3 – 1.7 s with 5,100 7-day pieces on a production copy, now about 0.2 s), and the front page builds the
 cards of its three rows only. Same answers (checked against the old functions on the copy).
+Migration `20261102090000_photo_redo` (D-163): `product_media.redo` (face, food, scene, or kept: looked at, nothing to
+change; null: not done). Worker only: `worker_photo_redo_plan(type, after, limit)` (listings by id after `after` with
+photos still to do: every clothing photo but vendor AI ones and kids' pieces, food's and home's main photo; stored
+photos only; with the active house models), `worker_photo_redo_set(media, old_path, new_path, redo)` (a new path in the
+listing's own `s/` folder, or `kept`; only while the row still has `old_path` and no redo; false otherwise),
+`worker_photo_redo_scene(media, old_path, new_path, alt)` (home: the scene becomes the main photo, the plain one second)
+and `worker_photo_stems_in_use(stems)` (which stored photos, paths without their extension, a listing still shows; at
+most 1,000). Internal: `_main_photo(product)`, `_redo_wanted(media, type)`. No store change. Tests: `photo_redo.test.sql`.
 Migration `20261030090000_search` (D-160): search that reads words as customers write them, at no running cost.
 `product_search` (one row per listing: `doc`, a weighted English tsvector of name A; category, craft and state B;
 summary C; type D; GIN-indexed; kept by triggers on `products`, `regions` and `categories` renames), `search_synonyms`

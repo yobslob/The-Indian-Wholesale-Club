@@ -532,3 +532,38 @@ Children's toys are not searched (D-138). Tiers: 1 the quick-shop rows (only a 7
 reaches a US door before Diwali on 8 Nov, D-161), 2 the broad Amazon and Flipkart rows, 3 the niche ones; one run takes
 every target anyway (D-158). Size: about 10 KB a listing in the database (up to 15 MB) and 0.6 MB in R2 (up to 0.9 GB),
 inside the budgets (`monitoring.md`); a bulk publish refreshes the store once.
+
+**D-163 · 2026-10-27 · founder: every listing's photos made again on the founder's laptop GPU: clothing gets a house model's face and skin, food's main photo a tempting scene, home & gifts a room**
+- Founder (2026-10-27): "We have to change every product's photo, even If a little even if We are making it just look
+  enhanced. 1. Clothing: We can't use the current faces, but we made some models and open source AI on our GPU which
+  we can replace them with but clothing piece quality should not change, the fabric and the lighting, just the model's
+  face and skin(hands, etc.) rest remains the exact same. 2. food: just the front(main) photo, we can change it by
+  making it look extra tempting or whatever. 3. home decor and gifts: we can make them put on a wall or something."
+  "all our tiers are free(vercel, supabase and R2 cloudflare) so I want minimum usage of everything, cloudflare is
+  already at 6.5GB usage with 13k inventory. We can delete or override or replace the current photos no issue in that,
+  if it helps." "In all problems like these, try to remember we have a GPU and we have a local laptop which we can
+  use." Then: "Just continue with the plan and start building".
+What it means for the build (migration `20261102090000_photo_redo`, not deployed; `tools/photo-redo`,
+`tools/photo-worker/redo.py`):
+- **All on the laptop:** `pnpm photos:redo fetch` reads each photo's 1200 copy from R2 (the original is not kept,
+  D-141); `redo.py` makes the new photo on the RTX 4060 offline; `pnpm photos:redo review` shows old and new side by
+  side on a local page; `publish` writes the new photo's two AVIF copies to R2, points the listing at it and deletes the
+  old copies 10 minutes later (store pages are cached for 5). Nothing runs on Vercel; Supabase sees one small row
+  update per photo; R2 about two writes per photo and no net growth for a replaced one.
+- **Clothing:** only the face is drawn again (FLUX.2 [klein] 4B on a close crop, the old face blurred away first, the
+  house model's face as the reference); arms, legs, hands and neck only change colour towards the new face's skin.
+  Every pixel the parser (SegFormer, ATR labels) calls clothing, and a 3-pixel band around it, is copied back from the
+  original, so the garment, its fabric and the light cannot change (checked: 0 changed pixels). One house model per
+  listing (who wears it, then the nearest skin tone), so a listing never shows two people.
+- **Food:** the main photo only: the pack cut out (BiRefNet), a shop thumbnail upscaled ×2 first, set on a table
+  scene that suits its category or name, the pack's own pixels pasted back.
+- **Home & gifts:** a new main photo in a room (a wall or doorway for torans and wall pieces, a pooja shelf, a
+  console, a dining table), the product's own pixels pasted back; the plain photo stays second.
+- **R2's size:** new copies use more encoder effort (7 % smaller in a sample of 24 photos); `pnpm photos:redo audit`
+  lists what fills the bucket and, with `--delete`, removes listing photo copies no listing shows (over a day old).
+*Claude's choices in it (proposed, confirm when convenient):* the hair, earrings and jewellery stay (only the face is
+drawn, so a hair accessory or an earring that is the product stays exact); kids' pieces wait (house models are
+adults); a clothing listing goes live only when all its photos are approved or have no person in them; a photo the
+checks pass can go live with `publish --auto`, but home photos should be looked at on the review page (a home scene can
+hide a second, drawn copy of the piece behind it, which the check does not always catch); a photo changed by an admin
+or the runner after it was fetched is left alone.

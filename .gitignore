@@ -110,3 +110,7 @@ tools/weight-estimator/food-weights-before.jsonl
 /history.sql
 # Environment files pulled from Vercel (ops.md §Moving): production secrets
 *.env
+
+# photo redo (D-163): the work folder and its log
+tools/photo-redo/redo.log
+tools/photo-worker/redo.log

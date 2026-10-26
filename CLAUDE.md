@@ -57,7 +57,7 @@ should be; report a mismatch instead of picking a side. "Done/works/fixed" needs
 `apps/app` Expo app · `packages/shared` pure logic (`domain`, `sourcing`, `info`, `vendor`) · `packages/db` typed
 queries (`store`/`account`/`admin`/`server`/`vendor`) · `packages/tokens` design tokens · `supabase/` migrations, seed,
 SQL tests · `scripts/` (`check.mjs` = verification, `docs-audit.mjs`, the founder's one-off and ops scripts) ·
-`tools/` the founder's machines: `sourcing-runner` (India PC), `weight-estimator` (laptop GPU), `photo-worker` (GPU) ·
+`tools/` the founder's machines: `sourcing-runner` (India PC), `weight-estimator` (laptop GPU), `photo-worker` (GPU) and `photo-redo` (every listing's photos made again, D-163) ·
 `catalogue/` the demo catalogue behind the local seed. `design/` (mockups the dev scripts still read) and
 `docs/archive/` are history; `.ignore` keeps them out of searches.
 

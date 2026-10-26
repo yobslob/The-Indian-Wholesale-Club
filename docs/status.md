@@ -15,7 +15,7 @@ Short on purpose: **replace** lines when something changes, don't append. Histor
 - **Database:** every migration up to `20261022120000_seven_day_delivery` (D-148) is applied (the founder ran the
   Deploy workflow on 2026-10-22, per their message; the live site shows the 7-day store, so later ones may be in
   too); waiting for the Deploy workflow: `20261029090000_region_head` (D-157), `20261029100000_quick_speed`,
-  `20261030090000_search` (D-160; the website falls back to the old search until it is applied).
+  `20261030090000_search` (D-160; the website falls back to the old search until it is applied), `20261102090000_photo_redo` (D-163; the photo redo needs it).
 - **Sourcing runner (India PC):** its `.env` pointed at the old Supabase project until 2026-10-22 (the move's step 7,
   `ops.md`); fixed by the founder. The Blinkit 7-day CSV is in (102 targets added, 11 already there). **Blinkit blocks
   the runner** from 2026-10-22: the cause was headless Chrome (`IWC_SOURCING_HEADLESS=1` in its `.env`); the runner now
@@ -95,7 +95,8 @@ Short on purpose: **replace** lines when something changes, don't append. Histor
   gives every missing weight one (similar pieces weighed before, else the category) and publishes.
 - **Tools on the founder's machines** (`ops.md` §Tools): the sourcing runner (India PC: auto-sourcing, weekly price and
   stock check, weights, liquids), the weight estimator (laptop GPU), the photo worker (vendor AI photos),
-  `pnpm photos:move` (the R2 move, finished).
+  `pnpm photos:move` (the R2 move, finished), the photo redo (D-163, laptop GPU: every listing's photos made again,
+  `tools/photo-redo/README.md`; built and run end to end on the local database, not yet on production).
 - **Speed and limits:** store pages from Vercel's cache (`/clothing` 7 – 18 ms on a local production build); photos as
   fixed AVIF copies from `/media/s/` (no resizer); narrow page refreshes (D-145). QA pass of 2026-10-24 (not deployed):
   See all's Size / Pack list kept to its 60 biggest past 100 (/food's HTML was 685 KB, 540 KB of it 1,687 packs; each
@@ -107,19 +108,25 @@ Short on purpose: **replace** lines when something changes, don't append. Histor
 ## Next for the founder
 1. **Run the Deploy workflow** (Actions → Deploy), not the daily website deploy: it applies the waiting migrations
    first (`20261029090000_region_head`, `20261029100000_quick_speed`, `20261030090000_search`,
-   `20261031090000_policy_days`, `20261101090000_quick_sources`), then deploys the
+   `20261031090000_policy_days`, `20261101090000_quick_sources`, `20261102090000_photo_redo`), then deploys the
    website. The website builds of
    2026-10-24 stopped at the database's statement limit prerendering `/7-day-delivery/home-and-gifts/all`, then
    `/7-day-delivery`: the 7-day store's reads took 1.3 – 1.7 s each on a production copy and grew with every 7-day
    piece; with the migration about 0.2 s. A website build before the migration hits the same limit.
-2. **Diwali home & gifts (D-162), soon: only a 7-day piece ordered by Sat, Oct 31 reaches a US door before Diwali.**
+2. **The photo redo (D-163), after the deploy:** on the laptop, `pnpm photos:redo fetch --type clothing --limit 30`,
+   then `tools\photo-worker\.venv\Scripts\python redo.py --type clothing`, `pnpm photos:redo review` (approve or
+   reject), `pnpm photos:redo publish --type clothing`; the same for food and home. First copy each house model's
+   `front.jpg` into `C:\kod\iwc-photo-models\house-models\<slug>\` (only `w-1`, 271 px wide, is there now: no men's
+   model, and a larger photo gives better faces) and give the laptop the runner's `.env`. `pnpm photos:redo audit`
+   shows what fills R2's 6.5 GB (run it before deleting anything with `--delete`).
+3. **Diwali home & gifts (D-162), soon: only a 7-day piece ordered by Sat, Oct 31 reaches a US door before Diwali.**
    Read Q-47 and D-162's choices, then Admin → Import → Auto-sourcing → Add targets from a CSV with
    `tools/sourcing-runner/targets/diwali-home-gifts.csv` (100 targets; pull the code on the India PC first), and on that
    PC `pnpm sourcing run --targets --type home` (the quick-shop rows are tier 1, so they go first). After the Deploy
    workflow (step 1): `pnpm quick:sources -- --env=C:iwcmove.env --allow-remote` (a dry run: how many listings would be
    bought from the quick shops instead of a cheaper backup, with both prices), then the same with `--apply`
    (`ops.md` §Sourcing runner, step 5). Publish the new drafts in batches (Products → Drafts).
-3. **The Blinkit 7-day batch (D-148 – D-151).** Upload `tools/sourcing-runner/out/7-day-four-shops.csv` again
+4. **The Blinkit 7-day batch (D-148 – D-151).** Upload `tools/sourcing-runner/out/7-day-four-shops.csv` again
    (Admin → Import → Auto-sourcing → Add targets from a CSV): the first upload ran before the new admin was live; the
    message should say "(102 of them now search more shops)". Then on this PC `pnpm sourcing run --targets --type food`
    (and `--type home`) once: since D-158 one run takes every queued target, claim after claim, with no hourly limit
@@ -137,33 +144,33 @@ Short on purpose: **replace** lines when something changes, don't append. Histor
    refresh per bulk publish: publish in three weekly batches of about 1,000 and read Usage → ISR each Monday;
    **Supabase egress** small (photos go straight to R2). A whole-Blinkit copy (well over 10,000 items) would not fit
    in R2's 10 GB.
-4. **Categories to check (D-159, after the next deploy):** Products → Categories to check: look down the list (about
+5. **Categories to check (D-159, after the next deploy):** Products → Categories to check: look down the list (about
    224 listings on the live store of 2026-10-24 whose names say another category: chutneys under Masala blends, kahwa,
    bhakarwadi under Papad & wadi…), untick or change any you disagree with, Move the ticked; then the 27 that are not
    their type at all (dog chews, hair oil, rakhi packs, dhoop sticks, Mysore pak under Home & gifts): archive or fix.
    Moving more than 100 at once refreshes the whole store once (page-cache writes, as a bulk publish).
-5. **Clear the admin's backlog (D-146), in this order:** Products → **Weights to check → Assign all and publish** (about
+6. **Clear the admin's backlog (D-146), in this order:** Products → **Weights to check → Assign all and publish** (about
    2,600 listings, a minute or two; it reports what it did) · **Drafts → Archive the drafts that can't go live** (80 on
    the production copy, no photo) · **Names to tidy → Rename all** (about 770). Drafts are then empty for new batches.
    Estimated weights are marked "Estimated": weigh pieces at the hub as they are picked and they are replaced.
-6. **Monitoring:** set up the weekly check once (`monitoring.md` §Set-up: usage alerts in Vercel and Supabase,
+7. **Monitoring:** set up the weekly check once (`monitoring.md` §Set-up: usage alerts in Vercel and Supabase,
    `CHECK_LIVE_SITE`, a free uptime ping), then the Monday 15 minutes it lists.
-7. **Products → For: not set yet** (235 clothing listings on the production copy): Women / Men / Kids / Everyone.
-8. **Settings → Bag charges → "Shipping shown when free"** ($ a kg; empty keeps $18.79 struck).
-9. **Answer:** Q-47 (the Diwali list's bands, coins, dry-fruit boxes, quick shop over a cheaper backup), Q-45 (festivals for the clock), Q-46 (the courier: nothing to pay at the door?); read D-161's words and
+8. **Products → For: not set yet** (235 clothing listings on the production copy): Women / Men / Kids / Everyone.
+9. **Settings → Bag charges → "Shipping shown when free"** ($ a kg; empty keeps $18.79 struck).
+10. **Answer:** Q-47 (the Diwali list's bands, coins, dry-fruit boxes, quick shop over a cheaper backup), Q-45 (festivals for the clock), Q-46 (the courier: nothing to pay at the door?); read D-161's words and
    change any line you would say differently; Q-36 (courier bills by size?), Q-37 (lights, gobar, powders), Q-38 (live Kids listings), Q-39 (interim
    size line), Q-40 (footwear in the drawer), Q-42 (the Blinkit CSV's band and
    leave-outs); approve D-148's drafted words (the 7-day page, the tag, the bag and product-page lines); whether ghee and honey sold by the litre count as liquids (D-135 says
    yes); confirm with the courier that ₹2,000 a kg includes the box and clearance.
-10. **Real bills for Settings** (D-069): one courier invoice and one duty bill, then the per-parcel cost, duty by type,
+11. **Real bills for Settings** (D-069): one courier invoice and one duty bill, then the per-parcel cost, duty by type,
    parcel kg and the small-food limits; watch the profit check.
-11. **Bulk sourcing** (D-137 – D-139): one product type per machine (`pnpm sourcing run --type food|home|clothing`);
+12. **Bulk sourcing** (D-137 – D-139): one product type per machine (`pnpm sourcing run --type food|home|clothing`);
    pull the code on the hub PC first; the target CSVs in `tools/sourcing-runner/targets/` go in through Admin → Import
    → Auto-sourcing → Add targets from a CSV.
-12. **Decide when convenient:** the name "Food" and 5 pieces per size by default (D-110); D-118's proposals (3 listings
+13. **Decide when convenient:** the name "Food" and 5 pieces per size by default (D-110); D-118's proposals (3 listings
    per target, the 60% rise / 50% fall guard, drafts until published, 40 targets a day); D-120's (₹200, 250 g, half the
    shipping share); D-105's vendor-screen drafts; the four men house models (D-104); Q-35 (US stores).
-13. **Before the launch proper:** Q-3 (US carrier), Q-9 (domain and support email), Q-32 (holding a piece while paying).
+14. **Before the launch proper:** Q-3 (US carrier), Q-9 (domain and support email), Q-32 (holding a piece while paying).
 
 ## Not built yet (known, in order of use)
 - App: the product page's 7-day date (`store_product_page().quick_delivery`, D-148; the 7-day screen, tag, Home line
@@ -196,6 +203,7 @@ Short on purpose: **replace** lines when something changes, don't append. Histor
 ## Last verification
 | Date | Commit | Where | Result |
 |---|---|---|---|
+| 2026-10-27 | D-163 photo redo; the runner's memory fix | Claude Code, the founder's laptop (RTX 4060, Docker; `check.mjs docs typecheck lint test`, `db-test.mjs` without a reset) | docs, typecheck, lint, test OK; SQL 66 / 68: `photo_redo.test.sql` (27) and `schema.test.sql` pass, `price_sheet` and `seven_day_insights` fail on the local data without a reset (as noted on 2026-10-26). The whole redo on the local database with local storage's S3 standing in for R2, on 24 photos from the live site: fetch (all 3 of a kurti's photos, food's and home's main only), `redo.py` (3 clothing photos, 2 food, 1 home: all passed their checks; garment and product pixels changed: 0), the review page in the browser pane, publish (new paths, `redo` set, home's scene first and plain photo second), the sweep (5 replaced photos' copies deleted, home's plain one kept), a second fetch finding nothing, the audit. Faces checked by eye: a different woman, the same one across a listing. Runner: Playwright kept 618 MB for 300 photo downloads, 37 MB once disposed; the restart loop run with a stand-in child. **Not run:** production (migration, R2, a real runner run of hours), `build`, `e2e`, men's photos (no men's house model on the laptop). |
 | 2026-10-26 | D-162 Diwali list and 7-day sources | Claude Code, founder's Windows machine with Docker (`check.mjs docs typecheck lint test db`) | docs, typecheck, lint OK; test OK (shared 355 pass, incl. the new `diwali-targets.test.ts`: all 100 rows upload, sample titles in and out); db OK after a reset: 67/67 SQL files incl. `quick_sources.test.sql` (13 assertions); `pnpm quick:sources` dry run on the local database (0 to switch, as expected on the seed). Seen: `seven_day_insights.test.sql` fails when `db-test.mjs` is run again without a reset (passes after one). **Not run:** the migration and the backfill on production, the CSV upload and a runner search, `build`, `e2e`. |
 | 2026-10-26 | CI on 54de256 (docs, typecheck failed on GitHub only) | Claude Code, founder's Windows machine; the website's typecheck again in a Linux container (node 22, a clean `pnpm install --frozen-lockfile`) | GitHub's run: docs named a build folder that exists only after a local build (status.md, reworded); `days.tsx`'s `<DaysContext.Provider>` failed on Linux, where the website's React 19 types and the app's 18.3 meet (the two-`@types/react` problem of 2026-10-24). The days are now a small store the layout fills (no context, no wrapper); new e2e test: a 7-day piece's page shows the 8-day week strip and `--door-day`. Locally docs, typecheck, lint, test, build OK, `seven-day-bag.spec.ts` 3 passed. The live site (deployed 11:25 UTC) was checked page by page: tabs, band, Diwali line, footer, the 7-day page, the stamp and week strip, the card tag ("Mon at your door") and the pill all show. |
 | 2026-10-26 | D-161 the homesick design, and the e2e fixes | Claude Code, founder's Windows machine with Docker (`check.mjs` all steps) | docs, typecheck, lint, test (`homesick.test.ts` 5), db (`policy_days.test.sql` 2), build, http (/ 15 ms 131 KB, /states/kerala 141 KB, /clothing 139 KB; none over budget), **e2e 38 passed**, bundle: OK. Three causes fixed: Stripe's test-mode tools frame lies along the bottom of the page and took the Pay click when the button sat at the bottom edge (`buy.ts` clicks Pay from mid-window; failed on main without D-161 too); search suggestions dropped what was typed while their code loaded on the box's first focus (`search-suggest.tsx` reads the box once listening); after `db` reset the website's data cache still served the old rows, so the demo saree's page named a variant id the reset had replaced and read Sold out (`check.mjs db` now clears the website's data cache, `scripts/clear-store-cache.mjs`). |

@@ -42,6 +42,17 @@ It logs to the console and `worker.log`. To start it with Windows: Task Schedule
 `C:\kod\root\tools\photo-worker\.venv\Scripts\pythonw.exe` with argument `worker.py` and "Start in"
 `C:\kod\root\tools\photo-worker`.
 
+## Photo redo (D-163)
+`redo.py` makes the new photos for every listing's photos that `pnpm photos:redo fetch` put in the work folder
+(`tools/photo-redo/README.md` has the whole flow): `.venv\Scripts\python redo.py --type clothing|food|home [--retry]`.
+It needs no account and no internet. Clothing (`iwc_worker/redo_clothing.py`): the face drawn again on a close crop with
+the house model's face as the reference, the skin's colour moved to match, the garment's pixels copied back. Food and
+home (`iwc_worker/redo_scene.py`): a scene drawn around the product, its own pixels pasted back. Three more models, in
+`IWC_MODELS` (about 150 MB), from Hugging Face: `segformer-clothes\` (`mattmdjaga/segformer_b2_clothes`: `config.json`,
+`preprocessor_config.json`, `model.safetensors`) and `opencv-face\` (`face_detection_yunet_2023mar.onnx` from
+`opencv/face_detection_yunet`, `face_recognition_sface_2021dec.onnx` from `opencv/face_recognition_sface`). It logs to
+the console and `redo.log`.
+
 ## House models (D-104)
 The founder supplies them: 6 women and 4 men, AI-generated and licensed, each one image with two poses side by side
 (facing front; from behind with the head turned). `prepare_house_model.py <image> <slug>` splits it into
