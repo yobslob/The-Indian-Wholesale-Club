@@ -25,11 +25,16 @@ export async function copyPhotos(
         timeout: 30_000,
         headers: { referer },
       });
-      const type = res.headers()['content-type'] ?? '';
-      if (!res.ok() || !/^image\/(jpeg|png|webp)/.test(type)) continue;
-      const body = await res.body();
-      if (body.length < 2_000 || body.length > MAX_BYTES) continue;
-      got.push({ photo, body, type });
+      try {
+        const type = res.headers()['content-type'] ?? '';
+        if (!res.ok() || !/^image\/(jpeg|png|webp)/.test(type)) continue;
+        const body = await res.body();
+        if (body.length < 2_000 || body.length > MAX_BYTES) continue;
+        got.push({ photo, body, type });
+      } finally {
+        // Playwright keeps every answer's body until the browser closes unless it is disposed (memory.ts)
+        await res.dispose();
+      }
     } catch (error) {
       log(`  photo not copied: ${errorText(error)}`);
     }

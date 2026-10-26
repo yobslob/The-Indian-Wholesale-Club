@@ -91,6 +91,12 @@ target is left, however long that takes. A target handed back during the run (a 
 the run ends, so it is not taken again in the same run. A `shop-rest.json` or `out/pace/` left from before is no longer
 read: delete them.
 
+**Long runs and memory.** `pnpm sourcing run` starts the run in a child process and watches it (`src/memory.ts`).
+When the run's memory passes 60 % of Node's limit it stops between target batches, hands its unsearched targets back
+and a fresh runner claims them; a crash (for example "JavaScript heap out of memory", 2026-10-26) is restarted after
+60 s, three times at most. Photo downloads are released as soon as they are read and each shop's tab is replaced every
+150 pages. The log's "next claim" lines show the memory in use.
+
 To run it every day: Task Scheduler → Create Task → "Daily" at a quiet hour, action `cmd.exe` with arguments
 `/c pnpm sourcing run` and "Start in" `C:\kod\root`, "Run only when user is logged on" (the browser opens
 off-screen).

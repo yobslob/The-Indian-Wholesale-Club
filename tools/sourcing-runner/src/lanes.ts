@@ -14,6 +14,9 @@ export { isBlocked, open, RobotCheck } from './robot';
 const GAP_MS = 2500;
 const JITTER_MS = 1500;
 
+/** A shop's tab is closed and opened again after this many pages: what a tab gathers is let go (memory.ts). */
+const PAGES_PER_TAB = 150;
+
 const sleep = (ms: number) => new Promise((r) => setTimeout(r, ms));
 
 /** Waits after "429 Too Many Requests" (or 503) when the shop names none: 10 s, then 30 s, then 60 s. */
@@ -23,6 +26,7 @@ export class Lane {
   private chain: Promise<unknown> = Promise.resolve();
   private page: Page | null = null;
   private last = 0;
+  private pages = 0;
   /** Grows after a shop's catalogue says "too many requests", for the rest of the run. */
   private gapMs = GAP_MS;
   /** Robot checks on this shop during this run. */
@@ -44,7 +48,13 @@ export class Lane {
       const wait = this.last + this.gapMs + Math.random() * JITTER_MS - Date.now();
       if (wait > 0) await sleep(wait);
       try {
-        if (!this.page || this.page.isClosed()) this.page = await this.lanes.browser.newPage();
+        if (this.page && !this.page.isClosed() && this.pages >= PAGES_PER_TAB)
+          await this.page.close().catch(() => undefined);
+        if (!this.page || this.page.isClosed()) {
+          this.page = await this.lanes.browser.newPage();
+          this.pages = 0;
+        }
+        this.pages += 1;
         return await work(this.page);
       } catch (error) {
         if (error instanceof RobotCheck) this.refusals += 1;

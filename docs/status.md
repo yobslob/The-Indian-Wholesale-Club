@@ -22,7 +22,10 @@ Short on purpose: **replace** lines when something changes, don't append. Histor
   always opens a window (D-151) and Blinkit reads again. The 7-day targets
   search all four quick shops (D-150); Zepto and Instamart read again since D-152 (their readers had not matched the
   shops' data; the food run of 22:13 UTC added 76 listings through them and BigBasket). Since D-158 nothing rests or is paced: a refused page only fails, and one run takes
-  every queued target, claim after claim.
+  every queued target, claim after claim. The home run of 2026-10-26 died after 5.7 h ("JavaScript heap out of
+  memory"): photo downloads were never released (measured locally: 300 × 2 MB kept 618 MB, 37 MB once disposed).
+  Fixed in the runner: answers disposed, tabs replaced every 150 pages, and `run` restarts itself in a fresh process
+  near the memory limit or after a crash (`tools/sourcing-runner/README.md`). Not yet run on the India PC.
 - **Catalogue (production copy of 2026-10-21):** 8,032 listings: 5,761 live (clothing 664, food 4,093, home 1,004),
   2,180 drafts, 91 archived; no placeholders left. 20,896 options, 34,915 photos (all in R2).
 - **Deploys:** the website once a day at 09:00 UTC from a green `main` (D-145); migrations only through the Deploy

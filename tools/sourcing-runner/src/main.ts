@@ -12,6 +12,7 @@ import { weighHome } from './home';
 import { Lanes } from './lanes';
 import { checkLiquids } from './liquids';
 import { errorText, log, setLogTag, ShopStats } from './log';
+import { heapFull, heapText, isChild, keepRunning, RESTART_CODE } from './memory';
 import { describeNetError, resolveOverHttps } from './net';
 import { fillWeights } from './weights';
 
@@ -155,6 +156,7 @@ async function run(args: string[]): Promise<number> {
   };
   let added = 0;
   let errors = 0;
+  let full = false;
   try {
     const checks =
       plan.checks.length && !weightsOnly
@@ -166,7 +168,7 @@ async function run(args: string[]): Promise<number> {
     const lanes = (t: (typeof targets)[number]): string =>
       /^collection:/i.test(t.query.trim()) ? `collection ${t.query.trim().toLowerCase()}` : t.id;
     const searchAll = async (list: typeof targets): Promise<void> => {
-      for (let i = 0; i < list.length && !stopping;) {
+      for (let i = 0; i < list.length && !stopping && !heapFull();) {
         const batch: typeof targets = [];
         while (i < list.length && batch.length < 3 && !batch.some((t) => lanes(t) === lanes(list[i]!)))
           batch.push(list[i++]!);
@@ -193,7 +195,7 @@ async function run(args: string[]): Promise<number> {
     let searched = targets.length;
     try {
       await searchAll(targets);
-      while (targets.length && !stopping) {
+      while (targets.length && !stopping && !heapFull()) {
         const next = await db.plan(0, { type, site });
         for (const key of next.known) ctx.known.add(key);
         const fresh = next.targets.filter((t) => !seen.has(t.id));
@@ -203,15 +205,23 @@ async function run(args: string[]): Promise<number> {
           unsearched.add(t.id);
         }
         searched += fresh.length;
-        log(`next claim: ${fresh.length} more targets (${searched} this run)`);
+        log(`next claim: ${fresh.length} more targets (${searched} this run, ${heapText()})`);
         await searchAll(fresh);
       }
     } finally {
       await db.flushReleases();
     }
+    // memory.ts: near Node's memory limit a fresh runner takes over; the targets not searched go back to the queue
+    full = !stopping && heapFull();
+    if (full) {
+      log(`run: ${heapText()}: ${unsearched.size} targets back to the queue for a fresh runner`);
+      await Promise.all(
+        [...unsearched].map((id) => db.releaseTarget(id, 'handed to a fresh runner (memory)')),
+      );
+    }
     // D-132: new clothing by class first (its weight is then settled); D-129: the weights the rest lack; D-133: then
     // food's packed weights (also from the net quantities the page search found)
-    const onlyOne = args.includes('--checks') || args.includes('--targets');
+    const onlyOne = full || args.includes('--checks') || args.includes('--targets');
     const classed = onlyOne || (type && type !== 'clothing') ? 0 : await sortNewClothing(db);
     // D-134: home from each option's own page first (the D-129 search below then skips home)
     const home =
@@ -237,7 +247,7 @@ async function run(args: string[]): Promise<number> {
   } finally {
     await context.close();
   }
-  return errors ? 1 : 0;
+  return full ? RESTART_CODE : errors ? 1 : 0;
 }
 
 async function dryRun(args: string[]): Promise<void> {
@@ -387,7 +397,9 @@ const main =
           : command === 'setup'
             ? setup(args)
             : command === 'run'
-              ? run(args)
+              ? isChild()
+                ? run(args)
+                : keepRunning()
               : command === 'try'
                 ? dryRun(args)
                 : command === 'doctor'
