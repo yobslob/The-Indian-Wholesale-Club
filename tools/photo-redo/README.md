@@ -39,8 +39,12 @@ pick up the new path within their 5-minute refresh; no page-cache write is asked
    `IWC_SUPABASE_URL`, `IWC_SUPABASE_ANON_KEY`, `IWC_WORKER_EMAIL`, `IWC_WORKER_PASSWORD` (the worker account, `docs/ops.md`),
    `IWC_PHOTO_STORE_S3_URL`, `IWC_PHOTO_STORE_KEY_ID`, `IWC_PHOTO_STORE_SECRET` (the R2 token: Object Read & Write, which
    also lists and deletes). Optional `IWC_REDO_OUT` (the work folder).
-3. The photo worker set up (`tools/photo-worker/README.md`), with its three extra models for the redo, and each active
-   house model's `front.jpg` in `C:\kod\iwc-photo-models\house-models\<slug>\` (the larger, the better the faces).
+3. The photo worker set up (`tools/photo-worker/README.md`), with its three extra models for the redo, and the house
+   models as one folder each in `C:\kod\iwc-photo-models\house-models\`: `w-1\front.jpg` and `back.jpg` …, `m-1\` …
+   for men (the first letter says who wears it unless the database has a house model of that slug). Every folder there
+   with a `front.jpg` in which a face is found is used; the larger the photo, the better the faces. On the laptop
+   (2026-10-27): `w-1` – `w-6` (about 540 × 1450, faces about 100 px wide); the originals in
+   `house-models-source\women_black\`, the earlier `w-1` in `house-models-previous\`. No men's model yet.
 
 ## A first run
 `pnpm photos:redo fetch --type clothing --limit 30`, `redo.py --type clothing`, `review`, then `publish` for the ones

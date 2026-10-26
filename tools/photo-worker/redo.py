@@ -31,20 +31,23 @@ log = logging.getLogger("iwc-redo")
 
 
 def house_models(parts: Parts) -> dict[str, dict]:
-    """The active house models (out/house-models.json, from the database) whose front photo is on this machine."""
+    """The house models: every folder in IWC_MODELS/house-models with a front.jpg (w-1 … for women, m-1 … for men).
+    Who wears it comes from the database's row of the same slug (out/house-models.json) when there is one, else from
+    the folder's first letter."""
     listed = OUT / "house-models.json"
-    rows = json.loads(listed.read_text("utf-8")) if listed.exists() else [
-        {"slug": d.name, "wears": "men" if d.name.startswith("m") else "women"}
-        for d in (MODELS / "house-models").iterdir() if d.is_dir()]
+    wears = {r["slug"]: r["wears"] for r in json.loads(listed.read_text("utf-8"))} if listed.exists() else {}
     found = {}
-    for row in rows:
-        front = MODELS / "house-models" / row["slug"] / "front.jpg"
-        if not front.exists():
-            log.warning("house model %s: no %s on this machine", row["slug"], front)
+    for d in sorted((MODELS / "house-models").iterdir()):
+        front = d / "front.jpg"
+        if not d.is_dir() or d.name.startswith("_") or not front.exists():
             continue
         img = Image.open(front).convert("RGB")
         skin = skin_colour(lab_of(img), parts.labels(img) == FACE)
-        found[row["slug"]] = {"wears": row["wears"], "image": img, "skin": None if skin is None else skin[0]}
+        found[d.name] = {"wears": wears.get(d.name, "men" if d.name.startswith("m") else "women"), "image": img,
+                         "skin": None if skin is None else skin[0]}
+        if not len(parts.faces(img)):
+            log.warning("house model %s: no face found in %s; it is skipped", d.name, front)
+            del found[d.name]
     return found
 
 

@@ -115,9 +115,9 @@ Short on purpose: **replace** lines when something changes, don't append. Histor
    piece; with the migration about 0.2 s. A website build before the migration hits the same limit.
 2. **The photo redo (D-163), after the deploy:** on the laptop, `pnpm photos:redo fetch --type clothing --limit 30`,
    then `tools\photo-worker\.venv\Scripts\python redo.py --type clothing`, `pnpm photos:redo review` (approve or
-   reject), `pnpm photos:redo publish --type clothing`; the same for food and home. First copy each house model's
-   `front.jpg` into `C:\kod\iwc-photo-models\house-models\<slug>\` (only `w-1`, 271 px wide, is there now: no men's
-   model, and a larger photo gives better faces) and give the laptop the runner's `.env`. `pnpm photos:redo audit`
+   reject), `pnpm photos:redo publish --type clothing`; the same for food and home. The six women's house models
+   are in place (`house-models\w-1` – `w-6`); men's pieces fail until an `m-1\front.jpg` (and more) is added. Give
+   the laptop the runner's `.env`. `pnpm photos:redo audit`
    shows what fills R2's 6.5 GB (run it before deleting anything with `--delete`).
 3. **Diwali home & gifts (D-162), soon: only a 7-day piece ordered by Sat, Oct 31 reaches a US door before Diwali.**
    Read Q-47 and D-162's choices, then Admin → Import → Auto-sourcing → Add targets from a CSV with

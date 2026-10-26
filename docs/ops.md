@@ -228,8 +228,8 @@ vendor, uploads a piece through the vendor's storage rules and queues its jobs.
 ### Photo redo (D-163; the founder runs every step on production)
 Every listing's photos made again on the laptop: `tools/photo-redo/README.md` (fetch, make, review, publish, and the R2
 audit). Once: run the Deploy workflow (migration `20261102090000_photo_redo`), give the laptop the sourcing runner's
-`.env` (or `tools/photo-redo/.env` with the same keys), and put each house model's `front.jpg` in
-`C:\kod\iwc-photo-models\house-models\<slug>\`. Start with `--limit 30` per type and look at the review page.
+`.env` (or `tools/photo-redo/.env` with the same keys), and keep the house models as one folder each in
+`C:\kod\iwc-photo-models\house-models\` (`w-1\front.jpg` …; `m-1\` … for men). Start with `--limit 30` per type and look at the review page.
 
 ### Sourcing runner (D-118; the founder runs every step on production)
 Auto-sourcing and the weekly price and stock check run on a PC **in India** by `tools/sourcing-runner` (its README has
