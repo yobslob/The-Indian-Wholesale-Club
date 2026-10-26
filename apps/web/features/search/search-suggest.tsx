@@ -130,6 +130,12 @@ export default function SearchSuggest({ input, quick }: { input: HTMLInputElemen
     };
   });
 
+  // Words typed while this code was loading (it loads on the box's first focus) reached no listener: read them once the
+  // listeners are on (this runs after the effect above), or a fast typer's first search suggests as if the box were empty.
+  useEffect(() => {
+    if (input.value !== text) setText(input.value);
+  }, [input, text]);
+
   // under the box, at least 320 px wide (on phones the whole width), inside the window's 16 px gutters; it follows
   // the box while the page moves
   useLayoutEffect(() => {

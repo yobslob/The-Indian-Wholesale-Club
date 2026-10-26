@@ -49,7 +49,7 @@ export async function buyDemoProduct(page: Page): Promise<string> {
   await card.locator('[name="cvc"]').fill('123');
   const postal = card.locator('[name="postalCode"]');
   if (await postal.isVisible().catch(() => false)) await postal.fill('08817');
-  await page.getByRole('button', { name: /^Pay \$/ }).click();
+  await clickPay(page);
 
   await expect(page).toHaveURL(/\/checkout\/success\?order=/, { timeout: 45_000 });
   await expect(page.getByRole('heading', { name: /Clear a shelf|Thank you!/ })).toBeVisible();
@@ -66,4 +66,16 @@ export async function openOrderAsGuest(page: Page, orderNumber: string): Promise
   await page.locator('input[name="email"]').fill(E2E_CUSTOMER.email);
   await page.getByRole('button', { name: 'Find my order' }).click();
   await expect(page.getByText(`Order ${orderNumber}`)).toBeVisible();
+}
+
+/**
+ * Pay from the middle of the window. In test mode Stripe lays its developer-tools frame along the bottom of the page
+ * (the "stripe" badge, localhost only), so a Pay button scrolled just into view at the bottom edge gets the click in
+ * Stripe's frame instead: no click, no payment, the test waiting for a page that never comes.
+ */
+export async function clickPay(page: Page): Promise<void> {
+  const pay = page.getByRole('button', { name: /^Pay \$/ });
+  await pay.evaluate((el) => el.scrollIntoView({ block: 'center' }));
+  await expect.poll(async () => ((await pay.boundingBox())?.y ?? 0) < (page.viewportSize()?.height ?? 720) - 160).toBe(true);
+  await pay.click();
 }

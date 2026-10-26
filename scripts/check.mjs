@@ -34,8 +34,9 @@ const COMMANDS = {
   test: 'pnpm turbo test --force --continue',
   build: 'pnpm turbo build --filter=web --force',
   // Local Supabase only: rebuild the DB from migrations + seeds, then run the
-  // invariant tests in supabase/tests (each rolls back). Never touches hosted DBs.
-  db: 'npx supabase db reset && node scripts/db-test.mjs',
+  // invariant tests in supabase/tests (each rolls back). Never touches hosted DBs. The website's cached store reads
+  // describe the old rows, so they go too (clear-store-cache.mjs).
+  db: 'npx supabase db reset && node scripts/clear-store-cache.mjs && node scripts/db-test.mjs',
   // Playwright smoke flows (apps/web/e2e) against the production build on local Supabase.
   e2e: 'pnpm --filter web e2e',
   // The app must bundle for both platforms (Metro resolution + Babel on every file). The
