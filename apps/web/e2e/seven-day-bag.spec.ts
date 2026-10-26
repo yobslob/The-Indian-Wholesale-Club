@@ -129,3 +129,13 @@ test('the store tabs open the 7-day store and its search; IWC returns to the pag
   await stores.getByRole('link', { name: /IWC store/ }).click();
   await expect(page).toHaveURL(/\/clothing$/);
 });
+
+test("D-161: a 7-day piece's page shows the week to the door, and cards learn the weekday", async ({ page, request }) => {
+  await refreshStore(request);
+  await page.goto(`/states/india/${SNACK}`);
+  // the days reach the browser from the layout (days.tsx): today, six days, the door
+  await expect(page.locator('.week-strip li')).toHaveCount(8);
+  await expect(page.locator('.week-strip li').first()).toHaveText('Today');
+  await expect(page.getByText('Duties paid. Nothing to pay at your door.')).toBeVisible();
+  expect(await page.evaluate(() => getComputedStyle(document.documentElement).getPropertyValue('--door-day'))).toMatch(/^"\w{3}"$/);
+});
