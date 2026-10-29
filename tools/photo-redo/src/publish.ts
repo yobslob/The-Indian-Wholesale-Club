@@ -1,5 +1,5 @@
 import { randomUUID } from 'node:crypto';
-import { readFileSync } from 'node:fs';
+import { existsSync, readFileSync } from 'node:fs';
 import { join } from 'node:path';
 
 import { storeKeys, type ProductType } from '@repo/shared/domain';
@@ -36,8 +36,20 @@ const settled = (w: Work, auto: boolean): boolean => removed(w) || approved(w, a
  * copies deleted by the sweep 10 minutes later. Clothing goes a whole listing at a time, so a listing never shows two
  * different faces: until each of its photos is settled, none of them goes.
  */
-export async function publish(out: string, db: Db, store: Store, type: ProductType, auto: boolean): Promise<void> {
+export async function publish(
+  out: string,
+  db: Db,
+  store: Store,
+  type: ProductType,
+  opts: { auto: boolean; models: string },
+): Promise<void> {
+  const { auto } = opts;
   const work = allWork(out, type).filter((w) => !w.item.published && !w.item.stale);
+  // a face drawn on a house model removed from this machine never goes out: redo.py makes it again on another
+  const models = new Set(work.flatMap((w) => (w.result?.house_model ? [w.result.house_model] : [])));
+  const removedModels = [...models].filter((m) => !existsSync(join(opts.models, 'house-models', m, 'front.jpg')));
+  if (removedModels.length)
+    log(`${type}: photos drawn on ${removedModels.join(', ')} (no longer in ${opts.models}) wait: run redo.py again`);
   const byListing = new Map<string, Work[]>();
   for (const w of work) byListing.set(w.item.product_id, [...(byListing.get(w.item.product_id) ?? []), w]);
   let live = 0;
@@ -45,7 +57,9 @@ export async function publish(out: string, db: Db, store: Store, type: ProductTy
   let gone = 0;
   let waiting = 0;
   for (const photos of byListing.values()) {
-    const ready = photos.filter((w) => settled(w, auto));
+    const ready = photos.filter(
+      (w) => removed(w) || (settled(w, auto) && !removedModels.includes(w.result?.house_model ?? '')),
+    );
     if (type === 'clothing' && ready.length < photos.length) {
       waiting += photos.length;
       continue;

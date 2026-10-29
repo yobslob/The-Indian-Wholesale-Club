@@ -60,7 +60,8 @@ async function main(): Promise<number> {
     const type = typeArg(flag('--type'));
     if (command === 'fetch')
       await fetchPhotos(out, db, store, type, { limit: Number(flag('--limit')) || 30, again: args.includes('--again') });
-    else if (command === 'publish') await publish(out, db, store, type, args.includes('--auto'));
+    else if (command === 'publish')
+      await publish(out, db, store, type, { auto: args.includes('--auto'), models: env.IWC_MODELS });
     else await sweep(out, db, store, type);
   }
   db.close();

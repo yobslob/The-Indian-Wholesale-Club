@@ -51,9 +51,11 @@ pick up the new path within their 5-minute refresh; no page-cache write is asked
 3. The photo worker set up (`tools/photo-worker/README.md`), with its three extra models for the redo, and the house
    models as one folder each in `C:\kod\iwc-photo-models\house-models\`: `w-1\front.jpg` and `back.jpg` …, `m-1\` …
    for men (the first letter says who wears it unless the database has a house model of that slug). Every folder there
-   with a `front.jpg` in which a face is found is used; the larger the photo, the better the faces. On the laptop
-   (2026-10-27): `w-1` – `w-6` (about 540 × 1450, faces about 100 px wide); the originals in
-   `house-models-source\women_black\`, the earlier `w-1` in `house-models-previous\`. No men's model yet.
+   with a `front.jpg` in which a face is found is used; the larger the photo, the better the faces. A model taken
+   out of the folder is safe: its listings get another, and photos drawn on it are made again by the next `redo.py`
+   and never published (`IWC_MODELS` tells `publish` where the folder is; default `C:\kod\iwc-photo-models`). On the
+   laptop (2026-10-30): `w-1` – `w-5` (about 540 × 1450, faces about 100 px wide; the founder removed `w-6`); the
+   originals in `house-models-source\women_black\`, the earlier `w-1` in `house-models-previous\`. No men's model yet.
 
 ## A first run
 `pnpm photos:redo fetch --type clothing --limit 30`, `redo.py --type clothing`, `review`, then `publish` for the ones

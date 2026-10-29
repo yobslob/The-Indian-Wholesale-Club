@@ -25,6 +25,8 @@ const schema = z.object({
   IWC_PHOTO_STORE_REGION: z.string().default('auto'),
   /** Where the photos wait between the steps (default tools/photo-redo/out; not in git). */
   IWC_REDO_OUT: z.string().default(join(ROOT, 'out')),
+  /** The photo worker's models, with the house models (as tools/photo-worker reads it). */
+  IWC_MODELS: z.string().default('C:\\kod\\iwc-photo-models'),
 });
 
 export type Env = z.infer<typeof schema>;

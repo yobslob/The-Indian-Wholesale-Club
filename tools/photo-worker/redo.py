@@ -71,7 +71,10 @@ def pending(kind: str, retry: bool, again: bool) -> list[tuple[Path, dict]]:
             continue
         if result_file.exists():
             done = json.loads(result_file.read_text("utf-8"))
-            if not (again or (retry and done.get("status") == "failed")):
+            # a face drawn on a house model since removed from this machine is made again, on another one
+            gone = bool(done.get("house_model")) and not (MODELS / "house-models" / done["house_model"] /
+                                                          "front.jpg").exists()
+            if not (again or gone or (retry and done.get("status") == "failed")):
                 continue
             (d / "decision.json").unlink(missing_ok=True)       # a choice made on another photo
             (d / "after.png").unlink(missing_ok=True)
@@ -107,6 +110,9 @@ def run_clothing(todo, pipe: Pipeline, parts: Parts, seed: int, faces: str) -> N
         wears = loaded[0][1].get("wears")
         who = "men" if wears == "men" else "women"
         # kids are never given a house model's face (D-102): theirs are always cut off
+        if state.get("house_model") and state["house_model"] not in models and faces == "redraw":
+            log.info("%s: house model %s is no longer here; choosing another", loaded[0][1]["name"],
+                     state.pop("house_model"))
         if wears != "kids" and models and "house_model" not in state:
             state["house_model"] = pick_model(models, who, parts, [im for _, _, im in loaded])
         slug = state.get("house_model") if wears != "kids" else None
