@@ -53,7 +53,8 @@ export async function fetchPhotos(
         try {
           const bytes = await store.get(`product-media/${copyFor(photo.path, 1200)}`);
           mkdirSync(dir, { recursive: true });
-          await sharp(bytes).png().toFile(join(dir, 'before.png'));
+          // a shop's transparent backdrop made white: the GPU step reads RGB, where it would turn black
+          await sharp(bytes).flatten({ background: '#ffffff' }).png().toFile(join(dir, 'before.png'));
           writeItem(dir, item);
           got += 1;
         } catch (error) {

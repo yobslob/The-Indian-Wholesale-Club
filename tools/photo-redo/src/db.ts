@@ -65,7 +65,12 @@ export class Db {
   }
 
   /** A photo's new path (`face`, `food`) or `kept` (no new path); false when the row changed since it was read. */
-  set(media: string, oldPath: string, newPath: string | null, redo: 'face' | 'food' | 'kept'): Promise<boolean> {
+  set(
+    media: string,
+    oldPath: string,
+    newPath: string | null,
+    redo: 'face' | 'food' | 'fresh' | 'kept',
+  ): Promise<boolean> {
     return this.rpc('worker_photo_redo_set', {
       p_media: media,
       p_old_path: oldPath,
@@ -82,6 +87,11 @@ export class Db {
       p_new_path: newPath,
       p_alt: alt,
     });
+  }
+
+  /** A photo taken off its listing (D-164); false when the listing has no other photo or the row changed. */
+  drop(media: string, oldPath: string): Promise<boolean> {
+    return this.rpc('worker_photo_redo_drop', { p_media: media, p_old_path: oldPath });
   }
 
   /** Of these stored photos (paths without the extension), the ones a listing still shows. */

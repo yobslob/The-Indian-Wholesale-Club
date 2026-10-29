@@ -4,7 +4,7 @@ import { join } from 'node:path';
 
 import { storeKeys, type ProductType } from '@repo/shared/domain';
 
-import { allWork, writeItem, type Work } from './items';
+import { allWork, modeOf, writeItem, type Work } from './items';
 import { errorText, log } from './log';
 
 import type { Db } from './db';
@@ -19,9 +19,16 @@ const stem = (path: string): string => path.replace(/\.[A-Za-z0-9]+$/, '');
 const approved = (w: Work, auto: boolean): boolean =>
   w.result?.status === 'made' && (w.decision ? w.decision.ok : auto && w.result.pass);
 
-/** Settled: goes live, or (no person in it) is marked as looked at. */
-const settled = (w: Work, auto: boolean): boolean =>
-  approved(w, auto) || (w.result?.status === 'none' && w.decision?.ok !== false);
+/** Removed on the review page (D-164): taken off the listing. */
+const removed = (w: Work): boolean => w.decision?.remove === true;
+
+/** Kept as it is: nothing to change, or a portrait the founder chose to keep. */
+const keeps = (w: Work): boolean =>
+  (w.result?.status === 'none' && w.decision?.ok !== false) ||
+  (w.result?.status === 'failed' && w.result.mode === 'crop' && !!w.decision && !w.decision.remove);
+
+/** Settled: goes live, is removed, or is marked as looked at. */
+const settled = (w: Work, auto: boolean): boolean => removed(w) || approved(w, auto) || keeps(w);
 
 /**
  * `publish`: every approved photo goes live. Its two copies are written under a new path, the listing pointed at it
@@ -35,6 +42,7 @@ export async function publish(out: string, db: Db, store: Store, type: ProductTy
   for (const w of work) byListing.set(w.item.product_id, [...(byListing.get(w.item.product_id) ?? []), w]);
   let live = 0;
   let kept = 0;
+  let gone = 0;
   let waiting = 0;
   for (const photos of byListing.values()) {
     const ready = photos.filter((w) => settled(w, auto));
@@ -45,14 +53,18 @@ export async function publish(out: string, db: Db, store: Store, type: ProductTy
     waiting += photos.length - ready.length;
     for (const w of ready) {
       try {
-        if (approved(w, auto)) live += (await goLive(db, store, w)) ? 1 : 0;
+        if (removed(w)) gone += (await remove(db, w)) ? 1 : 0;
+        else if (approved(w, auto)) live += (await goLive(db, store, w)) ? 1 : 0;
         else kept += (await keep(db, w)) ? 1 : 0;
       } catch (error) {
         log(`  ${w.item.name}: ${errorText(error)}`);
       }
     }
   }
-  log(`${type}: ${live} new photos live, ${kept} marked as nothing to change, ${waiting} waiting for review or work`);
+  log(
+    `${type}: ${live} new photos live, ${gone} removed, ${kept} marked as nothing to change, ${waiting} waiting for ` +
+      `review or work`,
+  );
   await sweep(out, db, store, type);
 }
 
@@ -60,10 +72,13 @@ async function goLive(db: Db, store: Store, w: Work): Promise<boolean> {
   const { item } = w;
   const path = `products/${item.product_id}/s/${randomUUID()}.jpg`;
   await store.putCopies(path, readFileSync(join(w.dir, 'after.png')));
-  const ok =
-    item.type === 'home'
-      ? (await db.scene(item.media_id, item.path, path, item.alt || item.name)) !== null
-      : await db.set(item.media_id, item.path, path, item.type === 'clothing' ? 'face' : 'food');
+  const mode = modeOf(w);
+  // a home scene goes first with the plain photo kept second; everything else replaces its photo
+  const scene = mode === 'scene' && item.type === 'home';
+  const redo = mode === 'fresh' ? 'fresh' : mode === 'scene' ? (item.type === 'home' ? 'scene' : 'food') : 'face';
+  const ok = scene
+    ? (await db.scene(item.media_id, item.path, path, item.alt || item.name)) !== null
+    : await db.set(item.media_id, item.path, path, redo === 'scene' ? 'food' : redo);
   if (!ok) {
     await Promise.all(storeKeys('product-media', path).map((k) => store.delete(k)));
     writeItem(w.dir, { ...item, stale: true });
@@ -75,9 +90,8 @@ async function goLive(db: Db, store: Store, w: Work): Promise<boolean> {
     published: {
       path,
       at: new Date().toISOString(),
-      redo: item.type === 'home' ? 'scene' : item.type === 'clothing' ? 'face' : 'food',
-      // home keeps its plain photo (second); the others replace theirs
-      old_path: item.type === 'home' ? null : item.path,
+      redo,
+      old_path: scene ? null : item.path,
     },
   });
   return true;
@@ -87,6 +101,15 @@ async function keep(db: Db, w: Work): Promise<boolean> {
   const ok = await db.set(w.item.media_id, w.item.path, null, 'kept');
   writeItem(w.dir, ok ? { ...w.item, published: { path: null, at: new Date().toISOString(), redo: 'kept', old_path: null } }
                       : { ...w.item, stale: true });
+  return ok;
+}
+
+async function remove(db: Db, w: Work): Promise<boolean> {
+  const ok = await db.drop(w.item.media_id, w.item.path);
+  const at = new Date().toISOString();
+  writeItem(w.dir, ok ? { ...w.item, published: { path: null, at, redo: 'removed', old_path: w.item.path } }
+                      : { ...w.item, stale: true });
+  if (!ok) log(`  ${w.item.name}: not removed (its only photo, or changed since it was fetched)`);
   return ok;
 }
 

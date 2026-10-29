@@ -48,10 +48,14 @@ export const resultSchema = z.object({
   pass: z.boolean().default(false),
   checks: z.record(z.string(), z.union([z.number(), z.boolean(), z.string()])).default({}),
   house_model: z.string().nullable().default(null),
+  /** What was done (D-164): face (drawn again), crop (cut under the chin), fresh (the light refresh), scene. Results
+   * made before it have none: clothing's were faces, food's and home's scenes. */
+  mode: z.enum(['face', 'crop', 'fresh', 'scene']).optional(),
 });
 export type Result = z.infer<typeof resultSchema>;
 
-export const decisionSchema = z.object({ ok: z.boolean(), at: z.string() });
+/** The founder's choice: `remove` takes the photo off the listing (a portrait whose face cannot be cut away). */
+export const decisionSchema = z.object({ ok: z.boolean(), at: z.string(), remove: z.boolean().optional() });
 
 export interface Work {
   dir: string;
@@ -80,8 +84,14 @@ export function writeItem(dir: string, item: Item): void {
   writeFileSync(join(dir, 'item.json'), `${JSON.stringify(item, null, 2)}\n`);
 }
 
-export function writeDecision(dir: string, ok: boolean): void {
-  writeFileSync(join(dir, 'decision.json'), `${JSON.stringify({ ok, at: new Date().toISOString() })}\n`);
+export function writeDecision(dir: string, ok: boolean, remove = false): void {
+  const decision = { ok, at: new Date().toISOString(), ...(remove ? { remove } : {}) };
+  writeFileSync(join(dir, 'decision.json'), `${JSON.stringify(decision)}\n`);
+}
+
+/** What a made photo is, for the database's mark and the way it goes live. */
+export function modeOf(w: Work): 'face' | 'crop' | 'fresh' | 'scene' {
+  return w.result?.mode ?? (w.item.type === 'clothing' ? 'face' : 'scene');
 }
 
 /** Every photo of a type in the work folder, a listing's photos together (its main photo first). */

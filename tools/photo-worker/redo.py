@@ -1,11 +1,16 @@
-"""The photo redo's GPU step (D-163): makes the new photo for every photo `pnpm photos:redo fetch` put in the work folder.
+"""The photo redo's GPU step (D-163, D-164): makes the new photo for every photo `pnpm photos:redo fetch` put in the
+work folder.
 
-    .venv\\Scripts\\python redo.py --type clothing [--limit 200] [--retry] [--seed 11]
+    .venv\\Scripts\\python redo.py --type clothing [--faces crop] [--limit 200] [--again] [--retry] [--seed 11]
+    .venv\\Scripts\\python redo.py --type food [--scene]
 
-Clothing: a house model's face and skin (iwc_worker/redo_clothing.py), the same house model on all of a listing's
-photos, chosen by gender and the nearest skin tone. Food and home: a new scene around the untouched product
-(iwc_worker/redo_scene.py). Each photo's folder gets after.png and result.json; `pnpm photos:redo review` shows them.
-Works offline: no account, no internet. --retry makes the failed ones again (another seed).
+Clothing (iwc_worker/redo_clothing.py): a face is drawn again as the house model's only when it is safe and every check
+passes, else the photo is cut under the chin (`--faces crop`: always cut, never drawn); a photo without a face is
+reframed a little. One house model per listing (who wears it, then the nearest skin tone); kids' faces are always cut.
+Food and home (iwc_worker/refresh.py): the light refresh, nothing cut out; `--scene` draws a scene around the product
+instead (iwc_worker/redo_scene.py: look at each one). Each photo's folder gets after.png and result.json; `pnpm
+photos:redo review` shows them. Works offline. --again makes every photo not yet live again (after a change here; its
+review choice is cleared); --retry only the failed ones, with another seed.
 """
 
 import argparse
@@ -24,6 +29,7 @@ from iwc_worker.parts import FACE, Parts, skin_colour
 from iwc_worker.pipeline import MODELS, Pipeline
 from iwc_worker.redo_clothing import ClothingRedo, lab_of
 from iwc_worker.redo_scene import SceneRedo
+from iwc_worker.refresh import flat, refresh
 
 HERE = Path(__file__).resolve().parent
 OUT = Path(os.environ.get("IWC_REDO_OUT", HERE.parent / "photo-redo" / "out"))
@@ -51,7 +57,7 @@ def house_models(parts: Parts) -> dict[str, dict]:
     return found
 
 
-def pending(kind: str, retry: bool) -> list[tuple[Path, dict]]:
+def pending(kind: str, retry: bool, again: bool) -> list[tuple[Path, dict]]:
     base = OUT / kind
     if not base.exists():
         return []
@@ -60,11 +66,16 @@ def pending(kind: str, retry: bool) -> list[tuple[Path, dict]]:
         item_file, result_file = d / "item.json", d / "result.json"
         if not item_file.exists() or not (d / "before.png").exists():
             continue
+        item = json.loads(item_file.read_text("utf-8"))
+        if item.get("published") or item.get("stale"):
+            continue
         if result_file.exists():
             done = json.loads(result_file.read_text("utf-8"))
-            if not (retry and done.get("status") == "failed"):
+            if not (again or (retry and done.get("status") == "failed")):
                 continue
-        todo.append((d, json.loads(item_file.read_text("utf-8"))))
+            (d / "decision.json").unlink(missing_ok=True)       # a choice made on another photo
+            (d / "after.png").unlink(missing_ok=True)
+        todo.append((d, item))
     return todo
 
 
@@ -74,13 +85,16 @@ def write_result(d: Path, status: str, note: str = "", checks: dict | None = Non
         image.save(d / "after.png")
     checks = {k: (round(v, 4) if isinstance(v, float) else v) for k, v in (checks or {}).items()}
     passed = bool(checks.pop("pass", False))
-    (d / "result.json").write_text(json.dumps({"status": status, "note": note, "pass": passed, "checks": checks,
-                                               "house_model": house}, indent=2), "utf-8")
+    mode = checks.pop("mode", None)
+    doc = {"status": status, "note": note, "pass": passed, "checks": checks, "house_model": house}
+    if mode:
+        doc["mode"] = mode
+    (d / "result.json").write_text(json.dumps(doc, indent=2), "utf-8")
 
 
-def run_clothing(todo, pipe: Pipeline, parts: Parts, seed: int) -> None:
+def run_clothing(todo, pipe: Pipeline, parts: Parts, seed: int, faces: str) -> None:
     redo = ClothingRedo(parts, pipe)
-    models = house_models(parts)
+    models = house_models(parts) if faces == "redraw" else {}
     listings: dict[str, list] = {}
     for d, item in todo:
         listings.setdefault(item["product_id"], []).append((d, item))
@@ -89,29 +103,26 @@ def run_clothing(todo, pipe: Pipeline, parts: Parts, seed: int) -> None:
     for product, photos in listings.items():
         saved = keep / f"{product}.json"
         state = json.loads(saved.read_text("utf-8")) if saved.exists() else {}
-        loaded = [(d, item, Image.open(d / "before.png").convert("RGB")) for d, item in photos]
-        loaded.sort(key=lambda x: not redo.has_face(x[2]))          # a face first: it sets the listing's skin
-        wears = "men" if (loaded[0][1].get("wears") == "men") else "women"
-        if "house_model" not in state:
-            state["house_model"] = pick_model(models, wears, parts, [im for _, _, im in loaded])
-        slug = state["house_model"]
-        if slug is None or slug not in models:
-            for d, _, _ in loaded:
-                write_result(d, "failed", f"no house model for {wears} on this machine ({MODELS / 'house-models'})")
-            continue
-        delta = np.array([float(v) for v in state["skin_delta"].split(",")]) if state.get("skin_delta") else None
+        loaded = [(d, item, flat(Image.open(d / "before.png"))) for d, item in photos]
+        wears = loaded[0][1].get("wears")
+        who = "men" if wears == "men" else "women"
+        # kids are never given a house model's face (D-102): theirs are always cut off
+        if wears != "kids" and models and "house_model" not in state:
+            state["house_model"] = pick_model(models, who, parts, [im for _, _, im in loaded])
+        slug = state.get("house_model") if wears != "kids" else None
+        house = models.get(slug, {}).get("image") if slug else None
         for d, item, img in loaded:
             started = time.time()
             try:
-                out, checks = redo.redo(img, models[slug]["image"], "man" if wears == "men" else "woman", seed, delta)
+                out, checks = redo.redo(img, house, "man" if who == "men" else "woman", seed, house is not None)
+                took = f"{time.time() - started:.0f} s"
                 if out is None:
-                    write_result(d, "none", "no person in the photo", checks, slug)
+                    write_result(d, "failed", checks.get("why", ""), checks, slug)
                 else:
-                    if delta is None and checks.get("face_drawn") and checks.get("skin_delta"):
-                        state["skin_delta"] = checks["skin_delta"]
-                        delta = np.array([float(v) for v in checks["skin_delta"].split(",")])
-                    write_result(d, "made", f"{time.time() - started:.0f} s", checks, slug, out)
-                log.info("%s: %s (%.0f s)", item["name"], "made" if out else "nothing to change", time.time() - started)
+                    note = {"face": "face drawn again", "crop": f"cut under the chin ({checks.get('not_drawn', '')})",
+                            "fresh": "no face: reframed"}[checks["mode"]]
+                    write_result(d, "made", f"{note}, {took}", checks, slug if checks["mode"] == "face" else None, out)
+                log.info("%s: %s (%s)", item["name"], checks.get("mode") if out else "your call", took)
             except Exception as error:  # one photo's failure never stops the run
                 log.error("%s: %s", item["name"], error)
                 log.debug(traceback.format_exc())
@@ -135,17 +146,30 @@ def pick_model(models: dict, wears: str, parts: Parts, photos: list[Image.Image]
                float(np.linalg.norm(fitting[s]["skin"] - skin[0])))
 
 
+def run_refresh(kind: str, todo) -> None:
+    """The light refresh: no GPU, nothing cut out (iwc_worker/refresh.py)."""
+    for d, item in todo:
+        try:
+            out, checks = refresh(Image.open(d / "before.png"), kind, paper=True)
+            note = f"{checks['style']}, {checks['phash_bits']} / {checks['dhash_bits']} bits from the shop's"
+            write_result(d, "made", note, {**checks, "mode": "fresh"}, image=out)
+        except Exception as error:  # one photo's failure never stops the run
+            log.error("%s: %s", item["name"], error)
+            write_result(d, "failed", str(error)[:300])
+    log.info("%s: %d photos refreshed", kind, len(todo))
+
+
 def run_scenes(kind: str, todo, pipe: Pipeline, seed: int) -> None:
     redo = SceneRedo(pipe)
     for d, item in todo:
         started = time.time()
         try:
-            out, checks = redo.redo(Image.open(d / "before.png"), kind, item["category"], item["name"], seed)
+            out, checks = redo.redo(flat(Image.open(d / "before.png")), kind, item["category"], item["name"], seed)
             if out is None:
                 write_result(d, "failed", "no product found in the photo", checks)
             else:
-                write_result(d, "made", f"{checks.get('where')} scene, {time.time() - started:.0f} s", checks,
-                             image=out)
+                write_result(d, "made", f"{checks.get('where')} scene, {time.time() - started:.0f} s",
+                             {**checks, "mode": "scene"}, image=out)
             log.info("%s: %s (%.0f s)", item["name"], "made" if out else "failed", time.time() - started)
         except Exception as error:  # one photo's failure never stops the run
             log.error("%s: %s", item["name"], error)
@@ -157,6 +181,10 @@ def main() -> int:
     ap.add_argument("--type", required=True, choices=["clothing", "food", "home"])
     ap.add_argument("--limit", type=int, default=0, help="at most this many photos (0: all fetched)")
     ap.add_argument("--retry", action="store_true", help="make the failed ones again, with another seed")
+    ap.add_argument("--again", action="store_true", help="make every photo not yet live again")
+    ap.add_argument("--faces", choices=["redraw", "crop"], default="redraw",
+                    help="clothing: draw a face again when it is safe (else cut it off), or always cut it off")
+    ap.add_argument("--scene", action="store_true", help="food and home: a drawn scene instead of the light refresh")
     ap.add_argument("--seed", type=int, default=11)
     args = ap.parse_args()
     logging.basicConfig(level=logging.INFO, format="%(asctime)s %(levelname)s %(message)s",
@@ -164,7 +192,7 @@ def main() -> int:
                                   logging.FileHandler(HERE / "redo.log", encoding="utf-8")])
     for noisy in ("httpx", "transformers", "diffusers"):
         logging.getLogger(noisy).setLevel(logging.WARNING)
-    todo = pending(args.type, args.retry)
+    todo = pending(args.type, args.retry, args.again)
     if args.limit:
         todo = todo[: args.limit]
     log.info("%s: %d photos to make in %s", args.type, len(todo), OUT / args.type)
@@ -174,9 +202,11 @@ def main() -> int:
     pipe, parts = Pipeline(), Parts()
     started = time.time()
     if args.type == "clothing":
-        run_clothing(todo, pipe, parts, seed)
-    else:
+        run_clothing(todo, pipe, parts, seed, args.faces)
+    elif args.scene:
         run_scenes(args.type, todo, pipe, seed)
+    else:
+        run_refresh(args.type, todo)
     log.info("%s: done in %.0f min; next: pnpm photos:redo review", args.type, (time.time() - started) / 60)
     return 0
 

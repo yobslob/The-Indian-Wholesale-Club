@@ -533,7 +533,7 @@ reaches a US door before Diwali on 8 Nov, D-161), 2 the broad Amazon and Flipkar
 every target anyway (D-158). Size: about 10 KB a listing in the database (up to 15 MB) and 0.6 MB in R2 (up to 0.9 GB),
 inside the budgets (`monitoring.md`); a bulk publish refreshes the store once.
 
-**D-163 · 2026-10-27 · founder: every listing's photos made again on the founder's laptop GPU: clothing gets a house model's face and skin, food's main photo a tempting scene, home & gifts a room**
+**D-163 · 2026-10-27 · founder: every listing's photos made again on the founder's laptop GPU: clothing gets a house model's face and skin, food's main photo a tempting scene, home & gifts a room** · its skin recolouring, scenes by default and kids waiting SUPERSEDED by D-164
 - Founder (2026-10-27): "We have to change every product's photo, even If a little even if We are making it just look
   enhanced. 1. Clothing: We can't use the current faces, but we made some models and open source AI on our GPU which
   we can replace them with but clothing piece quality should not change, the fabric and the lighting, just the model's
@@ -567,3 +567,34 @@ adults); a clothing listing goes live only when all its photos are approved or h
 checks pass can go live with `publish --auto`, but home photos should be looked at on the review page (a home scene can
 hide a second, drawn copy of the piece behind it, which the check does not always catch); a photo changed by an admin
 or the runner after it was fetched is left alone.
+
+
+**D-164 · 2026-10-30 · founder: faces change without one photo looking wrong; every other photo only a small change of its own** · Changes D-163's clothing skin and food and home scenes
+- Founder (2026-10-30, after fetching, making and reviewing the first redo): "I did fetch, make and review, when I
+  inspected most photos are good but side poses are face-distorted and in some photos neck area skin color is
+  distorted, I don't think by this way we can achieve 100% accuracy in clothing. In food, again most are correct but
+  then again some arer just cut wrongly. So let's try a way in which we can guarantee 100% seamless change in faces
+  that is all what matters, and in rest of the products give me a way which solves the problem of being flagged for
+  directly copying the photos I mean we just have to change something a little."
+What it means for the build (migration `20261103090000_photo_redo_modes`, not deployed; `tools/photo-worker`
+`iwc_worker/redo_clothing.py` and `refresh.py`, `tools/photo-redo`):
+- **Faces:** no drawing method can promise every face looks right (side poses are where they fail), so the guarantee
+  comes from what is allowed out. A face is drawn again only when it is safe (large, turned to the camera, level, no
+  sunglasses, one person) and every check afterwards passes (found once, in the same place, a different person, its
+  colour matched to the skin around it, no seam, no pixel outside the face changed). Every other photo with a face is
+  cut just under the chin and framed 3 : 4 around the person: nothing drawn, nothing that can look wrong. `--faces
+  crop` cuts every face. Neck, arms and hands are never recoloured (the neck faults came from that). Kids' faces are
+  always cut. A portrait whose face fills the photo cannot be cut: the founder removes it or keeps it on the review
+  page.
+- **Everything else (food and home & gifts, every photo; clothing without a face):** the light refresh, nothing cut out
+  or drawn (the wrong cuts came from cutting). A white backdrop becomes the store's paper colour and the product is
+  framed 3 : 4 with a soft shadow; any other food or home photo is shown whole on paper; both a gentle warm grade.
+  Clothing without a face is reframed a little, its colours untouched. Scenes stay available with `--scene`.
+- **"Flagged for copying":** measured on 164 live clothing photos, crops, frames and colour grades are what
+  duplicate finders are built to see through (perceptual hashes: a 24 % zoom left a fifth of photos under 12 of 64
+  bits; a mirror flip a seventh). The paper backdrop moves them reliably (every food and home packshot tested passed
+  14 bits); the review page shows each photo's distance and "check it" when it stays close. A small change cannot
+  promise a photo is not matched to the shop's by reverse image search.
+*Claude's choices in it (proposed, confirm when convenient):* every food and home photo is refreshed, not only the
+main one (each is a shop's photo); a shop's transparent backdrop is made white before anything else (it turned black,
+the likely cause of some wrong cuts); the paper is the store's own `paper` token shading towards `surface`.

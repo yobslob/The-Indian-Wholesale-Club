@@ -12,10 +12,9 @@ Short on purpose: **replace** lines when something changes, don't append. Histor
   since 2026-10-21/22, both near zero; photos stay in **Cloudflare R2** (D-141). The first accounts ran out of Vercel's
   image optimisation and page-cache writes and Supabase's storage; they are no longer used. Each limit now has a budget
   and a weekly check: `monitoring.md`.
-- **Database:** every migration up to `20261022120000_seven_day_delivery` (D-148) is applied (the founder ran the
-  Deploy workflow on 2026-10-22, per their message; the live site shows the 7-day store, so later ones may be in
-  too); waiting for the Deploy workflow: `20261029090000_region_head` (D-157), `20261029100000_quick_speed`,
-  `20261030090000_search` (D-160; the website falls back to the old search until it is applied), `20261102090000_photo_redo` (D-163; the photo redo needs it).
+- **Database:** every migration up to `20261102090000_photo_redo` (D-163) is applied: the founder's photo redo fetch of
+  2026-10-30 reads its function, and the Deploy workflow applies waiting migrations in order. Waiting for the Deploy
+  workflow: `20261103090000_photo_redo_modes` (D-164; the new redo's plan, `fresh` mark and photo removal need it).
 - **Sourcing runner (India PC):** its `.env` pointed at the old Supabase project until 2026-10-22 (the move's step 7,
   `ops.md`); fixed by the founder. The Blinkit 7-day CSV is in (102 targets added, 11 already there). **Blinkit blocks
   the runner** from 2026-10-22: the cause was headless Chrome (`IWC_SOURCING_HEADLESS=1` in its `.env`); the runner now
@@ -95,8 +94,8 @@ Short on purpose: **replace** lines when something changes, don't append. Histor
   gives every missing weight one (similar pieces weighed before, else the category) and publishes.
 - **Tools on the founder's machines** (`ops.md` §Tools): the sourcing runner (India PC: auto-sourcing, weekly price and
   stock check, weights, liquids), the weight estimator (laptop GPU), the photo worker (vendor AI photos),
-  `pnpm photos:move` (the R2 move, finished), the photo redo (D-163, laptop GPU: every listing's photos made again,
-  `tools/photo-redo/README.md`; built and run end to end on the local database, not yet on production).
+  `pnpm photos:move` (the R2 move, finished), the photo redo (D-163, D-164, laptop: faces drawn again only when safe,
+  else cut under the chin; every other photo a light refresh with nothing cut out; `tools/photo-redo/README.md`).
 - **Speed and limits:** store pages from Vercel's cache (`/clothing` 7 – 18 ms on a local production build); photos as
   fixed AVIF copies from `/media/s/` (no resizer); narrow page refreshes (D-145). QA pass of 2026-10-24 (not deployed):
   See all's Size / Pack list kept to its 60 biggest past 100 (/food's HTML was 685 KB, 540 KB of it 1,687 packs; each
@@ -106,19 +105,14 @@ Short on purpose: **replace** lines when something changes, don't append. Histor
   email job's secret compared in constant time.
 
 ## Next for the founder
-1. **Run the Deploy workflow** (Actions → Deploy), not the daily website deploy: it applies the waiting migrations
-   first (`20261029090000_region_head`, `20261029100000_quick_speed`, `20261030090000_search`,
-   `20261031090000_policy_days`, `20261101090000_quick_sources`, `20261102090000_photo_redo`), then deploys the
-   website. The website builds of
-   2026-10-24 stopped at the database's statement limit prerendering `/7-day-delivery/home-and-gifts/all`, then
-   `/7-day-delivery`: the 7-day store's reads took 1.3 – 1.7 s each on a production copy and grew with every 7-day
-   piece; with the migration about 0.2 s. A website build before the migration hits the same limit.
-2. **The photo redo (D-163), after the deploy:** on the laptop, `pnpm photos:redo fetch --type clothing --limit 30`,
-   then `tools\photo-worker\.venv\Scripts\python redo.py --type clothing`, `pnpm photos:redo review` (approve or
-   reject), `pnpm photos:redo publish --type clothing`; the same for food and home. The six women's house models
-   are in place (`house-models\w-1` – `w-6`); men's pieces fail until an `m-1\front.jpg` (and more) is added. Give
-   the laptop the runner's `.env`. `pnpm photos:redo audit`
-   shows what fills R2's 6.5 GB (run it before deleting anything with `--delete`).
+1. **Run the Deploy workflow** (Actions → Deploy) for `20261103090000_photo_redo_modes` (D-164).
+2. **The photo redo again, the new way (D-164), after the deploy:** pull the code on the laptop. Then, in order:
+   `pnpm photos:redo fetch --type food --again` and `--type home --again` (every photo of each listing is planned now,
+   not only the main one); in `tools\photo-worker`, `.venv\Scripts\python redo.py --type clothing --again`, then
+   `--type food --again` and `--type home --again` (photos already live are not touched; review choices are cleared);
+   `pnpm photos:redo review` (a portrait: Remove photo or Keep it); `publish`. Men's faces are cut until an
+   `m-1\front.jpg` (and more) is added. `pnpm photos:redo audit` shows what fills R2's 6.5 GB (run it before deleting
+   anything with `--delete`).
 3. **Diwali home & gifts (D-162), soon: only a 7-day piece ordered by Sat, Oct 31 reaches a US door before Diwali.**
    Read Q-47 and D-162's choices, then Admin → Import → Auto-sourcing → Add targets from a CSV with
    `tools/sourcing-runner/targets/diwali-home-gifts.csv` (100 targets; pull the code on the India PC first), and on that
@@ -203,6 +197,7 @@ Short on purpose: **replace** lines when something changes, don't append. Histor
 ## Last verification
 | Date | Commit | Where | Result |
 |---|---|---|---|
+| 2026-10-30 | D-164 photo redo, the safe way | Claude Code, the founder's laptop (RTX 4060, Docker; `check.mjs docs typecheck lint test`, `db-test.mjs` photo_redo (31) and schema) | all OK. Faces on 164 live clothing photos (the women's model on every face: no men's model on the laptop): 34 drawn again and passed every check, 39 cut under the chin, 9 portraits left for the founder, 82 without a face reframed; all 34 drawn looked clean by eye (8 checked close up), one chin seam the checks now catch; no full face among the 82 (three the shop had already cut at the nose keep lips and chin). The light refresh on 16 food and home photos: every one 14 bits or more from the shop's; transparent backdrops now white. End to end on the local database with local storage's S3 for R2: fetch (every food and home photo), `redo.py` (face, crop, fresh, a portrait), the review page in the browser pane (Remove photo, approve the rest), publish (new paths, `fresh`, a photo removed, a clothing listing in one go), the sweep. **Not run:** production, men's faces, `build`, `e2e`. |
 | 2026-10-27 | D-163 photo redo; the runner's memory fix | Claude Code, the founder's laptop (RTX 4060, Docker; `check.mjs docs typecheck lint test`, `db-test.mjs` without a reset) | docs, typecheck, lint, test OK; SQL 66 / 68: `photo_redo.test.sql` (27) and `schema.test.sql` pass, `price_sheet` and `seven_day_insights` fail on the local data without a reset (as noted on 2026-10-26). The whole redo on the local database with local storage's S3 standing in for R2, on 24 photos from the live site: fetch (all 3 of a kurti's photos, food's and home's main only), `redo.py` (3 clothing photos, 2 food, 1 home: all passed their checks; garment and product pixels changed: 0), the review page in the browser pane, publish (new paths, `redo` set, home's scene first and plain photo second), the sweep (5 replaced photos' copies deleted, home's plain one kept), a second fetch finding nothing, the audit. Faces checked by eye: a different woman, the same one across a listing. Runner: Playwright kept 618 MB for 300 photo downloads, 37 MB once disposed; the restart loop run with a stand-in child. **Not run:** production (migration, R2, a real runner run of hours), `build`, `e2e`, men's photos (no men's house model on the laptop). |
 | 2026-10-26 | D-162 Diwali list and 7-day sources | Claude Code, founder's Windows machine with Docker (`check.mjs docs typecheck lint test db`) | docs, typecheck, lint OK; test OK (shared 355 pass, incl. the new `diwali-targets.test.ts`: all 100 rows upload, sample titles in and out); db OK after a reset: 67/67 SQL files incl. `quick_sources.test.sql` (13 assertions); `pnpm quick:sources` dry run on the local database (0 to switch, as expected on the seed). Seen: `seven_day_insights.test.sql` fails when `db-test.mjs` is run again without a reset (passes after one). **Not run:** the migration and the backfill on production, the CSV upload and a runner search, `build`, `e2e`. |
 | 2026-10-26 | CI on 54de256 (docs, typecheck failed on GitHub only) | Claude Code, founder's Windows machine; the website's typecheck again in a Linux container (node 22, a clean `pnpm install --frozen-lockfile`) | GitHub's run: docs named a build folder that exists only after a local build (status.md, reworded); `days.tsx`'s `<DaysContext.Provider>` failed on Linux, where the website's React 19 types and the app's 18.3 meet (the two-`@types/react` problem of 2026-10-24). The days are now a small store the layout fills (no context, no wrapper); new e2e test: a 7-day piece's page shows the 8-day week strip and `--door-day`. Locally docs, typecheck, lint, test, build OK, `seven-day-bag.spec.ts` 3 passed. The live site (deployed 11:25 UTC) was checked page by page: tabs, band, Diwali line, footer, the 7-day page, the stamp and week strip, the card tag ("Mon at your door") and the pill all show. |

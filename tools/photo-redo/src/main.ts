@@ -32,8 +32,10 @@ function status(out: string): void {
     log(
       `${type}: ${work.length} fetched, ${n((w) => !w.result)} for the GPU, ${n((w) => w.result?.status === 'made')} made ` +
         `(${n((w) => w.result?.status === 'made' && !!w.result.pass)} passed the checks), ` +
-        `${n((w) => w.result?.status === 'none')} nothing to change, ${n((w) => w.result?.status === 'failed')} failed, ` +
-        `${n((w) => !!w.decision?.ok)} approved, ${n((w) => w.decision?.ok === false)} rejected, ` +
+        `${n((w) => w.result?.status === 'none')} nothing to change, ${n((w) => w.result?.status === 'failed')} ` +
+        `failed or your call, ${n((w) => !!w.decision?.ok)} approved, ` +
+        `${n((w) => w.decision?.ok === false && !w.decision.remove)} rejected or kept, ` +
+        `${n((w) => !!w.decision?.remove)} removed, ` +
         `${n((w) => !!w.item.published?.path)} live, ${n((w) => !!w.item.stale)} changed meanwhile`,
     );
   }

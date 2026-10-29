@@ -40,7 +40,7 @@ operations data are never queried from customer code.
 | | `variant_availability` | public mirror `variant_id → available`, trigger-maintained, in the Realtime publication (live "only 2 left", D-010) | store (visible products) |
 | | `product_search` | each listing's search words with English stems (name; category, craft, state; summary; type), trigger-maintained (D-160) | functions only |
 | | `search_synonyms`, `search_words` | search's synonym groups (Claude's draft, D-160) and the vocabulary of live listings' words (pg_cron every 6 hours) for spelling fixes and suggestions | admin (read) |
-| | `product_media` | Storage paths (bucket `product-media`), alt text, one primary per product, `is_ai` (an AI-generated model photo, D-100: the product's Details say so), `redo` (what the photo redo did, D-163) | store / admin |
+| | `product_media` | Storage paths (bucket `product-media`), alt text, one primary per product, `is_ai` (an AI-generated model photo, D-100: the product's Details say so), `redo` (what the photo redo did, D-163, D-164) | store / admin |
 | Supply | `vendors` | shop + owner, phone/WhatsApp, address, town, region, payment method + reference (D-029), licences, status, notes, photo; `online_site` = an online shop's host for imported listings (one vendor per shop and state, D-110) | admin |
 | | `cycles` | code, status, `cutoff_at`, est. export/arrival, actual dates, AWB, forwarder, freight, duty, FX | admin |
 | | `pickups` | one per ordered piece: vendor, cycle, variant, qty, shop price (the variant's own when it has one), status, who/when, photo, payout; `source_id` (the shop item in use), `ordered_at`, `ordered_by`, `paid_paise`, `shop_order_ref`, `shop_bill_path` (ordered from the shop, D-140) | admin |
@@ -290,6 +290,11 @@ Migration `20261029100000_quick_speed`: `store_quick_browse()` and `store_quick_
 into their own list before they meet `store_products` (joined straight to the view, the planner multiplied options by
 categories: 1.3 – 1.7 s with 5,100 7-day pieces on a production copy, now about 0.2 s), and the front page builds the
 cards of its three rows only. Same answers (checked against the old functions on the copy).
+Migration `20261103090000_photo_redo_modes` (D-164): `product_media.redo` may be `fresh` (the light refresh, any
+type); `_redo_wanted` plans every stored photo of every type (clothing's vendor AI ones excepted); the plan includes
+kids' pieces (their faces are cut off, never drawn); `worker_photo_redo_set` takes `fresh` for any type;
+`worker_photo_redo_drop(media, old_path)` (worker: a photo removed on the review page, only while the listing keeps
+another and the row is as read; the next photo becomes the main one). Tests: `photo_redo.test.sql`.
 Migration `20261102090000_photo_redo` (D-163): `product_media.redo` (face, food, scene, or kept: looked at, nothing to
 change; null: not done). Worker only: `worker_photo_redo_plan(type, after, limit)` (listings by id after `after` with
 photos still to do: every clothing photo but vendor AI ones and kids' pieces, food's and home's main photo; stored
