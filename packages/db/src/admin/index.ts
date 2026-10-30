@@ -20,3 +20,4 @@ export * from './photos';
 export * from './store-pages';
 export * from './bulk';
 export * from './shipments';
+export * from './home-photos';

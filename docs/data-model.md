@@ -290,6 +290,9 @@ Migration `20261029100000_quick_speed`: `store_quick_browse()` and `store_quick_
 into their own list before they meet `store_products` (joined straight to the view, the planner multiplied options by
 categories: 1.3 – 1.7 s with 5,100 7-day pieces on a production copy, now about 0.2 s), and the front page builds the
 cards of its three rows only. Same answers (checked against the old functions on the copy).
+Migration `20261104090000_home_photos` (D-169): `home_photos` (Home's own mosaic photos: path under `home/album/`,
+required alt text, order; admin-only under RLS), `admin_order_home_photos(ids)` (the admin's new order in one call,
+RLS-bound), and `store_home()`'s `album` reads only them, in order, up to 60 (no state album or listing photo).
 Migration `20261103090000_photo_redo_modes` (D-164): `product_media.redo` may be `fresh` (the light refresh, any
 type); `_redo_wanted` plans every stored photo of every type (clothing's vendor AI ones excepted); the plan includes
 kids' pieces (their faces are cut off, never drawn); `worker_photo_redo_set` takes `fresh` for any type;

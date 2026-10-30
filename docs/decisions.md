@@ -706,3 +706,15 @@ What it means for the build (migration `20261103100000_sourcing_media_redo`, `to
   food photo under a second.
 *Claude's choices in it (proposed, confirm when convenient):* food and home go up made again whether or not the
 refresh's distance check passed; the service on port 4318, started by the runner rather than as a separate step.
+
+**D-169 · 2026-10-31 · founder: Home's mosaic shows only the founder's own photos, in the founder's order** · Changes D-113's album for Home
+- Founder, verbatim: "Remove the existing working and states photos from home and just use the photos which I will
+  upload and give me an option to move them in the grid."
+What it means for the build (migration `20261104090000_home_photos`, admin **Home photos** `/admin/home-photos`):
+- **Home's drifting mosaic shows only `home_photos`**, in their order (up to 60): no state album photo and no listing
+  photo fills it any more. The states' albums stay on their own pages. Until there are three, Home has no mosaic.
+- **The admin page:** choose many photos at once, each with its line (alt text, started from the file's name); they go
+  up one by one (8 MB each, JPEG, PNG, WebP or AVIF) and Home is refreshed once per batch (only Home's cache entry).
+  The grid is Home's own layout (`album-tiles.ts`): drag a photo onto another tile, or pick one and move it earlier,
+  later, first or last, then Save order; a picked photo's line can be changed, or the photo removed (its files too).
+*Claude's choices in it (proposed, confirm when convenient):* the 60-photo cap; the line started from the file's name.

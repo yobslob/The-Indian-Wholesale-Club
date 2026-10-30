@@ -2,7 +2,7 @@ import { unwrap, type IwcClient } from '../client';
 
 /** A photo still in Supabase's storage, not yet in the photo store (D-140): where its path is recorded, and the path. */
 export interface PhotoWithoutCopies {
-  table: 'product_media' | 'region_photos' | 'regions';
+  table: 'product_media' | 'region_photos' | 'home_photos' | 'regions';
   id: string;
   path: string;
 }
@@ -17,13 +17,15 @@ const STORED = '%/s/%';
  */
 export async function listPhotosWithoutCopies(client: IwcClient, limit: number, days = 3): Promise<PhotoWithoutCopies[]> {
   const since = new Date(Date.now() - days * 86_400_000).toISOString();
-  const [media, album] = await Promise.all([
+  const [media, album, home] = await Promise.all([
     client.from('product_media').select('id, storage_path').not('storage_path', 'like', STORED).gte('created_at', since).order('created_at').limit(limit),
     client.from('region_photos').select('id, storage_path').not('storage_path', 'like', STORED).gte('created_at', since).order('created_at').limit(limit),
+    client.from('home_photos').select('id, storage_path').not('storage_path', 'like', STORED).gte('created_at', since).order('created_at').limit(limit),
   ]);
   return [
     ...unwrap(media).map((r) => ({ table: 'product_media' as const, id: r.id, path: r.storage_path })),
     ...unwrap(album).map((r) => ({ table: 'region_photos' as const, id: r.id, path: r.storage_path })),
+    ...unwrap(home).map((r) => ({ table: 'home_photos' as const, id: r.id, path: r.storage_path })),
   ].slice(0, limit);
 }
 

@@ -168,6 +168,20 @@ isOneToOne: false
                   Relationships: [
                     
                   ]
+                },"home_photos": {
+                  Row: {
+                    "alt_text": string,"created_at": string,"id": string,"sort_order": number,"storage_path": string
+                  }
+                  ComputedFields: never
+                  Insert: {
+                    "alt_text": string,"created_at"?: string,"id"?: string,"sort_order"?: number,"storage_path": string
+                  }
+                  Update: {
+                    "alt_text"?: string,"created_at"?: string,"id"?: string,"sort_order"?: number,"storage_path"?: string
+                  }
+                  Relationships: [
+                    
+                  ]
                 },"house_models": {
                   Row: {
                     "back_path": string,"created_at": string,"front_path": string,"id": string,"is_active": boolean,"label": string,"slug": string,"sort_order": number,"wears": string
@@ -554,14 +568,14 @@ isOneToOne: false
                   ]
                 },"product_media": {
                   Row: {
-                    "alt_text": string,"created_at": string,"credit": string | null,"id": string,"is_ai": boolean,"is_primary": boolean,"product_id": string,"sort_order": number,"storage_path": string,"variant_id": string | null
+                    "alt_text": string,"created_at": string,"credit": string | null,"id": string,"is_ai": boolean,"is_primary": boolean,"product_id": string,"redo": string | null,"sort_order": number,"storage_path": string,"variant_id": string | null
                   }
                   ComputedFields: never
                   Insert: {
-                    "alt_text"?: string,"created_at"?: string,"credit"?: string | null,"id"?: string,"is_ai"?: boolean,"is_primary"?: boolean,"product_id": string,"sort_order"?: number,"storage_path": string,"variant_id"?: string | null
+                    "alt_text"?: string,"created_at"?: string,"credit"?: string | null,"id"?: string,"is_ai"?: boolean,"is_primary"?: boolean,"product_id": string,"redo"?: string | null,"sort_order"?: number,"storage_path": string,"variant_id"?: string | null
                   }
                   Update: {
-                    "alt_text"?: string,"created_at"?: string,"credit"?: string | null,"id"?: string,"is_ai"?: boolean,"is_primary"?: boolean,"product_id"?: string,"sort_order"?: number,"storage_path"?: string,"variant_id"?: string | null
+                    "alt_text"?: string,"created_at"?: string,"credit"?: string | null,"id"?: string,"is_ai"?: boolean,"is_primary"?: boolean,"product_id"?: string,"redo"?: string | null,"sort_order"?: number,"storage_path"?: string,"variant_id"?: string | null
                   }
                   Relationships: [
                     {
@@ -1820,6 +1834,9 @@ isOneToOne: false
 "_load_pricing_estimates":
 { Args: { "p_checked_on": string,"p_estimates": Json }; Returns: number
                            },
+"_main_photo":
+{ Args: { "p_product": string }; Returns: string
+                           },
 "_next_cycle_dates":
 { Args: { "p_cycle": Omit<Database["public"]['Tables']["cycles"]['Row'], Database["public"]['Tables']["cycles"]['ComputedFields']> }; Returns: {
               "cutoff_at": string,"est_arrival_on": string,"est_export_on": string
@@ -1874,6 +1891,9 @@ isOneToOne: false
                            },
 "_redeem_vendor_code":
 { Args: { "p_code": string }; Returns: string
+                           },
+"_redo_wanted":
+{ Args: { "p_media": Omit<Database["public"]['Tables']["product_media"]['Row'], Database["public"]['Tables']["product_media"]['ComputedFields']>,"p_type": Database["public"]['Enums']["product_type"] }; Returns: boolean
                            },
 "_reprice_products":
 { Args: { "p_product"?: string }; Returns: number
@@ -2032,6 +2052,9 @@ isOneToOne: false
                            },
 "admin_order_counts":
 { Args: Record<PropertyKey, never>; Returns: Json
+                           },
+"admin_order_home_photos":
+{ Args: { "p_ids": (string)[] }; Returns: undefined
                            },
 "admin_price_preview":
 { Args: { "p_shop_paise": number,"p_type": Database["public"]['Enums']["product_type"],"p_weight_g": number }; Returns: number
@@ -2361,6 +2384,24 @@ isOneToOne: false
                            },
 "worker_may_add_photos":
 { Args: { "p_product": string }; Returns: boolean
+                           },
+"worker_photo_redo_drop":
+{ Args: { "p_media": string,"p_old_path": string }; Returns: boolean
+                           },
+"worker_photo_redo_plan":
+{ Args: { "p_after"?: string,"p_limit"?: number,"p_type": Database["public"]['Enums']["product_type"] }; Returns: Json
+                           },
+"worker_photo_redo_scene":
+{ Args: { "p_alt": string,"p_media": string,"p_new_path": string,"p_old_path": string }; Returns: string
+                           },
+"worker_photo_redo_set":
+{ Args: { "p_media": string,"p_new_path": string,"p_old_path": string,"p_redo": string }; Returns: boolean
+                           },
+"worker_photo_stems_in_use":
+{ Args: { "p_stems": (string)[] }; Returns: (string)[]
+                           },
+"worker_product_wears":
+{ Args: { "p_product": string }; Returns: string
                            },
 "worker_set_class_weights":
 { Args: { "p_weights": Json }; Returns: number

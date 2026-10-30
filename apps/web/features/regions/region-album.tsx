@@ -2,38 +2,17 @@
 import { StorePhoto } from '@/features/catalog/store-photo';
 import { mediaUrl } from '@/lib/site';
 
+import { albumTiles, TILES_PER_PATTERN } from './album-tiles';
+
 import type { RegionPage } from '@repo/db/store';
 
 type Photo = RegionPage['album'][number];
 
-/**
- * The tile pattern of the approved mockup (a-gallery.html v4, D-053): blocks of a mosaic four cells high, each
- * [width in cells, tiles as [column, row, columns spanned, rows spanned]].
- */
-const BLOCKS: [number, [number, number, number, number][]][] = [
-  [4, [[0, 0, 4, 2], [0, 2, 2, 2], [2, 2, 2, 2]]],
-  [2, [[0, 0, 2, 2], [0, 2, 2, 2]]],
-  [5, [[0, 0, 5, 4]]],
-  [3, [[0, 0, 3, 2], [0, 2, 3, 2]]],
-  [3, [[0, 0, 3, 4]]],
-  [4, [[0, 0, 2, 2], [2, 0, 2, 2], [0, 2, 4, 2]]],
-];
-const TILES_PER_PATTERN = BLOCKS.reduce((n, [, tiles]) => n + tiles.length, 0);
 /** Below this the album would repeat one or two photos over and over; the page leaves it out. */
 export const ALBUM_MINIMUM = 3;
 
 function Mosaic({ photos, hidden }: { photos: Photo[]; hidden?: boolean }): React.JSX.Element {
-  const patterns = Math.max(1, Math.ceil(photos.length / TILES_PER_PATTERN));
-  const tiles: { photo: Photo; column: number; row: number; columns: number; rows: number }[] = [];
-  let x = 0;
-  for (let p = 0; p < patterns; p++) {
-    for (const [width, list] of BLOCKS) {
-      for (const [tx, ty, tw, th] of list) {
-        tiles.push({ photo: photos[tiles.length % photos.length]!, column: x + tx + 1, row: ty + 1, columns: tw, rows: th });
-      }
-      x += width;
-    }
-  }
+  const tiles = albumTiles(photos.length).map((t) => ({ ...t, photo: photos[t.photo]! }));
   return (
     <ul className="album-mosaic" aria-hidden={hidden || undefined}>
       {tiles.map((t, i) => (
@@ -58,7 +37,7 @@ function Mosaic({ photos, hidden }: { photos: Photo[]; hidden?: boolean }): Reac
  * The region album (D-051, D-052): the region's photos as a mosaic that drifts sideways by itself, between Most
  * wanted and Curated for you. Not interactive and no pause control (founder's decision); still for reduced
  * motion, paused off screen (features/shell/motion.tsx). Server-rendered, no client code of its own.
- * Home shows it for all of India (D-113) with `reveal`: it opens with the clip-and-scale reveal and floats with a
+ * Home shows it (D-113; since D-169 the founder's own Home photos, in the admin's order) with `reveal`: it opens with the clip-and-scale reveal and floats with a
  * gentle parallax as the page scrolls (motion.tsx's [data-reveal] and [data-speed]).
  */
 export function RegionAlbum({
