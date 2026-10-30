@@ -101,9 +101,19 @@ select tests.assert_fails(format('select public.worker_sourcing_media(%L, %L, tr
 select tests.assert_fails(format('select public.worker_sourcing_media(%L, %L, true)', tests.id('product'),
   jsonb_build_array(jsonb_build_object('path', 'products/' || tests.id('product') || '/x/a.jpg'))),
   'media_invalid', 'and no other folder in it than s/');
+select tests.assert(public.worker_product_wears(tests.id('product')) is null, 'a food listing is for no one in particular');
+select tests.assert(public.worker_product_wears(tests.id('p_live')) is null, 'and a listing the runner did not make says nothing');
+-- D-168: a photo made again before upload carries its mark; a face is for clothing only, and nothing else is a mark
+select tests.assert_fails(format('select public.worker_sourcing_media(%L, %L, true)', tests.id('product'),
+  jsonb_build_array(jsonb_build_object('path', 'products/' || tests.id('product') || '/s/a.jpg', 'redo', 'face'))),
+  'media_invalid', 'a face is never a food photo''s mark');
+select tests.assert_fails(format('select public.worker_sourcing_media(%L, %L, true)', tests.id('product'),
+  jsonb_build_array(jsonb_build_object('path', 'products/' || tests.id('product') || '/s/a.jpg', 'redo', 'kept'))),
+  'media_invalid', 'only face and fresh are marks the runner sets');
 select tests.assert((public.worker_sourcing_media(tests.id('product'), jsonb_build_array(
   jsonb_build_object('path', 'products/' || tests.id('product') || '/a.jpg', 'alt_text', 'Chikki'),
-  jsonb_build_object('path', 'products/' || tests.id('product') || '/s/b.jpg', 'item_key', 'B0TEST0002')), true)
+  jsonb_build_object('path', 'products/' || tests.id('product') || '/s/b.jpg', 'item_key', 'B0TEST0002',
+                     'redo', 'fresh')), true)
   ->> 'published')::boolean = false, 'auto-publish is off: it waits as a draft');
 select tests.assert_fails(format('select public.worker_sourcing_media(%L, %L, false)', tests.id('product'),
   jsonb_build_array(jsonb_build_object('path', 'products/' || tests.id('product') || '/c.jpg'))),
@@ -113,6 +123,9 @@ reset role;
 select tests.assert((select variant_id from public.product_media where storage_path like '%/b.jpg') = tests.id('mawa'),
   'a flavour''s photo belongs to that flavour');
 select tests.assert((select is_primary from public.product_media where storage_path like '%/a.jpg'), 'the first photo is the main one');
+select tests.assert((select redo from public.product_media where storage_path like '%/s/b.jpg') = 'fresh'
+                    and (select redo from public.product_media where storage_path like '%/a.jpg') is null,
+  'a photo made again before upload keeps its mark; one sent as it is has none (the redo takes it later)');
 
 -- The weekly check: a small rise follows the shop; a jump is held; the sold-out flavour comes back.
 select tests.remember('src_malai', (select source_id from public.product_variants where id = tests.id('malai')));

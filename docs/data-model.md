@@ -439,7 +439,7 @@ uses `worker_sourcing_plan(checks)` (settings, shops, the targets it now holds, 
 sources, the items already listed), `worker_sourcing_add(target, listing)` (a draft listing of the shop's vendor for the
 target's state, `_online_vendor`, with its variants, sources and backups; an item already listed returns that listing),
 `worker_sourcing_media(product, media, publish)` (photos once, under `products/<id>/`; storage allows the upload only
-where `worker_may_add_photos(product)` says), `worker_sourcing_target_done(target, note)`,
+where `worker_may_add_photos(product)` says; since D-168 each photo may carry its `redo` mark, `face` for clothing or `fresh`, when the runner made it again before upload), `worker_product_wears(product)` (who a runner's clothing listing is for, so a kids' face is only cut), `worker_sourcing_target_done(target, note)`,
 `worker_sourcing_checked(product, results)` (prices and stock follow the shop, a jump beyond the guard is held, new items
 become variants, then `_sourcing_settle`: each variant takes its best usable source, its shop price and a top-up of
 pieces, or stops selling) and `worker_sourcing_log(run)`. Admins decide a held price with
