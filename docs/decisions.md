@@ -752,7 +752,7 @@ India-made pieces; tier 1 for the first 15 pages of each collection; jumpsuits (
 (Shirts, Tees & Tops) as two rows over the same 8 pages; NEWME's coupon prices ("Get it at ₹…") never used, only the
 size's own price and MRP.
 
-**D-171 · 2026-10-31 · founder: all of Savana and NEWME, made in China included; "Imported" instead of "Made in India" for them; NEWME and Savana in 10 days; R2's last 2 GB and the page cache kept in check** · Answers Q-49 · Changes D-004 for these two shops, D-170, D-068's 5-minute fallback
+**D-171 · 2026-10-31 · founder: all of Savana and NEWME, made in China included; "Imported" instead of "Made in India" for them; NEWME and Savana in 10 days; R2's last 2 GB and the page cache kept in check** · Answers Q-49 · Changes D-004 for these two shops, D-170, D-068's 5-minute fallback · its Savana drafts waiting for care SUPERSEDED by D-172
 - Founder, verbatim: "I want all of savana and newme, It doesn't matter if they are made in china on the products page
   we will remove the made in India besides Imported and In product details we will remove made in India only for
   savana products. and for newme orders, It works under 10 days delivery time. First I will run for savana then if
@@ -790,3 +790,24 @@ product page; both shops' names start "Women's …" when the shop's own name doe
 women's wear only; the store needs it to sell clothing, D-140); left out of `savana.csv`: beauty and fragrances
 (liquids and sprays, D-135), bras and panties (no category), phone cases (not clothing); lounge sets under Co-ords &
 Dresses; the hour's fallback.
+
+**D-172 · 2026-10-31 · founder: Savana's care given from its fabric where certain, the rest left out; the founder's photos in the picture slots** · Answers Q-50 · Changes D-171's Savana drafts
+- Founder, verbatim (answering Q-50, Savana's missing wash care): "YOu give it accordingly and ignore those who you're
+  not sure of." And: "Also I updated the photos at C:\kod\root\apps\web\public\visuals with proper names".
+What it means for the build:
+- **Savana's care** (`savanaCare`, `readers/savana.ts`) from what its page says a piece is made of, only where that
+  leaves no doubt: denim (machine wash cold, inside out), jersey and fleece (machine wash cold, gentle), sweater knits
+  (hand wash cold, dry flat), light wovens, lace and mesh (hand wash cold), nylon leggings, fashion jewellery and bag
+  charms (keep dry, wipe with a dry cloth), polyurethane bags and belts and plastic hair clips (wipe clean), sunglasses,
+  woven caps (spot clean). **Left out**, not drafted ("not sure of its care"): blazers, coats and jackets, leather,
+  suede, fur, velvet, tweed, wool, silk and satin, anything sequinned, beaded, with rhinestones or metallic trim (except
+  jewellery), and any piece whose page names no fabric or material. Checked on Savana's live pages on 2026-10-31: tops
+  9 of 10, dresses, bottoms, knitwear and jewellery 10 of 10, co-ords 9, lounge sets 7, bags 2, jackets 0.
+  `savana.csv` drops its jackets, coats, blazers and sports jackets rows (418 rows; 60 tier 1). Savana's weave
+  ("Twill Woven") stays as the Fabric line.
+- **The founder's photos** (`apps/web/public/visuals/`, `features/visuals/slots.ts`): the 7-day hero and poster, Home's
+  poster, Sign in, the empty bag and Page not found. The ones beside a page's column and the 7-day hero keep the
+  photo's own shape (no crop); the two wide posters keep their 3:1 frame and show the middle of the photo. About us,
+  How it works and Contact still wait for theirs.
+*Claude's choices in it (proposed, confirm when convenient):* each care line's words; the alt texts; JPEG files used as
+given (no conversion).

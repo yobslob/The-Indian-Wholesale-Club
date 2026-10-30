@@ -114,14 +114,17 @@ off-screen).
 ## Savana and NEWME (D-170, D-171)
 
 Both shops are taken whole (founder, 2026-10-31: "I want all of savana and newme, It doesn't matter if they are made
-in china"). `targets/savana.csv` (447 rows) and `targets/newme.csv` (237 rows), 40 listings a row, no price band; each
+in china"). `targets/savana.csv` (418 rows) and `targets/newme.csv` (237 rows), 40 listings a row, no price band; each
 row reads a run of pages of one department or collection, best sellers first, every page once:
 
 - **Savana:** `collection:12825 pages:1-3` is Savana's "Shop All Dresses" (activity 12825), 20 pieces a page, read from
   the JSON answer the shop's own page asks for (`readers/savana.ts`). That answer leaves out the pieces already seen,
   so the runner walks a department from its first page and keeps the walk for the department's next row within the
-  run (`shops.ts`). Product pages carry their data in `window.$preData`. Its pages state no wash care: every Savana
-  listing is a draft until its care is filled (Q-50). No pincode is needed.
+  run (`savana-walk.ts`). Product pages carry their data in `window.$preData`. Its pages state no wash care: the
+  reader gives it from the fabric or material only where that is certain (`savanaCare`, D-172: denim, jersey, knits,
+  light wovens, nylon leggings, jewellery, PU bags and belts, sunglasses, woven caps) and every other piece is left out
+  ("not sure of its care"): blazers, coats, jackets, leather, suede, fur, velvet, tweed, wool, silk, anything
+  sequinned or beaded. No pincode is needed.
 - **NEWME:** `collection:dresses pages:1-2` reads `newme.asia/womens-collection/dresses?p=1` and `?p=2` (30 a page,
   `readers/newme.ts`, the pages' `__NEXT_DATA__`): each size's price, MRP and stock, the colour, photos, fabric, care.
 - **Origin:** each page states its country. On these two shops a piece made in China is listed with it

@@ -283,6 +283,8 @@ export function buildListing(input: {
   // D-140 (L1): IWC's name, not the shop's title: no brand or shop, about six words (food keeps its brand, D-139)
   const name = listingName(cleanTitle(product.title, { brand: product.brand, productType: target.product_type }));
   const { attributes, complete, missing } = attributesFor(product, target.product_type);
+  // D-172: Savana's care is read only where it is certain (readers/savana.ts); the rest is left out, not drafted
+  if (shop.reader === 'savana' && !complete) return { skip: `not sure of its ${missing.join(', ')}` };
   const seenPhotos = new Set(product.images.slice(0, 8));
   const photos = [
     ...product.images

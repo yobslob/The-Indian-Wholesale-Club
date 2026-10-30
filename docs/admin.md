@@ -216,11 +216,11 @@ runner in `tools/sourcing-runner/` (its README says how to set it up on the PC a
   `diwali-outfits.csv` is Diwali's clothing (63 targets, up to 860 listings, every name "Diwali: …"), as the Myntra list:
   Myntra, ₹600 – ₹1,600, footwear ₹400 – ₹900: women's, men's and kids' festive wear and 22 state weaves and crafts, a
   state only for a handloom or hand-made piece whose title names it and never says style, art silk or print (Q-48). D-171:
-  `savana.csv` (447 targets) and `newme.csv` (237 targets) are those two shops whole, 40 listings a row, no band: Search
+  `savana.csv` (418 targets) and `newme.csv` (237 targets) are those two shops whole, 40 listings a row, no band: Search
   words name a department (Savana: its activity id, `collection:12825 pages:1-3`, 20 pieces a page) or collection
   (NEWME: `collection:dresses pages:1-2`, 30 a page) and its pages, best sellers first. On these two shops only, a piece
   whose page says another country (China) is listed with it and shows customers "Imported" (D-004 elsewhere); Savana's
-  pages have no care, so its listings are drafts until it is filled (Q-50). Amazon and
+  pages have no care: it is given from the fabric where certain and the rest is left out (D-172). Amazon and
   Flipkart searches use the shop's own price filter and read one result page per 10 listings a target wants (up to
   four). Zepto and Instamart are read from their own search answer (one page) and their item pages' data, each pack an
   option (D-152). For a Shopify shop, Search words may name one of its collections, `collection:kurtis`:

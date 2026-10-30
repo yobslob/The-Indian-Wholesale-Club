@@ -14,7 +14,8 @@ import type { Offer } from '../types';
  * and its pages ("collection:12825 pages:1-3"); the runner walks from the first page and keeps the walk for the next
  * target of the same activity (shops.ts). A product page carries its own data in `window.$preData`. Every piece read
  * on 2026-10-31 states "Country of Origin: PRC": listed as imported (founder: "It doesn't matter if they are made in
- * china"), never as made in India. Pages give fabric but no wash care, so its listings wait as drafts for their care.
+ * china"), never as made in India. Pages give no wash care: it is read from the fabric where that is certain
+ * (savanaCare, D-172), and a piece without one is not listed.
  */
 
 export const SAVANA_SITE = 'savana.com';
@@ -98,7 +99,61 @@ function skuOptions(value: string): { colour: string; size: string } {
   return { colour: get(/colou?r/i), size: get(/size/i) };
 }
 
-const SPEC_NAMES: Record<string, string> = { 'main fabric': 'Fabric', 'lining fabric': 'Lining' };
+const SPEC_NAMES: Record<string, string> = {
+  'main fabric': 'Fabric',
+  'lining fabric': 'Lining',
+  'main material': 'Material',
+  'main material (bag)': 'Material',
+};
+const MATERIALS: Record<string, string> = { pc: 'Polycarbonate', pu: 'Polyurethane', 'pu leather': 'Polyurethane' };
+
+const CARE = {
+  denim: 'Machine wash cold, inside out, with like colours. Do not bleach. Line dry.',
+  jersey: 'Machine wash cold on a gentle cycle. Do not bleach. Line dry.',
+  knit: 'Hand wash cold. Do not wring. Dry flat in the shade.',
+  woven: 'Hand wash cold. Do not bleach or wring. Dry in the shade.',
+  active: 'Machine wash cold, inside out. Do not bleach, iron or tumble dry.',
+  jewellery: 'Keep dry and away from perfume and lotion. Wipe with a soft, dry cloth.',
+  wipe: 'Wipe clean with a soft, damp cloth. Keep away from heat.',
+  lenses: 'Clean the lenses with a soft microfibre cloth. Keep in a case when not worn.',
+  cap: 'Spot clean with a damp cloth. Do not machine wash or tumble dry.',
+};
+
+/**
+ * D-172 (founder 2026-10-31: "YOu give it accordingly and ignore those who you're not sure of"): Savana's pages state
+ * no care, so its care is read from what the piece is made of, only where that leaves no doubt; null for the rest (the
+ * piece is not listed). Never for tailoring (blazers, coats, jackets), leather, suede, fur, velvet, tweed, wool or silk,
+ * nor anything sequinned, beaded or with rhinestones, unless it is jewellery.
+ */
+export function savanaCare(name: string, specs: [string, string][]): string | null {
+  const n = name.toLowerCase();
+  const said = specs.filter(([k]) => !/country of origin/i.test(k)).map(([, v]) => v.toLowerCase());
+  const all = said.join(' | ');
+  const fabric = specs.find(([k]) => k === 'Fabric')?.[1].toLowerCase() ?? '';
+  const material = specs.find(([k]) => k === 'Material')?.[1].toLowerCase() ?? '';
+  if (!fabric && !material) return null;
+  const hard = /suede|leather|fur\b|velvet|tweed|wool|silk|satin|feather|synthetic fiber/;
+  if (/\b(earrings?|rings?|bracelets?|bangles?|necklaces?|anklets?|brooch(es)?|pendants?|chokers?|jewell?ery)\b/.test(n))
+    return /alloy|resin|metal|acrylic|plastic|copper|stainless|zinc|glass/.test(material) ? CARE.jewellery : null;
+  if (hard.test(all)) return null;
+  if (/sunglasses/.test(n)) return CARE.lenses;
+  if (/\b(charms?|hair|claws?|clips?|headbands?|belts?|bags?|totes?|wallets?|clutch(es)?|backpacks?)\b/.test(n))
+    return /alloy|resin|plastic|acrylic|polyurethane|pu\b|metal/.test(material) && !/fur|rhinestone|glitter/.test(all)
+      ? n.match(/\bcharms?\b/) ? CARE.jewellery : CARE.wipe
+      : null;
+  if (/\b(caps?|hats?|beanies?|fedoras?)\b/.test(n))
+    return /rib knit|knit/.test(fabric) ? CARE.knit : /twill|woven|cotton/.test(all) ? CARE.cap : null;
+  if (/\b(blazers?|coats?|trench|overcoats?|jackets?|puffers?|parkas?|gilets?|waistcoats?|suits?|vest coat)\b/.test(n))
+    return null;
+  if (/sequin|bead|pearl|rhinestone|glitter|metallic|embellish|crystal|diamante|mirror/.test(all + ' ' + n)) return null;
+  if (fabric === 'denim' || /denim|jeans/.test(n)) return CARE.denim;
+  if (/\b(leggings?|gym|sports?)\b/.test(n) && /nylon|spandex|polyester/.test(material)) return CARE.active;
+  if (/cable|flat knits|open stitch|rib knit|knit/.test(fabric) || /acrylic/.test(material)) return CARE.knit;
+  if (/jersey|brushed|sweat fabric|fleece|french terry|waffle/.test(fabric)) return CARE.jersey;
+  if (/mesh|lace|jacquard|textured|twill|woven|yarn-dyed|stripe|corduroy|chiffon|crepe|georgette|poplin|linen|cotton/.test(fabric))
+    return CARE.woven;
+  return null;
+}
 
 /** The page's "About this product" rows and its stated origin; never who imported or marketed it (D-003). */
 function specsOf(d: Obj): [string, string][] {
@@ -118,7 +173,10 @@ function specsOf(d: Obj): [string, string][] {
     .find(Boolean);
   // D-004: always a row, so a page that says nothing is never listed as made in India (listing.ts)
   rows.push(['Country of origin', oneLine(origin ?? '') || 'not stated']);
-  return rows.map(([k, v]): [string, string] => [k.slice(0, 200), v.slice(0, 1000)]).slice(0, 40);
+  const named = rows.map(([k, v]): [string, string] => [k, k === 'Material' ? (MATERIALS[v.toLowerCase()] ?? v) : v]);
+  const care = savanaCare(str(d.goodsName), named);
+  if (care) named.push(['Wash care', care]);
+  return named.map(([k, v]): [string, string] => [k.slice(0, 200), v.slice(0, 1000)]).slice(0, 40);
 }
 
 /** A product page's `$preData` detail as a product: one variant per colour and size, priced and stocked per size. */

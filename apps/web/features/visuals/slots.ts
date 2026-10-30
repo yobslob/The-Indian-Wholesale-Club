@@ -1,7 +1,8 @@
 /**
  * The pictures the founder fills in (founder 2026-10-30: "You don't have to generate images just leave a placeholder
- * there and I will fill."). To fill one: put the file in apps/web/public/visuals/ (AVIF or WebP, at the size given) and
- * set its `src` ("/visuals/seven-day-hero.avif") and `alt`. Until then the slot shows a labelled frame on local and
+ * there and I will fill."). To fill one: put the file in apps/web/public/visuals/ (AVIF, WebP or JPEG) and set its `src`
+ * ("/visuals/seven-day-hero.jpg"), `alt`, and its width and height (the photo's own, so it is not cropped; the wide
+ * posters keep 3:1 and show the middle of a taller photo). Filled by the founder on 2026-10-31. Until then the slot shows a labelled frame on local and
  * preview builds and nothing at all on the live site, so a customer never sees an empty box.
  */
 export interface Slot {
@@ -17,24 +18,24 @@ export interface Slot {
 
 export const SLOTS = {
   'seven-day-hero': {
-    src: null,
-    alt: '',
-    width: 1200,
-    height: 1500,
+    src: '/visuals/seven-day-hero.jpg',
+    alt: 'A family eating together on the floor at home, steel plates of sabzi, dal and puris all around.',
+    width: 477,
+    height: 720,
     brief:
       'An opened parcel on a kitchen counter: snacks, masala packs and sweets spilling out, morning light.',
   },
   'seven-day-poster': {
-    src: null,
-    alt: '',
+    src: '/visuals/seven-day-poster.jpg',
+    alt: 'Diwali diyas around a bowl of marigolds, with kaju katli, chakli and wrapped chocolates.',
     width: 2400,
     height: 800,
     brief:
       'A wide seasonal poster for the 7-day store (now: Diwali, diyas and mithai boxes). Swap it each season.',
   },
   'home-poster': {
-    src: null,
-    alt: '',
+    src: '/visuals/home-poster.jpg',
+    alt: 'A home lit for Diwali: marigold garlands round a mirror, a brass lantern and diyas on a console.',
     width: 2400,
     height: 800,
     brief:
@@ -43,10 +44,10 @@ export const SLOTS = {
   // Founder 2026-10-31 ("think creatively of what we can put in the whitespaces available"): the empty side of pages
   // that hold one narrow column on a wide screen. Wide screens only (picture-beside.tsx); phones have no room to spare.
   'sign-in': {
-    src: null,
-    alt: '',
-    width: 1000,
-    height: 1250,
+    src: '/visuals/sign-in.jpg',
+    alt: 'Gold bangles, an armlet and a necklace worn with a red silk saree, hands painted with alta.',
+    width: 472,
+    height: 584,
     brief: 'Beside Sign in and Create an account: a brass diya and a pair of chappals at a front door, evening light.',
   },
   about: {
@@ -71,17 +72,17 @@ export const SLOTS = {
     brief: 'Beside Contact: a cup of chai in a glass and a phone on a wooden table, morning light.',
   },
   'empty-bag': {
-    src: null,
-    alt: '',
-    width: 1200,
-    height: 900,
+    src: '/visuals/empty-bag.jpg',
+    alt: 'Jhumkas, gold bangles, a hair clip and rupee notes laid out on a pair of jeans.',
+    width: 736,
+    height: 981,
     brief: 'Beside an empty bag: an empty steel thali with its katoris on a table, waiting to be filled.',
   },
   'not-found': {
-    src: null,
-    alt: '',
-    width: 1200,
-    height: 900,
+    src: '/visuals/not-found.jpg',
+    alt: 'Embroidered lehengas and festive outfits hanging on a rail in a boutique.',
+    width: 736,
+    height: 1308,
     brief: 'Beside Page not found: an empty auto-rickshaw parked in a quiet lane, nobody around. Lost, but calm.',
   },
 } satisfies Record<string, Slot>;
