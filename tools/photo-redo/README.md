@@ -8,7 +8,7 @@ every other photo gets a small change of its own. This tool does everything but 
 |---|---|---|
 | 1. fetch | `pnpm photos:redo fetch --type clothing --limit 200` | the next photos to do: each one's 1200 copy from R2 (one read) |
 | 2. make | `cd tools\photo-worker` then `.venv\Scripts\python redo.py --type clothing` (`--again` after a change here) | the GPU for clothing; food and home need none |
-| 3. review | `pnpm photos:redo review` → http://127.0.0.1:4317 | this machine only: old and new side by side, A approves, R rejects; a portrait: Remove photo or Keep it |
+| 3. review | `pnpm photos:redo review` → http://127.0.0.1:4317 | this machine only: old and new side by side, A approves, R rejects; **Approve all … waiting** approves every made photo of the tab not yet decided, checks passed or not (portraits stay yours); a portrait: Remove photo or Keep it |
 | 4. publish | `pnpm photos:redo publish --type clothing` (`--auto`: also the ones that passed the checks and were not rejected) | two R2 writes and one row per photo; old copies deleted 10 min later |
 | status | `pnpm photos:redo status` | how many photos are at each step |
 | audit | `pnpm photos:redo audit` (`--delete`) | what fills R2; listing photos no listing shows (over a day old) |

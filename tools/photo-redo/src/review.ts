@@ -10,10 +10,15 @@ import { log } from './log';
 /**
  * `review`: the new photos beside the old ones on this machine only (http://127.0.0.1:4317, nothing online). Each
  * photo: Approve or Reject (keys A and R act on the first one waiting); "Approve the rest that passed" approves every
- * photo still waiting whose automatic checks passed. A photo left for the founder (a portrait whose face cannot be
+ * photo still waiting whose automatic checks passed; "Approve all … waiting" approves every made photo still waiting in
+ * this tab, checks passed or not, in one go (founder 2026-10-30: 297 home photos). A photo left for the founder (a portrait whose face cannot be
  * cut away, D-164) has Remove (takes it off the listing) or Keep. `publish` then does what was chosen.
  */
 const PORT = 4317;
+
+/** Made, not yet decided or live, its new photo there: what "Approve all waiting" approves. */
+const waiting = (w: Work): boolean =>
+  w.result?.status === 'made' && !w.decision && !w.item.published && existsSync(join(w.dir, 'after.png'));
 
 const esc = (s: string): string =>
   s.replace(/[&<>"']/g, (c) => ({ '&': '&amp;', '<': '&lt;', '>': '&gt;', '"': '&quot;', "'": '&#39;' })[c]!);
@@ -63,13 +68,16 @@ body{font:14px system-ui;margin:16px;background:#faf7f2;color:#222}a{margin-righ
 button{margin-top:6px;padding:6px 14px}</style></head><body>
 <p>${tabs} | ${made.length} shown · ${count('made')} made · ${count('none')} nothing to change · ${count('failed')} failed ·
 <a href="/?type=${type}${all ? '' : '&all=1'}">${all ? 'only the waiting' : 'show all'}</a>
-<button id="rest">Approve the rest that passed</button></p>
+<button id="rest">Approve the rest that passed</button>
+<button id="all" data-type="${type}" data-n="${works.filter(waiting).length}">Approve all ${works.filter(waiting).length} waiting</button></p>
 ${made.map(card).join('\n') || '<p>Nothing waiting. Run the GPU step (tools/photo-worker/redo.py) or fetch more.</p>'}
 <script>
 async function decide(card, ok, remove){await fetch('/decide',{method:'POST',body:JSON.stringify({id:card.dataset.id,ok,remove:!!remove})});
 const s=remove?'removed':ok?'approved':'rejected';card.classList.remove('approved','rejected','removed');card.classList.add(s);card.querySelector('.tag').textContent=s}
 document.addEventListener('click',e=>{const b=e.target.closest('button[data-ok],button[data-remove]');if(b)decide(b.closest('.card'),b.dataset.ok==='1',b.dataset.remove==='1')});
 document.getElementById('rest').onclick=async()=>{for(const c of document.querySelectorAll('.card:not(.approved):not(.rejected):not(.removed):not(.live)'))if(c.dataset.pass==='true')await decide(c,true)};
+document.getElementById('all').onclick=async e=>{const b=e.target;if(b.dataset.n==='0'||!confirm('Approve all '+b.dataset.n+' waiting '+b.dataset.type+' photos, checks passed or not? Portraits that are your call are left for you.'))return;
+b.disabled=true;const r=await fetch('/approve-all',{method:'POST',body:JSON.stringify({type:b.dataset.type})});alert((await r.json()).approved+' approved. Next: pnpm photos:redo publish --type '+b.dataset.type);location.reload()};
 document.addEventListener('keydown',e=>{const c=document.querySelector('.card:not(.approved):not(.rejected):not(.removed):not(.live)');if(!c)return;
 if(e.key==='a')decide(c,true);if(e.key==='r')decide(c,false);c.nextElementSibling?.scrollIntoView({block:'center'})});
 </script></body></html>`;
@@ -93,6 +101,19 @@ export function review(out: string): Promise<void> {
         if (!m) return void res.writeHead(400).end();
         writeDecision(itemDir(out, { type: m[1] as ProductType, media_id: m[2]! }), ok === true, remove === true);
         res.writeHead(204).end();
+      });
+      return;
+    }
+    if (url.pathname === '/approve-all' && req.method === 'POST') {
+      let body = '';
+      req.on('data', (c: Buffer) => (body += c));
+      req.on('end', () => {
+        const type = PRODUCT_TYPES.find((t) => t === (JSON.parse(body) as { type?: string }).type);
+        if (!type) return void res.writeHead(400).end();
+        const todo = allWork(out, type).filter(waiting);
+        for (const w of todo) writeDecision(w.dir, true);
+        log(`review: ${todo.length} ${type} photos approved at once`);
+        res.writeHead(200, { 'content-type': 'application/json' }).end(JSON.stringify({ approved: todo.length }));
       });
       return;
     }
