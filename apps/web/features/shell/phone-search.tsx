@@ -60,7 +60,7 @@ export function PhoneSearch(): React.JSX.Element {
         aria-hidden={!open}
       >
         <HeaderIcon name="search" />
-        <input ref={input} type="search" name="q" maxLength={100} placeholder={search === '/search' ? 'Parle-G? Kasuri methi? That one pickle?' : 'Search the 7-day store'} aria-label="Search" enterKeyHint="search" />
+        <input ref={input} type="search" name="q" maxLength={100} placeholder={search === '/search' ? 'Search pieces, states…' : 'Search the 7-day store'} aria-label="Search" enterKeyHint="search" />
         <SuggestFor input={input} quick={search !== '/search'} />
         <button
           type="button"

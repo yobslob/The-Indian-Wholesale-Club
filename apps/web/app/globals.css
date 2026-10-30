@@ -418,38 +418,11 @@
     outline: 2px solid currentColor;
     outline-offset: -5px;
   }
-  .store-tab-words {
-    display: flex;
-    min-width: 0;
-    flex-direction: column;
-  }
-  .store-tab-line {
+  .store-tab-name {
     overflow: hidden;
-    font-size: 10.5px;
-    font-weight: 500;
+    font-size: 14px;
     text-overflow: ellipsis;
     white-space: nowrap;
-    opacity: 0.8;
-  }
-  /* a line of its own on phones: "At your door by Nov 11"; after the name's "·" from 768 px, lower case (D-161) */
-  .store-tab-line::first-letter {
-    text-transform: uppercase;
-  }
-  @media (min-width: 768px) {
-    .store-tab-line::first-letter {
-      text-transform: none;
-    }
-    .store-tab-words {
-      flex-direction: row;
-      align-items: baseline;
-      gap: 6px;
-    }
-    .store-tab-line {
-      font-size: 12px;
-    }
-    .store-tab-line::before {
-      content: '· ';
-    }
   }
   .store-tab-mark {
     display: grid;
@@ -1440,6 +1413,17 @@ html[data-free-bar] .site-footer {
     stroke-dasharray: 6 5;
     animation: stitch-run-line 0.7s linear infinite;
   }
+  /* the end of a See all grid while the next cards come (more-on-scroll.tsx): the stitch, turning */
+  .more-spin circle {
+    stroke-dasharray: 6 5;
+    transform-origin: 50% 50%;
+    animation: more-spin 1.2s linear infinite;
+  }
+  @keyframes more-spin {
+    to {
+      transform: rotate(1turn);
+    }
+  }
   @keyframes stitch-run-line {
     to {
       stroke-dashoffset: -11;
@@ -1813,76 +1797,252 @@ html[data-free-bar] .site-footer {
       opacity: 1;
     }
   }
-
-  /* the festival clock's diya: a small flame that flickers */
-  .festival-diya {
-    width: 9px;
-    height: 12px;
-    flex: none;
-    border-radius: 50% 50% 50% 50% / 62% 62% 38% 38%;
-    background: radial-gradient(circle at 50% 70%, #fff4d6 0 22%, #f5b041 45%, theme('colors.brand') 100%);
-    box-shadow: 0 0 10px 2px rgb(245 176 65 / 0.55);
-    animation: diya 2.4s ease-in-out infinite;
-  }
-  @keyframes diya {
-    50% {
-      transform: scale(0.88, 1.08) rotate(-3deg);
-      box-shadow: 0 0 14px 4px rgb(245 176 65 / 0.4);
-    }
-  }
 }
 
+/*
+ * The flight (flight.tsx, founder 2026-10-30): India's gold outline, the route as a faint dashed line, the brand's
+ * running stitch sewn along it behind the plane, a little house at the end, and the plane towing its maroon cloth.
+ * The cloth ripples only while it flies; with reduced motion the plane is parked from the start.
+ */
 @layer components {
-  /* postmarks: overlapping rings with wavy cancel lines, a little crooked (D-161) */
-  .postmarks {
-    display: inline-flex;
-    flex: none;
+  .flight-band {
+    margin-block: clamp(4px, 1vw, 12px);
   }
-  .postmarks i {
+  .flight-art {
+    width: 100%;
+    height: auto;
+    max-height: 300px;
+    overflow: visible;
+  }
+  .flight-india {
+    fill: none;
+    stroke: #c9962f;
+    stroke-width: 1.6px;
+    stroke-linejoin: round;
+  }
+  .flight-route {
+    fill: none;
+    stroke: theme('colors.line');
+    stroke-width: 1.5;
+    stroke-dasharray: 2 9;
+    stroke-linecap: round;
+  }
+  .flight-trail {
+    fill: none;
+    stroke: theme('colors.brand');
+    stroke-width: 2;
+    stroke-dasharray: 7 6;
+    stroke-linecap: round;
+  }
+  .flight-reveal {
+    fill: none;
+    stroke: #fff;
+    stroke-width: 12;
+  }
+  .flight-house path {
+    fill: none;
+    stroke: theme('colors.ink');
+    stroke-width: 1.6;
+    stroke-linecap: round;
+    stroke-linejoin: round;
+  }
+  .flight-plane {
+    fill: theme('colors.ink');
+  }
+  .flight-rope {
+    fill: none;
+    stroke: theme('colors.ink-muted');
+    stroke-width: 1;
+  }
+  .flight-cloth path {
+    fill: theme('colors.brand');
+  }
+  .flight-cloth text {
+    fill: theme('colors.on-brand');
+    font-family: inherit;
+    font-weight: 700;
+    letter-spacing: 0.01em;
+  }
+  .flight-cloth {
+    transform-box: fill-box;
+    transform-origin: 100% 50%;
+  }
+  .flight[data-flying] .flight-cloth {
+    animation: flight-ripple 0.5s ease-in-out infinite alternate;
+  }
+  .flight-band a:focus-visible {
+    outline: 2px solid theme('colors.ink');
+    outline-offset: 4px;
+    border-radius: 8px;
+  }
+  @keyframes flight-ripple {
+    to {
+      transform: skewY(-2.5deg) scaleY(0.94);
+    }
+  }
+
+  /* the 7-day store's door label (door-label.tsx): a parcel's address label, perforated top and bottom, its stamp
+     pressed once as the page opens */
+  .door-label {
     position: relative;
-    width: 22px;
-    height: 22px;
-    border-radius: 999px;
-    border: 1.5px solid color-mix(in srgb, theme('colors.brand') 70%, transparent);
+    display: grid;
+    gap: 14px;
+    max-width: 420px;
+    padding: 22px 24px 20px;
     background: theme('colors.paper');
-    transform: rotate(-12deg);
+    border-radius: 6px;
+    box-shadow:
+      0 1px 0 theme('colors.line'),
+      0 18px 40px -18px rgb(30 27 22 / 0.35);
+    -webkit-mask:
+      radial-gradient(circle 5px at 50% 0, #0000 98%, #000) 0 0 / 16px 51% repeat-x,
+      radial-gradient(circle 5px at 50% 100%, #0000 98%, #000) 0 100% / 16px 51% repeat-x;
+    mask:
+      radial-gradient(circle 5px at 50% 0, #0000 98%, #000) 0 0 / 16px 51% repeat-x,
+      radial-gradient(circle 5px at 50% 100%, #0000 98%, #000) 0 100% / 16px 51% repeat-x;
   }
-  .postmarks i + i {
-    margin-left: -8px;
-    transform: rotate(9deg);
+  .door-label-row {
+    display: grid;
+    grid-template-columns: 44px 22px 1fr;
+    align-items: center;
+    gap: 8px;
+    font-size: 15px;
   }
-  .postmarks i::after {
+  .door-label-row small {
+    color: theme('colors.ink-muted');
+    font-size: 12px;
+  }
+  .door-label-row svg {
+    height: 22px;
+    justify-self: center;
+    fill: none;
+    stroke: #c9962f;
+    stroke-width: 1.5px;
+    stroke-linejoin: round;
+    stroke-linecap: round;
+  }
+  .door-label-row:not([data-to]) svg {
+    width: 22px;
+  }
+  .door-label-row[data-to] svg {
+    stroke: theme('colors.ink');
+    width: 20px;
+  }
+  .door-label-rule {
+    border-top: 2px dashed color-mix(in srgb, theme('colors.brand') 55%, transparent);
+  }
+  .door-label-stamp {
+    position: absolute;
+    top: 16px;
+    right: 18px;
+    display: grid;
+    place-items: center;
+    width: 86px;
+    height: 86px;
+    border: 2.5px solid theme('colors.brand');
+    border-radius: 999px;
+    color: theme('colors.brand');
+    transform: rotate(-11deg);
+    animation: door-stamp 0.5s cubic-bezier(0.3, 1.5, 0.6, 1) 0.35s backwards;
+  }
+  .door-label-stamp::before {
     content: '';
     position: absolute;
-    inset: 6px 3px;
-    border-block: 1.5px dashed color-mix(in srgb, theme('colors.brand') 55%, transparent);
+    inset: 5px;
+    border: 1px dashed currentColor;
+    border-radius: inherit;
+  }
+  .door-label-stamp b {
+    font-size: 26px;
+    line-height: 1;
+    letter-spacing: 0.04em;
+  }
+  .door-label-check {
+    display: inline-grid;
+    place-items: center;
+    width: 18px;
+    height: 18px;
+    margin-right: 8px;
+    border: 1.5px solid theme('colors.ink');
+    border-radius: 3px;
+    vertical-align: -3px;
+  }
+  .door-label-check::after {
+    content: '';
+    width: 9px;
+    height: 5px;
+    margin-top: -3px;
+    border: solid theme('colors.brand');
+    border-width: 0 0 2px 2px;
+    transform: rotate(-45deg);
+  }
+  @keyframes door-stamp {
+    from {
+      transform: rotate(-11deg) scale(1.6);
+      opacity: 0;
+    }
+  }
+
+  /* D-154's category tiles as a kirana shelf: each tile stands on its stretch of plank, the planks meet across the gap */
+  .shelf-tile {
+    position: relative;
+    padding-bottom: 12px;
+  }
+  .shelf-tile::after {
+    content: '';
+    position: absolute;
+    left: calc(var(--gap) / -2);
+    right: calc(var(--gap) / -2);
+    bottom: 0;
+    height: 9px;
+    background: linear-gradient(
+      theme('colors.ink') 0 3px,
+      color-mix(in srgb, theme('colors.ink') 72%, theme('colors.brand')) 3px
+    );
+    box-shadow: 0 6px 10px -6px rgb(30 27 22 / 0.5);
+  }
+
+  /* the founder's picture slots (visual-slot.tsx): off the live site an empty one says what it wants */
+  .visual-slot {
+    display: grid;
+    place-items: center;
+    width: 100%;
+    padding: 20px;
+    border: 2px dashed theme('colors.line');
+    border-radius: 12px;
+    background: repeating-linear-gradient(
+      -45deg,
+      theme('colors.surface') 0 14px,
+      theme('colors.paper') 14px 28px
+    );
+    color: theme('colors.ink-muted');
+    font-size: 13px;
+  }
+  .visual-slot p {
+    display: grid;
+    gap: 4px;
+    max-width: 46ch;
+    margin: 0;
+    padding: 12px 14px;
+    border-radius: 8px;
+    background: theme('colors.paper');
+    text-align: center;
+  }
+  .visual-slot b {
+    color: theme('colors.ink');
+  }
+  .visual-slot-img {
+    display: block;
+    width: 100%;
+    height: auto;
+    border-radius: 12px;
+    object-fit: cover;
   }
 }
 
-@layer components {
-  /* India time: a small dot that pulses like a clock's second, in the footer and the menu (D-161) */
-  .india-time-dot {
-    display: inline-block;
-    width: 6px;
-    height: 6px;
-    margin: 0 8px 1px 0;
-    border-radius: 999px;
-    background: #f5b041;
-    box-shadow: 0 0 0 0 rgb(245 176 65 / 0.6);
-    animation: india-tick 2s ease-out infinite;
-  }
-  @keyframes india-tick {
-    70% {
-      box-shadow: 0 0 0 6px rgb(245 176 65 / 0);
-    }
-    100% {
-      box-shadow: 0 0 0 0 rgb(245 176 65 / 0);
-    }
-  }
-  .site-panel-time {
-    margin: 18px 0 4px;
-    font-size: 13px;
-    line-height: 1.5;
-    color: theme('colors.ink-muted');
+@media (prefers-reduced-motion: reduce) {
+  .door-label-stamp,
+  .flight[data-flying] .flight-cloth {
+    animation: none;
   }
 }

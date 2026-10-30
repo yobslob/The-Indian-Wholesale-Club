@@ -161,7 +161,7 @@ export function CheckoutFlow({ saved }: { saved: SavedDetails | null }): React.J
             }}
           />
         </Step>
-        <Step n={2} title="Where should we bring home?" state={stateOf(2)} summary={delivery.line1 ? deliverySummary(delivery) : ''} onEdit={edit(2)}>
+        <Step n={2} title="Delivery" state={stateOf(2)} summary={delivery.line1 ? deliverySummary(delivery) : ''} onEdit={edit(2)}>
           <SavedAddresses
             addresses={saved?.addresses ?? []}
             picked={picked}

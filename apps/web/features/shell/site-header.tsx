@@ -4,7 +4,6 @@ import { CartLink } from '@/features/cart/cart-link';
 import { isInfoPath, QUICK_HOME } from '@/lib/site';
 
 import { HeaderIcon } from './header-icons';
-import { IndiaTime } from './india-time';
 import { LogoText } from './logo';
 import { NavLink } from './nav-link';
 import { PhoneSearch } from './phone-search';
@@ -123,8 +122,6 @@ export function SiteHeader({ quick = null }: { quick?: QuickNav }): React.JSX.El
                 <Link href="/account/saved">Saved</Link>
               </li>
             </ul>
-            {/* D-161: India's hour, one quiet line in the menu */}
-            <IndiaTime className="site-panel-time" />
             <ul className="site-panel-small">
               {MORE.map((l) => (
                 <li key={l.href}>

@@ -33,8 +33,15 @@ export function FreeDeliveryBar(): React.JSX.Element | null {
   const charges = useBagCharges();
   const path = usePathname();
   const [shown, setShown] = useState(false);
+  // after the first paint only: the bag and the last charges live on the device, the server draws no pill
+  const [mounted, setMounted] = useState(false);
+  useEffect(() => setMounted(true), []);
+  // 2026-10-30: the pill comes with the add, not with the charges' answer; its words follow when the answer is in
   const visible =
-    lines.length > 0 && charges !== null && charges.freeMinCents !== null && path !== '/cart';
+    mounted &&
+    lines.length > 0 &&
+    (charges === null || charges.freeMinCents !== null) &&
+    path !== '/cart';
   useEffect(() => {
     if (!visible) return setShown(false);
     const frame = requestAnimationFrame(() => setShown(true));
@@ -109,8 +116,10 @@ export function FreeDeliveryBar(): React.JSX.Element | null {
               <span key={home.key} className="rise-in inline-block">
                 Coming home <b className="font-bold">{home.date}</b>
               </span>
-            ) : (
+            ) : charges ? (
               <GoalWords goal={goal} />
+            ) : (
+              <>{count} in your bag</>
             )}
             <span className="sr-only">
               . Bag, {count} {count === 1 ? 'item' : 'items'}

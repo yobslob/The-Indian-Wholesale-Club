@@ -52,9 +52,63 @@ export function bagLine(
 
 const loading = new Map<string, Promise<CardOption[]>>();
 
+// Cards seen on screen wait here a moment, then go as one read (preloadCardOptions)
+const waiting = new Map<
+  string,
+  { resolve: (list: CardOption[]) => void; reject: (error: unknown) => void }
+>();
+let queue: string[] = [];
+let timer: ReturnType<typeof setTimeout> | null = null;
+const BATCH = 48;
+
+function flush(): void {
+  timer = null;
+  const all = queue;
+  queue = [];
+  for (let i = 0; i < all.length; i += BATCH) {
+    const ids = all.slice(i, i + BATCH);
+    const settle = (answer: Record<string, unknown> | null, error?: unknown): void => {
+      for (const id of ids) {
+        const w = waiting.get(id);
+        waiting.delete(id);
+        const list = answer?.[id];
+        if (Array.isArray(list)) w?.resolve(list as CardOption[]);
+        else w?.reject(error ?? new Error('missing'));
+      }
+    };
+    fetch(`/api/card-options?ids=${ids.join(',')}`)
+      .then((r) => (r.ok ? r.json() : Promise.reject(new Error(String(r.status)))))
+      .then((answer: unknown) =>
+        settle(
+          typeof answer === 'object' && answer !== null
+            ? (answer as Record<string, unknown>)
+            : null,
+        ),
+      )
+      .catch((error: unknown) => settle(null, error));
+  }
+}
+
 /**
- * A card's options when the page kept them out (D-145, slim-cards.ts): read once per piece from /api/card-options and
- * kept for the visit; a failed read is forgotten, so the next press tries again.
+ * A several-option card came on screen (2026-10-30): its options are read now, with every other card that came on
+ * screen in the same moment (one request, not one per card), so its + opens at once instead of after a read. A failed
+ * read is forgotten, so the press reads again on its own.
+ */
+export function preloadCardOptions(productId: string): void {
+  if (loading.has(productId)) return;
+  const pending = new Promise<CardOption[]>((resolve, reject) =>
+    waiting.set(productId, { resolve, reject }),
+  );
+  pending.catch(() => loading.delete(productId));
+  loading.set(productId, pending);
+  queue.push(productId);
+  timer ??= setTimeout(flush, 120);
+}
+
+/**
+ * A card's options when the page kept them out (D-145, slim-cards.ts): read once per piece from /api/card-options (or
+ * already on its way from preloadCardOptions) and kept for the visit; a failed read is forgotten, so the next press
+ * tries again.
  */
 export function loadCardOptions(productId: string): Promise<CardOption[]> {
   let pending = loading.get(productId);

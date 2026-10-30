@@ -38,16 +38,23 @@ test("a state's inventory has See all's filters and keeps the state's address", 
   await expect(page.getByRole('tab', { name: /^Clothing/ })).toHaveAttribute('aria-selected', 'true');
 });
 
-test('See all pages draw 24 cards at a time', async ({ page }) => {
+test('See all pages draw 24 cards at a time, the next as the last row comes into view (2026-10-30)', async ({
+  page,
+}) => {
   await page.goto('/clothing');
   // the list's own cards, not the finishing-touches drawer's (D-144)
   const cards = page.locator('[data-card-grid] > article');
   await expect(cards).toHaveCount(24);
-  await page.getByRole('link', { name: 'Show more' }).click();
+  // no button: the last card coming into view brings the next 24, and the address keeps no ?show=
+  await cards.last().scrollIntoViewIfNeeded();
   await expect(cards).toHaveCount(48);
+  await expect(page).toHaveURL(/\/clothing$/);
+  await expect(page.getByRole('link', { name: 'Show more' })).toHaveCount(0);
 });
 
-test('filters and Show more change only the cards, never the page (D-136)', async ({ page }) => {
+test('filters and the endless scroll change only the cards, never the page (D-136)', async ({
+  page,
+}) => {
   await page.setViewportSize({ width: 1280, height: 900 });
   await page.goto('/clothing');
   await page.evaluate(() => ((window as unknown as { kept: boolean }).kept = true));
@@ -63,10 +70,9 @@ test('filters and Show more change only the cards, never the page (D-136)', asyn
   await page.getByRole('link', { name: 'Clear all' }).click();
   await page.getByLabel('Sort by').selectOption('new');
   await expect(cards).toHaveCount(24);
-  const more = page.getByRole('link', { name: 'Show more' });
-  await more.scrollIntoViewIfNeeded();
+  // the next 24 arrive below; the page stays where the shopper is (it used to load again from the top)
+  await cards.last().scrollIntoViewIfNeeded();
   const y = await page.evaluate(() => window.scrollY);
-  await more.click();
   await expect(cards).toHaveCount(48);
   expect(Math.abs((await page.evaluate(() => window.scrollY)) - y)).toBeLessThan(40);
   expect(await page.evaluate(() => (window as unknown as { kept?: boolean }).kept)).toBe(true);

@@ -93,6 +93,12 @@ export const browseCached = (filter: BrowseFilter) =>
   cached(['store-browse', ...browseKey(filter)], [listingsTag], () => browseRead(filter));
 
 /**
+ * The endless scroll's pages past the first 480 cards (2026-10-30): read straight from the database, not stored in the
+ * data cache, so a shopper scrolling deep never adds page-cache writes (D-145); the CDN still keeps each answer.
+ */
+export const browseFresh = async (filter: BrowseFilter) => slimCards(await browseRead(filter));
+
+/**
  * D-157: a state page's own inventory (each type's first cards): refreshed with its state, like the state page was
  * before, so a sale shows "Sold out" on the state's page at once (revalidate.ts). Its own entries: See all's stay as
  * they are. One more data-cache entry per type when a state's piece sells; no extra page.

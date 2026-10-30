@@ -2,14 +2,15 @@
 
 import dynamic from 'next/dynamic';
 import Link from 'next/link';
-import { useCallback, useRef, useState, useSyncExternalStore } from 'react';
+import { useCallback, useEffect, useRef, useState, useSyncExternalStore } from 'react';
+import { useShallow } from 'zustand/react/shallow';
 
 import { flyToBag } from '@/features/cart/fly-to-bag';
 import { MAX_QTY_PER_LINE } from '@/features/cart/limits';
 import { useCart } from '@/features/cart/store';
 import { mediaUrl } from '@/lib/site';
 
-import { bagLine, loadCardOptions, ribbonWidth } from './card-options';
+import { bagLine, loadCardOptions, preloadCardOptions, ribbonWidth } from './card-options';
 
 import type { CardOption, ProductCard, QuickAdd as QuickAddData } from '@repo/db/store';
 
@@ -35,6 +36,29 @@ function Icon({ d }: { d: string }): React.JSX.Element {
 const PLUS = 'M12 5v14M5 12h14';
 
 const noop = (): (() => void) => () => undefined;
+
+// One observer for every card: a several-option card coming near the screen reads its options (2026-10-30)
+let near: IntersectionObserver | null = null;
+const onNear = new WeakMap<Element, () => void>();
+function whenNear(el: Element, run: () => void): () => void {
+  near ??= new IntersectionObserver(
+    (entries) => {
+      for (const e of entries) {
+        if (!e.isIntersecting) continue;
+        near?.unobserve(e.target);
+        onNear.get(e.target)?.();
+        onNear.delete(e.target);
+      }
+    },
+    { rootMargin: '300px 0px' },
+  );
+  onNear.set(el, run);
+  near.observe(el);
+  return () => {
+    near?.unobserve(el);
+    onNear.delete(el);
+  };
+}
 /** True once the page is hydrated: the bag lives on the device, so the server draws every card empty. */
 const useHydrated = (): boolean => useSyncExternalStore(noop, () => true, () => false);
 
@@ -67,7 +91,8 @@ export function QuickAdd({
   href: string;
 }): React.JSX.Element {
   const hydrated = useHydrated();
-  const lines = useCart((s) => s.lines);
+  // only this piece's lines: a card re-draws when its own count changes, not on every add anywhere (2026-10-30)
+  const mine = useCart(useShallow((s) => s.lines.filter((l) => l.productId === product.id)));
   const add = useCart((s) => s.add);
   const setQuantity = useCart((s) => s.setQuantity);
   const [open, setOpen] = useState<false | 'ribbon' | 'sheet'>(false);
@@ -75,6 +100,17 @@ export function QuickAdd({
   const [loaded, setLoaded] = useState<CardOption[] | null>(null);
   const self = useRef<HTMLDivElement>(null);
   const close = useCallback(() => setOpen(false), []);
+  // the + becomes − n + (another element) once the bag on this device has the piece
+  const held = hydrated && mine.length > 0;
+  // 2026-10-30: a several-option card's options (and the picker's code) are read as it comes on screen, so + opens at once
+  useEffect(() => {
+    const el = self.current;
+    if (!choices || loaded || !el) return;
+    return whenNear(el, () => {
+      preloadCardOptions(product.id);
+      void loadPicker();
+    });
+  }, [choices, loaded, product.id, held]);
 
   // older cached cards carry only quick_add (one choice)
   const options: CardOption[] =
@@ -98,7 +134,7 @@ export function QuickAdd({
     if (choices && !loaded) loadCardOptions(product.id).catch(() => undefined);
     if (choices) void loadPicker();
   };
-  const inBag = hydrated ? lines.filter((l) => l.productId === product.id) : [];
+  const inBag = hydrated ? mine : [];
   const count = inBag.reduce((n, l) => n + l.quantity, 0);
   const counts = new Map(inBag.map((l) => [l.variantId, l.quantity]));
   const image = product.primary_image_path ? mediaUrl(product.primary_image_path) : null;

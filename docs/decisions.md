@@ -453,7 +453,7 @@ What it means for the build (Claude's design, awaiting the founder's look):
 - What is recorded stays as before (the words and the number found, no person); in addition the words a search was
   answered with after a fix, and whether only some words matched (counted with the searches that found nothing).
 
-**D-161 · 2026-10-26 · founder: the homesick design: the wait becomes the proof; every promise rides on what the page already has** · Supersedes D-079's and D-148's Home line
+**D-161 · 2026-10-26 · founder: the homesick design: the wait becomes the proof; every promise rides on what the page already has** · Supersedes D-079's and D-148's Home line · its tab dates, festival line, India time, Where's home, postmarks, diary lines, away tab title and joke copy SUPERSEDED by D-166
 Founder, verbatim: "If we don't standout then why will people use our website, providers are already selling to people there in 1 hour delivery, 1 day delivery but we are selling in 7-day or 12-16 days. So we have to target the homesickness emotion, we have to show them the product is coming directly from indian shops directly to their door, so that they buy on monday and they will know it that it is coming on the weekend so that they won't have to go out. We don't have to overkill or fill the whole website or distract the user or make it a blogging page but We have to fill their subconscious with these thing like 7 days shipping from india directly to your door, no tariffs, no shipping over 49.99 in 7 day store, no shipping over 99.99 and door delivery. Introduce new ideas, be very creative about these things, we have to fight with these static website, think outside of the box, not just these points but generate your own new points and be very creative about them. I am giving you the whole plan for this whole design."
 With it the founder handed over "IWC: the homesick design plan" (Oct 26, kept as `docs/archive/plan-homesick.md`): its
 seven settled decisions (shops said in general, never named; the diary in plain steps; "Duties paid. Nothing to pay
@@ -621,3 +621,38 @@ What it means for the build (`tools/photo-worker/iwc_worker/faceswap.py`, `redo_
   without a face; about half a second a photo.
 *Claude's choices in it (proposed, confirm when convenient):* HyperSwap over inswapper (sharper; inswapper kept a bindi
 more often and stays behind `--swapper inswapper`); `redo.py --again` keeps the photos the founder approved.
+
+**D-166 · 2026-10-30 · founder: faster cards and endless scroll; the tabs say only "IWC" and "7-day store"; the homesick design told in pictures, not text** · Changes D-161, D-136's Show more, D-154's tabs
+Founder, verbatim: "The design is better but a lot of code broke internally without showing any errors and passing all the tests, a lot of inconsistencies, a lot of AI slop got introduced our website looked 'made without AI' before. Also the functioning got worse, Now when I load and click + on any product it takes so long, when I click + for a multi varient product its weight shower takes so long, The load more issue again, it takes the user back to top and it takes so long to load more products, let's do this instead as soon as the user screen bottom reaches on row above the load more, it is already triggered, so the user gets an illusion of never ending scroll until the inventory runs out and if the user reaches ther first show a loading icon only, the stores name should be IWC and 7-day store only no subtext on the top tabs. The free delivery bar comes so late after adding a product. Now coming to design, When I said I want it to look like it is coming from India I didn't mean I want it to fill it with whole lots of texts and AI slop cues. I want it visually I want you to generate ideas of your own, ideas that are very very creative and out of the box, something like a plane flying from india to us carrying a banner of diwali or free delivery on 49.99 I want to make the website more visual rather than AI slop. You don't have to generate images just leave a placeholder there and I will fill. I want to modify and make the 7 day store as visually powerful as IWC look right now, 7 day store is just filled with text although the sections are perfectly named."
+What it means for the build (2026-10-30, website; not deployed):
+- **The +:** a several-option card's options are read while it comes near the screen, every card in that moment in one
+  request (`GET /api/card-options?ids=`, up to 48, CDN-kept a minute), and the picker's code is loaded with them, so
+  the + opens at once. Adding a piece no longer re-renders every card (`useShallow`). Card links no longer prefetch
+  every product page in view; a product page is fetched when the pointer or a finger reaches its card.
+- **The free-delivery bar:** shows with the first piece (its count), asks for the bag's charges at once instead of
+  after a pause, and starts from the last answer kept for the tab.
+- **Endless scroll on every See all page** (replaces "Show more"): the next 24 are asked for when the screen's bottom
+  reaches the row above the last one, and the 24 after them are read ahead, so the cards keep coming until the
+  pieces run out; the address never changes, so the page is never reloaded and the scroll stays put; reaching the end
+  first shows only a loading circle (a "Try again" if a read fails). Pages past the first 480 pieces are read fresh,
+  not kept in the data cache, so scrolling far never grows it.
+- **Store tabs:** "IWC" and "7-day store", nothing under them.
+- **Text taken out** (D-161's ideas that were words, not pictures): the tabs' dates, the festival line, India time,
+  Where's home, the postmark line, the order page's diary lines, the away tab title, the footer promise line, the
+  India-shops line on product pages, and the jokes in small places (sold out, no filter match, search placeholder,
+  404, error, checkout's step and button). Kept, as the founder chose them: "the flight's on us", the empty bag
+  ("Lighter than a tiffin. Let's fix that."), the thank-you heading ("It lands … Clear a shelf."), the emails, Home's
+  heading, the kirana counter and the 7-day rows' names; the product page's duties stamp and week strip (pictures).
+- **The flight** (`features/visuals/flight.tsx`): India's outline (`INDIA_OUTLINE`, the map's states traced as one,
+  under 2 KB), a plane that sews the running stitch to a house once the band is in view, towing a maroon cloth: "Free
+  delivery from $49.99" on the 7-day store, "Free delivery from $99.99" on Home, "For Diwali, order by Oct 31" while a
+  festival can still be reached (on Home it then opens the 7-day store). Drawn in SVG, no image, parked with reduced
+  motion.
+- **The 7-day front page:** the paragraph became a parcel's address label (From India, To your door, "Order today, open
+  it Sat, Oct 31.", duties ticked like a customs box, a rubber stamp with the weekday), the founder's photo beside it,
+  the flight under it, the category tiles on a shop shelf, and a wide seasonal poster between the rows.
+- **The founder's pictures** (`features/visuals/slots.ts`): `seven-day-hero` (1200 × 1500), `seven-day-poster` and
+  `home-poster` (2400 × 800). Empty slots show a labelled frame on local and preview builds and nothing on the live
+  site; to fill one, put the file in `apps/web/public/visuals/` and set its `src` and `alt`.
+*Claude's choices in it (proposed, confirm when convenient):* the address label, the stamp, the shelf and the
+three picture slots; the banner's words; the flight's place on Home (under the album, above Pick your home).

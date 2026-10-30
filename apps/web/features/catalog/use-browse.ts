@@ -91,6 +91,14 @@ export function useBrowse(productType: ProductType, initialQuery: BrowseQuery, i
   const restoreTo = useRef<{ y: number; products: Cards } | null>(null);
   const settled = useRef(false);
   const saveRef = useRef<(y: number) => void>(() => undefined);
+  // the endless scroll's state (showMore, below)
+  const queryRef = useRef(query);
+  queryRef.current = query;
+  const ahead = useRef<{ key: string; offset: number; page: Promise<BrowsePage | null> } | null>(
+    null,
+  );
+  const appending = useRef(false);
+  const [stuck, setStuck] = useState(false);
 
   const load = useCallback(
     async (q: BrowseQuery, offset: number, limit: number): Promise<BrowsePage | null> => {
@@ -116,6 +124,7 @@ export function useBrowse(productType: ProductType, initialQuery: BrowseQuery, i
 
   const replace = useCallback(
     async (q: BrowseQuery): Promise<void> => {
+      ahead.current = null;
       setQuery(q);
       setLoading('replace');
       const page = await load(q, 0, q.show ?? PAGE).catch(() => null);
@@ -135,10 +144,43 @@ export function useBrowse(productType: ProductType, initialQuery: BrowseQuery, i
     [productType, replace],
   );
 
+  // The endless scroll (2026-10-30): one page read at a time, and the next one read ahead as soon as a page lands, so it
+  // is usually here before the shopper reaches the end. The address no longer carries ?show=: changing it made Next
+  // load the page again from the top (the See all route's [show] segment), which is the jump the founder saw.
+
+  const nextPage = useCallback(
+    (q: BrowseQuery, offset: number): Promise<BrowsePage | null> => {
+      const search = browseSearch({ ...q, show: undefined });
+      const a = ahead.current;
+      if (a && a.key === search && a.offset === offset) return a.page;
+      const page = fetch(
+        `/api/browse?type=${productType}&offset=${offset}&limit=${PAGE}${search ? `&${search}` : ''}`,
+      )
+        .then((r) => (r.ok ? (r.json() as Promise<BrowsePage>) : null))
+        .catch(() => null);
+      ahead.current = { key: search, offset, page };
+      return page;
+    },
+    [productType],
+  );
+
   const showMore = useCallback(async (): Promise<void> => {
+    if (appending.current || loading === 'replace' || products.length >= meta.total) return;
+    appending.current = true;
+    const q = query;
+    const from = products.length;
+    setStuck(false);
     setLoading('append');
-    const page = await load(query, products.length, PAGE).catch(() => null);
-    if (!page) return;
+    const page = await nextPage(q, from);
+    appending.current = false;
+    // a filter chosen meanwhile: its own cards are coming, these belong to the old ones
+    if (queryRef.current !== q) return;
+    setLoading(false);
+    if (!page) {
+      ahead.current = null;
+      setStuck(true);
+      return;
+    }
     // D-144: each page brings the next drawer of finishing touches, after the ones already drawn
     setMeta((prev) => {
       const seen = new Set(prev.drawer.map((p) => p.id));
@@ -146,13 +188,11 @@ export function useBrowse(productType: ProductType, initialQuery: BrowseQuery, i
     });
     setProducts((prev) => {
       const seen = new Set(prev.map((p) => p.id));
-      const next = [...prev, ...page.products.filter((p) => !seen.has(p.id))];
-      // the address keeps how many are drawn (a reload or a shared link draws as many), without a new Back step
-      window.history.replaceState(window.history.state, '', browseHref(productType, { ...query, show: next.length }));
-      if (entry.current) entry.current = { ...entry.current, href: here() };
-      return next;
+      return [...prev, ...page.products.filter((p) => !seen.has(p.id))];
     });
-  }, [load, productType, products.length, query]);
+    const next = from + page.products.length;
+    if (page.products.length > 0 && next < page.total) void nextPage(q, next);
+  }, [loading, meta.total, nextPage, products.length, query]);
 
   // On arrival: a snapshot of this entry (Back from a product) wins; else filters only the address has (the cached
   // page knows the state and category only) are read now.
@@ -242,5 +282,5 @@ export function useBrowse(productType: ProductType, initialQuery: BrowseQuery, i
     });
   }, [products]);
 
-  return { query, meta, products, loading, apply, showMore };
+  return { query, meta, products, loading, stuck, apply, showMore };
 }

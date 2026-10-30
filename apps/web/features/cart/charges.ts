@@ -45,12 +45,31 @@ export interface ShipmentNote {
 // Three seconds (the plan); one with Undo stays twice as long, so the button can be reached
 const NOTE_MS = 3000;
 
-const useChargesStore = create<{ key: string; charges: BagCharges | null; moment: BagMoment | null; note: ShipmentNote | null }>(() => ({
-  key: '',
-  charges: null,
-  moment: null,
-  note: null,
-}));
+// The last answer, kept for this tab (2026-10-30): a page load draws the pill at once from it while the bag is unchanged
+const SAVED = 'iwc-bag-charges';
+function saved(): { key: string; charges: BagCharges } | null {
+  if (typeof window === 'undefined') return null;
+  try {
+    const v = JSON.parse(sessionStorage.getItem(SAVED) ?? 'null') as {
+      key?: unknown;
+      data?: unknown;
+    } | null;
+    const charges = v && typeof v.key === 'string' ? parse(v.data) : null;
+    return charges ? { key: v!.key as string, charges } : null;
+  } catch {
+    return null;
+  }
+}
+
+const useChargesStore = create<{
+  key: string;
+  charges: BagCharges | null;
+  moment: BagMoment | null;
+  note: ShipmentNote | null;
+}>(() => {
+  const last = saved();
+  return { key: last?.key ?? '', charges: last?.charges ?? null, moment: null, note: null };
+});
 // The bag key asked for (or about to be): every component calling useBagCharges shares one request per bag.
 let requested = '';
 let pending: ReturnType<typeof setTimeout> | null = null;
@@ -145,6 +164,8 @@ export function useBagCharges(): BagCharges | null {
     // Claimed before the wait, so the pill, the bag and the count mounting together send one request, not four
     requested = key;
     if (pending) clearTimeout(pending);
+    // the first answer at once (the pill waits for it); later ones a moment after the last tap, so quick taps ask once
+    const wait = useChargesStore.getState().charges ? 250 : 0;
     pending = setTimeout(() => {
       pending = null;
       fetch(`/api/bag-charges?items=${encodeURIComponent(key)}`)
@@ -152,6 +173,11 @@ export function useBagCharges(): BagCharges | null {
         .then((data: unknown) => {
           const parsed = parse(data);
           if (!parsed) return;
+          try {
+            sessionStorage.setItem(SAVED, JSON.stringify({ key, data }));
+          } catch {
+            // storage blocked: the next page asks again
+          }
           const state = useChargesStore.getState();
           const moment = momentOf(useCart.getState().lines, parsed);
           const note = shipmentNote(state.moment, moment);
@@ -166,7 +192,7 @@ export function useBagCharges(): BagCharges | null {
         .finally(() => {
           if (requested === key) requested = '';
         });
-    }, 250);
+    }, wait);
   }, [key, have]);
   return key ? charges : null;
 }

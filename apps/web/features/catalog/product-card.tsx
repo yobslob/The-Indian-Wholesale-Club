@@ -1,10 +1,9 @@
-import Link from 'next/link';
-
 import { formatUsd, productPath } from '@repo/shared/domain';
 
 import { SaveButton } from '@/features/account/save-button';
 import { mediaUrl } from '@/lib/site';
 
+import { CardLink } from './card-link';
 import { QuickAdd } from './quick-add';
 import { StorePhoto } from './store-photo';
 
@@ -62,7 +61,7 @@ export function ProductCard({
   return (
     <article className="product-card relative min-w-0">
       <div className="relative">
-        <Link
+        <CardLink
           href={href}
           className={`bg-land group relative block aspect-[3/4] overflow-hidden ${small ? 'rounded-[18px]' : 'rounded-lg'}`}
           data-reveal={reveal ? '' : undefined}
@@ -96,7 +95,7 @@ export function ProductCard({
               {product.pack}
             </span>
           ) : null}
-        </Link>
+        </CardLink>
         {product.coming_soon ? (
           // D-135: not on sale yet: the heart instead of the +, and what saving does (D-140, S7)
           <div className="absolute bottom-2.5 right-2.5 z-[1] flex items-center gap-2">
@@ -135,12 +134,12 @@ export function ProductCard({
         ) : null}
       </div>
       <div className={`product-card-text ${small ? 'pl-2 pt-2.5' : 'pl-3.5 pr-1.5 pt-3.5'}`}>
-        <Link
+        <CardLink
           href={href}
           className={`product-card-name font-ui block font-semibold leading-snug ${small ? 'text-[13.5px]' : 'text-[15px]'}`}
         >
           {product.name}
-        </Link>
+        </CardLink>
         <span className={`product-card-meta text-ink-muted ${small ? 'text-[13px]' : 'text-sm'}`}>
           {product.coming_soon ? 'Coming soon' : formatUsd(product.price_cents)}
           {product.region_name ? ` · ${product.region_name}` : null}

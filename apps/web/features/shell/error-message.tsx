@@ -19,8 +19,8 @@ export function ErrorMessage({
       </h1>
       <p className="mb-6 mt-2.5 text-lg leading-normal text-black">
         {kind === 'not-found'
-          ? 'This page went home and didn’t come back. Happens to the best of us.'
-          : 'Something cracked, like a papad. That’s on us, not you. Try again, and if it keeps happening, give it a few minutes.'}
+          ? 'We looked everywhere, even under the bed. This page isn’t here.'
+          : 'That’s on us, not you. Try again, and if it keeps happening, give it a few minutes.'}
       </p>
       <div className="flex flex-wrap gap-2.5">
         {onRetry ? (

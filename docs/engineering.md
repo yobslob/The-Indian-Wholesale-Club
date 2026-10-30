@@ -78,7 +78,7 @@ Baseline numbers come from the founder's first `node scripts/check.mjs` run and 
 | What | Cached? | Tags | Refreshed by |
 |---|---|---|---|
 | Home, region page, product page | yes (`unstable_cache` + the page's static render) | `store` + `store:home` / `store:region:<slug>` (and `store:regions` on every state page) / `store:product:<region>/<slug>` | a sale (`revalidateAfterSale`: the products sold, their regions, Home), an admin change to listings (D-145, `features/admin/refresh-listings.ts`: their own pages, their state pages, Home, See all; a draft's edit nothing; over 100 listings everything), a cancel, the automatic cutoff and any other admin change (everything), else 5 minutes |
-| See all (`/clothing`, `/food`, `/home-and-gifts`), sitemap | yes | `store` + `store:listings` | admin changes, else 5 minutes. Light cards without stock, so a sale never changes them. Each address with its filters is a cached page (rewritten to `app/(store)/see-all/…`, not rendered per request: 61 – 169 ms before, 7 – 13 ms after, 2026-10-15); a filter combination nobody opened yet is built on its first visit. D-136: the filters and Show more fetch `GET /api/browse` (no response cache; each filter set and page is its own `store_browse()` entry in the data cache) and swap only the cards |
+| See all (`/clothing`, `/food`, `/home-and-gifts`), sitemap | yes | `store` + `store:listings` | admin changes, else 5 minutes. Light cards without stock, so a sale never changes them. Each address with its filters is a cached page (rewritten to `app/(store)/see-all/…`, not rendered per request: 61 – 169 ms before, 7 – 13 ms after, 2026-10-15); a filter combination nobody opened yet is built on its first visit. D-136: the filters and the endless scroll (D-166) fetch `GET /api/browse` (CDN-kept a minute; each filter set and page within the first 480 pieces is its own `store_browse()` entry in the data cache, deeper pages are read fresh so scrolling far never grows it) and swap or append only the cards, never touching the address |
 | Search | no (per query; one `store_search_page()` read, 6 – 40 ms on 7,200 listings, D-160). Its suggestions' list (`/api/search/hints`) is CDN-kept an hour, never per keystroke | | |
 | Cart, checkout, orders, account, every API route, admin | **never** (session or service clients, `cookies()`, POST routes) | | |
 - A sale is refreshed from `features/checkout/finalize.ts` once the order exists (browser or webhook, whichever is first),
@@ -94,8 +94,10 @@ Baseline numbers come from the founder's first `node scripts/check.mjs` run and 
 - Bump `SHAPE` in `features/catalog/data.ts` whenever a cached store_* result changes shape.
 - D-145: Vercel counts page-cache writes by size (8 KB units, 200,000 a month free), and every page is stored twice
   (its HTML and its data). Cached store reads keep a card's options out (`slim-cards.ts`: their number and whether all are
-  sold out; one option stays), and the + reads them from `GET /api/card-options` when pressed; ProductCard passes the + only
-  the fields it uses, not the whole card. The website deploys once a day (ops.md §Deploy): each deploy starts the page
+  sold out; one option stays), and the + reads them from `GET /api/card-options`: D-166, while a several-option card
+  comes near the screen, every such card of that moment in one `?ids=` request (up to 48), so the + opens at once.
+  ProductCard passes the + only the fields it uses, not the whole card. Its links prefetch on pointer, touch or focus
+  (`card-link.tsx`), never for every card in view (each viewport prefetch was a product page's request). The website deploys once a day (ops.md §Deploy): each deploy starts the page
   cache afresh. The same for every See all read: its Size / Pack list is kept to the 60 biggest when it runs past 100
   (`size-facet.ts`: Food's 1,687 packs were 540 KB of /food's HTML).
 - Public, visitor-free JSON answers carry `s-maxage` so Vercel's CDN answers repeats without running a function (free;

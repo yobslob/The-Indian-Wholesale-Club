@@ -90,8 +90,9 @@ export function CheckoutSuccess({
         </h1>
         <p className="text-ink">
           Your order number is <strong>{number}</strong>.{' '}
-          {signedIn ? 'Your confirmation is in your email too.' : 'We have emailed your confirmation with the estimated delivery window.'}{' '}
-          We&rsquo;ll write when it&rsquo;s on its way. No spam, promise.
+          {signedIn
+            ? 'Your confirmation is in your email too.'
+            : 'We have emailed your confirmation with the estimated delivery window.'}
         </p>
         {door && door.from === door.to ? <WeekStrip day={door.to} /> : null}
         <OrderStitch state={order?.state ?? null} />

@@ -2,10 +2,18 @@
 
 import { useRef } from 'react';
 
-import { browseHref, MOST, priceLabel, sortsFor, WHO_LABEL, withFilter, type BrowseQuery } from './browse-query';
+import {
+  browseHref,
+  priceLabel,
+  sortsFor,
+  WHO_LABEL,
+  withFilter,
+  type BrowseQuery,
+} from './browse-query';
 import { FilterPanel } from './filter-panel';
 import styles from './filters.module.css';
 import { DRAWER_EVERY, DRAWER_SIZE, FinishingDrawer } from './finishing-drawer';
+import { MoreOnScroll } from './more-on-scroll';
 import { PhoneFilter } from './phone-filter';
 import { ProductCard } from './product-card';
 import { useBrowse } from './use-browse';
@@ -14,8 +22,6 @@ import { WhoTiles } from './who-tiles';
 import type { BrowsePage, BrowseSort } from '@repo/db/store';
 import type { ProductType } from '@repo/shared/domain';
 
-const pill =
-  'font-ui border-line bg-paper hover:border-ink inline-flex min-h-11 shrink-0 items-center gap-2 rounded-pill border px-6 text-sm font-medium transition-colors disabled:opacity-60';
 const pieces = (n: number): string => `${n} ${n === 1 ? 'piece' : 'pieces'}`;
 /** The count, with Clothing's finishing touches when they are in a drawer (D-144): "652 pieces · 40 finishing touches". */
 const counted = (meta: { total: number; drawer_total: number }): string =>
@@ -25,7 +31,7 @@ const counted = (meta: { total: number; drawer_total: number }): string =>
 
 /**
  * A See all page's heading, filters and cards (D-136): the filter panel on the left from 1024 px (the Filter bar and
- * side panel below that), what is chosen as chips with ×, the sort, the grid and Show more. Choosing anything swaps
+ * side panel below that), what is chosen as chips with ×, the sort, the grid and its endless scroll. Choosing anything swaps
  * only the cards (use-browse.ts); the page around them stays as it is. D-144: low to high by default, and on Clothing
  * the finishing touches in a drawer after the second row of every 24 cards.
  */
@@ -43,7 +49,11 @@ export function BrowseView({
   /** D-154: the 7-day days, for "Delivery: in 7 days"; null while 7-day delivery is off. */
   quickDays?: number | null;
 }): React.JSX.Element {
-  const { query, meta, products, loading, apply, showMore } = useBrowse(productType, initialQuery, initial);
+  const { query, meta, products, loading, stuck, apply, showMore } = useBrowse(
+    productType,
+    initialQuery,
+    initial,
+  );
   const results = useRef<HTMLDivElement>(null);
 
   // D-157: on a state's own page the state is the page's: no State filter, chip or name in the heading
@@ -156,10 +166,14 @@ export function BrowseView({
           </div>
           {products.length === 0 && meta.drawer.length === 0 && !loading ? (
             <p className="text-ink-muted">
-              Nothing matches. Even Mumbai traffic moves more than this.{' '}
+              Nothing matches all of these.{' '}
               {chosen ? (
-                <button type="button" className="underline underline-offset-4" onClick={() => change(clearAll)}>
-                  Loosen the filters
+                <button
+                  type="button"
+                  className="underline underline-offset-4"
+                  onClick={() => change(clearAll)}
+                >
+                  Clear the filters
                 </button>
               ) : null}
             </p>
@@ -193,25 +207,13 @@ export function BrowseView({
             </div>
           )}
           {products.length < meta.total && loading !== 'replace' ? (
-            <div className="flex flex-col items-center gap-3 pt-10">
-              <p className="text-ink-muted text-sm">
-                Showing {products.length} of {meta.total}
-              </p>
-              {products.length < MOST ? (
-                <a
-                  href={browseHref(productType, { ...query, show: products.length + 24 })}
-                  className={pill}
-                  aria-disabled={loading === 'append'}
-                  onClick={(e) => {
-                    if (e.metaKey || e.ctrlKey || e.shiftKey || e.button !== 0) return;
-                    e.preventDefault();
-                    if (!loading) void showMore();
-                  }}
-                >
-                  {loading === 'append' ? 'Loading…' : 'Show more'}
-                </a>
-              ) : null}
-            </div>
+            // 2026-10-30: the endless scroll; the next cards come as the last row comes into view
+            <MoreOnScroll
+              onNear={showMore}
+              busy={loading === 'append'}
+              stuck={stuck}
+              count={products.length}
+            />
           ) : null}
         </div>
       </div>

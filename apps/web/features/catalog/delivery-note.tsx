@@ -12,8 +12,8 @@ import type { DeliveryWindow } from '@repo/db/store';
  * hard-coded promise. A piece already in the US
  * (D-072) has its own window: today + the US delivery days, and a 7-day piece (D-148) today + the 7-day days. D-154:
  * a 7-day piece shows the usual window and its own date with $49.99 of 7-day pieces (the line from Settings). D-161
- * (the homesick plan): "At your door … if you order today", "Duties paid. Nothing to pay at your door." with its stamp,
- * and a 7-day piece's week strip.
+ * (the homesick plan): one way of saying it, "At your door …", then "Duties paid. Nothing to pay at your door." with its
+ * stamp, and a 7-day piece's week strip.
  */
 export function DeliveryNote({
   delivery,
@@ -40,8 +40,8 @@ export function DeliveryNote({
           </>
         ) : null}
         <span className={delivery ? 'text-ink-muted' : undefined}>
-          With {formatUsd(quickLine.minCents)} of 7-day pieces, <strong className="text-ink">{dates(quick)}</strong>, and
-          the delivery is free.
+          A bag of only 7-day pieces: <strong className="text-ink">{dates(quick)}</strong>, free
+          from {formatUsd(quickLine.minCents)}.
         </span>
       </>
     );
@@ -66,7 +66,7 @@ export function DeliveryNote({
   } else {
     line = (
       <>
-        From India to your door <strong>{dates(delivery)}</strong>
+        At your door <strong>{dates(delivery)}</strong>
         {delivery.order_by ? (
           <span className="text-ink-muted">
             {' '}

@@ -13,6 +13,7 @@
     "./domain": "./src/domain/index.ts",
     "./india-map": "./src/india-map/index.ts",
     "./india-map/mark": "./src/india-map/mark.ts",
+    "./india-map/outline": "./src/india-map/outline.ts",
     "./info": "./src/info/index.ts",
     "./search": "./src/search/index.ts",
     "./admin": "./src/admin/index.ts",

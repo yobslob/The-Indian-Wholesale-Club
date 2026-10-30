@@ -405,3 +405,32 @@ export async function getCardOptions(client: IwcClient, productId: string): Prom
   );
   return z.array(cardOptionSchema).parse(rows);
 }
+
+/**
+ * Several cards' options in one read (2026-10-30): the cards with several options a page has on screen, read while the
+ * shopper looks, so a + opens at once. Up to 48 pieces, each with the same 20 options as getCardOptions, in its order.
+ */
+export async function getCardOptionsFor(
+  client: IwcClient,
+  productIds: string[],
+): Promise<Record<string, CardOption[]>> {
+  const ids = [...new Set(productIds)].slice(0, 48);
+  const out: Record<string, CardOption[]> = Object.fromEntries(
+    ids.map((id) => [id, [] as CardOption[]]),
+  );
+  if (ids.length === 0) return out;
+  const rows = unwrap(
+    await client
+      .from('store_variants')
+      .select('product_id, id, label, options, price_cents, available')
+      .in('product_id', ids)
+      .order('sort_order')
+      .order('label')
+      .limit(1000),
+  );
+  for (const row of rows) {
+    const list = out[row.product_id];
+    if (list && list.length < 20) list.push(cardOptionSchema.parse(row));
+  }
+  return out;
+}

@@ -1,13 +1,6 @@
 import Link from 'next/link';
 
-import { DUTIES_PAID } from '@repo/shared/domain';
-
 import { INFO_LINKS, isInfoPath, SITE_NAME } from '@/lib/site';
-
-import { IndiaTime } from './india-time';
-
-/** The homesick plan's footer line (D-161): what every parcel is, in five words. */
-const PROMISE = DUTIES_PAID ? 'Bought in India. Duties paid. At your door.' : 'Bought in India. At your door.';
 
 const COLUMNS = [
   {
@@ -54,7 +47,7 @@ const MAP_CREDIT = (
 
 /**
  * Store footer (D-079): Karla; four columns from tablet up, without Clothing and Food (their pages stay); on phones one
- * small block. Carries the map's licence credit (D-052). D-161: the promise line and India time.
+ * small block. Carries the map's licence credit (D-052).
  */
 export function SiteFooter(): React.JSX.Element {
   return (
@@ -63,10 +56,8 @@ export function SiteFooter(): React.JSX.Element {
         <div className="grid grid-cols-4 gap-x-[var(--gap)] gap-y-8">
           <div>
             <p className="text-canvas mb-2.5 text-lg">{SITE_NAME}</p>
-            {/* TODO(founder): approve the footer line (storefront.md voice, D-019; D-161's promise line). */}
+            {/* TODO(founder): approve the footer line (storefront.md voice, D-019). */}
             <p className="max-w-[30ch]">Clothing, food and gifts from all of India, delivered in the US.</p>
-            <p className="text-canvas mt-3 max-w-[30ch] font-medium">{PROMISE}</p>
-            <IndiaTime className="mt-3 max-w-[34ch] text-[13px] leading-relaxed" />
           </div>
           {COLUMNS.map((col) => (
             <div key={col.title}>
@@ -89,8 +80,6 @@ export function SiteFooter(): React.JSX.Element {
         </div>
       </div>
       <div className="py-5 text-xs md:hidden">
-        <p className="text-canvas mb-1 text-[13px] font-medium">{PROMISE}</p>
-        <IndiaTime className="mb-2 text-[12px] leading-relaxed" />
         <nav aria-label="Footer" className="flex flex-wrap gap-x-4">
           {MINI.map((link) => (
             <Link key={link.href} href={link.href} prefetch={isInfoPath(link.href) ? false : undefined} className="text-canvas py-2">

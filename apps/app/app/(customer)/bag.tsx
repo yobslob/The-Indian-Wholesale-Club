@@ -26,7 +26,7 @@ function EmptyBag(): React.JSX.Element {
   const { data } = useQuery('home', () => getHome(supabase));
   return (
     <>
-      <Body>Your bag is lighter than an empty tiffin. Your mother would be worried. Find something from home.</Body>
+      <Body>Lighter than a tiffin. Let’s fix that.</Body>
       {data ? (
         <>
           <View className="gap-3">

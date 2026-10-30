@@ -31,20 +31,25 @@ Short on purpose: **replace** lines when something changes, don't append. Histor
   workflow, which the founder runs.
 
 ## What is built (details in the doc named; decisions in `decisions.md`)
+- **Faster cards, endless scroll, pictures not text (D-166, 2026-10-30, not deployed):** a several-option card's +
+  opens at once (its options read while it comes near the screen, a whole screen in one request); the free-delivery
+  bar shows with the first piece; every See all page scrolls on by itself until the pieces run out (the address never
+  changes, no reload, no jump to the top); the tabs read "IWC" and "7-day store". D-161's text-only touches are gone
+  (tab dates, festival line, India time, Where's home, postmarks, diary, away title, footer promise, the jokes); the
+  flight (a plane from India towing the free line or Diwali's last day) on Home and the 7-day store, whose front page is
+  now an address label with a stamp, the founder's photo, a shelf of categories and a seasonal poster. Three picture
+  slots wait for the founder (`apps/web/features/visuals/slots.ts`).
 - **Diwali list and 7-day sources (D-162, 2026-10-26, proposed, not deployed):** `targets/diwali-home-gifts.csv` (100
   home targets, up to 1,515 listings: 25 on the four quick shops, 36 all-India and 39 state crafts on Amazon and
   Flipkart at ₹1 – ₹900; nothing lit, battery-run, flammable, loose-powdered, cow-dung, feathered or edible). A listing
   that can be bought whole from the quick shops is bought there (its 7-day tag), when added and at every check
   (migration `20261101090000_quick_sources`); `pnpm quick:sources` switches the ones settled before it.
-- **The homesick design (D-161, 2026-10-26, words are drafts, not deployed):** the founder's plan
-  (`docs/archive/plan-homesick.md`) on the website and app: Home's "We go home so you don't have to.", the store tabs'
-  dates ("At your door by Nov 11", "Monday at your door"), 7-day cards "Mon at your door", the 7-day front page "Home is
-  7 days away. Order today, open it …", Home's band and the footer with both free lines and "Duties paid", the product
-  page's door date, duties stamp and week strip, the pill as a flight path with "Coming home …", postmarks in the bag
-  and checkout, "It lands … Clear a shelf." with Add to calendar, the order page's diary line, every customer email
-  rewritten, the festival clock (Diwali), Where's home, India time, the kirana counter, the away tab title. Migration
-  `20261031090000_policy_days` (the standard days in `store_policy()`); without it the IWC tab says "All 36 states"
-  and the pill's first "Coming home" waits for the bag's answer.
+- **The homesick design (D-161, 2026-10-26, words are drafts; its text-only parts taken out by D-166):** the founder's
+  plan (`docs/archive/plan-homesick.md`): Home's "We go home so you don't have to.", 7-day cards "Mon at your door", the
+  7-day front page "Home is 7 days away.", Home's band with both free lines and "Duties paid", the product page's door
+  date, duties stamp and week strip, the pill as a flight path with "Coming home …", "It lands … Clear a shelf." with Add
+  to calendar, every customer email rewritten, the kirana counter. Migration `20261031090000_policy_days` (the standard
+  days in `store_policy()`); without it the pill's first "Coming home" waits for the bag's answer.
 - **Search (D-160, 2026-10-26, proposed, not deployed):** one `store_search_page()` read: English stems ("kurtis" finds
   kurti), a synonym list (Claude's draft: sari = saree, haldi = turmeric, punjabi = Punjab), spelling fixes from the
   listings' own words ("kurtha" → "Showing pieces for kurta"), "some of the words" instead of nothing, buyable pieces
@@ -106,6 +111,9 @@ Short on purpose: **replace** lines when something changes, don't append. Histor
   email job's secret compared in constant time.
 
 ## Next for the founder
+0. **D-166 (2026-10-30): run `node scripts/check.mjs` before pushing** (typecheck passed; lint, build and e2e were not
+   run). Then look at `/7-day-delivery` and Home on `pnpm dev`: the three empty
+   picture slots show what each wants; fill them in `apps/web/features/visuals/slots.ts`.
 1. **Run the Deploy workflow** (Actions → Deploy) for `20261103090000_photo_redo_modes` (D-164).
 2. **The photo redo again, the new way (D-164), after the deploy:** pull the code on the laptop. Then, in order:
    `pnpm photos:redo fetch --type food --again` and `--type home --again` (every photo of each listing is planned now,
@@ -199,6 +207,7 @@ Short on purpose: **replace** lines when something changes, don't append. Histor
 ## Last verification
 | Date | Commit | Where | Result |
 |---|---|---|---|
+| 2026-10-30 | D-166 faster cards, endless scroll, the tabs' names, pictures not text | Claude, cloud sandbox (no npm) and the founder's PC through the desktop link (its node_modules read from a Linux shell) | typecheck OK: `tsc --noEmit` for apps/web, packages/shared and packages/db on the committed files (a planted type error was caught, so the check was real). `homesick.test.ts` 3/3 and `bag-shipments`, `bag-goal` (19 with the homesick file) under node's own TypeScript; every changed .ts/.tsx file parses (TypeScript's transpiler); `docs-audit` OK. The flight and the door label rendered from the real components with React's server renderer and shot in Chromium at 1280 and 390 px (parked, and mid-flight with the stitch sewn behind the plane); `INDIA_OUTLINE` traced from the map's states and checked by eye. **Not run:** ESLint (its plugins would not load from the shell), web tests, build, http, e2e (`rows.spec.ts` and `seven-day-bag.spec.ts` changed for the endless scroll and the tabs), bundle. Run `node scripts/check.mjs` before pushing. |
 | 2026-10-30 | D-165 clothing faces swapped, cuts at the chin | Claude Code, the founder's laptop (RTX 4060; `check.mjs docs typecheck lint test`) | all OK. 164 live clothing photos (the women's model on every face; no men's model): 74 swapped, 8 cut at the chin (four back views with the head turned, two still the same person, two people, one moved), 82 without a face, 90 s in all; every swap and cut looked at by eye (seams 1 - 2.2 Lab), the neck kept in every cut; a collage of earrings goes to the founder. `redo.py` on a local test listing: two swapped, one reframed, one portrait to the founder. **Not run:** production, men's faces, publishing a swapped photo (the publish path is unchanged since D-164's run). |
 | 2026-10-30 | D-164 photo redo, the safe way | Claude Code, the founder's laptop (RTX 4060, Docker; `check.mjs docs typecheck lint test`, `db-test.mjs` photo_redo (31) and schema) | all OK. Faces on 164 live clothing photos (the women's model on every face: no men's model on the laptop): 34 drawn again and passed every check, 39 cut under the chin, 9 portraits left for the founder, 82 without a face reframed; all 34 drawn looked clean by eye (8 checked close up), one chin seam the checks now catch; no full face among the 82 (three the shop had already cut at the nose keep lips and chin). The light refresh on 16 food and home photos: every one 14 bits or more from the shop's; transparent backdrops now white. End to end on the local database with local storage's S3 for R2: fetch (every food and home photo), `redo.py` (face, crop, fresh, a portrait), the review page in the browser pane (Remove photo, approve the rest), publish (new paths, `fresh`, a photo removed, a clothing listing in one go), the sweep. **Not run:** production, men's faces, `build`, `e2e`. |
 | 2026-10-27 | D-163 photo redo; the runner's memory fix | Claude Code, the founder's laptop (RTX 4060, Docker; `check.mjs docs typecheck lint test`, `db-test.mjs` without a reset) | docs, typecheck, lint, test OK; SQL 66 / 68: `photo_redo.test.sql` (27) and `schema.test.sql` pass, `price_sheet` and `seven_day_insights` fail on the local data without a reset (as noted on 2026-10-26). The whole redo on the local database with local storage's S3 standing in for R2, on 24 photos from the live site: fetch (all 3 of a kurti's photos, food's and home's main only), `redo.py` (3 clothing photos, 2 food, 1 home: all passed their checks; garment and product pixels changed: 0), the review page in the browser pane, publish (new paths, `redo` set, home's scene first and plain photo second), the sweep (5 replaced photos' copies deleted, home's plain one kept), a second fetch finding nothing, the audit. Faces checked by eye: a different woman, the same one across a listing. Runner: Playwright kept 618 MB for 300 photo downloads, 37 MB once disposed; the restart loop run with a stand-in child. **Not run:** production (migration, R2, a real runner run of hours), `build`, `e2e`, men's photos (no men's house model on the laptop). |

@@ -4,11 +4,12 @@ import { z } from 'zod';
 import { PRODUCT_TYPES } from '@repo/shared/domain';
 
 import { MOST, PAGE, parseBrowseQuery, toBrowseFilter } from '@/features/catalog/browse-query';
-import { browseCached } from '@/features/catalog/data';
+import { browseCached, browseFresh } from '@/features/catalog/data';
 import { limitRequestLocal } from '@/lib/rate-limit';
 
 const type = z.enum(PRODUCT_TYPES);
-const offset = z.coerce.number().int().min(0).max(MOST).catch(0);
+// the endless scroll reads on to the last piece (2026-10-30), a page at a time
+const offset = z.coerce.number().int().min(0).max(100_000).catch(0);
 const limit = z.coerce.number().int().min(1).max(MOST).catch(PAGE);
 
 /**
@@ -23,9 +24,10 @@ export async function GET(request: Request): Promise<NextResponse> {
   const productType = type.safeParse(params.get('type'));
   if (!productType.success) return NextResponse.json({ error: 'Unknown product type.' }, { status: 400 });
   const from = offset.parse(params.get('offset') ?? 0);
-  const count = Math.min(limit.parse(params.get('limit') ?? PAGE), MOST - from);
-  if (count <= 0) return NextResponse.json({ error: 'No more pieces on one page.' }, { status: 400 });
-  const page = await browseCached(toBrowseFilter(productType.data, parseBrowseQuery(params), from, count));
+  const count = limit.parse(params.get('limit') ?? PAGE);
+  const filter = toBrowseFilter(productType.data, parseBrowseQuery(params), from, count);
+  // the first 480 from the data cache, as before; deeper pages fresh, so the cache never grows with the scroll
+  const page = await (from + count <= MOST ? browseCached(filter) : browseFresh(filter));
   // The same answer for everyone (light cards, no stock): Vercel's CDN keeps it a minute, like /api/card-options, so a
   // filter or Show more someone opened before answers from the edge (about 20 ms, no function run) instead of a
   // function and a data-cache read (about 250 ms). Free: CDN caching is not the page cache (monitoring.md).

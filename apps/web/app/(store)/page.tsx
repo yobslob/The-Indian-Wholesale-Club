@@ -1,3 +1,5 @@
+import { formatUsd } from '@repo/shared/domain';
+
 import { PAGE } from '@/features/catalog/browse-query';
 import { getHomeCached, getStorePolicyCached, quickPageCached } from '@/features/catalog/data';
 import { ProductRow } from '@/features/catalog/product-row';
@@ -6,12 +8,13 @@ import { HomeHero } from '@/features/home/home-hero';
 import { JustListed } from '@/features/home/just-listed';
 import { PickHome } from '@/features/regions/pick-home';
 import { RegionAlbum } from '@/features/regions/region-album';
-import { WelcomeBack } from '@/features/regions/where-home';
+import { Flight } from '@/features/visuals/flight';
+import { VisualSlot } from '@/features/visuals/visual-slot';
 import { QUICK_HOME } from '@/lib/site';
 
 /**
  * Home (storefront.md, storefront.md §Direction, D-050 – D-055, D-113): the photo hero, the album of all of India (the
- * region pages' drifting mosaic), Pick your home, then Just listed (a row per type with its See all, D-062, D-140).
+ * region pages' drifting mosaic), the flight (founder 2026-10-30), Pick your home, the founder's wide picture (slots.ts), then Just listed (a row per type with its See all, D-062, D-140).
  * One cached store_home() call (PR-1, PR-2). Runs edge to edge (data-bleed); sections keep the gutter. D-154: while the
  * 7-day store is open, one row "Arrives in 7 days" before Just listed (the 7-day page's cached first page, refreshed
  * with Home when listings change).
@@ -27,6 +30,15 @@ export default async function HomePage(): Promise<React.JSX.Element> {
 
       <div className="px-[var(--gut)]">
         <RegionAlbum photos={home.album} regionName="India" reveal />
+        {/* founder 2026-10-30: the plane from India with its banner (the free line, or a festival's last order day) */}
+        <Flight
+          free={
+            home.band?.free_min_cents
+              ? `Free delivery from ${formatUsd(home.band.free_min_cents)}`
+              : null
+          }
+          festival="any"
+        />
       </div>
 
       <section id="pick" aria-labelledby="pick-home" className="px-[var(--gut)] py-[clamp(28px,3.4vw,56px)]">
@@ -35,12 +47,15 @@ export default async function HomePage(): Promise<React.JSX.Element> {
             Pick your home
           </h2>
           <p className="text-ink-muted mt-1.5 text-sm">
-            Where&rsquo;s home? All 28 states and 8 union territories, on the map or by name.
+            All 28 states and 8 union territories. Find yours on the map or by name.
           </p>
-          <WelcomeBack />
         </div>
         <PickHome regions={home.regions} delivery={home.delivery} />
       </section>
+
+      <div className="px-[var(--gut)]">
+        <VisualSlot id="home-poster" />
+      </div>
 
       <div className="px-[var(--gut)]">
         {quick && quickDays ? (

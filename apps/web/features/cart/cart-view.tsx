@@ -8,18 +8,17 @@ import { bagShipmentState, formatUsd } from '@repo/shared/domain';
 import { BagLines } from './bag-lines';
 import { ChargeLines } from './charge-lines';
 import { useBagCharges } from './charges';
-import { PostmarkLine } from './postmarks';
 import { cartSubtotalCents, useCart } from './store';
 
 export const checkoutButton = 'bg-brand text-on-brand font-ui inline-grid h-[52px] place-items-center rounded-pill px-7 text-base font-semibold';
 
-/** The empty bag's line with its link (D-161, the homesick plan's words): the page and the panel both start with it. */
+/** The empty bag's line with its link (D-161, the founder's pick of the plan's words): the page and the panel both start with it. */
 export function EmptyLine(): React.JSX.Element {
   return (
     <p className="text-ink m-0 text-base">
-      Your bag is lighter than an empty tiffin. Your mother would be worried.{' '}
+      Lighter than a tiffin.{' '}
       <Link href="/states" className="underline underline-offset-[3px]">
-        Find something from home
+        Let&rsquo;s fix that
       </Link>
       .
     </p>
@@ -40,7 +39,6 @@ export function Subtotal(): React.JSX.Element {
         Subtotal <b className="font-bold">{formatUsd(cartSubtotalCents(lines))}</b>
       </p>
       <ChargeLines />
-      <PostmarkLine names={lines.map((l) => l.regionName)} />
       <small className="text-ink-muted font-body block text-[13px] font-normal">
         {dated ? 'Tax is added at checkout, where your address confirms the dates.' : 'Tax and delivery dates are shown at checkout.'}
       </small>

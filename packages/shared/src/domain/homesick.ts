@@ -2,7 +2,7 @@ import { formatDeliveryWindow } from './delivery';
 import { dayDate, quickDates } from './bag-shipments';
 
 /**
- * The homesick plan's lines (D-161): the date as a day name, the festival clock, the weekend line and India's hour.
+ * The homesick plan's lines (D-161): the date as a day name, the festival clock and the flight's festival banner.
  * Every date is worked out from the days in Settings and today (non-negotiable 4), on the database's calendar (UTC),
  * as quickDates does, so a line says what the bag and checkout will. Pure, so the website and the app share it and
  * it has tests (homesick.test.ts). The words are Claude's drafts from the plan until the founder approves them (D-059).
@@ -93,47 +93,21 @@ export function festivalClock(
   return null;
 }
 
-/** The clock as one line: "Diwali is Sun, Nov 8. 7-day pieces ordered by Sat, Oct 31 get there in time." */
-export function festivalLine(c: FestivalClock | null): string | null {
-  if (!c) return null;
-  if (c.standardBy) return `${c.name} is ${c.date}. Order by ${dayDate(c.standardBy)} and it all gets there in time.`;
-  if (c.lastDay) return `Last day for ${c.name}: 7-day pieces ordered today get there in time.`;
-  return `${c.name} is ${c.date}. 7-day pieces ordered by ${dayDate(c.quickBy!)} get there in time.`;
-}
-
 /**
- * Friday to Sunday, when an order lands exactly a week later: "Order this weekend, cook with it next weekend." (the
- * plan's idea 1; no weekend promise beyond the real weekday, decision 4). Null on other days or other day counts.
+ * The flight's banner while a festival is near (founder 2026-10-30): "For Diwali, order by Oct 31", short enough for a
+ * towed cloth. `which` picks whose last order day: the 7-day store's, or the whole store's (Home), falling back to the
+ * 7-day one; `quickOnly` then says only 7-day pieces make it. Null without a festival an order can still reach.
  */
-export function weekendLine(quick: { min: number; max: number } | null, now: Date = new Date()): string | null {
-  if (!quick || quick.min !== 7 || quick.max !== 7) return null;
-  const d = now.getUTCDay();
-  return d === 5 || d === 6 || d === 0 ? 'Order this weekend, cook with it next weekend.' : null;
-}
-
-/** India's hours and what they sound like (the plan's India time). */
-const INDIA_HOURS: readonly [from: number, line: string][] = [
-  [1, "India's asleep. Even the street dogs."],
-  [5, 'Somewhere a pressure cooker just whistled.'],
-  [7, "Chai's on. Someone's reading the paper out loud."],
-  [9, 'Horns, tiffins and the school bus.'],
-  [12, 'Lunch, then the nap nobody admits to.'],
-  [15, 'Chai and samosa o’clock.'],
-  [18, 'Temple bells and the evening walk.'],
-  [20, 'Dinner, and the TV serial everyone pretends not to watch.'],
-  [22, 'Cricket highlights and one last chai.'],
-];
-
-/** "9:40 pm" in India and the line for its hour. */
-export function indiaTime(now: Date = new Date()): { time: string; line: string } {
-  // India has one zone, five and a half hours ahead of UTC, with no summer time
-  const ist = new Date(now.getTime() + 330 * 60_000);
-  const h = ist.getUTCHours();
-  const m = ist.getUTCMinutes();
-  const time = `${h % 12 === 0 ? 12 : h % 12}:${String(m).padStart(2, '0')} ${h < 12 ? 'am' : 'pm'}`;
-  let line = INDIA_HOURS[INDIA_HOURS.length - 1]![1]; // midnight to 1 am: still the cricket
-  for (const [from, l] of INDIA_HOURS) if (h >= from) line = l;
-  return { time, line };
+export function festivalBanner(
+  c: FestivalClock | null,
+  which: 'quick' | 'any',
+): { words: string; quickOnly: boolean } | null {
+  const by = !c ? null : which === 'quick' ? c.quickBy : (c.standardBy ?? c.quickBy);
+  if (!c || !by) return null;
+  return {
+    words: `For ${c.name}, order by ${formatDeliveryWindow(by, by)}`,
+    quickOnly: which === 'any' && !c.standardBy,
+  };
 }
 
 /**
