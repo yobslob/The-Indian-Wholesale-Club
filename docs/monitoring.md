@@ -18,7 +18,7 @@ A number past its **budget** is a warning (look for the cause that week); past t
 | Supabase | Egress (Usage) | 2.5 GB | 4 GB | photos read from Supabase instead of R2, the photo move or the weight tools reading everything at once, big admin exports |
 | Supabase | Storage | 100 MB | 500 MB | uploads not moved to R2 (`pnpm photos:move -- --clean` lists and removes them) |
 | Supabase | Monthly active users | 25,000 | 40,000 | real growth: good news, plan the paid tier |
-| Cloudflare R2 | Storage (R2 → bucket → Metrics) | 6 GB (about 4 GB in use) | 9 GB | repeats kept (D-142), originals stored, copies of deleted listings or photos (`pnpm photos:redo audit` lists them; `--delete` removes them) |
+| Cloudflare R2 | Storage (R2 → bucket → Metrics) | 6 GB (about 4 GB in use) | 9 GB | repeats kept (D-142), originals stored, copies of deleted listings or photos (`pnpm photos:redo audit` lists them; `--delete` removes them). What deletes them as it goes: a photo or album photo removed in admin, a re-import's replaced photos, a state's replaced main photo, the redo's replaced photos (its sweep, 10 min later) and its stale publishes, a copy whose twin failed to write, a runner listing whose photos could not be attached |
 | Cloudflare R2 | Class A (writes) / Class B (reads) | 500K / 5M | 900K / 9M | reads that miss Vercel's CDN |
 | GitHub | Actions minutes (Settings → Billing) | 1,000 | 1,600 | CI runs the full `check.mjs` on every push to `main` (up to 45 min allowed, usually far less; a private repository gets 2,000 free minutes): batch commits, push once a day |
 
@@ -55,7 +55,9 @@ A number past its **budget** is a warning (look for the cause that week); past t
 - **Every Monday, 15 minutes (the founder):** the §1 numbers (Vercel Usage, Supabase Usage and Reports, R2 Metrics,
   GitHub Billing) written into the table at the end of this page; Admin → Today; Products tabs counts; queries A – G
   in Supabase's SQL editor. Anything past a budget: tell Claude with the number and the screen.
-- **Every month (first Monday):** `node scripts/check.mjs` on the Windows machine (all steps); Lighthouse on Home, a
+- **Every month (first Monday):** `pnpm photos:redo audit` on the laptop (read-only; lists R2 by folder and the listing
+  photos no listing shows; if any, `pnpm photos:redo audit --delete` removes those over a day old);
+  `node scripts/check.mjs` on the Windows machine (all steps); Lighthouse on Home, a
   state, See all and a product page (mobile); the database dump; `pnpm launch:check --url=<production DB URL>
   --allow-remote` (read-only); the usage month that just ended compared with the one before.
 - **After any big change** (a bulk publish, a new sourcing round, a feature): the next day's Vercel ISR writes and

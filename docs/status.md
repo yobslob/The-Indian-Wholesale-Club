@@ -111,9 +111,11 @@ Short on purpose: **replace** lines when something changes, don't append. Histor
   email job's secret compared in constant time.
 
 ## Next for the founder
-0. **D-166 (2026-10-30): run `node scripts/check.mjs` before pushing** (typecheck passed; lint, build and e2e were not
-   run). Then look at `/7-day-delivery` and Home on `pnpm dev`: the three empty
-   picture slots show what each wants; fill them in `apps/web/features/visuals/slots.ts`.
+0. **Push `main` (Claude did not):** D-166 and the storage clean-up of 2026-10-30 passed `node scripts/check.mjs` (Last
+   verification). No migration in either. Then look at `/7-day-delivery` and Home on `pnpm dev`: the three empty
+   picture slots show what each wants; fill them in `apps/web/features/visuals/slots.ts`. On the laptop, after the
+   pull: `pnpm photos:redo sweep --type clothing` (and `food`, `home`) deletes the PNGs of every finished photo from
+   `tools/photo-redo/out` (3.4 GB on 2026-10-30); `pnpm photos:redo audit` then shows what is left in R2.
 1. **Run the Deploy workflow** (Actions → Deploy) for `20261103090000_photo_redo_modes` (D-164).
 2. **The photo redo again, the new way (D-164), after the deploy:** pull the code on the laptop. Then, in order:
    `pnpm photos:redo fetch --type food --again` and `--type home --again` (every photo of each listing is planned now,
@@ -201,12 +203,19 @@ Short on purpose: **replace** lines when something changes, don't append. Histor
   added (checkout re-prices), so a weekly price change can move the free-delivery goal between bag and checkout.
 - App bundle ids are still `com.indianwholesaleclub.app` (`apps/app/app.json`); they change with the domain (Q-9).
 - `supabase/config.toml` uses the deprecated `[inbucket]` section (a harmless CLI warning).
+- **Storage, suspected and not fixed (2026-10-30):** a re-import's "replace details" deletes the old photos' copies at
+  once, while a cached store page may show them for up to 5 minutes (the redo waits 10); a new listing's uploads
+  under `products/drafts/` in Supabase storage stay if the listing is never saved; a web upload whose row then fails
+  to save leaves its R2 copies until `pnpm photos:redo audit --delete`; archived listings keep their photos (they can
+  come back); `worker_photo_redo_drop` lets the worker account remove any listing's photo, not only one the redo
+  planned.
 - Some imported listings are not homesick goods (dog chews, toilet rolls, skewers seen on the production copy):
   worth a look in Products → search before the next sourcing round.
 
 ## Last verification
 | Date | Commit | Where | Result |
 |---|---|---|---|
+| 2026-10-30 | e2e fix and storage clean-up (after D-166) | Claude Code, the founder's Windows machine (Docker; port 3000 free) | `node scripts/check.mjs`, every step OK: docs 0.9 s, typecheck 40.3 s, lint 87.1 s, test 5.9 s, db 67.5 s, build 65.9 s, http (/ 14 ms 135 KB, /clothing 17 ms 139 KB, /search?q=saree 73 ms), e2e 39 passed (before the fix `seven-day-bag.spec.ts` failed: the bag's charges restored from the tab after a page load came without the bag's moment, so the first change after it never said "Your 7-day pieces now arrive by"), bundle OK. The redo's sweep on a scratch work folder with stand-ins for the database and R2: the due old copies deleted, finished photos' PNGs gone, a waiting and a not-yet-due one kept; `tsc` and ESLint for tools/photo-redo after the last change. **Not run:** anything against production (R2, the hosted database), the runner's and the redo's new clean-up paths against a real failure, `redo.py` (only parsed). |
 | 2026-10-30 | D-166 faster cards, endless scroll, the tabs' names, pictures not text | Claude, cloud sandbox (no npm) and the founder's PC through the desktop link (its node_modules read from a Linux shell) | typecheck OK: `tsc --noEmit` for apps/web, packages/shared and packages/db on the committed files (a planted type error was caught, so the check was real). `homesick.test.ts` 3/3 and `bag-shipments`, `bag-goal` (19 with the homesick file) under node's own TypeScript; every changed .ts/.tsx file parses (TypeScript's transpiler); `docs-audit` OK. The flight and the door label rendered from the real components with React's server renderer and shot in Chromium at 1280 and 390 px (parked, and mid-flight with the stitch sewn behind the plane); `INDIA_OUTLINE` traced from the map's states and checked by eye. **Not run:** ESLint (its plugins would not load from the shell), web tests, build, http, e2e (`rows.spec.ts` and `seven-day-bag.spec.ts` changed for the endless scroll and the tabs), bundle. Run `node scripts/check.mjs` before pushing. |
 | 2026-10-30 | D-165 clothing faces swapped, cuts at the chin | Claude Code, the founder's laptop (RTX 4060; `check.mjs docs typecheck lint test`) | all OK. 164 live clothing photos (the women's model on every face; no men's model): 74 swapped, 8 cut at the chin (four back views with the head turned, two still the same person, two people, one moved), 82 without a face, 90 s in all; every swap and cut looked at by eye (seams 1 - 2.2 Lab), the neck kept in every cut; a collage of earrings goes to the founder. `redo.py` on a local test listing: two swapped, one reframed, one portrait to the founder. **Not run:** production, men's faces, publishing a swapped photo (the publish path is unchanged since D-164's run). |
 | 2026-10-30 | D-164 photo redo, the safe way | Claude Code, the founder's laptop (RTX 4060, Docker; `check.mjs docs typecheck lint test`, `db-test.mjs` photo_redo (31) and schema) | all OK. Faces on 164 live clothing photos (the women's model on every face: no men's model on the laptop): 34 drawn again and passed every check, 39 cut under the chin, 9 portraits left for the founder, 82 without a face reframed; all 34 drawn looked clean by eye (8 checked close up), one chin seam the checks now catch; no full face among the 82 (three the shop had already cut at the nose keep lips and chin). The light refresh on 16 food and home photos: every one 14 bits or more from the shop's; transparent backdrops now white. End to end on the local database with local storage's S3 for R2: fetch (every food and home photo), `redo.py` (face, crop, fresh, a portrait), the review page in the browser pane (Remove photo, approve the rest), publish (new paths, `fresh`, a photo removed, a clothing listing in one go), the sweep. **Not run:** production, men's faces, `build`, `e2e`. |

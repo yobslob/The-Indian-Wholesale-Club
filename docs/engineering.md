@@ -147,7 +147,7 @@ the repo's Expo CLI and loads the Playwright specs (`playwright test --list`). N
 SWC binary), so no E2E run, and running the app on a device: the founder's runs are the evidence for those. The founder's `check.mjs`
 stays the evidence of record. After a migration, Claude patches `database.types.ts` by hand to match and the founder's
 `pnpm db:types` regenerates it (the diff should be formatting only).
-**Migrations:** never edit an applied migration. Every new function gets explicit grants (Supabase grants all by default), or `schema.test.sql` fails.
+**Migrations:** never edit an applied migration. A new one's timestamp sorts after the newest file in `supabase/migrations/` (two are dated ahead, `20261102090000` and `20261103090000`; `supabase migration new` would date one before them on 2026-10-30 – 11-02): the Deploy workflow's `supabase db push` refuses a migration that sorts before one production already has. Every new function gets explicit grants (Supabase grants all by default), or `schema.test.sql` fails.
 
 ## Layout (web: actual since R5; app: actual since R6)
 ```
