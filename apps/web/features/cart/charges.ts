@@ -45,17 +45,22 @@ export interface ShipmentNote {
 // Three seconds (the plan); one with Undo stays twice as long, so the button can be reached
 const NOTE_MS = 3000;
 
-// The last answer, kept for this tab (2026-10-30): a page load draws the pill at once from it while the bag is unchanged
+// The last answer, kept for this tab (2026-10-30): a page load draws the pill at once from it while the bag is unchanged.
+// Its bag's subtotal comes with it, so the next change after a page load still gets its note (shipmentNote needs the
+// moment before).
 const SAVED = 'iwc-bag-charges';
-function saved(): { key: string; charges: BagCharges } | null {
+function saved(): { key: string; charges: BagCharges; moment: BagMoment | null } | null {
   if (typeof window === 'undefined') return null;
   try {
     const v = JSON.parse(sessionStorage.getItem(SAVED) ?? 'null') as {
       key?: unknown;
       data?: unknown;
+      subtotal?: unknown;
     } | null;
     const charges = v && typeof v.key === 'string' ? parse(v.data) : null;
-    return charges ? { key: v!.key as string, charges } : null;
+    if (!charges) return null;
+    const subtotal = typeof v!.subtotal === 'number' && Number.isInteger(v!.subtotal) ? v!.subtotal : null;
+    return { key: v!.key as string, charges, moment: subtotal === null ? null : momentOf(subtotal, charges) };
   } catch {
     return null;
   }
@@ -68,7 +73,7 @@ const useChargesStore = create<{
   note: ShipmentNote | null;
 }>(() => {
   const last = saved();
-  return { key: last?.key ?? '', charges: last?.charges ?? null, moment: null, note: null };
+  return { key: last?.key ?? '', charges: last?.charges ?? null, moment: last?.moment ?? null, note: null };
 });
 // The bag key asked for (or about to be): every component calling useBagCharges shares one request per bag.
 let requested = '';
@@ -112,8 +117,8 @@ function parse(data: unknown): BagCharges | null {
 }
 
 /** Where a bag stands for the notes: its shipments and whether Shipping is charged. */
-function momentOf(lines: CartLine[], charges: BagCharges): BagMoment {
-  const at = bagChargesAt(cartSubtotalCents(lines), charges.freeMinCents, charges.small);
+function momentOf(subtotalCents: number, charges: BagCharges): BagMoment {
+  const at = bagChargesAt(subtotalCents, charges.freeMinCents, charges.small);
   return {
     facts: charges.shipments,
     shippingCents: at.shippingCents || at.waivedShippingCents,
@@ -173,13 +178,14 @@ export function useBagCharges(): BagCharges | null {
         .then((data: unknown) => {
           const parsed = parse(data);
           if (!parsed) return;
+          const subtotal = cartSubtotalCents(useCart.getState().lines);
           try {
-            sessionStorage.setItem(SAVED, JSON.stringify({ key, data }));
+            sessionStorage.setItem(SAVED, JSON.stringify({ key, data, subtotal }));
           } catch {
             // storage blocked: the next page asks again
           }
           const state = useChargesStore.getState();
-          const moment = momentOf(useCart.getState().lines, parsed);
+          const moment = momentOf(subtotal, parsed);
           const note = shipmentNote(state.moment, moment);
           useChargesStore.setState({
             key,
