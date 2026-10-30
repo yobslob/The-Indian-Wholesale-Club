@@ -1,4 +1,4 @@
-import { appendFileSync } from 'node:fs';
+import { appendFileSync, existsSync, renameSync, statSync } from 'node:fs';
 import { join } from 'node:path';
 
 import { ROOT } from './env';
@@ -10,12 +10,19 @@ export function setLogTag(value: string): void {
   tag = value ? `[${value}] ` : '';
 }
 
+const FILE = join(ROOT, 'sourcing.log');
+/** Past this the log becomes sourcing.log.1 (the one before is dropped), so it never grows without end. */
+const MAX_BYTES = 5_000_000;
+let rotated = false;
+
 /** One line per event on the console and in sourcing.log (kept next to the runner, not in git). */
 export function log(message: string): void {
   const line = `${new Date().toISOString()} ${tag}${message}`;
   console.log(line);
   try {
-    appendFileSync(join(ROOT, 'sourcing.log'), `${line}\n`);
+    if (!rotated && existsSync(FILE) && statSync(FILE).size > MAX_BYTES) renameSync(FILE, `${FILE}.1`);
+    rotated = true;
+    appendFileSync(FILE, `${line}\n`);
   } catch {
     // a read-only folder must not stop the run
   }

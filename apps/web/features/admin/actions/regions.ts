@@ -112,6 +112,10 @@ export async function uploadRegionImageAction(regionId: string, form: FormData):
   await updateRegion(client, regionIdOk, { hero_image_path: path });
   revalidateTag(STORE_TAG);
   revalidatePath(`/admin/regions/${regionIdOk}`);
+  // the photo it replaced is shown nowhere else: its files go, so the store doesn't keep every hero ever uploaded
+  const old = region.hero_image_path;
+  if (old && old !== path && old.startsWith(`regions/${region.slug}/`) && !old.includes('/album/'))
+    await removePhotos(client, 'product-media', [old]).catch(() => undefined);
 }
 
 /** A photo for the region album (D-051), with the alt text a screen reader says. Stored under regions/<slug>/album/. */

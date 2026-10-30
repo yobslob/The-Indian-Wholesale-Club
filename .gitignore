@@ -88,13 +88,13 @@ tools/photo-worker/worker.log*
 
 # The sourcing runner (tools/sourcing-runner, D-118): its log (its .env is covered above; the browser profile lives
 # outside the repo)
-tools/sourcing-runner/sourcing.log
+tools/sourcing-runner/sourcing.log*
 tools/sourcing-runner/home-weights.csv
 # the shops resting after robot checks (D-149), kept on the runner's PC
 tools/sourcing-runner/shop-rest.json
 
 # The weight estimator (tools/weight-estimator, D-131): its log, embeddings cache and clothing sheet
-tools/weight-estimator/estimator.log
+tools/weight-estimator/estimator.log*
 tools/weight-estimator/.cache/
 tools/weight-estimator/clothing-classes.csv
 tools/weight-estimator/clothing-classes-before.jsonl
@@ -112,5 +112,5 @@ tools/weight-estimator/food-weights-before.jsonl
 *.env
 
 # photo redo (D-163): the work folder and its log
-tools/photo-redo/redo.log
-tools/photo-worker/redo.log
+tools/photo-redo/redo.log*
+tools/photo-worker/redo.log*

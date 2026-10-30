@@ -67,7 +67,13 @@ export async function photoPrint(bytes: Uint8Array): Promise<PhotoPrint | null> 
 async function putCopies(bucket: Bucket, path: string, bytes: Uint8Array): Promise<void> {
   const copies = await makeCopies(bytes);
   const keys = storeKeys(bucket, path);
-  await Promise.all(copies.map((body, i) => putPhotoFile(keys[i]!, body, 'image/avif')));
+  const written = await Promise.allSettled(copies.map((body, i) => putPhotoFile(keys[i]!, body, 'image/avif')));
+  const failed = written.find((r) => r.status === 'rejected');
+  if (failed) {
+    // one copy without the other is never recorded, so never shown: it goes too
+    await removePhotoFiles(keys).catch(() => undefined);
+    throw failed.reason;
+  }
 }
 
 /** Supabase files a photo not yet stored may have: the photo, and the WebP copies made before 2026-10-20. */

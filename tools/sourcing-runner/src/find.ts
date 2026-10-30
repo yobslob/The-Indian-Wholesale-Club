@@ -180,7 +180,11 @@ async function tryCandidate(
   if (!added.created) return `${c.best.site}: already listed`;
   const media = await copyPhotos(ctx, added.product_id, draft.photos, listing.page_url);
   const published = media.length
-    ? await ctx.db.media(added.product_id, media, draft.complete)
+    ? await ctx.db.media(added.product_id, media, draft.complete).catch(async (error: unknown) => {
+        // the copies would stay in the photo store with no listing showing them
+        await ctx.db!.discard(media.map((m) => m.path)).catch((e: unknown) => log(`  photos not deleted: ${errorText(e)}`));
+        throw error;
+      })
     : { published: false, note: 'no photo could be copied' };
   // D-135: a liquid is not sent: archived, shown to customers as coming soon
   if (draft.liquid)

@@ -127,6 +127,21 @@ export class Db implements FoodPassDb {
   }
 
   /**
+   * A new listing's photos that could not be attached to it (worker_sourcing_media failed): their copies are deleted,
+   * unless the answer was lost after they were recorded (worker_photo_stems_in_use, D-163). If even that can't be
+   * asked, they stay for `pnpm photos:redo audit --delete`.
+   */
+  async discard(paths: string[]): Promise<void> {
+    const stems = paths.map((p) => p.replace(/\.[A-Za-z0-9]+$/, ''));
+    const shown = new Set(await this.rpc<string[]>('worker_photo_stems_in_use', { p_stems: stems }));
+    const gone = paths.filter((_, i) => !shown.has(stems[i]!));
+    const stored = gone.filter((p) => p.includes('/s/'));
+    if (this.photos) await Promise.all(stored.map((p) => this.photos!.remove(p)));
+    const plain = gone.filter((p) => !p.includes('/s/'));
+    if (plain.length) await this.client.storage.from('product-media').remove(plain);
+  }
+
+  /**
    * D-158: while a run claims target after target, a target it hands back waits here until the run ends, so the
    * run's next claim does not take it again at once.
    */

@@ -33,6 +33,17 @@ async function copyToStore(client: IwcClient, bucket: 'photo-candidates' | 'vend
   return storePhoto(client, 'product-media', `products/${folder}/${crypto.randomUUID()}.jpg`, data, 'image/jpeg');
 }
 
+/** A piece's AI candidates and the vendor's raw photos, once it is approved (copied) or declined. */
+async function removePieceFiles(
+  client: IwcClient,
+  piece: NonNullable<Awaited<ReturnType<typeof getVendorSubmission>>>,
+): Promise<void> {
+  const candidates = (piece.jobs ?? []).flatMap((j) => j.candidates ?? []);
+  if (candidates.length > 0) await client.storage.from('photo-candidates').remove(candidates);
+  const raw = (piece.photos ?? []).map((p) => p.storage_path);
+  if (raw.length > 0) await client.storage.from('vendor-uploads').remove(raw);
+}
+
 /**
  * Approves a vendor's piece (D-103): the picked AI photos (front, back) and the vendor's real close-up (D-100) go to
  * product-media, the piece becomes a product through admin_create_listing, optionally live at once; then the
@@ -76,9 +87,7 @@ export async function approveVendorPieceAction(submissionId: string, form: FormD
   }
 
   // Copied above: the originals are no longer needed (D-103, storage kept small).
-  await client.storage.from('photo-candidates').remove([...candidates]);
-  const raw = (piece.photos ?? []).map((p) => p.storage_path);
-  if (raw.length > 0) await client.storage.from('vendor-uploads').remove(raw);
+  await removePieceFiles(client, piece);
 
   revalidatePath('/admin/vendor-pieces');
   revalidatePath('/admin/listings');
@@ -99,7 +108,10 @@ export async function retakeVendorPieceAction(submissionId: string, form: FormDa
 export async function declineVendorPieceAction(submissionId: string, form: FormData): Promise<void> {
   const { client } = await requireAdminAction();
   const note = z.string().trim().max(500).optional().parse(form.get('note') || undefined);
+  const piece = await getVendorSubmission(client, submissionId);
   await declineSubmission(client, submissionId, note);
+  // a declined piece is never listed: its made photos and the vendor's own go (storage kept small)
+  if (piece) await removePieceFiles(client, piece).catch(() => undefined);
   revalidatePath('/admin/vendor-pieces');
   redirect('/admin/vendor-pieces');
 }

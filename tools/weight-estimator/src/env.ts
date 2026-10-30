@@ -1,4 +1,4 @@
-import { appendFileSync, existsSync } from 'node:fs';
+import { appendFileSync, existsSync, renameSync, statSync } from 'node:fs';
 import { dirname, join } from 'node:path';
 import { fileURLToPath } from 'node:url';
 
@@ -53,12 +53,18 @@ export function needDbEnv(): Env {
   );
 }
 
-/** One line per event on the console and in estimator.log (next to the tool, not in git). */
+const LOG = join(ROOT, 'estimator.log');
+let rotated = false;
+
+/** One line per event on the console and in estimator.log (next to the tool, not in git); past 5 MB it becomes
+ * estimator.log.1 (the one before is dropped), so it never grows without end. */
 export function log(message: string): void {
   const line = `${new Date().toISOString()} ${message}`;
   console.log(line);
   try {
-    appendFileSync(join(ROOT, 'estimator.log'), `${line}\n`);
+    if (!rotated && existsSync(LOG) && statSync(LOG).size > 5_000_000) renameSync(LOG, `${LOG}.1`);
+    rotated = true;
+    appendFileSync(LOG, `${line}\n`);
   } catch {
     // a read-only folder must not stop the run
   }

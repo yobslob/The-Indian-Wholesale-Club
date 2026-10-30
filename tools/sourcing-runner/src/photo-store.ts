@@ -34,11 +34,10 @@ export class PhotoStore {
   async put(path: string, bytes: Uint8Array): Promise<void> {
     const image = sharp(bytes, { failOn: 'error' }).rotate();
     const keys = storeKeys('product-media', path);
-    await Promise.all(
+    const written = await Promise.allSettled(
       COPY_WIDTHS.map(async (width, i) => {
         const body = await image.clone().resize({ width, withoutEnlargement: true }).avif(AVIF[width]).toBuffer();
-        const url = `${this.base}/${keys[i]!.split('/').map(encodeURIComponent).join('/')}`;
-        const res = await this.s3.fetch(url, {
+        const res = await this.s3.fetch(this.url(keys[i]!), {
           method: 'PUT',
           body: new Uint8Array(body),
           headers: { 'content-type': 'image/avif', 'cache-control': 'public, max-age=31536000, immutable' },
@@ -46,6 +45,26 @@ export class PhotoStore {
         if (!res.ok) throw new Error(`photo store: ${res.status}`);
       }),
     );
+    const failed = written.find((r) => r.status === 'rejected');
+    if (failed) {
+      // one copy without the other is never shown (the photo goes to Supabase instead): it goes too
+      await this.remove(path).catch(() => undefined);
+      throw failed.reason;
+    }
+  }
+
+  /** Deletes a photo's copies (a key that isn't there is fine). */
+  async remove(path: string): Promise<void> {
+    await Promise.all(
+      storeKeys('product-media', path).map(async (key) => {
+        const res = await this.s3.fetch(this.url(key), { method: 'DELETE' });
+        if (!res.ok && res.status !== 404) throw new Error(`photo store: ${res.status} deleting ${key}`);
+      }),
+    );
+  }
+
+  private url(key: string): string {
+    return `${this.base}/${key.split('/').map(encodeURIComponent).join('/')}`;
   }
 }
 
