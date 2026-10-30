@@ -58,6 +58,10 @@ export function inBand(target: SourcingTarget, paise: number | null): boolean {
 }
 
 /** The shops a target searches: its own list, else every enabled shop that sells its type (D-118, D-121). */
+/** D-171: a shop's own usual days are its delivery limit when longer than Settings' (Savana's and NEWME's 10). */
+export const shopMaxDays = (shop: Pick<SourcingShop, 'delivery_days'> | undefined, maxDays: number): number =>
+  Math.max(maxDays, shop?.delivery_days ?? 0);
+
 export function shopsFor(target: SourcingTarget, shops: SourcingShop[]): SourcingShop[] {
   return shops.filter(
     (s) =>
@@ -80,7 +84,7 @@ export function pickCandidates(
     if (opts.known.has(`${o.site}|${o.key}`)) return false;
     const days = offerDeliveryDays(o, shopOf.get(o.site), opts.now);
     // unknown here (Amazon, Flipkart search pages): the product page must show it before anything is added
-    return days === null || days <= opts.maxDays;
+    return days === null || days <= shopMaxDays(shopOf.get(o.site), opts.maxDays);
   });
   const ranked = usable
     .map((o) => ({ o, score: offerScore(o, matcher) }))

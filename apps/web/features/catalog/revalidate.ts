@@ -11,7 +11,7 @@ import { getHomeCached, homeTag, productTag, regionTag, STORE_TAG } from './data
 
 /** A product page, by the slugs its URL and cache entry use. */
 export interface ProductPageRef {
-  /** Null for an all-India piece (D-121): it sits on every state's page, which catch up within the 5-minute fallback. */
+  /** Null for an all-India piece (D-121): it sits on every state's page, which catch up within the hour's fallback. */
   regionSlug: string | null;
   productSlug: string;
 }
@@ -20,7 +20,7 @@ export interface ProductPageRef {
  * After a sale (engineering.md §Caching): the pages whose stock numbers just moved are rebuilt on their next visit:
  * each product's page (pieces left, sold out), its region page (cards, Leaving soon, Most wanted) and Home (Just
  * listed). See all pages carry no stock and stay cached; Similar items on other product pages catch up within the
- * 5-minute fallback (their Add is re-checked at checkout anyway). Without refs (an old stored checkout) everything.
+ * hour's fallback (their Add is re-checked at checkout anyway). Without refs (an old stored checkout) everything.
  */
 export function revalidateAfterSale(pages: ProductPageRef[]): void {
   if (pages.length === 0) {
@@ -45,7 +45,7 @@ export function revalidateAfterRelease(): void {
  */
 export async function revalidateIfCutoffPassed(): Promise<boolean> {
   const cached = (await getHomeCached()).delivery;
-  // The made-to-order pilot has no cutoff (D-115); its window moves with the date and the 5-minute cache.
+  // The made-to-order pilot has no cutoff (D-115); its window moves with the date and the hour's cache.
   if (!cached?.order_by || Date.parse(cached.order_by) > Date.now()) return false;
   const live = await getNextDelivery(storeClient());
   if (live?.order_by === cached.order_by) return false; // never purge twice for the same window

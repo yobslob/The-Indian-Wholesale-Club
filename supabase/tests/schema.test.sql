@@ -52,7 +52,7 @@ select tests.assert(
    where n.nspname = 'public' and has_function_privilege('authenticated', p.oid, 'execute'))
   = array['admin_accept_weights', 'admin_add_synonym', 'admin_approve_submission', 'admin_archive_unready_drafts', 'admin_assign_weights', 'admin_attention', 'admin_cancel_after_export',
           'admin_cancel_after_export_cents', 'admin_cancel_shipment', 'admin_create_listing', 'admin_cycle_totals',
-          'admin_decline_submission', 'admin_demand', 'admin_mark_ordered', 'admin_order_counts', 'admin_price_preview', 'admin_price_sheet', 'admin_publish_drafts', 'admin_quick_insights', 'admin_quick_watch',
+          'admin_decline_submission', 'admin_demand', 'admin_mark_ordered', 'admin_order_counts', 'admin_order_home_photos', 'admin_price_preview', 'admin_price_sheet', 'admin_publish_drafts', 'admin_quick_insights', 'admin_quick_watch',
           'admin_rename_listings', 'admin_request_retake', 'admin_rerun_photo_job', 'admin_return_received', 'admin_return_refunded',
           'admin_return_rejected', 'admin_sales', 'admin_save_shop_bill', 'admin_search_fixes', 'admin_set_listed_qty', 'admin_set_shop_bill_final',
           'admin_shop_bill', 'admin_sourcing_review', 'admin_stale_variants', 'admin_to_order', 'admin_unmark_ordered',
@@ -67,7 +67,7 @@ select tests.assert(
           'vendor_money', 'vendor_new_submission', 'vendor_pieces', 'vendor_submission', 'vendor_submit',
           'worker_claim_job', 'worker_clothing_plan', 'worker_estimate_plan', 'worker_finish_job', 'worker_food_plan', 'worker_home_plan', 'worker_liquid_plan', 'worker_may_add_photos', 'worker_photo_redo_drop', 'worker_photo_redo_plan',
           'worker_photo_redo_scene', 'worker_photo_redo_set', 'worker_photo_stems_in_use', 'worker_product_wears', 'worker_set_class_weights',
-          'worker_set_estimates', 'worker_set_food_weights', 'worker_set_home_weights', 'worker_set_liquids', 'worker_set_weights', 'worker_sourcing_add',
+          'worker_set_estimates', 'worker_set_food_weights', 'worker_set_home_weights', 'worker_set_liquids', 'worker_set_origin', 'worker_set_weights', 'worker_sourcing_add',
           'worker_sourcing_checked', 'worker_sourcing_log', 'worker_sourcing_media', 'worker_sourcing_plan',
           'worker_sourcing_target_done', 'worker_sourcing_target_release', 'worker_weight_plan', 'worker_weight_references'],
   'signed-in users can execute only store, admin-, vendor- and worker-checked functions (never create_order)');

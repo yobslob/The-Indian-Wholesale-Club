@@ -242,6 +242,7 @@ export function OrderView({ order }: { order: OrderDetail }): React.JSX.Element 
               name: i.product_name,
               label: i.variant_label,
               region: i.region_name,
+              madeInIndia: i.made_in_india !== false,
               quantity: i.quantity,
               unitCents: i.unit_price_cents,
               totalCents: i.total_price_cents,

@@ -19,6 +19,7 @@ and the admin sees the last run's date in **Admin → Import → Auto-sourcing**
 | `src/pages.ts`   | what is read inside a shop's page                                                       |
 | `src/browser.ts` | the browser profile and one lane per shop (pages one after another, shops side by side) |
 | `src/photos.ts`  | copies a new listing's photos into IWC's storage, each picture once (D-142)             |
+| `src/budget.ts`  | the run's photo space in the store (`--photo-gb`, D-171)                                 |
 | `src/redo.ts`    | new photos made again before upload by the photo redo service (D-168)                   |
 | `src/db.ts`      | the worker's database functions and photo uploads                                       |
 
@@ -38,7 +39,7 @@ The matching, delivery, variant and listing rules are in `packages/shared/src/so
    `IWC_PHOTO_STORE_KEY_ID`, `IWC_PHOTO_STORE_SECRET` (the same R2 token as the website's); the runner then writes
    each photo's two AVIF copies there itself. Without them photos go to Supabase's storage and wait to be moved.
 4. **The hub's address on every shop:** `pnpm sourcing setup` opens Blinkit, Zepto, Instamart, BigBasket, Amazon,
-   Flipkart, Myntra and NEWME. On each, set the delivery location to the hub (Amazon, Flipkart and NEWME: the pincode is enough),
+   Flipkart, Myntra, NEWME and Savana. On each, set the delivery location to the hub (Amazon, Flipkart and NEWME: the pincode is enough; Savana needs none),
    then close the browser. Do it again if the hub moves. A runner started with `--type` browses with its own copy of
    this profile (made the first time it ran): `pnpm sourcing setup --type food` opens that one.
 
@@ -110,26 +111,35 @@ To run it every day: Task Scheduler → Create Task → "Daily" at a quiet hour,
 `/c pnpm sourcing run` and "Start in" `C:\kod\root`, "Run only when user is logged on" (the browser opens
 off-screen).
 
-## NEWME (D-170)
+## Savana and NEWME (D-170, D-171)
 
-`targets/newme.csv` (Admin → Import → Auto-sourcing → Add targets from a CSV) is 99 rows of 40 listings, each a run of
-pages of one NEWME women's collection: `collection:dresses pages:1-2` reads `newme.asia/womens-collection/dresses?p=1`
-and `?p=2` (30 pieces a page, best sellers first), every page once. The reader (`readers/newme.ts`) reads the pages'
-own data (`__NEXT_DATA__`): each size's price, MRP and stock, the colour, photos, fabric and wash care.
+Both shops are taken whole (founder, 2026-10-31: "I want all of savana and newme, It doesn't matter if they are made
+in china"). `targets/savana.csv` (447 rows) and `targets/newme.csv` (237 rows), 40 listings a row, no price band; each
+row reads a run of pages of one department or collection, best sellers first, every page once:
 
-- **Only pieces made in India:** NEWME sells pieces made in India (style codes "NM-IN-…") and in China ("NM-PRC-…").
-  A piece is listed only when its page says "Country of origin: India" (D-004); China pieces are dropped from the
-  results before their page is read, and a page that says nothing is not listed either.
-- **Only sizes that come by tomorrow:** NEWME brings some sizes "by Tomorrow" to the pincode set on the shop and the
-  rest in 12 – 14 days, past the 3-day limit: those sizes count as out of stock, and a piece with no fast size is
-  skipped ("delivery takes 14 days"). Set the hub's pincode on NEWME in every profile you run with (`setup`, and
-  `setup --type clothing`). If every NEWME piece is skipped that way, the pincode is wrong or NEWME has no fast
-  delivery there.
-- One run: after the Deploy workflow has added NEWME's shop row (migration `20261105090000_newme_shop`),
-  `pnpm sourcing try "collection:dresses pages:1" --type clothing --shops newme.asia --listings 5` (nothing written),
-  then `pnpm sourcing run --targets --type clothing --shops newme.asia`.
+- **Savana:** `collection:12825 pages:1-3` is Savana's "Shop All Dresses" (activity 12825), 20 pieces a page, read from
+  the JSON answer the shop's own page asks for (`readers/savana.ts`). That answer leaves out the pieces already seen,
+  so the runner walks a department from its first page and keeps the walk for the department's next row within the
+  run (`shops.ts`). Product pages carry their data in `window.$preData`. Its pages state no wash care: every Savana
+  listing is a draft until its care is filled (Q-50). No pincode is needed.
+- **NEWME:** `collection:dresses pages:1-2` reads `newme.asia/womens-collection/dresses?p=1` and `?p=2` (30 a page,
+  `readers/newme.ts`, the pages' `__NEXT_DATA__`): each size's price, MRP and stock, the colour, photos, fabric, care.
+- **Origin:** each page states its country. On these two shops a piece made in China is listed with it
+  (`products.made_in`) and customers see "Imported", never "Made in India"; a page that says nothing is not listed;
+  every other shop still lists only what is made in India (D-004).
+- **10 days:** both shops' rows say 10 days to the hub, and a shop's own days are its limit when longer than Settings'
+  (3), so every size in stock counts.
+- **Photo space:** `--photo-gb 1.8` stops starting new listings once the run has written 1.8 GB to the photo store
+  (both AVIF copies of every photo, kept in `out/photo-budget.json` across fresh runners); the targets not reached go
+  back to the queue. A run without it has no cap.
 
-**Savana** (savana.com) is not a shop: every piece read on 2026-10-31 says "Country of Origin: PRC" (Q-49).
+After the Deploy workflow has run migrations `20261105090000_newme_shop` and `20261105100000_imported_pieces`:
+
+```
+pnpm sourcing try "collection:12825 pages:1" --type clothing --shops savana.com --listings 5     nothing written
+pnpm sourcing run --targets --type clothing --shops savana.com --photo-gb 1.8
+pnpm sourcing run --targets --type clothing --shops newme.asia --photo-gb 0.3                    if space is left
+```
 
 ## When a shop changes
 

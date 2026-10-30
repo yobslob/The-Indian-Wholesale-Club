@@ -114,7 +114,10 @@ export default async function ProductPage({
             {chart ? <Disclosure title="Size chart">{chart}</Disclosure> : null}
           </div>
           <p className="border-line font-display mt-4 border-t pt-4 text-[17px]">
-            Made in India{product.region_name ? ` · from ${product.region_name}` : ''} · Imported
+            {/* D-171: a piece made elsewhere (Savana's) says only that it is imported, never "Made in India" */}
+            {product.made_in_india === false
+              ? 'Imported'
+              : `Made in India${product.region_name ? ` · from ${product.region_name}` : ''} · Imported`}
           </p>
         </aside>
       </div>

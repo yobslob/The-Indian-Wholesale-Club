@@ -9,7 +9,7 @@ Claude can run the repo checks and read what the founder pastes.
 A number past its **budget** is a warning (look for the cause that week); past the **line**, act the same day.
 | Service | What to read (where) | Budget a month | Line (act) | Usual causes when it climbs |
 |---|---|---|---|---|
-| Vercel | ISR writes (Usage → ISR) | 100,000 | 150,000 | bulk edits of many live listings, many deploys in a day, a page that changes on every request; check that D-145's narrow refreshes still hold (`features/admin/refresh-listings.ts`) |
+| Vercel | ISR writes (Usage → ISR) | 100,000 | 150,000 | the store's fallback refresh (an hour since D-171, was 5 minutes: each page visited after it is written again), publishing more than 100 drafts at once (the whole store), bulk edits of many live listings, many deploys in a day, a page that changes on every request; check that D-145's narrow refreshes still hold (`features/admin/refresh-listings.ts`) |
 | Vercel | Function invocations (Usage → Functions) | 500,000 | 750,000 | a bot crawling search or `/api/browse` (rate limits; robots.txt keeps polite ones off `/search` since D-160), an uncached page, the uptime ping set too often |
 | Vercel | Active CPU | 2 h | 3 h | a slow server render (see §3), image work on the server (there should be none) |
 | Vercel | Fast data transfer / origin transfer | 50 GB / 5 GB | 75 GB / 7.5 GB | photos served without the CDN (`x-vercel-cache` should say HIT, `ops.md` §Photos) |

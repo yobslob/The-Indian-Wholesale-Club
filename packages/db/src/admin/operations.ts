@@ -78,7 +78,7 @@ export async function getAdminOrder(client: IwcClient, id: string) {
       .from('orders')
       .select(
         `*, cycle:cycles(id, code, status),
-          items:order_items(*, product:products(source_url, source_site, media:product_media(storage_path, alt_text, is_primary, sort_order)),
+          items:order_items(*, product:products(source_url, source_site, made_in, media:product_media(storage_path, alt_text, is_primary, sort_order)),
             pickup:pickups(id, status, vendor_id, picked_at, arrived_at, payout_id, shop_price_paise, weighed_g, weigh_note,
               ordered_at, paid_paise, shop_order_ref, shop_bill_path,
               source:product_sources(site, item_url, price_paise, in_stock, delivery_days),

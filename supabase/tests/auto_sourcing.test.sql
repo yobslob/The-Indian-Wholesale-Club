@@ -44,7 +44,7 @@ select tests.act_as(tests.id('worker'));
 select tests.remember('plan_target', (public.worker_sourcing_plan() -> 'targets' -> 0 ->> 'id')::uuid);
 select tests.assert(tests.id('plan_target') = tests.id('target'), 'the plan hands out the queued target');
 select tests.assert(jsonb_array_length(public.worker_sourcing_plan() -> 'targets') = 0, 'a held target is not handed out twice');
-select tests.assert(jsonb_array_length(public.worker_sourcing_plan() -> 'shops') = 10, 'the ten shops the founder named');
+select tests.assert(jsonb_array_length(public.worker_sourcing_plan() -> 'shops') = 12, 'the twelve shops the founder named (Savana and NEWME: D-170, D-171)');
 
 -- It adds two flavours (one sold out on the shop) and a cheaper backup that takes 5 days.
 select tests.remember('product', (public.worker_sourcing_add(tests.id('target'), jsonb_build_object(

@@ -13,6 +13,8 @@ export type DetailsInput = {
   region_name: string | null;
   /** D-133: food's net quantity (netQuantity), shown first among its rows. */
   net_quantity?: string | null;
+  /** D-171: false for a piece made elsewhere (Savana's, NEWME's made in China): no "Made in" row. */
+  made_in_india?: boolean | null;
 };
 
 /**
@@ -65,7 +67,8 @@ export function detailRows(product: DetailsInput, photos: PhotoNote): [string, s
       if (a.storage) rows.push(['Storage', a.storage]);
     }
   }
-  rows.push(['Made in', product.region_name ? `India, from ${product.region_name}` : 'India']);
+  if (product.made_in_india !== false)
+    rows.push(['Made in', product.region_name ? `India, from ${product.region_name}` : 'India']);
   if (photos.ai) {
     rows.push([
       'Photos',

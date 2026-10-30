@@ -14,6 +14,9 @@ import type { Env } from './env';
 const AVIF = { 640: { quality: 60, effort: 2 }, 1200: { quality: 55, effort: 2 } } as const;
 
 export class PhotoStore {
+  /** Bytes this process wrote to the store (both copies of every photo): the run's photo budget (budget.ts, D-171). */
+  static written = 0;
+
   private constructor(
     private readonly s3: AwsClient,
     private readonly base: string,
@@ -34,6 +37,7 @@ export class PhotoStore {
   async put(path: string, bytes: Uint8Array): Promise<void> {
     const image = sharp(bytes, { failOn: 'error' }).rotate();
     const keys = storeKeys('product-media', path);
+    let bytesOut = 0;
     const written = await Promise.allSettled(
       COPY_WIDTHS.map(async (width, i) => {
         const body = await image.clone().resize({ width, withoutEnlargement: true }).avif(AVIF[width]).toBuffer();
@@ -43,6 +47,7 @@ export class PhotoStore {
           headers: { 'content-type': 'image/avif', 'cache-control': 'public, max-age=31536000, immutable' },
         });
         if (!res.ok) throw new Error(`photo store: ${res.status}`);
+        bytesOut += body.length;
       }),
     );
     const failed = written.find((r) => r.status === 'rejected');
@@ -51,6 +56,7 @@ export class PhotoStore {
       await this.remove(path).catch(() => undefined);
       throw failed.reason;
     }
+    PhotoStore.written += bytesOut;
   }
 
   /** Deletes a photo's copies (a key that isn't there is fine). */

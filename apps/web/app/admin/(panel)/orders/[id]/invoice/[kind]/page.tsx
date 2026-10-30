@@ -59,6 +59,7 @@ export default async function OrderInvoicePage({ params }: { params: Params }): 
               name: i.product_name,
               label: i.variant_label,
               region: i.region_name,
+              madeInIndia: (i.product?.made_in ?? 'India') === 'India',
               quantity: i.quantity,
               unitCents: i.unit_price_cents,
               totalCents: i.total_price_cents,

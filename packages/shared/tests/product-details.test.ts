@@ -42,3 +42,12 @@ describe('an all-India piece (D-121)', () => {
     assert.equal(regionSegment(undefined), 'india');
   });
 });
+
+describe('a piece made outside India (D-171)', () => {
+  it('has no "Made in" row: its page says only "Imported"', () => {
+    const rows = detailRows({ ...kurta, region_name: null, made_in_india: false }, photoNote([]));
+    assert.deepEqual(rows.map(([label]) => label), ['Fabric', 'Care']);
+    // a listing read before migration 20261105100000 (no field) is still made in India
+    assert.deepEqual(detailRows({ ...kurta, made_in_india: undefined }, photoNote([])).at(-1), ['Made in', 'India, from Kerala']);
+  });
+});

@@ -6,6 +6,7 @@ export * from './readers/grocery';
 export * from './readers/marketplaces';
 export * from './readers/newme';
 export * from './readers/quick';
+export * from './readers/savana';
 export * from './readers/shopify';
 export * from './targets';
 export * from './types';

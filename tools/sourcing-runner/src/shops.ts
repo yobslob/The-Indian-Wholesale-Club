@@ -25,6 +25,9 @@ import {
   newmeSearchOffers,
   packVariants,
   refusedWith,
+  SAVANA_DETAIL_KEY,
+  savanaCollection,
+  savanaProduct,
   searchPages,
   shopifyProduct,
   shopifyProductJsUrl,
@@ -37,6 +40,7 @@ import {
 
 import { open, RobotCheck, type Lane } from './lanes';
 import * as read from './pages';
+import { savanaWalk } from './savana-walk';
 
 import type { Page } from 'playwright';
 
@@ -234,14 +238,30 @@ const SHOPS: Record<ShopReader, Shop> = {
       }
       return all;
     },
-    read: (lane, url, now) =>
+    // D-171: no page promise; NEWME's 10 days to the hub (its shop row) apply
+    read: (lane, url) =>
       lane.run(async (page) => {
         await open(page, url);
-        const piece = newmeProduct(await read.nextData(page), url);
-        return {
-          product: piece?.product ?? null,
-          pageDays: parseDeliveryDays(piece?.deliveryText, now),
-        };
+        return { product: newmeProduct(await read.nextData(page), url), pageDays: null };
+      }),
+  },
+  savana: {
+    // D-171: "collection:12825 pages:1-3", walked from the first page (savanaWalk); a page is 20 pieces
+    search: async (lane, query) => {
+      const c = savanaCollection(query);
+      if (!c) return [];
+      const pages = await savanaWalk(lane, c.activity, c.to);
+      return pages.slice(c.from - 1, c.to).flat();
+    },
+    read: (lane, url) =>
+      lane.run(async (page) => {
+        await open(page, url);
+        const detail: unknown = await page.evaluate(
+          (key) => (window as unknown as { $preData?: Record<string, unknown> }).$preData?.[key] ?? null,
+          SAVANA_DETAIL_KEY,
+        );
+        // no page promise: Savana's 10 days to the hub (its shop row) apply
+        return { product: savanaProduct(detail, url), pageDays: null };
       }),
   },
   shopify: {

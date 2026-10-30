@@ -41,6 +41,8 @@ export interface ExportLine {
       name: string;
       product_type: string;
       attributes: unknown;
+      /** D-171: the country its page states ("China"); absent before migration 20261105100000: India. */
+      made_in?: string | null;
       region: { name: string } | null;
       category: { name: string } | null;
     } | null;
@@ -98,7 +100,8 @@ export function invoiceRows(lines: ExportLine[], fxInrPerUsd: number | null, det
       p?.category?.name ?? '',
       attr(p?.attributes, 'fibre_content'),
       detail(details, p?.product_type === 'food' ? 'hs_food' : p?.product_type === 'home' ? 'hs_home' : 'hs_clothing'),
-      p?.region?.name ? `India (${p.region.name})` : 'India',
+      // customs gets the true country: a Savana piece made in China says China (D-171)
+      p?.made_in && p.made_in !== 'India' ? p.made_in : p?.region?.name ? `India (${p.region.name})` : 'India',
       pieces,
       line.variant?.weight_g ? line.variant.weight_g * pieces : '',
       (unitPaise / 100).toFixed(2),

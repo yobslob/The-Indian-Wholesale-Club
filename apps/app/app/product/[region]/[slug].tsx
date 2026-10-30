@@ -159,8 +159,10 @@ export default function ProductScreen(): React.JSX.Element {
               ) : null}
             </View>
             <Text className="border-line font-display text-ink border-t pt-4 text-[18px]">
-              Made in India{data.product.region_name ? ` · from ${data.product.region_name}` : ''} ·
-              Imported
+              {/* D-171: a piece made elsewhere says only that it is imported */}
+              {data.product.made_in_india === false
+                ? 'Imported'
+                : `Made in India${data.product.region_name ? ` · from ${data.product.region_name}` : ''} · Imported`}
             </Text>
           </View>
 

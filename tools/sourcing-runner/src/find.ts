@@ -5,6 +5,7 @@ import { checkCategory } from '@repo/shared/sourcing';
 import {
   buildListing,
   pickCandidates,
+  shopMaxDays,
   shopsFor,
   targetMatcher,
   type Candidate,
@@ -14,6 +15,7 @@ import {
 
 import { shopOf, type RunContext } from './context';
 import { errorText, log } from './log';
+import { PhotoStore } from './photo-store';
 import { copyPhotos } from './photos';
 import { shopFor, type PageRead } from './shops';
 
@@ -150,7 +152,12 @@ async function tryCandidate(
   const fit = checkCategory(read.product.title, target.product_type, target.category);
   if (fit.kind === 'not_type') return `${c.best.site}: ${fit.reason}`;
   if (fit.kind === 'move') return `${c.best.site}: reads as ${fit.to}, not ${target.category}`;
-  const { product, pageOf } = await withSiblings(ctx, read.product, c.best, s.max_delivery_days);
+  const { product, pageOf } = await withSiblings(
+    ctx,
+    read.product,
+    c.best,
+    shopMaxDays(shop, s.max_delivery_days),
+  );
   const draft = buildListing({
     product,
     target,
@@ -170,7 +177,7 @@ async function tryCandidate(
   };
   if (!ctx.db) {
     log(
-      `  would add "${listing.name}" from ${listing.site}: ${listing.variants.map((v) => `${v.label} ₹${v.price_paise / 100}`).join(', ')}` +
+      `  would add "${listing.name}" from ${listing.site}${draft.madeIn === 'India' ? '' : ` (made in ${draft.madeIn}: Imported)`}: ${listing.variants.map((v) => `${v.label} ₹${v.price_paise / 100}`).join(', ')}` +
         `${listing.backups.length ? `; backups ${listing.backups.map((b) => b.site).join(', ')}` : ''}${draft.complete ? '' : ` (details to finish: ${draft.missing.join(', ')})`}`,
     );
     return null;
@@ -178,6 +185,9 @@ async function tryCandidate(
   const added = await ctx.db.add(target.id, listing);
   for (const v of listing.variants) ctx.known.add(`${listing.site}|${v.item_key}`);
   if (!added.created) return `${c.best.site}: already listed`;
+  // D-171: a piece made elsewhere says "Imported" to customers; set before its photos can publish it
+  if (draft.madeIn !== 'India') await ctx.db.setOrigin(added.product_id, draft.madeIn);
+  const before = PhotoStore.written;
   const media = await copyPhotos(ctx, added.product_id, target.product_type, draft.photos, listing.page_url);
   const published = media.length
     ? await ctx.db.media(added.product_id, media, draft.complete).catch(async (error: unknown) => {
@@ -186,6 +196,7 @@ async function tryCandidate(
         throw error;
       })
     : { published: false, note: 'no photo could be copied' };
+  ctx.budget?.add(PhotoStore.written - before);
   if (media.some((m) => m.redo) && !('redo' in published && published.redo))
     ctx.redo?.stop('the database kept no marks: run the Deploy workflow (migration 20261103100000)');
   // D-135: a liquid is not sent: archived, shown to customers as coming soon
@@ -194,6 +205,7 @@ async function tryCandidate(
   log(
     `  added "${listing.name}" (${listing.variants.length} variant${listing.variants.length === 1 ? '' : 's'}) from ${listing.site}` +
       `${draft.liquid ? ', coming soon (a liquid)' : published.published ? ', live' : ', draft'}${published.note ? ` (${published.note})` : ''}` +
+      `${draft.madeIn === 'India' ? '' : `, made in ${draft.madeIn} (Imported)`}` +
       (draft.complete ? '' : ` (missing: ${draft.missing.join(', ')})`),
   );
   return null;
@@ -227,7 +239,7 @@ export async function findForTarget(ctx: RunContext, target: SourcingTarget): Pr
   let added = 0;
   const reasons: string[] = [];
   for (const c of candidates) {
-    if (added >= want) break;
+    if (added >= want || ctx.budget?.spent) break;
     try {
       const why = await tryCandidate(ctx, target, c);
       if (why) reasons.push(why);

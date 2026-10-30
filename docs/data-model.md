@@ -34,7 +34,7 @@ operations data are never queried from customer code.
 | | `vendor_applications` | "Join as a vendor?" requests (country IN or US, Q-35), status | admin |
 | Places | `regions` | the 36 regions (D-002): slug, name, sort, `is_live`, greeting (native + ISO 15924 script + Latin + meaning), languages, tagline, story, hero image, accent colour, `content_status` (D-019) | store (text only if approved) / admin |
 | Catalog | `categories` | browse groups per product type. A child always has its parent's type | store / admin |
-| | `products` | region, category, `product_type`, name, slug, summary, description, story, craft, `attributes` (customer-safe JSON), `price_cents`, `status`, search vector; `vendor_id`*, `shop_price_paise`*, `origin_town`*, `has_origin_label`*, `is_placeholder`*; `wears` (women, men, kids, unisex: who it is for, D-140; filled from the name or category on save, required for clothing to go live); `shop_title`* (an imported piece's own title on the shop, D-140 L1). **Spices are `live` only while "Spices are cleared" is on** (`pricing_settings.spices_cleared`, D-074; on since D-107) | store (live only) / admin |
+| | `products` | region, category, `product_type`, name, slug, summary, description, story, craft, `attributes` (customer-safe JSON), `price_cents`, `status`, search vector; `vendor_id`*, `shop_price_paise`*, `origin_town`*, `has_origin_label`*, `is_placeholder`*; `wears` (women, men, kids, unisex: who it is for, D-140; filled from the name or category on save, required for clothing to go live); `shop_title`* (an imported piece's own title on the shop, D-140 L1); `made_in`* (the country its page states, 'India' by default; D-171: Savana's and NEWME's China pieces; customers see only `store_products.made_in_india`, the customs invoice the country). **Spices are `live` only while "Spices are cleared" is on** (`pricing_settings.spices_cleared`, D-074; on since D-107) | store (live only) / admin |
 | | `product_variants` | `options` JSON (colour, flavour, style = "Type", pack, size: D-118), SKU*, label, price override, `weight_g`* with `weight_source`* and `weight_note`* (D-129), `weight_estimate_g`*, `weight_estimate_note`*, `weight_estimated_at`* (D-131), `weight_checked_at`* (D-146), `net_qty` (food, D-133), `qty_listed`*, `qty_reserved`*, `qty_confirmed_at`*, `shop_price_paise`*, `source_id`* | store (`available`, food's `net_qty`) / admin |
 | | `product_sources` | the shop items a variant can be ordered as, checked weekly (D-118) | admin / worker via functions |
 | | `variant_availability` | public mirror `variant_id → available`, trigger-maintained, in the Realtime publication (live "only 2 left", D-010) | store (visible products) |
@@ -290,6 +290,12 @@ Migration `20261029100000_quick_speed`: `store_quick_browse()` and `store_quick_
 into their own list before they meet `store_products` (joined straight to the view, the planner multiplied options by
 categories: 1.3 – 1.7 s with 5,100 7-day pieces on a production copy, now about 0.2 s), and the front page builds the
 cards of its three rows only. Same answers (checked against the old functions on the copy).
+Migrations `20261105090000_newme_shop` and `20261105100000_imported_pieces` (D-170, D-171): shops NEWME (`newme`) and
+Savana (`savana`), 10 days each; a shop's own `delivery_days` is its limit when longer than Settings' (`_sourcing_settle`,
+`_quick_sourceable`); `products.made_in` (the country its page states, 'India' by default; kept on a US clearance copy,
+`_to_clearance`); `store_products`, `store_order_items` and `guest_order_lookup`'s items append `made_in_india` (the
+country itself stays admin-only); worker only: `worker_set_origin(product, made_in)` (a listing the runner made; returns
+whether one was changed). Tests: `imported_pieces.test.sql`.
 Migration `20261104090000_home_photos` (D-169): `home_photos` (Home's own mosaic photos: path under `home/album/`,
 required alt text, order; admin-only under RLS), `admin_order_home_photos(ids)` (the admin's new order in one call,
 RLS-bound), and `store_home()`'s `album` reads only them, in order, up to 60 (no state album or listing photo).

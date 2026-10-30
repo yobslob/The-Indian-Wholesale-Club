@@ -15,7 +15,7 @@ const MANY = 100;
 /**
  * After an admin change to listings (D-145): only the pages that show them are rebuilt: each one's own page, its state
  * page (every state page for an all-India piece), Home, See all and the sitemap. Other product pages' Similar items
- * catch up within the 5-minute fallback, as after a sale (engineering.md §Caching). Refreshing everything on every
+ * catch up within the hour's fallback, as after a sale (engineering.md §Caching). Refreshing everything on every
  * edit rewrote all 5,852 product pages and the 2 MB state pages and used up Vercel's 200,000 page-cache writes
  * (2026-10-21). An edit to a listing customers don't see (a draft) refreshes nothing; `shownChanged` (published,
  * unpublished, Coming soon on or off) refreshes its pages either way.

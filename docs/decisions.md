@@ -719,7 +719,7 @@ What it means for the build (migration `20261104090000_home_photos`, admin **Hom
   later, first or last, then Save order; a picked photo's line can be changed, or the photo removed (its files too).
 *Claude's choices in it (proposed, confirm when convenient):* the 60-photo cap; the line started from the file's name.
 
-**D-170 · 2026-10-31 · founder: Savana and NEWME as sourcing shops, 3,000+ listings** · Savana held by Q-49 (honest origin, D-004)
+**D-170 · 2026-10-31 · founder: Savana and NEWME as sourcing shops, 3,000+ listings** · Savana held by Q-49 (honest origin, D-004) · its Savana hold, NEWME's India-only and next-day rules and its targets SUPERSEDED by D-171
 - Founder, verbatim (relayed by the session that started this work): "generate a savana scraper(https://www.savana.com/)
   we have to fill atleast 3k items from here" and "also include https://newme.asia/".
 - **Savana is not added.** Each Savana product page states its origin ("More Information"); all 119 pieces read on
@@ -751,3 +751,42 @@ the brand; the "NM-PRC" style code used only to skip pieces early; 2 – 10 page
 India-made pieces; tier 1 for the first 15 pages of each collection; jumpsuits (Co-ords & Dresses) and bodysuits
 (Shirts, Tees & Tops) as two rows over the same 8 pages; NEWME's coupon prices ("Get it at ₹…") never used, only the
 size's own price and MRP.
+
+**D-171 · 2026-10-31 · founder: all of Savana and NEWME, made in China included; "Imported" instead of "Made in India" for them; NEWME and Savana in 10 days; R2's last 2 GB and the page cache kept in check** · Answers Q-49 · Changes D-004 for these two shops, D-170, D-068's 5-minute fallback
+- Founder, verbatim: "I want all of savana and newme, It doesn't matter if they are made in china on the products page
+  we will remove the made in India besides Imported and In product details we will remove made in India only for
+  savana products. and for newme orders, It works under 10 days delivery time. First I will run for savana then if
+  space is left so newme. 7.3GB is filled in R2 se we got only 2GB left. In vercel the ISR writes are 153k/200k filled
+  so control that."
+What it means for the build (migration `20261105100000_imported_pieces`):
+- **Origin per piece:** `products.made_in` holds the country the shop's page states ('India' for every listing before).
+  On Savana and NEWME only, a piece whose page names another country is listed (the runner sets the country,
+  `worker_set_origin`); every other shop still lists only what is made in India (D-004). A page that names no country
+  is never listed. Customers see only `store_products.made_in_india`: such a piece's page says "Imported" (no "Made in
+  India" line, no "Made in" row in Details), on the web, the app and the customer's invoice. The customs invoice states
+  the real country ("China"); US customs needs it. The FAQ, Delivery and Terms pages no longer say every piece is made
+  in India.
+- **Delivery:** Savana and NEWME bring a piece to the hub in 10 days (their shop rows). A shop's own usual days are now
+  its limit when longer than Settings' 3 days, so their sources are used; every other shop is unchanged. NEWME takes
+  every size in stock (no "by tomorrow" rule).
+- **Targets:** `savana.csv` (447 rows × 40: every clothing department, 3 pages of 20 a row; the first 300 best sellers
+  of each clothing department tier 1, about 3,000 listings at most; the rest of clothing tier 2; jewellery, bags, hair
+  accessories, sunglasses, hats, belts and bag charms tier 3, Accessories) and `newme.csv` (237 rows × 40, every page
+  once, 2 pages of 30 a row, NEWME's made-in-China pieces included). No price band (none given).
+- **R2:** `pnpm sourcing run --targets --photo-gb 1.8` stops starting new listings once that run has written 1.8 GB to
+  the photo store (both copies of every photo counted, `out/photo-budget.json`); the targets not reached wait in the
+  queue. At about 0.6 MB a listing (D-167) 1.8 GB is about 3,000 listings: Savana's tier 1 alone fills it.
+- **Page cache (ISR):** the store's fallback refresh is an hour instead of 5 minutes (`STORE_REVALIDATE_SECONDS`): a
+  page visited after its fallback is rebuilt and written again. Sales, cancels and admin changes still refresh their
+  pages at once; prices after the daily exchange-rate update and the runner's weekly checks show within the hour
+  (checkout always prices fresh). New listings arrive as drafts (Savana's always: below) and are published in batches
+  of 100 or fewer (Products → Drafts), so each batch refreshes only its own pages (D-145).
+- **Savana's pages state no wash care** and give a weave ("Twill Woven", "Flat Jersey") as their fabric: every Savana
+  listing waits as a draft ("details to finish: care"), and a clothing piece cannot go live without care (D-140). Q-50.
+*Claude's choices in it (proposed, confirm when convenient):* Savana's 10 days (the founder named NEWME's; 10 is the
+pilot's upper bound for a piece to reach the hub); NEWME's made-in-China pieces taken too ("all of savana and newme")
+and shown as "Imported" like Savana's, never as made in India; the customer's invoice and the info pages follow the
+product page; both shops' names start "Women's …" when the shop's own name does not say who it is for (both sell
+women's wear only; the store needs it to sell clothing, D-140); left out of `savana.csv`: beauty and fragrances
+(liquids and sprays, D-135), bras and panties (no category), phone cases (not clothing); lounge sets under Co-ords &
+Dresses; the hour's fallback.

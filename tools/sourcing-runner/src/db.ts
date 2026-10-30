@@ -242,6 +242,11 @@ export class Db implements FoodPassDb {
     );
   }
 
+  /** D-171: the country a new listing's page states, when not India (it then says "Imported" to customers). */
+  setOrigin(productId: string, madeIn: string): Promise<boolean> {
+    return this.rpc('worker_set_origin', { p_product: productId, p_made_in: madeIn });
+  }
+
   setLiquids(
     items: { product_id: string; liquid: boolean; note: string | null }[],
   ): Promise<number> {

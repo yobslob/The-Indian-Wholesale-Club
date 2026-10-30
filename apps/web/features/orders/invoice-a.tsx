@@ -11,7 +11,7 @@ export interface InvoiceAData {
   email: string;
   address: Record<string, unknown>;
   express: boolean;
-  items: { id: string; name: string; label: string; region: string | null; quantity: number; unitCents: number; totalCents: number; status: string }[];
+  items: { id: string; name: string; label: string; region: string | null; madeInIndia?: boolean; quantity: number; unitCents: number; totalCents: number; status: string }[];
   subtotalCents: number;
   /** Promo discount, and the bulk saving when it is known apart (the admin's copy). */
   discountCents: number;
@@ -92,7 +92,8 @@ export function InvoiceA({ data: d }: { data: InvoiceAData }): React.JSX.Element
               <td className="py-1.5">
                 {i.name}
                 <span className="text-ink-muted block text-[12px]">
-                  {[i.label, i.region ? `Made in India · ${i.region}` : 'Made in India'].filter(Boolean).join(' · ')}
+                  {/* D-171: a piece made elsewhere is "Imported", never "Made in India" */}
+                  {[i.label, i.madeInIndia === false ? 'Imported' : i.region ? `Made in India · ${i.region}` : 'Made in India'].filter(Boolean).join(' · ')}
                   {i.status !== 'active' ? ` · ${i.status === 'refunded' ? 'refunded' : 'not available, refunded'}` : ''}
                 </span>
               </td>

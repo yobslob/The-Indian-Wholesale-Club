@@ -45,6 +45,13 @@ describe('export documents (flows.md §6.1)', () => {
     assert.equal(rows.length, 3);
   });
 
+  it('invoice: a piece made elsewhere states its own country, never India (D-171)', () => {
+    const china = line('IWC-3', 'SAV-1', 1, 160600);
+    china.variant!.product = { ...china.variant!.product!, made_in: 'China', region: null };
+    const rows = invoiceRows([china], 83.5, details);
+    assert.equal(rows.find((r) => r[0] === 'Kasavu saree (Cream)')?.[4], 'China');
+  });
+
   it('invoice: groups pieces of one variant, totals ₹ and $ at the cycle rate, origin India with the state', () => {
     const rows = invoiceRows(lines, 83.5, details);
     const goods = rows.find((r) => r[0] === 'Kasavu saree (Cream)');

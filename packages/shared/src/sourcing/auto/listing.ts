@@ -8,7 +8,7 @@ import { cleanTitle } from '../title';
 import { cleanOptions, packGrams } from '../variants';
 import { bestWeight, readWeights } from '../weight';
 
-import { inBand, offerDeliveryDays } from './cluster';
+import { inBand, offerDeliveryDays, shopMaxDays } from './cluster';
 import { packedFoodVariants } from './food-weights';
 import { homeVariants } from './home-weights';
 
@@ -22,7 +22,7 @@ import type { ListingVariantPayload, Offer, SourcingShop, SourcingTarget } from 
  */
 
 const SHOP_WORDS =
-  /legal disclaimer|our (app|website|site)|important information|amazon|flipkart|myntra|blinkit|grofers|zepto|bigbasket|big basket|instamart|swiggy|oyela|offduty|nishorama|newme|jiomart|meesho|ajio|nykaa|snapdeal|\bbuy\b|online|cash on delivery|free (shipping|delivery)|deliver(y|ed)|doorstep|replacement|return(s|able)?\b|refund|seller|warranty|genuine products?|best price|lowest price|\bmrp\b|discount|\boffer\b|coupon|in stock|add to cart|https?:\/\/|www\./i;
+  /legal disclaimer|our (app|website|site)|important information|amazon|flipkart|myntra|blinkit|grofers|zepto|bigbasket|big basket|instamart|swiggy|oyela|offduty|nishorama|newme|savana|jiomart|meesho|ajio|nykaa|snapdeal|\bbuy\b|online|cash on delivery|free (shipping|delivery)|deliver(y|ed)|doorstep|replacement|return(s|able)?\b|refund|seller|warranty|genuine products?|best price|lowest price|\bmrp\b|discount|\boffer\b|coupon|in stock|add to cart|https?:\/\/|www\./i;
 
 /** Text without the sentences that speak of the shop, delivery, returns or prices (D-003; IWC's own terms differ). */
 export function sanitizeText(text: string): string {
@@ -110,7 +110,20 @@ function attributesFor(product: SourcedProduct, type: SourcingTarget['product_ty
   return { attributes: found, complete: false, missing };
 }
 
+/** D-171: the shops whose pieces made outside India are listed too, as imported (founder: "I want all of savana and newme"). */
+const IMPORTS_TAKEN = new Set<SourcingShop['reader']>(['savana', 'newme']);
+
+/** The country as a page states it, as customs reads it ("PRC" → "China"); '' for a page that does not say. */
+export function countryName(origin: string): string {
+  const o = origin.trim();
+  if (/^(p\.?\s*r\.?\s*c\.?|people'?s republic of china|china|made in china)$/i.test(o)) return 'China';
+  if (!o || /^(not stated|n\/?a|na|none|-)$/i.test(o)) return '';
+  return o.replace(/\s+/g, ' ').slice(0, 60);
+}
+
 export interface ListingDraft {
+  /** D-171: the country the page states ('India' when it says India or nothing); not India: "Imported". */
+  madeIn: string;
   listing: {
     site: string;
     shop_label: string;
@@ -155,7 +168,7 @@ export function buildListing(input: {
   const { product, target, shop } = input;
   const days = input.pageDays ?? shop.delivery_days;
   if (days === null) return { skip: 'the page promises no delivery date' };
-  if (days > input.maxDays) return { skip: `delivery takes ${days} days` };
+  if (days > shopMaxDays(shop, input.maxDays)) return { skip: `delivery takes ${days} days` };
 
   let items: SourcedVariant[] = product.variants.filter((v) => v.pricePaise);
   if (!items.length && input.family.length > 1) {
@@ -194,10 +207,12 @@ export function buildListing(input: {
   items = items.filter((v) => inBand(target, v.pricePaise));
   if (!items.length) return { skip: 'price outside the band' };
   if (!items.some((v) => v.inStock !== false)) return { skip: 'sold out' };
-  // D-004: the store says "Made in India"; a page that names another country of origin is not listed
+  // D-004: the store says "Made in India"; a page that names another country of origin is not listed, except on the
+  // shops the founder took whole (D-171): there it is listed with its country and customers see "Imported"
   const origin =
     product.specs.find(([k]) => /country of origin|origin country/i.test(k))?.[1] ?? '';
-  if (origin && !/india|bharat/i.test(origin))
+  const madeIn = !origin || /india|bharat/i.test(origin) ? 'India' : countryName(origin);
+  if (madeIn !== 'India' && (!IMPORTS_TAKEN.has(shop.reader) || !madeIn))
     return { skip: `made in ${origin.slice(0, 40)}, not India` };
 
   const labels = new Set<string>();
@@ -240,7 +255,7 @@ export function buildListing(input: {
   const shopOf = new Map(input.shops.map((s) => [s.site, s]));
   const backups = input.others.flatMap((o) => {
     const oDays = offerDeliveryDays(o, shopOf.get(o.site), input.now);
-    if (oDays === null || oDays > input.maxDays || !o.pricePaise) return [];
+    if (oDays === null || oDays > shopMaxDays(shopOf.get(o.site), input.maxDays) || !o.pricePaise) return [];
     const grams = packGrams(o.pack ?? o.title);
     const at =
       variants.length === 1 ? 0 : variants.findIndex((v) => grams !== null && v.weight_g === grams);
@@ -279,6 +294,7 @@ export function buildListing(input: {
       .map((v) => ({ url: v.image!, itemKey: v.key as string | null, alt: `${name}, ${v.label}` })),
   ];
   return {
+    madeIn,
     listing: {
       site: product.site,
       shop_label: shop.label,

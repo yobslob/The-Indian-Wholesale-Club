@@ -13,7 +13,7 @@ import type { ProductType } from '../domain/product-types';
 const escape = (s: string): string => s.replace(/[.*+?^${}()|[\]\\]/g, '\\$&');
 
 /** The shops IWC imports from: their names never belong in a piece's name. */
-const SHOPS = /\b(amazon(\.in)?|flipkart|myntra|ajio|meesho|nykaa|blinkit|zepto|swiggy instamart|instamart|bigbasket|nishorama|oyela|offduty|newme)\b/i;
+const SHOPS = /\b(amazon(\.in)?|flipkart|myntra|ajio|meesho|nykaa|blinkit|zepto|swiggy instamart|instamart|bigbasket|nishorama|oyela|offduty|newme|savana)\b/i;
 
 const tidy = (s: string): string =>
   s

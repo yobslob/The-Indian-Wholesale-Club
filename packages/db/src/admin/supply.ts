@@ -178,7 +178,7 @@ export async function listCycleExportLines(client: IwcClient, cycleId: string) {
       .from('pickups')
       .select(
         `id, quantity, shop_price_paise, vendor:vendors(shop_name),
-          variant:product_variants(sku, label, weight_g, product:products(name, product_type, attributes,
+          variant:product_variants(sku, label, weight_g, product:products(name, product_type, attributes, made_in,
             region:regions(name), category:categories(name))),
           item:order_items(order:orders(order_number))`,
       )

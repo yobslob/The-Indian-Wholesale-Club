@@ -30,7 +30,9 @@ import { slimCards } from './slim-cards';
  * STORE_REVALIDATE_SECONDS.
  */
 export const STORE_TAG = 'store';
-export const STORE_REVALIDATE_SECONDS = 300;
+// D-171 (founder 2026-10-31: 153,000 of 200,000 page-cache writes used): an hour, not 5 minutes. Every page visited
+// after its fallback is rebuilt and written again; sales, cancels and admin changes still refresh their pages at once.
+export const STORE_REVALIDATE_SECONDS = 3600;
 
 export const homeTag = 'store:home';
 export const regionTag = (regionSlug: string): string => `store:region:${regionSlug}`;
@@ -47,8 +49,9 @@ export const listingsTag = 'store:listings';
  * that expects the new field. Last change: store_browse's sizes and prices, store_home's just_listed_types (D-136).
  */
 // v16: store_browse adds 'wears' and the For filter; v17: cards carry their options; v18: Home's band (D-140);
-// v19: store_browse's drawer (D-144); v20: cards keep their options out of the cache and the page (D-145)
-const SHAPE = 'v20';
+// v19: store_browse's drawer (D-144); v20: cards keep their options out of the cache and the page (D-145);
+// v21: the product carries made_in_india (D-171)
+const SHAPE = 'v21';
 
 const cached = <T>(key: string[], tags: string[], load: () => Promise<T>): Promise<T> =>
   unstable_cache(async () => slimCards(await load()), [...key, SHAPE], { tags: [STORE_TAG, ...tags], revalidate: STORE_REVALIDATE_SECONDS })();
@@ -143,7 +146,7 @@ export const getQuickNavCached = () =>
   });
 export type QuickNav = Awaited<ReturnType<typeof getQuickNavCached>>;
 
-/** Demo mode (D-078): the banner on every store page. Refreshed with STORE_TAG or within 5 minutes. */
+/** Demo mode (D-078): the banner on every store page. Refreshed with STORE_TAG or within the hour (STORE_REVALIDATE_SECONDS). */
 export const isDemoStoreCached = () => cached(['store-demo'], [], () => isDemoStore(storeClient()));
 
 /** The Shipping & returns page's numbers (migration 27); a settings save refreshes it with STORE_TAG. */

@@ -13,7 +13,8 @@ JSON sent to the browser.
   life), photos, price, variants (one row of choices per option that differs: colour, flavour, type, pack, size;
   each variant can have its own price, D-118), availability count, and
   **"Made in India" / "Imported"**, and its state when it has one (D-121: an all-India listing names no state; nothing
-  says "no state" either).
+  says "no state" either). A piece made outside India (D-171: Savana's, NEWME's made in China) says only "Imported":
+  no "Made in India" and no "Made in" row in Details (`store_products.made_in_india`; the country stays admin-only).
 - **Delivery:** the estimated delivery window, and "order by <date>" (D-035).
 - **Own orders:** number, items, totals, customer-facing status (`flows.md` §8), delivery window, US carrier + tracking link.
 
@@ -89,7 +90,7 @@ Framer Motion page transitions (speed, `engineering.md`).
 ## The product page
 Gallery → name, price → variant picker → availability (live) → **delivery window** → add to cart → details: description,
 craft, attributes, care or storage → origin line: "Made in India · from <Region> · Imported" ("Made in India · Imported"
-for an all-India listing, D-121).
+for an all-India listing, D-121; "Imported" alone for a piece made outside India, D-171).
 **D-100 (built):** clothing photos are Front, Back (worn by an AI-generated model, D-101) and the Material
 close-up, which is always the original photo; Details (above the Size chart) say how to wash it (Care), where it is
 from (Made in: India, from <Region>) and, when a photo is AI-generated, that the model photos are; one builder for the

@@ -100,6 +100,8 @@ export const productSchema = productCardSchema.extend({
   published_at: isoDateTime.nullable(),
   /** A piece already in the US (a clearance piece, D-072): it ships at once, outside the cycle. */
   is_us_stock: z.boolean().default(false),
+  /** D-171: false for a piece made outside India (it says "Imported" only); optional until migration 20261105100000. */
+  made_in_india: z.boolean().nullable().optional(),
 });
 
 export const variantSchema = z.object({
@@ -255,6 +257,8 @@ export const orderItemSchema = z.object({
   status: z.enum(['active', 'unavailable', 'refunded']),
   /** The product's photo (D-088); null when it has none. Optional until every reader runs migration 30. */
   image_path: z.string().nullable().optional(),
+  /** D-171: false for a piece made outside India (its invoice line says "Imported"); optional until 20261105100000. */
+  made_in_india: z.boolean().nullable().optional(),
 });
 
 export const orderEventSchema = z.object({

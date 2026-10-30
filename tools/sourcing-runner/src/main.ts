@@ -1,6 +1,7 @@
 import { PRODUCT_TYPES } from '@repo/shared/domain';
 
 import { openBrowser, profileFor } from './browser';
+import { PhotoBudget, startBudget } from './budget';
 import { runChecks } from './check';
 import { sortNewClothing } from './classes';
 import { DEFAULT_SHOPS, type RunContext } from './context';
@@ -28,6 +29,7 @@ import type { SourcingPlan } from '@repo/shared/sourcing/auto';
  *   pnpm sourcing run --checks           only the checks      (--targets: only the targets)
  *   pnpm sourcing run --type clothing --shops nishorama.com    one product type (and shop) only, so two runners
  *                                        can run at once in two terminals, each with its own browser profile
+ *   pnpm sourcing run --targets --photo-gb 1.8    at most 1.8 GB of new photos in the store this run (D-171)
  *   pnpm sourcing run --weights          only clothing by class (D-132) and the weights listings lack (D-129; `run`
  *                                        ends with them too)
  *   pnpm sourcing classes                only clothing by class (D-132): no browser, no shops, no new listings
@@ -48,6 +50,7 @@ const SETUP_PAGES = [
   'https://www.flipkart.com/',
   'https://www.myntra.com/',
   'https://newme.asia/',
+  'https://www.savana.com/',
 ];
 
 async function setup(args: string[]): Promise<void> {
@@ -157,6 +160,13 @@ async function run(args: string[]): Promise<number> {
     now: started,
     // D-168: only a run that adds listings needs the photo redo service
     redo: targets.length ? await Redo.start(db) : null,
+    budget: PhotoBudget.load(),
+  };
+  if (ctx.budget) log(`run: photo budget ${ctx.budget.text()}`);
+  const spent = (): boolean => {
+    if (!ctx.budget?.spent) return false;
+    log(`run: photo budget spent (${ctx.budget.text()}): no new listings this run`);
+    return true;
   };
   let added = 0;
   let errors = 0;
@@ -172,7 +182,7 @@ async function run(args: string[]): Promise<number> {
     const lanes = (t: (typeof targets)[number]): string =>
       /^collection:/i.test(t.query.trim()) ? `collection ${t.query.trim().toLowerCase()}` : t.id;
     const searchAll = async (list: typeof targets): Promise<void> => {
-      for (let i = 0; i < list.length && !stopping && !heapFull();) {
+      for (let i = 0; i < list.length && !stopping && !heapFull() && !spent();) {
         const batch: typeof targets = [];
         while (i < list.length && batch.length < 3 && !batch.some((t) => lanes(t) === lanes(list[i]!)))
           batch.push(list[i++]!);
@@ -199,7 +209,7 @@ async function run(args: string[]): Promise<number> {
     let searched = targets.length;
     try {
       await searchAll(targets);
-      while (targets.length && !stopping && !heapFull()) {
+      while (targets.length && !stopping && !heapFull() && !spent()) {
         const next = await db.plan(0, { type, site });
         for (const key of next.known) ctx.known.add(key);
         const fresh = next.targets.filter((t) => !seen.has(t.id));
@@ -217,6 +227,12 @@ async function run(args: string[]): Promise<number> {
     }
     // memory.ts: near Node's memory limit a fresh runner takes over; the targets not searched go back to the queue
     full = !stopping && heapFull();
+    // D-171: the photo budget spent: the targets not reached wait for the next run (with more space)
+    if (!stopping && !full && ctx.budget?.spent && unsearched.size) {
+      await Promise.all(
+        [...unsearched].map((id) => db.releaseTarget(id, "the run's photo budget (--photo-gb) was spent")),
+      );
+    }
     if (full) {
       log(`run: ${heapText()}: ${unsearched.size} targets back to the queue for a fresh runner`);
       await Promise.all(
@@ -389,6 +405,13 @@ async function liquids(): Promise<number> {
   log(`done: ${n} liquid listings ${args.includes('--dry') ? 'found' : 'archived'}`);
   return 0;
 }
+/** `run` in this process: the photo budget it starts with (D-171), then its runners one after another (memory.ts). */
+function supervise(runArgs: string[]): Promise<number> {
+  const gb = flag(runArgs, '--photo-gb');
+  startBudget(gb === null ? null : Number(gb));
+  return keepRunning();
+}
+
 const main =
   command === 'liquids'
     ? liquids()
@@ -403,7 +426,7 @@ const main =
             : command === 'run'
               ? isChild()
                 ? run(args)
-                : keepRunning()
+                : supervise(args)
               : command === 'try'
                 ? dryRun(args)
                 : command === 'doctor'

@@ -1,3 +1,4 @@
+import type { PhotoBudget } from './budget';
 import type { Db } from './db';
 import type { Lanes } from './lanes';
 import type { ShopStats } from './log';
@@ -14,6 +15,8 @@ export interface RunContext {
   now: Date;
   /** D-168: new photos made again before upload (`run` only); absent or null: they go up as they are. */
   redo?: Redo | null;
+  /** D-171: the photo store space this run may still use (`--photo-gb`); absent: no cap. */
+  budget?: PhotoBudget | null;
 }
 
 export const shopOf = (ctx: RunContext, site: string): SourcingShop | undefined =>
@@ -96,6 +99,13 @@ export const DEFAULT_SHOPS: SourcingShop[] = [
     label: 'NEWME',
     reader: 'newme',
     product_types: ['clothing'],
-    delivery_days: 3,
+    delivery_days: 10,
+  },
+  {
+    site: 'savana.com',
+    label: 'Savana',
+    reader: 'savana',
+    product_types: ['clothing'],
+    delivery_days: 10,
   },
 ];
