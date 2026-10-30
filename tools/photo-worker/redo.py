@@ -17,6 +17,7 @@ review choice is cleared); --retry only the failed ones, with another seed.
 import argparse
 import json
 import logging
+from logging.handlers import RotatingFileHandler
 import os
 import sys
 import time
@@ -206,7 +207,8 @@ def main() -> int:
     args = ap.parse_args()
     logging.basicConfig(level=logging.INFO, format="%(asctime)s %(levelname)s %(message)s",
                         handlers=[logging.StreamHandler(sys.stdout),
-                                  logging.FileHandler(HERE / "redo.log", encoding="utf-8")])
+                                  RotatingFileHandler(HERE / "redo.log", maxBytes=5_000_000,
+                                                      backupCount=1, encoding="utf-8")])
     for noisy in ("httpx", "transformers", "diffusers"):
         logging.getLogger(noisy).setLevel(logging.WARNING)
     todo = pending(args.type, args.retry, args.again)

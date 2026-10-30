@@ -1,4 +1,4 @@
-import { existsSync, mkdirSync, readdirSync, readFileSync, writeFileSync } from 'node:fs';
+import { existsSync, mkdirSync, readdirSync, readFileSync, rmSync, writeFileSync } from 'node:fs';
 import { join } from 'node:path';
 
 import { z } from 'zod';
@@ -11,7 +11,8 @@ import type { ProductType } from '@repo/shared/domain';
  *   before.png     the photo as customers see it now (its 1200 copy)
  *   after.png      the new photo, result.json what the GPU step found (tools/photo-worker/redo.py)
  *   decision.json  the founder's approve or reject (the review page)
- * Each file has one writer.
+ * Each file has one writer. Once a photo is done (live and its old copies swept, kept, removed, or changed meanwhile)
+ * its two PNGs are deleted (`tidy`); item.json stays, so `fetch` never takes the photo again.
  */
 
 export const itemSchema = z.object({
@@ -73,6 +74,8 @@ const read = <S extends z.ZodTypeAny>(file: string, schema: S): z.output<S> | nu
   }
 };
 
+export const readItem = (dir: string): Item | null => read(join(dir, 'item.json'), itemSchema);
+
 export const typeDir = (out: string, type: ProductType): string => join(out, type);
 
 export function itemDir(out: string, item: Pick<Item, 'type' | 'media_id'>): string {
@@ -83,6 +86,15 @@ export function writeItem(dir: string, item: Item): void {
   mkdirSync(dir, { recursive: true });
   writeFileSync(join(dir, 'item.json'), `${JSON.stringify(item, null, 2)}\n`);
 }
+
+/** A finished photo's PNGs go (a few MB each; 13k listings would fill the laptop's disk); its JSON files stay. */
+export function tidy(dir: string): void {
+  for (const file of ['before.png', 'after.png']) rmSync(join(dir, file), { force: true });
+}
+
+/** Done with: nothing left for the GPU, the review page or the sweep. */
+export const finished = (item: Item): boolean =>
+  !!item.stale || (!!item.published && (!item.published.old_path || !!item.published.swept));
 
 export function writeDecision(dir: string, ok: boolean, remove = false): void {
   const decision = { ok, at: new Date().toISOString(), ...(remove ? { remove } : {}) };
@@ -102,7 +114,7 @@ export function allWork(out: string, type: ProductType): Work[] {
     .filter((d) => d.isDirectory())
     .flatMap((d) => {
       const dir = join(base, d.name);
-      const item = read(join(dir, 'item.json'), itemSchema);
+      const item = readItem(dir);
       if (!item) return [];
       return [
         {

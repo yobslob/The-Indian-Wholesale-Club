@@ -1,11 +1,11 @@
-import { existsSync, mkdirSync, readFileSync, writeFileSync } from 'node:fs';
+import { existsSync, mkdirSync, readFileSync, rmSync, writeFileSync } from 'node:fs';
 import { join } from 'node:path';
 
 import sharp from 'sharp';
 
 import { copyFor, type ProductType } from '@repo/shared/domain';
 
-import { cursorFile, itemDir, typeDir, writeItem, type Item } from './items';
+import { cursorFile, itemDir, readItem, typeDir, writeItem, type Item } from './items';
 import { errorText, log } from './log';
 
 import type { Db } from './db';
@@ -36,6 +36,8 @@ export async function fetchPhotos(
       break;
     }
     for (const listing of plan.listings) {
+      const fetched: { dir: string; item: Item; png: Buffer }[] = [];
+      let failed = false;
       for (const photo of listing.photos) {
         const item: Item = {
           media_id: photo.id,
@@ -49,17 +51,30 @@ export async function fetchPhotos(
           main: photo.main,
         };
         const dir = itemDir(out, item);
-        if (existsSync(join(dir, 'item.json'))) continue;
+        const had = readItem(dir);
+        // a photo changed while it waited (left alone by publish) comes back as the photo it is now
+        if (had && !(had.stale && had.path !== photo.path)) continue;
         try {
           const bytes = await store.get(`product-media/${copyFor(photo.path, 1200)}`);
-          mkdirSync(dir, { recursive: true });
           // a shop's transparent backdrop made white: the GPU step reads RGB, where it would turn black
-          await sharp(bytes).flatten({ background: '#ffffff' }).png().toFile(join(dir, 'before.png'));
-          writeItem(dir, item);
-          got += 1;
+          fetched.push({ dir, item, png: await sharp(bytes).flatten({ background: '#ffffff' }).png().toBuffer() });
         } catch (error) {
+          failed = true;
           log(`  ${listing.name}: ${errorText(error)}`);
         }
+      }
+      // clothing goes live a whole listing at a time (publish.ts): a photo missing here would keep the shop's face
+      // beside the house model's, so the listing waits for `fetch --again`
+      if (failed && type === 'clothing') {
+        log(`  ${listing.name}: not fetched (a photo could not be read)`);
+        fetched.length = 0;
+      }
+      for (const f of fetched) {
+        rmSync(f.dir, { recursive: true, force: true });
+        mkdirSync(f.dir, { recursive: true });
+        writeFileSync(join(f.dir, 'before.png'), f.png);
+        writeItem(f.dir, f.item);
+        got += 1;
       }
       after = listing.product_id;
       writeFileSync(cursor, after);

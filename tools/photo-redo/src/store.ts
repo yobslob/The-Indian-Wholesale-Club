@@ -54,7 +54,7 @@ export class Store {
   /** Writes a photo's two copies for the recorded path `path` (`products/<id>/s/<name>.jpg`) in product-media. */
   async putCopies(path: string, image: Buffer): Promise<void> {
     const keys = storeKeys('product-media', path);
-    await Promise.all(
+    const written = await Promise.allSettled(
       WIDTHS.map(async (width, i) => {
         const body = await sharp(image)
           .resize({ width, withoutEnlargement: true })
@@ -68,6 +68,12 @@ export class Store {
         if (!res.ok) throw new Error(`photo store: ${res.status} writing ${keys[i]}`);
       }),
     );
+    const failed = written.find((r) => r.status === 'rejected');
+    if (failed) {
+      // one copy without the other is never shown: it goes too
+      await Promise.allSettled(keys.map((k) => this.delete(k)));
+      throw failed.reason;
+    }
   }
 
   /** Every key under `prefix`, 1,000 per request. */

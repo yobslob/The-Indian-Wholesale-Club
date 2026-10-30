@@ -4,7 +4,7 @@ import { join } from 'node:path';
 
 import { storeKeys, type ProductType } from '@repo/shared/domain';
 
-import { allWork, modeOf, writeItem, type Work } from './items';
+import { allWork, finished, modeOf, tidy, writeItem, type Work } from './items';
 import { errorText, log } from './log';
 
 import type { Db } from './db';
@@ -14,6 +14,9 @@ import type { Store } from './store';
 const SWEEP_AFTER_MS = 10 * 60_000;
 
 const stem = (path: string): string => path.replace(/\.[A-Za-z0-9]+$/, '');
+
+const deleteCopies = (store: Store, path: string): Promise<void[]> =>
+  Promise.all(storeKeys('product-media', path).map((k) => store.delete(k)));
 
 /** Ready to go live: approved on the review page, or with --auto passed by the automatic checks and not rejected;
  * and its new photo is there (redo.py clears it while it makes the photo again). */
@@ -93,12 +96,25 @@ async function goLive(db: Db, store: Store, w: Work): Promise<boolean> {
   // a home scene goes first with the plain photo kept second; everything else replaces its photo
   const scene = mode === 'scene' && item.type === 'home';
   const redo = mode === 'fresh' ? 'fresh' : mode === 'scene' ? (item.type === 'home' ? 'scene' : 'food') : 'face';
-  const ok = scene
-    ? (await db.scene(item.media_id, item.path, path, item.alt || item.name)) !== null
-    : await db.set(item.media_id, item.path, path, redo === 'scene' ? 'food' : redo);
+  let ok: boolean;
+  try {
+    ok = scene
+      ? (await db.scene(item.media_id, item.path, path, item.alt || item.name)) !== null
+      : await db.set(item.media_id, item.path, path, redo === 'scene' ? 'food' : redo);
+  } catch (error) {
+    // the answer can be lost after the change was made: the new copies go only if no listing shows them
+    const shown = await db.inUse([stem(path)]).catch(() => null);
+    if (!shown) throw new Error(`${errorText(error)} (${path} may be left for \`audit --delete\`)`);
+    if (!shown.has(stem(path))) {
+      await deleteCopies(store, path);
+      throw error;
+    }
+    ok = true;
+  }
   if (!ok) {
-    await Promise.all(storeKeys('product-media', path).map((k) => store.delete(k)));
+    await deleteCopies(store, path);
     writeItem(w.dir, { ...item, stale: true });
+    tidy(w.dir);
     log(`  ${item.name}: the photo changed since it was fetched; left alone`);
     return false;
   }
@@ -130,8 +146,17 @@ async function remove(db: Db, w: Work): Promise<boolean> {
   return ok;
 }
 
-/** Deletes the copies of photos replaced over 10 minutes ago, once no listing shows them (checked again here). */
+/** Deletes the copies of photos replaced over 10 minutes ago, once no listing shows them (checked again here), and
+ * the PNGs of every finished photo in the work folder. */
 export async function sweep(out: string, db: Db, store: Store, type: ProductType): Promise<number> {
+  const deleted = await sweepCopies(out, db, store, type);
+  const done = allWork(out, type).filter((w) => finished(w.item) && existsSync(join(w.dir, 'before.png')));
+  for (const w of done) tidy(w.dir);
+  if (done.length) log(`${type}: ${done.length} finished photos' PNGs deleted from the work folder`);
+  return deleted;
+}
+
+async function sweepCopies(out: string, db: Db, store: Store, type: ProductType): Promise<number> {
   const due = allWork(out, type).filter(
     (w) =>
       w.item.published?.old_path &&
@@ -148,7 +173,7 @@ export async function sweep(out: string, db: Db, store: Store, type: ProductType
     const old = w.item.published!.old_path!;
     try {
       if (!shown.has(stem(old))) {
-        await Promise.all(storeKeys('product-media', old).map((k) => store.delete(k)));
+        await deleteCopies(store, old);
         deleted += 1;
       }
       writeItem(w.dir, { ...w.item, published: { ...w.item.published!, swept: true } });

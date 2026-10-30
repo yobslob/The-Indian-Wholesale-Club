@@ -49,7 +49,9 @@ function page(type: ProductType, works: Work[], all: boolean): string {
   const made = works.filter(
     (w) =>
       (w.result?.status === 'made' || (w.result?.status === 'failed' && w.result.mode === 'crop')) &&
-      (all || (!w.decision && !w.item.published)),
+      (all || (!w.decision && !w.item.published)) &&
+      // a finished photo's PNGs are gone (items.ts tidy)
+      existsSync(join(w.dir, 'before.png')),
   );
   const count = (s: string) => works.filter((w) => w.result?.status === s).length;
   const tabs = PRODUCT_TYPES.map((t) => `<a href="/?type=${t}"${t === type ? ' class="on"' : ''}>${t}</a>`).join(' ');

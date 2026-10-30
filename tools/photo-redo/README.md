@@ -17,7 +17,11 @@ Each step can stop and carry on: the work sits in `out/<type>/<photo id>/` (not 
 `after.png`, `result.json` (the GPU step's checks) and `decision.json` (the review). `fetch` carries on from the last
 listing it read; `fetch --again` starts over and takes only what is still not done. `redo.py --again` makes every photo
 not yet live again, except the ones you approved (their review choice is cleared); `--retry` only the failed ones. Run `publish` again after 10 minutes (or `sweep --type …`) to delete the replaced photos'
-copies; it checks first that no listing still shows them.
+copies; it checks first that no listing still shows them. The sweep also deletes the two PNGs of every finished photo
+(live with its old copies gone, kept, removed, or changed meanwhile) from `out/`; `item.json` stays, so `fetch` never
+takes it again. A photo changed on its listing while it waited (left alone by `publish`) is fetched again as it is now.
+A publish whose answer is lost checks whether the listing shows the new copies and deletes them if not. `redo.log`
+here and in `tools/photo-worker` become `redo.log.1` past 5 MB.
 
 **What each photo gets**
 - **Clothing with a face (D-165):** a face swapper (HyperSwap) gives the face the house model's identity while the
