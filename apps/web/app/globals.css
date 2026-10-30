@@ -306,15 +306,19 @@
   /* D-154 (founder 2026-10-24: the floating pill "looks so badly placed, do something creative with it"): the store
      tabs, store-switch.tsx. A dark strip along the very top with the two stores as tabs; the open one is the header's
      own colour (--hdr) and flows into it through curved feet, like a browser's tab, so the header reads as the inside
-     of that store: ivory in the IWC store, a warm brand tint in the 7-day store (no line under it, founder 2026-10-30). The strip is part of the page, never over it: .site-top sticks 1 strip-height up, so the strip
-     scrolls away and the header stays; on Home it slides up with the hero's fade (--hero-p). The open tab glides over
-     in 320 ms with a slight spring and its mark pops once; at once with reduced motion. */
+     of that store: ivory in the IWC store, a warm brand tint in the 7-day store (no line under it, founder 2026-10-30).
+     Founder 2026-10-31 ("fixed not dynamic for all pages except the checkout page"): the strip stays at the top with
+     the header on every store page, Home's too (over the photo a dark glass, past it the ink strip and an ivory tab);
+     checkout has its own frame without tabs. The open tab glides over in 320 ms with a slight spring and its mark pops
+     once; at once with reduced motion. */
   :root:has(.store-strip) {
     --strip-h: 46px;
+    --top-h: calc(56px + var(--strip-h));
   }
   @media (min-width: 768px) {
     :root:has(.store-strip) {
       --strip-h: 42px;
+      --top-h: calc(72px + var(--strip-h));
     }
   }
   .site-top {
@@ -323,14 +327,13 @@
   .site-top:has(.store-strip[data-store='quick']) {
     --hdr: color-mix(in srgb, var(--brand) 12%, var(--canvas));
   }
-  .site-top:has(.store-strip) {
-    top: calc(-1 * var(--strip-h));
-  }
   /* Home: the header is clear over the photo, so the open tab is a pane of light glass instead */
   body:has([data-home-hero]) .site-top:has(.store-strip) {
     --hdr: transparent;
     --tab: rgb(255 255 255 / 0.18);
-    top: calc(var(--hero-p, 0) * -1 * var(--strip-h));
+  }
+  html[data-hero-passed] body:has([data-home-hero]) .site-top:has(.store-strip) {
+    --tab: theme('colors.canvas');
   }
   .store-strip {
     display: flex;
@@ -344,6 +347,10 @@
     background: rgb(20 17 15 / 0.5);
     -webkit-backdrop-filter: blur(14px);
     backdrop-filter: blur(14px);
+    transition: background-color 0.35s;
+  }
+  html[data-hero-passed] body:has([data-home-hero]) .store-strip {
+    background: theme('colors.ink');
   }
   .store-tabs {
     position: relative;
@@ -412,6 +419,9 @@
   }
   body:has([data-home-hero]) .store-tab[aria-current] {
     color: #fff;
+  }
+  html[data-hero-passed] body:has([data-home-hero]) .store-tab[aria-current] {
+    color: var(--ink);
   }
   .store-tab:focus-visible {
     outline: 2px solid currentColor;
@@ -1713,7 +1723,8 @@ html[data-free-bar] .site-footer {
     filter: drop-shadow(0 0 4px color-mix(in srgb, theme('colors.brand') 60%, transparent));
   }
   /* founder 2026-10-30: past the free line the route grows on from the house to a price tag (the bulk saving), the part
-     to the house staying full; folded away (no width) before the line */
+     to the house staying full; folded away (no width) before the line. Founder 2026-10-31: that part is short, four
+     grey dollar signs that turn dollar-bill green one by one as the saving fills its cap. */
   .fd-route > .fd-more,
   .fd-route > .fd-tag {
     flex: 0 0 0;
@@ -1721,15 +1732,59 @@ html[data-free-bar] .site-footer {
     margin-left: -6px;
     opacity: 0;
     transition:
-      flex-grow 0.7s cubic-bezier(0.22, 1, 0.36, 1),
       flex-basis 0.7s cubic-bezier(0.22, 1, 0.36, 1),
       margin 0.7s cubic-bezier(0.22, 1, 0.36, 1),
       opacity 0.4s ease 0.2s;
   }
+  .fd-more {
+    --dollar-off: rgb(255 255 255 / 0.32);
+    --dollar-on: #a8d58c;
+    display: flex;
+    justify-content: space-between;
+    overflow: hidden;
+  }
+  .fd-route[data-tone='canvas'] .fd-more {
+    --dollar-off: color-mix(in srgb, theme('colors.ink-muted') 45%, transparent);
+    --dollar-on: #4c7a3a;
+  }
   .fd-route[data-more] > .fd-more {
-    flex: 1.2 1 0;
+    flex: 0 0 44px;
     margin-left: 0;
     opacity: 1;
+  }
+  .fd-dollar {
+    color: var(--dollar-off);
+    font-size: 11px;
+    font-style: normal;
+    font-weight: 800;
+    line-height: 1;
+    transition:
+      color 0.6s ease,
+      text-shadow 0.6s ease;
+  }
+  .fd-dollar[data-lit] {
+    color: var(--dollar-on);
+    text-shadow: 0 0 6px color-mix(in srgb, var(--dollar-on) 55%, transparent);
+    animation: fd-dollar 0.6s cubic-bezier(0.34, 1.56, 0.64, 1);
+  }
+  .fd-dollar:nth-child(2) {
+    transition-delay: 0.08s;
+  }
+  .fd-dollar:nth-child(3) {
+    transition-delay: 0.16s;
+  }
+  .fd-dollar:nth-child(4) {
+    transition-delay: 0.24s;
+  }
+  @keyframes fd-dollar {
+    0% {
+      transform: scale(0.6) rotate(-14deg);
+    }
+  }
+  @media (prefers-reduced-motion: reduce) {
+    .fd-dollar[data-lit] {
+      animation: none;
+    }
   }
   .fd-route[data-more] > .fd-tag {
     flex: 0 0 13px;
@@ -1856,8 +1911,8 @@ html[data-free-bar] .site-footer {
 
 /*
  * The flight (flight.tsx, flight-art.tsx; founder 2026-10-30): a small band. India's gold outline, the route as a
- * straight faint dashed line, the US with its states in ink, and a side-view plane towing its maroon cloth across at a
- * steady speed, again and again (11 s wide, 8 s on phones). Only transform and opacity move; paused while the band is
+ * straight faint dashed line, the US with its states in ink, and a side-view plane towing its light, wine-edged cloth
+ * across at a steady speed, again and again (11 s wide, 8 s on phones). Only transform and opacity move; paused while the band is
  * off screen (no `data-on`) and resumed from the same spot; with reduced motion parked mid-way.
  */
 @layer components {
@@ -1914,11 +1969,15 @@ html[data-free-bar] .site-footer {
     stroke: theme('colors.ink-muted');
     stroke-width: 1;
   }
+  /* founder 2026-10-31: a light cloth with a hairline wine border and wine words */
   .flight-cloth path {
-    fill: theme('colors.brand');
+    fill: color-mix(in srgb, theme('colors.brand') 6%, theme('colors.paper'));
+    stroke: theme('colors.brand');
+    stroke-width: 0.75px;
+    stroke-linejoin: round;
   }
   .flight-cloth text {
-    fill: theme('colors.on-brand');
+    fill: theme('colors.brand');
     font-family: inherit;
     font-weight: 700;
     letter-spacing: 0.01em;
@@ -2063,25 +2122,6 @@ html[data-free-bar] .site-footer {
       transform: rotate(-11deg) scale(1.6);
       opacity: 0;
     }
-  }
-
-  /* D-154's category tiles as a kirana shelf: each tile stands on its stretch of plank, the planks meet across the gap */
-  .shelf-tile {
-    position: relative;
-    padding-bottom: 12px;
-  }
-  .shelf-tile::after {
-    content: '';
-    position: absolute;
-    left: calc(var(--gap) / -2);
-    right: calc(var(--gap) / -2);
-    bottom: 0;
-    height: 9px;
-    background: linear-gradient(
-      theme('colors.ink') 0 3px,
-      color-mix(in srgb, theme('colors.ink') 72%, theme('colors.brand')) 3px
-    );
-    box-shadow: 0 6px 10px -6px rgb(30 27 22 / 0.5);
   }
 
   /* the founder's picture slots (visual-slot.tsx): off the live site an empty one says what it wants */

@@ -40,7 +40,7 @@ const WIDE: Art = {
   to: 862,
   india: [24, 14, 104, 112],
   us: [770, 14, 196, 124],
-  font: 17,
+  font: 14,
   plane: 1.25,
   seconds: 11,
 };
@@ -51,7 +51,7 @@ const NARROW: Art = {
   to: 330,
   india: [4, 28, 62, 67],
   us: [282, 30, 112, 71],
-  font: 13,
+  font: 11.5,
   plane: 0.95,
   seconds: 8,
 };
@@ -84,6 +84,7 @@ function Drawing({ art, words, className }: { art: Art; words: string; className
           <g className="flight-cloth">
             <path
               d={`M${edge} ${-art.font} H${edge - cloth} l${art.font * 0.6} ${art.font} l${-art.font * 0.6} ${art.font} H${edge} Z`}
+              vectorEffect="non-scaling-stroke"
             />
             <text x={edge - cloth / 2 + art.font * 0.3} y={art.font * 0.36} fontSize={art.font} textAnchor="middle">
               {words}

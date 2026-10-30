@@ -48,7 +48,7 @@ export default async function StoreLayout({
     <>
       <DaysProvider value={days} />
       <div className="site-top">
-        {/* first in .site-top: it scrolls away and the header stays (globals.css, --strip-h) */}
+        {/* first in .site-top: the tabs stay at the top with the header (globals.css) */}
         {quick ? <StoreSwitch mark={<IndiaMark />} /> : null}
         {demo ? <DemoBanner /> : null}
         <SiteHeader quick={quick} />

@@ -8,7 +8,7 @@ export const metadata: Metadata = { title: 'Contact' };
 /** The page itself (a direct visit or a search engine); from any store page the same text opens in the glass panel (D-092). */
 export default function Page(): React.JSX.Element {
   return (
-    <InfoPage title="Contact">
+    <InfoPage title="Contact" picture="contact">
       <ContactText />
     </InfoPage>
   );

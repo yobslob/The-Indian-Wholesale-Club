@@ -55,14 +55,14 @@ export function FreeMeter({
       <svg viewBox="0 0 24 24" className="fd-end" data-house="">
         <path d="M4 11.5 12 4l8 7.5M6.5 9.5V20h11V9.5M10 20v-5h4v5" />
       </svg>
-      <span
-        className="fd-bar fd-more"
-        data-tone={tone}
-        data-full={saving >= 1 || undefined}
-        style={{ '--fd': saving >= 1 ? 1 : Math.max(saving, 0.04) } as React.CSSProperties}
-      >
-        <span className="fd-fill" />
-        <i key={surge} className="fd-head" data-surge={(more !== null && surge > 0) || undefined} />
+      {/* founder 2026-10-31: the saving's part is short, a few grey dollar signs that turn the green of a dollar bill
+          as the saving grows (each one a quarter of the cap) */}
+      <span className="fd-more" data-full={saving >= 1 || undefined}>
+        {DOLLARS.map((n) => (
+          <i key={n} className="fd-dollar" data-lit={(more !== null && saving >= n / DOLLARS.length - 0.001) || undefined}>
+            $
+          </i>
+        ))}
       </span>
       <svg viewBox="0 0 24 24" className="fd-end fd-tag">
         <path d="M3.5 12.5V4h8.5l8.5 8.5-8.5 8.5z" />
@@ -71,6 +71,8 @@ export function FreeMeter({
     </span>
   );
 }
+
+const DOLLARS = [1, 2, 3, 4];
 
 /** A number that goes up each time `share` grows, so the meter's edge can flare once per add (not on the first draw). */
 export function useSurge(share: number): number {

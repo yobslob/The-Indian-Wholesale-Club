@@ -15,8 +15,8 @@ const LAST_IWC = 'iwc-last-store-page';
  * shopper is in is the open tab: it is the header's own colour and runs into it, so the header reads as the inside of
  * that store (ivory in the IWC store, a warm brand tint in the 7-day store with no line under its categories, founder
  * 2026-10-30). Founder 2026-10-30: the tabs read "IWC" and "7-day store", nothing under
- * them. The strip is in the page, never over it: it scrolls away with the first 40 px and the header stays
- * (globals.css, `--strip-h`); on Home it slides up as the hero's words fade. A tap opens the other store's front page
+ * them. The strip is in the page, never over it, and stays at the top with the header on every store page (founder
+ * 2026-10-31: "fixed not dynamic"; globals.css). A tap opens the other store's front page
  * (the open tab moves at once, before the page arrives); the IWC tab returns to the page left. Plain links in a nav.
  */
 export function StoreSwitch({

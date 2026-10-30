@@ -40,6 +40,50 @@ export const SLOTS = {
     brief:
       'A wide picture for Home under Pick your home: a dining table set for a family meal, or a festival evening.',
   },
+  // Founder 2026-10-31 ("think creatively of what we can put in the whitespaces available"): the empty side of pages
+  // that hold one narrow column on a wide screen. Wide screens only (picture-beside.tsx); phones have no room to spare.
+  'sign-in': {
+    src: null,
+    alt: '',
+    width: 1000,
+    height: 1250,
+    brief: 'Beside Sign in and Create an account: a brass diya and a pair of chappals at a front door, evening light.',
+  },
+  about: {
+    src: null,
+    alt: '',
+    width: 1000,
+    height: 1250,
+    brief: 'Beside About us: a family at a table opening a parcel from home, sweets and a kurta coming out of it.',
+  },
+  'how-it-works': {
+    src: null,
+    alt: '',
+    width: 1000,
+    height: 1250,
+    brief: 'Beside How it works: a parcel at a US front door, opened, tissue paper and a box of mithai on top.',
+  },
+  contact: {
+    src: null,
+    alt: '',
+    width: 1000,
+    height: 1000,
+    brief: 'Beside Contact: a cup of chai in a glass and a phone on a wooden table, morning light.',
+  },
+  'empty-bag': {
+    src: null,
+    alt: '',
+    width: 1200,
+    height: 900,
+    brief: 'Beside an empty bag: an empty steel thali with its katoris on a table, waiting to be filled.',
+  },
+  'not-found': {
+    src: null,
+    alt: '',
+    width: 1200,
+    height: 900,
+    brief: 'Beside Page not found: an empty auto-rickshaw parked in a quiet lane, nobody around. Lost, but calm.',
+  },
 } satisfies Record<string, Slot>;
 
 export type SlotId = keyof typeof SLOTS;
