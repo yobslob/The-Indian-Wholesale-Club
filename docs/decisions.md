@@ -682,3 +682,27 @@ Kutch work (Gujarat); inside ₹1,600 genuine handlooms are few, so these rows m
 travel in the standard window (Settings: 12 – 16 days), so one ordered on 2026-10-31 arrives about 12 – 16 November,
 after Diwali (8 November); none of this list can be a 7-day piece. Size: about 10 KB a listing in the database (up to
 9 MB) and 0.6 MB in R2 (up to 0.5 GB), inside the budgets (`monitoring.md`); a bulk publish refreshes the store once.
+
+**D-168 · 2026-10-30 · founder: one pipeline for new listings: scraped, photos made again, then uploaded** · Changes D-163's order for new listings
+- Founder, verbatim: "Make a pipeline such that I don't have to run the redo pipeline for the new sourcing runs, Make
+  one long pipeline which scrapes modifies then uploads. (Currently I have to first scrape then approve drafts, then
+  fetch, then modify and then replace.) Make it productive"
+What it means for the build (migration `20261103100000_sourcing_media_redo`, `tools/sourcing-runner/src/redo.ts`,
+`tools/photo-worker/redo_serve.py`):
+- **The runner makes a new listing's photos again before uploading them**, through the photo redo service on the same
+  laptop (the GPU's work exactly as `redo.py` does it). `pnpm sourcing run` starts the service when it is not running;
+  it lets the GPU go after 10 idle minutes and ends after 30. The photos go up once, already changed, with their mark
+  (`face`, `fresh`) in `product_media.redo`, so `pnpm photos:redo` never takes them: no fetch, review or publish for
+  new listings, and a listing never shows a shop's photo first.
+- **Food and home:** every photo the refresh made goes up made again (the founder approved every refresh, D-165, and
+  all 297 home photos at once). **Clothing** goes a whole listing at a time (D-164): faces swapped or cut at the chin,
+  photos without a face reframed; if any photo is a portrait (the founder's call) or fails, every photo of the listing
+  goes up as it is and waits for the review page as before. Kids' faces are only ever cut (D-102), read from the
+  listing's `wears` (`worker_product_wears`).
+- **Safe without it:** with no photo worker on the PC, `IWC_SOURCING_REDO=off`, a service that fails, or a database
+  without the migration (asked once at the start of the run), photos go up as they are and the laptop's redo does them
+  later. Drafts are unchanged: a listing missing details still waits for Publish all drafts (D-120, D-146).
+- Measured on the laptop (RTX 4060): the first clothing listing 73 s (the models loading), then 4 – 9 s a listing; a
+  food photo under a second.
+*Claude's choices in it (proposed, confirm when convenient):* food and home go up made again whether or not the
+refresh's distance check passed; the service on port 4318, started by the runner rather than as a separate step.
