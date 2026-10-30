@@ -569,7 +569,7 @@ hide a second, drawn copy of the piece behind it, which the check does not alway
 or the runner after it was fetched is left alone.
 
 
-**D-164 · 2026-10-30 · founder: faces change without one photo looking wrong; every other photo only a small change of its own** · Changes D-163's clothing skin and food and home scenes
+**D-164 · 2026-10-30 · founder: faces change without one photo looking wrong; every other photo only a small change of its own** · Changes D-163's clothing skin and food and home scenes · its faces (drawn, cut under the chin) SUPERSEDED by D-165
 - Founder (2026-10-30, after fetching, making and reviewing the first redo): "I did fetch, make and review, when I
   inspected most photos are good but side poses are face-distorted and in some photos neck area skin color is
   distorted, I don't think by this way we can achieve 100% accuracy in clothing. In food, again most are correct but
@@ -598,3 +598,26 @@ What it means for the build (migration `20261103090000_photo_redo_modes`, not de
 *Claude's choices in it (proposed, confirm when convenient):* every food and home photo is refreshed, not only the
 main one (each is a shop's photo); a shop's transparent backdrop is made white before anything else (it turned black,
 the likely cause of some wrong cuts); the paper is the store's own `paper` token shading towards `surface`.
+
+**D-165 · 2026-10-30 · founder: food and home's refresh is right for every product; clothing's faces are swapped, not drawn, and a cut keeps the neck** · Changes D-164's faces
+- Founder (2026-10-30, after reviewing D-164): "You have done amazing work with the food and home section, I literally
+  like every single photo that It has generated, we can run this for all the products, On the other hand the clothing
+  is just trash although there are some very rare conversion which are literally perfect I even clicked on approve on
+  those but almost all of them (cropped ones are cropped too much the neck area is so important in kurti if you want
+  to crop then start from atleast the chin, on the rest which have face, I can literally see face squares just pasted
+  on their original faces), somehow solve the clohting issue. First deeply analyze your option what choices you have
+  and then efficiently solve it." Then, asked before downloading, "Yes, download all" (the face swap's models).
+What it means for the build (`tools/photo-worker/iwc_worker/faceswap.py`, `redo_clothing.py`; no migration):
+- **Why D-164 failed:** the parser's face label runs down the neck, so the cut went on until the collar; and the drawn
+  face was limited to a rectangle while the face label ran past it, so its straight edges showed.
+- **Faces:** a face swapper, not a drawing: the face is aligned from its five landmarks, HyperSwap (256 px) gives it
+  the house model's identity with the photo's own pose, expression, light and skin tone, GFPGAN sharpens a large one,
+  and it goes back through the inverse alignment with soft edges, so there is no edge and the neck matches. Kept only
+  if every check passes (one face, in the same place, a different person, no seam, no garment pixel changed).
+- **Cuts:** at the chin (the bottom of the face YuNet finds), the neck and neckline kept; only for a profile, two
+  people or a failed check. A face is only what YuNet finds (the parser's label alone also marked shoulders and a
+  cheek under an earring). A cut that would lose most of the photo (a portrait, a collage) is the founder's call.
+- Measured on 164 live clothing photos: 74 swapped (all seamless by eye, side poses included), 8 cut at the chin, 82
+  without a face; about half a second a photo.
+*Claude's choices in it (proposed, confirm when convenient):* HyperSwap over inswapper (sharper; inswapper kept a bindi
+more often and stays behind `--swapper inswapper`); `redo.py --again` keeps the photos the founder approved.

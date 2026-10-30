@@ -46,14 +46,16 @@ It logs to the console and `worker.log`. To start it with Windows: Task Schedule
 `redo.py` makes the new photos for every listing's photos that `pnpm photos:redo fetch` put in the work folder
 (`tools/photo-redo/README.md` has the whole flow): `.venv\Scripts\python redo.py --type clothing|food|home
 [--faces crop] [--scene] [--again] [--retry]`. It needs no account and no internet. Clothing
-(`iwc_worker/redo_clothing.py`): a face drawn again on a close crop with the house model's face as the reference, only
-when it is safe and every check passes, else the photo cut under the chin; nothing outside the face changes. Food and
+(`iwc_worker/redo_clothing.py`, `faceswap.py`): the house model's identity swapped onto the face (HyperSwap, pasted
+back with soft edges) when every check passes, else the photo cut at the chin; nothing outside the face changes. Food and
 home (`iwc_worker/refresh.py`): the light refresh, no GPU; `--scene` (`iwc_worker/redo_scene.py`) draws a scene around
 the product instead. Three more models, in
 `IWC_MODELS` (about 150 MB), from Hugging Face: `segformer-clothes\` (`mattmdjaga/segformer_b2_clothes`: `config.json`,
 `preprocessor_config.json`, `model.safetensors`) and `opencv-face\` (`face_detection_yunet_2023mar.onnx` from
-`opencv/face_detection_yunet`, `face_recognition_sface_2021dec.onnx` from `opencv/face_recognition_sface`). It logs to
-the console and `redo.log`.
+`opencv/face_detection_yunet`, `face_recognition_sface_2021dec.onnx` from `opencv/face_recognition_sface`), and for the
+face swap `faceswap\` (about 1.2 GB, FaceFusion's GitHub releases `facefusion/facefusion-assets`: `models-3.3.0/
+hyperswap_1a_256.onnx`, `models-3.0.0/inswapper_128_fp16.onnx`, `arcface_w600k_r50.onnx`, `gfpgan_1.4.onnx`). It logs
+to the console and `redo.log`.
 
 ## House models (D-104)
 The founder supplies them: 6 women and 4 men, AI-generated and licensed, each one image with two poses side by side

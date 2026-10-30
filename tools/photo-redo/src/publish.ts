@@ -15,9 +15,12 @@ const SWEEP_AFTER_MS = 10 * 60_000;
 
 const stem = (path: string): string => path.replace(/\.[A-Za-z0-9]+$/, '');
 
-/** Ready to go live: approved on the review page, or with --auto passed by the automatic checks and not rejected. */
+/** Ready to go live: approved on the review page, or with --auto passed by the automatic checks and not rejected;
+ * and its new photo is there (redo.py clears it while it makes the photo again). */
 const approved = (w: Work, auto: boolean): boolean =>
-  w.result?.status === 'made' && (w.decision ? w.decision.ok : auto && w.result.pass);
+  w.result?.status === 'made' &&
+  existsSync(join(w.dir, 'after.png')) &&
+  (w.decision ? w.decision.ok : auto && w.result.pass);
 
 /** Removed on the review page (D-164): taken off the listing. */
 const removed = (w: Work): boolean => w.decision?.remove === true;

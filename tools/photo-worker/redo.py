@@ -1,12 +1,13 @@
-"""The photo redo's GPU step (D-163, D-164): makes the new photo for every photo `pnpm photos:redo fetch` put in the
+"""The photo redo's GPU step (D-163 – D-165): makes the new photo for every photo `pnpm photos:redo fetch` put in the
 work folder.
 
-    .venv\\Scripts\\python redo.py --type clothing [--faces crop] [--limit 200] [--again] [--retry] [--seed 11]
+    .venv\\Scripts\\python redo.py --type clothing [--faces crop] [--swapper inswapper] [--limit 200] [--again] [--retry]
     .venv\\Scripts\\python redo.py --type food [--scene]
 
-Clothing (iwc_worker/redo_clothing.py): a face is drawn again as the house model's only when it is safe and every check
-passes, else the photo is cut under the chin (`--faces crop`: always cut, never drawn); a photo without a face is
-reframed a little. One house model per listing (who wears it, then the nearest skin tone); kids' faces are always cut.
+Clothing (iwc_worker/redo_clothing.py): a face takes the house model's identity through a face swapper (its pose, light
+and skin kept) when every check passes, else the photo is cut at the chin (`--faces crop`: always cut, never swapped);
+a photo without a face is reframed a little. One house model per listing (who wears it, then the nearest skin tone);
+kids' faces are always cut.
 Food and home (iwc_worker/refresh.py): the light refresh, nothing cut out; `--scene` draws a scene around the product
 instead (iwc_worker/redo_scene.py: look at each one). Each photo's folder gets after.png and result.json; `pnpm
 photos:redo review` shows them. Works offline. --again makes every photo not yet live again (after a change here; its
@@ -74,12 +75,20 @@ def pending(kind: str, retry: bool, again: bool) -> list[tuple[Path, dict]]:
             # a face drawn on a house model since removed from this machine is made again, on another one
             gone = bool(done.get("house_model")) and not (MODELS / "house-models" / done["house_model"] /
                                                           "front.jpg").exists()
-            if not (again or gone or (retry and done.get("status") == "failed")):
+            approved = (d / "decision.json").exists() and json.loads((d / "decision.json").read_text("utf-8")).get("ok")
+            # --again keeps what the founder approved (unless its house model is gone)
+            if not ((again and not approved) or gone or (retry and done.get("status") == "failed")):
                 continue
-            (d / "decision.json").unlink(missing_ok=True)       # a choice made on another photo
-            (d / "after.png").unlink(missing_ok=True)
         todo.append((d, item))
     return todo
+
+
+def clear(todo) -> None:
+    """Before a photo is made again: its old review choice and new photo were about another photo."""
+    for d, _ in todo:
+        (d / "decision.json").unlink(missing_ok=True)
+        (d / "after.png").unlink(missing_ok=True)
+        (d / "result.json").unlink(missing_ok=True)
 
 
 def write_result(d: Path, status: str, note: str = "", checks: dict | None = None, house: str | None = None,
@@ -95,8 +104,8 @@ def write_result(d: Path, status: str, note: str = "", checks: dict | None = Non
     (d / "result.json").write_text(json.dumps(doc, indent=2), "utf-8")
 
 
-def run_clothing(todo, pipe: Pipeline, parts: Parts, seed: int, faces: str) -> None:
-    redo = ClothingRedo(parts, pipe)
+def run_clothing(todo, pipe: Pipeline, parts: Parts, faces: str, swapper: str) -> None:
+    redo = ClothingRedo(parts, pipe, swapper)
     models = house_models(parts) if faces == "redraw" else {}
     listings: dict[str, list] = {}
     for d, item in todo:
@@ -120,12 +129,12 @@ def run_clothing(todo, pipe: Pipeline, parts: Parts, seed: int, faces: str) -> N
         for d, item, img in loaded:
             started = time.time()
             try:
-                out, checks = redo.redo(img, house, "man" if who == "men" else "woman", seed, house is not None)
+                out, checks = redo.redo(img, house, house is not None)
                 took = f"{time.time() - started:.0f} s"
                 if out is None:
                     write_result(d, "failed", checks.get("why", ""), checks, slug)
                 else:
-                    note = {"face": "face drawn again", "crop": f"cut under the chin ({checks.get('not_drawn', '')})",
+                    note = {"face": "face swapped", "crop": f"cut at the chin ({checks.get('not_swapped', '')})",
                             "fresh": "no face: reframed"}[checks["mode"]]
                     write_result(d, "made", f"{note}, {took}", checks, slug if checks["mode"] == "face" else None, out)
                 log.info("%s: %s (%s)", item["name"], checks.get("mode") if out else "your call", took)
@@ -189,7 +198,9 @@ def main() -> int:
     ap.add_argument("--retry", action="store_true", help="make the failed ones again, with another seed")
     ap.add_argument("--again", action="store_true", help="make every photo not yet live again")
     ap.add_argument("--faces", choices=["redraw", "crop"], default="redraw",
-                    help="clothing: draw a face again when it is safe (else cut it off), or always cut it off")
+                    help="clothing: swap a face when every check passes (else cut it off), or always cut it off")
+    ap.add_argument("--swapper", choices=["hyperswap", "inswapper"], default="hyperswap",
+                    help="clothing: the face swapper (hyperswap 256 px; inswapper 128 px keeps a bindi more often)")
     ap.add_argument("--scene", action="store_true", help="food and home: a drawn scene instead of the light refresh")
     ap.add_argument("--seed", type=int, default=11)
     args = ap.parse_args()
@@ -204,11 +215,12 @@ def main() -> int:
     log.info("%s: %d photos to make in %s", args.type, len(todo), OUT / args.type)
     if not todo:
         return 0
+    clear(todo)
     seed = args.seed + (7 if args.retry else 0)
     pipe, parts = Pipeline(), Parts()
     started = time.time()
     if args.type == "clothing":
-        run_clothing(todo, pipe, parts, seed, args.faces)
+        run_clothing(todo, pipe, parts, args.faces, args.swapper)
     elif args.scene:
         run_scenes(args.type, todo, pipe, seed)
     else:

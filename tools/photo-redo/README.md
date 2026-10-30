@@ -16,17 +16,19 @@ every other photo gets a small change of its own. This tool does everything but 
 Each step can stop and carry on: the work sits in `out/<type>/<photo id>/` (not in git): `item.json`, `before.png`,
 `after.png`, `result.json` (the GPU step's checks) and `decision.json` (the review). `fetch` carries on from the last
 listing it read; `fetch --again` starts over and takes only what is still not done. `redo.py --again` makes every photo
-not yet live again (its review choice is cleared); `--retry` only the failed ones, with another seed. Run `publish` again after 10 minutes (or `sweep --type …`) to delete the replaced photos'
+not yet live again, except the ones you approved (their review choice is cleared); `--retry` only the failed ones. Run `publish` again after 10 minutes (or `sweep --type …`) to delete the replaced photos'
 copies; it checks first that no listing still shows them.
 
 **What each photo gets**
-- **Clothing with a face:** the face is drawn again as the house model's only when that is safe (a large face turned
-  to the camera, level, no sunglasses, one person) and every check after it passes (one face, in the same place, a
-  different person, its colour matched to the neck around it, no seam, nothing outside the face changed). Any other
-  photo with a face is cut just under the chin and framed 3 : 4 around the person: nothing is drawn, so nothing can
-  look wrong. `redo.py --faces crop` cuts every face off and draws none. Neck, arms and hands never change. Kids' faces
-  are always cut. A portrait whose face fills the photo cannot be cut: the review page asks you to remove it (it comes
-  off the listing; a listing's only photo is never removed) or keep it. A listing goes live only when all its photos
+- **Clothing with a face (D-165):** a face swapper (HyperSwap) gives the face the house model's identity while the
+  photo keeps its own pose, expression, light and skin tone, pasted back with soft edges (no square, no seam); GFPGAN
+  sharpens a large face. It is kept only if every check passes (one face, in the same place, a different person, no
+  seam, no garment pixel changed). Any other photo with a face (a profile, two people, a failed check) is cut at the
+  chin, so the neck and neckline stay, and framed 3 : 4. `redo.py --faces crop` cuts every face; `--swapper inswapper`
+  uses the older 128-pixel swapper (it keeps a bindi more often). Kids' faces are always cut. A photo the cut would
+  mostly lose (a portrait, a collage of earrings) asks you on the review page: remove it (it comes off the listing; a
+  listing's only photo is never removed) or keep it. On 164 live clothing photos: 74 faces swapped, 8 cut, 82 without
+  a face, in 90 s. A listing goes live only when all its photos
   are settled, so it never shows two people.
 - **Clothing without a face:** reframed 3 : 4 a little closer; colours untouched.
 - **Food and home & gifts, every photo:** the light refresh, with nothing cut out or drawn. On a white backdrop (most
