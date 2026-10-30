@@ -10,6 +10,7 @@ import {
   bulkProgress,
   heavyShippingAt,
   parseBagShipments,
+  quickDates,
   shipmentNote,
   type BagMoment,
   type BagShipmentFacts,
@@ -20,8 +21,12 @@ import {
 
 import { cartSubtotalCents, useCart, type CartLine } from './store';
 
+import type { ShellDays } from '@/features/shell/days';
+
 /** D-111: a bag's small-order charges, as /api/bag-charges works them out (cents). */
 export interface BagCharges {
+  /** The bag this answer is for (bagKey): an answer for an earlier bag never decides the goal (bag-goal.ts). */
+  key: string;
   freeMinCents: number | null;
   /** Shipping (the parcel, or what the bag needs to pay its way), the retailer charges' rule (D-111, D-123, D-125). */
   small: SmallOrderCharges;
@@ -57,7 +62,7 @@ function saved(): { key: string; charges: BagCharges; moment: BagMoment | null }
       data?: unknown;
       subtotal?: unknown;
     } | null;
-    const charges = v && typeof v.key === 'string' ? parse(v.data) : null;
+    const charges = v && typeof v.key === 'string' ? parse(v.data, v.key) : null;
     if (!charges) return null;
     const subtotal = typeof v!.subtotal === 'number' && Number.isInteger(v!.subtotal) ? v!.subtotal : null;
     return { key: v!.key as string, charges, moment: subtotal === null ? null : momentOf(subtotal, charges) };
@@ -86,7 +91,7 @@ export const bagKey = (lines: CartLine[]): string =>
     .sort()
     .join(',');
 
-function parse(data: unknown): BagCharges | null {
+function parse(data: unknown, key: string): BagCharges | null {
   if (typeof data !== 'object' || data === null) return null;
   const d = data as Record<string, unknown>;
   const int = (v: unknown): number | null =>
@@ -97,7 +102,8 @@ function parse(data: unknown): BagCharges | null {
   const num = (v: unknown): number => (typeof v === 'number' && v > 0 ? v : 0);
   const pct = num(d.bulk_saving_pct);
   const cap = int(d.bulk_saving_cap_cents) ?? 0;
-  return {
+  const charges = {
+    key,
     freeMinCents: int(d.free_min_cents),
     small: {
       shippingCents,
@@ -114,6 +120,16 @@ function parse(data: unknown): BagCharges | null {
     heavy: (int(d.heavy_cents) ?? 0) > 0 ? { cents: int(d.heavy_cents)!, lineOffPct: num(d.heavy_line_off_pct) } : null,
     heavyIds: Array.isArray(d.heavy_ids) ? d.heavy_ids.filter((x): x is string => typeof x === 'string') : [],
   };
+  learn(charges);
+  return charges;
+}
+
+// Which options are 7-day, from every answer this tab has had (the answer names its bag's 7-day options; the others
+// in its key are not): a piece taken out leaves the rest known, so the goal changes with the tap (bag-goal.ts).
+const quickKnown = new Map<string, boolean>();
+function learn(c: BagCharges): void {
+  const quick = new Set(c.shipments?.quickIds ?? []);
+  for (const part of c.key.split(',')) if (part) quickKnown.set(part.slice(0, 36), quick.has(part.slice(0, 36)));
 }
 
 /** Where a bag stands for the notes: its shipments and whether Shipping is charged. */
@@ -176,7 +192,7 @@ export function useBagCharges(): BagCharges | null {
       fetch(`/api/bag-charges?items=${encodeURIComponent(key)}`)
         .then((r) => (r.ok ? r.json() : null))
         .then((data: unknown) => {
-          const parsed = parse(data);
+          const parsed = parse(data, key);
           if (!parsed) return;
           const subtotal = cartSubtotalCents(useCart.getState().lines);
           try {
@@ -205,14 +221,36 @@ export function useBagCharges(): BagCharges | null {
 
 /**
  * What the bar and the bag say: how far from free delivery, whether the charges are waived and, from the line up,
- * the bulk saving so far (D-119).
+ * the bulk saving so far (D-119). Founder 2026-10-30: the goal is the bag as it is now. The answer for this very bag
+ * decides; while the next one is on its way (or before the first) the goal comes from the lines in Settings and which
+ * pieces are 7-day (each line's word from its add, or an earlier answer), so the pill never shows an earlier bag's line.
+ * The charges' figures (Shipping, Retailer charges) are the last answer's until then, as before. `shell`: the layout's
+ * days and lines (useDays).
  */
-export function freeDelivery(lines: CartLine[], charges: BagCharges | null) {
+export function freeDelivery(lines: CartLine[], charges: BagCharges | null, shell?: ShellDays) {
   const subtotal = cartSubtotalCents(lines);
-  const line = charges?.freeMinCents ?? null;
+  const fresh = charges !== null && charges.key === bagKey(lines);
+  const line = charges?.freeMinCents ?? shell?.lines.freeMinCents ?? null;
   const free = line !== null && subtotal >= line;
-  const at = bagChargesAt(subtotal, line, charges?.small ?? null);
   const bulk = bulkProgress(subtotal, line, charges?.bulk);
+  const facts = fresh ? charges.shipments : null;
+  const known = {
+    quickIds: lines.filter((l) => quickKnown.get(l.variantId) ?? l.quick === true).map((l) => l.variantId),
+    quickMinCents: charges?.shipments?.minCents ?? shell?.lines.quickMinCents ?? null,
+    quickTo: charges?.shipments?.dates.quickTo ?? (shell?.quick ? quickDates(shell.quick.min, shell.quick.max).to : null),
+  };
+  const small = charges?.small ?? null;
+  const goal = bagGoal({
+    subtotalCents: subtotal,
+    freeMinCents: line,
+    at: bagChargesAt(subtotal, line, small),
+    bulk,
+    facts,
+    variantIds: lines.map((l) => l.variantId),
+    known,
+  });
+  // an earlier bag's answer: free 7-day Shipping follows this bag's goal, not that answer
+  const at = bagChargesAt(subtotal, line, small && !fresh ? { ...small, quickFree: goal.kind === 'quick-free' } : small);
   return {
     subtotal,
     line,
@@ -225,20 +263,13 @@ export function freeDelivery(lines: CartLine[], charges: BagCharges | null) {
     share: line ? Math.min(subtotal / line, 1) : 1,
     bulk,
     /** The one goal the pill and the bag show (bag-goal.ts): never two bars. */
-    goal: bagGoal({
-      subtotalCents: subtotal,
-      freeMinCents: line,
-      at,
-      bulk,
-      facts: charges?.shipments ?? null,
-      variantIds: lines.map((l) => l.variantId),
-    }),
+    goal,
   };
 }
 
 /** D-140 (F5): "You're saving $X" for this bag: the struck charges and the bulk saving (0 below the line). */
-export function bagSaving(lines: CartLine[], charges: BagCharges | null): number {
-  const f = freeDelivery(lines, charges);
+export function bagSaving(lines: CartLine[], charges: BagCharges | null, shell?: ShellDays): number {
+  const f = freeDelivery(lines, charges, shell);
   // D-154: a bag of only 7-day pieces from the 7-day line saves its Shipping too, and the line's part of Heavy-item shipping
   const heavyOff = f.heavy.shownCents ? f.heavy.shownCents - f.heavy.cents : 0;
   return f.free || f.at.shippingFree ? bagSavingCents(f.at, f.bulk.savingCents) + heavyOff : 0;

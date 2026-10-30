@@ -306,8 +306,7 @@
   /* D-154 (founder 2026-10-24: the floating pill "looks so badly placed, do something creative with it"): the store
      tabs, store-switch.tsx. A dark strip along the very top with the two stores as tabs; the open one is the header's
      own colour (--hdr) and flows into it through curved feet, like a browser's tab, so the header reads as the inside
-     of that store: ivory in the IWC store, a warm brand tint in the 7-day store (with the gold stitch along its bottom
-     edge, D-144). The strip is part of the page, never over it: .site-top sticks 1 strip-height up, so the strip
+     of that store: ivory in the IWC store, a warm brand tint in the 7-day store (no line under it, founder 2026-10-30). The strip is part of the page, never over it: .site-top sticks 1 strip-height up, so the strip
      scrolls away and the header stays; on Home it slides up with the hero's fade (--hero-p). The open tab glides over
      in 320 ms with a slight spring and its mark pops once; at once with reduced motion. */
   :root:has(.store-strip) {
@@ -464,17 +463,10 @@
       transform: scale(0.55) rotate(-120deg);
     }
   }
-  .site-top:has(.store-strip[data-store='quick']) .site-header::after {
-    content: '';
-    position: absolute;
-    inset: auto 0 -1px;
-    height: 2px;
-    pointer-events: none;
-    background: repeating-linear-gradient(
-      90deg,
-      color-mix(in oklab, var(--caution) 55%, var(--land)) 0 10px,
-      transparent 10px 16px
-    );
+  /* founder 2026-10-30 ("two horizontal lines under the categories, remove them"): the 7-day store's header ends in
+     its own tint, with no edge line and no stitch */
+  .site-top:has(.store-strip[data-store='quick']) .site-header {
+    box-shadow: none;
   }
   @media (prefers-reduced-motion: reduce) {
     .store-open,
@@ -1180,6 +1172,40 @@ html[data-free-bar] .site-footer {
 }
 
 /*
+ * A page on its way (motion.tsx, founder 2026-10-30): a thin brand line along the very top from the tap until the page
+ * is drawn. It waits 120 ms, so a page that comes at once shows nothing, then creeps towards the end and never reaches
+ * it. Reduced motion: the line sits still at a third.
+ */
+@layer components {
+  html[data-nav]::after {
+    content: '';
+    position: fixed;
+    inset: 0 0 auto;
+    z-index: 60;
+    height: 3px;
+    pointer-events: none;
+    background: theme('colors.brand');
+    box-shadow: 0 0 8px color-mix(in srgb, theme('colors.brand') 60%, transparent);
+    transform-origin: 0 50%;
+    animation: nav-wait 12s cubic-bezier(0.1, 0.75, 0.25, 1) 0.12s both;
+  }
+  @keyframes nav-wait {
+    from {
+      transform: scaleX(0);
+    }
+    to {
+      transform: scaleX(0.94);
+    }
+  }
+  @media (prefers-reduced-motion: reduce) {
+    html[data-nav]::after {
+      animation: none;
+      transform: scaleX(0.33);
+    }
+  }
+}
+
+/*
  * The free-delivery bar (D-111, D-116; features/cart/free-delivery-bar.tsx, the bag's summary): a slim track that fills
  * up to --fd (0 – 1) with light, a glowing head at the fill's end that breathes and flares when the bag grows
  * (data-surge), and a shimmer running through the filled part; at the line the head fades and a sheen crosses the
@@ -1196,7 +1222,8 @@ html[data-free-bar] .site-footer {
       transform 0.5s cubic-bezier(0.34, 1.4, 0.64, 1),
       opacity 0.3s ease,
       bottom 0.3s cubic-bezier(0.2, 0.7, 0.2, 1),
-      box-shadow 0.6s ease;
+      box-shadow 0.6s ease,
+      max-width 0.7s cubic-bezier(0.22, 1, 0.36, 1);
   }
   .fd-pill:hover {
     box-shadow:
@@ -1685,6 +1712,34 @@ html[data-free-bar] .site-footer {
   .fd-route[data-tone='canvas'][data-full] .fd-end[data-house] {
     filter: drop-shadow(0 0 4px color-mix(in srgb, theme('colors.brand') 60%, transparent));
   }
+  /* founder 2026-10-30: past the free line the route grows on from the house to a price tag (the bulk saving), the part
+     to the house staying full; folded away (no width) before the line */
+  .fd-route > .fd-more,
+  .fd-route > .fd-tag {
+    flex: 0 0 0;
+    min-width: 0;
+    margin-left: -6px;
+    opacity: 0;
+    transition:
+      flex-grow 0.7s cubic-bezier(0.22, 1, 0.36, 1),
+      flex-basis 0.7s cubic-bezier(0.22, 1, 0.36, 1),
+      margin 0.7s cubic-bezier(0.22, 1, 0.36, 1),
+      opacity 0.4s ease 0.2s;
+  }
+  .fd-route[data-more] > .fd-more {
+    flex: 1.2 1 0;
+    margin-left: 0;
+    opacity: 1;
+  }
+  .fd-route[data-more] > .fd-tag {
+    flex: 0 0 13px;
+    margin-left: 0;
+    opacity: 0.9;
+  }
+  .fd-route[data-more] .fd-more[data-full] ~ .fd-tag {
+    transform: scale(1.18);
+    filter: drop-shadow(0 0 4px rgb(255 214 170 / 0.95));
+  }
 
   /* a 7-day card's tag: "Sat at your door" once the browser knows today (days.tsx), else "In 7 days" */
   html[data-door-day] .door-tag-n {
@@ -1800,24 +1855,45 @@ html[data-free-bar] .site-footer {
 }
 
 /*
- * The flight (flight.tsx, founder 2026-10-30): India's gold outline, the route as a faint dashed line, the brand's
- * running stitch sewn along it behind the plane, a little house at the end, and the plane towing its maroon cloth.
- * The cloth ripples only while it flies; with reduced motion the plane is parked from the start.
+ * The flight (flight.tsx, flight-art.tsx; founder 2026-10-30): a small band. India's gold outline, the route as a
+ * straight faint dashed line, the US with its states in ink, and a side-view plane towing its maroon cloth across at a
+ * steady speed, again and again (11 s wide, 8 s on phones). Only transform and opacity move; paused while the band is
+ * off screen (no `data-on`) and resumed from the same spot; with reduced motion parked mid-way.
  */
 @layer components {
   .flight-band {
     margin-block: clamp(4px, 1vw, 12px);
   }
+  .flight {
+    max-width: 880px;
+    margin-inline: auto;
+  }
   .flight-art {
     width: 100%;
     height: auto;
-    max-height: 300px;
+    max-height: 124px;
     overflow: visible;
   }
   .flight-india {
     fill: none;
     stroke: #c9962f;
     stroke-width: 1.6px;
+    stroke-linejoin: round;
+  }
+  .flight-us {
+    color: theme('colors.ink');
+  }
+  .flight-us-border {
+    fill: color-mix(in srgb, theme('colors.ink') 4%, transparent);
+    stroke: currentColor;
+    stroke-width: 1.4px;
+    stroke-linejoin: round;
+  }
+  .flight-us-states {
+    fill: none;
+    stroke: currentColor;
+    stroke-width: 0.6px;
+    stroke-opacity: 0.45;
     stroke-linejoin: round;
   }
   .flight-route {
@@ -1827,27 +1903,11 @@ html[data-free-bar] .site-footer {
     stroke-dasharray: 2 9;
     stroke-linecap: round;
   }
-  .flight-trail {
-    fill: none;
-    stroke: theme('colors.brand');
-    stroke-width: 2;
-    stroke-dasharray: 7 6;
-    stroke-linecap: round;
-  }
-  .flight-reveal {
-    fill: none;
-    stroke: #fff;
-    stroke-width: 12;
-  }
-  .flight-house path {
-    fill: none;
-    stroke: theme('colors.ink');
-    stroke-width: 1.6;
-    stroke-linecap: round;
-    stroke-linejoin: round;
-  }
   .flight-plane {
     fill: theme('colors.ink');
+  }
+  .flight-windows {
+    fill: theme('colors.canvas');
   }
   .flight-rope {
     fill: none;
@@ -1866,14 +1926,36 @@ html[data-free-bar] .site-footer {
   .flight-cloth {
     transform-box: fill-box;
     transform-origin: 100% 50%;
-  }
-  .flight[data-flying] .flight-cloth {
     animation: flight-ripple 0.5s ease-in-out infinite alternate;
+    animation-play-state: paused;
+  }
+  .flight-craft {
+    animation: flight-cross 11s linear infinite;
+    animation-play-state: paused;
+    will-change: transform;
+  }
+  .flight[data-on] .flight-craft,
+  .flight[data-on] .flight-cloth {
+    animation-play-state: running;
   }
   .flight-band a:focus-visible {
     outline: 2px solid theme('colors.ink');
     outline-offset: 4px;
     border-radius: 8px;
+  }
+  @keyframes flight-cross {
+    0% {
+      transform: translateX(0);
+      opacity: 0;
+    }
+    6%,
+    90% {
+      opacity: 1;
+    }
+    100% {
+      transform: translateX(var(--fly-to));
+      opacity: 0;
+    }
   }
   @keyframes flight-ripple {
     to {
@@ -2042,7 +2124,12 @@ html[data-free-bar] .site-footer {
 
 @media (prefers-reduced-motion: reduce) {
   .door-label-stamp,
-  .flight[data-flying] .flight-cloth {
+  .flight-cloth {
     animation: none;
+  }
+  /* parked mid-way, still */
+  .flight-craft {
+    animation: none;
+    transform: translateX(calc(var(--fly-to) * 0.55));
   }
 }

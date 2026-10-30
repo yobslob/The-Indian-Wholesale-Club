@@ -23,6 +23,8 @@ interface Props {
   variants: Variant[];
   /** Shown just above the button (the delivery window, D-008). */
   delivery?: React.ReactNode;
+  /** A 7-day piece (D-154): the bag's goal knows it from the add (bag-goal.ts). */
+  quick?: boolean;
 }
 
 const pillClass = (selected: boolean, out: boolean): string =>
@@ -40,7 +42,7 @@ const legendClass = 'font-ui text-ink-muted mb-2 text-[11px] font-semibold upper
  * until then the button says "Choose a size" and takes them to the sizes. A colour may start chosen. (F8) The chosen
  * option says how many of it are already in the bag.
  */
-export function AddToCart({ product, variants, delivery }: Props): React.JSX.Element {
+export function AddToCart({ product, variants, delivery, quick = false }: Props): React.JSX.Element {
   const initial = useMemo(
     () => Object.fromEntries(variants.map((v) => [v.id, v.available])),
     [variants],
@@ -105,6 +107,7 @@ export function AddToCart({ product, variants, delivery }: Props): React.JSX.Ele
         unitPriceCents: variant.price_cents,
         imagePath: product.primary_image_path,
         productType: product.product_type,
+        quick,
       },
       quantity,
     );

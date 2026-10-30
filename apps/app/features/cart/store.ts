@@ -21,6 +21,8 @@ export interface BagLine {
   unitPriceCents: number;
   imagePath: string | null;
   quantity: number;
+  /** A 7-day piece when it was added (D-154), so the bag's goal is right before its answer comes; the answer decides. */
+  quick?: boolean;
 }
 
 interface BagState {

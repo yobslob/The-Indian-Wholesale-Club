@@ -11,6 +11,7 @@ import { useDays } from '@/features/shell/days';
 import { mediaUrl } from '@/lib/site';
 
 import { freeDelivery, undoBagChange, useBagCharges, useShipmentNote } from './charges';
+import { FreeMeter, useSurge } from './free-meter';
 import { cartCount, useCart, type CartLine } from './store';
 
 import type { BagCharges } from './charges';
@@ -27,10 +28,13 @@ import type { BagCharges } from './charges';
  * Shipping back.
  * D-161 (the homesick plan): the bar is a flight path, India to a little house, "$12.40 more and the flight's on us",
  * and each add says "Coming home Sat, Oct 31" for three seconds. The look is `.fd-*` in globals.css.
+ * Founder 2026-10-30: the goal is picked from the bag as it is now, from its first draw (charges.ts, bag-goal.ts), and
+ * past the free line the bar keeps its full part to the house while the pill grows a second part for the bulk saving.
  */
 export function FreeDeliveryBar(): React.JSX.Element | null {
   const lines = useCart((s) => s.lines);
   const charges = useBagCharges();
+  const days = useDays();
   const path = usePathname();
   const [shown, setShown] = useState(false);
   // after the first paint only: the bag and the last charges live on the device, the server draws no pill
@@ -53,9 +57,11 @@ export function FreeDeliveryBar(): React.JSX.Element | null {
     };
   }, [visible]);
 
-  const goal: BagGoal = visible ? freeDelivery(lines, charges).goal : { kind: 'none' };
+  const goal: BagGoal = visible ? freeDelivery(lines, charges, days).goal : { kind: 'none' };
   const free = goal.kind === 'free' || goal.kind === 'quick-free';
-  const surge = useSurge(goal.kind === 'none' ? 0 : goal.share);
+  // past the free line: the bulk saving's part after the house (null: no such part)
+  const more = goal.kind === 'free' && goal.bulk.capCents > 0 ? goal.bulk.share : null;
+  const surge = useSurge(goal.kind === 'none' ? 0 : goal.share + (more ?? 0));
   const note = useShipmentNote();
   const count = cartCount(lines);
   const newest = lines[lines.length - 1];
@@ -67,7 +73,7 @@ export function FreeDeliveryBar(): React.JSX.Element | null {
       <Link
         href="/cart"
         aria-live="polite"
-        className={`fd-pill bg-brand text-on-brand font-ui rounded-pill fixed inset-x-3 bottom-[max(12px,env(safe-area-inset-bottom))] z-[44] mx-auto flex h-14 max-w-[440px] items-center gap-3 pl-2 pr-4 [html[data-buy-bar]_&]:bottom-[84px] md:[html[data-buy-bar]_&]:bottom-[max(12px,env(safe-area-inset-bottom))] ${
+        className={`fd-pill bg-brand text-on-brand font-ui rounded-pill fixed inset-x-3 bottom-[max(12px,env(safe-area-inset-bottom))] z-[44] mx-auto flex h-14 ${more === null ? 'max-w-[440px]' : 'max-w-[520px]'} items-center gap-3 pl-2 pr-4 [html[data-buy-bar]_&]:bottom-[84px] md:[html[data-buy-bar]_&]:bottom-[max(12px,env(safe-area-inset-bottom))] ${
           shown ? 'translate-y-0 scale-100 opacity-100' : 'translate-y-5 scale-[.96] opacity-0'
         }`}
         data-free={free || undefined}
@@ -116,7 +122,7 @@ export function FreeDeliveryBar(): React.JSX.Element | null {
               <span key={home.key} className="rise-in inline-block">
                 Coming home <b className="font-bold">{home.date}</b>
               </span>
-            ) : charges ? (
+            ) : goal.kind !== 'none' ? (
               <GoalWords goal={goal} />
             ) : (
               <>{count} in your bag</>
@@ -125,7 +131,7 @@ export function FreeDeliveryBar(): React.JSX.Element | null {
               . Bag, {count} {count === 1 ? 'item' : 'items'}
             </span>
           </span>
-          <FreeMeter share={goal.kind === 'none' ? 0 : goal.share} surge={surge} />
+          <FreeMeter share={goal.kind === 'none' ? 0 : goal.share} more={more} surge={surge} />
         </span>
         <svg
           viewBox="0 0 24 24"
@@ -175,18 +181,17 @@ function GoalWords({ goal }: { goal: BagGoal }): React.JSX.Element | null {
         </>
       );
     case 'free':
-      // D-119: past the line the bar shows the bulk saving filling up to its cap
+      // D-119: past the line the bulk saving fills its own part of the bar, up to its cap; free delivery stays said
       if (goal.bulk.capped)
         return (
           <>
-            <b className="font-bold">{formatUsd(goal.bulk.capCents)}</b> off: {big('BIGGEST SAVING')}
+            {big('FREE DELIVERY')} + <b className="font-bold">{formatUsd(goal.bulk.capCents)}</b> off, the biggest saving
           </>
         );
       if (goal.bulk.savingCents > 0)
         return (
           <>
-            Saving <b className="font-bold">{formatUsd(goal.bulk.savingCents)}</b>
-            <span className="hidden sm:inline"> · add more, save more</span>
+            {big('FREE DELIVERY')} + saving <b className="font-bold">{formatUsd(goal.bulk.savingCents)}</b>
           </>
         );
       return (
@@ -200,51 +205,6 @@ function GoalWords({ goal }: { goal: BagGoal }): React.JSX.Element | null {
 }
 
 /**
- * The free-delivery bar (D-116): a track with a fill up to `share`, a glowing head at its end and a shimmer running
- * through the filled part; `surge` (from useSurge) flares the head once per add. `tone` "canvas" is the bag summary's
- * brand-on-cream version of the pill's light-on-brand one.
- */
-export function FreeMeter({
-  share,
-  surge,
-  tone = 'brand',
-  route = true,
-}: {
-  share: number;
-  surge: number;
-  tone?: 'brand' | 'canvas';
-  /** The flight path's ends: India and the house (D-161). */
-  route?: boolean;
-}): React.JSX.Element {
-  const full = share >= 1;
-  const bar = (
-    <span
-      className="fd-bar"
-      data-tone={tone}
-      data-full={full || undefined}
-      aria-hidden="true"
-      style={{ '--fd': full ? 1 : Math.max(share, 0.04) } as React.CSSProperties}
-    >
-      <span className="fd-fill" />
-      <i key={surge} className="fd-head" data-surge={surge > 0 || undefined} />
-    </span>
-  );
-  if (!route) return bar;
-  // D-161 (the plan's flight path): from the India outline (the layout's #india-mark) along the stitch to a house
-  return (
-    <span className="fd-route" data-tone={tone} data-full={full || undefined} aria-hidden="true">
-      <svg viewBox="0 0 24 24" className="fd-end">
-        <use href="#india-mark" />
-      </svg>
-      {bar}
-      <svg viewBox="0 0 24 24" className="fd-end" data-house="">
-        <path d="M4 11.5 12 4l8 7.5M6.5 9.5V20h11V9.5M10 20v-5h4v5" />
-      </svg>
-    </span>
-  );
-}
-
-/**
  * "Coming home Sat, Oct 31" for three seconds after each add (the plan's toast, D-161): the newest piece's date as the
  * bag's own answer says it (its 7-day date when it travels in the 7-day shipment, else the standard window), or the
  * standard days from Settings before that answer is in. Nothing on the first draw.
@@ -252,15 +212,23 @@ export function FreeMeter({
 function useComingHome(count: number, newest: CartLine | undefined, charges: BagCharges | null): { key: number; date: string } | null {
   const { standard } = useDays();
   const last = useRef<number | null>(null);
+  const timer = useRef<ReturnType<typeof setTimeout> | undefined>(undefined);
   const [key, setKey] = useState(0);
   const [on, setOn] = useState(false);
+  useEffect(() => () => clearTimeout(timer.current), []);
   useEffect(() => {
-    if (last.current !== null && count > last.current) {
+    // The first draw shows the server's empty bag: the bag already on this device is where it starts, not an add
+    // (2026-10-30: every page load said "Coming home" for three seconds)
+    if (last.current === null) {
+      last.current = cartCount(useCart.getState().lines);
+      return;
+    }
+    // its own timer, so taking a piece out within the three seconds does not leave the line up for good
+    if (count > last.current) {
       setKey((k) => k + 1);
       setOn(true);
-      const t = setTimeout(() => setOn(false), 3200);
-      last.current = count;
-      return () => clearTimeout(t);
+      clearTimeout(timer.current);
+      timer.current = setTimeout(() => setOn(false), 3200);
     }
     last.current = count;
   }, [count]);
@@ -274,15 +242,4 @@ function useComingHome(count: number, newest: CartLine | undefined, charges: Bag
   if (!standard) return null;
   const d = datesIn(standard.min, standard.max);
   return { key, date: doorDate(d.from, d.to) };
-}
-
-/** A number that goes up each time `share` grows, so the meter's edge can flare once per add (not on the first draw). */
-export function useSurge(share: number): number {
-  const last = useRef<number | null>(null);
-  const [surge, setSurge] = useState(0);
-  useEffect(() => {
-    if (last.current !== null && share > last.current + 0.001) setSurge((n) => n + 1);
-    last.current = share;
-  }, [share]);
-  return surge;
 }

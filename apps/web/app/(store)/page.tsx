@@ -63,7 +63,8 @@ export default async function HomePage(): Promise<React.JSX.Element> {
             id="arrives-in-7-days"
             title={`Arrives in ${quickDays} days`}
             // the row says it once, not each card (as on the 7-day page)
-            products={quick.products.slice(0, 12).map((p) => ({ ...p, quick_days: null }))}
+            products={quick.products.slice(0, 12)}
+            quickTag={false}
             href={QUICK_HOME}
           />
         ) : null}

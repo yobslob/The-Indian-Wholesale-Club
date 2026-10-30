@@ -39,7 +39,7 @@ export function FreeDeliveryBar({ onPress }: { onPress: () => void }): React.JSX
   const free = goal.kind === 'free' || goal.kind === 'quick-free';
   const share = goal.kind === 'none' ? 0 : goal.kind === 'free' ? 1 : goal.share;
   const leftCents = goal.kind === 'quick-gap' || goal.kind === 'free-gap' ? goal.leftCents : 0;
-  // D-119: past the line the bar shows the bulk saving filling up to its cap.
+  // D-119: past the line the words say the bulk saving; the bar stays full (founder 2026-10-30: never back to the start)
   const saving = goal.kind === 'free' && bulk.capCents > 0 && bulk.savingCents > 0;
   const count = bagCount(lines);
   const newest = lines[lines.length - 1];
@@ -54,7 +54,7 @@ export function FreeDeliveryBar({ onPress }: { onPress: () => void }): React.JSX
   const sheen = useSharedValue(-1);
   const pop = useSharedValue(1);
   const last = useRef<{ share: number; count: number } | null>(null);
-  const target = saving ? Math.max(bulk.share, 0.04) : free ? 1 : Math.max(share, 0.04);
+  const target = free ? 1 : Math.max(share, 0.04);
 
   useEffect(() => {
     if (!visible || width === 0) return;
@@ -153,12 +153,13 @@ export function FreeDeliveryBar({ onPress }: { onPress: () => void }): React.JSX
         <Text numberOfLines={1} className="font-ui text-on-brand text-[13.5px] leading-[15px]">
           {saving && bulk.capped ? (
             <>
-              <Text className="font-ui-semibold">{formatUsd(bulk.capCents)}</Text> off:{' '}
-              <Text className="font-ui-semibold">BIGGEST SAVING</Text>
+              <Text className="font-ui-semibold">FREE DELIVERY</Text> +{' '}
+              <Text className="font-ui-semibold">{formatUsd(bulk.capCents)}</Text> off, the biggest saving
             </>
           ) : saving ? (
             <>
-              Saving <Text className="font-ui-semibold">{formatUsd(bulk.savingCents)}</Text> · add more, save more
+              <Text className="font-ui-semibold">FREE DELIVERY</Text> + saving{' '}
+              <Text className="font-ui-semibold">{formatUsd(bulk.savingCents)}</Text>
             </>
           ) : goal.kind === 'quick-free' ? (
             <>

@@ -92,6 +92,7 @@ function QuickAdd({ product }: { product: CardData }): React.JSX.Element {
               variantLabel: quick.label,
               unitPriceCents: quick.price_cents,
               imagePath: product.primary_image_path,
+              quick: product.quick_days != null,
             },
             1,
           );

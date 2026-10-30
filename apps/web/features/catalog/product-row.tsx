@@ -20,11 +20,13 @@ export function ProductStrip<T extends CardData>({
   label,
   size = 'md',
   badge,
+  quickTag,
 }: {
   products: T[];
   label: string;
   size?: 'md' | 'sm';
   badge?: (p: T) => React.ReactNode;
+  quickTag?: boolean;
 }): React.JSX.Element {
   // phones: a smaller card, so more than two show at once (founder, 2026-10-24)
   const width = size === 'sm' ? 'w-[clamp(148px,17vw,224px)]' : 'w-[148px] sm:w-[clamp(176px,23vw,304px)]';
@@ -32,7 +34,7 @@ export function ProductStrip<T extends CardData>({
     <RowScroller label={label}>
       {products.map((p, i) => (
         <li key={p.id} className={`${width} shrink-0 snap-start`}>
-          <ProductCard product={p} size={size} layout="row" badge={badge?.(p)} reveal={i < REVEALED} />
+          <ProductCard product={p} size={size} layout="row" badge={badge?.(p)} reveal={i < REVEALED} quickTag={quickTag} />
         </li>
       ))}
     </RowScroller>
@@ -51,6 +53,7 @@ export function ProductRow<T extends CardData>({
   href,
   size,
   badge,
+  quickTag,
 }: {
   id: string;
   title: string;
@@ -59,6 +62,8 @@ export function ProductRow<T extends CardData>({
   href?: string;
   size?: 'md' | 'sm';
   badge?: (p: T) => React.ReactNode;
+  /** Off where every card is a 7-day piece and the page says so once. */
+  quickTag?: boolean;
 }): React.JSX.Element | null {
   if (products.length === 0) return null;
   return (
@@ -79,7 +84,7 @@ export function ProductRow<T extends CardData>({
           </Link>
         ) : null}
       </div>
-      <ProductStrip products={products} label={title} size={size} badge={badge} />
+      <ProductStrip products={products} label={title} size={size} badge={badge} quickTag={quickTag} />
     </section>
   );
 }

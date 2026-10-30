@@ -101,6 +101,7 @@ export default async function ProductPage({
             <AddToCart
               product={product}
               variants={variants}
+              quick={quick_delivery !== null}
               delivery={<DeliveryNote delivery={delivery} fromUs={ships_from_us} quick={quick_delivery} quickLine={quickLine} />}
             />
           ) : (

@@ -8,16 +8,27 @@ import { bagChargesAt, bulkProgress } from './checkout';
  * - `quick-free`: only 7-day pieces at the 7-day line: Shipping is already struck through and free (as checkout says),
  *   so the bar is full; the next goal ($99.99) is not pushed on top of it.
  * - `free-gap`: any other bag under the free-shipping line ($99.99).
- * - `free`: from the free-shipping line up; `bulk` then fills with the bulk saving (D-119).
+ * - `free`: from the free-shipping line up. The free part stays full and the bulk saving (D-119) fills a second part
+ *   after it (founder 2026-10-30: "instead let it keep it and extend the pill"), never the same bar from the start.
  * The "Add $12.40 of 7-day pieces and they arrive by …" line of a mixed bag stays in its shipment's heading (D-154),
  * as words, not a second bar.
+ * Founder 2026-10-30 ("now only the 7 day items exist but the bag was still showing 99"): the goal follows the bag as it
+ * is now. `facts` are the answer for this very bag; while the next answer is on its way they are null and `known`
+ * says which pieces are 7-day (each line's own word when it was added, or an earlier answer) and the 7-day line.
  */
 export type BagGoal =
   | { kind: 'none' }
   | { kind: 'quick-gap'; leftCents: number; share: number }
   | { kind: 'quick-free'; share: 1; arrivesBy: string | null; arrivesByDay: string | null }
   | { kind: 'free-gap'; leftCents: number; share: number }
-  | { kind: 'free'; share: number; bulk: ReturnType<typeof bulkProgress> };
+  | { kind: 'free'; share: 1; bulk: ReturnType<typeof bulkProgress> };
+
+/** What is known of a bag before its own answer comes: its 7-day options, the 7-day line and the 7-day day. */
+export interface BagGoalKnown {
+  quickIds: readonly string[];
+  quickMinCents: number | null;
+  quickTo: string | null;
+}
 
 export function bagGoal({
   subtotalCents,
@@ -26,30 +37,33 @@ export function bagGoal({
   bulk,
   facts,
   variantIds,
+  known,
 }: {
   subtotalCents: number;
   freeMinCents: number | null;
   at: ReturnType<typeof bagChargesAt>;
   bulk: ReturnType<typeof bulkProgress>;
+  /** The charges answer for this bag; null while it is on its way (then `known` speaks). */
   facts: BagShipmentFacts | null;
   /** The bag's options, to tell a bag of only 7-day pieces. */
   variantIds: string[];
+  known?: BagGoalKnown | null;
 }): BagGoal {
   if (freeMinCents === null || freeMinCents <= 0) return { kind: 'none' };
-  if (subtotalCents >= freeMinCents) {
-    // the bar refills with the bulk saving once there is one; until then it stays full
-    const share = bulk.capCents > 0 && bulk.savingCents > 0 ? bulk.share : 1;
-    return { kind: 'free', share, bulk };
-  }
-  if (at.shippingFree) {
-    const day = facts?.dates.quickTo ?? null;
+  if (subtotalCents >= freeMinCents) return { kind: 'free', share: 1, bulk };
+  const quick = new Set(facts ? facts.quickIds : (known?.quickIds ?? []));
+  const onlyQuick = variantIds.length > 0 && variantIds.every((id) => quick.has(id));
+  const minCents = facts ? facts.minCents : (known?.quickMinCents ?? null);
+  const quickCents = facts ? facts.quickCents : subtotalCents;
+  const quickFree = facts ? at.shippingFree : onlyQuick && minCents !== null && quickCents >= minCents;
+  if (quickFree) {
+    const day = facts ? facts.dates.quickTo : (known?.quickTo ?? null);
     // arrivesByDay: the calendar day itself, for "home by Saturday" (D-161)
     return { kind: 'quick-free', share: 1, arrivesBy: day ? dayDate(day) : null, arrivesByDay: day };
   }
-  const quick = new Set(facts?.quickIds ?? []);
-  const onlyQuick = variantIds.length > 0 && variantIds.every((id) => quick.has(id));
-  if (onlyQuick && facts?.minCents && facts.gapCents !== null && facts.gapCents > 0) {
-    return { kind: 'quick-gap', leftCents: facts.gapCents, share: Math.min(facts.quickCents / facts.minCents, 1) };
+  const gapCents = facts ? facts.gapCents : minCents !== null ? Math.max(minCents - quickCents, 0) : null;
+  if (onlyQuick && minCents && gapCents !== null && gapCents > 0) {
+    return { kind: 'quick-gap', leftCents: gapCents, share: Math.min(quickCents / minCents, 1) };
   }
   return {
     kind: 'free-gap',

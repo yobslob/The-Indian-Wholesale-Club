@@ -31,13 +31,18 @@ export default async function StoreLayout({
     getQuickNavCached().catch(() => null),
     getStorePolicyCached().catch(() => null),
   ]);
-  // D-161: the days the pages' dates count from (the dates themselves are worked out in the browser, days.tsx)
+  // D-161: the days the pages' dates count from (the dates themselves are worked out in the browser, days.tsx), and the
+  // free-delivery lines the bag's pill starts from
   const days: ShellDays = {
     quick: quick ? { min: quick.daysMin, max: quick.daysMax } : null,
     standard:
       policy?.delivery_days_min != null && policy.delivery_days_max != null
         ? { min: policy.delivery_days_min, max: policy.delivery_days_max }
         : null,
+    lines: {
+      freeMinCents: policy?.free_shipping_min_cents ?? null,
+      quickMinCents: quick ? (policy?.quick_delivery_min_cents ?? null) : null,
+    },
   };
   return (
     <>

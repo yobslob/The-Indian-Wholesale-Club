@@ -37,8 +37,6 @@ export default async function SevenDayPage(): Promise<React.JSX.Element> {
     ...QUICK_TYPES.map((t) => browseCached(toBrowseFilter(t, inQuickStore({ sizes: [], sort: 'low' }), 0, PAGE))),
   ]);
   if (!front) notFound();
-  // every card here is a 7-day piece: the page says so once, not on each card (as its list does)
-  const rows = <T extends object>(cards: T[]) => cards.map((p) => ({ ...p, quick_days: null }));
   const days =
     front.days_min === front.days_max
       ? `${front.days_max}`
@@ -69,23 +67,27 @@ export default async function SevenDayPage(): Promise<React.JSX.Element> {
       {front.total === 0 ? (
         <p className="text-ink-muted">Nothing here right now. Look again soon.</p>
       ) : (
+        // every card here is a 7-day piece: the page says so once, not on each card (quickTag, as its list does)
         <>
           <QuickTiles categories={quickCategories(front.categories, page.categories)} />
           <div>
-            <ProductRow id="most-ordered" title="What everyone missed this week" products={rows(front.most_ordered)} />
+            <ProductRow id="most-ordered" title="What everyone missed this week" products={front.most_ordered}
+              quickTag={false} />
             {/* D-161: Under $5 as the kirana counter, the small treats that top a bag up to the line */}
             <ProductRow
               id="under-5"
               title="The kirana counter"
               sub="Under $5"
-              products={rows(front.under_5)}
+              products={front.under_5}
+              quickTag={false}
             />
             {/* the founder's seasonal poster between the rows (slots.ts) */}
             <VisualSlot id="seven-day-poster" className="my-[clamp(20px,3vw,40px)]" />
             <ProductRow
               id="new-this-week"
               title="New this week"
-              products={rows(front.new_this_week)}
+              products={front.new_this_week}
+              quickTag={false}
             />
             {QUICK_TYPES.map((t, i) => (
               <ProductRow
@@ -93,7 +95,8 @@ export default async function SevenDayPage(): Promise<React.JSX.Element> {
                 id={`all-${t}`}
                 title={PRODUCT_TYPE_LABEL[t]}
                 sub={`${byType[i]!.total} ${byType[i]!.total === 1 ? 'piece' : 'pieces'} in ${days} days`}
-                products={rows(byType[i]!.products.slice(0, 12))}
+                products={byType[i]!.products.slice(0, 12)}
+                quickTag={false}
                 href={quickHref(t)}
               />
             ))}

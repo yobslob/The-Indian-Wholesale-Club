@@ -188,7 +188,7 @@ export function BrowseView({
               }`}
             >
               {products.map((p) => (
-                <ProductCard key={p.id} product={inQuick ? { ...p, quick_days: null } : p} layout="side" />
+                <ProductCard key={p.id} product={p} layout="side" quickTag={!inQuick} />
               ))}
               {Array.from({ length: Math.ceil(meta.drawer.length / DRAWER_SIZE) }, (_, k) => {
                 const cards = products.slice(k * DRAWER_EVERY, (k + 1) * DRAWER_EVERY).length;

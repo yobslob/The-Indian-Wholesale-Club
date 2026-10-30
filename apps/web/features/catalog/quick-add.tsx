@@ -81,7 +81,7 @@ export function QuickAdd({
   available,
   href,
 }: {
-  product: Pick<ProductCard, 'id' | 'name' | 'slug' | 'region_slug' | 'region_name' | 'primary_image_path' | 'product_type'>;
+  product: Pick<ProductCard, 'id' | 'name' | 'slug' | 'region_slug' | 'region_name' | 'primary_image_path' | 'product_type' | 'quick_days'>;
   quickAdd: QuickAddData | null | undefined;
   options?: CardOption[] | null;
   /** How many options there are when the page left them out (D-145). */

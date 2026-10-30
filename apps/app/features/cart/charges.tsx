@@ -15,8 +15,14 @@ const bagKey = (lines: BagLine[]): string =>
     .sort()
     .join(',');
 
+/** A bag's charges with the bag they answer (bagKey): an earlier bag's answer never decides the goal (bag-goal.ts). */
+export type KeyedCharges = BagCharges & { bagKey: string };
+
+// Which options are 7-day, from every answer so far (an answer names its bag's 7-day options; the others are not)
+const quickKnown = new Map<string, boolean>();
+
 /** D-111: the bag's small-order charges, worked out by the database (one query per bag, kept while the next loads). */
-export function useBagCharges(): BagCharges | null {
+export function useBagCharges(): KeyedCharges | null {
   const lines = useBag((s) => s.lines);
   const key = bagKey(lines);
   const { data } = useQuery(`bag-charges:${key}`, () =>
@@ -24,14 +30,22 @@ export function useBagCharges(): BagCharges | null {
       ? getBagCharges(
           supabase,
           lines.map((l) => ({ variantId: l.variantId, quantity: l.quantity })),
-        )
+        ).then((charges): KeyedCharges => {
+          const quick = new Set(parseBagShipments(charges)?.quickIds ?? []);
+          for (const l of lines) quickKnown.set(l.variantId, quick.has(l.variantId));
+          return { ...charges, bagKey: key };
+        })
       : Promise.resolve(null),
   );
   return key ? (data ?? null) : null;
 }
 
-/** Where the bag stands against the free-delivery line (D-111) and, from it up, on the bulk saving (D-119). */
-export function freeDelivery(lines: BagLine[], charges: BagCharges | null) {
+/**
+ * Where the bag stands against the free-delivery line (D-111) and, from it up, on the bulk saving (D-119). Founder
+ * 2026-10-30: the goal is the bag as it is now: while the next answer loads, which pieces are 7-day comes from each
+ * line's add and earlier answers, never from the last bag's answer.
+ */
+export function freeDelivery(lines: BagLine[], charges: KeyedCharges | null) {
   const subtotal = bagSubtotalCents(lines);
   const line = charges?.free_min_cents ?? null;
   const free = line !== null && subtotal >= line;
@@ -39,8 +53,25 @@ export function freeDelivery(lines: BagLine[], charges: BagCharges | null) {
     charges && charges.bulk_saving_pct > 0 && charges.bulk_saving_cap_cents > 0
       ? { pct: charges.bulk_saving_pct, capCents: charges.bulk_saving_cap_cents }
       : null;
-  const at = bagChargesAt(subtotal, line, charges ? smallOrderOf(charges) : null);
+  const small = charges ? smallOrderOf(charges) : null;
+  const facts = charges ? parseBagShipments(charges) : null;
+  const fresh = charges !== null && charges.bagKey === bagKey(lines);
   const progress = bulkProgress(subtotal, line, bulk);
+  const goal = bagGoal({
+    subtotalCents: subtotal,
+    freeMinCents: line,
+    at: bagChargesAt(subtotal, line, small),
+    bulk: progress,
+    facts: fresh ? facts : null,
+    variantIds: lines.map((l) => l.variantId),
+    known: {
+      quickIds: lines.filter((l) => quickKnown.get(l.variantId) ?? l.quick === true).map((l) => l.variantId),
+      quickMinCents: facts?.minCents ?? null,
+      quickTo: facts?.dates.quickTo ?? null,
+    },
+  });
+  // an earlier bag's answer: free 7-day Shipping follows this bag's goal, not that answer
+  const at = bagChargesAt(subtotal, line, small && !fresh ? { ...small, quickFree: goal.kind === 'quick-free' } : small);
   return {
     free,
     line,
@@ -52,14 +83,7 @@ export function freeDelivery(lines: BagLine[], charges: BagCharges | null) {
     share: line ? Math.min(subtotal / line, 1) : 1,
     bulk: progress,
     /** The one goal the pill and the Bag show (bag-goal.ts, founder 2026-10-24): never two bars. */
-    goal: bagGoal({
-      subtotalCents: subtotal,
-      freeMinCents: line,
-      at,
-      bulk: progress,
-      facts: charges ? parseBagShipments(charges) : null,
-      variantIds: lines.map((l) => l.variantId),
-    }),
+    goal,
   };
 }
 
@@ -150,7 +174,8 @@ export function ChargeRows(): React.JSX.Element | null {
       {words && goal.kind !== 'none' ? (
         <View className="mt-1 gap-2">
           <Text className="font-ui-semibold text-brand text-[13px]">{words}</Text>
-          <MeterLine share={goal.kind === 'free' ? bulk.share : goal.share} />
+          {/* past the line the bar stays full (founder 2026-10-30); the words say the bulk saving */}
+          <MeterLine share={goal.share} />
         </View>
       ) : null}
     </View>

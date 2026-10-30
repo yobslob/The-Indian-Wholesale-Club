@@ -46,12 +46,15 @@ export function AddToBag({
   delivery,
   buttonRef,
   onBar,
+  quick = false,
 }: {
   product: Pick<
     Product,
     'id' | 'name' | 'slug' | 'region_slug' | 'region_name' | 'primary_image_path'
   >;
   variants: Variant[];
+  /** A 7-day piece (D-154): the bag's goal knows it from the add (bag-goal.ts). */
+  quick?: boolean;
   /** Shown just above the button (the delivery window, D-008). */
   delivery?: React.ReactNode;
   /** The row with Add to bag, so the screen can tell when it has scrolled away (the buy bar, D-082). */
@@ -88,6 +91,7 @@ export function AddToBag({
         variantLabel: variant.label,
         unitPriceCents: variant.price_cents,
         imagePath: product.primary_image_path,
+        quick,
       },
       quantity,
     );

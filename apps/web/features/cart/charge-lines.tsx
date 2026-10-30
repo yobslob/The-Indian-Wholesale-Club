@@ -5,9 +5,12 @@ import { usePathname } from 'next/navigation';
 
 import { formatUsd, type BagGoal } from '@repo/shared/domain';
 
+import { useDays } from '@/features/shell/days';
+
 import { bagSaving, freeDelivery, undoBagChange, useBagCharges, useShipmentNote } from './charges';
-import { FreeMeter, useSurge } from './free-delivery-bar';
+import { FreeMeter, useSurge } from './free-meter';
 import { useCart } from './store';
+
 
 /** "$18.79", or "$18.79" struck through and "$0.00" once the bag reaches the free-delivery line (D-111, D-112). */
 export function ChargeValue({ cents, free }: { cents: number; free: boolean }): React.JSX.Element {
@@ -47,8 +50,9 @@ export function ReducedValue({ cents, shownCents }: { cents: number; shownCents:
 export function ChargeLines(): React.JSX.Element | null {
   const lines = useCart((s) => s.lines);
   const charges = useBagCharges();
+  const days = useDays();
   if (!charges) return null;
-  const { free, bulk, at, heavy, goal } = freeDelivery(lines, charges);
+  const { free, bulk, at, heavy, goal } = freeDelivery(lines, charges, days);
   const row = 'flex items-baseline justify-between gap-3 text-[14px]';
   return (
     <div className="font-ui grid gap-1" aria-live="polite">
@@ -76,7 +80,7 @@ export function ChargeLines(): React.JSX.Element | null {
         </p>
       ) : null}
       <GoalMeter goal={goal} />
-      <SavingLine cents={bagSaving(lines, charges)} />
+      <SavingLine cents={bagSaving(lines, charges, days)} />
     </div>
   );
 }
@@ -140,14 +144,17 @@ function GoalMeter({ goal }: { goal: BagGoal }): React.JSX.Element | null {
           </Link>
         ) : null}
       </p>
-      <Meter share={goal.kind === 'free' ? goal.bulk.share : goal.share} />
+      <Meter share={goal.share} more={goal.kind === 'free' && goal.bulk.capCents > 0 ? goal.bulk.share : null} />
     </div>
   );
 }
 
-/** The free-delivery pill's bar, in brand on cream (D-116), flaring when the bag grows. */
-function Meter({ share }: { share: number }): React.JSX.Element {
-  return <FreeMeter share={share} surge={useSurge(share)} tone="canvas" />;
+/**
+ * The free-delivery pill's bar, in brand on cream (D-116), flaring when the bag grows; past the line its free part stays
+ * full and the bulk saving fills the part after it (founder 2026-10-30).
+ */
+function Meter({ share, more }: { share: number; more: number | null }): React.JSX.Element {
+  return <FreeMeter share={share} more={more} surge={useSurge(share + (more ?? 0))} tone="canvas" />;
 }
 
 /**
@@ -157,8 +164,10 @@ function Meter({ share }: { share: number }): React.JSX.Element {
 export function PendingChargeRows(): React.JSX.Element | null {
   const lines = useCart((s) => s.lines);
   const charges = useBagCharges();
+  const days = useDays();
   if (!charges) return null;
-  const { free, bulk, at, heavy } = freeDelivery(lines, charges);
+  const { free, bulk, at, heavy } = freeDelivery(lines, charges, days);
+  const saving = bagSaving(lines, charges, days);
   const row = (label: string, cents: number, struck = free) => (
     <div className="flex justify-between">
       <dt className="text-ink-muted">{label}</dt>
@@ -187,10 +196,10 @@ export function PendingChargeRows(): React.JSX.Element | null {
           <dd className="text-positive m-0">−{formatUsd(bulk.savingCents)}</dd>
         </div>
       ) : null}
-      {bagSaving(lines, charges) > 0 ? (
+      {saving > 0 ? (
         <div className="text-brand flex justify-between font-semibold">
           <dt>You&apos;re saving</dt>
-          <dd className="m-0">{formatUsd(bagSaving(lines, charges))}</dd>
+          <dd className="m-0">{formatUsd(saving)}</dd>
         </div>
       ) : null}
     </>

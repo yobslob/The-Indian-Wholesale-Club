@@ -138,6 +138,7 @@ export default function ProductScreen(): React.JSX.Element {
               <AddToBag
                 product={data.product}
                 variants={data.variants}
+                quick={data.quick_delivery !== null}
                 buttonRef={button}
                 onBar={onBar}
                 delivery={<DeliveryNote delivery={data.delivery} fromUs={data.ships_from_us} />}

@@ -136,7 +136,13 @@ option says how many of it are already in the bag.
   by Fri, Oct 30" and **Shop the 7-day store** (a bag of only 7-day pieces says it once, in its summary's goal); each date
   "for most US addresses". **One goal, one bar (D-156, `bag-goal.ts`)** in the pill, the summary and the app: only 7-day
   pieces under $49.99 → "Add $12.40 more for FREE 7-DAY DELIVERY"; only 7-day pieces from $49.99 → "FREE 7-DAY DELIVERY ·
-  by Fri, Oct 30", the bar full; any other bag → "Add $X more for FREE DELIVERY", then the bulk saving. When a change crosses a line the pill (on
+  by Fri, Oct 30", the bar full; any other bag → "Add $X more for FREE DELIVERY"; past the free line the bar keeps its
+  full part to the house and grows a second part to a price tag that fills with the bulk saving ("FREE DELIVERY + saving
+  $1.40"; the pill widens from 440 to 520 px), never back to the start (founder 2026-10-30). The goal follows the bag as
+  it is now from the first draw: the two lines come from Settings with the page (`days.tsx`), each line remembers whether
+  it was a 7-day piece when added, and an answer for an earlier bag never decides it (`charges.ts`, the app's
+  `charges.tsx`; founder 2026-10-30: "now only the 7 day items exist but the bag was still showing 99"). The app keeps
+  the bar full past the line and says the saving in words. When a change crosses a line the pill (on
   `/cart` the summary) says so for three seconds: "Your 7-day pieces now arrive by …", "That opened a second shipment:
   …", "Your 7-day pieces now travel with the rest: …", or, when a normal piece ends a free 7-day bag's free Shipping,
   "Shipping is now $46.55 until $99.99." with **Undo** beside the pill (six seconds; Undo puts the bag back). Checkout,
@@ -151,7 +157,8 @@ option says how many of it are already in the bag.
   "7-day store" with a brand-colour 7, nothing under them (D-166). Phones: the strip 46 px (42 px from 768 px), the tabs sharing the width; from 768 px 500 px
   from the left gutter. The open tab is the header's own colour and runs into it through curved feet: ivory in the IWC
   store; in the 7-day store (every page under `/7-day-delivery`) the header takes a warm brand tint (12% of the brand
-  colour) and its bottom edge becomes the jewellery drawer's gold stitch. On Home the open tab is light glass over the
+  colour) with no line under it (founder 2026-10-30: "two horizontal lines under the categories, remove them"). The IWC
+  tab returns to the address the shopper saw (`/food`, not its rewritten route). On Home the open tab is light glass over the
   photo. The strip is part of the page: `.site-top` sticks one strip-height up, so it scrolls away and the header stays
   (`--top-h` is the header's height alone); on Home it slides up as the hero's words fade. A tap moves the open tab at
   once (320 ms with a slight spring, the mark pops once; at once with reduced motion) and opens the other store's front
@@ -260,7 +267,9 @@ The storefront reads like a **premium editorial magazine / contemporary gallery 
 - **Density (the founder's 4th prompt refines the first three):** no large empty gaps. Bigger images, sections that fill
   more of the viewport, elements closer together, clean alignment, consistent breathing room. Immersive, not sparse.
 - **Motion:** Lenis smooth scrolling; subtle vertical (and some horizontal) parallax tied to scroll velocity; images
-  reveal as they enter the viewport through gentle clipping, slow scale and opacity transitions.
+  reveal as they enter the viewport through gentle clipping, slow scale and opacity transitions. A tap on a link to
+  another page draws a thin brand line along the top until that page is drawn (after 120 ms, so an instant page shows
+  nothing; `navStart()` for the map's taps; founder 2026-10-30: a slow tap looked dead).
 - **Typography:** minimal, clean, luxury-magazine; photographs carry the page.
 **Guard rails (built in C1: `apps/web/features/shell/motion.tsx`, tested in `e2e/motion-keyboard.spec.ts`):** motion is progressive enhancement. Lenis and the scroll effects load as one small
 client module after the page is interactive; with `prefers-reduced-motion` they are off entirely (native scroll, no
@@ -296,8 +305,11 @@ region images, C2), mockups and dev pages use clearly marked placeholders, never
   `apps/web/features/shell/days.tsx`).
 - **One promise per screen, inside something the page already has** (a header line, a card tag, the pill, a summary
   line): no banners, pop-ups or tickers, no countdown, no blog. Where each one sits: D-161.
-- **Pictures, not paragraphs (D-166):** a promise is drawn before it is written: the flight (a plane from India's
-  outline to a house, towing the free line or the festival's last order day), the 7-day store's address label and
+- **Pictures, not paragraphs (D-166):** a promise is drawn before it is written: the flight (founder 2026-10-30: a small
+  band, India's outline and the US with its states, a straight dashed line between them, a side-view plane towing the
+  free line or the festival's last order day across at one steady speed, again and again; paused off screen and resumed
+  from the same spot, parked with reduced motion; `features/visuals/flight.tsx`, the map from
+  `scripts/build-us-map.mjs`), the 7-day store's address label and
   stamp, the duties stamp, the week strip, the shelf. No new lines of copy on pages; the jokes stay in the emails, the
   pill, the empty bag and the thank-you page. The founder's photos go in the slots of `features/visuals/slots.ts`.
 - Say "Duties paid. Nothing to pay at your door.", never "no tariffs"; every such line follows `DUTIES_PAID` (Q-46).

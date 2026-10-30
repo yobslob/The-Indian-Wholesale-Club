@@ -61,7 +61,7 @@ describe('one goal for the bag (founder 2026-10-24: one bar, never two)', () => 
     assert.equal(goal(8000, ['snack', 'kurta'], ['snack'], { quickCents: 5500 }).kind, 'free-gap');
   });
 
-  it('case 5: from $99.99 → free, then the bar refills with the bulk saving', () => {
+  it('case 5: from $99.99 → free; the free part stays full and the bulk saving fills after it', () => {
     const at = goal(9999, ['kurta'], []);
     assert.ok(at.kind === 'free');
     assert.equal(at.share, 1);
@@ -69,9 +69,34 @@ describe('one goal for the bag (founder 2026-10-24: one bar, never two)', () => 
     const past = goal(12555, ['kurta'], []);
     assert.ok(past.kind === 'free');
     assert.equal(past.bulk.savingCents, Math.round(((12555 - 9999) * 5) / 100));
-    assert.equal(past.share, past.bulk.savingCents / 2500);
+    // founder 2026-10-30: the bar keeps its progress past the line; the saving is its own part (bulk.share)
+    assert.equal(past.share, 1);
+    assert.equal(past.bulk.share, past.bulk.savingCents / 2500);
     // a 7-day-only bag past $99.99 is a free bag like any other
     assert.equal(goal(15000, ['snack'], ['snack']).kind, 'free');
+  });
+
+  it('while the answer for this bag is on its way, the goal follows the bag as it is now (founder 2026-10-30)', () => {
+    const known = { quickIds: ['snack', 'tea'], quickMinCents: QUICK_LINE, quickTo: '2026-10-30' };
+    const small: SmallOrderCharges = { shippingCents: 1879, retailerCents: 99, quickFree: false };
+    const at = (subtotal: number, ids: string[]) =>
+      bagGoal({
+        subtotalCents: subtotal,
+        freeMinCents: LINE,
+        at: bagChargesAt(subtotal, LINE, small),
+        bulk: bulkProgress(subtotal, LINE, BULK),
+        facts: null,
+        variantIds: ids,
+        known,
+      });
+    // the kurti set taken out: only 7-day pieces left, under the 7-day line → the 7-day goal at once
+    assert.deepEqual(at(3000, ['snack', 'tea']), { kind: 'quick-gap', leftCents: QUICK_LINE - 3000, share: 3000 / QUICK_LINE });
+    // over it → free 7-day delivery, not "add more for free delivery"
+    assert.equal(at(6000, ['snack', 'tea']).kind, 'quick-free');
+    // a normal piece in the bag → the free-delivery line
+    assert.equal(at(6000, ['snack', 'kurta']).kind, 'free-gap');
+    // nothing known yet about a piece → treated as a normal one
+    assert.equal(bagGoal({ subtotalCents: 3000, freeMinCents: LINE, at: bagChargesAt(3000, LINE, small), bulk: bulkProgress(3000, LINE, BULK), facts: null, variantIds: ['snack'] }).kind, 'free-gap');
   });
 
   it('no line (charges off) → no goal', () => {

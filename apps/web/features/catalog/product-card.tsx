@@ -45,6 +45,7 @@ export function ProductCard({
   reveal = true,
   layout = 'grid',
   corner,
+  quickTag = true,
 }: {
   product: CardData;
   size?: 'md' | 'sm';
@@ -55,6 +56,8 @@ export function ProductCard({
   corner?: React.ReactNode;
   /** The scroll reveal (D-049). Off for cards that start off to the side in a row: animating dozens made scrolling stutter. */
   reveal?: boolean;
+  /** The "In 7 days" tag; off where the page says it once for every card (the 7-day store, Home's 7-day row). */
+  quickTag?: boolean;
 }): React.JSX.Element {
   const href = productPath(product.region_slug, product.slug);
   const small = size === 'sm';
@@ -82,7 +85,7 @@ export function ProductCard({
             <span className="bg-paper font-ui rounded-pill absolute left-3.5 top-3.5 px-3 py-1.5 text-xs font-medium">
               {badge}
             </span>
-          ) : product.quick_days ? (
+          ) : product.quick_days && quickTag ? (
             // D-148: a 7-day piece (its days from Settings); the bag keeps the promise only while it holds 7-day pieces alone.
             // D-161: once the browser knows today, "Sat at your door" (`.door-tag`, the weekday from days.tsx)
             <span className="door-tag product-card-chip bg-brand text-on-brand font-ui rounded-pill absolute left-3.5 top-3.5 px-2.5 py-1 text-xs font-semibold">
@@ -115,6 +118,7 @@ export function ProductCard({
               region_name: product.region_name,
               primary_image_path: product.primary_image_path,
               product_type: product.product_type,
+              quick_days: product.quick_days,
             }}
             quickAdd={product.quick_add}
             options={product.options}

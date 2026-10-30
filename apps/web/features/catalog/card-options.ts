@@ -33,7 +33,10 @@ export function showsPrices(options: CardOption[], type: ProductCard['product_ty
 
 /** The bag line for an option. */
 export function bagLine(
-  product: Pick<ProductCard, 'id' | 'name' | 'slug' | 'region_slug' | 'region_name' | 'primary_image_path'> & { product_type?: string },
+  product: Pick<ProductCard, 'id' | 'name' | 'slug' | 'region_slug' | 'region_name' | 'primary_image_path'> & {
+    product_type?: string;
+    quick_days?: number | null;
+  },
   o: Pick<CardOption, 'id' | 'label' | 'price_cents'>,
 ) {
   return {
@@ -47,6 +50,8 @@ export function bagLine(
     unitPriceCents: o.price_cents,
     imagePath: product.primary_image_path,
     ...(product.product_type ? { productType: product.product_type } : {}),
+    // the bag's goal knows a 7-day piece from the add, before its answer comes (bag-goal.ts)
+    quick: product.quick_days != null,
   };
 }
 

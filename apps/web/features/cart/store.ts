@@ -23,6 +23,8 @@ export interface CartLine {
   quantity: number;
   /** D-140: clothing, food or home (lines added before it have none). */
   productType?: string;
+  /** A 7-day piece when it was added (D-154), so the bag's goal is right before its answer comes; the answer decides. */
+  quick?: boolean;
 }
 
 interface CartState {

@@ -31,6 +31,15 @@ Short on purpose: **replace** lines when something changes, don't append. Histor
   workflow, which the founder runs.
 
 ## What is built (details in the doc named; decisions in `decisions.md`)
+- **The founder's six storefront fixes (2026-10-30, not deployed):** the bag's goal follows the bag as it is now, from
+  its first draw (each line remembers it was a 7-day piece; an answer for an earlier bag never decides; the lines come
+  with the page from Settings), so taking the last normal piece out switches to the 7-day line at once (web and app);
+  past the free line the bar stays full to the house and a second part fills with the bulk saving (the app: full bar,
+  saving in words); no "Coming home" on every page load. The flight: a small band, India and the US with its states, a
+  straight line, a side-view plane at one steady speed, paused off screen. A thin line along the top from a tap until
+  the next page is drawn; the IWC tab returns to `/food`, not its rewritten route. No lines under the 7-day store's
+  categories. The founder's "59" matches no amount in the code: the lines are Settings' free line ($99.99 on
+  production) and the 7-day line ($49.99), `pilot-numbers.md`.
 - **Faster cards, endless scroll, pictures not text (D-166, 2026-10-30, not deployed):** a several-option card's +
   opens at once (its options read while it comes near the screen, a whole screen in one request); the free-delivery
   bar shows with the first piece; every See all page scrolls on by itself until the pieces run out (the address never
@@ -111,8 +120,10 @@ Short on purpose: **replace** lines when something changes, don't append. Histor
   email job's secret compared in constant time.
 
 ## Next for the founder
-0. **Push `main` (Claude did not):** D-166 and the storage clean-up of 2026-10-30 passed `node scripts/check.mjs` (Last
-   verification). No migration in either. Then look at `/7-day-delivery` and Home on `pnpm dev`: the three empty
+0. **Push `main` (Claude did not):** D-166, the storage clean-up and the six storefront fixes of 2026-10-30 (Last
+   verification). No migration in any. After the deploy, on the live site: a kurti set and a 7-day piece in the bag,
+   then the kurti set out (the pill should say the 7-day line at once); a bag past the free line (the bar stays full,
+   a second part fills); the flight on Home; a state's stamp from Home on a phone. Then look at `/7-day-delivery` and Home on `pnpm dev`: the three empty
    picture slots show what each wants; fill them in `apps/web/features/visuals/slots.ts`. On the laptop, after the
    pull: `pnpm photos:redo sweep --type clothing` (and `food`, `home`) deletes the PNGs of every finished photo from
    `tools/photo-redo/out` (3.4 GB on 2026-10-30); `pnpm photos:redo audit` then shows what is left in R2.
@@ -215,6 +226,7 @@ Short on purpose: **replace** lines when something changes, don't append. Histor
 ## Last verification
 | Date | Commit | Where | Result |
 |---|---|---|---|
+| 2026-10-30 | the founder's six storefront fixes (bag goal, flight, state clicks, 7-day lines, tab switch) | Claude Code, the founder's Windows machine (Docker; port 3000 free) | `check.mjs docs typecheck lint test` OK (shared tests 354 with the bag goal's new cases), build OK. e2e 35 passed, 4 failed, then on a second run 34 passed, 5 failed: every failure at checkout's Payment with Stripe's card frame left blank (the order priced, the frame empty), a different set each run; checkout is not touched here. In the browser pane on a local production build (8 local listings made 7-day for the test, then put back): the founder's case (a $75.99 piece and a $39 7-day piece, the first taken out) now shows the 7-day line from the first frame (before: the $149.99 line until the answer came); past the line the bar stays full and the saving part fills ($1.40, then $24.20 at 97%); the page load no longer says "Coming home"; the flight at 1280 and 375 px, steady (about 65 units a second), held off screen and resumed at the same point; a stamp and a map tap open the state with the top line; the 7-day header without its two lines; the IWC tab back to `/food`. Live site (read only): page data stalled 7 – 10 s at times, even cache hits, while Home's photos and the header's five reads ahead loaded; a stamp click waited over 6 s with nothing on screen. **Not run:** e2e green, `db`, `http`, `bundle`, the app on a phone, the live site after a deploy, frame timings on a phone (the pane draws about once a second). |
 | 2026-10-30 | e2e fix and storage clean-up (after D-166) | Claude Code, the founder's Windows machine (Docker; port 3000 free) | `node scripts/check.mjs`, every step OK: docs 0.9 s, typecheck 40.3 s, lint 87.1 s, test 5.9 s, db 67.5 s, build 65.9 s, http (/ 14 ms 135 KB, /clothing 17 ms 139 KB, /search?q=saree 73 ms), e2e 39 passed (before the fix `seven-day-bag.spec.ts` failed: the bag's charges restored from the tab after a page load came without the bag's moment, so the first change after it never said "Your 7-day pieces now arrive by"), bundle OK. The redo's sweep on a scratch work folder with stand-ins for the database and R2: the due old copies deleted, finished photos' PNGs gone, a waiting and a not-yet-due one kept; `tsc` and ESLint for tools/photo-redo after the last change. **Not run:** anything against production (R2, the hosted database), the runner's and the redo's new clean-up paths against a real failure, `redo.py` (only parsed). |
 | 2026-10-30 | D-166 faster cards, endless scroll, the tabs' names, pictures not text | Claude, cloud sandbox (no npm) and the founder's PC through the desktop link (its node_modules read from a Linux shell) | typecheck OK: `tsc --noEmit` for apps/web, packages/shared and packages/db on the committed files (a planted type error was caught, so the check was real). `homesick.test.ts` 3/3 and `bag-shipments`, `bag-goal` (19 with the homesick file) under node's own TypeScript; every changed .ts/.tsx file parses (TypeScript's transpiler); `docs-audit` OK. The flight and the door label rendered from the real components with React's server renderer and shot in Chromium at 1280 and 390 px (parked, and mid-flight with the stitch sewn behind the plane); `INDIA_OUTLINE` traced from the map's states and checked by eye. **Not run:** ESLint (its plugins would not load from the shell), web tests, build, http, e2e (`rows.spec.ts` and `seven-day-bag.spec.ts` changed for the endless scroll and the tabs), bundle. Run `node scripts/check.mjs` before pushing. |
 | 2026-10-30 | D-165 clothing faces swapped, cuts at the chin | Claude Code, the founder's laptop (RTX 4060; `check.mjs docs typecheck lint test`) | all OK. 164 live clothing photos (the women's model on every face; no men's model): 74 swapped, 8 cut at the chin (four back views with the head turned, two still the same person, two people, one moved), 82 without a face, 90 s in all; every swap and cut looked at by eye (seams 1 - 2.2 Lab), the neck kept in every cut; a collage of earrings goes to the founder. `redo.py` on a local test listing: two swapped, one reframed, one portrait to the founder. **Not run:** production, men's faces, publishing a swapped photo (the publish path is unchanged since D-164's run). |

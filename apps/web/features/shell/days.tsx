@@ -11,9 +11,14 @@ export interface ShellDays {
   quick: Days;
   /** The standard days (the pilot's, Settings); null in cycle mode. */
   standard: Days;
+  /**
+   * The two free-delivery lines (Settings): the bag's pill picks its goal from them on its first draw, before the bag's
+   * own answer comes (founder 2026-10-30). The 7-day line is null while the 7-day store is off or paused.
+   */
+  lines: { freeMinCents: number | null; quickMinCents: number | null };
 }
 
-const NONE: ShellDays = { quick: null, standard: null };
+const NONE: ShellDays = { quick: null, standard: null, lines: { freeMinCents: null, quickMinCents: null } };
 let current: ShellDays = NONE;
 const listeners = new Set<() => void>();
 const subscribe = (on: () => void): (() => void) => {

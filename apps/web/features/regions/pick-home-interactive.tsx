@@ -3,6 +3,8 @@
 import { useRouter } from 'next/navigation';
 import { useEffect, useRef } from 'react';
 
+import { navStart } from '@/features/shell/motion';
+
 /** How long the pointer rests on a name or stamp before its state lights up on the map (D-051). */
 export const NAME_HOVER_MS = 700;
 
@@ -16,7 +18,9 @@ interface RegionRef {
  * The interactive layer of "Pick your home" (server-rendered markup as children, listeners attached by
  * delegation). Hovering the map lights a state at once and shows its name; resting on a name or stamp for
  * 700 ms lights its state; keyboard focus lights it at once. Search filters the names and stamps and fades
- * the rest of the map. Clicking an open state opens its page.
+ * the rest of the map. Clicking an open state opens its page, with the top line from the tap (motion.tsx; founder
+ * 2026-10-30: "make it fast so that it instantly opens them on clicking"). Its page is read ahead by its stamp's link
+ * beside the map; a second read from here, still on its way at the click, made the click a full page load (2026-10-30).
  */
 export function PickHomeInteractive({
   className,
@@ -40,6 +44,7 @@ export function PickHomeInteractive({
     if (!svg || !panel || !tip) return;
 
     let current: string | null = null;
+
     let pending: string | null = null;
     let timer = 0;
     const onMap = (el: Element): boolean => svg.contains(el);
@@ -107,7 +112,9 @@ export function PickHomeInteractive({
     };
     const onClick = (e: MouseEvent): void => {
       const hit = slugOf(e.target);
-      if (hit && onMap(hit.el) && bySlug.get(hit.slug)?.live) router.push(`/states/${hit.slug}`);
+      if (!hit || !onMap(hit.el) || !bySlug.get(hit.slug)?.live) return;
+      navStart();
+      router.push(`/states/${hit.slug}`);
     };
     const onInput = (e: Event): void => {
       if (!(e.target instanceof HTMLInputElement) || !e.target.hasAttribute('data-search')) return;
