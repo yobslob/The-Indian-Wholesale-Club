@@ -47,6 +47,7 @@ const SETUP_PAGES = [
   'https://www.amazon.in/',
   'https://www.flipkart.com/',
   'https://www.myntra.com/',
+  'https://newme.asia/',
 ];
 
 async function setup(args: string[]): Promise<void> {

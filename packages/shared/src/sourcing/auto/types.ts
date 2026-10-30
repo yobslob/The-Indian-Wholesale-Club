@@ -17,6 +17,7 @@ export const SHOP_READERS = [
   'bigbasket',
   'zepto',
   'instamart',
+  'newme',
 ] as const;
 export type ShopReader = (typeof SHOP_READERS)[number];
 

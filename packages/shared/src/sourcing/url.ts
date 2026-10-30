@@ -21,6 +21,7 @@ const LABELS: Record<string, string> = {
   'oyela.in': 'Oyela',
   'offduty.in': 'Offduty',
   'nishorama.com': 'Nishorama',
+  'newme.asia': 'NEWME',
 };
 
 /** The site's host without www. / m. ("myntra.com"), or null for something that is not an http(s) URL. */

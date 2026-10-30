@@ -7,7 +7,7 @@
   "sideEffects": false,
   "scripts": {
     "typecheck": "tsc --noEmit",
-    "test": "tsx --test tests/domain.test.ts tests/admin.test.ts tests/product-details.test.ts tests/vendor.test.ts tests/sourcing.test.ts tests/auto-sourcing.test.ts tests/pricing-band.test.ts tests/pricing-beta.test.ts tests/weight.test.ts tests/estimate.test.ts tests/clothing-classes.test.ts tests/food-weights.test.ts tests/home-weights.test.ts tests/liquids.test.ts tests/shopify-collections.test.ts tests/marketplace-search.test.ts tests/order-money.test.ts tests/assign-weights.test.ts tests/shop-rest.test.ts tests/bag-shipments.test.ts tests/bag-goal.test.ts tests/category-check.test.ts tests/search.test.ts tests/homesick.test.ts tests/diwali-targets.test.ts tests/diwali-outfits.test.ts"
+    "test": "tsx --test tests/domain.test.ts tests/admin.test.ts tests/product-details.test.ts tests/vendor.test.ts tests/sourcing.test.ts tests/auto-sourcing.test.ts tests/pricing-band.test.ts tests/pricing-beta.test.ts tests/weight.test.ts tests/estimate.test.ts tests/clothing-classes.test.ts tests/food-weights.test.ts tests/home-weights.test.ts tests/liquids.test.ts tests/shopify-collections.test.ts tests/marketplace-search.test.ts tests/order-money.test.ts tests/assign-weights.test.ts tests/shop-rest.test.ts tests/bag-shipments.test.ts tests/bag-goal.test.ts tests/category-check.test.ts tests/search.test.ts tests/homesick.test.ts tests/diwali-targets.test.ts tests/diwali-outfits.test.ts tests/newme.test.ts"
   },
   "exports": {
     "./domain": "./src/domain/index.ts",

@@ -4,6 +4,7 @@ export * from './listing';
 export * from './match';
 export * from './readers/grocery';
 export * from './readers/marketplaces';
+export * from './readers/newme';
 export * from './readers/quick';
 export * from './readers/shopify';
 export * from './targets';

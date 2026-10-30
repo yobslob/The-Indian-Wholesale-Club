@@ -38,7 +38,7 @@ The matching, delivery, variant and listing rules are in `packages/shared/src/so
    `IWC_PHOTO_STORE_KEY_ID`, `IWC_PHOTO_STORE_SECRET` (the same R2 token as the website's); the runner then writes
    each photo's two AVIF copies there itself. Without them photos go to Supabase's storage and wait to be moved.
 4. **The hub's address on every shop:** `pnpm sourcing setup` opens Blinkit, Zepto, Instamart, BigBasket, Amazon,
-   Flipkart and Myntra. On each, set the delivery location to the hub (Amazon and Flipkart: the pincode is enough),
+   Flipkart, Myntra and NEWME. On each, set the delivery location to the hub (Amazon, Flipkart and NEWME: the pincode is enough),
    then close the browser. Do it again if the hub moves. A runner started with `--type` browses with its own copy of
    this profile (made the first time it ran): `pnpm sourcing setup --type food` opens that one.
 
@@ -109,6 +109,27 @@ and a fresh runner claims them; a crash (for example "JavaScript heap out of mem
 To run it every day: Task Scheduler → Create Task → "Daily" at a quiet hour, action `cmd.exe` with arguments
 `/c pnpm sourcing run` and "Start in" `C:\kod\root`, "Run only when user is logged on" (the browser opens
 off-screen).
+
+## NEWME (D-170)
+
+`targets/newme.csv` (Admin → Import → Auto-sourcing → Add targets from a CSV) is 99 rows of 40 listings, each a run of
+pages of one NEWME women's collection: `collection:dresses pages:1-2` reads `newme.asia/womens-collection/dresses?p=1`
+and `?p=2` (30 pieces a page, best sellers first), every page once. The reader (`readers/newme.ts`) reads the pages'
+own data (`__NEXT_DATA__`): each size's price, MRP and stock, the colour, photos, fabric and wash care.
+
+- **Only pieces made in India:** NEWME sells pieces made in India (style codes "NM-IN-…") and in China ("NM-PRC-…").
+  A piece is listed only when its page says "Country of origin: India" (D-004); China pieces are dropped from the
+  results before their page is read, and a page that says nothing is not listed either.
+- **Only sizes that come by tomorrow:** NEWME brings some sizes "by Tomorrow" to the pincode set on the shop and the
+  rest in 12 – 14 days, past the 3-day limit: those sizes count as out of stock, and a piece with no fast size is
+  skipped ("delivery takes 14 days"). Set the hub's pincode on NEWME in every profile you run with (`setup`, and
+  `setup --type clothing`). If every NEWME piece is skipped that way, the pincode is wrong or NEWME has no fast
+  delivery there.
+- One run: after the Deploy workflow has added NEWME's shop row (migration `20261105090000_newme_shop`),
+  `pnpm sourcing try "collection:dresses pages:1" --type clothing --shops newme.asia --listings 5` (nothing written),
+  then `pnpm sourcing run --targets --type clothing --shops newme.asia`.
+
+**Savana** (savana.com) is not a shop: every piece read on 2026-10-31 says "Country of Origin: PRC" (Q-49).
 
 ## When a shop changes
 

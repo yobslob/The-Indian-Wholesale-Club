@@ -91,4 +91,11 @@ export const DEFAULT_SHOPS: SourcingShop[] = [
     product_types: ['clothing'],
     delivery_days: 3,
   },
+  {
+    site: 'newme.asia',
+    label: 'NEWME',
+    reader: 'newme',
+    product_types: ['clothing'],
+    delivery_days: 3,
+  },
 ];

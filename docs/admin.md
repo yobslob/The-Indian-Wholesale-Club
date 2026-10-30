@@ -215,7 +215,11 @@ runner in `tools/sourcing-runner/` (its README says how to set it up on the PC a
   kits, hampers, food and pure silver coins; a state only for a handmade craft the title names (Q-47). D-167:
   `diwali-outfits.csv` is Diwali's clothing (63 targets, up to 860 listings, every name "Diwali: …"), as the Myntra list:
   Myntra, ₹600 – ₹1,600, footwear ₹400 – ₹900: women's, men's and kids' festive wear and 22 state weaves and crafts, a
-  state only for a handloom or hand-made piece whose title names it and never says style, art silk or print (Q-48). Amazon and
+  state only for a handloom or hand-made piece whose title names it and never says style, art silk or print (Q-48). D-170:
+  `newme.csv` is NEWME's India-made women's wear (99 targets × 40, no band): Search words name one of NEWME's
+  collections and its pages, `collection:dresses pages:1-2` (30 pieces a page, best sellers first); only a piece whose
+  page says "Country of origin: India" is listed (NEWME also sells pieces made in China), and only its sizes that come
+  by tomorrow to the pincode set on NEWME. Savana is not a shop: its pieces are made in China (Q-49). Amazon and
   Flipkart searches use the shop's own price filter and read one result page per 10 listings a target wants (up to
   four). Zepto and Instamart are read from their own search answer (one page) and their item pages' data, each pack an
   option (D-152). For a Shopify shop, Search words may name one of its collections, `collection:kurtis`:

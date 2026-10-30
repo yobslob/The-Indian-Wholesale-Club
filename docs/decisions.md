@@ -718,3 +718,36 @@ What it means for the build (migration `20261104090000_home_photos`, admin **Hom
   The grid is Home's own layout (`album-tiles.ts`): drag a photo onto another tile, or pick one and move it earlier,
   later, first or last, then Save order; a picked photo's line can be changed, or the photo removed (its files too).
 *Claude's choices in it (proposed, confirm when convenient):* the 60-photo cap; the line started from the file's name.
+
+**D-170 · 2026-10-31 · founder: Savana and NEWME as sourcing shops, 3,000+ listings** · Savana held by Q-49 (honest origin, D-004)
+- Founder, verbatim (relayed by the session that started this work): "generate a savana scraper(https://www.savana.com/)
+  we have to fill atleast 3k items from here" and "also include https://newme.asia/".
+- **Savana is not added.** Each Savana product page states its origin ("More Information"); all 119 pieces read on
+  2026-10-31, across all 14 of its departments (tops, dresses, bottoms, denim, co-ords, knitwear, lingerie, activewear,
+  curve, accessories, jewellery, bags, beauty, fragrances), say "Country of Origin: PRC", imported into India. IWC
+  says "Made in India" on every piece (D-004, non-negotiable 2), so none of them can be listed. Savana's site also
+  calls itself "Fashion from London". Q-49 asks the founder.
+- **NEWME is added** (migration `20261105090000_newme_shop`, reader `newme`, `readers/newme.ts`). Each NEWME piece
+  states its own country of origin: "NM-IN-…" style codes say India (made for NEWME in Bangalore), "NM-PRC-…" say
+  PRC (checked on 56 pieces: the code and the stated origin always agreed). The runner lists **only a piece whose page
+  says India**; a "PRC" piece or one whose page says nothing is never listed, and PRC pieces are dropped from the
+  search results before any page is read. Clothing only (NEWME sells women's western wear: dresses, tops, T-shirts,
+  bottoms, co-ords, jumpsuits).
+- **Delivery:** each size says whether it comes "by Tomorrow" to the shop's delivery pincode; other sizes take NEWME's
+  usual 12 – 14 days, longer than the runner's 3-day limit, so they count as out of stock. `pnpm sourcing setup`
+  opens NEWME so its pincode is set to the hub's; a piece with no fast size is skipped ("delivery takes 14 days").
+- **Targets:** `tools/sourcing-runner/targets/newme.csv`, 99 rows, 40 listings each, no price band (none was given;
+  the pricing rules are unchanged), each row a run of one collection's pages ("collection:dresses pages:1-2", 30
+  pieces a page, NEWME's best sellers first) so every page is read once. A scan of every fifth page on 2026-10-31
+  found about 3,200 India-made pieces with a size coming by tomorrow (dresses ~750, tops ~1,200, bottoms ~760,
+  T-shirts ~450, co-ords ~160, jumpsuits and bodysuits ~70): 3,000 is close to NEWME's whole India-made catalogue,
+  and pieces skipped on their page (sold out, unreadable) will leave it somewhat under.
+- **Size (D-167's numbers):** about 10 KB a listing in the database and 0.6 MB of photos in R2: 3,000 listings ≈ 30 MB
+  and ≈ 1.8 GB. The database stays far inside its 250 MB budget; **R2 does not**: about 4 GB was in use on 2026-10-19
+  (more since the photo redo), so 1.8 GB more passes the 6 GB budget (`monitoring.md` §1) though not the 9 GB line.
+  Run `pnpm photos:redo audit` before the run and watch R2 → Metrics during it.
+*Claude's choices in it (proposed, confirm when convenient):* origin read from the page itself, never guessed from
+the brand; the "NM-PRC" style code used only to skip pieces early; 2 – 10 pages a row so each row expects about 30 – 40
+India-made pieces; tier 1 for the first 15 pages of each collection; jumpsuits (Co-ords & Dresses) and bodysuits
+(Shirts, Tees & Tops) as two rows over the same 8 pages; NEWME's coupon prices ("Get it at ₹…") never used, only the
+size's own price and MRP.

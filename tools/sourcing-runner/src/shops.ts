@@ -18,6 +18,11 @@ import {
   instamartOffers,
   itemKeyOf,
   myntraSearchOffers,
+  newmeCollection,
+  newmeCollectionUrl,
+  newmePieces,
+  newmeProduct,
+  newmeSearchOffers,
   packVariants,
   refusedWith,
   searchPages,
@@ -210,6 +215,34 @@ const SHOPS: Record<ShopReader, Shop> = {
         return [...offers, ...myntraSearchOffers(await read.myntraProducts(page))];
       }),
     read: capturedRead(),
+  },
+  newme: {
+    // D-170: "collection:dresses pages:1-4", each page its own turn on the lane; a page with nothing on it ends it
+    search: async (lane, query) => {
+      const c = newmeCollection(query);
+      if (!c) return [];
+      const all: Offer[] = [];
+      for (let n = c.from; n <= c.to; n += 1) {
+        const shown = await lane.run(async (page) => {
+          await open(page, newmeCollectionUrl(c.handle, n));
+          const data = await read.nextData(page);
+          if (data === null) throw new Error('the results page did not load');
+          return { offers: newmeSearchOffers(data), pieces: newmePieces(data) };
+        });
+        if (!shown.pieces) break;
+        all.push(...shown.offers.filter((o) => !all.some((x) => x.key === o.key)));
+      }
+      return all;
+    },
+    read: (lane, url, now) =>
+      lane.run(async (page) => {
+        await open(page, url);
+        const piece = newmeProduct(await read.nextData(page), url);
+        return {
+          product: piece?.product ?? null,
+          pageDays: parseDeliveryDays(piece?.deliveryText, now),
+        };
+      }),
   },
   shopify: {
     search: async (lane, query) =>

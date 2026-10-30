@@ -39,6 +39,11 @@ Short on purpose: **replace** lines when something changes, don't append. Histor
   photos** page uploads many at once and moves them on Home's own grid (drag, or earlier / later / first / last).
   Until three are uploaded Home has no mosaic. Deploy the website only after the migration: its admin page reads the
   new table.
+- **NEWME as a sourcing shop (D-170, 2026-10-31, needs the Deploy workflow):** reader `newme` (`readers/newme.ts`,
+  tested on saved pages and on live ones) lists only pieces whose page says "Country of origin: India" and only the
+  sizes that come by tomorrow; `tools/sourcing-runner/targets/newme.csv` (99 rows × 40, every page of NEWME's six
+  women's collections; about 3,200 India-made pieces found). **Savana is not added:** all 119 pieces read say
+  "Country of Origin: PRC" (Q-49).
 - **The founder's storefront touches (2026-10-31, not deployed):** the flight's banner smaller, a light cloth with a
   hairline wine border and wine words; the store tabs stay at the top with the header on every store page (Home too;
   checkout has none); past the free line the pill's saving part is short, four grey dollar signs turning dollar-bill
@@ -145,7 +150,8 @@ Short on purpose: **replace** lines when something changes, don't append. Histor
    pull: `pnpm photos:redo sweep --type clothing` (and `food`, `home`) deletes the PNGs of every finished photo from
    `tools/photo-redo/out` (3.4 GB on 2026-10-30); `pnpm photos:redo audit` then shows what is left in R2.
 1. **Run the Deploy workflow** (Actions → Deploy) for `20261103090000_photo_redo_modes` (D-164) and
-   `20261103100000_sourcing_media_redo` (D-168: until then the runner uploads new photos as they are).
+   `20261103100000_sourcing_media_redo` (D-168: until then the runner uploads new photos as they are), and
+   `20261105090000_newme_shop` (D-170: NEWME's shop row; until then a NEWME target finds no shop).
 2. **The photo redo again, the new way (D-164), after the deploy:** pull the code on the laptop. Then, in order:
    `pnpm photos:redo fetch --type food --again` and `--type home --again` (every photo of each listing is planned now,
    not only the main one); in `tools\photo-worker`, `.venv\Scripts\python -m pip install -r requirements.txt` (the face swap's two packages),
@@ -165,6 +171,13 @@ Short on purpose: **replace** lines when something changes, don't append. Histor
    with `tools/sourcing-runner/targets/diwali-outfits.csv` (63 targets) and on the India PC
    `pnpm sourcing run --targets --type clothing` (its own browser profile, so it can run beside the
    home run in a second terminal).
+   **NEWME (D-170), after the Deploy workflow has run `20261105090000_newme_shop`:** read Q-49 (Savana: made in China,
+   not added). Pull the code on the India PC; `pnpm sourcing setup` and `pnpm sourcing setup --type clothing`, each
+   time setting NEWME's delivery pincode to the hub's (its tab is the last one); then a dry run `pnpm sourcing try "collection:dresses pages:1" --type clothing
+   --shops newme.asia --listings 5`; if it would add pieces, Add targets from a CSV with
+   `tools/sourcing-runner/targets/newme.csv` and `pnpm sourcing run --targets --type clothing --shops newme.asia`.
+   Before it: `pnpm photos:redo audit` on the laptop; 3,000 listings add about 1.8 GB to R2, past the 6 GB budget
+   (with the Blinkit batch below, near the 9 GB line), and about 30 MB to the database.
 4. **The Blinkit 7-day batch (D-148 – D-151).** Upload `tools/sourcing-runner/out/7-day-four-shops.csv` again
    (Admin → Import → Auto-sourcing → Add targets from a CSV): the first upload ran before the new admin was live; the
    message should say "(102 of them now search more shops)". Then on this PC `pnpm sourcing run --targets --type food`
@@ -248,6 +261,7 @@ Short on purpose: **replace** lines when something changes, don't append. Histor
 ## Last verification
 | Date | Commit | Where | Result |
 |---|---|---|---|
+| 2026-10-31 | D-170 NEWME shop (Savana held, Q-49) | Claude Code, the founder's Windows machine (Docker) | `check.mjs docs typecheck lint test` all OK, incl. `newme.test.ts` (10: saved NEWME pages, India-only, fast sizes, `newme.csv` 99 rows covering every page once); runner `tsc` clean. The reader on live NEWME pages (read-only): tops and bottoms read with sizes, prices, fabric, care, photos, origin India, listings complete; a PRC dress refused. Migration `20261105090000_newme_shop` applied on the local database in a transaction and rolled back (`db` step not run). The runner itself not run (no `try`, no browser profile touched). |
 | 2026-10-31 | D-169 Home photos | Claude Code, the founder's Windows machine (Docker; port 3000 free) | `check.mjs typecheck lint docs test build` OK (run after the docs). Migration applied to the local database and `db:types` regenerated (it also picked up D-168's `product_media.redo` columns). In the browser pane, signed in as the local e2e admin: five test pictures chosen at once (lines from their file names), uploaded one by one, shown on the grid in Home's layout (12 tiles, 7 faded repeats); photo 5 moved first and saved, then photo 1 dragged onto tile 3 and saved; Home showed only those five, in that order; a photo removed with its file; all test rows and files removed afterwards. **Not run:** the SQL tests (`db` step), e2e, production (needs the Deploy workflow), a real drag with a mouse and Save line (drag events sent from the page; the window was behind another, so screenshots stalled). |
 | 2026-10-31 | the founder's storefront touches (banner, fixed tabs, dollar signs, no shelf, picture slots) | Claude Code, the founder's Windows machine (Docker; port 3000 free) | `check.mjs typecheck lint docs test build` all OK. In the browser pane on `next dev` at 1280 px: the banner light with a wine hairline and wine words; the pill past the free line with three green and one grey dollar sign before the tag ($24.20 of the saving); the six slots beside their column (493 px wide, from x 746) and none at 390 px, no sideways scroll; the empty bag's slot with the bag emptied for the check, then put back. The local 7-day store has no pieces today, so the tabs were checked with the strip's markup put into the page: at the top on Home after scrolling past the photo (ink strip, ivory tab). **Not run:** the real tabs and the tiles without the shelf on a page (no 7-day pieces locally), e2e, the live site. |
 | 2026-10-30 | D-168 one pipeline for new listings | Claude Code, the founder's laptop (RTX 4060, Docker) | `check.mjs docs typecheck lint test db` all OK (68 SQL files, `auto_sourcing.test.sql` 50 with the marks and `worker_product_wears`). The runner's `Redo` against the real service it started itself on real fetched photos: a clothing listing face + no face → `face`, `fresh` (73 s with the models loading), a listing with a portrait → every photo as it is (9 s), a kids' piece → the face only cut (a portrait here, so as it is), food → `fresh` (0.6 s); the pictures looked at. `tsc` and ESLint for tools/sourcing-runner (its old `home.ts` whitespace error aside). **Not run:** a whole `pnpm sourcing run` adding listings (it touches the shops and production), the migration on production (the Deploy workflow), build, e2e (the website is unchanged). |

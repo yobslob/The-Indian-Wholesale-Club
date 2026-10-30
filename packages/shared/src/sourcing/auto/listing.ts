@@ -22,7 +22,7 @@ import type { ListingVariantPayload, Offer, SourcingShop, SourcingTarget } from 
  */
 
 const SHOP_WORDS =
-  /legal disclaimer|our (app|website|site)|important information|amazon|flipkart|myntra|blinkit|grofers|zepto|bigbasket|big basket|instamart|swiggy|oyela|offduty|nishorama|jiomart|meesho|ajio|nykaa|snapdeal|\bbuy\b|online|cash on delivery|free (shipping|delivery)|deliver(y|ed)|doorstep|replacement|return(s|able)?\b|refund|seller|warranty|genuine products?|best price|lowest price|\bmrp\b|discount|\boffer\b|coupon|in stock|add to cart|https?:\/\/|www\./i;
+  /legal disclaimer|our (app|website|site)|important information|amazon|flipkart|myntra|blinkit|grofers|zepto|bigbasket|big basket|instamart|swiggy|oyela|offduty|nishorama|newme|jiomart|meesho|ajio|nykaa|snapdeal|\bbuy\b|online|cash on delivery|free (shipping|delivery)|deliver(y|ed)|doorstep|replacement|return(s|able)?\b|refund|seller|warranty|genuine products?|best price|lowest price|\bmrp\b|discount|\boffer\b|coupon|in stock|add to cart|https?:\/\/|www\./i;
 
 /** Text without the sentences that speak of the shop, delivery, returns or prices (D-003; IWC's own terms differ). */
 export function sanitizeText(text: string): string {
