@@ -48,6 +48,9 @@ Short on purpose: **replace** lines when something changes, don't append. Histor
   flight (a plane from India towing the free line or Diwali's last day) on Home and the 7-day store, whose front page is
   now an address label with a stamp, the founder's photo, a shelf of categories and a seasonal poster. Three picture
   slots wait for the founder (`apps/web/features/visuals/slots.ts`).
+- **Diwali outfits list (D-167, 2026-10-30, proposed):** `targets/diwali-outfits.csv` (63 clothing targets, up to 860
+  listings, Myntra at ₹600 – ₹1,600 and footwear ₹400 – ₹900 as the Myntra list): women 23, men 11, kids 7, state
+  weaves and crafts 22 (handloom or hand-made pieces that name their craft only). Nothing to deploy.
 - **Diwali list and 7-day sources (D-162, 2026-10-26, proposed, not deployed):** `targets/diwali-home-gifts.csv` (100
   home targets, up to 1,515 listings: 25 on the four quick shops, 36 all-India and 39 state crafts on Amazon and
   Flipkart at ₹1 – ₹900; nothing lit, battery-run, flammable, loose-powdered, cow-dung, feathered or edible). A listing
@@ -140,9 +143,13 @@ Short on purpose: **replace** lines when something changes, don't append. Histor
    Read Q-47 and D-162's choices, then Admin → Import → Auto-sourcing → Add targets from a CSV with
    `tools/sourcing-runner/targets/diwali-home-gifts.csv` (100 targets; pull the code on the India PC first), and on that
    PC `pnpm sourcing run --targets --type home` (the quick-shop rows are tier 1, so they go first). After the Deploy
-   workflow (step 1): `pnpm quick:sources -- --env=C:iwcmove.env --allow-remote` (a dry run: how many listings would be
+   workflow (step 1): `pnpm quick:sources -- --env=C:\iwc\move.env --allow-remote` (a dry run: how many listings would be
    bought from the quick shops instead of a cheaper backup, with both prices), then the same with `--apply`
    (`ops.md` §Sourcing runner, step 5). Publish the new drafts in batches (Products → Drafts).
+   **Diwali outfits (D-167):** read Q-48 (a Myntra piece ordered now arrives after Diwali), then Add targets from a CSV
+   with `tools/sourcing-runner/targets/diwali-outfits.csv` (63 targets) and on the India PC
+   `pnpm sourcing run --targets --type clothing` (its own browser profile, so it can run beside the
+   home run in a second terminal).
 4. **The Blinkit 7-day batch (D-148 – D-151).** Upload `tools/sourcing-runner/out/7-day-four-shops.csv` again
    (Admin → Import → Auto-sourcing → Add targets from a CSV): the first upload ran before the new admin was live; the
    message should say "(102 of them now search more shops)". Then on this PC `pnpm sourcing run --targets --type food`
@@ -174,7 +181,7 @@ Short on purpose: **replace** lines when something changes, don't append. Histor
    `CHECK_LIVE_SITE`, a free uptime ping), then the Monday 15 minutes it lists.
 8. **Products → For: not set yet** (235 clothing listings on the production copy): Women / Men / Kids / Everyone.
 9. **Settings → Bag charges → "Shipping shown when free"** ($ a kg; empty keeps $18.79 struck).
-10. **Answer:** Q-47 (the Diwali list's bands, coins, dry-fruit boxes, quick shop over a cheaper backup), Q-45 (festivals for the clock), Q-46 (the courier: nothing to pay at the door?); read D-161's words and
+10. **Answer:** Q-48 (the Diwali outfits: now or later, Kids rows, handloom states), Q-47 (the Diwali list's bands, coins, dry-fruit boxes, quick shop over a cheaper backup), Q-45 (festivals for the clock), Q-46 (the courier: nothing to pay at the door?); read D-161's words and
    change any line you would say differently; Q-36 (courier bills by size?), Q-37 (lights, gobar, powders), Q-38 (live Kids listings), Q-39 (interim
    size line), Q-40 (footwear in the drawer), Q-42 (the Blinkit CSV's band and
    leave-outs); approve D-148's drafted words (the 7-day page, the tag, the bag and product-page lines); whether ghee and honey sold by the litre count as liquids (D-135 says
@@ -226,6 +233,7 @@ Short on purpose: **replace** lines when something changes, don't append. Histor
 ## Last verification
 | Date | Commit | Where | Result |
 |---|---|---|---|
+| 2026-10-30 | D-167 Diwali outfits list | Claude Code, founder's Windows machine (`check.mjs docs typecheck lint test`) | docs, typecheck, lint, test OK (shared 358 pass, incl. the new `diwali-outfits.test.ts`: all 63 rows upload with Myntra, ₹600 – ₹1,600 and footwear ₹400 – ₹900; adult, kids and state rows tried on sample titles). Also fixed: the `quick:sources` command in `ops.md` and here had lost its backslashes. **Not run:** the CSV upload and a runner search on Myntra. |
 | 2026-10-30 | the founder's six storefront fixes (bag goal, flight, state clicks, 7-day lines, tab switch) | Claude Code, the founder's Windows machine (Docker; port 3000 free) | `check.mjs docs typecheck lint test` OK (shared tests 354 with the bag goal's new cases), build OK. e2e 35 passed, 4 failed, then on a second run 34 passed, 5 failed: every failure at checkout's Payment with Stripe's card frame left blank (the order priced, the frame empty), a different set each run; checkout is not touched here. In the browser pane on a local production build (8 local listings made 7-day for the test, then put back): the founder's case (a $75.99 piece and a $39 7-day piece, the first taken out) now shows the 7-day line from the first frame (before: the $149.99 line until the answer came); past the line the bar stays full and the saving part fills ($1.40, then $24.20 at 97%); the page load no longer says "Coming home"; the flight at 1280 and 375 px, steady (about 65 units a second), held off screen and resumed at the same point; a stamp and a map tap open the state with the top line; the 7-day header without its two lines; the IWC tab back to `/food`. Live site (read only): page data stalled 7 – 10 s at times, even cache hits, while Home's photos and the header's five reads ahead loaded; a stamp click waited over 6 s with nothing on screen. **Not run:** e2e green, `db`, `http`, `bundle`, the app on a phone, the live site after a deploy, frame timings on a phone (the pane draws about once a second). |
 | 2026-10-30 | e2e fix and storage clean-up (after D-166) | Claude Code, the founder's Windows machine (Docker; port 3000 free) | `node scripts/check.mjs`, every step OK: docs 0.9 s, typecheck 40.3 s, lint 87.1 s, test 5.9 s, db 67.5 s, build 65.9 s, http (/ 14 ms 135 KB, /clothing 17 ms 139 KB, /search?q=saree 73 ms), e2e 39 passed (before the fix `seven-day-bag.spec.ts` failed: the bag's charges restored from the tab after a page load came without the bag's moment, so the first change after it never said "Your 7-day pieces now arrive by"), bundle OK. The redo's sweep on a scratch work folder with stand-ins for the database and R2: the due old copies deleted, finished photos' PNGs gone, a waiting and a not-yet-due one kept; `tsc` and ESLint for tools/photo-redo after the last change. **Not run:** anything against production (R2, the hosted database), the runner's and the redo's new clean-up paths against a real failure, `redo.py` (only parsed). |
 | 2026-10-30 | D-166 faster cards, endless scroll, the tabs' names, pictures not text | Claude, cloud sandbox (no npm) and the founder's PC through the desktop link (its node_modules read from a Linux shell) | typecheck OK: `tsc --noEmit` for apps/web, packages/shared and packages/db on the committed files (a planted type error was caught, so the check was real). `homesick.test.ts` 3/3 and `bag-shipments`, `bag-goal` (19 with the homesick file) under node's own TypeScript; every changed .ts/.tsx file parses (TypeScript's transpiler); `docs-audit` OK. The flight and the door label rendered from the real components with React's server renderer and shot in Chromium at 1280 and 390 px (parked, and mid-flight with the stitch sewn behind the plane); `INDIA_OUTLINE` traced from the map's states and checked by eye. **Not run:** ESLint (its plugins would not load from the shell), web tests, build, http, e2e (`rows.spec.ts` and `seven-day-bag.spec.ts` changed for the endless scroll and the tabs), bundle. Run `node scripts/check.mjs` before pushing. |

@@ -656,3 +656,29 @@ What it means for the build (2026-10-30, website; not deployed):
   site; to fill one, put the file in `apps/web/public/visuals/` and set its `src` and `alt`.
 *Claude's choices in it (proposed, confirm when convenient):* the address label, the stamp, the shelf and the
 three picture slots; the banner's words; the flight's place on Home (under the album, above Pick your home).
+
+**D-167 · 2026-10-30 · proposed: the Diwali outfits list**
+- Founder, verbatim (relayed by the session that started this work): "give me a csv to run for diwali outfits".
+- What it means: `tools/sourcing-runner/targets/diwali-outfits.csv`, 63 clothing targets (up to 860 listings with
+  their colours and sizes), every name "Diwali: …" so none is skipped as a target already there. Built as
+  `myntra-600-1600.csv` is (D-121, D-122): Myntra only, ₹600 – ₹1,600, footwear ₹400 – ₹900, 10 – 25 listings a row.
+  Women (23): festive, silk, embroidered and anarkali kurta sets, sharara sets, salwar suits, gowns, co-ords, festive
+  kurtas, silk, sequinned, organza and ready-to-wear sarees, blouses, lehengas, dupattas, bandhani, jackets, potlis,
+  jhumkas, juttis and mojaris, kolhapuris. Men (11): kurta pyjama sets, with Nehru jacket, silk kurtas, Nehru jackets and
+  bandhgalas, sherwanis, indo-western, dhoti kurta, pathani, silk veshtis, mojaris, kolhapuris. Kids (7, category Kids).
+  State weaves and crafts (22). Tested in `packages/shared/tests/diwali-outfits.test.ts`.
+*Claude's choices in it (proposed, confirm before uploading, Q-48):* an adult row leaves out the other wearer and
+children's titles, and a set row leaves out unstitched dress material; the store reads who a piece is for from its
+name (D-140). A state goes only to a piece whose title names the weave or craft **and** says handloom (or hand
+embroidered / handmade for chikankari, Phulkari, Kutch work and footwear), and never says style, inspired, art silk,
+synthetic, polyester, print, digital, replica or look: a ₹1,000 "Banarasi" or "Kanjeevaram" is usually woven elsewhere,
+which is why the Myntra list keeps those all-India ("Banarasi-style", D-121). Weaves made in more than one state
+(bandhani, ajrakh, kolhapuri, kantha, kalamkari prints) stay all-India; Dhakai jamdani is left out (Bangladesh's).
+The state rows: Banarasi sarees and dupattas, Lucknowi chikankari kurtas and sets (Uttar Pradesh), Kanjeevaram (Tamil
+Nadu), Chanderi and Maheshwari (Madhya Pradesh), kasavu (Kerala), Pochampally, Narayanpet and Gadwal (Telangana),
+Mangalagiri (Andhra Pradesh), Sambalpuri and Bomkai (Odisha), tant and jamdani (West Bengal), Paithani (Maharashtra),
+Ilkal (Karnataka), mekhela chador (Assam), Kota doria, leheriya and mojaris (Rajasthan), Phulkari and juttis (Punjab),
+Kutch work (Gujarat); inside ₹1,600 genuine handlooms are few, so these rows may find little. Timing: Myntra pieces
+travel in the standard window (Settings: 12 – 16 days), so one ordered on 2026-10-31 arrives about 12 – 16 November,
+after Diwali (8 November); none of this list can be a 7-day piece. Size: about 10 KB a listing in the database (up to
+9 MB) and 0.6 MB in R2 (up to 0.5 GB), inside the budgets (`monitoring.md`); a bulk publish refreshes the store once.

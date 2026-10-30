@@ -211,7 +211,10 @@ runner in `tools/sourcing-runner/` (its README says how to set it up on the PC a
   `diwali-home-gifts.csv` is Diwali's home & gifts (100 targets, up to 1,515 listings, every name "Diwali: …"): 25 on
   the four quick shops (7-day pieces, no band), 36 all-India and 39 state crafts on Amazon and Flipkart (₹1 – ₹900); Must
   match leaves out lit, battery and plug pieces, fireworks, camphor, matches, cow dung, feathers, loose colours, samagri
-  kits, hampers, food and pure silver coins; a state only for a handmade craft the title names (Q-47). Amazon and
+  kits, hampers, food and pure silver coins; a state only for a handmade craft the title names (Q-47). D-167:
+  `diwali-outfits.csv` is Diwali's clothing (63 targets, up to 860 listings, every name "Diwali: …"), as the Myntra list:
+  Myntra, ₹600 – ₹1,600, footwear ₹400 – ₹900: women's, men's and kids' festive wear and 22 state weaves and crafts, a
+  state only for a handloom or hand-made piece whose title names it and never says style, art silk or print (Q-48). Amazon and
   Flipkart searches use the shop's own price filter and read one result page per 10 listings a target wants (up to
   four). Zepto and Instamart are read from their own search answer (one page) and their item pages' data, each pack an
   option (D-152). For a Shopify shop, Search words may name one of its collections, `collection:kurtis`:
