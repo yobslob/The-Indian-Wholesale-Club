@@ -57,6 +57,12 @@ face swap `faceswap\` (about 1.2 GB, FaceFusion's GitHub releases `facefusion/fa
 hyperswap_1a_256.onnx`, `models-3.0.0/inswapper_128_fp16.onnx`, `arcface_w600k_r50.onnx`, `gfpgan_1.4.onnx`). It logs
 to the console and `redo.log`.
 
+## Photo redo service (D-168)
+`redo_serve.py` is the same work as a service on http://127.0.0.1:4318 for the sourcing runner: `pnpm sourcing run`
+starts it when it is not running and sends each new listing's photos before uploading them (`tools/sourcing-runner`
+README). It lets the GPU go after 10 idle minutes and ends after 30; its log is `serve.log` (`serve.log.1` past 5 MB).
+To run it by hand: `.venv\Scripts\python redo_serve.py`.
+
 ## House models (D-104)
 The founder supplies them: 6 women and 4 men, AI-generated and licensed, each one image with two poses side by side
 (facing front; from behind with the head turned). `prepare_house_model.py <image> <slug>` splits it into

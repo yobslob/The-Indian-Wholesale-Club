@@ -178,7 +178,7 @@ async function tryCandidate(
   const added = await ctx.db.add(target.id, listing);
   for (const v of listing.variants) ctx.known.add(`${listing.site}|${v.item_key}`);
   if (!added.created) return `${c.best.site}: already listed`;
-  const media = await copyPhotos(ctx, added.product_id, draft.photos, listing.page_url);
+  const media = await copyPhotos(ctx, added.product_id, target.product_type, draft.photos, listing.page_url);
   const published = media.length
     ? await ctx.db.media(added.product_id, media, draft.complete).catch(async (error: unknown) => {
         // the copies would stay in the photo store with no listing showing them
@@ -186,6 +186,8 @@ async function tryCandidate(
         throw error;
       })
     : { published: false, note: 'no photo could be copied' };
+  if (media.some((m) => m.redo) && !('redo' in published && published.redo))
+    ctx.redo?.stop('the database kept no marks: run the Deploy workflow (migration 20261103100000)');
   // D-135: a liquid is not sent: archived, shown to customers as coming soon
   if (draft.liquid)
     await ctx.db.setLiquids([{ product_id: added.product_id, liquid: true, note: draft.liquid }]);

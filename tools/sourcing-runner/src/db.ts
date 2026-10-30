@@ -116,14 +116,20 @@ export class Db implements FoodPassDb {
 
   media(
     product: string,
-    media: { path: string; alt_text: string; item_key?: string }[],
+    media: { path: string; alt_text: string; item_key?: string; redo?: 'face' | 'fresh' }[],
     publish: boolean,
   ) {
-    return this.rpc<{ published: boolean; note: string | null }>('worker_sourcing_media', {
+    // `redo`: true once the database keeps the photos' marks (D-168, migration 20261103100000)
+    return this.rpc<{ published: boolean; note: string | null; redo?: boolean }>('worker_sourcing_media', {
       p_product: product,
       p_media: media,
       p_publish: publish,
     });
+  }
+
+  /** Who a new clothing listing is for (its trigger reads the name or category; D-102); null when not known. */
+  wears(product: string): Promise<string | null> {
+    return this.rpc<string | null>('worker_product_wears', { p_product: product });
   }
 
   /**

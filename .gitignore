@@ -114,3 +114,5 @@ tools/weight-estimator/food-weights-before.jsonl
 # photo redo (D-163): the work folder and its log
 tools/photo-redo/redo.log*
 tools/photo-worker/redo.log*
+# the photo redo service for the sourcing runner (D-168): its log
+tools/photo-worker/serve.log*

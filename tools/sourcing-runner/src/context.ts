@@ -1,6 +1,7 @@
 import type { Db } from './db';
 import type { Lanes } from './lanes';
 import type { ShopStats } from './log';
+import type { Redo } from './redo';
 import type { SourcingPlan, SourcingShop } from '@repo/shared/sourcing/auto';
 
 /** Everything a run shares. `db` is null on a dry run (`try`): nothing is written. */
@@ -11,6 +12,8 @@ export interface RunContext {
   stats: ShopStats;
   known: Set<string>;
   now: Date;
+  /** D-168: new photos made again before upload (`run` only); absent or null: they go up as they are. */
+  redo?: Redo | null;
 }
 
 export const shopOf = (ctx: RunContext, site: string): SourcingShop | undefined =>

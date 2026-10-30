@@ -1,7 +1,9 @@
 # Photo redo (D-163, D-164)
 
 Makes every listing's photos again on the founder's laptop (RTX 4060): no shop model's face reaches the store, and
-every other photo gets a small change of its own. This tool does everything but the image work, which is
+every other photo gets a small change of its own. Listings the sourcing runner adds from D-168 on come with their
+photos already made again (`tools/sourcing-runner` README); this tool is for the listings from before, and for a new
+clothing listing with a portrait (it waits here for your call). This tool does everything but the image work, which is
 `tools/photo-worker/redo.py`. Nothing runs on Vercel.
 
 | Step | Command (from `C:\kod\root`) | Uses |

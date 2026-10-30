@@ -14,6 +14,7 @@ import { checkLiquids } from './liquids';
 import { errorText, log, setLogTag, ShopStats } from './log';
 import { heapFull, heapText, isChild, keepRunning, RESTART_CODE } from './memory';
 import { describeNetError, resolveOverHttps } from './net';
+import { Redo } from './redo';
 import { fillWeights } from './weights';
 
 import type { ProductType } from '@repo/shared/domain';
@@ -153,6 +154,8 @@ async function run(args: string[]): Promise<number> {
     stats: new ShopStats(),
     known: new Set(plan.known),
     now: started,
+    // D-168: only a run that adds listings needs the photo redo service
+    redo: targets.length ? await Redo.start(db) : null,
   };
   let added = 0;
   let errors = 0;

@@ -19,6 +19,7 @@ and the admin sees the last run's date in **Admin → Import → Auto-sourcing**
 | `src/pages.ts`   | what is read inside a shop's page                                                       |
 | `src/browser.ts` | the browser profile and one lane per shop (pages one after another, shops side by side) |
 | `src/photos.ts`  | copies a new listing's photos into IWC's storage, each picture once (D-142)             |
+| `src/redo.ts`    | new photos made again before upload by the photo redo service (D-168)                   |
 | `src/db.ts`      | the worker's database functions and photo uploads                                       |
 
 The matching, delivery, variant and listing rules are in `packages/shared/src/sourcing/auto` (tested there).
@@ -65,6 +66,14 @@ pnpm sourcing try "kurta set women" --type clothing --shops myntra.com --min 600
                                                  the same for one shop and a price band (D-121)
 pnpm sourcing doctor           tests the road to IWC's database and the worker sign-in
 ```
+
+**New listings' photos are made again before they go up (D-168):** a run that adds listings starts the photo redo
+service on this laptop (`tools/photo-worker/redo_serve.py`, needs the photo worker's `.venv`) and sends it each new
+listing's photos; they go up changed and marked, so `pnpm photos:redo` never needs them. Food and home: every refreshed
+photo. Clothing: the whole listing (faces swapped or cut at the chin), unless a photo is a portrait or fails: then
+the listing goes up as it is and waits for the review page. Without the service, with `IWC_SOURCING_REDO=off`, or
+before the Deploy workflow has run migration `20261103100000`, photos go up as they are (the log says why).
+
 
 Indian ISPs have answered Supabase's addresses wrongly before (Jio, Airtel and ACT in early 2026; Node says only
 "fetch failed"). When the normal road fails, the runner looks Supabase up over HTTPS at Cloudflare or Google and
