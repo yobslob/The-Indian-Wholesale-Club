@@ -28,7 +28,9 @@ import { nameProposals } from '../names/proposals';
  * `finishBulkAction` refreshes the store once (one whole-store refresh, not one per batch: D-145).
  */
 
-type Step<T> = { ok: true; value: T } | { ok: false; error: string };
+const ASSIGN_MOST = 600;
+
+type Step<T> ={ ok: true; value: T } | { ok: false; error: string };
 
 async function step<T>(name: string, run: () => Promise<T>): Promise<Step<T>> {
   try {
@@ -45,7 +47,16 @@ export async function assignWeightsStepAction(): Promise<Step<AssignResult & { l
   return step('assign', async () => {
     const plan = weightPlanSchema.parse(await weightPlan(client, 40));
     if (plan.rows.length === 0) return { ruled: 0, similar: 0, usual: 0, listings: 0, left: 0 };
-    const result = await assignWeights(client, ruleWeights(plan.rows));
+    // admin_assign_weights takes up to 600 options a call: 40 of Savana's pieces, a colour by a size each, came to
+    // more and every press failed (2026-10-31), so the options go in calls of 600
+    const items = ruleWeights(plan.rows);
+    const result: AssignResult = { ruled: 0, similar: 0, usual: 0 };
+    for (let i = 0; i < items.length; i += ASSIGN_MOST) {
+      const r = await assignWeights(client, items.slice(i, i + ASSIGN_MOST));
+      result.ruled += r.ruled;
+      result.similar += r.similar;
+      result.usual += r.usual;
+    }
     return { ...result, listings: plan.rows.length, left: Math.max(plan.left - plan.rows.length, 0) };
   });
 }
