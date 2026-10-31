@@ -18,13 +18,38 @@ import type { Metadata } from 'next';
 
 type Params = Promise<{ region: string }>;
 
+/** A state page's reads, all cached: its head, the policy and its first type's first 24 cards (D-157). */
+async function regionReads(slug: string) {
+  const page = await getRegionHeadCached(slug);
+  if (!page) return null;
+  const counts = page.type_counts;
+  // Clothing, or the first type the state has
+  const firstType = PRODUCT_TYPES.find((t) => counts[t] > 0) ?? 'clothing';
+  const query = inStatePage(parseBrowseQuery({}), slug);
+  const [policy, initial] = await Promise.all([
+    getStorePolicyCached(),
+    page.region.is_live && counts[firstType] > 0
+      ? browseStateCached({ ...toBrowseFilter(firstType, query, 0, PAGE), regionSlug: slug })
+      : null,
+  ]);
+  return { page, firstType, query, policy, initial };
+}
+
 /** The 36 region pages are built ahead of time and refreshed from the cache (PR-1). */
 export async function generateStaticParams(): Promise<{ region: string }[]> {
-  // This step has no retry: a busy database here failed the whole deploy (2026-10-31, statement timeout while the
-  // sourcing runner was adding listings). Then the 36 pages are built on their first visit instead, as 7-day's are.
+  // A page that fails to build fails the whole deploy, with no way to skip it: a busy database did so twice on
+  // 2026-10-31 (statement timeouts while the sourcing runner was adding listings). So each page's reads are made here
+  // first, four states at a time, which fills the cache its build then reads; a state whose reads fail is left out and
+  // built on its first visit instead, as 7-day's categories are.
   try {
     const { regions } = await getHomeCached();
-    return regions.map((r) => ({ region: r.slug }));
+    const built: { region: string }[] = [];
+    for (let i = 0; i < regions.length; i += 4) {
+      const group = regions.slice(i, i + 4);
+      const read = await Promise.all(group.map((r) => regionReads(r.slug).then(() => true, () => false)));
+      built.push(...group.filter((_, j) => read[j]).map((r) => ({ region: r.slug })));
+    }
+    return built;
   } catch {
     return [];
   }
@@ -36,23 +61,15 @@ export async function generateMetadata({ params }: { params: Params }): Promise<
 }
 
 export default async function RegionPage({ params }: { params: Params }): Promise<React.JSX.Element> {
-  const page = await getRegionHeadCached((await params).region);
-  if (!page) notFound();
+  const reads = await regionReads((await params).region);
+  if (!reads) notFound();
+  const { page, firstType, query, policy, initial } = reads;
   const { region, album, most_wanted: mostWanted, curated, type_counts: counts } = page;
   const slugOf = (type: ProductType): string => PRODUCT_TYPE_PATH[type].slice(1);
   const tabs = PRODUCT_TYPES.map((t) => ({ slug: slugOf(t), label: PRODUCT_TYPE_LABEL[t], count: counts[t] }));
-  // Clothing, or the first type the state has
-  const firstType = PRODUCT_TYPES.find((t) => counts[t] > 0) ?? 'clothing';
   // D-157: the first type's inventory as See all draws it, the state fixed: its first 24 cards and filter counts, one
   // cached store_browse() read refreshed with the state (a sale shows Sold out here at once); the other types are read
   // when opened (region-type-tabs.tsx), so building the 36 state pages reads one inventory each
-  const query = inStatePage(parseBrowseQuery({}), region.slug);
-  const [policy, initial] = await Promise.all([
-    getStorePolicyCached(),
-    region.is_live && counts[firstType] > 0
-      ? browseStateCached({ ...toBrowseFilter(firstType, query, 0, PAGE), regionSlug: region.slug })
-      : null,
-  ]);
   const quickDays = policy.quick_delivery_on ? policy.quick_delivery_days_max : null;
   const firstView =
     initial && initial.total > 0 ? (
