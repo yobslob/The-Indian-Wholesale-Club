@@ -818,3 +818,41 @@ given (no conversion).
 - What it means: `slots.ts`'s 7-day hero, 7-day poster, Home poster and Sign in are empty again (as before D-172: nothing
   on the live site, a labelled frame on local and preview builds). Page not found and the empty bag keep their photos.
   The four photo files stay in `apps/web/public/visuals/` (the founder's files), unused.
+
+**D-174 · 2026-10-31 · founder: Home's flight becomes a row of Diwali windows, the plane flying inside one** · Changes D-161's "no banners" for Home's band
+- Founder, verbatim: "My website currently has this section between the global horizontal home page grid and the map
+  with states. I want to convert this into an ad/banner types component (where creative hooks like Host your Diwali
+  under $99, Clothing starting from $19, snacks starting from $0.99, Get snacks from your neighbourhood, Sorry for being
+  this good, Diwali decoration types arch windows for each category, basically banners) I want you to get very creative,
+  think out of the box yet don't overcomplicate, we can show this airplane flying inside somewhere the card as currently
+  it is taking the whole row."
+- What it means: on Home, between the album and Pick your home, a toran over one row (`features/home/diwali-windows.tsx`):
+  a wide Diwali night ("Host your Diwali under $99.", Diwali's date from `FESTIVALS`, Shop under $99 →
+  /home-and-gifts?max=99, string lights, two fireworks and the flight in light colours, `Flight compact`), then three
+  pointed arch windows, each with a line drawing and a diya on the sill: Clothing starting from $19 (/clothing),
+  Snacks starting from $0.99 (/food?category=snacks-and-namkeen) with the chit "Sorry for being this good.", and "Get
+  snacks from your neighbourhood" (→ Pick your home just below). Desktop one row, tablet the night over the arches,
+  phones a row that swipes. The 7-day store keeps the full-width flight. The words and prices are the founder's
+  (`diwali-hooks.ts`); each "from" opens a See all page that lists low to high (D-144).
+- *Interpretation (proposed, confirm):* the arches' "from" prices are the founder's figures, not read from the
+  catalogue; the founder keeps them true. The wide window is seasonal: its words change after Diwali (Nov 8).
+
+**D-175 · 2026-10-31 · founder: a photo slot in each Diwali window; the arches' prices $11.45 and $0.39** · Changes D-174's prices
+- Founder, verbatim: "Yes it is good design, Leave image placeholders in it where I can Insert my photos one photo per
+  card, clothing starting from $11.45 and snacks starting from $0.39. start building".
+- What it means: four new slots in `features/visuals/slots.ts` (`diwali-night` 1200 × 1000, `diwali-clothing`,
+  `diwali-snacks`, `diwali-nearby` 1000 × 820), filled the usual way (file in `public/visuals/`, `src`, `alt`). In an
+  arch the photo fills the top, cut to the window's shape and fading into its colour, and replaces the line drawing;
+  on the night it fills the right side, fading into the wine on its left and bottom, under the lights, fireworks and
+  flight. While a slot is empty: a small labelled frame on local and preview builds; on the live site the window
+  shows its drawing as before. Clothing starting from $11.45, Snacks starting from $0.39 (`diwali-hooks.ts`).
+
+**D-176 · 2026-10-31 · founder: the Diwali windows get the founder's photos and a quiet button each**
+- Founder, verbatim: "I added the photos with the names set src with alt (also give cta in these banners, very
+  aesthetic button minimilistics, which takes them to respective pages) then commit and push(all changes even from
+  other sessions), then I will run a deploy".
+- What it means: `slots.ts` points the four Diwali slots at the founder's files (`diwali-night.jpg`,
+  `diwali-clothing.jpg`, `diwali-snacks.jpg`, `snacks-nearby.jpg`), each with its own size and a line of alt text.
+  Each window gets a button: small spaced capitals and an arrow in a hairline ring that fills on hover (Shop under $99
+  on the night, a real link; Shop clothing, Shop snacks and Find your state in the arches, drawn inside the arch's own
+  link so the whole window stays the target).

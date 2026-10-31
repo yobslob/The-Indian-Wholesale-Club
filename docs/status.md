@@ -36,8 +36,10 @@ Short on purpose: **replace** lines when something changes, don't append. Histor
   listing's photos again on the laptop's GPU before uploading them (food and home refreshed, clothing faces swapped or
   cut, a listing with a portrait left for the review page), so `pnpm photos:redo` is only for older listings.
 - **Diwali windows on Home (D-174, 2026-10-31):** the full-width flight gave way to a toran over a Diwali night (the
-  plane flying inside it) and three arch windows (Clothing from $19, Snacks from $0.99, Get snacks from your
-  neighbourhood); the 7-day store keeps its flight. Seasonal: change `features/home/diwali-hooks.ts` after Nov 8.
+  plane flying inside it) and three arch windows (Clothing from $11.45, Snacks from $0.39, Get snacks from your
+  neighbourhood), each with the founder's photo (D-175, D-176, `slots.ts`) and a button (Shop under $99, Shop clothing,
+  Shop snacks, Find your state); the 7-day store keeps its flight. Seasonal: change `features/home/diwali-hooks.ts`
+  after Nov 8.
 - **Home photos (D-169, 2026-10-31, needs the Deploy workflow):** Home's drifting mosaic shows only the founder's own
   photos (`home_photos`, migration `20261104090000_home_photos`), no state album or listing photo; the admin's **Home
   photos** page uploads many at once and moves them on Home's own grid (drag, or earlier / later / first / last).

@@ -13,9 +13,12 @@ import { US_MAP } from './us-map';
 export function Flight({
   free,
   festival,
+  compact = false,
 }: {
   free: string | null;
   festival: 'quick' | 'any';
+  /** Inside a card (Home's Diwali window, D-174): the phone drawing at every width, so the banner stays readable. */
+  compact?: boolean;
 }): React.JSX.Element {
   return (
     <section aria-label="From India to your door" className="flight-band">
@@ -25,7 +28,7 @@ export function Flight({
           <path d={US_MAP.border} className="flight-us-border" vectorEffect="non-scaling-stroke" />
         </symbol>
       </svg>
-      <FlightArt free={free} festival={festival} />
+      <FlightArt free={free} festival={festival} compact={compact} />
     </section>
   );
 }

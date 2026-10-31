@@ -103,11 +103,14 @@ function Drawing({ art, words, className }: { art: Art; words: string; className
 export function FlightArt({
   free,
   festival,
+  compact = false,
 }: {
   /** "Free delivery from $49.99", from the store's policy; null hides it. */
   free: string | null;
   /** Which days the festival's last order day counts from: the 7-day store's, or any store's (Home). */
   festival: 'quick' | 'any';
+  /** The narrow drawing only (flight.tsx). */
+  compact?: boolean;
 }): React.JSX.Element | null {
   const days = useDays();
   const now = useToday();
@@ -131,8 +134,14 @@ export function FlightArt({
   if (!words) return null;
   const art = (
     <div ref={box} className="flight" data-on={on ? '' : undefined}>
-      <Drawing art={NARROW} words={words} className="sm:hidden" />
-      <Drawing art={WIDE} words={words} className="hidden sm:block" />
+      {compact ? (
+        <Drawing art={NARROW} words={words} className="" />
+      ) : (
+        <>
+          <Drawing art={NARROW} words={words} className="sm:hidden" />
+          <Drawing art={WIDE} words={words} className="hidden sm:block" />
+        </>
+      )}
     </div>
   );
   return href ? (

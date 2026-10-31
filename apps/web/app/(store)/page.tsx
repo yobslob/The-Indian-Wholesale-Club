@@ -4,17 +4,17 @@ import { PAGE } from '@/features/catalog/browse-query';
 import { getHomeCached, getStorePolicyCached, quickPageCached } from '@/features/catalog/data';
 import { ProductRow } from '@/features/catalog/product-row';
 import { DeliveryBand } from '@/features/home/delivery-band';
+import { DiwaliWindows } from '@/features/home/diwali-windows';
 import { HomeHero } from '@/features/home/home-hero';
 import { JustListed } from '@/features/home/just-listed';
 import { PickHome } from '@/features/regions/pick-home';
 import { RegionAlbum } from '@/features/regions/region-album';
-import { Flight } from '@/features/visuals/flight';
 import { VisualSlot } from '@/features/visuals/visual-slot';
 import { QUICK_HOME } from '@/lib/site';
 
 /**
  * Home (storefront.md, storefront.md §Direction, D-050 – D-055, D-113): the photo hero, the album of all of India (the
- * region pages' drifting mosaic), the flight (founder 2026-10-30), Pick your home, the founder's wide picture (slots.ts), then Just listed (a row per type with its See all, D-062, D-140).
+ * region pages' drifting mosaic), the Diwali windows with the flight inside (D-174), Pick your home, the founder's wide picture (slots.ts), then Just listed (a row per type with its See all, D-062, D-140).
  * One cached store_home() call (PR-1, PR-2). Runs edge to edge (data-bleed); sections keep the gutter. D-154: while the
  * 7-day store is open, one row "Arrives in 7 days" before Just listed (the 7-day page's cached first page, refreshed
  * with Home when listings change).
@@ -30,14 +30,9 @@ export default async function HomePage(): Promise<React.JSX.Element> {
 
       <div className="px-[var(--gut)]">
         <RegionAlbum photos={home.album} regionName="India" reveal />
-        {/* founder 2026-10-30: the plane from India with its banner (the free line, or a festival's last order day) */}
-        <Flight
-          free={
-            home.band?.free_min_cents
-              ? `Free delivery from ${formatUsd(home.band.free_min_cents)}`
-              : null
-          }
-          festival="any"
+        {/* D-174: the Diwali windows, the plane from India flying inside the wide one */}
+        <DiwaliWindows
+          free={home.band?.free_min_cents ? `Free delivery from ${formatUsd(home.band.free_min_cents)}` : null}
         />
       </div>
 

@@ -79,6 +79,41 @@ export const SLOTS = {
     height: 981,
     brief: 'Beside an empty bag: an empty steel thali with its katoris on a table, waiting to be filled.',
   },
+  // D-175 (founder 2026-10-31: "Leave image placeholders in it where I can Insert my photos one photo per card"): the
+  // Diwali windows on Home (diwali-windows.tsx), the founder's photos since 2026-10-31. Cropped to fill; while empty the
+  // window shows its drawing.
+  'diwali-night': {
+    src: '/visuals/diwali-night.jpg',
+    alt: 'Two friends laughing at a Diwali party, one feeding the other a sweet.',
+    width: 1080,
+    height: 1350,
+    brief:
+      'The wide Diwali window: a balcony or doorway at night, diyas and fairy lights, people in festive clothes. Fills the card\'s right side, fading into the wine on its left and bottom (keep the subject right of centre).',
+  },
+  'diwali-clothing': {
+    src: '/visuals/diwali-clothing.jpg',
+    alt: 'A woman in gold and silver glass bangles, her wrists crossed over her eyes.',
+    width: 736,
+    height: 970,
+    brief:
+      'The Clothing arch: a kurta or saree up close, or someone wearing one, warm light. Fills the arch\'s top, its bottom fading into saffron.',
+  },
+  'diwali-snacks': {
+    src: '/visuals/diwali-snacks.jpg',
+    alt: 'Lit diyas round a bowl of flowers, with plates of kaju katli, namkeen and chocolates.',
+    width: 736,
+    height: 1275,
+    brief:
+      'The Snacks arch: namkeen, bhujia or chips spilling on a table, or a paper cone of bhel. Fills the arch\'s top, fading into green.',
+  },
+  'diwali-nearby': {
+    src: '/visuals/snacks-nearby.jpg',
+    alt: 'A packet of Maggi masala noodles beside a steaming bowl of them.',
+    width: 1200,
+    height: 1499,
+    brief:
+      'The neighbourhood arch: a small kirana shop front or a mohalla lane at dusk. Fills the arch\'s top, fading into cream.',
+  },
   'not-found': {
     src: '/visuals/not-found.jpg',
     alt: 'Embroidered lehengas and festive outfits hanging on a rail in a boutique.',
