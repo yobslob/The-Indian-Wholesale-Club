@@ -2,7 +2,8 @@
  * The pictures the founder fills in (founder 2026-10-30: "You don't have to generate images just leave a placeholder
  * there and I will fill."). To fill one: put the file in apps/web/public/visuals/ (AVIF, WebP or JPEG) and set its `src`
  * ("/visuals/seven-day-hero.jpg"), `alt`, and its width and height (the photo's own, so it is not cropped; the wide
- * posters keep 3:1 and show the middle of a taller photo). Filled by the founder on 2026-10-31. Until then the slot shows a labelled frame on local and
+ * posters keep 3:1 and show the middle of a taller photo). The founder's photos fill Page not found and the empty bag
+ * (2026-10-31; the 7-day, Home and Sign in photos taken out again the same day). Until then the slot shows a labelled frame on local and
  * preview builds and nothing at all on the live site, so a customer never sees an empty box.
  */
 export interface Slot {
@@ -18,24 +19,24 @@ export interface Slot {
 
 export const SLOTS = {
   'seven-day-hero': {
-    src: '/visuals/seven-day-hero.jpg',
-    alt: 'A family eating together on the floor at home, steel plates of sabzi, dal and puris all around.',
-    width: 477,
-    height: 720,
+    src: null,
+    alt: '',
+    width: 1200,
+    height: 1500,
     brief:
       'An opened parcel on a kitchen counter: snacks, masala packs and sweets spilling out, morning light.',
   },
   'seven-day-poster': {
-    src: '/visuals/seven-day-poster.jpg',
-    alt: 'Diwali diyas around a bowl of marigolds, with kaju katli, chakli and wrapped chocolates.',
+    src: null,
+    alt: '',
     width: 2400,
     height: 800,
     brief:
       'A wide seasonal poster for the 7-day store (now: Diwali, diyas and mithai boxes). Swap it each season.',
   },
   'home-poster': {
-    src: '/visuals/home-poster.jpg',
-    alt: 'A home lit for Diwali: marigold garlands round a mirror, a brass lantern and diyas on a console.',
+    src: null,
+    alt: '',
     width: 2400,
     height: 800,
     brief:
@@ -44,10 +45,10 @@ export const SLOTS = {
   // Founder 2026-10-31 ("think creatively of what we can put in the whitespaces available"): the empty side of pages
   // that hold one narrow column on a wide screen. Wide screens only (picture-beside.tsx); phones have no room to spare.
   'sign-in': {
-    src: '/visuals/sign-in.jpg',
-    alt: 'Gold bangles, an armlet and a necklace worn with a red silk saree, hands painted with alta.',
-    width: 472,
-    height: 584,
+    src: null,
+    alt: '',
+    width: 1000,
+    height: 1250,
     brief: 'Beside Sign in and Create an account: a brass diya and a pair of chappals at a front door, evening light.',
   },
   about: {

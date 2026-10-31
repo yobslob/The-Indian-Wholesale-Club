@@ -791,7 +791,7 @@ women's wear only; the store needs it to sell clothing, D-140); left out of `sav
 (liquids and sprays, D-135), bras and panties (no category), phone cases (not clothing); lounge sets under Co-ords &
 Dresses; the hour's fallback.
 
-**D-172 · 2026-10-31 · founder: Savana's care given from its fabric where certain, the rest left out; the founder's photos in the picture slots** · Answers Q-50 · Changes D-171's Savana drafts
+**D-172 · 2026-10-31 · founder: Savana's care given from its fabric where certain, the rest left out; the founder's photos in the picture slots** · Answers Q-50 · Changes D-171's Savana drafts · its 7-day, Home and Sign in photos SUPERSEDED by D-173
 - Founder, verbatim (answering Q-50, Savana's missing wash care): "YOu give it accordingly and ignore those who you're
   not sure of." And: "Also I updated the photos at C:\kod\root\apps\web\public\visuals with proper names".
 What it means for the build:
@@ -811,3 +811,10 @@ What it means for the build:
   How it works and Contact still wait for theirs.
 *Claude's choices in it (proposed, confirm when convenient):* each care line's words; the alt texts; JPEG files used as
 given (no conversion).
+
+**D-173 · 2026-10-31 · founder: only Page not found and the empty bag keep the founder's photos** · Changes D-172's photos
+- Founder, verbatim: "I want you to undo the photo changes that you've done in the whitespaces except for page not found
+  and empty bag".
+- What it means: `slots.ts`'s 7-day hero, 7-day poster, Home poster and Sign in are empty again (as before D-172: nothing
+  on the live site, a labelled frame on local and preview builds). Page not found and the empty bag keep their photos.
+  The four photo files stay in `apps/web/public/visuals/` (the founder's files), unused.

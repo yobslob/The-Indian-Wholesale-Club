@@ -50,7 +50,7 @@ Short on purpose: **replace** lines when something changes, don't append. Histor
   checkout has none); past the free line the pill's saving part is short, four grey dollar signs turning dollar-bill
   green as the saving fills; no shelf under the 7-day store's category tiles; six new picture slots in the empty side of
   wide pages (Sign in and Create an account, About us, How it works, Contact, the empty bag, Page not found). The
-  founder's photos are in six of the nine slots since 2026-10-31 (D-172; About us, How it works and Contact still wait):
+  founder's photos fill Page not found and the empty bag (D-172, D-173); the other seven slots are empty again:
   `apps/web/public/visuals/`, `apps/web/features/visuals/slots.ts`.
 - **The founder's six storefront fixes (2026-10-30, deployed 2026-10-31):** the bag's goal follows the bag as it is now, from
   its first draw (each line remembers it was a 7-day piece; an answer for an earlier bag never decides; the lines come
@@ -67,8 +67,8 @@ Short on purpose: **replace** lines when something changes, don't append. Histor
   changes, no reload, no jump to the top); the tabs read "IWC" and "7-day store". D-161's text-only touches are gone
   (tab dates, festival line, India time, Where's home, postmarks, diary, away title, footer promise, the jokes); the
   flight (a plane from India towing the free line or Diwali's last day) on Home and the 7-day store, whose front page is
-  now an address label with a stamp, the founder's photo, the category tiles and a seasonal poster (its photos filled
-  2026-10-31, D-172).
+  now an address label with a stamp, the founder's photo, the category tiles and a seasonal poster (its two slots empty
+  again, D-173).
 - **Diwali outfits list (D-167, 2026-10-30, proposed):** `targets/diwali-outfits.csv` (63 clothing targets, up to 860
   listings, Myntra at ₹600 – ₹1,600 and footwear ₹400 – ₹900 as the Myntra list): women 23, men 11, kids 7, state
   weaves and crafts 22 (handloom or hand-made pieces that name their craft only). Nothing to deploy.
@@ -147,8 +147,8 @@ Short on purpose: **replace** lines when something changes, don't append. Histor
 0. **Push `main` (Claude did not):** D-166, the storage clean-up and the six storefront fixes of 2026-10-30 (Last
    verification). No migration in any. After the deploy, on the live site: a kurti set and a 7-day piece in the bag,
    then the kurti set out (the pill should say the 7-day line at once); a bag past the free line (the bar stays full,
-   a second part fills); the flight on Home; a state's stamp from Home on a phone. Then look at `/7-day-delivery`, Home, Sign in, the empty
-   bag and a missing page with your photos (D-172); About us, How it works and Contact still wait for theirs. On the laptop, after the
+   a second part fills); the flight on Home; a state's stamp from Home on a phone. Then look at the empty bag and a missing page with your
+   photos (D-172, D-173). On the laptop, after the
    pull: `pnpm photos:redo sweep --type clothing` (and `food`, `home`) deletes the PNGs of every finished photo from
    `tools/photo-redo/out` (3.4 GB on 2026-10-30); `pnpm photos:redo audit` then shows what is left in R2.
 1. **Run the Deploy workflow** (Actions → Deploy) for `20261103090000_photo_redo_modes` (D-164) and
@@ -267,6 +267,7 @@ Short on purpose: **replace** lines when something changes, don't append. Histor
 ## Last verification
 | Date | Commit | Where | Result |
 |---|---|---|---|
+| 2026-10-31 | D-173 four picture slots empty again | Claude Code, the founder's Windows machine | `check.mjs docs typecheck lint test` all OK. The four slots draw nothing on the live site (empty `src`, as before D-172); not looked at in a browser. |
 | 2026-10-31 | D-172 Savana's care from its fabric, the founder's photos in their slots (on D-171) | Claude Code, the founder's Windows machine (Docker; port 3000 free) | `check.mjs docs typecheck lint test` all OK (D-171's run: `db` too, 69 SQL files); shared tests incl. `savana.test.ts` (care given and refused); runner `tsc` clean. Care rules run on live Savana pages (read-only): tops 9/10, dresses, bottoms, knitwear and jewellery 10/10, co-ords 9, lounge sets 7, bags 2, jackets 0. On `pnpm dev` at 1440 px: Sign in, Page not found, the 7-day hero and Home's poster show their photos (Home's poster soft: a 736 px photo across the page); the empty bag and the 7-day poster not seen (the local bag was not empty; no 7-day rows locally). Not run: the runner, the app. |
 | 2026-10-31 | D-169 Home photos | Claude Code, the founder's Windows machine (Docker; port 3000 free) | `check.mjs typecheck lint docs test build` OK (run after the docs). Migration applied to the local database and `db:types` regenerated (it also picked up D-168's `product_media.redo` columns). In the browser pane, signed in as the local e2e admin: five test pictures chosen at once (lines from their file names), uploaded one by one, shown on the grid in Home's layout (12 tiles, 7 faded repeats); photo 5 moved first and saved, then photo 1 dragged onto tile 3 and saved; Home showed only those five, in that order; a photo removed with its file; all test rows and files removed afterwards. **Not run:** the SQL tests (`db` step), e2e, production (needs the Deploy workflow), a real drag with a mouse and Save line (drag events sent from the page; the window was behind another, so screenshots stalled). |
 | 2026-10-31 | the founder's storefront touches (banner, fixed tabs, dollar signs, no shelf, picture slots) | Claude Code, the founder's Windows machine (Docker; port 3000 free) | `check.mjs typecheck lint docs test build` all OK. In the browser pane on `next dev` at 1280 px: the banner light with a wine hairline and wine words; the pill past the free line with three green and one grey dollar sign before the tag ($24.20 of the saving); the six slots beside their column (493 px wide, from x 746) and none at 390 px, no sideways scroll; the empty bag's slot with the bag emptied for the check, then put back. The local 7-day store has no pieces today, so the tabs were checked with the strip's markup put into the page: at the top on Home after scrolling past the photo (ink strip, ivory tab). **Not run:** the real tabs and the tiles without the shelf on a page (no 7-day pieces locally), e2e, the live site. |
