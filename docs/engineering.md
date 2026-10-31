@@ -35,6 +35,11 @@ Baseline numbers come from the founder's first `node scripts/check.mjs` run and 
   Counts and sums are made in SQL (a head count or a function), never by fetching rows and counting them: the API
   returns at most 1,000 rows (`supabase/config.toml` `max_rows`), so a count of fetched rows is silently wrong past
   that (the admin's chips and Today, fixed in migration 31, D-099).
+  **Row-level security asks once per query:** an admin policy is `using ((select public.is_admin()))`, never bare
+  `is_admin()`: the function is SECURITY DEFINER, so Postgres cannot inline it and ran it for every row it looked at
+  (the admin's Products page: 8,078 products and their 72,884 options, 1.45 s of database time locally, near the free
+  plan's 8 s limit beside the sourcing runner; 0.15 s once per query, migration `20261106090000_admin_rls_once`,
+  checked by `admin_rls_once.test.sql`). The same goes for any new policy calling a function.
 - **PR-4 Narrow middleware:** runs only on `/admin`, `/account`, `/checkout` and `/orders` (`apps/web/middleware.ts`; there
   are no admin API routes). It uses `getClaims()`: a local JWT check with asymmetric signing keys, one Auth call with the
   legacy shared secret (local Supabase and old hosted projects use the shared secret). Rate limits run inside the routes.
