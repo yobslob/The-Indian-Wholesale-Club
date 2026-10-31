@@ -20,8 +20,14 @@ type Params = Promise<{ region: string }>;
 
 /** The 36 region pages are built ahead of time and refreshed from the cache (PR-1). */
 export async function generateStaticParams(): Promise<{ region: string }[]> {
-  const { regions } = await getHomeCached();
-  return regions.map((r) => ({ region: r.slug }));
+  // This step has no retry: a busy database here failed the whole deploy (2026-10-31, statement timeout while the
+  // sourcing runner was adding listings). Then the 36 pages are built on their first visit instead, as 7-day's are.
+  try {
+    const { regions } = await getHomeCached();
+    return regions.map((r) => ({ region: r.slug }));
+  } catch {
+    return [];
+  }
 }
 
 export async function generateMetadata({ params }: { params: Params }): Promise<Metadata> {
