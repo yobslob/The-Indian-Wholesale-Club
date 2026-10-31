@@ -34,11 +34,15 @@ const keyUrl = (base: string, key: string): string => `${base}/${key.split('/').
 export async function putPhotoFile(key: string, body: Uint8Array<ArrayBuffer>, contentType: string): Promise<void> {
   const s = store();
   if (!s) throw new Error('the photo store is not set up');
-  const res = await s.s3.fetch(keyUrl(s.base, key), {
+  // Signed first, then sent with the bytes themselves (not the signed Request): on Vercel, Next's fetch passed the
+  // Request's body on as a stream without its length and R2 refused every upload with 411 MissingContentLength
+  // (2026-10-31, the Home photos); a byte array carries its Content-Length.
+  const signed = await s.s3.sign(keyUrl(s.base, key), {
     method: 'PUT',
     body,
     headers: { 'content-type': contentType, 'cache-control': `public, max-age=${PHOTO_CACHE_CONTROL}, immutable` },
   });
+  const res = await fetch(signed.url, { method: 'PUT', headers: signed.headers, body, cache: 'no-store' });
   if (!res.ok) throw new Error(`photo store: ${res.status} ${(await res.text()).slice(0, 200)}`);
 }
 
