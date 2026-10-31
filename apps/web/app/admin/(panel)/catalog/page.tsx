@@ -1,35 +1,35 @@
-import Link from 'next/link';
+import { listCategories, listRegionChoices, listShopChoices } from '@repo/db/admin';
+import { PRODUCT_TYPE_LABEL } from '@repo/shared/domain';
 
 import {
-  countProductsByStatus,
-  pageAdminProducts,
-  listCategories,
-  listRegionsAdmin,
-  listVendors,
-  listWeightsToCheck,
-} from '@repo/db/admin';
-import { formatUsd, PRODUCT_TYPE_LABEL, type Wears } from '@repo/shared/domain';
-
-import { ArchiveUnready, AssignAndPublish } from '@/features/admin/bulk/assign-publish';
-import { PRODUCT_STATUS, StatusChip } from '@/features/admin/chips';
+  CatalogTabs,
+  ExportLine,
+  ProductRows,
+  RowsLoading,
+  WeightRows,
+} from '@/features/admin/catalog/parts';
 import { requireAdminPage } from '@/features/admin/guard';
 import { listingTabs } from '@/features/admin/listing-tabs';
-import { Pager } from '@/features/admin/pager/pager';
 import { plainParams } from '@/features/admin/pager/paging';
 import { readPaging } from '@/features/admin/pager/read-paging';
 import { ProductFilterBar } from '@/features/admin/product-filter-bar';
-import { hasProductFilters, parseProductView, productViewQuery, toAdminFilter } from '@/features/admin/product-filters';
-import { Cell, linkButton, PageHead, rupees, Table, Tabs } from '@/features/admin/ui';
-import { WearsPicker } from '@/features/admin/wears-picker';
-import { WeightSummary, WeightsToCheck } from '@/features/admin/weights-to-check';
+import {
+  hasProductFilters,
+  parseProductView,
+  productViewQuery,
+  toAdminFilter,
+} from '@/features/admin/product-filters';
+import { Section } from '@/features/admin/section';
+import { PageHead, Tabs } from '@/features/admin/ui';
 
 type SearchParams = Promise<Record<string, string | string[] | undefined>>;
 
 /**
  * Catalog: every product with admin-only fields (shop, shop price, stock), optionally one status (the tabs), in pages
  * with the total and page numbers (D-140), so a catalogue of thousands is never one long page and every row is
- * reachable. The US
- * clearance tab lists pieces already in the US (D-072): drafts made from returns and cancels, published once checked.
+ * reachable. The US clearance tab lists pieces already in the US (D-072): drafts made from returns and cancels,
+ * published once checked. The heading, tabs and filters show at once; the tab counts and the rows each load in their
+ * own section (features/admin/section.tsx), so a busy database leaves the page standing with Load again on that part.
  */
 export default async function CatalogPage({
   searchParams,
@@ -42,54 +42,46 @@ export default async function CatalogPage({
   const { status, usStock } = view;
   const weightsView = params.weights === '1';
   const { page, size, offset } = await readPaging('products', params);
-  const [products, counts, weights, regions, categories, shops] = await Promise.all([
-    weightsView
-      ? Promise.resolve({ rows: [], total: 0 })
-      : pageAdminProducts(client, { ...toAdminFilter(view), offset, limit: size }),
-    countProductsByStatus(client),
-    // D-129: the count for the tab; the rows only on the Weights to check tab
-    listWeightsToCheck(client, weightsView ? offset : 0, weightsView ? size : 0),
-    // D-136: the filters' choices
-    weightsView ? Promise.resolve([]) : listRegionsAdmin(client),
-    weightsView ? Promise.resolve([]) : listCategories(client),
-    weightsView ? Promise.resolve([]) : listVendors(client),
-  ]);
-  const pagerParams = plainParams(params);
-  const pager = (keys: boolean, total: number): React.JSX.Element => (
-    <Pager list="products" path="/admin/catalog" params={pagerParams} page={page} size={size} total={total} keys={keys} />
+  const paging = { page, size, offset, params: plainParams(params) };
+  const current = weightsView ? 'weights' : usStock ? 'us' : (status ?? 'all');
+  // without their counts while they load, and if the counts fail (the tabs never go missing)
+  const plainTabs = <Tabs items={listingTabs()} current={current} />;
+  const tabs = (
+    <Section fallback={plainTabs} failed={plainTabs}>
+      <CatalogTabs current={current} weights={weightsView ? paging : null} />
+    </Section>
   );
 
-  const exportQuery = productViewQuery({ ...view, sort: 'updated' });
-  const exportHref = `/admin/catalog/export${exportQuery ? `?${exportQuery}` : ''}`;
-  const keep: Record<string, string> = { ...(status ? { status } : {}), ...(usStock ? { us: '1' } : {}) };
-  const tabQuery = new URLSearchParams(keep).toString();
-  const filtered = hasProductFilters(view) || view.q !== '';
-
-  const tabs = listingTabs({ ...counts, weights: weights.total });
   if (weightsView)
     return (
       <div className="space-y-4">
         <PageHead title="Products" />
-        <Tabs items={tabs} current="weights" />
-        {/* D-146: every missing weight assigned, every shown weight accepted, every ready draft live */}
-        {weights.total > 0 ? <AssignAndPublish accept label="Assign all and publish" /> : null}
-        {pager(false, weights.total)}
-        <WeightsToCheck rows={weights.rows} missing={weights.missing} />
-        {pager(true, weights.total)}
+        {tabs}
+        <Section fallback={<RowsLoading />}>
+          <WeightRows paging={paging} />
+        </Section>
       </div>
     );
+
+  // D-136: the filters' choices, a few short lists; without them the filters still work, their lists just stay empty
+  const [regions, categories, shops] = await Promise.all([
+    listRegionChoices(client).catch(() => []),
+    listCategories(client).catch(() => []),
+    listShopChoices(client).catch(() => []),
+  ]);
+  const exportQuery = productViewQuery({ ...view, sort: 'updated' });
+  const exportHref = `/admin/catalog/export${exportQuery ? `?${exportQuery}` : ''}`;
+  const keep: Record<string, string> = {
+    ...(status ? { status } : {}),
+    ...(usStock ? { us: '1' } : {}),
+  };
+  const tabQuery = new URLSearchParams(keep).toString();
+  const filtered = hasProductFilters(view) || view.q !== '';
 
   return (
     <div className="space-y-4">
       <PageHead title="Products" />
-      <Tabs items={tabs} current={usStock ? 'us' : (status ?? 'all')} />
-      {status === 'draft' && !usStock && counts.draft > 0 ? (
-        <div className="flex flex-wrap items-center gap-3">
-          {/* D-120, D-146: weighs what has no weight, then publishes; the drafts that cannot go live can be archived */}
-          <AssignAndPublish accept={false} label="Publish all drafts" />
-          <ArchiveUnready />
-        </div>
-      ) : null}
+      {tabs}
       {usStock ? (
         <p className="text-ink-muted text-sm">
           Returned and cancelled pieces already in the US, as drafts at the clearance price. Check
@@ -108,7 +100,7 @@ export default async function CatalogPage({
           sort: view.sort,
           wears: view.wears ?? '',
         }}
-        keep={{ ...keep, ...(pagerParams.size ? { size: pagerParams.size } : {}) }}
+        keep={{ ...keep, ...(paging.params.size ? { size: paging.params.size } : {}) }}
         regions={regions.map((r) => ({ value: r.id, label: r.name }))}
         categories={categories.map((c) => ({
           value: c.id,
@@ -118,68 +110,21 @@ export default async function CatalogPage({
         shops={shops.map((v) => ({ value: v.id, label: v.shop_name }))}
         clearHref={filtered ? `/admin/catalog${tabQuery ? `?${tabQuery}` : ''}` : null}
       />
-      <p className="text-ink-muted flex flex-wrap items-center gap-x-4 text-sm">
-        {filtered ? <span>{products.total === 0 ? 'No products match.' : `${products.total.toLocaleString('en-US')} match (the tab counts are every product).`}</span> : null}
-        {/* D-128: the six price columns of this view as an Excel sheet (a plain link: a file, not a page) */}
-        <a href={exportHref} className={`${linkButton} text-ink`} download>
-          Download Excel
-        </a>
-      </p>
-      {pager(false, products.total)}
-      <Table
-        head={[
-          'Product',
-          'Type',
-          'Status',
-          'Region',
-          'Shop',
-          'Price',
-          'Shop price',
-          'Weight',
-          'For',
-          'Listed / reserved',
-        ]}
+      <Section
+        fallback={
+          <>
+            <ExportLine exportHref={exportHref} matches={null} />
+            <RowsLoading />
+          </>
+        }
       >
-        {products.rows.map((p) => (
-          <tr key={p.id}>
-            <Cell>
-              <Link href={`/admin/catalog/${p.id}`} className="font-semibold">
-                {p.name}
-              </Link>
-              {p.is_placeholder ? <span className="text-caution ml-1 text-xs">(demo)</span> : null}
-              {p.is_us_stock ? (
-                <span className="text-ink-muted ml-1 text-xs">(in the US)</span>
-              ) : null}
-            </Cell>
-            <Cell>{p.product_type}</Cell>
-            <Cell>
-              <StatusChip map={PRODUCT_STATUS} status={p.status} />
-              {p.coming_soon ? (
-                <span className="text-ink-muted ml-1 text-xs">coming soon on the store</span>
-              ) : null}
-            </Cell>
-            <Cell>{p.region?.name ?? 'All states'}</Cell>
-            <Cell>{p.vendor?.shop_name}</Cell>
-            <Cell>{formatUsd(p.price_cents)}</Cell>
-            <Cell>{rupees(p.shop_price_paise)}</Cell>
-            <Cell>
-              <WeightSummary
-                variants={p.variants}
-                type={p.product_type}
-                categoryWeightG={p.category?.default_weight_g ?? null}
-              />
-            </Cell>
-            <Cell>
-              {p.product_type === 'clothing' ? <WearsPicker productId={p.id} wears={p.wears as Wears | null} /> : null}
-            </Cell>
-            <Cell>
-              {p.variants.reduce((n, v) => n + v.qty_listed, 0)} /{' '}
-              {p.variants.reduce((n, v) => n + v.qty_reserved, 0)}
-            </Cell>
-          </tr>
-        ))}
-      </Table>
-      {pager(true, products.total)}
+        <ProductRows
+          filter={toAdminFilter(view)}
+          paging={paging}
+          filtered={filtered}
+          exportHref={exportHref}
+        />
+      </Section>
     </div>
   );
 }

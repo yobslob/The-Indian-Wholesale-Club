@@ -14,7 +14,8 @@ Short on purpose: **replace** lines when something changes, don't append. Histor
   and a weekly check: `monitoring.md`.
 - **Database:** every migration up to `20261102090000_photo_redo` (D-163) is applied: the founder's photo redo fetch of
   2026-10-30 reads its function, and the Deploy workflow applies waiting migrations in order. Waiting for the Deploy
-  workflow: `20261103090000_photo_redo_modes` (D-164; the new redo's plan, `fresh` mark and photo removal need it).
+  workflow: `20261103090000_photo_redo_modes` (D-164; the new redo's plan, `fresh` mark and photo removal need it), and
+  the admin's speed: `20261106090000_admin_rls_once` and `20261106090100_admin_product_order` (2026-10-31, below).
 - **Sourcing runner (India PC):** its `.env` pointed at the old Supabase project until 2026-10-22 (the move's step 7,
   `ops.md`); fixed by the founder. The Blinkit 7-day CSV is in (102 targets added, 11 already there). **Blinkit blocks
   the runner** from 2026-10-22: the cause was headless Chrome (`IWC_SOURCING_HEADLESS=1` in its `.env`); the runner now
@@ -130,6 +131,13 @@ Short on purpose: **replace** lines when something changes, don't append. Histor
 - **Admin** (`admin.md`): Today, Orders, To order (order from the shop in one tap), invoices A / B / C, Products with
   filters, pager, Download Excel, Weights to check, Names to tidy, For; Import from shops (bookmark, pasted links);
   Auto-sourcing targets; Settings with the profit check; vendor accounts and Vendor pieces; app admin mode.
+- **The admin's speed (2026-10-31; the database half needs the Deploy workflow):** the founder: Products and Listings
+  "slow, breaks and shows try again". Cause: every admin row check (`is_admin()`) ran once per row, so the Products page
+  (8,078 products, 72,884 options locally) spent 1.45 s in the database for 50 rows and 0.2 s per tab count, near the
+  8 s limit on the free plan; and any failed read anywhere gave the bare "Try again" page. Now the check runs once per
+  query (rows 0.15 s → about 0.01 s with the new order index; counts under 3 ms), the frame never waits for the
+  sidebar counts, each slow part of Products and Listings loads in its own section with Load again, a failed page
+  keeps the frame, Re-check is paged, the table reads only the columns it shows (`admin.md` §Sections, `engineering.md` PR-3).
 - **Weights** (D-129 – D-135, D-146): every option's weight says where it came from; clothing by class, food by the
   label's net quantity, home from its own page; the hub weighs pieces as they are picked; **Assign all and publish**
   gives every missing weight one (similar pieces weighed before, else the category) and publishes.
@@ -270,6 +278,7 @@ Short on purpose: **replace** lines when something changes, don't append. Histor
 ## Last verification
 | Date | Commit | Where | Result |
 |---|---|---|---|
+| 2026-10-31 | the admin's speed: row checks once per query, Products and Listings in sections | Claude Code, the founder's Windows machine (Docker; port 3000 free, own `next dev` for the check, stopped after) | `check.mjs docs test db` OK (70 SQL files, new `admin_rls_once.test.sql` 6), `lint` OK; `typecheck` fails only on another session's uncommitted `features/home/diwali-windows.tsx` (a slot name), not this work. Measured on the local database with 8,078 products, 72,884 options, 32,312 photos (copies of the seed, removed by the reset): the Products list query 1,453 ms → 152 ms (RLS) → about 10 ms (index); each status count 200 ms → under 3 ms; whole pages in dev mode: Products 2.1 s → 0.8 s, Listings 1.35 s → 0.42 s, Re-check 5.1 s (1,000 rows) → 0.6 s (paged). Options table locked past the 8 s limit: heading, tabs and filters stayed, the rows said "did not load … Load again", which brought them back once the lock cleared. Not run: `build`, `e2e`, the live site. |
 | 2026-10-31 | the website's photo uploads reach R2 again (Home photos) | Claude Code, the founder's Windows machine | `check.mjs typecheck lint test` OK. Cause, from Vercel's logs: every Home photo upload got `photo store: 411 MissingContentLength` from R2 (the signed Request's body went out as a stream with no length under Next's fetch) and then fell back to Supabase storage, which refused it ("new row violates row-level security policy"). Now signed, then sent as bytes: a PUT to local Supabase's S3 the same way answered 200. Not verified: an upload on the live site (after this deploys). Seen in the same logs: `/admin/catalog` statement timeouts. |
 | 2026-10-31 | a busy database no longer fails a deploy at the state pages | Claude Code, the founder's Windows machine (Docker; port 3000 free) | `check.mjs typecheck lint build` OK, all 36 state pages still built ahead (prerender manifest). Why: 4e51178's fallback covered only the build list; a7d81c2's Vercel build then failed prerendering `/states/andhra-pradesh` (statement timeout, 3 tries). Production logs show 78 statement timeouts from 00:50 to 01:30 UTC (state pages, See all, `/api/browse`, product pages) and none after; the same reads answered in 0.3–1.2 s at 01:50. Now each state's reads are made in the build list first, four at a time; a state whose reads fail is left out and built on its first visit. Not verified: a Vercel build with this commit, or a build during a timeout. |
 | 2026-10-31 | Assign weights goes in calls of 600 options | Claude Code, the founder's Windows machine | `check.mjs typecheck lint` OK. Why: every press of Weights to assign failed with `items_invalid` (production logs 01:59–02:00 UTC, `admin.bulk_assign_failed`): `admin_assign_weights` takes up to 600 options a call and 40 of Savana's pieces, a colour by a size each, came to more; the drafts waited on their weights, so 0 were published. Not verified: a press on production, or a local run with over 600 options. |

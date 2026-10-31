@@ -19,6 +19,11 @@ export async function listVendors(client: IwcClient, filter: VendorFilter = {}) 
   return unwrap(await query.order('shop_name'));
 }
 
+/** The shops as a filter's choices (D-136): their id and name only. */
+export async function listShopChoices(client: IwcClient) {
+  return unwrap(await client.from('vendors').select('id, shop_name').order('shop_name'));
+}
+
 export async function getVendor(client: IwcClient, id: string) {
   return unwrap(await client.from('vendors').select(VENDOR_COLUMNS).eq('id', id).maybeSingle());
 }
@@ -43,6 +48,11 @@ export async function listRegionsAdmin(client: IwcClient) {
       )
       .order('sort_order'),
   );
+}
+
+/** The states as a filter's choices (D-136): their id and name only, not their page's text. */
+export async function listRegionChoices(client: IwcClient) {
+  return unwrap(await client.from('regions').select('id, name').order('sort_order'));
 }
 
 /** One region for its admin edit page; null when the id does not exist. */
@@ -127,6 +137,12 @@ const PRODUCT_LIST_COLUMNS = `id, slug, name, product_type, status, coming_soon,
   category:categories(default_weight_g),
   media:product_media(storage_path, is_primary, sort_order)`;
 
+/** The web Products table's columns only: no photos, and of each option what the weight and stock cells show. */
+const PRODUCT_TABLE_COLUMNS = `id, name, product_type, status, coming_soon, price_cents, shop_price_paise, is_placeholder, is_us_stock, wears,
+  region:regions(name), vendor:vendors(shop_name),
+  variants:product_variants(qty_listed, qty_reserved, is_active, weight_g, weight_source),
+  category:categories(default_weight_g)`;
+
 export const ADMIN_PRODUCT_SORTS = ['updated', 'newest', 'price-asc', 'price-desc', 'name'] as const;
 export type AdminProductSort = (typeof ADMIN_PRODUCT_SORTS)[number];
 
@@ -153,8 +169,14 @@ export interface AdminProductFilter {
   offset?: number;
 }
 
-function adminProductQuery(client: IwcClient, filter: AdminProductFilter, count: boolean) {
-  let query = client.from('products').select(PRODUCT_LIST_COLUMNS, count ? { count: 'exact' } : undefined);
+/** An admin product list with its filters, search, order and page, on either column list. */
+function adminProductQuery<C extends typeof PRODUCT_LIST_COLUMNS | typeof PRODUCT_TABLE_COLUMNS>(
+  client: IwcClient,
+  columns: C,
+  filter: AdminProductFilter,
+  count: boolean,
+) {
+  let query = client.from('products').select(columns, count ? { count: 'exact' } : undefined);
   if (filter.status) query = query.eq('status', filter.status);
   if (filter.productType) query = query.eq('product_type', filter.productType);
   if (filter.regionId) query = query.eq('region_id', filter.regionId);
@@ -188,12 +210,15 @@ function adminProductQuery(client: IwcClient, filter: AdminProductFilter, count:
 }
 
 export async function listAdminProducts(client: IwcClient, filter: AdminProductFilter = {}) {
-  return unwrap(await adminProductQuery(client, filter, false));
+  return unwrap(await adminProductQuery(client, PRODUCT_LIST_COLUMNS, filter, false));
 }
 
-/** A page of products and how many match the filters in all (the pager's "1–50 of 3,412", D-140). */
+/**
+ * A page of the web Products table and how many match the filters in all (the pager's "1–50 of 3,412", D-140): only
+ * the columns it shows, so a page of 200 stays a small answer.
+ */
 export async function pageAdminProducts(client: IwcClient, filter: AdminProductFilter = {}) {
-  return unwrapPage(await adminProductQuery(client, filter, true));
+  return unwrapPage(await adminProductQuery(client, PRODUCT_TABLE_COLUMNS, filter, true));
 }
 
 /** How many products are in each status: the Listings tabs' counts (D-096). */
@@ -348,7 +373,8 @@ export async function listWeightsToCheck(
   limit = 50,
 ): Promise<{ total: number; missing: number; rows: WeightToCheck[] }> {
   return unwrap(
-    await client.rpc('admin_weights_to_check', { p_offset: offset, p_limit: limit }),
+    // a GET: the gateway retries a read whose connection dropped, never a POST (PR-2)
+    await client.rpc('admin_weights_to_check', { p_offset: offset, p_limit: limit }, { get: true }),
   ) as unknown as { total: number; missing: number; rows: WeightToCheck[] };
 }
 
@@ -437,25 +463,27 @@ export async function setProductWears(client: IwcClient, id: string, wears: 'wom
   unwrap(await client.from('products').update({ wears }).eq('id', id));
 }
 
-/** D-140 (L1): every imported clothing and home listing's name with its shop, for the names-to-tidy review (1,000 at a time). */
+/**
+ * D-140 (L1): every imported clothing and home listing's name with its shop, for the names-to-tidy review: the first
+ * 1,000 with the total, then the rest side by side (one short read each, D-146) instead of one after another.
+ */
 export async function listNamesToReview(client: IwcClient) {
-  const all = [];
-  for (let from = 0; ; from += 1000) {
-    const rows = unwrap(
-      await client
-        .from('products')
-        .select('id, name, product_type, status, vendor_id, source_site, shop_title')
-        .in('product_type', ['clothing', 'home'])
-        // only names that came from a shop's page; names written for IWC are left alone
-        .not('source_url', 'is', null)
-        .neq('status', 'archived')
-        .order('created_at')
-        .order('id')
-        .range(from, from + 999),
-    );
-    all.push(...rows);
-    if (rows.length < 1000) return all;
-  }
+  const page = (from: number, count: boolean) =>
+    client
+      .from('products')
+      .select('id, name, product_type, status, vendor_id, source_site, shop_title', count ? { count: 'exact' } : undefined)
+      .in('product_type', ['clothing', 'home'])
+      // only names that came from a shop's page; names written for IWC are left alone
+      .not('source_url', 'is', null)
+      .neq('status', 'archived')
+      .order('created_at')
+      .order('id')
+      .range(from, from + 999);
+  const first = unwrapPage(await page(0, true));
+  const rest = await Promise.all(
+    Array.from({ length: Math.ceil(Math.max(first.total - 1000, 0) / 1000) }, (_, i) => page((i + 1) * 1000, false)),
+  );
+  return [...first.rows, ...rest.flatMap((r) => unwrap(r))];
 }
 
 /**

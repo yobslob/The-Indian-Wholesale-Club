@@ -131,6 +131,14 @@ Built 2026-10-09 from `design/pages/admin/` (code in `apps/web/features/admin/`)
   Paging is a soft navigation (the scroll stays) with the running stitch along the top while it loads; table headers
   stay under the top bar on wide screens. Search runs on the server over every row. No list stops silently at a
   limit (the API's 1,000-row cap included: target counts are head counts).
+- **Pages that never break (2026-10-31):** the frame shows at once; the sidebar's counts stream in and a failed count
+  only leaves its number off. A page whose reads fail keeps the frame and says "This page did not load … Load again"
+  (`(panel)/error.tsx`; before, any failed read anywhere gave the bare "Something went wrong / Try again" page); opening
+  a page shows "Loading…" inside the frame at once (`(panel)/loading.tsx`). The slow parts of Products (tab counts,
+  rows, Weights to check, Names to tidy, Categories to check) and Listings (tab counts, Re-check, now paged) each load
+  in their own `Section` (`features/admin/section.tsx`): heading, tabs and filters show first, and a part whose read
+  fails says so with **Load again** while the rest stays (tabs fall back to tabs without numbers). New slow parts go in a
+  `Section`; a part takes the client from `requireAdminPage()` (one check per request), never as a prop.
 - **Chips** in plain words (`chips.tsx`). **Today**: the open cycle's countdown, totals and progress, Needs attention,
   each desk's queue. **Orders**: search, chips with counts, ticked rows → Mark shipped… (one carrier and tracking
   number each) / Mark delivered, pages of 50. **Order page**: only the actions that apply; every refund and cancel (and

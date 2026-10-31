@@ -1,25 +1,25 @@
-import { unwrap, type IwcClient } from '../client';
+import { unwrap, unwrapPage, type IwcClient } from '../client';
 
 /**
  * Categories to check (founder, 2026-10-24): every food and home listing that customers see or will see (not archived)
- * with its category, read 1,000 at a time (the API's page). The rules that judge them are in
+ * with its category, read 1,000 at a time (the API's page), the pages side by side. The rules that judge them are in
  * @repo/shared/sourcing (category-check.ts); clothing is not checked.
  */
 export async function listCategoriesToCheck(client: IwcClient) {
-  const all = [];
-  for (let from = 0; ; from += 1000) {
-    const rows = unwrap(
-      await client
-        .from('products')
-        .select('id, name, product_type, status, category:categories(id, slug, name)')
-        .in('product_type', ['food', 'home'])
-        .neq('status', 'archived')
-        .order('id')
-        .range(from, from + 999),
-    );
-    all.push(...rows);
-    if (rows.length < 1000) return all;
-  }
+  const page = (from: number, count: boolean) =>
+    client
+      .from('products')
+      .select('id, name, product_type, status, category:categories(id, slug, name)', count ? { count: 'exact' } : undefined)
+      .in('product_type', ['food', 'home'])
+      .neq('status', 'archived')
+      .order('id')
+      .range(from, from + 999);
+  // the first 1,000 with the total, then the rest side by side (one short read each, D-146)
+  const first = unwrapPage(await page(0, true));
+  const rest = await Promise.all(
+    Array.from({ length: Math.ceil(Math.max(first.total - 1000, 0) / 1000) }, (_, i) => page((i + 1) * 1000, false)),
+  );
+  return [...first.rows, ...rest.flatMap((r) => unwrap(r))];
 }
 
 /**

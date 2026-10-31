@@ -2,7 +2,7 @@
 
 import Link from 'next/link';
 import { usePathname } from 'next/navigation';
-import { useEffect, useState } from 'react';
+import { Suspense, use, useEffect, useState } from 'react';
 
 import { ZONES, deskOrder, type Desk } from '@repo/shared/admin';
 
@@ -11,22 +11,22 @@ import { QuickFind } from './quick-find';
 
 import type { WaitingCounts } from '@repo/db/admin';
 
-type Item = { href: string; label: string; count?: number; hint?: string; soft?: boolean };
+type Item = { href: string; label: string; count?: keyof WaitingCounts; hint?: string; soft?: boolean };
 
 /** The sidebar grouped by job, with live counts of what waits (D-096). */
-function groups(c: WaitingCounts): [string, Item[]][] {
+function groups(): [string, Item[]][] {
   return [
     [
       'Daily',
       [
         { href: '/admin', label: 'Today' },
-        { href: '/admin/orders', label: 'Orders', count: c.ordersToShip, hint: 'Arrived · to ship' },
+        { href: '/admin/orders', label: 'Orders', count: 'ordersToShip', hint: 'Arrived · to ship' },
         // D-140: sold pieces to order from their shops (the pilot's pickups have no cycle)
-        { href: '/admin/to-order', label: 'To order', count: c.toOrder, hint: 'Pieces to order from shops' },
-        { href: '/admin/cycles', label: 'Cycle', count: c.pickupsToDo, hint: 'Pickups to do' },
-        { href: '/admin/listings', label: 'Listings', count: c.drafts, hint: 'Drafts' },
-        { href: '/admin/vendor-pieces', label: 'Vendor pieces', count: c.vendorPieces, hint: 'Photos ready to pick' },
-        { href: '/admin/payouts', label: 'Payouts', count: c.shopsOwed, hint: 'Shops owed' },
+        { href: '/admin/to-order', label: 'To order', count: 'toOrder', hint: 'Pieces to order from shops' },
+        { href: '/admin/cycles', label: 'Cycle', count: 'pickupsToDo', hint: 'Pickups to do' },
+        { href: '/admin/listings', label: 'Listings', count: 'drafts', hint: 'Drafts' },
+        { href: '/admin/vendor-pieces', label: 'Vendor pieces', count: 'vendorPieces', hint: 'Photos ready to pick' },
+        { href: '/admin/payouts', label: 'Payouts', count: 'shopsOwed', hint: 'Shops owed' },
       ],
     ],
     [
@@ -37,7 +37,7 @@ function groups(c: WaitingCounts): [string, Item[]][] {
         { href: '/admin/regions', label: 'Regions' },
         { href: '/admin/home-photos', label: 'Home photos' },
         { href: '/admin/house-models', label: 'House models' },
-        { href: '/admin/reviews', label: 'Reviews', count: c.reviews, hint: 'To approve', soft: true },
+        { href: '/admin/reviews', label: 'Reviews', count: 'reviews', hint: 'To approve', soft: true },
         { href: '/admin/promotions', label: 'Promotions' },
       ],
     ],
@@ -45,8 +45,8 @@ function groups(c: WaitingCounts): [string, Item[]][] {
       'People',
       [
         { href: '/admin/customers', label: 'Customers' },
-        { href: '/admin/vendors', label: 'Vendors', count: c.joinRequests, hint: 'Join requests', soft: true },
-        { href: '/admin/returns', label: 'Returns', count: c.returns, hint: 'Requested', soft: true },
+        { href: '/admin/vendors', label: 'Vendors', count: 'joinRequests', hint: 'Join requests', soft: true },
+        { href: '/admin/returns', label: 'Returns', count: 'returns', hint: 'Requested', soft: true },
       ],
     ],
     [
@@ -57,6 +57,22 @@ function groups(c: WaitingCounts): [string, Item[]][] {
       ],
     ],
   ];
+}
+
+/** A sidebar count, once the counts have come (they never hold up or break the page; none shows if they fail). */
+function CountBadge({ counts, item }: { counts: Promise<WaitingCounts | null>; item: Item }): React.JSX.Element | null {
+  const n = item.count ? use(counts)?.[item.count] : undefined;
+  if (!n) return null;
+  return (
+    <b
+      className={`h-5 min-w-[22px] rounded-full px-1.5 text-center text-[11px] font-bold leading-5 ${
+        item.soft ? 'bg-line text-ink' : 'bg-ink text-paper'
+      }`}
+    >
+      <span className="sr-only">{item.hint}: </span>
+      {n}
+    </b>
+  );
 }
 
 const isCurrent = (pathname: string, href: string): boolean =>
@@ -94,7 +110,8 @@ export function AdminFrame({
   signOut,
   children,
 }: {
-  counts: WaitingCounts;
+  /** Streamed: the frame shows at once and the numbers join it (D-096). */
+  counts: Promise<WaitingCounts | null>;
   email: string;
   desk: Desk | null;
   signOut: () => Promise<void>;
@@ -103,7 +120,7 @@ export function AdminFrame({
   const pathname = usePathname();
   const [menu, setMenu] = useState(false);
   useEffect(() => setMenu(false), [pathname]);
-  const nav = groups(counts);
+  const nav = groups();
   const current = nav.flatMap(([, items]) => items).find((i) => isCurrent(pathname, i.href));
 
   const side = (
@@ -129,21 +146,16 @@ export function AdminFrame({
                   key={item.href}
                   href={item.href}
                   aria-current={on ? 'page' : undefined}
-                  title={item.count ? item.hint : undefined}
+                  title={item.hint}
                   className={`font-ui flex h-10 items-center justify-between rounded-[9px] px-2.5 text-[14px] md:h-9 ${
                     on ? 'bg-paper font-bold shadow-[inset_3px_0_0_theme(colors.brand),0_0_0_1px_theme(colors.line)]' : 'font-medium hover:bg-paper/50'
                   }`}
                 >
                   {item.label}
                   {item.count ? (
-                    <b
-                      className={`h-5 min-w-[22px] rounded-full px-1.5 text-center text-[11px] font-bold leading-5 ${
-                        item.soft ? 'bg-line text-ink' : 'bg-ink text-paper'
-                      }`}
-                    >
-                      <span className="sr-only">{item.hint}: </span>
-                      {item.count}
-                    </b>
+                    <Suspense fallback={null}>
+                      <CountBadge counts={counts} item={item} />
+                    </Suspense>
                   ) : null}
                 </Link>
               );
