@@ -15,7 +15,8 @@ Short on purpose: **replace** lines when something changes, don't append. Histor
 - **Database:** every migration up to `20261102090000_photo_redo` (D-163) is applied: the founder's photo redo fetch of
   2026-10-30 reads its function, and the Deploy workflow applies waiting migrations in order. Waiting for the Deploy
   workflow: `20261103090000_photo_redo_modes` (D-164; the new redo's plan, `fresh` mark and photo removal need it), and
-  the admin's speed: `20261106090000_admin_rls_once` and `20261106090100_admin_product_order` (2026-10-31, below).
+  the admin's speed: `20261106090000_admin_rls_once` and `20261106090100_admin_product_order` (2026-10-31, below), and
+  the description redo's functions: `20261107090000_description_redo` (D-178, 2026-11-02).
 - **Sourcing runner (India PC):** its `.env` pointed at the old Supabase project until 2026-10-22 (the move's step 7,
   `ops.md`); fixed by the founder. The Blinkit 7-day CSV is in (102 targets added, 11 already there). **Blinkit blocks
   the runner** from 2026-10-22: the cause was headless Chrome (`IWC_SOURCING_HEADLESS=1` in its `.env`); the runner now
@@ -32,6 +33,12 @@ Short on purpose: **replace** lines when something changes, don't append. Histor
   workflow, which the founder runs.
 
 ## What is built (details in the doc named; decisions in `decisions.md`)
+- **Description redo (D-178, 2026-11-02, needs the Deploy workflow):** `pnpm descriptions:redo` writes every
+  listing's summary and description again on the laptop (Ollama, `qwen2.5:7b`, eight at once): new wording, a short
+  paragraph and `• Label: value` fact lines, every fact kept and none added, and no price, shop, brand, link, emoji,
+  shipping or health claim, each enforced by checks before the review page; one small write per listing, only where
+  the words are still the ones read (`tools/description-redo/README.md`). Trial on 24 live listings: 20 passed, 4
+  flagged for review, 25.6 a minute (about 9 hours for 13,000). Not run on production.
 - **One pipeline for new listings (D-168, 2026-10-30, needs the Deploy workflow):** `pnpm sourcing run` makes each new
   listing's photos again on the laptop's GPU before uploading them (food and home refreshed, clothing faces swapped or
   cut, a listing with a portrait left for the review page), so `pnpm photos:redo` is only for older listings.
@@ -147,7 +154,7 @@ Short on purpose: **replace** lines when something changes, don't append. Histor
   stock check, weights, liquids), the weight estimator (laptop GPU), the photo worker (vendor AI photos),
   `pnpm photos:move` (the R2 move, finished), the photo redo (D-163 – D-165, laptop: faces swapped to a house model
   when every check passes, else cut at the chin; every other photo a light refresh with nothing cut out;
-  `tools/photo-redo/README.md`).
+  `tools/photo-redo/README.md`), the description redo (D-178, laptop; `tools/description-redo/README.md`).
 - **Speed and limits:** store pages from Vercel's cache (`/clothing` 7 – 18 ms on a local production build); photos as
   fixed AVIF copies from `/media/s/` (no resizer); narrow page refreshes (D-145). QA pass of 2026-10-24 (not deployed):
   See all's Size / Pack list kept to its 60 biggest past 100 (/food's HTML was 685 KB, 540 KB of it 1,687 packs; each
@@ -176,6 +183,10 @@ Short on purpose: **replace** lines when something changes, don't append. Histor
    `pnpm photos:redo review` (a portrait: Remove photo or Keep it); `publish`. Men's faces are cut until an
    `m-1\front.jpg` (and more) is added. `pnpm photos:redo audit` shows what fills R2's 6.5 GB (run it before deleting
    anything with `--delete`).
+2b. **The description redo (D-178), after the Deploy workflow applies `20261107090000_description_redo`:** read the
+   24 trial samples Claude showed you, then on the laptop `pnpm descriptions:redo run --limit 100`, `pnpm
+   descriptions:redo review` (read some of each type; approve, edit or reject), `publish`; then `run --limit 3000` a
+   night, Approve all that passed, look at the flagged ones, `publish` (`tools/description-redo/README.md`).
 3. **Diwali home & gifts (D-162), soon: only a 7-day piece ordered by Sat, Oct 31 reaches a US door before Diwali.**
    Read Q-47 and D-162's choices, then Admin → Import → Auto-sourcing → Add targets from a CSV with
    `tools/sourcing-runner/targets/diwali-home-gifts.csv` (100 targets; pull the code on the India PC first), and on that
@@ -280,6 +291,7 @@ Short on purpose: **replace** lines when something changes, don't append. Histor
 ## Last verification
 | Date | Commit | Where | Result |
 |---|---|---|---|
+| 2026-11-02 | D-178 description redo | Claude Code, the founder's laptop (RTX 4060, Docker, Ollama `qwen2.5:7b`) | `check.mjs docs lint test db` OK (71 SQL files, new `description_redo.test.sql` 21; shared tests with the new `describe.test.ts` 13); `typecheck` fails only on another session's uncommitted `features/home/diwali-windows.tsx` (a slot name), the tools' `tsc` (sourcing-runner, weight-estimator, photo-redo, description-redo) run by hand: OK. Trial: 24 live listings read from the store's public view into a scratch folder (nothing written to production): 20 passed every check, 4 flagged, 25.6 listings a minute with eight at once; the review page (approve, reject, an edit with a price refused, a clean edit saved) in the browser pane. On the local database: fetch, run, publish `--auto` through the worker functions (flagged ones not sent; a listing an admin changed after fetch left alone and fetched again), and a rewritten description on the product page (paragraph, then one fact per line). **Not run:** anything against production's worker functions (not deployed), `build`, `e2e`. |
 | 2026-10-31 | the admin's speed: row checks once per query, Products and Listings in sections | Claude Code, the founder's Windows machine (Docker; port 3000 free, own `next dev` for the check, stopped after) | `check.mjs docs test db` OK (70 SQL files, new `admin_rls_once.test.sql` 6), `lint` OK; `typecheck` fails only on another session's uncommitted `features/home/diwali-windows.tsx` (a slot name), not this work. Measured on the local database with 8,078 products, 72,884 options, 32,312 photos (copies of the seed, removed by the reset): the Products list query 1,453 ms → 152 ms (RLS) → about 10 ms (index); each status count 200 ms → under 3 ms; whole pages in dev mode: Products 2.1 s → 0.8 s, Listings 1.35 s → 0.42 s, Re-check 5.1 s (1,000 rows) → 0.6 s (paged). Options table locked past the 8 s limit: heading, tabs and filters stayed, the rows said "did not load … Load again", which brought them back once the lock cleared. Not run: `build`, `e2e`, the live site. |
 | 2026-10-31 | the website's photo uploads reach R2 again (Home photos) | Claude Code, the founder's Windows machine | `check.mjs typecheck lint test` OK. Cause, from Vercel's logs: every Home photo upload got `photo store: 411 MissingContentLength` from R2 (the signed Request's body went out as a stream with no length under Next's fetch) and then fell back to Supabase storage, which refused it ("new row violates row-level security policy"). Now signed, then sent as bytes: a PUT to local Supabase's S3 the same way answered 200. Not verified: an upload on the live site (after this deploys). Seen in the same logs: `/admin/catalog` statement timeouts. |
 | 2026-10-31 | a busy database no longer fails a deploy at the state pages | Claude Code, the founder's Windows machine (Docker; port 3000 free) | `check.mjs typecheck lint build` OK, all 36 state pages still built ahead (prerender manifest). Why: 4e51178's fallback covered only the build list; a7d81c2's Vercel build then failed prerendering `/states/andhra-pradesh` (statement timeout, 3 tries). Production logs show 78 statement timeouts from 00:50 to 01:30 UTC (state pages, See all, `/api/browse`, product pages) and none after; the same reads answered in 0.3–1.2 s at 01:50. Now each state's reads are made in the build list first, four at a time; a state whose reads fail is left out and built on its first visit. Not verified: a Vercel build with this commit, or a build during a timeout. |

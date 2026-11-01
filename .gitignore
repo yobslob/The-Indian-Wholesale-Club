@@ -116,3 +116,5 @@ tools/photo-redo/redo.log*
 tools/photo-worker/redo.log*
 # the photo redo service for the sourcing runner (D-168): its log
 tools/photo-worker/serve.log*
+# description redo (D-178): its log (the work folder is out/, ignored above)
+tools/description-redo/redo.log*

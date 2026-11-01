@@ -231,6 +231,14 @@ audit). Once: run the Deploy workflow (migration `20261102090000_photo_redo`), g
 `.env` (or `tools/photo-redo/.env` with the same keys), and keep the house models as one folder each in
 `C:\kod\iwc-photo-models\house-models\` (`w-1\front.jpg` …; `m-1\` … for men). Start with `--limit 30` per type and look at the review page.
 
+### Description redo (D-178; the founder runs every step on production)
+Every listing's summary and description written again on the laptop: `tools/description-redo/README.md` (fetch, make,
+review, publish, and what the checks refuse). Once: run the Deploy workflow (migration `20261107090000_description_redo`);
+the laptop needs the sourcing runner's `.env` (or `tools/description-redo/.env` with the worker account's keys) and
+Ollama with `qwen2.5:7b`, as for the weight estimator (below). Start with `pnpm descriptions:redo run --limit 100` and
+the review page (http://127.0.0.1:4319), then `run --limit 3000` a night (about 25 listings a minute). Before the
+deploy, `pnpm descriptions:redo try --out <scratch folder>` shows new words for live listings without writing anything.
+
 ### Sourcing runner (D-118; the founder runs every step on production)
 Auto-sourcing and the weekly price and stock check run on a PC **in India** by `tools/sourcing-runner` (its README has
 setup and running). For production, once:

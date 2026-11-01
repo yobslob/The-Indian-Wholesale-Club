@@ -34,7 +34,7 @@ operations data are never queried from customer code.
 | | `vendor_applications` | "Join as a vendor?" requests (country IN or US, Q-35), status | admin |
 | Places | `regions` | the 36 regions (D-002): slug, name, sort, `is_live`, greeting (native + ISO 15924 script + Latin + meaning), languages, tagline, story, hero image, accent colour, `content_status` (D-019) | store (text only if approved) / admin |
 | Catalog | `categories` | browse groups per product type. A child always has its parent's type | store / admin |
-| | `products` | region, category, `product_type`, name, slug, summary, description, story, craft, `attributes` (customer-safe JSON), `price_cents`, `status`, search vector; `vendor_id`*, `shop_price_paise`*, `origin_town`*, `has_origin_label`*, `is_placeholder`*; `wears` (women, men, kids, unisex: who it is for, D-140; filled from the name or category on save, required for clothing to go live); `shop_title`* (an imported piece's own title on the shop, D-140 L1); `made_in`* (the country its page states, 'India' by default; D-171: Savana's and NEWME's China pieces; customers see only `store_products.made_in_india`, the customs invoice the country). **Spices are `live` only while "Spices are cleared" is on** (`pricing_settings.spices_cleared`, D-074; on since D-107) | store (live only) / admin |
+| | `products` | region, category, `product_type`, name, slug, summary, description, story, craft, `attributes` (customer-safe JSON), `price_cents`, `status`, search vector; `vendor_id`*, `shop_price_paise`*, `origin_town`*, `has_origin_label`*, `is_placeholder`*; `wears` (women, men, kids, unisex: who it is for, D-140; filled from the name or category on save, required for clothing to go live); `shop_title`* (an imported piece's own title on the shop, D-140 L1); `made_in`* (the country its page states, 'India' by default; D-171: Savana's and NEWME's China pieces; customers see only `store_products.made_in_india`, the customs invoice the country); `description_redo`* (how the description redo last set the summary and description, D-178). **Spices are `live` only while "Spices are cleared" is on** (`pricing_settings.spices_cleared`, D-074; on since D-107) | store (live only) / admin |
 | | `product_variants` | `options` JSON (colour, flavour, style = "Type", pack, size: D-118), SKU*, label, price override, `weight_g`* with `weight_source`* and `weight_note`* (D-129), `weight_estimate_g`*, `weight_estimate_note`*, `weight_estimated_at`* (D-131), `weight_checked_at`* (D-146), `net_qty` (food, D-133), `qty_listed`*, `qty_reserved`*, `qty_confirmed_at`*, `shop_price_paise`*, `source_id`* | store (`available`, food's `net_qty`) / admin |
 | | `product_sources` | the shop items a variant can be ordered as, checked weekly (D-118) | admin / worker via functions |
 | | `variant_availability` | public mirror `variant_id → available`, trigger-maintained, in the Realtime publication (live "only 2 left", D-010) | store (visible products) |
@@ -296,6 +296,15 @@ Savana (`savana`), 10 days each; a shop's own `delivery_days` is its limit when 
 `_to_clearance`); `store_products`, `store_order_items` and `guest_order_lookup`'s items append `made_in_india` (the
 country itself stays admin-only); worker only: `worker_set_origin(product, made_in)` (a listing the runner made; returns
 whether one was changed). Tests: `imported_pieces.test.sql`.
+Migration `20261107090000_description_redo` (D-178): `products.description_redo` (`rewritten`: the redo's new summary
+and description, approved; `edited`: the founder's own on the review page; null: not done, so planned, a listing the
+runner adds later too). Worker only: `worker_description_plan(type, after, limit)` (listings by id after `after`,
+of one type or all, not placeholders or archived, with a summary or description and no mark; each with its
+attributes, `made_in`, `shop_title`, the shop's name and `hash`, the words' md5; at most 50) and
+`worker_description_set(product, hash, summary, description, redo)` (the new words, empty ones stored as null; only
+while the listing has no mark and its words still hash to `hash`; false otherwise; raises `price_or_link` for a price
+or a link, `too_long` past 300 / 4,000 characters, `bad_redo`). Internal: `_description_hash(summary, description)`.
+No store change: the views show the new words as they are. Tests: `description_redo.test.sql`.
 Migration `20261104090000_home_photos` (D-169): `home_photos` (Home's own mosaic photos: path under `home/album/`,
 required alt text, order; admin-only under RLS), `admin_order_home_photos(ids)` (the admin's new order in one call,
 RLS-bound), and `store_home()`'s `album` reads only them, in order, up to 60 (no state album or listing photo).
