@@ -1,3 +1,5 @@
+import { fixSpelling } from './spelling';
+
 import type { ProductType } from '../domain/product-types';
 
 /**
@@ -24,7 +26,8 @@ const tidy = (s: string): string =>
     .trim();
 
 export function cleanTitle(title: string, opts: { brand?: string | null; productType?: ProductType | null } = {}): string {
-  const original = tidy(title);
+  // launch QA B-9: a shop's misspellings ("Cotten") are fixed as the name is made; saved names stay as they are
+  const original = fixSpelling(tidy(title));
   if (opts.productType === 'food') return original;
   let t = original.replace(/^\s*amazon brand\s*[-–:]\s*/i, '');
   const brand = opts.brand?.trim();

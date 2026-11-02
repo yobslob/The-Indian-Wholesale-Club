@@ -24,3 +24,6 @@ export * from './wears';
 export * from './bag-shipments';
 export * from './bag-goal';
 export * from './homesick';
+export * from './sizes';
+export * from './display-text';
+export * from './price-label';
