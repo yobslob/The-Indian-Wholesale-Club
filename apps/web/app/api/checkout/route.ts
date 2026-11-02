@@ -1,8 +1,10 @@
 import { NextResponse } from 'next/server';
+import { z } from 'zod';
 
-import { savePendingCheckout } from '@repo/db/server';
 import { formatUsd } from '@repo/shared/domain';
 
+import { checkoutIdempotencyKey } from '@/features/checkout/intent-key';
+import { startPayment } from '@/features/checkout/payment-intent';
 import { checkoutRequestSchema, priceCart } from '@/features/checkout/pricing';
 import { errorMessage, logger } from '@/lib/logger';
 import { limitRequest } from '@/lib/rate-limit';
@@ -11,7 +13,11 @@ import { isStripeConfigured, stripeServer } from '@/lib/stripe';
 import { serviceClient } from '@/lib/supabase/service';
 
 import type { PendingCheckout } from '@/features/checkout/finalize';
-import type { CheckoutErrorResponse, CheckoutProblem, CheckoutStartResponse } from '@/features/checkout/types';
+import type {
+  CheckoutErrorResponse,
+  CheckoutProblem,
+  CheckoutStartResponse,
+} from '@/features/checkout/types';
 
 const PROBLEM_MESSAGE = {
   unavailable: 'Some items in your bag are no longer available.',
@@ -19,6 +25,9 @@ const PROBLEM_MESSAGE = {
   express_unavailable: 'Express shipping is not available right now.',
   closed: 'Checkout is not open right now. Please try again soon.',
 } as const;
+
+/** The website sends the payment it already holds this visit, so a re-price keeps it (launch QA A-5). */
+const reuseSchema = z.object({ clientSecret: z.string().max(200).nullish() });
 
 function problemMessage(problem: CheckoutProblem): string {
   if (problem.kind === 'below_minimum')
@@ -30,7 +39,8 @@ function problemMessage(problem: CheckoutProblem): string {
  * POST /api/checkout (flows.md §3 steps 1–3): price the bag on the server,
  * create the Stripe PaymentIntent for that exact total, and store the priced
  * checkout so the order can later be created from it (never from the browser).
- * DB round trips: 1 (price) + 1 (store) = the checkout budget of 2 (PR-2).
+ * A re-price in the same visit moves the amount of the payment the browser holds (`clientSecret`) instead of
+ * creating another (payment-intent.ts). DB round trips: 1 (price) + 1 (store) = the checkout budget of 2 (PR-2).
  */
 export async function POST(
   request: Request,
@@ -42,18 +52,23 @@ export async function POST(
     return NextResponse.json({ error: 'Payments are not available right now.' }, { status: 503 });
   }
 
-  const parsed = checkoutRequestSchema.safeParse(await request.json().catch(() => null));
+  const raw: unknown = await request.json().catch(() => null);
+  const parsed = checkoutRequestSchema.safeParse(raw);
   if (!parsed.success) {
     return NextResponse.json(
       { error: 'Please check your details and try again.' },
       { status: 400 },
     );
   }
+  const reuse = reuseSchema.safeParse(raw);
 
   try {
     const service = serviceClient();
     // Website: session cookies. App: Bearer token. Only links the order to the account. Read alongside the pricing.
-    const [priced, user] = await Promise.all([priceCart(service, parsed.data), requestUser(request)]);
+    const [priced, user] = await Promise.all([
+      priceCart(service, parsed.data),
+      requestUser(request),
+    ]);
     if (!priced.ok) {
       return NextResponse.json(
         { error: problemMessage(priced.problem), problem: priced.problem },
@@ -61,14 +76,6 @@ export async function POST(
       );
     }
     const { quote } = priced;
-
-    const intent = await stripeServer().paymentIntents.create({
-      amount: quote.breakdown.totalCents,
-      currency: 'usd',
-      automatic_payment_methods: { enabled: true },
-      receipt_email: parsed.data.email,
-      metadata: { source: 'iwc' },
-    });
 
     const pending: PendingCheckout = {
       email: parsed.data.email,
@@ -85,7 +92,8 @@ export async function POST(
       bulkSavingCents: quote.breakdown.bulkSavingCents,
       // D-111: the retailer charges travel inside the order's shipping; their part is kept beside it. So does
       // Heavy-item shipping (founder 2026-10-24).
-      shippingCents: quote.breakdown.shippingCents + quote.breakdown.retailerCents + quote.breakdown.heavyCents,
+      shippingCents:
+        quote.breakdown.shippingCents + quote.breakdown.retailerCents + quote.breakdown.heavyCents,
       retailerChargeCents: quote.breakdown.retailerCents,
       heavyShippingCents: quote.breakdown.heavyCents,
       taxCents: quote.breakdown.taxCents,
@@ -94,14 +102,23 @@ export async function POST(
       shippingMethod: quote.shippingMethod,
       pages: priced.pages,
     };
-    try {
-      await savePendingCheckout(service, intent.id, { ...pending });
-    } catch (error) {
-      await stripeServer()
-        .paymentIntents.cancel(intent.id)
-        .catch(() => undefined);
-      throw error;
-    }
+
+    const intent = await startPayment(stripeServer(), service, {
+      pending,
+      reuseSecret: reuse.success ? (reuse.data.clientSecret ?? null) : null,
+      idempotencyKey: checkoutIdempotencyKey(
+        {
+          email: pending.email,
+          userId: pending.userId,
+          totalCents: pending.totalCents,
+          shippingMethod: pending.shippingMethod,
+          promoCode: quote.promoCode,
+          address: priced.address,
+          lines: pending.items,
+        },
+        new Date(),
+      ),
+    });
 
     if (!intent.client_secret) throw new Error('PaymentIntent has no client secret');
     return NextResponse.json({
