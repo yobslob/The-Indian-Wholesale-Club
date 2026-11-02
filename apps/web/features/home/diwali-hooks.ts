@@ -39,7 +39,7 @@ export const WIDE = {
   hook: 'Host your Diwali under $99.',
   cta: 'Shop under $99',
   href: '/home-and-gifts?max=99',
-  slot: 'diwali-night' satisfies SlotId,
+  slot: 'diwali-night' as const satisfies SlotId,
 };
 
 export const ARCHES: readonly Arch[] = [
