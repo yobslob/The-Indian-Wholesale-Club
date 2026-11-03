@@ -9,13 +9,14 @@ import {
   findOrderByPaymentIntent,
   getPendingCheckout,
   markPendingReconciled,
-  recordFailedReconciliation,
+  recordFailedReconciliationOnce,
   redeemPromo,
   rememberOrderAddress,
 } from '@repo/db/server';
 import { shippingAddressSchema } from '@repo/shared/domain';
 
 import { revalidateAfterSale } from '@/features/catalog/revalidate';
+import { alertDollars, sendAlert } from '@/lib/alert';
 import { deliverOutboxRow } from '@/lib/email/send';
 import { errorMessage, logger } from '@/lib/logger';
 import { stripeServer } from '@/lib/stripe';
@@ -53,6 +54,31 @@ export const pendingCheckoutSchema = z.object({
   pages: z.array(z.object({ regionSlug: z.string().nullable(), productSlug: z.string() })).default([]),
 });
 export type PendingCheckout = z.infer<typeof pendingCheckoutSchema>;
+
+type FailedReconciliation = Parameters<typeof recordFailedReconciliationOnce>[1];
+
+/**
+ * F-3: recorded once per payment (the browser, the webhook and the sweep can each reach the same refusal), and the
+ * founder is alerted the first time. The alert carries the payment, amount and reason, never the customer's email.
+ */
+async function recordFailedReconciliation(service: IwcClient, input: FailedReconciliation): Promise<void> {
+  const isNew = await recordFailedReconciliationOnce(service, input);
+  if (!isNew) return;
+  await sendAlert('Paid, but no order: check it in Stripe', {
+    paymentIntentId: input.paymentIntentId,
+    amount: input.amountCents === null ? 'unknown' : alertDollars(input.amountCents),
+    reason: input.reason,
+  });
+}
+
+/** F-6: the order number on the payment, so support finds an order from Stripe. Best effort: never fails the order. */
+async function tagPayment(paymentIntentId: string, orderNumber: string): Promise<void> {
+  await stripeServer()
+    .paymentIntents.update(paymentIntentId, { metadata: { order_number: orderNumber } })
+    .catch((error: unknown) =>
+      logger.warn('checkout.payment_not_tagged', { orderNumber, error: errorMessage(error) }),
+    );
+}
 
 export type FinalizeResult =
   | { ok: true; orderNumber: string }
@@ -149,6 +175,7 @@ export async function finalizeOrder(
   const [, promoRedeemed] = await Promise.all([
     markPendingReconciled(service, paymentIntentId, via),
     input.promoCodeId ? redeemPromo(service, input.promoCodeId) : Promise.resolve(true),
+    tagPayment(paymentIntentId, result.orderNumber),
   ]);
   if (!promoRedeemed) {
     // The code hit its limit between pricing and payment. The customer keeps the discount they paid for.

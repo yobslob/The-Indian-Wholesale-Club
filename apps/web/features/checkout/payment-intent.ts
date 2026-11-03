@@ -42,7 +42,8 @@ async function create(
     currency: 'usd',
     automatic_payment_methods: { enabled: true },
     receipt_email: email,
-    metadata: { source: 'iwc' },
+    // F-6: support finds the payment from our side (the order number is added once the order exists, finalize.ts).
+    metadata: { source: 'iwc', checkout_hash: idempotencyKey.replace(/^iwc-checkout-/, '') },
   };
   const intent = await stripe.paymentIntents.create(params, { idempotencyKey });
   if (intent.lastResponse.headers['idempotent-replayed'] !== 'true') return intent;

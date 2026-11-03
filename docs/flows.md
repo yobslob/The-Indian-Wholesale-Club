@@ -79,7 +79,17 @@ open ──cutoff──► collecting ──► packed ──► exported ──
    `stock_movements`, attach the order to the open cycle and store the delivery window. Then the server queues the
    confirmation email in `email_outbox`.
 5. If `create_order` refuses (sold out meanwhile, price changed, no open cycle), no order is created, the payment is refunded
-   in full and recorded in `failed_reconciliations`. The customer is told an item sold out.
+   in full and recorded in `failed_reconciliations` (one open row per payment, however many of the device, webhook and
+   sweep reach it; the founder is alerted once, F-3). The customer is told an item sold out. A created order's number is
+   added to the PaymentIntent's metadata (with `source: iwc` and the checkout's hash from creation, F-6), so support
+   finds it in Stripe.
+6. **After payment (F-3, the same webhook and claims):** a refund made in the Stripe dashboard (`charge.refunded`) brings
+   the order's refunded total up to Stripe's and emails the customer (the `item_refunded` update), unless the admin's
+   own refund already counted it (a fresh event waits 30 s for that record); a dispute (`charge.dispute.created`,
+   `.closed`) is kept in `payment_disputes` and alerts the founder at once; a failed payment
+   (`payment_intent.payment_failed`) is logged with its codes and the checkout stays open (the customer may try another
+   card), the sweep asking Stripe again an hour later. Alerts go to `ADMIN_ALERT_WEBHOOK_URL` (`monitoring.md` §5);
+   Today shows payments to check and open disputes in red.
 
 ## 4. Pickups (India desk)
 1. At cutoff, the system creates one `pickup` per ordered piece, grouped by vendor into a per-shop checklist.

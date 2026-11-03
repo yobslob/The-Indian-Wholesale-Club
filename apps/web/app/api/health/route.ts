@@ -1,5 +1,6 @@
 import { NextResponse } from 'next/server';
 
+import { isStripeConfigured } from '@/lib/stripe';
 import { storeClient } from '@/lib/supabase/store';
 
 export const dynamic = 'force-dynamic';
@@ -26,7 +27,8 @@ export async function GET(): Promise<NextResponse> {
       status,
       dbLatencyMs: Date.now() - started,
       services: {
-        stripe: process.env.STRIPE_SECRET_KEY ? 'configured' : 'not_configured',
+        // F-5: both keys and the webhook's signing secret (payments and their orders); never shown in production.
+        stripe: isStripeConfigured() && process.env.STRIPE_WEBHOOK_SECRET ? 'configured' : 'not_configured',
         email:
           process.env.RESEND_API_KEY && process.env.RESEND_FROM_EMAIL
             ? 'configured'

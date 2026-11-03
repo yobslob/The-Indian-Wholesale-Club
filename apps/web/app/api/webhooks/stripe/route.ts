@@ -1,6 +1,6 @@
 import { NextResponse } from 'next/server';
 
-import { claimWebhookEvent, finishWebhookEvent, releaseWebhookEvent } from '@repo/db/server';
+import { claimWebhookEvent, deferPaymentSweep, finishWebhookEvent, releaseWebhookEvent } from '@repo/db/server';
 
 import { finalizeOrder } from '@/features/checkout/finalize';
 import { FASTER_KIND, finalizeFasterPayment } from '@/features/orders/faster';
@@ -8,6 +8,9 @@ import { errorMessage, logger } from '@/lib/logger';
 import { isStripeConfigured, stripeServer } from '@/lib/stripe';
 import { busyIfDbTimeout } from '@/lib/supabase/busy';
 import { serviceClient } from '@/lib/supabase/service';
+
+import { stripeEventDeps } from './deps';
+import { handleExtraEvent, isExtraEvent } from './events';
 
 import type Stripe from 'stripe';
 
@@ -19,7 +22,8 @@ export const maxDuration = 60;
  * paying (flows.md §3, pending_orders reconciliation), and finishes a paid
  * faster-delivery offer the same way (D-064). Idempotent per event: a claim is
  * marked done once handled; one left unfinished by a killed function is taken
- * over by Stripe's retry after 2 minutes (F-1).
+ * over by Stripe's retry after 2 minutes (F-1). Refunds made in Stripe, disputes and failed payments are handled the
+ * same way (F-3, events.ts).
  */
 export async function POST(request: Request): Promise<NextResponse> {
   const secret = process.env.STRIPE_WEBHOOK_SECRET;
@@ -38,7 +42,8 @@ export async function POST(request: Request): Promise<NextResponse> {
     return NextResponse.json({ error: 'Invalid signature' }, { status: 400 });
   }
 
-  if (event.type !== 'payment_intent.succeeded') return NextResponse.json({ received: true });
+  if (event.type !== 'payment_intent.succeeded' && !isExtraEvent(event.type))
+    return NextResponse.json({ received: true });
 
   const service = serviceClient();
   let claimed: boolean;
@@ -52,6 +57,17 @@ export async function POST(request: Request): Promise<NextResponse> {
   if (!claimed) return NextResponse.json({ received: true, duplicate: true });
 
   try {
+    if (isExtraEvent(event.type)) {
+      const outcome = await handleExtraEvent(
+        event,
+        stripeEventDeps(service, { deferSweep: (id) => deferPaymentSweep(service, id) }),
+      );
+      logger.info('stripe.webhook_handled', { eventId: event.id, type: event.type, outcome });
+      await finishWebhookEvent(service, event.id).catch((error: unknown) =>
+        logger.warn('stripe.webhook_finish_failed', { eventId: event.id, error: errorMessage(error) }),
+      );
+      return NextResponse.json({ received: true });
+    }
     const intent = event.data.object as Stripe.PaymentIntent;
     const result =
       intent.metadata.kind === FASTER_KIND

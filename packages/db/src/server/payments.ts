@@ -69,3 +69,17 @@ export async function stopSweeping(service: IwcClient, paymentIntentId: string, 
       .eq('payment_intent_id', paymentIntentId),
   );
 }
+
+/**
+ * A payment failed (payment_intent.payment_failed, F-3): the customer may still try another card on it, so the
+ * checkout stays open; the sweep just asks Stripe about it an hour from now rather than at its next run.
+ */
+export async function deferPaymentSweep(service: IwcClient, paymentIntentId: string) {
+  unwrap(
+    await service
+      .from('pending_orders')
+      .update({ swept_at: new Date().toISOString() })
+      .eq('payment_intent_id', paymentIntentId)
+      .is('reconciled_at', null),
+  );
+}
