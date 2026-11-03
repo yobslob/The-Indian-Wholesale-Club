@@ -25,7 +25,7 @@ A number past its **budget** is a warning (look for the cause that week); past t
 ## 2. The site's health: what "behaving well" means
 | Area | Healthy when | How it is checked |
 |---|---|---|
-| Up | `/api/health` answers `{"status":"healthy"}` | an uptime service every 10 minutes (§5); it also keeps the free Supabase project awake |
+| Up | `/api/health` answers `{"status":"healthy"}`; `/`, `/food` and a product page answer 200; the webhook answers `HEAD` with 405 | an uptime service every 5 minutes (§5 step 3); it also keeps the free Supabase project awake |
 | Speed | cached store pages answer in ≤ 100 ms and ship ≤ 150 KB first-load JS (D-011, `engineering.md` §Performance); on the live site Home, a state, See all and a product page load in under 2 s on a phone | `node scripts/check.mjs http` (local production build) weekly; the live pages in Chrome's Lighthouse (mobile) monthly |
 | Photos | every photo from `/media/s/…avif`, a second request `x-vercel-cache: HIT` | `CHECK_LIVE_SITE=<site> node scripts/check.mjs http`; `curl -I` on one photo twice |
 | Payments | every paid Stripe payment has its order; no row in `failed_reconciliations` unresolved | Admin → Today (payments to check); Stripe → Payments vs Admin → Orders weekly |
@@ -44,6 +44,7 @@ A number past its **budget** is a warning (look for the cause that week); past t
 | Supabase down or slow | cached store pages keep showing (they are built pages); checkout, account and admin fail | uptime ping (`degraded`), Today | wait for Supabase status; nothing to repair in the code |
 | R2 down | photos fail where not already in Vercel's CDN | photo check | wait; Vercel's CDN may keep a photo up to a year (`CDN-Cache-Control` in `apps/web/next.config.js`), so most still show |
 | Stripe webhook failing | payments arrive without orders | `failed_reconciliations`, Today | fix the endpoint or secret (`ops.md` §Going live step 7); reconcile from Today |
+| Refund made in Stripe, dispute opened | the order's refund is recorded and the customer emailed; a dispute is kept in `payment_disputes` | an alert at once (§5 step 5); Today's red count | a dispute: answer it in Stripe → Disputes before its due date; a whole-order refund: cancel the order in the admin if nothing should ship |
 | Email timer not running | emails wait (the site's own actions still send at once) | query C, D | the Vault secrets and `cron.schedule` lines (`ops.md` §Email timer, §Moving step 5) |
 | Exchange-rate service down | prices keep the last rate; a jump over 10% is held for an admin (D-075) | query E | nothing; check Settings |
 | India PC or laptop off | no new listings, no weekly check; nothing breaks | runner's last run | turn it on; it carries on |
@@ -66,11 +67,39 @@ A number past its **budget** is a warning (look for the cause that week); past t
 ## 5. Set-up once (the founder)
 1. Vercel → Settings → Billing / Usage: turn on the usage notifications (50%, 75%, 100%) for the account's email.
 2. Supabase → Organization → Billing / Usage: the same email; note the plan's limits page.
-3. An uptime service on its free plan (UptimeRobot or Better Stack): HTTP check of
-   `https://the-indian-wholesale-club.vercel.app/api/health` every 10 minutes, alert when it is not 200 or its body
-   lacks `healthy`. Ten-minute pings are about 4,300 function invocations a month (under 0.5% of the limit).
+3. An uptime service on its free plan (Better Stack or UptimeRobot; launch QA F-5), five checks every 5 minutes on the
+   domain, each alerting the founder's phone through the service's own app (push notifications are free on both;
+   calls and SMS are paid extras) and email:
+
+   | Check | Request | Up when |
+   |---|---|---|
+   | Health | `GET https://indianwholesaleclub.com/api/health` | 200 and the body contains `healthy` (it answers within 9 s even when the database hangs, F-0) |
+   | Home | `GET https://indianwholesaleclub.com/` | 200 |
+   | A category | `GET https://indianwholesaleclub.com/food` | 200 |
+   | A product | `GET` one live product page that will stay listed (pick it in the store) | 200 |
+   | Webhook route | `HEAD https://indianwholesaleclub.com/api/webhooks/stripe` | 405 (the route answers only POST; a 404, 307 or 5xx means it moved or is broken) |
+
+   Set "alert after 2 failed checks" so one slow answer does not page. If the free plan does not let a check expect
+   405, leave that one out: Stripe emails the account when deliveries keep failing. Cost: the health and webhook
+   checks are about 17,300 function invocations a month (under 2% of Hobby's limit) and 8,600 one-row reads; the three
+   pages come from Vercel's page cache, and at most refresh each page once per its cache time at night (a few hundred
+   page-cache writes a month).
 4. On the Windows machine, `apps/web/.env.local` gets `CHECK_LIVE_SITE=https://the-indian-wholesale-club.vercel.app`
    (`ops.md` §Environment variables), so `check.mjs http` also checks a live photo.
+5. **Alerts (launch QA F-3, F-4):** an incoming webhook for the founder's phone, its URL in Vercel's
+   `ADMIN_ALERT_WEBHOOK_URL` (Production), then redeploy. Any of: a Slack incoming webhook, a Discord channel webhook,
+   or a Telegram bot (`https://api.telegram.org/bot<token>/sendMessage?chat_id=<chat id>`). The site posts
+   `{"text": …, "content": …}`, a title and a few `key: value` lines: order number, amount, reason, route, never a
+   customer's email, address or phone (`apps/web/lib/alert.ts`). What sends one:
+   - a dispute opened (at once, every new one) or closed; a refund made in the Stripe dashboard reaching an order;
+   - a paid order that could not be created (each `failed_reconciliations` row, once per payment);
+   - any server error the logger records (`stripe.webhook_failed`, `payment_sweep.not_finalized`, …), at most one per
+     event name per 10 minutes;
+   - an uncaught server error in a page or route (`instrumentation.ts`), at most one per route per 10 minutes, with
+     the method, Next's error digest (search it in Vercel's logs) and the release.
+   Test it once: `stripe trigger charge.dispute.created` against a test-mode deployment.
+6. **Stripe → Developers → Webhooks → the endpoint → events:** `payment_intent.succeeded`, `charge.refunded`,
+   `charge.dispute.created`, `charge.dispute.closed`, `payment_intent.payment_failed` (F-3).
 
 ## 6. Queries for Supabase's SQL editor (read-only)
 ```sql
