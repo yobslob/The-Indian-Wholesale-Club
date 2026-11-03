@@ -15,6 +15,7 @@ import {
   reachPayment,
   watchCheckoutStarts,
 } from './pay';
+import { restoreDemoStock } from './stock';
 
 /**
  * One visit, one payment (launch QA plan A-5, §8 item 9): switching the shipping method updates the same
@@ -22,8 +23,10 @@ import {
  * one order. PaymentIntents are counted from what /api/checkout hands this page, which is what the browser pays.
  */
 
-test.beforeEach(() => {
+test.beforeEach(async ({ request }) => {
   test.skip(!stripeTestKeysPresent(), 'Stripe test keys are not set in apps/web/.env.local');
+  // each test buys the demo piece: top its stock up so a long run never sells it out
+  await restoreDemoStock(request);
 });
 
 test('standard ↔ express five times: one PaymentIntent, the card details kept (A-5)', async ({ page }) => {

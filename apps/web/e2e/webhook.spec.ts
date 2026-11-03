@@ -2,6 +2,7 @@ import { expect, test, type Page } from '@playwright/test';
 
 import { stripeTestKeysPresent } from './env';
 import { CARDS, confirmationQueued, ordersFor, ownCaller, payWith, reachPayment, watchCheckoutStarts } from './pay';
+import { restoreDemoStock } from './stock';
 import { newEventId, sendSucceededEvent, stripeListenRun, webhookSecretPresent, writeClaim } from './webhook';
 
 /**
@@ -19,8 +20,10 @@ import { newEventId, sendSucceededEvent, stripeListenRun, webhookSecretPresent, 
  *     pnpm --filter web exec playwright test --grep @stripe-listen
  */
 
-test.beforeEach(() => {
+test.beforeEach(async ({ request }) => {
   test.skip(!stripeTestKeysPresent(), 'Stripe test keys are not set in apps/web/.env.local');
+  // each test buys the demo piece: top its stock up so a long run never sells it out
+  await restoreDemoStock(request);
 });
 
 /** Pays with the browser's own /api/orders call blocked, then closes the tab: only a webhook can make the order. */

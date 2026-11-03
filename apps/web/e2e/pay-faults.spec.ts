@@ -13,6 +13,7 @@ import {
   reachPayment,
   watchCheckoutStarts,
 } from './pay';
+import { restoreDemoStock } from './stock';
 
 /**
  * Launch QA plan §8 item 5 (A-2, A-3, A-4): when our own server misbehaves the customer is never stuck. A paid
@@ -21,8 +22,10 @@ import {
  * shows an error and the button works again. The faults are browser-side route mocks: the server and Stripe behave.
  */
 
-test.beforeEach(() => {
+test.beforeEach(async ({ request }) => {
   test.skip(!stripeTestKeysPresent(), 'Stripe test keys are not set in apps/web/.env.local');
+  // each test buys the demo piece: top its stock up so a long run never sells it out
+  await restoreDemoStock(request);
 });
 
 const GATEWAY_HTML = '<!doctype html><html><body><h1>504 Gateway Timeout</h1></body></html>';

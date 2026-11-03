@@ -10,6 +10,7 @@ import {
   threeDSFailedFlow,
 } from './flows';
 import { CARDS } from './pay';
+import { restoreDemoStock } from './stock';
 
 /**
  * Launch QA plan §8 items 3 and 4 on a laptop screen (phone-flows.spec.ts runs the same flows at 375 × 812).
@@ -17,8 +18,10 @@ import { CARDS } from './pay';
  */
 
 test.describe('paying (§8.3, §8.4)', () => {
-  test.beforeEach(() => {
+  test.beforeEach(async ({ request }) => {
     test.skip(!stripeTestKeysPresent(), 'Stripe test keys are not set in apps/web/.env.local');
+    // each test buys the demo piece: top its stock up so a long run never sells it out
+    await restoreDemoStock(request);
   });
 
   test('4242 pays: the number on the thank-you page, the bag empty, the email queued', async ({ page }) => {

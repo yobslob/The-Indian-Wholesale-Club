@@ -11,6 +11,7 @@ import {
   threeDSFailedFlow,
 } from './flows';
 import { CARDS } from './pay';
+import { restoreDemoStock } from './stock';
 
 /**
  * Launch QA plan §8 item 10: a phone (375 × 812, touch) runs browse, the happy path and the card outcomes, and the
@@ -52,8 +53,10 @@ test('phone: browse to an empty bag (§8.1)', async ({ page }) => {
 });
 
 test.describe('phone: paying (§8.3, §8.4)', () => {
-  test.beforeEach(() => {
+  test.beforeEach(async ({ request }) => {
     test.skip(!stripeTestKeysPresent(), 'Stripe test keys are not set in apps/web/.env.local');
+    // each test buys the demo piece: top its stock up so a long run never sells it out
+    await restoreDemoStock(request);
   });
 
   test('4242 pays', async ({ page }) => {
