@@ -7,6 +7,10 @@
  * The wall in the photo's pixels (1117 x 1409): x 690 - 1117, y 335 - 670. --W/--H/--L/--T repeat what object-fit: cover
  * and object-position do, so the name is placed on the wall itself; --fs is capped by the wall's width (the word
  * "Wholesale" is 5.683 em wide in Cinzel) and its height. Checked at 13 screen sizes, 2560 x 1080 to 360 x 740 (D-079).
+ *
+ * The photo's date stamp ("31 03 2025", x 873 - 1076, launch QA C-2) stays whole: the crop sits at 85 % across as
+ * before, except on screens narrower than about 3 : 5 (phones), where it slides right only as far as needed to keep
+ * x 1089 on screen (97.5 %); --L is the photo's left edge, and .photo is placed by it, so the words follow.
  */
 .hero {
   position: relative;
@@ -19,7 +23,7 @@
   --ar: 0.7928;
   --W: max(100cqw, 100cqh * var(--ar));
   --H: calc(var(--W) / var(--ar));
-  --L: calc((100cqw - var(--W)) * 0.85);
+  --L: max(100cqw - var(--W), min((100cqw - var(--W)) * 0.85, 100cqw - var(--W) * 0.975));
   --T: calc((100cqh - var(--H)) * 0.2);
   --avail: calc(100cqw - var(--gut) - var(--L) - var(--W) * 0.6177);
   --fs: min(calc(var(--avail) / 5.683 * 0.74), calc(var(--H) * 0.057), 108px);
@@ -31,7 +35,7 @@
   width: 100%;
   height: 100%;
   object-fit: cover;
-  object-position: 85% 20%;
+  object-position: var(--L) var(--T);
 }
 
 .words {

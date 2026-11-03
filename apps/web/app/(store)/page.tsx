@@ -2,13 +2,13 @@ import { formatUsd } from '@repo/shared/domain';
 
 import { PAGE } from '@/features/catalog/browse-query';
 import { getHomeCached, getStorePolicyCached, quickPageCached } from '@/features/catalog/data';
-import { ProductRow } from '@/features/catalog/product-row';
 import { DeliveryBand } from '@/features/home/delivery-band';
 import { DiwaliWindows } from '@/features/home/diwali-windows';
 import { HomeHero } from '@/features/home/home-hero';
+import { HomeRow } from '@/features/home/home-row';
 import { JustListed } from '@/features/home/just-listed';
-import { PickHome } from '@/features/regions/pick-home';
-import { RegionAlbum } from '@/features/regions/region-album';
+import { LazyAlbum, LazyPickHome } from '@/features/home/lazy-sections';
+import { ALBUM_MINIMUM } from '@/features/regions/region-album';
 import { VisualSlot } from '@/features/visuals/visual-slot';
 import { QUICK_HOME } from '@/lib/site';
 
@@ -17,7 +17,9 @@ import { QUICK_HOME } from '@/lib/site';
  * region pages' drifting mosaic), the Diwali windows with the flight inside (D-174), Pick your home, the founder's wide picture (slots.ts), then Just listed (a row per type with its See all, D-062, D-140).
  * One cached store_home() call (PR-1, PR-2). Runs edge to edge (data-bleed); sections keep the gutter. D-154: while the
  * 7-day store is open, one row "Arrives in 7 days" before Just listed (the 7-day page's cached first page, refreshed
- * with Home when listings change).
+ * with Home when listings change). Launch QA C-2: the first screen, the Diwali windows, the headings and the band are
+ * server-rendered; the album, Pick your home's map and stamps and every row's cards are drawn in the browser as they
+ * come near (features/home/lazy-sections.tsx), from data the page carries, so the page stays one cached page.
  */
 export default async function HomePage(): Promise<React.JSX.Element> {
   const [home, policy] = await Promise.all([getHomeCached(), getStorePolicyCached()]);
@@ -29,7 +31,7 @@ export default async function HomePage(): Promise<React.JSX.Element> {
       <HomeHero />
 
       <div className="px-[var(--gut)]">
-        <RegionAlbum photos={home.album} regionName="India" reveal />
+        {home.album.length >= ALBUM_MINIMUM ? <LazyAlbum photos={home.album} /> : null}
         {/* D-174: the Diwali windows, the plane from India flying inside the wide one */}
         <DiwaliWindows
           free={home.band?.free_min_cents ? `Free delivery from ${formatUsd(home.band.free_min_cents)}` : null}
@@ -45,7 +47,17 @@ export default async function HomePage(): Promise<React.JSX.Element> {
             All 28 states and 8 union territories. Find yours on the map or by name.
           </p>
         </div>
-        <PickHome regions={home.regions} delivery={home.delivery} />
+        <LazyPickHome
+          // only what the map and stamps read: the greetings and taglines stay out of the page
+          regions={home.regions.map(({ slug, name, is_live, accent_color, hero_image_path }) => ({
+            slug,
+            name,
+            is_live,
+            accent_color,
+            hero_image_path,
+          }))}
+          delivery={home.delivery}
+        />
       </section>
 
       <div className="px-[var(--gut)]">
@@ -54,7 +66,7 @@ export default async function HomePage(): Promise<React.JSX.Element> {
 
       <div className="px-[var(--gut)]">
         {quick && quickDays ? (
-          <ProductRow
+          <HomeRow
             id="arrives-in-7-days"
             title={`Arrives in ${quickDays} days`}
             // the row says it once, not each card (as on the 7-day page)

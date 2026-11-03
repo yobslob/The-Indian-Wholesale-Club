@@ -1,8 +1,9 @@
-import Link from 'next/link';
-
 import { PRODUCT_TYPE_LABEL, PRODUCT_TYPE_PATH, PRODUCT_TYPES } from '@repo/shared/domain';
 
-import { ProductStrip, seeAllPill, sectionHeading } from '@/features/catalog/product-row';
+import { seeAllPill, sectionHeading } from '@/features/catalog/product-row';
+import { IntentLink } from '@/features/shell/intent-link';
+
+import { LazyStrip } from './lazy-sections';
 
 import type { HomeData } from '@repo/db/store';
 
@@ -12,8 +13,8 @@ const MIN_ROW = 4;
 /**
  * Home's Just listed (D-062, D-113; D-140 replaces D-136's switch): one heading, then a row for each type (Clothing,
  * Food, Home & gifts), the twelve newest of each, every row with its own See all. A type with fewer than four pieces
- * is left out. Server-rendered, no client island. Before migration 20261016210000 (no per-type lists) the one mixed row
- * shows, as before.
+ * is left out. The headings and See all are server-rendered; each row's cards are drawn as it comes near (launch QA
+ * C-2, lazy-sections.tsx). Before migration 20261016210000 (no per-type lists) the one mixed row shows, as before.
  */
 export function JustListed({ home }: { home: HomeData }): React.JSX.Element | null {
   const byType = home.just_listed_types;
@@ -28,7 +29,7 @@ export function JustListed({ home }: { home: HomeData }): React.JSX.Element | nu
         Just listed
       </h2>
       {byType === undefined ? (
-        <ProductStrip products={home.just_listed} label="Just listed" />
+        <LazyStrip products={home.just_listed} label="Just listed" />
       ) : (
         // One column that may shrink below its content (minmax(0,1fr) + min-w-0): a plain `grid` sizes its column to the
         // rows' full width, so each row grew past the screen, could not scroll and pushed See all off the page.
@@ -39,14 +40,14 @@ export function JustListed({ home }: { home: HomeData }): React.JSX.Element | nu
                 <h3 id={`just-listed-${type}`} className="font-heading text-[clamp(18px,1.5vw,22px)] font-medium tracking-[-0.01em]">
                   {PRODUCT_TYPE_LABEL[type]}
                 </h3>
-                <Link href={PRODUCT_TYPE_PATH[type]} className={seeAllPill}>
+                <IntentLink href={PRODUCT_TYPE_PATH[type]} className={seeAllPill}>
                   See all<span className="sr-only"> {PRODUCT_TYPE_LABEL[type]}</span>
                   <span aria-hidden="true" className="-mr-1 transition-transform duration-300 group-hover:translate-x-1">
                     →
                   </span>
-                </Link>
+                </IntentLink>
               </div>
-              <ProductStrip products={products} label={`Just listed: ${PRODUCT_TYPE_LABEL[type]}`} />
+              <LazyStrip products={products} label={`Just listed: ${PRODUCT_TYPE_LABEL[type]}`} />
             </section>
           ))}
         </div>

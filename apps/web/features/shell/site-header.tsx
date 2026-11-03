@@ -4,6 +4,7 @@ import { CartLink } from '@/features/cart/cart-link';
 import { isInfoPath, QUICK_HOME } from '@/lib/site';
 
 import { HeaderIcon } from './header-icons';
+import { IntentLink } from './intent-link';
 import { LogoText } from './logo';
 import { NavLink } from './nav-link';
 import { PhoneSearch } from './phone-search';
@@ -29,7 +30,7 @@ const MORE = [
  * tabs sit above it (store-switch.tsx, drawn by the store layout), and inside the 7-day store the type links become its
  * categories and Search finds only 7-day pieces. Server-rendered with
  * no session reads, so pages stay static (PR-1); the bag count, the search pill, the menu and the current-section mark are the only client
- * islands. Its look
+ * islands. Its links read their page ahead on intent, never on sight (intent-link.tsx, launch QA C-6). Its look
  * on Home (on the photo, logo fading in on scroll) is CSS in app/globals.css. No admin link anywhere (D-006).
  */
 export function SiteHeader({ quick = null }: { quick?: QuickNav }): React.JSX.Element {
@@ -37,14 +38,14 @@ export function SiteHeader({ quick = null }: { quick?: QuickNav }): React.JSX.El
     <header className="site-header">
       <a
         href="#main"
-        className="font-ui bg-ink text-paper sr-only rounded-pill px-4 py-2 text-sm focus:not-sr-only focus:absolute focus:left-[var(--gut)] focus:top-3 focus:z-50"
+        className="font-ui bg-ink text-paper sr-only rounded-pill px-5 text-sm focus:not-sr-only focus:absolute focus:left-[var(--gut)] focus:top-2 focus:z-50 focus:inline-flex focus:min-h-11 focus:items-center"
       >
         Skip to content
       </a>
       <div className="site-bar font-ui">
-        <Link href="/" aria-label="Indian Wholesale Club, home" className="site-logo font-logo mr-auto text-[16px] font-normal leading-none tracking-normal md:text-[22px]">
+        <IntentLink href="/" aria-label="Indian Wholesale Club, home" className="site-logo font-logo mr-auto text-[16px] font-normal leading-none tracking-normal md:text-[22px]">
           <LogoText />
-        </Link>
+        </IntentLink>
         <nav aria-label="Main" className="site-links">
           <SearchPill />
           <StoreLinks
@@ -68,8 +69,8 @@ export function SiteHeader({ quick = null }: { quick?: QuickNav }): React.JSX.El
           <div className="site-drop site-type">
             <NavLink href="/clothing">Clothing</NavLink>
             <div className="site-drop-menu">
-              <Link href="/clothing?for=women">Women</Link>
-              <Link href="/clothing?for=men">Men</Link>
+              <IntentLink href="/clothing?for=women">Women</IntentLink>
+              <IntentLink href="/clothing?for=men">Men</IntentLink>
             </div>
           </div>
           <span className="site-type">
@@ -83,14 +84,14 @@ export function SiteHeader({ quick = null }: { quick?: QuickNav }): React.JSX.El
         </nav>
         <div className="site-icons">
           {/* Phones: Search takes Saved's place (Saved is in the menu there, D-116). */}
-          <Link href="/account/saved" className="site-icon hidden md:grid" aria-label="Saved">
+          <IntentLink href="/account/saved" className="site-icon hidden md:grid" aria-label="Saved">
             <HeaderIcon name="heart" />
-          </Link>
+          </IntentLink>
           <PhoneSearch />
           <CartLink />
-          <Link href="/account" className="site-icon" aria-label="Profile">
+          <IntentLink href="/account" className="site-icon" aria-label="Profile">
             <HeaderIcon name="person" />
-          </Link>
+          </IntentLink>
           <SiteMenu>
             <form action="/search" role="search" className="site-panel-search">
               <HeaderIcon name="search" />
@@ -98,20 +99,20 @@ export function SiteHeader({ quick = null }: { quick?: QuickNav }): React.JSX.El
             </form>
             <ul className="site-panel-big">
               <li>
-                <Link href="/clothing">Clothing</Link>
+                <IntentLink href="/clothing">Clothing</IntentLink>
                 <span className="site-panel-sub">
-                  <Link href="/clothing?for=women">Women</Link>
-                  <Link href="/clothing?for=men">Men</Link>
+                  <IntentLink href="/clothing?for=women">Women</IntentLink>
+                  <IntentLink href="/clothing?for=men">Men</IntentLink>
                 </span>
               </li>
               <li>
-                <Link href="/food">Food</Link>
+                <IntentLink href="/food">Food</IntentLink>
               </li>
               <li>
-                <Link href="/home-and-gifts">Home &amp; gifts</Link>
+                <IntentLink href="/home-and-gifts">Home &amp; gifts</IntentLink>
               </li>
               <li>
-                <Link href="/states">States</Link>
+                <IntentLink href="/states">States</IntentLink>
               </li>
               <li>
                 <Link href="/about" prefetch={false}>
@@ -119,15 +120,19 @@ export function SiteHeader({ quick = null }: { quick?: QuickNav }): React.JSX.El
                 </Link>
               </li>
               <li>
-                <Link href="/account/saved">Saved</Link>
+                <IntentLink href="/account/saved">Saved</IntentLink>
               </li>
             </ul>
             <ul className="site-panel-small">
               {MORE.map((l) => (
                 <li key={l.href}>
-                  <Link href={l.href} prefetch={isInfoPath(l.href) ? false : undefined}>
-                    {l.label}
-                  </Link>
+                  {isInfoPath(l.href) ? (
+                    <Link href={l.href} prefetch={false}>
+                      {l.label}
+                    </Link>
+                  ) : (
+                    <IntentLink href={l.href}>{l.label}</IntentLink>
+                  )}
                 </li>
               ))}
             </ul>
