@@ -42,16 +42,21 @@ Short on purpose: **replace** lines when something changes, don't append. Histor
   all-India piece, 2,966 → 856 for a state's, same output on 300 pieces). The 7-day tiles take the founder's photos
   (`features/seven-day/tile-photos.ts`: 9 of 12 set 2026-11-04, resized to 800 px; Sweets, Ground Spices and Thaali
   & Serveware still show their newest piece).
-- **Home's hero (D-182, 2026-11-04):** one screen on a phone: the founder's Diwali poster, then Indian Wholesale Club
-  with Clothing, Food, Home & gifts and States, then the 7-day store (`home-hero.tsx`, `e2e/home-hero.spec.ts`).
-  First-load JS budget 160 KB. Q-60: the poster's headline needs replacing after Nov 8.
+- **Home's hero (D-183 – D-186, 2026-11-04, not deployed):** the poster is the 7-day store's front door, in the
+  poster's fonts (Cormorant Garamond, Montserrat; Home only): the Diwali date, "Mithai. Masala. *Memories.*", "From India
+  to your door in 7 days (on food)." and a small gold button "Free delivery from $49.99" (days and line from Settings), all live
+  text on the picture (its own headline painted out); under it only Indian Wholesale Club and its four doors
+  (`home-hero.tsx`, `hero-words.ts`, `e2e/home-hero.spec.ts`). No "$99" on the first screen. The Diwali windows on phones
+  are about 1 : 1.56 instead of 1 : 2. First-load JS budget 160 KB (D-182). Q-60: only the picture's Diwali look after Nov 8.
 - **7-day band and own pieces first (D-181, 2026-11-03, the database half needs the Deploy workflow):** a state's Food
   and Home & gifts carry "Arrives in 7 days" after their second row (12 pieces, "Shop the 7-day store →",
   `quick-band.tsx`), and its own pieces come before the all-India ones under every sort. Goa's Food "not showing" was
   the anon role's 3 s limit: six Food lists opened at once on the live site all failed (HTTP 500 after 4 – 5 s).
   `20261108090500_browse_reads` reads Food in about 240 ms instead of 570 ms (121,626 → 52,150 buffers) on a
   production-sized copy, same output (10 cases; only the price sorts' order changed, as asked).
-- **A busy database no longer fails a deploy (2026-11-04, needs a Vercel build to confirm):** Vercel's builds kept
+- **A busy database no longer fails a deploy (2026-11-04, confirmed on Vercel):** the build of `13677fe` passed with
+  six timeouts waited out, at least one up to the 30 s wait; all 36 state pages built and the hero live (checked on the
+  live site). Vercel's builds kept
   stopping on `/7-day-delivery/food/all` (statement timeout), also after `801d5c2`, whose reading-first did not protect
   a page's own read. Reproduced locally: with store reads past the 3 s limit for 150 s in every 180 s, `2a128af`'s build
   exits 1 after 3 quick attempts. Now a read in a build waits 5, 15, 30 s and tries again, and the 7-day See all pages are
@@ -323,6 +328,7 @@ Short on purpose: **replace** lines when something changes, don't append. Histor
 ## Last verification
 | Date | Commit | Where | Result |
 |---|---|---|---|
+| 2026-11-04 | D-183 – D-186 Home's hero as the 7-day store's poster (Diwali date, Cormorant Garamond and Montserrat, the free line as the button, "(on food)"); shorter Diwali windows on phones; `customer-choices.spec.ts:58` waits for the admin's slow refresh | the founder's `check.mjs` on the D-185 tree (Windows, 2026-11-03 23:38 UTC), then Claude through the desktop link and the app's browser pane | Founder's run: docs, typecheck, lint, test, db, build, http, bundle OK; e2e 74 passed, 1 failed, 2 skipped: `home-hero.spec.ts` passed; `customer-choices.spec.ts:58` failed because the admin order page still showed the old window 5 s after "Change window" (the slow refresh of Open: Publish looks stuck), now waited for up to 60 s like `admin.spec.ts`. Afterwards (D-186's "(on food)" and that wait) only `docs-audit.mjs` was run, and the hero seen in the browser pane at 390 x 664 with the real fonts. **Not run** after D-186: `check.mjs`, e2e. |
 | 2026-11-02 | D-178 description redo | Claude Code, the founder's laptop (RTX 4060, Docker, Ollama `qwen2.5:7b`) | `check.mjs docs lint test db` OK (71 SQL files, new `description_redo.test.sql` 21; shared tests with the new `describe.test.ts` 13); `typecheck` fails only on another session's uncommitted `features/home/diwali-windows.tsx` (a slot name), the tools' `tsc` (sourcing-runner, weight-estimator, photo-redo, description-redo) run by hand: OK. Trial: 24 live listings read from the store's public view into a scratch folder (nothing written to production): 20 passed every check, 4 flagged, 25.6 listings a minute with eight at once; the review page (approve, reject, an edit with a price refused, a clean edit saved) in the browser pane. On the local database: fetch, run, publish `--auto` through the worker functions (flagged ones not sent; a listing an admin changed after fetch left alone and fetched again), and a rewritten description on the product page (paragraph, then one fact per line). **Not run:** anything against production's worker functions (not deployed), `build`, `e2e`. |
 | 2026-11-04 | A busy database cannot fail a build as before; `admin.spec.ts` waits for the slow Publish | Claude Code, the founder's laptop | `check.mjs` typecheck lint test db build http bundle e2e all OK (76 SQL files; e2e 75 passed, 2 skipped, the first full pass this week); docs OK after `NEXT_PHASE` was listed in `ops.md`. Before and after on the local database with store reads past anon's 3 s limit for 150 s of every 180 s, from an empty `.next`: `2a128af` exits 1 ("Failed to build /7-day-delivery after 3 attempts"); this commit exits 0, also started 5 s before a busy spell. With a healthy database 57 pages are prerendered (all 36 states, 5 See all, the 7-day front page); `/7-day-delivery/food` is a MISS on its first visit and a HIT on its second. Not run: a Vercel build against the live database. |
 | 2026-11-04 | D-182 Home's hero, first-load JS budget 160 KB | Claude Code, the founder's laptop | `check.mjs` typecheck lint test build http bundle OK; docs OK after one path was reworded; db 75 of 76 (`search_speed.test.sql`'s time budget, on a just-started Docker; 5 of 5 alone). http: `/states/kerala` 154 KB, `/clothing` 151 KB, inside 160 KB. e2e 73 passed, 2 failed, 2 skipped: `admin.spec.ts` publish and `customer-choices.spec.ts:58` as before; new `home-hero.spec.ts` (every door inside the first screen at 390 x 664 and 320 x 568, the header turning cream) passes. Seen in the browser at 320, 360, 390, 768, 844 and 1440 px wide. Not run: the live site after deploy, a real phone. |
