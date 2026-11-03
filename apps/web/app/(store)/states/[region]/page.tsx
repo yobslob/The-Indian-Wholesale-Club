@@ -42,15 +42,17 @@ async function regionReads(slug: string) {
 export async function generateStaticParams(): Promise<{ region: string }[]> {
   // A page that fails to build fails the whole deploy, with no way to skip it: a busy database did so twice on
   // 2026-10-31 (statement timeouts while the sourcing runner was adding listings). So each page's reads are made here
-  // first, four states at a time, which fills the cache its build then reads; a state whose reads fail is left out and
-  // built on its first visit instead, as 7-day's categories are.
+  // first, two states at a time, which fills the cache its build then reads; a state whose reads fail is left out and
+  // built on its first visit instead, as 7-day's pages are. A failed read has already waited a minute for the database
+  // (data.ts), so the states after it are left out unread: this list has 240 s, not a minute for each of 36 states.
   try {
     const { regions } = await getHomeCached();
     const built: { region: string }[] = [];
-    for (let i = 0; i < regions.length; i += 4) {
-      const group = regions.slice(i, i + 4);
+    for (let i = 0; i < regions.length; i += 2) {
+      const group = regions.slice(i, i + 2);
       const read = await Promise.all(group.map((r) => regionReads(r.slug).then(() => true, () => false)));
       built.push(...group.filter((_, j) => read[j]).map((r) => ({ region: r.slug })));
+      if (read.includes(false)) break;
     }
     return built;
   } catch {

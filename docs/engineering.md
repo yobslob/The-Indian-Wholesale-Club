@@ -24,10 +24,13 @@ Baseline numbers come from the founder's first `node scripts/check.mjs` run and 
   product pages on first visit. So **`next build` reads the database** (the new schema must be there). Since
   2026-10-18 the build prerenders at most two pages at a time per worker and retries a failed page three times
   (`experimental.staticGenerationMaxConcurrency`, `staticGenerationRetryCount`): many pages at once against the
-  production database hit the anon role's 3 s statement timeout and failed deploys. A page built from a list
-  (`generateStaticParams`) reads each page's data there first and leaves out a page whose read fails, built on its
-  first visit instead (the state pages since 2026-10-31, the 7-day See all pages since 2026-11-04); a page without
-  params leaves out a section whose read fails (the 7-day front page's type rows). The same limit stops a customer's
+  production database hit the anon role's 3 s statement timeout and failed deploys. Next's retries come straight after
+  each other, inside one busy spell, so during a build alone a store read past the limit waits 5, 15, then 30 s and
+  tries again (`patientInBuild`, `features/catalog/data.ts`; a page has 240 s, `staticPageGenerationTimeout`). The 7-day
+  See all pages are not built ahead at all (first visit); reading a page's data in `generateStaticParams` does not
+  protect its build, whose own read can still fail (2026-11-04). Reproduce a busy database by wrapping a `store_*`
+  function locally in `pg_sleep(4)` for spells of minutes: `57014` as anon, and build from an empty `.next`.
+  The same limit stops a customer's
   read: a `store_*` function that takes 1 s alone fails when a few run at once (a state's Food tab, 2026-11-03), so
   measure a new read on a production-sized copy, and mark a CTE `materialized` when it must run once (Postgres
   otherwise inlines a function into every row, as `store_browse`'s size spellings did).

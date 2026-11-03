@@ -54,8 +54,32 @@ export const listingsTag = 'store:listings';
 // v21: the product carries made_in_india (D-171)
 const SHAPE = 'v21';
 
+/**
+ * During a deploy's build only: a read past the database's 3 s limit waits and tries again. Next's own retries (a page
+ * up to 3 times) come straight after each other, all inside one busy spell, and a page that fails them fails the whole
+ * deploy (2026-11-04, three times). 5 + 15 + 30 s spread each attempt over about a minute, three minutes in all, inside
+ * the build's 240 s for one attempt (next.config.js). A customer's request never waits here: it fails fast and the page asks again.
+ */
+const BUILDING = process.env.NEXT_PHASE === 'phase-production-build';
+const BUILD_WAITS_MS = [5_000, 15_000, 30_000];
+const STATEMENT_TIMEOUT = '57014';
+
+async function patientInBuild<T>(load: () => Promise<T>): Promise<T> {
+  if (!BUILDING) return load();
+  for (const wait of BUILD_WAITS_MS) {
+    try {
+      return await load();
+    } catch (error) {
+      if ((error as { code?: string }).code !== STATEMENT_TIMEOUT) throw error;
+      console.warn(`Database busy (statement timeout) during the build: trying again in ${wait / 1000} s`);
+      await new Promise((done) => setTimeout(done, wait));
+    }
+  }
+  return load();
+}
+
 const cached = <T>(key: string[], tags: string[], load: () => Promise<T>): Promise<T> =>
-  unstable_cache(async () => slimCards(await load()), [...key, SHAPE], { tags: [STORE_TAG, ...tags], revalidate: STORE_REVALIDATE_SECONDS })();
+  unstable_cache(async () => slimCards(await patientInBuild(load)), [...key, SHAPE], { tags: [STORE_TAG, ...tags], revalidate: STORE_REVALIDATE_SECONDS })();
 
 // v2: Home's album (D-113); a new key so no entry cached before it (without the album) is read back.
 export const getHomeCached = () => cached(['store-home-v2'], [homeTag], () => getHome(storeClient()));

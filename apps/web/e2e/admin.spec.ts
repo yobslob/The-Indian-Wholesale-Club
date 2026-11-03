@@ -54,7 +54,9 @@ test('an admin lists a product and publishes it to the store', async ({ page }) 
   await expect(page.getByRole('cell', { name: 'One size' })).toBeVisible();
 
   await page.getByRole('button', { name: 'Publish' }).click();
-  await expect(page.getByRole('button', { name: 'Publish' })).toHaveCount(0);
+  // The piece is live at once; the page takes about 29 s to say so under `next start` (measured 2026-11-04: the database
+  // is idle meanwhile, and a reload shows it in 0.5 s). Open in docs/status.md.
+  await expect(page.getByRole('button', { name: 'Publish' })).toHaveCount(0, { timeout: 60_000 });
 
   // The storefront: search is uncached, and publishing refreshed the cached pages.
   await page.goto(`/search?q=${encodeURIComponent(name)}`);

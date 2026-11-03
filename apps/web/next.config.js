@@ -136,6 +136,8 @@ const nextConfig = {
     staticGenerationMaxConcurrency: 1,
     staticGenerationRetryCount: 3,
   },
+  // Room for a page's reads to wait out a busy database during the build (features/catalog/data.ts, 2026-11-04).
+  staticPageGenerationTimeout: 240,
   // D-140: Vercel's image resizer is off. Its allowance (5,000 photos a month) ran out and photos answered 402
   // (2026-10-18). Every photo is served as fixed copies made when it is stored (lib/photo-copies.ts), straight from
   // Supabase's CDN; anything still drawn with next/image is served as it is, so the allowance can never run out again.
