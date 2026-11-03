@@ -1,8 +1,14 @@
 import { NextResponse } from 'next/server';
 
-import { claimWebhookEvent, deferPaymentSweep, finishWebhookEvent, releaseWebhookEvent } from '@repo/db/server';
+import {
+  claimWebhookEvent,
+  deferPaymentSweep,
+  finishWebhookEvent,
+  releaseWebhookEvent,
+} from '@repo/db/server';
 
 import { finalizeOrder } from '@/features/checkout/finalize';
+import { TEST_PAYMENT_KIND } from '@/features/checkout/test-payment';
 import { FASTER_KIND, finalizeFasterPayment } from '@/features/orders/faster';
 import { errorMessage, logger } from '@/lib/logger';
 import { isStripeConfigured, stripeServer } from '@/lib/stripe';
@@ -44,6 +50,12 @@ export async function POST(request: Request): Promise<NextResponse> {
 
   if (event.type !== 'payment_intent.succeeded' && !isExtraEvent(event.type))
     return NextResponse.json({ received: true });
+  // The admin's $1 payment test (admin.md §Payment test) makes no order: nothing to finalize or alert.
+  if (
+    event.type === 'payment_intent.succeeded' &&
+    (event.data.object as Stripe.PaymentIntent).metadata.kind === TEST_PAYMENT_KIND
+  )
+    return NextResponse.json({ received: true });
 
   const service = serviceClient();
   let claimed: boolean;
@@ -52,7 +64,10 @@ export async function POST(request: Request): Promise<NextResponse> {
   } catch (error) {
     // Nothing was claimed: any non-2xx makes Stripe deliver the event again later.
     logger.error('stripe.webhook_claim_failed', { eventId: event.id, error: errorMessage(error) });
-    return busyIfDbTimeout(error) ?? NextResponse.json({ error: 'Webhook processing failed' }, { status: 500 });
+    return (
+      busyIfDbTimeout(error) ??
+      NextResponse.json({ error: 'Webhook processing failed' }, { status: 500 })
+    );
   }
   if (!claimed) return NextResponse.json({ received: true, duplicate: true });
 
@@ -64,7 +79,10 @@ export async function POST(request: Request): Promise<NextResponse> {
       );
       logger.info('stripe.webhook_handled', { eventId: event.id, type: event.type, outcome });
       await finishWebhookEvent(service, event.id).catch((error: unknown) =>
-        logger.warn('stripe.webhook_finish_failed', { eventId: event.id, error: errorMessage(error) }),
+        logger.warn('stripe.webhook_finish_failed', {
+          eventId: event.id,
+          error: errorMessage(error),
+        }),
       );
       return NextResponse.json({ received: true });
     }
@@ -80,7 +98,10 @@ export async function POST(request: Request): Promise<NextResponse> {
       });
     // Handled (the order exists, or why not is recorded). If this mark is lost, a retry finds the existing order.
     await finishWebhookEvent(service, event.id).catch((error: unknown) =>
-      logger.warn('stripe.webhook_finish_failed', { eventId: event.id, error: errorMessage(error) }),
+      logger.warn('stripe.webhook_finish_failed', {
+        eventId: event.id,
+        error: errorMessage(error),
+      }),
     );
     return NextResponse.json({ received: true });
   } catch (error) {
@@ -88,6 +109,9 @@ export async function POST(request: Request): Promise<NextResponse> {
     // claim expires after 2 minutes instead.
     await releaseWebhookEvent(service, event.id).catch(() => undefined);
     logger.error('stripe.webhook_failed', { eventId: event.id, error: errorMessage(error) });
-    return busyIfDbTimeout(error) ?? NextResponse.json({ error: 'Webhook processing failed' }, { status: 500 });
+    return (
+      busyIfDbTimeout(error) ??
+      NextResponse.json({ error: 'Webhook processing failed' }, { status: 500 })
+    );
   }
 }

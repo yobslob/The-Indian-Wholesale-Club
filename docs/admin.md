@@ -154,6 +154,15 @@ Built 2026-10-09 from `design/pages/admin/` (code in `apps/web/features/admin/`)
   draft per photo row; the shop, the fabric and the care are typed once for the batch (every draft needs them, ops.md
   §Compliance) and can be changed per piece on its page. Clothing only.
 
+## Payment test (web, 2026-11-03)
+`/admin/settings/payment-test`, linked from nowhere, admin only (the panel's server check): whether the Stripe account
+behind the deployment's keys is live, can take payments and pay out, where payouts go (bank or debit card, last four),
+its balance and what Stripe still asks for; then **Make a $1 test payment** through the store's own card form
+(`PaymentForm`, so the domain's security rules and the live publishable key are tested too) and the result read back
+from Stripe: status, card brand and last four, **Refund this $1** (Stripe keeps its fee). Test payments carry
+`metadata.kind = 'admin_test'`: the webhook skips them (the kind lives in `features/checkout/test-payment.ts`) (no order, no "Paid, but no order" alert), the payment sweep
+never sees them (no stored checkout), and only this page refunds them.
+
 ## Design principles for the admin
 1. **One screen per job.** "Pick up at Shop X" is one checklist, not a table with filters.
 2. **Phone-first for field work:** big tap targets, camera upload, works on weak networks (drafts saved locally
