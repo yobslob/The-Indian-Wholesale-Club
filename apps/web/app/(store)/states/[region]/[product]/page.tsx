@@ -1,7 +1,7 @@
 import Link from 'next/link';
 import { notFound } from 'next/navigation';
 
-import { PRODUCT_TYPE_LABEL, PRODUCT_TYPE_PATH, usableSummary } from '@repo/shared/domain';
+import { displayTitle, PRODUCT_TYPE_LABEL, PRODUCT_TYPE_PATH, usableSummary } from '@repo/shared/domain';
 
 import { SaveButton } from '@/features/account/save-button';
 import { AddToCart } from '@/features/catalog/add-to-cart';
@@ -45,6 +45,8 @@ export default async function ProductPage({
   if (!page) notFound();
   const { product, variants, media, similar, curated, reviews, delivery, ships_from_us, quick_delivery } = page;
   const chart = sizeChart(product, variants);
+  // launch QA B-9: an all lower-case shop title reads in title case (display only; the row is unchanged)
+  const name = displayTitle(product.name);
   const lo = policy.quick_delivery_days_min;
   const hi = policy.quick_delivery_days_max;
   const quickLine =
@@ -55,7 +57,7 @@ export default async function ProductPage({
   return (
     <>
       <div className="grid items-start gap-[var(--gap)] md:grid-cols-[minmax(0,1.05fr)_minmax(0,1fr)] min-[1100px]:grid-cols-[auto_minmax(0,1fr)]">
-        <ProductGallery media={media} name={product.name} />
+        <ProductGallery media={media} name={name} />
         <aside
           aria-label="Buy"
           className="bg-surface rounded-lg p-[clamp(22px,2.6vw,44px)] md:sticky md:top-[calc(var(--top-h)+16px)]"
@@ -83,7 +85,7 @@ export default async function ProductPage({
           <div className="my-3 flex items-start justify-between gap-4">
             {/* D-140 (L5): 32 – 36 px, two lines at most, so the price and the sizes stay above the fold */}
             <h1 className="font-display line-clamp-2 text-[clamp(30px,2.5vw,36px)] leading-[1.08] tracking-[-0.01em]">
-              {product.name}
+              {name}
             </h1>
             <SaveButton productId={product.id} />
           </div>

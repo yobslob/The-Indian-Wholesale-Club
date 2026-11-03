@@ -47,6 +47,28 @@ export function Subtotal(): React.JSX.Element {
 }
 
 /**
+ * The bag's shape while the page wakes up (launch QA B-10): the bag lives on the device, so the server draws no lines.
+ * Two quiet line shapes instead of "Loading your bag…", which flashed for about a second on every visit; no words.
+ */
+function BagSkeleton(): React.JSX.Element {
+  const block = 'bg-land/70 motion-safe:animate-pulse rounded-md';
+  return (
+    <div aria-busy="true" className="border-line border-t">
+      <span className="sr-only">Opening your bag</span>
+      {[0, 1].map((i) => (
+        <div key={i} aria-hidden="true" className="border-line flex items-center gap-5 border-b py-4">
+          <div className={`${block} aspect-[3/4] w-16 rounded-xl sm:w-[72px]`} />
+          <div className="flex-1 space-y-2">
+            <div className={`${block} h-4 w-3/5`} />
+            <div className={`${block} h-3.5 w-2/5`} />
+          </div>
+        </div>
+      ))}
+    </div>
+  );
+}
+
+/**
  * The bag page (D-086): photo lines with − / + and the subtotal; an empty bag shows `empty` (the open states and Just
  * listed, drawn on the server) under its sentence, so it is never a dead end.
  */
@@ -55,7 +77,7 @@ export function CartView({ empty }: { empty: React.ReactNode }): React.JSX.Eleme
   const [mounted, setMounted] = useState(false);
   useEffect(() => setMounted(true), []);
 
-  if (!mounted) return <p className="text-ink-muted text-sm">Loading your bag…</p>;
+  if (!mounted) return <BagSkeleton />;
   if (lines.length === 0) {
     return (
       <div>

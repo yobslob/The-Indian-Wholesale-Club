@@ -2,7 +2,7 @@
 
 import Link from 'next/link';
 
-import { arrivalLine, bagGroups, bagShipmentState, formatUsd, productPath, quickGapLine } from '@repo/shared/domain';
+import { arrivalLine, bagGroups, bagShipmentState, displayOption, displayTitle, formatUsd, productPath, quickGapLine } from '@repo/shared/domain';
 
 import { StorePhoto } from '@/features/catalog/store-photo';
 import { mediaUrl } from '@/lib/site';
@@ -17,7 +17,7 @@ const stepButton = 'grid size-11 place-items-center text-lg font-medium disabled
 function Stepper({ line }: { line: CartLine }): React.JSX.Element {
   const setQuantity = useCart((s) => s.setQuantity);
   return (
-    <div className="border-line bg-paper font-ui inline-flex h-11 items-center rounded-pill border" role="group" aria-label={`Quantity of ${line.productName}`}>
+    <div className="border-line bg-paper font-ui inline-flex h-11 items-center rounded-pill border" role="group" aria-label={`Quantity of ${displayTitle(line.productName)}`}>
       <button type="button" className={stepButton} aria-label="One fewer" disabled={line.quantity <= 1} onClick={() => setQuantity(line.variantId, line.quantity - 1)}>
         −
       </button>
@@ -99,10 +99,10 @@ function LineList({ lines, compact, top }: { lines: CartLine[]; compact: boolean
             <LinePhoto path={line.imagePath} href={href} className={`rounded-xl [grid-area:pic] ${compact ? 'w-16' : 'w-16 sm:w-[72px]'}`} />
             <div className="min-w-0 [grid-area:nm]">
               <Link href={href} className="text-[15px] font-semibold leading-snug hover:underline">
-                {line.productName}
+                {displayTitle(line.productName)}
               </Link>
               <span className="text-ink-muted mt-0.5 block text-sm">
-                {line.variantLabel}
+                {displayOption(line.variantLabel)}
                 {line.regionName ? ` · ${line.regionName}` : null}
               </span>
             </div>
@@ -116,7 +116,7 @@ function LineList({ lines, compact, top }: { lines: CartLine[]; compact: boolean
               type="button"
               onClick={() => remove(line.variantId)}
               className="min-h-11 justify-self-end text-sm font-medium underline underline-offset-[3px] [grid-area:rm]"
-              aria-label={`Remove ${line.productName}`}
+              aria-label={`Remove ${displayTitle(line.productName)}`}
             >
               Remove
             </button>

@@ -21,17 +21,20 @@ export function ProductStrip<T extends CardData>({
   size = 'md',
   badge,
   quickTag,
+  headed = false,
 }: {
   products: T[];
   label: string;
   size?: 'md' | 'sm';
   badge?: (p: T) => React.ReactNode;
   quickTag?: boolean;
+  /** Inside a section named by its own heading (ProductRow): the list needs no name of its own. */
+  headed?: boolean;
 }): React.JSX.Element {
   // phones: a smaller card, so more than two show at once (founder, 2026-10-24)
   const width = size === 'sm' ? 'w-[clamp(148px,17vw,224px)]' : 'w-[148px] sm:w-[clamp(176px,23vw,304px)]';
   return (
-    <RowScroller label={label}>
+    <RowScroller label={label} headed={headed}>
       {products.map((p, i) => (
         <li key={p.id} className={`${width} shrink-0 snap-start`}>
           <ProductCard product={p} size={size} layout="row" badge={badge?.(p)} reveal={i < REVEALED} quickTag={quickTag} />
@@ -84,7 +87,7 @@ export function ProductRow<T extends CardData>({
           </Link>
         ) : null}
       </div>
-      <ProductStrip products={products} label={title} size={size} badge={badge} quickTag={quickTag} />
+      <ProductStrip products={products} label={title} size={size} badge={badge} quickTag={quickTag} headed />
     </section>
   );
 }

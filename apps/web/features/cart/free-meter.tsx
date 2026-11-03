@@ -57,9 +57,11 @@ export function FreeMeter({
       </svg>
       {/* founder 2026-10-31: the saving's part is short, a few grey dollar signs that turn the green of a dollar bill
           as the saving grows (each one a quarter of the cap) */}
-      <span className="fd-more" data-full={saving >= 1 || undefined}>
+      {/* launch QA B-11: the dollar signs are a picture; hidden here too, since a live region around the bar (the pill)
+          made some screen readers read "$ $ $ $" past the parent's aria-hidden. The words beside the bar say it. */}
+      <span className="fd-more" aria-hidden="true" data-full={saving >= 1 || undefined}>
         {DOLLARS.map((n) => (
-          <i key={n} className="fd-dollar" data-lit={(more !== null && saving >= n / DOLLARS.length - 0.001) || undefined}>
+          <i key={n} aria-hidden="true" className="fd-dollar" data-lit={(more !== null && saving >= n / DOLLARS.length - 0.001) || undefined}>
             $
           </i>
         ))}
