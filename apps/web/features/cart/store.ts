@@ -90,4 +90,6 @@ if (typeof window !== 'undefined') {
   window.addEventListener('storage', (e) => {
     if (e.key === 'iwc-cart') void useCart.persist.rehydrate();
   });
+  // E-1: a bag carried from the old vercel.app address arrives as #bag=… once; its reader loads only then
+  if (window.location.hash.startsWith('#bag=')) void import('./bag-carry').then((m) => m.carryBagFromFragment());
 }
