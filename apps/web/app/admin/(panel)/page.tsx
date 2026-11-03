@@ -8,6 +8,7 @@ import {
   getPickupCycle,
   getTodaySummary,
   isMadeToOrderPilot,
+  moneyAtRisk,
   pilotPipelineCounts,
   quickWatch,
   toOrderSummary,
@@ -50,6 +51,7 @@ export default async function TodayPage(): Promise<React.JSX.Element> {
   const atRisk = quick.not_bought + quick.not_shipped;
   const totals = cycle ? await getCycleTotals(client, cycle.id) : null;
   const alerts = attentionLines(attention);
+  const atRiskMoney = moneyAtRisk(attention);
   const now = new Date();
   const status = (s: keyof typeof summary.ordersByStatus): number => summary.ordersByStatus[s] ?? 0;
 
@@ -181,6 +183,20 @@ export default async function TodayPage(): Promise<React.JSX.Element> {
               </Link>
             </div>
           )}
+          {atRiskMoney > 0 ? (
+            // F-3: payments refused or unmatched and open disputes, in red until resolved
+            <p role="status" className="border-danger/30 bg-danger/[0.08] text-danger rounded-xl border px-3.5 py-3 text-[14px] font-semibold">
+              <span className="bg-danger mr-2 inline-flex h-6 min-w-6 items-center justify-center rounded-full px-1.5 text-[13px] text-white">
+                {atRiskMoney}
+              </span>
+              {[
+                attention.payments_to_check ? `${attention.payments_to_check} payment${attention.payments_to_check === 1 ? '' : 's'} to check` : '',
+                attention.disputes_open ? `${attention.disputes_open} open dispute${attention.disputes_open === 1 ? '' : 's'}` : '',
+              ]
+                .filter(Boolean)
+                .join(' · ')}
+            </p>
+          ) : null}
           {alerts.length > 0 ? (
             <div className="border-caution/25 bg-caution/[0.08] flex items-start gap-2.5 rounded-xl border px-3.5 py-3 text-[14px] leading-[1.45]">
               <svg viewBox="0 0 24 24" aria-hidden="true" className="text-caution h-5 w-5 flex-none fill-none stroke-current stroke-[1.6]">

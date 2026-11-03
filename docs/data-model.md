@@ -60,6 +60,7 @@ operations data are never queried from customer code.
 | | `wishlists` | saved products | owner |
 | Settings | `app_settings` | `dev_preview` (true only via `seed/demo.sql`: store shows placeholders + draft text) | admin |
 | Ops | `webhook_events`, `pending_orders`, `failed_reconciliations`, `email_outbox`, `admin_error_events`, `newsletter_subscribers` | kept from the old schema. `webhook_events.status` (`processing`/`done`) + `claimed_at`: a claim unfinished after 2 minutes is taken over (F-1); `pending_orders.swept_at`/`sweep_note`: the payment sweep's last look and why it stopped (F-2), `reconciled_by` browser/webhook/sweep | service |
+| Ops | `payment_disputes` | Stripe disputes (chargebacks) from the webhook: amount, reason, status, evidence due date, the order; `closed_at` once won/lost (launch QA F-3, migration 20261108090300). `failed_reconciliations` keeps one open row per PaymentIntent (trigger `failed_reconciliations_once`) | service |
 
 **Dropped from the old schema:** `cart_items`, `tracking_events` (→ `order_events`), `reviews` (re-added with the reviews
 feature), `product_images` (→ `product_media`), the `size_enum` type (→ `options` JSON).
@@ -548,6 +549,8 @@ rule, used by the `variant_availability` read policy so the live stock feed neve
 | `item_refund_cents(item)`, `cancel_refund_cents(order, reason)` | admin | D-042 refund amounts (the only place the rules live) |
 | `refund_order_item(item, amount, ref)` | admin | §4.4: records the Stripe refund of an unavailable piece; re-checks the amount |
 | `cancel_order(order, reason, amount, ref)` | admin | §7b: cancels before cutoff (admin), releases stock, records the refund; re-checks the amount |
+| `record_stripe_refund(payment_intent, refunded_cents, refund_id)` | service | §3 (F-3, `charge.refunded`): the order's `refunded_cents` catches up with Stripe's cumulative refund (never down, never past the total), `payment_status` becomes refunded / partially_refunded and a customer-visible `item_refunded` event queues the refund email. Returns `found`, `order_number`, `applied_cents` (0 when the admin already recorded it) |
+| `record_payment_dispute(dispute, payment_intent, charge, amount, currency, reason, status, due)` | service | §3 (F-3, `charge.dispute.*`): keeps `payment_disputes` current; `is_new` only the first time (one alert); won / lost / warning_closed close it. `admin_attention()` counts the open ones (`disputes_open`) |
 | `admin_set_listed_qty(variant, qty, note)` | admin | stock correction with a ledger note. It also counts as re-confirmed with the shop |
 
 **Privileges rule:** Supabase grants every new function to everyone by default. Any migration adding a function must set

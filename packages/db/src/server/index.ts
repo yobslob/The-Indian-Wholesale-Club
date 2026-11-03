@@ -266,4 +266,6 @@ export async function requestReturn(
   }
   throw dbError;
 }
+export * from './reconciliation';
+export * from './stripe-events';
 export * from './vendor';

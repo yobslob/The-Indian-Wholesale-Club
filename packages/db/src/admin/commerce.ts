@@ -278,8 +278,19 @@ export async function getQuickInsights(client: IwcClient, since: Date | null): P
   return quickInsightsSchema.parse(data);
 }
 
-const attentionSchema = z.object({ errors_24h: z.number(), payments_to_check: z.number(), emails_stuck: z.number() });
+const attentionSchema = z.object({
+  errors_24h: z.number(),
+  payments_to_check: z.number(),
+  /** Launch QA F-3 (migration 20261108090300); 0 before it is applied. */
+  disputes_open: z.number().default(0),
+  emails_stuck: z.number(),
+});
 export type Attention = z.infer<typeof attentionSchema>;
+
+/** Today's red count (F-3): money at risk, unresolved failed reconciliations and open disputes. */
+export function moneyAtRisk(a: Attention): number {
+  return a.payments_to_check + a.disputes_open;
+}
 
 /** B-8: what an admin should look at (server errors in 24 h, payments to check, stuck customer emails). Counts only. */
 export async function getAttention(client: IwcClient): Promise<Attention> {
@@ -289,6 +300,9 @@ export async function getAttention(client: IwcClient): Promise<Attention> {
 /** The lines an admin reads for Attention; empty when all is well. */
 export function attentionLines(a: Attention): string[] {
   return [
+    a.disputes_open > 0
+      ? `${a.disputes_open} open dispute(s): answer each in Stripe → Disputes before its due date`
+      : '',
     a.payments_to_check > 0
       ? `${a.payments_to_check} payment(s) refunded or unmatched: check them in Stripe (failed_reconciliations)`
       : '',
