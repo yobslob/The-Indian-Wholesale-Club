@@ -43,6 +43,7 @@ Reading `process.env.X` for a variable not listed here = add it here in the same
 | `ADMIN_EMAILS` | web server | admin email allowlist (D-006, INV-7) |
 | `ADMIN_ALERT_WEBHOOK_URL` | web server | optional ops alerts |
 | `NEXT_PUBLIC_APP_URL`, `NEXT_PUBLIC_SITE_URL` | web | absolute URLs |
+| `LEGACY_HOSTS` | web middleware (run time) | optional, comma separated host names (e.g. `the-indian-wholesale-club.vercel.app,<new project>.vercel.app`): their **pages** send GET/HEAD with 308 to `NEXT_PUBLIC_SITE_URL`, carrying the bag (E-1, §Going live on the domain); `/api/*`, `/media/*`, `/auth/*`, `/_next/*`, files and every POST are served there as they are. Only `*.vercel.app` names reach the middleware; never list a preview address. Unset: nothing moves |
 | `NEXT_PUBLIC_CONTACT_EMAIL` | web | support address shown on /contact and in emails (Q-9). `CONTACT_EMAIL` is no longer read since R5 |
 | `EXPO_PUBLIC_SUPABASE_URL`, `EXPO_PUBLIC_SUPABASE_ANON_KEY`, `EXPO_PUBLIC_API_URL`, `EXPO_PUBLIC_STRIPE_PUBLISHABLE_KEY` | app | app clients |
 No longer read by any code (safe to delete from your own `.env` files): `CARRIER_WEBHOOK_SECRET`, `NEXT_PUBLIC_RAZORPAY_KEY_ID`,
@@ -207,6 +208,64 @@ nothing to move. Supabase's guide "Backup and restore using the CLI" (Platform �
    new app build; `move.env`.
 8. Check: `pnpm launch:check --url=<new> --allow-remote`, then one real order (live keys refuse test cards), refunded
    from the admin. Pause the old project a week later.
+
+## Going live on the domain (the founder runs every step; launch QA DOM-1, E-1, L-1 – L-3, L-8, L-9, C-4)
+`indianwholesaleclub.com` is the only address customers, Stripe, Supabase and the app should use: it survives any
+Vercel or Supabase move. Check after each block with `node scripts/domain-check.mjs` (add
+`--legacy=<old host>` for every old `*.vercel.app` name still up): it fails on any regression of the launch plan's
+§0 table. Ids are the launch plan's (`docs/launch-qa-plan.md`).
+1. **Stripe webhook (DOM-1).** Stripe → Developers → Webhooks: the live endpoint is
+   `https://indianwholesaleclub.com/api/webhooks/stripe` (events `payment_intent.succeeded` plus the refund, dispute
+   and failed-payment events of F-3). A new endpoint has a new signing secret: Vercel `STRIPE_WEBHOOK_SECRET`, redeploy.
+   Keep the old endpoint **disabled, not deleted**, for 7 days, then delete it.
+2. **Old address (DOM-1, E-1).** Vercel → the project → Settings → Domains: the `*.vercel.app` name set to **no
+   redirect** (Vercel's whole-host redirect sends the webhook and the app's API away too). Set `LEGACY_HOSTS` to that
+   name (and, after a move, the new account's own `*.vercel.app` production name), redeploy. Then
+   `curl -i -X POST https://<old host>/api/webhooks/stripe` → 400 "Missing signature" (served), and
+   `curl -i https://<old host>/food` → 308 to the domain. A browser's first visit to an old page gets a short page that
+   carries its bag to the domain (`#bag=`, `apps/web/lib/legacy-move.ts`), then 308 from then on.
+3. **`www` (DOM-1).** Vercel → Domains: `www.indianwholesaleclub.com` → apex as **308 (permanent)**. Cloudflare
+   records stay **DNS-only** (grey cloud): with the proxy on, every visitor's address becomes Cloudflare's and the rate
+   limits (`apps/web/lib/rate-limit.ts`) would throttle all customers together.
+4. **Support address (L-1).** Google Workspace: `support@indianwholesaleclub.com` (a group or alias). Vercel:
+   `NEXT_PUBLIC_CONTACT_EMAIL` = it, rebuild; `/contact` must no longer say "coming soon". Stripe → Settings → Public
+   details: support email, phone, website `https://indianwholesaleclub.com`, the statement descriptor (the founder's
+   choice).
+5. **Order emails (L-2).** Resend: the domain shows **Verified**. Vercel: `RESEND_FROM_EMAIL=orders@indianwholesaleclub.com`,
+   rebuild. `pnpm launch:check` shows no stuck outbox rows (resend any that never went out). `dmarc@` exists in
+   Workspace (or `rua` points at a DMARC report service); after 2 – 4 clean weeks, `p=quarantine`.
+6. **Sign-in emails (L-3).** Supabase → Authentication → SMTP: Resend's SMTP (`smtp.resend.com`, sender
+   `noreply@indianwholesaleclub.com`); Supabase's own mail server reaches only the team. Test sign-up, a sign-in code
+   and a password reset with a Gmail and an Outlook address that are not on the team: inbox, not spam.
+7. **Supabase URLs (L-8).** Authentication → URL configuration: Site URL `https://indianwholesaleclub.com`; Redirect
+   URLs `https://indianwholesaleclub.com/**` and `https://www.indianwholesaleclub.com/**` (keep the vercel.app entry a
+   month). Vault `iwc_site_url` = the domain (§Email timer: `vault.update_secret`, or delete and create it again).
+8. **Stripe account (L-9).** Settings → Payment method domains: `indianwholesaleclub.com` and `www.` (Apple Pay needs
+   them). Radar: block when the CVC fails, review when the ZIP fails. Receipts on; payouts and bank verified. Two-step
+   sign-in on Stripe, Vercel, Supabase, GitHub, Cloudflare, Resend and Google Workspace.
+9. **Photos (C-4).** Cloudflare R2 → the bucket → Custom domain `media.indianwholesaleclub.com` (same account). Vercel
+   `PHOTO_STORE_PUBLIC_URL` = `https://media.indianwholesaleclub.com`, rebuild. Pages keep `/media/s/` (the rewrite now
+   points at the custom domain), so no page and no CSP change. Check a photo twice: 200, then `x-vercel-cache: HIT`.
+10. **The payment step (E-3).** On the live site: a card payment, Apple Pay (Safari), Google Pay (Chrome), Link and a
+    3-D Secure card with the browser console open: no "Content Security Policy" errors. Violations also arrive in the
+    runtime logs as `csp.violation` (`apps/web/app/api/csp-report/route.ts`). HSTS stays as it is: no submission to
+    the preload list until every subdomain answers over HTTPS.
+11. **Search engines (L-10, optional).** Google Search Console and Bing: a domain property, submit
+    `https://indianwholesaleclub.com/sitemap.xml` (an index of parts of 5,000 listings).
+
+**Moving to a new Vercel account (or Supabase project) after this** (the launch plan's "New Vercel account"): the order
+matters, because the installed Android app has its addresses built in.
+1. **First, the app:** EAS `EXPO_PUBLIC_API_URL=https://indianwholesaleclub.com` (and, if Supabase moves, the new
+   `EXPO_PUBLIC_SUPABASE_URL` / `EXPO_PUBLIC_SUPABASE_ANON_KEY`), ship a build, and wait until installs have updated.
+   **Never delete an old account before that:** every installed app still calling it would break.
+2. New Vercel project from the same repo (§Moving to new Vercel or Supabase accounts): every variable of the table
+   above, `LEGACY_HOSTS` with the new project's own `*.vercel.app` name, the deploy hook in GitHub's
+   `VERCEL_DEPLOY_HOOK_URL`, Pro if taken (L-4). Move the domain (apex and `www`, still 308) to it.
+3. `node scripts/domain-check.mjs https://<new>.vercel.app` before the domain moves, then
+   `node scripts/domain-check.mjs --legacy=the-indian-wholesale-club.vercel.app` after (the old project serves its
+   pages as 308 while it lives, step 2 above). The Stripe webhook already points at the domain, so it survives.
+4. Supabase, if moved: §Moving's Supabase steps, then steps 6 – 7 above again for the new project.
+5. Only then delete the old accounts (keep their dumps outside the repo a month).
 
 ## Demo round and placeholders (D-078, D-108; done)
 Production has no placeholder listings left (checked on the copy of 2026-10-21). The demo round and the placeholder

@@ -219,16 +219,23 @@ Files: `apps/web/features/search/`, `apps/web/app/(store)/search/`, one new migr
 ---
 
 ## 6. Workstream E: the domain (what's done, what's left)
-Files: `apps/web/next.config.js`, `apps/web/middleware.ts`, `apps/web/lib/env.ts`, `apps/web/app/layout.tsx`, `apps/web/app/sitemap.ts`, `apps/web/app/robots.ts`, product/state `page.tsx` metadata, `docs/ops.md`.
+Files: `apps/web/next.config.js`, `apps/web/middleware.ts`, `apps/web/lib/env.ts`, `apps/web/app/layout.tsx`, `apps/web/app/sitemap.xml/route.ts` + `apps/web/app/sitemaps/sitemap-data.ts` (was `app/sitemap.ts`), `apps/web/app/robots.ts`, product/state `page.tsx` metadata, `docs/ops.md`, `scripts/domain-check.mjs`.
 
 **Done and checked 2026-11-03:** DNS on Cloudflare, records DNS-only (no `cf-ray`; keep it so: with the orange cloud
 every visitor's IP becomes Cloudflare's and `lib/rate-limit.ts` would throttle all customers together). Apex A records
 to Vercel, `www` CNAME to Vercel, certificate valid, `http` → `https` 308. `NEXT_PUBLIC_SITE_URL` is the domain
 (robots and sitemap list `https://indianwholesaleclub.com`). Email DNS as in L-2.
 
+**Wave 2 (agent E, 2026-11-03, not deployed):** E-1 in code (`apps/web/middleware.ts` + `apps/web/lib/legacy-move.ts`:
+pages on the hosts in `LEGACY_HOSTS` → 308 to the domain, a first browser visit carries the bag in `#bag=`; API,
+media, auth, Next files and POSTs served), `docs/ops.md` §Going live on the domain, `scripts/domain-check.mjs`;
+D-2's CDN rule; E-2a canonicals; E-2b product and state metadata + product JSON-LD; E-2d sitemap index + parts
+(CDN-kept, no page-cache writes); E-3 Stripe CSP hosts from Stripe's guide + `/api/csp-report`. E-2c waits for the
+founder. Needs the founder: Vercel domain redirect off, `LEGACY_HOSTS`, then `node scripts/domain-check.mjs`.
+
 | ID | Sev | Problem | Fix | Acceptance |
 |---|---|---|---|---|
-| E-1 | **P0** | DOM-1: whole-host redirect from vercel.app. | After the founder turns Vercel's domain redirect off: middleware sends only **GET page requests** on the vercel.app host to the domain with **308**, and serves `/api/*`, `/media/*`, `/auth/*`, `/_next/*` as they are. Carry the bag in the fragment (`#bag=<base64 of variantId:qty>`, never the query string); the domain's bag reads it once, merges, clears it. Write §"Going live on the domain" in `docs/ops.md` (DOM-1, L-2, L-3, L-8, L-9, C-4 as one checklist) and a a new domain check script in `scripts/` that curls every row of §0's table and fails on a regression. | `curl -X POST vercel.app/api/webhooks/stripe` → 400 "Missing signature" (served, not redirected); `GET vercel.app/food` → 308 to the domain with the bag; the domain check script green. |
+| E-1 | **P0** | DOM-1: whole-host redirect from vercel.app. | After the founder turns Vercel's domain redirect off: middleware sends only **GET page requests** on the vercel.app host to the domain with **308**, and serves `/api/*`, `/media/*`, `/auth/*`, `/_next/*` as they are. Carry the bag in the fragment (`#bag=<base64 of variantId:qty>`, never the query string); the domain's bag reads it once, merges, clears it. Write §"Going live on the domain" in `docs/ops.md` (DOM-1, L-2, L-3, L-8, L-9, C-4 as one checklist) and `scripts/domain-check.mjs` that requests every row of §0's table and fails on a regression. | `curl -X POST vercel.app/api/webhooks/stripe` → 400 "Missing signature" (served, not redirected); `GET vercel.app/food` → 308 to the domain with the bag; `node scripts/domain-check.mjs --legacy=<old host>` green. |
 | E-2a | P1 | No `canonical` on Home, product or state pages (only See all / 7-day have one): the vercel.app copy competes in search. | `alternates.canonical` on every store page from `siteUrl()`. | View source on a product shows the domain's canonical. |
 | E-2b | P1 | **Product pages have no meta description, no `og:image`, no JSON-LD** (checked on the poshak). WhatsApp shares show nothing; Google shows no price. | `description` from the listing summary; `openGraph` (photo, title, price); JSON-LD `Product` + `offers` (USD, availability) and `BreadcrumbList`. No shop or source in any of it (D-003). | Facebook sharing debugger and Google Rich Results pass on 3 products. |
 | E-2c | P1 | **FOUNDER.** Site description still `TODO(founder)` (`app/layout.tsx:10`). | Founder approves the line. | No `TODO(founder)` on customer pages (`pnpm launch:check`). |
@@ -298,7 +305,7 @@ reached the order (F-3).
 | D | Search | `features/search/`, the search routes, one migration | 1 |
 | F0 | DB time limits + webhook claim (F-0, F-1, F-2) | `lib/supabase/`, `app/api/health/`, `app/api/webhooks/`, `packages/db/src/server/checkout.ts`, one migration, the cron route | 1 (P0, small) |
 | G | Tests | `apps/web/e2e/` | 1–3 |
-| E | Domain, SEO, headers | `next.config.js`, `middleware.ts`, `lib/env.ts`, `sitemap.ts`, `robots.ts`, `layout.tsx`, product/state metadata (coordinate with B on the product route: E edits only `generateMetadata`), `docs/ops.md`, a new domain check script in `scripts/` | 2 |
+| E | Domain, SEO, headers | `next.config.js`, `middleware.ts`, `lib/env.ts`, `sitemap.ts`, `robots.ts`, `layout.tsx`, product/state metadata (coordinate with B on the product route: E edits only `generateMetadata`), `docs/ops.md`, `scripts/domain-check.mjs` | 2 |
 | F | Monitoring and ledger (F-3 … F-7) | `lib/logger.ts`, `features/checkout/finalize.ts` (after A merges), admin Today count | 3 |
 
 Two migrations in wave 1 (D and F0): give them timestamps one minute apart and merge D first.
