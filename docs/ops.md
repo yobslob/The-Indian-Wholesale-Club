@@ -163,7 +163,7 @@ The old `NEXT_PUBLIC_SUPABASE_*` / `NEXT_PUBLIC_APP_URL` CI secrets are no longe
    EAS build page) or `production` (an AAB for Google Play). The app's id is `com.indianwholesaleclub.app` (`app.json`,
    set by the founder on 2026-10-07); Google Play never lets it change after the first upload.
 
-## Moving to new Vercel or Supabase accounts (the founder runs every step; done 2026-10-21/22)
+## Moving to new Vercel or Supabase accounts (the founder runs every step; done 2026-10-21/22; the second move's order: `launch-qa-plan.md`)
 The code names no account: everything comes from the variables above, the GitHub secrets and the Vault. A move is
 those values, nothing in the repo. Both providers' free-plan terms apply to the new accounts too (Vercel's Hobby plan
 is for non-commercial use). The old account used 208K of Vercel's 200K page-cache writes by 2026-10-21, mostly
@@ -194,10 +194,14 @@ nothing to move. Supabase's guide "Backup and restore using the CLI" (Platform �
    failed, its table does not exist in a new project, and the build then said `store_home` was missing; a second time
    its rows were already there from `migration repair`, hence the truncate). Checked on a
    local Supabase 17 the same day: 8,032 listings, 82 migrations, the Realtime tables, about 5 seconds.
-5. What no dump carries, in the SQL editor of the new project: the three timers,
+5. What no dump carries, in the SQL editor of the new project: the timers,
    `select cron.schedule('iwc-roll-cycles', '* * * * *', 'select public.roll_cycles()');`,
    `select cron.schedule('iwc-email-outbox', '* * * * *', 'select public._kick_email_outbox()');`,
-   `select cron.schedule('iwc-fx-refresh', '*/10 * * * *', 'select public._fx_refresh()');`; and the Vault (its key stays
+   `select cron.schedule('iwc-fx-refresh', '*/10 * * * *', 'select public._fx_refresh()');`, and since search (D-160)
+   `select cron.schedule('iwc-search-words', '17 */6 * * *', 'select public.refresh_search_words()');` (the payment
+   sweep's `iwc-payment-sweep` comes with its migration when it runs on the new project; restored after it, schedule
+   it too: `select cron.schedule('iwc-payment-sweep', '*/10 * * * *', 'select public._kick_payment_sweep()');`); check
+   with `select jobname, schedule from cron.job;`. And the Vault (its key stays
    with the old project): the two `vault.create_secret` lines of §Email timer, with the new site URL.
 6. Authentication: site URL, Redirect URLs, the two email templates (step 8 of §Going live). Accounts and passwords
    move with the data; everyone signs in again once.

@@ -51,29 +51,49 @@ Severity: **P0** blocks selling or loses money/orders · **P1** fix this week ·
 - **Skipped, with reasons in the agents' reports:** A-6 (wallets up front need a quote from a partial address: its
   own piece of work), B-8 (photo widths aren't stored: needs a column, a backfill from R2 and a ranking rule), C-5
   (pre-building 300 product pages would cost 180K – 270K page-cache writes a month against a 100K budget).
-- **FOUNDER questions filed:** Q-52 – Q-59 in `docs/questions.md`.
+- **FOUNDER questions filed and answered (D-179, 2026-11-03):** the "Imported" line, phone cards and Home's Diwali arches built; the rest stay as they are.
 - **Deploy order:** migrations `20261108090000_search_speed`, `20261108090100_webhook_claims`,
   `20261108090200_payment_sweep`, `20261108090300_payment_alerts` through the Deploy workflow, then the website. The payment sweep's first run looks
   back 2 days: check any paid-without-order checkouts handled by hand in Stripe first.
 
-## New Vercel account and maybe a new Supabase project (founder's plan, 2026-11-03)
-The founder will move the repo to a **new Vercel account** and delete the old one, and may do the same for Supabase.
-What breaks when an old account is deleted, and the order that avoids it:
-1. **The installed Android app** calls the old `the-indian-wholesale-club.vercel.app` (`EXPO_PUBLIC_API_URL`) and, if
-   Supabase moves, the old project's URL and anon key (`EXPO_PUBLIC_SUPABASE_URL`, `EXPO_PUBLIC_SUPABASE_ANON_KEY`),
-   all baked into the build. **First** ship an app build with `EXPO_PUBLIC_API_URL=https://indianwholesaleclub.com` (the
-   domain survives any Vercel move) and the new Supabase values, wait until installs have updated, **then** delete the
-   old accounts. Deleting first breaks every installed app.
-2. **Vercel move:** new project from the same GitHub repo; copy every env var (`docs/ops.md` env table), move the domain
-   (apex and `www`; Cloudflare records stay DNS-only), the deploy hook for the Deploy workflow, the daily deploy, and
-   Pro if L-4 is taken. The Stripe webhook already points at the domain (DOM-1), so it survives. Re-run §0's table
-   against the new deployment before deleting the old one.
-3. **Supabase move** (if done): it fixes nothing about INC-1 on its own: a new **free** project has the same small
-   compute and the same catalogue, so the disk IO budget runs out again (D-1 and F-0 reduce the reads; they don't
-   remove the limit). If it is done anyway: every migration, the data (including `auth` users, so customers keep
-   their accounts), Vault entries (`iwc_site_url`, `iwc_outbox_secret`), Auth URL configuration and SMTP (L-3, L-8),
-   then every place that holds the URL or keys: Vercel env, EAS env, the sourcing runner's and the laptop tools'
-    `.env` files (`docs/ops.md` §Moving, the D-147 move's checklist).
+## New Vercel account and new Supabase project, before this deploy (founder's choice, 2026-11-03)
+**Decided: move first, then deploy these commits straight onto the new accounts.** The old Vercel account is out of
+page-cache writes and active CPU, and a deploy rewrites every page on its next visit, so deploying there spends the
+limit that is already gone. The old Supabase project is unhealthy (disk IO); the four migrations (search rebuild
+included) and a full dump both read the whole database, and they run far better on a fresh project with a full
+budget. The code names no account (everything comes from env vars, GitHub secrets and the Vault), so no commit
+changes for the move; only the order below does.
+
+**What the move does not fix:** a new free Supabase project has the same small compute. The first one lasted
+2026-10-21 → 11-03. To keep it healthy until the paid plan: run no bulk job on production while customers shop
+(description redo, photo redo, sourcing runner, weight tools: nights only, one at a time), and watch Reports →
+Disk IO each day of the first week. The new Vercel account is Hobby again: its terms keep it non-commercial (L-4).
+
+**Order (a quiet hour; about 2 hours):**
+1. **Stop writes:** the sourcing runner, every laptop tool, admin imports. Note the time.
+2. **New Supabase project** (US East): `docs/ops.md` §Moving, Supabase steps 1 – 6 (dump, restore in one transaction,
+   timers, Vault, Auth). Then the **Deploy workflow's migrations only** against it (GitHub secrets
+   `SUPABASE_PROJECT_REF`, `SUPABASE_ACCESS_TOKEN`, `SUPABASE_DB_PASSWORD` now the new project's): the four
+   `20261108…` migrations; `payment_sweep` adds its own timer.
+3. **New Vercel project** from the same repo (`docs/ops.md` §Moving, Vercel steps 1 – 4): every env var with the new
+   Supabase values, plus this deploy's: `NEXT_PUBLIC_SITE_URL=https://indianwholesaleclub.com`,
+   `LEGACY_HOSTS=the-indian-wholesale-club.vercel.app,<new>.vercel.app`, `ADMIN_ALERT_WEBHOOK_URL`. Deploy `main`.
+   Check on `<new>.vercel.app`: `node scripts/domain-check.mjs https://<new>.vercel.app`, Home, a product, `/admin`.
+4. **Move the domain:** old project → Settings → Domains → remove `indianwholesaleclub.com` and `www`; new project →
+   add both (apex, `www` → apex as 308). Cloudflare: the records Vercel shows, DNS only (grey cloud). The Stripe
+   webhook already points at the domain, so its URL and signing secret stay. Supabase → Authentication → URL
+   configuration: the domain; Vault `iwc_site_url` = the domain.
+5. **Check on the domain:** `node scripts/domain-check.mjs https://indianwholesaleclub.com`, `/api/health` under 1 s,
+   one real order refunded from the admin. Stripe → Payments since step 1: any payment the old site took after the
+   dump has no checkout in the new database; the payment sweep alerts it ("Paid, but no order"): make those orders
+   by hand or refund.
+6. **The Android app:** its build holds the old Supabase URL and key and the old API address. Ship a build with
+   `EXPO_PUBLIC_API_URL=https://indianwholesaleclub.com` and the new `EXPO_PUBLIC_SUPABASE_URL` / `_ANON_KEY`.
+   Installed old builds read the old project until updated: keep the old Supabase project **running, read-only in
+   practice** (no tools pointed at it) until installs have updated, then pause it. Everyone signs in again once
+   (new project, new keys).
+7. **Old accounts:** keep the dumps outside the repo; delete the old Vercel project once the domain has served from the
+   new one for a day; pause the old Supabase project after step 6, delete it a month later.
 
 ---
 
@@ -107,6 +127,8 @@ queues behind the 5 MB/s baseline. The budget refills only while disk demand sta
 
 **Which queries read the disk** (Supabase → SQL editor; read-only; or Reports → Query Performance):
 ```sql
+-- since when the numbers below count (a restart resets them: run it again after a day of normal traffic)
+select stats_reset from pg_stat_statements_info;
 -- the 15 statements that read the most from disk since the last stats reset
 select round(total_exec_time / 1000) as total_s, calls, round(mean_exec_time) as mean_ms,
        shared_blks_read, temp_blks_written, left(regexp_replace(query, '\s+', ' ', 'g'), 160) as query
@@ -118,6 +140,15 @@ from pg_stat_activity where state <> 'idle' and pid <> pg_backend_pid() order by
 select pg_size_pretty(pg_total_relation_size('cron.job_run_details')) as cron_history,
        pg_size_pretty(pg_total_relation_size('net._http_response')) as net_responses;
 ```
+
+**Result on 2026-11-03 (founder's screenshot), read:** the top rows were PostgREST loading its schema cache ("WITH --
+Recursively get the base types of domains", 311 loads, about 144 s) and one RPC averaging 0.7 s (`pgrst_call`, 32
+calls), with only about 400 blocks (3 MB) read from disk in all; two Supabase start-up statements ran once. So the
+counters had just been reset by a restart and the disk eaters were not in them yet. PostgREST reloads its cache on
+every reconnect: while the database starves it reconnects again and again, and each load reads the whole catalogue
+of tables and functions, which adds to the load but did not start it. No migration or timer of ours sends schema
+reloads (temporary tables inside functions are ignored). Run the queries again after a day of traffic on the new
+project.
 
 **Code follow-up → Agent F (F-0 below):** every server read gets a time limit and a friendly fallback, so a slow
 database shows "try again in a minute" in 8 s instead of a 90 s spinner.
