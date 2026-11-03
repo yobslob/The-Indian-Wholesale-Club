@@ -1,32 +1,43 @@
 /*
- * Home hero (D-052 – D-055, D-079, D-080): the photo fills the first screen, behind the header too. The name stands on
- * the photo's white wall at every screen size, right-aligned to the screen, centred on the wall and sized to fit it
- * (#1D1A17 Cinzel, the line under it black Karla; no shade or blur). Scrolling fades the words out one after another
- * (--hero-p from hero-scroll.tsx; the drift is off for reduced motion).
+ * Home hero (D-182): the poster and the two doors, one screen at every size. Portrait: the poster over the panel, the
+ * poster taking what the panel leaves. Landscape: the panel beside a poster at full height, its dark wall running on
+ * from the photo's. The header sits over the poster, white on its soft fade.
  *
- * The wall in the photo's pixels (1117 x 1409): x 690 - 1117, y 335 - 670. --W/--H/--L/--T repeat what object-fit: cover
- * and object-position do, so the name is placed on the wall itself; --fs is capped by the wall's width (the word
- * "Wholesale" is 5.683 em wide in Cinzel) and its height. Checked at 13 screen sizes, 2560 x 1080 to 360 x 740 (D-079).
- *
- * The photo's date stamp ("31 03 2025", x 873 - 1076, launch QA C-2) stays whole: the crop sits at 85 % across as
- * before, except on screens narrower than about 3 : 5 (phones), where it slides right only as far as needed to keep
- * x 1089 on screen (97.5 %); --L is the photo's left edge, and .photo is placed by it, so the words follow.
+ * --W / --H repeat what object-fit: cover does with the crop kept at the top left (the headline is on the photo's left
+ * and the crop never cuts it), so the live date and link sit on the wall where the picture left room for them: the date
+ * at 23.8 % of its height, the link at 51.5 %, both 6.8 % across (the picture is 1024 x 1536).
  */
 .hero {
+  --h: clamp(560px, 100svh, 1200px);
+  --wall: #2a170c;
+  --gold: #e3b873;
+  --cream: #f6eee3;
   position: relative;
-  height: 100svh;
-  min-height: 620px;
-  max-height: 1200px;
+  display: grid;
+  grid-template-rows: minmax(0, 1fr) auto;
+  height: var(--h);
   overflow: hidden;
-  background: #1e1b16;
+  background: var(--wall);
+  color: var(--cream);
+}
+
+.poster {
+  --W: max(100cqw, 100cqh * 0.6667);
+  --H: calc(var(--W) * 1.5);
+  position: relative;
+  display: block;
+  min-height: 0;
+  overflow: hidden;
   container-type: size;
-  --ar: 0.7928;
-  --W: max(100cqw, 100cqh * var(--ar));
-  --H: calc(var(--W) / var(--ar));
-  --L: max(100cqw - var(--W), min((100cqw - var(--W)) * 0.85, 100cqw - var(--W) * 0.975));
-  --T: calc((100cqh - var(--H)) * 0.2);
-  --avail: calc(100cqw - var(--gut) - var(--L) - var(--W) * 0.6177);
-  --fs: min(calc(var(--avail) / 5.683 * 0.74), calc(var(--H) * 0.057), 108px);
+}
+/* the poster runs into the panel below it */
+.poster::after {
+  content: '';
+  position: absolute;
+  inset: auto 0 0;
+  height: 64px;
+  background: linear-gradient(to bottom, transparent, var(--wall));
+  pointer-events: none;
 }
 
 .photo {
@@ -35,66 +46,142 @@
   width: 100%;
   height: 100%;
   object-fit: cover;
-  object-position: var(--L) var(--T);
+  object-position: 0 0;
 }
 
-.words {
+.date,
+.shop {
   position: absolute;
-  right: var(--gut);
-  top: calc(var(--T) + var(--H) * 0.3567);
-  max-width: var(--avail);
-  transform: translateY(-50%);
-  text-align: right;
+  left: calc(var(--W) * 0.068);
+  text-transform: uppercase;
+  white-space: nowrap;
+}
+.date {
+  top: calc(var(--H) * 0.238);
+  font-size: clamp(10px, calc(var(--W) * 0.0205), 15px);
+  letter-spacing: 0.14em;
+  color: var(--gold);
+}
+.date::after {
+  content: '';
+  display: block;
+  width: 2.6em;
+  height: 1px;
+  margin-top: 0.9em;
+  background: var(--gold);
+}
+.shop {
+  top: calc(var(--H) * 0.515);
+  display: inline-flex;
+  align-items: center;
+  gap: calc(var(--W) * 0.018);
+  min-height: 44px;
+  font-size: clamp(11.5px, calc(var(--W) * 0.0205), 15px);
+  font-weight: 600;
+  letter-spacing: 0.06em;
+  color: var(--cream);
+}
+.ring {
+  display: grid;
+  place-items: center;
+  width: clamp(28px, calc(var(--W) * 0.06), 40px);
+  height: clamp(28px, calc(var(--W) * 0.06), 40px);
+  border: 1px solid var(--gold);
+  border-radius: 50%;
+  color: var(--gold);
+  transition:
+    background-color 0.2s,
+    color 0.2s;
+}
+.poster:hover .ring {
+  background: var(--gold);
+  color: var(--wall);
 }
 
+.panel {
+  display: grid;
+  gap: 12px;
+  padding: 10px var(--gut) calc(14px + env(safe-area-inset-bottom));
+}
+.store {
+  display: grid;
+  gap: 4px;
+}
 .brand {
   margin: 0;
-  font-size: var(--fs);
+  font-size: clamp(19px, 5.4vw, 30px);
   font-weight: 400;
-  line-height: 0.95;
-  color: #1d1a17;
+  line-height: 1.15;
 }
-
-.word {
-  display: block;
-  --q: clamp(0, calc((var(--hero-p, 0) * 1.5 - var(--i) * 0.17) / 0.7), 1);
-  opacity: calc(1 - var(--q));
-  transform: translate3d(0, calc(var(--q) * -28px), 0);
-}
-
-.line {
-  margin: calc(var(--fs) * 0.3) 0 0;
-  font-size: clamp(12px, calc(var(--fs) * 0.2), 18px);
+.about {
+  margin: 0;
+  font-size: 14px;
   line-height: 1.35;
-  color: #000;
+  color: rgb(246 238 227 / 0.78);
+  text-wrap: pretty;
 }
 
-.lead {
-  font-weight: 600;
-  letter-spacing: -0.005em;
+.kinds {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 6px;
+  margin-top: 8px;
 }
-
-.sub {
-  margin: 0.2em 0 0;
-  font-size: clamp(12px, calc(var(--fs) * 0.2), 18px);
-  line-height: 1.35;
-  color: #000;
-}
-
-.sub a,
-.line a {
+.kind {
+  display: inline-flex;
+  flex: 1 1 auto;
+  align-items: center;
+  justify-content: center;
+  min-height: 40px;
+  padding: 0 11px;
+  border: 1px solid rgb(227 184 115 / 0.45);
+  border-radius: 999px;
+  font-size: 13px;
+  font-weight: 500;
   white-space: nowrap;
-  text-decoration: underline;
-  text-decoration-thickness: 1px;
-  text-underline-offset: 3px;
+  transition:
+    background-color 0.2s,
+    color 0.2s;
+}
+.kind:hover {
+  background: var(--gold);
+  color: var(--wall);
+}
+
+.door {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 16px;
+  padding-top: 12px;
+  border-top: 1px solid rgb(227 184 115 / 0.28);
+}
+.doorWords {
+  display: grid;
+  gap: 2px;
+  min-width: 0;
+}
+.doorName {
+  font-size: 17px;
+  font-weight: 500;
+  line-height: 1.2;
+  letter-spacing: -0.01em;
+}
+.doorName b {
+  font-weight: 600;
+  color: var(--gold);
 }
 
 /* founder 2026-11-03: "Get it here >>", then "make the >> animation minimilistic": the two arrows drift a few
    pixels right and back together, slowly */
 .go {
   display: inline-flex;
+  flex: none;
   align-items: baseline;
   gap: 0.3em;
+  font-size: 14px;
+  font-weight: 600;
+  color: var(--gold);
 }
 .arrows {
   display: inline-block;
@@ -117,10 +204,76 @@
   }
 }
 
-@media (prefers-reduced-motion: reduce) {
-  .word {
-    transform: none;
+/* the smallest phones: the four doors stay on one row, so the poster's link stays clear of the panel */
+@media (max-width: 350px) {
+  .kinds {
+    gap: 4px;
   }
+  .kind {
+    padding: 0 8px;
+    font-size: 12px;
+  }
+  .about,
+  .go {
+    font-size: 13px;
+  }
+}
+
+@media (orientation: landscape) and (min-width: 700px) {
+  .hero {
+    --h: clamp(520px, 100svh, 1200px);
+    grid-template-rows: none;
+    grid-template-columns: minmax(0, 1fr) calc(var(--h) * 2 / 3);
+  }
+  .poster {
+    order: 2;
+  }
+  .poster::after {
+    content: none;
+  }
+  /* the seam: the photo's wall fades into the panel's */
+  .photo {
+    mask-image: linear-gradient(to right, transparent, #000 6%);
+  }
+  .panel {
+    align-self: center;
+    justify-self: center;
+    gap: clamp(20px, 2.6vw, 36px);
+    width: min(100%, 680px);
+    padding: calc(var(--top-h, 56px) + 16px) var(--gut) 24px;
+  }
+  .store {
+    gap: clamp(8px, 1vw, 14px);
+  }
+  .brand {
+    font-size: clamp(30px, 4.1vw, 68px);
+    line-height: 1.05;
+  }
+  .about {
+    font-size: clamp(15px, 1.25vw, 18px);
+  }
+  .kinds {
+    gap: 8px;
+    margin-top: 10px;
+  }
+  .kind {
+    flex: 0 1 auto;
+    min-height: 44px;
+    padding: 0 20px;
+    font-size: 14px;
+  }
+  .door {
+    padding-top: clamp(16px, 2vw, 28px);
+  }
+  .doorName {
+    font-size: clamp(19px, 1.7vw, 26px);
+  }
+  .go {
+    font-size: 15px;
+  }
+}
+
+@media (prefers-reduced-motion: reduce) {
   .arrows {
     animation: none;
   }

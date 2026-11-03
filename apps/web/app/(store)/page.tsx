@@ -33,7 +33,10 @@ export default async function HomePage(): Promise<React.JSX.Element> {
 
   return (
     <div data-bleed>
-      <HomeHero quick={quickDays !== null} />
+      <HomeHero
+        quickDays={policy.quick_delivery_on ? { min: policy.quick_delivery_days_min, max: policy.quick_delivery_days_max } : null}
+        storeDays={{ min: policy.delivery_days_min, max: policy.delivery_days_max }}
+      />
 
       <div className="px-[var(--gut)]">
         {/* D-179: the three Diwali arches right under the hero, a price on the first screens; the night with

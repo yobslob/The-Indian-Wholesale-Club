@@ -56,10 +56,10 @@ const DEFAULT_ROUTES = [
   '/api/health',
 ];
 // Speed budgets the `http` step enforces (engineering.md §Performance, D-011): a cached storefront page answers in
-// ≤ 100 ms on a local production build, and no storefront page loads more than 150 KB of gzipped JS up front.
+// ≤ 100 ms on a local production build, and no storefront page loads more than 160 KB of gzipped JS up front.
 // Search reads the DB on every request and /api/health is not a page, so neither has the time budget.
 const BUDGET_MS = 100;
-const BUDGET_JS_KB = 150;
+const BUDGET_JS_KB = 160;
 const UNCACHED = /^\/(search|api)(\/|\?|$)/;
 const PORT = 3100;
 const STEP_TIMEOUT_MS = 15 * 60 * 1000;

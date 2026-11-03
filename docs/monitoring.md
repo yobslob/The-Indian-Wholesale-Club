@@ -26,7 +26,7 @@ A number past its **budget** is a warning (look for the cause that week); past t
 | Area | Healthy when | How it is checked |
 |---|---|---|
 | Up | `/api/health` answers `{"status":"healthy"}`; `/`, `/food` and a product page answer 200; the webhook answers `HEAD` with 405 | an uptime service every 5 minutes (§5 step 3); it also keeps the free Supabase project awake |
-| Speed | cached store pages answer in ≤ 100 ms and ship ≤ 150 KB first-load JS (D-011, `engineering.md` §Performance); on the live site Home, a state, See all and a product page load in under 2 s on a phone | `node scripts/check.mjs http` (local production build) weekly; the live pages in Chrome's Lighthouse (mobile) monthly |
+| Speed | cached store pages answer in ≤ 100 ms and ship ≤ 160 KB first-load JS (D-011, `engineering.md` §Performance); on the live site Home, a state, See all and a product page load in under 2 s on a phone | `node scripts/check.mjs http` (local production build) weekly; the live pages in Chrome's Lighthouse (mobile) monthly |
 | Photos | every photo from `/media/s/…avif`, a second request `x-vercel-cache: HIT` | `CHECK_LIVE_SITE=<site> node scripts/check.mjs http`; `curl -I` on one photo twice |
 | Payments | every paid Stripe payment has its order; no row in `failed_reconciliations` unresolved | Admin → Today (payments to check); Stripe → Payments vs Admin → Orders weekly |
 | Emails | nothing pending for more than 10 minutes | Admin → Today (stuck emails); query D below |

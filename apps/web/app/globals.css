@@ -230,8 +230,8 @@
 /*
  * Store shell (features/shell). Pages get the side gutter; a page whose first element carries
  * data-bleed (Home) runs edge to edge. On Home the header sits on the hero photo (D-054, D-080): white on a
- * soft dark fade, the logo hidden until the page scrolls (--hero-p, set by features/home/hero-scroll.tsx),
- * and cream again, with a 0.35 s fade, once the photo has scrolled past (html[data-hero-passed]). Pure CSS
+ * soft dark fade, and cream again, with a 0.35 s fade, once the hero has scrolled past (html[data-hero-passed], set
+ * by features/home/hero-scroll.tsx). Pure CSS
  * from the server render, so nothing jumps when the page hydrates.
  */
 @layer components {
@@ -286,13 +286,6 @@
     pointer-events: none;
     background: linear-gradient(to bottom, rgb(20 17 15 / 0.6), rgb(20 17 15 / 0));
     transition: opacity 0.35s;
-  }
-  body:has([data-home-hero]) .site-logo {
-    opacity: var(--hero-p, 0);
-  }
-  /* Keyboard users always see the logo they tab to. */
-  body:has([data-home-hero]) .site-logo:focus-visible {
-    opacity: 1;
   }
   html[data-hero-passed] body:has([data-home-hero]) .site-header {
     background-color: theme('colors.canvas');

@@ -27,7 +27,7 @@ import type { BrowsePage, BrowseSort } from '@repo/db/store';
 import type { ProductType } from '@repo/shared/domain';
 
 // D-181: only a state's Food and Home & gifts draw the 7-day band, and it reads its cards after the page: its code
-// loads with it, so See all and Clothing keep their first-load JS (D-011's 150 KB)
+// loads with it, so See all and Clothing keep their first-load JS (D-011's budget)
 const QuickBand = dynamic(() => import('@/features/seven-day/quick-band').then((m) => m.QuickBand), { ssr: false });
 
 const pieces = (n: number): string => `${n} ${n === 1 ? 'piece' : 'pieces'}`;

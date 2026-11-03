@@ -953,3 +953,29 @@ given (no conversion).
   - **Goa's Food:** not a Goa fault. The store reads the database as `anon`, which Supabase stops after 3 s; a Food list
     took 1.3 – 2 s alone, so a few opened at once failed and the tab said "These pieces did not load"
     (`20261108090500_browse_reads` makes the read about 2.4 × faster).
+
+**D-182 · 2026-11-04 · founder: Home's hero is the Diwali poster and the two doors; the first-load JS budget is 160 KB**
+- Founder, verbatim: "yes they failed, now raise everyone's budget to 160kb, and then solve this second problem: as
+  everyone is using it on their phones, my customers complained about scrolling too much to get to the interactive part
+  yet I want to keep it minimilistic and not to fill it with AI slop then it will look like a blogging page. the girl
+  that this ain't vibe an ecommerce website but they liked the host your diwali part, so redesign my hero section
+  accordingly such that it is properly defined what the 7 day store is how to get to it and what the iwc is and still
+  keeping it designing and minimalistic. I had an inspo to use a colorful image instead, I added it to visuals for you
+  to inspect, it's name is hero_updated."
+- What it means:
+  - **Budget:** every storefront page may load 160 KB of gzipped JS up front (`check.mjs`, was 150 KB, D-011's speed
+    rule otherwise unchanged).
+  - **The hero:** one screen at every size, so a phone can open the store without scrolling. The poster (a link to
+    `/home-and-gifts?max=99`) over a dark panel, or beside it on landscape screens: Indian Wholesale Club with Clothing,
+    Food, Home & gifts and States, then the 7-day store with "Get it here" and D-180's two arrows. Replaces the stacked
+    brand name on the white wall (D-052 – D-055, D-079) and D-180's two lines; the header's logo now always shows.
+    The Android and iPhone app's hero is unchanged.
+  - *Interpretation (proposed, confirm on the live site):* the poster's small date and "SHOP UNDER $99" were painted out
+    of `hero_updated.png` and redrawn as live text (about 7 px tall in the picture on a phone, and not a real link); the
+    large headline stays in the picture, because the site has no serif with a true italic. The source PNG (3.1 MB) is
+    not served: `public/images/home-hero-diwali.avif` (91 KB) and `.webp` (115 KB) are.
+  - *Interpretation (Claude's draft, the founder to confirm the words):* "Clothing, food and gifts from all 36 states of
+    India, at your door in 12–16 days." (the days from Settings). The 7-day line is the 7-day page's approved one, "Snacks,
+    masalas and sweets from home, at your door in 7 days." (days from Settings).
+  - After Diwali the poster's headline is out of date: Q-60. "Host your Diwali under $99" also still shows in the Diwali
+    night further down the page (D-179), kept as it was.
