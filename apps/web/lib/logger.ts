@@ -1,7 +1,10 @@
 /**
- * Structured JSON logger: one JSON line per event. Errors are also stored in
- * admin_error_events (service role) and optionally sent to ADMIN_ALERT_WEBHOOK_URL.
+ * Structured JSON logger: one JSON line per event. Errors are also stored in admin_error_events (service role) and
+ * sent to the founder through lib/alert.ts (ADMIN_ALERT_WEBHOOK_URL): at most one alert per event name per
+ * 10 minutes, with emails and phone numbers hidden and a 5 s limit (launch QA F-3).
  */
+import { sendThrottledAlert } from './alert';
+
 type LogLevel = 'info' | 'warn' | 'error';
 export type LogContext = Record<string, unknown>;
 
@@ -14,23 +17,7 @@ async function persistError(event: string, context: LogContext): Promise<void> {
   } catch {
     // The console line above is still there when persistence is unavailable.
   }
-  const alertUrl = process.env.ADMIN_ALERT_WEBHOOK_URL;
-  if (!alertUrl) return;
-  try {
-    await fetch(alertUrl, {
-      method: 'POST',
-      headers: { 'content-type': 'application/json' },
-      body: JSON.stringify({ event, context, timestamp: new Date().toISOString() }),
-    });
-  } catch (alertError) {
-    console.error(
-      JSON.stringify({
-        level: 'error',
-        event: 'admin.alert_delivery_failed',
-        error: String(alertError),
-      }),
-    );
-  }
+  await sendThrottledAlert(`log:${event}`, event, context);
 }
 
 function emit(level: LogLevel, event: string, context: LogContext = {}): void {
