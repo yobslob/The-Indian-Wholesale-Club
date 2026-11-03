@@ -45,7 +45,8 @@ Short on purpose: **replace** lines when something changes, don't append. Histor
 - **Diwali windows on Home (D-174, 2026-10-31):** the full-width flight gave way to a toran over a Diwali night (the
   plane flying inside it) and three arch windows (Clothing from $11.45, Snacks from $0.39, Get snacks from your
   neighbourhood), each with the founder's photo (D-175, D-176, `slots.ts`) and a button (Shop under $99, Shop clothing,
-  Shop snacks, Find your state); the 7-day store keeps its flight. Seasonal: change `features/home/diwali-hooks.ts`
+  Shop snacks, Find your state); the night runs across the top and the three arches sit in a row under it at every width, no sliding (D-177);
+  the 7-day store keeps its flight. Seasonal: change `features/home/diwali-hooks.ts`
   after Nov 8.
 - **Home photos (D-169, 2026-10-31, needs the Deploy workflow):** Home's drifting mosaic shows only the founder's own
   photos (`home_photos`, migration `20261104090000_home_photos`), no state album or listing photo; the admin's **Home

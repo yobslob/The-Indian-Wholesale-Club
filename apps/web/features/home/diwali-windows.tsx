@@ -13,8 +13,8 @@ import { ARCHES, WIDE } from './diwali-hooks';
  * types arch windows for each category … show this airplane flying inside somewhere the card"): where the full-width
  * flight was, a row of festive windows under a toran. The wide one is a Diwali night: string lights, two fireworks and
  * the flight crossing it with its banner (the free line or the festival's last order day, flight.tsx). Then an arch
- * window per hook (diwali-hooks.ts), each with its drawing and a diya on the sill. Desktop: one row; tablet: the
- * night over the three arches; phones: one row that swipes (scroll snap, no JavaScript). Server-drawn; the only client
+ * window per hook (diwali-hooks.ts), each with its drawing and a diya on the sill. At every width the night runs across
+ * the top and the three arches sit in a row under it (founder 2026-11-02, D-177: no sliding). Server-drawn; the only client
  * part is the flight. Loops move transform and opacity only, pause off screen (`data-album`, motion.tsx) and stop with
  * reduced motion.
  */

@@ -2198,10 +2198,11 @@ html[data-free-bar] .site-footer {
     background: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 36 26'%3E%3Cpath d='M0 3H36' stroke='%238a5a00' stroke-width='1.2'/%3E%3Cpath d='M27 3C32 8 31.5 16 27 22C22.5 16 22 8 27 3Z' fill='%23466b34'/%3E%3Cpath d='M27 5V20' stroke='%2393ad6e' stroke-width='.6'/%3E%3Ccircle cx='9' cy='9' r='6' fill='%23e07b1a'/%3E%3Ccircle cx='9' cy='9' r='3.8' fill='%23f2a43a'/%3E%3Ccircle cx='9' cy='9' r='1.4' fill='%23b8560f'/%3E%3C/svg%3E")
       repeat-x 0 0 / 36px 26px;
   }
+  /* founder 2026-11-02 (D-177): the night across the top, the three arches in a row under it, at every width */
   .dw-row {
     display: grid;
-    grid-template-columns: 2fr 1fr 1fr 1fr;
-    gap: clamp(10px, 1.2vw, 18px);
+    grid-template-columns: repeat(3, 1fr);
+    gap: clamp(8px, 1.2vw, 18px);
     align-items: stretch;
   }
 
@@ -2215,6 +2216,7 @@ html[data-free-bar] .site-footer {
     gap: 12px;
     border-radius: 22px;
     padding: clamp(34px, 3vw, 46px) clamp(18px, 2vw, 30px) clamp(8px, 1vw, 14px);
+    grid-column: 1 / -1;
     color: theme('colors.paper');
     background:
       radial-gradient(110% 90% at 88% 0%, color-mix(in srgb, var(--dw-gold) 30%, transparent), transparent 62%),
@@ -2393,8 +2395,6 @@ html[data-free-bar] .site-footer {
   .dw-arch {
     position: relative;
     display: block;
-    /* the ratio is the least height; next to a taller night the arch stretches to match */
-    align-self: stretch;
     aspect-ratio: 100 / 133;
     transition:
       transform 320ms cubic-bezier(0.2, 0.8, 0.2, 1),
@@ -2415,7 +2415,7 @@ html[data-free-bar] .site-footer {
     display: flex;
     flex-direction: column;
     align-items: center;
-    padding: 27% 9% 5%;
+    padding: 0 9% 5%;
     text-align: center;
     color: var(--fg);
     background: var(--bg);
@@ -2597,8 +2597,13 @@ html[data-free-bar] .site-footer {
     position: relative;
     z-index: 1;
   }
-  .dw-arch--photo .dw-arch-shape {
-    padding-top: 66%;
+  /* the words start below the arch's point, or below the photo; a share of the height, whatever the arch's ratio */
+  .dw-arch-shape::before {
+    content: '';
+    flex: 0 0 21%;
+  }
+  .dw-arch--photo .dw-arch-shape::before {
+    flex-basis: 49%;
   }
   .dw-photo--night {
     inset: 0 0 0 auto;
@@ -2622,16 +2627,12 @@ html[data-free-bar] .site-footer {
     animation-play-state: paused;
   }
 
-  /* tablet: the night over the three arches */
-  @media (min-width: 640px) and (max-width: 1023px) {
-    .dw-row {
-      grid-template-columns: repeat(3, 1fr);
-    }
+  /* from tablets up the night lays out sideways: the words on the left, the flight on the right */
+  @media (min-width: 640px) {
     .dw-wide {
-      grid-column: 1 / -1;
       flex-direction: row;
       align-items: flex-end;
-      min-height: 230px;
+      min-height: clamp(230px, 21vw, 300px);
     }
     .dw-wide-words {
       align-self: flex-start;
@@ -2640,27 +2641,102 @@ html[data-free-bar] .site-footer {
       flex: 0 0 56%;
     }
   }
-  /* phones: one row that swipes, edge to edge */
+  /* the arches' ratios are set so the words, the button and the diya always fit (checked from 320 to 1920 px) */
+  @media (min-width: 640px) and (max-width: 819px) {
+    .dw-arch {
+      aspect-ratio: 100 / 160;
+    }
+    .dw-big {
+      font-size: 28px;
+    }
+    .dw-tag {
+      font-size: 10px;
+    }
+  }
+  @media (min-width: 820px) and (max-width: 1023px) {
+    .dw-arch {
+      aspect-ratio: 100 / 145;
+    }
+  }
+  /* wide screens: lower, broader arches (the arch shape stretches with its box) */
+  @media (min-width: 1024px) {
+    .dw-arch {
+      aspect-ratio: 100 / 108;
+    }
+    .dw-big {
+      font-size: clamp(40px, 3.6vw, 58px);
+    }
+    .dw-hook--words {
+      font-size: clamp(20px, 1.8vw, 27px);
+    }
+  }
+  @media (min-width: 1280px) {
+    .dw-arch {
+      aspect-ratio: 100 / 94;
+    }
+  }
+  /* phones: three slim arches side by side, the words smaller and the buttons just their arrow */
   @media (max-width: 639px) {
-    .dw-row {
-      grid-template-columns: calc(100vw - 2 * var(--gut));
-      grid-auto-flow: column;
-      grid-auto-columns: 58vw;
-      overflow-x: auto;
-      scroll-snap-type: x mandatory;
-      scroll-padding-inline: var(--gut);
-      margin-inline: calc(-1 * var(--gut));
-      padding: 0 var(--gut) 6px;
-      scrollbar-width: none;
-    }
-    .dw-row::-webkit-scrollbar {
-      display: none;
-    }
-    .dw-row > * {
-      scroll-snap-align: start;
-    }
     .dw-wide {
       min-height: 280px;
+    }
+    .dw-arch {
+      aspect-ratio: 100 / 200;
+    }
+    .dw-arch-shape {
+      padding: 0 5% 7%;
+    }
+    .dw-arch--photo .dw-arch-shape::before {
+      flex-basis: 40%;
+    }
+    .dw-arch .dw-photo {
+      height: 46%;
+    }
+    .dw-arch .dw-kicker {
+      font-size: 8.5px;
+      letter-spacing: 0.1em;
+    }
+    .dw-lead {
+      margin-bottom: 2px;
+      font-size: 9.5px;
+    }
+    .dw-big {
+      font-size: 21px;
+    }
+    .dw-hook--words {
+      max-width: none;
+      font-size: 12.5px;
+    }
+    .dw-tag {
+      margin-top: 8px;
+      padding: 3px 5px 3px 10px;
+      font-size: 8.5px;
+    }
+    .dw-tag::before {
+      left: 4px;
+    }
+    .dw-arch .dw-go {
+      gap: 0;
+      margin-top: 8px;
+      font-size: 0;
+      letter-spacing: 0;
+    }
+    .dw-arch .dw-go-ring {
+      width: 22px;
+      height: 22px;
+    }
+    .dw-diya {
+      width: 22px;
+    }
+  }
+  @media (max-width: 379px) {
+    .dw-arch {
+      aspect-ratio: 100 / 220;
+    }
+  }
+  @media (max-width: 339px) {
+    .dw-arch {
+      aspect-ratio: 100 / 240;
     }
   }
 

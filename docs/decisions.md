@@ -857,6 +857,14 @@ given (no conversion).
   on the night, a real link; Shop clothing, Shop snacks and Find your state in the arches, drawn inside the arch's own
   link so the whole window stays the target).
 
+**D-177 · 2026-11-02 · founder: the Diwali night across the top, the three arches under it, no sliding** · Changes D-174's layout
+- Founder, verbatim: "Okay it is looking very very good but I want the host your diwali as it is and then the three
+  windows below it. no sliding".
+- What it means: at every width the night spans the row and the three arches sit side by side under it; the phones'
+  sideways swipe is gone. From 640 px the night lays out sideways (words left, flight right). The arches' ratio
+  changes with the width so the words, the button and the diya always fit (checked from 320 to 1920 px); on phones
+  the arches are slim, the words smaller and each button just its arrow ring.
+
 **D-178 · 2026-11-02 · founder: every listing's description written again on the laptop, fast and checked**
 - Founder, verbatim: "Generate a very optimized, efficient, smart and productive description make which changes all
   the products descriptions by running on local machine(if cloud is costing limits.) We want to avoid any copyrights
