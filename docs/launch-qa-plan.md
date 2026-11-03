@@ -36,12 +36,24 @@ Severity: **P0** blocks selling or loses money/orders · **P1** fix this week ·
 - **Wave 1 merged into `main`** (branches `qa/D-search`, `qa/F0-safety`, `qa/A-checkout`, `qa/B-product`, `qa/C-home`,
   `qa/G-tests`): A-1 – A-5, A-8, A-9; B-1 – B-3, B-6, B-9 – B-11; C-1 – C-3, C-6, C-7; D-1 – D-3 (D-2's cache rule
   waits for E); F-0 – F-2 (F-1 and F-2 here are the claim fix and the payment sweep); G's 73 tests. **Not deployed.**
+- **Waves 2 – 3 merged:** E-1, E-2a, E-2b, E-2d, E-3, D-2's CDN rule, the domain checklist (`docs/ops.md` §Going live
+  on the domain) and its check script; F-3 (refunds, disputes, failed payments, founder alerts, the admin's red count),
+  F-4 (server error alerts, no new service), F-5 (uptime set-up in `monitoring.md`), F-6, F-7 (next 15.5.28, sharp
+  0.35.5; zod, postcss and the Expo toolchain need bigger upgrades).
+- **Found by the e2e run and fixed:** a replayed PaymentIntent was reused when already paid (card form "didn't load")
+  or at an old amount after a shipping switch (would have charged the old total); the Supabase CLI 3.0 refusing
+  `config.toml` (pinned to 2.122.1 in `check.mjs` and the **Deploy workflow**); two `@types/react` copies.
+- **Verified 2026-11-03** (Claude Code, the founder's PC, Docker): `check.mjs docs typecheck lint test db build` OK
+  (74 SQL files), e2e **69 passed, 2 failed, 2 skipped**. Both failures fail the same way on `2f064d4` (before this
+  work): the admin's Publish takes ~30 s to show on the page (the database is updated at once), and
+  `customer-choices` "keeps the order" (passes on some runs). One SQL test failed once in five fresh runs (name not
+  captured). Not checked: anything on production, the payment step in a real browser on the domain, Apple/Google Pay.
 - **Skipped, with reasons in the agents' reports:** A-6 (wallets up front need a quote from a partial address: its
   own piece of work), B-8 (photo widths aren't stored: needs a column, a backfill from R2 and a ranking rule), C-5
   (pre-building 300 product pages would cost 180K – 270K page-cache writes a month against a 100K budget).
 - **FOUNDER questions filed:** Q-52 – Q-59 in `docs/questions.md`.
 - **Deploy order:** migrations `20261108090000_search_speed`, `20261108090100_webhook_claims`,
-  `20261108090200_payment_sweep` through the Deploy workflow, then the website. The payment sweep's first run looks
+  `20261108090200_payment_sweep`, `20261108090300_payment_alerts` through the Deploy workflow, then the website. The payment sweep's first run looks
   back 2 days: check any paid-without-order checkouts handled by hand in Stripe first.
 
 ## New Vercel account and maybe a new Supabase project (founder's plan, 2026-11-03)
