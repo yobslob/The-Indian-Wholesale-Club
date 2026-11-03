@@ -8,7 +8,7 @@
     "start": "next start",
     "lint": "eslint . --ext .ts,.tsx --max-warnings 0",
     "typecheck": "node -e \"require('fs').rmSync('.next/types',{recursive:true,force:true})\" && next typegen && tsc --noEmit",
-    "test": "tsx --test tests/order-email.test.ts tests/site.test.ts tests/rate-limit.test.ts tests/payment-check.test.ts tests/faster-decision.test.ts tests/export-documents.test.ts tests/order-update.test.ts tests/policy-text.test.ts tests/browse-query.test.ts tests/price-sheet.test.ts tests/paging.test.ts tests/card-options.test.ts tests/image-copies.test.ts tests/slim-cards.test.ts tests/size-facet.test.ts tests/search-url.test.ts tests/db-timeout.test.ts tests/payment-sweep.test.ts tests/checkout-http.test.ts tests/checkout-order-confirm.test.ts tests/checkout-payment.test.ts tests/alert.test.ts tests/request-error.test.ts tests/stripe-events.test.ts",
+    "test": "tsx --test tests/order-email.test.ts tests/site.test.ts tests/rate-limit.test.ts tests/payment-check.test.ts tests/faster-decision.test.ts tests/export-documents.test.ts tests/order-update.test.ts tests/policy-text.test.ts tests/browse-query.test.ts tests/price-sheet.test.ts tests/paging.test.ts tests/card-options.test.ts tests/image-copies.test.ts tests/slim-cards.test.ts tests/size-facet.test.ts tests/search-url.test.ts tests/db-timeout.test.ts tests/payment-sweep.test.ts tests/checkout-http.test.ts tests/checkout-order-confirm.test.ts tests/checkout-payment.test.ts tests/alert.test.ts tests/request-error.test.ts tests/stripe-events.test.ts tests/legacy-move.test.ts tests/sitemap-parts.test.ts tests/product-seo.test.ts",
     "e2e": "playwright test"
   },
   "dependencies": {
