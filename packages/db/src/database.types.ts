@@ -406,6 +406,32 @@ isOneToOne: false
       referencedColumns: ["id"]
     }
                   ]
+                },"payment_disputes": {
+                  Row: {
+                    "amount_cents": number,"charge_id": string | null,"closed_at": string | null,"created_at": string,"currency": string,"dispute_id": string,"evidence_due_at": string | null,"order_id": string | null,"payment_intent_id": string | null,"reason": string | null,"status": string,"updated_at": string
+                  }
+                  ComputedFields: never
+                  Insert: {
+                    "amount_cents": number,"charge_id"?: string | null,"closed_at"?: string | null,"created_at"?: string,"currency"?: string,"dispute_id": string,"evidence_due_at"?: string | null,"order_id"?: string | null,"payment_intent_id"?: string | null,"reason"?: string | null,"status": string,"updated_at"?: string
+                  }
+                  Update: {
+                    "amount_cents"?: number,"charge_id"?: string | null,"closed_at"?: string | null,"created_at"?: string,"currency"?: string,"dispute_id"?: string,"evidence_due_at"?: string | null,"order_id"?: string | null,"payment_intent_id"?: string | null,"reason"?: string | null,"status"?: string,"updated_at"?: string
+                  }
+                  Relationships: [
+                    {
+      foreignKeyName: "payment_disputes_order_id_fkey"
+      columns: ["order_id"]
+isOneToOne: false
+      referencedRelation: "orders"
+      referencedColumns: ["id"]
+    },{
+      foreignKeyName: "payment_disputes_order_id_fkey"
+      columns: ["order_id"]
+isOneToOne: false
+      referencedRelation: "store_orders"
+      referencedColumns: ["id"]
+    }
+                  ]
                 },"pending_orders": {
                   Row: {
                     "checkout_payload": NonNullable<Json>,"created_at": string,"id": string,"payment_intent_id": string,"reconciled_at": string | null,"reconciled_by": string | null,"sweep_note": string | null,"swept_at": string | null
@@ -2243,8 +2269,14 @@ isOneToOne: false
 "rate_limit_hit":
 { Args: { "p_key": string,"p_limit": number,"p_window_seconds": number }; Returns: Json
                            },
+"record_payment_dispute":
+{ Args: { "p_amount_cents": number,"p_charge": string,"p_currency": string,"p_dispute_id": string,"p_evidence_due": string,"p_payment_intent": string,"p_reason": string,"p_status": string }; Returns: Json
+                           },
 "record_payout":
 { Args: { "p_method": string,"p_note"?: string,"p_pickups": (string)[],"p_receipt_path"?: string,"p_reference"?: string,"p_vendor": string }; Returns: string
+                           },
+"record_stripe_refund":
+{ Args: { "p_payment_intent": string,"p_refund_id": string,"p_refunded_cents": number }; Returns: Json
                            },
 "refresh_search_words":
 { Args: Record<PropertyKey, never>; Returns: number
