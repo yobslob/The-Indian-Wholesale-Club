@@ -47,10 +47,12 @@ async function create(
   };
   const intent = await stripe.paymentIntents.create(params, { idempotencyKey });
   if (intent.lastResponse.headers['idempotent-replayed'] !== 'true') return intent;
-  // A replay returns the payment as it was created: make sure it is still unpaid, else start a new one.
+  // A replay returns the payment as it was created: make sure it is still unpaid, else start a new one. The new one
+  // has no key of its own: a fixed second key would be replayed too (the same bag bought again within ten minutes
+  // got the earlier, already paid payment, and the card form failed to load).
   const fresh = await stripe.paymentIntents.retrieve(intent.id);
   if (fresh.status === 'requires_payment_method') return fresh;
-  return stripe.paymentIntents.create(params, { idempotencyKey: `${idempotencyKey}-again` });
+  return stripe.paymentIntents.create(params);
 }
 
 export async function startPayment(
