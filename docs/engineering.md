@@ -45,7 +45,7 @@ Baseline numbers come from the founder's first `node scripts/check.mjs` run and 
   legacy shared secret (local Supabase and old hosted projects use the shared secret). Rate limits run inside the routes.
 - **PR-5 Server-first:** Server Components by default. Client components only for real interaction (add to cart, variant
   picker, live stock). No animation libraries on the storefront (framer-motion removed in R5) except Lenis smooth scrolling,
-  which the founder asked for (D-049, `storefront.md` §Direction: one small client module, off for reduced motion). Fonts
+  which the founder asked for (D-049, `storefront.md` §Direction: one small client module, off for reduced motion and on touch screens, its frame loop running only while the page moves: launch QA C-1, Q-59). Fonts
   (D-079, D-080, since 2026-10-08): Cinzel, Syne and Karla via `next/font`, self-hosted Latin variable files (about 85 KB
   in all); Georgia as the system font for the logo text with Gelasio, loaded only where Georgia is missing.
   Click-only parts load on the click (`next/dynamic`), never with the page: the product page's photo viewer (its

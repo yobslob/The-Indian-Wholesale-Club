@@ -30,7 +30,7 @@ A number past its **budget** is a warning (look for the cause that week); past t
 | Photos | every photo from `/media/s/…avif`, a second request `x-vercel-cache: HIT` | `CHECK_LIVE_SITE=<site> node scripts/check.mjs http`; `curl -I` on one photo twice |
 | Payments | every paid Stripe payment has its order; no row in `failed_reconciliations` unresolved | Admin → Today (payments to check); Stripe → Payments vs Admin → Orders weekly |
 | Emails | nothing pending for more than 10 minutes | Admin → Today (stuck emails); query D below |
-| Timers | the three pg_cron jobs ran in the last hour | query C below |
+| Timers | the pg_cron jobs (cycles, email outbox, FX, search words, payment sweep) ran in the last hour | query C below |
 | Exchange rate | refreshed today (D-075) | query E; Admin → Settings (the exchange rate) |
 | Errors | Today shows no new server errors, or each is understood | Admin → Today; query F (Vercel keeps runtime logs only 1 hour on Hobby, so `admin_error_events` is the record) |
 | Catalogue | Weights to check, Drafts and Names to tidy stay small; no live listing without a weight | Admin → Products tabs; query G |
