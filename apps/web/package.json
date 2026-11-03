@@ -30,6 +30,7 @@
     "zustand": "^5.0.3"
   },
   "devDependencies": {
+    "@axe-core/playwright": "^4.14.0",
     "@playwright/test": "^1.55.0",
     "@repo/eslint-config": "workspace:*",
     "@repo/tokens": "workspace:*",
