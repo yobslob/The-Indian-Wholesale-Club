@@ -408,14 +408,14 @@ isOneToOne: false
                   ]
                 },"pending_orders": {
                   Row: {
-                    "checkout_payload": NonNullable<Json>,"created_at": string,"id": string,"payment_intent_id": string,"reconciled_at": string | null,"reconciled_by": string | null
+                    "checkout_payload": NonNullable<Json>,"created_at": string,"id": string,"payment_intent_id": string,"reconciled_at": string | null,"reconciled_by": string | null,"sweep_note": string | null,"swept_at": string | null
                   }
                   ComputedFields: never
                   Insert: {
-                    "checkout_payload": NonNullable<Json>,"created_at"?: string,"id"?: string,"payment_intent_id": string,"reconciled_at"?: string | null,"reconciled_by"?: string | null
+                    "checkout_payload": NonNullable<Json>,"created_at"?: string,"id"?: string,"payment_intent_id": string,"reconciled_at"?: string | null,"reconciled_by"?: string | null,"sweep_note"?: string | null,"swept_at"?: string | null
                   }
                   Update: {
-                    "checkout_payload"?: NonNullable<Json>,"created_at"?: string,"id"?: string,"payment_intent_id"?: string,"reconciled_at"?: string | null,"reconciled_by"?: string | null
+                    "checkout_payload"?: NonNullable<Json>,"created_at"?: string,"id"?: string,"payment_intent_id"?: string,"reconciled_at"?: string | null,"reconciled_by"?: string | null,"sweep_note"?: string | null,"swept_at"?: string | null
                   }
                   Relationships: [
                     
@@ -1480,14 +1480,14 @@ isOneToOne: false
                   ]
                 },"webhook_events": {
                   Row: {
-                    "event_id": string,"event_type": string,"id": string,"processed_at": string
+                    "claimed_at": string,"event_id": string,"event_type": string,"id": string,"processed_at": string,"status": string
                   }
                   ComputedFields: never
                   Insert: {
-                    "event_id": string,"event_type": string,"id"?: string,"processed_at"?: string
+                    "claimed_at"?: string,"event_id": string,"event_type": string,"id"?: string,"processed_at"?: string,"status"?: string
                   }
                   Update: {
-                    "event_id"?: string,"event_type"?: string,"id"?: string,"processed_at"?: string
+                    "claimed_at"?: string,"event_id"?: string,"event_type"?: string,"id"?: string,"processed_at"?: string,"status"?: string
                   }
                   Relationships: [
                     
@@ -1820,6 +1820,9 @@ isOneToOne: false
 { Args: { "p_product": string,"p_user": string }; Returns: boolean
                            },
 "_kick_email_outbox":
+{ Args: Record<PropertyKey, never>; Returns: undefined
+                           },
+"_kick_payment_sweep":
 { Args: Record<PropertyKey, never>; Returns: undefined
                            },
 "_leaving_soon_max":
@@ -2163,6 +2166,14 @@ isOneToOne: false
                            },
 "checkout_context":
 { Args: { "p_promo_code"?: string,"p_state"?: string,"p_variant_ids": (string)[] }; Returns: Json
+                           },
+"claim_payment_sweep":
+{ Args: { "p_limit"?: number }; Returns: {
+              "created_at": string,"payment_intent_id": string
+            }[]
+                           },
+"claim_webhook_event":
+{ Args: { "p_event_id": string,"p_event_type": string }; Returns: boolean
                            },
 "confirm_move_shipped":
 { Args: { "p_move": string }; Returns: Database["public"]['Enums']["move_offer_status"]

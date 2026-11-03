@@ -36,7 +36,7 @@ Reading `process.env.X` for a variable not listed here = add it here in the same
 | `CHECK_LIVE_SITE` | `scripts/check.mjs` (`http` step) | optional: the live site's address; the step then fails when its first /clothing photo does not answer 200 (D-140) |
 | `SUPABASE_TEST_DB_URL` | `scripts/db-test.mjs` | optional; defaults to local Supabase. Non-local hosts are refused unless `--allow-remote` is passed (never do that against production) |
 | `NEXT_PUBLIC_STRIPE_PUBLISHABLE_KEY`, `STRIPE_SECRET_KEY`, `STRIPE_WEBHOOK_SECRET` | web | payments (test-mode keys in dev) |
-| `RESEND_API_KEY`, `RESEND_FROM_EMAIL`, `EMAIL_OUTBOX_CRON_SECRET` | web | email + outbox job (`POST /api/internal/email-outbox` with `Authorization: Bearer <secret>`; without email keys, emails wait in the outbox). The sender's domain must be verified in Resend (Q-9). For local tests before that, Resend accepts `onboarding@resend.dev` as the sender, delivering only to the Resend account's own address |
+| `RESEND_API_KEY`, `RESEND_FROM_EMAIL`, `EMAIL_OUTBOX_CRON_SECRET` | web | email + outbox job (`POST /api/internal/email-outbox` with `Authorization: Bearer <secret>`; without email keys, emails wait in the outbox). The same secret guards the payment sweep (`POST /api/internal/payment-sweep`, F-2). The sender's domain must be verified in Resend (Q-9). For local tests before that, Resend accepts `onboarding@resend.dev` as the sender, delivering only to the Resend account's own address |
 | `PHOTO_STORE_S3_URL`, `PHOTO_STORE_KEY_ID`, `PHOTO_STORE_SECRET`, `PHOTO_STORE_PUBLIC_URL` (`PHOTO_STORE_REGION`, default `auto`) | web (server only) | the photo store, Cloudflare R2 (D-141, §Photos). Without them photos stay in Supabase's storage (local development). Locally, Supabase's own S3 endpoint can stand in: the `web-photo-store` preview in `.claude/launch.json` |
 | `VERCEL_ENV` | web (build) | set by Vercel; a `production` build without `PHOTO_STORE_PUBLIC_URL` stops (§Photos) |
 | `ADMIN_EMAILS` | web server | admin email allowlist (D-006, INV-7) |
@@ -70,6 +70,10 @@ for the local one (the database runs in Docker). Without them, emails still go o
 actions; those from the app's admin screens and the automatic cutoff wait for the timer. The same timer refreshes the
 website's cached store pages after a cycle closes by itself (D-068): without the Vault secrets they show the past "order
 by" time for up to an hour after a cutoff (D-171; checkout itself always prices the real cycle).
+The same two Vault secrets drive the **payment sweep** (F-2, migration `20261108090200`): pg_cron `iwc-payment-sweep`
+every 10 minutes checks (one index lookup) for an unreconciled checkout due a look and, only then, calls
+`/api/internal/payment-sweep`; without the secrets it does nothing, and a paid customer whose device and webhook both
+failed waits for a Stripe webhook resend. Its first run after deploy also looks at the last 2 days' unreconciled checkouts.
 
 ## Database workflow (from R3)
 - Schema changes = a new file in `supabase/migrations/`. Never edit an applied migration.
