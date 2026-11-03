@@ -203,3 +203,61 @@
   text-transform: uppercase;
   color: var(--muted);
 }
+
+/* Launch QA B-6: below 420 px a dense grid (food, home & gifts) goes back to two cards a row with the full-size heart,
+   + and words: three cards of about 108 px clipped their tags under the heart and left 32 px tap targets. This undoes
+   globals.css's phone `data-dense` rules (founder 2026-10-24) below 420 px only, one class more specific than them;
+   from 420 px to 639 px the three-a-row grid stays. The values are the cards' own (product-card.tsx). */
+@media (max-width: 419px) {
+  .cards[data-card-grid][data-dense] {
+    grid-template-columns: repeat(2, minmax(0, 1fr));
+    column-gap: var(--gap);
+    row-gap: 28px;
+  }
+  .cards[data-dense] :global(.product-card a.bg-land) {
+    border-radius: theme('borderRadius.lg');
+  }
+  .cards[data-dense] :global(.product-card .heart),
+  .cards[data-dense] :global(.product-card .quick-add) {
+    width: 44px;
+    height: 44px;
+  }
+  .cards[data-dense] :global(.product-card .heart svg) {
+    width: 22px;
+    height: 22px;
+  }
+  .cards[data-dense] :global(.product-card .quick-add svg) {
+    width: 18px;
+    height: 18px;
+  }
+  .cards[data-dense] :global(.product-card [data-card-plus] button) {
+    width: 44px;
+    height: 44px;
+    font-size: 18px;
+  }
+  .cards[data-dense] :global(.product-card [data-card-plus]) {
+    right: 10px;
+    bottom: 10px;
+  }
+  .cards[data-dense] :global(.product-card-chip) {
+    left: 14px;
+    padding: 4px 10px;
+    font-size: 12px;
+  }
+  .cards[data-dense] :global(.product-card-chip.bottom-3\.5) {
+    bottom: 14px;
+  }
+  .cards[data-dense] :global(.product-card-chip.top-3\.5) {
+    top: 14px;
+  }
+  .cards[data-dense] :global(.product-card-text) {
+    padding: 14px 6px 0 14px;
+  }
+  .cards[data-dense] :global(.product-card-name) {
+    font-size: 15px;
+    line-height: 1.375;
+  }
+  .cards[data-dense] :global(.product-card-meta) {
+    font-size: 14px;
+  }
+}

@@ -89,7 +89,8 @@ describe("See all's For and size groups (D-140)", () => {
     assert.deepEqual(
       groups.map((g) => [g.label, g.sizes.map((s) => s.value)]),
       [
-        ['Tops & kurtas', ['S', 'XL', 'L/XL']],
+        // launch QA B-3: a two-size label sorts by its first size, between L and XL
+        ['Tops & kurtas', ['S', 'L/XL', 'XL']],
         ['Waist', ['W28', 'W32']],
         ['Footwear', ['UK 7']],
         ['Bangles', ['2.4', '2.6']],

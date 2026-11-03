@@ -1,3 +1,5 @@
+import styles from './filters.module.css';
+
 /**
  * What a See all page shows the moment its link is tapped, while the page comes (loading.tsx; founder 2026-10-24: "when
  * I click on a category it waits for a long time"). The page's own shape, so nothing jumps when it arrives: a heading,
@@ -21,7 +23,7 @@ export function BrowseSkeleton({ dense = true }: { dense?: boolean }): React.JSX
         <div
           data-card-grid=""
           data-dense={dense ? '' : undefined}
-          className="grid grid-cols-2 gap-x-[var(--gap)] gap-y-[clamp(28px,3vw,44px)] lg:grid-cols-3 2xl:grid-cols-4"
+          className={`${styles.cards} grid grid-cols-2 gap-x-[var(--gap)] gap-y-[clamp(28px,3vw,44px)] lg:grid-cols-3 2xl:grid-cols-4`}
         >
           {Array.from({ length: 9 }, (_, i) => (
             <div key={i} className="space-y-2">

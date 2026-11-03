@@ -2,6 +2,8 @@
 
 import { useState } from 'react';
 
+import { sizeLabel } from '@repo/shared/domain';
+
 import { browseHref, priceRanges, sizeGroups, withFilter, WHO, WHO_LABEL, type BrowseQuery } from './browse-query';
 import styles from './filters.module.css';
 import { PriceSlider } from './price-slider';
@@ -221,7 +223,7 @@ export function FilterPanel({
                       aria-pressed={on}
                       title={`${s.count} ${s.count === 1 ? 'piece' : 'pieces'}`}
                     >
-                      {s.value}
+                      {sizeLabel(s.value)}
                     </a>
                   );
                 })}

@@ -1,4 +1,4 @@
-import { clothingAttributesSchema, detailRows, netQuantity, specPairs, type PhotoNote } from '@repo/shared/domain';
+import { clothingAttributesSchema, detailRows, netQuantity, sizeLabel, sortBySize, specPairs, type PhotoNote } from '@repo/shared/domain';
 
 import type { Product, Variant } from '@repo/db/store';
 
@@ -43,33 +43,33 @@ export function ProductDetails({
 }
 
 /**
- * "Size chart" (D-051) from what the listing actually holds: each size option, and the fabric length
- * when it is known. Null when there is nothing to show (no invented measurements, D-012).
+ * "Size chart" (D-051) from what the listing actually holds: each size option beside the fabric length. Null without
+ * a real measurement (no invented measurements, D-012): a chart of the sizes alone only repeated the size buttons
+ * (launch QA B-3).
  */
 export function sizeChart(product: Product, variants: Variant[]): React.JSX.Element | null {
   if (product.product_type !== 'clothing') return null;
   const attrs = clothingAttributesSchema.safeParse(product.attributes);
   const length = attrs.success ? attrs.data.length_m : undefined;
-  // Each size once, even when it comes in several colours.
-  const sizes = [
-    ...new Set(
-      variants.map((v) => (typeof v.options.size === 'string' ? v.options.size : null)).filter((s): s is string => s !== null),
-    ),
-  ];
-  if (sizes.length === 0 && length === undefined) return null;
+  if (length === undefined) return null;
+  // Each size once, even when it comes in several colours, in size order.
+  const sizes = sortBySize(
+    [...new Set(variants.map((v) => (typeof v.options.size === 'string' ? v.options.size : null)).filter((s): s is string => s !== null))],
+    (s) => s,
+  ).map(sizeLabel);
   return (
     <table className="w-full border-collapse text-[13px]">
       <thead>
         <tr className="font-ui text-ink-muted text-left text-[11px] font-semibold uppercase tracking-[0.08em]">
           <th className="border-line border-b px-2 py-1.5">Size</th>
-          {length !== undefined ? <th className="border-line border-b px-2 py-1.5">Length</th> : null}
+          <th className="border-line border-b px-2 py-1.5">Length</th>
         </tr>
       </thead>
       <tbody>
         {(sizes.length > 0 ? sizes : ['One size']).map((size) => (
           <tr key={size}>
             <td className="border-line border-b px-2 py-1.5">{size}</td>
-            {length !== undefined ? <td className="border-line border-b px-2 py-1.5">{length} m</td> : null}
+            <td className="border-line border-b px-2 py-1.5">{length} m</td>
           </tr>
         ))}
       </tbody>
