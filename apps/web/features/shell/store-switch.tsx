@@ -1,10 +1,11 @@
 'use client';
 
-import Link from 'next/link';
 import { usePathname } from 'next/navigation';
 import { useEffect, useRef, useState } from 'react';
 
 import { isQuickPath, QUICK_HOME } from '@/lib/site';
+
+import { IntentLink } from './intent-link';
 
 /** Where the shopper last was in the IWC store, so its tab takes them back there (per tab, not per device). */
 const LAST_IWC = 'iwc-last-store-page';
@@ -56,8 +57,9 @@ export function StoreSwitch({
 
   const tab = (toQuick: boolean): React.JSX.Element => {
     const open = quick === toQuick;
+    // read ahead on intent, not on sight (intent-link.tsx, launch QA C-6)
     return (
-      <Link
+      <IntentLink
         href={toQuick ? QUICK_HOME : back}
         aria-current={open ? 'page' : undefined}
         className="store-tab"
@@ -75,7 +77,7 @@ export function StoreSwitch({
           </span>
         )}
         <span className="store-tab-name">{toQuick ? '7-day store' : 'IWC'}</span>
-      </Link>
+      </IntentLink>
     );
   };
 

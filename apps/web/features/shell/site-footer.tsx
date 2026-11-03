@@ -2,6 +2,8 @@ import Link from 'next/link';
 
 import { INFO_LINKS, isInfoPath, SITE_NAME } from '@/lib/site';
 
+import { IntentLink } from './intent-link';
+
 const COLUMNS = [
   {
     title: 'Shop',
@@ -36,14 +38,30 @@ const MINI = [
   { href: '/terms', label: 'Terms' },
 ] as const;
 
+/** On a touch screen every footer link is at least 44 x 44 px (launch QA C-7); a mouse keeps the compact look. */
+const TOUCH = '[@media(pointer:coarse)]:inline-flex [@media(pointer:coarse)]:min-h-11 [@media(pointer:coarse)]:items-center';
+
 const MAP_CREDIT = (
   <>
-    <a href="https://github.com/datameet/maps" className="text-[#D8D0C4] underline">
+    <a href="https://github.com/datameet/maps" className={`text-[#D8D0C4] underline ${TOUCH}`}>
       DataMeet India
     </a>
     , CC BY 4.0
   </>
 );
+
+/** A footer link: an info page is never read ahead (D-116), the rest on intent, not on sight (launch QA C-6). */
+function FooterLink({ href, className, children }: { href: string; className: string; children: React.ReactNode }): React.JSX.Element {
+  return isInfoPath(href) ? (
+    <Link href={href} prefetch={false} className={className}>
+      {children}
+    </Link>
+  ) : (
+    <IntentLink href={href} className={className}>
+      {children}
+    </IntentLink>
+  );
+}
 
 /**
  * Store footer (D-079): Karla; four columns from tablet up, without Clothing and Food (their pages stay); on phones one
@@ -65,9 +83,9 @@ export function SiteFooter(): React.JSX.Element {
               <ul className="grid gap-2">
                 {col.links.map((link) => (
                   <li key={link.href}>
-                    <Link href={link.href} prefetch={isInfoPath(link.href) ? false : undefined} className="text-canvas hover:underline">
+                    <FooterLink href={link.href} className={`text-canvas hover:underline ${TOUCH}`}>
                       {link.label}
-                    </Link>
+                    </FooterLink>
                   </li>
                 ))}
               </ul>
@@ -80,14 +98,15 @@ export function SiteFooter(): React.JSX.Element {
         </div>
       </div>
       <div className="py-5 text-xs md:hidden">
-        <nav aria-label="Footer" className="flex flex-wrap gap-x-4">
+        {/* 44 x 44 px targets (launch QA C-7): the padding keeps the words 16 px apart, as the gap did */}
+        <nav aria-label="Footer" className="-mx-2 flex flex-wrap">
           {MINI.map((link) => (
-            <Link key={link.href} href={link.href} prefetch={isInfoPath(link.href) ? false : undefined} className="text-canvas py-2">
+            <FooterLink key={link.href} href={link.href} className="text-canvas inline-flex min-h-11 min-w-11 items-center justify-center px-2">
               {link.label}
-            </Link>
+            </FooterLink>
           ))}
         </nav>
-        <p className="mt-2 text-[11px] text-[#A89F92]">
+        <p className="text-[11px] text-[#A89F92]">
           © {SITE_NAME} · Map: {MAP_CREDIT}
         </p>
       </div>
