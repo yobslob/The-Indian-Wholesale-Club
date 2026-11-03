@@ -13,8 +13,9 @@ import { ARCHES, WIDE } from './diwali-hooks';
  * types arch windows for each category … show this airplane flying inside somewhere the card"): where the full-width
  * flight was, a row of festive windows under a toran. The wide one is a Diwali night: string lights, two fireworks and
  * the flight crossing it with its banner (the free line or the festival's last order day, flight.tsx). Then an arch
- * window per hook (diwali-hooks.ts), each with its drawing and a diya on the sill. At every width the night runs across
- * the top and the three arches sit in a row under it (founder 2026-11-02, D-177: no sliding). Server-drawn; the only client
+ * window per hook (diwali-hooks.ts), each with its drawing and a diya on the sill. At every width the arches sit in a
+ * row (founder 2026-11-02, D-177: no sliding). D-179: Home shows the arches under the hero, under their toran,
+ * and the night where it was, after the album, so the two are separate sections. Server-drawn; the only client
  * part is the flight. Loops move transform and opacity only, pause off screen (`data-album`, motion.tsx) and stop with
  * reduced motion.
  */
@@ -47,10 +48,10 @@ function StringLights(): React.JSX.Element {
   );
 }
 
-export function DiwaliWindows({ free }: { free: string | null }): React.JSX.Element {
+/** The night with the flight inside ("Host your Diwali", D-174 – D-176): its own row, spanning it. */
+export function DiwaliNight({ free }: { free: string | null }): React.JSX.Element {
   return (
     <section aria-label="Diwali at IWC" className="dw" data-album="">
-      <div className="dw-toran" aria-hidden="true" />
       <div className="dw-row">
         <div className="dw-wide">
           {/* D-175: the founder's photo on the night's right, fading into it */}
@@ -72,13 +73,23 @@ export function DiwaliWindows({ free }: { free: string | null }): React.JSX.Elem
             <Flight free={free} festival="any" compact />
           </div>
         </div>
+      </div>
+    </section>
+  );
+}
 
+/** The three arch windows under their toran: Clothing, Snacks and the neighbourhood's shelves (D-174 – D-176). */
+export function DiwaliArches(): React.JSX.Element {
+  return (
+    <section aria-label="Shop for Diwali" className="dw" data-album="">
+      <div className="dw-toran" aria-hidden="true" />
+      <div className="dw-row">
         {ARCHES.map((a) => (
           <Link
             key={a.id}
             href={a.href}
             prefetch={false}
-            className={`dw-arch dw-arch--${a.tone}${slotShown(a.slot) ? ' dw-arch--photo' : ''}`}
+            className={`dw-arch dw-arch--${a.tone}${slotShown(a.slot) ? 'dw-arch--photo' : ''}`}
           >
             <span className="dw-arch-shape">
               {/* D-175: the founder's photo fills the arch's top (the view through the window); else the drawing */}

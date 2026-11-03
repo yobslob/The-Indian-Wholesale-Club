@@ -121,10 +121,11 @@ export default async function ProductPage({
             {chart ? <Disclosure title="Size chart">{chart}</Disclosure> : null}
           </div>
           <p className="border-line font-display mt-4 border-t pt-4 text-[17px]">
-            {/* D-171: a piece made elsewhere (Savana's) says only that it is imported, never "Made in India" */}
+            {/* D-171: a piece made elsewhere (Savana's) says only that it is imported, never "Made in India";
+                an India-made piece no longer adds "Imported", so the two lines read differently (D-179) */}
             {product.made_in_india === false
               ? 'Imported'
-              : `Made in India${product.region_name ? ` · from ${product.region_name}` : ''} · Imported`}
+              : `Made in India${product.region_name ? ` · from ${product.region_name}` : ''}`}
           </p>
         </aside>
       </div>

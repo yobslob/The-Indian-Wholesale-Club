@@ -182,7 +182,7 @@ export function BrowseView({
           ) : (
             <div
               data-card-grid=""
-              // food and home three to a row on phones (globals.css), two below 420 px (styles.cards, launch QA B-6);
+              // food and home three to a row on phones (globals.css), smaller heart, + and words below 420 px (D-179);
               // clothing keeps two, its photos need the width
               data-dense={productType === 'clothing' ? undefined : ''}
               aria-busy={loading === 'replace'}

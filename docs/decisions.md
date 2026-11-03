@@ -899,3 +899,26 @@ given (no conversion).
     listings a minute, about 9 hours for 13,000 listings.
   - **Free plans:** Supabase reads about 2 KB a listing in pages of 25 and writes one row each; Vercel: no page-cache
     write asked for (store pages pick up the words within their cache fallback).
+
+**D-179 · 2026-11-03 · founder (was Q-52 – Q-59): the launch QA questions answered**
+- Founder, verbatim: "yes Q-53 is true, In Q-58 insert the banner windows between hero and the global grid and the
+  host your party banner where it is right now., 54 is false, 55 is false, in 56 wherever anything is congested
+  instead of removing the whole column just make the buttons or text small according to the card, keep both in 57, 52
+  is false, 59 is true."
+- What it means:
+  - **Q-52 (checkout order): no change.** Phone first, then email and address.
+  - **Q-53 ("Imported" on India-made pieces): yes.** The India line reads "Made in India · from Kerala" ("Made in
+    India" for an all-India listing); a piece made elsewhere still reads "Imported" alone (D-171).
+    *Interpretation (proposed, confirm when you next see a product page):* the question offered dropping "Imported" or
+    saying "Shipped from India"; built as dropped, the smaller change. "Shipped from India" is a one-line swap.
+  - **Q-54 (delivery line in the bag, free line on cards, retailer charges folded in): no change.**
+  - **Q-55 (default sort "Most loved"): no change.** /food and /clothing open on Low to high.
+  - **Q-56 (phone cards): three a row everywhere.** Below 420 px food and home & gifts keep three cards a row (the
+    two-a-row of 2026-11-03 is undone); what is crowded is made smaller to fit the card: a 28 px heart and + each with
+    a 44 px tap area reaching past its edge, tags on one line left of the heart, 12 px names, 11 px prices.
+  - **Q-57 ("Duties paid" sentence and stamp): keep both.**
+  - **Q-58 (Home's first screen): the three Diwali arches go between the hero and the album** (the "global grid", the
+    drifting mosaic), under their toran; the night with the plane ("Host your Diwali under $99", the "host your party
+    banner") stays where it was, after the album and before Pick your home. Changes D-174/D-177's single section into
+    two (`DiwaliArches`, `DiwaliNight`).
+  - **Q-59 (Lenis off on touch screens): yes, keep it so.**

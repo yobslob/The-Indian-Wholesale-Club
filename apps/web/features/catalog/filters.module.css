@@ -204,60 +204,52 @@
   color: var(--muted);
 }
 
-/* Launch QA B-6: below 420 px a dense grid (food, home & gifts) goes back to two cards a row with the full-size heart,
-   + and words: three cards of about 108 px clipped their tags under the heart and left 32 px tap targets. This undoes
-   globals.css's phone `data-dense` rules (founder 2026-10-24) below 420 px only, one class more specific than them;
-   from 420 px to 639 px the three-a-row grid stays. The values are the cards' own (product-card.tsx). */
+/* D-179 (founder 2026-11-03): below 420 px food and home & gifts keep three cards a row (globals.css's phone
+   `data-dense` rules); what is crowded on a card of about 108 px gets smaller instead. The heart and + draw at 28 px,
+   and each keeps a 44 px tap area that reaches past its edge (::after). Tags take the width left of the heart
+   and stop at one line. One class more specific than globals.css. */
 @media (max-width: 419px) {
   .cards[data-card-grid][data-dense] {
-    grid-template-columns: repeat(2, minmax(0, 1fr));
-    column-gap: var(--gap);
-    row-gap: 28px;
-  }
-  .cards[data-dense] :global(.product-card a.bg-land) {
-    border-radius: theme('borderRadius.lg');
+    column-gap: 8px;
   }
   .cards[data-dense] :global(.product-card .heart),
   .cards[data-dense] :global(.product-card .quick-add) {
-    width: 44px;
-    height: 44px;
+    width: 28px;
+    height: 28px;
   }
-  .cards[data-dense] :global(.product-card .heart svg) {
-    width: 22px;
-    height: 22px;
+  .cards[data-dense] :global(.product-card .heart) {
+    position: relative;
   }
-  .cards[data-dense] :global(.product-card .quick-add svg) {
-    width: 18px;
-    height: 18px;
+  .cards[data-dense] :global(.product-card .heart::after),
+  .cards[data-dense] :global(.product-card .quick-add::after),
+  .cards[data-dense] :global(.product-card [data-card-plus] button::after) {
+    content: '';
+    position: absolute;
+    inset: -8px;
   }
   .cards[data-dense] :global(.product-card [data-card-plus] button) {
-    width: 44px;
-    height: 44px;
-    font-size: 18px;
+    position: relative;
+    width: 24px;
+    height: 24px;
+    font-size: 14px;
   }
-  .cards[data-dense] :global(.product-card [data-card-plus]) {
-    right: 10px;
-    bottom: 10px;
+  .cards[data-dense] :global(.product-card .heart svg),
+  .cards[data-dense] :global(.product-card .quick-add svg) {
+    width: 14px;
+    height: 14px;
   }
   .cards[data-dense] :global(.product-card-chip) {
-    left: 14px;
-    padding: 4px 10px;
-    font-size: 12px;
-  }
-  .cards[data-dense] :global(.product-card-chip.bottom-3\.5) {
-    bottom: 14px;
-  }
-  .cards[data-dense] :global(.product-card-chip.top-3\.5) {
-    top: 14px;
-  }
-  .cards[data-dense] :global(.product-card-text) {
-    padding: 14px 6px 0 14px;
+    max-width: calc(100% - 42px);
+    padding: 2px 5px;
+    font-size: 9.5px;
+    white-space: nowrap;
+    overflow: hidden;
+    text-overflow: ellipsis;
   }
   .cards[data-dense] :global(.product-card-name) {
-    font-size: 15px;
-    line-height: 1.375;
+    font-size: 12px;
   }
   .cards[data-dense] :global(.product-card-meta) {
-    font-size: 14px;
+    font-size: 11px;
   }
 }
