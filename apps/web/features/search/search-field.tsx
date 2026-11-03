@@ -1,14 +1,29 @@
 'use client';
 
-import { useRef } from 'react';
+import { useEffect, useRef } from 'react';
+
+import { cleanSearch } from '@repo/shared/search';
 
 import { HeaderIcon } from '@/features/shell/header-icons';
 
 import { SuggestFor } from './suggest-for';
 
-/** The search page's box (D-085) with the suggestions (D-160); on phones a round search icon inside it. */
+/**
+ * The search page's box (D-085) with the suggestions (D-160); on phones a round search icon inside it. The words go
+ * out as the search's one address spells them (lower case, single spaces: search-url.ts), so a phone's capital
+ * first letter is not a second address and a redirect.
+ */
 export function SearchField({ defaultValue, placeholder, quick }: { defaultValue: string; placeholder: string; quick: boolean }): React.JSX.Element {
   const input = useRef<HTMLInputElement>(null);
+  useEffect(() => {
+    const form = input.current?.form;
+    if (!form) return;
+    const tidy = (): void => {
+      if (input.current) input.current.value = cleanSearch(input.current.value).toLowerCase(); // as normalSearch (search-url.ts)
+    };
+    form.addEventListener('submit', tidy);
+    return () => form.removeEventListener('submit', tidy);
+  }, []);
   return (
     <div className="relative flex flex-1">
       <input
