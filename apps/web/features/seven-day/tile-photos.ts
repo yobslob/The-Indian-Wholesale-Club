@@ -7,17 +7,17 @@
  */
 export const TILE_PHOTOS: Record<string, string | null> = {
   // Food
-  'snacks-and-namkeen': null,
+  'snacks-and-namkeen': '/visuals/snacks-and-namkeen.jpg',
   sweets: null,
-  'rice-flours-and-staples': null,
-  'masala-blends': null,
-  'pickles-and-chutneys': null,
-  'whole-spices': null,
-  'tea-and-drinks': null,
+  'rice-flours-and-staples': '/visuals/rice-flours-and-staples.jpg',
+  'masala-blends': '/visuals/masala-blends.jpg',
+  'pickles-and-chutneys': '/visuals/pickles-and-chutneys.jpg',
+  'whole-spices': '/visuals/whole-spices.jpg',
+  'tea-and-drinks': '/visuals/tea-and-drinks.jpg',
   'ground-spices': null,
-  'papad-and-wadi': null,
+  'papad-and-wadi': '/visuals/papad-and-wadi.jpg',
   // Home & gifts
-  'pooja-and-spiritual': null,
-  'handicrafts-and-decor': null,
+  'pooja-and-spiritual': '/visuals/pooja-and-spiritual.jpg',
+  'handicrafts-and-decor': '/visuals/handicrafts-and-decor.jpg',
   'thaali-and-serveware': null,
 };
