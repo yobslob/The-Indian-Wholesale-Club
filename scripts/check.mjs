@@ -36,7 +36,7 @@ const COMMANDS = {
   // Local Supabase only: rebuild the DB from migrations + seeds, then run the
   // invariant tests in supabase/tests (each rolls back). Never touches hosted DBs. The website's cached store reads
   // describe the old rows, so they go too (clear-store-cache.mjs).
-  db: 'npx supabase db reset && node scripts/clear-store-cache.mjs && node scripts/db-test.mjs',
+  db: 'npx supabase@2.122.1 db reset && node scripts/clear-store-cache.mjs && node scripts/db-test.mjs',
   // Playwright smoke flows (apps/web/e2e) against the production build on local Supabase.
   e2e: 'pnpm --filter web e2e',
   // The app must bundle for both platforms (Metro resolution + Babel on every file). The

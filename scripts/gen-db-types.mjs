@@ -12,7 +12,7 @@ import { writeFileSync } from 'node:fs';
 
 const OUT = 'packages/db/src/database.types.ts';
 
-const result = spawnSync('npx supabase gen types --lang=typescript --local --schema public', {
+const result = spawnSync('npx supabase@2.122.1 gen types --lang=typescript --local --schema public', {
   shell: true,
   encoding: 'utf8',
   maxBuffer: 50 * 1024 * 1024,

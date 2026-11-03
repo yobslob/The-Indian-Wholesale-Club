@@ -44,7 +44,8 @@ jobs:
       - name: Setup Supabase CLI
         uses: supabase/setup-cli@v1
         with:
-          version: latest
+          # Pinned: CLI 3.0 (2026-11) refuses supabase/config.toml ([inbucket] is no longer supported).
+          version: 2.122.1
 
       - name: Link Supabase project
         run: supabase link --project-ref ${{ secrets.SUPABASE_PROJECT_REF }}
