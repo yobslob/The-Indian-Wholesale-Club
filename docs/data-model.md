@@ -38,7 +38,7 @@ operations data are never queried from customer code.
 | | `product_variants` | `options` JSON (colour, flavour, style = "Type", pack, size: D-118), SKU*, label, price override, `weight_g`* with `weight_source`* and `weight_note`* (D-129), `weight_estimate_g`*, `weight_estimate_note`*, `weight_estimated_at`* (D-131), `weight_checked_at`* (D-146), `net_qty` (food, D-133), `qty_listed`*, `qty_reserved`*, `qty_confirmed_at`*, `shop_price_paise`*, `source_id`* | store (`available`, food's `net_qty`) / admin |
 | | `product_sources` | the shop items a variant can be ordered as, checked weekly (D-118) | admin / worker via functions |
 | | `variant_availability` | public mirror `variant_id → available`, trigger-maintained, in the Realtime publication (live "only 2 left", D-010) | store (visible products) |
-| | `product_search` | each listing's search words with English stems (name; category, craft, state; summary; type), trigger-maintained (D-160) | functions only |
+| | `product_search` | each listing's search words with English stems (name; category, craft, state; summary; type), and since 20261108090000 what search filters, counts and ranks by (type, category, state, `listed`, `soon`, placeholder, published); trigger-maintained (D-160) | functions only |
 | | `search_synonyms`, `search_words` | search's synonym groups (Claude's draft, D-160) and the vocabulary of live listings' words (pg_cron every 6 hours) for spelling fixes and suggestions | admin (read) |
 | | `product_media` | Storage paths (bucket `product-media`), alt text, one primary per product, `is_ai` (an AI-generated model photo, D-100: the product's Details say so), `redo` (what the photo redo did, D-163, D-164) | store / admin |
 | Supply | `vendors` | shop + owner, phone/WhatsApp, address, town, region, payment method + reference (D-029), licences, status, notes, photo; `online_site` = an online shop's host for imported listings (one vendor per shop and state, D-110) | admin |
@@ -345,6 +345,24 @@ their counts, and popular searches (30 days, 3 or more, results, only vocabulary
 searches answered through a fix, with `pairs` (each changed word: typed, read as, already a synonym);
 `admin_add_synonym(term, means)` puts the typed word in the group of the word it was read as (Insights' button) and
 refreshes the vocabulary. Tests: `search.test.sql`.
+Migration `20261108090000_search_speed` (launch QA D-1, INC-1: search read the disk, 500 after 90 s): `product_search`
+gains `product_type`, `category_id`, `region_id`, `listed` (store_products' rule: live, or archived and coming soon),
+`soon` (archived), `is_placeholder`, `published_at`, rebuilt once and kept by the same trigger (it now also fires on a
+listing's status, coming soon, placeholder and published time); its GIN index is partial (`product_search_listed_doc_idx`,
+`where listed`). `variant_availability_on_sale_idx` (`variant_availability (product_id) where available > 0`): the
+"sold out last" check. `_search_hits` is plpgsql (it was an un-inlined SQL function planned once for any words: a scan
+of every listing per search) and reads only `product_search`; the old `products.search` (description) is read only when
+no listing's own words match. `store_search_page` reads hits, counts, filters and best match from `product_search`,
+stock (and a price sort's price) for the best 1,000 only, and listing rows only for the cards; `total` and `all_total`
+stop at 1,000 with `capped` true ("1,000+"); `slow` is true when `_search_late()` (2.5 s since the request's statement
+began; `iwc.search_budget_ms` overrides it, for tests) skipped the spelling-fix or some-words pass. `_search_match`
+returns `slow` too. A function-level `statement_timeout` would not stop the running statement (Postgres arms it at
+statement start), so the hard stop is the role's timeout and the website's 3.5 s limit (`SEARCH_TIMEOUT_MS`).
+`store_search_hints()` counts categories and states from `product_search`. Every function here plans with its words
+(`plan_cache_mode = force_custom_plan`). Measured on 8,278 live listings with 16 MB of shared buffers (`EXPLAIN
+(ANALYZE, BUFFERS)`, cold / warm reads outside the cache): saree 4,677 / 2,077 → 801 / 0; kurti 4,776 / 2,369 → 939 / 0;
+masala 4,112 / 2,152 → 906 / 0; ghee 4,685 / 2,249 → 932 / 0; xyzqq (nothing) 1,956 / 1,326 → 370 / 0 (of the cold
+reads about 370 are Postgres' own catalogue after a restart). Tests: `search_speed.test.sql`.
 Migration 80 (D-141, the photo store): a photo in Cloudflare R2 is recorded with an `s/` path
 (`products/<id>/s/<name>.jpg`, packages/shared media.ts). `worker_sourcing_media` accepts `products/<id>/s/<name>` as
 well as `products/<id>/<name>`; album photos may be `regions/<slug>/album/s/<name>`.

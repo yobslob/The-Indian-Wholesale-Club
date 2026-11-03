@@ -606,14 +606,14 @@ isOneToOne: false
                   ]
                 },"product_search": {
                   Row: {
-                    "doc": unknown,"product_id": string
+                    "category_id": string,"doc": unknown,"is_placeholder": boolean,"listed": boolean,"product_id": string,"product_type": Database["public"]['Enums']["product_type"],"published_at": string | null,"region_id": string | null,"soon": boolean
                   }
                   ComputedFields: never
                   Insert: {
-                    "doc": unknown,"product_id": string
+                    "category_id": string,"doc": unknown,"is_placeholder"?: boolean,"listed"?: boolean,"product_id": string,"product_type": Database["public"]['Enums']["product_type"],"published_at"?: string | null,"region_id"?: string | null,"soon"?: boolean
                   }
                   Update: {
-                    "doc"?: unknown,"product_id"?: string
+                    "category_id"?: string,"doc"?: unknown,"is_placeholder"?: boolean,"listed"?: boolean,"product_id"?: string,"product_type"?: Database["public"]['Enums']["product_type"],"published_at"?: string | null,"region_id"?: string | null,"soon"?: boolean
                   }
                   Relationships: [
                     {
@@ -1916,6 +1916,9 @@ isOneToOne: false
                            },
 "_search_key":
 { Args: { "p_text": string }; Returns: string
+                           },
+"_search_late":
+{ Args: Record<PropertyKey, never>; Returns: boolean
                            },
 "_search_letters":
 { Args: { "p_word": string }; Returns: string
