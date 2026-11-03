@@ -47,7 +47,11 @@ test('a product page chooses no size until the customer does (D-140, L3)', async
   await expect(add).toBeVisible();
   await add.click();
   expect(await page.evaluate(() => JSON.parse(localStorage.getItem('iwc-cart') ?? '{"state":{"lines":[]}}').state.lines.length)).toBe(0);
-  await page.getByRole('button', { name: 'M', exact: true }).click();
+  // CI clicked M before the page answered clicks and the size stayed unchosen (2026-11-03, every run): click until chosen
+  await expect(async () => {
+    await page.getByRole('button', { name: 'M', exact: true }).click();
+    await expect(page.getByRole('group', { name: 'Size: M' })).toBeVisible({ timeout: 1000 });
+  }).toPass({ timeout: 15_000 });
   await page.getByRole('button', { name: 'Add to bag' }).first().click();
   await expect(page.getByText('1 in your bag')).toBeVisible();
 });

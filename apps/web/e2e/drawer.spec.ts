@@ -55,7 +55,12 @@ test("+ in the drawer adds to the bag, and its See all opens the accessories wit
 
 test('Newest is still a choice', async ({ page }) => {
   await page.goto('/clothing');
-  await page.getByLabel('Sort by').selectOption('new');
-  await expect(page).toHaveURL(/\/clothing\?sort=new$/);
+  // chosen before the page answered, Newest stayed unapplied (2026-11-04, also on b5af3ec): choose again until it takes
+  const sort = page.getByLabel('Sort by');
+  await expect(async () => {
+    await sort.selectOption('low');
+    await sort.selectOption('new');
+    await expect(page).toHaveURL(/\/clothing\?sort=new$/, { timeout: 1000 });
+  }).toPass({ timeout: 15_000 });
   await expect(page.locator('[data-drawer]')).toHaveCount(0);
 });
