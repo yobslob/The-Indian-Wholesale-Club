@@ -55,7 +55,8 @@ select tests.assert(not exists (select 1 from public.claim_payment_sweep(20)),
 update public.pending_orders set swept_at = null where payment_intent_id in ('pi_due', 'pi_due_older', 'pi_asked_long_ago');
 update public.pending_orders set swept_at = now() - interval '2 hours' where payment_intent_id = 'pi_due_older';
 select tests.assert(
-  (select array_agg(payment_intent_id) from public.claim_payment_sweep(2)) = array['pi_asked_long_ago', 'pi_due'],
+  (select array_agg(payment_intent_id order by payment_intent_id) from public.claim_payment_sweep(2))
+  = array['pi_asked_long_ago', 'pi_due'],
   'a run takes at most its limit, the never-looked-at first (oldest first)');
 
 -- The sweep's own reconciliations are recorded as such.

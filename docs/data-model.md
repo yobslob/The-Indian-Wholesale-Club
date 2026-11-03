@@ -78,7 +78,10 @@ anon or customers), which adds `available` and `quick_add` (the variant, only wh
 in stock, so a card's "Add" needs no choice). Migration 6 (D-056): `products.is_curated` (an admin's pick) and
 `pricing_settings.leaving_soon_max` (default 2); `store_region_page()` adds `curated` (up to four picks) and `leaving_soon`
 (up to four live pieces with 1 to `leaving_soon_max` left, read by the internal `_leaving_soon_max()`), and
-`store_product_page()` adds `curated` (the region's other picks). Migration 7 (reviews, D-051, D-056): `reviews`
+`store_product_page()` adds `curated` (the region's other picks; since `20261108090400_product_page_reads` both lists
+walk an index newest first and stop at 12: `products_category_region_newest_idx`, `products_category_newest_idx`,
+`products_curated_newest_idx` on `coalesce(region_id, zero uuid)`, so all-India matches all-India; one all-India
+piece's page read 3,165 buffers before, 1,717 after on a production-sized copy). Migration 7 (reviews, D-051, D-056): `reviews`
 (rating 1–5, text, display name, one per customer per product; a trigger makes every new review `pending` and sets
 `is_verified_buyer` from `_is_verified_buyer(user, product)`: a delivered order on their account with the product) and
 `review_photos` (verified reviews only, at most four); customers insert and read their own, admins approve or reject;

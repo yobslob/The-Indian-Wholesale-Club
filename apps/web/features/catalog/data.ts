@@ -1,6 +1,7 @@
 import 'server-only';
 
 import { unstable_cache } from 'next/cache';
+import { cache } from 'react';
 
 import {
   browseProducts,
@@ -65,10 +66,13 @@ export const getRegionHeadCached = (regionSlug: string) =>
     getRegionHead(storeClient(), regionSlug),
   );
 
-export const getProductPageCached = (regionSlug: string, productSlug: string) =>
+// React's cache: the page's title (generateMetadata) and the page share one read. unstable_cache alone let both miss
+// at once, so a product page built for the first time called store_product_page twice (measured 2026-11-03).
+export const getProductPageCached = cache((regionSlug: string, productSlug: string) =>
   cached(['store-product-page', regionSlug, productSlug], [productTag(regionSlug, productSlug)], () =>
     getProductPage(storeClient(), regionSlug, productSlug),
-  );
+  ),
+);
 
 /**
  * See all pages and their filters (/api/browse, D-136): light cards without stock, so a sale never has to refresh

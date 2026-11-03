@@ -101,8 +101,10 @@ Baseline numbers come from the founder's first `node scripts/check.mjs` run and 
   (its HTML and its data). Cached store reads keep a card's options out (`slim-cards.ts`: their number and whether all are
   sold out; one option stays), and the + reads them from `GET /api/card-options`: D-166, while a several-option card
   comes near the screen, every such card of that moment in one `?ids=` request (up to 48), so the + opens at once.
-  ProductCard passes the + only the fields it uses, not the whole card. Its links prefetch on pointer, touch or focus
-  (`card-link.tsx`), never for every card in view (each viewport prefetch was a product page's request). The website deploys once a day (ops.md §Deploy): each deploy starts the page
+  ProductCard passes the + only the fields it uses, not the whole card. Its links prefetch on touch, focus or a mouse resting
+  120 ms on them (`card-link.tsx`, `intent-link.tsx`, 2026-11-03: a mouse crossing a grid built a product page per card
+  it passed, several at once, more than the free database could answer in 8 s), never for every card in view (each
+  viewport prefetch was a product page's request). The website deploys once a day (ops.md §Deploy): each deploy starts the page
   cache afresh. The same for every See all read: its Size / Pack list is kept to the 60 biggest when it runs past 100
   (`size-facet.ts`: Food's 1,687 packs were 540 KB of /food's HTML).
 - Public, visitor-free JSON answers carry `s-maxage` so Vercel's CDN answers repeats without running a function (free;
