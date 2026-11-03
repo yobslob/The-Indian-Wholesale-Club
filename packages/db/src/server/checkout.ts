@@ -6,10 +6,13 @@ import { z } from 'zod';
 
 import { PRODUCT_TYPES } from '@repo/shared/domain';
 
-import { DbError, unwrap, type IwcClient } from '../client';
+import { unwrap, type IwcClient } from '../client';
 import { deliveryWindowSchema } from '../store/schemas';
 
 import type { Json } from '../database.types';
+
+// The webhook's event claims and the payment sweep (launch QA F-1, F-2).
+export * from './payments';
 
 export const checkoutVariantSchema = z.object({
   variant_id: z.string().uuid(),
@@ -125,7 +128,7 @@ export async function getPendingCheckout(service: IwcClient, paymentIntentId: st
 export async function markPendingReconciled(
   service: IwcClient,
   paymentIntentId: string,
-  by: 'browser' | 'webhook',
+  by: 'browser' | 'webhook' | 'sweep',
 ) {
   unwrap(
     await service
@@ -171,26 +174,7 @@ export async function findOrderByPaymentIntent(service: IwcClient, paymentIntent
   );
 }
 
-// ---------------------------------------------------------------- webhooks + email outbox
-
-/** True the first time an event id is seen; false for a duplicate delivery. */
-export async function claimWebhookEvent(
-  service: IwcClient,
-  eventId: string,
-  eventType: string,
-): Promise<boolean> {
-  const { error } = await service
-    .from('webhook_events')
-    .insert({ event_id: eventId, event_type: eventType });
-  if (!error) return true;
-  if (error.code === '23505') return false;
-  throw new DbError(error.code || 'unknown', error.message);
-}
-
-/** Lets a failed handler be retried by Stripe (the claim is removed). */
-export async function releaseWebhookEvent(service: IwcClient, eventId: string) {
-  unwrap(await service.from('webhook_events').delete().eq('event_id', eventId));
-}
+// ---------------------------------------------------------------- email outbox
 
 export type EmailKind = 'order_confirmation';
 
