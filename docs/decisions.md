@@ -979,3 +979,66 @@ given (no conversion).
     masalas and sweets from home, at your door in 7 days." (days from Settings).
   - After Diwali the poster's headline is out of date: Q-60. "Host your Diwali under $99" also still shows in the Diwali
     night further down the page (D-179), kept as it was.
+
+**D-183 · 2026-11-04 · founder: Home's hero becomes the 7-day store's poster; no "$99" on the first screen; shorter windows on phones** · Supersedes D-182's poster offer, its 7-day row and its "about" line (D-182's one-screen rule and 160 KB budget stay)
+- Founder, verbatim: "This is strictly regarding the frontend hero section. Mostly are on phone webapps, People are clicking off because it is too much text and high 99$ prices, So I am suggesting changes : we should remove the host your diwali banner because it is already under global grid, think of something creative something out of the box, use the power of vocabulary, some CTA for the 7-day store showing $49.99 we gotta change the "Host your Diwali under $99 SHOP UNDER $99" Also the window banners are looking too stretched in mobile view, we need to remove the 7 day store part from hero section bottom and show it on headline somehow, keep the Indian wholesale club part as it is but remove the subtext, these were just suggestions, you should be very creative about them and redesign our hero section."
+- What it means:
+  - **The poster is the 7-day store's front door.** "Host your Diwali under $99." and "Shop under $99" leave the hero
+    (the Diwali night further down keeps them, D-179). The picture's own headline is painted out
+    (`public/images/home-hero-7day.avif` 86 KB, `.webp` 109 KB, from `hero_updated.png`; the old
+    `home-hero-diwali.*` are no longer read), and its words are live text on the picture's dark wall: a gold kicker with a
+    small plane ("The 7-day store"), the headline, "From India to your door in <days> days." and a gold button "Bring it
+    home"; the whole poster is one link to `/7-day-delivery`. The free 7-day line sits on the lehenga as a round seal
+    ("FREE DELIVERY • 7-DAY STORE •" turning slowly around "from $49.99"). The days and the amount come from Settings
+    (non-negotiable 4); while 7-day delivery is off the poster opens Food with the whole store's days and no seal.
+  - **Under it (portrait) or beside it (landscape):** "Indian Wholesale Club" and its four doors only; the line under the
+    name and the 7-day row are gone, so the poster gets the room.
+  - **The Diwali windows on phones** (under 640 px) are about 1 : 1.56 instead of 1 : 2 (1 : 1.66 under 380 px, 1 : 1.76
+    under 340 px): the photo takes 52 % of the window instead of 46 %, and the diya leaves the sill to make room; the
+    arrow stays. Tablets and wide screens unchanged (D-177's one row stays).
+  - **A fourth font, on Home only:** the gold italic is Lora Italic 500 (SIL OFL, Basic Latin, 17 KB WOFF), declared in
+    `features/home/hero-font.ts` so no other page loads it. The other words use Cinzel and Karla as before. No new JS and no
+    new read (the hero already had the policy).
+  - *Interpretation (Claude's draft, the founder to confirm or change in `features/home/hero-words.ts`):* the headline
+    "Mithai. Masala. *Memories.*" (what the 7-day store sells, and what it brings back), the button "Bring it home", the
+    kicker "The 7-day store". No Diwali date on the poster: a 7-day order placed this week lands after Diwali, and a date
+    beside "7 days" would read as a promise. Alternatives kept in that file.
+  - Q-60 narrows: only the picture's Diwali look dates after Nov 8, not its words.
+
+**D-184 · 2026-11-04 · founder: the hero keeps the poster's lettering and its Diwali date; no seal; the $49.99 under a smaller button** · Changes D-183's kicker, headline font, seal and button
+- Founder, verbatim: "Perfect, it's just that the font before was the final one and instead of the 7 day store write diwali. Sun, nov 8 like it was before, the stamp disturbs whole miniimilism, rest it good just let's try to show the 49.99 in some other way, maybe the CTA button or something else? also make the cta pill smaller."
+- What it means:
+  - **The kicker is the Diwali date again,** "Diwali · Sun, Nov 8" with the hairline under it, from `diwali-hooks.ts` as in
+    D-182 (Q-60 for after Nov 8). Screen readers still hear "The 7-day store." first, since the poster opens it.
+  - **The headline in the poster's lettering:** mixed case in a book serif with the last word in gold italic, as "Host
+    your *Diwali* under $99." was drawn. That lettering was part of the picture and its font is not known, so the nearest
+    free one is used: Lora, roman 400 and italic 500 (`features/home/hero-font.ts`, Home only, 16 KB + 17 KB WOFF).
+    Cinzel stays for "Indian Wholesale Club".
+  - **No seal.** The free 7-day line is one quiet line under the button: "Free delivery from **$49.99**" (the amount from
+    Settings, in gold); none while 7-day delivery is off.
+  - **The button is smaller:** 32 – 42 px tall with the poster (was 44 px), no shadow; the whole poster stays the tap target.
+  - *Interpretation (proposed, confirm on the live site):* with the date over "From India to your door in 7 days.", a
+    shopper may read it as arriving by Diwali; an order placed from Nov 2 lands after Nov 8. The words do not promise it.
+
+**D-185 · 2026-11-04 · founder: the hero in the poster's own fonts; the button is the free line** · Changes D-184's fonts and button
+- Founder, verbatim: [an image: a table of the poster's fonts: "Host your" / "under $99": Cormorant Garamond · "Diwali" (italic): Cormorant Garamond Italic · "Indian Wholesale Club": Cormorant Garamond · Description text: Inter or Montserrat · "DIWALI · SUN, NOV 8": Montserrat Medium, letter-spaced · "SHOP UNDER $99": Montserrat SemiBold, letter-spaced] "put the fonts as stated(Although the references are old but the fonts stay the same), then this is just too much text so remove bring it home and put free delivery line into the CTA. And then give me a lot of ideas very very creative for the header line."
+- What it means:
+  - **Fonts, in the hero only:** Cormorant Garamond 500 for the headline and "Indian Wholesale Club" (was Lora and
+    Cinzel), its italic for the gold word; Montserrat for the date (500, letter-spaced), the days line (400), the button
+    (600) and the four doors (500; Montserrat chosen over Inter). Files: `app/fonts/cormorant-garamond-latin-variable.woff2`
+    (38 KB), `cormorant-garamond-italic-latin-variable.woff2` (39 KB), `montserrat-latin-variable.woff2` (38 KB), the latin
+    WOFF2 Google Fonts serves (variable 400 – 700), declared in `features/home/hero-font.ts` so only Home loads them. Cinzel,
+    Syne and Karla stay everywhere else. D-184's Lora files are no longer read.
+  - **"Bring it home" is gone; the button is the free line:** a small gold capsule, "FREE DELIVERY" small and spaced over
+    "from $49.99", and the arrow (the amount from Settings). While 7-day delivery is off: "Shop the store" (D-183's Food
+    fallback).
+  - *Interpretation (proposed):* "Inter or Montserrat" for the description: Montserrat, so the hero has one sans.
+  - The headline ideas asked for were answered in the conversation; the headline stays "Mithai. Masala. *Memories.*"
+    until the founder picks another (`hero-words.ts`).
+
+**D-186 · 2026-11-04 · founder: the hero says the 7 days and the $49.99 line are for food**
+- Founder, verbatim: "Make a small change we have to show that we are only delivering food in 7 days and on food only 49.99, so add a small(on food) and rest is good push all the commits then I will run the deploy, also e2e failed"
+- What it means: the days line reads "From India to your door in 7 days (on food).", "(on food)" small (`hero-words.ts`),
+  only while the 7-day store is open. *Interpretation (proposed):* one "(on food)" right over the button covers both; the
+  button keeps "Free delivery from $49.99", since adding it there too widened the button onto the woman's arm on a phone.
+  The rules themselves (Settings, the bag) are unchanged.

@@ -1,11 +1,10 @@
 /*
- * Home hero (D-182): the poster and the two doors, one screen at every size. Portrait: the poster over the panel, the
- * poster taking what the panel leaves. Landscape: the panel beside a poster at full height, its dark wall running on
- * from the photo's. The header sits over the poster, white on its soft fade.
+ * Home hero (D-183 – D-185): the poster is the 7-day store's front door, with the Indian Wholesale Club under it
+ * (portrait) or beside it (landscape). One screen at every size. The header sits over the poster, white on its soft fade.
  *
- * --W / --H repeat what object-fit: cover does with the crop kept at the top left (the headline is on the photo's left
- * and the crop never cuts it), so the live date and link sit on the wall where the picture left room for them: the date
- * at 23.8 % of its height, the link at 51.5 %, both 6.8 % across (the picture is 1024 x 1536).
+ * --W / --H repeat what object-fit: cover does with the crop kept at the top left, so the words sit on the picture's
+ * dark wall (left of the woman, above the diyas: about 4 – 47 % across, 17 – 71 % down; the picture is 1024 x 1536)
+ * and grow with the picture, not with the window.
  */
 .hero {
   --h: clamp(560px, 100svh, 1200px);
@@ -35,7 +34,7 @@
   content: '';
   position: absolute;
   inset: auto 0 0;
-  height: 64px;
+  height: 56px;
   background: linear-gradient(to bottom, transparent, var(--wall));
   pointer-events: none;
 }
@@ -49,20 +48,40 @@
   object-position: 0 0;
 }
 
-.date,
-.shop {
+/* the words on the wall: never under the header, never past the woman's shoulder */
+.offer {
   position: absolute;
-  left: calc(var(--W) * 0.068);
+  z-index: 1;
+  top: max(calc(var(--H) * 0.185), calc(var(--top-h, 102px) + 10px));
+  left: calc(var(--W) * 0.064);
+  display: flex;
+  flex-direction: column;
+  align-items: flex-start;
+  width: calc(var(--W) * 0.42);
+}
+
+/* D-185: the poster's own type. Montserrat for every small word, letter-spaced where the poster spaced it */
+.kicker,
+.when,
+.cta,
+.kind {
+  font-family: var(--font-hero-sans), system-ui, sans-serif;
+}
+.headline,
+.brand {
+  font-family: var(--font-hero-serif), Georgia, serif;
+}
+
+.kicker {
+  font-size: clamp(10px, calc(var(--W) * 0.0205), 15px);
+  font-weight: 500;
+  letter-spacing: 0.16em;
   text-transform: uppercase;
   white-space: nowrap;
-}
-.date {
-  top: calc(var(--H) * 0.238);
-  font-size: clamp(10px, calc(var(--W) * 0.0205), 15px);
-  letter-spacing: 0.14em;
   color: var(--gold);
 }
-.date::after {
+/* the poster's hairline under the date */
+.kicker::after {
   content: '';
   display: block;
   width: 2.6em;
@@ -70,62 +89,105 @@
   margin-top: 0.9em;
   background: var(--gold);
 }
-.shop {
-  top: calc(var(--H) * 0.515);
-  display: inline-flex;
-  align-items: center;
-  gap: calc(var(--W) * 0.018);
-  min-height: 44px;
-  font-size: clamp(11.5px, calc(var(--W) * 0.0205), 15px);
+
+/* Cormorant Garamond, the last beat in its gold italic, at the poster's size ("Host your" was 39 % of its width) */
+.headline {
+  display: flex;
+  flex-direction: column;
+  margin-top: calc(var(--W) * 0.04);
+  font-size: clamp(30px, calc(var(--W) * 0.1), 66px);
+  font-weight: 500;
+  line-height: 0.98;
+  letter-spacing: -0.005em;
+}
+.headline em {
+  font-size: 1.04em;
+  font-style: italic;
+  font-weight: 500;
+  color: var(--gold);
+}
+
+.when {
+  margin-top: calc(var(--W) * 0.035);
+  font-size: clamp(12px, calc(var(--W) * 0.032), 17px);
+  line-height: 1.4;
+  color: rgb(246 238 227 / 0.84);
+  text-wrap: balance;
+}
+.when b {
   font-weight: 600;
-  letter-spacing: 0.06em;
   color: var(--cream);
 }
-.ring {
-  display: grid;
-  place-items: center;
-  width: clamp(28px, calc(var(--W) * 0.06), 40px);
-  height: clamp(28px, calc(var(--W) * 0.06), 40px);
-  border: 1px solid var(--gold);
-  border-radius: 50%;
-  color: var(--gold);
-  transition:
-    background-color 0.2s,
-    color 0.2s;
+/* D-186: "(on food)", small, so the 7 days and the free line under it read as food's */
+.when small {
+  font-size: 0.78em;
+  opacity: 0.78;
+  white-space: nowrap;
 }
-.poster:hover .ring {
+
+/* the button is the free line (D-185): two short lines in a small gold capsule, the arrow in a dark ring */
+.cta {
+  display: inline-flex;
+  align-items: center;
+  gap: calc(var(--W) * 0.026);
+  margin-top: calc(var(--W) * 0.045);
+  padding: 0.5em 0.42em 0.5em 1.25em;
+  border-radius: 999px;
   background: var(--gold);
   color: var(--wall);
+  font-size: clamp(11px, calc(var(--W) * 0.033), 17px);
+  font-weight: 600;
+  white-space: nowrap;
+  transition: background-color 0.2s;
+}
+.cta > span {
+  display: grid;
+  line-height: 1.15;
+}
+.cta small {
+  font-size: 0.7em;
+  font-weight: 600;
+  letter-spacing: 0.14em;
+  text-transform: uppercase;
+  opacity: 0.78;
+}
+.cta i {
+  display: grid;
+  place-items: center;
+  width: 2em;
+  aspect-ratio: 1;
+  border-radius: 50%;
+  background: var(--wall);
+  color: var(--gold);
+}
+.cta svg {
+  width: 0.9em;
+  height: 0.9em;
+  transition: transform 0.25s cubic-bezier(0.2, 0.8, 0.2, 1);
+}
+.poster:hover .cta {
+  background: #f0cd90;
+}
+.poster:hover .cta svg {
+  transform: translateX(2px);
 }
 
 .panel {
   display: grid;
-  gap: 12px;
-  padding: 10px var(--gut) calc(14px + env(safe-area-inset-bottom));
-}
-.store {
-  display: grid;
-  gap: 4px;
+  gap: 10px;
+  padding: 4px var(--gut) calc(14px + env(safe-area-inset-bottom));
 }
 .brand {
   margin: 0;
-  font-size: clamp(19px, 5.4vw, 30px);
-  font-weight: 400;
-  line-height: 1.15;
-}
-.about {
-  margin: 0;
-  font-size: 14px;
-  line-height: 1.35;
-  color: rgb(246 238 227 / 0.78);
-  text-wrap: pretty;
+  font-size: clamp(25px, 7.4vw, 38px);
+  font-weight: 500;
+  line-height: 1.1;
 }
 
 .kinds {
   display: flex;
   flex-wrap: wrap;
   gap: 6px;
-  margin-top: 8px;
 }
 .kind {
   display: inline-flex;
@@ -133,10 +195,10 @@
   align-items: center;
   justify-content: center;
   min-height: 40px;
-  padding: 0 11px;
+  padding: 0 10px;
   border: 1px solid rgb(227 184 115 / 0.45);
   border-radius: 999px;
-  font-size: 13px;
+  font-size: 12px;
   font-weight: 500;
   white-space: nowrap;
   transition:
@@ -148,74 +210,13 @@
   color: var(--wall);
 }
 
-.door {
-  display: flex;
-  align-items: center;
-  justify-content: space-between;
-  gap: 16px;
-  padding-top: 12px;
-  border-top: 1px solid rgb(227 184 115 / 0.28);
-}
-.doorWords {
-  display: grid;
-  gap: 2px;
-  min-width: 0;
-}
-.doorName {
-  font-size: 17px;
-  font-weight: 500;
-  line-height: 1.2;
-  letter-spacing: -0.01em;
-}
-.doorName b {
-  font-weight: 600;
-  color: var(--gold);
-}
-
-/* founder 2026-11-03: "Get it here >>", then "make the >> animation minimilistic": the two arrows drift a few
-   pixels right and back together, slowly */
-.go {
-  display: inline-flex;
-  flex: none;
-  align-items: baseline;
-  gap: 0.3em;
-  font-size: 14px;
-  font-weight: 600;
-  color: var(--gold);
-}
-.arrows {
-  display: inline-block;
-  font-weight: 600;
-  letter-spacing: -0.12em;
-  animation: hero-arrows 2.4s ease-in-out infinite;
-}
-.arrows i {
-  font-style: normal;
-}
-@keyframes hero-arrows {
-  0%,
-  100% {
-    transform: translate3d(0, 0, 0);
-    opacity: 1;
-  }
-  50% {
-    transform: translate3d(3px, 0, 0);
-    opacity: 0.6;
-  }
-}
-
-/* the smallest phones: the four doors stay on one row, so the poster's link stays clear of the panel */
 @media (max-width: 350px) {
   .kinds {
     gap: 4px;
   }
   .kind {
-    padding: 0 8px;
-    font-size: 12px;
-  }
-  .about,
-  .go {
-    font-size: 13px;
+    padding: 0 7px;
+    font-size: 11px;
   }
 }
 
@@ -238,43 +239,21 @@
   .panel {
     align-self: center;
     justify-self: center;
-    gap: clamp(20px, 2.6vw, 36px);
+    gap: clamp(18px, 2vw, 30px);
     width: min(100%, 680px);
     padding: calc(var(--top-h, 56px) + 16px) var(--gut) 24px;
   }
-  .store {
-    gap: clamp(8px, 1vw, 14px);
-  }
   .brand {
-    font-size: clamp(30px, 4.1vw, 68px);
-    line-height: 1.05;
-  }
-  .about {
-    font-size: clamp(15px, 1.25vw, 18px);
+    font-size: clamp(38px, 5.2vw, 86px);
+    line-height: 1;
   }
   .kinds {
     gap: 8px;
-    margin-top: 10px;
   }
   .kind {
     flex: 0 1 auto;
     min-height: 44px;
     padding: 0 20px;
-    font-size: 14px;
-  }
-  .door {
-    padding-top: clamp(16px, 2vw, 28px);
-  }
-  .doorName {
-    font-size: clamp(19px, 1.7vw, 26px);
-  }
-  .go {
-    font-size: 15px;
-  }
-}
-
-@media (prefers-reduced-motion: reduce) {
-  .arrows {
-    animation: none;
+    font-size: 13px;
   }
 }

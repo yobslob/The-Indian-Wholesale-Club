@@ -18,7 +18,8 @@ import type { Metadata } from 'next';
 export const metadata: Metadata = { alternates: { canonical: '/' } };
 
 /**
- * Home (storefront.md, storefront.md §Direction, D-050 – D-055, D-113): the photo hero, the three Diwali arches (D-179),
+ * Home (storefront.md, storefront.md §Direction, D-050 – D-055, D-113): the hero (D-183: the 7-day store's poster and
+ * the store's doors), the three Diwali arches (D-179),
  * the album of all of India (the region pages' drifting mosaic), the Diwali night with the flight inside (D-174), Pick your home, the founder's wide picture (slots.ts), then Just listed (a row per type with its See all, D-062, D-140).
  * One cached store_home() call (PR-1, PR-2). Runs edge to edge (data-bleed); sections keep the gutter. D-154: while the
  * 7-day store is open, one row "Arrives in 7 days" before Just listed (the 7-day page's cached first page, refreshed
@@ -35,6 +36,7 @@ export default async function HomePage(): Promise<React.JSX.Element> {
     <div data-bleed>
       <HomeHero
         quickDays={policy.quick_delivery_on ? { min: policy.quick_delivery_days_min, max: policy.quick_delivery_days_max } : null}
+        quickFreeCents={policy.quick_delivery_on ? policy.quick_delivery_min_cents : null}
         storeDays={{ min: policy.delivery_days_min, max: policy.delivery_days_max }}
       />
 
