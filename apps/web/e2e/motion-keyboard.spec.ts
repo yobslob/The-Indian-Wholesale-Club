@@ -32,8 +32,10 @@ test.describe('with motion', () => {
   test('smooth scrolling runs, and images below the fold reveal once scrolled to', async ({ page }) => {
     await page.goto('/');
     await expect(page.locator('html')).toHaveClass(/lenis/, { timeout: 15_000 });
+    // launch QA C-2: Home's rows draw as they come near, after the first scroll
+    await page.mouse.wheel(0, 400);
     const firstCard = page.locator('#just-listed [data-reveal]').first();
-    await expect(firstCard).toHaveAttribute('data-reveal', 'pending');
+    await expect(firstCard).not.toHaveAttribute('data-reveal', 'in');
     await firstCard.scrollIntoViewIfNeeded();
     await expect(firstCard).toHaveAttribute('data-reveal', 'in');
   });
@@ -52,6 +54,8 @@ test.describe('keyboard', () => {
 
   test('Pick your home: search filters by typing; a focused name lights its state at once', async ({ page }) => {
     await page.goto('/');
+    // launch QA C-2: Pick your home is drawn as it comes near
+    await page.locator('#pick').scrollIntoViewIfNeeded();
     const search = page.getByRole('searchbox', { name: 'Find your state' });
     await search.focus();
     await page.keyboard.type('pra');
@@ -63,7 +67,8 @@ test.describe('keyboard', () => {
 
   test('product page: + / − sections and the heart work from the keyboard', async ({ page }) => {
     await page.goto(product);
-    const sizeChart = page.getByRole('button', { name: 'Size chart' });
+    // launch QA B-3: Size chart shows only with real measurements, so take the first + / − section there is
+    const sizeChart = page.getByRole('main').locator('button[aria-expanded]').first();
     await sizeChart.focus();
     await page.keyboard.press('Enter');
     await expect(sizeChart).toHaveAttribute('aria-expanded', 'true');
