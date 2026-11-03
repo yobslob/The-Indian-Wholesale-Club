@@ -76,7 +76,8 @@ export function SiteHeader({ quick = null }: { quick?: QuickNav }): React.JSX.El
           <span className="site-type">
             <NavLink href="/food">Food</NavLink>
           </span>
-          <span className="site-type">
+          {/* one line, as Clothing and Food: it broke onto two at tablet widths */}
+          <span className="site-type whitespace-nowrap">
             <NavLink href="/home-and-gifts">Home &amp; gifts</NavLink>
           </span>
           <NavLink href="/states">States</NavLink>

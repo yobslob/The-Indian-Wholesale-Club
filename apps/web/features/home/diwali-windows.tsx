@@ -6,7 +6,7 @@ import { Flight } from '@/features/visuals/flight';
 import { VisualSlot, slotShown } from '@/features/visuals/visual-slot';
 
 import { Arrow, ArchLine, Burst, Diya, WindowArt } from './diwali-art';
-import { ARCHES, WIDE } from './diwali-hooks';
+import { ARCHES, WIDE, type Tone } from './diwali-hooks';
 
 /**
  * The Diwali windows (founder 2026-10-31, D-174: "convert this into an ad/banner types component … Diwali decoration
@@ -21,6 +21,14 @@ import { ARCHES, WIDE } from './diwali-hooks';
  */
 
 const BULBS = 17;
+
+// written out in full: Tailwind keeps a components-layer rule only when its class appears whole in the source, so a
+// built `dw-arch--${tone}` left the windows without their colours
+const TONE: Record<Tone, string> = {
+  saffron: 'dw-arch--saffron',
+  peacock: 'dw-arch--peacock',
+  paper: 'dw-arch--paper',
+};
 
 function StringLights(): React.JSX.Element {
   // the wire is a quadratic curve; a bulb at t sits on it at 4·sag·t(1−t)
@@ -89,7 +97,7 @@ export function DiwaliArches(): React.JSX.Element {
             key={a.id}
             href={a.href}
             prefetch={false}
-            className={`dw-arch dw-arch--${a.tone}${slotShown(a.slot) ? 'dw-arch--photo' : ''}`}
+            className={`dw-arch ${TONE[a.tone]}${slotShown(a.slot) ? ' dw-arch--photo' : ''}`}
           >
             <span className="dw-arch-shape">
               {/* D-175: the founder's photo fills the arch's top (the view through the window); else the drawing */}
