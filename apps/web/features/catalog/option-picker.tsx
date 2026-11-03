@@ -3,11 +3,11 @@
 import { useEffect, useRef, useState } from 'react';
 import { createPortal } from 'react-dom';
 
-import { formatUsd } from '@repo/shared/domain';
+import { displayOption, displayTitle, formatUsd, optionPriceLabel } from '@repo/shared/domain';
 
 import { mediaUrl } from '@/lib/site';
 
-import { chipLabel, coloursOf, LOW_STOCK, showsPrices } from './card-options';
+import { chipLabel, coloursOf, inSizeOrder, LOW_STOCK, showsPrices } from './card-options';
 import { StorePhoto } from './store-photo';
 
 import type { CardOption, ProductCard } from '@repo/db/store';
@@ -45,7 +45,7 @@ export function OptionRibbon({
   const colours = coloursOf(options);
   const [colour, setColour] = useState<string | null>(colours.length ? null : '');
   const prices = showsPrices(options, product.product_type);
-  const shown = colour === null ? [] : options.filter((o) => !colour || o.options?.colour === colour);
+  const shown = colour === null ? [] : inSizeOrder(options.filter((o) => !colour || o.options?.colour === colour));
 
   useEffect(() => {
     const el = ref.current;
@@ -88,7 +88,7 @@ export function OptionRibbon({
                 else setColour(c);
               }}
             >
-              {c}
+              {displayTitle(c)}
             </button>
           ))}
         </div>
@@ -156,25 +156,29 @@ export function OptionSheet({
           <span className="bg-land relative block h-16 w-12 flex-none overflow-hidden rounded-[10px]">
             {product.primary_image_path ? <StorePhoto src={mediaUrl(product.primary_image_path)} alt="" sizes="48px" className="object-cover" /> : null}
           </span>
-          <b className="font-ui flex-1 text-[15px] leading-snug">{product.name}</b>
+          <span className="font-ui flex-1 text-[15px] leading-snug">
+            <b className="block">{product.name}</b>
+            {/* launch QA B-1: the price as the card and the product page say it, before a size is chosen */}
+            <span className="text-ink-muted text-[13.5px]">{optionPriceLabel(options)}</span>
+          </span>
           <button ref={close} type="button" onClick={onClose} aria-label="Close" className="grid h-11 w-11 place-items-center rounded-full text-[20px]">
             ×
           </button>
         </div>
         <ul className="divide-line divide-y">
-          {options.map((o) => {
+          {inSizeOrder(options).map((o) => {
             const n = counts.get(o.id) ?? 0;
             const out = o.available <= 0;
             return (
               <li key={o.id} className="font-ui flex items-center gap-3 py-2.5">
                 <span className={`flex-1 text-[14.5px] ${out ? 'text-ink-muted line-through' : ''}`}>
-                  {o.label}
+                  {displayOption(o.label)}
                   {prices ? <span className="text-ink-muted"> · {formatUsd(o.price_cents)}</span> : null}
                   {!out && o.available <= LOW_STOCK ? <small className="text-caution block text-[12px]">Only {o.available} left</small> : null}
                   {out ? <small className="block text-[12px] no-underline">Sold out</small> : null}
                 </span>
                 {n > 0 ? (
-                  <button type="button" className={step} aria-label={`One less ${o.label}`} onClick={(e) => onChange(o, n - 1, e.currentTarget)}>
+                  <button type="button" className={step} aria-label={`One less ${displayOption(o.label)}`} onClick={(e) => onChange(o, n - 1, e.currentTarget)}>
                     −
                   </button>
                 ) : null}
@@ -187,7 +191,7 @@ export function OptionSheet({
                   type="button"
                   className={step}
                   disabled={out || n >= o.available}
-                  aria-label={`Add ${o.label}`}
+                  aria-label={`Add ${displayOption(o.label)}`}
                   onClick={(e) => onChange(o, n + 1, e.currentTarget)}
                 >
                   +

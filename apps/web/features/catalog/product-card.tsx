@@ -1,4 +1,4 @@
-import { formatUsd, productPath } from '@repo/shared/domain';
+import { displayTitle, fromLabel, optionPriceLabel, productPath } from '@repo/shared/domain';
 
 import { SaveButton } from '@/features/account/save-button';
 import { mediaUrl } from '@/lib/site';
@@ -9,7 +9,8 @@ import { StorePhoto } from './store-photo';
 
 import type { ProductCard as ProductCardData, RegionProductCard } from '@repo/db/store';
 
-type CardData = ProductCardData & Partial<Pick<RegionProductCard, 'available' | 'quick_add'>>;
+// price_varies: set by the website's cache when a card's options differ in price (slim-cards.ts, launch QA B-1)
+type CardData = ProductCardData & Partial<Pick<RegionProductCard, 'available' | 'quick_add'>> & { price_varies?: boolean };
 
 /**
  * The photo's `sizes`: the width the card really has at each screen width, so the browser downloads exactly the
@@ -61,6 +62,12 @@ export function ProductCard({
 }): React.JSX.Element {
   const href = productPath(product.region_slug, product.slug);
   const small = size === 'sm';
+  // launch QA B-9: an all lower-case shop title reads in title case (display only)
+  const name = displayTitle(product.name);
+  // launch QA B-1: the price its options say, "From" the lowest in stock when they differ (as the product page says it)
+  const price = product.options?.length
+    ? optionPriceLabel(product.options)
+    : fromLabel(product.price_cents, product.price_varies === true);
   return (
     <article className="product-card relative min-w-0">
       <div className="relative">
@@ -72,7 +79,7 @@ export function ProductCard({
           {product.primary_image_path ? (
             <StorePhoto
               src={mediaUrl(product.primary_image_path)}
-              alt={product.name}
+              alt={name}
               sizes={SIZES[layout][size]}
               className="duration-slow object-cover transition-transform group-hover:scale-[1.025]"
             />
@@ -81,20 +88,21 @@ export function ProductCard({
               Photo coming soon
             </span>
           )}
+          {/* launch QA B-6: a tag never runs under the heart (44 px at the top right): it wraps within the width left */}
           {badge ? (
-            <span className="bg-paper font-ui rounded-pill absolute left-3.5 top-3.5 px-3 py-1.5 text-xs font-medium">
+            <span className="bg-paper font-ui rounded-pill absolute left-3.5 top-3.5 max-w-[calc(100%-4.5rem)] px-3 py-1.5 text-xs font-medium leading-tight">
               {badge}
             </span>
           ) : product.quick_days && quickTag ? (
             // D-148: a 7-day piece (its days from Settings); the bag keeps the promise only while it holds 7-day pieces alone.
             // D-161: once the browser knows today, "Sat at your door" (`.door-tag`, the weekday from days.tsx)
-            <span className="door-tag product-card-chip bg-brand text-on-brand font-ui rounded-pill absolute left-3.5 top-3.5 px-2.5 py-1 text-xs font-semibold">
+            <span className="door-tag product-card-chip bg-brand text-on-brand font-ui rounded-pill absolute left-3.5 top-3.5 max-w-[calc(100%-4.5rem)] px-2.5 py-1 text-xs font-semibold leading-tight">
               <span className="door-tag-n">In {product.quick_days} days</span>
             </span>
           ) : null}
           {product.pack ? (
             // D-122: a food piece's pack size, so two prices read side by side make sense
-            <span className="product-card-chip bg-paper/75 font-ui rounded-pill absolute bottom-3.5 left-3.5 px-2.5 py-1 text-xs font-semibold backdrop-blur-md">
+            <span className="product-card-chip bg-paper/75 font-ui rounded-pill absolute bottom-3.5 left-3.5 max-w-[calc(100%-4.5rem)] px-2.5 py-1 text-xs font-semibold leading-tight backdrop-blur-md">
               {product.pack}
             </span>
           ) : null}
@@ -112,7 +120,7 @@ export function ProductCard({
             // only what the + uses: the page carries each card's props once more as data (D-145)
             product={{
               id: product.id,
-              name: product.name,
+              name,
               slug: product.slug,
               region_slug: product.region_slug,
               region_name: product.region_name,
@@ -140,12 +148,12 @@ export function ProductCard({
       <div className={`product-card-text ${small ? 'pl-2 pt-2.5' : 'pl-3.5 pr-1.5 pt-3.5'}`}>
         <CardLink
           href={href}
-          className={`product-card-name font-ui block font-semibold leading-snug ${small ? 'text-[13.5px]' : 'text-[15px]'}`}
+          className={`product-card-name font-ui line-clamp-2 font-semibold leading-snug ${small ? 'text-[13.5px]' : 'text-[15px]'}`}
         >
-          {product.name}
+          {name}
         </CardLink>
         <span className={`product-card-meta text-ink-muted ${small ? 'text-[13px]' : 'text-sm'}`}>
-          {product.coming_soon ? 'Coming soon' : formatUsd(product.price_cents)}
+          {product.coming_soon ? 'Coming soon' : price}
           {product.region_name ? ` · ${product.region_name}` : null}
         </span>
       </div>
