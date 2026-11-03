@@ -40,15 +40,17 @@ jobs:
       - name: Install dependencies
         run: pnpm install --frozen-lockfile
 
+      # Pinned as in deploy.yml and check.mjs: CLI 3.0 (2026-11) refuses supabase/config.toml ([inbucket] is no
+      # longer supported), so an unpinned npx failed every run from 2026-11-03.
       - name: Start local Supabase (only what the app and tests use)
-        run: npx --yes supabase start -x studio,imgproxy,edge-runtime,logflare,vector,supavisor,postgres-meta
+        run: npx --yes supabase@2.122.1 start -x studio,imgproxy,edge-runtime,logflare,vector,supavisor,postgres-meta
 
       - name: Point the website at local Supabase
         env:
           STRIPE_TEST_PUBLISHABLE_KEY: ${{ secrets.STRIPE_TEST_PUBLISHABLE_KEY }}
           STRIPE_TEST_SECRET_KEY: ${{ secrets.STRIPE_TEST_SECRET_KEY }}
         run: |
-          eval "$(npx --yes supabase status -o env)"
+          eval "$(npx --yes supabase@2.122.1 status -o env)"
           {
             echo "NEXT_PUBLIC_SUPABASE_URL=$API_URL"
             echo "NEXT_PUBLIC_SUPABASE_ANON_KEY=$ANON_KEY"

@@ -10,7 +10,7 @@ const WORDS = ['Indian', 'Wholesale', 'Club'] as const;
  * white wall and, since D-161, "We go home so you don't have to." with "India's shelves, at your door." under it, which
  * jumps to Pick your home (D-079's "Miss local market? Start here." and D-148's 7-day line gave way; the store tabs
  * carry the 7-day store). Founder 2026-11-03: "Want it in 7 days? Get it here >>" instead, to the 7-day store, the two
- * arrows easing apart and back; while 7-day delivery is off the store 404s, so D-161's lines stay. Server component;
+ * arrows drifting right and back; while 7-day delivery is off the store 404s, so D-161's lines stay. Server component;
  * the only script is
  * HeroScroll, which publishes the scroll position for the CSS fade. The photo is drawn at full height on every screen,
  * so every screen needs all of its 1117 x 1409 pixels: AVIF (120 KB) where the browser reads it, else the WebP (241 KB),

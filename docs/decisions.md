@@ -928,7 +928,7 @@ given (no conversion).
   say Want it in 7 days? Get it here >> (with these two signs expanding and contracting making a smooth animation)
   also put all items in stock except for liquids, all items to 10"
 - What it means:
-  - **The hero:** "Want it in 7 days?" (the bold line) and "Get it here" with two arrows easing apart and back, a link
+  - **The hero:** "Want it in 7 days?" (the bold line) and "Get it here" with two arrows drifting a few pixels right and back (made minimal the same day: "make the >> animation minimilistic"), a link
     to `/7-day-delivery` (`home-hero.tsx`). The arrows stop with reduced motion. While 7-day delivery is off or paused
     the 7-day store 404s, so the hero keeps D-161's two lines then (a proposal, not the founder's words).
   - **Stock:** every active option of every live listing at 10 available (`qty_listed` = held by open orders + 10),

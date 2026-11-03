@@ -89,42 +89,31 @@
   text-underline-offset: 3px;
 }
 
-/* founder 2026-11-03: "Get it here >>", the two arrows easing apart and back together, a little larger as they part */
+/* founder 2026-11-03: "Get it here >>", then "make the >> animation minimilistic": the two arrows drift a few
+   pixels right and back together, slowly */
 .go {
   display: inline-flex;
   align-items: baseline;
   gap: 0.3em;
 }
 .arrows {
-  display: inline-flex;
-  text-decoration: none;
+  display: inline-block;
   font-weight: 600;
+  letter-spacing: -0.12em;
+  animation: hero-arrows 2.4s ease-in-out infinite;
 }
 .arrows i {
-  display: inline-block;
   font-style: normal;
-  animation: hero-arrow 1.6s cubic-bezier(0.45, 0, 0.55, 1) infinite;
 }
-.arrows i + i {
-  margin-left: -0.12em;
-  animation-name: hero-arrow-far;
-}
-@keyframes hero-arrow {
+@keyframes hero-arrows {
   0%,
   100% {
-    transform: translate3d(0, 0, 0) scale(1);
+    transform: translate3d(0, 0, 0);
+    opacity: 1;
   }
   50% {
-    transform: translate3d(0.08em, 0, 0) scale(1.15);
-  }
-}
-@keyframes hero-arrow-far {
-  0%,
-  100% {
-    transform: translate3d(0, 0, 0) scale(1);
-  }
-  50% {
-    transform: translate3d(0.34em, 0, 0) scale(1.15);
+    transform: translate3d(3px, 0, 0);
+    opacity: 0.6;
   }
 }
 
@@ -132,7 +121,7 @@
   .word {
     transform: none;
   }
-  .arrows i {
+  .arrows {
     animation: none;
   }
 }
