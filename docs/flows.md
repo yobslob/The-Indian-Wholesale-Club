@@ -59,6 +59,14 @@ open ──cutoff──► collecting ──► packed ──► exported ──
    After payment the server verifies amount, currency and status with Stripe, then creates the order **from the stored
    checkout** (D-038). The customer's device (website or app, D-043) and the Stripe webhook both trigger this; the
    second finds the existing order. The website pays with Stripe's Payment Element, the app with Stripe's payment sheet.
+   **Safety nets (launch QA F-1, F-2):** the webhook claims each event (`webhook_events`, `processing` → `done` once
+   handled); a claim left `processing` by a killed function is taken over by Stripe's retry after 2 minutes. If both
+   the device and the webhook fail, the **payment sweep** (`POST /api/internal/payment-sweep`, called by pg_cron every
+   10 minutes only when a checkout is due) asks Stripe about each unreconciled checkout 10 minutes to 2 days old (each
+   at most hourly, 20 a run) and creates the order for a succeeded payment, never for one already refunded in Stripe; a
+   cancelled payment, or one finalize refused, is not looked at again (`sweep_note`).
+   Every server database call gives up after 8 s (F-0): a route answers 503 "We're busy right now…" with
+   `Retry-After: 30` (`lib/supabase/busy.ts`), and a cached store page keeps showing the copy built before.
 4. In one transaction (`create_order`): create the order and items, **reserve** stock (a conditional update, INV-3), write
    `stock_movements`, attach the order to the open cycle and store the delivery window. Then the server queues the
    confirmation email in `email_outbox`.

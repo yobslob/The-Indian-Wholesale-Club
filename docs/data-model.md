@@ -59,7 +59,7 @@ operations data are never queried from customer code.
 | | `promo_codes` | codes, limits, validity. Redeemed via `increment_promo_uses()` | admin |
 | | `wishlists` | saved products | owner |
 | Settings | `app_settings` | `dev_preview` (true only via `seed/demo.sql`: store shows placeholders + draft text) | admin |
-| Ops | `webhook_events`, `pending_orders`, `failed_reconciliations`, `email_outbox`, `admin_error_events`, `newsletter_subscribers` | kept from the old schema | service |
+| Ops | `webhook_events`, `pending_orders`, `failed_reconciliations`, `email_outbox`, `admin_error_events`, `newsletter_subscribers` | kept from the old schema. `webhook_events.status` (`processing`/`done`) + `claimed_at`: a claim unfinished after 2 minutes is taken over (F-1); `pending_orders.swept_at`/`sweep_note`: the payment sweep's last look and why it stopped (F-2), `reconciled_by` browser/webhook/sweep | service |
 
 **Dropped from the old schema:** `cart_items`, `tracking_events` (→ `order_events`), `reviews` (re-added with the reviews
 feature), `product_images` (→ `product_media`), the `size_enum` type (→ `options` JSON).
@@ -525,6 +525,8 @@ rule, used by the `variant_availability` read policy so the live stock feed neve
 | `change_delivery_window(order, from, to, note)` | admin | §7: the only way to move a window (INV-6) |
 | `increment_promo_uses(promo)` | service | guarded promo redemption |
 | `checkout_context(variant_ids, promo)` | service | §3 step 1: pricing inputs for a bag, incl. the express option when set up (read-only) |
+| `claim_webhook_event(event_id, event_type)` | service | §3: true when this delivery may process the Stripe event (the first, or a retry of one still `processing` after 2 minutes); the handler then marks it `done` (F-1) |
+| `claim_payment_sweep(limit)` | service | §3: stamps and returns up to `limit` (≤ 50) unreconciled checkouts 10 minutes to 2 days old not looked at in the last hour (F-2). `_kick_payment_sweep()`, pg_cron `iwc-payment-sweep` every 10 minutes, calls the site's sweep only when one is due |
 | `item_refund_cents(item)`, `cancel_refund_cents(order, reason)` | admin | D-042 refund amounts (the only place the rules live) |
 | `refund_order_item(item, amount, ref)` | admin | §4.4: records the Stripe refund of an unavailable piece; re-checks the amount |
 | `cancel_order(order, reason, amount, ref)` | admin | §7b: cancels before cutoff (admin), releases stock, records the refund; re-checks the amount |
