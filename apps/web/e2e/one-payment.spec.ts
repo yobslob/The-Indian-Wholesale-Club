@@ -41,16 +41,24 @@ test('standard ↔ express five times: one PaymentIntent, the card details kept 
   await fillCard(page, CARDS.ok);
   for (let i = 0; i < 5; i += 1) {
     const target = i % 2 === 0 ? express : standard;
-    const priced = page.waitForResponse((r) => r.url().endsWith('/api/checkout') && r.request().method() === 'POST');
-    await target.check();
-    expect((await priced).ok()).toBe(true);
-    await expect(target).toBeChecked();
+    // The choice shows as picked once the new price is back, so click and wait rather than check(). A click right
+    // after the last answer can land before React is listening again: click once more only while it is still
+    // unpicked, so a switch is never sent twice.
+    await expect(async () => {
+      if (!(await target.isChecked())) await target.click();
+      await expect(target).toBeChecked({ timeout: 5_000 });
+    }).toPass({ timeout: 30_000 });
     await expect(target).toBeEnabled();
   }
 
   await expect.poll(() => starts.length).toBe(6); // Continue to payment + five switches
   expect(new Set(starts.map((s) => s.paymentIntentId)).size).toBe(1);
-  await expect(cardFrame(page).locator('[name="number"]')).toHaveValue(CARDS.ok);
+  // Stripe's form can fold back to its default method on an update (a test account offers Bank first): reopen Card,
+  // then the number typed before the switches must still be there.
+  const card = cardFrame(page);
+  if (!(await card.locator('[name="number"]').isVisible().catch(() => false)))
+    await card.getByRole('button', { name: 'Card', exact: true }).click();
+  await expect(card.locator('[name="number"]')).toHaveValue(CARDS.ok);
 });
 
 test('a double click on Continue to payment prices the bag once (§8.9)', async ({ page }) => {

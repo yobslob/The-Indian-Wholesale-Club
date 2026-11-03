@@ -80,7 +80,8 @@ export async function reachPayment(page: Page): Promise<void> {
   await addDemoToBag(page);
   await fillCheckoutDetails(page);
   await continueToPayment(page).click();
-  await expect(page.getByText('Estimated delivery:').first()).toBeVisible();
+  // the priced step: its shipping choice (the bag's 'Estimated delivery' is folded behind the bag bar on phones)
+  await expect(page.getByRole('radio', { name: /^Standard/ })).toBeVisible();
 }
 
 /** Stripe's Payment Element: the visible frame inside <main> (Stripe's dev-tools frame sits outside it). */
@@ -116,24 +117,22 @@ export async function payWith(page: Page, number: string): Promise<void> {
 export async function answerThreeDS(page: Page, answer: 'complete' | 'fail'): Promise<void> {
   const id = answer === 'complete' ? '#test-source-authorize-3ds' : '#test-source-fail-3ds';
   const name = answer === 'complete' ? /^complete/i : /^fail/i;
-  const found: { button?: Locator } = {};
-  await expect
-    .poll(
-      async () => {
-        for (const frame of page.frames()) {
-          if (frame === page.mainFrame()) continue;
-          const button = frame.locator(id).or(frame.getByRole('button', { name })).first();
-          if (await button.isVisible().catch(() => false)) {
-            found.button = button;
-            return true;
-          }
-        }
-        return false;
-      },
-      { timeout: 45_000, message: 'the 3-D Secure challenge never showed' },
-    )
-    .toBe(true);
-  await found.button!.click();
+  // Clicked until the challenge closes: a button can show before Stripe's test page listens to it, and a click then
+  // does nothing (seen in long runs).
+  await expect(async () => {
+    let button: Locator | undefined;
+    for (const frame of page.frames()) {
+      if (frame === page.mainFrame()) continue;
+      const candidate = frame.locator(id).or(frame.getByRole('button', { name })).first();
+      if (await candidate.isVisible().catch(() => false)) {
+        button = candidate;
+        break;
+      }
+    }
+    expect(button, 'the 3-D Secure challenge never showed').toBeDefined();
+    await button!.click({ timeout: 5_000 });
+    await expect(button!).toBeHidden({ timeout: 5_000 });
+  }).toPass({ timeout: 45_000 });
 }
 
 /** Lines in this tab's bag (the bag lives in localStorage, features/cart/store.ts). */
