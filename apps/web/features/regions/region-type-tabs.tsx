@@ -8,6 +8,7 @@ import { browseSearch, inStatePage, PAGE, parseBrowseQuery } from '@/features/ca
 import { BrowseSkeleton } from '@/features/catalog/browse-skeleton';
 import { BrowseView } from '@/features/catalog/browse-view';
 import { typeSwitch, typeSwitchItem } from '@/features/catalog/type-switch-style';
+import { QUICK_TYPES } from '@/features/seven-day/links';
 
 import type { BrowsePage } from '@repo/db/store';
 
@@ -157,7 +158,14 @@ export function RegionTypeTabs({
             </button>
           </p>
         ) : page ? (
-          <BrowseView productType={type} title={PRODUCT_TYPE_LABEL[type]} initialQuery={query} initial={page} quickDays={quickDays} />
+          <BrowseView
+            productType={type}
+            title={PRODUCT_TYPE_LABEL[type]}
+            initialQuery={query}
+            initial={page}
+            quickDays={quickDays}
+            quickBand={QUICK_TYPES.includes(type)}
+          />
         ) : (
           <BrowseSkeleton dense={type !== 'clothing'} />
         )}

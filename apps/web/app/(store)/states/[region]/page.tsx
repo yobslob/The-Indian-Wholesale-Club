@@ -12,6 +12,7 @@ import { StorePhoto } from '@/features/catalog/store-photo';
 import { RegionAlbum } from '@/features/regions/region-album';
 import { ComingSoon, RegionTypeTabs } from '@/features/regions/region-type-tabs';
 import { scriptFontClass } from '@/features/regions/script-fonts';
+import { QUICK_TYPES } from '@/features/seven-day/links';
 import { mediaUrl, SITE_NAME } from '@/lib/site';
 
 import { sharePhoto } from './[product]/product-seo';
@@ -87,7 +88,14 @@ export default async function RegionPage({ params }: { params: Params }): Promis
   const quickDays = policy.quick_delivery_on ? policy.quick_delivery_days_max : null;
   const firstView =
     initial && initial.total > 0 ? (
-      <BrowseView productType={firstType} title={PRODUCT_TYPE_LABEL[firstType]} initialQuery={query} initial={initial} quickDays={quickDays} />
+      <BrowseView
+        productType={firstType}
+        title={PRODUCT_TYPE_LABEL[firstType]}
+        initialQuery={query}
+        initial={initial}
+        quickDays={quickDays}
+        quickBand={QUICK_TYPES.includes(firstType)}
+      />
     ) : (
       <ComingSoon type={firstType} regionName={region.name} />
     );

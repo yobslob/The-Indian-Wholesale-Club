@@ -180,8 +180,8 @@ Migration 72 (D-140, plan F2, L2, L8): `products.wears` with trigger `products_w
 `_wears_from_category`; raises `wears_missing` when clothing goes live without it); `_size_norm(text)` and
 `_variant_size(options, type)` (one spelling per size; clothing without a size is One size); `store_browse()` takes
 `p_for` ('women' | 'men', unisex under both) and returns `wears` counts, matches sizes by their one spelling, puts a
-state's own pieces first in the newest order and mixes pieces published at the same moment by shop and category (never
-returning the shop); `store_home()` mixes the same way in Just listed; `store_region_page()` puts the state's own pieces
+state's own pieces first in the newest order (under every sort since `20261108090500_browse_reads`, D-181) and mixes
+pieces published at the same moment by shop and category (never returning the shop); `store_home()` mixes the same way in Just listed; `store_region_page()` puts the state's own pieces
 first in Most wanted, Curated and Leaving soon too. Tests: `wears_and_rows.test.sql` (older test files that make generic
 "Test" clothing switch the wears trigger off inside their own transaction).
 Migration 73 (D-140, L1): `products.shop_title` (admin only, backfilled from the names of imported listings);
@@ -217,7 +217,8 @@ reason). Never placeholders or US clearance pieces. Tests: `assign_weights.test.
 Migration `20261022120000_seven_day_delivery` (D-148): `pricing_settings.quick_delivery_days_min/_max` (7 and 7; empty
 = off) and `sourcing_shops.quick_delivery` (Blinkit, BigBasket, Zepto, Instamart). `_quick_listings()` (no SET clause,
 so it is inlined: live, not US stock, every active option's source in use, else the listing's `source_site`, on a
-quick-delivery shop) and `_quick_days(product)` (internal). Customers: `store_quick_bag(variant ids)` (`{days_min,
+quick-delivery shop; since `20261108090500_browse_reads` one pass over the active options grouped by listing, the same
+set, 46,345 → 2,513 buffers on a production-sized copy) and `_quick_days(product)` (internal). Customers: `store_quick_bag(variant ids)` (`{days_min,
 days_max}` when every piece is a 7-day piece, else null) and `store_quick_browse(category, offset, limit)` (the 7-day
 page: days, totals, categories with counts, light cards). `_store_product_card` and `store_browse` add `quick_days`;
 `store_product_page` adds `quick_delivery`; `store_policy` the two days (D-161, migration `20261031090000_policy_days`: also `delivery_days_min` / `_max`, the pilot's standard days, null in cycle mode); `checkout_context` adds `quick_delivery` and

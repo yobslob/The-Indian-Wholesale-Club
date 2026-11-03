@@ -24,7 +24,10 @@ Baseline numbers come from the founder's first `node scripts/check.mjs` run and 
   product pages on first visit. So **`next build` reads the database** (the new schema must be there). Since
   2026-10-18 the build prerenders at most two pages at a time per worker and retries a failed page three times
   (`experimental.staticGenerationMaxConcurrency`, `staticGenerationRetryCount`): many pages at once against the
-  production database hit the anon role's 3 s statement timeout and failed deploys.
+  production database hit the anon role's 3 s statement timeout and failed deploys. The same limit stops a customer's
+  read: a `store_*` function that takes 1 s alone fails when a few run at once (a state's Food tab, 2026-11-03), so
+  measure a new read on a production-sized copy, and mark a CTE `materialized` when it must run once (Postgres
+  otherwise inlines a function into every row, as `store_browse`'s size spellings did).
 - **PR-2 One round trip per page:** each storefront page or endpoint gets its data from one `store_*` view or function returning exactly
   what it renders. Checkout allows at most 2.
   Read-only functions (STABLE) are called with `{ get: true }` (a GET): the API gateway retries a GET when PostgREST

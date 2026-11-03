@@ -1,8 +1,10 @@
 'use client';
 
+import dynamic from 'next/dynamic';
 import { useRef } from 'react';
 
 import { sizeLabel } from '@repo/shared/domain';
+
 
 import {
   browseHref,
@@ -24,6 +26,10 @@ import { WhoTiles } from './who-tiles';
 import type { BrowsePage, BrowseSort } from '@repo/db/store';
 import type { ProductType } from '@repo/shared/domain';
 
+// D-181: only a state's Food and Home & gifts draw the 7-day band, and it reads its cards after the page: its code
+// loads with it, so See all and Clothing keep their first-load JS (D-011's 150 KB)
+const QuickBand = dynamic(() => import('@/features/seven-day/quick-band').then((m) => m.QuickBand), { ssr: false });
+
 const pieces = (n: number): string => `${n} ${n === 1 ? 'piece' : 'pieces'}`;
 /** The count, with Clothing's finishing touches when they are in a drawer (D-144): "652 pieces · 40 finishing touches". */
 const counted = (meta: { total: number; drawer_total: number }): string =>
@@ -43,6 +49,7 @@ export function BrowseView({
   initialQuery,
   initial,
   quickDays = null,
+  quickBand = false,
 }: {
   productType: ProductType;
   title: string;
@@ -50,6 +57,8 @@ export function BrowseView({
   initial: BrowsePage;
   /** D-154: the 7-day days, for "Delivery: in 7 days"; null while 7-day delivery is off. */
   quickDays?: number | null;
+  /** A state's Food and Home & gifts: the 7-day band after the second row (quick-band.tsx), while 7-day is open. */
+  quickBand?: boolean;
 }): React.JSX.Element {
   const { query, meta, products, loading, stuck, apply, showMore } = useBrowse(
     productType,
@@ -207,6 +216,10 @@ export function BrowseView({
                   />
                 );
               })}
+              {quickBand && quickDays && !query.quick && products.length > 0 ? (
+                // two full rows at four columns
+                <QuickBand productType={productType} days={quickDays} placed={products.length >= 8} />
+              ) : null}
             </div>
           )}
           {products.length < meta.total && loading !== 'replace' ? (
