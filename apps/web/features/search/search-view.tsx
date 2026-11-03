@@ -1,11 +1,8 @@
 import { headers } from 'next/headers';
 import Link from 'next/link';
+import { redirect } from 'next/navigation';
 
-import { SEARCH_SORTS, type SearchPage, type SearchSort } from '@repo/db/store';
-import { isProductType, type ProductType } from '@repo/shared/domain';
-import { cleanSearch } from '@repo/shared/search';
-
-import { getHomeCached, getStorePolicyCached, searchStorePage } from '@/features/catalog/data';
+import { getHomeCached, getStorePolicyCached } from '@/features/catalog/data';
 import { ProductCard, ProductGrid } from '@/features/catalog/product-card';
 import { ProductRow } from '@/features/catalog/product-row';
 import { postmarkFor, StampGrid } from '@/features/regions/region-stamp';
@@ -13,64 +10,47 @@ import { isLimitedLocal } from '@/lib/rate-limit';
 import { QUICK_HOME } from '@/lib/site';
 
 import { SearchField } from './search-field';
-import { SearchFilters } from './search-filters';
+import { SearchFilters, type SearchHref } from './search-filters';
+import { SearchBusy, SearchIdeasRows } from './search-ideas';
+import { EMPTY_PAGE, loadSearch, loadSearchIdeas, type SearchResult } from './search-load';
+import { asCame, PAGE, plainSearch, QUICK_VALUE, readSearch, searchHref, withFilters, type SearchParams } from './search-url';
 
-type Param = string | string[] | undefined;
-export type SearchParams = Promise<Record<'q' | 'show' | 'delivery' | 'type' | 'category' | 'state' | 'sort', Param>>;
+export type { SearchParams } from './search-url';
 
-const PAGE = 24;
-/** D-154: the IWC store's "Delivery: in 7 days", as the address carries it (?delivery=7-day). */
-const QUICK_VALUE = '7-day';
 const h2 = 'font-heading text-[clamp(22px,1.8vw,30px)] font-medium tracking-[-0.02em] text-[#1D1A17]';
 const label = 'font-ui text-ink-muted text-[11px] font-semibold uppercase tracking-[0.16em]';
 const pill = 'font-ui inline-flex min-h-11 items-center gap-2 rounded-pill border px-4 text-sm font-medium transition-colors';
 const link = 'text-ink underline underline-offset-[3px]';
-const plural = (n: number, word: string): string => `${n.toLocaleString('en-US')} ${word}${n === 1 ? '' : 's'}`;
-const first = (v: Param): string | undefined => (Array.isArray(v) ? v[0] : v);
-const slug = (v: Param): string | null => {
-  const s = first(v);
-  return s && /^[a-z0-9-]{1,60}$/.test(s) ? s : null;
-};
-
-const EMPTY: SearchPage = {
-  query: '',
-  fixed: null,
-  mode: 'none',
-  total: 0,
-  all_total: 0,
-  types: {},
-  categories: [],
-  regions: [],
-  named_regions: [],
-  products: [],
-};
+const plural = (n: number, word: string, more = false): string =>
+  `${n.toLocaleString('en-US')}${more ? '+' : ''} ${word}${n === 1 && !more ? '' : 's'}`;
 
 /**
  * Search (/search, and since D-154 the 7-day store's /7-day-delivery/search): products and regions in one round trip
  * (store_search_page, D-160: stems, synonyms, spelling fixes, "some of your words", the counts). No session.
  * Results come 24 at a time with "Show more" (?show=). D-085: the count with the words under the box; matching
- * states as the D-080 stamps; with no words or no results, the open states and Just listed, so the page is never a
- * dead end. D-160: the type, category and state filters and Sort by as links (?type= ?category= ?state= ?sort=);
- * "Showing results for" a fixed spelling. D-154: in the IWC store "Delivery: in 7 days" keeps only 7-day pieces; the
- * 7-day store's search finds only those, without the states. A caller searching faster than a person is told to wait.
+ * states as the D-080 stamps; with no words, the open states and Just listed, so the page is never a dead end. D-160:
+ * the type, category and state filters and Sort by as links; "Showing results for" a fixed spelling. D-154: in the IWC
+ * store "Delivery: in 7 days" keeps only 7-day pieces; the 7-day store's search finds only those, without the states.
+ * Launch QA: every search has one address (search-url.ts: lower case, its parameters in one order, nothing else), so
+ * the CDN can keep a page for everyone (D-2); the page holds nothing about the visitor (a caller searching faster
+ * than a person is sent to the Try again address, which is never kept); a slow or failing database shows a line with
+ * Try again, never the error page (D-1); a search that finds nothing offers popular searches, states and categories
+ * (D-3).
  */
 export async function SearchView({ searchParams, store }: { searchParams: SearchParams; store: 'iwc' | 'quick' }): Promise<React.JSX.Element> {
   const params = await searchParams;
-  const q = cleanSearch(first(params.q) ?? '');
-  const showRaw = Number(first(params.show));
-  const show = Math.min(Math.max(Number.isInteger(showRaw) ? showRaw : PAGE, PAGE), 480);
-  const typeRaw = first(params.type);
-  const type: ProductType | null = isProductType(typeRaw) ? typeRaw : null;
-  const category = slug(params.category);
-  const sortRaw = first(params.sort);
-  const sort = (SEARCH_SORTS as readonly string[]).includes(sortRaw ?? '') ? (sortRaw as SearchSort) : null;
   const inQuick = store === 'quick';
-  const state = inQuick ? null : slug(params.state);
+  const base = inQuick ? `${QUICK_HOME}/search` : '/search';
+  const s = readSearch(params, inQuick);
+  const own = searchHref(base, s);
+  if (own !== asCame(base, params)) redirect(own);
+  const { q, type, category, state, sort, show } = s;
+  const retryHref = searchHref(base, { ...s, retry: true });
+  const limited = q ? isLimitedLocal(await headers(), 'search') : false;
+  if (limited && !s.retry) redirect(retryHref);
   const [home, policy] = await Promise.all([getHomeCached(), getStorePolicyCached()]);
   const quickOn = policy.quick_delivery_on;
-  const quick = inQuick || (quickOn && first(params.delivery) === QUICK_VALUE);
-  const base = inQuick ? `${QUICK_HOME}/search` : '/search';
-  const limited = q ? isLimitedLocal(await headers(), 'search') : false;
+  const quick = inQuick || (quickOn && s.delivery);
   const filtered = Boolean(type || category || state || sort);
   // "Show more" and the filters read from the first result again, so only the first unfiltered page is recorded
   const filter = {
@@ -82,25 +62,20 @@ export async function SearchView({ searchParams, store }: { searchParams: Search
     record: show === PAGE && !filtered,
     quick,
   };
-  const page = q && !limited ? await searchStorePage(q, filter) : EMPTY;
+  const { page, failed }: SearchResult = q && !limited ? await loadSearch(q, filter) : { page: EMPTY_PAGE, failed: null };
   const products = page.products;
   const more = page.total > products.length;
-  const needle = q.toLowerCase();
   const regions =
-    q && !quick ? home.regions.filter((r) => page.named_regions.includes(r.slug) || r.name.toLowerCase().includes(needle)) : [];
+    q && !quick ? home.regions.filter((r) => page.named_regions.includes(r.slug) || r.name.toLowerCase().includes(q)) : [];
   const open = regions.filter((r) => r.is_live);
   const soon = regions.filter((r) => !r.is_live);
   const postmark = postmarkFor(home.delivery);
   const found = page.mode !== 'none' && page.mode !== 'some';
   const nothing = !q || (!found && regions.length === 0);
-  const current: Record<string, string | null> = { q, delivery: quick && !inQuick ? QUICK_VALUE : null, type, category, state, sort };
-  const href = (over: Record<string, string | null>): string => {
-    const all = { ...current, ...over };
-    const qs = new URLSearchParams(Object.entries(all).filter((e): e is [string, string] => e[1] !== null));
-    return `${base}?${qs.toString()}`;
-  };
-  const filterHref = `/search?${new URLSearchParams({ q, ...(quick ? {} : { delivery: QUICK_VALUE }) }).toString()}`;
-  const stateName = (s: string): string => home.regions.find((r) => r.slug === s)?.name ?? s;
+  const ideas = q && !limited && !failed && !found && regions.length === 0 ? await loadSearchIdeas() : null;
+  const href: SearchHref = (over) => searchHref(base, withFilters(s, over));
+  const filterHref = searchHref('/search', plainSearch(q, !quick));
+  const stateName = (slug: string): string => home.regions.find((r) => r.slug === slug)?.name ?? slug;
 
   return (
     <div className="space-y-8">
@@ -138,14 +113,21 @@ export async function SearchView({ searchParams, store }: { searchParams: Search
                 No pieces match “{q}”. Showing pieces for <b className="text-ink font-medium">“{page.fixed}”</b>.
               </p>
             ) : null}
-            {!limited ? (
+            {!limited && !failed ? (
               <p>
                 {regions.length > 0 ? <b className="text-ink font-medium">{plural(regions.length, 'state')}</b> : null}
                 {regions.length > 0 && found ? ' and ' : null}
-                {found || regions.length === 0 ? <b className="text-ink font-medium">{plural(found ? page.total : 0, 'piece')}</b> : null}
+                {found || regions.length === 0 ? (
+                  <b className="text-ink font-medium">{plural(found ? page.total : 0, 'piece', found && page.capped)}</b>
+                ) : null}
                 {` for “${page.fixed ?? q}”`}
               </p>
             ) : null}
+          </div>
+        ) : null}
+        {failed ? (
+          <div className="mt-3.5">
+            <SearchBusy kind={failed} retryHref={retryHref} />
           </div>
         ) : null}
       </div>
@@ -178,7 +160,7 @@ export async function SearchView({ searchParams, store }: { searchParams: Search
         </section>
       ) : null}
 
-      {q && !limited && (products.length > 0 || regions.length === 0) ? (
+      {q && !limited && !failed && (products.length > 0 || regions.length === 0) ? (
         <section className="space-y-4">
           <h2 className={h2}>Products</h2>
           {!found ? (
@@ -186,7 +168,7 @@ export async function SearchView({ searchParams, store }: { searchParams: Search
               {inQuick ? `Nothing in the 7-day store matches “${q}”. ` : `No products match “${q}”. `}
               {page.mode === 'some' ? 'These have some of its words. ' : null}
               {quick ? (
-                <Link href={`/search?${new URLSearchParams({ q }).toString()}`} className={link}>
+                <Link href={searchHref('/search', plainSearch(q))} className={link}>
                   Search the whole IWC store
                 </Link>
               ) : null}
@@ -206,7 +188,7 @@ export async function SearchView({ searchParams, store }: { searchParams: Search
           ) : null}
           {more ? (
             <Link
-              href={`${href({})}&show=${show + PAGE}`}
+              href={searchHref(base, { ...s, retry: false, show: show + PAGE })}
               scroll={false}
               className="border-line bg-paper hover:border-ink font-ui inline-flex min-h-12 items-center rounded-pill border px-6 text-[15px]"
             >
@@ -216,9 +198,11 @@ export async function SearchView({ searchParams, store }: { searchParams: Search
         </section>
       ) : null}
 
+      {ideas ? <SearchIdeasRows ideas={ideas} base={base} inQuick={inQuick} /> : null}
+
       {nothing && !inQuick ? (
         <>
-          {home.regions.some((r) => r.is_live) ? (
+          {!q && home.regions.some((r) => r.is_live) ? (
             <section className="space-y-3">
               <p className={label}>Open now</p>
               <div className="max-w-[660px]">

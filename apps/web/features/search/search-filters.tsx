@@ -45,7 +45,7 @@ export function SearchFilters({
   const all = types.reduce((n, t) => n + (page.types[t] ?? 0), 0);
   // a state the words name, offered only when it narrows what was found
   const named = page.regions
-    .filter((r) => page.named_regions.includes(r.slug) && r.slug !== state && r.count < page.total)
+    .filter((r) => page.named_regions.includes(r.slug) && r.slug !== state && (page.capped || r.count < page.total))
     .slice(0, 2);
   const showCats = page.categories.length > 1 || category !== null;
   if (page.all_total === 0) return null;

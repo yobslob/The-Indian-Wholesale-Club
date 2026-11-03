@@ -2,6 +2,7 @@
  * Search (D-160), website and app alike, through store_* only (D-017): one page of a search with its counts
  * (store_search_page) and the list the search boxes suggest from (store_search_hints). Until migration
  * 20261030090000 is applied (PostgREST: no such function) the page falls back to store_search, as before.
+ * Launch QA D-1: a search gives up after SEARCH_TIMEOUT_MS, so a slow database is a friendly message, not a 90 s wait.
  */
 import { z } from 'zod';
 
@@ -15,6 +16,9 @@ import { productCardSchema, type ProductCard } from './schemas';
 const productType = z.enum(PRODUCT_TYPES);
 const count = z.number().int();
 
+/** The most a search waits for the database (the database itself stops trying extra passes after 2.5 s). */
+export const SEARCH_TIMEOUT_MS = 3500;
+
 export const SEARCH_SORTS = ['price-asc', 'price-desc', 'new'] as const;
 export type SearchSort = (typeof SEARCH_SORTS)[number];
 
@@ -24,9 +28,14 @@ export const searchPageSchema = z.object({
   fixed: z.string().nullable(),
   /** all: every word · fixed: every word once spelled as the listings do · some: pieces with some words · none. */
   mode: z.enum(['all', 'fixed', 'some', 'none']),
+  /** Matches with the filters, counted up to 1,000 (migration 20261108090000). */
   total: count,
-  /** Every match, whatever the filters. */
+  /** Every match, whatever the filters (up to 1,000). */
   all_total: count,
+  /** More than 1,000 match: the page says "1,000+". */
+  capped: z.boolean().default(false),
+  /** The database ran out of time before trying a spelling fix or some of the words. */
+  slow: z.boolean().default(false),
   /** Matches per type (with the state filter). */
   types: z.record(count).default({}),
   categories: z.array(z.object({ slug: z.string(), name: z.string(), type: productType, count })),
@@ -80,6 +89,8 @@ async function oldSearch(client: IwcClient, query: string, f: SearchFilter): Pro
     mode: products.length ? 'all' : 'none',
     total,
     all_total: total,
+    capped: false,
+    slow: false,
     types: {},
     categories: [],
     regions: [],
@@ -88,9 +99,27 @@ async function oldSearch(client: IwcClient, query: string, f: SearchFilter): Pro
   };
 }
 
+/** A time limit for the request, where the runtime has one (Hermes on older phones may not). */
+const timeLimit = (): AbortSignal | undefined => {
+  if (typeof AbortSignal === 'undefined') return undefined;
+  const timeout = (AbortSignal as { timeout?: (ms: number) => AbortSignal }).timeout;
+  return typeof timeout === 'function' ? timeout.call(AbortSignal, SEARCH_TIMEOUT_MS) : undefined;
+};
+
+/**
+ * Whether a failed search failed for time or a busy database (worth "try again" or a shorter search): a statement
+ * timeout (57014), our own time limit or an aborted request, or PostgREST unable to reach the database (PGRST000-003).
+ */
+export function isSearchBusy(error: unknown): boolean {
+  if (!(error instanceof Error)) return false;
+  if (error.name === 'AbortError' || error.name === 'TimeoutError') return true;
+  const code = 'code' in error && typeof error.code === 'string' ? error.code : '';
+  return code === '57014' || /^PGRST00[0-3]$/.test(code) || /^(AbortError|TimeoutError)\b|statement timeout/i.test(error.message);
+}
+
 /** One page of a search with its counts (1 round trip; it records the first unfiltered page, so a POST). */
 export async function searchPage(client: IwcClient, query: string, f: SearchFilter = {}): Promise<SearchPage> {
-  const res = await client.rpc('store_search_page', {
+  const call = client.rpc('store_search_page', {
     p_query: query,
     p_type: f.type,
     p_category: f.category,
@@ -101,6 +130,8 @@ export async function searchPage(client: IwcClient, query: string, f: SearchFilt
     p_record: f.record ?? true,
     p_quick: f.quick ?? false,
   });
+  const signal = timeLimit();
+  const res = await (signal ? call.abortSignal(signal) : call);
   if (missing(res.error?.code)) return oldSearch(client, query, f);
   return searchPageSchema.parse(unwrap(res));
 }
