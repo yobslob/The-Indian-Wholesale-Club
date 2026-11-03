@@ -77,4 +77,26 @@ select tests.assert(
       and (select id from public.products where slug = 'br-india-cheapest') not in (select id from public._quick_listings())),
   'every option from a 7-day shop: 7-day; one option from a normal shop: not');
 
+-- 20261108090600_quick_by_type: one type's 7-day set, and the cards' days from it.
+select tests.assert(
+  (select array_agg(id order by id) from public._quick_listings_of('home'))
+  = (select array_agg(q.id order by q.id) from public._quick_listings() q join public.products p on p.id = q.id
+      where p.product_type = 'home'),
+  'one type''s 7-day set is the whole set''s pieces of that type');
+select tests.assert(not exists (select 1 from public._quick_listings_of('clothing') q
+                                join public.products p on p.id = q.id where p.slug like 'br-%'),
+  'and holds no other type''s');
+-- (as the owner: _quick_days is internal)
+select tests.assert(
+  (select bool_and((c ->> 'quick_days')::int is not distinct from public._quick_days((c ->> 'id')::uuid))
+          and count(*) filter (where c ->> 'quick_days' is not null) = 1
+     from jsonb_array_elements(public.store_browse('home', 'test-region', 'br-home') -> 'products') c),
+  'a card''s 7-day days are _quick_days'' (br-own-cheap only)');
+set local role anon;
+select tests.assert(
+  (select (b ->> 'quick_total')::int = 1 and b -> 'products' -> 0 ->> 'slug' = 'br-own-cheap'
+     from public.store_browse('home', 'test-region', 'br-home', 0, 24, null, null, null, 'low', null, true) b),
+  'In 7 days keeps only the 7-day piece');
+reset role;
+
 rollback;

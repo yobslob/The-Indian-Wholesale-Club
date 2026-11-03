@@ -35,7 +35,11 @@ export default async function SevenDayPage(): Promise<React.JSX.Element> {
   const [front, page, ...byType] = await Promise.all([
     getQuickFrontCached(),
     quickPageCached(null, 0, PAGE),
-    ...QUICK_TYPES.map((t) => browseCached(toBrowseFilter(t, inQuickStore({ sizes: [], sort: 'low' }), 0, PAGE))),
+    // a type's row that cannot be read is left out, not the page: the build prerenders this page, and one read past
+    // the database's 3 s limit failed a deploy (2026-11-04); the row is back when the page next refreshes (1 h)
+    ...QUICK_TYPES.map((t) =>
+      browseCached(toBrowseFilter(t, inQuickStore({ sizes: [], sort: 'low' }), 0, PAGE)).catch(() => null),
+    ),
   ]);
   if (!front) notFound();
   const days =
@@ -90,17 +94,20 @@ export default async function SevenDayPage(): Promise<React.JSX.Element> {
               products={front.new_this_week}
               quickTag={false}
             />
-            {QUICK_TYPES.map((t, i) => (
-              <ProductRow
-                key={t}
-                id={`all-${t}`}
-                title={PRODUCT_TYPE_LABEL[t]}
-                sub={`${byType[i]!.total} ${byType[i]!.total === 1 ? 'piece' : 'pieces'} in ${days} days`}
-                products={byType[i]!.products.slice(0, 12)}
-                quickTag={false}
-                href={quickHref(t)}
-              />
-            ))}
+            {QUICK_TYPES.map((t, i) => {
+              const row = byType[i];
+              return row ? (
+                <ProductRow
+                  key={t}
+                  id={`all-${t}`}
+                  title={PRODUCT_TYPE_LABEL[t]}
+                  sub={`${row.total} ${row.total === 1 ? 'piece' : 'pieces'} in ${days} days`}
+                  products={row.products.slice(0, 12)}
+                  quickTag={false}
+                  href={quickHref(t)}
+                />
+              ) : null;
+            })}
           </div>
         </>
       )}

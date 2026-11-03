@@ -4,6 +4,7 @@ import { useEffect, useRef, useState } from 'react';
 
 import { PRODUCT_TYPE_LABEL, PRODUCT_TYPE_PATH, PRODUCT_TYPES, type ProductType } from '@repo/shared/domain';
 
+import { fetchBrowse } from '@/features/catalog/browse-fetch';
 import { browseSearch, inStatePage, PAGE, parseBrowseQuery } from '@/features/catalog/browse-query';
 import { BrowseSkeleton } from '@/features/catalog/browse-skeleton';
 import { BrowseView } from '@/features/catalog/browse-view';
@@ -63,8 +64,7 @@ export function RegionTypeTabs({
   useEffect(() => {
     if (open === first || !type || count === 0 || page) return;
     let gone = false;
-    fetch(`/api/browse?type=${type}&offset=0&limit=${PAGE}&${browseSearch(query)}`)
-      .then((r) => (r.ok ? (r.json() as Promise<BrowsePage>) : Promise.reject(new Error(String(r.status)))))
+    fetchBrowse(`/api/browse?type=${type}&offset=0&limit=${PAGE}&${browseSearch(query)}`)
       .then((p) => !gone && setPages((all) => ({ ...all, [open]: p })))
       .catch(() => !gone && setPages((all) => ({ ...all, [open]: 'failed' })));
     return () => {

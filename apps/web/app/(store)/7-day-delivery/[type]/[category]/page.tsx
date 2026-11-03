@@ -20,19 +20,41 @@ type Params = Promise<{ type: string; category: string }>;
  * browser, as on See all.
  */
 export async function generateStaticParams(): Promise<{ type: string; category: string }[]> {
-  const all = QUICK_TYPES.map((t) => ({ type: PRODUCT_TYPE_PATH[t].slice(1), category: 'all' }));
+  const all = QUICK_TYPES.map((t) => ({ productType: t, category: undefined as string | undefined }));
   // Every 7-day category too (about a dozen pages a deploy): built on the first click instead, a category took 1.7 –
   // 2.4 s to open after each deploy (measured 2026-10-24); built ahead, its click is a cached answer.
+  let pages = all;
   try {
     const { categories } = await quickPageCached(null, 0, PAGE);
-    const byType = categories.flatMap((c) => {
-      const t = QUICK_TYPES.find((q) => q === c.product_type);
-      return t ? [{ type: PRODUCT_TYPE_PATH[t].slice(1), category: c.slug }] : [];
-    });
-    return [...all, ...byType];
+    pages = [
+      ...all,
+      ...categories.flatMap((c) => {
+        const t = QUICK_TYPES.find((q) => q === c.product_type);
+        return t ? [{ productType: t, category: c.slug as string | undefined }] : [];
+      }),
+    ];
   } catch {
-    return all;
+    // the types' pages only
   }
+  // A page that fails to build fails the whole deploy: /7-day-delivery/food/all did (2026-11-04, its list read past the
+  // database's 3 s limit). As the state pages do, each page's list is read here first, two at a time, which fills the
+  // cache its build then reads; a page whose read fails is left out and built on its first visit instead.
+  const built: { type: string; category: string }[] = [];
+  for (let i = 0; i < pages.length; i += 2) {
+    const group = pages.slice(i, i + 2);
+    const read = await Promise.all(
+      group.map((p) =>
+        browseCached(toBrowseFilter(p.productType, inQuickStore(parseBrowseQuery({ category: p.category })), 0, PAGE)).then(
+          () => true,
+          () => false,
+        ),
+      ),
+    );
+    built.push(
+      ...group.filter((_, j) => read[j]).map((p) => ({ type: PRODUCT_TYPE_PATH[p.productType].slice(1), category: p.category ?? 'all' })),
+    );
+  }
+  return built;
 }
 
 async function read(params: Params): Promise<{ productType: ProductType; category: string | undefined }> {

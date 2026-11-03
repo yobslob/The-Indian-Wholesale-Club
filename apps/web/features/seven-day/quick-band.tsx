@@ -3,13 +3,14 @@
 import Link from 'next/link';
 import { useEffect, useState } from 'react';
 
+import { fetchBrowse } from '@/features/catalog/browse-fetch';
 import { browseSearch, inQuickStore, PAGE, parseBrowseQuery } from '@/features/catalog/browse-query';
 import { ProductStrip } from '@/features/catalog/product-row';
 
 import { quickHref } from './links';
 import styles from './quick-band.module.css';
 
-import type { BrowsePage, ProductCard } from '@repo/db/store';
+import type { ProductCard } from '@repo/db/store';
 import type { ProductType } from '@repo/shared/domain';
 
 /** Cards the band shows; the button opens the rest. */
@@ -36,8 +37,7 @@ export function QuickBand({
   useEffect(() => {
     let gone = false;
     const search = browseSearch(inQuickStore(parseBrowseQuery({})));
-    fetch(`/api/browse?type=${productType}&offset=0&limit=${PAGE}&${search}`)
-      .then((r) => (r.ok ? (r.json() as Promise<BrowsePage>) : Promise.reject(new Error(String(r.status)))))
+    fetchBrowse(`/api/browse?type=${productType}&offset=0&limit=${PAGE}&${search}`)
       .then((p) => !gone && setCards(p.products.length > 0 ? p.products.slice(0, SHOWN) : 'none'))
       // a band that cannot load is left out: the list around it is what the reader came for
       .catch(() => !gone && setCards('none'));

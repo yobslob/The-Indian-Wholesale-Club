@@ -218,7 +218,9 @@ Migration `20261022120000_seven_day_delivery` (D-148): `pricing_settings.quick_d
 = off) and `sourcing_shops.quick_delivery` (Blinkit, BigBasket, Zepto, Instamart). `_quick_listings()` (no SET clause,
 so it is inlined: live, not US stock, every active option's source in use, else the listing's `source_site`, on a
 quick-delivery shop; since `20261108090500_browse_reads` one pass over the active options grouped by listing, the same
-set, 46,345 → 2,513 buffers on a production-sized copy) and `_quick_days(product)` (internal). Customers: `store_quick_bag(variant ids)` (`{days_min,
+set, 46,345 → 2,513 buffers on a production-sized copy; since `20261108090600_quick_by_type` it is
+`_quick_listings_of(null)`, and `store_browse` reads `_quick_listings_of(its type)` and gives its cards their 7-day
+days from that set) and `_quick_days(product)` (internal). Customers: `store_quick_bag(variant ids)` (`{days_min,
 days_max}` when every piece is a 7-day piece, else null) and `store_quick_browse(category, offset, limit)` (the 7-day
 page: days, totals, categories with counts, light cards). `_store_product_card` and `store_browse` add `quick_days`;
 `store_product_page` adds `quick_delivery`; `store_policy` the two days (D-161, migration `20261031090000_policy_days`: also `delivery_days_min` / `_max`, the pilot's standard days, null in cycle mode); `checkout_context` adds `quick_delivery` and
