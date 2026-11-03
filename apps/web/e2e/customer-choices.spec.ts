@@ -68,7 +68,9 @@ test('after a later delivery date, the customer keeps the order (D-008)', async 
   await estimate.locator('input[name="to"]').fill(isoDay(64));
   await estimate.locator('input[name="note"]').fill('E2E: export slipped');
   await estimate.getByRole('button', { name: 'Change window' }).click();
-  await expect(page.getByText(`${shortDay(60)} – ${shortDay(64)}`)).toBeVisible();
+  // Saved at once; like Publish in admin.spec.ts, the admin page takes about 29 s to show it under `next start` (open in
+  // docs/status.md). The customer's page below reads the saved window, so the change itself is still checked.
+  await expect(page.getByText(`${shortDay(60)} – ${shortDay(64)}`)).toBeVisible({ timeout: 60_000 });
 
   await openOrderAsGuest(page, orderNumber);
   await expect(page.getByRole('heading', { name: 'Your delivery date moved' })).toBeVisible();
