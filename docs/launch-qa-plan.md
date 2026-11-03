@@ -70,7 +70,9 @@ changes for the move; only the order below does.
 Disk IO each day of the first week. The new Vercel account is Hobby again: its terms keep it non-commercial (L-4).
 
 **Order (a quiet hour; about 2 hours):**
-1. **Stop writes:** the sourcing runner, every laptop tool, admin imports. Note the time.
+1. **Stop writes:** the sourcing runner, every laptop tool, admin imports (the founder runs none of them until the paid
+   plan, 2026-11-03). Disable GitHub → Actions → Daily website deploy until the move is done: it would send `main` to
+   the old Vercel project without its migrations. Note the time of the dump.
 2. **New Supabase project** (US East): `docs/ops.md` §Moving, Supabase steps 1 – 6 (dump, restore in one transaction,
    timers, Vault, Auth). Then the **Deploy workflow's migrations only** against it (GitHub secrets
    `SUPABASE_PROJECT_REF`, `SUPABASE_ACCESS_TOKEN`, `SUPABASE_DB_PASSWORD` now the new project's): the four
@@ -84,9 +86,10 @@ Disk IO each day of the first week. The new Vercel account is Hobby again: its t
    webhook already points at the domain, so its URL and signing secret stay. Supabase → Authentication → URL
    configuration: the domain; Vault `iwc_site_url` = the domain.
 5. **Check on the domain:** `node scripts/domain-check.mjs https://indianwholesaleclub.com`, `/api/health` under 1 s,
-   one real order refunded from the admin. Stripe → Payments since step 1: any payment the old site took after the
-   dump has no checkout in the new database; the payment sweep alerts it ("Paid, but no order"): make those orders
-   by hand or refund.
+   one real order refunded from the admin. Orders the old site took between the dump and the domain switch exist only
+   in the old database (the payment sweep reads the new one's checkouts, so it does not see them): in the old
+   project's SQL editor `select order_number, email, total_cents, created_at from orders where created_at > '<dump
+   time>'`, and Stripe → Payments since then; make those orders again in the new admin, or refund them.
 6. **The Android app:** its build holds the old Supabase URL and key and the old API address. Ship a build with
    `EXPO_PUBLIC_API_URL=https://indianwholesaleclub.com` and the new `EXPO_PUBLIC_SUPABASE_URL` / `_ANON_KEY`.
    Installed old builds read the old project until updated: keep the old Supabase project **running, read-only in
