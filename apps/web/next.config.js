@@ -100,6 +100,25 @@ const SECURITY_HEADERS = [
 // of X-Frame-Options).
 const LOCKED_DOWN = ["object-src 'none'", "base-uri 'self'", "frame-ancestors 'self'"];
 
+// E-3: violations are reported to the site itself (app/api/csp-report): report-uri for Firefox and Safari, report-to
+// (with the Reporting-Endpoints header below) for Chrome and Edge. A short summary goes to the logs; nothing is stored.
+const REPORTING = ['report-uri /api/csp-report', 'report-to csp'];
+const REPORTING_ENDPOINTS = { key: 'Reporting-Endpoints', value: 'csp="/api/csp-report"' };
+
+/**
+ * E-3: exactly what Stripe's Content Security Policy guide (docs.stripe.com/security/guide, read 2026-11-03) lists for
+ * Stripe.js, which runs the Payment Element (cards, Apple Pay, Google Pay), the Express Checkout Element and 3-D Secure
+ * (the guide adds nothing more for either), plus Link. Stripe.js: scripts and frames from js.stripe.com and *.js.stripe.com (frames on other origins for speed),
+ * hooks.stripe.com frames for 3-D Secure and redirects, api.stripe.com for its calls. Link: link.com and *.link.com
+ * frames, calls and images. maps.googleapis.com is listed only for the Address Element with one's own Maps key: not used.
+ */
+const STRIPE = {
+  script: 'https://js.stripe.com https://*.js.stripe.com',
+  frame: 'https://js.stripe.com https://*.js.stripe.com https://hooks.stripe.com https://link.com https://*.link.com',
+  connect: 'https://api.stripe.com https://link.com https://*.link.com',
+  img: 'https://*.link.com',
+};
+
 /** @type {import('next').NextConfig} */
 const nextConfig = {
   // No "X-Powered-By: Next.js" on every answer: it only tells a scanner what to try.
@@ -149,15 +168,17 @@ const nextConfig = {
             key: 'Content-Security-Policy',
             value: [
               "default-src 'self'",
-              `script-src 'self' 'unsafe-inline'${devEval} https://js.stripe.com`,
-              "frame-src 'self' https://js.stripe.com https://hooks.stripe.com",
+              `script-src 'self' 'unsafe-inline'${devEval} ${STRIPE.script}`,
+              `frame-src 'self' ${STRIPE.frame}`,
               "style-src 'self' 'unsafe-inline'",
               "font-src 'self' data:",
-              `img-src 'self' data: blob: ${supabaseOrigin}`,
-              `connect-src 'self' ${supabaseOrigin} ${supabaseWs} https://api.stripe.com`,
+              `img-src 'self' data: blob: ${supabaseOrigin} ${STRIPE.img}`,
+              `connect-src 'self' ${supabaseOrigin} ${supabaseWs} ${STRIPE.connect}`,
               ...LOCKED_DOWN,
+              ...REPORTING,
             ].join('; '),
           },
+          REPORTING_ENDPOINTS,
           ...SECURITY_HEADERS,
         ],
       },
@@ -188,6 +209,17 @@ const nextConfig = {
           { key: 'Cache-Control', value: 'public, max-age=86400' },
         ],
       },
+      // D-2: a search's page is the same for everyone (search-url.ts gives each search one address; the page holds
+      // nothing about the visitor), so Vercel's CDN keeps it 5 minutes. Browsers still get no-store (Next's own
+      // Cache-Control); CDN-Cache-Control is for the CDN alone. Free: no page-cache (ISR) writes, and a repeat search
+      // costs no function call or database read. The Try again address (?retry=1) and a search without words are never
+      // kept, so a busy moment is never kept either once a person presses Try again.
+      ...['/search', '/7-day-delivery/search'].map((source) => ({
+        source,
+        has: [{ type: 'query', key: 'q' }],
+        missing: [{ type: 'query', key: 'retry' }],
+        headers: [{ key: 'CDN-Cache-Control', value: 'max-age=300, stale-while-revalidate=600' }],
+      })),
     ];
   },
 };
