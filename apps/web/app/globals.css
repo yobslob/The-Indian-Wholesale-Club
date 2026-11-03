@@ -2668,49 +2668,51 @@ html[data-free-bar] .site-footer {
       aspect-ratio: 100 / 94;
     }
   }
-  /* phones: three slim arches side by side, the words smaller and the buttons just their arrow */
+  /* phones: three arches side by side, the words smaller and the buttons just their arrow. Founder 2026-11-04 (D-183):
+     the 1 : 2 windows looked "too stretched", so they are about 1 : 1.56 now; to fit, the photo takes a little less of
+     the top and the diya steps off the sill (the arrow stays: it says the window opens). */
   @media (max-width: 639px) {
     .dw-wide {
       min-height: 280px;
     }
     .dw-arch {
-      aspect-ratio: 100 / 200;
+      aspect-ratio: 100 / 156;
     }
     .dw-arch-shape {
-      padding: 0 5% 7%;
+      padding: 0 6% 9%;
     }
     .dw-arch--photo .dw-arch-shape::before {
-      flex-basis: 40%;
+      flex-basis: 45%;
     }
     .dw-arch .dw-photo {
-      height: 46%;
+      height: 52%;
     }
     .dw-arch .dw-kicker {
-      font-size: 8.5px;
+      font-size: 8px;
       letter-spacing: 0.1em;
     }
     .dw-lead {
-      margin-bottom: 2px;
-      font-size: 9.5px;
+      margin-bottom: 1px;
+      font-size: 9px;
     }
     .dw-big {
-      font-size: 21px;
+      font-size: 20px;
     }
     .dw-hook--words {
       max-width: none;
-      font-size: 12.5px;
+      font-size: 12px;
     }
     .dw-tag {
-      margin-top: 8px;
-      padding: 3px 5px 3px 10px;
-      font-size: 8.5px;
+      margin-top: 5px;
+      padding: 2px 5px 2px 10px;
+      font-size: 8px;
     }
     .dw-tag::before {
       left: 4px;
     }
     .dw-arch .dw-go {
       gap: 0;
-      margin-top: 8px;
+      margin-top: auto;
       font-size: 0;
       letter-spacing: 0;
     }
@@ -2718,18 +2720,21 @@ html[data-free-bar] .site-footer {
       width: 22px;
       height: 22px;
     }
-    .dw-diya {
-      width: 22px;
+    .dw-arch .dw-diya {
+      display: none;
     }
   }
   @media (max-width: 379px) {
     .dw-arch {
-      aspect-ratio: 100 / 220;
+      aspect-ratio: 100 / 166;
+    }
+    .dw-hook--words {
+      font-size: 11px;
     }
   }
   @media (max-width: 339px) {
     .dw-arch {
-      aspect-ratio: 100 / 240;
+      aspect-ratio: 100 / 176;
     }
   }
 
