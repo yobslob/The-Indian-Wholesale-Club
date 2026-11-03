@@ -50,8 +50,11 @@ async function create(
   // A replay returns the payment as it was created: make sure it is still unpaid, else start a new one. The new one
   // has no key of its own: a fixed second key would be replayed too (the same bag bought again within ten minutes
   // got the earlier, already paid payment, and the card form failed to load).
+  // Its amount must still be this checkout's: a re-price (A-5) moves an unpaid payment's amount, so the same bag
+  // back within ten minutes (the express total kept from a switch, now standard) would charge the old total and the
+  // order would then be refused as a mismatch. Found by e2e one-payment.spec (2026-11-03).
   const fresh = await stripe.paymentIntents.retrieve(intent.id);
-  if (fresh.status === 'requires_payment_method') return fresh;
+  if (fresh.status === 'requires_payment_method' && fresh.amount === amount && fresh.currency === 'usd') return fresh;
   return stripe.paymentIntents.create(params);
 }
 
