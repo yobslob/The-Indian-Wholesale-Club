@@ -1,3 +1,5 @@
+import { priceRange } from '@repo/shared/domain';
+
 import type { ProductCard } from '@repo/db/store';
 
 /** A product card as store_* functions send it: its `options` is a list (a variant's own `options` is a record). */
@@ -9,6 +11,8 @@ const isCard = (v: Record<string, unknown>): boolean =>
  * card with several keeps only how many and whether all are sold out, and its + reads them when pressed
  * (/api/card-options). The options were a fifth of a state page, sent twice (its HTML and its data), and Vercel's
  * page-cache writes are counted by size. Walks the whole result, so every card in it is slimmed wherever it sits.
+ * Such a card's `price_cents` becomes the lowest price in stock among its options, with `price_varies` when they differ
+ * (about 20 bytes on those cards only), so it can say "From $x" without its options.
  */
 export function slimCards<T>(data: T): T {
   if (Array.isArray(data)) return data.map(slimCards) as T;
@@ -18,5 +22,13 @@ export function slimCards<T>(data: T): T {
   if (!isCard(out)) return out as T;
   const options = out.options as NonNullable<ProductCard['options']>;
   if (options.length <= 1) return out as T;
-  return { ...out, options: null, choices: options.length, sold_out: options.every((o) => o.available <= 0) } as T;
+  // Launch QA B-1: the card keeps the price its options say, "From" the lowest in stock when they differ (price-label.ts)
+  const range = priceRange(options);
+  return {
+    ...out,
+    ...(range ? { price_cents: range.fromCents, ...(range.varies ? { price_varies: true } : {}) } : {}),
+    options: null,
+    choices: options.length,
+    sold_out: options.every((o) => o.available <= 0),
+  } as T;
 }

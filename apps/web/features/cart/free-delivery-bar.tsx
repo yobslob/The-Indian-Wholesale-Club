@@ -72,7 +72,6 @@ export function FreeDeliveryBar(): React.JSX.Element | null {
     <>
       <Link
         href="/cart"
-        aria-live="polite"
         className={`fd-pill bg-brand text-on-brand font-ui rounded-pill fixed inset-x-3 bottom-[max(12px,env(safe-area-inset-bottom))] z-[44] mx-auto flex h-14 ${more === null ? 'max-w-[440px]' : 'max-w-[520px]'} items-center gap-3 pl-2 pr-4 [html[data-buy-bar]_&]:bottom-[84px] md:[html[data-buy-bar]_&]:bottom-[max(12px,env(safe-area-inset-bottom))] ${
           shown ? 'translate-y-0 scale-100 opacity-100' : 'translate-y-5 scale-[.96] opacity-0'
         }`}
@@ -113,7 +112,8 @@ export function FreeDeliveryBar(): React.JSX.Element | null {
           </b>
         </span>
         <span className="relative z-[1] grid min-w-0 flex-1 gap-[7px]">
-          <span className="truncate text-[13.5px] font-medium leading-none sm:text-[14.5px]">
+          {/* launch QA B-11: only the words are live (one sentence read out), not the bar and its "$ $ $ $" picture */}
+          <span aria-live="polite" className="truncate text-[13.5px] font-medium leading-none sm:text-[14.5px]">
             {note ? (
               <span key={note.until} className="rise-in inline-block">
                 {note.text}

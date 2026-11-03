@@ -1,4 +1,4 @@
-import { PRODUCT_TYPE_PATH, type ProductType } from '@repo/shared/domain';
+import { PRODUCT_TYPE_PATH, sortBySize, type ProductType } from '@repo/shared/domain';
 
 import { QUICK_HOME } from '@/lib/site';
 
@@ -170,29 +170,12 @@ export function withFilter(q: BrowseQuery, change: Partial<BrowseQuery>): Browse
 
 // ---------------------------------------------------------------- sizes
 
-const LETTERS = ['XXXS', 'XXS', 'XS', 'S', 'M', 'L', 'XL', 'XXL', '2XL', '3XL', 'XXXL', '4XL', '5XL', '6XL'];
-const GRAMS: Record<string, number> = { mg: 0.001, g: 1, gm: 1, gms: 1, kg: 1000, ml: 1, l: 1000, ltr: 1000 };
-
-/** Where a size sorts: letter sizes in wearing order, then numbers (kids' years, US, waist), weights, then the rest. */
-function sizeRank(value: string): [number, number, string] {
-  const v = value.trim().toUpperCase();
-  const letter = LETTERS.indexOf(v.replace(/\s+/g, ''));
-  if (letter >= 0) return [0, letter, v];
-  if (/^FREE/.test(v) || v === 'ONE SIZE') return [5, 0, v];
-  const weight = /^(\d+(?:\.\d+)?)\s*(MG|G|GM|GMS|KG|ML|L|LTR)\b/.exec(v);
-  if (weight) return [3, Number(weight[1]) * (GRAMS[weight[2]!.toLowerCase()] ?? 1), v];
-  const num = /(\d+(?:\.\d+)?)/.exec(v);
-  if (num) return [/^\d/.test(v) ? 1 : 2, Number(num[1]), v.replace(/[\d.]+/g, '')];
-  return [4, 0, v];
-}
-
+/**
+ * Letter sizes in wearing order, kids' ages by age, numbers of one kind (US 8, W30) together, weights, free size last:
+ * the one size order every list uses (`@repo/shared/domain` sizes.ts, launch QA B-3).
+ */
 export function sortSizes<T extends { value: string }>(sizes: T[]): T[] {
-  return [...sizes].sort((a, b) => {
-    const [ga, na, ta] = sizeRank(a.value);
-    const [gb, nb, tb] = sizeRank(b.value);
-    // numbers of one kind (US 8, W30) stay together: group, then the text around the number, then the number
-    return ga - gb || (ga === 2 ? ta.localeCompare(tb) : 0) || na - nb || ta.localeCompare(tb);
-  });
+  return sortBySize(sizes, (s) => s.value);
 }
 
 // ---------------------------------------------------------------- prices

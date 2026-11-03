@@ -2,6 +2,8 @@
 
 import { useRef } from 'react';
 
+import { sizeLabel } from '@repo/shared/domain';
+
 import {
   browseHref,
   priceLabel,
@@ -136,7 +138,7 @@ export function BrowseView({
                 {categoryName ? chip(categoryName, { category: undefined }) : null}
                 {stateName ? chip(stateName, { state: undefined }) : null}
                 {price ? chip(price, { min: undefined, max: undefined }) : null}
-                {query.sizes.map((s) => chip(s, { sizes: query.sizes.filter((x) => x !== s) }))}
+                {query.sizes.map((s) => chip(sizeLabel(s), { sizes: query.sizes.filter((x) => x !== s) }))}
                 <a
                   href={browseHref(productType, clearAll)}
                   className="font-ui text-ink-muted text-sm underline underline-offset-4"
@@ -180,10 +182,11 @@ export function BrowseView({
           ) : (
             <div
               data-card-grid=""
-              // food and home three to a row on phones (globals.css); clothing keeps two, its photos need the width
+              // food and home three to a row on phones (globals.css), two below 420 px (styles.cards, launch QA B-6);
+              // clothing keeps two, its photos need the width
               data-dense={productType === 'clothing' ? undefined : ''}
               aria-busy={loading === 'replace'}
-              className={`drift drift-side grid grid-cols-2 gap-x-[var(--gap)] gap-y-[clamp(28px,3vw,44px)] transition-opacity duration-200 lg:grid-cols-3 2xl:grid-cols-4 ${
+              className={`${styles.cards} drift drift-side grid grid-cols-2 gap-x-[var(--gap)] gap-y-[clamp(28px,3vw,44px)] transition-opacity duration-200 lg:grid-cols-3 2xl:grid-cols-4 ${
                 loading === 'replace' ? 'opacity-50' : ''
               }`}
             >

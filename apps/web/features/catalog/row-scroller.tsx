@@ -14,10 +14,16 @@ const list = 'no-scrollbar -mx-[var(--gut)] flex overflow-x-auto overscroll-x-co
 export function RowScroller({
   children,
   label,
+  headed = false,
   pills = false,
 }: {
   children: React.ReactNode;
   label: string;
+  /**
+   * The row sits in a section named by its own visible heading: the list then has no name of its own, so the heading
+   * is not read out again for the list (launch QA B-9: "Similar items" twice). The arrows still name the row.
+   */
+  headed?: boolean;
   pills?: boolean;
 }): React.JSX.Element {
   const ref = useRef<HTMLUListElement>(null);
@@ -54,7 +60,7 @@ export function RowScroller({
     <div className="relative">
       <ul
         ref={ref}
-        aria-label={label}
+        aria-label={headed ? undefined : label}
         className={pills ? `${list} gap-2.5` : `${list} drift drift-row -my-4 snap-x snap-mandatory scroll-px-[var(--gut)] gap-[var(--gap)] pb-5 pt-4`}
       >
         {children}

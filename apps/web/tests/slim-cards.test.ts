@@ -18,6 +18,16 @@ describe('slimCards (D-145)', () => {
     assert.equal((slimCards(card('gone', [option('s', 0), option('m', 0)])) as { sold_out?: boolean }).sold_out, true);
   });
 
+  it('keeps the price its options say: "From" the lowest in stock when they differ (launch QA B-1)', () => {
+    const priced = (id: string, price_cents: number, available: number) => ({ ...option(id, available), price_cents });
+    const poshak = slimCards({ ...card('poshak', [priced('red', 1731, 2), priced('blue', 1630, 1), priced('pink', 1499, 0)]), price_cents: 1499 });
+    assert.equal(poshak.price_cents, 1630);
+    assert.equal((poshak as { price_varies?: boolean }).price_varies, true);
+    const same = slimCards({ ...card('frock', [priced('s', 2273, 1), priced('m', 2273, 1), priced('l', 1999, 0)]), price_cents: 1999 });
+    assert.equal(same.price_cents, 2273);
+    assert.equal('price_varies' in same, false);
+  });
+
   it("leaves a variant's own options (a record) alone", () => {
     const data = { product: { slug: 'p', price_cents: 100, variants: [{ id: 'v', options: { size: 'M' }, price_cents: 100 }] } };
     assert.deepEqual(slimCards(data), data);

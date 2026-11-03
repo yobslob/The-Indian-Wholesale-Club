@@ -11,4 +11,5 @@ export * from './weight';
 export * from './liquid';
 export * from './cart';
 export * from './title';
+export * from './spelling';
 export * from './category-check';

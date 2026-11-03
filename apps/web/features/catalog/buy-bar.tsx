@@ -2,15 +2,21 @@
 
 import { useEffect, useState } from 'react';
 
+/** The bar's height on a phone (its button 48 px and padding), so the page's button counts as seen only above it. */
+const BAR_PX = 76;
+
 /**
- * Phones only (D-082): a bar with the name, price · option and Add to bag that slides up from the bottom once the
- * page's own Add to bag has scrolled away above the screen, and slides back down when it returns. It adds the same
- * piece and quantity as the button it stands in for.
+ * Phones only (D-082): a bar with the name, price · option and Add to bag that slides up from the bottom whenever the
+ * page's own Add to bag is off the screen, and slides back down when it is in view. Launch QA B-2: on a phone the
+ * button starts below the fold (its top at 827 px on an 812 px screen), so the bar shows from the first screen, not
+ * only once the button has scrolled away above it. It adds the same piece and quantity as the button it stands in for,
+ * and says what that button says ("Choose a size" until one is picked). One IntersectionObserver, no scroll listener.
  */
 export function BuyBar({
   target,
   name,
   detail,
+  action,
   disabled,
   added,
   onAdd,
@@ -18,6 +24,8 @@ export function BuyBar({
   target: React.RefObject<HTMLElement | null>;
   name: string;
   detail: string;
+  /** The page button's words: "Add to bag", or "Choose a size" before a pick (D-140, L3). */
+  action: string;
   disabled: boolean;
   /** The page's "Added" line is off screen while the bar shows, so the bar's button says it. */
   added: boolean;
@@ -29,10 +37,11 @@ export function BuyBar({
   useEffect(() => {
     const el = target.current;
     if (!el) return;
-    // The root reaches far below the screen, so "not intersecting" means "scrolled away above it", and a jump from
-    // above the screen to below it (Home key, a jump link) still counts as a change.
+    // The sticky header covers the top (--top-h) and the bar itself the bottom: a button hidden under either is off
+    // the screen for the customer.
+    const top = Number.parseFloat(getComputedStyle(document.documentElement).getPropertyValue('--top-h')) || 0;
     const io = new IntersectionObserver(([e]) => setShown(e ? !e.isIntersecting : false), {
-      rootMargin: '0px 0px 100000px 0px',
+      rootMargin: `-${Math.round(top)}px 0px -${BAR_PX}px 0px`,
     });
     io.observe(el);
     return () => io.disconnect();
@@ -56,7 +65,7 @@ export function BuyBar({
     >
       <div className="font-ui min-w-0 flex-1">
         <b className="block truncate text-sm font-semibold">{name}</b>
-        <span className="text-ink-muted text-[13px]">{detail}</span>
+        <span className="text-ink-muted block truncate text-[13px]">{detail}</span>
       </div>
       <button
         type="button"
@@ -64,7 +73,7 @@ export function BuyBar({
         onClick={(e) => onAdd(e.currentTarget)}
         className="bg-brand text-on-brand font-ui press h-12 w-[150px] flex-none rounded-pill text-[15px] font-medium disabled:opacity-50"
       >
-        {added ? '✓ Added' : 'Add to bag'}
+        {added ? '✓ Added' : action}
       </button>
     </div>
   );

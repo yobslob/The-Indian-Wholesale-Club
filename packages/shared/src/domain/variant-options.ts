@@ -5,6 +5,8 @@
  * shows one row of choices per option instead of one long list. Pure functions, no I/O.
  */
 
+import { sortBySize } from './sizes';
+
 /** In the order the rows show. */
 export const OPTION_KEYS = ['colour', 'flavour', 'style', 'pack', 'size'] as const;
 export type OptionKey = (typeof OPTION_KEYS)[number];
@@ -32,15 +34,15 @@ const valueOf = (v: WithOptions, key: OptionKey): string | undefined =>
   typeof v.options[key] === 'string' ? (v.options[key] as string) : undefined;
 
 /**
- * The axes to show: each option only when variants differ on it, values in variant order. Empty when
+ * The axes to show: each option only when variants differ on it, values in variant order (sizes in size order). Empty when
  * the axes can't tell every variant apart (then the product page falls back to one button per variant).
  */
 export function optionAxes(variants: WithOptions[]): OptionAxis[] {
-  const axes = OPTION_KEYS.map((key) => ({
-    key,
-    label: OPTION_LABEL[key],
-    values: [...new Set(variants.map((v) => valueOf(v, key)).filter((x): x is string => x !== undefined))],
-  })).filter((a) => a.values.length > 1);
+  const axes = OPTION_KEYS.map((key) => {
+    const values = [...new Set(variants.map((v) => valueOf(v, key)).filter((x): x is string => x !== undefined))];
+    // sizes in wearing order, kids' ages by age (launch QA B-3; web and app alike); other options in variant order
+    return { key, label: OPTION_LABEL[key], values: key === 'size' ? sortBySize(values, (s) => s) : values };
+  }).filter((a) => a.values.length > 1);
   if (axes.length === 0) return [];
   const keys = new Set(variants.map((v) => axes.map((a) => valueOf(v, a.key) ?? '').join('\u0000')));
   return keys.size === variants.length ? axes : [];

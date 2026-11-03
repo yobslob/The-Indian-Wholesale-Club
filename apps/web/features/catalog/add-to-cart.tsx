@@ -3,7 +3,7 @@
 import Link from 'next/link';
 import { useEffect, useMemo, useRef, useState } from 'react';
 
-import { choose, formatUsd, isAvailable, optionAxes, selectionOf } from '@repo/shared/domain';
+import { displayOption, displayTitle, formatUsd, optionAxes, optionPriceLabel, selectionOf } from '@repo/shared/domain';
 
 import { flyToBag } from '@/features/cart/fly-to-bag';
 import { MAX_QTY_PER_LINE } from '@/features/cart/limits';
@@ -11,6 +11,7 @@ import { useCart } from '@/features/cart/store';
 import { mediaUrl } from '@/lib/site';
 
 import { BuyBar } from './buy-bar';
+import { OptionRows } from './option-rows';
 import { useLiveAvailability } from './use-live-availability';
 
 import type { Product, Variant } from '@repo/db/store';
@@ -27,20 +28,17 @@ interface Props {
   quick?: boolean;
 }
 
-const pillClass = (selected: boolean, out: boolean): string =>
-  `font-ui bg-paper min-h-11 rounded-pill border px-4 text-sm font-medium ${
-    selected ? 'border-ink shadow-[inset_0_0_0_1px_theme(colors.ink)]' : 'border-line'
-  } ${out ? 'line-through opacity-60' : ''}`;
 const stepButton = 'grid size-11 place-items-center text-lg font-medium disabled:cursor-default disabled:text-line';
-const legendClass = 'font-ui text-ink-muted mb-2 text-[11px] font-semibold uppercase tracking-[0.16em]';
 
 /**
- * Variant picker + live availability + add to bag, with the phone buy bar standing in for the button once it has
- * scrolled away (D-082). Colour and size
- * get a row each when the variants carry them (`optionAxes`); otherwise one button per variant.
+ * Variant picker + live availability + add to bag, with the phone buy bar standing in for the button whenever it is
+ * off the screen (D-082; launch QA B-2: also before it has scrolled into view). Colour and size
+ * get a row each when the variants carry them (`optionAxes`); otherwise one button per variant (option-rows.tsx).
  * D-140 (L3): no size (or option) is chosen until the customer taps one, so a quick Add never buys the smallest size:
  * until then the button says "Choose a size" and takes them to the sizes. A colour may start chosen. (F8) The chosen
  * option says how many of it are already in the bag.
+ * Launch QA B-1: until a pick the price is "From $x" (the lowest in stock) when the options differ, so the price shown
+ * is never one the bag then changes; after the pick it is that option's price, the one the bag line gets.
  */
 export function AddToCart({ product, variants, delivery, quick = false }: Props): React.JSX.Element {
   const initial = useMemo(
@@ -89,6 +87,10 @@ export function AddToCart({ product, variants, delivery, quick = false }: Props)
     setNudge((n) => n + 1);
   };
   const inBagNow = mounted && picked ? (lines.find((l) => l.variantId === variant.id)?.quantity ?? 0) : 0;
+  const price = optionPriceLabel(
+    variants.map((v) => ({ price_cents: v.price_cents, available: available[v.id] ?? 0 })),
+    picked ? variant : null,
+  );
 
   const left = available[variant.id] ?? 0;
   const soldOut = left <= 0;
@@ -118,7 +120,9 @@ export function AddToCart({ product, variants, delivery, quick = false }: Props)
 
   return (
     <div className="space-y-4">
-      <p className="font-ui text-[22px] font-semibold leading-none">{formatUsd(variant.price_cents)}</p>
+      <p data-testid="product-price" className="font-ui text-[22px] font-semibold leading-none">
+        {price}
+      </p>
       {/* founder 2026-10-24: heavy cookware's other half, added in the bag and at checkout */}
       {variant.heavy_cents > 0 ? (
         <p className="font-ui -mt-1 flex flex-wrap items-center gap-2 text-sm">
@@ -128,56 +132,15 @@ export function AddToCart({ product, variants, delivery, quick = false }: Props)
       ) : null}
 
       <div ref={choices} key={nudge} className={`scroll-mt-28 space-y-4 ${nudge ? 'choose-nudge' : ''}`}>
-      {axes.length > 0
-        ? axes.map((axis) => {
-            const open = !picked && axis.key === (sizeAxis ? 'size' : axis.key);
-            return (
-            <fieldset key={axis.key}>
-              <legend className={legendClass}>
-                {axis.label}:{' '}
-                <span className={`normal-case tracking-normal ${open ? 'text-caution' : 'text-ink'}`}>{open ? 'choose one' : selection[axis.key]}</span>
-              </legend>
-              <div className="flex flex-wrap gap-2">
-                {axis.values.map((value) => (
-                  <button
-                    key={value}
-                    type="button"
-                    onClick={() => {
-                      const next = choose(variants, axes, selection, axis.key, value, inStock);
-                      if (next) select(next.id);
-                    }}
-                    aria-pressed={!open && selection[axis.key] === value}
-                    className={pillClass(
-                      !open && selection[axis.key] === value,
-                      !isAvailable(variants, axes, selection, axis.key, value, inStock),
-                    )}
-                  >
-                    {value}
-                  </button>
-                ))}
-              </div>
-            </fieldset>
-            );
-          })
-        : null}
-      {axes.length === 0 && variants.length > 1 ? (
-        <fieldset>
-          <legend className={legendClass}>Option</legend>
-          <div className="flex flex-wrap gap-2">
-            {variants.map((v) => (
-              <button
-                key={v.id}
-                type="button"
-                onClick={() => select(v.id)}
-                aria-pressed={picked && v.id === variantId}
-                className={pillClass(picked && v.id === variantId, !inStock(v))}
-              >
-                {v.label}
-              </button>
-            ))}
-          </div>
-        </fieldset>
-      ) : null}
+        <OptionRows
+          variants={variants}
+          axes={axes}
+          selection={selection}
+          variantId={variant.id}
+          picked={picked}
+          inStock={inStock}
+          onSelect={select}
+        />
       </div>
 
       <p className={`flex items-center gap-2 text-sm ${soldOut ? 'text-caution' : ''}`} aria-live="polite">
@@ -239,8 +202,9 @@ export function AddToCart({ product, variants, delivery, quick = false }: Props)
       ) : null}
       <BuyBar
         target={button}
-        name={product.name}
-        detail={variants.length > 1 && picked ? `${formatUsd(variant.price_cents)} · ${variant.label}` : formatUsd(variant.price_cents)}
+        name={displayTitle(product.name)}
+        detail={variants.length > 1 && picked ? `${price} · ${displayOption(variant.label)}` : price}
+        action={mustChoose ? `Choose ${mustChoose}` : 'Add to bag'}
         disabled={soldOut}
         added={flash > 0}
         onAdd={addToBag}
