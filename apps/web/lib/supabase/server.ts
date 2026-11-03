@@ -6,15 +6,18 @@ import { cookies } from 'next/headers';
 
 import { supabaseAnonKey, supabaseUrl } from '@/lib/env';
 
+import { serverDbOptions } from './busy';
+
 import type { Database, IwcClient } from '@repo/db';
 
 /**
  * The signed-in user's client (cookies). Makes a page dynamic, so use it only
- * on account, checkout, order and admin pages (engineering.md PR-1).
+ * on account, checkout, order and admin pages (engineering.md PR-1). Every call has the 8 s limit (F-0).
  */
 export async function sessionClient(): Promise<IwcClient> {
   const cookieStore = await cookies();
   const client = createServerClient<Database>(supabaseUrl(), supabaseAnonKey(), {
+    ...serverDbOptions,
     cookies: {
       getAll() {
         return cookieStore.getAll();
@@ -41,7 +44,8 @@ export async function sessionClient(): Promise<IwcClient> {
 export function tokenClient(token: string): IwcClient {
   return createClient<Database>(supabaseUrl(), supabaseAnonKey(), {
     auth: { persistSession: false, autoRefreshToken: false, detectSessionInUrl: false },
-    global: { headers: { Authorization: `Bearer ${token}` } },
+    ...serverDbOptions,
+    global: { ...serverDbOptions.global, headers: { Authorization: `Bearer ${token}` } },
   });
 }
 
