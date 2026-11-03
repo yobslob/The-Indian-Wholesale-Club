@@ -67,6 +67,14 @@ open ──cutoff──► collecting ──► packed ──► exported ──
    cancelled payment, or one finalize refused, is not looked at again (`sweep_note`).
    Every server database call gives up after 8 s (F-0): a route answers 503 "We're busy right now…" with
    `Retry-After: 30` (`lib/supabase/busy.ts`), and a cached store page keeps showing the copy built before.
+   **One PaymentIntent per checkout visit (website):** a re-price (shipping switched, details edited, a refresh at
+   Payment) sends back the payment's client secret and the server moves that payment's amount and rewrites its stored
+   checkout instead of creating another; if storing fails, the amount is put back or the payment cancelled, so the
+   stored checkout always matches what can be paid. Creating one carries an Idempotency-Key (the priced bag, details,
+   total and a 10-minute window). **A paid customer never stays on the form:** if confirming fails or is slow, the
+   thank-you page asks again with back-off for about a minute (2, 4, 8, 16, 30 s), then says the payment went through
+   and the number will follow by email, with the support address. A failed 3-D Secure check goes back to Payment with
+   the reason and the bag kept.
 4. In one transaction (`create_order`): create the order and items, **reserve** stock (a conditional update, INV-3), write
    `stock_movements`, attach the order to the open cycle and store the delivery window. Then the server queues the
    confirmation email in `email_outbox`.
