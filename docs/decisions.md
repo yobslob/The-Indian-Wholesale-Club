@@ -922,3 +922,16 @@ given (no conversion).
     banner") stays where it was, after the album and before Pick your home. Changes D-174/D-177's single section into
     two (`DiwaliArches`, `DiwaliNight`).
   - **Q-59 (Lenis off on touch screens): yes, keep it so.**
+
+**D-180 · 2026-11-03 · founder: Home's hero line points to the 7-day store; every live piece in stock at 10**
+- Founder, verbatim: "Instead of "we go home so you don't have to and the link below it" Change these home sub-line to
+  say Want it in 7 days? Get it here >> (with these two signs expanding and contracting making a smooth animation)
+  also put all items in stock except for liquids, all items to 10"
+- What it means:
+  - **The hero:** "Want it in 7 days?" (the bold line) and "Get it here" with two arrows easing apart and back, a link
+    to `/7-day-delivery` (`home-hero.tsx`). The arrows stop with reduced motion. While 7-day delivery is off or paused
+    the 7-day store 404s, so the hero keeps D-161's two lines then (a proposal, not the founder's words).
+  - **Stock:** every active option of every live listing at 10 available (`qty_listed` = held by open orders + 10),
+    logged as an adjustment. Liquids are not live (D-135 archives them as coming soon), so they are left out by the
+    same rule. Claude does not write to the hosted database: the founder runs `scripts/stock-every-live-piece-to-10.sql`
+    once in Supabase's SQL editor. The sourcing runner's next shop check sets stock from the shops again (D-118).

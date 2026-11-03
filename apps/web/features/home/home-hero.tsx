@@ -1,3 +1,5 @@
+import { QUICK_HOME } from '@/lib/site';
+
 import { HeroScroll } from './hero-scroll';
 import styles from './home-hero.module.css';
 
@@ -7,12 +9,15 @@ const WORDS = ['Indian', 'Wholesale', 'Club'] as const;
  * Home hero (D-052 – D-055, D-079): the founder's photo (AI-generated, IWC holds the rights) with the brand name on its
  * white wall and, since D-161, "We go home so you don't have to." with "India's shelves, at your door." under it, which
  * jumps to Pick your home (D-079's "Miss local market? Start here." and D-148's 7-day line gave way; the store tabs
- * carry the 7-day store). Server component; the only script is
+ * carry the 7-day store). Founder 2026-11-03: "Want it in 7 days? Get it here >>" instead, to the 7-day store, the two
+ * arrows easing apart and back; while 7-day delivery is off the store 404s, so D-161's lines stay. Server component;
+ * the only script is
  * HeroScroll, which publishes the scroll position for the CSS fade. The photo is drawn at full height on every screen,
  * so every screen needs all of its 1117 x 1409 pixels: AVIF (120 KB) where the browser reads it, else the WebP (241 KB),
  * both static files with no resizer in between (D-140).
  */
-export function HomeHero(): React.JSX.Element {
+/** `quick`: 7-day delivery is on (Settings), so its store is open. */
+export function HomeHero({ quick }: { quick: boolean }): React.JSX.Element {
   return (
     <section className={styles.hero} data-home-hero>
       <picture>
@@ -36,13 +41,44 @@ export function HomeHero(): React.JSX.Element {
             </span>
           ))}
         </h1>
-        {/* D-161: the homesick plan's heading (Claude's draft, the plan's first pick) and its line, to Pick your home */}
-        <p className={`${styles.line} ${styles.lead} ${styles.word} font-body`} style={{ '--i': 3 } as React.CSSProperties}>
-          We go home so you don&rsquo;t have to.
-        </p>
-        <p className={`${styles.sub} ${styles.word} font-body`} style={{ '--i': 4 } as React.CSSProperties}>
-          <a href="#pick">India&rsquo;s shelves, at your door.</a>
-        </p>
+        {quick ? (
+          <>
+            <p
+              className={`${styles.line} ${styles.lead} ${styles.word} font-body`}
+              style={{ '--i': 3 } as React.CSSProperties}
+            >
+              Want it in 7 days?
+            </p>
+            <p
+              className={`${styles.sub} ${styles.word} font-body`}
+              style={{ '--i': 4 } as React.CSSProperties}
+            >
+              <a href={QUICK_HOME} className={styles.go}>
+                Get it here
+                <span className={styles.arrows} aria-hidden="true">
+                  <i>&rsaquo;</i>
+                  <i>&rsaquo;</i>
+                </span>
+              </a>
+            </p>
+          </>
+        ) : (
+          <>
+            {/* D-161: the homesick plan's heading (Claude's draft, the plan's first pick) and its line, to Pick your home */}
+            <p
+              className={`${styles.line} ${styles.lead} ${styles.word} font-body`}
+              style={{ '--i': 3 } as React.CSSProperties}
+            >
+              We go home so you don&rsquo;t have to.
+            </p>
+            <p
+              className={`${styles.sub} ${styles.word} font-body`}
+              style={{ '--i': 4 } as React.CSSProperties}
+            >
+              <a href="#pick">India&rsquo;s shelves, at your door.</a>
+            </p>
+          </>
+        )}
       </div>
       <HeroScroll />
     </section>

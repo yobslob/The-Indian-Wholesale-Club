@@ -33,7 +33,7 @@ export default async function HomePage(): Promise<React.JSX.Element> {
 
   return (
     <div data-bleed>
-      <HomeHero />
+      <HomeHero quick={quickDays !== null} />
 
       <div className="px-[var(--gut)]">
         {/* D-179: the three Diwali arches right under the hero, a price on the first screens; the night with

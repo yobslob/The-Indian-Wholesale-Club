@@ -89,8 +89,50 @@
   text-underline-offset: 3px;
 }
 
+/* founder 2026-11-03: "Get it here >>", the two arrows easing apart and back together, a little larger as they part */
+.go {
+  display: inline-flex;
+  align-items: baseline;
+  gap: 0.3em;
+}
+.arrows {
+  display: inline-flex;
+  text-decoration: none;
+  font-weight: 600;
+}
+.arrows i {
+  display: inline-block;
+  font-style: normal;
+  animation: hero-arrow 1.6s cubic-bezier(0.45, 0, 0.55, 1) infinite;
+}
+.arrows i + i {
+  margin-left: -0.12em;
+  animation-name: hero-arrow-far;
+}
+@keyframes hero-arrow {
+  0%,
+  100% {
+    transform: translate3d(0, 0, 0) scale(1);
+  }
+  50% {
+    transform: translate3d(0.08em, 0, 0) scale(1.15);
+  }
+}
+@keyframes hero-arrow-far {
+  0%,
+  100% {
+    transform: translate3d(0, 0, 0) scale(1);
+  }
+  50% {
+    transform: translate3d(0.34em, 0, 0) scale(1.15);
+  }
+}
+
 @media (prefers-reduced-motion: reduce) {
   .word {
     transform: none;
+  }
+  .arrows i {
+    animation: none;
   }
 }
