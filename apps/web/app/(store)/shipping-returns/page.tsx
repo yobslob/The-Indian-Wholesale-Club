@@ -3,7 +3,7 @@ import { ShippingReturnsText } from '@/features/info/shipping-returns';
 
 import type { Metadata } from 'next';
 
-export const metadata: Metadata = { title: 'Shipping & returns' };
+export const metadata: Metadata = { title: 'Shipping & returns', alternates: { canonical: '/shipping-returns' } };
 
 /** The page itself (a direct visit or a search engine); from any store page the same text opens in the glass panel (D-092). */
 export default function Page(): React.JSX.Element {

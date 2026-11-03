@@ -16,6 +16,7 @@ import type { Metadata } from 'next';
 export const metadata: Metadata = {
   title: '7-day store',
   description: 'Snacks, masalas and sweets from home, at your door in 7 days.',
+  alternates: { canonical: '/7-day-delivery' },
 };
 
 /**

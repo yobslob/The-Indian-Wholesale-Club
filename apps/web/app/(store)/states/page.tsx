@@ -3,7 +3,7 @@ import { PickHome } from '@/features/regions/pick-home';
 
 import type { Metadata } from 'next';
 
-export const metadata: Metadata = { title: 'Pick your home' };
+export const metadata: Metadata = { title: 'Pick your home', alternates: { canonical: '/states' } };
 
 /**
  * All 36 regions, states and UTs together (D-002): the same "Pick your home" section as Home (map, open regions as

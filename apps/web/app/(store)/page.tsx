@@ -12,6 +12,11 @@ import { ALBUM_MINIMUM } from '@/features/regions/region-album';
 import { VisualSlot } from '@/features/visuals/visual-slot';
 import { QUICK_HOME } from '@/lib/site';
 
+import type { Metadata } from 'next';
+
+// E-2a: the domain's address for Home (metadataBase in app/layout.tsx), so the old vercel.app copy never competes
+export const metadata: Metadata = { alternates: { canonical: '/' } };
+
 /**
  * Home (storefront.md, storefront.md §Direction, D-050 – D-055, D-113): the photo hero, the album of all of India (the
  * region pages' drifting mosaic), the Diwali windows with the flight inside (D-174), Pick your home, the founder's wide picture (slots.ts), then Just listed (a row per type with its See all, D-062, D-140).

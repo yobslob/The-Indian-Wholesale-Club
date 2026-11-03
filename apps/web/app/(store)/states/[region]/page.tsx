@@ -12,7 +12,9 @@ import { StorePhoto } from '@/features/catalog/store-photo';
 import { RegionAlbum } from '@/features/regions/region-album';
 import { ComingSoon, RegionTypeTabs } from '@/features/regions/region-type-tabs';
 import { scriptFontClass } from '@/features/regions/script-fonts';
-import { mediaUrl } from '@/lib/site';
+import { mediaUrl, SITE_NAME } from '@/lib/site';
+
+import { sharePhoto } from './[product]/product-seo';
 
 import type { Metadata } from 'next';
 
@@ -57,7 +59,19 @@ export async function generateStaticParams(): Promise<{ region: string }[]> {
 
 export async function generateMetadata({ params }: { params: Params }): Promise<Metadata> {
   const page = await getRegionHeadCached((await params).region);
-  return page ? { title: page.region.name } : {};
+  if (!page) return {};
+  // E-2a/E-2b: canonical on the domain, the state's line as its description, its main photo for link previews
+  const { name, slug, tagline, hero_image_path } = page.region;
+  const description = tagline ?? undefined;
+  const photo = sharePhoto(hero_image_path);
+  const images = photo ? [{ url: photo, alt: name }] : undefined;
+  return {
+    title: name,
+    description,
+    alternates: { canonical: `/states/${slug}` },
+    openGraph: { type: 'website', siteName: SITE_NAME, locale: 'en_US', url: `/states/${slug}`, title: name, description, images },
+    twitter: { card: photo ? 'summary_large_image' : 'summary', title: name, description, images: photo ? [photo] : undefined },
+  };
 }
 
 export default async function RegionPage({ params }: { params: Params }): Promise<React.JSX.Element> {

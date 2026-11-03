@@ -14,6 +14,8 @@ import { ProductGallery } from '@/features/catalog/product-gallery';
 import { ProductRow } from '@/features/catalog/product-row';
 import { ReviewsSection } from '@/features/reviews/reviews-section';
 
+import { productJsonLdText, productMetadata } from './product-seo';
+
 import type { Metadata } from 'next';
 
 type Params = Promise<{ region: string; product: string }>;
@@ -26,7 +28,8 @@ export async function generateStaticParams(): Promise<{ region: string; product:
 export async function generateMetadata({ params }: { params: Params }): Promise<Metadata> {
   const { region, product } = await params;
   const page = await getProductPageCached(region, product);
-  return page ? { title: page.product.name, description: usableSummary(page.product.summary, page.product.description) ?? undefined } : {};
+  // E-2a/E-2b: title, summary, canonical, share card (product-seo.tsx)
+  return page ? productMetadata(page) : {};
 }
 
 /**
@@ -56,6 +59,8 @@ export default async function ProductPage({
 
   return (
     <>
+      {/* E-2b: schema.org Product + offers and BreadcrumbList (product-seo.ts) */}
+      <script type="application/ld+json" dangerouslySetInnerHTML={{ __html: productJsonLdText(page) }} />
       <div className="grid items-start gap-[var(--gap)] md:grid-cols-[minmax(0,1.05fr)_minmax(0,1fr)] min-[1100px]:grid-cols-[auto_minmax(0,1fr)]">
         <ProductGallery media={media} name={name} />
         <aside
