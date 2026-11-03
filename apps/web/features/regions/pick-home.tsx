@@ -59,7 +59,7 @@ export function PickHome({
             </span>
           </div>
           <span>
-            Map: <a href="https://github.com/datameet/maps" className="underline">DataMeet India</a>, CC BY 4.0
+            Map: <a href="https://github.com/datameet/maps" className="underline [@media(pointer:coarse)]:inline-flex [@media(pointer:coarse)]:min-h-11 [@media(pointer:coarse)]:items-center">DataMeet India</a>, CC BY 4.0
           </span>
         </div>
       </div>

@@ -49,6 +49,7 @@ export function CartLink(): React.JSX.Element {
       <Link
         ref={link}
         href="/cart"
+        prefetch={false}
         className="site-icon"
         aria-label={count > 0 ? `Bag, ${count} ${count === 1 ? 'piece' : 'pieces'}` : 'Bag'}
         aria-controls="bag-panel"

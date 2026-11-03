@@ -20,10 +20,10 @@ export default async function CheckoutLayout({ children }: { children: React.Rea
         {demo ? <DemoBanner /> : null}
         <header className="site-header">
           <div className="site-bar font-ui justify-between">
-            <Link href="/" aria-label="Indian Wholesale Club, home" className="site-logo font-logo text-[16px] font-normal leading-none tracking-normal md:text-[22px]">
+            <Link href="/" prefetch={false} aria-label="Indian Wholesale Club, home" className="site-logo font-logo text-[16px] font-normal leading-none tracking-normal md:text-[22px]">
               <LogoText />
             </Link>
-            <Link href="/cart" className="inline-flex min-h-11 items-center gap-1.5 text-sm font-medium">
+            <Link href="/cart" prefetch={false} className="inline-flex min-h-11 items-center gap-1.5 text-sm font-medium">
               <svg viewBox="0 0 24 24" aria-hidden="true" className="size-[18px]" fill="none" stroke="currentColor" strokeWidth="1.6" strokeLinecap="round" strokeLinejoin="round">
                 <path d="M15 18 9 12l6-6" />
               </svg>
@@ -37,9 +37,9 @@ export default async function CheckoutLayout({ children }: { children: React.Rea
       </main>
       <footer className="border-line font-foot text-ink-muted flex flex-wrap gap-x-4 gap-y-1 border-t px-[var(--gut)] py-[18px] text-xs">
         <span>© {SITE_NAME}</span>
-        <Link href="/privacy">Privacy</Link>
-        <Link href="/terms">Terms</Link>
-        <Link href="/contact">Contact</Link>
+        <Link href="/privacy" prefetch={false}>Privacy</Link>
+        <Link href="/terms" prefetch={false}>Terms</Link>
+        <Link href="/contact" prefetch={false}>Contact</Link>
       </footer>
       <Motion />
       <TopHeight />

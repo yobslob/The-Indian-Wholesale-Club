@@ -79,7 +79,7 @@ export function ProductRow<T extends CardData>({
           {sub ? <p className="text-ink-muted mt-1.5 text-sm">{sub}</p> : null}
         </div>
         {href ? (
-          <Link href={href} className={seeAllPill}>
+          <Link href={href} prefetch={false} className={seeAllPill}>
             See all<span className="sr-only"> {title}</span>
             <span aria-hidden="true" className="-mr-1 transition-transform duration-300 group-hover:translate-x-1">
               →
