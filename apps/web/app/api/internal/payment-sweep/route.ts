@@ -61,7 +61,7 @@ async function sweepOne(service: IwcClient, row: SweepRow): Promise<Outcome> {
 
   // Paid, and neither the customer's device nor the webhook created the order (or marked it reconciled).
   try {
-    const after = stepAfterFinalize(await finalizeOrder(service, paymentIntentId, 'webhook', null));
+    const after = stepAfterFinalize(await finalizeOrder(service, paymentIntentId, 'sweep', null));
     if (after.kind === 'wait') return 'waiting';
     if (after.kind === 'stop') {
       await stopSweeping(service, paymentIntentId, after.note);

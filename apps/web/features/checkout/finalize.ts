@@ -72,7 +72,7 @@ export type FinalizeResult =
 export async function finalizeOrder(
   service: IwcClient,
   paymentIntentId: string,
-  via: 'browser' | 'webhook',
+  via: 'browser' | 'webhook' | 'sweep',
   stripeEventId: string | null = null,
 ): Promise<FinalizeResult> {
   // Both reads at once: the second caller (browser or webhook) usually finds the order; the first needs the checkout.
@@ -84,7 +84,7 @@ export async function finalizeOrder(
 
   const parsed = pending ? pendingCheckoutSchema.safeParse(pending.checkout_payload) : null;
   if (!parsed?.success) {
-    if (via === 'webhook') {
+    if (via !== 'browser') {
       await recordFailedReconciliation(service, {
         paymentIntentId,
         stripeEventId,
