@@ -9,6 +9,8 @@ test.use({ reducedMotion: 'reduce' });
 
 test('a row scrolls sideways; See all opens its list', async ({ page }) => {
   await page.goto('/');
+  // launch QA C-2: Home draws its rows as they come near
+  await page.locator('#just-listed').scrollIntoViewIfNeeded();
   const list = page.getByRole('list', { name: 'Just listed: Clothing' });
   const size = await list.evaluate((el) => ({ scroll: el.scrollWidth, box: el.clientWidth }));
   expect(size.scroll).toBeGreaterThan(size.box);
@@ -80,6 +82,8 @@ test('filters and the endless scroll change only the cards, never the page (D-13
 
 test("Home's Just listed is a row per type, each with its own See all (D-140)", async ({ page }) => {
   await page.goto('/');
+  // launch QA C-2: Home draws its rows as they come near
+  await page.locator('#just-listed').scrollIntoViewIfNeeded();
   const section = page.locator('#just-listed');
   await expect(section.getByRole('tab')).toHaveCount(0);
   const clothing = section.getByRole('region', { name: 'Clothing' });

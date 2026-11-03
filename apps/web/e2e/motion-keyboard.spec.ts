@@ -67,13 +67,17 @@ test.describe('keyboard', () => {
 
   test('product page: + / − sections and the heart work from the keyboard', async ({ page }) => {
     await page.goto(product);
+    await page.waitForLoadState('networkidle'); // the sections answer keys once hydrated
     // launch QA B-3: Size chart shows only with real measurements, so take the first + / − section there is
-    const sizeChart = page.getByRole('main').locator('button[aria-expanded]').first();
-    await sizeChart.focus();
+    // (Details, which starts open): Enter and Space each flip it
+    const section = page.getByRole('main').locator('button[aria-expanded]').first();
+    const before = await section.getAttribute('aria-expanded');
+    const flipped = before === 'true' ? 'false' : 'true';
+    await section.focus();
     await page.keyboard.press('Enter');
-    await expect(sizeChart).toHaveAttribute('aria-expanded', 'true');
+    await expect(section).toHaveAttribute('aria-expanded', flipped);
     await page.keyboard.press('Space');
-    await expect(sizeChart).toHaveAttribute('aria-expanded', 'false');
+    await expect(section).toHaveAttribute('aria-expanded', before ?? 'false');
     const heart = page.getByRole('button', { name: 'Save for later' }).first();
     await heart.focus();
     await expect(heart).toBeFocused();

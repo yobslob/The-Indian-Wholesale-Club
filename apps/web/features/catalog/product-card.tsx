@@ -84,7 +84,7 @@ export function ProductCard({
               className="duration-slow object-cover transition-transform group-hover:scale-[1.025]"
             />
           ) : (
-            <span className="text-ink-muted font-ui absolute inset-0 grid place-items-center px-2 text-center text-xs">
+            <span className="text-ink font-ui absolute inset-0 grid place-items-center px-2 text-center text-xs">
               Photo coming soon
             </span>
           )}
