@@ -8,8 +8,6 @@ import {
 } from '@repo/db/server';
 
 import { finalizeOrder } from '@/features/checkout/finalize';
-import { TEST_PAYMENT_KIND } from '@/features/checkout/test-payment';
-import { FASTER_KIND, finalizeFasterPayment } from '@/features/orders/faster';
 import { errorMessage, logger } from '@/lib/logger';
 import { isStripeConfigured, stripeServer } from '@/lib/stripe';
 import { busyIfDbTimeout } from '@/lib/supabase/busy';
@@ -25,8 +23,7 @@ export const maxDuration = 60;
 
 /**
  * Stripe webhook: creates the order if the browser never came back after
- * paying (flows.md §3, pending_orders reconciliation), and finishes a paid
- * faster-delivery offer the same way (D-064). Idempotent per event: a claim is
+ * paying (flows.md §3, pending_orders reconciliation). Idempotent per event: a claim is
  * marked done once handled; one left unfinished by a killed function is taken
  * over by Stripe's retry after 2 minutes (F-1). Refunds made in Stripe, disputes and failed payments are handled the
  * same way (F-3, events.ts).
@@ -49,12 +46,6 @@ export async function POST(request: Request): Promise<NextResponse> {
   }
 
   if (event.type !== 'payment_intent.succeeded' && !isExtraEvent(event.type))
-    return NextResponse.json({ received: true });
-  // The admin's $1 payment test (admin.md §Payment test) makes no order: nothing to finalize or alert.
-  if (
-    event.type === 'payment_intent.succeeded' &&
-    (event.data.object as Stripe.PaymentIntent).metadata.kind === TEST_PAYMENT_KIND
-  )
     return NextResponse.json({ received: true });
 
   const service = serviceClient();
@@ -87,10 +78,7 @@ export async function POST(request: Request): Promise<NextResponse> {
       return NextResponse.json({ received: true });
     }
     const intent = event.data.object as Stripe.PaymentIntent;
-    const result =
-      intent.metadata.kind === FASTER_KIND
-        ? await finalizeFasterPayment(service, intent.id)
-        : await finalizeOrder(service, intent.id, 'webhook', event.id);
+    const result = await finalizeOrder(service, intent.id, 'webhook', event.id);
     if (!result.ok)
       logger.warn('stripe.webhook_not_finalized', {
         paymentIntentId: intent.id,

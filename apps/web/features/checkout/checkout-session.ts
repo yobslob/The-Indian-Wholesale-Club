@@ -24,7 +24,6 @@ const savedSchema = z.object({
     }),
     lines: z.array(z.object({ variantId: z.string(), quantity: z.number().int() })).min(1),
     promoCode: z.string().nullish(),
-    shippingMethod: z.enum(['standard', 'express']).optional(),
   }),
 });
 export type SavedCheckout = z.infer<typeof savedSchema>;

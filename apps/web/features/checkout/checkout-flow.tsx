@@ -14,10 +14,11 @@ import { PaymentStep } from './payment-step';
 import { PhoneStep } from './phone-step';
 import { SavedAddresses } from './saved-addresses';
 import { Step } from './step';
+import { StockProblems } from './stock-problems';
 import { useCheckoutPayment } from './use-checkout-payment';
 
 import type { SummaryLine } from './last-order';
-import type { CheckoutQuote, CheckoutRequestBody, SavedAddress, SavedDetails } from './types';
+import type { CheckoutQuote, CheckoutRequestBody, SavedAddress, SavedDetails, StockProblemLine } from './types';
 
 const NO_DELIVERY: Delivery = {
   fullName: '',
@@ -67,6 +68,8 @@ function deliveryOf(body: CheckoutRequestBody): Delivery {
  * (use-checkout-payment.ts, launch QA A-5). A refresh at Payment, or a failed 3-D Secure coming back, resumes there (A-8).
  * Signed in (D-114): the default saved address and its phone fill the steps (it opens at Delivery when the phone is
  * known), the other saved addresses can be picked, and the address of a paid order is saved (finalize.ts).
+ * §10 Y-3: when it opens and on every re-price the server says each line's stock; a problem line is listed at the top
+ * with Remove or Keep n, payment stays locked until the last is fixed, and fixing it prices the bag again at once.
  */
 export function CheckoutFlow({ saved }: { saved: SavedDetails | null }): React.JSX.Element {
   const lines = useCart((s) => s.lines);
@@ -101,7 +104,10 @@ export function CheckoutFlow({ saved }: { saved: SavedDetails | null }): React.J
   const { started, request, busy, error } = payment;
 
   async function go(body: CheckoutRequestBody, heldSecret: string | null = null): Promise<void> {
-    if (await payment.post(body, heldSecret)) setAt(3);
+    const outcome = await payment.post(body, heldSecret);
+    if (outcome === 'ok') setAt(3);
+    // the payment form closed: back to the step that holds Continue
+    else if (outcome === 'stock') setAt((n) => (n === 3 ? 2 : n));
   }
 
   useEffect(() => {
@@ -109,7 +115,11 @@ export function CheckoutFlow({ saved }: { saved: SavedDetails | null }): React.J
     // A-8 / A-4: resume a checkout this tab started for this same bag, with any message from a failed payment.
     const resume = readCheckout(useCart.getState().lines);
     const message = takePaymentNotice();
-    if (!resume) return;
+    if (!resume) {
+      const bag = useCart.getState().lines;
+      if (bag.length > 0) void payment.checkStock(bag.map((l) => ({ variantId: l.variantId, quantity: l.quantity })));
+      return;
+    }
     const digits = resume.request.address.phone
       ? usPhoneDigits(resume.request.address.phone)
       : null;
@@ -144,8 +154,20 @@ export function CheckoutFlow({ saved }: { saved: SavedDetails | null }): React.J
       },
       lines: lines.map((l) => ({ variantId: l.variantId, quantity: l.quantity })),
       promoCode: d.promoCode || null,
-      shippingMethod: request?.shippingMethod ?? 'standard',
     });
+  }
+
+  /** Y-3: Remove (keep 0) or Keep n. The bag changes at once; with the last line fixed the server prices it again. */
+  function fixLine(line: StockProblemLine, keep: number): void {
+    const cart = useCart.getState();
+    if (keep > 0) cart.setQuantity(line.variantId, keep);
+    else cart.remove(line.variantId);
+    const rest = payment.stockFixed(line.variantId);
+    const bag = useCart.getState().lines;
+    if (bag.length === 0) return payment.drop();
+    if (rest.length === 0 && request) {
+      void go({ ...request, lines: bag.map((l) => ({ variantId: l.variantId, quantity: l.quantity })) });
+    }
   }
 
   const edit = (step: 1 | 2) => () => {
@@ -160,6 +182,7 @@ export function CheckoutFlow({ saved }: { saved: SavedDetails | null }): React.J
   return (
     <div className="grid items-start gap-[clamp(16px,2.4vw,40px)] min-[900px]:grid-cols-[minmax(0,1.25fr)_minmax(0,1fr)]">
       <div>
+        <StockProblems problems={payment.stock} bag={lines} busy={busy} onFix={fixLine} />
         <Step
           n={1}
           title="Phone"

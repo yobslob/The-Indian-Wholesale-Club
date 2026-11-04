@@ -46,7 +46,6 @@ export function PaymentForm({
   amountCents,
   disabled = false,
   notice = null,
-  onPaying,
 }: {
   clientSecret: string;
   totalLabel: string;
@@ -61,8 +60,6 @@ export function PaymentForm({
   disabled?: boolean;
   /** A message to show above Pay from outside (a payment that failed after a redirect). */
   notice?: string | null;
-  /** Told when a charge starts and, if it fails, ends (the page locks what would change the amount). */
-  onPaying?: (paying: boolean) => void;
 }): React.JSX.Element {
   const [mountEl, setMountEl] = useState<HTMLDivElement | null>(null);
   const [attempt, setAttempt] = useState(0);
@@ -137,7 +134,6 @@ export function PaymentForm({
   async function pay(): Promise<void> {
     if (!stripe || !elements || busy || paid) return;
     setBusy(true);
-    onPaying?.(true);
     setError(null);
     try {
       const { error: stripeError, paymentIntent } = await stripe.confirmPayment({
@@ -159,7 +155,6 @@ export function PaymentForm({
       setError('We could not reach the payment service. Please try again.');
     }
     setBusy(false);
-    onPaying?.(false);
     elementRef.current?.focus();
   }
 

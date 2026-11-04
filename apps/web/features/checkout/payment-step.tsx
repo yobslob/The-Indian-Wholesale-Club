@@ -1,21 +1,19 @@
 'use client';
 
 import Link from 'next/link';
-import { useState } from 'react';
 
 import { formatUsd } from '@repo/shared/domain';
 
 import { PaymentForm } from './payment-form';
-import { ShippingPicker } from './shipping-picker';
 
 import type { Delivery } from './delivery-step';
 import type { CheckoutRequestBody } from './types';
 import type { useCheckoutPayment } from './use-checkout-payment';
 
 /**
- * Step 3 of /checkout: shipping, the card form and Pay. A re-price that failed shows its message with Try again and
- * keeps Pay off until the total is the one the payment holds (launch QA A-3, A-5); while the card is being charged
- * the shipping can't change. An order refused after payment (sold out meanwhile, refunded) replaces the form.
+ * Step 3 of /checkout: the card form and Pay. A re-price that failed shows its message with Try again and keeps Pay off
+ * until the total is the one the payment holds (launch QA A-3, A-5). An order refused after payment (sold out meanwhile,
+ * refunded) replaces the form.
  */
 export function PaymentStep({
   payment,
@@ -30,7 +28,6 @@ export function PaymentStep({
   notice: string | null;
   onPrice: (body: CheckoutRequestBody) => void;
 }): React.JSX.Element | null {
-  const [paying, setPaying] = useState(false);
   const { started, request, busy, error } = payment;
 
   if (payment.refused) {
@@ -46,11 +43,6 @@ export function PaymentStep({
   if (!started || !request) return null;
   return (
     <>
-      <ShippingPicker
-        quote={started.quote}
-        disabled={busy || paying}
-        onChange={(method) => onPrice({ ...request, shippingMethod: method })}
-      />
       {error ? (
         <div className="mb-3 flex flex-wrap items-center gap-3" role="alert">
           <p className="text-danger text-sm">{error}</p>
@@ -73,7 +65,6 @@ export function PaymentStep({
         amountCents={started.quote.breakdown.totalCents}
         disabled={busy || payment.stale}
         notice={notice}
-        onPaying={setPaying}
         onPaid={(id, status) => void payment.paid(id, status)}
         billing={{
           name: delivery.fullName,

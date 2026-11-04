@@ -1,4 +1,4 @@
-import { arrivalLine, dayDate, formatDeliveryWindow, formatUsd } from '@repo/shared/domain';
+import { formatDeliveryWindow, formatUsd } from '@repo/shared/domain';
 
 import { LinePhoto } from '@/features/cart/bag-lines';
 import { ChargeValue, PendingChargeRows, ReducedValue } from '@/features/cart/charge-lines';
@@ -53,26 +53,20 @@ export function BagSummary({
         {b ? (
           <>
             {b.discountCents > 0 ? <Row label={`Discount (${quote.promoCode})`} value={`−${formatUsd(b.discountCents)}`} /> : null}
-            {/* D-119: from the free-shipping line up, the bulk saving. */}
+            {/* D-119, D-187: from its own line up, the bulk saving. */}
             {b.bulkSavingCents > 0 ? <Row label="Bulk saving" value={`−${formatUsd(b.bulkSavingCents)}`} /> : null}
-            {quote.shippingMethod === 'express' ? (
-              <Row label="Express shipping" value={formatUsd(b.shippingCents)} />
-            ) : (
-              <>
-                {/* D-111, D-124: Shipping (the parcel + the food in the bag) and the retailer charges; struck through once free. */}
-                <Row
-                  label="Shipping"
-                  value={<ChargeValue cents={b.shippingCents || (b.waivedCents?.shipping ?? 0)} free={b.shippingCents === 0} />}
-                />
-                {b.retailerCents > 0 || (b.waivedCents?.retailer ?? 0) > 0 ? (
-                  <Row
-                    label="Retailer charges"
-                    value={<ChargeValue cents={b.retailerCents || (b.waivedCents?.retailer ?? 0)} free={b.retailerCents === 0} />}
-                  />
-                ) : null}
-              </>
-            )}
-            {/* founder 2026-10-24: heavy cookware's other half, on standard and express alike */}
+            {/* D-111, D-124: Shipping (the parcel + the food in the bag) and the retailer charges; struck through once free. */}
+            <Row
+              label="Shipping"
+              value={<ChargeValue cents={b.shippingCents || (b.waivedCents?.shipping ?? 0)} free={b.shippingCents === 0} />}
+            />
+            {b.retailerCents > 0 || (b.waivedCents?.retailer ?? 0) > 0 ? (
+              <Row
+                label="Retailer charges"
+                value={<ChargeValue cents={b.retailerCents || (b.waivedCents?.retailer ?? 0)} free={b.retailerCents === 0} />}
+              />
+            ) : null}
+            {/* founder 2026-10-24: heavy cookware's other half */}
             {b.heavyCents > 0 ? (
               <Row label="Heavy-item shipping" value={<ReducedValue cents={b.heavyCents} shownCents={b.heavyShownCents} />} />
             ) : null}
@@ -100,8 +94,7 @@ export function BagSummary({
 }
 
 /**
- * The dates, once the address is known (D-008, D-154): one window, or Shipment 1 and Shipment 2 with their pieces;
- * under the 7-day line how much more brings the 7-day pieces in 7 days (naming the promo code when it is the reason);
+ * The dates, once the address is known (D-008, D-187): one window, or Shipment 1 (food) and Shipment 2 with their pieces;
  * for an address outside the 48 states and DC, the line saying why everything comes together.
  */
 function QuoteDelivery({ quote, lines }: { quote: CheckoutQuote; lines: SummaryLine[] }): React.JSX.Element {
@@ -110,16 +103,17 @@ function QuoteDelivery({ quote, lines }: { quote: CheckoutQuote; lines: SummaryL
       .filter((l) => ids.includes(l.variantId))
       .map((l) => l.productName)
       .join(', ');
-  const gap = !quote.quickOutside && quote.quickGapCents && quote.quickBy ? quote.quickGapCents : null;
-  const byCode = gap !== null && quote.promoCode !== null && quote.breakdown.discountCents >= gap;
   return (
     <div className="bg-paper font-body mt-3 grid gap-2 rounded-xl px-3.5 py-3 text-sm font-medium">
       {quote.shipments && quote.shipments.length > 1 ? (
         quote.shipments.map((sh) => (
           <p key={sh.seq} className="m-0">
-            <b className={sh.kind === 'quick' ? 'text-brand' : ''}>
-              Shipment {sh.seq} · {arrivalLine(sh.delivery.est_delivery_from, sh.delivery.est_delivery_to)}
+            <b className={sh.kind === 'food' ? 'text-brand' : ''}>
+              Shipment {sh.seq} · {sh.kind === 'food' ? 'Food' : 'Clothing and home & gifts'}
             </b>
+            <span className="block font-normal">
+              Estimated delivery: <b className="font-semibold">{formatDeliveryWindow(sh.delivery.est_delivery_from, sh.delivery.est_delivery_to)}</b>
+            </span>
             <small className="text-ink-muted block text-[13px] font-normal">{names(sh.variantIds)}</small>
           </p>
         ))
@@ -128,16 +122,9 @@ function QuoteDelivery({ quote, lines }: { quote: CheckoutQuote; lines: SummaryL
           Estimated delivery: <b>{formatDeliveryWindow(quote.delivery.est_delivery_from, quote.delivery.est_delivery_to)}</b>
         </p>
       )}
-      {gap !== null && quote.quickBy ? (
-        <p className="text-brand m-0 text-[13px] font-semibold">
-          {byCode
-            ? `With the code ${quote.promoCode}, your 7-day pieces come to under the 7-day line, so they travel with the rest. Add ${formatUsd(gap)} of 7-day pieces and they arrive by ${dayDate(quote.quickBy)}.`
-            : `Add ${formatUsd(gap)} of 7-day pieces and they arrive by ${dayDate(quote.quickBy)}`}
-        </p>
-      ) : null}
-      {quote.quickOutside ? (
+      {quote.outside ? (
         <p className="text-ink-muted m-0 text-[13px] font-normal">
-          7-day delivery reaches the 48 mainland states and DC, so everything here comes together in one shipment.
+          Food comes on its own only to the 48 mainland states and DC, so everything here comes together in one shipment.
         </p>
       ) : null}
     </div>

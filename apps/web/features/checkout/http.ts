@@ -15,6 +15,8 @@ export type ApiResult<T> =
       message: string;
       /** The server's own `{ error }` text, when there was one. */
       serverMessage: string | null;
+      /** The server's `{ problem }`, unchecked (the caller checks what it reads). */
+      problem?: unknown;
       retryAfterSeconds: number | null;
       timedOut: boolean;
     };
@@ -64,6 +66,7 @@ export function interpretResponse<T>(
     status,
     message: serverMessage ?? fallback,
     serverMessage,
+    problem: typeof json === 'object' && json !== null && 'problem' in json ? json.problem : undefined,
     retryAfterSeconds: retryAfter(retryAfterHeader),
     timedOut: false,
   };

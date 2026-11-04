@@ -49,6 +49,7 @@ export const pendingCheckoutSchema = z.object({
   taxCents: z.number().int(),
   totalCents: z.number().int(),
   promoCodeId: z.string().uuid().nullable(),
+  // A checkout stored before D-187 may say express; create_order keeps it (old orders keep their word, Y-1).
   shippingMethod: z.enum(['standard', 'express']).default('standard'),
   /** The product pages to refresh after the sale; absent in checkouts stored before 2026-10-06. */
   pages: z.array(z.object({ regionSlug: z.string().nullable(), productSlug: z.string() })).default([]),
@@ -92,8 +93,8 @@ export type FinalizeResult =
  * flows.md §3 steps 3–5. Creates the order for a PaymentIntent, once, from the
  * payload stored at checkout (never from the browser). Called by the browser
  * after payment and by the Stripe webhook; whichever comes second finds the
- * existing order. If the database refuses (sold out meanwhile, price changed,
- * no open cycle) the payment is refunded in full.
+ * existing order. If the database refuses (sold out meanwhile, price changed)
+ * the payment is refunded in full.
  */
 export async function finalizeOrder(
   service: IwcClient,
