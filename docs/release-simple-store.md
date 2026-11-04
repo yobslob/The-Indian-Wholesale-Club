@@ -23,10 +23,10 @@ hour for the Deploy part. Nothing is dropped from the database until step 12.
 6. **Take the backup** (`ops.md` §Moving, Supabase step 3). In a folder **outside `C:\kod\root`**, for example
    `C:\iwc\backup-before-simple-store\`, with production's connection string (Supabase → Connect → Session pooler):
    ```
-   npx supabase db dump --db-url <production> -f roles.sql --role-only
-   npx supabase db dump --db-url <production> -f schema.sql
-   npx supabase db dump --db-url <production> -f data.sql --use-copy --data-only -x "storage.buckets_vectors" -x "storage.vector_indexes"
-   npx supabase db dump --db-url <production> -f history.sql --data-only --schema supabase_migrations
+   npx supabase@2.122.1 db dump --db-url <production> -f roles.sql --role-only
+   npx supabase@2.122.1 db dump --db-url <production> -f schema.sql
+   npx supabase@2.122.1 db dump --db-url <production> -f data.sql --use-copy --data-only -x "storage.buckets_vectors" -x "storage.vector_indexes"
+   npx supabase@2.122.1 db dump --db-url <production> -f history.sql --data-only --schema supabase_migrations
    ```
    Check that all four files exist and that `data.sql` is large. `data.sql` holds every account and address: keep it private.
    **This backup is the only way back for what the release drops.** It holds rows, not the files in storage buckets.
@@ -65,7 +65,6 @@ hour for the Deploy part. Nothing is dropped from the database until step 12.
      (select count(*) from products where coming_soon)                                          as coming_soon_pieces_hidden,
      (select count(*) from storage.objects where bucket_id in ('vendor-uploads', 'photo-candidates')) as files_in_old_buckets,
      (select count(*) from cron.job_run_details where end_time < now() - interval '7 days')     as old_cron_log_rows,
-     (select count(*) from webhook_events where status = 'done' and processed_at < now() - interval '30 days') as old_webhook_rows,
      (select count(*) from email_outbox where status = 'sent' and sent_at < now() - interval '30 days') as old_sent_emails,
      (select count(*) from admin_error_events where created_at < now() - interval '90 days')    as old_error_events,
      (select count(*) from search_queries where created_at < now() - interval '90 days')        as old_searches;
@@ -111,8 +110,8 @@ hour for the Deploy part. Nothing is dropped from the database until step 12.
 12. **Run the Deploy.** GitHub → Actions → **Deploy** → Run workflow, on `main`, type `deploy`; for Android choose `production`
     (an AAB for Google Play) or `preview` (an APK to install by hand). Each migration holds a table for about a third of a second, which
     is why this wants a quiet hour. It runs, in this order:
-    - **the migrations:** those waiting since `20261103090000`, then `20261109090000_simple_rules`, `20261109090100_simple_reads`,
-      `20261109090200_simple_drops`, which drops the old tables;
+    - **the migrations:** `20261109090000_simple_rules`, `20261109090100_simple_reads`, `20261109090200_simple_drops`, which drops
+      the old tables (the Deploy of 2026-11-03 on `88b2f82` found production up to date, so nothing older is waiting);
     - **then, side by side:** the Vercel deploy hook, and the Android build (uploaded to EAS, never sent to a store).
 
     The job order means a failed migration stops the website from going out. If only the Android job is red (Expo's free builds
@@ -129,6 +128,9 @@ hour for the Deploy part. Nothing is dropped from the database until step 12.
 
 ## After
 14. **Run the price checksum again** (step 9). **All five values must match.** If not, see "If it goes wrong".
+    In the same SQL editor, also run `select jobname from cron.job order by 1;`. It must list exactly `iwc-email-outbox`,
+    `iwc-payment-sweep`, `iwc-search-words` and `iwc-tidy`. If `iwc-roll-cycles` or `iwc-fx-refresh` is still there, it is
+    calling a function that is gone: tell Claude straight away.
 15. **The smoke test, on the live site.** Stop before paying:
     - Home's order: hero, Diwali arches, mosaic, Shop by category, Diwali night, What everyone missed this week, The kirana counter,
       Just listed Clothing, Just listed Home & gifts, Pick your home, the delivery band.

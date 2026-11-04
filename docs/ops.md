@@ -178,9 +178,9 @@ whole-store refreshes and deploys rewriting 2 MB state pages; D-145 cuts both, s
 nothing to move. Supabase's guide "Backup and restore using the CLI" (Platform → Migrating within Supabase):
 1. New account and project, US East. Its database password and connection string (Connect → Session pooler).
 2. Stop changes: no imports, the sourcing runner off, for the hour.
-3. `npx supabase db dump --db-url <old> -f roles.sql --role-only`, then `-f schema.sql`, then
+3. `npx supabase@2.122.1 db dump --db-url <old> -f roles.sql --role-only`, then `-f schema.sql`, then
    `-f data.sql --use-copy --data-only -x "storage.buckets_vectors" -x "storage.vector_indexes"`, and the migration
-   history: `npx supabase db dump --db-url <old> -f history.sql --data-only --schema supabase_migrations`.
+   history: `npx supabase@2.122.1 db dump --db-url <old> -f history.sql --data-only --schema supabase_migrations`.
 4. From the folder holding the four files (outside the repo: `data.sql` holds every account and address):
    `psql --single-transaction --variable ON_ERROR_STOP=1 --file roles.sql --file schema.sql --command "SET session_replication_role = replica" --file data.sql --command "create schema if not exists supabase_migrations; create table if not exists supabase_migrations.schema_migrations (version text primary key, statements text[], name text); truncate supabase_migrations.schema_migrations" --file history.sql --command "NOTIFY pgrst, 'reload schema'" --dbname <new>`.
    One transaction: any error undoes it all and the new database stays empty (on 2026-10-21 `history.sql` alone

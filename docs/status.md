@@ -15,9 +15,9 @@ Short on purpose (the audit warns past 10 KB): **replace** lines when something 
   and it stopped answering for about 45 minutes that day).
 - **Deploys:** the website once a day at 09:00 UTC from a green `main` (D-145); migrations only through the Deploy
   workflow, which the founder runs.
-- **Waiting for the Deploy workflow:** the migrations from `20261103090000` to `20261108090600`, and the three new ones
-  (`20261109090000_simple_rules`, `20261109090100_simple_reads`, `20261109090200_simple_drops`). They all ship in this
-  one release (founder, 2026-11-04, D-187).
+- **Waiting for the Deploy workflow:** the three new migrations (`20261109090000_simple_rules`,
+  `20261109090100_simple_reads`, `20261109090200_simple_drops`). The Deploy of 2026-11-03 on `88b2f82` found production up
+  to date, so nothing older is waiting (D-187's "same release" note no longer applies).
 - **Catalogue (production copy of 2026-10-21; more has been added since):** 8,032 listings, 5,761 live (clothing 664,
   food 4,093, home 1,004), about 21,000 options, all photos in R2.
 
