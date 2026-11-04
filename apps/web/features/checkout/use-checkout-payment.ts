@@ -72,6 +72,8 @@ export function useCheckoutPayment(summarize: (quote: CheckoutQuote) => SummaryL
     setBusy(true);
     setError(null);
     setRequest(body);
+    // kept even if this answer lists stock problems: the re-price after the fix moves the same payment (A-5)
+    if (heldSecret) secret.current = heldSecret;
     const result = await postJson(
       '/api/checkout',
       { ...body, clientSecret: heldSecret ?? secret.current },

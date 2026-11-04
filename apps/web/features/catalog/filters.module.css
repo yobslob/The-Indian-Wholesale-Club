@@ -252,4 +252,8 @@
   .cards[data-dense] :global(.product-card-meta) {
     font-size: 11px;
   }
+  /* "12 – 16 delivery days" on one line in a third of a phone */
+  .cards[data-dense] :global(.product-card-days) {
+    font-size: 10px;
+  }
 }

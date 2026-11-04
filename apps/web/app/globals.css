@@ -1360,9 +1360,6 @@ html[data-free-bar] .site-footer {
   [data-dense] .product-card-chip.bottom-3\.5 {
     bottom: 6px;
   }
-  [data-dense] .product-card-chip.top-3\.5 {
-    top: 6px;
-  }
   [data-dense] .product-card-text {
     padding: 8px 2px 0 4px;
   }
