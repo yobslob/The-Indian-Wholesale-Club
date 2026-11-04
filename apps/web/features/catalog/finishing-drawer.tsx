@@ -17,7 +17,7 @@ export const DRAWER_SIZE = 12;
  * The jewellery drawer (D-144, plan F11): on Clothing's default view, accessories and turbans leave the price order
  * and open as a dark velvet band after the second row of each 24 cards, a sideways row of smaller cards with their
  * + and − n +. It sits after every card in the page source and takes its row in the grid (`placed`), so the cards'
- * column drift (D-116) is unchanged. See all opens the accessories in place.
+ * columns are unchanged. See all opens the accessories in place.
  */
 export function FinishingDrawer({
   items,
