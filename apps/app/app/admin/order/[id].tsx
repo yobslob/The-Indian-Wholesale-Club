@@ -44,9 +44,9 @@ export default function AdminOrderScreen(): React.JSX.Element {
 
   const a = order.shipping_address as Record<string, string | null>;
   const events = [...order.events].sort((x, y) => x.created_at.localeCompare(y.created_at));
-  const { canShip, express } = shipState(order);
-  // Pieces without a cycle (express, and the made-to-order pilot, D-115) are marked picked, and weighed, here (D-130)
-  const pickHere = !order.cycle_id && ['confirmed', 'collecting'].includes(order.status);
+  const { canShip } = shipState(order);
+  // Every order's pieces are marked picked, and weighed, here (D-130, D-187)
+  const pickHere = ['confirmed', 'collecting'].includes(order.status);
   const target = [{ id: order.id, number: order.order_number, name: a.fullName ?? '' }];
   const phone = (a.phone ?? '').replace(/[^\d+]/g, '');
   // D-154: an order of two shipments ships each on its own, from the web admin's order page
@@ -74,11 +74,11 @@ export default function AdminOrderScreen(): React.JSX.Element {
           <View className="flex-row flex-wrap gap-1.5">
             <StatusChip map={ORDER_STATUS} status={order.status} />
             <StatusChip map={PAYMENT_STATUS} status={order.payment_status} />
-            <Chip tone={express ? 'brand' : 'mute'}>{order.shipping_method === 'express' ? 'Express' : 'Standard'}</Chip>
+            {/* An order placed with Express keeps its word in its history (§10 Y-1) */}
+            {order.shipping_method === 'express' ? <Chip tone="brand">Express</Chip> : null}
           </View>
           <Text className="font-ui text-ink-muted text-[12.5px]">
             Placed {deskTime(order.created_at, desk).main} · promised {dateRange(order.est_delivery_from, order.est_delivery_to)}
-            {order.cycle ? ` · cycle ${order.cycle.code}` : ''}
           </Text>
         </View>
         {action.error ? <ErrorText>{action.error}</ErrorText> : null}
@@ -88,7 +88,8 @@ export default function AdminOrderScreen(): React.JSX.Element {
             const media = item.product?.media.slice().sort((x, y) => Number(y.is_primary) - Number(x.is_primary) || x.sort_order - y.sort_order)[0];
             const p = item.pickup;
             const itemUrl = p?.source?.item_url ?? item.product?.source_url ?? null;
-            const stage = p ? pieceStage(p, Boolean(itemUrl)) : null;
+            const stage = p ? pieceStage(p) : null;
+            const shop = p ? (p.source?.site ?? p.site ?? item.product?.source_site ?? null) : null;
             return (
               <View key={item.id} className="border-line flex-row gap-3 border-t pt-2.5">
                 <View className="bg-land h-[54px] w-10 overflow-hidden rounded-lg">{media ? <Photo path={media.storage_path} width={40} /> : null}</View>
@@ -96,13 +97,12 @@ export default function AdminOrderScreen(): React.JSX.Element {
                   <Text className="font-ui-semibold text-ink text-[14px]">{item.product_name}</Text>
                   <Text className="font-body text-ink-muted text-[12.5px]">
                     {[item.variant_label, item.region_name].filter(Boolean).join(' · ')} · × {item.quantity} · {formatUsd(item.total_price_cents)}
-                    {p?.vendor ? ` · ${p.vendor.shop_name} ${rupees(p.shop_price_paise)}` : ''}
+                    {shop ? ` · ${shop} ${rupees(p?.shop_price_paise)}` : ''}
                   </Text>
                   <View className="flex-row flex-wrap gap-1.5">
                     {item.status === 'unavailable' ? <Chip tone="bad">Unavailable · to refund</Chip> : null}
                     {item.status === 'refunded' ? <Chip tone="mute">Refunded</Chip> : null}
                     {stage && item.status === 'active' ? <StatusChip map={PIECE_STAGE} status={stage} /> : null}
-                    {p?.status === 'picked' ? p.payout_id ? <Chip tone="ok">Paid to shop</Chip> : <Chip tone="warn">Not paid yet</Chip> : null}
                     {p?.arrived_at ? <Chip tone="brand">In the US</Chip> : null}
                   </View>
                   {item.status === 'unavailable' && order.payment_intent_id ? (

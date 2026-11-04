@@ -114,7 +114,7 @@ export function AdminButton({
   );
 }
 
-/** A sheet from the bottom (Pack & ship, Record payout, Add a vendor): dimmed page, a handle, its own scroll. */
+/** A sheet from the bottom (Pack & ship): dimmed page, a handle, its own scroll. */
 export function Sheet({ open, onClose, title, children }: { open: boolean; onClose: () => void; title: string; children: React.ReactNode }): React.JSX.Element {
   return (
     <Modal visible={open} transparent animationType="slide" onRequestClose={onClose}>
