@@ -1,7 +1,7 @@
 import { formatDeliveryWindow, formatUsd } from '@repo/shared/domain';
 
 import { button, escapeHtml, frame, paragraph, pieces, type EmailContext } from './frame';
-import { arrives, piecesOf, shipmentOf } from './shipments';
+import { arrives, piecesOf, shipmentName, shipmentOf } from './shipments';
 
 import type { OrderDetail } from '@repo/db/store';
 
@@ -9,8 +9,8 @@ import type { OrderDetail } from '@repo/db/store';
  * The email for one customer-visible order update (flows.md §8, B-20), in the D-094 frame: the subject as its heading,
  * the missing pieces' photos when one is unavailable, and the shipped email's button to our order page (where "Track
  * the parcel" goes on to the carrier, D-088). Built ONLY from the customer-safe order shape
- * (guest_order_lookup), so nothing operational can reach it (D-003): no shops, pickups, exports or cycles, and no
- * reason why a date moved. Every dynamic value is escaped. Copy follows storefront.md §Voice (D-059); D-161 rewrote it
+ * (guest_order_lookup), so nothing operational can reach it (D-003): no shops, pickups or exports, and no reason why
+ * a date moved. Every dynamic value is escaped. Copy follows storefront.md §Voice (D-059); D-161 rewrote it
  * in the homesick plan's words (no new emails); the founder may rewrite any of it. Pure, so it has unit tests (tests/order-update.test.ts).
  */
 
@@ -37,11 +37,12 @@ function shipmentParts(kind: string, order: OrderDetail, orderUrl: string, seq: 
   const view = { href: orderUrl, label: 'See your order' };
   const show = piecesOf(order, sh);
   const other = order.shipments.find((s) => s.seq !== sh.seq);
+  const name = shipmentName(sh);
   const actions = order.actions;
   switch (kind) {
     case 'shipped':
       return {
-        subject: `Shipment ${sh.seq} of order ${n} is on its way home`,
+        subject: `${name} of order ${n} is on its way home`,
         show,
         paragraphs: [
           `Out the door and headed to yours.${arrives(sh) ? ` It ${strong(arrives(sh)!.replace(/^Arrives/, 'arrives'))}.` : ''}`,
@@ -51,7 +52,7 @@ function shipmentParts(kind: string, order: OrderDetail, orderUrl: string, seq: 
       };
     case 'delivered':
       return {
-        subject: `Shipment ${sh.seq} of order ${n} has landed`,
+        subject: `${name} of order ${n} has landed`,
         show,
         paragraphs: [`This part of your order is at your door. We hope it smells right.`],
         link: view,
@@ -60,7 +61,7 @@ function shipmentParts(kind: string, order: OrderDetail, orderUrl: string, seq: 
       const when = arrives(sh);
       const open = actions?.delay_open && actions.delay_shipment === sh.seq && actions.delay_refund_cents !== null;
       return {
-        subject: `New delivery date for shipment ${sh.seq} of order ${n}`,
+        subject: `New delivery date for ${name.toLowerCase()} of order ${n}`,
         show,
         paragraphs: [
           when ? `This part of your order now ${strong(when.replace(/^Arrives/, 'arrives'))}, later than we said. That's on us.` : `Its delivery date has changed. That's on us.`,
@@ -74,7 +75,7 @@ function shipmentParts(kind: string, order: OrderDetail, orderUrl: string, seq: 
     }
     case 'shipment_cancelled':
       return {
-        subject: `Shipment ${sh.seq} of order ${n} is cancelled`,
+        subject: `${name} of order ${n} is cancelled`,
         show,
         paragraphs: [
           `This part of your order is cancelled.`,
@@ -162,29 +163,6 @@ function parts(kind: string, order: OrderDetail, orderUrl: string): Parts | null
             : '',
         ],
         link: actions?.delay_open ? { href: orderUrl, label: 'Keep it or cancel' } : view,
-      };
-    case 'faster_delivery_offer':
-      return order.offer
-        ? {
-            subject: `Order ${n} can reach you sooner`,
-            paragraphs: [
-              `Good news: your order can arrive ${strong(formatDeliveryWindow(order.offer.est_delivery_from, order.offer.est_delivery_to))} instead.`,
-              `That's ${strong(formatUsd(order.offer.price_cents))} if you want it. Or do nothing, and it still arrives by the date we gave you.`,
-            ],
-            link: { href: orderUrl, label: 'Get it sooner' },
-          }
-        : null;
-    case 'faster_delivery_accepted':
-      return {
-        subject: `Faster delivery added to order ${n}`,
-        paragraphs: [window ? `Done. Your order should reach you ${strong(window)}.` : `Done. Your order is coming sooner.`],
-        link: view,
-      };
-    case 'arriving_sooner':
-      return {
-        subject: `Plot twist: order ${n} is early`,
-        paragraphs: [`It's already on its way, arriving ahead of the date we gave you.`],
-        link: view,
       };
     case 'shipped':
       // D-094: the button opens our order page, which links on to the carrier (D-066, D-088).

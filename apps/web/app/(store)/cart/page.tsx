@@ -1,7 +1,7 @@
 import { CartView } from '@/features/cart/cart-view';
 import { getHomeCached } from '@/features/catalog/data';
 import { ProductRow } from '@/features/catalog/product-row';
-import { postmarkFor, StampGrid } from '@/features/regions/region-stamp';
+import { StampGrid } from '@/features/regions/region-stamp';
 import { PictureBeside } from '@/features/visuals/picture-beside';
 
 import type { Metadata } from 'next';
@@ -23,12 +23,12 @@ export default async function CartPage(): Promise<React.JSX.Element> {
           <section className="mt-[clamp(28px,3vw,40px)] space-y-3">
             <p className="font-ui text-ink-muted text-[11px] font-semibold uppercase tracking-[0.16em]">Open now</p>
             <div className="max-w-[660px]">
-              <StampGrid regions={open} postmark={postmarkFor(home.delivery)} idPrefix="bg" />
+              <StampGrid regions={open} />
             </div>
           </section>
         ) : null}
       </PictureBeside>
-      <ProductRow id="just-listed" title="Just listed" products={home.just_listed} href="/clothing" />
+      <ProductRow id="just-listed" title="Just listed" products={home.just_listed_types.clothing ?? []} href="/clothing" />
     </>
   );
   return (

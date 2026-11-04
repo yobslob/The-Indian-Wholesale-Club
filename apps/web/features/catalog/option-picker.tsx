@@ -147,7 +147,7 @@ export function OptionSheet({
   }, [onClose]);
 
   const step = 'grid h-11 w-11 place-items-center rounded-full border border-line bg-paper text-[18px] disabled:opacity-40';
-  // on the page itself: a card's grid drifts (transform), which would pin a fixed sheet to the card
+  // on the page itself: a card's reveal uses a transform, which would pin a fixed sheet to the card
   return createPortal(
     <div className="fixed inset-0 z-[70]" role="dialog" aria-modal="true" aria-label={`Choose for ${product.name}`}>
       <button type="button" aria-label="Close" tabIndex={-1} onClick={onClose} className="absolute inset-0 bg-[rgb(20_17_15/0.4)]" />

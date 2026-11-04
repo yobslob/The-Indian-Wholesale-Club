@@ -2,7 +2,7 @@
 
 import { useNear, useNearComponent } from './use-near';
 
-import type { DeliveryWindow, HomeData, ProductCard, RegionCard, RegionProductCard } from '@repo/db/store';
+import type { HomeData, ProductCard, RegionCard, RegionProductCard } from '@repo/db/store';
 
 /**
  * Home's parts below the first screen, drawn in the browser as they come near (launch QA C-2): the album, Pick your
@@ -15,17 +15,16 @@ import type { DeliveryWindow, HomeData, ProductCard, RegionCard, RegionProductCa
 
 type AlbumPhoto = HomeData['album'][number];
 type StampRegion = Pick<RegionCard, 'slug' | 'name' | 'is_live' | 'accent_color' | 'hero_image_path'>;
-/** A card as the rows draw it (product-row.tsx): Just listed's carry stock, the 7-day row's do not. */
+/** A card as the rows draw it (product-row.tsx). */
 export type RowCard = ProductCard & Partial<Pick<RegionProductCard, 'available' | 'quick_add'>>;
 interface StripProps {
   products: RowCard[];
   label: string;
-  quickTag?: boolean;
 }
 
 const loadAlbum = (): Promise<React.ComponentType<{ photos: AlbumPhoto[]; regionName: string; reveal?: boolean }>> =>
   import('@/features/regions/region-album').then((m) => m.RegionAlbum);
-const loadPick = (): Promise<React.ComponentType<{ regions: RegionCard[]; delivery: DeliveryWindow | null }>> =>
+const loadPick = (): Promise<React.ComponentType<{ regions: RegionCard[] }>> =>
   import('@/features/regions/pick-home').then((m) => m.PickHome);
 const loadStrip = (): Promise<React.ComponentType<StripProps>> =>
   import('@/features/catalog/product-row').then((m) => m.ProductStrip);
@@ -60,20 +59,14 @@ export function LazyAlbum({ photos }: { photos: AlbumPhoto[] }): React.JSX.Eleme
  * Pick your home (pick-home.tsx): the map and its 44 KB of outlines come with its code instead of twice in the page.
  * Its box is about the section's height: two panels side by side from 1101 px, one above the other below.
  */
-export function LazyPickHome({
-  regions,
-  delivery,
-}: {
-  regions: StampRegion[];
-  delivery: DeliveryWindow | null;
-}): React.JSX.Element {
+export function LazyPickHome({ regions }: { regions: StampRegion[] }): React.JSX.Element {
   const [ref, near] = useNear<HTMLDivElement>(warm);
   const [Pick, box] = useNearComponent(near, loadPick);
   if (Pick) {
     return (
       <div ref={box}>
         {/* the fields PickHome reads; the greetings and taglines stay out of the page */}
-        <Pick regions={regions as RegionCard[]} delivery={delivery} />
+        <Pick regions={regions as RegionCard[]} />
       </div>
     );
   }
@@ -95,7 +88,7 @@ export function LazyStrip(props: StripProps): React.JSX.Element {
     <div ref={ref} aria-hidden="true" className="pb-1">
       <div className="w-[148px] sm:w-[clamp(176px,23vw,304px)]">
         <div className="aspect-[3/4]" />
-        <div className="h-[66px]" />
+        <div className="h-[86px]" />
       </div>
     </div>
   );

@@ -12,7 +12,7 @@ import { ARCHES, WIDE, type Tone } from './diwali-hooks';
  * The Diwali windows (founder 2026-10-31, D-174: "convert this into an ad/banner types component … Diwali decoration
  * types arch windows for each category … show this airplane flying inside somewhere the card"): where the full-width
  * flight was, a row of festive windows under a toran. The wide one is a Diwali night: string lights, two fireworks and
- * the flight crossing it with its banner (the free line or the festival's last order day, flight.tsx). Then an arch
+ * the flight crossing it with its banner (the free line, flight.tsx). Then an arch
  * window per hook (diwali-hooks.ts), each with its drawing and a diya on the sill. At every width the arches sit in a
  * row (founder 2026-11-02, D-177: no sliding). D-179: Home shows the arches under the hero, under their toran,
  * and the night where it was, after the album, so the two are separate sections. Server-drawn; the only client
@@ -78,7 +78,7 @@ export function DiwaliNight({ free }: { free: string | null }): React.JSX.Elemen
             </Link>
           </div>
           <div className="dw-sky">
-            <Flight free={free} festival="any" compact />
+            <Flight free={free} compact />
           </div>
         </div>
       </div>

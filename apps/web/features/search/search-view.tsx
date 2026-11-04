@@ -2,55 +2,50 @@ import { headers } from 'next/headers';
 import Link from 'next/link';
 import { redirect } from 'next/navigation';
 
-import { getHomeCached, getStorePolicyCached } from '@/features/catalog/data';
+import { getHomeCached } from '@/features/catalog/data';
 import { ProductCard, ProductGrid } from '@/features/catalog/product-card';
 import { ProductRow } from '@/features/catalog/product-row';
-import { postmarkFor, StampGrid } from '@/features/regions/region-stamp';
+import { StampGrid } from '@/features/regions/region-stamp';
 import { isLimitedLocal } from '@/lib/rate-limit';
-import { QUICK_HOME } from '@/lib/site';
 
 import { SearchField } from './search-field';
 import { SearchFilters, type SearchHref } from './search-filters';
 import { SearchBusy, SearchIdeasRows } from './search-ideas';
 import { EMPTY_PAGE, loadSearch, loadSearchIdeas, type SearchResult } from './search-load';
-import { asCame, PAGE, plainSearch, QUICK_VALUE, readSearch, searchHref, withFilters, type SearchParams } from './search-url';
+import { asCame, PAGE, readSearch, searchHref, withFilters, type SearchParams } from './search-url';
 
 export type { SearchParams } from './search-url';
 
 const h2 = 'font-heading text-[clamp(22px,1.8vw,30px)] font-medium tracking-[-0.02em] text-[#1D1A17]';
 const label = 'font-ui text-ink-muted text-[11px] font-semibold uppercase tracking-[0.16em]';
-const pill = 'font-ui inline-flex min-h-11 items-center gap-2 rounded-pill border px-4 text-sm font-medium transition-colors';
 const link = 'text-ink underline underline-offset-[3px]';
 const plural = (n: number, word: string, more = false): string =>
   `${n.toLocaleString('en-US')}${more ? '+' : ''} ${word}${n === 1 && !more ? '' : 's'}`;
 
 /**
- * Search (/search, and since D-154 the 7-day store's /7-day-delivery/search): products and regions in one round trip
+ * Search (/search): products and regions in one round trip
  * (store_search_page, D-160: stems, synonyms, spelling fixes, "some of your words", the counts). No session.
  * Results come 24 at a time with "Show more" (?show=). D-085: the count with the words under the box; matching
  * states as the D-080 stamps; with no words, the open states and Just listed, so the page is never a dead end. D-160:
- * the type, category and state filters and Sort by as links; "Showing results for" a fixed spelling. D-154: in the IWC
- * store "Delivery: in 7 days" keeps only 7-day pieces; the 7-day store's search finds only those, without the states.
+ * the type, category and state filters and Sort by as links; "Showing results for" a fixed spelling.
  * Launch QA: every search has one address (search-url.ts: lower case, its parameters in one order, nothing else), so
  * the CDN can keep a page for everyone (D-2); the page holds nothing about the visitor (a caller searching faster
  * than a person is sent to the Try again address, which is never kept); a slow or failing database shows a line with
  * Try again, never the error page (D-1); a search that finds nothing offers popular searches, states and categories
  * (D-3).
  */
-export async function SearchView({ searchParams, store }: { searchParams: SearchParams; store: 'iwc' | 'quick' }): Promise<React.JSX.Element> {
+const base = '/search';
+
+export async function SearchView({ searchParams }: { searchParams: SearchParams }): Promise<React.JSX.Element> {
   const params = await searchParams;
-  const inQuick = store === 'quick';
-  const base = inQuick ? `${QUICK_HOME}/search` : '/search';
-  const s = readSearch(params, inQuick);
+  const s = readSearch(params);
   const own = searchHref(base, s);
   if (own !== asCame(base, params)) redirect(own);
   const { q, type, category, state, sort, show } = s;
   const retryHref = searchHref(base, { ...s, retry: true });
   const limited = q ? isLimitedLocal(await headers(), 'search') : false;
   if (limited && !s.retry) redirect(retryHref);
-  const [home, policy] = await Promise.all([getHomeCached(), getStorePolicyCached()]);
-  const quickOn = policy.quick_delivery_on;
-  const quick = inQuick || (quickOn && s.delivery);
+  const home = await getHomeCached();
   const filtered = Boolean(type || category || state || sort);
   // "Show more" and the filters read from the first result again, so only the first unfiltered page is recorded
   const filter = {
@@ -60,51 +55,35 @@ export async function SearchView({ searchParams, store }: { searchParams: Search
     sort: sort ?? undefined,
     limit: show,
     record: show === PAGE && !filtered,
-    quick,
   };
   const { page, failed }: SearchResult = q && !limited ? await loadSearch(q, filter) : { page: EMPTY_PAGE, failed: null };
   const products = page.products;
   const more = page.total > products.length;
   const regions =
-    q && !quick ? home.regions.filter((r) => page.named_regions.includes(r.slug) || r.name.toLowerCase().includes(q)) : [];
+    q ? home.regions.filter((r) => page.named_regions.includes(r.slug) || r.name.toLowerCase().includes(q)) : [];
   const open = regions.filter((r) => r.is_live);
   const soon = regions.filter((r) => !r.is_live);
-  const postmark = postmarkFor(home.delivery);
   const found = page.mode !== 'none' && page.mode !== 'some';
   const nothing = !q || (!found && regions.length === 0);
   const ideas = q && !limited && !failed && !found && regions.length === 0 ? await loadSearchIdeas() : null;
   const href: SearchHref = (over) => searchHref(base, withFilters(s, over));
-  const filterHref = searchHref('/search', plainSearch(q, !quick));
   const stateName = (slug: string): string => home.regions.find((r) => r.slug === slug)?.name ?? slug;
 
   return (
     <div className="space-y-8">
       <div>
         <h1 className="font-heading text-ink text-[clamp(32px,3vw,52px)] font-medium leading-tight tracking-[-0.03em]">
-          {inQuick ? 'Search the 7-day store' : 'Search'}
+          Search
         </h1>
         <form action={base} className="mt-6 flex max-w-3xl gap-2" role="search">
           <label htmlFor="q" className="sr-only">
             Search
           </label>
-          {quick && !inQuick ? <input type="hidden" name="delivery" value={QUICK_VALUE} /> : null}
-          <SearchField
-            defaultValue={q}
-            quick={quick}
-            placeholder={inQuick ? 'Search snacks, masalas, sweets…' : 'Search a state, a saree, a masala…'}
-          />
+          <SearchField defaultValue={q} placeholder="Search a state, a saree, a masala…" />
           <button type="submit" className="bg-brand text-on-brand font-ui hidden min-h-12 rounded-pill px-6 text-[15px] font-medium md:block">
             Search
           </button>
         </form>
-        {q && quickOn && !inQuick ? (
-          <div className="mt-4">
-            <Link href={filterHref} aria-pressed={quick} className={`${pill} ${quick ? 'bg-ink text-canvas border-ink' : 'bg-paper border-line hover:border-ink'}`}>
-              Delivery: in {policy.quick_delivery_days_max} days
-              {quick ? <span aria-hidden="true">×</span> : null}
-            </Link>
-          </div>
-        ) : null}
         {q ? (
           <div className="text-ink-muted mt-3.5 space-y-1 text-[15px]" role="status">
             {limited ? <p>Searching a little fast: wait a moment, then search again.</p> : null}
@@ -141,7 +120,7 @@ export async function SearchView({ searchParams, store }: { searchParams: Search
           <h2 className={h2}>States</h2>
           {open.length > 0 ? (
             <div className="max-w-[660px]">
-              <StampGrid regions={open} postmark={postmark} idPrefix="sr" />
+              <StampGrid regions={open} />
             </div>
           ) : null}
           {soon.length > 0 ? (
@@ -165,13 +144,8 @@ export async function SearchView({ searchParams, store }: { searchParams: Search
           <h2 className={h2}>Products</h2>
           {!found ? (
             <p className="text-ink-muted text-[15px]">
-              {inQuick ? `Nothing in the 7-day store matches “${q}”. ` : `No products match “${q}”. `}
+              {`No products match “${q}”. `}
               {page.mode === 'some' ? 'These have some of its words. ' : null}
-              {quick ? (
-                <Link href={searchHref('/search', plainSearch(q))} className={link}>
-                  Search the whole IWC store
-                </Link>
-              ) : null}
             </p>
           ) : null}
           {found && page.total === 0 ? (
@@ -198,25 +172,20 @@ export async function SearchView({ searchParams, store }: { searchParams: Search
         </section>
       ) : null}
 
-      {ideas ? <SearchIdeasRows ideas={ideas} base={base} inQuick={inQuick} /> : null}
+      {ideas ? <SearchIdeasRows ideas={ideas} base={base} /> : null}
 
-      {nothing && !inQuick ? (
+      {nothing ? (
         <>
           {!q && home.regions.some((r) => r.is_live) ? (
             <section className="space-y-3">
               <p className={label}>Open now</p>
               <div className="max-w-[660px]">
-                <StampGrid regions={home.regions.filter((r) => r.is_live)} postmark={postmark} idPrefix="so" />
+                <StampGrid regions={home.regions.filter((r) => r.is_live)} />
               </div>
             </section>
           ) : null}
-          <ProductRow id="just-listed" title="Just listed" products={home.just_listed} href="/clothing" />
+          <ProductRow id="just-listed" title="Just listed" products={home.just_listed_types.clothing ?? []} href="/clothing" />
         </>
-      ) : null}
-      {nothing && inQuick && !q ? (
-        <p className="text-ink-muted text-[15px]">
-          Or browse <Link href={QUICK_HOME} className={link}>the whole 7-day store</Link>.
-        </p>
       ) : null}
     </div>
   );

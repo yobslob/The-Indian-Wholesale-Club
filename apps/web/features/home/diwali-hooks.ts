@@ -1,5 +1,3 @@
-import { FESTIVALS } from '@repo/shared/domain';
-
 import type { SlotId } from '@/features/visuals/slots';
 
 /**
@@ -31,11 +29,9 @@ export interface Arch {
   slot: SlotId;
 }
 
-const diwali = FESTIVALS.find((f) => f.name === 'Diwali');
-
 export const WIDE = {
-  /** Lakshmi Puja's real date (homesick.ts). */
-  day: diwali?.day ?? null,
+  /** Lakshmi Puja, the main day of Diwali 2026 (Y-15: seasonal, the founder decides after Diwali). */
+  day: '2026-11-08' as string | null,
   hook: 'Host your Diwali under $99.',
   cta: 'Shop under $99',
   href: '/home-and-gifts?max=99',

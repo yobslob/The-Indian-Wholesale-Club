@@ -23,7 +23,7 @@ function loadHints(): Promise<SearchHints> {
 const hrefOf = (s: Suggestion, form: HTMLFormElement | null): string => {
   if (s.kind === 'state') return `/states/${s.slug}`;
   if (s.kind === 'category') return `${PRODUCT_TYPE_PATH[s.type]}?category=${encodeURIComponent(s.slug)}`;
-  // the box's own form, with its other fields (the 7-day filter): the search the suggestion completes
+  // the box's own form, with its other fields: the search the suggestion completes
   const params = new URLSearchParams();
   if (form) for (const [k, v] of new FormData(form)) if (typeof v === 'string' && k !== 'q') params.append(k, v);
   params.set('q', s.query);
@@ -48,7 +48,7 @@ function Label({ s, typed }: { s: Suggestion; typed: string }): React.JSX.Elemen
  * one picked (or searches the words), Escape closes the list (a second Escape is the box's own). Drawn in a layer of
  * its own under the box, so the header's clipping never cuts it.
  */
-export default function SearchSuggest({ input, quick }: { input: HTMLInputElement; quick: boolean }): React.JSX.Element | null {
+export default function SearchSuggest({ input }: { input: HTMLInputElement }): React.JSX.Element | null {
   const router = useRouter();
   const listId = `suggest-${useId().replace(/[^a-zA-Z0-9]/g, '')}`;
   const [hints, setHints] = useState<SearchHints>(EMPTY_HINTS);
@@ -56,7 +56,7 @@ export default function SearchSuggest({ input, quick }: { input: HTMLInputElemen
   const [open, setOpen] = useState(() => document.activeElement === input);
   const [active, setActive] = useState(-1);
   const [box, setBox] = useState<{ top: number; left: number; width: number } | null>(null);
-  const items = useMemo(() => suggest(text, hints, { quick }), [text, hints, quick]);
+  const items = useMemo(() => suggest(text, hints), [text, hints]);
   const shown = open && items.length > 0;
   const typed = text.toLowerCase().replace(/\s+/g, ' ').trimStart();
 

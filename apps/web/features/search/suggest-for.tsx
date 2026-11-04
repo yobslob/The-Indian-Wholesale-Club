@@ -9,7 +9,7 @@ const SearchSuggest = dynamic(() => import('./search-suggest'), { ssr: false });
  * Suggestions for a search box (D-160), armed on its first focus or hover: until then not a byte of them is loaded
  * (next/dynamic), so the store's first-load script budget (engineering.md PR-5) stays as it is.
  */
-export function SuggestFor({ input, quick }: { input: RefObject<HTMLInputElement | null>; quick: boolean }): React.JSX.Element | null {
+export function SuggestFor({ input }: { input: RefObject<HTMLInputElement | null> }): React.JSX.Element | null {
   const [armed, setArmed] = useState<HTMLInputElement | null>(null);
   useEffect(() => {
     const box = input.current;
@@ -26,5 +26,5 @@ export function SuggestFor({ input, quick }: { input: RefObject<HTMLInputElement
       box.removeEventListener('pointerenter', arm);
     };
   }, [input]);
-  return armed ? <SearchSuggest input={armed} quick={quick} /> : null;
+  return armed ? <SearchSuggest input={armed} /> : null;
 }

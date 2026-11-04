@@ -1,6 +1,6 @@
 'use client';
 
-import { useEffect, useState } from 'react';
+import { useEffect } from 'react';
 import { create } from 'zustand';
 
 import {
@@ -10,9 +10,6 @@ import {
   bulkProgress,
   heavyShippingAt,
   parseBagShipments,
-  quickDates,
-  shipmentNote,
-  type BagMoment,
   type BagShipmentFacts,
   type BulkSaving,
   type HeavyShipping,
@@ -25,60 +22,38 @@ import type { ShellDays } from '@/features/shell/days';
 
 /** D-111: a bag's small-order charges, as /api/bag-charges works them out (cents). */
 export interface BagCharges {
-  /** The bag this answer is for (bagKey): an answer for an earlier bag never decides the goal (bag-goal.ts). */
+  /** The bag this answer is for (bagKey): the charges' figures are the last answer's until the next one comes. */
   key: string;
   freeMinCents: number | null;
+  /** D-187: the bulk saving and the heavy-item discount start here. */
+  bulkFromCents: number | null;
   /** Shipping (the parcel, or what the bag needs to pay its way), the retailer charges' rule (D-111, D-123, D-125). */
   small: SmallOrderCharges;
-  /** D-119: the bulk saving from the line up; null = none. */
+  /** D-119: the bulk saving; null = none. */
   bulk: BulkSaving | null;
-  /** D-154: which pieces are 7-day, the 7-day line and gap, a split, and each shipment's dates. */
+  /** D-187: which pieces are food and whether the bag splits. */
   shipments: BagShipmentFacts | null;
   /** Heavy-item shipping (founder 2026-10-24): the bag's heavy pieces' charge (null = none) and which options. */
   heavy: HeavyShipping | null;
   heavyIds: string[];
 }
 
-/** D-154: the pill's three-second note when a change moved the bag across a line; `prevKey` is the bag before it (Undo). */
-export interface ShipmentNote {
-  text: string;
-  undo: boolean;
-  prevKey: string;
-  until: number;
-}
-
-// Three seconds (the plan); one with Undo stays twice as long, so the button can be reached
-const NOTE_MS = 3000;
-
 // The last answer, kept for this tab (2026-10-30): a page load draws the pill at once from it while the bag is unchanged.
-// Its bag's subtotal comes with it, so the next change after a page load still gets its note (shipmentNote needs the
-// moment before).
 const SAVED = 'iwc-bag-charges';
-function saved(): { key: string; charges: BagCharges; moment: BagMoment | null } | null {
+function saved(): { key: string; charges: BagCharges } | null {
   if (typeof window === 'undefined') return null;
   try {
-    const v = JSON.parse(sessionStorage.getItem(SAVED) ?? 'null') as {
-      key?: unknown;
-      data?: unknown;
-      subtotal?: unknown;
-    } | null;
+    const v = JSON.parse(sessionStorage.getItem(SAVED) ?? 'null') as { key?: unknown; data?: unknown } | null;
     const charges = v && typeof v.key === 'string' ? parse(v.data, v.key) : null;
-    if (!charges) return null;
-    const subtotal = typeof v!.subtotal === 'number' && Number.isInteger(v!.subtotal) ? v!.subtotal : null;
-    return { key: v!.key as string, charges, moment: subtotal === null ? null : momentOf(subtotal, charges) };
+    return charges ? { key: charges.key, charges } : null;
   } catch {
     return null;
   }
 }
 
-const useChargesStore = create<{
-  key: string;
-  charges: BagCharges | null;
-  moment: BagMoment | null;
-  note: ShipmentNote | null;
-}>(() => {
+const useChargesStore = create<{ key: string; charges: BagCharges | null }>(() => {
   const last = saved();
-  return { key: last?.key ?? '', charges: last?.charges ?? null, moment: last?.moment ?? null, note: null };
+  return { key: last?.key ?? '', charges: last?.charges ?? null };
 });
 // The bag key asked for (or about to be): every component calling useBagCharges shares one request per bag.
 let requested = '';
@@ -102,9 +77,10 @@ function parse(data: unknown, key: string): BagCharges | null {
   const num = (v: unknown): number => (typeof v === 'number' && v > 0 ? v : 0);
   const pct = num(d.bulk_saving_pct);
   const cap = int(d.bulk_saving_cap_cents) ?? 0;
-  const charges = {
+  return {
     key,
     freeMinCents: int(d.free_min_cents),
+    bulkFromCents: int(d.bulk_saving_from_cents),
     small: {
       shippingCents,
       pastLineCents: int(d.past_line_cents) ?? 0,
@@ -112,64 +88,12 @@ function parse(data: unknown, key: string): BagCharges | null {
       retailerPct: num(d.retailer_pct) || null,
       // D-140 (F5): the struck figure once free (display only)
       shownShippingCents: int(d.shown_shipping_cents),
-      // D-154: a bag of only 7-day pieces from the 7-day line ships free
-      quickFree: d.quick_free === true,
     },
     bulk: pct > 0 && cap > 0 ? { pct, capCents: cap } : null,
     shipments: parseBagShipments(d),
     heavy: (int(d.heavy_cents) ?? 0) > 0 ? { cents: int(d.heavy_cents)!, lineOffPct: num(d.heavy_line_off_pct) } : null,
     heavyIds: Array.isArray(d.heavy_ids) ? d.heavy_ids.filter((x): x is string => typeof x === 'string') : [],
   };
-  learn(charges);
-  return charges;
-}
-
-// Which options are 7-day, from every answer this tab has had (the answer names its bag's 7-day options; the others
-// in its key are not): a piece taken out leaves the rest known, so the goal changes with the tap (bag-goal.ts).
-const quickKnown = new Map<string, boolean>();
-function learn(c: BagCharges): void {
-  const quick = new Set(c.shipments?.quickIds ?? []);
-  for (const part of c.key.split(',')) if (part) quickKnown.set(part.slice(0, 36), quick.has(part.slice(0, 36)));
-}
-
-/** Where a bag stands for the notes: its shipments and whether Shipping is charged. */
-function momentOf(subtotalCents: number, charges: BagCharges): BagMoment {
-  const at = bagChargesAt(subtotalCents, charges.freeMinCents, charges.small);
-  return {
-    facts: charges.shipments,
-    shippingCents: at.shippingCents || at.waivedShippingCents,
-    shippingCharged: at.shippingCents > 0,
-    freeMinCents: charges.freeMinCents,
-  };
-}
-
-/** The note while it lasts (three seconds), then null. */
-export function useShipmentNote(): ShipmentNote | null {
-  const note = useChargesStore((s) => s.note);
-  const [, tick] = useState(0);
-  useEffect(() => {
-    if (!note) return;
-    const timer = setTimeout(() => tick((n) => n + 1), Math.max(note.until - Date.now(), 0) + 20);
-    return () => clearTimeout(timer);
-  }, [note]);
-  return note && note.until > Date.now() ? note : null;
-}
-
-/** Undo: the bag as it was before the change ("Shipping is now $46.55 until $99.99. Undo", the plan's case 35). */
-export function undoBagChange(prevKey: string): void {
-  const before = new Map(
-    prevKey
-      .split(',')
-      .filter(Boolean)
-      .map((part) => [part.slice(0, 36), Number(part.slice(37))] as const),
-  );
-  const { lines, setQuantity, remove } = useCart.getState();
-  for (const l of lines) {
-    const q = before.get(l.variantId);
-    if (q === undefined) remove(l.variantId);
-    else if (q !== l.quantity) setQuantity(l.variantId, q);
-  }
-  useChargesStore.setState({ note: null });
 }
 
 /**
@@ -194,21 +118,12 @@ export function useBagCharges(): BagCharges | null {
         .then((data: unknown) => {
           const parsed = parse(data, key);
           if (!parsed) return;
-          const subtotal = cartSubtotalCents(useCart.getState().lines);
           try {
-            sessionStorage.setItem(SAVED, JSON.stringify({ key, data, subtotal }));
+            sessionStorage.setItem(SAVED, JSON.stringify({ key, data }));
           } catch {
             // storage blocked: the next page asks again
           }
-          const state = useChargesStore.getState();
-          const moment = momentOf(subtotal, parsed);
-          const note = shipmentNote(state.moment, moment);
-          useChargesStore.setState({
-            key,
-            charges: parsed,
-            moment,
-            ...(note ? { note: { ...note, prevKey: state.key, until: Date.now() + NOTE_MS * (note.undo ? 2 : 1) } } : {}),
-          });
+          useChargesStore.setState({ key, charges: parsed });
         })
         .catch(() => undefined)
         .finally(() => {
@@ -220,57 +135,41 @@ export function useBagCharges(): BagCharges | null {
 }
 
 /**
- * What the bar and the bag say: how far from free delivery, whether the charges are waived and, from the line up,
- * the bulk saving so far (D-119). Founder 2026-10-30: the goal is the bag as it is now. The answer for this very bag
- * decides; while the next one is on its way (or before the first) the goal comes from the lines in Settings and which
- * pieces are 7-day (each line's word from its add, or an earlier answer), so the pill never shows an earlier bag's line.
- * The charges' figures (Shipping, Retailer charges) are the last answer's until then, as before. `shell`: the layout's
- * days and lines (useDays).
+ * What the bar and the bag say: how far from free delivery, whether the charges are waived and the bulk saving so far
+ * (D-119, from its own line, D-187). The goal is the bag as it is now (founder 2026-10-30): the line comes from the last
+ * answer or Settings, the subtotal from the lines. The charges' figures are the last answer's until the next one comes.
+ * `shell`: the layout's days and line (useDays).
  */
 export function freeDelivery(lines: CartLine[], charges: BagCharges | null, shell?: ShellDays) {
   const subtotal = cartSubtotalCents(lines);
-  const fresh = charges !== null && charges.key === bagKey(lines);
-  const line = charges?.freeMinCents ?? shell?.lines.freeMinCents ?? null;
+  const line = charges?.freeMinCents ?? shell?.freeMinCents ?? null;
   const free = line !== null && subtotal >= line;
-  const bulk = bulkProgress(subtotal, line, charges?.bulk);
-  const facts = fresh ? charges.shipments : null;
-  const known = {
-    quickIds: lines.filter((l) => quickKnown.get(l.variantId) ?? l.quick === true).map((l) => l.variantId),
-    quickMinCents: charges?.shipments?.minCents ?? shell?.lines.quickMinCents ?? null,
-    quickTo: charges?.shipments?.dates.quickTo ?? (shell?.quick ? quickDates(shell.quick.min, shell.quick.max).to : null),
-  };
+  const bulkFrom = charges?.bulkFromCents ?? null;
+  const bulk = bulkProgress(subtotal, bulkFrom, charges?.bulk);
   const small = charges?.small ?? null;
-  const goal = bagGoal({
-    subtotalCents: subtotal,
-    freeMinCents: line,
-    at: bagChargesAt(subtotal, line, small),
-    bulk,
-    facts,
-    variantIds: lines.map((l) => l.variantId),
-    known,
-  });
-  // an earlier bag's answer: free 7-day Shipping follows this bag's goal, not that answer
-  const at = bagChargesAt(subtotal, line, small && !fresh ? { ...small, quickFree: goal.kind === 'quick-free' } : small);
+  const at = bagChargesAt(subtotal, line, small);
   return {
     subtotal,
     line,
     free,
+    /** Where the bulk saving and the heavy-item discount start. */
+    bulkFrom,
     /** D-125: the charges at this bag's goods (Shipping and the retailer charges, paid or struck through). */
     at,
-    /** Heavy-item shipping: paid, and its whole struck through once a line took its % off. */
-    heavy: heavyShippingAt(charges?.heavy, free || at.shippingFree),
+    /** Heavy-item shipping: paid, and its whole struck through once its line took its % off. */
+    heavy: heavyShippingAt(charges?.heavy, bulkFrom !== null && subtotal >= bulkFrom),
     leftCents: line === null ? 0 : Math.max(line - subtotal, 0),
     share: line ? Math.min(subtotal / line, 1) : 1,
     bulk,
     /** The one goal the pill and the bag show (bag-goal.ts): never two bars. */
-    goal,
+    goal: bagGoal({ subtotalCents: subtotal, freeMinCents: line, bulk }),
   };
 }
 
 /** D-140 (F5): "You're saving $X" for this bag: the struck charges and the bulk saving (0 below the line). */
 export function bagSaving(lines: CartLine[], charges: BagCharges | null, shell?: ShellDays): number {
   const f = freeDelivery(lines, charges, shell);
-  // D-154: a bag of only 7-day pieces from the 7-day line saves its Shipping too, and the line's part of Heavy-item shipping
+  // the $99.99 line's part of Heavy-item shipping counts too
   const heavyOff = f.heavy.shownCents ? f.heavy.shownCents - f.heavy.cents : 0;
   return f.free || f.at.shippingFree ? bagSavingCents(f.at, f.bulk.savingCents) + heavyOff : 0;
 }

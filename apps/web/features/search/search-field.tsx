@@ -13,7 +13,7 @@ import { SuggestFor } from './suggest-for';
  * out as the search's one address spells them (lower case, single spaces: search-url.ts), so a phone's capital
  * first letter is not a second address and a redirect.
  */
-export function SearchField({ defaultValue, placeholder, quick }: { defaultValue: string; placeholder: string; quick: boolean }): React.JSX.Element {
+export function SearchField({ defaultValue, placeholder }: { defaultValue: string; placeholder: string }): React.JSX.Element {
   const input = useRef<HTMLInputElement>(null);
   useEffect(() => {
     const form = input.current?.form;
@@ -40,7 +40,7 @@ export function SearchField({ defaultValue, placeholder, quick }: { defaultValue
       <button type="submit" aria-label="Search" className="bg-brand text-on-brand absolute right-1 top-1 grid size-10 place-items-center rounded-full md:hidden">
         <HeaderIcon name="search" />
       </button>
-      <SuggestFor input={input} quick={quick} />
+      <SuggestFor input={input} />
     </div>
   );
 }

@@ -7,13 +7,10 @@ export type SearchParams = Promise<Record<string, Param>>;
 
 /** Cards a page; "Show more" adds as many, up to 480. */
 export const PAGE = 24;
-/** D-154: the IWC store's "Delivery: in 7 days", as the address carries it (?delivery=7-day). */
-export const QUICK_VALUE = '7-day';
 
 /** A search as its address reads (D-2): what decides the results, nothing else. */
 export interface SearchState {
   q: string;
-  delivery: boolean;
   type: ProductType | null;
   category: string | null;
   state: string | null;
@@ -32,17 +29,16 @@ const slug = (v: Param): string | null => {
 /** The words as the database reads them (lower case, spaces collapsed), so "Saree " and "saree" are one address. */
 export const normalSearch = (text: string): string => cleanSearch(text).toLowerCase();
 
-/** The search an address asks for; anything unknown or malformed is dropped. The 7-day store has no states. */
-export function readSearch(params: Record<string, Param>, inQuick: boolean): SearchState {
+/** The search an address asks for; anything unknown or malformed is dropped. */
+export function readSearch(params: Record<string, Param>): SearchState {
   const showRaw = Number(first(params.show));
   const typeRaw = first(params.type);
   const sortRaw = first(params.sort);
   return {
     q: normalSearch(first(params.q) ?? ''),
-    delivery: !inQuick && first(params.delivery) === QUICK_VALUE,
     type: isProductType(typeRaw) ? typeRaw : null,
     category: slug(params.category),
-    state: inQuick ? null : slug(params.state),
+    state: slug(params.state),
     sort: (SEARCH_SORTS as readonly string[]).includes(sortRaw ?? '') ? (sortRaw as SearchSort) : null,
     show: Math.min(Math.max(Number.isInteger(showRaw) ? showRaw : PAGE, PAGE), 480),
     retry: first(params.retry) === '1',
@@ -53,7 +49,6 @@ export function readSearch(params: Record<string, Param>, inQuick: boolean): Sea
 export function searchHref(base: string, s: SearchState): string {
   const entries: [string, string | null][] = [
     ['q', s.q || null],
-    ['delivery', s.delivery ? QUICK_VALUE : null],
     ['type', s.type],
     ['category', s.category],
     ['state', s.state],
@@ -67,9 +62,8 @@ export function searchHref(base: string, s: SearchState): string {
 }
 
 /** A plain search for these words: no filter, the first page. */
-export const plainSearch = (q: string, delivery = false): SearchState => ({
+export const plainSearch = (q: string): SearchState => ({
   q,
-  delivery,
   type: null,
   category: null,
   state: null,

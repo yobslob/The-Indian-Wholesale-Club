@@ -38,7 +38,7 @@ export function productMetadata(page: ProductPage): Metadata {
   const summary = usableSummary(product.summary, product.description) ?? undefined;
   const path = productPath(product.region_slug, product.slug);
   const photo = sharePhoto(product.primary_image_path ?? media[0]?.storage_path);
-  const price = product.coming_soon ? 'Coming soon' : optionPriceLabel(variants);
+  const price = optionPriceLabel(variants);
   const shareText = [price, summary].filter(Boolean).join(' · ') || undefined;
   const images = photo ? [{ url: photo, alt: title }] : undefined;
   return {
@@ -53,8 +53,8 @@ export function productMetadata(page: ProductPage): Metadata {
 type Json = string | number | boolean | null | Json[] | { [key: string]: Json | undefined };
 
 function offers(page: ProductPage, url: string): Json | undefined {
-  const { product, variants } = page;
-  if (product.coming_soon || variants.length === 0) return undefined;
+  const { variants } = page;
+  if (variants.length === 0) return undefined;
   const prices = variants.map((v) => v.price_cents);
   const low = Math.min(...prices);
   const high = Math.max(...prices);

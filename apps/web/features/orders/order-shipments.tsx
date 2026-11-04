@@ -10,8 +10,9 @@ const STATUS: Record<OrderShipment['status'], string> = {
 };
 
 /**
- * D-154: an order of two shipments shows each one: "Shipment 1 · Arrives by Fri, Oct 30", where it stands, its own
- * Track the parcel (D-066) and its pieces (`renderItem`, the page's own rows). One order number, one receipt.
+ * D-154, D-187: an order of two shipments shows each one: "Shipment 1 · Food · Arrives by Fri, Oct 30", where it stands,
+ * its own Track the parcel (D-066) and its pieces (`renderItem`, the page's own rows). One order number, one receipt.
+ * The second is named only by its number: an order from before D-187 may carry food in it.
  */
 export function OrderShipments({
   order,
@@ -28,8 +29,8 @@ export function OrderShipments({
         return (
           <section key={sh.seq} aria-label={`Shipment ${sh.seq}`}>
             <h2 className="font-ui m-0 flex flex-wrap items-baseline gap-x-3 gap-y-1 pb-2 text-[15px] font-semibold">
-              <span className={sh.kind === 'quick' ? 'text-brand' : 'text-ink'}>
-                {[`Shipment ${sh.seq}`, sh.status === 'cancelled' ? null : arrivalLine(sh.est_delivery_from, sh.est_delivery_to)]
+              <span className={sh.kind === 'food' ? 'text-brand' : 'text-ink'}>
+                {[`Shipment ${sh.seq}`, sh.kind === 'food' ? 'Food' : null, sh.status === 'cancelled' ? null : arrivalLine(sh.est_delivery_from, sh.est_delivery_to)]
                   .filter(Boolean)
                   .join(' · ')}
               </span>

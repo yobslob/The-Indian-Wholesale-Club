@@ -8,19 +8,19 @@ import { TYPE_EMPTY } from '@/features/catalog/type-toggle';
 
 import type { Metadata } from 'next';
 
-type Params = Promise<{ type: string; state: string; category: string; show: string; for: string }>;
+type Params = Promise<{ type: string; state: string; category: string; for: string }>;
 
 /**
  * The See all pages, /clothing, /food and /home-and-gifts (D-062, D-106), with their filters (?state=, ?category=,
- * ?show=, and ?for= women or men on clothing, D-140). next.config.js rewrites each address here (it never shows in the browser), so a page is built once and
+ * and ?for= women or men on clothing, D-140). next.config.js rewrites each address here (it never shows in the browser), so a page is built once and
  * served from the cache like the state pages (PR-1, D-011) instead of rendered on every request; "all" = no filter.
  * The other filters (price, size, sort, D-136) are read by the page itself in the browser (browse-view.tsx).
  */
-export async function generateStaticParams(): Promise<{ type: string; state: string; category: string; show: string; for: string }[]> {
+export async function generateStaticParams(): Promise<{ type: string; state: string; category: string; for: string }[]> {
   return [
-    ...PRODUCT_TYPES.map((t) => ({ type: PRODUCT_TYPE_PATH[t].slice(1), state: 'all', category: 'all', show: '24', for: 'all' })),
+    ...PRODUCT_TYPES.map((t) => ({ type: PRODUCT_TYPE_PATH[t].slice(1), state: 'all', category: 'all', for: 'all' })),
     // D-140: the header's and the tiles' Women and Men
-    ...(['women', 'men'] as const).map((w) => ({ type: 'clothing', state: 'all', category: 'all', show: '24', for: w })),
+    ...(['women', 'men'] as const).map((w) => ({ type: 'clothing', state: 'all', category: 'all', for: w })),
   ];
 }
 
@@ -33,7 +33,6 @@ async function read(params: Params) {
   const query = parseBrowseQuery({
     state: p.state === 'all' ? undefined : p.state,
     category: p.category === 'all' ? undefined : p.category,
-    show: p.show === '24' ? undefined : p.show, // the first page, as /clothing shows it
     for: p.for === 'all' ? undefined : p.for,
   });
   return { productType, query };

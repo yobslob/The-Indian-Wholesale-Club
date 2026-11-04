@@ -9,8 +9,11 @@ export interface InfoPolicy {
   shipping_flat_cents: number | null;
   free_shipping_min_cents: number | null;
   min_order_cents: number | null;
-  express_days_min: number | null;
-  express_days_max: number | null;
+  /** D-187: clothing and home & gifts, and food, in delivery days. */
+  delivery_days_min: number | null;
+  delivery_days_max: number | null;
+  food_delivery_days_min: number | null;
+  food_delivery_days_max: number | null;
   us_delivery_days_min: number | null;
   us_delivery_days_max: number | null;
   cancel_fee_pct: number | null;
@@ -23,6 +26,14 @@ export const pct = (n: number): string => `${Number(n.toFixed(3))}%`;
 
 export const dayRange = (from: number | null, to: number | null): string | null =>
   from !== null && to !== null ? (from === to ? `${from} days` : `${from} to ${to} days`) : null;
+
+/** D-187: "7 delivery days", "12 to 16 delivery days"; null when the days are not set. */
+export const deliveryDays = (from: number | null, to: number | null): string | null =>
+  from !== null && to !== null ? (from === to ? `${from} delivery days` : `${from} to ${to} delivery days`) : null;
+
+/** D-187: what a delivery day is. The one place the definition is spelled out (the founder, §10 Y-5). */
+export const DELIVERY_DAY =
+  'A delivery day is a working day, Monday to Friday. Delays to flights are not counted in them: if a flight is late, your order can arrive later, and we email you the new date.';
 
 /** "free", "$5.00", plus the free-shipping threshold when there is one (D-111: small orders pay their charges); with a smallest order (D-109), "free on orders over $x". */
 export function standardShipping(p: InfoPolicy): string {

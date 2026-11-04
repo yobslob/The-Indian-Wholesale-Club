@@ -7,8 +7,6 @@ import {
   browseProducts,
   getHome,
   getProductPage,
-  getQuickFront,
-  getQuickPage,
   getRegionHead,
   getStorePolicy,
   isDemoStore,
@@ -18,7 +16,6 @@ import {
   type SearchFilter,
 } from '@repo/db/store';
 
-import { quickCategories } from '@/features/seven-day/links';
 import { storeClient } from '@/lib/supabase/store';
 
 import { usefulSizes } from './size-facet';
@@ -51,8 +48,8 @@ export const listingsTag = 'store:listings';
  */
 // v16: store_browse adds 'wears' and the For filter; v17: cards carry their options; v18: Home's band (D-140);
 // v19: store_browse's drawer (D-144); v20: cards keep their options out of the cache and the page (D-145);
-// v21: the product carries made_in_india (D-171)
-const SHAPE = 'v21';
+// v21: the product carries made_in_india (D-171); v22: the simple store's Home, cards and policy (D-187)
+const SHAPE = 'v22';
 
 /**
  * During a deploy's build only: a read past the database's 3 s limit waits and tries again. Next's own retries (a page
@@ -111,7 +108,6 @@ const browseKey = (filter: BrowseFilter): string[] => [
   (filter.sizes ?? []).join('|'),
   filter.sort ?? 'new',
   filter.forWho ?? '',
-  filter.quick ? 'quick' : '',
   String(filter.offset ?? 0),
   String(filter.limit ?? 24),
 ];
@@ -140,39 +136,6 @@ export const browseStateCached = (filter: BrowseFilter & { regionSlug: string })
     [listingsTag, regionsTag, regionTag(filter.regionSlug)],
     () => browseRead(filter),
   );
-
-/**
- * The 7-day store's first cards and its categories with their types (D-148): Home's "Arrives in 7 days" row and the
- * front page's tiles, refreshed with the listings (listingsTag). One entry per category and page.
- */
-export const quickPageCached = (category: string | null, offset: number, limit: number) =>
-  cached(['store-quick', category ?? '', String(offset), String(limit)], [listingsTag], () =>
-    getQuickPage(storeClient(), { category, offset, limit }),
-  );
-
-/** D-154: the 7-day store's front page (its tiles and rows), refreshed with the listings like its list. */
-export const getQuickFrontCached = () => cached(['store-quick-front'], [listingsTag], () => getQuickFront(storeClient()));
-
-/**
- * D-154: what the header needs on every page for the store switch and the 7-day store's links: the days and the
- * categories, nothing else; null while the 7-day store is off, paused or empty. Only STORE_TAG (like the demo flag), so a listing change never rebuilds every page.
- */
-export const getQuickNavCached = () =>
-  cached(['store-quick-nav'], [], async () => {
-    const [front, page] = await Promise.all([
-      getQuickFront(storeClient()),
-      getQuickPage(storeClient(), { offset: 0, limit: 1 }),
-    ]);
-    // an empty 7-day store has no door; a category's link needs its type (/7-day-delivery/food?category=sweets)
-    return front && front.total > 0
-      ? {
-          daysMin: front.days_min,
-          daysMax: front.days_max,
-          categories: quickCategories(front.categories, page.categories).slice(0, 4),
-        }
-      : null;
-  });
-export type QuickNav = Awaited<ReturnType<typeof getQuickNavCached>>;
 
 /** Demo mode (D-078): the banner on every store page. Refreshed with STORE_TAG or within the hour (STORE_REVALIDATE_SECONDS). */
 export const isDemoStoreCached = () => cached(['store-demo'], [], () => isDemoStore(storeClient()));

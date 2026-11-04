@@ -20,14 +20,12 @@ export function ProductStrip<T extends CardData>({
   label,
   size = 'md',
   badge,
-  quickTag,
   headed = false,
 }: {
   products: T[];
   label: string;
   size?: 'md' | 'sm';
   badge?: (p: T) => React.ReactNode;
-  quickTag?: boolean;
   /** Inside a section named by its own heading (ProductRow): the list needs no name of its own. */
   headed?: boolean;
 }): React.JSX.Element {
@@ -37,7 +35,7 @@ export function ProductStrip<T extends CardData>({
     <RowScroller label={label} headed={headed}>
       {products.map((p, i) => (
         <li key={p.id} className={`${width} shrink-0 snap-start`}>
-          <ProductCard product={p} size={size} layout="row" badge={badge?.(p)} reveal={i < REVEALED} quickTag={quickTag} />
+          <ProductCard product={p} size={size} layout="row" badge={badge?.(p)} reveal={i < REVEALED} />
         </li>
       ))}
     </RowScroller>
@@ -56,7 +54,6 @@ export function ProductRow<T extends CardData>({
   href,
   size,
   badge,
-  quickTag,
 }: {
   id: string;
   title: string;
@@ -65,8 +62,6 @@ export function ProductRow<T extends CardData>({
   href?: string;
   size?: 'md' | 'sm';
   badge?: (p: T) => React.ReactNode;
-  /** Off where every card is a 7-day piece and the page says so once. */
-  quickTag?: boolean;
 }): React.JSX.Element | null {
   if (products.length === 0) return null;
   return (
@@ -87,7 +82,7 @@ export function ProductRow<T extends CardData>({
           </Link>
         ) : null}
       </div>
-      <ProductStrip products={products} label={title} size={size} badge={badge} quickTag={quickTag} headed />
+      <ProductStrip products={products} label={title} size={size} badge={badge} headed />
     </section>
   );
 }

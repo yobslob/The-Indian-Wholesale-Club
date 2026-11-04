@@ -9,7 +9,6 @@ import { browseSearch, inStatePage, PAGE, parseBrowseQuery } from '@/features/ca
 import { BrowseSkeleton } from '@/features/catalog/browse-skeleton';
 import { BrowseView } from '@/features/catalog/browse-view';
 import { typeSwitch, typeSwitchItem } from '@/features/catalog/type-switch-style';
-import { QUICK_TYPES } from '@/features/seven-day/links';
 
 import type { BrowsePage } from '@repo/db/store';
 
@@ -43,15 +42,12 @@ export function RegionTypeTabs({
   region,
   regionName,
   firstView,
-  quickDays,
 }: {
   tabs: RegionTab[];
   first: string;
   region: string;
   regionName: string;
   firstView: React.ReactNode;
-  /** D-154: the 7-day days for "Delivery: in 7 days"; null while 7-day delivery is off. */
-  quickDays: number | null;
 }): React.JSX.Element {
   const [open, setOpen] = useState(first);
   const [pages, setPages] = useState<Record<string, BrowsePage | 'failed'>>({});
@@ -163,8 +159,6 @@ export function RegionTypeTabs({
             title={PRODUCT_TYPE_LABEL[type]}
             initialQuery={query}
             initial={page}
-            quickDays={quickDays}
-            quickBand={QUICK_TYPES.includes(type)}
           />
         ) : (
           <BrowseSkeleton dense={type !== 'clothing'} />

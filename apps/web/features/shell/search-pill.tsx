@@ -1,10 +1,8 @@
 'use client';
 
-import { usePathname } from 'next/navigation';
 import { useEffect, useRef } from 'react';
 
 import { SuggestFor } from '@/features/search/suggest-for';
-import { isQuickPath, QUICK_HOME } from '@/lib/site';
 
 import { HeaderIcon } from './header-icons';
 
@@ -16,12 +14,11 @@ const typing = (t: EventTarget | null): boolean =>
  * The header's Search (D-079, D-113): a pill with the icon and the word; it grows into a long search bar once the page
  * is scrolled (html[data-scrolled]), on hover or focus, and while something is typed. Enter opens /search. The look
  * is CSS (app/globals.css, .site-search); the script marks the scroll and lets a hovered pill close on mouse-out.
- * D-154: inside the 7-day store it searches only 7-day pieces (/7-day-delivery/search). D-160: suggestions while
+ * D-160: suggestions while
  * typing (loaded on the first focus or hover) and "/" anywhere on the page puts the cursor in it.
  */
 export function SearchPill(): React.JSX.Element {
   const input = useRef<HTMLInputElement>(null);
-  const quick = isQuickPath(usePathname());
   useEffect(() => {
     const root = document.documentElement;
     let frame = 0;
@@ -49,7 +46,7 @@ export function SearchPill(): React.JSX.Element {
   }, []);
   return (
     <form
-      action={quick ? `${QUICK_HOME}/search` : '/search'}
+      action="/search"
       role="search"
       className="site-search"
       onMouseLeave={() => {
@@ -60,8 +57,8 @@ export function SearchPill(): React.JSX.Element {
         Search
       </span>
       <HeaderIcon name="search" />
-      <input ref={input} type="search" name="q" maxLength={100} placeholder={quick ? 'Search the 7-day store' : 'Search'} aria-label="Search" aria-keyshortcuts="/" />
-      <SuggestFor input={input} quick={quick} />
+      <input ref={input} type="search" name="q" maxLength={100} placeholder="Search" aria-label="Search" aria-keyshortcuts="/" />
+      <SuggestFor input={input} />
     </form>
   );
 }

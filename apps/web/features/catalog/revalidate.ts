@@ -2,12 +2,9 @@ import 'server-only';
 
 import { revalidateTag } from 'next/cache';
 
-import { getNextDelivery } from '@repo/db/store';
 import { regionSegment } from '@repo/shared/domain';
 
-import { storeClient } from '@/lib/supabase/store';
-
-import { getHomeCached, homeTag, productTag, regionTag, STORE_TAG } from './data';
+import { homeTag, productTag, regionTag, STORE_TAG } from './data';
 
 /** A product page, by the slugs its URL and cache entry use. */
 export interface ProductPageRef {
@@ -37,18 +34,4 @@ export function revalidateAfterSale(pages: ProductPageRef[]): void {
 /** Pieces went back to stock (a cancel): rare, so everything. */
 export function revalidateAfterRelease(): void {
   revalidateTag(STORE_TAG);
-}
-
-/**
- * The cached "order by" time has passed (D-008): the cycle closed by itself (roll_cycles) and the store must show the
- * next window. Called every minute by the scheduler's job; refreshes at most once per cutoff. Returns whether it did.
- */
-export async function revalidateIfCutoffPassed(): Promise<boolean> {
-  const cached = (await getHomeCached()).delivery;
-  // The made-to-order pilot has no cutoff (D-115); its window moves with the date and the hour's cache.
-  if (!cached?.order_by || Date.parse(cached.order_by) > Date.now()) return false;
-  const live = await getNextDelivery(storeClient());
-  if (live?.order_by === cached.order_by) return false; // never purge twice for the same window
-  revalidateTag(STORE_TAG);
-  return true;
 }

@@ -1,13 +1,10 @@
 'use client';
 
-import Link from 'next/link';
-import { usePathname } from 'next/navigation';
-
 import { formatUsd, type BagGoal } from '@repo/shared/domain';
 
 import { useDays } from '@/features/shell/days';
 
-import { bagSaving, freeDelivery, undoBagChange, useBagCharges, useShipmentNote } from './charges';
+import { bagSaving, freeDelivery, useBagCharges } from './charges';
 import { FreeMeter, useSurge } from './free-meter';
 import { useCart } from './store';
 
@@ -45,18 +42,17 @@ export function ReducedValue({ cents, shownCents }: { cents: number; shownCents:
  * The bag's Shipping and Retailer charges under its subtotal (D-111, D-125): Shipping is at least the parcel's amount,
  * more when the bag's pieces cannot pay for the parcel; both are paid below the free-delivery line and struck through
  * above it. Heavy-item shipping, when the bag has a heavy piece (founder 2026-10-24), is always paid, less its % from
- * the line. Checkout prices them again on the server.
+ * $99.99 (D-187). Checkout prices them again on the server.
  */
 export function ChargeLines(): React.JSX.Element | null {
   const lines = useCart((s) => s.lines);
   const charges = useBagCharges();
   const days = useDays();
   if (!charges) return null;
-  const { free, bulk, at, heavy, goal } = freeDelivery(lines, charges, days);
+  const { free, bulk, bulkFrom, at, heavy, goal } = freeDelivery(lines, charges, days);
   const row = 'flex items-baseline justify-between gap-3 text-[14px]';
   return (
     <div className="font-ui grid gap-1" aria-live="polite">
-      <BagNote />
       <p className={row}>
         <span>Shipping</span>
         <ChargeValue cents={at.shippingCents || at.waivedShippingCents} free={at.shippingFree} />
@@ -79,29 +75,9 @@ export function ChargeLines(): React.JSX.Element | null {
           <span className="text-positive font-semibold">−{formatUsd(bulk.savingCents)}</span>
         </p>
       ) : null}
-      <GoalMeter goal={goal} />
+      <GoalMeter goal={goal} bulkFrom={bulkFrom} />
       <SavingLine cents={bagSaving(lines, charges, days)} />
     </div>
-  );
-}
-
-/**
- * D-154: the three-second note when a change moved the bag across a line, on the bag page (elsewhere the pill shows
- * it): "Your 7-day pieces now arrive by Fri, Oct 30", "Shipping is now $46.55 until $99.99. Undo".
- */
-function BagNote(): React.JSX.Element | null {
-  const note = useShipmentNote();
-  const path = usePathname();
-  if (!note || path !== '/cart') return null;
-  return (
-    <p className="text-brand rise-in m-0 mb-1 text-[13px] font-semibold">
-      {note.text}{' '}
-      {note.undo ? (
-        <button type="button" onClick={() => undoBagChange(note.prevKey)} className="min-h-11 underline underline-offset-[3px]">
-          Undo
-        </button>
-      ) : null}
-    </p>
   );
 }
 
@@ -117,32 +93,27 @@ export function SavingLine({ cents }: { cents: number }): React.JSX.Element | nu
 }
 
 /**
- * The bag's one goal under its charges, as the pill says it (bag-goal.ts; founder 2026-10-24: one bar, never two). From
- * the line up (D-119), how the bulk saving grows and where it stops.
+ * The bag's one goal under its charges, as the pill says it (bag-goal.ts; founder 2026-10-24: one bar, never two). Past
+ * the free line, how the bulk saving grows from its own line ($99.99, D-187) and where it stops.
  */
-function GoalMeter({ goal }: { goal: BagGoal }): React.JSX.Element | null {
+function GoalMeter({ goal, bulkFrom }: { goal: BagGoal; bulkFrom: number | null }): React.JSX.Element | null {
+  const every = (b: { perDollarCents: number | null; capCents: number }): string =>
+    `every ${formatUsd(b.perDollarCents ?? 0)} more saves $1 more, up to ${formatUsd(b.capCents)}`;
   const words =
-    goal.kind === 'quick-gap'
-      ? `Add ${formatUsd(goal.leftCents)} more for free 7-day delivery`
-      : goal.kind === 'quick-free'
-        ? `Free 7-day delivery${goal.arrivesBy ? `: arrives by ${goal.arrivesBy}` : ' unlocked'}`
-        : goal.kind === 'free-gap'
-          ? `Add ${formatUsd(goal.leftCents)} more for free delivery`
-          : goal.kind === 'free' && goal.bulk.capCents > 0
-            ? goal.bulk.capped
-              ? `You've unlocked the biggest bulk saving: ${formatUsd(goal.bulk.capCents)}`
-              : `Every ${formatUsd(goal.bulk.perDollarCents ?? 0)} more saves $1 more, up to ${formatUsd(goal.bulk.capCents)}`
-            : null;
+    goal.kind === 'free-gap'
+      ? `Add ${formatUsd(goal.leftCents)} more for free delivery`
+      : goal.kind === 'free' && goal.bulk.capCents > 0
+        ? goal.bulk.capped
+          ? `You've unlocked the biggest bulk saving: ${formatUsd(goal.bulk.capCents)}`
+          : goal.bulk.savingCents === 0 && bulkFrom !== null
+            ? `From ${formatUsd(bulkFrom)}, ${every(goal.bulk)}`
+            : `E${every(goal.bulk).slice(1)}`
+        : null;
   if (!words || goal.kind === 'none') return null;
   return (
     <div className="mt-1.5 grid gap-2">
-      <p className="m-0 flex flex-wrap items-baseline justify-between gap-x-3 gap-y-1 text-[13px]">
+      <p className="m-0 text-[13px]">
         <span className="text-brand font-semibold">{words}</span>
-        {goal.kind === 'quick-gap' ? (
-          <Link href="/7-day-delivery" className="font-medium underline underline-offset-[3px]">
-            Shop the 7-day store
-          </Link>
-        ) : null}
       </p>
       <Meter share={goal.share} more={goal.kind === 'free' && goal.bulk.capCents > 0 ? goal.bulk.share : null} />
     </div>

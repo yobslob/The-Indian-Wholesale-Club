@@ -1,6 +1,5 @@
 'use client';
 
-import dynamic from 'next/dynamic';
 import { useRef } from 'react';
 
 import { sizeLabel } from '@repo/shared/domain';
@@ -26,10 +25,6 @@ import { WhoTiles } from './who-tiles';
 import type { BrowsePage, BrowseSort } from '@repo/db/store';
 import type { ProductType } from '@repo/shared/domain';
 
-// D-181: only a state's Food and Home & gifts draw the 7-day band, and it reads its cards after the page: its code
-// loads with it, so See all and Clothing keep their first-load JS (D-011's budget)
-const QuickBand = dynamic(() => import('@/features/seven-day/quick-band').then((m) => m.QuickBand), { ssr: false });
-
 const pieces = (n: number): string => `${n} ${n === 1 ? 'piece' : 'pieces'}`;
 /** The count, with Clothing's finishing touches when they are in a drawer (D-144): "652 pieces · 40 finishing touches". */
 const counted = (meta: { total: number; drawer_total: number }): string =>
@@ -48,17 +43,11 @@ export function BrowseView({
   title,
   initialQuery,
   initial,
-  quickDays = null,
-  quickBand = false,
 }: {
   productType: ProductType;
   title: string;
   initialQuery: BrowseQuery;
   initial: BrowsePage;
-  /** D-154: the 7-day days, for "Delivery: in 7 days"; null while 7-day delivery is off. */
-  quickDays?: number | null;
-  /** A state's Food and Home & gifts: the 7-day band after the second row (quick-band.tsx), while 7-day is open. */
-  quickBand?: boolean;
 }): React.JSX.Element {
   const { query, meta, products, loading, stuck, apply, showMore } = useBrowse(
     productType,
@@ -73,10 +62,7 @@ export function BrowseView({
   const categoryName = meta.categories.find((c) => c.slug === query.category)?.name;
   const price = priceLabel(query);
   const whoName = query.who ? WHO_LABEL[query.who] : undefined;
-  // D-154: on the 7-day store's own pages every piece is a 7-day piece: no Delivery filter, chip or tag on the cards
-  const inQuick = query.inQuick === true;
-  const quickName = query.quick && quickDays && !inQuick ? `In ${quickDays} days` : undefined;
-  const chosen = Boolean((query.state && !inState) || query.category || price || query.sizes.length || query.who || quickName);
+  const chosen = Boolean((query.state && !inState) || query.category || price || query.sizes.length || query.who);
 
   /** A filter applied: the cards swap in place; if the reader is far down, back to the top of the cards. */
   const change = (next: BrowseQuery): void => {
@@ -106,9 +92,9 @@ export function BrowseView({
       </a>
     );
   };
-  const clearAll = withFilter(query, { state: query.inState, category: undefined, who: undefined, min: undefined, max: undefined, sizes: [], quick: inQuick || undefined });
+  const clearAll = withFilter(query, { state: query.inState, category: undefined, who: undefined, min: undefined, max: undefined, sizes: [] });
   const panel = (
-    <FilterPanel productType={productType} query={query} meta={meta} quickDays={inQuick ? null : quickDays} onChange={change} states={!inState} />
+    <FilterPanel productType={productType} query={query} meta={meta} onChange={change} states={!inState} />
   );
 
   return (
@@ -120,7 +106,7 @@ export function BrowseView({
       </Heading>
       {productType === 'clothing' && meta.wears ? <WhoTiles query={query} counts={meta.wears} onChange={change} /> : null}
       <PhoneFilter
-        chosen={`${whoName ? `${whoName} · ` : ''}${inState ? '' : `${stateName ?? 'All states'} · `}${categoryName ?? 'Everything'}${price ? ` · ${price}` : ''}${quickName ? ` · ${quickName}` : ''}`}
+        chosen={`${whoName ? `${whoName} · ` : ''}${inState ? '' : `${stateName ?? 'All states'} · `}${categoryName ?? 'Everything'}${price ? ` · ${price}` : ''}`}
         count={counted(meta)}
         onClear={chosen ? () => change(clearAll) : null}
       >
@@ -129,7 +115,6 @@ export function BrowseView({
       <div className="lg:grid lg:grid-cols-[232px_minmax(0,1fr)] lg:gap-[clamp(28px,3vw,52px)]">
         <aside aria-label="Filters" className="hidden lg:block">
           <div
-            data-lenis-prevent
             className="no-scrollbar sticky top-[calc(var(--top-h)+20px)] max-h-[calc(100dvh-var(--top-h)-40px)] overflow-y-auto pb-6 pr-1"
           >
             {panel}
@@ -142,7 +127,6 @@ export function BrowseView({
             </p>
             {chosen ? (
               <div className={`${styles.chips} order-last w-full md:order-none md:w-auto`}>
-                {quickName ? chip(quickName, { quick: undefined }) : null}
                 {whoName ? chip(whoName, { who: undefined }) : null}
                 {categoryName ? chip(categoryName, { category: undefined }) : null}
                 {stateName ? chip(stateName, { state: undefined }) : null}
@@ -195,12 +179,12 @@ export function BrowseView({
               // clothing keeps two, its photos need the width
               data-dense={productType === 'clothing' ? undefined : ''}
               aria-busy={loading === 'replace'}
-              className={`${styles.cards} drift drift-side grid grid-cols-2 gap-x-[var(--gap)] gap-y-[clamp(28px,3vw,44px)] transition-opacity duration-200 lg:grid-cols-3 2xl:grid-cols-4 ${
+              className={`${styles.cards} grid grid-cols-2 gap-x-[var(--gap)] gap-y-[clamp(28px,3vw,44px)] transition-opacity duration-200 lg:grid-cols-3 2xl:grid-cols-4 ${
                 loading === 'replace' ? 'opacity-50' : ''
               }`}
             >
               {products.map((p) => (
-                <ProductCard key={p.id} product={p} layout="side" quickTag={!inQuick} />
+                <ProductCard key={p.id} product={p} layout="side" />
               ))}
               {Array.from({ length: Math.ceil(meta.drawer.length / DRAWER_SIZE) }, (_, k) => {
                 const cards = products.slice(k * DRAWER_EVERY, (k + 1) * DRAWER_EVERY).length;
@@ -216,10 +200,6 @@ export function BrowseView({
                   />
                 );
               })}
-              {quickBand && quickDays && !query.quick && products.length > 0 ? (
-                // two full rows at four columns
-                <QuickBand productType={productType} days={quickDays} placed={products.length >= 8} />
-              ) : null}
             </div>
           )}
           {products.length < meta.total && loading !== 'replace' ? (
