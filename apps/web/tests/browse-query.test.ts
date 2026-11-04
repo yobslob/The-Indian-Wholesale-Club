@@ -3,6 +3,7 @@ import { describe, it } from 'node:test';
 
 import {
   browseHref,
+  browseSearch,
   inStatePage,
   parseBrowseQuery,
   priceRanges,
@@ -16,9 +17,13 @@ import {
 describe("See all's filters in the address (D-136)", () => {
   it('reads every filter and leaves out what is malformed', () => {
     const q = parseBrowseQuery(new URLSearchParams('state=kerala&category=Bad!&min=60&max=20&size=M&size=XL&size=M&sort=price-asc&show=48'));
-    assert.deepEqual(q, { state: 'kerala', category: undefined, min: 20, max: 60, sizes: ['M', 'XL'], sort: 'price-asc', show: 48 });
-    assert.equal(parseBrowseQuery({ sort: 'cheapest', show: '24' }).sort, 'low');
-    assert.equal(parseBrowseQuery({ show: '24' }).show, undefined);
+    assert.deepEqual(q, { state: 'kerala', category: undefined, min: 20, max: 60, sizes: ['M', 'XL'], sort: 'price-asc' });
+    assert.equal(parseBrowseQuery({ sort: 'cheapest' }).sort, 'low');
+  });
+
+  it('R-6, D-187: an old ?show= or ?delivery= link lands on the first page, and neither stays in the address', () => {
+    const q = parseBrowseQuery(new URLSearchParams('show=48&delivery=7-day&state=kerala'));
+    assert.equal(browseSearch(q), 'state=kerala');
   });
 
   it('writes one address per filter set, in a fixed order', () => {
@@ -37,8 +42,8 @@ describe("See all's filters in the address (D-136)", () => {
   });
 
   it('a new state drops the category and every change starts again at the first page', () => {
-    const q = parseBrowseQuery({ state: 'kerala', category: 'sarees', show: '72' });
-    assert.deepEqual(withFilter(q, { state: 'punjab' }), { ...q, state: 'punjab', category: undefined, show: undefined });
+    const q = parseBrowseQuery({ state: 'kerala', category: 'sarees' });
+    assert.deepEqual(withFilter(q, { state: 'punjab' }), { ...q, state: 'punjab', category: undefined });
     assert.equal(withFilter(q, { sizes: ['M'] }).category, 'sarees');
   });
 
@@ -104,13 +109,11 @@ describe("See all's For and size groups (D-140)", () => {
 
 describe('the checks that replaced zod in the browser (D-157)', () => {
   it('keeps the same rules: whole numbers in range, a size of 1 – 40 letters, a known sort', () => {
-    const q = parseBrowseQuery({ min: '1.5', max: '100001', size: ['  ', 'x'.repeat(41), ' L '], sort: 'new', show: '480' });
+    const q = parseBrowseQuery({ min: '1.5', max: '100001', size: ['  ', 'x'.repeat(41), ' L '], sort: 'new' });
     assert.equal(q.min, undefined);
     assert.equal(q.max, undefined);
     assert.deepEqual(q.sizes, ['L']);
     assert.equal(q.sort, 'new');
-    assert.equal(q.show, 480);
-    assert.equal(parseBrowseQuery({ show: '481' }).show, undefined);
     assert.equal(parseBrowseQuery({ min: '' }).min, 0);
     assert.equal(parseBrowseQuery({ state: 'Kerala' }).state, undefined);
   });

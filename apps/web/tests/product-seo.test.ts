@@ -84,8 +84,6 @@ describe('product metadata and JSON-LD (E-2a, E-2b)', () => {
     assert.equal(india['@graph'][0].url, `${BASE}/states/india/kasavu-saree`);
     const imported = JSON.parse(productJsonLdText(page({ made_in_india: false }), BASE));
     assert.equal(imported['@graph'][0].countryOfOrigin, undefined);
-    const coming = JSON.parse(productJsonLdText(page({ coming_soon: true }), BASE));
-    assert.equal(coming['@graph'][0].offers, undefined);
   });
 
   it('carries no shop, source or brand field, and escapes < in product text', () => {

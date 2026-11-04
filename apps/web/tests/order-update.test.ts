@@ -45,7 +45,6 @@ const base: OrderDetail = {
   ],
   events: [],
   shipments: [],
-  offer: null,
   actions: { can_cancel: false, cancel_refund_cents: null, delay_open: true, delay_refund_cents: 5400, returns: [] },
 };
 const url = 'https://iwc.example/orders/IWC-261006-ABCDEF0123';
@@ -63,8 +62,6 @@ const KINDS = [
   'item_refunded',
   'order_cancelled',
   'delivery_window_changed',
-  'faster_delivery_accepted',
-  'arriving_sooner',
   'return_requested',
   'return_rejected',
   'shipped',
@@ -82,10 +79,8 @@ describe('order update emails (B-20)', () => {
   });
 
   it('D-003: no email ever mentions shops, pickups, exports, cycles or vendors', () => {
-    for (const kind of [...KINDS, 'faster_delivery_offer']) {
-      const html =
-        mail(kind, { ...base, offer: { price_cents: 500, est_delivery_from: '2026-11-01', est_delivery_to: '2026-11-04' } })
-          ?.html ?? '';
+    for (const kind of KINDS) {
+      const html = mail(kind)?.html ?? '';
       assert.doesNotMatch(html, /shop|pickup|export|cycle|vendor|forwarder|india desk/i, kind);
     }
   });
@@ -117,13 +112,13 @@ describe('order update emails (B-20)', () => {
     assert.ok(html.includes('https://iwc.example/photo/products/p1/mundu.jpg'));
   });
 
-  it('no email for internal or unknown kinds, or an offer that is gone', () => {
+  it('no email for internal or unknown kinds, or the faster-delivery kinds that are gone (D-187)', () => {
     assert.equal(mail('note'), null);
     assert.equal(mail('faster_delivery_offer'), null);
   });
 });
 
-// D-154: an order of two shipments, the 7-day snack apart from the kurta
+// D-154, D-187: an order of two shipments, the food apart from the kurta
 const SNACK = '00000000-0000-4000-8000-000000000003';
 const split: OrderDetail = {
   ...base,
@@ -132,7 +127,7 @@ const split: OrderDetail = {
     { ...base.items[0]!, id: SNACK, product_name: 'Banana chips', variant_label: '200 g', status: 'active' },
   ],
   shipments: [
-    { seq: 1, kind: 'quick', status: 'shipped', est_delivery_from: '2026-10-30', est_delivery_to: '2026-10-30', shipping_cents: 931,
+    { seq: 1, kind: 'food', status: 'shipped', est_delivery_from: '2026-10-30', est_delivery_to: '2026-10-30', shipping_cents: 931,
       carrier: 'DHL', tracking_number: '1234567890', shipped_at: '2026-10-24T10:00:00Z', item_ids: [SNACK] },
     { seq: 2, kind: 'standard', status: 'open', est_delivery_from: '2026-11-03', est_delivery_to: '2026-11-07', shipping_cents: 1862,
       carrier: null, tracking_number: null, shipped_at: null, item_ids: [base.items[0]!.id] },
@@ -144,7 +139,7 @@ describe('two shipments (D-154)', () => {
   it('each shipped email names its shipment and shows only its pieces', () => {
     const first = orderUpdateEmail('shipped', split, ctx, 1);
     assert.ok(first);
-    assert.ok(first.subject.startsWith('Shipment 1 of order'));
+    assert.ok(first.subject.startsWith('Shipment 1 (food) of order'));
     assert.ok(first.html.includes('Banana chips'));
     assert.ok(!first.html.includes('Kasavu'));
     assert.ok(first.html.includes('The rest travels on its own'));
