@@ -111,16 +111,19 @@ export function ChargeRows(): React.JSX.Element | null {
   const charges = useBagCharges();
   if (!charges) return null;
   const { free, bulk, at, heavy, goal } = freeDelivery(lines, charges);
+  const every = `every ${formatUsd(bulk.perDollarCents ?? 0)} more saves $1 more, up to ${formatUsd(bulk.capCents)}`;
+  const bulkFrom = charges.bulk_saving_from_cents;
+  // the website's words (charge-lines.tsx)
   const words =
     goal.kind === 'free-gap'
       ? `Add ${formatUsd(goal.leftCents)} more for free delivery`
-      : goal.kind !== 'free'
-        ? null
-        : bulk.capped
+      : goal.kind === 'free' && bulk.capCents > 0
+        ? bulk.capped
           ? `You've unlocked the biggest bulk saving: ${formatUsd(bulk.capCents)}`
-          : bulk.savingCents > 0
-            ? `Every ${formatUsd(bulk.perDollarCents ?? 0)} more saves $1 more, up to ${formatUsd(bulk.capCents)}`
-            : 'Free delivery unlocked';
+          : bulk.savingCents === 0 && bulkFrom !== null
+            ? `From ${formatUsd(bulkFrom)}, ${every}`
+            : `E${every.slice(1)}`
+        : null;
   return (
     <View className="gap-1">
       <ChargeRow

@@ -2,7 +2,7 @@ import { Link, useRouter } from 'expo-router';
 import { Pressable, Text, View } from 'react-native';
 
 import { getHome } from '@repo/db/store';
-import { bagGroups, bagShipmentState, formatUsd, parseBagShipments, regionSegment } from '@repo/shared/domain';
+import { bagGroups, formatUsd, parseBagShipments, regionSegment } from '@repo/shared/domain';
 
 import { Photo } from '@/components/photo';
 import { Body, Button, Label, Screen } from '@/components/ui';
@@ -49,7 +49,6 @@ export default function BagScreen(): React.JSX.Element {
   const charges = useBagCharges();
   // An earlier bag's answer never decides what this bag's lines promise (founder 2026-10-30)
   const facts = charges?.bagKey === bagKey(lines) ? parseBagShipments(charges) : null;
-  const state = bagShipmentState(facts);
   const foodDays = useDeliveryLine('food');
   const otherDays = useDeliveryLine('clothing');
   const step = 'h-10 w-10 items-center justify-center';
@@ -152,14 +151,14 @@ export default function BagScreen(): React.JSX.Element {
                   >
                     {[
                       g.seq ? `Shipment ${g.seq}` : null,
-                      g.seq ? (g.kind === 'food' ? 'Food' : 'Clothing and home & gifts') : null,
+                      g.kind === 'food' ? 'Food' : 'Clothing and home & gifts',
                       g.kind === 'food' ? foodDays : otherDays,
                     ]
                       .filter(Boolean)
                       .join(' · ')}
-                    {state === 'none' ? null : (
+                    {g.kind === 'food' ? (
                       <Text className="font-ui text-ink-muted"> · for most US addresses</Text>
-                    )}
+                    ) : null}
                   </Text>
                   {lineList(g.lines)}
                 </View>
