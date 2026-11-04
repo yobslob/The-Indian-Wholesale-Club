@@ -1,6 +1,8 @@
 import assert from 'node:assert/strict';
 import { describe, it } from 'node:test';
 
+import { orderShipmentSchema } from '@repo/db/store';
+
 import { adminNewOrderHtml, adminNewOrderSubject } from '../lib/email/admin-new-order';
 import {
   escapeHtml,
@@ -134,5 +136,32 @@ describe("the admins' new-order email (D-140, A1)", () => {
     assert.match(html, /going to Edison, NJ/);
     assert.match(html, /Kasavu mundu/);
     assert.ok(html.includes('https://iwc.example/admin/orders?q=IWC-260928-ABCDEF0123'));
+  });
+});
+
+describe('old orders still draw (D-187)', () => {
+  const shipment = {
+    seq: 1,
+    status: 'open',
+    est_delivery_from: '2026-10-30',
+    est_delivery_to: '2026-10-30',
+    shipping_cents: 300,
+    carrier: null,
+    tracking_number: null,
+    shipped_at: null,
+    item_ids: [],
+  };
+
+  it("a shipment the database answers as 'quick' reads as food; an Express one stays Express", () => {
+    assert.equal(orderShipmentSchema.parse({ ...shipment, kind: 'quick' }).kind, 'food');
+    assert.equal(orderShipmentSchema.parse({ ...shipment, kind: 'food' }).kind, 'food');
+    assert.equal(orderShipmentSchema.parse({ ...shipment, kind: 'express' }).kind, 'express');
+  });
+
+  it('an Express order keeps its word, and an order with no shipments lists its pieces', () => {
+    const html = orderConfirmationHtml({ ...order, order: { ...order.order, shipping_method: 'express' }, shipments: [] }, ctx);
+    assert.match(html, /Express shipping/);
+    assert.match(html, /Estimated delivery/);
+    assert.match(html, new RegExp(order.items[0]!.product_name));
   });
 });

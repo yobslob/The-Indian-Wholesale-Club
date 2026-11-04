@@ -55,11 +55,11 @@ async function multiPricePieces(limit: number): Promise<Piece[]> {
   if (ids.length === 0) return [];
   const { data: products, error: productError } = await service
     .from('store_products')
-    .select('id, name, slug, region_slug, coming_soon')
+    .select('id, name, slug, region_slug')
     .in('id', ids.slice(0, 200));
   if (productError) throw productError;
   return products
-    .filter((p) => !p.coming_soon && p.slug && p.id && p.name)
+    .filter((p) => p.slug && p.id && p.name)
     .slice(0, limit)
     .map((p) => {
       const list = byProduct.get(p.id!)!;

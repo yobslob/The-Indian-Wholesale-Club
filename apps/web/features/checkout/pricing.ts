@@ -17,9 +17,9 @@ import { MAX_QTY_PER_LINE } from '@/features/cart/limits';
 import { stockProblems } from './stock';
 
 import type { CheckoutProblem, CheckoutQuote } from './types';
-import type { QuotedShipment } from '@repo/shared/domain';
 import type { ProductPageRef } from '@/features/catalog/revalidate';
 import type { IwcClient } from '@repo/db';
+import type { QuotedShipment } from '@repo/shared/domain';
 
 export const checkoutRequestSchema = z.object({
   email: emailSchema,

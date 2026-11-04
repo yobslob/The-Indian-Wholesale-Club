@@ -25,7 +25,7 @@ export interface CheckoutStart {
 }
 
 /**
- * /api/checkout and /api/orders share one rate limit per caller (20 a minute, lib/rate-limit-memory.ts), and the whole
+ * /api/checkout, /api/checkout/stock and /api/orders share one rate limit per caller (20 a minute, lib/rate-limit-memory.ts), and the whole
  * suite comes from one address. Each test gets its own made-up caller on those two routes only (never on Stripe's
  * requests), so a test that prices the bag six times doesn't make the next one answer 429. Fault routes added later
  * pass requests on with `route.fallback()`, which ends here.
@@ -35,10 +35,11 @@ export async function ownCaller(page: Page): Promise<void> {
   const handler = (route: Route) =>
     route.continue({ headers: { ...route.request().headers(), 'x-forwarded-for': ip } });
   await page.route('**/api/checkout', handler);
+  await page.route('**/api/checkout/stock', handler);
   await page.route('**/api/orders', handler);
 }
 
-/** Every answer /api/checkout gave in this page, in order (one per pricing: Continue to payment, each shipping switch). */
+/** Every answer /api/checkout gave in this page, in order (one per pricing). */
 export function watchCheckoutStarts(page: Page): CheckoutStart[] {
   const starts: CheckoutStart[] = [];
   page.on('response', (res: Response) => {
@@ -80,8 +81,8 @@ export async function reachPayment(page: Page): Promise<void> {
   await addDemoToBag(page);
   await fillCheckoutDetails(page);
   await continueToPayment(page).click();
-  // the priced step: its shipping choice (the bag's 'Estimated delivery' is folded behind the bag bar on phones)
-  await expect(page.getByRole('radio', { name: /^Standard/ })).toBeVisible();
+  // the priced step: Pay with the total (the bag's 'Estimated delivery' is folded behind the bag bar on phones)
+  await expect(page.getByRole('button', { name: /^Pay \$/ })).toBeVisible({ timeout: 30_000 });
 }
 
 /** Stripe's Payment Element: the visible frame inside <main> (Stripe's dev-tools frame sits outside it). */

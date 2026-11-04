@@ -2,15 +2,22 @@ import assert from 'node:assert/strict';
 import { createRequire } from 'node:module';
 import { describe, it } from 'node:test';
 
-import { compile, pathToRegexp, type Key } from 'next/dist/compiled/path-to-regexp';
-
 interface Rule {
   source: string;
   destination: string;
   permanent: boolean;
 }
 
+interface Key {
+  name: string | number;
+  modifier: string;
+}
+
 const require_ = createRequire(__filename);
+const { compile, pathToRegexp } = require_('next/dist/compiled/path-to-regexp') as {
+  pathToRegexp: (source: string, keys: Key[]) => RegExp;
+  compile: (pattern: string, options?: { validate: boolean }) => (params: Record<string, string | string[]>) => string;
+};
 const config = require_('../next.config.js') as {
   redirects: () => Promise<Rule[]>;
   rewrites: () => Promise<{ beforeFiles: { source: string; destination: string; has?: { key: string }[] }[] }>;
