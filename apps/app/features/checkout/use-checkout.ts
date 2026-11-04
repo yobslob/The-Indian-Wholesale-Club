@@ -1,5 +1,7 @@
 import { useState } from 'react';
 
+import { stockProblemLines } from './stock';
+
 import type {
   CheckoutErrorResponse,
   CheckoutRequestBody,
@@ -9,7 +11,6 @@ import type {
   StockProblemLine,
 } from '@repo/shared/domain';
 
-import { stockProblemLines } from './stock';
 
 import { apiPost } from '@/lib/api';
 import { SITE_NAME } from '@/lib/site';

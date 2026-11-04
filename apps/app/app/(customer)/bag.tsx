@@ -6,7 +6,7 @@ import { bagGroups, bagShipmentState, formatUsd, parseBagShipments, regionSegmen
 
 import { Photo } from '@/components/photo';
 import { Body, Button, Label, Screen } from '@/components/ui';
-import { ChargeRows, useBagCharges } from '@/features/cart/charges';
+import { bagKey, ChargeRows, useBagCharges } from '@/features/cart/charges';
 import { bagSubtotalCents, MAX_QTY_PER_LINE, useBag, type BagLine } from '@/features/cart/store';
 import { ProductRow } from '@/features/catalog/product-row';
 import { StampGrid } from '@/features/regions/stamps';
@@ -46,7 +46,9 @@ function EmptyBag(): React.JSX.Element {
 export default function BagScreen(): React.JSX.Element {
   const router = useRouter();
   const { lines, setQuantity } = useBag();
-  const facts = parseBagShipments(useBagCharges());
+  const charges = useBagCharges();
+  // An earlier bag's answer never decides what this bag's lines promise (founder 2026-10-30)
+  const facts = charges?.bagKey === bagKey(lines) ? parseBagShipments(charges) : null;
   const state = bagShipmentState(facts);
   const foodDays = useDeliveryLine('food');
   const otherDays = useDeliveryLine('clothing');

@@ -9,7 +9,7 @@ import { bagSubtotalCents, useBag, type BagLine } from './store';
 import { supabase } from '@/lib/supabase';
 import { useQuery } from '@/lib/use-query';
 
-const bagKey = (lines: BagLine[]): string =>
+export const bagKey = (lines: BagLine[]): string =>
   lines
     .map((l) => `${l.variantId}:${l.quantity}`)
     .sort()
