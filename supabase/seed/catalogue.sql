@@ -9,19 +9,6 @@
 
 update public.regions set is_live = true where slug in ('delhi', 'punjab', 'rajasthan', 'assam', 'maharashtra', 'kerala');
 
-insert into public.vendors (id, shop_name, region_id, status, is_placeholder)
-select v.id::uuid, 'Catalogue placeholder shop (' || r.name || ')', r.id, 'active', true
-from (values
-  ('00000000-0000-4000-8000-000000000301', 'delhi'),
-  ('00000000-0000-4000-8000-000000000302', 'punjab'),
-  ('00000000-0000-4000-8000-000000000303', 'rajasthan'),
-  ('00000000-0000-4000-8000-000000000304', 'assam'),
-  ('00000000-0000-4000-8000-000000000305', 'maharashtra'),
-  ('00000000-0000-4000-8000-000000000306', 'kerala')
-) as v (id, region_slug)
-join public.regions r on r.slug = v.region_slug
-on conflict (id) do nothing;
-
 create temporary table catalogue_products (
   slug text, name text, product_type public.product_type, region_slug text, category_slug text, summary text,
   price_cents integer, shop_price_paise integer, origin_town text, status public.product_status, age integer,
@@ -602,15 +589,14 @@ insert into catalogue_products values
   ('kerala-wayanad-robusta-coffee', 'Wayanad robusta coffee', 'food', 'kerala', 'tea-and-drinks', 'Robusta from Wayanad.', 999, 24875, 'Wayanad', 'draft', 189, false),
   ('kerala-munnar-tea', 'Munnar tea', 'food', 'kerala', 'tea-and-drinks', 'Hill tea from Munnar.', 1199, 29855, 'Munnar', 'draft', 190, false);
 
-insert into public.products (id, slug, name, product_type, region_id, category_id, vendor_id, summary, price_cents,
+insert into public.products (id, slug, name, product_type, region_id, category_id, summary, price_cents,
                              shop_price_paise, origin_town, status, is_placeholder, is_curated, published_at)
-select md5('iwc-catalogue:' || p.slug)::uuid, p.slug, p.name, p.product_type, r.id, c.id, v.id, p.summary,
+select md5('iwc-catalogue:' || p.slug)::uuid, p.slug, p.name, p.product_type, r.id, c.id, p.summary,
        p.price_cents, p.shop_price_paise, p.origin_town, p.status, true, p.is_curated,
        case when p.status = 'live' then now() - p.age * interval '1 minute' end
 from catalogue_products p
 join public.regions r on r.slug = p.region_slug
 join public.categories c on c.slug = p.category_slug and c.product_type = p.product_type
-join public.vendors v on v.region_id = r.id and v.shop_name like 'Catalogue placeholder shop (%'
 on conflict (id) do update set
   name = excluded.name, category_id = excluded.category_id, summary = excluded.summary,
   price_cents = excluded.price_cents, shop_price_paise = excluded.shop_price_paise,
@@ -619,8 +605,7 @@ on conflict (id) do update set
 
 -- Listings removed from catalogue/data are archived, not deleted (orders may point at them).
 update public.products set status = 'archived'
-where vendor_id in (select id from public.vendors where shop_name like 'Catalogue placeholder shop (%')
-  and slug not in (select slug from catalogue_products);
+where is_placeholder and slug not like 'demo-%' and slug not in (select slug from catalogue_products);
 
 -- Clothing: one variant per colour × size. Pieces are a DEV PLACEHOLDER from the SKU (0 to 10, some sold out).
 create temporary table catalogue_clothing (slug text, sku_prefix text, colours text[], sizes text[]);

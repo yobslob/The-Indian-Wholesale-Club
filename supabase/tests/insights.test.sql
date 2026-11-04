@@ -6,6 +6,7 @@ select tests.setup();
 -- order_a (Free size × 1, $50, tax $4) and order_b (Large × 1, $60) are paid. Order B is cancelled in full.
 update public.orders set status = 'cancelled', payment_status = 'refunded', refunded_cents = total_cents
  where id = tests.id('order_b');
+update public.products set source_site = 'test-shop.example' where id = tests.id('p_live');
 -- Only this test's orders: they were placed at now() (the transaction's start), real local orders are older.
 set local role authenticated;
 select tests.act_as(tests.id('admin'));
@@ -14,8 +15,8 @@ select tests.assert(
   'only the active lines of paid, not-cancelled orders count (order A: 1 piece, $50.00 before tax)');
 select tests.assert(
   exists (select 1 from jsonb_array_elements(public.admin_sales(now()) -> 'by_shop') s
-          where s ->> 'name' = 'Test Shop' and (s ->> 'shop_cost_paise')::int = 100000),
-  'by shop: what was sold and what the shop is paid for it');
+          where s ->> 'name' = 'test-shop.example' and (s ->> 'revenue_cents')::int = 5000 and not s ? 'shop_cost_paise'),
+  'by shop: what was sold, by the site it is bought from');
 select tests.assert(
   exists (select 1 from jsonb_array_elements(public.admin_sales(now()) -> 'by_category') c
           where c ->> 'name' = 'Test clothing' and (c ->> 'pieces')::int = 1),

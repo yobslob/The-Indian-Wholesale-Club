@@ -66,7 +66,6 @@ select tests.assert(
   'and the cancellation is emailed');
 
 -- After cutoff, with the piece already collected: no self-service cancel; a delay cancel keeps the piece for the admin.
-select public.cutoff_cycle(tests.id('cycle'));
 select public.mark_pickup((select p.id from public.pickups p join public.order_items oi on oi.id = p.order_item_id
                            where oi.order_id = tests.id('order_b')), 'picked');
 select tests.assert(

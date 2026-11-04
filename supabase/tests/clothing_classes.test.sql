@@ -5,13 +5,12 @@ begin;
 select tests.setup();
 select tests.create_user('worker', 'worker@example.test');
 update public.profiles set role = 'worker' where id = tests.id('worker');
-update public.pricing_settings set food_cleared = true, beta_pricing = true where id = 1;
 
-insert into public.products (slug, name, product_type, region_id, category_id, vendor_id, price_cents, status,
+insert into public.products (slug, name, product_type, region_id, category_id, price_cents, status,
                              price_auto, shop_price_paise)
 values ('cls-kurta-set', 'Class kurta with pyjama', 'clothing', tests.id('region'), tests.id('cat_clothing'),
-        tests.id('vendor'), 3000, 'draft', true, 100000),
-       ('cls-food', 'Class bhujia', 'food', tests.id('region'), tests.id('cat_food'), tests.id('vendor'), 900, 'draft',
+        3000, 'draft', true, 100000),
+       ('cls-food', 'Class bhujia', 'food', tests.id('region'), tests.id('cat_food'), 900, 'draft',
         false, null);
 select tests.remember('set', (select id from public.products where slug = 'cls-kurta-set'));
 select tests.remember('food', (select id from public.products where slug = 'cls-food'));

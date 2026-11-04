@@ -4,9 +4,9 @@ begin;
 select tests.setup();
 
 insert into public.categories (product_type, slug, name, sort_order) values ('home', 'test-kitchen', 'Test kitchen', 9);
-insert into public.products (slug, name, product_type, region_id, category_id, vendor_id, price_cents, status,
+insert into public.products (slug, name, product_type, region_id, category_id, price_cents, status,
                              shop_price_paise, price_auto)
-select x.slug, x.name, 'home', tests.id('region'), c.id, tests.id('vendor'), 5000, 'live', 180000, true
+select x.slug, x.name, 'home', tests.id('region'), c.id, 5000, 'live', 180000, true
 from public.categories c
 cross join (values ('test-cooker', 'Steel pressure cooker 3 L'), ('test-kadai', 'Iron kadai')) x(slug, name)
 where c.slug = 'test-kitchen';

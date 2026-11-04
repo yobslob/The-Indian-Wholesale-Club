@@ -8,18 +8,14 @@ alter table public.products disable trigger products_wears;
 -- More products in the test region: the newest one (one variant, in stock), a sold-out one-variant product,
 -- and one in another clothing category.
 insert into public.categories (product_type, slug, name) values ('clothing', 'test-other-clothing', 'Test other clothing');
-insert into public.products (slug, name, product_type, region_id, category_id, vendor_id, price_cents, status, published_at)
+insert into public.products (slug, name, product_type, region_id, category_id, price_cents, status, published_at)
 values
-  ('test-new', 'Test newest product', 'clothing', tests.id('region'), tests.id('cat_clothing'), tests.id('vendor'),
-   4000, 'live', now() + interval '1 day'),
-  ('test-soldout', 'Test sold-out product', 'clothing', tests.id('region'), tests.id('cat_clothing'), tests.id('vendor'),
-   3000, 'live', now() - interval '2 days'),
+  ('test-new', 'Test newest product', 'clothing', tests.id('region'), tests.id('cat_clothing'), 4000, 'live', now() + interval '1 day'),
+  ('test-soldout', 'Test sold-out product', 'clothing', tests.id('region'), tests.id('cat_clothing'), 3000, 'live', now() - interval '2 days'),
   ('test-other', 'Test other-category product', 'clothing', tests.id('region'),
-   (select id from public.categories where slug = 'test-other-clothing'), tests.id('vendor'),
-   2000, 'live', now() - interval '3 days'),
+   (select id from public.categories where slug = 'test-other-clothing'), 2000, 'live', now() - interval '3 days'),
   -- oldest, but its name sorts first: just listed must still leave it out
-  ('test-aaa-oldest', 'AAA oldest product', 'clothing', tests.id('region'), tests.id('cat_clothing'), tests.id('vendor'),
-   2500, 'live', now() - interval '10 days');
+  ('test-aaa-oldest', 'AAA oldest product', 'clothing', tests.id('region'), tests.id('cat_clothing'), 2500, 'live', now() - interval '10 days');
 insert into public.product_variants (product_id, sku, label, qty_listed)
 select id, upper(slug), 'Free size', case slug when 'test-soldout' then 0 else 3 end
 from public.products where slug in ('test-new', 'test-soldout', 'test-other', 'test-aaa-oldest');
@@ -27,9 +23,9 @@ from public.products where slug in ('test-new', 'test-soldout', 'test-other', 't
 -- between the others and the oldest: just listed (12) now has to leave the oldest out.
 insert into public.regions (slug, name) values ('test-filler-region', 'Test filler region');
 insert into public.categories (product_type, slug, name) values ('clothing', 'test-filler-clothing', 'Test filler clothing');
-insert into public.products (slug, name, product_type, region_id, category_id, vendor_id, price_cents, status, published_at)
+insert into public.products (slug, name, product_type, region_id, category_id, price_cents, status, published_at)
 select 'test-fill-' || i, 'Test filler ' || i, 'clothing', (select id from public.regions where slug = 'test-filler-region'),
-       (select id from public.categories where slug = 'test-filler-clothing'), tests.id('vendor'), 1000, 'live',
+       (select id from public.categories where slug = 'test-filler-clothing'), 1000, 'live',
        now() - interval '4 days' - i * interval '1 hour'
 from generate_series(1, 8) i;
 -- Real listings in the local database (a founder's phone listing, the catalogue) must not crowd the test's dates:

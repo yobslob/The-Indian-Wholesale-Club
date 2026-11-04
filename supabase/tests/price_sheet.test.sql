@@ -3,11 +3,10 @@
 -- product's own) and the price itself.
 begin;
 select tests.setup();
-update public.pricing_settings set beta_pricing = true where id = 1;
 
-insert into public.products (slug, name, product_type, region_id, category_id, vendor_id, price_cents, shop_price_paise,
+insert into public.products (slug, name, product_type, region_id, category_id, price_cents, shop_price_paise,
                              price_auto, status)
-values ('sheet-pickle', 'Sheet mango pickle', 'food', tests.id('region'), tests.id('cat_food'), tests.id('vendor'), 100,
+values ('sheet-pickle', 'Sheet mango pickle', 'food', tests.id('region'), tests.id('cat_food'), 100,
         18000, true, 'draft');
 select tests.remember('pickle', (select id from public.products where slug = 'sheet-pickle'));
 insert into public.product_variants (product_id, sku, label, qty_listed, weight_g, shop_price_paise) values

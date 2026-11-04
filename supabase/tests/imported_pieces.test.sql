@@ -5,7 +5,6 @@ begin;
 select tests.setup();
 select tests.create_user('worker', 'worker@example.test');
 update public.profiles set role = 'worker' where id = tests.id('worker');
-update public.pricing_settings set fx_inr_per_usd = 100, fx_auto = false where id = 1;
 
 set local role authenticated;
 select tests.act_as(tests.id('admin'));

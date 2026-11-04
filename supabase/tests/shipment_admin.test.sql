@@ -1,22 +1,21 @@
 -- D-154 step 2 (migration 20261024090000): each shipment ships, arrives, moves its dates and is cancelled on its own.
--- The plan's "done when": an order ships as two parcels with two tracking emails, and a refunded 7-day piece leaves
+-- The plan's "done when": an order ships as two parcels with two tracking emails, and a refunded food piece leaves
 -- the second shipment untouched.
 begin;
 select tests.setup();
 
 update public.pricing_settings
-   set quick_delivery_days_min = 7, quick_delivery_days_max = 7, quick_delivery_min_cents = 4999,
-       shipping_cents_per_kg = 1862, pilot_delivery_days_min = 12, pilot_delivery_days_max = 16,
-       free_shipping_min_cents = 9999, food_billed_pct = 100, food_cleared = true, quick_delivery_paused = false,
-       cancel_fee_pct = 0
+   set food_delivery_days_min = 7, food_delivery_days_max = 7,
+       shipping_cents_per_kg = 1862, delivery_days_min = 12, delivery_days_max = 16,
+       free_shipping_min_cents = 4999, food_billed_pct = 100, cancel_fee_pct = 0
  where id = 1;
 insert into public.categories (product_type, slug, name) values ('food', 'sa-snacks', 'Snacks')
   on conflict (slug) do nothing;
-insert into public.products (slug, name, product_type, region_id, category_id, vendor_id, price_cents, status,
+insert into public.products (slug, name, product_type, region_id, category_id, price_cents, status,
                              published_at, source_url, source_site, wears, attributes)
 values ('sa-snack', 'Snack', 'food', null, (select id from public.categories where slug = 'sa-snacks'),
-        tests.id('vendor'), 1000, 'live', now(), 'https://blinkit.com/prn/x/prid/1', 'blinkit.com', null, '{}'),
-       ('sa-kurta', 'Kurta', 'clothing', tests.id('region'), tests.id('cat_clothing'), tests.id('vendor'), 5000, 'live',
+        1000, 'live', now(), 'https://blinkit.com/prn/x/prid/1', 'blinkit.com', null, '{}'),
+       ('sa-kurta', 'Kurta', 'clothing', tests.id('region'), tests.id('cat_clothing'), 5000, 'live',
         now(), 'https://example.in/kurta', 'example.in', 'women',
         '{"fibre_content": "100% cotton", "care": "Hand wash"}');
 update public.products set price_auto = false where slug in ('sa-snack', 'sa-kurta');
@@ -29,7 +28,7 @@ update public.products set price_cents = 5000 where slug = 'sa-kurta';
 select tests.remember('v_snack', (select id from public.product_variants where sku = 'SA-SNACK'));
 select tests.remember('v_kurta', (select id from public.product_variants where sku = 'SA-KURTA'));
 
--- Four split orders: $50 of 7-day snacks and a kurta, to New York ($27.93 Shipping, one parcel).
+-- Four split orders: $50 of food snacks and a kurta, to New York ($27.93 Shipping, one parcel).
 create function pg_temp.split_order(p_email text) returns uuid language sql as $$
   select order_id from public.create_order(jsonb_build_object(
     'email', p_email, 'shipping_address', '{"line1": "1 Main St", "state": "NY"}'::jsonb,
@@ -68,7 +67,7 @@ select tests.assert_fails(format('select public.ship_order(%L, %L, %L)', tests.i
 select tests.assert_fails(format('select public.change_delivery_window(%L, %L, %L)', tests.id('o_two'), current_date + 20, current_date + 24),
   'order_has_two_shipments', 'and so does the order-wide date change');
 select tests.assert_fails(format('select public.ship_shipment(%L, %L, %L)', pg_temp.sh('o_two', 1), 'DHL', '1234567890'),
-  'express_not_picked', 'the 7-day shipment leaves the hub once its pieces are there');
+  'pieces_not_picked', 'the food shipment leaves the hub once its pieces are there');
 
 -- Two parcels, two tracking emails.
 select public.mark_pickup(pg_temp.pk('o_two', 'v_snack'), 'picked');
@@ -93,7 +92,7 @@ select tests.assert((select status = 'delivered' from public.orders where id = t
   and (select bool_and(status = 'delivered') from public.order_shipments where order_id = tests.id('o_two')),
   'both delivered: the order is Delivered');
 
--- A refunded 7-day piece leaves the second shipment untouched (cases 17, 19, 22).
+-- A refunded food piece leaves the second shipment untouched (cases 17, 19, 22).
 select public.mark_pickup(pg_temp.pk('o_refund', 'v_snack'), 'unavailable');
 select public.refund_order_item(
   (select id from public.order_items where order_id = tests.id('o_refund') and variant_id = tests.id('v_snack')),
@@ -103,7 +102,7 @@ select tests.assert(
   (select array_agg(status order by seq) from public.order_shipments where order_id = tests.id('o_refund')) = array['cancelled', 'open']
   and (select status = 'active' from public.order_items where order_id = tests.id('o_refund') and variant_id = tests.id('v_kurta'))
   and (select status = 'confirmed' and refunded_cents = 5000 from public.orders where id = tests.id('o_refund')),
-  'the 7-day shipment has nothing left to send and is cancelled; the kurta''s shipment goes on');
+  'the food shipment has nothing left to send and is cancelled; the kurta''s shipment goes on');
 select tests.assert(public.shipment_cancel_cents(pg_temp.sh('o_refund', 2), 'customer_request') is null,
   'its last shipment is cancelled as the order, not on its own');
 select public.mark_pickup(pg_temp.pk('o_refund', 'v_kurta'), 'picked');
@@ -111,10 +110,10 @@ select public.ship_order(tests.id('o_refund'), 'USPS', '9400100000000000000000')
 select tests.assert((select status = 'shipped' from public.orders where id = tests.id('o_refund')),
   'one shipment left: the bulk ship works again, and a pilot order ships once its pieces are at the hub');
 
--- Cases 23 – 24: the whole order can be cancelled until the hub buys the 7-day pieces; after that only shipment 2.
+-- Cases 23 – 24: the whole order can be cancelled until the hub buys the food pieces; after that only shipment 2.
 reset role;
 select tests.assert((public._order_actions(tests.id('o_delay')) ->> 'can_cancel')::boolean,
-  'case 23: before the 7-day pieces are bought, the customer may cancel everything');
+  'case 23: before the food pieces are bought, the customer may cancel everything');
 set local role authenticated;
 select tests.act_as(tests.id('admin'));
 select public.mark_pickup(pg_temp.pk('o_delay', 'v_snack'), 'picked');
@@ -122,12 +121,12 @@ reset role;
 select tests.assert(not (public._order_actions(tests.id('o_delay')) ->> 'can_cancel')::boolean,
   'case 24: once they are bought the order cannot be cancelled as a whole');
 set local role service_role;
-select tests.assert_fails(format('select public.customer_cancel(%L, 12793, null)', tests.id('o_delay')), 'quick_bought',
+select tests.assert_fails(format('select public.customer_cancel(%L, 12793, null)', tests.id('o_delay')), 'food_bought',
   'and the database refuses it');
 set local role authenticated;
 select tests.act_as(tests.id('admin'));
 select tests.assert(public.shipment_cancel_cents(pg_temp.sh('o_delay', 1), 'customer_request') is null,
-  'nor can the bought 7-day shipment be cancelled');
+  'nor can the bought food shipment be cancelled');
 select tests.assert(public.shipment_cancel_cents(pg_temp.sh('o_delay', 2), 'customer_request') = 6862,
   'shipment 2 can, for the kurta ($50.00) and its Shipping share ($18.62)');
 
@@ -137,7 +136,7 @@ select public.change_shipment_window(pg_temp.sh('o_delay', 2), current_date + 20
 select tests.assert(
   (select est_delivery_from = current_date + 20 and est_delivery_to = current_date + 24
    from public.order_shipments where id = pg_temp.sh('o_delay', 2))
-  and (select est_delivery_from = current_date + 7 and est_delivery_to = current_date + 24
+  and (select est_delivery_from = (select s1.est_delivery_from from public.order_shipments s1 where s1.id = pg_temp.sh('o_delay', 1)) and est_delivery_to = current_date + 24
        from public.orders where id = tests.id('o_delay')),
   'shipment 2 has its new dates; the order spans both');
 reset role;
@@ -170,9 +169,9 @@ select public.admin_cancel_shipment(pg_temp.sh('o_cancel', 2), 'customer_request
 select tests.assert(
   (select status = 'confirmed' and refunded_cents = 6862 from public.orders where id = tests.id('o_cancel'))
   and (select status = 'open' from public.order_shipments where id = pg_temp.sh('o_cancel', 1)),
-  'shipment 2 is cancelled; the 7-day shipment goes on');
+  'shipment 2 is cancelled; the food shipment goes on');
 
--- The India desk: To order's 7-day lane and Today's watch.
+-- The India desk: To order's food lane and Today's watch.
 reset role;
 update public.orders set created_at = now() - interval '3 hours' where id = tests.id('o_cancel');
 set local role authenticated;
@@ -180,11 +179,11 @@ select tests.act_as(tests.id('admin'));
 select tests.assert(
   (select buy_by = ordered_on + interval '2 hours' and ship_by = ordered_on + interval '1 day'
    from public.admin_to_order() where pickup_id = pg_temp.pk('o_cancel', 'v_snack')),
-  'a 7-day piece to order carries its buy-by and ship-by times');
-select tests.assert(public.admin_quick_watch() = '{"open": 1, "not_bought": 1, "not_shipped": 0}'::jsonb,
-  'Today: one 7-day shipment open, not bought within 2 hours');
+  'a food piece to order carries its buy-by and ship-by times');
+select tests.assert(public.admin_food_watch() = '{"open": 1, "not_bought": 1, "not_shipped": 0}'::jsonb,
+  'Today: one food shipment open, not bought within 2 hours');
 select tests.act_as(tests.id('cust_a'));
-select tests.assert_fails('select public.admin_quick_watch()', 'admin_only', 'customers never see it');
+select tests.assert_fails('select public.admin_food_watch()', 'admin_only', 'customers never see it');
 select tests.assert_fails(format('select public.ship_shipment(%L, %L, %L)', pg_temp.sh('o_cancel', 1), 'DHL', '1234567890'),
   'admin_only', 'nor ship anything');
 

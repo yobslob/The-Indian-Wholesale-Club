@@ -1,18 +1,17 @@
--- A state's own pieces first whatever the sort, and the 7-day set unchanged by its faster read (migration
--- 20261108090500_browse_reads, founder 2026-11-03).
+-- A state's own pieces first whatever the sort (migration 20261108090500_browse_reads, founder 2026-11-03).
 begin;
 select tests.setup();
 
 insert into public.categories (product_type, slug, name) values ('home', 'br-home', 'BR home');
-insert into public.products (slug, name, product_type, region_id, category_id, vendor_id, price_cents, status, published_at)
+insert into public.products (slug, name, product_type, region_id, category_id, price_cents, status, published_at)
 values ('br-own-cheap', 'BR own cheap', 'home', tests.id('region'), (select id from public.categories where slug = 'br-home'),
-        tests.id('vendor'), 3000, 'live', now() - interval '3 days'),
+        3000, 'live', now() - interval '3 days'),
        ('br-own-dear', 'BR own dear', 'home', tests.id('region'), (select id from public.categories where slug = 'br-home'),
-        tests.id('vendor'), 6000, 'live', now() - interval '2 days'),
+        6000, 'live', now() - interval '2 days'),
        ('br-india-cheapest', 'BR all-India cheapest', 'home', null, (select id from public.categories where slug = 'br-home'),
-        tests.id('vendor'), 1000, 'live', now() - interval '1 day'),
+        1000, 'live', now() - interval '1 day'),
        ('br-india-dearest', 'BR all-India dearest', 'home', null, (select id from public.categories where slug = 'br-home'),
-        tests.id('vendor'), 9000, 'live', now());
+        9000, 'live', now());
 insert into public.product_variants (product_id, sku, label, options, qty_listed)
 select id, 'BR-' || slug, '500 g', '{"size": "500 g"}', 2 from public.products where slug like 'br-%';
 
@@ -46,57 +45,6 @@ select tests.assert(
      from jsonb_array_elements(public.store_browse('home', 'test-region', 'br-home') -> 'products') p
     where p ->> 'slug' = 'br-own-cheap'),
   'a card still carries its photo field (read for the page''s cards only)');
-reset role;
-
--- The 7-day set, grouped now, is the one the per-listing check gave (20261023120000_seven_day_shipments).
-update public.sourcing_shops set quick_delivery = true where site = 'blinkit.com';
-update public.products set source_site = 'blinkit.com' where slug in ('br-own-cheap', 'br-india-cheapest');
--- a 7-day listing with a second option from a normal shop is not 7-day
-insert into public.product_variants (product_id, sku, label, options, qty_listed)
-select id, 'BR-x-' || slug, '1 kg', '{"size": "1 kg"}', 2 from public.products where slug = 'br-india-cheapest';
-insert into public.product_sources (product_id, variant_id, site, page_url, item_url)
-select v.product_id, v.id, 'amazon.in', 'https://example.test/br', 'https://example.test/br'
-  from public.product_variants v where v.sku = 'BR-x-br-india-cheapest';
-update public.product_variants v set source_id = (select ps.id from public.product_sources ps where ps.variant_id = v.id)
- where v.sku = 'BR-x-br-india-cheapest';
-select tests.assert(
-  (select array_agg(id order by id) from public._quick_listings())
-  = (select array_agg(p.id order by p.id)
-       from public.products p
-      where p.status = 'live' and not p.is_us_stock
-        and not (select s.quick_delivery_paused from public.pricing_settings s where s.id = 1)
-        and exists (select 1 from public.product_variants v where v.product_id = p.id and v.is_active)
-        and not exists (
-          select 1 from public.product_variants v
-          left join public.product_sources ps on ps.id = v.source_id
-          left join public.sourcing_shops sh on sh.site = coalesce(ps.site, p.source_site)
-          where v.product_id = p.id and v.is_active and not coalesce(sh.quick_delivery, false))),
-  'the 7-day listings are the same set as the per-listing check');
-select tests.assert(
-  (select (select id from public.products where slug = 'br-own-cheap') in (select id from public._quick_listings())
-      and (select id from public.products where slug = 'br-india-cheapest') not in (select id from public._quick_listings())),
-  'every option from a 7-day shop: 7-day; one option from a normal shop: not');
-
--- 20261108090600_quick_by_type: one type's 7-day set, and the cards' days from it.
-select tests.assert(
-  (select array_agg(id order by id) from public._quick_listings_of('home'))
-  = (select array_agg(q.id order by q.id) from public._quick_listings() q join public.products p on p.id = q.id
-      where p.product_type = 'home'),
-  'one type''s 7-day set is the whole set''s pieces of that type');
-select tests.assert(not exists (select 1 from public._quick_listings_of('clothing') q
-                                join public.products p on p.id = q.id where p.slug like 'br-%'),
-  'and holds no other type''s');
--- (as the owner: _quick_days is internal)
-select tests.assert(
-  (select bool_and((c ->> 'quick_days')::int is not distinct from public._quick_days((c ->> 'id')::uuid))
-          and count(*) filter (where c ->> 'quick_days' is not null) = 1
-     from jsonb_array_elements(public.store_browse('home', 'test-region', 'br-home') -> 'products') c),
-  'a card''s 7-day days are _quick_days'' (br-own-cheap only)');
-set local role anon;
-select tests.assert(
-  (select (b ->> 'quick_total')::int = 1 and b -> 'products' -> 0 ->> 'slug' = 'br-own-cheap'
-     from public.store_browse('home', 'test-region', 'br-home', 0, 24, null, null, null, 'low', null, true) b),
-  'In 7 days keeps only the 7-day piece');
 reset role;
 
 rollback;

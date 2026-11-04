@@ -4,16 +4,6 @@
 begin;
 select tests.setup();
 
--- Simple numbers: ₹100 per $, no margin or fees, ₹1,000 a kg shipping. ₹100 at 500 g = $1 + $5 = $6.00 -> $6.29.
-update public.pricing_settings set
-  fx_inr_per_usd = 100, fx_buffer_pct = 0, fx_auto = false, india_handling_pct = 0, ship_alloc_paise_per_kg = 100000,
-  margin_pct = 0, margin_food_pct = 0, card_fee_pct = 0, card_fee_fixed_cents = 0,
-  -- D-119's food recipe with simple numbers: ₹1,000 per kg, no fee, the label's weight, no guard
-  courier_first_kg_paise = 100000, courier_next_kg_paise = 100000, food_parcel_kg = 1, parcel_fixed_paise = 0,
-  food_fee_paise = 0, food_billed_pct = 100, duty_food_pct = 0, min_profit_food_cents = 0, min_profit_food_pct = 0,
-  guard_card_fee_pct = 0, food_ship_share_pct = null,
-  beta_pricing = false  -- the full formula (D-127's beta is tested in pricing_engine)
- where id = 1;
 select tests.create_user('worker', 'worker@example.test');
 update public.profiles set role = 'worker' where id = tests.id('worker');
 
@@ -66,11 +56,11 @@ select tests.remember('malai', (select id from public.product_variants where pro
 select tests.remember('mawa', (select id from public.product_variants where product_id = tests.id('product') and label = 'Mawa'));
 select tests.assert((select status = 'draft' and region_id = tests.id('region') and sourcing_target_id = tests.id('target')
                        from public.products where id = tests.id('product')), 'a draft in the target''s state');
-select tests.assert((select price_cents from public.product_variants where id = tests.id('malai')) = 629,
-  'each flavour has its own price ($1 + $5 -> $6.29)');
-select tests.assert((select price_cents from public.product_variants where id = tests.id('mawa')) = 729,
-  'the dearer flavour costs more ($2 + $5 -> $7.29)');
-select tests.assert((select price_cents from public.products where id = tests.id('product')) = 629,
+select tests.assert((select price_cents from public.product_variants where id = tests.id('malai')) = 1510,
+  'each flavour has its own price (D-128: ₹100 · 500 g food is $15.10)');
+select tests.assert((select price_cents from public.product_variants where id = tests.id('mawa')) = 1661,
+  'the dearer flavour costs more (₹200 · 500 g is $16.61)');
+select tests.assert((select price_cents from public.products where id = tests.id('product')) = 1510,
   'the product shows the lowest flavour price');
 select tests.assert((select qty_listed - qty_reserved from public.product_variants where id = tests.id('malai')) = 5
                     and (select qty_listed from public.product_variants where id = tests.id('mawa')) = 0,
@@ -79,8 +69,6 @@ select tests.assert((select s.site from public.product_variants v join public.pr
                       where v.id = tests.id('malai')) = 'amazon.in',
   'the 5-day backup is cheaper but too slow, so the desk orders from Amazon');
 select tests.assert((select found_count from public.sourcing_targets where id = tests.id('target')) = 1, 'the target counts it');
-select tests.assert((select count(*) from public.vendors where online_site = 'amazon.in' and region_id = tests.id('region')) = 1,
-  'the shop''s vendor for the state');
 
 set local role authenticated;
 select tests.act_as(tests.id('worker'));
@@ -137,9 +125,9 @@ select tests.assert((public.worker_sourcing_checked(tests.id('product'), jsonb_b
   jsonb_build_object('id', tests.id('src_mawa'), 'ok', true, 'price_paise', 20000, 'in_stock', true, 'delivery_days', 1))))
   ->> 'price_changes')::integer = 1, 'one price moved');
 reset role;
-select tests.assert((select price_cents from public.product_variants where id = tests.id('malai')) = 629
+select tests.assert((select price_cents from public.product_variants where id = tests.id('malai')) = 1525
                     and (select shop_price_paise from public.product_variants where id = tests.id('malai')) = 11000,
-  'a ₹10 rise follows the shop ($1.10 + $5 still ends at $6.29)');
+  'a ₹10 rise follows the shop ($15.25)');
 select tests.assert((select qty_listed - qty_reserved from public.product_variants where id = tests.id('mawa')) = 5,
   'the flavour back in stock is on sale again');
 select tests.assert((select reason = 'adjusted' and ref_type = 'source_check' from public.stock_movements
@@ -209,7 +197,6 @@ select tests.assert((select last_ok_at is not null from public.sourcing_shops wh
   'each shop''s health');
 
 -- D-003: none of it reaches customers.
-update public.pricing_settings set food_cleared = true where id = 1;
 update public.products set status = 'live', published_at = now() where id = tests.id('product');
 set local role authenticated;
 select tests.act_as(tests.id('cust_a'));

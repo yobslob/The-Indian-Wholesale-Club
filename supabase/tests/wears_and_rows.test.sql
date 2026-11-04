@@ -6,14 +6,14 @@ select tests.setup();
 -- Who it is for: from the name, else the category; clothing cannot go live without it.
 insert into public.categories (product_type, slug, name) values ('clothing', 'sarees', 'Sarees')
   on conflict (slug) do nothing;
-insert into public.products (slug, name, product_type, region_id, category_id, vendor_id, price_cents, status)
-values ('wr-w', 'Women''s Anarkali Kurta', 'clothing', tests.id('region'), tests.id('cat_clothing'), tests.id('vendor'), 3000, 'draft'),
-       ('wr-m', 'Men Pathani Suit', 'clothing', tests.id('region'), tests.id('cat_clothing'), tests.id('vendor'), 3000, 'draft'),
-       ('wr-k', 'Girls Lehenga Choli', 'clothing', tests.id('region'), tests.id('cat_clothing'), tests.id('vendor'), 3000, 'draft'),
-       ('wr-u', 'Unisex Nehru Jacket', 'clothing', tests.id('region'), tests.id('cat_clothing'), tests.id('vendor'), 3000, 'draft'),
+insert into public.products (slug, name, product_type, region_id, category_id, price_cents, status)
+values ('wr-w', 'Women''s Anarkali Kurta', 'clothing', tests.id('region'), tests.id('cat_clothing'), 3000, 'draft'),
+       ('wr-m', 'Men Pathani Suit', 'clothing', tests.id('region'), tests.id('cat_clothing'), 3000, 'draft'),
+       ('wr-k', 'Girls Lehenga Choli', 'clothing', tests.id('region'), tests.id('cat_clothing'), 3000, 'draft'),
+       ('wr-u', 'Unisex Nehru Jacket', 'clothing', tests.id('region'), tests.id('cat_clothing'), 3000, 'draft'),
        ('wr-s', 'Kanjivaram silk', 'clothing', tests.id('region'), (select id from public.categories where slug = 'sarees'),
-        tests.id('vendor'), 3000, 'draft'),
-       ('wr-n', 'Bootcut jeans', 'clothing', tests.id('region'), tests.id('cat_clothing'), tests.id('vendor'), 3000, 'draft');
+        3000, 'draft'),
+       ('wr-n', 'Bootcut jeans', 'clothing', tests.id('region'), tests.id('cat_clothing'), 3000, 'draft');
 select tests.assert(
   (select string_agg(slug || '=' || coalesce(wears, '-'), ',' order by slug) from public.products where slug like 'wr-%')
   = 'wr-k=kids,wr-m=men,wr-n=-,wr-s=women,wr-u=unisex,wr-w=women',
@@ -71,8 +71,8 @@ select tests.assert(
 
 -- L2: with a state, its own pieces come before newer all-India ones.
 reset role;
-insert into public.products (slug, name, product_type, region_id, category_id, vendor_id, price_cents, status, published_at, wears, attributes)
-values ('wr-all', 'All India newest shirt', 'clothing', null, tests.id('cat_clothing'), tests.id('vendor'), 3000, 'draft', now(), 'men',
+insert into public.products (slug, name, product_type, region_id, category_id, price_cents, status, published_at, wears, attributes)
+values ('wr-all', 'All India newest shirt', 'clothing', null, tests.id('cat_clothing'), 3000, 'draft', now(), 'men',
         '{"fibre_content": "Cotton", "care": "Hand wash"}');
 insert into public.product_variants (product_id, sku, label, options, qty_listed, weight_g)
 select id, 'WR-all', 'M', '{"size": "M"}', 2, 400 from public.products where slug = 'wr-all';
@@ -89,12 +89,10 @@ select tests.assert(
 reset role;
 
 -- L8: pieces published at the same moment take turns by shop instead of A-Z.
-insert into public.vendors (shop_name, region_id, status) values ('Second Shop', tests.id('region'), 'active');
-insert into public.products (slug, name, product_type, region_id, category_id, vendor_id, price_cents, status, wears, attributes)
+insert into public.products (slug, name, product_type, region_id, category_id, source_site, price_cents, status, wears, attributes)
 select 'wr-mix-' || v.n || '-' || i, chr(64 + i) || ' mix ' || v.n, 'clothing', tests.id('region'), tests.id('cat_clothing'),
-       v.id, 3000, 'draft', 'women', '{"fibre_content": "Cotton", "care": "Hand wash"}'
-  from (select 1 as n, tests.id('vendor') as id union all
-        select 2, (select id from public.vendors where shop_name = 'Second Shop')) v, generate_series(1, 4) i;
+       v.site, 3000, 'draft', 'women', '{"fibre_content": "Cotton", "care": "Hand wash"}'
+  from (values (1, 'first-shop.example'), (2, 'second-shop.example')) v(n, site), generate_series(1, 4) i;
 insert into public.product_variants (product_id, sku, label, options, qty_listed, weight_g)
 select id, 'WR-' || slug, 'M', '{"size": "M"}', 2, 400 from public.products where slug like 'wr-mix-%';
 update public.products set status = 'live', published_at = now() + interval '1 hour' where slug like 'wr-mix-%';

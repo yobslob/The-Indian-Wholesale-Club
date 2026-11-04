@@ -9,8 +9,8 @@ select tests.assert(
 insert into public.categories (product_type, slug, name, sort_order) values ('home', 'test-home', 'Test home', 9);
 select tests.assert((select tax_class = 'general' from public.categories where slug = 'test-home'),
   'D-106: a new home category is taxed as general goods by default');
-insert into public.products (slug, name, product_type, region_id, category_id, vendor_id, price_cents, status)
-select 'test-home-piece', 'Test home piece', 'home', tests.id('region'), c.id, tests.id('vendor'), 5000, 'live'
+insert into public.products (slug, name, product_type, region_id, category_id, price_cents, status)
+select 'test-home-piece', 'Test home piece', 'home', tests.id('region'), c.id, 5000, 'live'
 from public.categories c where c.slug = 'test-home';
 select tests.assert(
   (select value <> '' from public.business_details where key = 'hs_home'),

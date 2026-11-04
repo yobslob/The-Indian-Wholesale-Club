@@ -5,9 +5,8 @@ select tests.setup();
 alter table public.products disable trigger products_wears;
 
 -- 14 more live pieces in the test clothing category, so the row has more than 12.
-insert into public.products (slug, name, product_type, region_id, category_id, vendor_id, price_cents, status)
-select 'test-many-' || n, 'Test many ' || n, 'clothing', tests.id('region'), tests.id('cat_clothing'), tests.id('vendor'),
-       5000, 'live'
+insert into public.products (slug, name, product_type, region_id, category_id, price_cents, status)
+select 'test-many-' || n, 'Test many ' || n, 'clothing', tests.id('region'), tests.id('cat_clothing'), 5000, 'live'
 from generate_series(1, 14) n;
 
 set local role anon;

@@ -55,10 +55,10 @@ select tests.act_as(tests.id('worker'));
 
 -- Checks: each runner re-reads only its type, and with a shop only listings sourced there alone.
 reset role;
-insert into public.products (slug, name, product_type, region_id, category_id, vendor_id, price_cents, status)
-values ('runner-nisho', 'Runner nishorama kurta', 'clothing', tests.id('region'), tests.id('cat_clothing'), tests.id('vendor'), 3000, 'draft'),
-       ('runner-myntra', 'Runner myntra kurta', 'clothing', tests.id('region'), tests.id('cat_clothing'), tests.id('vendor'), 3000, 'draft'),
-       ('runner-food', 'Runner bhujia', 'food', tests.id('region'), tests.id('cat_food'), tests.id('vendor'), 900, 'draft');
+insert into public.products (slug, name, product_type, region_id, category_id, price_cents, status)
+values ('runner-nisho', 'Runner nishorama kurta', 'clothing', tests.id('region'), tests.id('cat_clothing'), 3000, 'draft'),
+       ('runner-myntra', 'Runner myntra kurta', 'clothing', tests.id('region'), tests.id('cat_clothing'), 3000, 'draft'),
+       ('runner-food', 'Runner bhujia', 'food', tests.id('region'), tests.id('cat_food'), 900, 'draft');
 insert into public.product_variants (product_id, sku, label, options, qty_listed, weight_g)
 select id, upper(slug), 'One size', '{}', 1, 300 from public.products where slug like 'runner-%';
 insert into public.product_sources (product_id, variant_id, site, page_url, item_url, item_key)

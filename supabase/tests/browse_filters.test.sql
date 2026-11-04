@@ -5,13 +5,13 @@ begin;
 select tests.setup();
 
 insert into public.categories (product_type, slug, name) values ('home', 'test-home', 'Test home');
-insert into public.products (slug, name, product_type, region_id, category_id, vendor_id, price_cents, status, published_at)
+insert into public.products (slug, name, product_type, region_id, category_id, price_cents, status, published_at)
 values ('bf-cheap', 'BF cheap cushion', 'home', tests.id('region'), (select id from public.categories where slug = 'test-home'),
-        tests.id('vendor'), 1500, 'live', now() - interval '2 days'),
+        1500, 'live', now() - interval '2 days'),
        ('bf-mid', 'BF mid cushion', 'home', tests.id('region'), (select id from public.categories where slug = 'test-home'),
-        tests.id('vendor'), 4000, 'live', now() - interval '1 day'),
+        4000, 'live', now() - interval '1 day'),
        ('bf-dear', 'BF dear cushion', 'home', tests.id('region'), (select id from public.categories where slug = 'test-home'),
-        tests.id('vendor'), 9000, 'live', now());
+        9000, 'live', now());
 insert into public.product_variants (product_id, sku, label, options, qty_listed)
 select id, 'BF-' || slug || '-' || s, s, jsonb_build_object(case when slug = 'bf-dear' then 'pack' else 'size' end, s), 2
   from public.products, unnest(case slug when 'bf-cheap' then array['Small'] when 'bf-mid' then array['Small', 'Large']
@@ -72,8 +72,8 @@ set local role authenticated;
 select tests.act_as(tests.id('admin'));
 select tests.assert(
   (select count(*) from public.admin_price_sheet(null, false, null, 'home', tests.id('region'), false,
-                                                 (select id from public.categories where slug = 'test-home'),
-                                                 tests.id('vendor'), 2000, 5000)) = 1,
+                                                 (select id from public.categories where slug = 'test-home'), null,
+                                                 2000, 5000)) = 1,
   'Download Excel follows the Products filters (type, state, category, shop, price)');
 select tests.assert(
   (select count(*) from public.admin_price_sheet(null, false, null, 'home', null, true)

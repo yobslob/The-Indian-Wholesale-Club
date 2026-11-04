@@ -7,7 +7,7 @@ select tests.assert(
   not exists (
     select 1 from information_schema.columns
     where table_schema = 'public' and table_name like 'store\_%'
-      and column_name in ('vendor_id', 'shop_price_paise', 'origin_town', 'cycle_id', 'notes', 'internal_note',
+      and column_name in ('shop_price_paise', 'source_site', 'source_url', 'origin_town', 'notes', 'internal_note',
                           'qty_listed', 'qty_reserved', 'qty_confirmed_at', 'is_placeholder', 'has_origin_label',
                           'sku', 'payment_intent_id', 'promo_code_id', 'created_by', 'licences', 'user_id',
                           'visible_to_customer', 'content_status', 'actor')),
@@ -15,12 +15,9 @@ select tests.assert(
 
 -- Signed-out visitor
 set local role anon;
-select tests.assert_fails('select * from public.vendors', '42501', 'INV-1: anon cannot read vendors');
 select tests.assert_fails('select * from public.products', '42501', 'INV-1: anon cannot read base products');
 select tests.assert_fails('select * from public.product_variants', '42501', 'INV-1: anon cannot read base variants');
 select tests.assert_fails('select * from public.pickups', '42501', 'INV-1: anon cannot read pickups');
-select tests.assert_fails('select * from public.vendor_payouts', '42501', 'INV-1: anon cannot read payouts');
-select tests.assert_fails('select * from public.cycles', '42501', 'INV-1: anon cannot read cycles');
 select tests.assert_fails('select * from public.stock_movements', '42501', 'INV-1: anon cannot read the stock ledger');
 select tests.assert_fails('select * from public.pricing_settings', '42501', 'INV-1: anon cannot read pricing');
 select tests.assert_fails('select * from public.orders', '42501', 'INV-1: anon cannot read orders');
@@ -49,14 +46,12 @@ reset role;
 -- but RLS returns nothing to a customer.
 set local role authenticated;
 select tests.act_as(tests.id('cust_a'));
-select tests.assert((select count(*) from public.vendors) = 0, 'INV-1: customer sees no vendors');
 select tests.assert((select count(*) from public.products) = 0, 'INV-1: customer sees no base products');
 select tests.assert((select count(*) from public.product_variants) = 0, 'INV-1: customer sees no base variants');
 select tests.assert((select count(*) from public.pickups) = 0, 'INV-1: customer sees no pickups');
-select tests.assert((select count(*) from public.cycles) = 0, 'INV-1: customer sees no cycles');
 select tests.assert((select count(*) from public.stock_movements) = 0, 'INV-1: customer sees no stock ledger');
 select tests.assert((select count(*) from public.orders) = 0,
-  'INV-1: base orders table (holds cycle_id, notes) is hidden; customers use store_orders');
+  'INV-1: base orders table (holds notes) is hidden; customers use store_orders');
 select tests.assert((select count(*) from public.order_events) = 0, 'INV-1: base order_events hidden');
 select tests.assert_fails('select * from public.admin_emails', '42501', 'customer cannot read the admin allowlist');
 reset role;

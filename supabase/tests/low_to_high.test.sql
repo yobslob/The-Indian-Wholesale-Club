@@ -8,9 +8,9 @@ insert into public.categories (product_type, slug, name) values
   ('clothing', 'accessories', 'Accessories'), ('clothing', 'headwear', 'Turbans & Headwear')
   on conflict (slug) do nothing;
 -- the cheapest prices in the database, so pieces seeded elsewhere never come between them
-insert into public.products (slug, name, product_type, region_id, category_id, vendor_id, price_cents, status,
+insert into public.products (slug, name, product_type, region_id, category_id, price_cents, status,
                              published_at, wears, attributes)
-select s, s, 'clothing', tests.id('region'), (select id from public.categories where slug = c), tests.id('vendor'), cents,
+select s, s, 'clothing', tests.id('region'), (select id from public.categories where slug = c), cents,
        'live', now() - age, 'women', '{"fibre_content": "Cotton", "care": "Hand wash"}'
   from (values ('lh-kurta-1', 'kurtas', 3, interval '1 day'), ('lh-kurta-2', 'kurtas', 5, interval '2 days'),
                ('lh-saree-1', 'sarees', 4, interval '3 days'), ('lh-saree-2', 'sarees', 9, interval '4 days'),

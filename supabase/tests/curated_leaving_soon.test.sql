@@ -5,23 +5,16 @@ select tests.setup();
 alter table public.products disable trigger products_wears;
 
 -- Fixture: test-live has 1 piece left after the two setup orders (2 + 1 listed, 2 reserved).
-insert into public.products (slug, name, product_type, region_id, category_id, vendor_id, price_cents, status,
+insert into public.products (slug, name, product_type, region_id, category_id, price_cents, status,
                              published_at, is_curated, is_placeholder)
 values
-  ('cur-new', 'Curated newest', 'clothing', tests.id('region'), tests.id('cat_clothing'), tests.id('vendor'),
-   4000, 'live', now() + interval '1 day', true, false),
-  ('cur-old', 'Curated older', 'clothing', tests.id('region'), tests.id('cat_clothing'), tests.id('vendor'),
-   4000, 'live', now() - interval '5 days', true, false),
-  ('not-cur', 'Not curated, 3 left', 'clothing', tests.id('region'), tests.id('cat_clothing'), tests.id('vendor'),
-   4000, 'live', now() - interval '1 day', false, false),
-  ('two-left', 'Two left', 'clothing', tests.id('region'), tests.id('cat_clothing'), tests.id('vendor'),
-   4000, 'live', now() - interval '2 days', false, false),
-  ('gone', 'Sold out', 'clothing', tests.id('region'), tests.id('cat_clothing'), tests.id('vendor'),
-   4000, 'live', now() - interval '3 days', false, false),
-  ('cur-draft', 'Curated draft', 'clothing', tests.id('region'), tests.id('cat_clothing'), tests.id('vendor'),
-   4000, 'draft', null, true, false),
-  ('cur-ph', 'Curated placeholder', 'clothing', tests.id('region'), tests.id('cat_clothing'), tests.id('vendor'),
-   4000, 'live', now(), true, true);
+  ('cur-new', 'Curated newest', 'clothing', tests.id('region'), tests.id('cat_clothing'), 4000, 'live', now() + interval '1 day', true, false),
+  ('cur-old', 'Curated older', 'clothing', tests.id('region'), tests.id('cat_clothing'), 4000, 'live', now() - interval '5 days', true, false),
+  ('not-cur', 'Not curated, 3 left', 'clothing', tests.id('region'), tests.id('cat_clothing'), 4000, 'live', now() - interval '1 day', false, false),
+  ('two-left', 'Two left', 'clothing', tests.id('region'), tests.id('cat_clothing'), 4000, 'live', now() - interval '2 days', false, false),
+  ('gone', 'Sold out', 'clothing', tests.id('region'), tests.id('cat_clothing'), 4000, 'live', now() - interval '3 days', false, false),
+  ('cur-draft', 'Curated draft', 'clothing', tests.id('region'), tests.id('cat_clothing'), 4000, 'draft', null, true, false),
+  ('cur-ph', 'Curated placeholder', 'clothing', tests.id('region'), tests.id('cat_clothing'), 4000, 'live', now(), true, true);
 insert into public.product_variants (product_id, sku, label, qty_listed)
 select id, upper(slug), 'Free size', case slug when 'two-left' then 2 when 'cur-ph' then 1 when 'gone' then 0 else 3 end
 from public.products where slug in ('cur-new', 'cur-old', 'not-cur', 'two-left', 'gone', 'cur-draft', 'cur-ph');

@@ -3,11 +3,9 @@
 -- Admins only; only a picked piece.
 begin;
 select tests.setup();
-update public.pricing_settings set beta_pricing = true where id = 1;
 
 set local role authenticated;
 select tests.act_as(tests.id('admin'));
-select public.cutoff_cycle(tests.id('cycle'));
 select tests.remember('pick_a', (select p.id from public.pickups p join public.order_items oi on oi.id = p.order_item_id
                                  where oi.order_id = tests.id('order_a')));
 select tests.remember('pick_b', (select p.id from public.pickups p join public.order_items oi on oi.id = p.order_item_id

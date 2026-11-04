@@ -7,15 +7,14 @@ begin;
 select tests.setup();
 select tests.create_user('worker', 'worker@example.test');
 update public.profiles set role = 'worker' where id = tests.id('worker');
-update public.pricing_settings set beta_pricing = true where id = 1;
 
 insert into public.categories (product_type, slug, name, default_weight_g)
 values ('home', 'hw-decor', 'HW decor', 1500) returning tests.remember('cat_home', id);
-insert into public.products (slug, name, product_type, region_id, category_id, vendor_id, price_cents, status,
+insert into public.products (slug, name, product_type, region_id, category_id, price_cents, status,
                              price_auto, shop_price_paise, source_url, source_site)
-values ('hw-diya', 'Brass Kerala diya', 'home', tests.id('region'), tests.id('cat_home'), tests.id('vendor'), 2000,
+values ('hw-diya', 'Brass Kerala diya', 'home', tests.id('region'), tests.id('cat_home'), 2000,
         'draft', true, 50000, 'https://www.amazon.in/dp/B0HW000001', 'amazon.in'),
-       ('hw-food', 'HW bhujia', 'food', tests.id('region'), tests.id('cat_food'), tests.id('vendor'), 900, 'draft',
+       ('hw-food', 'HW bhujia', 'food', tests.id('region'), tests.id('cat_food'), 900, 'draft',
         true, 20000, null, null);
 select tests.remember('diya', (select id from public.products where slug = 'hw-diya'));
 select tests.remember('food', (select id from public.products where slug = 'hw-food'));
