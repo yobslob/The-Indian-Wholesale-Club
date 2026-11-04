@@ -6,7 +6,7 @@
  *   node scripts/domain-check.mjs https://indianwholesaleclub.com --legacy=the-indian-wholesale-club.vercel.app
  *   node scripts/domain-check.mjs https://<new>.vercel.app          # a new deployment before the domain moves
  *
- * Requests every row of the launch plan's §0 table (docs/launch-qa-plan.md) and fails (exit 1) on a regression:
+ * Requests every row of the launch plan's §0 table (docs/archive/launch-qa-plan.md) and fails (exit 1) on a regression:
  * pages answer 200 in time, /contact has no "coming soon", search never 5xx, /api/health under 2 s, the Stripe webhook
  * is served (a POST without a signature gets 400), robots.txt and the sitemap name the domain, `www.` → 308 apex,
  * http → https. With `--legacy=<host>` (repeatable): that host's pages 308 to the domain with path and query, while its

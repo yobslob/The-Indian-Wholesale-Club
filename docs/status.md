@@ -63,6 +63,12 @@ Short on purpose: **replace** lines when something changes, don't append. Histor
   built on first visit. The same test passes, also started as a busy spell begins. The 7-day reads themselves
   are not what changed: 7-day Food 980 → ~165 ms (`quick_by_type`), cards' `_quick_days` 11 ms for 24; live they took
   about 1 s one at a time on 2026-11-04.
+- **Open: the database stopped answering (2026-11-04):** seen from 01:52 UTC, back about 02:38 UTC, on the free project
+  with low traffic and no incident on Supabase's status page. Even the health check's one-row read failed; cached store
+  pages kept showing, Load more failed. The founder restarted it about 02:10 UTC, and reads kept failing for about 25
+  minutes with the CPU quiet. Cause not proven: memory commitment peaked at 1.87 GB of 1.4 GB as it began; the logs show
+  statement timeouts (57014), statements not yet known. The free plan's disk (baseline 250 IOPS, 5 MB/s once its IO
+  budget is spent) is the next thing to read. The founder decides on the paid tier before Nov 8.
 - **Open: Publish looks stuck (2026-11-04):** on a product's admin page the piece goes live at once, but under
   `next start` the page shows it only about 29 s later (the database idle; a reload shows it in 0.5 s). Cause not found;
   on Vercel not measured. `admin.spec.ts` waits for it and is no longer the reason CI fails.

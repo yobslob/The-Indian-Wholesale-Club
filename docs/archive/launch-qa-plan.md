@@ -1,5 +1,19 @@
 # Launch QA plan: indianwholesaleclub.com and live Stripe
 
+> **Archived 2026-11-04** (founder: "move to archive now but keep track of what was done before in short").
+> - **Done:** waves 1 – 3 merged into `main` (A-1 – A-5, A-8, A-9; B-1 – B-3, B-6, B-9 – B-11; C-1 – C-3, C-6, C-7;
+>   D-1 – D-3; E-1, E-2a, E-2b, E-2d, E-3; F-0 – F-7; G's tests); e2e on 2026-11-03: 69 passed, 2 failed (both failing
+>   before this work too), 2 skipped; the FOUNDER questions answered as D-179; a real payment on the domain
+>   (founder, 2026-11-04). The hidden $1 payment-test page goes with D-187 (`docs/simple-store-plan.md` §10 Y-10).
+> - **Skipped on purpose:** A-6 (wallets before the address), B-8 (photo widths), C-5 (pre-building 300 product pages:
+>   too many page-cache writes).
+> - **Not marked done in this file when it was archived** (check before assuming): INC-1's root cause (the database
+>   stopped answering again on 2026-11-04, `status.md`); L-4 / L-5 the paid Vercel and Supabase plans (founder decides
+>   before Nov 8); L-6 a private repo; L-7 env files in the repo folder (`prod.env`, simple-store plan §9 R-2); L-9
+>   Stripe's domain, Radar and 2FA settings; L-10 the search consoles; every box of §12 "Definition of done".
+> - **Where the living parts are now:** the domain checks in `docs/ops.md` §Going live on the domain and
+>   `scripts/domain-check.mjs`; moving accounts in `docs/ops.md` §Moving.
+
 First written 2026-11-02. **Re-tested 2026-11-03 on the live domain** (`indianwholesaleclub.com`, Cloudflare DNS,
 Stripe live, Google Workspace mail). Written by Claude as senior QA engineer and developer, for subagents: every item
 has an ID, a severity, evidence, files, a fix and an acceptance test. Order, as the founder asked: **the customer's

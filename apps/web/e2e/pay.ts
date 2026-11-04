@@ -6,7 +6,7 @@ import { clickPay } from './buy';
 import { DEMO_PRODUCT, E2E_CUSTOMER, serviceClient } from './env';
 
 /**
- * Checkout helpers for the launch QA tests (docs/launch-qa-plan.md §8): the demo saree to the payment step, Stripe's
+ * Checkout helpers for the launch QA tests (docs/archive/launch-qa-plan.md §8): the demo saree to the payment step, Stripe's
  * test cards, the 3-D Secure challenge, and what the server and Stripe say afterwards. Stripe test mode only: env.ts
  * refuses a live key before any test runs.
  */

@@ -164,7 +164,7 @@ The old `NEXT_PUBLIC_SUPABASE_*` / `NEXT_PUBLIC_APP_URL` CI secrets are no longe
    EAS build page) or `production` (an AAB for Google Play). The app's id is `com.indianwholesaleclub.app` (`app.json`,
    set by the founder on 2026-10-07); Google Play never lets it change after the first upload.
 
-## Moving to new Vercel or Supabase accounts (the founder runs every step; done 2026-10-21/22; the second move's order: `launch-qa-plan.md`)
+## Moving to new Vercel or Supabase accounts (the founder runs every step; done 2026-10-21/22; the second move's order: `archive/launch-qa-plan.md`)
 The code names no account: everything comes from the variables above, the GitHub secrets and the Vault. A move is
 those values, nothing in the repo. Both providers' free-plan terms apply to the new accounts too (Vercel's Hobby plan
 is for non-commercial use). The old account used 208K of Vercel's 200K page-cache writes by 2026-10-21, mostly
@@ -218,7 +218,7 @@ nothing to move. Supabase's guide "Backup and restore using the CLI" (Platform �
 `indianwholesaleclub.com` is the only address customers, Stripe, Supabase and the app should use: it survives any
 Vercel or Supabase move. Check after each block with `node scripts/domain-check.mjs` (add
 `--legacy=<old host>` for every old `*.vercel.app` name still up): it fails on any regression of the launch plan's
-§0 table. Ids are the launch plan's (`docs/launch-qa-plan.md`).
+§0 table. Ids are the launch plan's (`docs/archive/launch-qa-plan.md`).
 1. **Stripe webhook (DOM-1).** Stripe → Developers → Webhooks: the live endpoint is
    `https://indianwholesaleclub.com/api/webhooks/stripe` (events `payment_intent.succeeded` plus the refund, dispute
    and failed-payment events of F-3). A new endpoint has a new signing secret: Vercel `STRIPE_WEBHOOK_SECRET`, redeploy.
