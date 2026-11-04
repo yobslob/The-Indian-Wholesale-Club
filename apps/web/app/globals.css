@@ -1663,108 +1663,6 @@ html[data-free-bar] .site-footer {
     }
   }
 
-  /* the 7-day store's door label (door-label.tsx): a parcel's address label, perforated top and bottom, its stamp
-     pressed once as the page opens */
-  .door-label {
-    position: relative;
-    display: grid;
-    gap: 14px;
-    max-width: 420px;
-    padding: 22px 24px 20px;
-    background: theme('colors.paper');
-    border-radius: 6px;
-    box-shadow:
-      0 1px 0 theme('colors.line'),
-      0 18px 40px -18px rgb(30 27 22 / 0.35);
-    -webkit-mask:
-      radial-gradient(circle 5px at 50% 0, #0000 98%, #000) 0 0 / 16px 51% repeat-x,
-      radial-gradient(circle 5px at 50% 100%, #0000 98%, #000) 0 100% / 16px 51% repeat-x;
-    mask:
-      radial-gradient(circle 5px at 50% 0, #0000 98%, #000) 0 0 / 16px 51% repeat-x,
-      radial-gradient(circle 5px at 50% 100%, #0000 98%, #000) 0 100% / 16px 51% repeat-x;
-  }
-  .door-label-row {
-    display: grid;
-    grid-template-columns: 44px 22px 1fr;
-    align-items: center;
-    gap: 8px;
-    font-size: 15px;
-  }
-  .door-label-row small {
-    color: theme('colors.ink-muted');
-    font-size: 12px;
-  }
-  .door-label-row svg {
-    height: 22px;
-    justify-self: center;
-    fill: none;
-    stroke: #c9962f;
-    stroke-width: 1.5px;
-    stroke-linejoin: round;
-    stroke-linecap: round;
-  }
-  .door-label-row:not([data-to]) svg {
-    width: 22px;
-  }
-  .door-label-row[data-to] svg {
-    stroke: theme('colors.ink');
-    width: 20px;
-  }
-  .door-label-rule {
-    border-top: 2px dashed color-mix(in srgb, theme('colors.brand') 55%, transparent);
-  }
-  .door-label-stamp {
-    position: absolute;
-    top: 16px;
-    right: 18px;
-    display: grid;
-    place-items: center;
-    width: 86px;
-    height: 86px;
-    border: 2.5px solid theme('colors.brand');
-    border-radius: 999px;
-    color: theme('colors.brand');
-    transform: rotate(-11deg);
-    animation: door-stamp 0.5s cubic-bezier(0.3, 1.5, 0.6, 1) 0.35s backwards;
-  }
-  .door-label-stamp::before {
-    content: '';
-    position: absolute;
-    inset: 5px;
-    border: 1px dashed currentColor;
-    border-radius: inherit;
-  }
-  .door-label-stamp b {
-    font-size: 26px;
-    line-height: 1;
-    letter-spacing: 0.04em;
-  }
-  .door-label-check {
-    display: inline-grid;
-    place-items: center;
-    width: 18px;
-    height: 18px;
-    margin-right: 8px;
-    border: 1.5px solid theme('colors.ink');
-    border-radius: 3px;
-    vertical-align: -3px;
-  }
-  .door-label-check::after {
-    content: '';
-    width: 9px;
-    height: 5px;
-    margin-top: -3px;
-    border: solid theme('colors.brand');
-    border-width: 0 0 2px 2px;
-    transform: rotate(-45deg);
-  }
-  @keyframes door-stamp {
-    from {
-      transform: rotate(-11deg) scale(1.6);
-      opacity: 0;
-    }
-  }
-
   /* the founder's picture slots (visual-slot.tsx): off the live site an empty one says what it wants */
   .visual-slot {
     display: grid;
@@ -1804,7 +1702,6 @@ html[data-free-bar] .site-footer {
 }
 
 @media (prefers-reduced-motion: reduce) {
-  .door-label-stamp,
   .flight-cloth {
     animation: none;
   }
