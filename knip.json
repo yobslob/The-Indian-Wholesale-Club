@@ -1,0 +1,22 @@
+{
+  "$schema": "https://unpkg.com/knip@5/schema.json",
+  "workspaces": {
+    ".": {
+      "entry": ["scripts/*.{mjs,ts}", "tools/*/src/*.ts", "tools/*/*.{mjs,ts}"],
+      "project": ["scripts/**/*.{mjs,ts}", "tools/**/*.{mjs,ts}"]
+    },
+    "apps/web": {
+      "entry": ["app/**/*.{ts,tsx}", "middleware.ts", "e2e/**/*.ts", "tests/**/*.ts", "next.config.js"],
+      "project": ["**/*.{ts,tsx,js}"]
+    },
+    "apps/app": {
+      "entry": ["app/**/*.{ts,tsx}", "tests/**/*.ts"],
+      "project": ["**/*.{ts,tsx,js}"],
+      "ignoreDependencies": ["expo-linking", "react-native-web", "react-dom", "@react-navigation/native", "query-string"]
+    },
+    "packages/*": {
+      "entry": ["src/**/index.ts", "tests/**/*.ts"],
+      "project": ["**/*.{ts,tsx,js}"]
+    }
+  }
+}
