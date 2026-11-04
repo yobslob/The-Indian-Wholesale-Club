@@ -13,8 +13,6 @@ const isoDate = z.string(); // 'YYYY-MM-DD'
 const isoDateTime = z.string();
 
 export const deliveryWindowSchema = z.object({
-  /** The cycle's cutoff; null in the made-to-order pilot, which has none (D-115). */
-  order_by: isoDateTime.nullable(),
   est_delivery_from: isoDate,
   est_delivery_to: isoDate,
 });
@@ -61,8 +59,6 @@ export const productCardSchema = z.object({
   primary_image_path: z.string().nullable(),
   /** A food piece's pack size ("200 g"), shown on its card (D-122); null otherwise. Optional until migration 52. */
   pack: z.string().nullable().optional(),
-  /** D-135: archived but shown as "Coming soon": the heart, no price, cannot be bought. Optional until migration 20261016200000. */
-  coming_soon: z.boolean().optional(),
   /** D-140 (F9): every option the card's + offers; optional until migration 20261018120000, null when coming soon. */
   options: z.array(cardOptionSchema).nullable().optional(),
   /**
@@ -71,8 +67,6 @@ export const productCardSchema = z.object({
    */
   choices: z.number().int().optional(),
   sold_out: z.boolean().optional(),
-  /** D-148: a 7-day piece's days (Settings), for its tag; null otherwise. Optional until migration 20261022120000. */
-  quick_days: z.number().int().nullable().optional(),
 });
 
 /** Set only when the product has exactly one variant and it is in stock: a card's "Add" puts it in the bag. */
@@ -98,7 +92,7 @@ export const productSchema = productCardSchema.extend({
   craft: z.string().nullable(),
   attributes: z.record(z.unknown()),
   published_at: isoDateTime.nullable(),
-  /** A piece already in the US (a clearance piece, D-072): it ships at once, outside the cycle. */
+  /** A piece already in the US (a clearance piece, D-072): it ships at once. */
   is_us_stock: z.boolean().default(false),
   /** D-171: false for a piece made outside India (it says "Imported" only); optional until migration 20261105100000. */
   made_in_india: z.boolean().nullable().optional(),
@@ -134,15 +128,26 @@ export const mediaSchema = z.object({
 
 export const homeSchema = z.object({
   regions: z.array(regionCardSchema),
-  /** Home's album from all of India (D-113): the states' album photos, then their newest pieces' main photos (≤ 30). */
+  /** D-169: the founder's Home photos, in the admin's order. */
   album: z.array(z.object({ storage_path: z.string(), alt_text: z.string() })).default([]),
-  /** The twelve newest live products (Just listed, D-062). */
-  just_listed: z.array(regionProductCardSchema),
-  /** D-136: the twelve newest of each product type (Home's Just listed switch); optional until migration 20261016210000. */
-  just_listed_types: z.record(z.array(regionProductCardSchema)).nullable().optional(),
-  delivery: deliveryWindowSchema.nullable(),
-  /** D-140 (L7, optional until migration 20261018150000): Home's band, from the store's policy. */
-  band: z.object({ free_min_cents: z.number().int().nullable(), return_claim_days: z.number().int().nullable() }).nullable().optional(),
+  /** D-187: the category tiles, biggest first: count and the photo of its newest piece. */
+  categories: z.array(
+    z.object({
+      slug: z.string(),
+      name: z.string(),
+      product_type: productType,
+      count: z.number().int(),
+      image_path: z.string().nullable(),
+    }),
+  ),
+  /** D-187: What everyone missed this week: most ordered in the last 7 days, 12 at most (ranking only, D-003). */
+  most_ordered: z.array(regionProductCardSchema),
+  /** D-187: The kirana counter: live pieces under $5, cheapest first, 12 at most. */
+  under_5: z.array(regionProductCardSchema),
+  /** D-187: the twelve newest of Clothing and of Home & gifts (Just listed). */
+  just_listed_types: z.record(z.array(regionProductCardSchema)),
+  /** D-140 (L7): Home's band, from the store's policy. */
+  band: z.object({ free_min_cents: z.number().int().nullable(), return_claim_days: z.number().int().nullable() }).nullable(),
 });
 
 /** A region album photo (D-051): only the file and what it shows. */
@@ -205,11 +210,8 @@ export const productPageSchema = z.object({
   curated: z.array(regionProductCardSchema),
   /** A US piece's window: today + the US delivery days (null for pieces coming from India). */
   ships_from_us: z.object({ est_delivery_from: isoDate, est_delivery_to: isoDate }).nullable().default(null),
-  /** D-148: a 7-day piece's window (today + the 7-day days) in a bag of only 7-day pieces. */
-  quick_delivery: z.object({ est_delivery_from: isoDate, est_delivery_to: isoDate }).nullable().default(null),
   /** Approved reviews: summary over all of them and the six newest (D-051, D-056). */
   reviews: reviewsSummarySchema,
-  delivery: deliveryWindowSchema.nullable(),
 });
 
 export const customerStatusSchema = z.enum([
@@ -272,12 +274,15 @@ export const orderEventSchema = z.object({
 });
 
 /**
- * D-154: one of the order's shipments (one, or two when its 7-day pieces travel apart): its speed, dates, status,
- * tracking and which pieces. Nothing operational (D-003).
+ * D-154, D-187: one of the order's shipments (one, or two when food travels apart): its kind, dates, status, tracking
+ * and which pieces. Nothing operational (D-003).
  */
 export const orderShipmentSchema = z.object({
   seq: z.number().int(),
-  kind: z.enum(['quick', 'standard', 'express']),
+  // TODO(D-187): the database answers 'quick' for a food shipment until app <next version> is the minimum; read as 'food'.
+  kind: z
+    .enum(['quick', 'food', 'standard', 'express'])
+    .transform((kind): 'food' | 'standard' | 'express' => (kind === 'quick' ? 'food' : kind)),
   status: z.enum(['open', 'shipped', 'delivered', 'cancelled']),
   est_delivery_from: z.string().nullable(),
   est_delivery_to: z.string().nullable(),
@@ -286,13 +291,6 @@ export const orderShipmentSchema = z.object({
   tracking_number: z.string().nullable(),
   shipped_at: isoDateTime.nullable(),
   item_ids: z.array(z.string().uuid()),
-});
-
-/** D-064: an earlier delivery the customer can pay for. Price and window only (D-003). */
-export const orderOfferSchema = z.object({
-  price_cents: z.number().int().positive(),
-  est_delivery_from: z.string(),
-  est_delivery_to: z.string(),
 });
 
 /** A delivered piece's return options (D-071): the refund for a damage or mistake claim and for a change of mind. */
@@ -323,9 +321,8 @@ export const orderDetailSchema = z.object({
   order: orderSummarySchema,
   items: z.array(orderItemSchema),
   events: z.array(orderEventSchema),
-  /** D-154 (optional until migration 20261024090000): one or two shipments. */
+  /** D-154: one or two shipments. */
   shipments: z.array(orderShipmentSchema).default([]),
-  offer: orderOfferSchema.nullable().default(null),
   actions: orderActionsSchema.nullable().default(null),
 });
 
@@ -356,8 +353,6 @@ export const browsePageSchema = z.object({
   categories: z.array(filterCountSchema),
   /** D-136 (optional until migration 20261016210000): pieces in all states with the price and size filters applied. */
   states_total: z.number().int().optional(),
-  /** D-154 (0 until migration 20261026090000): the 7-day pieces among them, for "Delivery: in 7 days". */
-  quick_total: z.number().int().default(0),
   /** D-136: every size (or food pack) with its pieces, each counted with the other filters applied. */
   sizes: z.array(z.object({ value: z.string(), count: z.number().int() })).default([]),
   /** D-140 (optional until migration 20261018100000): clothing for women and for men, unisex counted under both. */
@@ -390,28 +385,23 @@ export type OrderItem = z.infer<typeof orderItemSchema>;
 export type OrderEvent = z.infer<typeof orderEventSchema>;
 export type OrderShipment = z.infer<typeof orderShipmentSchema>;
 export type OrderDetail = z.infer<typeof orderDetailSchema>;
-export type OrderOffer = z.infer<typeof orderOfferSchema>;
 export type OrderActions = z.infer<typeof orderActionsSchema>;
 
 /** store_policy() (migration 27): the terms the Shipping & returns page states, the same numbers the rules use. */
 export const storePolicySchema = z.object({
   shipping_flat_cents: z.number().int().nullable(),
   free_shipping_min_cents: z.number().int().nullable(),
+  /** D-187: the bulk saving and the heavy-item discount start here ($99.99). */
+  bulk_saving_from_cents: z.number().int().nullable(),
   /** D-109: the smallest order that can check out. */
   min_order_cents: z.number().int().nullable().default(null),
-  express_days_min: z.number().int().nullable(),
-  express_days_max: z.number().int().nullable(),
-  /** D-161 (until migration 20261031090000: none): the pilot's standard days, for the browser's dates. */
-  delivery_days_min: z.number().int().nullable().default(null),
-  delivery_days_max: z.number().int().nullable().default(null),
+  /** D-187: clothing and home & gifts, and food, in delivery days (business days). */
+  delivery_days_min: z.number().int().nullable(),
+  delivery_days_max: z.number().int().nullable(),
+  food_delivery_days_min: z.number().int().nullable(),
+  food_delivery_days_max: z.number().int().nullable(),
   us_delivery_days_min: z.number().int().nullable(),
   us_delivery_days_max: z.number().int().nullable(),
-  /** D-148: 7-day delivery's days from the order; empty = no 7-day delivery. */
-  quick_delivery_days_min: z.number().int().nullable().default(null),
-  quick_delivery_days_max: z.number().int().nullable().default(null),
-  /** D-154 (until migration 20261026090000: none, closed): the 7-day line, and whether the 7-day store is open. */
-  quick_delivery_min_cents: z.number().int().nullable().default(null),
-  quick_delivery_on: z.boolean().default(false),
   cancel_fee_pct: z.coerce.number().nullable(),
   return_claim_days: z.number().int().nullable(),
   return_tiers: z.array(z.object({ days: z.number().int(), kept_pct: z.coerce.number() })),
