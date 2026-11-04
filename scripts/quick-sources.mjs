@@ -1,8 +1,9 @@
 #!/usr/bin/env node
 /**
- * scripts/quick-sources.mjs (D-162): the listings that can be bought whole from the quick-delivery shops (Blinkit,
- * BigBasket, Zepto, Instamart) but are bought from a cheaper Amazon or Flipkart backup today, so they lack the 7-day
- * tag. Since migration 20261101090000 new and re-checked listings are bought there by themselves; this switches the
+ * scripts/quick-sources.mjs (D-162): the listings that can be bought whole from the fast shops (Blinkit, BigBasket,
+ * Zepto, Instamart) but are bought from a cheaper Amazon or Flipkart backup today; buying food from the fast shops is
+ * what makes 7 delivery days true (D-187). Since migration 20261101090000 new and re-checked listings are bought there
+ * by themselves; this switches the
  * ones settled before it, as the weekly check would (from the prices last read; each listing's check date kept).
  * Read-only unless --apply; batches of --batch listings (default 100), each one database call, until none is left.
  *
@@ -48,12 +49,12 @@ async function call(applyNow) {
 }
 
 function report(r) {
-  console.log(`To switch to the quick shops: ${r.to_switch} listings (${r.live_to_switch} live).`);
-  console.log(`Staying as they are: ${r.stay_normal} (an option has no usable quick-shop source: sold out, held or not found there).`);
+  console.log(`To switch to the fast shops: ${r.to_switch} listings (${r.live_to_switch} live).`);
+  console.log(`Staying as they are: ${r.stay_normal} (an option has no usable fast-shop source: sold out, held or not found there).`);
   for (const s of r.sample)
     console.log(`  ${s.status.padEnd(5)} ${s.name.slice(0, 60).padEnd(60)} ${String(s.bought_at).padEnd(24)} ${rupees(s.shop_price_paise)} → ${rupees(s.quick_price_paise)}`);
   if (r.unmarked_sites.length)
-    console.log(`Sites that look like a quick shop but are not marked as one (not changed): ${r.unmarked_sites.join(', ')}`);
+    console.log(`Sites that look like a fast shop but are not marked as one (not changed): ${r.unmarked_sites.join(', ')}`);
 }
 
 let r = await call(false);
@@ -70,4 +71,4 @@ while (r.to_switch > 0) {
   console.log(`Switched ${switched}; ${r.to_switch} left.`);
   if (r.switched === 0 || r.to_switch >= before) break;
 }
-console.log(`Done: ${switched} listings now bought from the quick shops. Store pages show their 7-day tag within 5 minutes.`);
+console.log(`Done: ${switched} listings now bought from the fast shops.`);

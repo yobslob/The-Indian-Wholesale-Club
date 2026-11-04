@@ -6,20 +6,18 @@
  *   node scripts/build-catalogue.mjs            write the seed
  *   node scripts/build-catalogue.mjs --check    fail if the seed is out of date (check.mjs `docs` step)
  *   node scripts/build-catalogue.mjs --apply    write it, then load it into the LOCAL database without a reset
- *   node scripts/build-catalogue.mjs --folders  create catalogue/photos/<region>/<product>/ for every listing
  *
  * Everything the catalogue does not say (prices, pieces, shops) is a DEV PLACEHOLDER: every row is
  * is_placeholder = true (D-012), prices and pieces are derived from the slug so the output is stable. Pantry items
- * are drafts: food cannot go live until cleared (D-074). Product ids are derived from the slug, so loading it
- * again updates the same listings and keeps their photos and pieces.
+ * are drafts. Product ids are derived from the slug, so loading it again updates the same listings and keeps their
+ * photos and pieces.
  */
-import { existsSync, mkdirSync, readFileSync, writeFileSync } from 'node:fs';
+import { existsSync, readFileSync, writeFileSync } from 'node:fs';
 import { createHash } from 'node:crypto';
 import { pathToFileURL } from 'node:url';
 
 const REGIONS = ['delhi', 'punjab', 'rajasthan', 'assam', 'maharashtra', 'kerala'];
 const OUT = 'supabase/seed/catalogue.sql';
-const PHOTOS = 'catalogue/photos';
 const CODES = { delhi: 'DEL', punjab: 'PUN', rajasthan: 'RAJ', assam: 'ASM', maharashtra: 'MAH', kerala: 'KER' };
 
 // DEV PLACEHOLDER price bands in cents (the lowest pack for the pantry). Not business decisions (D-012).
@@ -197,19 +195,6 @@ if (args.includes('--check')) {
 writeFileSync(OUT, sql);
 console.log(`Wrote ${OUT}: ${clothing.length} clothing, ${pantry.length} pantry, ` +
   `${clothing.reduce((n, l) => n + l.colours.length * l.sizes.length, 0) + pantry.reduce((n, l) => n + l.packs.length, 0)} variants.`);
-
-if (args.includes('--folders')) {
-  let made = 0;
-  for (const l of listings) {
-    for (const dir of [`${PHOTOS}/${l.region}/_region`, `${PHOTOS}/${l.region}/${l.slug.slice(l.region.length + 1)}`]) {
-      if (!existsSync(dir)) {
-        mkdirSync(dir, { recursive: true });
-        made += 1;
-      }
-    }
-  }
-  console.log(`Photo folders ready under ${PHOTOS} (${made} new).`);
-}
 
 if (args.includes('--apply')) {
   const { default: pg } = await import('pg');

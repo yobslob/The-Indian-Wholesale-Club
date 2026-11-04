@@ -119,7 +119,7 @@ const rewrites = nextConfig.rewrites ? await nextConfig.rewrites() : [];
 const rewriteRules = Array.isArray(rewrites) ? rewrites : [...(rewrites.beforeFiles ?? []), ...(rewrites.afterFiles ?? [])];
 const rewritten = new Set(
   rewriteRules.flatMap((r) => {
-    // /:type(clothing|food) and, inside the 7-day store (D-154), /7-day-delivery/:type(food|home-and-gifts)
+    // /:type(clothing|food)
     const alt = r.source.match(/^(.*)\/:\w+\(([^)]+)\)$/);
     return alt ? alt[2].split('|').map((s) => `${alt[1]}/${s}`) : [r.source];
   }),
@@ -131,7 +131,7 @@ const documented = new Set(
   ),
 );
 for (const route of webRoutes) {
-  // the dynamic route a rewrite serves (/see-all/[type]/…, /7-day-delivery/[type]/[category]), not its plain pages
+  // the dynamic route a rewrite serves (/see-all/[type]/…), not its plain pages
   if (internal.some((prefix) => route.startsWith(`${prefix}/`) && route.includes('['))) continue;
   if (!documented.has(route === '/' ? '/' : route))
     problems.push(`docs/storefront.md: page ${route} is not listed`);
@@ -152,7 +152,7 @@ for (const [, r] of tableRows.matchAll(/`(\/[^`\s]*)`/g)) {
 }
 
 // 4. App screens: each file under apps/app/app is named (by its route path) in the docs.
-const appDocs = storefront + docs['docs/admin.md']; // vendor mode: admin.md §Vendor screens (D-103)
+const appDocs = storefront + docs['docs/admin.md'];
 for (const f of walk('apps/app/app', (x) => x.endsWith('.tsx')).map(posix)) {
   const rel = f.replace('apps/app/app/', '').replace(/\.tsx$/, '');
   // Layouts and tab home screens (index) are covered by the tab lists in the docs.

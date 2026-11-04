@@ -2,8 +2,8 @@
 /**
  * scripts/production-seed.mjs: the ONE-TIME data a new production database needs after its migrations (the Deploy
  * workflow pushes migrations, never seeds): the 36 regions (D-002, their text as drafts, D-019), the category tree,
- * and the pilot's high-end numbers (D-069, each labelled as a placeholder in Settings until the founder saves their own).
- * Never the demo data or the placeholder catalogue.
+ * and the after-sale and re-check numbers (D-069; a number already set is kept). Never the demo data or the placeholder
+ * catalogue.
  *
  * The founder runs it (Claude never touches a hosted database):
  *   pnpm prod:seed --url=postgresql://… --allow-remote            # dry run: says what it would load
@@ -53,10 +53,10 @@ try {
   }
   await client.query('commit');
   const counts = await client.query(
-    'select (select count(*) from public.regions)::int as regions, (select count(*) from public.categories)::int as categories, (select count(*) from public.pricing_estimates)::int as estimates',
+    'select (select count(*) from public.regions)::int as regions, (select count(*) from public.categories)::int as categories',
   );
   const c = counts.rows[0];
-  console.log(`Done: ${c.regions} regions, ${c.categories} categories, ${c.estimates} pilot numbers (placeholders).`);
+  console.log(`Done: ${c.regions} regions, ${c.categories} categories, the after-sale numbers.`);
 } catch (error) {
   await client.query('rollback').catch(() => {});
   console.error(`Nothing was loaded: ${error.message}`);

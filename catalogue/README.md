@@ -1,28 +1,10 @@
-# Catalogue: the launch regions' listings and their photos
+# Catalogue: the local test data
 
-The six launch regions (Delhi, Punjab, Rajasthan, Assam, Maharashtra, Kerala, D-059) and every item from
-`docs/iwc-live-regions-catalogue.md`, as listings with their colours, sizes and pack sizes.
+The six launch regions (Delhi, Punjab, Rajasthan, Assam, Maharashtra, Kerala, D-059) as listings with their colours, sizes
+and pack sizes: the local database's test catalogue (`supabase/seed/catalogue.sql`). Nothing here goes to production.
 
-**Pilot listings** come from Indian online shops through the admin's Import from shops page (D-110), not from here.
-The 2,880-row master catalogue (D-108) was removed; `pnpm demo:clear` clears its placeholders (`docs/ops.md`).
-
-## Adding photos (on your machine)
-
-1. Make the folders once (and again after adding items): `pnpm catalogue:folders`
-   This creates `catalogue/photos/<region>/<product>/` for every listing, plus `catalogue/photos/<region>/_region/`.
-2. Drop photos in (`.jpg`, `.jpeg`, `.png`, `.webp`):
-   - **A product:** `catalogue/photos/kerala/kasavu-saree/`. Photos show in file-name order and the first one is the
-     main photo, so name them `1-main.jpg`, `2-front.jpg`, `3-back.jpg`, `4-closeup.jpg`.
-   - **Alt text** (what a screen reader says; required for accessibility): an `alt.txt` in the same folder, one line
-     per photo: `1-main.jpg: Kasavu saree with its gold border, spread out on the grass`. Photos without a line get
-     "<product name>, photo 2 of 4", which is better than nothing but not good.
-   - **A region:** `catalogue/photos/kerala/_region/`. The first photo is the region's main photo; the rest go into its album (the
-     sliding mosaic on the region page, shown once there are three). Album photos get alt text from `alt.txt` too.
-3. Load them into your local store: `pnpm dev:photos`. Running it again replaces a product's photos with what's in
-   its folder.
-
-The photos folder is **not in git** (it would get huge). Keep your own backup of `catalogue/photos/`.
-For the hosted site, upload through the admin (Catalog → a product → Photos; Regions → a region).
+**Real listings** come from Indian online shops through the admin's Import from shops page (D-110) and the sourcing
+runner, not from here.
 
 ## Changing the listings
 
@@ -47,11 +29,9 @@ database without a reset (same listings, photos and pieces kept). Commit the dat
 
 - **Real (from the catalogue):** the items, their names, the one-line descriptions, the categories, and which region they
   belong to. The descriptions are Claude-written drafts in the founder's voice rule (`docs/storefront.md` §Voice).
-- **Placeholders until shops are signed up** (`is_placeholder = true`, D-012): prices, pieces in stock, the shop,
-  the colours on offer and the sizes. Placeholders show only in demo mode (`dev_preview`): in development, and in
-  production during the demo round (D-078, `pnpm demo:load` / `pnpm demo:clear`, docs/ops.md §Demo round).
-- **Pantry items are drafts:** spices cannot go live until the FDA question is settled (D-032, Q-10). They are in
-  the admin Catalog, not on the store.
+- **Placeholders** (`is_placeholder = true`, D-012): prices, pieces in stock, the shop, the colours on offer and the
+  sizes. Placeholders show only in demo mode (`dev_preview`), which is development.
+- **Pantry items are drafts:** they are in the admin Catalog, not on the store.
 
 ## Left out, and why
 
