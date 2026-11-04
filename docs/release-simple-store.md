@@ -140,6 +140,11 @@ hour for the Deploy part. Nothing is dropped from the database until step 12.
     - A mixed bag: Shipment 1 · Food, Shipment 2 · Clothing and home & gifts.
     - The FAQ: "What is a delivery day?", with the numbers from Settings.
     - The admin: Today (and its live dot), To order, Settings (Free shipping from $49.99, bulk from $99.99, food 7 – 7, the rest 12 – 16).
+15a. **The $1 Stripe test (D-188).** Open `/admin/settings/payment-test` on the live site, signed in as admin (nothing links to it).
+    Check that the Stripe account says live and can take payments and pay out. Press **Make a $1 test payment**, pay with your own
+    card, read the result back, then press **Refund this $1** (Stripe keeps its fee). It makes no order and no alert.
+    **What it does not prove:** it never runs `create_order`, so the first order made on production is a real customer's. Watch
+    that first order: the admin's Today, its To order row, the customer's email and "Paid, but no order".
 16. **Delete the two old buckets.** Supabase → Storage: empty and delete **`vendor-uploads`** and **`photo-candidates`** (the migration
     cannot: Supabase refuses that from SQL). **Keep `vendor-docs`:** it holds the shop bills' photos.
 17. **Pull the code on the laptop and the India PC** (`git pull` on `main`, then `pnpm install`). The old `pnpm photos:redo fetch` refuses

@@ -8,6 +8,7 @@ import {
 } from '@repo/db/server';
 
 import { finalizeOrder } from '@/features/checkout/finalize';
+import { TEST_PAYMENT_KIND } from '@/features/checkout/test-payment';
 import { errorMessage, logger } from '@/lib/logger';
 import { isStripeConfigured, stripeServer } from '@/lib/stripe';
 import { busyIfDbTimeout } from '@/lib/supabase/busy';
@@ -46,6 +47,12 @@ export async function POST(request: Request): Promise<NextResponse> {
   }
 
   if (event.type !== 'payment_intent.succeeded' && !isExtraEvent(event.type))
+    return NextResponse.json({ received: true });
+  // The admin's $1 payment test (admin.md §Payment test) makes no order: nothing to finalize or alert.
+  if (
+    event.type === 'payment_intent.succeeded' &&
+    (event.data.object as Stripe.PaymentIntent).metadata.kind === TEST_PAYMENT_KIND
+  )
     return NextResponse.json({ received: true });
 
   const service = serviceClient();

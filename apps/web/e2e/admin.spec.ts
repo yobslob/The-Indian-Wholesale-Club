@@ -106,7 +106,7 @@ test('the buying screens and Settings load, and the removed pages are gone', asy
     await expect(page.getByText('This page did not load'), path).toHaveCount(0);
   }
 
-  for (const path of ['/admin/cycles', '/admin/payouts', '/admin/vendors', '/admin/vendor-pieces', '/admin/house-models', '/admin/settings/payment-test']) {
+  for (const path of ['/admin/cycles', '/admin/payouts', '/admin/vendors', '/admin/vendor-pieces', '/admin/house-models']) {
     const response = await page.goto(path);
     expect(response?.status(), path).toBe(404);
   }
