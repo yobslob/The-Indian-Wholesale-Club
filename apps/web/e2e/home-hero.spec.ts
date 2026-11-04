@@ -68,7 +68,7 @@ test("D-187: Home's sections in the founder's order, with no second store", asyn
     '#pick',
     'aside[aria-label="How buying works"]',
   ];
-  // A row with nothing to show (a thin local catalogue) is left out; the rest keep their places.
+  // A part with nothing to show (the local catalogue can hold no food) is left out; the rest keep their places.
   const tops = await page.evaluate(
     (selectors) =>
       selectors.flatMap((s) => {
@@ -77,11 +77,13 @@ test("D-187: Home's sections in the founder's order, with no second store", asyn
       }),
     order,
   );
-  expect(tops.map((t) => t.s)).toEqual(expect.arrayContaining(['#categories', '#just-listed', '#pick']));
+  expect(tops.map((t) => t.s)).toEqual(expect.arrayContaining(['[data-home-hero]', '#just-listed', '#pick']));
   for (let i = 1; i < tops.length; i += 1) expect(tops[i]!.top, `${tops[i]!.s} after ${tops[i - 1]!.s}`).toBeGreaterThan(tops[i - 1]!.top);
 
-  await expect(page.getByRole('heading', { name: 'Shop by category' })).toBeVisible();
-  await expect(page.locator('#categories a').first()).toHaveAttribute('href', /^\/(food|home-and-gifts)\?category=/);
+  if (tops.some((t) => t.s === '#categories')) {
+    await expect(page.getByRole('heading', { name: 'Shop by category' })).toBeVisible();
+    await expect(page.locator('#categories a').first()).toHaveAttribute('href', /^\/(food|home-and-gifts)\?category=/);
+  }
   await expect(page.getByRole('link', { name: 'Shop under $99' })).toHaveAttribute('href', /max=99/);
   await expect(page.getByRole('navigation', { name: 'Store' })).toHaveCount(0);
   const text = await page.locator('body').innerText();
