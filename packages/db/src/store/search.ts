@@ -55,8 +55,6 @@ export interface SearchFilter {
   limit?: number;
   /** false for a re-read (Show more, a filter): only a first unfiltered page counts for Insights. */
   record?: boolean;
-  /** D-154: only 7-day pieces. */
-  quick?: boolean;
 }
 
 const missing = (code: string | undefined): boolean => code === 'PGRST202' || code === '42883';
@@ -75,7 +73,6 @@ async function oldSearch(client: IwcClient, query: string, f: SearchFilter): Pro
           p_offset: f.offset ?? 0,
           p_limit: limit + 1,
           p_record: f.record ?? true,
-          ...(f.quick ? { p_quick: true } : {}),
         })
         .select(PRODUCT_CARD_COLUMNS),
     ),
@@ -128,7 +125,6 @@ export async function searchPage(client: IwcClient, query: string, f: SearchFilt
     p_offset: f.offset ?? 0,
     p_limit: f.limit ?? 24,
     p_record: f.record ?? true,
-    p_quick: f.quick ?? false,
   });
   const signal = timeLimit();
   const res = await (signal ? call.abortSignal(signal) : call);
