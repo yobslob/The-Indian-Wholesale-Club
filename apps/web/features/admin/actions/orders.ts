@@ -11,7 +11,6 @@ import {
   markOrderDelivered,
   markOrderShipped,
   markPickup,
-  moveOrder,
   shipShipment,
   weighPickup,
 } from '@repo/db/admin';
@@ -48,7 +47,7 @@ function carrierFrom(form: FormData): { carrier: string; tracking: string } {
   return { carrier, tracking: input.tracking };
 }
 
-/** US desk: the order leaves in a domestic parcel (flows.md §6.4). */
+/** The order leaves in a parcel, with its tracking number. */
 export async function markShippedAction(orderId: string, form: FormData): Promise<void> {
   const { client } = await requireAdminAction();
   const { carrier, tracking } = carrierFrom(form);
@@ -114,19 +113,8 @@ export async function addNoteAction(orderId: string, form: FormData): Promise<vo
   done(orderId);
 }
 
-/** flows.md §6b / D-045: the order joins another cycle, as it did physically. A later cycle changes its window. */
-export async function moveOrderAction(orderId: string, form: FormData): Promise<void> {
-  const { client } = await requireAdminAction();
-  const input = z
-    .object({ toCycleId: id, note: z.string().trim().max(500) })
-    .parse({ toCycleId: form.get('toCycleId'), note: form.get('note') ?? '' });
-  await moveOrder(client, { orderId: id.parse(orderId), toCycleId: input.toCycleId, note: input.note || undefined });
-  done(orderId);
-  revalidatePath('/admin/cycles', 'layout');
-}
-
-/** D-070: the COO marks an express order's piece picked (or unavailable) at the shop; then it goes by courier. */
-export async function markExpressPickupAction(
+/** The India desk marks a piece at the hub (or unavailable); once every piece is there its shipment can leave. */
+export async function markPieceAction(
   pickupId: string,
   status: 'picked' | 'unavailable',
   orderId: string,
@@ -134,7 +122,7 @@ export async function markExpressPickupAction(
 ): Promise<void> {
   const { client } = await requireAdminAction();
   await markPickup(client, id.parse(pickupId), z.enum(['picked', 'unavailable']).parse(status));
-  // D-130: weighed as it is picked, when the desk typed a weight
+  // D-130: weighed as it arrives, when the desk typed a weight
   const grams = status === 'picked' ? gramsFrom(form) : null;
   if (grams !== null) await weighPickup(client, pickupId, grams);
   done(orderId);

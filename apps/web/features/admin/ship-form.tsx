@@ -9,22 +9,19 @@ export { shipState };
 export interface ShipOrder {
   id: string;
   status: string;
-  shipping_method: string;
-  cycle_id: string | null;
   carrier: string | null;
   tracking_number: string | null;
-  items: { status: string; pickup: { status: string; arrived_at: string | null } | null }[];
+  items: { status: string; pickup: { status: string } | null }[];
 }
 
 /**
- * flows.md §6.4: pack and ship once its pieces are ready, then mark delivered. USPS, UPS and FedEx give the customer a
+ * Pack and ship once its pieces are at the hub, then mark delivered. USPS, UPS and FedEx give the customer a
  * tracking link (D-066); any other carrier is typed and its number shown as is. Shown only when it applies (D-096).
  * One order, or one of its two shipments (D-154): the caller passes the actions bound to it.
  */
 export function ShipControls({
   title = 'Pack & ship',
   canShip,
-  unchecked,
   shipped,
   carrier,
   trackingNumber,
@@ -33,7 +30,6 @@ export function ShipControls({
 }: {
   title?: string;
   canShip: boolean;
-  unchecked: number;
   /** On its way: the tracking and Mark delivered. */
   shipped: boolean;
   carrier: string | null;
@@ -47,11 +43,6 @@ export function ShipControls({
     return (
       <form action={ship} className="space-y-2.5">
         <h3 className="text-[14px] font-semibold">{title}</h3>
-        {unchecked > 0 ? (
-          <p className="text-caution text-[13px]">
-            {unchecked} piece{unchecked === 1 ? ' is' : 's are'} not checked off as arrived yet.
-          </p>
-        ) : null}
         <div className="grid grid-cols-2 gap-2.5">
           <Field label="Carrier">
             <select name="carrier" required className={input} defaultValue={CARRIERS[0]}>
@@ -102,11 +93,10 @@ export function ShipControls({
 }
 
 export function ShipForm({ order }: { order: ShipOrder }): React.JSX.Element | null {
-  const { canShip, unchecked } = shipState(order);
+  const { canShip } = shipState(order);
   return (
     <ShipControls
       canShip={canShip}
-      unchecked={unchecked}
       shipped={order.status === 'shipped'}
       carrier={order.carrier}
       trackingNumber={order.tracking_number}

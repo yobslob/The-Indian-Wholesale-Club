@@ -134,7 +134,7 @@ export function ReviewForm({
     Number(f.weight) > 0
       ? Number(f.weight)
       : fallbackWeightG(type, toPaise(f.shopPrice), category?.default_weight_g ?? null, data.pricing);
-  const cents = livePrice(toPaise(f.shopPrice), weight, data.pricing, type);
+  const cents = livePrice(toPaise(f.shopPrice), weight, type);
   const toggle = (url: string): void =>
     setPhotos((list) =>
       list.includes(url) ? list.filter((u) => u !== url) : [...list, url].slice(0, 12),

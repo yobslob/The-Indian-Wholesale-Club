@@ -1,5 +1,6 @@
-import { listCategories, listRegionChoices, listShopChoices } from '@repo/db/admin';
+import { listCategories, listRegionChoices, listSourcedSites } from '@repo/db/admin';
 import { PRODUCT_TYPE_LABEL } from '@repo/shared/domain';
+import { siteLabel } from '@repo/shared/sourcing';
 
 import {
   CatalogTabs,
@@ -67,7 +68,7 @@ export default async function CatalogPage({
   const [regions, categories, shops] = await Promise.all([
     listRegionChoices(client).catch(() => []),
     listCategories(client).catch(() => []),
-    listShopChoices(client).catch(() => []),
+    listSourcedSites(client).catch(() => []),
   ]);
   const exportQuery = productViewQuery({ ...view, sort: 'updated' });
   const exportHref = `/admin/catalog/export${exportQuery ? `?${exportQuery}` : ''}`;
@@ -85,7 +86,7 @@ export default async function CatalogPage({
       {usStock ? (
         <p className="text-ink-muted text-sm">
           Returned and cancelled pieces already in the US, as drafts at the clearance price. Check
-          each piece in hand, then publish it: it ships at once, without a cycle.
+          each piece in hand, then publish it: it ships at once.
         </p>
       ) : null}
       <ProductFilterBar
@@ -107,7 +108,7 @@ export default async function CatalogPage({
           label: `${c.name} (${PRODUCT_TYPE_LABEL[c.product_type]})`,
           type: c.product_type,
         }))}
-        shops={shops.map((v) => ({ value: v.id, label: v.shop_name }))}
+        shops={shops.map((site) => ({ value: site, label: siteLabel(site) }))}
         clearHref={filtered ? `/admin/catalog${tabQuery ? `?${tabQuery}` : ''}` : null}
       />
       <Section

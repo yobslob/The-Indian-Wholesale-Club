@@ -7,7 +7,6 @@ import {
   createListing,
   createVariant,
   getSourcedProduct,
-  onlineVendorFor,
   removeProductMedia,
   setListedQty,
   setProductStatus,
@@ -24,7 +23,6 @@ import {
 } from '@repo/shared/domain';
 import {
   importVariants,
-  siteLabel,
   sourcedProductSchema,
   type SourcedProduct,
 } from '@repo/shared/sourcing';
@@ -109,9 +107,7 @@ function plain(error: unknown): string {
     return 'It needs its weight first: weigh it, or type the weight the shop states (D-129).';
   if (message.includes('care_missing')) return 'Add its care (how to wash it) first: US customers are owed it (D-140).';
   if (message.includes('price_needed'))
-    return 'The price could not be worked out: check the pricing numbers in Settings.';
-  if (message.includes('products_food_not_live'))
-    return 'Food goes live once “Food is cleared” is on in Settings (D-074).';
+    return 'The price could not be worked out: check the shop price and the weight.';
   if (message.includes('products_source_url_key') || message.includes('duplicate key'))
     return 'This page was just imported. Reload the page and try again.';
   return message.length < 200 ? message : 'Could not save. Try again.';
@@ -130,12 +126,12 @@ async function publishOrNote(
 }
 
 /**
- * Saves an imported product (D-110). A new page becomes a listing of the shop's online vendor in the chosen state,
- * priced from the shop's price (D-109), with its photos copied. A page imported before keeps its listing: the price,
+ * Saves an imported product (D-110). A new page becomes a listing in the chosen state (or all India), with its shop's
+ * link and site, priced from the shop's price (D-128), with its photos copied. A page imported before keeps its listing: the price,
  * the sizes in stock and the check date are updated, and with "replace" its name, words and photos too.
  */
 export async function saveImportAction(raw: ImportInput): Promise<ImportResult> {
-  const { client, user } = await requireAdminAction();
+  const { client } = await requireAdminAction();
   const parsed = importSchema.safeParse(raw);
   if (!parsed.success) return { error: parsed.error.issues[0]?.message ?? 'Check the form.' };
   const input = parsed.data;
@@ -244,15 +240,10 @@ export async function saveImportAction(raw: ImportInput): Promise<ImportResult> 
       };
     }
 
-    const vendorId = await onlineVendorFor(
-      client,
-      input.product.site,
-      siteLabel(input.product.site),
-      input.regionId,
-      user.id,
-    );
     const listing = {
-      vendor_id: vendorId,
+      region_id: input.regionId,
+      source_url: input.product.url,
+      source_site: input.product.site,
       category_id: input.categoryId,
       product_type: input.productType,
       name: input.name,
@@ -275,8 +266,6 @@ export async function saveImportAction(raw: ImportInput): Promise<ImportResult> 
       ...(input.wears ? { wears: input.wears } : {}),
       shop_title: input.product.title.slice(0, 300),
       description: input.description || null,
-      source_url: input.product.url,
-      source_site: input.product.site,
       source_checked_at: checked,
       source_in_stock: inStock,
     });

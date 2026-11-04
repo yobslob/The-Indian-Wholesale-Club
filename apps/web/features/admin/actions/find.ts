@@ -16,7 +16,7 @@ export interface FoundItem {
   chip?: [string, Tone];
   photo?: string;
 }
-export type Found = { group: 'Orders' | 'Products' | 'Customers' | 'Vendors'; items: FoundItem[] }[];
+export type Found = { group: 'Orders' | 'Products' | 'Customers'; items: FoundItem[] }[];
 
 /** Quick find (D-096): what the Ctrl+K box shows. Admin only; anyone else gets a 404 like every admin action. */
 export async function quickFindAction(words: string): Promise<Found> {
@@ -55,14 +55,6 @@ export async function quickFindAction(words: string): Promise<Found> {
         href: `/admin/orders?q=${encodeURIComponent(c.email ?? '')}`,
         title: c.full_name || c.email || 'Customer',
         sub: c.full_name ? (c.email ?? '') : 'their orders',
-      })),
-    },
-    {
-      group: 'Vendors' as const,
-      items: r.vendors.map((v) => ({
-        href: `/admin/vendors#v-${v.id}`,
-        title: v.shop_name,
-        sub: [v.town, v.region?.name].filter(Boolean).join(' · '),
       })),
     },
   ].filter((g) => g.items.length > 0);

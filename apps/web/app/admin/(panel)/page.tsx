@@ -1,94 +1,67 @@
-import Link from 'next/link';
-
 import {
   attentionLines,
+  foodWatch,
   getAttention,
-  getCycleTotals,
-  getOpenCycle,
-  getPickupCycle,
   getTodaySummary,
-  isMadeToOrderPilot,
   moneyAtRisk,
   pilotPipelineCounts,
-  quickWatch,
   toOrderSummary,
 } from '@repo/db/admin';
-import { bothPlaces, deskOrder, greeting, timeLeft, type Desk } from '@repo/shared/admin';
+import { deskOrder, greeting, type Desk } from '@repo/shared/admin';
 
-import { Chip } from '@/features/admin/chips';
 import { waitingCounts } from '@/features/admin/counts';
-import { CycleFlow } from '@/features/admin/cycle-flow';
 import { requireAdminPage } from '@/features/admin/guard';
 import { LiveFeed } from '@/features/admin/live-feed';
 import { Queue, type Job } from '@/features/admin/queue';
 import { waited } from '@/features/admin/to-order/group';
-import { PageHead, Panel, SectionTitle } from '@/features/admin/ui';
+import { PageHead, SectionTitle } from '@/features/admin/ui';
 
 const DESK_NAME: Record<Desk, string> = { us: 'US desk', india: 'India desk' };
-const dollars = new Intl.NumberFormat('en-US', { style: 'currency', currency: 'USD', maximumFractionDigits: 0 });
 
 /**
- * Today (D-096, admin.md): the open cycle's countdown with its totals, what needs attention, then the admin's own desk
- * as a work queue (count, the job, one button to it; D-007: India picks up, lists and pays shops, the US ships) and
- * the other desk below. Live orders at the side. Every job links to the screen that does it.
- * D-140 (A2): in the made-to-order pilot (D-115) no cycle is open and none is needed: the India desk orders each sold
- * piece from its shop, marks it at the hub and weighs it; the US desk sends orders on. Cycle jobs show only while a
- * cycle is open. D-154: the 7-day shipments open, and those at risk, come first on the India desk.
+ * Today (D-096, admin.md): what needs attention, then the admin's own desk as a work queue (count, the job, one button
+ * to it; D-007: India buys and weighs, the US ships) and the other desk below. Live orders at the side. Every job links
+ * to the screen that does it. D-140 (A2): the India desk orders each sold piece from its shop, marks it at the hub and
+ * weighs it. D-154, D-187: the food shipments open, and those at risk, come first on the India desk.
  */
 export default async function TodayPage(): Promise<React.JSX.Element> {
   const { client, desk } = await requireAdminPage();
-  const [summary, counts, cycle, attention, pickupCycle, pilot, toOrder, pipeline, quick] = await Promise.all([
+  const [summary, counts, attention, toOrder, pipeline, food] = await Promise.all([
     getTodaySummary(client),
     waitingCounts(client),
-    getOpenCycle(client),
     getAttention(client),
-    getPickupCycle(client),
-    isMadeToOrderPilot(client),
     toOrderSummary(client),
     pilotPipelineCounts(client),
-    quickWatch(client),
+    foodWatch(client),
   ]);
-  const atRisk = quick.not_bought + quick.not_shipped;
-  const totals = cycle ? await getCycleTotals(client, cycle.id) : null;
+  const atRisk = food.not_bought + food.not_shipped;
   const alerts = attentionLines(attention);
   const atRiskMoney = moneyAtRisk(attention);
   const now = new Date();
   const status = (s: keyof typeof summary.ordersByStatus): number => summary.ordersByStatus[s] ?? 0;
 
-  const cycleJobs = cycle !== null || pickupCycle !== null;
   const jobs: Record<Desk, Job[]> = {
     us: [
       { n: status('arrived'), what: 'Orders in the US to send on', sub: 'Pack and ship to the customer', go: 'Pack & ship', href: '/admin/orders?status=arrived', urgent: true },
-      ...(cycle
-        ? [
-            {
-              n: status('confirmed'),
-              what: 'Orders confirmed in the open cycle',
-              sub: 'Nothing to do until cutoff; check for problems',
-              go: 'See orders',
-              href: '/admin/orders?status=confirmed',
-            },
-          ]
-        : []),
       { n: counts.returns, what: 'Returns to collect', go: 'Open returns', href: '/admin/returns' },
     ],
     india: [
-      // D-154: a 7-day piece is bought within 2 hours and ships the next day
+      // D-154: food is bought within 2 hours and ships the next day; the 7 delivery days depend on it
       {
-        n: quick.open,
-        what: '7-day shipments to send',
+        n: food.open,
+        what: 'Food shipments to send',
         sub: atRisk
-          ? [quick.not_bought ? `${quick.not_bought} not bought within 2 hours` : '', quick.not_shipped ? `${quick.not_shipped} not shipped by the next day` : '']
+          ? [food.not_bought ? `${food.not_bought} not bought within 2 hours` : '', food.not_shipped ? `${food.not_shipped} not shipped by the next day` : '']
               .filter(Boolean)
               .join(' · ')
-          : quick.open
+          : food.open
             ? 'All on time'
             : undefined,
         go: 'Order them',
         href: '/admin/to-order',
         urgent: atRisk > 0,
       },
-      // D-140 (F3): the India desk's first job, cycle or not
+      // D-140 (F3): the India desk's first job
       {
         n: toOrder.count,
         what: 'Pieces to order from their shops',
@@ -99,90 +72,20 @@ export default async function TodayPage(): Promise<React.JSX.Element> {
       },
       { n: pipeline.ordered, what: 'Ordered, on the way to the hub', sub: 'Mark each at the hub when it arrives', go: 'Open', href: '/admin/to-order?view=ordered' },
       { n: pipeline.toWeigh, what: 'At the hub, to weigh', go: 'Weigh them', href: '/admin/to-order?view=weigh' },
-      ...(cycleJobs
-        ? [
-            {
-              n: counts.pickupsToDo,
-              what: 'Pickups still to do',
-              sub: pickupCycle ? `In cycle ${pickupCycle.code}` : undefined,
-              go: 'Start pickups',
-              href: pickupCycle ? `/admin/cycles/${pickupCycle.id}` : '/admin/cycles',
-              urgent: true,
-            },
-          ]
-        : []),
-      { n: summary.expressToSend, what: 'Express orders to pick up and send by courier', go: 'Open orders', href: '/admin/orders?express=1', urgent: true },
       { n: pipeline.held, what: 'Prices held for you', sub: "A shop's price jumped; accept it or stop using that shop", go: 'Review', href: '/admin/import/auto' },
       { n: summary.draftProducts, what: 'Draft listings to review', go: 'Review drafts', href: '/admin/catalog?status=draft' },
-      {
-        n: counts.shopsOwed,
-        what: 'Shops owed for picked pieces',
-        sub: `${summary.unpaidPickedPickups} picked piece${summary.unpaidPickedPickups === 1 ? '' : 's'} not paid yet`,
-        go: 'Pay shops',
-        href: '/admin/payouts',
-      },
-      // Imported listings are re-checked by the sourcing runner (D-118); the hand re-check is for shops' own stock.
-      ...(pilot
-        ? []
-        : [
-            summary.staleVariants === null
-              ? { n: null, what: 'Quantities to re-check with the shops', sub: 'Set "stale after" days in Settings to count them', go: 'Settings', href: '/admin/settings' }
-              : { n: summary.staleVariants, what: 'Quantities to re-check with the shops', go: 'Re-check', href: '/admin/listings?view=recheck' },
-          ]),
+      summary.staleVariants === null
+        ? { n: null, what: 'Quantities to re-check with the shops', sub: 'Set "stale after" days in Settings to count them', go: 'Settings', href: '/admin/settings' }
+        : { n: summary.staleVariants, what: 'Quantities to re-check with the shops', go: 'Re-check', href: '/admin/listings' },
     ],
   };
   const [own, other] = deskOrder(desk);
-  const left = cycle ? timeLeft(cycle.cutoff_at, now) : null;
-  const places = cycle ? bothPlaces(cycle.cutoff_at, desk) : null;
 
   return (
     <>
       <PageHead title={greeting(now, desk)} sub={desk ? `${DESK_NAME[own]} first; the ${DESK_NAME[other]} below.` : 'Both desks below.'} />
       <div className="grid grid-cols-[minmax(0,1fr)] items-start gap-[18px] lg:grid-cols-[minmax(0,1fr)_340px]">
         <div className="grid min-w-0 grid-cols-[minmax(0,1fr)] gap-4">
-          {cycle && totals ? (
-            <Panel>
-              <div className="grid items-center gap-[18px] md:grid-cols-[1.1fr_1fr]">
-                <div>
-                  <p className="text-ink-muted mb-1.5 flex items-center gap-1.5 text-[12.5px]">
-                    Open cycle{' '}
-                    <Link href={`/admin/cycles/${cycle.id}`} className="text-ink font-bold">
-                      {cycle.code}
-                    </Link>{' '}
-                    <Chip tone="blue">Open</Chip>
-                  </p>
-                  <p className="font-heading text-[28px] font-semibold leading-none tracking-[-0.01em] md:text-[34px]">
-                    {left ?? 'Cutoff passed'}
-                    <small className="font-ui text-ink-muted mt-1.5 block text-[14px] font-medium leading-[1.4]">
-                      {left ? 'to cutoff · ' : 'it closes by itself shortly · '}
-                      {places?.[0]} · {places?.[1]}
-                    </small>
-                  </p>
-                </div>
-                <dl className="grid grid-cols-2 gap-2.5 sm:grid-cols-4">
-                  {[
-                    [totals.orders, 'orders'],
-                    [totals.pieces, 'pieces'],
-                    [totals.shops, 'shops'],
-                    [dollars.format(Math.round(totals.salesCents / 100)), 'sales'],
-                  ].map(([value, label]) => (
-                    <div key={label} className="bg-canvas flex flex-col-reverse rounded-[10px] px-3 py-2.5">
-                      <dt className="text-ink-muted text-[12px] font-medium">{label}</dt>
-                      <dd className="text-[20px] font-bold leading-none">{value}</dd>
-                    </div>
-                  ))}
-                </dl>
-              </div>
-              <CycleFlow cycle={cycle} desk={desk} />
-            </Panel>
-          ) : pilot ? null : (
-            <div className="border-caution/25 bg-caution/[0.08] rounded-xl border px-3.5 py-3 text-[14px]">
-              <b className="text-caution">No open cycle: customers cannot check out.</b>{' '}
-              <Link href="/admin/cycles" className="underline">
-                Open one
-              </Link>
-            </div>
-          )}
           {atRiskMoney > 0 ? (
             // F-3: payments refused or unmatched and open disputes, in red until resolved
             <p role="status" className="border-danger/30 bg-danger/[0.08] text-danger rounded-xl border px-3.5 py-3 text-[14px] font-semibold">

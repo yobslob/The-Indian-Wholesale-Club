@@ -17,7 +17,7 @@ import type { getAdminOrder } from '@repo/db/admin';
 type Order = NonNullable<Awaited<ReturnType<typeof getAdminOrder>>>;
 type Shipment = Order['shipments'][number];
 
-const KIND: Record<string, string> = { quick: '7-day', standard: 'Standard', express: 'Express' };
+const KIND: Record<string, string> = { food: 'Food', standard: 'Clothing and home', express: 'Express' };
 const STATUS: Record<string, [string, Tone]> = {
   open: ['Being prepared', 'warn'],
   shipped: ['On its way', 'blue'],
@@ -37,7 +37,7 @@ function timeLeft(to: string | null, now = Date.now()): string | null {
 /**
  * D-154: an order of two shipments, each on its own (the plan's "Operations"): its pieces, its promised dates and the
  * time left, its own Ship form and tracking, its own delay notice and its own cancel with the amount shown first. A
- * 7-day shipment shows the desk's buy-by (2 hours) and ship-by (the next day) times while it is open.
+ * food shipment shows the desk's buy-by (2 hours) and ship-by (the next day) times while it is open.
  */
 export function ShipmentsPanel({
   order,
@@ -77,7 +77,7 @@ function ShipmentBlock({
   first: boolean;
 }): React.JSX.Element {
   const pieces = order.items.filter((it) => it.shipment_id === sh.id);
-  const { canShip, fromHub, unchecked } = shipmentShipState(order, sh);
+  const { canShip } = shipmentShipState(order, sh);
   const [label, tone] = STATUS[sh.status] ?? [sh.status, 'mute'];
   const open = sh.status === 'open';
   const placed = Date.parse(order.created_at);
@@ -91,7 +91,7 @@ function ShipmentBlock({
     <section className={first ? '' : 'border-line border-t pt-4'}>
       <h3 className="mb-1.5 flex flex-wrap items-center gap-1.5 text-[14px] font-semibold">
         Shipment {sh.seq}
-        <Chip tone={sh.kind === 'quick' ? 'brand' : 'mute'}>{KIND[sh.kind] ?? sh.kind}</Chip>
+        <Chip tone={sh.kind === 'food' ? 'brand' : 'mute'}>{KIND[sh.kind] ?? sh.kind}</Chip>
         <Chip tone={tone}>{label}</Chip>
       </h3>
       <p className="text-[13.5px]">
@@ -99,7 +99,7 @@ function ShipmentBlock({
         {open ? <span className="text-ink-muted"> · {timeLeft(sh.est_delivery_to)}</span> : null} ·
         Shipping {formatUsd(sh.shipping_cents)}
       </p>
-      {open && sh.kind === 'quick' ? (
+      {open && sh.kind === 'food' ? (
         <p className="text-ink-muted text-[12.5px]">
           Buy by <When iso={new Date(placed + 2 * HOUR).toISOString()} inline /> · ship by{' '}
           <When iso={new Date(placed + 24 * HOUR).toISOString()} inline />
@@ -115,7 +115,6 @@ function ShipmentBlock({
       <ShipControls
         title={`Pack & ship shipment ${sh.seq}`}
         canShip={canShip}
-        unchecked={unchecked}
         shipped={sh.status === 'shipped'}
         carrier={sh.carrier}
         trackingNumber={sh.tracking_number}
@@ -123,11 +122,7 @@ function ShipmentBlock({
         deliver={markShipmentDeliveredAction.bind(null, order.id, sh.id)}
       />
       {open && !canShip ? (
-        <p className="text-ink-muted text-[13px]">
-          {fromHub
-            ? 'Ships from the hub once every piece is there.'
-            : 'Ships once its export has arrived.'}
-        </p>
+        <p className="text-ink-muted text-[13px]">Ships from the hub once every piece is there.</p>
       ) : null}
       {open ? (
         <div className="mt-2.5 grid gap-2">

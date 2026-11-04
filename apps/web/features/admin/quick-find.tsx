@@ -105,7 +105,7 @@ export function QuickFind({ compact = false }: { compact?: boolean }): React.JSX
           className="border-line bg-paper text-ink-muted font-ui flex h-[38px] min-w-0 flex-[0_1_460px] items-center gap-2.5 rounded-[10px] border px-3 text-[14px]"
         >
           <SearchIcon />
-          <span className="truncate">Find an order, customer, product or vendor</span>
+          <span className="truncate">Find an order, customer or product</span>
           <kbd className="border-line bg-canvas ml-auto rounded-[5px] border px-1.5 py-[3px] text-[11px] font-semibold">
             Ctrl K
           </kbd>
@@ -198,7 +198,7 @@ export function QuickFind({ compact = false }: { compact?: boolean }): React.JSX
                   <span>↑ ↓ move</span>
                   <span>Enter open</span>
                   <span>Esc close</span>
-                  <span className="ml-auto">Searches orders, customers, products, vendors</span>
+                  <span className="ml-auto">Searches orders, customers, products</span>
                 </div>
               </div>
             </div>,

@@ -52,7 +52,7 @@ export async function refundItemAction(orderId: string, itemId: string): Promise
 }
 
 /**
- * D-042, before cutoff only: the customer's own cancel refunds everything except
+ * D-042, before it ships only: the customer's own cancel refunds everything except
  * the tax; a cancel because of us refunds everything. Reserved stock is released.
  */
 export async function cancelOrderAction(orderId: string, reason: CancelReason): Promise<void> {
@@ -74,7 +74,7 @@ export async function cancelOrderAction(orderId: string, reason: CancelReason): 
 
 /**
  * D-154: one of two shipments is cancelled (the customer asked, or because of us): its pieces, its Shipping share and
- * their tax back; the other shipment goes on. A 7-day shipment only until its pieces are bought, the other until it
+ * their tax back; the other shipment goes on. A food shipment only until its pieces are bought, the other until it
  * leaves India. Stripe first, then the database (which re-checks the amount).
  */
 export async function cancelShipmentAction(orderId: string, shipmentId: string, reason: CancelReason): Promise<void> {

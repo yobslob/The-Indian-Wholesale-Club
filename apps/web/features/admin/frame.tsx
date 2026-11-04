@@ -21,22 +21,17 @@ function groups(): [string, Item[]][] {
       [
         { href: '/admin', label: 'Today' },
         { href: '/admin/orders', label: 'Orders', count: 'ordersToShip', hint: 'Arrived · to ship' },
-        // D-140: sold pieces to order from their shops (the pilot's pickups have no cycle)
+        // D-140: sold pieces to order from their shops
         { href: '/admin/to-order', label: 'To order', count: 'toOrder', hint: 'Pieces to order from shops' },
-        { href: '/admin/cycles', label: 'Cycle', count: 'pickupsToDo', hint: 'Pickups to do' },
-        { href: '/admin/listings', label: 'Listings', count: 'drafts', hint: 'Drafts' },
-        { href: '/admin/vendor-pieces', label: 'Vendor pieces', count: 'vendorPieces', hint: 'Photos ready to pick' },
-        { href: '/admin/payouts', label: 'Payouts', count: 'shopsOwed', hint: 'Shops owed' },
       ],
     ],
     [
       'Catalog',
       [
-        { href: '/admin/catalog', label: 'Products' },
+        { href: '/admin/catalog', label: 'Products', count: 'drafts', hint: 'Drafts' },
         { href: '/admin/import', label: 'Import from shops' },
         { href: '/admin/regions', label: 'Regions' },
         { href: '/admin/home-photos', label: 'Home photos' },
-        { href: '/admin/house-models', label: 'House models' },
         { href: '/admin/reviews', label: 'Reviews', count: 'reviews', hint: 'To approve', soft: true },
         { href: '/admin/promotions', label: 'Promotions' },
       ],
@@ -45,7 +40,6 @@ function groups(): [string, Item[]][] {
       'People',
       [
         { href: '/admin/customers', label: 'Customers' },
-        { href: '/admin/vendors', label: 'Vendors', count: 'joinRequests', hint: 'Join requests', soft: true },
         { href: '/admin/returns', label: 'Returns', count: 'returns', hint: 'Requested', soft: true },
       ],
     ],

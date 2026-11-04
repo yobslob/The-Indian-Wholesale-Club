@@ -29,7 +29,7 @@ function defaultRows(order: Order): BillRow[] {
         label: `${i.product_name} · ${i.variant_label}`,
         quantity: i.quantity,
         unit: rupeeText(unit),
-        shop: site ? siteLabel(site) : (p?.vendor?.shop_name ?? ''),
+        shop: site ? siteLabel(site) : '',
         shop_order_ref: p?.shop_order_ref ?? '',
       };
     });

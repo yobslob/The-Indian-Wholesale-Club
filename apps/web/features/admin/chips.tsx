@@ -25,7 +25,7 @@ export function Chip({ tone = 'mute', children }: { tone?: Tone; children: React
   );
 }
 
-export { CYCLE_STATUS, ORDER_STATUS, PAYMENT_STATUS, PICKUP_STATUS, PRODUCT_STATUS } from '@repo/shared/admin';
+export { ORDER_STATUS, PAYMENT_STATUS, PRODUCT_STATUS } from '@repo/shared/admin';
 
 export function StatusChip<K extends string>({ map, status }: { map: Record<K, [string, Tone]>; status: K }): React.JSX.Element {
   const [label, tone] = map[status] ?? [status, 'mute'];

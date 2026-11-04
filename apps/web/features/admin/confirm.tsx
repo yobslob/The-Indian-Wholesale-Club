@@ -1,6 +1,6 @@
 'use client';
 
-import { useRef, useState } from 'react';
+import { useState } from 'react';
 import { useFormStatus } from 'react-dom';
 
 import { MailPreview, Modal } from './modal';
@@ -66,7 +66,7 @@ export function ConfirmButton({
   );
 }
 
-/** A "More" action that opens a small form in a box: a new delivery date, a note, a move to another cycle. */
+/** A "More" action that opens a small form in a box: a new delivery date, a note. */
 export function FormButton({
   label,
   title,
@@ -109,59 +109,5 @@ export function FormButton({
         </Modal>
       ) : null}
     </>
-  );
-}
-
-/**
- * A form whose fields are filled in place and whose button asks first (D-096): Record payout shows the amount and the
- * shop before anything is saved. The browser checks the fields before the box opens.
- */
-export function ConfirmForm({
-  action,
-  fields,
-  label,
-  title,
-  children,
-  confirm,
-  className = '',
-}: {
-  action: (form: FormData) => Promise<void>;
-  fields: React.ReactNode;
-  label: string;
-  title: string;
-  children: React.ReactNode;
-  confirm: string;
-  className?: string;
-}): React.JSX.Element {
-  const form = useRef<HTMLFormElement>(null);
-  const [open, setOpen] = useState(false);
-  return (
-    <form ref={form} action={action} className={className}>
-      {fields}
-      <button type="button" onClick={() => form.current?.reportValidity() && setOpen(true)} className={button}>
-        {label}
-      </button>
-      {open ? (
-        <Modal title={title} onClose={() => setOpen(false)}>
-          <div className="mb-3 text-[14px] leading-[1.5]">{children}</div>
-          <div className="flex justify-end gap-2">
-            <button type="button" onClick={() => setOpen(false)} className={secondaryButton}>
-              Not yet
-            </button>
-            <button
-              type="button"
-              data-autofocus
-              onClick={() => {
-                setOpen(false);
-                form.current?.requestSubmit();
-              }}
-              className={button}
-            >
-              {confirm}
-            </button>
-          </div>
-        </Modal>
-      ) : null}
-    </form>
   );
 }

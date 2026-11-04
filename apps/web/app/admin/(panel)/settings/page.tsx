@@ -1,29 +1,17 @@
-import { getPricingSettings, listBusinessDetails, listPricingEstimates } from '@repo/db/admin';
+import { getPricingSettings, listBusinessDetails } from '@repo/db/admin';
 
-import {
-  updateBusinessDetailsAction,
-  updateFoodClearedAction,
-  updatePricingSettingsAction,
-  updateQuickPausedAction,
-} from '@/features/admin/actions/settings';
-import { EstimateNote } from '@/features/admin/estimate-note';
+import { updateBusinessDetailsAction, updatePricingSettingsAction } from '@/features/admin/actions/settings';
 import { requireAdminPage } from '@/features/admin/guard';
-import { ProfitCheck } from '@/features/admin/profit-check';
 import { displayValue, SETTING_GROUPS } from '@/features/admin/settings-fields';
 import { button, Field, input, PageHead, SectionTitle, When } from '@/features/admin/ui';
 
 /**
- * Settings: every number that prices and delivers an order (D-069: the pilot's high-end placeholders, each labelled
- * with its basis until the founder saves their own; the full list is docs/pilot-numbers.md). Prices follow from them
- * automatically (D-075). Business and compliance details for the invoice and food (D-074) below.
+ * Settings: every number that charges and delivers an order (the full list is docs/pilot-numbers.md). Business and
+ * compliance details for the invoice and food (D-074) below.
  */
 export default async function SettingsPage(): Promise<React.JSX.Element> {
   const { client } = await requireAdminPage();
-  const [s, estimates, details] = await Promise.all([
-    getPricingSettings(client),
-    listPricingEstimates(client),
-    listBusinessDetails(client),
-  ]);
+  const [s, details] = await Promise.all([getPricingSettings(client), listBusinessDetails(client)]);
   const row = s as unknown as Record<string, number | null>;
   const placeholders = details.filter((d) => d.is_placeholder).length;
   const groups = [...new Set(details.map((d) => d.group_name))];
@@ -32,19 +20,10 @@ export default async function SettingsPage(): Promise<React.JSX.Element> {
     <div className="space-y-8">
       <PageHead title="Settings" />
       <p className="text-ink-muted max-w-2xl">
-        Last updated <When iso={s.updated_at} inline />. Prices are worked out from these numbers by themselves (D-075). The exchange
-        rate updates every day
-        {s.fx_updated_at ? <> (last <When iso={s.fx_updated_at} inline />{s.fx_source ? `, ${s.fx_source}` : ''})</> : ''}.
+        Last updated <When iso={s.updated_at} inline />.
       </p>
-      {estimates.length > 0 ? (
-        <p className="text-caution max-w-2xl">
-          {estimates.length} number{estimates.length === 1 ? ' is a placeholder' : 's are placeholders'} for the pilot
-          (D-069), each with its basis below. Saving your own number removes its label; the launch check lists what is
-          left.
-        </p>
-      ) : null}
 
-      <form id="pricing-form" action={updatePricingSettingsAction} className="max-w-3xl space-y-8">
+      <form action={updatePricingSettingsAction} className="max-w-3xl space-y-8">
         {SETTING_GROUPS.map((group) => (
           <section key={group.title} className="space-y-3">
             <SectionTitle>{group.title}</SectionTitle>
@@ -62,53 +41,22 @@ export default async function SettingsPage(): Promise<React.JSX.Element> {
                     />
                   </Field>
                   {f.hint ? <p className="text-ink-muted text-[12px] leading-snug">{f.hint}</p> : null}
-                  <EstimateNote estimates={estimates} setting={f.key} />
                 </div>
               ))}
             </div>
           </section>
         ))}
-        {/* D-119: what the numbers on the form do to prices and to each sample bag's profit, before saving. */}
-        <ProfitCheck formId="pricing-form" saved={row} />
         <button type="submit" className={button}>
           Save numbers
         </button>
       </form>
-
-      <section className="max-w-3xl space-y-3">
-        <SectionTitle>Food (D-032, D-074)</SectionTitle>
-        <p className="text-sm">
-          {s.food_cleared
-            ? 'Cleared: food listings can be published.'
-            : 'Not cleared: food listings stay drafts. Fill the FDA details below first, then switch this on.'}
-        </p>
-        <form action={updateFoodClearedAction.bind(null, !s.food_cleared)}>
-          <button type="submit" className={s.food_cleared ? 'min-h-11 underline' : button}>
-            {s.food_cleared ? 'Stop publishing food' : 'Food is cleared: allow publishing'}
-          </button>
-        </form>
-      </section>
-
-      <section className="max-w-3xl space-y-3">
-        <SectionTitle>7-day delivery (D-154)</SectionTitle>
-        <p className="text-sm">
-          {s.quick_delivery_paused
-            ? 'Paused: no piece is tagged "In 7 days", the 7-day page is empty and no bag splits. Orders already placed keep their dates.'
-            : 'On: 7-day pieces worth the 7-day line ship in their own shipment. Pause it for a day the hub cannot buy.'}
-        </p>
-        <form action={updateQuickPausedAction.bind(null, !s.quick_delivery_paused)}>
-          <button type="submit" className={s.quick_delivery_paused ? button : 'min-h-11 underline'}>
-            {s.quick_delivery_paused ? 'Switch 7-day delivery back on' : 'Pause 7-day delivery'}
-          </button>
-        </form>
-      </section>
 
       <form action={updateBusinessDetailsAction} className="max-w-3xl space-y-6">
         <div className="space-y-1">
           <SectionTitle>Business and compliance details (D-074)</SectionTitle>
           {placeholders > 0 ? (
             <p className="text-caution text-sm">
-              {placeholders} still placeholders. They go on the commercial invoice and the food paperwork.
+              {placeholders} still placeholders. They go on the food paperwork.
             </p>
           ) : null}
         </div>

@@ -18,7 +18,7 @@ const MANY = 100;
  * catch up within the hour's fallback, as after a sale (engineering.md §Caching). Refreshing everything on every
  * edit rewrote all 5,852 product pages and the 2 MB state pages and used up Vercel's 200,000 page-cache writes
  * (2026-10-21). An edit to a listing customers don't see (a draft) refreshes nothing; `shownChanged` (published,
- * unpublished, Coming soon on or off) refreshes its pages either way.
+ * unpublished) refreshes its pages either way.
  */
 export async function refreshListings(client: Client, ids: string[], shownChanged = false): Promise<void> {
   if (ids.length === 0) return;

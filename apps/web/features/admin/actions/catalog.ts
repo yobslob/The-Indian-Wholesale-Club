@@ -5,23 +5,14 @@ import { redirect } from 'next/navigation';
 import { z } from 'zod';
 
 import {
-  createListing,
   createVariant,
-  createVendor,
   renameListings,
   setListedQty,
   setProductStatus,
   setProductWears,
   updateProduct,
 } from '@repo/db/admin';
-import {
-  clothingAttributesSchema,
-  homeAttributesSchema,
-  PRODUCT_TYPES,
-  foodAttributesSchema,
-  WEARS,
-  type ListingInput,
-} from '@repo/shared/domain';
+import { WEARS } from '@repo/shared/domain';
 
 import { errorMessage, logger } from '@/lib/logger';
 
@@ -36,11 +27,6 @@ const optional = (max: number) =>
     .trim()
     .max(max)
     .transform((v) => v || null);
-const slug = z
-  .string()
-  .trim()
-  .toLowerCase()
-  .regex(/^[a-z0-9]+(-[a-z0-9]+)*$/, 'slug: lowercase letters, digits and dashes');
 /** Empty = priced automatically (D-075). */
 const optionalDollars = z
   .string()
@@ -55,95 +41,6 @@ const rupeesToPaise = z
     (v) => v === null || (Number.isFinite(v) && v >= 0),
     'shop price must be a positive number',
   );
-
-function field(form: FormData, key: string): string {
-  const value = form.get(key);
-  return typeof value === 'string' ? value : '';
-}
-
-// ---------------------------------------------------------------- vendors (admin only, D-003, D-018)
-
-export async function createVendorAction(form: FormData): Promise<void> {
-  const { client, user } = await requireAdminAction();
-  const input = z
-    .object({
-      shopName: text(120).pipe(z.string().min(2)),
-      ownerName: optional(120),
-      phone: optional(40),
-      whatsapp: optional(40),
-      town: optional(80),
-      regionId: id,
-      paymentMethod: optional(40),
-      paymentReference: optional(120),
-      notes: optional(1000),
-    })
-    .parse(Object.fromEntries(form));
-  await createVendor(client, {
-    shop_name: input.shopName,
-    owner_name: input.ownerName,
-    phone: input.phone,
-    whatsapp: input.whatsapp,
-    town: input.town,
-    region_id: input.regionId,
-    payment_method: input.paymentMethod,
-    payment_reference: input.paymentReference,
-    notes: input.notes,
-    status: 'active',
-    onboarded_at: new Date().toISOString(),
-    onboarded_by: user.id,
-  });
-  revalidatePath('/admin/vendors');
-}
-
-// ---------------------------------------------------------------- products (flows.md §2)
-
-/** Draft listing: the region comes from the vendor; attributes are validated per type (D-003). */
-export async function createProductAction(form: FormData): Promise<void> {
-  const { client } = await requireAdminAction();
-  const base = z
-    .object({
-      vendorId: id,
-      categoryId: id,
-      productType: z.enum(PRODUCT_TYPES),
-      name: text(120).pipe(z.string().min(2)),
-      slug,
-      price: optionalDollars,
-      shopPrice: rupeesToPaise,
-      summary: optional(300),
-    })
-    .parse(Object.fromEntries(form));
-  const attributes =
-    base.productType === 'clothing'
-      ? clothingAttributesSchema.parse({
-          fibre_content: field(form, 'fibre'),
-          care: field(form, 'care'),
-        })
-      : base.productType === 'home'
-        ? homeAttributesSchema.parse({ material: field(form, 'material') })
-        : foodAttributesSchema.parse({
-            ingredients: field(form, 'ingredients'),
-            allergens: field(form, 'allergens')
-              .split(',')
-              .map((a) => a.trim())
-              .filter(Boolean),
-            shelf_life_days: Number(field(form, 'shelfLifeDays')),
-          });
-  // One path for every new listing, web or phone: product + variants in one transaction (admin_create_listing).
-  // Here the variants are added afterwards on the draft's page.
-  const createdId = await createListing(client, {
-    vendor_id: base.vendorId,
-    category_id: base.categoryId,
-    product_type: base.productType,
-    name: base.name,
-    slug: base.slug,
-    summary: base.summary ?? undefined,
-    price_cents: base.price ?? undefined,
-    shop_price_paise: base.shopPrice ?? undefined,
-    attributes,
-    variants: [],
-  } as ListingInput);
-  redirect(`/admin/catalog/${createdId}`);
-}
 
 export async function updateProductAction(productId: string, form: FormData): Promise<void> {
   const { client } = await requireAdminAction();
@@ -194,18 +91,7 @@ export async function setProductHeavyAction(productId: string, heavy: boolean): 
   revalidatePath(`/admin/catalog/${productId}`);
 }
 
-/** D-135: an archived listing shown to customers as "Coming soon" (the heart, not sold), or hidden again. */
-export async function setProductComingSoonAction(
-  productId: string,
-  comingSoon: boolean,
-): Promise<void> {
-  const { client } = await requireAdminAction();
-  await updateProduct(client, id.parse(productId), { coming_soon: z.boolean().parse(comingSoon) });
-  await refreshListings(client, [productId], true);
-  revalidatePath(`/admin/catalog/${productId}`);
-}
-
-/** Publishing makes it visible in the store. The database refuses live food until it is cleared (D-074, D-107). */
+/** Publishing makes it visible in the store. */
 export async function setProductStatusAction(
   productId: string,
   status: 'draft' | 'live' | 'paused' | 'archived',
@@ -218,9 +104,9 @@ export async function setProductStatusAction(
       z.enum(['draft', 'live', 'paused', 'archived']).parse(status),
     );
   } catch (error) {
-    // the database's refusals, said on the page: an option without a weight (D-129), food not cleared (D-074)
+    // the database's refusal, said on the page: an option without a weight (D-129)
     const message = error instanceof Error ? error.message : '';
-    const why = /(weight_missing|products_food_not_live):\s*(.*)$/.exec(message)?.[2];
+    const why = /weight_missing:\s*(.*)$/.exec(message)?.[1];
     if (!why) throw error;
     redirect(`/admin/catalog/${productId}?note=${encodeURIComponent(`Not published: ${why}`)}`);
   }

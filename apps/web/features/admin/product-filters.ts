@@ -35,6 +35,7 @@ const get = (raw: Raw, key: string): string | undefined => {
   return Array.isArray(v) ? v[0] : v;
 };
 const id = z.string().uuid().optional().catch(undefined);
+const site = z.string().trim().min(1).max(120).optional().catch(undefined);
 const dollars = z.coerce.number().min(0).max(100_000).optional().catch(undefined);
 
 export function parseProductView(raw: Raw): ProductView {
@@ -50,7 +51,7 @@ export function parseProductView(raw: Raw): ProductView {
     type: PRODUCT_TYPES.includes(type as ProductType) ? (type as ProductType) : undefined,
     region: region === 'none' ? 'none' : id.parse(region),
     category: id.parse(get(raw, 'category')),
-    shop: id.parse(get(raw, 'shop')),
+    shop: site.parse(get(raw, 'shop')),
     min: dollars.parse(get(raw, 'min') || undefined),
     max: dollars.parse(get(raw, 'max') || undefined),
     sort: ADMIN_PRODUCT_SORTS.includes(sort as AdminProductSort) ? (sort as AdminProductSort) : 'updated',
@@ -67,7 +68,7 @@ export function toAdminFilter(v: ProductView): AdminProductFilter {
     regionId: v.region && v.region !== 'none' ? v.region : undefined,
     noRegion: v.region === 'none',
     categoryId: v.category,
-    vendorId: v.shop,
+    site: v.shop,
     minCents: v.min !== undefined ? Math.round(v.min * 100) : undefined,
     maxCents: v.max !== undefined ? Math.round(v.max * 100) : undefined,
     sort: v.sort,
