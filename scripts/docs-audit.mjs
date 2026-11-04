@@ -185,7 +185,11 @@ for (const [, name] of sql.matchAll(
 for (const [, list] of sql.matchAll(/grant\s+execute\s+on\s+function\s+([\s\S]*?)\s+to\s+/gi)) {
   for (const [, name] of list.matchAll(/public\.(\w+)\s*\(/g)) objects.add(name);
 }
+// A later migration may drop what an earlier one made (D-187): the generated types are the schema as it ends up, so a
+// name they no longer hold is gone and is not asked for here.
+const finalSchema = read('packages/db/src/database.types.ts');
 for (const name of objects) {
+  if (!new RegExp(`\\b${name}\\b`).test(finalSchema)) continue;
   if (!new RegExp(`\\b${name}\\b`).test(dataModel))
     problems.push(`docs/data-model.md: ${name} (migrations) is not described`);
 }
@@ -204,6 +208,13 @@ for (const [name, file] of envVars) {
   if (!PLATFORM.has(name) && !ops.includes(name))
     problems.push(`docs/ops.md: ${name} (read in ${file}) is not listed`);
 }
+
+// A warning, not a failure (D-187, plan R-11): every session reads status.md, so history belongs in the archive.
+const statusBytes = Buffer.byteLength(docs['docs/status.md']);
+if (statusBytes > 10 * 1024)
+  console.log(
+    `Docs audit warning: docs/status.md is ${(statusBytes / 1024).toFixed(1)} KB, past 10 KB. Move its history to docs/archive/.\n`,
+  );
 
 if (problems.length) {
   console.log(`Docs audit: ${problems.length} mismatch(es)\n`);
