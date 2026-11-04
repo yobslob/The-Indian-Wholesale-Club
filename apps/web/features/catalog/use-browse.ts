@@ -4,7 +4,7 @@ import { useCallback, useEffect, useLayoutEffect, useRef, useState } from 'react
 
 import { PRODUCT_TYPE_PATH, type ProductType } from '@repo/shared/domain';
 
-import { browseHref, browseSearch, inQuickStore, inStatePage, PAGE, parseBrowseQuery, sameQuery, type BrowseQuery } from './browse-query';
+import { browseHref, browseSearch, inStatePage, PAGE, parseBrowseQuery, sameQuery, type BrowseQuery } from './browse-query';
 
 import type { BrowsePage } from '@repo/db/store';
 
@@ -41,13 +41,12 @@ function readSnapshot(type: ProductType): Snapshot | null {
 }
 
 /**
- * The address's filters, inside the 7-day store when the page is one of its own (D-154), or within the state when the
- * page is the state's (D-157: the state is the page's, never the address's).
+ * The address's filters, within the state when the page is the state's (D-157: the state is the page's, never the
+ * address's).
  */
 function addressQuery(initial: BrowseQuery): BrowseQuery {
   const q = parseBrowseQuery(new URLSearchParams(window.location.search));
-  if (initial.inState) return inStatePage(q, initial.inState);
-  return initial.inQuick ? inQuickStore(q) : q;
+  return initial.inState ? inStatePage(q, initial.inState) : q;
 }
 
 /** D-157: on a state's page, whether the address is this type's (?type=, none for Clothing). */
@@ -105,7 +104,7 @@ export function useBrowse(productType: ProductType, initialQuery: BrowseQuery, i
       abort.current?.abort();
       const ctrl = new AbortController();
       abort.current = ctrl;
-      const search = browseSearch({ ...q, show: undefined });
+      const search = browseSearch(q);
       const url = `/api/browse?type=${productType}&offset=${offset}&limit=${limit}${search ? `&${search}` : ''}`;
       try {
         const res = await fetch(url, { signal: ctrl.signal });
@@ -113,7 +112,7 @@ export function useBrowse(productType: ProductType, initialQuery: BrowseQuery, i
         return (await res.json()) as BrowsePage;
       } catch (error) {
         if (ctrl.signal.aborted) return null;
-        window.location.assign(browseHref(productType, { ...q, show: offset + limit > PAGE ? offset + limit : undefined }));
+        window.location.assign(browseHref(productType, q));
         throw error;
       } finally {
         if (abort.current === ctrl) setLoading(false);
@@ -127,7 +126,7 @@ export function useBrowse(productType: ProductType, initialQuery: BrowseQuery, i
       ahead.current = null;
       setQuery(q);
       setLoading('replace');
-      const page = await load(q, 0, q.show ?? PAGE).catch(() => null);
+      const page = await load(q, 0, PAGE).catch(() => null);
       if (!page) return;
       setMeta(metaOf(page));
       setProducts(page.products);
@@ -145,12 +144,11 @@ export function useBrowse(productType: ProductType, initialQuery: BrowseQuery, i
   );
 
   // The endless scroll (2026-10-30): one page read at a time, and the next one read ahead as soon as a page lands, so it
-  // is usually here before the shopper reaches the end. The address no longer carries ?show=: changing it made Next
-  // load the page again from the top (the See all route's [show] segment), which is the jump the founder saw.
+  // is usually here before the shopper reaches the end. The address never changes with it.
 
   const nextPage = useCallback(
     (q: BrowseQuery, offset: number): Promise<BrowsePage | null> => {
-      const search = browseSearch({ ...q, show: undefined });
+      const search = browseSearch(q);
       const a = ahead.current;
       if (a && a.key === search && a.offset === offset) return a.page;
       const page = fetch(

@@ -8,17 +8,17 @@ set local role authenticated;
 
 select tests.act_as(tests.id('admin'));
 select tests.assert(public.is_admin(), 'INV-7: role admin + allowlisted email is an admin');
-select tests.assert((select count(*) from public.vendors) >= 1, 'admin can read vendors');
+select tests.assert((select count(*) from public.pricing_settings) = 1, 'admin can read the settings');
 select tests.assert((select count(*) from public.orders) >= 2, 'admin can read all orders');
 select tests.assert(
-  tests.rows_affected(format('update public.vendors set notes = %L where id = %L', 'checked', tests.id('vendor'))) = 1,
-  'admin can update a vendor');
+  tests.rows_affected('update public.pricing_settings set stale_listing_days = 9 where id = 1') = 1,
+  'admin can update a setting');
 
 select tests.act_as(tests.id('fake_admin'));
 select tests.assert(not public.is_admin(), 'INV-7: role admin WITHOUT allowlisted email is not an admin');
-select tests.assert((select count(*) from public.vendors) = 0, 'INV-7: non-allowlisted "admin" sees no vendors');
-select tests.assert_fails(format('select public.cutoff_cycle(%L)', tests.id('cycle')), 'admin_only',
-  'INV-7: non-allowlisted "admin" cannot run cutoff');
+select tests.assert((select count(*) from public.pricing_settings) = 0, 'INV-7: non-allowlisted "admin" sees no settings');
+select tests.assert_fails('select public.admin_order_counts()', 'admin_only',
+  'INV-7: non-allowlisted "admin" gets no admin answer');
 
 select tests.act_as(tests.id('cust_a'));
 select tests.assert(not public.is_admin(), 'a customer is not an admin');

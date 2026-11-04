@@ -6,7 +6,7 @@ import { bounceHtml } from '@/lib/legacy-bounce';
 import { legacyMove, MOVED_COOKIE, parseHosts } from '@/lib/legacy-move';
 
 /** The session paths (PR-4): the only ones whose auth cookies are refreshed here. */
-const SESSION_PATH = /^\/(admin|vendor|account|checkout|orders)(\/|$)/;
+const SESSION_PATH = /^\/(admin|account|checkout|orders)(\/|$)/;
 
 let hostsRaw: string | undefined;
 let hosts: ReadonlySet<string> = new Set();
@@ -83,7 +83,7 @@ export async function middleware(request: NextRequest): Promise<NextResponse> {
   // local JWT check; with the legacy shared secret it falls back to one Auth call.
   await supabase.auth.getClaims();
 
-  if (request.nextUrl.pathname.startsWith('/admin') || request.nextUrl.pathname.startsWith('/vendor')) {
+  if (request.nextUrl.pathname.startsWith('/admin')) {
     response.headers.set('X-Robots-Tag', 'noindex, nofollow');
   }
   return response;
@@ -92,7 +92,6 @@ export async function middleware(request: NextRequest): Promise<NextResponse> {
 export const config = {
   matcher: [
     '/admin/:path*',
-    '/vendor/:path*',
     '/account/:path*',
     '/checkout/:path*',
     '/orders/:path*',

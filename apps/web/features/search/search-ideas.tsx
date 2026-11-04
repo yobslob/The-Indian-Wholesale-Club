@@ -22,12 +22,10 @@ function Row({ title, children, empty }: { title: string; children: React.ReactN
 
 /**
  * When a search finds nothing (launch QA D-3): popular searches, the states and the categories with the most pieces,
- * from store_search_hints() (the store's own words and counts, nothing made up). In the 7-day store only the searches,
- * since its pieces are not by state.
+ * from store_search_hints() (the store's own words and counts, nothing made up).
  */
-export function SearchIdeasRows({ ideas, base, inQuick }: { ideas: SearchIdeas; base: string; inQuick: boolean }): React.JSX.Element | null {
-  const regions = inQuick ? [] : ideas.regions;
-  const categories = inQuick ? [] : ideas.categories;
+export function SearchIdeasRows({ ideas, base }: { ideas: SearchIdeas; base: string }): React.JSX.Element | null {
+  const { regions, categories } = ideas;
   if (ideas.popular.length + regions.length + categories.length === 0) return null;
   return (
     <section className="space-y-5" aria-label="Ideas to search">

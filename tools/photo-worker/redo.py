@@ -35,27 +35,41 @@ from iwc_worker.refresh import flat, refresh
 
 HERE = Path(__file__).resolve().parent
 OUT = Path(os.environ.get("IWC_REDO_OUT", HERE.parent / "photo-redo" / "out"))
+MODELS_DIR = MODELS / "house-models"
+NO_MODELS = (f"No usable house models in {MODELS_DIR}: each needs a folder like w-1 or m-1 with a front.jpg showing "
+             "a face (README.md). Nothing was changed.")
 log = logging.getLogger("iwc-redo")
 
 
-def house_models(parts: Parts) -> dict[str, dict]:
-    """The house models: every folder in IWC_MODELS/house-models with a front.jpg (w-1 … for women, m-1 … for men).
-    Who wears it comes from the database's row of the same slug (out/house-models.json) when there is one, else from
-    the folder's first letter."""
-    listed = OUT / "house-models.json"
-    wears = {r["slug"]: r["wears"] for r in json.loads(listed.read_text("utf-8"))} if listed.exists() else {}
+def model_folders() -> dict[str, Path]:
+    """The house models are the folders in IWC_MODELS/house-models with a front.jpg: w-1 … wear women's, m-1 … men's.
+    `_` folders are set aside; any other name is said and skipped, so a typo never puts a man on a women's listing."""
+    if not MODELS_DIR.is_dir():
+        return {}
     found = {}
-    for d in sorted((MODELS / "house-models").iterdir()):
-        front = d / "front.jpg"
-        if not d.is_dir() or d.name.startswith("_") or not front.exists():
+    for d in sorted(p for p in MODELS_DIR.iterdir() if p.is_dir() and not p.name.startswith("_")):
+        if not d.name.startswith(("w-", "m-")):
+            log.warning("house model folder %s: not w-something or m-something; it is skipped", d.name)
+        elif (d / "front.jpg").exists():
+            found[d.name] = d / "front.jpg"
+    return found
+
+
+def load_models(parts: Parts) -> dict[str, dict]:
+    """Every model folder's photo, with who wears it and its skin tone. One the face finder can't use is left out."""
+    found = {}
+    for slug, front in model_folders().items():
+        try:
+            img = Image.open(front).convert("RGB")
+        except OSError as error:
+            log.warning("house model %s: cannot read %s (%s); it is skipped", slug, front, error)
             continue
-        img = Image.open(front).convert("RGB")
-        skin = skin_colour(lab_of(img), parts.labels(img) == FACE)
-        found[d.name] = {"wears": wears.get(d.name, "men" if d.name.startswith("m") else "women"), "image": img,
-                         "skin": None if skin is None else skin[0]}
         if not len(parts.faces(img)):
-            log.warning("house model %s: no face found in %s; it is skipped", d.name, front)
-            del found[d.name]
+            log.warning("house model %s: no face found in %s; it is skipped", slug, front)
+            continue
+        skin = skin_colour(lab_of(img), parts.labels(img) == FACE)
+        found[slug] = {"wears": "men" if slug.startswith("m-") else "women", "image": img,
+                       "skin": None if skin is None else skin[0]}
     return found
 
 
@@ -74,8 +88,7 @@ def pending(kind: str, retry: bool, again: bool) -> list[tuple[Path, dict]]:
         if result_file.exists():
             done = json.loads(result_file.read_text("utf-8"))
             # a face drawn on a house model since removed from this machine is made again, on another one
-            gone = bool(done.get("house_model")) and not (MODELS / "house-models" / done["house_model"] /
-                                                          "front.jpg").exists()
+            gone = bool(done.get("house_model")) and not (MODELS_DIR / done["house_model"] / "front.jpg").exists()
             approved = (d / "decision.json").exists() and json.loads((d / "decision.json").read_text("utf-8")).get("ok")
             # --again keeps what the founder approved (unless its house model is gone)
             if not ((again and not approved) or gone or (retry and done.get("status") == "failed")):
@@ -105,9 +118,8 @@ def write_result(d: Path, status: str, note: str = "", checks: dict | None = Non
     (d / "result.json").write_text(json.dumps(doc, indent=2), "utf-8")
 
 
-def run_clothing(todo, pipe: Pipeline, parts: Parts, faces: str, swapper: str) -> None:
+def run_clothing(todo, pipe: Pipeline, parts: Parts, models: dict, faces: str, swapper: str) -> None:
     redo = ClothingRedo(parts, pipe, swapper)
-    models = house_models(parts) if faces == "redraw" else {}
     listings: dict[str, list] = {}
     for d, item in todo:
         listings.setdefault(item["product_id"], []).append((d, item))
@@ -217,12 +229,17 @@ def main() -> int:
     log.info("%s: %d photos to make in %s", args.type, len(todo), OUT / args.type)
     if not todo:
         return 0
+    pipe, parts = Pipeline(), Parts()
+    swapping = args.type == "clothing" and args.faces == "redraw"
+    models = load_models(parts) if swapping else {}
+    if swapping and not models:  # said before clear(): no review choice or photo is lost to a missing folder
+        log.error("%s Or: --faces crop cuts every face.", NO_MODELS)
+        return 2
     clear(todo)
     seed = args.seed + (7 if args.retry else 0)
-    pipe, parts = Pipeline(), Parts()
     started = time.time()
     if args.type == "clothing":
-        run_clothing(todo, pipe, parts, args.faces, args.swapper)
+        run_clothing(todo, pipe, parts, models, args.faces, args.swapper)
     elif args.scene:
         run_scenes(args.type, todo, pipe, seed)
     else:

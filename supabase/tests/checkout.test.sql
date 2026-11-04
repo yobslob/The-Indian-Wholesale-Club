@@ -45,7 +45,7 @@ select tests.assert(
   and (current_setting('tests.ctx')::jsonb -> 'promo' ->> 'discount_value') = '10',
   'a usable promo code is found case-insensitively');
 select tests.assert(
-  (current_setting('tests.ctx')::jsonb -> 'shipping') = '{"flat_cents": 900, "free_min_cents": 10000, "min_order_cents": 5000}'::jsonb,
+  (current_setting('tests.ctx')::jsonb -> 'shipping') = '{"flat_cents": 900, "free_min_cents": 10000, "bulk_saving_from_cents": 9999, "min_order_cents": 5000}'::jsonb,
   'shipping settings are returned as stored (D-109: includes min_order_cents)');
 select tests.assert((current_setting('tests.ctx')::jsonb -> 'delivery' ->> 'est_delivery_from') is not null,
   'the next delivery window is included');

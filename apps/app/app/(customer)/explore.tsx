@@ -176,7 +176,7 @@ export default function ExploreScreen(): React.JSX.Element {
           {matched.length > 0 ? (
             <View className="gap-3">
               <Heading>States</Heading>
-              {matched.some((r) => r.is_live) ? <StampGrid regions={matched.filter((r) => r.is_live)} delivery={home.data?.delivery ?? null} /> : null}
+              {matched.some((r) => r.is_live) ? <StampGrid regions={matched.filter((r) => r.is_live)} /> : null}
               {matched.some((r) => !r.is_live) ? (
                 <Text className="font-ui text-ink-muted text-sm">Coming soon: {matched.filter((r) => !r.is_live).map((r) => r.name).join(', ')}</Text>
               ) : null}
@@ -202,7 +202,7 @@ export default function ExploreScreen(): React.JSX.Element {
                 {meta?.mode === 'some' && pieces.length > 0 ? ' The pieces above have some of its words.' : ''}
               </Body>
               <Label>Open now</Label>
-              <StampGrid regions={open} delivery={home.data?.delivery ?? null} />
+              <StampGrid regions={open} />
             </View>
           ) : null}
         </>
@@ -211,7 +211,7 @@ export default function ExploreScreen(): React.JSX.Element {
           <>
             <View className="gap-3">
               <Label>Open now</Label>
-              <StampGrid regions={open} delivery={home.data.delivery} />
+              <StampGrid regions={open} />
             </View>
             <View className="gap-2">
               <Label>Coming soon</Label>

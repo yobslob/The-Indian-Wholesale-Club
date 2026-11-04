@@ -9,10 +9,9 @@ alter table public.products disable trigger products_wears;
 select tests.create_user('worker', 'worker@example.test');
 update public.profiles set role = 'worker' where id = tests.id('worker');
 update public.categories set default_weight_g = 450 where id = tests.id('cat_clothing');
-update public.pricing_settings set food_cleared = true where id = 1;
 
-insert into public.products (slug, name, product_type, region_id, category_id, vendor_id, price_cents, status)
-values ('weight-kurta', 'Weight kurta', 'clothing', tests.id('region'), tests.id('cat_clothing'), tests.id('vendor'), 3000, 'draft');
+insert into public.products (slug, name, product_type, region_id, category_id, price_cents, status)
+values ('weight-kurta', 'Weight kurta', 'clothing', tests.id('region'), tests.id('cat_clothing'), 3000, 'draft');
 select tests.remember('kurta', (select id from public.products where slug = 'weight-kurta'));
 
 -- The admin's options: a typed weight is the admin's; a size without one takes its sibling's (marked similar).
@@ -29,8 +28,8 @@ select tests.assert((select weight_g = 420 and weight_source = 'similar' and wei
   'another size of the same piece takes its sibling''s weight, marked as from a matching item');
 
 -- A pack never borrows: a 1 kg pack is not a 200 g one.
-insert into public.products (slug, name, product_type, region_id, category_id, vendor_id, price_cents, status)
-values ('weight-bhujia', 'Weight bhujia', 'food', tests.id('region'), tests.id('cat_food'), tests.id('vendor'), 300, 'draft');
+insert into public.products (slug, name, product_type, region_id, category_id, price_cents, status)
+values ('weight-bhujia', 'Weight bhujia', 'food', tests.id('region'), tests.id('cat_food'), 300, 'draft');
 select tests.remember('bhujia', (select id from public.products where slug = 'weight-bhujia'));
 insert into public.product_variants (product_id, sku, label, options, qty_listed, weight_g)
 values (tests.id('bhujia'), 'WB-200', '200 g', '{"pack": "200 g"}', 5, 200);

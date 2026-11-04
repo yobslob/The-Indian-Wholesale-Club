@@ -5,17 +5,17 @@ begin;
 select tests.setup();
 
 -- Made-up words, so the local catalogue never matches them.
-insert into public.products (slug, name, product_type, region_id, category_id, vendor_id, price_cents, status, wears,
+insert into public.products (slug, name, product_type, region_id, category_id, price_cents, status, wears,
                              attributes, summary, published_at)
-values ('zv-kurti', 'Zarvelle kurti', 'clothing', tests.id('region'), tests.id('cat_clothing'), tests.id('vendor'), 3000,
+values ('zv-kurti', 'Zarvelle kurti', 'clothing', tests.id('region'), tests.id('cat_clothing'), 3000,
         'live', 'women', '{"fibre_content": "100% cotton", "care": "Hand wash"}', 'Cotton, block printed.', now() - interval '40 days'),
-       ('zv-saree', 'Zarvelle saree', 'clothing', tests.id('region'), tests.id('cat_clothing'), tests.id('vendor'), 9000,
+       ('zv-saree', 'Zarvelle saree', 'clothing', tests.id('region'), tests.id('cat_clothing'), 9000,
         'live', 'women', '{"fibre_content": "100% silk", "care": "Dry clean"}', null, now() - interval '40 days'),
-       ('zv-stole-a', 'Zarvelle stole plain', 'clothing', tests.id('region'), tests.id('cat_clothing'), tests.id('vendor'), 2000,
+       ('zv-stole-a', 'Zarvelle stole plain', 'clothing', tests.id('region'), tests.id('cat_clothing'), 2000,
         'live', 'women', '{"fibre_content": "100% wool", "care": "Dry clean"}', null, now()),
-       ('zv-stole-b', 'Zarvelle stole woven', 'clothing', tests.id('region'), tests.id('cat_clothing'), tests.id('vendor'), 2500,
+       ('zv-stole-b', 'Zarvelle stole woven', 'clothing', tests.id('region'), tests.id('cat_clothing'), 2500,
         'live', 'women', '{"fibre_content": "100% wool", "care": "Dry clean"}', null, now() - interval '40 days'),
-       ('zv-draft', 'Zarvelle draft shawl', 'clothing', tests.id('region'), tests.id('cat_clothing'), tests.id('vendor'), 2500,
+       ('zv-draft', 'Zarvelle draft shawl', 'clothing', tests.id('region'), tests.id('cat_clothing'), 2500,
         'draft', 'women', '{}', null, null);
 insert into public.product_variants (product_id, sku, label, qty_listed, qty_reserved)
 select p.id, 'ZV-' || p.slug, 'Free size', case when p.slug = 'zv-stole-a' then 1 else 3 end,
@@ -98,8 +98,7 @@ select tests.assert(
 -- Nothing a customer may not see: a card carries only the store's card fields.
 select tests.assert(
   (select bool_and(k in ('id', 'slug', 'name', 'product_type', 'region_slug', 'region_name', 'category_slug',
-                         'category_name', 'price_cents', 'primary_image_path', 'pack', 'coming_soon', 'options',
-                         'quick_days'))
+                         'category_name', 'price_cents', 'primary_image_path', 'pack', 'options'))
    from jsonb_array_elements(public.store_search_page('zarvelle', p_record => false) -> 'products') e,
         jsonb_object_keys(e) k),
   'cards carry no shop, cost or source');

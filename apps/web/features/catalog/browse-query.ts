@@ -1,14 +1,11 @@
 import { PRODUCT_TYPE_PATH, sortBySize, type ProductType } from '@repo/shared/domain';
 
-import { QUICK_HOME } from '@/lib/site';
-
 import type { BrowseFilter, BrowsePage, BrowseSort } from '@repo/db/store';
 
 /**
  * The See all pages' filters as the address carries them (D-136): ?state=, ?category=, ?for= (women or men, clothing,
- * D-140), ?min= and ?max= (whole dollars), ?size= (repeated), ?sort= (absent: low to high, D-144), ?delivery=7-day
- * (only 7-day pieces, D-154), ?show=. Pure: the
- * page, the /api/browse route and the filter panel share it.
+ * D-140), ?min= and ?max= (whole dollars), ?size= (repeated), ?sort= (absent: low to high, D-144). Pure: the page, the
+ * /api/browse route and the filter panel share it. An old ?show= or ?delivery= link lands on the first page (R-6).
  */
 export interface BrowseQuery {
   state?: string;
@@ -19,20 +16,11 @@ export interface BrowseQuery {
   max?: number;
   sizes: string[];
   sort: BrowseSort;
-  /** D-154: "Delivery: in 7 days", only 7-day pieces. */
-  quick?: boolean;
-  /**
-   * The 7-day store's own See all page (/7-day-delivery/food): only 7-day pieces, always, so the address leaves out
-   * ?delivery= and the page has no Delivery filter. Set by the page, never read from the address.
-   */
-  inQuick?: true;
   /**
    * D-157: a state's own page (/states/punjab): its inventory as See all with the state fixed, so the address stays the
    * state page's (/states/punjab?type=food&category=sweets) and there is no State filter. Set by the page, with `state`.
    */
   inState?: string;
-  /** How many cards are drawn ("Show more", D-067); absent = the first page. */
-  show?: number;
 }
 
 export const WHO = ['women', 'men'] as const;
@@ -40,7 +28,7 @@ export type Who = (typeof WHO)[number];
 export const WHO_LABEL: Record<Who, string> = { women: 'Women', men: 'Men' };
 
 export const PAGE = 24;
-/** The most cards one page draws (20 pages of "Show more"; the database allows 500). */
+/** The most cards one read draws, and how deep the data cache goes (the database allows 500). */
 export const MOST = 480;
 
 /**
@@ -75,7 +63,6 @@ const dollars = whole(0, 100_000);
 const size = { safeParse: (v: string) => ({ success: v.trim().length >= 1 && v.trim().length <= 40 }) };
 const SORTS: BrowseSort[] = ['low', 'new', 'price-asc', 'price-desc'];
 const sort = { parse: (v: string): BrowseSort => SORTS.find((x) => x === v) ?? 'low' };
-const show = whole(PAGE + 1, MOST);
 
 const all = (raw: Raw, key: string): string[] => {
   if (raw instanceof URLSearchParams) return raw.getAll(key);
@@ -99,8 +86,6 @@ export function parseBrowseQuery(raw: Raw): BrowseQuery {
     max,
     sizes,
     sort: sort.parse(one(raw, 'sort') ?? 'low'),
-    ...(one(raw, 'delivery') === '7-day' ? { quick: true } : {}),
-    show: show.parse(one(raw, 'show')),
   };
 }
 
@@ -114,12 +99,10 @@ export function browseSearch(q: BrowseQuery): string {
   if (q.max !== undefined) p.set('max', String(q.max));
   for (const s of q.sizes) p.append('size', s);
   if (q.sort !== 'low') p.set('sort', q.sort);
-  if (q.quick) p.set('delivery', '7-day');
-  if (q.show) p.set('show', String(q.show));
   return p.toString();
 }
 
-/** The address customers see: /clothing?state=kerala&category=sarees&size=M, or in the 7-day store /7-day-delivery/food. */
+/** The address customers see: /clothing?state=kerala&category=sarees&size=M. */
 export function browseHref(productType: ProductType, q: BrowseQuery): string {
   if (q.inState) {
     // the state page's own address: its type (Clothing has none) before the filters, the state in the path
@@ -128,16 +111,13 @@ export function browseHref(productType: ProductType, q: BrowseQuery): string {
     const search = [type, rest].filter(Boolean).join('&');
     return search ? `/states/${q.inState}?${search}` : `/states/${q.inState}`;
   }
-  const path = q.inQuick ? `${QUICK_HOME}${PRODUCT_TYPE_PATH[productType]}` : PRODUCT_TYPE_PATH[productType];
-  const search = browseSearch(q.inQuick ? { ...q, quick: undefined } : q);
+  const path = PRODUCT_TYPE_PATH[productType];
+  const search = browseSearch(q);
   return search ? `${path}?${search}` : path;
 }
 
 /** D-157: a query on a state's own page: that state, always, and the state page's address. */
 export const inStatePage = (q: BrowseQuery, region: string): BrowseQuery => ({ ...q, state: region, inState: region });
-
-/** A query on the 7-day store's own pages: only 7-day pieces (D-154). */
-export const inQuickStore = (q: BrowseQuery): BrowseQuery => ({ ...q, quick: true, inQuick: true });
 
 /** The database read for a set of filters: cards offset … offset + limit. */
 export const toBrowseFilter = (productType: ProductType, q: BrowseQuery, offset: number, limit: number): BrowseFilter => ({
@@ -150,20 +130,19 @@ export const toBrowseFilter = (productType: ProductType, q: BrowseQuery, offset:
   sizes: q.sizes,
   sort: q.sort,
   forWho: q.who,
-  quick: q.quick,
   offset,
   limit,
 });
 
 /** True when any filter beyond the state and the category is set (those only the server's cached page knows). */
 export const hasExtraFilters = (q: BrowseQuery): boolean =>
-  q.min !== undefined || q.max !== undefined || q.sizes.length > 0 || q.sort !== 'low' || Boolean(q.quick);
+  q.min !== undefined || q.max !== undefined || q.sizes.length > 0 || q.sort !== 'low';
 
 export const sameQuery = (a: BrowseQuery, b: BrowseQuery): boolean => browseSearch(a) === browseSearch(b);
 
 /** The next query once a filter changes: a new state drops the category (a category lives within a state). */
 export function withFilter(q: BrowseQuery, change: Partial<BrowseQuery>): BrowseQuery {
-  const next: BrowseQuery = { ...q, ...change, show: undefined };
+  const next: BrowseQuery = { ...q, ...change };
   if ('state' in change && change.state !== q.state) next.category = undefined;
   return next;
 }

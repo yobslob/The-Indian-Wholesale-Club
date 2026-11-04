@@ -95,15 +95,7 @@ export async function removeShopBillPhoto(client: IwcClient, photoId: string): P
   return row?.storage_path ?? null;
 }
 
-/** D-115: the made-to-order pilot is on while Settings has its delivery days (no cycles, pieces ordered at once). */
-export async function isMadeToOrderPilot(client: IwcClient): Promise<boolean> {
-  const row = unwrap(
-    await client.from('pricing_settings').select('pilot_delivery_days_min, pilot_delivery_days_max').eq('id', 1).maybeSingle(),
-  );
-  return row?.pilot_delivery_days_min != null && row.pilot_delivery_days_max != null;
-}
-
-const PIECE_COLUMNS = `id, status, quantity, shop_price_paise, paid_paise, shop_order_ref, ordered_at, picked_at, weighed_g, weigh_note,
+const PIECE_COLUMNS = `id, status, site, quantity, shop_price_paise, paid_paise, shop_order_ref, ordered_at, picked_at, weighed_g, weigh_note,
   source:product_sources(site, item_url, delivery_days),
   variant:product_variants(label, product:products(id, name, source_site, media:product_media(storage_path, is_primary, sort_order))),
   item:order_items!inner(id, product_name, variant_label, status, order:orders!inner(id, order_number, created_at))`;
@@ -138,7 +130,7 @@ export async function listToWeigh(client: IwcClient) {
 
 export type PipelinePiece = Awaited<ReturnType<typeof listToWeigh>>[number];
 
-/** Today's India desk in the pilot: how many pieces are ordered, at the hub to weigh, and prices held for an admin. */
+/** Today's India desk: how many pieces are ordered, at the hub to weigh, and prices held for an admin. */
 export async function pilotPipelineCounts(client: IwcClient): Promise<{ ordered: number; toWeigh: number; held: number }> {
   const head = { count: 'exact', head: true } as const;
   const [ordered, toWeigh, held] = await Promise.all([

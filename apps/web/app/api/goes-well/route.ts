@@ -25,7 +25,7 @@ export async function GET(request: Request): Promise<NextResponse> {
   const { type, state, not } = parsed.data;
   const skip = new Set((not ?? '').split(',').filter(Boolean));
   const page = await browseCached({ productType: type, regionSlug: state, offset: 0, limit: 24 });
-  const cards = page.products.filter((p) => !skip.has(p.id) && !p.coming_soon).slice(0, 4);
+  const cards = page.products.filter((p) => !skip.has(p.id)).slice(0, 4);
   // Nothing about the visitor is in the answer (the address carries the bag's ids), so the CDN may keep it too.
   return NextResponse.json({ cards }, { headers: { 'cache-control': 'public, max-age=60, s-maxage=60' } });
 }

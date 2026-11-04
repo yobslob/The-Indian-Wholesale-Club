@@ -18,7 +18,7 @@ export function PageTitle({ children }: { children: React.ReactNode }): React.JS
 }
 
 /**
- * A page's head: its title (codes such as orders and cycles in Karla, D-096), a line under it, and its actions on the
+ * A page's head: its title (codes such as orders in Karla, D-096), a line under it, and its actions on the
  * right. `back` adds the small link above the title.
  */
 export function PageHead({
@@ -122,7 +122,7 @@ export function Tabs({
   );
 }
 
-/** Filter chips with counts (Orders, Cycle pickups): links, the current one in ink. */
+/** Filter chips with counts (Orders): links, the current one in ink. */
 export function FilterChips({ items }: { items: { href: string; label: string; count?: number; on: boolean }[] }): React.JSX.Element {
   return (
     <nav aria-label="Filter" className="-mx-3.5 mb-3 flex gap-1.5 overflow-x-auto px-3.5 md:mx-0 md:flex-wrap md:px-0">

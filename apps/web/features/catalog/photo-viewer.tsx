@@ -68,7 +68,6 @@ export function PhotoViewer({
       role="dialog"
       aria-modal="true"
       aria-label={`Photos of ${name}`}
-      data-lenis-prevent
       className="viewer-in fixed inset-0 z-[80] bg-[rgb(20_17_15/0.94)]"
     >
       <div

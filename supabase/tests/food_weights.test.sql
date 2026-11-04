@@ -6,14 +6,12 @@ begin;
 select tests.setup();
 select tests.create_user('worker', 'worker@example.test');
 update public.profiles set role = 'worker' where id = tests.id('worker');
-update public.pricing_settings set food_cleared = true, beta_pricing = true where id = 1;
 
-insert into public.products (slug, name, product_type, region_id, category_id, vendor_id, price_cents, status,
+insert into public.products (slug, name, product_type, region_id, category_id, price_cents, status,
                              price_auto, shop_price_paise, description)
 values ('fw-pickle', 'Mango pickle in glass jar 500 g', 'food', tests.id('region'), tests.id('cat_food'),
-        tests.id('vendor'), 900, 'draft', true, 20000, 'Sun-dried. Net Weight: 500 g'),
-       ('fw-kurta', 'Food test kurta', 'clothing', tests.id('region'), tests.id('cat_clothing'), tests.id('vendor'),
-        3000, 'draft', true, 100000, null);
+        900, 'draft', true, 20000, 'Sun-dried. Net Weight: 500 g'),
+       ('fw-kurta', 'Food test kurta', 'clothing', tests.id('region'), tests.id('cat_clothing'), 3000, 'draft', true, 100000, null);
 select tests.remember('pickle', (select id from public.products where slug = 'fw-pickle'));
 select tests.remember('kurta', (select id from public.products where slug = 'fw-kurta'));
 insert into public.product_variants (product_id, sku, label, options, qty_listed, weight_g, weight_source, weight_note,

@@ -70,9 +70,7 @@ Vault secrets exist in that database (SQL editor, once per database; the values 
 `select vault.create_secret('<site URL>', 'iwc_site_url');` and `select vault.create_secret('<EMAIL_OUTBOX_CRON_SECRET>',
 'iwc_outbox_secret');`. The site URL is the deployed site for the hosted database, and `http://host.docker.internal:3000`
 for the local one (the database runs in Docker). Without them, emails still go out right after the website's own
-actions; those from the app's admin screens and the automatic cutoff wait for the timer. The same timer refreshes the
-website's cached store pages after a cycle closes by itself (D-068): without the Vault secrets they show the past "order
-by" time for up to an hour after a cutoff (D-171; checkout itself always prices the real cycle).
+actions; those from the app's admin screens wait for the timer.
 The same two Vault secrets drive the **payment sweep** (F-2, migration `20261108090200`): pg_cron `iwc-payment-sweep`
 every 10 minutes checks (one index lookup) for an unreconciled checkout due a look and, only then, calls
 `/api/internal/payment-sweep`; without the secrets it does nothing, and a paid customer whose device and webhook both
@@ -95,16 +93,11 @@ failed waits for a Stripe webhook resend. Its first run after deploy also looks 
   in the hosted dev DB and applies `supabase/migrations/`. The CLI output lists which seed files it ran (`--no-seed` skips
   them); the seeds include the dev demo data (placeholders, `dev_preview` on). Never run it against production.
 - **Local admin in one step:** `pnpm dev:admin <email> <password> [us|india]` (`scripts/dev-admin.mjs`, local database only)
-- **Launch check (C8):** `pnpm launch:check` lists what still blocks going live (estimates, settings, placeholder or demo
-  data, unapproved state text, a dev cycle, the timers and Vault settings, stuck emails, open launch questions,
-  TODO(founder) markers on customer pages). Read-only. For production: `pnpm launch:check --url=<db url> --allow-remote`.
-- **Pricing estimates (D-047, C6):** `pnpm dev:estimates` loads Claude's researched estimates (`supabase/seed/estimates.sql`,
-  each with its source and date) into the local database without a reset, filling only empty settings; a local reset
-  loads them too. For the hosted dev database, run that file in the SQL editor. In production the pilot runs on them
-  (D-069): `pnpm prod:seed` loads them once with the regions and categories (below), and Settings shows each as a
-  placeholder until the founder saves their own number.
   creates or refreshes the account with the role and the `admin_emails` row. Run it again after every `check.mjs db`
   (the reset deletes local accounts). The website also needs the email in `ADMIN_EMAILS` in `apps/web/.env.local`.
+- **Launch check (C8):** `pnpm launch:check` lists what still blocks going live (settings, placeholder or demo
+  data, unapproved state text, the timers and Vault settings, stuck emails, open launch questions,
+  TODO(founder) markers on customer pages). Read-only. For production: `pnpm launch:check --url=<db url> --allow-remote`.
 - Admin bootstrap (after the person has signed up once): `insert into admin_emails (email) values ('<email>')` and
   `update profiles set role = 'admin', desk = 'us' | 'india' where email = '<email>'`, **and** add the email to the
   `ADMIN_EMAILS` env var. All three are required (INV-7). The app guard enforces role + env since R3 (the old
@@ -113,7 +106,7 @@ failed waits for a Stripe webhook resend. Its first run after deploy also looks 
 ## Deploy (to be finalised, Q-9)
 Manual only (D-044): Actions → **Deploy** → Run workflow, type `deploy`. It pushes new migrations to the production
 Supabase project (never the seeds), triggers the Vercel deploy hook and starts EAS builds (no store submission). Run it
-only on a commit whose CI run is green. **The website alone** deploys once a day (D-145): Actions → **Daily website
+only on a commit whose CI run is green. **The simple store's release (D-187) has its own order: `docs/release-simple-store.md`.** **The website alone** deploys once a day (D-145): Actions → **Daily website
 deploy** runs at 09:00 UTC, and when `main` changed in the last day and that commit's CI run is green it calls the Vercel
 deploy hook (Run workflow on it deploys now). `apps/web/vercel.json` turns off Vercel's own deploy on every push, so a
 push to `main` reaches customers by the next morning. A change that needs a new migration still waits for the Deploy
@@ -135,14 +128,13 @@ The old `NEXT_PUBLIC_SUPABASE_*` / `NEXT_PUBLIC_APP_URL` CI secrets are no longe
 4. **Deploy:** Actions → Deploy → `deploy` (migrations to production, then the Vercel build). The first build reads the
    empty catalogue; that is fine.
 5. **Data, once:** `pnpm prod:seed --url=<production DB URL> --allow-remote` (dry run), then again with `--apply`: the 36
-   states (text as drafts), the categories and the pilot numbers. Never `seed/demo.sql`; the placeholder catalogue only
-   through the demo round (below).
+   states (text as drafts), the categories and the pilot numbers. Never `seed/demo.sql`.
 6. **Vault (SQL editor):** the two `vault.create_secret` lines of §Email timer, with the production site URL and the
    same secret as `EMAIL_OUTBOX_CRON_SECRET`.
 7. **Stripe:** add the webhook endpoint `<site>/api/webhooks/stripe` for the live account (event `payment_intent.succeeded`) and put its signing secret in
    `STRIPE_WEBHOOK_SECRET` on Vercel (redeploy).
 8. **In the admin:** sign up, then the admin bootstrap of §Database workflow; approve and switch on the launch states
-   (Regions); fill Settings → Business and compliance details; open the first cycle with real dates; list products.
+   (Regions); fill Settings → Business and compliance details; import or source the first listings.
    The first admin account: Supabase → Authentication → Users → Add user → Create new user (tick "Auto Confirm User"),
    then in the SQL editor (the email in lowercase) `insert into public.admin_emails (email, note) values ('<email>', 'founder');` and
    `update public.profiles set role = 'admin', desk = 'us' where id = (select id from auth.users where email = '<email>');`,
@@ -164,7 +156,7 @@ The old `NEXT_PUBLIC_SUPABASE_*` / `NEXT_PUBLIC_APP_URL` CI secrets are no longe
    EAS build page) or `production` (an AAB for Google Play). The app's id is `com.indianwholesaleclub.app` (`app.json`,
    set by the founder on 2026-10-07); Google Play never lets it change after the first upload.
 
-## Moving to new Vercel or Supabase accounts (the founder runs every step; done 2026-10-21/22; the second move's order: `launch-qa-plan.md`)
+## Moving to new Vercel or Supabase accounts (the founder runs every step; done 2026-10-21/22; the second move's order: `archive/launch-qa-plan.md`)
 The code names no account: everything comes from the variables above, the GitHub secrets and the Vault. A move is
 those values, nothing in the repo. Both providers' free-plan terms apply to the new accounts too (Vercel's Hobby plan
 is for non-commercial use). The old account used 208K of Vercel's 200K page-cache writes by 2026-10-21, mostly
@@ -186,9 +178,9 @@ whole-store refreshes and deploys rewriting 2 MB state pages; D-145 cuts both, s
 nothing to move. Supabase's guide "Backup and restore using the CLI" (Platform → Migrating within Supabase):
 1. New account and project, US East. Its database password and connection string (Connect → Session pooler).
 2. Stop changes: no imports, the sourcing runner off, for the hour.
-3. `npx supabase db dump --db-url <old> -f roles.sql --role-only`, then `-f schema.sql`, then
+3. `npx supabase@2.122.1 db dump --db-url <old> -f roles.sql --role-only`, then `-f schema.sql`, then
    `-f data.sql --use-copy --data-only -x "storage.buckets_vectors" -x "storage.vector_indexes"`, and the migration
-   history: `npx supabase db dump --db-url <old> -f history.sql --data-only --schema supabase_migrations`.
+   history: `npx supabase@2.122.1 db dump --db-url <old> -f history.sql --data-only --schema supabase_migrations`.
 4. From the folder holding the four files (outside the repo: `data.sql` holds every account and address):
    `psql --single-transaction --variable ON_ERROR_STOP=1 --file roles.sql --file schema.sql --command "SET session_replication_role = replica" --file data.sql --command "create schema if not exists supabase_migrations; create table if not exists supabase_migrations.schema_migrations (version text primary key, statements text[], name text); truncate supabase_migrations.schema_migrations" --file history.sql --command "NOTIFY pgrst, 'reload schema'" --dbname <new>`.
    One transaction: any error undoes it all and the new database stays empty (on 2026-10-21 `history.sql` alone
@@ -196,10 +188,9 @@ nothing to move. Supabase's guide "Backup and restore using the CLI" (Platform �
    its rows were already there from `migration repair`, hence the truncate). Checked on a
    local Supabase 17 the same day: 8,032 listings, 82 migrations, the Realtime tables, about 5 seconds.
 5. What no dump carries, in the SQL editor of the new project: the timers,
-   `select cron.schedule('iwc-roll-cycles', '* * * * *', 'select public.roll_cycles()');`,
-   `select cron.schedule('iwc-email-outbox', '* * * * *', 'select public._kick_email_outbox()');`,
-   `select cron.schedule('iwc-fx-refresh', '*/10 * * * *', 'select public._fx_refresh()');`, and since search (D-160)
-   `select cron.schedule('iwc-search-words', '17 */6 * * *', 'select public.refresh_search_words()');` (the payment
+   `select cron.schedule('iwc-email-outbox', '* * * * *', 'select public._kick_email_outbox()');`, since search (D-160)
+   `select cron.schedule('iwc-search-words', '17 */6 * * *', 'select public.refresh_search_words()');`, and since D-187
+   `select cron.schedule('iwc-tidy', '37 8 * * *', 'select public._tidy()');` (the payment
    sweep's `iwc-payment-sweep` comes with its migration when it runs on the new project; restored after it, schedule
    it too: `select cron.schedule('iwc-payment-sweep', '*/10 * * * *', 'select public._kick_payment_sweep()');`); check
    with `select jobname, schedule from cron.job;`. And the Vault (its key stays
@@ -208,7 +199,7 @@ nothing to move. Supabase's guide "Backup and restore using the CLI" (Platform �
    move with the data; everyone signs in again once.
 7. New keys everywhere: Vercel `NEXT_PUBLIC_SUPABASE_URL`, `NEXT_PUBLIC_SUPABASE_ANON_KEY`,
    `SUPABASE_SERVICE_ROLE_KEY` (redeploy); GitHub secrets `SUPABASE_PROJECT_REF`, `SUPABASE_ACCESS_TOKEN`,
-   `SUPABASE_DB_PASSWORD`; the hub PC's `tools/sourcing-runner/.env` (and the photo worker's, the weight estimator's)
+   `SUPABASE_DB_PASSWORD`; the hub PC's `tools/sourcing-runner/.env` (and the weight estimator's, the redo tools')
    `IWC_SUPABASE_URL`, `IWC_SUPABASE_ANON_KEY`; EAS `EXPO_PUBLIC_SUPABASE_URL`, `EXPO_PUBLIC_SUPABASE_ANON_KEY`, then a
    new app build; `move.env`.
 8. Check: `pnpm launch:check --url=<new> --allow-remote`, then one real order (live keys refuse test cards), refunded
@@ -218,7 +209,7 @@ nothing to move. Supabase's guide "Backup and restore using the CLI" (Platform �
 `indianwholesaleclub.com` is the only address customers, Stripe, Supabase and the app should use: it survives any
 Vercel or Supabase move. Check after each block with `node scripts/domain-check.mjs` (add
 `--legacy=<old host>` for every old `*.vercel.app` name still up): it fails on any regression of the launch plan's
-§0 table. Ids are the launch plan's (`docs/launch-qa-plan.md`).
+§0 table. Ids are the launch plan's (`docs/archive/launch-qa-plan.md`).
 1. **Stripe webhook (DOM-1).** Stripe → Developers → Webhooks: the live endpoint is
    `https://indianwholesaleclub.com/api/webhooks/stripe` (events `payment_intent.succeeded` plus the refund, dispute
    and failed-payment events of F-3). A new endpoint has a new signing secret: Vercel `STRIPE_WEBHOOK_SECRET`, redeploy.
@@ -274,31 +265,31 @@ matters, because the installed Android app has its addresses built in.
 
 ## Demo round and placeholders (D-078, D-108; done)
 Production has no placeholder listings left (checked on the copy of 2026-10-21). The demo round and the placeholder
-clearing are in `docs/archive/ops-demo-round.md`; `pnpm demo:load` / `demo:clear` still work against a local database.
+clearing are in `docs/archive/ops-demo-round.md`; its tools left the repo with D-187 (plan R-4). `catalogue/` and
+`supabase/seed/*` stay as the local test data.
 
 ## Tools on the founder's machines
 Nothing on the website depends on them: when a machine is off, work waits in the database. Each uses the `worker`
 account, whose role can only run the `worker_*` functions (`data-model.md`).
 
-### Photo worker (D-101, D-103; the founder runs every step on production)
-The AI product photos are made on the founder's laptop by `tools/photo-worker` (its README has setup and running).
-For production, once:
-1. Supabase dashboard (production) → Authentication → Add user: an email of your choice (e.g. a `+worker` alias)
-   and a long password, "Auto confirm". Then SQL editor: `update public.profiles set role = 'worker' where email =
-   '<that email>';`. The account can only take photo jobs and use the two photo buckets (`data-model.md`).
-2. `tools/photo-worker/.env` (you write it, never committed): `IWC_SUPABASE_URL` and `IWC_SUPABASE_ANON_KEY` (the
-   production project's public URL and anon key, as in the app), `IWC_WORKER_EMAIL`, `IWC_WORKER_PASSWORD`.
-3. The chosen house models (6 – 7, D-102) uploaded to `product-media/house-models/<slug>/front.jpg` and `back.jpg` with
-   a `house_models` row each (the admin screen comes with V3).
-4. Start it with Windows (README, Task Scheduler). When the laptop is off, pieces wait in the queue; nothing breaks.
-Locally, `pnpm dev:photo-e2e <front> <back> <close-up> --house=<front>,<back>` makes the worker account, signs in as a
-vendor, uploads a piece through the vendor's storage rules and queues its jobs.
+### The worker account (the founder runs every step)
+`tools/sourcing-runner`, `tools/weight-estimator`, `tools/photo-redo` and `tools/description-redo` sign in with one account whose
+role is `worker`. Production has one. To make one on a new project, or on the **local** database (local Supabase Studio,
+http://127.0.0.1:54323, nothing else makes a local one now):
+1. Authentication → Add user: an email of your choice (e.g. a `+worker` alias) and a long password, "Auto confirm".
+2. SQL editor: `update public.profiles set role = 'worker' where email = '<that email>';`.
+3. The tool's `.env` (you write it, never committed): `IWC_SUPABASE_URL`, `IWC_SUPABASE_ANON_KEY` (the project's public URL and
+   anon key, as in the app), `IWC_WORKER_EMAIL`, `IWC_WORKER_PASSWORD`.
+`tools/photo-worker` no longer signs in: `worker.py` and its Task Scheduler task went with D-187 (`redo.py` and `redo_serve.py` stay,
+its README says how they run). `tools/photo-worker/.env` is unused.
 
 ### Photo redo (D-163; the founder runs every step on production)
 Every listing's photos made again on the laptop: `tools/photo-redo/README.md` (fetch, make, review, publish, and the R2
 audit). Once: run the Deploy workflow (migration `20261102090000_photo_redo`), give the laptop the sourcing runner's
-`.env` (or `tools/photo-redo/.env` with the same keys), and keep the house models as one folder each in
-`C:\kod\iwc-photo-models\house-models\` (`w-1\front.jpg` …; `m-1\` … for men). Start with `--limit 30` per type and look at the review page.
+`.env` (or `tools/photo-redo/.env` with the same keys). **The models are only folders on the laptop (D-187):**
+`C:\kod\iwc-photo-models\house-models\` (`IWC_MODELS` is the folder above it), `w-1\front.jpg` … for women, `m-1\front.jpg` … for men, `_…` set aside. To add a
+model, add a folder with `front.jpg`; to remove one, remove its folder; any other name is skipped with a warning. With no usable
+model, `redo.py --type clothing` stops before touching the work folder. Start with `--limit 30` per type and look at the review page.
 
 ### Description redo (D-178; the founder runs every step on production)
 Every listing's summary and description written again on the laptop: `tools/description-redo/README.md` (fetch, make,
@@ -322,12 +313,12 @@ setup and running). For production, once:
    a CSV (the state bestseller list).
 4. Task Scheduler runs `pnpm sourcing run` daily (README). When the PC is off nothing is added or checked; listings keep
    their last checked price and stock, and the admin page shows the last run.
-5. **7-day sources (D-162), once after the Deploy workflow has applied `20261101090000_quick_sources`:** on any PC with
+5. **Fast-shop sources (D-162), once after the Deploy workflow has applied `20261101090000_quick_sources`:** on any PC with
    the repo, `pnpm quick:sources -- --env=C:\iwc\move.env --allow-remote` (the same file as `photos:move`:
    `NEXT_PUBLIC_SUPABASE_URL` and `SUPABASE_SERVICE_ROLE_KEY` of production; it writes nothing and lists how many
-   listings would be bought from the quick shops instead of a cheaper backup, a sample with both prices, and sites that
-   look like a quick shop but are not marked one), then the same with `--apply` (batches of 100 until none is left;
-   safe to run again). New and re-checked listings need nothing: the runner's database functions choose the quick shop.
+   listings would be bought from the fast shops instead of a cheaper backup, a sample with both prices, and sites that
+   look like a fast shop but are not marked one), then the same with `--apply` (batches of 100 until none is left;
+   safe to run again). New and re-checked listings need nothing: the runner's database functions choose the fast shop.
 
 ### Weight estimator, clothing classes, food and home weights, liquids (D-131 – D-135; the founder runs them on production)
 `tools/weight-estimator` gives listings a packed weight on the founder's laptop GPU (its README has setup and running).
@@ -353,9 +344,9 @@ Recorded because they shape the data model and flows. Each needs an owner before
 | Area | Requirement (as understood 2026-09-27) | Where it lands in the product |
 |---|---|---|
 | Clothing labels | garments need country-of-origin ("Made in India"), fibre-content and care labels. Online listings must say "Imported" (FTC textile rules) | origin line on product pages (D-004). Intake records whether a label is attached |
-| Spices (food) | FDA food-facility registration of the maker/packer, FDA Prior Notice for each shipment, importer duties under FSVP, English labels (ingredients, net weight, allergens, origin) | spice listings stay unpublished until Q-10 is answered (D-032). `vendors.licences` stores the numbers |
+| Spices (food) | FDA food-facility registration of the maker/packer, FDA Prior Notice for each shipment, importer duties under FSVP, English labels (ingredients, net weight, allergens, origin) | `business_details` holds the numbers (Settings → Business and compliance details). Food follows its status (D-187: the "cleared" switch went, on since D-107) |
 | Delivery promises | FTC Mail/Internet Order Rule: ship within the stated time (30 days if none stated), delays need customer consent with a refund option | delivery windows + delay flow (D-008, `flows.md` §7) |
-| Export from India | the exporting entity needs an IEC (Importer-Exporter Code) | cycle export documents |
+| Export from India | the exporting entity needs an IEC (Importer-Exporter Code) | `business_details`; the packing list and commercial invoice pages went with Cycles (plan §7) |
 | Sales tax | US state sales tax obligations | charged per delivery state where IWC is registered (New Jersey now, `tax_rates`, D-073); every cancel refunds the tax. An accountant should confirm the rates and thresholds |
 | Privacy | privacy policy + terms for a US site | info pages (founder input needed) |
 

@@ -5,8 +5,7 @@ import { z } from 'zod';
 
 import {
   createPromoCode,
-  setFoodCleared,
-  setQuickPaused,
+  getPricingSettings,
   updateBusinessDetails,
   updatePricingSettings,
   updatePromoCode,
@@ -31,21 +30,26 @@ const optionalCents = z
   .pipe(z.number().int().min(0).nullable());
 
 /**
- * Saves every number in Settings (the list in settings-fields.ts). Empty = not decided = NULL (D-047), never a default.
- * A value that is not a number refuses the whole save. Prices follow in the database (D-075); the store refreshes.
+ * Saves the numbers in Settings that changed (the list in settings-fields.ts). Empty = not decided = NULL (D-047), never
+ * a default. A value that is not a number refuses the whole save. Only what changed is written: writing the home & gifts
+ * estimate re-prices listings even at the same value (D-187), and an unchanged form refreshes no store page.
  */
 export async function updatePricingSettingsAction(form: FormData): Promise<void> {
   const { client, user } = await requireAdminAction();
+  const saved = (await getPricingSettings(client)) as unknown as Record<string, number | string | null>;
   const patch: Record<string, number | null> = {};
   for (const field of SETTING_FIELDS) {
     const value = storedValue(field.kind, String(form.get(field.key) ?? ''));
     if (Number.isNaN(value) || (field.required && value === null)) {
       throw new Error(`Settings: "${field.label}" needs a number`);
     }
-    patch[field.key] = value;
+    const before = saved[field.key];
+    if (value !== (before === null || before === undefined ? null : Number(before))) patch[field.key] = value;
   }
-  await updatePricingSettings(client, { ...patch, updated_by: user.id });
-  revalidateTag(STORE_TAG); // prices (D-075), delivery windows and the next cycle's dates (D-008, D-063) changed
+  if (Object.keys(patch).length > 0) {
+    await updatePricingSettings(client, { ...patch, updated_by: user.id });
+    revalidateTag(STORE_TAG); // the free line, delivery days and prices the store shows
+  }
   revalidatePath('/admin/settings');
 }
 
@@ -92,20 +96,5 @@ export async function updateBusinessDetailsAction(form: FormData): Promise<void>
     if (/^[a-z_]+$/.test(key) && typeof value === 'string') values[key] = value.slice(0, 500);
   }
   await updateBusinessDetails(client, values);
-  revalidatePath('/admin/settings');
-}
-
-/** D-074: food listings can be published once cleared. */
-export async function updateFoodClearedAction(cleared: boolean): Promise<void> {
-  const { client } = await requireAdminAction();
-  await setFoodCleared(client, z.boolean().parse(cleared));
-  revalidatePath('/admin/settings');
-}
-
-/** D-154: pause 7-day delivery (a day the hub cannot buy) or switch it back on; the store's pages follow. */
-export async function updateQuickPausedAction(paused: boolean): Promise<void> {
-  const { client } = await requireAdminAction();
-  await setQuickPaused(client, z.boolean().parse(paused));
-  revalidateTag(STORE_TAG); // the 7-day tags, page and bag split
   revalidatePath('/admin/settings');
 }

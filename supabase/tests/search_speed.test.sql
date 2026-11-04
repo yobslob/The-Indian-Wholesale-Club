@@ -5,22 +5,21 @@ begin;
 select tests.setup();
 
 -- Made-up words, so the local catalogue never matches them: 1,005 "Qorvane" pieces (one sold out, the newest).
-insert into public.products (slug, name, product_type, region_id, category_id, vendor_id, price_cents, status, wears,
+insert into public.products (slug, name, product_type, region_id, category_id, price_cents, status, wears,
                              attributes, published_at)
-select 'qv-' || g, 'Qorvane piece ' || g, 'clothing', tests.id('region'), tests.id('cat_clothing'), tests.id('vendor'),
-       1000 + g, 'live', 'women', '{"fibre_content": "100% cotton", "care": "Hand wash"}', now() - (g || ' hours')::interval
+select 'qv-' || g, 'Qorvane piece ' || g, 'clothing', tests.id('region'), tests.id('cat_clothing'), 1000 + g, 'live', 'women', '{"fibre_content": "100% cotton", "care": "Hand wash"}', now() - (g || ' hours')::interval
 from generate_series(1, 1005) g;
 insert into public.product_variants (product_id, sku, label, qty_listed, qty_reserved)
 select p.id, 'QV-' || p.slug, 'Free size', 3, case when p.slug = 'qv-1' then 3 else 0 end
 from public.products p where p.slug like 'qv-%';
 -- one listing names a word only in its description; another has it in its name
-insert into public.products (slug, name, product_type, region_id, category_id, vendor_id, price_cents, status, wears,
+insert into public.products (slug, name, product_type, region_id, category_id, price_cents, status, wears,
                              attributes, description, published_at)
-values ('zq-desc', 'Plain stole', 'clothing', tests.id('region'), tests.id('cat_clothing'), tests.id('vendor'), 2000,
+values ('zq-desc', 'Plain stole', 'clothing', tests.id('region'), tests.id('cat_clothing'), 2000,
         'live', 'women', '{"fibre_content": "100% wool", "care": "Dry clean"}', 'Pairs well with a zelquor.', now()),
-       ('zq-other', 'Woven shawl', 'clothing', tests.id('region'), tests.id('cat_clothing'), tests.id('vendor'), 2000,
+       ('zq-other', 'Woven shawl', 'clothing', tests.id('region'), tests.id('cat_clothing'), 2000,
         'live', 'women', '{"fibre_content": "100% wool", "care": "Dry clean"}', 'Pairs well with a yandrel.', now()),
-       ('zq-name', 'Yandrel wrap', 'clothing', tests.id('region'), tests.id('cat_clothing'), tests.id('vendor'), 2000,
+       ('zq-name', 'Yandrel wrap', 'clothing', tests.id('region'), tests.id('cat_clothing'), 2000,
         'live', 'women', '{"fibre_content": "100% wool", "care": "Dry clean"}', null, now());
 insert into public.product_variants (product_id, sku, label, qty_listed, qty_reserved)
 select p.id, 'ZQ-' || p.slug, 'Free size', 3, 0 from public.products p where p.slug like 'zq-%';
@@ -61,7 +60,7 @@ reset role;
 -- The trigger keeps product_search's status: an archived listing is no longer found, a published one is.
 update public.products set status = 'archived' where slug = 'qv-2';
 select tests.assert(
-  (select not s.listed and s.soon from public.product_search s join public.products p on p.id = s.product_id
+  (select not s.listed from public.product_search s join public.products p on p.id = s.product_id
    where p.slug = 'qv-2'),
   'archiving a listing takes it out of search''s rows');
 set local role anon;

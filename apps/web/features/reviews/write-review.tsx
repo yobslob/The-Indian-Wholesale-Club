@@ -77,7 +77,7 @@ export function WriteReview({ productId }: { productId: string }): React.JSX.Ele
             <HeaderIcon name="close" />
           </button>
         </header>
-        <div className="flex-1 overflow-y-auto px-5 pb-6 pt-[18px]" data-lenis-prevent>
+        <div className="flex-1 overflow-y-auto px-5 pb-6 pt-[18px]">
           {!open ? null : state === null ? (
             <p className="text-ink-muted text-sm">Loading…</p>
           ) : !state.signedIn ? (

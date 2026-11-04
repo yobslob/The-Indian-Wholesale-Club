@@ -2,11 +2,10 @@
 -- typical weight.
 begin;
 select tests.setup();
-update public.pricing_settings set food_cleared = true where id = 1;
 
-insert into public.products (slug, name, product_type, region_id, category_id, vendor_id, price_cents, status, published_at)
-values ('test-bhujia', 'Test Bikaneri Bhujia', 'food', tests.id('region'), tests.id('cat_food'), tests.id('vendor'), 399, 'live', now()),
-       ('test-sev', 'Test Ratlami Sev 400g', 'food', null, tests.id('cat_food'), tests.id('vendor'), 849, 'live', now());
+insert into public.products (slug, name, product_type, region_id, category_id, price_cents, status, published_at)
+values ('test-bhujia', 'Test Bikaneri Bhujia', 'food', tests.id('region'), tests.id('cat_food'), 399, 'live', now()),
+       ('test-sev', 'Test Ratlami Sev 400g', 'food', null, tests.id('cat_food'), 849, 'live', now());
 insert into public.product_variants (product_id, sku, label, options, qty_listed, price_cents)
 select id, 'TEST-BHUJIA-1', '1 kg', '{"pack": "1 kg"}'::jsonb, 3, 2049 from public.products where slug = 'test-bhujia'
 union all

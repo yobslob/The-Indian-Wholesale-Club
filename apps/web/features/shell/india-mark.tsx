@@ -16,7 +16,7 @@ export function IndiaMark(): React.JSX.Element {
 /**
  * The same outline once per page as a symbol (D-161), for client parts that draw it with `<use href="#india-mark">`
  * (the free-delivery pill's flight path), so the path rides in the HTML once and never in their JavaScript; and the
- * whole mainland (`#india-outline`, outline.ts) for the flight and the 7-day store's door label (2026-10-30).
+ * whole mainland (`#india-outline`, outline.ts) for the flight (2026-10-30).
  */
 export function IndiaSymbol(): React.JSX.Element {
   return (

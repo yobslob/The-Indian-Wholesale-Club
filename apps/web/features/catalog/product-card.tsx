@@ -37,6 +37,8 @@ const SIZES = {
 /**
  * The founder's reference card (D-050): a rounded 3 : 4 photo with a round + on it (D-080), then the name and
  * price · region across the card's full width; a food piece's pack size sits on its photo (D-122). `size="sm"` is the smaller card of the product page grids (D-051).
+ * D-187: one line says its delivery days, its words from Settings through a CSS variable the store layout sets
+ * (`.product-card-days`, globals.css), so a card carries no days and no script of its own.
  * Server component; the + and the heart (D-140) are its client islands.
  */
 export function ProductCard({
@@ -46,7 +48,6 @@ export function ProductCard({
   reveal = true,
   layout = 'grid',
   corner,
-  quickTag = true,
 }: {
   product: CardData;
   size?: 'md' | 'sm';
@@ -57,8 +58,6 @@ export function ProductCard({
   corner?: React.ReactNode;
   /** The scroll reveal (D-049). Off for cards that start off to the side in a row: animating dozens made scrolling stutter. */
   reveal?: boolean;
-  /** The "In 7 days" tag; off where the page says it once for every card (the 7-day store, Home's 7-day row). */
-  quickTag?: boolean;
 }): React.JSX.Element {
   const href = productPath(product.region_slug, product.slug);
   const small = size === 'sm';
@@ -93,12 +92,6 @@ export function ProductCard({
             <span className="bg-paper font-ui rounded-pill absolute left-3.5 top-3.5 max-w-[calc(100%-4.5rem)] px-3 py-1.5 text-xs font-medium leading-tight">
               {badge}
             </span>
-          ) : product.quick_days && quickTag ? (
-            // D-148: a 7-day piece (its days from Settings); the bag keeps the promise only while it holds 7-day pieces alone.
-            // D-161: once the browser knows today, "Sat at your door" (`.door-tag`, the weekday from days.tsx)
-            <span className="door-tag product-card-chip bg-brand text-on-brand font-ui rounded-pill absolute left-3.5 top-3.5 max-w-[calc(100%-4.5rem)] px-2.5 py-1 text-xs font-semibold leading-tight">
-              <span className="door-tag-n">In {product.quick_days} days</span>
-            </span>
           ) : null}
           {product.pack ? (
             // D-122: a food piece's pack size, so two prices read side by side make sense
@@ -107,43 +100,26 @@ export function ProductCard({
             </span>
           ) : null}
         </CardLink>
-        {product.coming_soon ? (
-          // D-135: not on sale yet: the heart instead of the +, and what saving does (D-140, S7)
-          <div className="absolute bottom-2.5 right-2.5 z-[1] flex items-center gap-2">
-            <span className="bg-paper/85 font-ui rounded-pill max-w-[150px] px-2.5 py-1 text-[11.5px] font-medium leading-tight">
-              Save it, we&apos;ll show it in Saved when it&apos;s back
-            </span>
-            <SaveButton productId={product.id} small />
-          </div>
-        ) : (
-          <QuickAdd
-            // only what the + uses: the page carries each card's props once more as data (D-145)
-            product={{
-              id: product.id,
-              name,
-              slug: product.slug,
-              region_slug: product.region_slug,
-              region_name: product.region_name,
-              primary_image_path: product.primary_image_path,
-              product_type: product.product_type,
-              quick_days: product.quick_days,
-            }}
-            quickAdd={product.quick_add}
-            options={product.options}
-            choices={product.choices}
-            soldOut={product.sold_out}
-            available={product.available}
-            href={href}
-          />
-        )}
-        {corner ? (
-          <div className="absolute right-2.5 top-2.5 z-[2]">{corner}</div>
-        ) : !product.coming_soon ? (
-          // D-140 (F6): save from any card, top right of the photo
-          <div className="absolute right-2.5 top-2.5 z-[2]">
-            <SaveButton productId={product.id} small />
-          </div>
-        ) : null}
+        <QuickAdd
+          // only what the + uses: the page carries each card's props once more as data (D-145)
+          product={{
+            id: product.id,
+            name,
+            slug: product.slug,
+            region_slug: product.region_slug,
+            region_name: product.region_name,
+            primary_image_path: product.primary_image_path,
+            product_type: product.product_type,
+          }}
+          quickAdd={product.quick_add}
+          options={product.options}
+          choices={product.choices}
+          soldOut={product.sold_out}
+          available={product.available}
+          href={href}
+        />
+        {/* D-140 (F6): save from any card, top right of the photo */}
+        <div className="absolute right-2.5 top-2.5 z-[2]">{corner ?? <SaveButton productId={product.id} small />}</div>
       </div>
       <div className={`product-card-text ${small ? 'pl-2 pt-2.5' : 'pl-3.5 pr-1.5 pt-3.5'}`}>
         <CardLink
@@ -153,15 +129,16 @@ export function ProductCard({
           {name}
         </CardLink>
         <span className={`product-card-meta text-ink-muted ${small ? 'text-[13px]' : 'text-sm'}`}>
-          {product.coming_soon ? 'Coming soon' : price}
+          {price}
           {product.region_name ? ` · ${product.region_name}` : null}
         </span>
+        <span className="product-card-days" data-days={product.product_type === 'food' ? 'food' : 'standard'} />
       </div>
     </article>
   );
 }
 
-/** The reference grid: four equal columns (five for small cards), two on phones; its columns drift with the scroll (D-116). */
+/** The reference grid: four equal columns (five for small cards), two on phones. */
 export function ProductGrid({
   children,
   size = 'md',
@@ -173,8 +150,8 @@ export function ProductGrid({
     <div
       className={
         size === 'sm'
-          ? 'drift drift-cols-3 drift-cols-5 grid grid-cols-2 gap-x-[var(--gap)] gap-y-7 md:grid-cols-3 xl:grid-cols-5'
-          : 'drift grid grid-cols-2 gap-x-[var(--gap)] gap-y-[clamp(28px,3vw,44px)] xl:grid-cols-4'
+          ? 'grid grid-cols-2 gap-x-[var(--gap)] gap-y-7 md:grid-cols-3 xl:grid-cols-5'
+          : 'grid grid-cols-2 gap-x-[var(--gap)] gap-y-[clamp(28px,3vw,44px)] xl:grid-cols-4'
       }
     >
       {children}

@@ -38,7 +38,7 @@ export function timelineIndex(status: CustomerStatus): number {
 
 /**
  * Customer-visible order_events.kind → text. Kinds are written by SQL functions
- * (create_order, cutoff_cycle, mark_pickup, change_delivery_window) and by admin actions.
+ * (create_order, mark_pickup, change_delivery_window) and by admin actions.
  * The text never mentions shops or India-side operations (D-003).
  */
 export const ORDER_EVENT_LABEL: Record<string, string> = {
@@ -47,9 +47,6 @@ export const ORDER_EVENT_LABEL: Record<string, string> = {
   item_unavailable: 'An item is no longer available. It will be refunded.', // D-030
   item_refunded: 'Item refunded',
   delivery_window_changed: 'New delivery estimate', // D-008
-  faster_delivery_offer: 'It can reach you sooner. See the offer above.', // D-064
-  faster_delivery_accepted: 'Faster delivery added. New delivery estimate', // D-064
-  arriving_sooner: 'Good news: it is coming sooner than we said', // D-064
   order_cancelled: 'Order cancelled', // D-072
   shipment_cancelled: 'Part of your order was cancelled and refunded', // D-154
   return_requested: 'Return requested', // D-071

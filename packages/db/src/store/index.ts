@@ -12,7 +12,6 @@ import { unwrap, type IwcClient } from '../client';
 import {
   browsePageSchema,
   cardOptionSchema,
-  deliveryWindowSchema,
   homeSchema,
   orderDetailSchema,
   orderSummarySchema,
@@ -23,7 +22,6 @@ import {
   storePolicySchema,
   type BrowsePage,
   type CardOption,
-  type DeliveryWindow,
   type HomeData,
   type OrderDetail,
   type OrderSummary,
@@ -37,10 +35,9 @@ import {
 } from './schemas';
 
 export * from './schemas';
-export * from './quick';
 export * from './search';
 
-/** Home + /states: all 36 regions and the next delivery window (1 round trip). */
+/** Home + /states: all 36 regions, the tiles and Home's rows (1 round trip). */
 export async function getHome(client: IwcClient): Promise<HomeData> {
   const data = unwrap(await client.rpc('store_home', undefined, { get: true }));
   return homeSchema.parse(data);
@@ -99,12 +96,6 @@ export async function getProductPage(
   return data === null ? null : productPageSchema.parse(data);
 }
 
-export async function getNextDelivery(client: IwcClient): Promise<DeliveryWindow | null> {
-  const rows = unwrap(await client.rpc('store_next_delivery', undefined, { get: true }));
-  const first = Array.isArray(rows) ? rows[0] : undefined;
-  return first ? deliveryWindowSchema.parse(first) : null;
-}
-
 const PRODUCT_CARD_COLUMNS =
   'id, slug, name, product_type, region_slug, region_name, category_slug, category_name, price_cents, primary_image_path';
 
@@ -125,8 +116,6 @@ export interface BrowseFilter {
   sort?: BrowseSort;
   /** D-140: clothing for women or men (unisex pieces show under both). */
   forWho?: 'women' | 'men';
-  /** D-154: only 7-day pieces ("Delivery: in 7 days"). */
-  quick?: boolean;
   /** Skip this many (the next page of a See all list). */
   offset?: number;
   /** At most 500 (the database caps it). */
@@ -150,7 +139,6 @@ export async function browseProducts(client: IwcClient, filter: BrowseFilter): P
         ...(filter.sizes?.length ? { p_sizes: filter.sizes.join('|') } : {}),
         ...(filter.sort && filter.sort !== 'new' ? { p_sort: filter.sort } : {}),
         ...(filter.forWho ? { p_for: filter.forWho } : {}),
-        ...(filter.quick ? { p_quick: true } : {}),
         p_offset: filter.offset ?? 0,
         p_limit: filter.limit ?? 24,
       },
@@ -168,7 +156,7 @@ export async function browseProducts(client: IwcClient, filter: BrowseFilter): P
 export async function searchProducts(
   client: IwcClient,
   query: string,
-  page: { offset?: number; limit?: number; record?: boolean; quick?: boolean } = {},
+  page: { offset?: number; limit?: number; record?: boolean } = {},
 ): Promise<ProductCard[]> {
   const data = unwrap(
     await client
@@ -177,7 +165,6 @@ export async function searchProducts(
         p_offset: page.offset ?? 0,
         p_limit: page.limit ?? 24,
         p_record: page.record ?? true,
-        ...(page.quick ? { p_quick: true } : {}),
       })
       .select(PRODUCT_CARD_COLUMNS),
   );
@@ -296,18 +283,16 @@ export async function isDemoStore(client: IwcClient): Promise<boolean> {
 }
 
 /**
- * D-154: a bag's shipments as store_bag_charges works them out: the 7-day line and how far the 7-day pieces are from it,
- * whether they ship on their own (`split`) or are the whole bag (`quick_only`), and the one parcel's billed weight and
- * Shipping (its 7-day shipment's share by weight). Never a shop or a source (D-003).
+ * D-154, D-187: a bag's shipments as store_bag_charges works them out: whether its food travels apart (`split`) or is the
+ * whole bag (`food_only`), an address outside the 48 states and DC (`outside`: one shipment), and the one parcel's
+ * Shipping (its food shipment's share by weight). Never a shop or a source (D-003).
  */
 export const bagShipmentsSchema = z.object({
   days_min: z.number().int().nullable(),
   days_max: z.number().int().nullable(),
-  min_cents: z.number().int().nullable(),
-  quick_cents: z.number().int(),
-  quick_only: z.boolean(),
+  food_cents: z.number().int(),
+  food_only: z.boolean(),
   split: z.boolean(),
-  gap_cents: z.number().int().nullable(),
   outside: z.boolean(),
   shipping_cents: z.number().int(),
 });
@@ -316,9 +301,11 @@ export type BagShipments = z.infer<typeof bagShipmentsSchema>;
 export const bagChargesSchema = z.object({
   /** The free-shipping line (null = none). */
   free_min_cents: z.number().int().nullable(),
+  /** D-187: the bulk saving and the heavy-item discount start here, not at the free line. */
+  bulk_saving_from_cents: z.number().int().nullable(),
   shipping_cents: z.number().int().min(0),
   retailer_cents: z.number().int().min(0),
-  /** D-119: the bulk saving from the line up (% of the amount over it, up to the cap); 0 = none. */
+  /** D-119: the bulk saving (% of the amount over its line, up to the cap); 0 = none. */
   bulk_saving_pct: z.number().min(0).default(0),
   bulk_saving_cap_cents: z.number().int().min(0).default(0),
   /** D-123: the retailer charges are this % of the goods, at least `retailer_cents`; 0 = the fixed amount. */
@@ -327,20 +314,18 @@ export const bagChargesSchema = z.object({
   past_line_cents: z.number().int().min(0).default(0),
   /** D-140 (F5): the Shipping figure shown struck through once free; null = the small-order Shipping. Display only. */
   shown_shipping_cents: z.number().int().min(0).nullable().optional(),
-  /** D-154: a bag of only 7-day pieces from the 7-day line ships free. */
-  quick_free: z.boolean().default(false),
-  /** D-154: the bag's shipments (_bag_shipments); absent before the migration. */
+  /** D-154: the bag's shipments (_bag_shipments). */
   shipments: bagShipmentsSchema.nullable().optional(),
-  /** D-154 step 3: which of the asked options are 7-day pieces, and each shipment's dates from today. */
-  quick_ids: z.array(z.string().uuid()).default([]),
+  /** D-187: which of the asked options are food, and each shipment's dates from today (checkout and the order only). */
+  food_ids: z.array(z.string().uuid()).default([]),
   /** Heavy-item shipping (founder 2026-10-24): the bag's heavy pieces' charge, what the line takes off, which options. */
   heavy_cents: z.number().int().min(0).default(0),
   heavy_line_off_pct: z.number().min(0).max(100).default(0),
   heavy_ids: z.array(z.string().uuid()).default([]),
   dates: z
     .object({
-      quick_from: z.string().nullable(),
-      quick_to: z.string().nullable(),
+      food_from: z.string().nullable(),
+      food_to: z.string().nullable(),
       standard_from: z.string().nullable(),
       standard_to: z.string().nullable(),
     })
@@ -357,7 +342,6 @@ export function smallOrderOf(c: BagCharges): SmallOrderCharges {
     retailerCents: c.retailer_cents,
     retailerPct: c.retailer_pct || null,
     shownShippingCents: c.shown_shipping_cents ?? null,
-    quickFree: c.quick_free,
   };
 }
 
@@ -369,13 +353,13 @@ export function heavyOf(c: BagCharges): HeavyShipping | null {
 /**
  * D-111: a bag's small-order charges (one courier parcel's shipping beyond what the prices carry, and the retailer
  * charges), worked out in the database where the weights are (INV-1). Charged below `free_min_cents`, struck through
- * from it up; from it up the bulk saving's two numbers apply (D-119). The bag, the free-delivery bar and checkout all
- * read this one function.
+ * from it up; from `bulk_saving_from_cents` up the bulk saving's two numbers apply (D-119, D-187). The bag, the
+ * free-delivery bar and checkout all read this one function.
  */
 export async function getBagCharges(
   client: IwcClient,
   items: { variantId: string; quantity: number }[],
-  /** D-154: at checkout, the promo's discount and the address decide the 7-day shipment too. */
+  /** D-154: at checkout, the promo's discount and the address decide the food shipment too. */
   at: { discountCents?: number; state?: string; line1?: string } = {},
 ): Promise<BagCharges> {
   const data = unwrap(

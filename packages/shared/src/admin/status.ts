@@ -7,7 +7,6 @@ export type Tone = 'ok' | 'warn' | 'bad' | 'brand' | 'blue' | 'mute';
 type OrderStatus = 'pending_payment' | 'confirmed' | 'collecting' | 'packed' | 'in_transit' | 'arrived' | 'shipped' | 'delivered' | 'cancelled' | 'refunded';
 type PaymentStatus = 'pending' | 'paid' | 'failed' | 'refunded' | 'partially_refunded';
 type PickupStatus = 'pending' | 'picked' | 'unavailable';
-type CycleStatusName = 'open' | 'collecting' | 'packed' | 'exported' | 'arrived' | 'fulfilling' | 'closed';
 type ProductStatus = 'draft' | 'live' | 'paused' | 'archived';
 
 export const ORDER_STATUS: Record<OrderStatus, [string, Tone]> = {
@@ -31,41 +30,20 @@ export const PAYMENT_STATUS: Record<PaymentStatus, [string, Tone]> = {
   partially_refunded: ['Part refunded', 'warn'],
 };
 
-export const PICKUP_STATUS: Record<PickupStatus, [string, Tone]> = {
-  pending: ['To pick', 'warn'],
-  picked: ['Picked', 'ok'],
-  unavailable: ['Unavailable', 'bad'],
-};
-
-/**
- * D-140 (F3): where a sold piece stands on its way to the hub. A piece from an online shop is ordered (To order →
- * Ordered); a shop's piece in a cycle is picked up (To pick); either way Picked is At the hub.
- */
-export type PieceStage = 'to_order' | 'ordered' | 'to_pick' | 'at_hub' | 'unavailable';
+/** D-140 (F3): where a sold piece stands on its way to the hub: To order → Ordered → At the hub. */
+export type PieceStage = 'to_order' | 'ordered' | 'at_hub' | 'unavailable';
 export const PIECE_STAGE: Record<PieceStage, [string, Tone]> = {
   to_order: ['To order', 'warn'],
   ordered: ['Ordered', 'blue'],
-  to_pick: ['To pick', 'warn'],
   at_hub: ['At the hub', 'ok'],
   unavailable: ['Unavailable', 'bad'],
 };
 
-export function pieceStage(p: { status: PickupStatus; ordered_at: string | null }, online: boolean): PieceStage {
+export function pieceStage(p: { status: PickupStatus; ordered_at: string | null }): PieceStage {
   if (p.status === 'picked') return 'at_hub';
   if (p.status === 'unavailable') return 'unavailable';
-  if (p.ordered_at) return 'ordered';
-  return online ? 'to_order' : 'to_pick';
+  return p.ordered_at ? 'ordered' : 'to_order';
 }
-
-export const CYCLE_STATUS: Record<CycleStatusName, [string, Tone]> = {
-  open: ['Open', 'blue'],
-  collecting: ['Collecting', 'warn'],
-  packed: ['Packed', 'warn'],
-  exported: ['Exported', 'warn'],
-  arrived: ['Arrived', 'brand'],
-  fulfilling: ['Fulfilling', 'brand'],
-  closed: ['Closed', 'mute'],
-};
 
 export const PRODUCT_STATUS: Record<ProductStatus, [string, Tone]> = {
   draft: ['Draft', 'mute'],

@@ -7,15 +7,13 @@ select tests.setup();
 select tests.create_user('worker', 'worker@example.test');
 update public.profiles set role = 'worker' where id = tests.id('worker');
 
-insert into public.house_models (slug, label, wears, front_path, back_path)
-values ('pr-model', 'PR model', 'women', 'house-models/pr-model/front.jpg', 'house-models/pr-model/back.jpg');
 insert into public.categories (product_type, slug, name, default_weight_g)
 values ('home', 'pr-decor', 'PR decor', 900) returning tests.remember('cat_home', id);
-insert into public.products (slug, name, product_type, region_id, category_id, vendor_id, price_cents, status, wears)
-values ('pr-kids', 'PR kids kurta', 'clothing', tests.id('region'), tests.id('cat_clothing'), tests.id('vendor'), 900,
+insert into public.products (slug, name, product_type, region_id, category_id, price_cents, status, wears)
+values ('pr-kids', 'PR kids kurta', 'clothing', tests.id('region'), tests.id('cat_clothing'), 900,
         'draft', 'kids'),
-       ('pr-food', 'PR bhujia', 'food', tests.id('region'), tests.id('cat_food'), tests.id('vendor'), 900, 'draft', null),
-       ('pr-home', 'PR toran', 'home', tests.id('region'), tests.id('cat_home'), tests.id('vendor'), 900, 'draft', null);
+       ('pr-food', 'PR bhujia', 'food', tests.id('region'), tests.id('cat_food'), 900, 'draft', null),
+       ('pr-home', 'PR toran', 'home', tests.id('region'), tests.id('cat_home'), 900, 'draft', null);
 select tests.remember('kids', (select id from public.products where slug = 'pr-kids'));
 select tests.remember('food', (select id from public.products where slug = 'pr-food'));
 select tests.remember('home', (select id from public.products where slug = 'pr-home'));
@@ -51,8 +49,7 @@ select tests.assert_fails($$select public.worker_photo_redo_scene(tests.id('h1')
 
 select tests.act_as(tests.id('worker'));
 create temp table plan_c on commit drop as select public.worker_photo_redo_plan('clothing') as doc;
-select tests.assert((select doc -> 'house_models' @> '[{"slug": "pr-model", "wears": "women"}]' from plan_c),
-                    'the house models come along');
+select tests.assert((select not doc ? 'house_models' from plan_c), 'the models are folders on the laptop (D-187)');
 create temp table live_c on commit drop as
   select l from plan_c, jsonb_array_elements(doc -> 'listings') l where l ->> 'product_id' = tests.id('p_live')::text;
 select tests.assert((select jsonb_array_length(doc -> 'listings') from plan_c) = 2,

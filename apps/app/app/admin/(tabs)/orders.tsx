@@ -16,8 +16,10 @@ import { supabase } from '@/lib/supabase';
 import { usePagedQuery } from '@/lib/use-paged-query';
 import { useQuery } from '@/lib/use-query';
 
-const CHIPS: (Enum<'order_status'> | 'all' | 'express')[] = ['all', 'arrived', 'confirmed', 'collecting', 'packed', 'in_transit', 'shipped', 'delivered', 'cancelled', 'express'];
-const chipLabel = (c: (typeof CHIPS)[number]): string => (c === 'all' ? 'All' : c === 'express' ? 'Express to send' : ORDER_STATUS[c][0]);
+const CHIPS: (Enum<'order_status'> | 'all')[] = ['all', 'arrived', 'confirmed', 'collecting', 'packed', 'in_transit', 'shipped', 'delivered', 'cancelled'];
+const chipLabel = (c: (typeof CHIPS)[number]): string => (c === 'all' ? 'All' : ORDER_STATUS[c][0]);
+/** Not shipped yet: every order leaves from the hub once its pieces are there (D-187; the database refuses it until then). */
+const NOT_SHIPPED = ['confirmed', 'collecting', 'packed', 'in_transit', 'arrived'];
 
 /**
  * Orders (D-097, US desk): search, chips with counts, order cards, 50 at a time. A long press starts selecting, and a
@@ -26,8 +28,8 @@ const chipLabel = (c: (typeof CHIPS)[number]): string => (c === 'all' ? 'All' : 
 export default function AdminOrdersScreen(): React.JSX.Element {
   const router = useRouter();
   const desk = useDesk();
-  const params = useLocalSearchParams<{ status?: string; express?: string; q?: string }>();
-  const filter = params.express === '1' ? 'express' : (CHIPS.find((c) => c === params.status) ?? 'all');
+  const params = useLocalSearchParams<{ status?: string; q?: string }>();
+  const filter = CHIPS.find((c) => c === params.status) ?? 'all';
   const q = params.q ?? '';
   const [words, setWords] = useState(q);
   const { data: counts, reload: reloadCounts } = useQuery('admin:order-counts', () => countOrdersByStatus(supabase));
@@ -35,7 +37,7 @@ export default function AdminOrdersScreen(): React.JSX.Element {
     `admin:orders:${filter}:${q}`,
     (offset, limit) =>
       listAdminOrders(supabase, {
-        ...(filter === 'express' ? { expressToSend: true } : filter === 'all' ? {} : { status: filter }),
+        ...(filter === 'all' ? {} : { status: filter }),
         search: q,
         offset,
         limit,
@@ -52,10 +54,7 @@ export default function AdminOrdersScreen(): React.JSX.Element {
     number: o.order_number,
     name: (o.shipping_address as { fullName?: string } | null)?.fullName ?? '',
   });
-  // Arrived in the US, or an express order still in India (D-070; the database refuses one not yet picked).
-  const canShip = (o: (typeof chosen)[number]): boolean =>
-    o.status === 'arrived' || (o.shipping_method === 'express' && !o.cycle_id && ['confirmed', 'collecting'].includes(o.status));
-  const toShip = chosen.filter(canShip).map(target);
+  const toShip = chosen.filter((o) => NOT_SHIPPED.includes(o.status)).map(target);
   const toDeliver = chosen.filter((o) => o.status === 'shipped').map(target);
   const toggle = (id: string): void =>
     setPicked((s) => {
@@ -72,7 +71,7 @@ export default function AdminOrdersScreen(): React.JSX.Element {
     reloadCounts();
   };
   const count = (c: (typeof CHIPS)[number]): number | undefined =>
-    !counts ? undefined : c === 'all' ? counts.all : c === 'express' ? counts.expressToSend : (counts.byStatus[c] ?? 0);
+    !counts ? undefined : c === 'all' ? counts.all : (counts.byStatus[c] ?? 0);
 
   return (
     <View className="bg-canvas flex-1">
@@ -101,7 +100,7 @@ export default function AdminOrdersScreen(): React.JSX.Element {
             return (
               <Pressable
                 key={c}
-                onPress={() => router.setParams(c === 'express' ? { express: '1', status: '' } : { status: c === 'all' ? '' : c, express: '' })}
+                onPress={() => router.setParams({ status: c === 'all' ? '' : c })}
                 accessibilityRole="button"
                 accessibilityState={{ selected: on }}
                 className={`h-9 flex-row items-center gap-1.5 rounded-pill border px-3 ${on ? 'border-ink bg-ink' : 'border-line bg-paper'}`}

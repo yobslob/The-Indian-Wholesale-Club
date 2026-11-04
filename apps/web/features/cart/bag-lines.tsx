@@ -2,9 +2,11 @@
 
 import Link from 'next/link';
 
-import { arrivalLine, bagGroups, bagShipmentState, displayOption, displayTitle, formatUsd, productPath, quickGapLine } from '@repo/shared/domain';
+import { bagGroups, bagShipmentState, displayOption, displayTitle, formatUsd, productPath } from '@repo/shared/domain';
 
+import { deliveryDaysLabel } from '@/features/catalog/delivery-days';
 import { StorePhoto } from '@/features/catalog/store-photo';
+import { useDays } from '@/features/shell/days';
 import { mediaUrl } from '@/lib/site';
 
 import { useBagCharges } from './charges';
@@ -48,40 +50,35 @@ export function LinePhoto({ path, href, className }: { path: string | null; href
 /**
  * The bag's lines (D-086): a small photo (it and the name open the product), the option and state, the stepper, the
  * line's price and Remove. `compact` is the panel's and phones' two-row layout. Prices are for display only:
- * checkout re-prices every line on the server (D-038). D-154: once the bag holds 7-day pieces, its lines sit under
- * their arrival dates ("Shipment 1 · Arrives by Fri, Oct 30", "Shipment 2 · Arrives Nov 3 – Nov 7"), and under the
- * 7-day line the bag says how much more brings them in 7 days, with the way to the 7-day store.
+ * checkout re-prices every line on the server (D-038). D-187: the lines sit under their shipment and delivery days,
+ * never a date: "Shipment 1 · Food · 7 delivery days", "Shipment 2 · Clothing and home & gifts · 12 – 16 delivery days".
  */
 export function BagLines({ compact = false }: { compact?: boolean }): React.JSX.Element {
   const lines = useCart((s) => s.lines);
-  const facts = useBagCharges()?.shipments ?? null;
+  const charges = useBagCharges();
+  const days = useDays();
+  const facts = charges?.shipments ?? null;
+  // a bag from India has retailer charges: pieces already in the US (D-072) have other days, and no line here
+  const fromIndia = (charges?.small.retailerCents ?? 0) > 0;
   const state = bagShipmentState(facts);
-  if (state === 'none') return <LineList lines={lines} compact={compact} top={!compact} />;
-  // a bag of only 7-day pieces under the line: its summary's one goal says it (bag-goal.ts), not a second line here
-  const onlyQuick = facts !== null && lines.every((l) => facts.quickIds.includes(l.variantId));
-  const gap = state === 'under' && !onlyQuick ? quickGapLine(facts) : null;
+  if (state === 'none' && !fromIndia) return <LineList lines={lines} compact={compact} top={!compact} />;
   return (
     <div className="font-ui">
       {bagGroups(lines, facts).map((g) => {
-        const when = arrivalLine(g.from, g.to);
+        const food = g.kind === 'food';
+        const d = food ? days.food : days.standard;
         return (
           <section key={g.seq ?? 0} aria-label={g.seq ? `Shipment ${g.seq}` : 'Your bag'} className="pt-3 first:pt-0">
-            <h3 className={`m-0 pb-2 text-[14px] font-semibold ${g.kind === 'quick' ? 'text-brand' : 'text-ink'}`}>
-              {[g.seq ? `Shipment ${g.seq}` : null, when].filter(Boolean).join(' · ')}
-              <span className="text-ink-muted font-normal"> · for most US addresses</span>
+            <h3 className={`m-0 pb-2 text-[14px] font-semibold ${food ? 'text-brand' : 'text-ink'}`}>
+              {[g.seq ? `Shipment ${g.seq}` : null, food ? 'Food' : 'Clothing and home & gifts', deliveryDaysLabel(d?.min, d?.max)]
+                .filter(Boolean)
+                .join(' · ')}
+              {food ? <span className="text-ink-muted font-normal"> · for most US addresses</span> : null}
             </h3>
             <LineList lines={g.lines} compact={compact} top />
           </section>
         );
       })}
-      {gap ? (
-        <p className="m-0 flex flex-wrap items-baseline justify-between gap-x-3 gap-y-1 pt-3 text-[13.5px]">
-          <span className="text-brand font-semibold">{gap}</span>
-          <Link href="/7-day-delivery" className="font-medium underline underline-offset-[3px]">
-            Shop the 7-day store
-          </Link>
-        </p>
-      ) : null}
     </div>
   );
 }

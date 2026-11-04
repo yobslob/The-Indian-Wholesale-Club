@@ -30,7 +30,7 @@ function Hit({ title, sub, href, lead, children }: { title: string; sub?: string
 }
 
 /**
- * Quick find (D-097, as the web's Ctrl+K): orders by number, name or email, products, customers and shops. Admin only
+ * Quick find (D-097, as the web's Ctrl+K): orders by number, name or email, products and customers. Admin only
  * (RLS); five of each.
  */
 export default function FindScreen(): React.JSX.Element {
@@ -47,7 +47,7 @@ export default function FindScreen(): React.JSX.Element {
       clearTimeout(timer);
     };
   }, [words]);
-  const none = found && !found.orders.length && !found.products.length && !found.customers.length && !found.vendors.length;
+  const none = found && !found.orders.length && !found.products.length && !found.customers.length;
 
   return (
     <Screen title="Find">
@@ -55,7 +55,7 @@ export default function FindScreen(): React.JSX.Element {
         autoFocus
         value={words}
         onChangeText={setWords}
-        placeholder="Order number, name, email, product or shop"
+        placeholder="Order number, name, email or product"
         placeholderTextColor={tokens.colors['ink-muted']}
         accessibilityLabel="Find"
         returnKeyType="search"
@@ -101,14 +101,6 @@ export default function FindScreen(): React.JSX.Element {
           <Group>Customers</Group>
           {found.customers.map((c) => (
             <Hit key={c.id} title={c.full_name || c.email || 'Customer'} sub={c.full_name ? (c.email ?? '') : 'their orders'} href={{ pathname: '/admin/orders', params: { q: c.email ?? '' } }} />
-          ))}
-        </View>
-      ) : null}
-      {found?.vendors.length ? (
-        <View>
-          <Group>Vendors</Group>
-          {found.vendors.map((v) => (
-            <Hit key={v.id} title={v.shop_name} sub={[v.town, v.region?.name].filter(Boolean).join(' · ')} href="/admin/vendors" />
           ))}
         </View>
       ) : null}

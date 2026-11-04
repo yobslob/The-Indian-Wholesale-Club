@@ -1,7 +1,7 @@
 import { Text, View } from 'react-native';
 
 import { getBagCharges, heavyOf, smallOrderOf, type BagCharges } from '@repo/db/store';
-import { bagChargesAt, bagGoal, bulkProgress, formatUsd, heavyShippingAt, parseBagShipments } from '@repo/shared/domain';
+import { bagChargesAt, bagGoal, bulkProgress, formatUsd, heavyShippingAt } from '@repo/shared/domain';
 
 import { MeterLine } from './meter-line';
 import { bagSubtotalCents, useBag, type BagLine } from './store';
@@ -9,7 +9,7 @@ import { bagSubtotalCents, useBag, type BagLine } from './store';
 import { supabase } from '@/lib/supabase';
 import { useQuery } from '@/lib/use-query';
 
-const bagKey = (lines: BagLine[]): string =>
+export const bagKey = (lines: BagLine[]): string =>
   lines
     .map((l) => `${l.variantId}:${l.quantity}`)
     .sort()
@@ -17,9 +17,6 @@ const bagKey = (lines: BagLine[]): string =>
 
 /** A bag's charges with the bag they answer (bagKey): an earlier bag's answer never decides the goal (bag-goal.ts). */
 export type KeyedCharges = BagCharges & { bagKey: string };
-
-// Which options are 7-day, from every answer so far (an answer names its bag's 7-day options; the others are not)
-const quickKnown = new Map<string, boolean>();
 
 /** D-111: the bag's small-order charges, worked out by the database (one query per bag, kept while the next loads). */
 export function useBagCharges(): KeyedCharges | null {
@@ -30,20 +27,15 @@ export function useBagCharges(): KeyedCharges | null {
       ? getBagCharges(
           supabase,
           lines.map((l) => ({ variantId: l.variantId, quantity: l.quantity })),
-        ).then((charges): KeyedCharges => {
-          const quick = new Set(parseBagShipments(charges)?.quickIds ?? []);
-          for (const l of lines) quickKnown.set(l.variantId, quick.has(l.variantId));
-          return { ...charges, bagKey: key };
-        })
+        ).then((charges): KeyedCharges => ({ ...charges, bagKey: key }))
       : Promise.resolve(null),
   );
   return key ? (data ?? null) : null;
 }
 
 /**
- * Where the bag stands against the free-delivery line (D-111) and, from it up, on the bulk saving (D-119). Founder
- * 2026-10-30: the goal is the bag as it is now: while the next answer loads, which pieces are 7-day comes from each
- * line's add and earlier answers, never from the last bag's answer.
+ * Where the bag stands against the free-delivery line (D-111) and on the bulk saving (D-119, its own line, D-187). Founder
+ * 2026-10-30: the goal is the bag as it is now, also while the next answer loads.
  */
 export function freeDelivery(lines: BagLine[], charges: KeyedCharges | null) {
   const subtotal = bagSubtotalCents(lines);
@@ -54,31 +46,17 @@ export function freeDelivery(lines: BagLine[], charges: KeyedCharges | null) {
       ? { pct: charges.bulk_saving_pct, capCents: charges.bulk_saving_cap_cents }
       : null;
   const small = charges ? smallOrderOf(charges) : null;
-  const facts = charges ? parseBagShipments(charges) : null;
-  const fresh = charges !== null && charges.bagKey === bagKey(lines);
-  const progress = bulkProgress(subtotal, line, bulk);
-  const goal = bagGoal({
-    subtotalCents: subtotal,
-    freeMinCents: line,
-    at: bagChargesAt(subtotal, line, small),
-    bulk: progress,
-    facts: fresh ? facts : null,
-    variantIds: lines.map((l) => l.variantId),
-    known: {
-      quickIds: lines.filter((l) => quickKnown.get(l.variantId) ?? l.quick === true).map((l) => l.variantId),
-      quickMinCents: facts?.minCents ?? null,
-      quickTo: facts?.dates.quickTo ?? null,
-    },
-  });
-  // an earlier bag's answer: free 7-day Shipping follows this bag's goal, not that answer
-  const at = bagChargesAt(subtotal, line, small && !fresh ? { ...small, quickFree: goal.kind === 'quick-free' } : small);
+  const bulkFrom = charges?.bulk_saving_from_cents ?? null;
+  const progress = bulkProgress(subtotal, bulkFrom, bulk);
+  const goal = bagGoal({ subtotalCents: subtotal, freeMinCents: line, bulk: progress });
+  const at = bagChargesAt(subtotal, line, small);
   return {
     free,
     line,
     /** D-125: the charges at this bag's goods (Shipping and the retailer charges, paid or struck through). */
     at,
-    /** Heavy-item shipping (founder 2026-10-24): paid, and its whole struck through once a line took its % off. */
-    heavy: heavyShippingAt(charges ? heavyOf(charges) : null, free || at.shippingFree),
+    /** Heavy-item shipping (founder 2026-10-24): paid, and its whole struck through once the saving's line took its % off. */
+    heavy: heavyShippingAt(charges ? heavyOf(charges) : null, bulkFrom !== null && subtotal >= bulkFrom),
     leftCents: line === null ? 0 : Math.max(line - subtotal, 0),
     share: line ? Math.min(subtotal / line, 1) : 1,
     bulk: progress,
@@ -133,18 +111,19 @@ export function ChargeRows(): React.JSX.Element | null {
   const charges = useBagCharges();
   if (!charges) return null;
   const { free, bulk, at, heavy, goal } = freeDelivery(lines, charges);
+  const every = `every ${formatUsd(bulk.perDollarCents ?? 0)} more saves $1 more, up to ${formatUsd(bulk.capCents)}`;
+  const bulkFrom = charges.bulk_saving_from_cents;
+  // the website's words (charge-lines.tsx)
   const words =
-    goal.kind === 'quick-gap'
-      ? `Add ${formatUsd(goal.leftCents)} more for free 7-day delivery`
-      : goal.kind === 'quick-free'
-        ? `Free 7-day delivery${goal.arrivesBy ? `: arrives by ${goal.arrivesBy}` : ' unlocked'}`
-        : goal.kind === 'free-gap'
-          ? `Add ${formatUsd(goal.leftCents)} more for free delivery`
-          : goal.kind === 'free' && bulk.capCents > 0
-            ? bulk.capped
-              ? `You've unlocked the biggest bulk saving: ${formatUsd(bulk.capCents)}`
-              : `Every ${formatUsd(bulk.perDollarCents ?? 0)} more saves $1 more, up to ${formatUsd(bulk.capCents)}`
-            : null;
+    goal.kind === 'free-gap'
+      ? `Add ${formatUsd(goal.leftCents)} more for free delivery`
+      : goal.kind === 'free' && bulk.capCents > 0
+        ? bulk.capped
+          ? `You've unlocked the biggest bulk saving: ${formatUsd(bulk.capCents)}`
+          : bulk.savingCents === 0 && bulkFrom !== null
+            ? `From ${formatUsd(bulkFrom)}, ${every}`
+            : `E${every.slice(1)}`
+        : null;
   return (
     <View className="gap-1">
       <ChargeRow

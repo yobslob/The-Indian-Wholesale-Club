@@ -1,4 +1,4 @@
-/* Open-state stamps (D-051, D-080): perforated stamp, photo, name, postmark with the next delivery window. */
+/* Open-state stamps (D-051, D-080): perforated stamp, photo, name, postmark. */
 .stamps {
   display: grid;
   grid-template-columns: repeat(3, minmax(0, 1fr));

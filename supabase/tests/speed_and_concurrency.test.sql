@@ -25,13 +25,13 @@ update public.product_variants set is_active = true where id = tests.id('v_live'
 
 -- 14 more live pieces in the test clothing category and 2 in another: the category has 15 (more than a row).
 insert into public.categories (product_type, slug, name) values ('clothing', 'test-second', 'Test second clothing');
-insert into public.products (slug, name, product_type, region_id, category_id, vendor_id, price_cents, status, published_at)
+insert into public.products (slug, name, product_type, region_id, category_id, price_cents, status, published_at)
 select 'test-many-' || lpad(n::text, 2, '0'), 'Test many ' || n, 'clothing', tests.id('region'), tests.id('cat_clothing'),
-       tests.id('vendor'), 5000, 'live', now() - n * interval '1 hour'
+       5000, 'live', now() - n * interval '1 hour'
 from generate_series(1, 14) n;
-insert into public.products (slug, name, product_type, region_id, category_id, vendor_id, price_cents, status, published_at)
+insert into public.products (slug, name, product_type, region_id, category_id, price_cents, status, published_at)
 select 'test-second-' || n, 'Test second ' || n, 'clothing', tests.id('region'),
-       (select id from public.categories where slug = 'test-second'), tests.id('vendor'), 3000, 'live',
+       (select id from public.categories where slug = 'test-second'), 3000, 'live',
        now() - interval '30 days' - n * interval '1 hour'
 from generate_series(1, 2) n;
 
@@ -103,9 +103,9 @@ select tests.assert((public.store_browse('nonsense') ->> 'total')::int = 0, 'an 
 -- Search: 120 more pieces in another state, so a broad search finds more than 100.
 reset role;
 insert into public.regions (slug, name) values ('test-bulk-region', 'Test bulk region');
-insert into public.products (slug, name, product_type, region_id, category_id, vendor_id, price_cents, status)
+insert into public.products (slug, name, product_type, region_id, category_id, price_cents, status)
 select 'test-bulk-' || n, 'Test bulk ' || n, 'clothing', (select id from public.regions where slug = 'test-bulk-region'),
-       tests.id('cat_clothing'), tests.id('vendor'), 1000, 'live'
+       tests.id('cat_clothing'), 1000, 'live'
 from generate_series(1, 120) n;
 set local role anon;
 select tests.assert((select count(*) from public.store_search('test bulk', 0, 200, false)) = 120,

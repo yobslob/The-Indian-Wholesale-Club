@@ -52,7 +52,7 @@ export function BagPanel({ open, onClose }: { open: boolean; onClose: (refocus: 
             <HeaderIcon name="close" />
           </button>
         </header>
-        <div className="flex-1 overflow-y-auto px-5" data-lenis-prevent>
+        <div className="flex-1 overflow-y-auto px-5">
           {lines.length > 0 ? (
             <>
               <BagLines compact />

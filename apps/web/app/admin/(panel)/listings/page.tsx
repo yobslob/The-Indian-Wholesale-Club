@@ -1,19 +1,11 @@
 import Link from 'next/link';
 import { cache } from 'react';
 
-import {
-  countProductsByStatus,
-  getPricingSettings,
-  listCategories,
-  listStaleVariants,
-  listVendors,
-} from '@repo/db/admin';
-import { pricingSettingsFrom } from '@repo/shared/domain';
+import { countProductsByStatus, getPricingSettings, listStaleVariants } from '@repo/db/admin';
+import { siteLabel } from '@repo/shared/sourcing';
 
 import { RowsLoading } from '@/features/admin/catalog/parts';
 import { requireAdminPage } from '@/features/admin/guard';
-import { AddMany } from '@/features/admin/listing/add-many';
-import { NewListing, type ListingFormData } from '@/features/admin/listing/new-listing';
 import { listingTabs } from '@/features/admin/listing-tabs';
 import { Pager } from '@/features/admin/pager/pager';
 import { plainParams } from '@/features/admin/pager/paging';
@@ -27,10 +19,8 @@ type SearchParams = Promise<Record<string, string | string[] | undefined>>;
 type Paging = { page: number; size: number; offset: number; params: Record<string, string> };
 
 /**
- * Listings (D-096, flows.md §2): a new listing in one step (photos, options, live price, Save draft / Publish), Add
- * many (a batch of photos becomes drafts), and the quantities to re-check with the shops. Drafts, Live and Paused are
- * the catalog's views of the same products. The form shows as soon as its choices are read; the tabs' counts and the
- * re-check list (in pages, D-140) load in their own sections.
+ * Re-check (D-096): the quantities to re-check with the shops. Listings come from the importer and the runner (D-187,
+ * Y-4). The tabs' counts and the list (in pages, D-140) load in their own sections.
  */
 export default async function ListingsPage({
   searchParams,
@@ -39,49 +29,22 @@ export default async function ListingsPage({
 }): Promise<React.JSX.Element> {
   const { client } = await requireAdminPage();
   const params = await searchParams;
-  const view = plainParams(params).view;
-  const current = view === 'many' || view === 'recheck' ? view : 'new';
-  const [vendors, categories, settings] = await Promise.all([
-    listVendors(client, { status: 'active' }),
-    listCategories(client),
-    getPricingSettings(client),
-  ]);
-  const staleDays = settings.stale_listing_days;
-  const data: ListingFormData = {
-    vendors: vendors.map((v) => ({
-      id: v.id,
-      shop_name: v.shop_name,
-      town: v.town,
-      region: v.region,
-    })),
-    categories: categories.map((c) => ({
-      id: c.id,
-      product_type: c.product_type,
-      name: c.name,
-      is_active: c.is_active,
-      default_weight_g: c.default_weight_g,
-    })),
-    pricing: pricingSettingsFrom(settings as unknown as Record<string, unknown>),
-  };
+  const staleDays = (await getPricingSettings(client)).stale_listing_days;
 
   // without their counts while they load, and if the counts fail (the tabs never go missing)
-  const plainTabs = <Tabs items={listingTabs()} current={current} />;
+  const plainTabs = <Tabs items={listingTabs()} current="recheck" />;
   return (
     <>
-      <PageHead title="Listings" />
+      <PageHead title="Products" />
       <Section fallback={plainTabs} failed={plainTabs}>
-        <ListingTabs current={current} staleDays={staleDays} />
+        <ListingTabs staleDays={staleDays} />
       </Section>
-      {current === 'new' ? <NewListing data={data} /> : null}
-      {current === 'many' ? <AddMany data={data} /> : null}
-      {current === 'recheck' ? (
-        <Section fallback={<RowsLoading />}>
-          <Recheck
-            staleDays={staleDays}
-            paging={{ ...(await readPaging('recheck', params)), params: plainParams(params) }}
-          />
-        </Section>
-      ) : null}
+      <Section fallback={<RowsLoading />}>
+        <Recheck
+          staleDays={staleDays}
+          paging={{ ...(await readPaging('recheck', params)), params: plainParams(params) }}
+        />
+      </Section>
     </>
   );
 }
@@ -89,13 +52,7 @@ export default async function ListingsPage({
 /** Once per request: the Re-check tab's count and its list share one read. */
 const staleVariants = cache((client: IwcClient) => listStaleVariants(client));
 
-async function ListingTabs({
-  current,
-  staleDays,
-}: {
-  current: string;
-  staleDays: number | null;
-}): Promise<React.JSX.Element> {
+async function ListingTabs({ staleDays }: { staleDays: number | null }): Promise<React.JSX.Element> {
   const { client } = await requireAdminPage();
   const [counts, stale] = await Promise.all([
     countProductsByStatus(client),
@@ -104,7 +61,7 @@ async function ListingTabs({
   return (
     <Tabs
       items={listingTabs({ ...counts, recheck: stale ? stale.length : null })}
-      current={current}
+      current="recheck"
     />
   );
 }
@@ -160,7 +117,7 @@ async function Recheck({
                   </Link>
                 </Cell>
                 <Cell>{v.label}</Cell>
-                <Cell>{v.shop_name}</Cell>
+                <Cell>{v.site ? siteLabel(v.site) : ''}</Cell>
                 <Cell className="text-right">{v.qty_listed}</Cell>
                 <Cell>{v.qty_confirmed_at ? <When iso={v.qty_confirmed_at} /> : 'never'}</Cell>
               </tr>

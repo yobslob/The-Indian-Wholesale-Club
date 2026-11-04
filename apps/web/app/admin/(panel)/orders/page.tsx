@@ -24,18 +24,16 @@ export default async function AdminOrdersPage({ searchParams }: { searchParams: 
   const { client, desk } = await requireAdminPage();
   const params = plainParams(await searchParams);
   const status = CHIPS.concat('refunded').find((s) => s === params.status);
-  const expressToSend = params.express === '1';
   const q = (params.q ?? '').slice(0, 80);
   const { page, size, offset } = await readPaging('orders', params);
   const [{ orders, total }, counts] = await Promise.all([
-    listAdminOrders(client, { status, expressToSend, search: q, limit: size, offset }),
+    listAdminOrders(client, { status, search: q, limit: size, offset }),
     countOrdersByStatus(client),
   ]);
 
-  const href = (p: { status?: string; express?: boolean }): string => {
+  const href = (p: { status?: string }): string => {
     const sp = new URLSearchParams();
     if (p.status) sp.set('status', p.status);
-    if (p.express) sp.set('express', '1');
     if (q) sp.set('q', q);
     if (params.size) sp.set('size', params.size);
     const s = sp.toString();
@@ -55,10 +53,8 @@ export default async function AdminOrdersPage({ searchParams }: { searchParams: 
       total: formatUsd(o.total_cents),
       window: dateRange(o.est_delivery_from, o.est_delivery_to),
       // D-154: an order of two shipments is shipped one shipment at a time, from its page
-      canShip:
-        o.shipments.filter((sh) => sh.status === 'open').length <= 1 &&
-        (o.status === 'arrived' || (o.shipping_method === 'express' && !o.cycle_id && ['confirmed', 'collecting'].includes(o.status))),
-      quick: o.shipments.some((sh) => sh.kind === 'quick' && sh.status !== 'cancelled'),
+      canShip: o.shipments.filter((sh) => sh.status === 'open').length <= 1 && o.status === 'arrived',
+      food: o.shipments.some((sh) => sh.kind === 'food' && sh.status !== 'cancelled'),
     };
   });
   const [own, other] = deskOrder(desk).map((d) => ZONES[d].place);
@@ -72,7 +68,6 @@ export default async function AdminOrdersPage({ searchParams }: { searchParams: 
           <form action="/admin/orders" className="flex gap-2" role="search">
             {status ? <input type="hidden" name="status" value={status} /> : null}
             {params.size ? <input type="hidden" name="size" value={params.size} /> : null}
-            {expressToSend ? <input type="hidden" name="express" value="1" /> : null}
             <input name="q" defaultValue={q} aria-label="Search orders" placeholder="Number, name or email" className={`${input} w-[min(340px,70vw)]`} />
             <button type="submit" className={secondaryButton}>
               Search
@@ -82,15 +77,14 @@ export default async function AdminOrdersPage({ searchParams }: { searchParams: 
       />
       <FilterChips
         items={[
-          { href: href({}), label: 'All', count: counts.all, on: !status && !expressToSend },
+          { href: href({}), label: 'All', count: counts.all, on: !status },
           ...CHIPS.map((s) => ({ href: href({ status: s }), label: ORDER_STATUS[s][0], count: counts.byStatus[s] ?? 0, on: s === status })),
-          { href: href({ express: true }), label: 'Express to send', count: counts.expressToSend, on: expressToSend },
         ]}
       />
       {q ? (
         <p className="text-ink-muted mb-3 text-[14px]">
           {total} found for “{q}” ·{' '}
-          <Link href={href({ status, express: expressToSend })} className="text-ink underline">
+          <Link href={href({ status })} className="text-ink underline">
             Clear the search
           </Link>
         </p>

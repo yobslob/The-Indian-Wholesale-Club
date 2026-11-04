@@ -30,18 +30,17 @@ const valid = {
 
 describe('app checkout request (flows.md §3)', () => {
   it('sends only variant ids and quantities, never prices', () => {
-    const result = toCheckoutRequest(valid, [line], 'standard');
+    const result = toCheckoutRequest(valid, [line]);
     assert.ok('body' in result);
     assert.deepEqual(result.body.lines, [{ variantId: line.variantId, quantity: 2 }]);
     assert.equal(JSON.stringify(result.body).includes('12900'), false);
   });
 
   it('normalises email and state the way the server does', () => {
-    const result = toCheckoutRequest(valid, [line], 'express');
+    const result = toCheckoutRequest(valid, [line]);
     assert.ok('body' in result);
     assert.equal(result.body.email, 'priya@example.com');
     assert.equal(result.body.address.state, 'NJ');
-    assert.equal(result.body.shippingMethod, 'express');
     assert.equal(result.body.address.line2, null);
     assert.equal(result.body.promoCode, null);
   });
@@ -53,11 +52,11 @@ describe('app checkout request (flows.md §3)', () => {
   });
 
   it('stops with a readable message before calling the server', () => {
-    const noEmail = toCheckoutRequest({ ...valid, email: 'not-an-email' }, [line], 'standard');
+    const noEmail = toCheckoutRequest({ ...valid, email: 'not-an-email' }, [line]);
     assert.deepEqual(noEmail, { error: 'Enter a valid email address' });
-    const badZip = toCheckoutRequest({ ...valid, zipCode: '123' }, [line], 'standard');
+    const badZip = toCheckoutRequest({ ...valid, zipCode: '123' }, [line]);
     assert.ok('error' in badZip && /ZIP/.test(badZip.error));
-    const badState = toCheckoutRequest({ ...valid, state: 'Narnia' }, [line], 'standard');
+    const badState = toCheckoutRequest({ ...valid, state: 'Narnia' }, [line]);
     assert.deepEqual(badState, { error: 'Choose a US state' });
   });
 });

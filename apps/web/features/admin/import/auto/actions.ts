@@ -168,7 +168,7 @@ export async function checkSoonAction(productId: string): Promise<void> {
 }
 
 /**
- * Publishes every found draft that has a photo and every detail customers must see (food: once cleared, D-074); the
+ * Publishes every found draft that has a photo and every detail customers must see; the
  * database holds one with an option that has no weight (D-129), listed under Products → Weights to check.
  */
 export async function publishReadyAction(): Promise<void> {
@@ -180,7 +180,7 @@ export async function publishReadyAction(): Promise<void> {
       (PRODUCT_TYPES as readonly string[]).includes(d.product_type) &&
       attributesSchemaFor(d.product_type).safeParse(d.attributes).success,
   );
-  // one at a time, so a food listing refused before food is cleared doesn't stop the others
+  // one at a time, so one refused listing doesn't stop the others
   for (const d of ready) await publishProducts(client, [d.id]).catch(() => undefined);
   await refreshListings(
     client,

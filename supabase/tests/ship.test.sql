@@ -1,16 +1,14 @@
--- US pack & ship (migration 16; flows.md §6.4, D-066): only arrived orders ship, only shipped orders are delivered.
+-- Shipping (migration 16, D-115, D-187): a piece still to be bought holds its order back; only shipped orders are delivered.
 begin;
 select tests.setup();
 
 set local role authenticated;
 select tests.act_as(tests.id('admin'));
 select tests.assert_fails(format('select public.ship_order(%L, %L, %L)', tests.id('order_a'), 'USPS', '9400100000000000000000'),
-  'order_not_arrived', 'an order still in India cannot ship');
+  'pieces_not_picked', 'an order whose pieces are not at the hub cannot ship');
+select public.mark_pickup((select p.id from public.pickups p join public.order_items oi on oi.id = p.order_item_id
+                           where oi.order_id = tests.id('order_a')), 'picked');
 
-select public.cutoff_cycle(tests.id('cycle'));
-select public.advance_cycle(tests.id('cycle'));   -- packed
-select public.advance_cycle(tests.id('cycle'));   -- exported
-select public.advance_cycle(tests.id('cycle'));   -- arrived
 
 select tests.assert_fails(format('select public.deliver_order(%L)', tests.id('order_a')), 'order_not_shipped',
   'an order is shipped before it is delivered');

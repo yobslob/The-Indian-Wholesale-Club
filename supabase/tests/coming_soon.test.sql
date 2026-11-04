@@ -1,18 +1,17 @@
--- Coming soon (migration 20261016200000, D-135): the worker's liquid check archives a liquid listing and shows it to
--- customers as coming soon: its card and page, no price to buy, no quick add, no variants, its photos; a checked
--- listing is not checked again; putting it back on sale ends its coming soon; clothing is never checked.
+-- Coming soon (migration 20261016200000, D-135, D-187 Y-9): the worker's liquid check archives a liquid listing as
+-- coming soon: the admin has it, customers do not see it until it is on sale; a checked listing is not checked again;
+-- putting it back on sale ends its coming soon; clothing is never checked.
 begin;
 select tests.setup();
 select tests.create_user('worker', 'worker@example.test');
 update public.profiles set role = 'worker' where id = tests.id('worker');
-update public.pricing_settings set food_cleared = true, beta_pricing = true where id = 1;
 
-insert into public.products (slug, name, product_type, region_id, category_id, vendor_id, price_cents, status,
+insert into public.products (slug, name, product_type, region_id, category_id, price_cents, status,
                              price_auto, shop_price_paise, published_at)
-values ('cs-juice', 'Sea buckthorn juice', 'food', tests.id('region'), tests.id('cat_food'), tests.id('vendor'), 900,
+values ('cs-juice', 'Sea buckthorn juice', 'food', tests.id('region'), tests.id('cat_food'), 900,
         'draft', true, 20000, now()),
        ('cs-pickle', 'Mango pickle in mustard oil', 'food', tests.id('region'), tests.id('cat_food'),
-        tests.id('vendor'), 900, 'draft', true, 20000, now());
+        900, 'draft', true, 20000, now());
 select tests.remember('juice', (select id from public.products where slug = 'cs-juice'));
 select tests.remember('pickle', (select id from public.products where slug = 'cs-pickle'));
 insert into public.product_variants (product_id, sku, label, options, qty_listed, weight_g, weight_source)
@@ -46,25 +45,25 @@ select tests.assert((select status = 'archived' and coming_soon and coming_soon_
                     and (select status = 'live' and not coming_soon from public.products where id = tests.id('pickle')),
   'the juice is archived as coming soon, the pickle stays live');
 
--- Customers see it as coming soon and cannot buy it.
+-- Customers do not see it at all (D-187, Y-9): not fetched and then hidden, simply not there.
 set local role anon;
-select tests.assert((select coming_soon from public.store_products where id = tests.id('juice'))
-                    and (select not coming_soon from public.store_products where id = tests.id('pickle')),
-  'the store lists it, marked coming soon');
+select tests.assert(not exists (select 1 from public.store_products where id = tests.id('juice'))
+                    and exists (select 1 from public.store_products where id = tests.id('pickle')),
+  'the store does not list it');
 select tests.assert(not exists (select 1 from public.store_variants where product_id = tests.id('juice')),
   'it has nothing to buy');
-select tests.assert(exists (select 1 from public.store_media where product_id = tests.id('juice')),
-  'its photos show');
-select tests.assert((select (p -> 'product' ->> 'coming_soon')::boolean and jsonb_array_length(p -> 'variants') = 0
-                       from (select public.store_product_page('test-region', 'cs-juice') p) x),
-  'its page says coming soon, with no options');
-select tests.assert(exists (select 1 from jsonb_array_elements(public.store_browse('food') -> 'products') b
-                             where b ->> 'slug' = 'cs-juice' and (b ->> 'coming_soon')::boolean),
-  'See all lists it as coming soon');
+select tests.assert(not exists (select 1 from public.store_media where product_id = tests.id('juice')),
+  'its photos do not show');
+select tests.assert(public.store_product_page('test-region', 'cs-juice') is null, 'its page answers nothing (a 404)');
+select tests.assert(not exists (select 1 from jsonb_array_elements(public.store_browse('food') -> 'products') b
+                                 where b ->> 'slug' = 'cs-juice'),
+  'See all does not list it');
+select tests.assert(not exists (select 1 from jsonb_array_elements(public.store_search_page('buckthorn', p_record => false) -> 'products') b
+                                 where b ->> 'slug' = 'cs-juice'),
+  'nor does search');
 reset role;
-select tests.assert((select (c ->> 'coming_soon')::boolean and c -> 'quick_add' = 'null'::jsonb
-                       from (select public._store_product_card(tests.id('juice')) c) x),
-  'its card says coming soon, no quick add');
+select tests.assert(public._store_product_card(tests.id('juice')) is null, 'there is no card for it');
+select tests.assert((select coming_soon from public.products where id = tests.id('juice')), 'the admin still has it');
 
 -- Put back on sale by an admin: no longer coming soon, and the check leaves it alone.
 update public.products set status = 'live' where id = tests.id('juice');

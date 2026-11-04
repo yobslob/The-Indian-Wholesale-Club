@@ -1,7 +1,7 @@
 import Link from 'next/link';
 
 import { CartLink } from '@/features/cart/cart-link';
-import { isInfoPath, QUICK_HOME } from '@/lib/site';
+import { isInfoPath } from '@/lib/site';
 
 import { HeaderIcon } from './header-icons';
 import { IntentLink } from './intent-link';
@@ -10,9 +10,6 @@ import { NavLink } from './nav-link';
 import { PhoneSearch } from './phone-search';
 import { SearchPill } from './search-pill';
 import { SiteMenu } from './site-menu';
-import { StoreLinks } from './store-links';
-
-import type { QuickNav } from '@/features/catalog/data';
 
 const MORE = [
   { href: '/orders/lookup', label: 'Track an order' },
@@ -26,14 +23,12 @@ const MORE = [
  * Store header (D-079, D-113, D-140): Search (a pill that grows into a bar on scroll) · Clothing (Women · Men on hover
  * or focus) · Food · Home & gifts · States, then Saved, Bag and Profile as icons (About us lives in the menu and the
  * footer); below 1024 px the types move into the menu, which phones and tablets open from the menu button; on phones the
- * logo, the icons and a menu button that opens a side panel over the page. D-154: while 7-day delivery is on, the store
- * tabs sit above it (store-switch.tsx, drawn by the store layout), and inside the 7-day store the type links become its
- * categories and Search finds only 7-day pieces. Server-rendered with
+ * logo, the icons and a menu button that opens a side panel over the page. Server-rendered with
  * no session reads, so pages stay static (PR-1); the bag count, the search pill, the menu and the current-section mark are the only client
  * islands. Its links read their page ahead on intent, never on sight (intent-link.tsx, launch QA C-6). Its look
  * on Home (on the photo, logo fading in on scroll) is CSS in app/globals.css. No admin link anywhere (D-006).
  */
-export function SiteHeader({ quick = null }: { quick?: QuickNav }): React.JSX.Element {
+export function SiteHeader(): React.JSX.Element {
   return (
     <header className="site-header">
       <a
@@ -48,23 +43,6 @@ export function SiteHeader({ quick = null }: { quick?: QuickNav }): React.JSX.El
         </IntentLink>
         <nav aria-label="Main" className="site-links">
           <SearchPill />
-          <StoreLinks
-            quick={
-              <>
-                <span className="site-type">
-                  <NavLink href={QUICK_HOME} exact>
-                    All
-                  </NavLink>
-                </span>
-                {/* the names are long ("Rice, Flours & Staples"): two fit beside the logo below 1280 px, four above */}
-                {quick?.categories.map((c, i) => (
-                  <span key={c.slug} className={`site-type whitespace-nowrap ${i > 1 ? 'max-xl:hidden' : ''}`}>
-                    <NavLink href={c.href}>{c.name}</NavLink>
-                  </span>
-                ))}
-              </>
-            }
-          >
           {/* D-140 (S1): shopping by type from every page; no Kids at launch */}
           <div className="site-drop site-type">
             <NavLink href="/clothing">Clothing</NavLink>
@@ -81,7 +59,6 @@ export function SiteHeader({ quick = null }: { quick?: QuickNav }): React.JSX.El
             <NavLink href="/home-and-gifts">Home &amp; gifts</NavLink>
           </span>
           <NavLink href="/states">States</NavLink>
-          </StoreLinks>
         </nav>
         <div className="site-icons">
           {/* Phones: Search takes Saved's place (Saved is in the menu there, D-116). */}

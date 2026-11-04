@@ -8,9 +8,10 @@ select tests.assert(
   'order numbers are IWC-YYMMDD-<10 hex> (40 bits, not enumerable)');
 
 select tests.assert(
-  (select est_delivery_from = current_date + 23 and est_delivery_to = current_date + 27
+  (select est_delivery_from = public._add_business_days(current_date, 12)
+          and est_delivery_to = public._add_business_days(current_date, 16)
    from public.orders where id = tests.id('order_a')),
-  'the window = cycle arrival (+20 days) + domestic days (3..7)');
+  'the window = today + the delivery days (12..16), in business days');
 
 select tests.assert_fails(
   format('update public.orders set est_delivery_to = est_delivery_to + 10 where id = %L', tests.id('order_a')),
@@ -36,17 +37,12 @@ select tests.assert(
   'the internal note is not shown to the customer');
 reset role;
 
-update public.pricing_settings set domestic_days_min = null where id = 1;
+update public.pricing_settings set delivery_days_min = null where id = 1;
 select tests.assert_fails(
   format($q$select public.create_order(jsonb_build_object(
     'email', 'x@example.test', 'shipping_address', '{"line1": "x"}'::jsonb,
     'items', jsonb_build_array(jsonb_build_object('variant_id', %L::uuid, 'quantity', 1, 'unit_price_cents', 5000)),
     'subtotal_cents', 5000, 'total_cents', 5000))$q$, tests.id('v_live')),
   'delivery_window_unconfigured', 'no order without a configured delivery window (never invented)');
-
-update public.cycles set status = 'collecting' where id = tests.id('cycle');
-select tests.assert_fails(
-  $q$select public.create_order('{"items": [{}]}'::jsonb)$q$,
-  'no_open_cycle', 'no order without an open cycle');
 
 rollback;

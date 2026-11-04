@@ -9,7 +9,7 @@
     "build:ios": "eas build --platform ios",
     "lint": "eslint . --ext .ts,.tsx --max-warnings 0",
     "typecheck": "tsc --noEmit",
-    "test": "tsx --test tests/checkout-request.test.ts tests/cart.test.ts tests/local-host.test.ts tests/seven-day.test.ts"
+    "test": "tsx --test tests/checkout-request.test.ts tests/cart.test.ts tests/local-host.test.ts tests/delivery-days.test.ts tests/checkout-stock.test.ts"
   },
   "dependencies": {
     "@expo-google-fonts/cinzel": "^0.4.2",
@@ -35,7 +35,6 @@
     "expo-secure-store": "~14.0.0",
     "expo-splash-screen": "~0.29.0",
     "expo-status-bar": "~2.0.0",
-    "jpeg-js": "0.4.4",
     "nativewind": "^4.1.0",
     "query-string": "^7.1.3",
     "react": "^18.3.0",

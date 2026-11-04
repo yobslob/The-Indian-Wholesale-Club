@@ -13,9 +13,9 @@ import type { CheckoutQuote } from '@repo/shared/domain';
 import { Body, Button, ErrorText, Screen } from '@/components/ui';
 import { bagCount, bagSubtotalCents, useBag } from '@/features/cart/store';
 import { BagSummary } from '@/features/checkout/bag-summary';
-import { ShippingOptions } from '@/features/checkout/quote-summary';
 import { EMPTY_DETAILS, toCheckoutRequest } from '@/features/checkout/request';
 import { DeliveryStep, PhoneStep, Step } from '@/features/checkout/steps';
+import { StockProblems } from '@/features/checkout/stock-problems';
 import { useCheckout } from '@/features/checkout/use-checkout';
 import { DemoBanner } from '@/features/shell/demo-banner';
 import { useSession } from '@/lib/session';
@@ -28,7 +28,8 @@ const deliveryLine = (d: Details): string => `${d.fullName} · ${d.line1}${d.lin
  * Checkout (D-087, D-095): 1. phone → 2. delivery → 3. payment on one screen, each opening when the one before is
  * done and folding to a line with Edit; the bag bar at the top opens the bag. Continue to payment prices the bag on
  * the server and readies Stripe's PaymentSheet (native) for that exact total; Pay presents it. The thank-you screen
- * shows the pieces, the total and the delivery window.
+ * shows the pieces, the total and the delivery window. §10 Y-3: a line that cannot go ahead as it is shows at the top
+ * from the moment checkout opens; there is nothing to pay until it is removed or lowered, and that re-prices at once.
  */
 export default function CheckoutScreen(): React.JSX.Element {
   const router = useRouter();
@@ -63,6 +64,23 @@ export default function CheckoutScreen(): React.JSX.Element {
       active = false;
     };
   }, [session]);
+
+  async function continueToPayment(): Promise<void> {
+    setFormError(null);
+    const result = toCheckoutRequest({ ...details, phone: phone ? formatUsPhone(phone) : '' }, lines);
+    if ('error' in result) return setFormError(result.error);
+    await checkout.start(result.body);
+    setAt(3);
+  }
+
+  // When checkout opens and each time the bag changes: the stock again, or from the payment step a new price.
+  const bagKey = lines.map((l) => `${l.variantId}:${l.quantity}`).join(',');
+  useEffect(() => {
+    if (!bagKey || done) return;
+    if (at === 3) void continueToPayment();
+    else void checkout.checkStock(lines.map((l) => ({ variantId: l.variantId, quantity: l.quantity })));
+    // Only the bag decides: the payment step's own moves price it themselves.
+  }, [bagKey]);
 
   if (done) {
     const { outcome } = done;
@@ -99,14 +117,6 @@ export default function CheckoutScreen(): React.JSX.Element {
     );
   }
 
-  async function continueToPayment(): Promise<void> {
-    setFormError(null);
-    const result = toCheckoutRequest({ ...details, phone: phone ? formatUsPhone(phone) : '' }, lines, checkout.request?.shippingMethod ?? 'standard');
-    if ('error' in result) return setFormError(result.error);
-    await checkout.start(result.body);
-    setAt(3);
-  }
-
   async function pay(): Promise<void> {
     const snapshot = { lines, quote: checkout.started?.quote };
     const result = await checkout.pay();
@@ -123,7 +133,7 @@ export default function CheckoutScreen(): React.JSX.Element {
   const stateOf = (n: 1 | 2 | 3): 'open' | 'done' | 'later' => (n === at ? 'open' : n < at ? 'done' : 'later');
   const quote = checkout.started?.quote ?? null;
   const total = quote ? quote.breakdown.totalCents : bagSubtotalCents(lines);
-  const { started, request } = checkout;
+  const { started, stock } = checkout;
 
   return (
     <Screen title="Checkout">
@@ -140,6 +150,7 @@ export default function CheckoutScreen(): React.JSX.Element {
         <Text className="text-ink text-base">{bagOpen ? '⌃' : '⌄'}</Text>
       </Pressable>
       {bagOpen ? <BagSummary title="Your bag" lines={lines} quote={quote} /> : null}
+      <StockProblems problems={stock} />
       <View className="border-line border-b">
         <Step n={1} title="Phone" state={stateOf(1)} summary={phone ? formatUsPhone(phone) : ''} onEdit={edit(1)}>
           <PhoneStep
@@ -154,9 +165,10 @@ export default function CheckoutScreen(): React.JSX.Element {
           <DeliveryStep value={details} onChange={setDetails} busy={checkout.busy} error={formError ?? checkout.error} onDone={() => void continueToPayment()} />
         </Step>
         <Step n={3} title="Payment" state={stateOf(3)}>
-          {started && request ? (
+          {stock.length > 0 ? (
+            <Body muted>Remove or lower the pieces above to pay.</Body>
+          ) : started ? (
             <>
-              <ShippingOptions quote={started.quote} disabled={checkout.busy} onChange={(method) => void checkout.start({ ...request, shippingMethod: method })} />
               <BagSummary title="Your bag" lines={lines} quote={started.quote} />
               {checkout.error ? <ErrorText>{checkout.error}</ErrorText> : null}
               <Button label={`Pay ${formatUsd(started.quote.breakdown.totalCents)}`} onPress={() => void pay()} disabled={checkout.busy} />

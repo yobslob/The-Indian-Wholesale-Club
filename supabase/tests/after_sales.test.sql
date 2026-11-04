@@ -33,7 +33,6 @@ select tests.assert((select qty_reserved from public.product_variants where id =
 
 -- 2. Collecting, the piece already picked: still in India, so the customer may cancel, minus the cancel fee; the
 --    collected piece becomes a US clearance draft at the clearance discount.
-select public.cutoff_cycle(tests.id('cycle'));
 select public.mark_pickup((select p.id from public.pickups p join public.order_items oi on oi.id = p.order_item_id
                            where oi.order_id = tests.id('order_b')), 'picked');
 select tests.assert((public._order_actions(tests.id('order_b')) ->> 'cancel_refund_cents')::int = 6000 - 300,
@@ -48,7 +47,7 @@ select tests.assert(
   'one piece, the same variant');
 reset role;
 
--- 3. A clearance piece in the US ships at once: an order of only US pieces skips the cycle.
+-- 3. A clearance piece in the US ships at once: an order of only US pieces is ready from the start.
 update public.products set status = 'live' where id = tests.id('clearance_b');
 select tests.assert(
   (select (pg -> 'ships_from_us' ->> 'est_delivery_from')::date = current_date + 3
@@ -63,43 +62,28 @@ select tests.assert(
 select tests.remember('order_us', pg_temp.buy('pi_us', (select id from public.product_variants
                                                          where product_id = tests.id('clearance_b')), 4199));
 select tests.assert(
-  (select status = 'arrived' and cycle_id is null and est_delivery_from = current_date + 3 and est_delivery_to = current_date + 7
+  (select status = 'arrived' and est_delivery_from = current_date + 3 and est_delivery_to = current_date + 7
    from public.orders where id = tests.id('order_us')),
   'ready to ship from the US at once, delivered in the US delivery days');
 select tests.assert(not exists (select 1 from public.pickups p join public.order_items oi on oi.id = p.order_item_id
                                 where oi.order_id = tests.id('order_us')), 'no pickup in India for it');
 
--- Checkout says so before payment (migration 28), and express (the courier from Mumbai) is never offered for it.
-update public.pricing_settings set express_base_cents = 1500, express_courier_cents_per_kg = 2200, express_min_kg = 1,
-  express_days_min = 15, express_days_max = 18 where id = 1;
+-- Checkout says so before payment (migration 28).
 select tests.remember('v_us', (select id from public.product_variants where product_id = tests.id('clearance_b')));
 update public.product_variants set qty_listed = qty_listed + 1 where id = tests.id('v_us');
 select tests.assert(
   (select c -> 'us_delivery' = jsonb_build_object('est_delivery_from', current_date + 3, 'est_delivery_to', current_date + 7)
-          and c -> 'express' = 'null'::jsonb
    from public.checkout_context(array[tests.id('v_us')]) c),
-  'a bag of only US pieces gets the US window at checkout, and no express');
+  'a bag of only US pieces gets the US window at checkout');
 select tests.assert(
-  (select c -> 'us_delivery' = 'null'::jsonb and c -> 'express' = 'null'::jsonb
+  (select c -> 'us_delivery' = 'null'::jsonb
    from public.checkout_context(array[tests.id('v_us'), tests.id('v_x')]) c),
-  'mixed with a piece from India: the cycle''s window, still no express');
-select tests.assert(
-  (select c -> 'us_delivery' = 'null'::jsonb and c -> 'express' <> 'null'::jsonb
-   from public.checkout_context(array[tests.id('v_x')]) c),
-  'a bag from India keeps express');
-select tests.assert_fails(format($q$select public.create_order(jsonb_build_object(
-    'email', 'cust.a@example.test', 'user_id', %L, 'shipping_method', 'express',
-    'shipping_address', jsonb_build_object('fullName', 'Cust A', 'line1', '1 Main St', 'city', 'Austin', 'state', 'TX', 'zipCode', '73301'),
-    'items', jsonb_build_array(jsonb_build_object('variant_id', %L, 'quantity', 1, 'unit_price_cents', 4199)),
-    'subtotal_cents', 4199, 'total_cents', 4199, 'payment_intent_id', 'pi_us_express'))$q$, tests.id('cust_a'), tests.id('v_us')),
-  'express_unavailable', 'and the database refuses an express order with a US piece');
-
+  'mixed with a piece from India: the normal window');
 -- 4. After it left India: no customer cancel; customer care cancels with the 25% shipping deduction.
 select tests.remember('order_t', pg_temp.buy('pi_t', tests.id('v_x'), 5000));
 -- In transit means its piece was collected: picked, on its way.
-insert into public.pickups (order_item_id, cycle_id, vendor_id, variant_id, quantity, status, picked_at)
-select oi.id, null, tests.id('vendor'), oi.variant_id, oi.quantity, 'picked', now()
-from public.order_items oi where oi.order_id = tests.id('order_t');
+select public.mark_pickup((select p.id from public.pickups p join public.order_items oi on oi.id = p.order_item_id
+                           where oi.order_id = tests.id('order_t')), 'picked');
 update public.orders set status = 'in_transit' where id = tests.id('order_t');
 select set_config('request.jwt.claims', '{"role": "service_role"}', true);
 select tests.assert(not (public._order_actions(tests.id('order_t')) ->> 'can_cancel')::boolean,
@@ -167,7 +151,6 @@ select tests.assert(exists (select 1 from public.products where is_us_stock and 
   'the returned piece is a clearance draft');
 
 -- Food is final sale for a change of mind; a damage claim still works.
-update public.pricing_settings set food_cleared = true where id = 1;
 update public.products set product_type = 'food', category_id = tests.id('cat_food') where id = tests.id('p_live');
 select tests.remember('order_s', pg_temp.buy('pi_s', tests.id('v_x'), 5000));
 update public.orders set status = 'delivered' where id = tests.id('order_s');

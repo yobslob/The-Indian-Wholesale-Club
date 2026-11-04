@@ -1,12 +1,6 @@
 'use client';
 
-import Link from 'next/link';
 import { useEffect, useRef, useState } from 'react';
-
-import { festivalBanner, festivalClock } from '@repo/shared/domain';
-
-import { useDays, useToday } from '@/features/shell/days';
-import { QUICK_HOME } from '@/lib/site';
 
 /**
  * The flight's moving part (flight.tsx; founder 2026-10-30: "make it smaller the path to be straight … make the plane
@@ -101,26 +95,16 @@ function Drawing({ art, words, className }: { art: Art; words: string; className
 }
 
 export function FlightArt({
-  free,
-  festival,
+  free: words,
   compact = false,
 }: {
   /** "Free delivery from $49.99", from the store's policy; null hides it. */
   free: string | null;
-  /** Which days the festival's last order day counts from: the 7-day store's, or any store's (Home). */
-  festival: 'quick' | 'any';
   /** The narrow drawing only (flight.tsx). */
   compact?: boolean;
 }): React.JSX.Element | null {
-  const days = useDays();
-  const now = useToday();
   const box = useRef<HTMLDivElement>(null);
   const [on, setOn] = useState(false);
-
-  const banner = now ? festivalBanner(festivalClock(days.quick, days.standard, now), festival) : null;
-  const words = banner?.words ?? free;
-  // on Home a festival only the 7-day store can reach opens that store
-  const href = banner?.quickOnly ? QUICK_HOME : null;
 
   useEffect(() => {
     const el = box.current;
@@ -132,26 +116,19 @@ export function FlightArt({
   }, [words]);
 
   if (!words) return null;
-  const art = (
-    <div ref={box} className="flight" data-on={on ? '' : undefined}>
-      {compact ? (
-        <Drawing art={NARROW} words={words} className="" />
-      ) : (
-        <>
-          <Drawing art={NARROW} words={words} className="sm:hidden" />
-          <Drawing art={WIDE} words={words} className="hidden sm:block" />
-        </>
-      )}
-    </div>
-  );
-  return href ? (
-    <Link href={href} prefetch={false} className="block" aria-label={`${words}: open the 7-day store`}>
-      {art}
-    </Link>
-  ) : (
+  return (
     <>
       <p className="sr-only">{words}</p>
-      {art}
+      <div ref={box} className="flight" data-on={on ? '' : undefined}>
+        {compact ? (
+          <Drawing art={NARROW} words={words} className="" />
+        ) : (
+          <>
+            <Drawing art={NARROW} words={words} className="sm:hidden" />
+            <Drawing art={WIDE} words={words} className="hidden sm:block" />
+          </>
+        )}
+      </div>
     </>
   );
 }

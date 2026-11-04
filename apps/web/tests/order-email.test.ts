@@ -1,6 +1,8 @@
 import assert from 'node:assert/strict';
 import { describe, it } from 'node:test';
 
+import { orderShipmentSchema } from '@repo/db/store';
+
 import { adminNewOrderHtml, adminNewOrderSubject } from '../lib/email/admin-new-order';
 import {
   escapeHtml,
@@ -63,21 +65,20 @@ const order: OrderDetail = {
   ],
   events: [],
   shipments: [],
-  offer: null,
   actions: null,
 };
 
 describe('order confirmation email (storefront.md §Emails)', () => {
   const html = orderConfirmationHtml(order, ctx);
 
-  it('D-154: two shipments, each with its date and its pieces', () => {
+  it('D-154, D-187: two shipments, each with its date and its pieces, the first named as food', () => {
     const snack = { ...order.items[0]!, id: '00000000-0000-4000-8000-000000000003', product_name: 'Banana chips' };
     const two = orderConfirmationHtml(
       {
         ...order,
         items: [...order.items, snack],
         shipments: [
-          { seq: 1, kind: 'quick', status: 'open', est_delivery_from: '2026-10-30', est_delivery_to: '2026-10-30', shipping_cents: 300,
+          { seq: 1, kind: 'food', status: 'open', est_delivery_from: '2026-10-30', est_delivery_to: '2026-10-30', shipping_cents: 300,
             carrier: null, tracking_number: null, shipped_at: null, item_ids: [snack.id] },
           { seq: 2, kind: 'standard', status: 'open', est_delivery_from: '2026-11-03', est_delivery_to: '2026-11-07', shipping_cents: 600,
             carrier: null, tracking_number: null, shipped_at: null, item_ids: [order.items[0]!.id] },
@@ -85,7 +86,7 @@ describe('order confirmation email (storefront.md §Emails)', () => {
       },
       ctx,
     );
-    assert.match(two, /Shipment 1<\/strong> · Arrives by Fri, Oct 30/);
+    assert.match(two, /Shipment 1 \(food\)<\/strong> · Arrives by Fri, Oct 30/);
     assert.match(two, /Shipment 2<\/strong> · Arrives Nov 3 – Nov 7/);
     assert.ok(two.indexOf('Banana chips') < two.indexOf('Shipment 2'));
     assert.doesNotMatch(two, /Estimated delivery/);
@@ -135,5 +136,32 @@ describe("the admins' new-order email (D-140, A1)", () => {
     assert.match(html, /going to Edison, NJ/);
     assert.match(html, /Kasavu mundu/);
     assert.ok(html.includes('https://iwc.example/admin/orders?q=IWC-260928-ABCDEF0123'));
+  });
+});
+
+describe('old orders still draw (D-187)', () => {
+  const shipment = {
+    seq: 1,
+    status: 'open',
+    est_delivery_from: '2026-10-30',
+    est_delivery_to: '2026-10-30',
+    shipping_cents: 300,
+    carrier: null,
+    tracking_number: null,
+    shipped_at: null,
+    item_ids: [],
+  };
+
+  it("a shipment the database answers as 'quick' reads as food; an Express one stays Express", () => {
+    assert.equal(orderShipmentSchema.parse({ ...shipment, kind: 'quick' }).kind, 'food');
+    assert.equal(orderShipmentSchema.parse({ ...shipment, kind: 'food' }).kind, 'food');
+    assert.equal(orderShipmentSchema.parse({ ...shipment, kind: 'express' }).kind, 'express');
+  });
+
+  it('an Express order keeps its word, and an order with no shipments lists its pieces', () => {
+    const html = orderConfirmationHtml({ ...order, order: { ...order.order, shipping_method: 'express' }, shipments: [] }, ctx);
+    assert.match(html, /Express shipping/);
+    assert.match(html, /Estimated delivery/);
+    assert.match(html, new RegExp(order.items[0]!.product_name));
   });
 });

@@ -1,11 +1,16 @@
 import { useState } from 'react';
 
+import { stockProblemLines } from './stock';
+
 import type {
   CheckoutErrorResponse,
   CheckoutRequestBody,
   CheckoutStartResponse,
+  CheckoutStockResponse,
   FinalizeResponse,
+  StockProblemLine,
 } from '@repo/shared/domain';
+
 
 import { apiPost } from '@/lib/api';
 import { SITE_NAME } from '@/lib/site';
@@ -23,7 +28,8 @@ export type CheckoutOutcome =
  * The app's checkout, on the same server API as the website (flows.md §3):
  * POST /api/checkout prices the bag and creates the PaymentIntent, the
  * PaymentSheet takes the payment, POST /api/orders creates the order from the
- * checkout stored on the server (D-038). The phone never sends prices.
+ * checkout stored on the server (D-038). The phone never sends prices. §10 Y-3: `stock` holds the lines that cannot go
+ * ahead as they are, from when checkout opens and from every re-price; while it has any there is nothing to pay.
  */
 export function useCheckout() {
   const { initPaymentSheet, presentPaymentSheet } = useStripe();
@@ -31,17 +37,28 @@ export function useCheckout() {
   const [request, setRequest] = useState<CheckoutRequestBody | null>(null);
   const [busy, setBusy] = useState(false);
   const [error, setError] = useState<string | null>(null);
+  const [stock, setStock] = useState<StockProblemLine[]>([]);
+
+  /** A failed check changes nothing: the re-price asks again and the order's own check still stands (INV-3). */
+  async function checkStock(lines: CheckoutRequestBody['lines']): Promise<void> {
+    const res = await apiPost<CheckoutStockResponse>('/api/checkout/stock', { lines });
+    if (res.ok) setStock(res.data.lines);
+  }
 
   async function start(body: CheckoutRequestBody): Promise<void> {
     setBusy(true);
     setError(null);
     setRequest(body);
+    setStarted(null);
     const res = await apiPost<CheckoutStartResponse>('/api/checkout', body);
     if (!res.ok) {
       setBusy(false);
-      setError(res.error);
+      const lines = stockProblemLines(res.problem);
+      setStock(lines);
+      if (lines.length === 0) setError(res.error);
       return;
     }
+    setStock([]);
     const a = body.address;
     const { error: initError } = await initPaymentSheet({
       merchantDisplayName: SITE_NAME,
@@ -89,6 +106,7 @@ export function useCheckout() {
       // Sold out while paying: the server refunded in full. The bag stays.
       setStarted(null);
       setError(res.error);
+      void checkStock(request.lines);
       return null;
     }
     const message = res.ok
@@ -101,5 +119,5 @@ export function useCheckout() {
     return { kind: 'pending', message, email: request.email };
   }
 
-  return { started, request, busy, error, start, pay, edit: () => setStarted(null) };
+  return { started, request, busy, error, stock, checkStock, start, pay, edit: () => setStarted(null) };
 }

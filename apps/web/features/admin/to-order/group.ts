@@ -17,7 +17,7 @@ export interface ShopGroup {
 export function groupByShop(rows: ToOrderRow[]): ShopGroup[] {
   const groups = new Map<string, ToOrderRow[]>();
   for (const r of rows) {
-    const key = r.site ?? `vendor:${r.vendor_name ?? '?'}`;
+    const key = r.site ?? '';
     groups.set(key, [...(groups.get(key) ?? []), r]);
   }
   return [...groups.entries()]
@@ -25,7 +25,7 @@ export function groupByShop(rows: ToOrderRow[]): ShopGroup[] {
       const withUrl = list.filter((r) => r.item_url);
       return {
         key,
-        label: list[0]!.site ? siteLabel(list[0]!.site) : (list[0]!.vendor_name ?? 'Shop'),
+        label: key ? siteLabel(key) : 'Shop not known',
         rows: list,
         soldPaise: list.reduce((s, r) => s + (r.sold_paise ?? 0) * r.quantity, 0),
         nowPaise: list.reduce((s, r) => s + (r.now_paise ?? r.sold_paise ?? 0) * r.quantity, 0),
@@ -47,7 +47,7 @@ export function waited(iso: string, now = Date.now()): string {
   return `${days} day${days === 1 ? '' : 's'}`;
 }
 
-/** D-154: a 7-day piece's buy-by or ship-by time from now: "in 1 hour", "2 hours late". */
+/** D-154: a food piece's buy-by or ship-by time from now: "in 1 hour", "2 hours late". */
 export function dueIn(iso: string, now = Date.now()): { text: string; late: boolean } {
   const ms = Date.parse(iso) - now;
   const span = waited(new Date(now - Math.abs(ms)).toISOString(), now);

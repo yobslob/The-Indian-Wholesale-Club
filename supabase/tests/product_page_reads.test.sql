@@ -6,17 +6,17 @@ select tests.setup();
 -- Generic test clothing: D-140's "who it is for" rule has its own test (wears_and_rows.test.sql).
 alter table public.products disable trigger products_wears;
 
-insert into public.products (slug, name, product_type, region_id, category_id, vendor_id, price_cents, status,
+insert into public.products (slug, name, product_type, region_id, category_id, price_cents, status,
                              published_at, is_curated)
 values
-  ('pr-india', 'All-India piece', 'clothing', null, tests.id('cat_clothing'), tests.id('vendor'), 4000, 'live',
+  ('pr-india', 'All-India piece', 'clothing', null, tests.id('cat_clothing'), 4000, 'live',
    now() - interval '3 days', false),
-  ('pr-india-old', 'All-India, older', 'clothing', null, tests.id('cat_clothing'), tests.id('vendor'), 4000, 'live',
+  ('pr-india-old', 'All-India, older', 'clothing', null, tests.id('cat_clothing'), 4000, 'live',
    now() - interval '5 days', true),
-  ('pr-india-new', 'All-India, newer', 'clothing', null, tests.id('cat_clothing'), tests.id('vendor'), 4000, 'live',
+  ('pr-india-new', 'All-India, newer', 'clothing', null, tests.id('cat_clothing'), 4000, 'live',
    now() - interval '1 day', true),
   ('pr-state-newest', 'A state''s piece, newest of all', 'clothing', tests.id('region'), tests.id('cat_clothing'),
-   tests.id('vendor'), 4000, 'live', now() + interval '1 day', true);
+   4000, 'live', now() + interval '1 day', true);
 
 set local role anon;
 select tests.assert(

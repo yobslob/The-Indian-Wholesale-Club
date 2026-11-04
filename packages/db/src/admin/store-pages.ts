@@ -4,7 +4,7 @@ import { unwrap, type IwcClient } from '../client';
 export interface ListingPage {
   slug: string;
   region_slug: string | null;
-  /** Customers see it: live, or archived and shown as Coming soon (D-135). */
+  /** Customers see it: live (D-187, Y-9: a coming-soon piece is on no store page). */
   shown: boolean;
 }
 
@@ -12,11 +12,11 @@ export interface ListingPage {
 export async function listListingPages(client: IwcClient, ids: string[]): Promise<ListingPage[]> {
   if (ids.length === 0) return [];
   const rows = unwrap(
-    await client.from('products').select('slug, status, coming_soon, region:regions(slug)').in('id', ids),
+    await client.from('products').select('slug, status, region:regions(slug)').in('id', ids),
   );
   return rows.map((r) => ({
     slug: r.slug,
     region_slug: r.region?.slug ?? null,
-    shown: r.status === 'live' || r.coming_soon,
+    shown: r.status === 'live',
   }));
 }

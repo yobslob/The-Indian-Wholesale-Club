@@ -11,10 +11,6 @@ export const RULES = {
   checkout: { limit: 20, windowMs: 60_000 },
   orderLookup: { limit: 10, windowMs: 60_000 },
   webhook: { limit: 120, windowMs: 60_000 },
-  /** Vendor sign-in codes (D-103): a few tries a minute is plenty for a person, too few to guess a 32-byte code. */
-  vendorSignIn: { limit: 10, windowMs: 60_000 },
-  /** "Join as a vendor?" requests (D-102). */
-  vendorJoin: { limit: 5, windowMs: 60_000 },
   /** See all's filters and Show more (/api/browse, D-136): a person clicks a few a minute; this server only. */
   browse: { limit: 120, windowMs: 60_000 },
   /** A card's + reading its options (/api/card-options, D-145): one per piece pressed; this server only. */

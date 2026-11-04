@@ -72,17 +72,17 @@ export async function recordShipmentCancel(
   );
 }
 
-const quickWatchSchema = z.object({
+const foodWatchSchema = z.object({
   open: z.number().int(),
   not_bought: z.number().int(),
   not_shipped: z.number().int(),
 });
-export type QuickWatch = z.infer<typeof quickWatchSchema>;
+export type FoodWatch = z.infer<typeof foodWatchSchema>;
 
-/** Today: 7-day shipments open, those not bought within 2 hours and those not shipped by the next day. */
-export async function quickWatch(client: IwcClient): Promise<QuickWatch> {
-  const data = unwrap(await client.rpc('admin_quick_watch', undefined, { get: true }));
-  const parsed = quickWatchSchema.safeParse(data);
-  if (!parsed.success) throw new DbError('quick_watch_shape', parsed.error.message);
+/** Today: food shipments open, those not bought within 2 hours and those not shipped by the next day (D-187). */
+export async function foodWatch(client: IwcClient): Promise<FoodWatch> {
+  const data = unwrap(await client.rpc('admin_food_watch', undefined, { get: true }));
+  const parsed = foodWatchSchema.safeParse(data);
+  if (!parsed.success) throw new DbError('food_watch_shape', parsed.error.message);
   return parsed.data;
 }

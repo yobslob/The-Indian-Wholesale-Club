@@ -7,9 +7,9 @@
  *   pnpm launch:check                                  # the local database (a dry run of the checks)
  *   pnpm launch:check --url=postgresql://…  --allow-remote   # the production database, before going live
  *
- * Checks the database (pricing estimates D-047, every pilot setting D-069, the daily exchange rate D-075, sales tax
- * D-073, the business details D-074, placeholder and demo data, region text approval D-019, the open cycle, the timers
- * and the email sender's Vault settings) and the repo (open launch questions, TODO(founder) markers on customer pages).
+ * Checks the database (every setting D-069 and the delivery and free-shipping numbers D-187, sales tax D-073, the
+ * business details D-074, placeholder and demo data, region text approval D-019, the timers and the email sender's
+ * Vault settings) and the repo (open launch questions, TODO(founder) markers on customer pages).
  * Environment variables are checked by the deploy itself (docs/ops.md).
  */
 import { readdirSync, readFileSync, statSync } from 'node:fs';
@@ -27,11 +27,9 @@ if (!['127.0.0.1', 'localhost', '::1'].includes(new URL(url).hostname) && !args.
   process.exit(2);
 }
 
-/** @type {{ ok: boolean, label: string, detail?: string, note?: boolean }[]} */
+/** @type {{ ok: boolean, label: string, detail?: string }[]} */
 const results = [];
 const check = (ok, label, detail) => results.push({ ok, label, detail });
-/** Shown, but never blocks the launch: a decision says it may go live this way. */
-const note = (ok, label, detail) => results.push({ ok, label, detail, note: true });
 
 // ------------------------------------------------------------------ the database
 const client = new pg.Client({ connectionString: url });
@@ -41,27 +39,13 @@ try {
   const one = async (sql) => (await client.query(sql)).rows[0];
   const all = async (sql) => (await client.query(sql)).rows;
 
-  const estimates = await all('select setting from public.pricing_estimates order by setting');
-  // D-069: the pilot runs on Claude's high-end placeholders, so they don't block; they stay listed until replaced.
-  note(estimates.length === 0, 'Pricing settings are the founder\'s own numbers, not placeholders (D-047; the pilot may run on them, D-069)',
-    estimates.map((e) => e.setting).join(', '));
-
   const s = await one('select * from public.pricing_settings where id = 1');
-  const unset = ['fx_inr_per_usd', 'fx_buffer_pct', 'india_handling_pct', 'ship_alloc_paise_per_kg', 'margin_pct',
-    'card_fee_pct', 'card_fee_fixed_cents',
-    'domestic_days_min', 'domestic_days_max', 'shipping_flat_cents', 'stale_listing_days', 'cycle_days',
+  const unset = ['food_delivery_days_min', 'food_delivery_days_max', 'delivery_days_min', 'delivery_days_max',
+    'free_shipping_min_cents', 'bulk_saving_from_cents',
+    'domestic_days_min', 'domestic_days_max', 'shipping_flat_cents', 'stale_listing_days',
     'export_cancel_deduction_pct', 'return_claim_days', 'return_tier1_days', 'return_tier1_pct', 'return_tier2_days',
     'return_tier2_pct', 'return_tier3_days', 'return_tier3_pct', 'clearance_discount_pct'].filter((k) => s[k] === null);
-  check(unset.length === 0, 'Every pricing, delivery, cycle and after-sale setting is set (D-069)', unset.join(', '));
-  check(
-    (s.express_days_min === null) === (s.express_days_max === null),
-    'Express delivery days are both set or both empty (D-070)',
-  );
-  check(
-    s.fx_auto && s.fx_updated_at !== null && Date.now() - new Date(s.fx_updated_at).getTime() < 3 * 86_400_000,
-    'The exchange rate updates by itself and is under three days old (D-075)',
-    s.fx_updated_at ? `last updated ${new Date(s.fx_updated_at).toISOString().slice(0, 10)}` : 'never fetched',
-  );
+  check(unset.length === 0, 'Every delivery, shipping and after-sale setting is set (D-069, D-187)', unset.join(', '));
   const tax = await one('select count(*)::int as n from public.tax_rates');
   check(tax.n > 0, 'Sales tax is set up for the states where IWC is registered (D-073)', 'no tax_rates row');
   const details = await all('select label from public.business_details where is_placeholder order by group_name, sort_order');
@@ -84,27 +68,14 @@ try {
   const liveRegions = await one('select count(*)::int as n from public.regions where is_live');
   check(liveRegions.n > 0, 'At least one state is live', 'no live state');
 
-  const cycle = await one(
-    "select code, cutoff_at, notes from public.cycles where status = 'open'",
-  );
-  check(Boolean(cycle), 'A cycle is open, so customers can check out (D-045)', 'no open cycle');
-  if (cycle) {
-    check(
-      !/^DEV|^TEST|^E2E/i.test(cycle.code) && !/PLACEHOLDER/i.test(cycle.notes ?? ''),
-      'The open cycle has real dates (not a dev placeholder)',
-      `${cycle.code}: ${cycle.notes ?? ''}`,
-    );
-  }
-
   const cron = await one(
     "select to_regclass('cron.job') is not null as present",
   );
   const jobs = cron.present
-    ? (await all("select jobname from cron.job where jobname in ('iwc-roll-cycles', 'iwc-email-outbox', 'iwc-fx-refresh')")).map((j) => j.jobname)
+    ? (await all("select jobname from cron.job where jobname in ('iwc-email-outbox', 'iwc-tidy')")).map((j) => j.jobname)
     : [];
-  check(jobs.includes('iwc-roll-cycles'), 'Cycles close and open by themselves (pg_cron job)', 'iwc-roll-cycles missing');
   check(jobs.includes('iwc-email-outbox'), 'The email outbox is sent every minute (pg_cron job)', 'iwc-email-outbox missing');
-  check(jobs.includes('iwc-fx-refresh'), 'The exchange rate is fetched by itself (pg_cron job, D-075)', 'iwc-fx-refresh missing');
+  check(jobs.includes('iwc-tidy'), 'Old logs are cleared every day (pg_cron job, D-187)', 'iwc-tidy missing');
   const vault = await one(
     "select to_regclass('vault.secrets') is not null as present",
   );
@@ -142,11 +113,9 @@ check(todos.length === 0, 'Customer pages carry no TODO(founder) markers (policy
   todos.map((t) => t.replace(/\\/g, '/').replace('apps/web/app/(store)/', '')).join(', '));
 
 // ------------------------------------------------------------------ report
-const failed = results.filter((r) => !r.ok && !r.note);
+const failed = results.filter((r) => !r.ok);
 for (const r of results) {
-  const tag = r.ok ? 'OK  ' : r.note ? 'NOTE' : 'TODO';
-  console.log(`${tag}  ${r.label}${r.ok || !r.detail ? '' : `\n        ${r.detail}`}`);
+  console.log(`${r.ok ? 'OK  ' : 'TODO'}  ${r.label}${r.ok || !r.detail ? '' : `\n        ${r.detail}`}`);
 }
-const counted = results.filter((r) => !r.note).length;
-console.log(`\n${failed.length === 0 ? 'Ready to launch.' : `${failed.length} of ${counted} still to do before launch.`}`);
+console.log(`\n${failed.length === 0 ? 'Ready to launch.' : `${failed.length} of ${results.length} still to do before launch.`}`);
 process.exit(failed.length === 0 ? 0 : 1);

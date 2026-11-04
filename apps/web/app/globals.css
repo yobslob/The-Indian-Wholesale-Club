@@ -194,18 +194,8 @@
   }
 }
 
-/* Motion (features/shell/motion.tsx, D-049): Lenis's base rules, and the reveal of images that were below the fold. */
+/* Motion (features/shell/motion.tsx, D-049): the reveal of images that were below the fold. */
 @layer base {
-  html.lenis,
-  html.lenis body {
-    height: auto;
-  }
-  .lenis.lenis-smooth {
-    scroll-behavior: auto !important;
-  }
-  .lenis.lenis-stopped {
-    overflow: hidden;
-  }
   [data-reveal] {
     transition:
       clip-path 1.3s cubic-bezier(0.19, 1, 0.22, 1),
@@ -294,191 +284,6 @@
   }
   html[data-hero-passed] body:has([data-home-hero]) .site-header::before {
     opacity: 0;
-  }
-
-  /* D-154 (founder 2026-10-24: the floating pill "looks so badly placed, do something creative with it"): the store
-     tabs, store-switch.tsx. A dark strip along the very top with the two stores as tabs; the open one is the header's
-     own colour (--hdr) and flows into it through curved feet, like a browser's tab, so the header reads as the inside
-     of that store: ivory in the IWC store, a warm brand tint in the 7-day store (no line under it, founder 2026-10-30).
-     Founder 2026-10-31 ("fixed not dynamic for all pages except the checkout page"): the strip stays at the top with
-     the header on every store page, Home's too (over the photo a dark glass, past it the ink strip and an ivory tab);
-     checkout has its own frame without tabs. The open tab glides over in 320 ms with a slight spring and its mark pops
-     once; at once with reduced motion. */
-  :root:has(.store-strip) {
-    --strip-h: 46px;
-    --top-h: calc(56px + var(--strip-h));
-  }
-  @media (min-width: 768px) {
-    :root:has(.store-strip) {
-      --strip-h: 42px;
-      --top-h: calc(72px + var(--strip-h));
-    }
-  }
-  .site-top {
-    --hdr: theme('colors.canvas');
-  }
-  .site-top:has(.store-strip[data-store='quick']) {
-    --hdr: color-mix(in srgb, var(--brand) 12%, var(--canvas));
-  }
-  /* Home: the header is clear over the photo, so the open tab is a pane of light glass instead */
-  body:has([data-home-hero]) .site-top:has(.store-strip) {
-    --hdr: transparent;
-    --tab: rgb(255 255 255 / 0.18);
-  }
-  html[data-hero-passed] body:has([data-home-hero]) .site-top:has(.store-strip) {
-    --tab: theme('colors.canvas');
-  }
-  .store-strip {
-    display: flex;
-    align-items: flex-end;
-    height: var(--strip-h);
-    padding: 0 var(--gut);
-    background: theme('colors.ink');
-    color: var(--paper);
-  }
-  body:has([data-home-hero]) .store-strip {
-    background: rgb(20 17 15 / 0.5);
-    -webkit-backdrop-filter: blur(14px);
-    backdrop-filter: blur(14px);
-    transition: background-color 0.35s;
-  }
-  html[data-hero-passed] body:has([data-home-hero]) .store-strip {
-    background: theme('colors.ink');
-  }
-  .store-tabs {
-    position: relative;
-    display: grid;
-    grid-template-columns: 1fr 1fr;
-    width: 100%;
-    height: calc(100% - 6px);
-  }
-  @media (min-width: 768px) {
-    .store-tabs {
-      width: 500px;
-    }
-  }
-  .store-open {
-    position: absolute;
-    inset: 0 auto 0 0;
-    width: 50%;
-    border-radius: 12px 12px 0 0;
-    background: var(--tab, var(--hdr));
-    transition:
-      transform 0.32s cubic-bezier(0.34, 1.3, 0.64, 1),
-      background-color 0.35s;
-  }
-  .store-strip[data-store='quick'] .store-open {
-    transform: translateX(100%);
-  }
-  /* the feet: the strip's colour curving into the open tab at its two bottom corners */
-  .store-open::before,
-  .store-open::after {
-    content: '';
-    position: absolute;
-    bottom: 0;
-    width: 12px;
-    height: 12px;
-    transition: background 0.35s;
-  }
-  .store-open::before {
-    left: -12px;
-    background: radial-gradient(circle at 0 0, transparent 11.5px, var(--tab, var(--hdr)) 12px);
-  }
-  .store-open::after {
-    right: -12px;
-    background: radial-gradient(circle at 100% 0, transparent 11.5px, var(--tab, var(--hdr)) 12px);
-  }
-  .store-tab {
-    position: relative;
-    z-index: 1;
-    display: flex;
-    min-width: 0;
-    align-items: center;
-    justify-content: center;
-    gap: 8px;
-    padding: 0 10px;
-    border-radius: 12px 12px 0 0;
-    color: color-mix(in srgb, var(--paper) 70%, transparent);
-    font-size: 13px;
-    font-weight: 600;
-    line-height: 1.15;
-    transition: color 0.3s;
-  }
-  .store-tab:hover {
-    color: var(--paper);
-  }
-  .store-tab[aria-current] {
-    color: var(--ink);
-  }
-  body:has([data-home-hero]) .store-tab[aria-current] {
-    color: #fff;
-  }
-  html[data-hero-passed] body:has([data-home-hero]) .store-tab[aria-current] {
-    color: var(--ink);
-  }
-  .store-tab:focus-visible {
-    outline: 2px solid currentColor;
-    outline-offset: -5px;
-  }
-  .store-tab-name {
-    overflow: hidden;
-    font-size: 14px;
-    text-overflow: ellipsis;
-    white-space: nowrap;
-  }
-  .store-tab-mark {
-    display: grid;
-    flex: none;
-    place-items: center;
-    width: 20px;
-    height: 20px;
-    border-radius: 9999px;
-    background: var(--brand);
-    color: theme('colors.on-brand');
-    font-size: 11.5px;
-    font-weight: 800;
-  }
-  .store-tab-mark[data-iwc] {
-    background: transparent;
-  }
-  .store-tab-mark svg {
-    height: 22px;
-    aspect-ratio: 440 / 1076;
-    fill: none;
-    stroke: #c9962f;
-    stroke-width: 1.5px;
-    stroke-linejoin: round;
-    stroke-linecap: round;
-  }
-  .store-strip[data-pop='a'] .store-tab[aria-current] .store-tab-mark {
-    animation: store-pop-a 0.6s cubic-bezier(0.34, 1.5, 0.64, 1);
-  }
-  .store-strip[data-pop='b'] .store-tab[aria-current] .store-tab-mark {
-    animation: store-pop-b 0.6s cubic-bezier(0.34, 1.5, 0.64, 1);
-  }
-  @keyframes store-pop-a {
-    from {
-      transform: scale(0.55) rotate(-120deg);
-    }
-  }
-  @keyframes store-pop-b {
-    from {
-      transform: scale(0.55) rotate(-120deg);
-    }
-  }
-  /* founder 2026-10-30 ("two horizontal lines under the categories, remove them"): the 7-day store's header ends in
-     its own tint, with no edge line and no stitch */
-  .site-top:has(.store-strip[data-store='quick']) .site-header {
-    box-shadow: none;
-  }
-  @media (prefers-reduced-motion: reduce) {
-    .store-open,
-    .store-tab {
-      transition: none;
-    }
-    .store-strip[data-pop] .store-tab[aria-current] .store-tab-mark {
-      animation: none;
-    }
   }
 
   /* One row at every width: logo · States · Search · About us · Saved, Bag, Profile (phones: logo · icons · menu). */
@@ -1501,101 +1306,6 @@ html[data-free-bar] .site-footer {
   }
 }
 
-/*
- * Velocity drift (D-116, the floating composition of D-049): while the page scrolls fast, a grid's columns and a row's
- * cards fall a few pixels behind or run ahead by their own amount (--k), so the composition floats apart and closes
- * again as the scroll settles. --sv is the scroll's velocity (motion.tsx; never set for reduced motion), at most
- * ±30 px per frame; at most ±24 px of drift. Phones get half.
- */
-@layer components {
-  .drift > * {
-    --k: 0;
-    transform: translate3d(0, calc(var(--sv, 0) * var(--k) * var(--drift, 0.8px)), 0);
-    will-change: transform;
-  }
-  .drift > :nth-child(2n) {
-    --k: 0.7;
-  }
-  @media (min-width: 768px) {
-    .drift-cols-3 > :nth-child(n) {
-      --k: 0;
-    }
-    .drift-cols-3 > :nth-child(3n + 2) {
-      --k: 0.7;
-    }
-    .drift-cols-3 > :nth-child(3n) {
-      --k: 0.35;
-    }
-  }
-  @media (min-width: 1280px) {
-    .drift > :nth-child(n) {
-      --k: 0;
-    }
-    .drift > :nth-child(4n + 2) {
-      --k: 0.7;
-    }
-    .drift > :nth-child(4n + 3) {
-      --k: 0.3;
-    }
-    .drift > :nth-child(4n) {
-      --k: 1;
-    }
-    .drift-cols-5 > :nth-child(n) {
-      --k: 0;
-    }
-    .drift-cols-5 > :nth-child(5n + 2) {
-      --k: 0.6;
-    }
-    .drift-cols-5 > :nth-child(5n + 3) {
-      --k: 1;
-    }
-    .drift-cols-5 > :nth-child(5n + 4) {
-      --k: 0.4;
-    }
-  }
-  /* See all's grid beside the filter panel (D-136): three columns from 1024 px, four from 1536 px. */
-  @media (min-width: 1024px) {
-    .drift-side > :nth-child(n) {
-      --k: 0;
-    }
-    .drift-side > :nth-child(3n + 2) {
-      --k: 0.7;
-    }
-    .drift-side > :nth-child(3n) {
-      --k: 0.35;
-    }
-  }
-  @media (min-width: 1536px) {
-    .drift-side > :nth-child(n) {
-      --k: 0;
-    }
-    .drift-side > :nth-child(4n + 2) {
-      --k: 0.7;
-    }
-    .drift-side > :nth-child(4n + 3) {
-      --k: 0.3;
-    }
-    .drift-side > :nth-child(4n) {
-      --k: 1;
-    }
-  }
-  /* A sideways row: a slow wave along the cards. */
-  .drift-row > :nth-child(n) {
-    --k: 0;
-  }
-  .drift-row > :nth-child(3n + 2) {
-    --k: 0.6;
-  }
-  .drift-row > :nth-child(3n) {
-    --k: 0.25;
-  }
-  @media (max-width: 767px) {
-    .drift > * {
-      --drift: 0.4px;
-    }
-  }
-}
-
 /* D-140 (F4): a page that holds an invoice prints only the invoice (the customer's order page, invoice A). */
 @media print {
   body:has(.invoice-print) * {
@@ -1650,9 +1360,6 @@ html[data-free-bar] .site-footer {
   [data-dense] .product-card-chip.bottom-3\.5 {
     bottom: 6px;
   }
-  [data-dense] .product-card-chip.top-3\.5 {
-    top: 6px;
-  }
   [data-dense] .product-card-text {
     padding: 8px 2px 0 4px;
   }
@@ -1663,11 +1370,35 @@ html[data-free-bar] .site-footer {
   [data-dense] .product-card-meta {
     font-size: 11.5px;
   }
+  [data-dense] .product-card-days {
+    font-size: 11px;
+  }
+}
+
+/* D-187: a card's delivery line, one per type: the words are the store layout's CSS variables, so a card carries none. */
+@layer components {
+  .product-card-days {
+    display: block;
+    margin-top: 2px;
+    font-size: 12.5px;
+    line-height: 1.3;
+    color: theme('colors.ink-muted');
+    white-space: nowrap;
+    overflow: hidden;
+    text-overflow: ellipsis;
+  }
+  .product-card-days[data-days='food']::before {
+    content: var(--days-food, '');
+    color: theme('colors.brand');
+    font-weight: 600;
+  }
+  .product-card-days[data-days='standard']::before {
+    content: var(--days-standard, '');
+  }
 }
 
 /* ---------------------------------------------------------------------------------------------------------------
-   The homesick plan (D-161): the flight path, the cards' weekday, the duties stamp, the week strip, the festival
-   diya. CSS only; the global reduced-motion rule above stops every animation here.
+   The homesick plan (D-161): the flight path and the duties stamp. CSS only; the global reduced-motion rule above stops every animation here.
    --------------------------------------------------------------------------------------------------------------- */
 @layer components {
   /* the track ahead is the brand's running stitch; what is filled is the light already travelled */
@@ -1789,14 +1520,6 @@ html[data-free-bar] .site-footer {
     filter: drop-shadow(0 0 4px rgb(255 214 170 / 0.95));
   }
 
-  /* a 7-day card's tag: "Sat at your door" once the browser knows today (days.tsx), else "In 7 days" */
-  html[data-door-day] .door-tag-n {
-    display: none;
-  }
-  html[data-door-day] .door-tag::before {
-    content: var(--door-day) ' at your door';
-  }
-
   /* "Duties paid · nothing at your door": a rubber stamp pressed on once */
   .duties-stamp {
     position: absolute;
@@ -1822,84 +1545,6 @@ html[data-free-bar] .site-footer {
     }
   }
 
-  /* the week strip: today to the door, a cell a day, the stitch drawn across once */
-  .week-strip {
-    position: relative;
-    display: grid;
-    grid-template-columns: repeat(var(--n), minmax(0, 1fr));
-    margin: 14px 0 2px;
-    padding: 0;
-    list-style: none;
-  }
-  .week-strip::before {
-    content: '';
-    position: absolute;
-    top: 25px;
-    left: calc(50% / var(--n));
-    right: calc(50% / var(--n));
-    height: 2px;
-    background: repeating-linear-gradient(90deg, theme('colors.brand') 0 5px, transparent 5px 9px);
-    transform-origin: left;
-    animation: strip-draw 1.4s cubic-bezier(0.22, 1, 0.36, 1) 0.3s both;
-  }
-  .week-strip li {
-    position: relative;
-    display: grid;
-    justify-items: center;
-    gap: 6px;
-    font-family: theme('fontFamily.ui');
-    font-size: 11px;
-    font-weight: 600;
-    color: theme('colors.ink-muted');
-  }
-  .week-strip i {
-    width: 8px;
-    height: 8px;
-    margin-top: 2px;
-    border-radius: 999px;
-    background: theme('colors.paper');
-    box-shadow: inset 0 0 0 1.5px color-mix(in srgb, theme('colors.ink') 30%, transparent);
-  }
-  .week-strip li[data-at='today'] {
-    color: theme('colors.ink');
-  }
-  .week-strip li[data-at='today'] i {
-    background: theme('colors.ink');
-    box-shadow: none;
-  }
-  .week-strip li[data-at='door'] {
-    color: theme('colors.brand');
-  }
-  .week-strip svg {
-    width: 18px;
-    height: 18px;
-    margin-top: -3px;
-    fill: theme('colors.paper');
-    stroke: theme('colors.brand');
-    stroke-width: 1.8px;
-    stroke-linecap: round;
-    stroke-linejoin: round;
-    animation: door-glow 1.2s ease 1.5s both;
-  }
-  @keyframes strip-draw {
-    from {
-      transform: scaleX(0);
-    }
-  }
-  @keyframes door-glow {
-    0% {
-      transform: scale(0.6);
-      opacity: 0;
-    }
-    60% {
-      transform: scale(1.25);
-      filter: drop-shadow(0 0 5px color-mix(in srgb, theme('colors.brand') 55%, transparent));
-    }
-    100% {
-      transform: scale(1);
-      opacity: 1;
-    }
-  }
 }
 
 /*
@@ -2015,108 +1660,6 @@ html[data-free-bar] .site-footer {
     }
   }
 
-  /* the 7-day store's door label (door-label.tsx): a parcel's address label, perforated top and bottom, its stamp
-     pressed once as the page opens */
-  .door-label {
-    position: relative;
-    display: grid;
-    gap: 14px;
-    max-width: 420px;
-    padding: 22px 24px 20px;
-    background: theme('colors.paper');
-    border-radius: 6px;
-    box-shadow:
-      0 1px 0 theme('colors.line'),
-      0 18px 40px -18px rgb(30 27 22 / 0.35);
-    -webkit-mask:
-      radial-gradient(circle 5px at 50% 0, #0000 98%, #000) 0 0 / 16px 51% repeat-x,
-      radial-gradient(circle 5px at 50% 100%, #0000 98%, #000) 0 100% / 16px 51% repeat-x;
-    mask:
-      radial-gradient(circle 5px at 50% 0, #0000 98%, #000) 0 0 / 16px 51% repeat-x,
-      radial-gradient(circle 5px at 50% 100%, #0000 98%, #000) 0 100% / 16px 51% repeat-x;
-  }
-  .door-label-row {
-    display: grid;
-    grid-template-columns: 44px 22px 1fr;
-    align-items: center;
-    gap: 8px;
-    font-size: 15px;
-  }
-  .door-label-row small {
-    color: theme('colors.ink-muted');
-    font-size: 12px;
-  }
-  .door-label-row svg {
-    height: 22px;
-    justify-self: center;
-    fill: none;
-    stroke: #c9962f;
-    stroke-width: 1.5px;
-    stroke-linejoin: round;
-    stroke-linecap: round;
-  }
-  .door-label-row:not([data-to]) svg {
-    width: 22px;
-  }
-  .door-label-row[data-to] svg {
-    stroke: theme('colors.ink');
-    width: 20px;
-  }
-  .door-label-rule {
-    border-top: 2px dashed color-mix(in srgb, theme('colors.brand') 55%, transparent);
-  }
-  .door-label-stamp {
-    position: absolute;
-    top: 16px;
-    right: 18px;
-    display: grid;
-    place-items: center;
-    width: 86px;
-    height: 86px;
-    border: 2.5px solid theme('colors.brand');
-    border-radius: 999px;
-    color: theme('colors.brand');
-    transform: rotate(-11deg);
-    animation: door-stamp 0.5s cubic-bezier(0.3, 1.5, 0.6, 1) 0.35s backwards;
-  }
-  .door-label-stamp::before {
-    content: '';
-    position: absolute;
-    inset: 5px;
-    border: 1px dashed currentColor;
-    border-radius: inherit;
-  }
-  .door-label-stamp b {
-    font-size: 26px;
-    line-height: 1;
-    letter-spacing: 0.04em;
-  }
-  .door-label-check {
-    display: inline-grid;
-    place-items: center;
-    width: 18px;
-    height: 18px;
-    margin-right: 8px;
-    border: 1.5px solid theme('colors.ink');
-    border-radius: 3px;
-    vertical-align: -3px;
-  }
-  .door-label-check::after {
-    content: '';
-    width: 9px;
-    height: 5px;
-    margin-top: -3px;
-    border: solid theme('colors.brand');
-    border-width: 0 0 2px 2px;
-    transform: rotate(-45deg);
-  }
-  @keyframes door-stamp {
-    from {
-      transform: rotate(-11deg) scale(1.6);
-      opacity: 0;
-    }
-  }
-
   /* the founder's picture slots (visual-slot.tsx): off the live site an empty one says what it wants */
   .visual-slot {
     display: grid;
@@ -2156,7 +1699,6 @@ html[data-free-bar] .site-footer {
 }
 
 @media (prefers-reduced-motion: reduce) {
-  .door-label-stamp,
   .flight-cloth {
     animation: none;
   }

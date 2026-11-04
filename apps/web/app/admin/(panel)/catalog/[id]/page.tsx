@@ -1,7 +1,7 @@
 import Link from 'next/link';
 import { notFound } from 'next/navigation';
 
-import { getAdminProduct, listPricingEstimates, PRICE_SUGGESTION_SETTINGS } from '@repo/db/admin';
+import { getAdminProduct } from '@repo/db/admin';
 import { formatUsd, PRODUCT_TYPE_LABEL } from '@repo/shared/domain';
 import { siteLabel } from '@repo/shared/sourcing';
 
@@ -9,7 +9,6 @@ import {
   addVariantAction,
   setProductStatusAction,
   setQtyAction,
-  setProductComingSoonAction,
   setProductCuratedAction,
   setProductHeavyAction,
   updateProductAction,
@@ -47,15 +46,11 @@ export default async function AdminProductPage({
   const { client } = await requireAdminPage();
   const { id } = await params;
   if (!/^[0-9a-f-]{36}$/.test(id)) notFound();
-  const [product, estimates] = await Promise.all([
-    getAdminProduct(client, id),
-    listPricingEstimates(client),
-  ]);
-  const estimated = estimates.some((e) => PRICE_SUGGESTION_SETTINGS.includes(e.setting));
+  const product = await getAdminProduct(client, id);
   if (!product) notFound();
   const statuses = ['draft', 'live', 'paused', 'archived'] as const;
   const sizes = sizeOptions(product.variants);
-  // Why a new listing saved as a draft instead of publishing (listing/new-listing.tsx).
+  // Why it did not publish (setProductStatusAction).
   const note = (await searchParams).note?.slice(0, 300);
 
   return (
@@ -111,20 +106,11 @@ export default async function AdminProductPage({
             </form>
           ))}
       </div>
-      {product.status === 'archived' ? (
-        // D-135: archived, and still shown to customers as "Coming soon" (the heart, not sold)
-        <form
-          action={setProductComingSoonAction.bind(null, product.id, !product.coming_soon)}
-          className="flex flex-wrap items-center gap-3"
-        >
-          <span>
-            Shown on the store as coming soon: <strong>{product.coming_soon ? 'yes' : 'no'}</strong>
-            {product.coming_soon_note ? ` (${product.coming_soon_note})` : ''}
-          </span>
-          <button type="submit" className="min-h-11 underline">
-            {product.coming_soon ? 'Hide it from the store' : 'Show it as coming soon'}
-          </button>
-        </form>
+      {product.coming_soon ? (
+        // D-135, D-187 (Y-9): no store page shows it until it is on sale
+        <p>
+          Coming soon, not on the store{product.coming_soon_note ? ` (${product.coming_soon_note})` : ''}.
+        </p>
       ) : null}
       <form
         action={setProductCuratedAction.bind(null, product.id, !product.is_curated)}
@@ -189,8 +175,8 @@ export default async function AdminProductPage({
         <div className="sm:col-span-2">
           <p className="text-ink-muted">
             {product.price_auto
-              ? `Priced automatically: ${formatUsd(product.price_cents)} from the shop price, the weight and every cost in Settings (D-075)${estimated ? ', some of them pilot placeholders' : ''}. Type a price to set it by hand.`
-              : `Priced by hand at ${formatUsd(product.price_cents)}. Empty the price to let it follow the costs again.`}
+              ? `Priced automatically: ${formatUsd(product.price_cents)} from the shop price and the weight (D-128). Type a price to set it by hand.`
+              : `Priced by hand at ${formatUsd(product.price_cents)}. Empty the price to let it follow the shop price again.`}
           </p>
         </div>
         <Field label="Summary">

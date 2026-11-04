@@ -10,6 +10,7 @@ import {
   type AdminProductFilter,
 } from '@repo/db/admin';
 import { formatUsd, type Wears } from '@repo/shared/domain';
+import { siteLabel } from '@repo/shared/sourcing';
 
 import { ArchiveUnready, AssignAndPublish } from '../bulk/assign-publish';
 import { PRODUCT_STATUS, StatusChip } from '../chips';
@@ -143,11 +144,11 @@ export async function ProductRows({
             <Cell>
               <StatusChip map={PRODUCT_STATUS} status={p.status} />
               {p.coming_soon ? (
-                <span className="text-ink-muted ml-1 text-xs">coming soon on the store</span>
+                <span className="text-ink-muted ml-1 text-xs">coming soon, not on the store</span>
               ) : null}
             </Cell>
             <Cell>{p.region?.name ?? 'All states'}</Cell>
-            <Cell>{p.vendor?.shop_name}</Cell>
+            <Cell>{p.source_site ? siteLabel(p.source_site) : ''}</Cell>
             <Cell>{formatUsd(p.price_cents)}</Cell>
             <Cell>{rupees(p.shop_price_paise)}</Cell>
             <Cell>

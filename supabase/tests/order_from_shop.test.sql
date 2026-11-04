@@ -13,6 +13,13 @@ select tests.assert((select count(*) = 1 from public.email_outbox
 select tests.assert((select shop_price_paise = 100000 and pricing_rule = 'hand' and inr_per_usd = 92
                        from public.order_items where order_id = tests.id('order_a')),
   'an order line keeps the shop price, the rate and the rule (a hand-set price) it was sold at');
+-- Pickups take the variant's own shop price and its shop item in use.
+insert into public.product_sources (product_id, variant_id, site, page_url, item_url, item_key, price_paise, in_stock, delivery_days)
+values (tests.id('p_live'), tests.id('v_live'), 'amazon.in', 'https://www.amazon.in/dp/B0TEST0001',
+        'https://www.amazon.in/dp/B0TEST0001', 'B0TEST0001', 99000, true, 3);
+select tests.remember('src', (select id from public.product_sources where item_key = 'B0TEST0001'));
+update public.product_variants set source_id = tests.id('src') where id = tests.id('v_live');
+
 update public.product_variants set shop_price_paise = 80000, weight_g = 450, weight_source = 'admin', qty_listed = 5
  where id = tests.id('v_live');
 create temp table o2 on commit drop as select * from public.create_order(jsonb_build_object(
@@ -30,21 +37,13 @@ update public.product_variants set shop_price_paise = 99000, weight_g = 900 wher
 select tests.assert((select shop_price_paise = 80000 and weight_g = 450 from public.order_items where order_id = tests.id('order_c')),
   'a later price or weight change does not move a placed order''s cost');
 
--- Pickups take the variant's own shop price and its shop item in use.
-insert into public.product_sources (product_id, variant_id, site, page_url, item_url, item_key, price_paise, in_stock, delivery_days)
-values (tests.id('p_live'), tests.id('v_live'), 'amazon.in', 'https://www.amazon.in/dp/B0TEST0001',
-        'https://www.amazon.in/dp/B0TEST0001', 'B0TEST0001', 99000, true, 3);
-select tests.remember('src', (select id from public.product_sources where item_key = 'B0TEST0001'));
-update public.product_variants set source_id = tests.id('src') where id = tests.id('v_live');
-
 set local role authenticated;
 select tests.act_as(tests.id('admin'));
-select public.cutoff_cycle(tests.id('cycle'));
 select tests.remember('pick_c', (select p.id from public.pickups p join public.order_items oi on oi.id = p.order_item_id
                                  where oi.order_id = tests.id('order_c')));
 select tests.remember('pick_b', (select p.id from public.pickups p join public.order_items oi on oi.id = p.order_item_id
                                  where oi.order_id = tests.id('order_b')));
-select tests.assert((select shop_price_paise = 99000 and source_id = tests.id('src') from public.pickups where id = tests.id('pick_c')),
+select tests.assert((select shop_price_paise = 80000 and source_id = tests.id('src') from public.pickups where id = tests.id('pick_c')),
   'a pickup carries the variant''s own shop price (not the listing''s) and the shop item in use');
 
 -- To order: every piece not yet ordered, with the shop item's address.
@@ -59,13 +58,13 @@ select tests.assert((select count(*) = 3 from public.admin_to_order()
 select tests.assert(public.admin_mark_ordered(jsonb_build_array(jsonb_build_object('pickup', tests.id('pick_c'))),
                                               '402-1234567', 'shop-bills/test/bill.jpg') = 1,
   'an admin marks a piece ordered');
-select tests.assert((select ordered_at is not null and ordered_by = tests.id('admin') and paid_paise = 198000
+select tests.assert((select ordered_at is not null and ordered_by = tests.id('admin') and paid_paise = 160000
                             and shop_order_ref = '402-1234567' and status = 'pending'
                        from public.pickups where id = tests.id('pick_c')),
   'the piece is ordered (still to reach the hub), paid at its shop price × 2 by default');
 select tests.assert(not exists (select 1 from public.admin_to_order() where pickup_id = tests.id('pick_c')),
   'an ordered piece leaves To order');
-select tests.assert((select l.unit_paise = 99000 and l.shop_order_ref = '402-1234567' and l.quantity = 2
+select tests.assert((select l.unit_paise = 80000 and l.shop_order_ref = '402-1234567' and l.quantity = 2
                        from public.shop_bill_lines l join public.shop_bills b on b.id = l.bill_id
                       where b.order_id = tests.id('order_c') and l.kind = 'piece'),
   'the order''s shop bill (invoice C) gets the row filled, nothing typed twice');

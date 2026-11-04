@@ -5,9 +5,11 @@ export type {
   CheckoutQuote,
   CheckoutRequestBody,
   CheckoutStartResponse,
+  CheckoutStockResponse,
   DeliveryDates,
   FinalizeResponse,
   QuotedLine,
+  StockProblemLine,
 } from '@repo/shared/domain';
 
 /** D-114: a signed-in customer's saved address, as checkout offers it. */

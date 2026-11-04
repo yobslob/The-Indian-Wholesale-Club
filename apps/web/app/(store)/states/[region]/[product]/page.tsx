@@ -7,6 +7,7 @@ import { SaveButton } from '@/features/account/save-button';
 import { AddToCart } from '@/features/catalog/add-to-cart';
 import { CuratedCard } from '@/features/catalog/curated-card';
 import { getProductPageCached, getStorePolicyCached } from '@/features/catalog/data';
+import { deliveryDaysLabel } from '@/features/catalog/delivery-days';
 import { DeliveryNote } from '@/features/catalog/delivery-note';
 import { Disclosure } from '@/features/catalog/disclosure';
 import { photoNote, ProductDetails, sizeChart } from '@/features/catalog/product-details';
@@ -34,8 +35,8 @@ export async function generateMetadata({ params }: { params: Params }): Promise<
 
 /**
  * storefront.md §The product page, storefront.md §Direction (D-051): the photos | the buying panel (two even columns on
- * tablets, D-082), then Reviews, Similar items in smaller cards and Curated for you (D-051, D-056). One cached store_product_page() call; the
- * add-to-bag island refreshes availability live (PR-7).
+ * tablets, D-082), then Reviews, Similar items in smaller cards and Curated for you (D-051, D-056). One cached store_product_page() call;
+ * its stock is as the page was built, nothing live (§10 Y-3): checkout checks it. A coming-soon piece has no page (Y-9).
  */
 export default async function ProductPage({
   params,
@@ -43,19 +44,19 @@ export default async function ProductPage({
   params: Params;
 }): Promise<React.JSX.Element> {
   const { region, product: productSlug } = await params;
-  // D-154: the policy (STORE_TAG only) carries the 7-day line for the delivery note
+  // the policy (STORE_TAG only) carries the delivery days
   const [page, policy] = await Promise.all([getProductPageCached(region, productSlug), getStorePolicyCached()]);
   if (!page) notFound();
-  const { product, variants, media, similar, curated, reviews, delivery, ships_from_us, quick_delivery } = page;
+  const { product, variants, media, similar, curated, reviews, ships_from_us } = page;
   const chart = sizeChart(product, variants);
   // launch QA B-9: an all lower-case shop title reads in title case (display only; the row is unchanged)
   const name = displayTitle(product.name);
-  const lo = policy.quick_delivery_days_min;
-  const hi = policy.quick_delivery_days_max;
-  const quickLine =
-    policy.quick_delivery_on && lo !== null && hi !== null && policy.quick_delivery_min_cents
-      ? { days: lo === hi ? `${hi}` : `${lo} – ${hi}`, minCents: policy.quick_delivery_min_cents }
-      : null;
+  const food = product.product_type === 'food';
+  const days = food
+    ? deliveryDaysLabel(policy.food_delivery_days_min, policy.food_delivery_days_max)
+    : deliveryDaysLabel(policy.delivery_days_min, policy.delivery_days_max);
+  // D-072: from the warehouse, so calendar days, as Shipping & returns says them
+  const usDays = deliveryDaysLabel(policy.us_delivery_days_min, policy.us_delivery_days_max)?.replace(' delivery', '') ?? null;
 
   return (
     <>
@@ -98,18 +99,11 @@ export default async function ProductPage({
           {usableSummary(product.summary, product.description) ? (
             <p className="text-ink-muted mb-5">{usableSummary(product.summary, product.description)}</p>
           ) : null}
-          {product.coming_soon ? (
-            // D-135: shown, not sold yet: the heart above saves it
-            <div className="border-line border-y py-4">
-              <p className="font-display text-[22px]">Coming soon</p>
-              <p className="text-ink-muted text-sm">Save it with the heart to find it again.</p>
-            </div>
-          ) : variants.length > 0 ? (
+          {variants.length > 0 ? (
             <AddToCart
               product={product}
               variants={variants}
-              quick={quick_delivery !== null}
-              delivery={<DeliveryNote delivery={delivery} fromUs={ships_from_us} quick={quick_delivery} quickLine={quickLine} />}
+              delivery={<DeliveryNote days={days} fromUs={ships_from_us ? usDays : null} />}
             />
           ) : (
             <p className="text-ink-muted text-sm">Not available right now.</p>

@@ -37,6 +37,14 @@ test.describe('hidden admin and customer-safe pages', () => {
     }
   });
 
+  test('D-187: the old vendor pages send everyone to Home', async ({ request }) => {
+    for (const path of ['/vendor', '/vendor/login', '/vendor/pieces/1']) {
+      const response = await request.get(path, { maxRedirects: 0 });
+      expect(response.status(), path).toBe(308);
+      expect(new URL(response.headers().location ?? '', 'http://x').pathname, path).toBe('/');
+    }
+  });
+
   test('customer pages and their data carry no vendor or cost fields', async ({ request }) => {
     const pages = [
       '/',

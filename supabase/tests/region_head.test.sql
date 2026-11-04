@@ -6,12 +6,12 @@ select tests.setup();
 alter table public.products disable trigger products_wears;
 
 -- An all-India piece and a curated one in the test region
-insert into public.products (slug, name, product_type, region_id, category_id, vendor_id, price_cents, status,
+insert into public.products (slug, name, product_type, region_id, category_id, price_cents, status,
                              published_at, is_placeholder, is_curated)
 values
-  ('rh-all-india', 'From all of India', 'clothing', null, tests.id('cat_clothing'), tests.id('vendor'), 3000, 'live',
+  ('rh-all-india', 'From all of India', 'clothing', null, tests.id('cat_clothing'), 3000, 'live',
    now() - interval '1 day', false, false),
-  ('rh-curated', 'Picked', 'clothing', tests.id('region'), tests.id('cat_clothing'), tests.id('vendor'), 3000, 'live',
+  ('rh-curated', 'Picked', 'clothing', tests.id('region'), tests.id('cat_clothing'), 3000, 'live',
    now(), false, true);
 insert into public.product_variants (product_id, sku, label, qty_listed)
 select id, upper(slug), 'Free size', 5 from public.products where slug like 'rh-%';

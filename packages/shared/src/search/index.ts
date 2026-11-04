@@ -79,7 +79,7 @@ const startsAWord = (name: string, part: string): boolean => searchWords(name).s
  * begin with it (not in the 7-day store, which has no states), then the text with its last word completed. An empty
  * box offers the popular searches. At most `limit`, no label twice.
  */
-export function suggest(text: string, hints: SearchHints, opts: { limit?: number; quick?: boolean } = {}): Suggestion[] {
+export function suggest(text: string, hints: SearchHints, opts: { limit?: number } = {}): Suggestion[] {
   const limit = opts.limit ?? 8;
   const words = searchWords(text);
   const typed = words.join(' ');
@@ -104,7 +104,7 @@ export function suggest(text: string, hints: SearchHints, opts: { limit?: number
     if (q.startsWith(typed) && q !== typed) add({ kind: 'search', label: q, query: q });
     if (out.length >= 2) break;
   }
-  if (!opts.quick && typed.length >= 2) {
+  if (typed.length >= 2) {
     // a state by its name or by its people's ("punjabi"), through the synonym groups that hold its name
     const aliases = (name: string): string[] => {
       const own = searchWords(name);

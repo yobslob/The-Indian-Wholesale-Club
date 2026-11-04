@@ -21,7 +21,7 @@ const HINTS: SearchHints = {
   popular: ['silk saree', 'kurta set', 'kasavu saree'],
 };
 
-const labels = (text: string, quick = false): string[] => suggest(text, HINTS, { quick }).map((s) => `${s.kind}:${s.label}`);
+const labels = (text: string): string[] => suggest(text, HINTS).map((s) => `${s.kind}:${s.label}`);
 
 describe('search words (D-160)', () => {
   it('cleans a search as the database reads it', () => {
@@ -62,10 +62,6 @@ describe('suggestions while typing (D-160)', () => {
     assert.equal(labels('pu').filter((l) => l.startsWith('state:'))[0], 'state:Punjab', 'more pieces first');
     assert.ok(labels('spic').includes('category:Ground Spices'));
     assert.ok(labels('saree').includes('category:Sarees & Drapes'));
-  });
-
-  it('the 7-day store has no states or categories to offer', () => {
-    assert.ok(!labels('ker', true).some((l) => !l.startsWith('search:')));
   });
 
   it('never more than the limit, never one label twice', () => {

@@ -5,8 +5,6 @@ import { useEffect, useState } from 'react';
 
 import { doorDate } from '@repo/shared/domain';
 
-import { WeekStrip } from '@/features/catalog/week-strip';
-
 import { BagSummary } from './bag-summary';
 import { CalendarLink } from './calendar-link';
 import { ConfirmNotice } from './confirm-notice';
@@ -22,7 +20,7 @@ import { useOrderStatus } from './use-order-status';
  * D-140 (F7): the running stitch sews from India to the customer's state while the number, the window and the buttons
  * are there from the first frame; on wide screens the message and the stitch on the left, the order on the right; a
  * signed-in customer gets "View your order" instead of the email note; confirming shows the same stitch running.
- * D-161 (the homesick plan): "It lands Sat, Oct 31. Clear a shelf.", Add to calendar, and one arrival day's week strip.
+ * D-161 (the homesick plan): "It lands Sat, Oct 31. Clear a shelf." and Add to calendar.
  */
 export function CheckoutSuccess({
   orderNumber,
@@ -89,7 +87,6 @@ export function CheckoutSuccess({
             ? 'Your confirmation is in your email too.'
             : 'We have emailed your confirmation with the estimated delivery window.'}
         </p>
-        {door && door.from === door.to ? <WeekStrip day={door.to} /> : null}
         <OrderStitch state={order?.state ?? null} />
         <div className="flex flex-wrap items-center gap-3">
           <Link

@@ -8,7 +8,7 @@ import tokens from '@repo/tokens';
 
 import { StampGrid } from './stamps';
 
-import type { DeliveryWindow, RegionCard } from '@repo/db/store';
+import type { RegionCard } from '@repo/db/store';
 
 import { Label } from '@/components/ui';
 
@@ -17,10 +17,10 @@ const accentOf = (r: RegionCard | undefined): string => r?.accent_color ?? token
 
 /**
  * "Pick your home" on a phone (D-050 – D-052): the India map (tap a state to see its name and open it), the open
- * regions as postage stamps postmarked with the next delivery window (pages of 6 from 7, D-080), and every other region by name, with a
+ * regions as postage stamps (pages of 6 from 7, D-080), and every other region by name, with a
  * search that filters all three. The map credit stays visible (CC BY 4.0).
  */
-export function PickHome({ regions, delivery }: { regions: RegionCard[]; delivery: DeliveryWindow | null }): React.JSX.Element {
+export function PickHome({ regions }: { regions: RegionCard[] }): React.JSX.Element {
   const router = useRouter();
   const [query, setQuery] = useState('');
   const [selected, setSelected] = useState<string | null>(null);
@@ -86,7 +86,7 @@ export function PickHome({ regions, delivery }: { regions: RegionCard[]; deliver
       {live.length > 0 ? (
         <View className="gap-3">
           <Label>Open now</Label>
-          <StampGrid regions={live} delivery={delivery} />
+          <StampGrid regions={live} />
         </View>
       ) : null}
 

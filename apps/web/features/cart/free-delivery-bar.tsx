@@ -4,30 +4,27 @@ import Link from 'next/link';
 import { usePathname } from 'next/navigation';
 import { useEffect, useRef, useState } from 'react';
 
-import { bagShipmentState, datesIn, dayName, doorDate, formatUsd, type BagGoal } from '@repo/shared/domain';
+import { formatUsd, type BagGoal } from '@repo/shared/domain';
 
+import { deliveryDaysLabel } from '@/features/catalog/delivery-days';
 import { StorePhoto } from '@/features/catalog/store-photo';
 import { useDays } from '@/features/shell/days';
 import { mediaUrl } from '@/lib/site';
 
-import { freeDelivery, undoBagChange, useBagCharges, useShipmentNote } from './charges';
+import { freeDelivery, useBagCharges } from './charges';
 import { FreeMeter, useSurge } from './free-meter';
 import { cartCount, useCart, type CartLine } from './store';
 
-import type { BagCharges } from './charges';
 
 /**
  * The free-delivery pill (D-111, D-116): once a piece is in the bag, a slim pill floats at the bottom of every store
  * page with the newest photo and the bag's count, how much more unlocks free delivery and, under that line, a bar
  * that fills with light: a glowing head, a shimmer running through the filled part, a flare each time the bag grows.
  * At the line the bar is full and a sheen runs across the pill once; from there the bar fills again with the bulk
- * saving until its cap (D-119). A tap opens the bag. Not on the bag page, which shows the same bars in its summary.
- * One goal, one bar (founder, 2026-10-24; bag-goal.ts): a bag of only 7-day pieces works towards free 7-day delivery
- * ($49.99) and, there, says it is free as checkout does; every other bag towards free delivery. D-154: when a change
- * moves the bag across a line the pill says so for three seconds, with Undo beside it when a normal piece brought
- * Shipping back.
+ * saving until its cap (D-119, from $99.99, D-187). A tap opens the bag. Not on the bag page, which shows the same bars
+ * in its summary. One goal, one bar (founder, 2026-10-24; bag-goal.ts).
  * D-161 (the homesick plan): the bar is a flight path, India to a little house, "$12.40 more and the flight's on us",
- * and each add says "Coming home Sat, Oct 31" for three seconds. The look is `.fd-*` in globals.css.
+ * and each add says "Coming home in 7 delivery days" for three seconds. The look is `.fd-*` in globals.css.
  * Founder 2026-10-30: the goal is picked from the bag as it is now, from its first draw (charges.ts, bag-goal.ts), and
  * past the free line the bar keeps its full part to the house while the pill grows a second part for the bulk saving.
  */
@@ -58,19 +55,17 @@ export function FreeDeliveryBar(): React.JSX.Element | null {
   }, [visible]);
 
   const goal: BagGoal = visible ? freeDelivery(lines, charges, days).goal : { kind: 'none' };
-  const free = goal.kind === 'free' || goal.kind === 'quick-free';
+  const free = goal.kind === 'free';
   // past the free line: the bulk saving's part after the house (null: no such part)
   const more = goal.kind === 'free' && goal.bulk.capCents > 0 ? goal.bulk.share : null;
   const surge = useSurge(goal.kind === 'none' ? 0 : goal.share + (more ?? 0));
-  const note = useShipmentNote();
   const count = cartCount(lines);
   const newest = lines[lines.length - 1];
-  const home = useComingHome(count, newest, charges);
+  const home = useComingHome(count, newest);
   if (!visible) return null;
 
   return (
-    <>
-      <Link
+    <Link
         href="/cart"
         className={`fd-pill bg-brand text-on-brand font-ui rounded-pill fixed inset-x-3 bottom-[max(12px,env(safe-area-inset-bottom))] z-[44] mx-auto flex h-14 ${more === null ? 'max-w-[440px]' : 'max-w-[520px]'} items-center gap-3 pl-2 pr-4 [html[data-buy-bar]_&]:bottom-[84px] md:[html[data-buy-bar]_&]:bottom-[max(12px,env(safe-area-inset-bottom))] ${
           shown ? 'translate-y-0 scale-100 opacity-100' : 'translate-y-5 scale-[.96] opacity-0'
@@ -114,13 +109,9 @@ export function FreeDeliveryBar(): React.JSX.Element | null {
         <span className="relative z-[1] grid min-w-0 flex-1 gap-[7px]">
           {/* launch QA B-11: only the words are live (one sentence read out), not the bar and its "$ $ $ $" picture */}
           <span aria-live="polite" className="truncate text-[13.5px] font-medium leading-none sm:text-[14.5px]">
-            {note ? (
-              <span key={note.until} className="rise-in inline-block">
-                {note.text}
-              </span>
-            ) : home ? (
+            {home ? (
               <span key={home.key} className="rise-in inline-block">
-                Coming home <b className="font-bold">{home.date}</b>
+                Coming home <b className="font-bold">in {home.days}</b>
               </span>
             ) : goal.kind !== 'none' ? (
               <GoalWords goal={goal} />
@@ -140,38 +131,14 @@ export function FreeDeliveryBar(): React.JSX.Element | null {
         >
           <path d="M9 5l7 7-7 7" />
         </svg>
-      </Link>
-      {note?.undo ? (
-        // Beside the pill, not inside it: the pill is a link to the bag
-        <button
-          type="button"
-          onClick={() => undoBagChange(note.prevKey)}
-          className="bg-paper text-ink border-line font-ui rounded-pill rise-in fixed bottom-[calc(max(12px,env(safe-area-inset-bottom))+76px)] right-[max(12px,calc(50%-208px))] z-[44] min-h-11 border px-4 text-[14px] font-semibold shadow-sm [html[data-buy-bar]_&]:bottom-[160px] md:[html[data-buy-bar]_&]:bottom-[calc(max(12px,env(safe-area-inset-bottom))+76px)]"
-        >
-          Undo
-        </button>
-      ) : null}
-    </>
+    </Link>
   );
 }
 
-/** The pill's one line for the bag's goal ("Add $12.40 more for FREE 7-DAY DELIVERY", "FREE DELIVERY unlocked", …). */
+/** The pill's one line for the bag's goal ("$12.40 more and the flight's on us", "FREE DELIVERY + saving $1.40", …). */
 function GoalWords({ goal }: { goal: BagGoal }): React.JSX.Element | null {
   const big = (words: string) => <b className="font-bold tracking-[0.02em]">{words}</b>;
   switch (goal.kind) {
-    case 'quick-gap':
-      return (
-        <>
-          <b className="font-bold">{formatUsd(goal.leftCents)}</b> more for {big('FREE 7-DAY DELIVERY')}
-        </>
-      );
-    case 'quick-free':
-      return (
-        <>
-          {big('FREE 7-DAY DELIVERY')}
-          {goal.arrivesByDay ? <> · home by {dayName(goal.arrivesByDay)}</> : ' unlocked'}
-        </>
-      );
     case 'free-gap':
       return (
         // D-161: the homesick plan's words; "free delivery" stays for screen readers and the bag's own line
@@ -205,12 +172,11 @@ function GoalWords({ goal }: { goal: BagGoal }): React.JSX.Element | null {
 }
 
 /**
- * "Coming home Sat, Oct 31" for three seconds after each add (the plan's toast, D-161): the newest piece's date as the
- * bag's own answer says it (its 7-day date when it travels in the 7-day shipment, else the standard window), or the
- * standard days from Settings before that answer is in. Nothing on the first draw.
+ * "Coming home in 7 delivery days" for three seconds after each add (the plan's toast, D-161, D-187): the newest piece's
+ * delivery days from Settings. Nothing on the first draw.
  */
-function useComingHome(count: number, newest: CartLine | undefined, charges: BagCharges | null): { key: number; date: string } | null {
-  const { standard } = useDays();
+function useComingHome(count: number, newest: CartLine | undefined): { key: number; days: string } | null {
+  const { food, standard } = useDays();
   const last = useRef<number | null>(null);
   const timer = useRef<ReturnType<typeof setTimeout> | undefined>(undefined);
   const [key, setKey] = useState(0);
@@ -233,13 +199,7 @@ function useComingHome(count: number, newest: CartLine | undefined, charges: Bag
     last.current = count;
   }, [count]);
   if (!on || !newest) return null;
-  const f = charges?.shipments ?? null;
-  const state = bagShipmentState(f);
-  const inQuick = f !== null && (state === 'quick' || state === 'split') && f.quickIds.includes(newest.variantId);
-  const from = inQuick ? f.dates.quickFrom : f?.dates.standardFrom;
-  const to = inQuick ? f.dates.quickTo : f?.dates.standardTo;
-  if (from && to) return { key, date: doorDate(from, to) };
-  if (!standard) return null;
-  const d = datesIn(standard.min, standard.max);
-  return { key, date: doorDate(d.from, d.to) };
+  const d = newest.productType === 'food' ? food : standard;
+  const days = deliveryDaysLabel(d?.min, d?.max);
+  return days ? { key, days } : null;
 }

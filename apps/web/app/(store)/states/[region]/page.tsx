@@ -6,13 +6,12 @@ import { PRODUCT_TYPE_LABEL, PRODUCT_TYPE_PATH, PRODUCT_TYPES, type ProductType 
 import { inStatePage, PAGE, parseBrowseQuery, toBrowseFilter } from '@/features/catalog/browse-query';
 import { BrowseView } from '@/features/catalog/browse-view';
 import { CuratedCard } from '@/features/catalog/curated-card';
-import { browseStateCached, getHomeCached, getRegionHeadCached, getStorePolicyCached } from '@/features/catalog/data';
+import { browseStateCached, getHomeCached, getRegionHeadCached } from '@/features/catalog/data';
 import { ProductRow } from '@/features/catalog/product-row';
 import { StorePhoto } from '@/features/catalog/store-photo';
 import { RegionAlbum } from '@/features/regions/region-album';
 import { ComingSoon, RegionTypeTabs } from '@/features/regions/region-type-tabs';
 import { scriptFontClass } from '@/features/regions/script-fonts';
-import { QUICK_TYPES } from '@/features/seven-day/links';
 import { mediaUrl, SITE_NAME } from '@/lib/site';
 
 import { sharePhoto } from './[product]/product-seo';
@@ -21,7 +20,7 @@ import type { Metadata } from 'next';
 
 type Params = Promise<{ region: string }>;
 
-/** A state page's reads, all cached: its head, the policy and its first type's first 24 cards (D-157). */
+/** A state page's reads, all cached: its head and its first type's first 24 cards (D-157). */
 async function regionReads(slug: string) {
   const page = await getRegionHeadCached(slug);
   if (!page) return null;
@@ -29,13 +28,11 @@ async function regionReads(slug: string) {
   // Clothing, or the first type the state has
   const firstType = PRODUCT_TYPES.find((t) => counts[t] > 0) ?? 'clothing';
   const query = inStatePage(parseBrowseQuery({}), slug);
-  const [policy, initial] = await Promise.all([
-    getStorePolicyCached(),
+  const initial =
     page.region.is_live && counts[firstType] > 0
-      ? browseStateCached({ ...toBrowseFilter(firstType, query, 0, PAGE), regionSlug: slug })
-      : null,
-  ]);
-  return { page, firstType, query, policy, initial };
+      ? await browseStateCached({ ...toBrowseFilter(firstType, query, 0, PAGE), regionSlug: slug })
+      : null;
+  return { page, firstType, query, initial };
 }
 
 /** The 36 region pages are built ahead of time and refreshed from the cache (PR-1). */
@@ -43,7 +40,7 @@ export async function generateStaticParams(): Promise<{ region: string }[]> {
   // A page that fails to build fails the whole deploy, with no way to skip it: a busy database did so twice on
   // 2026-10-31 (statement timeouts while the sourcing runner was adding listings). So each page's reads are made here
   // first, two states at a time, which fills the cache its build then reads; a state whose reads fail is left out and
-  // built on its first visit instead, as 7-day's pages are. A failed read has already waited a minute for the database
+  // built on its first visit instead. A failed read has already waited a minute for the database
   // (data.ts), so the states after it are left out unread: this list has 240 s, not a minute for each of 36 states.
   try {
     const { regions } = await getHomeCached();
@@ -80,14 +77,13 @@ export async function generateMetadata({ params }: { params: Params }): Promise<
 export default async function RegionPage({ params }: { params: Params }): Promise<React.JSX.Element> {
   const reads = await regionReads((await params).region);
   if (!reads) notFound();
-  const { page, firstType, query, policy, initial } = reads;
+  const { page, firstType, query, initial } = reads;
   const { region, album, most_wanted: mostWanted, curated, type_counts: counts } = page;
   const slugOf = (type: ProductType): string => PRODUCT_TYPE_PATH[type].slice(1);
   const tabs = PRODUCT_TYPES.map((t) => ({ slug: slugOf(t), label: PRODUCT_TYPE_LABEL[t], count: counts[t] }));
   // D-157: the first type's inventory as See all draws it, the state fixed: its first 24 cards and filter counts, one
   // cached store_browse() read refreshed with the state (a sale shows Sold out here at once); the other types are read
   // when opened (region-type-tabs.tsx), so building the 36 state pages reads one inventory each
-  const quickDays = policy.quick_delivery_on ? policy.quick_delivery_days_max : null;
   const firstView =
     initial && initial.total > 0 ? (
       <BrowseView
@@ -95,8 +91,6 @@ export default async function RegionPage({ params }: { params: Params }): Promis
         title={PRODUCT_TYPE_LABEL[firstType]}
         initialQuery={query}
         initial={initial}
-        quickDays={quickDays}
-        quickBand={QUICK_TYPES.includes(firstType)}
       />
     ) : (
       <ComingSoon type={firstType} regionName={region.name} />
@@ -162,7 +156,6 @@ export default async function RegionPage({ params }: { params: Params }): Promis
             region={region.slug}
             regionName={region.name}
             firstView={firstView}
-            quickDays={quickDays}
           />
         </>
       )}

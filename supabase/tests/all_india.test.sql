@@ -7,8 +7,8 @@ select tests.setup();
 alter table public.products disable trigger products_wears;
 
 insert into public.regions (slug, name) values ('test-other-region', 'Test other region');
-insert into public.products (slug, name, product_type, region_id, category_id, vendor_id, price_cents, status, published_at)
-values ('test-all-india', 'Test all-India kurta', 'clothing', null, tests.id('cat_clothing'), tests.id('vendor'), 4500,
+insert into public.products (slug, name, product_type, region_id, category_id, price_cents, status, published_at)
+values ('test-all-india', 'Test all-India kurta', 'clothing', null, tests.id('cat_clothing'), 4500,
         'live', now() + interval '1 day');
 select tests.remember('india', (select id from public.products where slug = 'test-all-india'));
 insert into public.product_variants (product_id, sku, label, qty_listed) values (tests.id('india'), 'TEST-INDIA-1', 'M', 4);
@@ -57,15 +57,6 @@ select tests.remember('o', (select order_id from public.create_order(jsonb_build
 select tests.assert((select region_name is null from public.order_items where order_id = tests.id('o')),
   'the order line has no state');
 
--- One online vendor for all India per shop; a state's online vendor stays its own.
-select tests.assert(public._online_vendor('myntra.com', 'Myntra', null) = public._online_vendor('myntra.com', 'Myntra', null),
-  'one all-India vendor per online shop');
-select tests.assert(public._online_vendor('myntra.com', 'Myntra', null)
-                    <> public._online_vendor('myntra.com', 'Myntra', tests.id('region')),
-  'a state''s online vendor is another row');
-select tests.assert_fails($$insert into public.vendors (shop_name, status) values ('No state, not online', 'active')$$,
-  'vendors_region_or_online', 'a shop in person still needs its state');
-
 -- Targets: all states, a shop list, a band; the same name twice for all states is one target.
 insert into public.sourcing_targets (name, query, product_type, category_id, sites, min_price_paise, max_price_paise, listings)
 values ('Kurta sets', 'kurta set women', 'clothing', tests.id('cat_clothing'), '{myntra.com}', 60000, 160000, 15);
@@ -78,10 +69,10 @@ select tests.assert_fails($$insert into public.sourcing_targets (name, query, pr
 
 -- Home & gifts without a weight: shop ₹ × 1.5 g, at least 200 g, at most the category's weight.
 insert into public.categories (product_type, slug, name, default_weight_g) values ('home', 'test-home', 'Test home', 1500);
-insert into public.products (slug, name, product_type, region_id, category_id, vendor_id, price_cents, shop_price_paise,
+insert into public.products (slug, name, product_type, region_id, category_id, price_cents, shop_price_paise,
                              price_auto, status)
 values ('test-basket', 'Test basket', 'home', null, (select id from public.categories where slug = 'test-home'),
-        tests.id('vendor'), 100, 20000, true, 'draft');
+        100, 20000, true, 'draft');
 insert into public.product_variants (product_id, sku, label, qty_listed)
 select id, 'TEST-BASKET-1', 'One size', 2 from public.products where slug = 'test-basket';
 select tests.assert((select price_cents from public.products where slug = 'test-basket')

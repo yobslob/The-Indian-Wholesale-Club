@@ -5,27 +5,22 @@ select tests.setup();
 alter table public.products disable trigger products_wears;
 
 -- Fixture. test-live already has 2 pieces ordered by the two setup orders (and 1 left).
-insert into public.products (slug, name, product_type, region_id, category_id, vendor_id, price_cents, status,
+insert into public.products (slug, name, product_type, region_id, category_id, price_cents, status,
                              published_at, is_placeholder)
 values
-  ('mw-top', 'Ordered most', 'clothing', tests.id('region'), tests.id('cat_clothing'), tests.id('vendor'),
-   4000, 'live', now() - interval '9 days', false),
-  ('mw-tie-old', 'One ordered, older', 'clothing', tests.id('region'), tests.id('cat_clothing'), tests.id('vendor'),
-   4000, 'live', now() - interval '8 days', false),
-  ('mw-tie-new', 'One ordered, newer', 'clothing', tests.id('region'), tests.id('cat_clothing'), tests.id('vendor'),
-   4000, 'live', now() - interval '1 day', false),
+  ('mw-top', 'Ordered most', 'clothing', tests.id('region'), tests.id('cat_clothing'), 4000, 'live', now() - interval '9 days', false),
+  ('mw-tie-old', 'One ordered, older', 'clothing', tests.id('region'), tests.id('cat_clothing'), 4000, 'live', now() - interval '8 days', false),
+  ('mw-tie-new', 'One ordered, newer', 'clothing', tests.id('region'), tests.id('cat_clothing'), 4000, 'live', now() - interval '1 day', false),
   ('mw-tie-mid', 'One ordered, in between', 'clothing', tests.id('region'), tests.id('cat_clothing'),
-   tests.id('vendor'), 4000, 'live', now() - interval '6 days', false),
+   4000, 'live', now() - interval '6 days', false),
   ('mw-cancelled', 'Only in a cancelled order', 'clothing', tests.id('region'), tests.id('cat_clothing'),
-   tests.id('vendor'), 4000, 'live', now() - interval '2 days', false),
-  ('mw-old', 'Only ordered 40 days ago', 'clothing', tests.id('region'), tests.id('cat_clothing'), tests.id('vendor'),
-   4000, 'live', now() - interval '3 days', false),
+   4000, 'live', now() - interval '2 days', false),
+  ('mw-old', 'Only ordered 40 days ago', 'clothing', tests.id('region'), tests.id('cat_clothing'), 4000, 'live', now() - interval '3 days', false),
   ('mw-line-refunded', 'Its line was refunded', 'clothing', tests.id('region'), tests.id('cat_clothing'),
-   tests.id('vendor'), 4000, 'live', now() - interval '4 days', false),
+   4000, 'live', now() - interval '4 days', false),
   ('mw-sold-out', 'Sold out after orders', 'clothing', tests.id('region'), tests.id('cat_clothing'),
-   tests.id('vendor'), 4000, 'live', now() - interval '5 days', false),
-  ('mw-never', 'Never ordered', 'clothing', tests.id('region'), tests.id('cat_clothing'), tests.id('vendor'),
-   4000, 'live', now(), false);
+   4000, 'live', now() - interval '5 days', false),
+  ('mw-never', 'Never ordered', 'clothing', tests.id('region'), tests.id('cat_clothing'), 4000, 'live', now(), false);
 insert into public.product_variants (product_id, sku, label, qty_listed)
 select id, upper(slug), 'Free size', case slug when 'mw-sold-out' then 2 else 10 end
 from public.products where slug like 'mw-%';
@@ -90,10 +85,10 @@ select tests.assert(
 reset role;
 
 -- The row holds twelve (D-062). Twelve newer pieces ordered once each must not push out an older piece ordered more.
-insert into public.products (slug, name, product_type, region_id, category_id, vendor_id, price_cents, status,
+insert into public.products (slug, name, product_type, region_id, category_id, price_cents, status,
                              published_at, is_placeholder)
 select 'mw-new-' || i, 'Newer, ordered once ' || i, 'clothing', tests.id('region'), tests.id('cat_clothing'),
-       tests.id('vendor'), 4000, 'live', now() + i * interval '1 hour', false
+       4000, 'live', now() + i * interval '1 hour', false
 from generate_series(1, 12) i;
 insert into public.product_variants (product_id, sku, label, qty_listed)
 select id, upper(slug), 'Free size', 5 from public.products where slug like 'mw-new-%';

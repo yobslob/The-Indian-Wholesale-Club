@@ -12,7 +12,6 @@ import { mediaUrl } from '@/lib/site';
 
 import { BuyBar } from './buy-bar';
 import { OptionRows } from './option-rows';
-import { useLiveAvailability } from './use-live-availability';
 
 import type { Product, Variant } from '@repo/db/store';
 
@@ -24,14 +23,12 @@ interface Props {
   variants: Variant[];
   /** Shown just above the button (the delivery window, D-008). */
   delivery?: React.ReactNode;
-  /** A 7-day piece (D-154): the bag's goal knows it from the add (bag-goal.ts). */
-  quick?: boolean;
 }
 
 const stepButton = 'grid size-11 place-items-center text-lg font-medium disabled:cursor-default disabled:text-line';
 
 /**
- * Variant picker + live availability + add to bag, with the phone buy bar standing in for the button whenever it is
+ * Variant picker + availability as the cached page was built (§10 Y-3: checkout checks the stock) + add to bag, with the phone buy bar standing in for the button whenever it is
  * off the screen (D-082; launch QA B-2: also before it has scrolled into view). Colour and size
  * get a row each when the variants carry them (`optionAxes`); otherwise one button per variant (option-rows.tsx).
  * D-140 (L3): no size (or option) is chosen until the customer taps one, so a quick Add never buys the smallest size:
@@ -40,12 +37,7 @@ const stepButton = 'grid size-11 place-items-center text-lg font-medium disabled
  * Launch QA B-1: until a pick the price is "From $x" (the lowest in stock) when the options differ, so the price shown
  * is never one the bag then changes; after the pick it is that option's price, the one the bag line gets.
  */
-export function AddToCart({ product, variants, delivery, quick = false }: Props): React.JSX.Element {
-  const initial = useMemo(
-    () => Object.fromEntries(variants.map((v) => [v.id, v.available])),
-    [variants],
-  );
-  const available = useLiveAvailability(product.id, initial);
+export function AddToCart({ product, variants, delivery }: Props): React.JSX.Element {
   const add = useCart((s) => s.add);
   const lines = useCart((s) => s.lines);
   const [variantId, setVariantId] = useState(
@@ -71,7 +63,7 @@ export function AddToCart({ product, variants, delivery, quick = false }: Props)
   const axes = useMemo(() => optionAxes(variants), [variants]);
   const variant = variants.find((v) => v.id === variantId);
   if (!variant) return <p className="text-ink-muted text-sm">Not available right now.</p>;
-  const inStock = (v: Variant): boolean => (available[v.id] ?? 0) > 0;
+  const inStock = (v: Variant): boolean => v.available > 0;
   const selection = selectionOf(variant, axes);
   const select = (id: string): void => {
     setVariantId(id);
@@ -87,12 +79,9 @@ export function AddToCart({ product, variants, delivery, quick = false }: Props)
     setNudge((n) => n + 1);
   };
   const inBagNow = mounted && picked ? (lines.find((l) => l.variantId === variant.id)?.quantity ?? 0) : 0;
-  const price = optionPriceLabel(
-    variants.map((v) => ({ price_cents: v.price_cents, available: available[v.id] ?? 0 })),
-    picked ? variant : null,
-  );
+  const price = optionPriceLabel(variants, picked ? variant : null);
 
-  const left = available[variant.id] ?? 0;
+  const left = variant.available;
   const soldOut = left <= 0;
   const maxQty = Math.max(1, Math.min(left, MAX_QTY_PER_LINE));
   const addToBag = (from: Element | null = button.current): void => {
@@ -109,7 +98,6 @@ export function AddToCart({ product, variants, delivery, quick = false }: Props)
         unitPriceCents: variant.price_cents,
         imagePath: product.primary_image_path,
         productType: product.product_type,
-        quick,
       },
       quantity,
     );

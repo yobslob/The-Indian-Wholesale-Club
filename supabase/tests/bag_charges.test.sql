@@ -31,10 +31,10 @@ select tests.assert_fails('select public.store_bag_charges(''{}''::jsonb)', 'inv
 reset role;
 
 -- D-154: $18.62 a billed kg: at least 1 kg, then by the half kg, food at its billed % (here 110%).
-update public.pricing_settings set shipping_cents_per_kg = 1862, food_billed_pct = 110, food_cleared = true where id = 1;
-insert into public.products (slug, name, product_type, region_id, category_id, vendor_id, price_cents, shop_price_paise, status)
-values ('test-masala-bag', 'Test masala', 'food', tests.id('region'), tests.id('cat_food'), tests.id('vendor'), 400, 5000, 'live'),
-       ('test-sack-bag', 'Test heavy sack', 'food', tests.id('region'), tests.id('cat_food'), tests.id('vendor'), 1600, 5000, 'live');
+update public.pricing_settings set shipping_cents_per_kg = 1862, food_billed_pct = 110 where id = 1;
+insert into public.products (slug, name, product_type, region_id, category_id, price_cents, shop_price_paise, status)
+values ('test-masala-bag', 'Test masala', 'food', tests.id('region'), tests.id('cat_food'), 400, 5000, 'live'),
+       ('test-sack-bag', 'Test heavy sack', 'food', tests.id('region'), tests.id('cat_food'), 1600, 5000, 'live');
 insert into public.product_variants (product_id, sku, label, qty_listed, weight_g)
 select id, 'TEST-MASALA-BAG', '100 g', 99, 100 from public.products where slug = 'test-masala-bag'
 union all

@@ -23,7 +23,7 @@ export async function itemRefundCents(client: IwcClient, itemId: string): Promis
   );
 }
 
-/** Before cutoff: the customer's own cancel keeps the tax; a cancel because of us refunds everything. */
+/** Before it ships: the customer's own cancel keeps the tax; a cancel because of us refunds everything. */
 export async function cancelRefundCents(
   client: IwcClient,
   orderId: string,

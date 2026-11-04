@@ -1,7 +1,7 @@
 import { emailSchema, shippingAddressSchema, US_STATES } from '@repo/shared/domain';
 
 import type { BagLine } from '../cart/store';
-import type { CheckoutRequestBody, ShippingMethod } from '@repo/shared/domain';
+import type { CheckoutRequestBody } from '@repo/shared/domain';
 
 /** Checkout details → request body. Pure (no React Native), so it has unit tests. */
 
@@ -44,7 +44,6 @@ export function stateCode(value: string): string {
 export function toCheckoutRequest(
   details: Details,
   lines: BagLine[],
-  shippingMethod: ShippingMethod,
 ): { body: CheckoutRequestBody } | { error: string } {
   const email = emailSchema.safeParse(details.email);
   if (!email.success)
@@ -58,7 +57,6 @@ export function toCheckoutRequest(
       address: address.data,
       lines: lines.map((l) => ({ variantId: l.variantId, quantity: l.quantity })),
       promoCode: details.promoCode.trim() || null,
-      shippingMethod,
     },
   };
 }

@@ -1,30 +1,30 @@
 import Link from 'next/link';
 
-import { DUTIES_PAID, formatDeliveryWindow, formatUsd } from '@repo/shared/domain';
+import { DUTIES_PAID, formatUsd } from '@repo/shared/domain';
+
+import { deliveryDaysLabel } from '@/features/catalog/delivery-days';
 
 import type { HomeData, StorePolicy } from '@repo/db/store';
 
 /**
- * A slim band on Home (D-140, plan L7): when an order placed today arrives, where delivery turns free and how long
- * returns stay open, so nobody has to scroll to the bottom to learn how buying from India works. D-161 (the homesick
- * plan's promises): the 7-day store's free line and "Duties paid. Nothing to pay at your door." too (founder
- * 2026-10-30: no festival line here; the flight banner carries it). Every number comes from the store's own data (store_home, store_policy;
- * D-008, D-012): a missing one is simply left out.
+ * A slim band at the end of Home (D-140, plan L7): how long an order takes in delivery days (D-187, no date), where
+ * delivery turns free and how long returns stay open, so nobody has to scroll to the bottom to learn how buying from
+ * India works. Every number comes from the store's own data (store_home, store_policy; D-008, D-012): a missing one is
+ * simply left out.
  */
 export function DeliveryBand({
-  delivery,
   band,
   policy,
 }: {
-  delivery: HomeData['delivery'];
   band: HomeData['band'];
   policy: StorePolicy;
 }): React.JSX.Element | null {
-  const quickFree = policy.quick_delivery_on && policy.quick_delivery_min_cents ? policy.quick_delivery_min_cents : null;
+  const food = deliveryDaysLabel(policy.food_delivery_days_min, policy.food_delivery_days_max);
+  const rest = deliveryDaysLabel(policy.delivery_days_min, policy.delivery_days_max);
   const parts = [
-    delivery ? `From India to your door ${formatDeliveryWindow(delivery.est_delivery_from, delivery.est_delivery_to)}` : null,
+    food ? `Food in ${food}` : null,
+    rest ? `Clothing and home & gifts in ${rest}` : null,
     band?.free_min_cents ? `Free delivery from ${formatUsd(band.free_min_cents)}` : null,
-    quickFree ? `Free 7-day delivery from ${formatUsd(quickFree)}` : null,
     DUTIES_PAID ? 'Duties paid' : null,
     band?.return_claim_days ? `Returns within ${band.return_claim_days} days` : null,
   ].filter((p): p is string => Boolean(p));

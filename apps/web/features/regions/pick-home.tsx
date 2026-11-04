@@ -4,9 +4,9 @@ import { INDIA_MAP as MAP, TINY_REGIONS as TINY } from '@repo/shared/india-map';
 
 import { PickHomeInteractive } from './pick-home-interactive';
 import styles from './pick-home.module.css';
-import { postmarkFor, StampGrid } from './region-stamp';
+import { StampGrid } from './region-stamp';
 
-import type { DeliveryWindow, RegionCard } from '@repo/db/store';
+import type { RegionCard } from '@repo/db/store';
 
 const accent = (r: RegionCard): React.CSSProperties =>
   ({ '--acc': r.accent_color ?? 'var(--brand)' }) as React.CSSProperties;
@@ -16,17 +16,10 @@ const accent = (r: RegionCard): React.CSSProperties =>
  * beside the open regions as postage stamps and every other region by name. The map is decorative for
  * screen readers: the names and stamps are the same links. PickHomeInteractive adds hover, search and tips.
  */
-export function PickHome({
-  regions,
-  delivery,
-}: {
-  regions: RegionCard[];
-  delivery: DeliveryWindow | null;
-}): React.JSX.Element {
+export function PickHome({ regions }: { regions: RegionCard[] }): React.JSX.Element {
   const bySlug = new Map(regions.map((r) => [r.slug, r]));
   const live = regions.filter((r) => r.is_live);
   const soon = regions.filter((r) => !r.is_live);
-  const postmark = postmarkFor(delivery);
 
   return (
     <PickHomeInteractive className={styles.pick} regions={regions.map((r) => ({ slug: r.slug, name: r.name, live: r.is_live }))}>
@@ -79,7 +72,7 @@ export function PickHome({
             <span>Open now</span>
             <span>{live.length}</span>
           </h3>
-          <StampGrid regions={live} postmark={postmark} idPrefix="pm" />
+          <StampGrid regions={live} />
         </div>
 
         <div>

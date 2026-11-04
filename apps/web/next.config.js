@@ -1,6 +1,6 @@
 /**
  * Supabase origin (hosted *.supabase.co or local http://127.0.0.1:54321) for
- * images, auth, Realtime and the Content-Security-Policy.
+ * images, auth and the Content-Security-Policy.
  */
 const supabaseUrl = process.env.NEXT_PUBLIC_SUPABASE_URL
   ? new URL(process.env.NEXT_PUBLIC_SUPABASE_URL)
@@ -48,12 +48,12 @@ function mediaRewrites() {
 }
 
 /**
- * /clothing, /food and /home-and-gifts with any of ?state=, ?category=, ?show=, ?for= →
- * /see-all/<type>/<state>/<category>/<show>/<for> ("all" and 24 when absent; ?for= is women or men, D-140). The rules with the most filters come first; a filter that is not a plain slug or number
- * is left out, as the page always did (browseParams).
+ * /clothing, /food and /home-and-gifts with any of ?state=, ?category=, ?for= → /see-all/<type>/<state>/<category>/<for>
+ * ("all" when absent; ?for= is women or men, D-140). The rules with the most filters come first; a filter that is not a
+ * plain slug is left out, as the page always did (browseParams). R-6: no ?show=: an old link lands on the first page.
  */
 function seeAllRewrites() {
-  const filters = { state: '[a-z0-9-]{1,80}', category: '[a-z0-9-]{1,80}', show: '[0-9]{1,4}', for: 'women|men' };
+  const filters = { state: '[a-z0-9-]{1,80}', category: '[a-z0-9-]{1,80}', for: 'women|men' };
   const keys = Object.keys(filters);
   const sets = [];
   for (let mask = 0; mask < 1 << keys.length; mask += 1) sets.push(keys.filter((_, i) => mask & (1 << i)));
@@ -64,21 +64,27 @@ function seeAllRewrites() {
       ...(used.length
         ? { has: used.map((k) => ({ type: 'query', key: k, value: `(?<${k}>${filters[k]})` })) }
         : {}),
-      destination: `/see-all/:type/${keys.map((k) => (used.includes(k) ? `:${k}` : k === 'show' ? '24' : 'all')).join('/')}`,
+      destination: `/see-all/:type/${keys.map((k) => (used.includes(k) ? `:${k}` : 'all')).join('/')}`,
     }));
 }
+
 /**
- * D-154: the 7-day store's See all pages, /7-day-delivery/food and /7-day-delivery/home-and-gifts with ?category= →
- * /7-day-delivery/<type>/<category> ("all" when absent). Its other filters are read in the browser.
+ * D-187: the 7-day store's and the vendor pages' old addresses, permanent, with no page cache and no function. The first
+ * rule that matches wins, so each more specific one comes first (tests/redirects.test.ts). The query goes along by
+ * itself: /7-day-delivery/food?category=sweets → /food?category=sweets.
  */
-function quickRewrites() {
-  const source = '/7-day-delivery/:type(food|home-and-gifts)';
+function oldAddresses() {
+  const type = ':type(food|home-and-gifts)';
   return [
-    { source, has: [{ type: 'query', key: 'category', value: '(?<category>[a-z0-9-]{1,80})' }], destination: '/7-day-delivery/:type/:category' },
-    { source, destination: '/7-day-delivery/:type/all' },
+    { source: '/7-day-delivery/search', destination: '/search', permanent: true },
+    { source: `/7-day-delivery/${type}/all`, destination: '/:type', permanent: true },
+    { source: `/7-day-delivery/${type}/:category`, destination: '/:type?category=:category', permanent: true },
+    { source: `/7-day-delivery/${type}`, destination: '/:type', permanent: true },
+    { source: '/7-day-delivery', destination: '/food', permanent: true },
+    { source: '/vendor/:path*', destination: '/', permanent: true },
   ];
 }
-const supabaseWs = supabaseOrigin.replace(/^http/, 'ws');
+
 // React Fast Refresh needs eval in development only.
 const devEval = process.env.NODE_ENV === 'production' ? '' : " 'unsafe-eval'";
 
@@ -119,6 +125,22 @@ const STRIPE = {
   img: 'https://*.link.com',
 };
 
+const supabaseWs = supabaseOrigin.replace(/^http/, 'ws');
+
+/** The Content-Security-Policy of every page but the importer; `connectExtra`: what else it may connect to. */
+const siteCsp = (connectExtra) =>
+  [
+    "default-src 'self'",
+    `script-src 'self' 'unsafe-inline'${devEval} ${STRIPE.script}`,
+    `frame-src 'self' ${STRIPE.frame}`,
+    "style-src 'self' 'unsafe-inline'",
+    "font-src 'self' data:",
+    `img-src 'self' data: blob: ${supabaseOrigin} ${STRIPE.img}`,
+    `connect-src 'self' ${supabaseOrigin}${connectExtra} ${STRIPE.connect}`,
+    ...LOCKED_DOWN,
+    ...REPORTING,
+  ].join('; ');
+
 /** @type {import('next').NextConfig} */
 const nextConfig = {
   // No "X-Powered-By: Next.js" on every answer: it only tells a scanner what to try.
@@ -145,11 +167,11 @@ const nextConfig = {
   // The See all pages and their filters are served from one cached route (app/(store)/see-all), like the state pages,
   // instead of rendering on every request; the address in the browser stays /clothing?state=kerala (D-011, PR-1).
   async rewrites() {
-    return { beforeFiles: [...mediaRewrites(), ...seeAllRewrites(), ...quickRewrites()] };
+    return { beforeFiles: [...mediaRewrites(), ...seeAllRewrites()] };
   },
   // D-110: Spices became Food; old links keep working.
   async redirects() {
-    return [{ source: '/spices', destination: '/food', permanent: true }];
+    return [{ source: '/spices', destination: '/food', permanent: true }, ...oldAddresses()];
   },
   async headers() {
     return [
@@ -164,25 +186,14 @@ const nextConfig = {
       },
       {
         // Every page but the importer, whose preview shows the source site's photos before they are copied (D-110).
+        // No websocket here: store pages open no live connection (§10 Y-3).
         source: '/((?!admin/import).*)',
-        headers: [
-          {
-            key: 'Content-Security-Policy',
-            value: [
-              "default-src 'self'",
-              `script-src 'self' 'unsafe-inline'${devEval} ${STRIPE.script}`,
-              `frame-src 'self' ${STRIPE.frame}`,
-              "style-src 'self' 'unsafe-inline'",
-              "font-src 'self' data:",
-              `img-src 'self' data: blob: ${supabaseOrigin} ${STRIPE.img}`,
-              `connect-src 'self' ${supabaseOrigin} ${supabaseWs} ${STRIPE.connect}`,
-              ...LOCKED_DOWN,
-              ...REPORTING,
-            ].join('; '),
-          },
-          REPORTING_ENDPOINTS,
-          ...SECURITY_HEADERS,
-        ],
+        headers: [{ key: 'Content-Security-Policy', value: siteCsp('') }, REPORTING_ENDPOINTS, ...SECURITY_HEADERS],
+      },
+      {
+        // Later rules win. Only the admin's live Today (features/admin/live-feed.tsx) may open the Supabase socket.
+        source: '/admin/:path*',
+        headers: [{ key: 'Content-Security-Policy', value: siteCsp(` ${supabaseWs}`) }],
       },
       {
         source: '/admin/import',
@@ -216,12 +227,12 @@ const nextConfig = {
       // Cache-Control); CDN-Cache-Control is for the CDN alone. Free: no page-cache (ISR) writes, and a repeat search
       // costs no function call or database read. The Try again address (?retry=1) and a search without words are never
       // kept, so a busy moment is never kept either once a person presses Try again.
-      ...['/search', '/7-day-delivery/search'].map((source) => ({
-        source,
+      {
+        source: '/search',
         has: [{ type: 'query', key: 'q' }],
         missing: [{ type: 'query', key: 'retry' }],
         headers: [{ key: 'CDN-Cache-Control', value: 'max-age=300, stale-while-revalidate=600' }],
-      })),
+      },
     ];
   },
 };

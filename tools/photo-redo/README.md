@@ -58,8 +58,9 @@ pick up the new path within their 5-minute refresh; no page-cache write is asked
    also lists and deletes). Optional `IWC_REDO_OUT` (the work folder).
 3. The photo worker set up (`tools/photo-worker/README.md`), with its three extra models for the redo, and the house
    models as one folder each in `C:\kod\iwc-photo-models\house-models\`: `w-1\front.jpg` and `back.jpg` …, `m-1\` …
-   for men (the first letter says who wears it unless the database has a house model of that slug). Every folder there
-   with a `front.jpg` in which a face is found is used; the larger the photo, the better the faces. A model taken
+   for men (the folder is the whole list, D-187). Every folder there
+   with a `front.jpg` in which a face is found is used; the larger the photo, the better the faces. With none,
+   `redo.py --type clothing` stops before changing anything and says where it looked. A model taken
    out of the folder is safe: its listings get another, and photos drawn on it are made again by the next `redo.py`
    and never published (`IWC_MODELS` tells `publish` where the folder is; default `C:\kod\iwc-photo-models`). On the
    laptop (2026-10-30): `w-1` – `w-5` (about 540 × 1450, faces about 100 px wide; the founder removed `w-6`); the

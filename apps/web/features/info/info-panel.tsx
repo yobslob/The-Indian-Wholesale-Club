@@ -54,7 +54,7 @@ export function InfoPanel({ title, children }: { title: string; children: React.
             </svg>
           </button>
         </header>
-        <div ref={body} className="info-body" data-lenis-prevent>
+        <div ref={body} className="info-body">
           <h2 className="font-heading text-[clamp(28px,3vw,40px)] font-medium leading-[1.1] tracking-[-0.02em] text-[#1D1A17]">
             {title}
           </h2>

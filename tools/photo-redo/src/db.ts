@@ -8,7 +8,6 @@ import type { Env } from './env';
 /** The redo's door to IWC: the worker account (never a service key) and the worker_photo_* functions (D-163). */
 
 const planSchema = z.object({
-  house_models: z.array(z.object({ slug: z.string(), wears: z.enum(['women', 'men']) })),
   listings: z.array(
     z.object({
       product_id: z.string().uuid(),

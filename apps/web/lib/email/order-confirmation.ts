@@ -1,7 +1,7 @@
 import { CUSTOMER_STATUS_LABEL, formatDeliveryWindow, formatUsd } from '@repo/shared/domain';
 
 import { button, escapeHtml, frame, paragraph, pieces, small, totals, type EmailContext } from './frame';
-import { arrives, piecesOf } from './shipments';
+import { arrives, piecesOf, shipmentName } from './shipments';
 
 import type { OrderDetail } from '@repo/db/store';
 
@@ -43,10 +43,10 @@ export function orderConfirmationHtml(order: OrderDetail, ctx: EmailContext): st
         window ? ` It lands <strong>${escapeHtml(window)}</strong>.` : ''
       } We'll write once more when it's on its way.`,
     ),
-    // D-154: two shipments, each with its date and its pieces
+    // D-154, D-187: two shipments, each with its date and its pieces
     ...(order.shipments.length > 1
       ? order.shipments.flatMap((sh) => [
-          paragraph(`<strong>Shipment ${sh.seq}</strong>${arrives(sh) ? ` · ${escapeHtml(arrives(sh)!)}` : ''}`),
+          paragraph(`<strong>${escapeHtml(shipmentName(sh))}</strong>${arrives(sh) ? ` · ${escapeHtml(arrives(sh)!)}` : ''}`),
           pieces(piecesOf(order, sh), ctx),
           '<div style="height:14px"></div>',
         ])

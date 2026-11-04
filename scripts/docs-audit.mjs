@@ -119,7 +119,7 @@ const rewrites = nextConfig.rewrites ? await nextConfig.rewrites() : [];
 const rewriteRules = Array.isArray(rewrites) ? rewrites : [...(rewrites.beforeFiles ?? []), ...(rewrites.afterFiles ?? [])];
 const rewritten = new Set(
   rewriteRules.flatMap((r) => {
-    // /:type(clothing|food) and, inside the 7-day store (D-154), /7-day-delivery/:type(food|home-and-gifts)
+    // /:type(clothing|food)
     const alt = r.source.match(/^(.*)\/:\w+\(([^)]+)\)$/);
     return alt ? alt[2].split('|').map((s) => `${alt[1]}/${s}`) : [r.source];
   }),
@@ -131,7 +131,7 @@ const documented = new Set(
   ),
 );
 for (const route of webRoutes) {
-  // the dynamic route a rewrite serves (/see-all/[type]/…, /7-day-delivery/[type]/[category]), not its plain pages
+  // the dynamic route a rewrite serves (/see-all/[type]/…), not its plain pages
   if (internal.some((prefix) => route.startsWith(`${prefix}/`) && route.includes('['))) continue;
   if (!documented.has(route === '/' ? '/' : route))
     problems.push(`docs/storefront.md: page ${route} is not listed`);
@@ -152,7 +152,7 @@ for (const [, r] of tableRows.matchAll(/`(\/[^`\s]*)`/g)) {
 }
 
 // 4. App screens: each file under apps/app/app is named (by its route path) in the docs.
-const appDocs = storefront + docs['docs/admin.md']; // vendor mode: admin.md §Vendor screens (D-103)
+const appDocs = storefront + docs['docs/admin.md'];
 for (const f of walk('apps/app/app', (x) => x.endsWith('.tsx')).map(posix)) {
   const rel = f.replace('apps/app/app/', '').replace(/\.tsx$/, '');
   // Layouts and tab home screens (index) are covered by the tab lists in the docs.
@@ -185,7 +185,11 @@ for (const [, name] of sql.matchAll(
 for (const [, list] of sql.matchAll(/grant\s+execute\s+on\s+function\s+([\s\S]*?)\s+to\s+/gi)) {
   for (const [, name] of list.matchAll(/public\.(\w+)\s*\(/g)) objects.add(name);
 }
+// A later migration may drop what an earlier one made (D-187): the generated types are the schema as it ends up, so a
+// name they no longer hold is gone and is not asked for here.
+const finalSchema = read('packages/db/src/database.types.ts');
 for (const name of objects) {
+  if (!new RegExp(`\\b${name}\\b`).test(finalSchema)) continue;
   if (!new RegExp(`\\b${name}\\b`).test(dataModel))
     problems.push(`docs/data-model.md: ${name} (migrations) is not described`);
 }
@@ -204,6 +208,13 @@ for (const [name, file] of envVars) {
   if (!PLATFORM.has(name) && !ops.includes(name))
     problems.push(`docs/ops.md: ${name} (read in ${file}) is not listed`);
 }
+
+// A warning, not a failure (D-187, plan R-11): every session reads status.md, so history belongs in the archive.
+const statusBytes = Buffer.byteLength(docs['docs/status.md']);
+if (statusBytes > 10 * 1024)
+  console.log(
+    `Docs audit warning: docs/status.md is ${(statusBytes / 1024).toFixed(1)} KB, past 10 KB. Move its history to docs/archive/.\n`,
+  );
 
 if (problems.length) {
   console.log(`Docs audit: ${problems.length} mismatch(es)\n`);

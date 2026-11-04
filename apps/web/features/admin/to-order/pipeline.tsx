@@ -5,7 +5,7 @@ import { siteLabel } from '@repo/shared/sourcing';
 import { StorePhoto } from '@/features/catalog/store-photo';
 import { mediaUrl } from '@/lib/site';
 
-import { markExpressPickupAction } from '../actions/orders';
+import { markPieceAction } from '../actions/orders';
 import { PickedWeightInput, WeighPicked } from '../hub-weigh';
 import { button, Empty, rupees, When } from '../ui';
 
@@ -15,7 +15,7 @@ import { UnorderButton } from './unorder-button';
 import type { PipelinePiece } from '@repo/db/admin';
 
 /**
- * The India desk's pieces after ordering (D-140, F3; D-130): **On the way** (ordered, not at the hub: Picked with its
+ * The India desk's pieces after ordering (D-140, F3; D-130): **On the way** (ordered, not at the hub: At the hub with its
  * weight when it arrives) and **To weigh** (at the hub, not weighed yet). Each row links to its order.
  */
 export function PipelineList({ rows, view }: { rows: PipelinePiece[]; view: 'ordered' | 'weigh' }): React.JSX.Element {
@@ -27,7 +27,7 @@ export function PipelineList({ rows, view }: { rows: PipelinePiece[]; view: 'ord
         const product = p.variant?.product;
         const media = product?.media.slice().sort((a, b) => Number(b.is_primary) - Number(a.is_primary) || a.sort_order - b.sort_order)[0];
         const name = p.item.product_name;
-        const site = p.source?.site ?? product?.source_site ?? null;
+        const site = p.source?.site ?? p.site ?? product?.source_site ?? null;
         return (
           <li key={p.id} className="grid grid-cols-[40px_minmax(0,1fr)] items-center gap-x-3 gap-y-2 px-4 py-2.5 text-[14px] md:grid-cols-[40px_minmax(0,1fr)_auto]">
             <span className="bg-land relative block h-[54px] w-10 overflow-hidden rounded-lg">
@@ -60,7 +60,7 @@ export function PipelineList({ rows, view }: { rows: PipelinePiece[]; view: 'ord
             <span className="col-span-2 md:col-span-1">
               {view === 'ordered' ? (
                 <span className="flex flex-col items-start gap-1 md:items-end">
-                  <form action={markExpressPickupAction.bind(null, p.id, 'picked', p.item.order.id)} className="flex gap-1.5">
+                  <form action={markPieceAction.bind(null, p.id, 'picked', p.item.order.id)} className="flex gap-1.5">
                     {/* D-130: weighed as it arrives (optional): the listing is repriced on the scale's weight */}
                     <PickedWeightInput label={name} />
                     <button type="submit" className={button}>

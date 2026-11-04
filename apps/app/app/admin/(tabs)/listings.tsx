@@ -9,7 +9,7 @@ import type { Enum } from '@repo/db';
 import { Photo } from '@/components/photo';
 import { Body, Button, ErrorText, Loading, Screen } from '@/components/ui';
 import { listingNeeds } from '@/features/admin/listing-needs';
-import { AdminButton, AdminHead, Chip } from '@/features/admin/ui';
+import { AdminHead, Chip } from '@/features/admin/ui';
 import { supabase } from '@/lib/supabase';
 import { usePagedQuery } from '@/lib/use-paged-query';
 import { useQuery } from '@/lib/use-query';
@@ -21,8 +21,8 @@ const VIEWS: { key: Enum<'product_status'>; label: string }[] = [
 ];
 
 /**
- * Listings (D-097, India desk): New (the camera or many from the gallery) and Add many, then Drafts / Live / Paused
- * with counts, 50 at a time. A draft's card says what it still needs; opening a listing publishes it, pauses it and
+ * Listings (D-097, India desk; D-187: they come from the importer and the runner): Drafts / Live / Paused with counts,
+ * 50 at a time. A draft's card says what it still needs; opening a listing publishes it, pauses it and
  * confirms its pieces with the shop. Editing a listing's words stays on the web panel.
  */
 export default function AdminListingsScreen(): React.JSX.Element {
@@ -46,14 +46,6 @@ export default function AdminListingsScreen(): React.JSX.Element {
       }}
     >
       <AdminHead title="Listings" />
-      <View className="-mt-2 flex-row gap-2">
-        <View className="flex-1">
-          <AdminButton big icon="camera-outline" label="New listing" onPress={() => router.push('/admin/listing/new')} />
-        </View>
-        <View className="flex-1">
-          <AdminButton big kind="secondary" icon="images-outline" label="Add many" onPress={() => router.push('/admin/listing/many')} />
-        </View>
-      </View>
       <ScrollView horizontal showsHorizontalScrollIndicator={false} className="-mx-4 -mt-2" contentContainerClassName="gap-1.5 px-4">
         {VIEWS.map((v) => {
           const on = v.key === status;
@@ -92,7 +84,7 @@ export default function AdminListingsScreen(): React.JSX.Element {
                   {p.name}
                 </Text>
                 <Text numberOfLines={1} className="font-body text-ink-muted text-[12.5px]">
-                  {[p.region?.name, p.vendor?.shop_name, `${pieces} piece${pieces === 1 ? '' : 's'}`].filter(Boolean).join(' · ')}
+                  {[p.region?.name, p.source_site, `${pieces} piece${pieces === 1 ? '' : 's'}`].filter(Boolean).join(' · ')}
                 </Text>
                 {status === 'draft' ? <Chip tone={tone}>{need}</Chip> : null}
               </View>

@@ -18,6 +18,7 @@ import type { ProductCard as ProductCardData, RegionProductCard } from '@repo/db
 
 import { Photo } from '@/components/photo';
 import { useBag } from '@/features/cart/store';
+import { useDeliveryLine } from '@/features/shell/days';
 
 type CardData = ProductCardData & Partial<Pick<RegionProductCard, 'available' | 'quick_add'>>;
 
@@ -35,14 +36,6 @@ function QuickAdd({ product }: { product: CardData }): React.JSX.Element {
   const pressStyle = useAnimatedStyle(() => ({ transform: [{ scale: scale.value }] }));
   const round =
     'bg-paper border-line absolute bottom-2.5 right-2.5 h-10 w-10 items-center justify-center rounded-full border';
-  if (product.coming_soon) {
-    // D-135: not on sale yet; its page has the heart
-    return (
-      <View className="bg-paper rounded-pill absolute bottom-2.5 right-2.5 px-3 py-1.5">
-        <Text className="font-ui text-ink-muted text-xs">Coming soon</Text>
-      </View>
-    );
-  }
   if (product.available === 0) {
     return (
       <View className="bg-paper rounded-pill absolute bottom-2.5 right-2.5 px-3 py-1.5">
@@ -92,7 +85,6 @@ function QuickAdd({ product }: { product: CardData }): React.JSX.Element {
               variantLabel: quick.label,
               unitPriceCents: quick.price_cents,
               imagePath: product.primary_image_path,
-              quick: product.quick_days != null,
             },
             1,
           );
@@ -116,7 +108,7 @@ function QuickAdd({ product }: { product: CardData }): React.JSX.Element {
 
 /**
  * The founder's reference card (D-050): a rounded 3 : 4 photo with a round + on it (D-080), then the name and price ·
- * region across the card's full width. `row` is the fixed width for a sideways row (D-062); otherwise it fills half
+ * region and its delivery days (D-187) across the card's full width. `row` is the fixed width for a sideways row (D-062); otherwise it fills half
  * the screen in a two-column grid. `corner` sits top right on the photo (Saved's heart, D-089). No entry animation:
  * dozens of cards animating at once made scrolling stutter.
  */
@@ -132,6 +124,7 @@ export const ProductCard = memo(function ProductCard({
   corner?: React.ReactNode;
 }): React.JSX.Element {
   const width = layout === 'row' ? 'w-[164px]' : layout === 'fill' ? 'flex-1' : 'w-[48%]';
+  const days = useDeliveryLine(product.product_type);
   return (
     <View className={`${width} gap-2.5`}>
       <View>
@@ -161,11 +154,6 @@ export const ProductCard = memo(function ProductCard({
               <View className="bg-paper rounded-pill absolute left-2.5 top-2.5 px-2.5 py-1">
                 <Text className="font-ui text-ink text-[11px]">{badge}</Text>
               </View>
-            ) : product.quick_days ? (
-              // D-148: a 7-day piece (its days from Settings); the bag keeps the promise only while it holds 7-day pieces alone
-              <View className="bg-brand rounded-pill absolute left-2.5 top-2.5 px-2.5 py-1">
-                <Text className="font-ui-semibold text-on-brand text-[11px]">In {product.quick_days} days</Text>
-              </View>
             ) : null}
             {product.pack ? (
               // D-122: a food piece's pack size on its photo
@@ -183,9 +171,10 @@ export const ProductCard = memo(function ProductCard({
           {product.name}
         </Text>
         <Text className="font-body text-ink-muted text-[12.5px]">
-          {product.coming_soon ? 'Coming soon' : formatUsd(product.price_cents)}
+          {formatUsd(product.price_cents)}
           {product.region_name ? ` · ${product.region_name}` : null}
         </Text>
+        {days ? <Text className="font-body text-ink-muted text-[12px]">{days}</Text> : null}
       </View>
     </View>
   );

@@ -8,7 +8,7 @@
         "projectId": "a3d8cbc0-bfa4-4aa8-ad53-eea9824778f4"
       }
     },
-    "version": "1.0.0",
+    "version": "1.1.0",
     "orientation": "portrait",
     "scheme": "iwc",
     "userInterfaceStyle": "light",
@@ -33,8 +33,8 @@
       [
         "expo-image-picker",
         {
-          "cameraPermission": "The camera photographs pieces for a new listing (admins only).",
-          "photosPermission": "Photos you pick are added to a listing (admins only)."
+          "cameraPermission": false,
+          "photosPermission": "Photos you pick are added to your review."
         }
       ],
       [

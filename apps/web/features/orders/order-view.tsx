@@ -11,7 +11,6 @@ import {
 import { LinePhoto } from '@/features/cart/bag-lines';
 import { SITE_NAME } from '@/lib/site';
 
-import { FasterOffer } from './faster-offer';
 import { InvoiceA } from './invoice-a';
 import { OrderChoices } from './order-choices';
 import { OrderShipments } from './order-shipments';
@@ -90,7 +89,7 @@ function Timeline({ order, step }: { order: OrderDetail; step: number }): React.
 
 /**
  * One order as the customer sees it (flows.md §8, D-088): a status card (number, status, delivery window, Track the
- * parcel once shipped, the timeline), the offer and choices when they apply, the items with photos, totals and
+ * parcel once shipped, the timeline), the choices when they apply, the items with photos, totals and
  * updates. Only customer-safe fields exist in OrderDetail (store_my_order / guest_order_lookup), so nothing internal
  * can show.
  */
@@ -160,9 +159,6 @@ export function OrderView({ order }: { order: OrderDetail }): React.JSX.Element 
         {step >= 0 ? <Timeline order={order} step={step} /> : null}
       </section>
 
-      {order.offer ? (
-        <FasterOffer offer={order.offer} orderNumber={o.order_number} email={o.email} />
-      ) : null}
       {order.actions ? (
         <OrderChoices
           actions={order.actions}

@@ -12,8 +12,8 @@ type SearchParams = Promise<{ view?: string }>;
  * The India desk's pieces (D-140, plan F3, A2): **To order** — every sold piece of a paid, open order not yet ordered
  * from its shop, grouped by shop, oldest first, with the shop item in use (D-118) and its price there now; **On the
  * way** — ordered, not at the hub yet; **To weigh** — at the hub, not weighed (D-130). Ordering a piece needs neither
- * its product page nor a cycle (the pilot has none, D-115). D-154: 7-day pieces come first, in their own lane, with
- * their buy-by (2 hours) and ship-by (the next day) times.
+ * its product page (D-115). D-154: food comes first, in its own lane, with its buy-by (2 hours) and ship-by (the next
+ * day) times.
  */
 export default async function ToOrderPage({ searchParams }: { searchParams: SearchParams }): Promise<React.JSX.Element> {
   const { client } = await requireAdminPage();
@@ -25,7 +25,7 @@ export default async function ToOrderPage({ searchParams }: { searchParams: Sear
     view === 'ordered' ? listOrderedPieces(client) : view === 'weigh' ? listToWeigh(client) : Promise.resolve([]),
   ]);
   const groups = groupByShop(toOrder);
-  const quickGroups = groupByShop(toOrder.filter((r) => r.buy_by));
+  const foodGroups = groupByShop(toOrder.filter((r) => r.buy_by));
   const otherGroups = groupByShop(toOrder.filter((r) => !r.buy_by));
   const waiting = toOrder.reduce((n, r) => n + r.quantity, 0);
   const tabs = [
@@ -51,13 +51,13 @@ export default async function ToOrderPage({ searchParams }: { searchParams: Sear
         <PipelineList rows={pieces} view={view} />
       ) : groups.length === 0 ? (
         <Empty>Nothing to order. Every sold piece is on its way to the hub.</Empty>
-      ) : quickGroups.length === 0 ? (
+      ) : foodGroups.length === 0 ? (
         <ToOrderList groups={groups} />
       ) : (
         <div className="space-y-6">
           <section className="space-y-3">
-            <SectionTitle>7-day orders first: buy within 2 hours, ship the next day</SectionTitle>
-            <ToOrderList groups={quickGroups} />
+            <SectionTitle>Food first: buy within 2 hours, ship the next day</SectionTitle>
+            <ToOrderList groups={foodGroups} />
           </section>
           {otherGroups.length > 0 ? (
             <section className="space-y-3">

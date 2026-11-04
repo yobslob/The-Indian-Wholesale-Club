@@ -109,8 +109,8 @@ end $$;
 
 -- Fixture used by every test file (all rolled back afterwards):
 --   users: cust_a, cust_b (customers), admin (role + allowlist), fake_admin (role only)
---   region (draft text), categories, vendor, products: p_live (2 variants),
---   p_draft, p_placeholder; an open cycle; orders order_a (cust_a, v_live x1)
+--   region (draft text), categories, products: p_live (2 variants),
+--   p_draft, p_placeholder; orders order_a (cust_a, v_live x1)
 --   and order_b (cust_b, v_live2 x1).
 create function tests.setup() returns void
 language plpgsql as $$
@@ -119,11 +119,9 @@ declare
   v_order record;
 begin
   -- a clean slate that does not depend on dev seed data
-  update public.cycles set status = 'closed', closed_at = now() where status = 'open';
   update public.app_settings set value = 'false'::jsonb where key = 'dev_preview';
-  -- The cycle model by default (D-008); pilot_delivery.test.sql switches the made-to-order pilot on (D-115).
-  update public.pricing_settings set domestic_days_min = 3, domestic_days_max = 7, pilot_delivery_days_min = null,
-                                     pilot_delivery_days_max = null where id = 1;
+  update public.pricing_settings set domestic_days_min = 3, domestic_days_max = 7, delivery_days_min = 12,
+                                     delivery_days_max = 16 where id = 1;
 
   perform tests.create_user('cust_a', 'cust.a@example.test');
   perform tests.create_user('cust_b', 'cust.b@example.test');
@@ -144,28 +142,24 @@ begin
   returning id into v_id;
   perform tests.remember('cat_food', v_id);
 
-  insert into public.vendors (shop_name, region_id, status) values ('Test Shop', tests.id('region'), 'active')
-  returning id into v_id;
-  perform tests.remember('vendor', v_id);
-
-  insert into public.products (slug, name, product_type, region_id, category_id, vendor_id, price_cents,
+  insert into public.products (slug, name, product_type, region_id, category_id, price_cents,
                                shop_price_paise, origin_town, status, wears, attributes)
   values ('test-live', 'Test live product', 'clothing', tests.id('region'), tests.id('cat_clothing'),
-          tests.id('vendor'), 5000, 100000, 'Secret Town', 'live', 'women',
+          5000, 100000, 'Secret Town', 'live', 'women',
           '{"fibre_content": "100% cotton", "care": "Hand wash"}')
   returning id into v_id;
   perform tests.remember('p_live', v_id);
 
-  insert into public.products (slug, name, product_type, region_id, category_id, vendor_id, price_cents, status, wears)
+  insert into public.products (slug, name, product_type, region_id, category_id, price_cents, status, wears)
   values ('test-draft', 'Test draft product', 'clothing', tests.id('region'), tests.id('cat_clothing'),
-          tests.id('vendor'), 5000, 'draft', 'women')
+          5000, 'draft', 'women')
   returning id into v_id;
   perform tests.remember('p_draft', v_id);
 
-  insert into public.products (slug, name, product_type, region_id, category_id, vendor_id, price_cents, status,
+  insert into public.products (slug, name, product_type, region_id, category_id, price_cents, status,
                                is_placeholder)
   values ('test-placeholder', 'Test placeholder product', 'clothing', tests.id('region'), tests.id('cat_clothing'),
-          tests.id('vendor'), 5000, 'live', true)
+          5000, 'live', true)
   returning id into v_id;
   perform tests.remember('p_placeholder', v_id);
 
@@ -178,10 +172,6 @@ begin
   insert into public.product_variants (product_id, sku, label, qty_listed)
   values (tests.id('p_placeholder'), 'TEST-PH-1', 'Free size', 5) returning id into v_id;
   perform tests.remember('v_placeholder', v_id);
-
-  insert into public.cycles (code, status, cutoff_at, est_arrival_on)
-  values ('TEST-CYCLE', 'open', now() + interval '5 days', current_date + 20) returning id into v_id;
-  perform tests.remember('cycle', v_id);
 
   select * into v_order from public.create_order(jsonb_build_object(
     'email', 'cust.a@example.test', 'user_id', tests.id('cust_a'),

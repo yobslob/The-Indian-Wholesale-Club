@@ -2,10 +2,11 @@
 
 A US storefront (web + Android app) for the clothing, food and home goods of India's regions.
 Monorepo: Next.js web · Expo app · Supabase · Stripe · photos in Cloudflare R2. Live at
-https://the-indian-wholesale-club.vercel.app.
+https://indianwholesaleclub.com.
 
 - **Start here:** [`CLAUDE.md`](CLAUDE.md), the project rules, map and doc index (for people and for Claude).
 - **Status and next steps:** [`docs/status.md`](docs/status.md) · production checks: [`docs/monitoring.md`](docs/monitoring.md)
+- **Releasing the simple store (D-187):** [`docs/release-simple-store.md`](docs/release-simple-store.md)
 
 ## Setup
 ```bash

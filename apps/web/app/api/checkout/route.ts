@@ -20,9 +20,8 @@ import type {
 } from '@/features/checkout/types';
 
 const PROBLEM_MESSAGE = {
-  unavailable: 'Some items in your bag are no longer available.',
-  sold_out: 'Some items in your bag just sold out.',
-  express_unavailable: 'Express shipping is not available right now.',
+  // The website lists each line with Remove or Keep n; the old app shows only this sentence.
+  stock: 'Some items in your bag just sold out or have fewer left. Please change your bag to go on.',
   closed: 'Checkout is not open right now. Please try again soon.',
 } as const;
 

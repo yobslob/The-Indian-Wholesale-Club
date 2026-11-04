@@ -11,10 +11,9 @@ const product = `/states/${DEMO_PRODUCT.region}/${DEMO_PRODUCT.slug}`;
 test.describe('reduced motion', () => {
   test.use({ reducedMotion: 'reduce' });
 
-  test('no smooth scrolling, nothing hidden for a reveal, no parallax', async ({ page }) => {
+  test('nothing hidden for a reveal, no parallax', async ({ page }) => {
     await page.goto('/');
     await page.waitForLoadState('networkidle');
-    await expect(page.locator('html')).not.toHaveClass(/lenis/);
     await expect(page.locator('[data-reveal="pending"]')).toHaveCount(0);
 
     await page.goto(`/states/${DEMO_PRODUCT.region}`);
@@ -29,9 +28,9 @@ test.describe('reduced motion', () => {
 test.describe('with motion', () => {
   test.use({ reducedMotion: 'no-preference' });
 
-  test('smooth scrolling runs, and images below the fold reveal once scrolled to', async ({ page }) => {
+  test("the browser's own scrolling (Y-6), and images below the fold reveal once scrolled to", async ({ page }) => {
     await page.goto('/');
-    await expect(page.locator('html')).toHaveClass(/lenis/, { timeout: 15_000 });
+    await expect(page.locator('html')).not.toHaveClass(/lenis/);
     // launch QA C-2: Home's rows draw as they come near, after the first scroll
     await page.mouse.wheel(0, 400);
     const firstCard = page.locator('#just-listed [data-reveal]').first();

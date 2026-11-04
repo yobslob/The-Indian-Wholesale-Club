@@ -3,7 +3,6 @@
 begin;
 select tests.setup();
 alter table public.products disable trigger products_wears;
-update public.pricing_settings set food_cleared = true where id = 1;
 
 insert into public.categories (product_type, slug, name, default_weight_g) values ('home', 'test-home', 'Test home', 1500);
 select tests.remember('cat_home', (select id from public.categories where slug = 'test-home'));
@@ -11,8 +10,8 @@ insert into public.categories (product_type, slug, name, default_weight_g) value
 select tests.remember('cat_empty', (select id from public.categories where slug = 'test-home-empty'));
 
 -- Four brass diyas already weighed (their shop's pages), one brass bell, and the piece to weigh
-insert into public.products (slug, name, product_type, region_id, category_id, vendor_id, price_cents, shop_price_paise, status)
-select 'aw-ref-' || n, name, 'home', tests.id('region'), tests.id('cat_home'), tests.id('vendor'), 2000, paise, 'live'
+insert into public.products (slug, name, product_type, region_id, category_id, price_cents, shop_price_paise, status)
+select 'aw-ref-' || n, name, 'home', tests.id('region'), tests.id('cat_home'), 2000, paise, 'live'
   from (values (1, 'Brass Diya Pair', 20000), (2, 'Small Brass Diya', 21000), (3, 'Brass Kuber Diya', 19000),
                (4, 'Brass Akhand Diya', 22000), (5, 'Heavy Brass Temple Bell', 90000)) as r(n, name, paise);
 insert into public.product_variants (product_id, sku, label, qty_listed, weight_g, weight_source)
@@ -21,11 +20,11 @@ select p.id, 'AW-REF-' || p.slug, 'One size', 3, w, 'shop'
   join (values ('aw-ref-1', 300), ('aw-ref-2', 320), ('aw-ref-3', 340), ('aw-ref-4', 360), ('aw-ref-5', 2400)) as r(slug, w)
     on r.slug = p.slug;
 
-insert into public.products (slug, name, product_type, region_id, category_id, vendor_id, price_cents, shop_price_paise, status)
-values ('aw-diya', 'Brass Diya for Pooja', 'home', tests.id('region'), tests.id('cat_home'), tests.id('vendor'), 2000, 20500, 'draft'),
-       ('aw-lonely', 'Wooden Toran', 'home', tests.id('region'), tests.id('cat_empty'), tests.id('vendor'), 2000, 30000, 'draft'),
-       ('aw-kurta', 'Cotton Kurta', 'clothing', tests.id('region'), tests.id('cat_clothing'), tests.id('vendor'), 3000, 80000, 'draft'),
-       ('aw-nophoto', 'Brass Lamp', 'home', tests.id('region'), tests.id('cat_home'), tests.id('vendor'), 2000, 20000, 'draft');
+insert into public.products (slug, name, product_type, region_id, category_id, price_cents, shop_price_paise, status)
+values ('aw-diya', 'Brass Diya for Pooja', 'home', tests.id('region'), tests.id('cat_home'), 2000, 20500, 'draft'),
+       ('aw-lonely', 'Wooden Toran', 'home', tests.id('region'), tests.id('cat_empty'), 2000, 30000, 'draft'),
+       ('aw-kurta', 'Cotton Kurta', 'clothing', tests.id('region'), tests.id('cat_clothing'), 3000, 80000, 'draft'),
+       ('aw-nophoto', 'Brass Lamp', 'home', tests.id('region'), tests.id('cat_home'), 2000, 20000, 'draft');
 insert into public.product_variants (product_id, sku, label, qty_listed)
 select id, 'AW-' || slug, 'One size', 3 from public.products where slug in ('aw-diya', 'aw-lonely', 'aw-kurta', 'aw-nophoto');
 insert into public.product_media (product_id, storage_path, is_primary)

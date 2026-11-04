@@ -7,16 +7,16 @@ select tests.create_user('worker', 'worker@example.test');
 update public.profiles set role = 'worker' where id = tests.id('worker');
 
 update public.products set summary = 'Shop line', description = 'Soft cotton kurta. MRP Rs. 999, 20% off!',
-                           shop_title = 'Brandy Women Kurta'
+                           shop_title = 'Brandy Women Kurta', source_site = 'amazon.in'
  where id = tests.id('p_live');
 update public.products set description = 'A draft piece.' where id = tests.id('p_draft');
 update public.products set description = 'Never planned.' where id = tests.id('p_placeholder');
-insert into public.products (slug, name, product_type, region_id, category_id, vendor_id, price_cents, status,
+insert into public.products (slug, name, product_type, region_id, category_id, price_cents, status,
                              description)
-values ('dr-food', 'DR bhujia', 'food', tests.id('region'), tests.id('cat_food'), tests.id('vendor'), 900, 'draft',
+values ('dr-food', 'DR bhujia', 'food', tests.id('region'), tests.id('cat_food'), 900, 'draft',
         'Crunchy bhujia, 200 g.'),
-       ('dr-empty', 'DR empty', 'food', tests.id('region'), tests.id('cat_food'), tests.id('vendor'), 900, 'draft', ''),
-       ('dr-gone', 'DR gone', 'food', tests.id('region'), tests.id('cat_food'), tests.id('vendor'), 900, 'archived',
+       ('dr-empty', 'DR empty', 'food', tests.id('region'), tests.id('cat_food'), 900, 'draft', ''),
+       ('dr-gone', 'DR gone', 'food', tests.id('region'), tests.id('cat_food'), 900, 'archived',
         'Archived words.');
 select tests.remember('food', (select id from public.products where slug = 'dr-food'));
 
@@ -39,7 +39,7 @@ select tests.assert((select jsonb_array_length(doc) from plan_all) = 3,
                     'every type: the live and draft listings and the food (not the placeholder, empty or archived)');
 create temp table live_l on commit drop as
   select l from plan_all, jsonb_array_elements(doc) l where l ->> 'product_id' = tests.id('p_live')::text;
-select tests.assert((select l ->> 'shop' = 'Test Shop' and l ->> 'shop_title' = 'Brandy Women Kurta'
+select tests.assert((select l ->> 'shop' = 'Amazon India' and l ->> 'shop_title' = 'Brandy Women Kurta'
                             and l -> 'attributes' ->> 'care' = 'Hand wash' and l ->> 'type' = 'clothing'
                             and l ->> 'made_in' = 'India'
                        from live_l), 'what the words are checked against comes along');

@@ -4,9 +4,7 @@ import { buyDemoProduct, openOrderAsGuest } from './buy';
 import { DEMO_PRODUCT, E2E_ADMIN, E2E_CUSTOMER, serviceClient, stripeTestKeysPresent } from './env';
 
 /**
- * Flow 6 (C4, C5): what a customer may decide on their order, and the cycle pages behind it. Nothing here changes a
- * cycle's status, so it can run against a local database mid-cycle. A whole cycle is covered in SQL
- * (supabase/tests/cycle_lifecycle.test.sql).
+ * Flow 6 (C4, C5): what a customer may decide on their order.
  */
 
 async function signInAsAdmin(page: Page): Promise<void> {
@@ -89,7 +87,7 @@ test('a delivered piece is returned: asked on the order page, received and refun
   test.skip(!stripeTestKeysPresent(), 'Stripe test keys are not set in apps/web/.env.local');
   const orderNumber = await buyDemoProduct(page);
   const { id } = await orderRow(orderNumber);
-  // Delivered two days ago (the steps in between are covered in SQL, cycle_lifecycle.test.sql).
+  // Delivered two days ago (the steps in between are covered in SQL, simple_store.test.sql).
   const service = serviceClient();
   const { error: statusError } = await service.from('orders').update({ status: 'delivered' }).eq('id', id);
   if (statusError) throw statusError;
@@ -128,22 +126,4 @@ test('a delivered piece is returned: asked on the order page, received and refun
     .eq('status', 'draft')
     .like('slug', `${DEMO_PRODUCT.slug}-us-%`);
   expect(clearance?.length).toBeGreaterThan(0); // the piece is a US clearance draft (D-072)
-});
-
-test('an admin opens the open cycle, its dates and its export documents (C4)', async ({ page }) => {
-  const { data: cycle, error } = await serviceClient().from('cycles').select('id, code').eq('status', 'open').single();
-  if (error) throw error;
-
-  await signInAsAdmin(page);
-  await page.goto(`/admin/cycles/${cycle.id}`);
-  await expect(page.getByRole('heading', { name: `Cycle ${cycle.code}` })).toBeVisible();
-  await expect(page.getByRole('button', { name: 'Save dates' })).toBeVisible();
-  await expect(page.getByRole('button', { name: /Cut off now/ })).toBeVisible();
-
-  await page.goto(`/admin/cycles/${cycle.id}/documents`);
-  await expect(page.getByRole('heading', { name: 'Packing list' })).toBeVisible();
-  await expect(page.getByText(/still a placeholder/)).toBeVisible();
-  const csv = await page.request.get(`/admin/cycles/${cycle.id}/csv/invoice`);
-  expect(csv.status()).toBe(200);
-  expect(await csv.text()).toContain('FCA Mumbai airport (placeholder)');
 });

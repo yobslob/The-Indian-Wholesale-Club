@@ -26,8 +26,7 @@ Baseline numbers come from the founder's first `node scripts/check.mjs` run and 
   (`experimental.staticGenerationMaxConcurrency`, `staticGenerationRetryCount`): many pages at once against the
   production database hit the anon role's 3 s statement timeout and failed deploys. Next's retries come straight after
   each other, inside one busy spell, so during a build alone a store read past the limit waits 5, 15, then 30 s and
-  tries again (`patientInBuild`, `features/catalog/data.ts`; a page has 240 s, `staticPageGenerationTimeout`). The 7-day
-  See all pages are not built ahead at all (first visit); reading a page's data in `generateStaticParams` does not
+  tries again (`patientInBuild`, `features/catalog/data.ts`; a page has 240 s, `staticPageGenerationTimeout`). Reading a page's data in `generateStaticParams` does not
   protect its build, whose own read can still fail (2026-11-04). Reproduce a busy database by wrapping a `store_*`
   function locally in `pg_sleep(4)` for spells of minutes: `57014` as anon, and build from an empty `.next`.
   The same limit stops a customer's
@@ -53,8 +52,7 @@ Baseline numbers come from the founder's first `node scripts/check.mjs` run and 
   are no admin API routes). It uses `getClaims()`: a local JWT check with asymmetric signing keys, one Auth call with the
   legacy shared secret (local Supabase and old hosted projects use the shared secret). Rate limits run inside the routes.
 - **PR-5 Server-first:** Server Components by default. Client components only for real interaction (add to cart, variant
-  picker, live stock). No animation libraries on the storefront (framer-motion removed in R5) except Lenis smooth scrolling,
-  which the founder asked for (D-049, `storefront.md` §Direction: one small client module, off for reduced motion and on touch screens, its frame loop running only while the page moves: launch QA C-1, D-179). Fonts
+  picker, the checkout). No animation libraries on the storefront (framer-motion removed in R5, Lenis with D-187: the browser's own scrolling). Fonts
   (D-079, D-080, since 2026-10-08): Cinzel, Syne and Karla via `next/font`, self-hosted Latin variable files (about 85 KB
   in all); Georgia as the system font for the logo text with Gelasio, loaded only where Georgia is missing.
   Click-only parts load on the click (`next/dynamic`), never with the page: the product page's photo viewer (its
@@ -80,30 +78,25 @@ Baseline numbers come from the founder's first `node scripts/check.mjs` run and 
   `next/font`, subset. Script fonts only on their region page. (D-068)
   The India map's paths are written compactly (each point relative to the one before, `scripts/build-india-map.mjs`):
   the same points in 44 KB instead of 76 KB, which counts twice on Home and States (the HTML and React's copy of it). (D-099)
-- **PR-7 Realtime only where it matters:** product availability, and the admin orders/stock feed.
+- **PR-7 Realtime only where it matters:** the admin's orders feed (`features/admin/live-feed.tsx`, the app's Today). Since D-187 no store page opens a live connection (plan Y-3).
 - **PR-8 Dependencies cost:** every new dependency is justified in its commit message (size + reason).
 
-- **PR-9 Checkout concurrency (D-068):** `create_order` shares the open cycle's row lock (`FOR SHARE`: orders run side by
-  side, a cutoff waits for them) and reserves pieces in variant-id order (no deadlocks between two bags holding the same
-  pieces in a different order). INV-3 stays one conditional `UPDATE` per piece. Measured 2026-10-06: a second checkout
-  waited 2.6 s for a first one still open with the old exclusive lock, and not at all with the new one (`status.md`).
+- **PR-9 Checkout concurrency (D-068):** `create_order` runs orders side by side and reserves pieces in variant-id order (no deadlocks between two bags holding the same
+  pieces in a different order). INV-3 stays one conditional `UPDATE` per piece.
 
 ## Caching (D-068)
 | What | Cached? | Tags | Refreshed by |
 |---|---|---|---|
-| Home, region page, product page | yes (`unstable_cache` + the page's static render) | `store` + `store:home` / `store:region:<slug>` (and `store:regions` on every state page) / `store:product:<region>/<slug>` | a sale (`revalidateAfterSale`: the products sold, their regions, Home), an admin change to listings (D-145, `features/admin/refresh-listings.ts`: their own pages, their state pages, Home, See all; a draft's edit nothing; over 100 listings everything), a cancel, the automatic cutoff and any other admin change (everything), else 1 hour (D-171: 5 minutes until 2026-10-31) |
+| Home, region page, product page | yes (`unstable_cache` + the page's static render) | `store` + `store:home` / `store:region:<slug>` (and `store:regions` on every state page) / `store:product:<region>/<slug>` | a sale (`revalidateAfterSale`: the products sold, their regions, Home), an admin change to listings (D-145, `features/admin/refresh-listings.ts`: their own pages, their state pages, Home, See all; a draft's edit nothing; over 100 listings everything), a cancel and any other admin change (everything), else 1 hour (D-171: 5 minutes until 2026-10-31) |
 | See all (`/clothing`, `/food`, `/home-and-gifts`) | yes | `store` + `store:listings` | admin changes, else 1 hour. Light cards without stock, so a sale never changes them. Each address with its filters is a cached page (rewritten to `app/(store)/see-all/…`, not rendered per request: 61 – 169 ms before, 7 – 13 ms after, 2026-10-15); a filter combination nobody opened yet is built on its first visit. D-136: the filters and the endless scroll (D-166) fetch `GET /api/browse` (CDN-kept a minute; each filter set and page within the first 480 pieces is its own `store_browse()` entry in the data cache, deeper pages are read fresh so scrolling far never grows it) and swap or append only the cards, never touching the address |
 | Search | no (per query; one `store_search_page()` read, 6 – 40 ms on 7,200 listings, D-160). Its suggestions' list (`/api/search/hints`) is CDN-kept an hour, never per keystroke | | |
 | Cart, checkout, orders, account, every API route, admin | **never** (session or service clients, `cookies()`, POST routes) | | |
 - A sale is refreshed from `features/checkout/finalize.ts` once the order exists (browser or webhook, whichever is first),
   from the product pages stored with the priced checkout (`features/checkout/pricing.ts` → `pending_orders`). On-demand
   revalidation purges, so the very next request renders fresh: E2E flow 8 checks that the product and region pages say
-  "Sold out" right after the last piece is bought. Within the page, the product page's buy button also follows Realtime
-  stock (PR-7). Similar items on *other* product pages catch up within the fallback; their Add is re-checked at checkout.
+  "Sold out" right after the last piece is bought. Similar items on *other* product pages catch up within the fallback; their Add is
+  checked at checkout (plan Y-3).
 - Cancels (`app/api/orders/choice/route.ts`, admin refunds) put pieces back: everything is refreshed (rare).
-- The cutoff (D-008): `roll_cycles()` closes a cycle by itself; the every-minute timer calls the website's job
-  (`app/api/internal/email-outbox/route.ts`) in the two minutes after any cycle closes, and the job refreshes the store
-  once the cached "order by" time has passed (`revalidateIfCutoffPassed`). Needs the Vault settings (`ops.md`).
 - App admin writes go straight to the database and refresh the website through `POST /admin/revalidate` (B-17).
 - Bump `SHAPE` in `features/catalog/data.ts` whenever a cached store_* result changes shape.
 - D-145: Vercel counts page-cache writes by size (8 KB units, 200,000 a month free), and every page is stored twice
@@ -139,7 +132,7 @@ A test must **fail when the rule it protects breaks**. Never assert on source-co
 |---|---|---|---|
 | Unit | `node:test` via `tsx` (D-037) | pure logic: pricing, delivery window, status labels, attribute schemas, token preset, the web's email/site/rate-limit helpers, the app's bag and checkout request | `packages/shared/tests`, `packages/tokens/tests`, `apps/web/tests`, `apps/app/tests` |
 | DB | plain SQL (`supabase/tests/*.test.sql`), run by `check.mjs db` → `scripts/db-test.mjs` against local Supabase (D-031) | invariants INV-1…INV-9 and the business functions, as anon / customer / admin (`request.jwt.claims`), each file rolled back | `supabase/tests/` |
-| E2E smoke | Playwright (`check.mjs e2e`, after `build`) | (1) region → product → bag → checkout (Stripe test card) → thank-you → order page after the email check · (2) admin sign-in → new listing → variant → publish → visible on the storefront · (3) signed out, `/admin` → its sign-in page with `noindex`; a signed-in customer gets a plain 404 (no "admin" in page or title); no admin link, robots or sitemap entry; customer pages carry no vendor, cost or cycle fields · (4) motion and keyboard (C1): with reduced motion no Lenis, nothing hidden, no parallax; with motion Lenis runs and a card below the fold reveals when scrolled to; skip link first, the hidden Home logo shows when focused, Pick your home search + focus highlight, product page +/− and heart by keyboard · (5) rows (D-062): a row scrolls sideways and its arrow moves it, See all opens that state's category, See all pages draw 24 then 48 · (6) customer choices (C4, C5): cancel before cutoff with the refund and its email, a later delivery date then keep my order, the admin's cycle page, export documents and invoice CSV (no cycle status changes; a whole cycle is in `cycle_lifecycle.test.sql`) · (7) Insights + live (C7): a search that finds nothing shows in Insights, an order change appears on Today without a reload (Realtime), `/admin/revalidate` refuses visitors and customers and works for an admin's token (B-17) · (8) a sale refreshes the cache (D-068): with one piece left, the cached product page says "Only 1 left"; once it is bought, the server's HTML of the product page and the region card say "Sold out" on the next request | `apps/web/e2e` |
+| E2E smoke | Playwright (`check.mjs e2e`, after `build`) | (1) region → product → bag → checkout (Stripe test card) → thank-you → order page after the email check · (2) admin sign-in → a draft made with the service client → publish on its page → visible on the storefront; To order's three views, Settings' values, 404s on removed pages · (3) signed out, `/admin` → its sign-in page with `noindex`; a signed-in customer gets a plain 404 (no "admin" in page or title); no admin link, robots or sitemap entry; customer pages carry no cost or operations fields; `/vendor` → 308 to `/` · (4) motion and keyboard (C1): with reduced motion nothing hidden, no parallax; with motion a card below the fold reveals when scrolled to; skip link first, the hidden Home logo shows when focused, Pick your home search + focus highlight, product page +/− and heart by keyboard · (5) rows (D-062): a row scrolls sideways and its arrow moves it, See all opens that state's category, See all pages draw 24 then 48 · (6) customer choices (C4, C5): cancel with the refund and its email, a later delivery date then keep my order · (7) Insights + live (C7): a search that finds nothing shows in Insights, an order change appears on Today without a reload (Realtime), `/admin/revalidate` refuses visitors and customers and works for an admin's token (B-17) · (8) a sale refreshes the cache (D-068): with one piece left, the cached product page says "Only 1 left"; once it is bought, the server's HTML of the product page and the region card say "Sold out" on the next request | `apps/web/e2e` |
 | App bundle | Expo CLI (`check.mjs bundle`) | the app bundles for Android and iOS: every import resolves in Metro and every file compiles with Babel (bugs `tsc` can't see) | `apps/app` |
 
 The E2E run starts its own production server (`next start`, port 3101) and refuses anything but local Supabase and
@@ -168,16 +161,16 @@ stays the evidence of record. After a migration, Claude patches `database.types.
 ## Layout (web: actual since R5; app: actual since R6)
 ```
 apps/web/app/(store)/…     customer routes (storefront.md)       apps/web/app/admin/…   hidden admin (admin.md)
-apps/web/app/vendor/…      vendor screens (admin.md)            tools/photo-worker/    the Python GPU worker (D-103)
+                           (no vendor screens since D-187)      tools/photo-worker/    the Python GPU face swap and refresh (D-163)
 apps/web/features/<name>/  shell (header, footer), home, catalog, regions (incl. the India map), cart, checkout,
-                           orders, account, auth, info, admin (guard, actions, ui), vendor (guard, the add-a-piece steps)
+                           orders, account, auth, info, admin (guard, actions, ui)
 apps/web/lib/              infra: env, supabase (store / session / browser / service clients), stripe, email, logger, rate limit
 apps/app/app/(customer)/…  customer tabs; region/, product/, checkout, order/, auth/, addresses (storefront.md)
 apps/app/app/admin/…       admin mode, mounted only after is_admin() (admin.md)
 apps/app/features/<name>/  home, regions, catalog, reviews, cart, checkout, orders, auth, admin
 apps/app/lib/              supabase, api, session, use-query, fonts, stripe (+ web stand-ins)
-packages/db       generated DB types (`pnpm db:types`) + typed queries: store/* (customer-safe, zod) · admin/* · server/* · vendor/* (vendor_* functions)
-packages/shared   pure domain logic + zod schemas (no I/O); shared/vendor: the piece form, photo check, vendor words
+packages/db       generated DB types (`pnpm db:types`) + typed queries: store/* (customer-safe, zod) · admin/* · server/*
+packages/shared   pure domain logic + zod schemas (no I/O)
 packages/tokens  design tokens → Tailwind + NativeWind
 supabase/migrations  one baseline (R3) + small increments          supabase/seed/  regions, categories, demo (dev only)
 scripts/build-india-map.mjs  regenerates packages/shared/src/india-map/india-map.json (web + app) from DataMeet's boundaries (D-052)

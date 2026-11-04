@@ -15,29 +15,26 @@ JSON sent to the browser.
   **"Made in India" / "Imported"**, and its state when it has one (D-121: an all-India listing names no state; nothing
   says "no state" either). A piece made outside India (D-171: Savana's, NEWME's made in China) says only "Imported":
   no "Made in India" and no "Made in" row in Details (`store_products.made_in_india`; the country stays admin-only).
-- **Delivery:** the estimated delivery window, and "order by <date>" (D-035).
+- **Delivery:** the term "delivery days" on store pages (food 7, clothing and home & gifts 12 – 16; D-187, plan §10 Y-5), never a calendar date there; the order's estimated window at checkout and on the order page (D-008). Already in the US keeps its dates on its product page.
 - **Own orders:** number, items, totals, customer-facing status (`flows.md` §8), delivery window, US carrier + tracking link.
 
-**Never shown:** vendor or shop anything, the shop's town, shop price or cost, cycle codes, pickups, payouts, export or AWB
+**Never shown:** shop anything, the shop's town, shop price or cost, pickups, the hub or the buying, export or AWB
 details, admin names, the COO, or anything about India-side operations.
 Enforcement: customer code reads catalog and order data only through `store_*` (D-017), and INV-1/INV-8 tests (`data-model.md`).
 
 ## Web routes (`apps/web/app/(store)/…`, built in R5)
 | Route | Purpose | Rendering (see `engineering.md`) |
 |---|---|---|
-| `/` | **the hero (D-182 – D-185), one screen at every size, behind the nav bar:** the 7-day store's poster (`public/images/home-hero-7day.avif`, the founder's Diwali picture with no words of its own; the whole poster a link to `/7-day-delivery`): on its dark wall, in the poster's own type (D-185: Cormorant Garamond and Montserrat, Home only, `hero-font.ts`), the Diwali date ("Diwali · Sun, Nov 8" with a hairline, `diwali-hooks.ts`), "Mithai. Masala." and *Memories.* in gold italic, "From India to your door in 7 days (on food)." (D-186) and a small gold button that is the free line ("FREE DELIVERY" over "from $49.99") (words in `hero-words.ts`, Claude's draft kept by the founder; the days and the free line from Settings; while 7-day delivery is off the poster opens Food with the store's days and "Shop the store"). Under it on portrait screens, beside it on landscape ones, a dark panel: "Indian Wholesale Club" (the page's h1, Cormorant Garamond) and four doors (Clothing, Food, Home & gifts, States), nothing else; the header's logo always shows; `e2e/home-hero.spec.ts` holds all of it inside a phone's first screen. Then the album of all of India (the region pages' drifting mosaic; since D-169 only the founder's own Home photos, in the order set in the admin's Home photos; it opens with the clip-and-scale reveal and a gentle parallax, D-113), the Diwali windows (D-174: a Diwali night with the flight inside, "Host your Diwali under $99", and three arch windows in a row under a toran (D-177; about 1 : 1.56 on phones since D-183, the diya left off there), Clothing from $11.45, Snacks from $0.39, Get snacks from your neighbourhood, each with the founder's photo and a button (D-175, D-176); since D-179 the arches sit right under the hero, before the album, and the night stays after the album; `features/home/diwali-windows.tsx`, words in `diwali-hooks.ts`), Pick your home (India map + stamps, in pages of 6 from 7 open states, + names; D-080), then Just listed (D-113): since D-140 one heading and a row per type (Clothing, Food, Home & gifts), each with its own See all, a type with fewer than four pieces left out; pieces published at the same moment take turns by shop and category (D-140, L8). D-154: while the 7-day store is open, one row "Arrives in 7 days" (the days from Settings; See all → `/7-day-delivery`) just before Just listed, its cards without the tag | static, cached `store_home()` |
+| `/` | **Home, in this order (D-187):** **the hero** (D-182 – D-186, one screen at every size, behind the nav bar): the poster (`public/images/home-hero-7day.avif`, the founder's Diwali picture with no words of its own; the whole poster a link to `/food`): on its dark wall, in the poster's own type (D-185: Cormorant Garamond and Montserrat, Home only, `hero-font.ts`), the Diwali date ("Diwali · Sun, Nov 8" with a hairline, `diwali-hooks.ts`), "Mithai. Masala." and *Memories.* in gold italic, "From India to your door in 7 delivery days (on food)." and a small gold button that is the free line ("FREE DELIVERY" over "from $49.99") (words in `hero-words.ts`, Claude's draft kept by the founder; the days and the free line from Settings). Under it on portrait screens, beside it on landscape ones, a dark panel: "Indian Wholesale Club" (the page's h1, Cormorant Garamond) and four doors (Clothing, Food, Home & gifts, States), nothing else; the header's logo always shows; `e2e/home-hero.spec.ts` holds all of it inside a phone's first screen. → **the Diwali arches** (D-174 – D-177, D-179: three arch windows in a row under a toran, about 1 : 1.56 on phones, the diya left off there: Clothing from $11.45, Snacks from $0.39, Get snacks from your neighbourhood, each with the founder's photo and a button; `features/home/diwali-windows.tsx`, words in `diwali-hooks.ts`; Y-15: as it is until the founder decides after Diwali) → **the album of all of India** (the region pages' drifting mosaic; since D-169 only the founder's own Home photos, in the order set in the admin's Home photos; it opens with the clip-and-scale reveal and a gentle parallax, D-113) → **Shop by category** (`features/home/category-tiles.tsx`, `tile-photos.ts`: the 12 tile categories, biggest first, each with the founder's photo when set, else the category's newest piece; a tile opens `/food?category=sweets` or `/home-and-gifts?category=…`) → **the Diwali night** (the flight inside, "Host your Diwali under $99", the free line) → **What everyone missed this week** (by units ordered, never shown) → **The kirana counter** (under $5) → **Just listed Clothing** → **Just listed Home & gifts** (D-113, D-140: each with its own See all, a type with fewer than four pieces left out; pieces published at the same moment take turns by shop and category, L8) → **Pick your home** (India map + stamps, in pages of 6 from 7 open states, + names; D-080) → **the delivery band** (L7). No "Arrives in 7 days" row and no Just listed Food: the two food rows cover it. | static, one cached `store_home()` |
 | `/states` | Pick your home as its own page (D-083): all 36 regions, alphabetical, with no state/UT distinction (D-002) | static (same cached read as `/`) |
-| `/states/[region]` | **the core page:** greeting in the region's script, story, accent theme, the album, Most wanted and Picked for you, then the state's inventory: Clothing · Food · Home & gifts as a switch, each with See all's filters (D-157), the state's own pieces first whatever the sort (D-181); Food and Home & gifts carry the 7-day band after their second row while 7-day delivery is open: "Arrives in 7 days", 12 pieces of the 7-day store's first page of that type and "Shop the 7-day store →" (D-181, `quick-band.tsx`, the same cached `/api/browse` answer as that page) | static per region (36 built at build time): cached `store_region_head()` and the first type's `store_browse()` page |
+| `/states/[region]` | **the core page:** greeting in the region's script, story, accent theme, the album, Most wanted and Picked for you, then the state's inventory: Clothing · Food · Home & gifts as a switch, each with See all's filters (D-157), the state's own pieces first whatever the sort (D-181) | static per region (36 built at build time): cached `store_region_head()` and the first type's `store_browse()` page |
 | See all (`/clothing`, `/food`, `/home-and-gifts`) | D-122: a frosted-glass switch between the three types at the top, keeping the chosen state; a food card shows its pack size on its photo. D-136: the filter panel on the left from 1024 px (D-140: For first on clothing, Women · Men with counts, unisex under both, no Kids at launch; Category, State, Price with a slider and four ranges, Size / Pack boxes grouped as Tops & kurtas, Waist, Footwear, Bangles, Kids' ages, One size, each shown only when the pieces in view use it; a list of more than 100 sizes or packs (Food and Home & gifts, whose packs come as the shops write them) shows the 60 with the most pieces plus any chosen, `size-facet.ts`, 2026-10-24; "One Size", "Free size" and a piece without a size read One size, "L-XL" reads L/XL), /clothing's two large Women · Men tiles under the heading, chips with × and Clear all, Sort by; filters and the endless scroll (D-166) change only the cards (`GET /api/browse`), never load the page, and Back from a product restores the cards and the scroll | cached `store_browse()` |
-| `/states/[region]/[product]` | product page: gallery, options, price (D-155: a heavy piece's option adds the tag "Heavy-item shipping" and "+ $65.21, added at checkout"), availability (live), save, delivery window, origin line; an all-India listing lives at /states/india/<slug> (D-121; `india` is no state's slug and has no page of its own) | static on first visit + live stock island |
-| `/clothing`, `/food`, `/home-and-gifts` (D-106, D-110; the old /spices address redirects to /food) | the **See all** page behind every row (D-062): low to high (D-144; with a state, its own pieces before the all-India ones under every sort, D-140 L2, D-181); on Clothing with no category one of each category, then the next of each, with Accessories and Turbans & Headwear in a velvet drawer after the second row of every 24 cards (12 a drawer, See all → accessories), filters in the address (`?state=`, `?category=`, `?for=women|men` (D-140), `?delivery=7-day` (D-154: "Delivery: in 7 days", the first filter group while the type has 7-day pieces, with their count), `?min=` / `?max=` in dollars, `?size=` repeated, `?sort=price-asc|price-desc|new`), 24 cards, then the next 24 each time the screen's bottom reaches the row above the last (D-166, replacing D-136's Show more; the 24 after them read ahead; the address never changes; a loading circle if the shopper gets there first). D-136 replaced D-084's state and category pill rows with the left filter panel; below 1024 px one Filter bar (a round icon once scrolled) opens the same groups in a side panel that stays open until "Show n pieces" | built once per address and served from the cache like the state pages: `next.config.js` rewrites each address and its filters to `app/(store)/see-all/[type]/[state]/[category]/[show]/[for]` (the browser keeps `/clothing?state=…`; canonical is the public address); one cached `store_browse()` read (the cards drawn, the total, the filter counts; D-068). Price, size and sort are read in the browser (`features/catalog/use-browse.ts`), from `GET /api/browse` (the same cached read; in-memory rate limit) |
-| `/7-day-delivery` | D-154: **the 7-day store's front page** (D-148's page, kept; D-166: pictures, not paragraphs): "Home is 7 days away." beside a parcel's address label (From India, To your door, "Order today, open it Sat, Oct 31.": the real next date, today + the 7-day days from Settings, worked out again in the browser so a cached page never shows yesterday's; duties ticked; a stamp with the weekday) and the founder's photo (`slots.ts`), the flight towing "Free delivery from $49.99" (or the festival's last order day), the category tiles (a photo each: the founder's own from `features/seven-day/tile-photos.ts` when set, else the category's newest piece, 2026-11-03; no shelf under them since 2026-10-31; a tile opens its category's 7-day See all page), the rows What everyone missed this week (by units ordered, never shown), The kirana counter (under $5), the seasonal poster, New this week, then a row per type (Food, Home & gifts: "11 pieces in 7 days") with See all, as the IWC store's Home ends (founder, 2026-10-24: "the same aesthetics for 7-day store as the main one"). "From your state" is not built: the site keeps no chosen state. No shop is ever named. 404 while 7-day delivery is off or paused | cached `store_quick_front()`, `store_quick_browse()` (the categories' types) and each type's first `store_browse(p_quick)` page (the same entries as its See all page) |
-| `/7-day-delivery/food`, `/7-day-delivery/home-and-gifts` (`?category=`) | the 7-day store's **See all** pages (founder, 2026-10-24): the IWC store's See all (`browse-view.tsx`: the filter panel with Category, State, Price and Pack or Size, chips, Sort by, the endless scroll, the Filter bar on phones) with only 7-day pieces, always: no Delivery filter or chip, no tag on the cards, the address without `?delivery=` (`BrowseQuery.inQuick`). At the top the same frosted switch as the IWC store's types: Everything (the front page) · Food · Home & gifts. The tiles and the header's 7-day categories open them. `next.config.js` rewrites the address to the route `7-day-delivery/[type]/[category]` (cached per type and category, every category built with the deploy, D-156; the other filters are read in the browser). A tap shows the page's shape and the running stitch at once (`loading.tsx`, as every See all page does). 404 while 7-day delivery is off | cached `store_browse(..., p_quick)` |
-| `/7-day-delivery/search` | D-154: the 7-day store's search: only 7-day pieces, no states; nothing found → "Search the whole IWC store"; D-160 as `/search` (no state filter, suggestions without states or categories) | dynamic (no auth), `store_search_page(..., p_quick)` |
-| `/search` | search products and regions; 24 results at a time with "Show more" (`?show=`, D-067), through `store_search_page` (D-160: English stems, synonyms, spelling fixes, "some of the words", buyable first), which records the words (not who searched) for the admin's Insights. D-085: the count with the words, matching states as stamps (coming-soon ones by name; also a state the words name: "punjabi"), no words or no results → the open states and Just listed; phones: a round search icon in the box. D-160: "No pieces match “kurtha”. Showing pieces for “kurta”."; with some words only, those pieces under "No products match …"; the type pills with counts (`?type=`), the categories found (`?category=`), "Only from Kerala" when the words name a state (`?state=`, its all-India pieces too), Sort by (Best match, price both ways, Newest; `?sort=`), all plain links; suggestions while typing in every search box (`features/search/`, below); `noindex` and kept out of robots.txt; a caller searching faster than a person (60 a minute, per server) is asked to wait. D-154: while 7-day delivery is on, a "Delivery: in 7 days" pill under the box (`?delivery=7-day`, only 7-day pieces, no states) | dynamic (no auth) |
-| `/cart` | the bag ("Bag" in the UI; on-device state). D-111, D-112: under the subtotal, the fixed Shipping and Retailer charges (struck through at $0.00 from the free-shipping line up; checkout shows them from its first step); D-155: with a heavy piece, **Heavy-item shipping** (paid below the line; from the free-shipping or 7-day line 20% off, the whole struck through, its saving in "You're saving"; checkout the same, on express too) and how much more makes them free, from `GET /api/bag-charges`; every other store page shows the free-delivery bar once the bag has a piece. D-119: from the line up, the **bulk saving** (a % of the amount over the line, up to a cap) shows as its own line, and the bar refills with it ("Saving $5 · add more, save more" until "BIGGEST SAVING"); checkout takes it off the goods before tax. D-125: Shipping is one number, at least $18.79 and more when the bag's pieces cannot pay for its parcel (one masala), struck through and free from the line up; the Retailer charges are 1.5% of the goods, at least $0.99. D-086: a photo on each line, − / number / + (1 – 10), an empty bag shows the open states as stamps and Just listed; the header's bag icon opens the same bag as a side panel (it stays a link to `/cart` for new tabs and without JavaScript) | static shell |
-| `/checkout`, `/checkout/success` | D-114: signed in, the saved addresses are offered above the delivery form (the default picked and filled in, its phone too, so it opens at Delivery; "A new address" empties it), and a paid order's address is saved to the account (the first becomes the default). D-087: phone (+1, required, no code) → delivery (name, email, ZIP with the city and state filled in from our own list through `GET /api/zip`, D-098; street, apartment, promo code) → server-priced total + Standard (free) / Express with each delivery window (D-041) → payment (Stripe) → order (D-038); finished steps fold to a line with Edit; the bag beside the steps (a bar on phones); `/checkout` sits in the quiet frame of the `(checkout)` route group (logo and Back to bag, a one-line footer). The thank-you page adds the pieces, the total and the delivery window from this tab's priced bag (sessionStorage) | dynamic |
-| `/orders/lookup`, `/orders/[number]` | order tracking. The signed-in owner sees the order directly; anyone else confirms the order email first, in a centred card (D-088). The order opens with a status card (number, status, delivery window, Track the parcel once shipped, D-066) holding the timeline with each reached step's date, and a photo on each item (D-088). An open faster-delivery offer (D-064) shows above the timeline: `POST /api/orders/faster` (order number + email) → Stripe Payment Element, loaded only when taken → `POST /api/orders/faster/confirm`. The customer's choices (cancel before cutoff, D-042; keep or cancel after a delay, D-008) through `POST /api/orders/choice` (number + email, refund shown first) | dynamic |
+| `/states/[region]/[product]` | product page: gallery, options, price (D-155: a heavy piece's option adds the tag "Heavy-item shipping" and "+ $65.21, added at checkout"), availability (as its cached page was built, nothing live, plan Y-3), save, the delivery days, origin line; an all-India listing lives at /states/india/<slug> (D-121; `india` is no state's slug and has no page of its own); a coming-soon piece answers 404 (plan Y-9) | static on first visit, no live connection |
+| `/clothing`, `/food`, `/home-and-gifts` (D-106, D-110; the old /spices address redirects to /food) | the **See all** page behind every row (D-062): low to high (D-144; with a state, its own pieces before the all-India ones under every sort, D-140 L2, D-181); on Clothing with no category one of each category, then the next of each, with Accessories and Turbans & Headwear in a velvet drawer after the second row of every 24 cards (12 a drawer, See all → accessories), filters in the address (`?state=`, `?category=`, `?for=women|men` (D-140), `?min=` / `?max=` in dollars, `?size=` repeated, `?sort=price-asc|price-desc|new`), 24 cards, then the next 24 each time the screen's bottom reaches the row above the last (D-166, replacing D-136's Show more; the 24 after them read ahead; the address never changes; a loading circle if the shopper gets there first). An old `?show=` link lands on the first page. D-136 replaced D-084's state and category pill rows with the left filter panel; below 1024 px one Filter bar (a round icon once scrolled) opens the same groups in a side panel that stays open until "Show n pieces" | built once per address and served from the cache like the state pages: `next.config.js` rewrites each address and its filters to `app/(store)/see-all/[type]/[state]/[category]/[for]` (the browser keeps `/clothing?state=…`; canonical is the public address); one cached `store_browse()` read (the cards drawn, the total, the filter counts; D-068). Price, size and sort are read in the browser (`features/catalog/use-browse.ts`), from `GET /api/browse` (the same cached read; in-memory rate limit) |
+| `/search` | search products and regions; 24 results at a time with "Show more" (`?show=`, D-067), through `store_search_page` (D-160: English stems, synonyms, spelling fixes, "some of the words", buyable first), which records the words (not who searched) for the admin's Insights. D-085: the count with the words, matching states as stamps (coming-soon ones by name; also a state the words name: "punjabi"), no words or no results → the open states and Just listed; phones: a round search icon in the box. D-160: "No pieces match “kurtha”. Showing pieces for “kurta”."; with some words only, those pieces under "No products match …"; the type pills with counts (`?type=`), the categories found (`?category=`), "Only from Kerala" when the words name a state (`?state=`, its all-India pieces too), Sort by (Best match, price both ways, Newest; `?sort=`), all plain links; suggestions while typing in every search box (`features/search/`, below); `noindex` and kept out of robots.txt; a caller searching faster than a person (60 a minute, per server) is asked to wait | dynamic (no auth) |
+| `/cart` | the bag ("Bag" in the UI; on-device state). D-111, D-112: under the subtotal, the Shipping and Retailer charges (struck through at $0.00 from the free-shipping line up, $49.99; checkout shows them from its first step); D-155: with a heavy piece, **Heavy-item shipping** (paid below $99.99; from $99.99 20% off, the whole struck through, its saving in "You're saving"; checkout the same) and how much more makes shipping free, from `GET /api/bag-charges`; every other store page shows the free-delivery bar once the bag has a piece. D-119: from $99.99 up, the **bulk saving** (a % of the amount over that line, up to a cap) shows as its own line; checkout takes it off the goods before tax. D-086: a photo on each line, − / number / + (1 – 10), an empty bag shows the open states as stamps and Just listed; the header's bag icon opens the same bag as a side panel (it stays a link to `/cart` for new tabs and without JavaScript) | static shell |
+| `/checkout`, `/checkout/success` | D-114: signed in, the saved addresses are offered above the delivery form (the default picked and filled in, its phone too, so it opens at Delivery; "A new address" empties it), and a paid order's address is saved to the account (the first becomes the default). D-087: phone (+1, required, no code) → delivery (name, email, ZIP with the city and state filled in from our own list through `GET /api/zip`, D-098; street, apartment, promo code) → server-priced total with "Estimated delivery" (one window, or Shipment 1 and Shipment 2 with their pieces; standard is the only shipping, plan Y-1) → payment (Stripe) → order (D-038); finished steps fold to a line with Edit; the bag beside the steps (a bar on phones). **Stock (plan Y-3):** `POST /api/checkout/stock` when it opens (one small read a visit, 20 a minute), then every re-price: `stock-problems.tsx` at the top lists each line sold out, short or off sale with its photo, name and option, "Not available right now" or "Only 2 left", Remove or Keep 2; the form closes while a problem is open; fixing the last re-prices at once and moves the same PaymentIntent. An address outside the 48 states and DC gets one shipment and a line saying so. `/checkout` sits in the quiet frame of the `(checkout)` route group (logo and Back to bag, a one-line footer). The thank-you page adds the pieces, the total and the delivery window from this tab's priced bag (sessionStorage) | dynamic |
+| `/orders/lookup`, `/orders/[number]` | order tracking. The signed-in owner sees the order directly; anyone else confirms the order email first, in a centred card (D-088). The order opens with a status card (number, status, estimated delivery, Track the parcel once shipped, D-066) holding the timeline with each reached step's date, and a photo on each item (D-088). A second shipment is named only "Shipment 2", because an old order's second shipment may hold food; an old Express order keeps its label. The customer's choices (cancel until it leaves India, D-042; keep or cancel after a delay, D-008) through `POST /api/orders/choice` (number + email, refund shown first) | dynamic |
 | `/account`, `/account/saved`, `/account/addresses`, `/account/details` | the profile (D-089): one page, four sections (Orders · Saved · Addresses · Your details; a list on desktop, pill tabs on phones), Sign out at the foot. Orders are cards (the first piece's photo with "+n", number, placed date and window, status label, total); Saved uses the standard cards with a filled heart that removes; addresses are cards with Default / Make default and a pencil and a minus in the corner (`?edit=`, `?add=1` open the form). Signed out, the same address shows the sign-in card. `/account/orders` redirects to `/account` ("Save for later" on product pages fills `saved`) | dynamic |
 | `/account/reviews/[productId]` | write a review (D-051, D-056): rating + text; photos only for verified buyers; pending until an admin approves it. D-090: "Write a review" on the product page opens the same form as a side panel over the product (signed out, the sign-in card first, in the panel); the piece at the top, five large stars (tap or arrow keys, "n of 5"), photo tiles with previews for verified buyers (× removes, + hides at 4); this address keeps the form for links from outside | dynamic |
 | `/login`, `/signup`, `/account/password` | customer auth (D-091): the profile's sign-in card centred, with an eye on passwords, "Forgot password?" (Supabase sends a reset link back through `apps/web/app/auth/callback/route.ts` to `/account/password`, "Set a new password" typed twice) and "Email me a sign-in code" (six digits in six boxes; existing accounts only); `?link=expired` notes a used link. **No admin mention anywhere** (D-006) | dynamic (reads `?next=`), no DB call |
@@ -55,6 +52,10 @@ The matcher is `packages/shared/src/search` (the app uses the same).
 
 Why `/states` in URLs: it's the founder's own word for the concept. UTs live under it too (D-002). Headings that list all 36
 avoid calling them "states" (e.g. "Pick your home").
+
+**Redirects (D-187, `next.config.js` `redirects()`: permanent, no page cache, no function; tested in
+`apps/web/tests/redirects.test.ts`):** `/7-day-delivery` → `/food`, `/7-day-delivery/search` → `/search`,
+`/7-day-delivery/food/sweets` → `/food?category=sweets` (`all` → no query), `/7-day-delivery/:type` → `/:type`, `/vendor/:path*` → `/`.
 
 **Removed from the old storefront:** `/shop`, `/category/[slug]`, `/size-guide` (size info moves onto product pages),
 the duplicate `/wishlist` (→ `/account/saved`), `/order-lookup` + `/order-status/[id]` (→ `/orders/…`), and the
@@ -82,13 +83,13 @@ Framer Motion page transitions (speed, `engineering.md`).
    particular) shows on every state's page and under every state in See all, after the state's own pieces, with no
    state on its card. New arrivals, the first row, is the state's own pieces only (D-122).
 6. Regions with no live products show "Coming soon" (`regions.is_live = false`). Anything more, like a notify-me feature, needs founder approval.
-7. A **coming-soon** piece (D-135: a liquid, not sent; archived for admins) is shown like any other: its card says "Coming soon" instead of the price, with the heart instead of the + (the app card: a "Coming soon" pill), and its page says "Coming soon. Save it with the heart to find it again." instead of Add to bag. It cannot be bought (no options in `store_variants`).
+7. A **coming-soon** piece (D-135: a liquid, not sent; archived for admins) appears nowhere: every `store_*` read and search leave it out and its product page answers 404 until it is on sale (plan Y-9).
 **Target (D-051; built in C1 and C2; the lists are rows, D-062; the album shows once a region has three album photos):** below the hero (greeting, tagline, story, image): Clothing / Food filter pills, then
 **New arrivals → Most wanted → a photo album that scrolls sideways by itself (not interactive) → Curated for you (a card)
 → Leaving soon** (almost out of stock). Curated for you = admin picks per region, Leaving soon = 1–2 left (D-056); Most wanted = most pieces ordered in the last 30 days (D-058); the album has no pause control (founder, D-052).
 
 ## The product page
-Gallery → name, price → variant picker → availability (live) → **delivery window** → add to cart → details: description,
+Gallery → name, price → variant picker → availability → **delivery days** ("7 delivery days" or "12 – 16 delivery days"; Already in the US: its date window) → add to cart → details: description,
 craft, attributes, care or storage → origin line: "Made in India · from <Region>" ("Made in India" for an all-India
 listing, D-121; "Imported" alone for a piece made outside India, D-171; D-179 dropped "· Imported" from the India line).
 **D-100 (built):** clothing photos are Front, Back (worn by an AI-generated model, D-101) and the Material
@@ -107,11 +108,10 @@ button says "Choose a size" and takes them to the sizes with a short glow; a col
 option says how many of it are already in the bag.
 
 ## Feel (D-140, plan F5, F7, L4 – L7)
-- **F5:** from the free-delivery line up, Shipping shows struck through at the Settings figure "Shipping shown when
-  free" × the bag's packed kg (never below the $18.79 it is below the line; empty = $18.79), and **You're saving $X**
-  (the struck Shipping and retailer charges and the bulk saving) shows in the brand colour above the total in the bag,
-  the bag panel, checkout and the thank-you page. Display only: what is charged, Express and every price are unchanged
-  (founder, D-140); the figure is never charged, stored or sent to Stripe; customers never see grams. Claude flagged
+- **F5:** from the free-delivery line up, Shipping shows struck through at the bag's own figure (`shown_shipping_cents`), and
+  **You're saving $X** (the struck Shipping and retailer charges and the bulk saving) shows in the brand colour above the
+  total in the bag, the bag panel, checkout and the thank-you page. Display only: what is charged and every price are
+  unchanged (founder, D-140); the figure is never charged, stored or sent to Stripe; customers never see grams. Claude flagged
   that a struck figure never charged can read as a fictitious former price (FTC 16 CFR 233.1); the founder chose it.
 - **F7:** the thank-you page sews a running stitch from India to the customer's state ending in a stitched check
   (about 1.4 s, once; finished at once with reduced motion), the message on the left and the order on the right on
@@ -120,57 +120,29 @@ option says how many of it are already in the bag.
 - **L4:** a summary that is the shop's run of specs, or the description again, is not shown; such specs read as a list
   in Details; the importer and the runner pick a plain line. **L5:** the product title is 30 – 36 px, two lines at
   most. **L6:** the bag panel adds "Goes well with" (four small cards of the last piece's type from its state, each with
-  its +) under its lines. **L7:** Home's band under Just listed: when an order placed today arrives, where delivery
-  turns free and the return window, from the store's data.
+  its +) under its lines. **L7:** Home's band at its end: how long food and the rest take, in delivery days (no date, D-187),
+  where delivery turns free and the return window, from the store's data.
 
 ## Cards (D-140, plan F6, F8, F9)
 - **Tap anywhere on a card but its buttons → the product page.**
-- **7-day tag (D-148):** a 7-day piece's card says "In 7 days" (brand colour, top left of the photo; the days from
-  Settings, `quick_days`); not inside the 7-day store (its rows and list) or Home's "Arrives in 7 days" row, which say it
-  once. Its product page has no tag: its delivery line gives the normal window and "Comes in 7 days with $49.99 of 7-day
-  pieces." (D-154; the days and the line from Settings).
-- **Two shipments (D-154, step 3):** once the bag holds 7-day pieces, the bag (page and panel, web and app) shows its
-  lines under their dates, from `/api/bag-charges` (`quick_ids`, `dates`, `shipments`; no weight leaves the database):
-  "Shipment 1 · Arrives by Fri, Oct 30" over the 7-day pieces and "Shipment 2 · Arrives Nov 3 – Nov 7" over the rest
-  when they are worth the 7-day line ($49.99), one "Arrives by …" group for a bag of only them (Shipping struck through,
-  "You're saving"), and under the line one group in the normal window with "Add $12.40 of 7-day pieces and they arrive
-  by Fri, Oct 30" and **Shop the 7-day store** (a bag of only 7-day pieces says it once, in its summary's goal); each date
-  "for most US addresses". **One goal, one bar (D-156, `bag-goal.ts`)** in the pill, the summary and the app: only 7-day
-  pieces under $49.99 → "Add $12.40 more for FREE 7-DAY DELIVERY"; only 7-day pieces from $49.99 → "FREE 7-DAY DELIVERY ·
-  by Fri, Oct 30", the bar full; any other bag → "Add $X more for FREE DELIVERY"; past the free line the bar keeps its
-  full part to the house and grows a short second part to a price tag: four grey dollar signs that turn dollar-bill green
-  one by one as the bulk saving fills its cap (founder 2026-10-31) ("FREE DELIVERY + saving $1.40"; the pill widens from
-  440 to 520 px for the words), never back to the start (founder 2026-10-30). The goal follows the bag as
-  it is now from the first draw: the two lines come from Settings with the page (`days.tsx`), each line remembers whether
-  it was a 7-day piece when added, and an answer for an earlier bag never decides it (`charges.ts`, the app's
-  `charges.tsx`; founder 2026-10-30: "now only the 7 day items exist but the bag was still showing 99"). The app keeps
-  the bar full past the line and says the saving in words. When a change crosses a line the pill (on
-  `/cart` the summary) says so for three seconds: "Your 7-day pieces now arrive by …", "That opened a second shipment:
-  …", "Your 7-day pieces now travel with the rest: …", or, when a normal piece ends a free 7-day bag's free Shipping,
-  "Shipping is now $46.55 until $99.99." with **Undo** beside the pill (six seconds; Undo puts the bag back). Checkout,
-  after the address: one window or Shipment 1 and Shipment 2 with their pieces, the "Add …" line (naming the promo code
-  when it is the reason), and for an address outside the 48 states and DC "7-day delivery reaches the 48 mainland states
-  and DC, so everything here comes together in one shipment." No Express with a 7-day shipment. The order page (and its
-  emails) shows each shipment's date, status, Track the parcel and pieces; a late shipment's notice offers to keep it or
-  cancel just that shipment. Shared logic: `packages/shared/src/domain/bag-shipments.ts`.
-- **The store tabs (D-154 step 4; D-156 replaced the floating pill):** while the 7-day store is open (days in Settings, not
-  paused, at least one piece), a dark strip along the very top of every store page with the two stores as tabs, like a
-  browser's (`features/shell/store-switch.tsx`, CSS `.store-*` in globals.css): "IWC" with the gold India outline and
-  "7-day store" with a brand-colour 7, nothing under them (D-166). Phones: the strip 46 px (42 px from 768 px), the tabs sharing the width; from 768 px 500 px
-  from the left gutter. The open tab is the header's own colour and runs into it through curved feet: ivory in the IWC
-  store; in the 7-day store (every page under `/7-day-delivery`) the header takes a warm brand tint (12% of the brand
-  colour) with no line under it (founder 2026-10-30: "two horizontal lines under the categories, remove them"). The IWC
-  tab returns to the address the shopper saw (`/food`, not its rewritten route). On Home the open tab is light glass over the
-  photo; past the photo the strip turns ink and the open tab ivory. The strip is part of the page and stays at the top
-  with the header on every store page (founder 2026-10-31: "fixed not dynamic for all pages except the checkout page";
-  checkout's own frame has no tabs), so `--top-h` counts it. A tap moves the open tab at
-  once (320 ms with a slight spring, the mark pops once; at once with reduced motion) and opens the other store's front
-  page; the IWC tab returns to the page left (this tab's sessionStorage). Plain links in a "Store" nav, the open one
-  `aria-current="page"`. Inside the 7-day store the header's type links become All and its biggest categories (two
-  below 1280 px, four above; each opens its 7-day See all page) and Search finds only 7-day pieces
-  (`/7-day-delivery/search`).
+- **The delivery line (D-187):** every card has one text line under the price, about 18 px, "7 delivery days" for food and
+  "12 – 16 delivery days" for the rest (on phones in three-to-a-row, at 10 px). It adds no script: `--days-food` and
+  `--days-standard`, CSS variables the store layout writes in its `<style>` from `store_policy()`. A card does not know
+  `is_us_stock`, so a clearance piece's card says the standard days. No "7-day" tag anywhere, and the old brand chip on the
+  photo is gone.
+- **Two shipments and one bar (D-187, `bag-goal.ts`, `bag-shipments.ts`):** the bag (page and panel, web and app) groups its
+  lines from `/api/bag-charges` (`food_ids`, `dates`, `shipments`; no weight leaves the database): "Shipment 1 · Food · 7
+  delivery days" and "Shipment 2 · Clothing and home & gifts · 12 – 16 delivery days" for a mixed bag, one heading for a bag of
+  one kind (a bag of only pieces in the US has no such line). **One bar:** "Add $X more for FREE DELIVERY" to $49.99; past it
+  the bar keeps its full part to the house and grows a short second part to a price tag, from $99.99: four grey dollar signs
+  that turn dollar-bill green one by one as the bulk saving fills its cap (founder 2026-10-31) ("FREE DELIVERY + saving $1.40";
+  the pill widens from 440 to 520 px for the words), never back to the start (founder 2026-10-30). The line comes from Settings
+  with the page (`days.tsx`), and an answer for an earlier bag never decides it (`charges.ts`, the app's `charges.tsx`). The app
+  keeps the bar full past the line and says the saving in words. Checkout, after the address: one window or Shipment 1 and
+  Shipment 2 with their pieces. The order page (and its emails) shows each shipment's date, status, Track the parcel and
+  pieces; a late shipment's notice offers to keep it or cancel just that shipment.
 - **Phones, smaller cards (founder, 2026-10-24):** below 640 px a row's cards are 148 px wide (176 px above), and See
-  all's food and home grids (both stores) show three to a row with a 32 px heart and +, smaller chips and words
+  all's food and home grids show three to a row with a 32 px heart and +, smaller chips and words
   (`data-dense`, globals.css); clothing keeps two to a row, its photos need the width. Below 420 px (D-179)
   they stay three to a row and get smaller still: a 28 px heart and + that each keep a 44 px tap area, one-line tags
   left of the heart, 12 px names (`filters.module.css`).
@@ -188,17 +160,16 @@ option says how many of it are already in the bag.
   short pop and is never disabled; the database follows a moment later (quick on/off sends only the last state) and
   a refusal puts it back with "Couldn't save". The page reads a signed-in visitor's saved pieces once, not once per
   card. Signed out, the piece is saved on this device ("Saved on this device. Sign in to keep them on every device",
-  once) and joins the account after sign-in. A coming-soon card says "Save it, we'll show it in Saved when it's back"
-  beside its heart (S7).
+  once) and joins the account after sign-in.
 
 ## Mobile app (customer side, `apps/app`, built in R6, redesigned in B6 on D-095)
-Tabs on the app's own cream tab bar (a brand bar over the active tab, the bag count as a brand pill): **Home** (the photo
-with "Indian Wholesale Club" on its wall and "Miss local market? Start here." (D-148: "Want in 7 days? Click here." to the
-7-day screen while 7-day delivery is on; D-154: the store switch at the top of the content and the "Arrives in 7 days"
-row while the 7-day store is open), the demo strip on top, Just listed, Pick
+Tabs on the app's own cream tab bar (a brand bar over the active tab, the bag count as a brand pill): **Home** (in the
+website's order where the app has the section: the hero photo with "We go home so you don't have to.", Shop by category (the
+newest piece's photo on each tile: the website's tile photos live in its own `public/`), What everyone missed this week, The
+kirana counter, Just listed Clothing and Home & gifts, Pick
 your home with stamp pages from 7) · **Explore** (search with the count, States · Clothing · Food · Home & gifts; states as stamps) ·
 **Bag** (photos, − / + , the empty bag shows stamps and Just listed; the bag is a tab, so no bag panel; D-154: its lines
-under their shipments' dates with the one goal and bar (D-156), as on the website; not yet the pill's notes) · **Saved** (cards
+under their shipments' headings with the one goal and bar, as on the website; not yet the pill's notes) · **Saved** (cards
 with a filled heart that removes) · **Profile** (Orders · Addresses · Your details as pill tabs, Track an order, About us &
 help, Sign out; signed out, the sign-in card). Tab roots have a large Syne title, pushed screens a back bar. The screens
 follow the web pages above, read the same `store_*` data through `@repo/db/store` (one call per screen, D-017) and share
@@ -206,11 +177,10 @@ the tokens (§Design system). About us & help is the D-092 panel as a sheet with
 `packages/shared/src/info/` (one source with the website's info pages).
 | Screen | File (`apps/app/app/…`) | Data |
 |---|---|---|
-| Home, Explore, Bag, Saved, Profile | `(customer)/…` | `store_home()`, `store_type_rows()`, search, on-device bag, `wishlists` (signed in), own orders as cards (`listMyOrderCards`), `store_policy()` for the help sheet and Home's 7-day line, `store_bag_charges()` for the Bag's charges and shipments |
-| 7-day delivery | `7-day-delivery` (D-148: the web page's header with the days, category pills with counts, a two-column grid 24 at a time like `browse`; the cards without the tag; nothing to show while the days are empty. D-154: the 7-day store's front page: the store switch on top (no shared header in the app, so on Home and here; IWC goes back), "Order today, arrives by …", the line, the rows Most ordered this week, Under $5 and New this week) | `store_quick_browse()`, `store_quick_front()` |
-| Region, product | `region/[slug]`, `product/[region]/[slug]` (same sections as the web pages above: the region photo first and jump pills; on the product page the photos edge to edge with a full-screen viewer, the buy bar, reviews as a row, and "Write a review" as a sheet with the D-090 form, D-095) | `store_region_page()`, `store_product_page()` + live availability |
-| Checkout | `checkout` | phone → delivery (the ZIP fills the city and state through the website's `GET /api/zip`) → payment, as on the web (D-087); the website's server API: `POST /api/checkout` (server-priced quote + Standard / Express, D-041) → Stripe PaymentSheet → `POST /api/orders` (D-038). The phone never sends prices |
-| Order | `order/[number]` (signed-in owner, `store_my_order`) · `order/lookup` (number + checkout email via `POST /api/orders/lookup`, rate-limited, one answer for any mismatch); the faster-delivery offer (D-064) through the same API as the website, paid with the PaymentSheet; cancel / keep through `POST /api/orders/choice` | |
+| Home, Explore, Bag, Saved, Profile | `(customer)/…` | `store_home()`, `store_type_rows()`, search, on-device bag, `wishlists` (signed in), own orders as cards (`listMyOrderCards`), `store_policy()` for the help sheet and the cards' delivery days (`features/shell/days.tsx`), `store_bag_charges()` for the Bag's charges and shipments |
+| Region, product | `region/[slug]`, `product/[region]/[slug]` (same sections as the web pages above: the region photo first and jump pills; on the product page the photos edge to edge with a full-screen viewer, the buy bar, reviews as a row, and "Write a review" as a sheet with the D-090 form, D-095) | `store_region_page()`, `store_product_page()` (no live stock, plan Y-3) |
+| Checkout | `checkout` | phone → delivery (the ZIP fills the city and state through the website's `GET /api/zip`) → payment, as on the web (D-087); the website's server API: `POST /api/checkout/stock` when it opens and when the bag changes before the payment step (`features/checkout/stock-problems.tsx`: the same list, Remove and Keep n), `POST /api/checkout` (server-priced quote; standard only, no `shippingMethod` sent) → Stripe PaymentSheet → `POST /api/orders` (D-038). The phone never sends prices |
+| Order | `order/[number]` (signed-in owner, `store_my_order`) · `order/lookup` (number + checkout email via `POST /api/orders/lookup`, rate-limited, one answer for any mismatch); cancel / keep through `POST /api/orders/choice` | |
 | Addresses, sign-in | `addresses` (the add / edit form), `auth/login`, `auth/signup` | own `addresses` rows · Supabase Auth: the sign-in card with the eye, Forgot password (the link opens the website's "Set a new password") and the email code (D-091) |
 Every list in the app is a sideways row (a horizontal `FlatList`) with **See all** → the **Browse** screen
 (`app/browse.tsx`: one type, optional region and category, a virtualized two-column grid that loads 24 at a time as it
@@ -220,11 +190,14 @@ search (`store_search_page`): the same results, the fix line, the type pills wit
 while typing (from the website's `GET /api/search/hints`, read once per app session; a state opens its screen, a
 category the Browse screen). The app versions already on phones call `store_search`, which answers the same way.
 Signing in with an admin account switches the app to admin mode (`admin.md`). Nothing in the customer UI hints at this (D-006).
+**App versions (D-187):** the app is 1.1.0 (`apps/app/app.json`). The website and database keep the keys app 1.0.0 reads, each
+marked `TODO(D-187): drop when app 1.1.0 is the minimum`. Until then that old app's bag can show a small wrong saving on a
+$50 – $99.99 bag (it works the saving out from the free line); checkout's total is right and shown before payment.
 
 ## Emails (customer)
 Order confirmed (with delivery window) · preparing (optional) · shipped (tracking) · delivered · item unavailable + refund ·
 delay notice with cancel option (D-008). All go through `email_outbox` and follow the same whitelist. **Built (C5):** all of
-these, plus cancelled, refund, the faster-delivery offer and its confirmation, and "coming sooner" (D-064). The copy is in
+these, plus cancelled and refund, with "Shipment 1 (food)" wording for a split order. The copy is in
 `apps/web/lib/email/order-update.ts` (drafted in the D-059 voice; the founder may rewrite it). Sent with Resend's test
 sender until launch (D-046).
 **D-094 (built in B5):** every email sits in one frame (`apps/web/lib/email/frame.ts`): the cream page, the logo as an
@@ -240,17 +213,17 @@ button opens our order page, which links on to the carrier (D-088).
 > **Status:** direction set on 2026-09-29 (D-049); the mockup was approved on 2026-09-30 (D-055) and its tokens and fonts
 > are in `packages/tokens` and `apps/web/app/fonts.ts`. Code uses the token roles, never raw hex.
 > **Direction chosen (2026-09-30, D-050):** A, reworked: the hero keeps its format, everything below it is a symmetric
-> full-width grid, no dark mode, fonts below. Mockup: `design/mockups/index.html` (palette with contrast, the map source,
-> the founder's remaining choices). Tokens go into `packages/tokens` in C1 step 2.
+> full-width grid, no dark mode, fonts below. Tokens go into `packages/tokens` in C1 step 2.
 > **Since 2026-10-08 (D-079, D-080; built in B1 and B2 of the design pass build):** the shell and the Home hero from the
 > design pass: **Cinzel** (headlines), **Syne** (headings below the hero) and **Karla** (everything else) replace the five
 > fonts below, the logo stays Georgia; header Search (a visible pill that grows into a long search bar once the page scrolls, D-113) · Clothing (Women · Men on hover or focus) · Food · Home & gifts · States (D-140; below 1024 px the types are in the menu and About us lives in the menu and footer) + saved / bag / profile icons; phone
 > side panel; the hero name held on the photo's white wall at every size in #1D1A17; on the Home photo the header stays
 > as before (white links over a dark band, smooth fade to cream); soft blur is fine, harsh blur is not; the card's add
-> button is a round + on its photo; Open now stamps page in sixes. Approved mockups: `design/pages/shell/`,
-> `design/pages/home/`. Where the sections below still describe the older build, these lines win.
-> **Design pass (since 2026-10-07):** every page is designed again, one at a time; the register, the workflow and each
-> page's brief and mockup are in `design/pages/`. Until a page's mockup is approved, this file and the code stay as they are.
+> button is a round + on its photo; Open now stamps page in sixes. Where the sections below still describe the older build,
+> these lines win.
+> **Design pass:** the old mockups and page briefs left the repo (D-187, plan R-3): they are in
+> `C:\kod\iwc-removed-2026-11-04\design.zip`. A page's design pass no longer registers in the repo; this file and the code are
+> what stands.
 
 ### Direction (founder, D-049; layout below the hero and fonts changed by D-050)
 **D-050 (2026-09-30):** Direction A. The hero keeps A's asymmetric, image-led format and motion; **everything below the
@@ -264,24 +237,22 @@ the logo text only.
 **Home hero (D-052 – D-054):** the founder's photo fills the first screen edge to edge, behind the nav bar too; "Indian Wholesale Club" (D-077) stands on its white wall,
 one word per line, right-aligned, with the label "Clothing and spices from home" under it and nothing else (D-055; **target**
 D-079: "Miss local market? Start here.", the name sized and placed on the white wall at every width); the
-photo is AI-generated and IWC holds the rights; scrolling fades the words out while the header logo fades in. The earlier hero is archived in `design/mockups/archive/a-gallery-v3.html`.
+photo is AI-generated and IWC holds the rights; scrolling fades the words out while the header logo fades in.
 The D-049 bullets below still apply to the hero and to motion; their asymmetric layout rules no longer apply below it.
 The storefront reads like a **premium editorial magazine / contemporary gallery wall** built from large photographs:
 - **Layout:** asymmetric, image-led compositions. Large photographs at varying vertical positions, varied widths,
   offsets and overlaps; images may break the grid and extend between sections; floating compositions.
 - **Density (the founder's 4th prompt refines the first three):** no large empty gaps. Bigger images, sections that fill
   more of the viewport, elements closer together, clean alignment, consistent breathing room. Immersive, not sparse.
-- **Motion:** Lenis smooth scrolling; subtle vertical (and some horizontal) parallax tied to scroll velocity; images
-  reveal as they enter the viewport through gentle clipping, slow scale and opacity transitions. A tap on a link to
-  another page draws a thin brand line along the top until that page is drawn (after 120 ms, so an instant page shows
-  nothing; `navStart()` for the map's taps; founder 2026-10-30: a slow tap looked dead).
+- **Motion:** the browser's own scrolling (no smooth-scroll library since D-187, plan Y-6); images reveal as they enter the
+  viewport through gentle clipping, slow scale and opacity transitions, with a gentle parallax on a few pictures. A tap on a link to another page draws a thin brand
+  line along the top until that page is drawn (after 120 ms, so an instant page shows nothing; `navStart()` for the map's
+  taps; founder 2026-10-30: a slow tap looked dead).
 - **Typography:** minimal, clean, luxury-magazine; photographs carry the page.
-**Guard rails (built in C1: `apps/web/features/shell/motion.tsx`, tested in `e2e/motion-keyboard.spec.ts`):** motion is progressive enhancement. Lenis and the scroll effects load as one small
-client module after the page is interactive; with `prefers-reduced-motion` they are off entirely (native scroll, no
-parallax, images simply visible); keyboard, find-in-page, anchor links and screen readers keep working; content is fully
+**Guard rails (`apps/web/features/shell/motion.tsx`, tested in `e2e/motion-keyboard.spec.ts`):** motion is progressive enhancement. The reveal and parallax load as one small
+client module after the page is interactive; with `prefers-reduced-motion` they are off entirely (no parallax, images simply visible); keyboard, find-in-page, anchor links and screen readers keep working; content is fully
 readable with JavaScript off. The speed budgets still hold (`engineering.md`: first-load JS ≤ 160 KB, cached pages
-≤ 100 ms), and images use `next/image` with explicit sizes so the large photos don't slow the first paint. On mobile
-the effects are lighter. The app follows the same look with native motion (Reanimated), not Lenis.
+≤ 100 ms). The app follows the same look with native motion (Reanimated).
 **Photography dependency:** the direction lives on photographs. Until real product and region photos exist (listing, C3;
 region images, C2), mockups and dev pages use clearly marked placeholders, never stock photos presented as products.
 
@@ -302,29 +273,26 @@ region images, C2), mockups and dev pages use clearly marked placeholders, never
   joke where a person would make one; no "vibrant", "rich heritage", "timeless", "curated with love", no stacked
   adjectives, no "whether you're…", no em-dash asides. Read it aloud; if it sounds like an ad, rewrite it.
 
-### The homesick promises (D-161, `docs/archive/plan-homesick.md`)
-- **The wait is the proof:** a date and a day name, never an apology and never "fast". The seven promises (7 days
-  from India to your door, the 12 – 16 day window, free 7-day delivery from $49.99, free delivery from $99.99, duties
-  paid and nothing to pay at your door, right to your door, the pack from back home) each come from Settings or the
-  order, worked out in the browser for cached pages (`packages/shared/src/domain/homesick.ts`,
-  `apps/web/features/shell/days.tsx`).
-- **One promise per screen, inside something the page already has** (a header line, a card tag, the pill, a summary
-  line): no banners, pop-ups or tickers (except Home's Diwali windows, D-174), no countdown, no blog. Where each one sits: D-161.
+### The homesick promises (D-161, `docs/archive/plan-homesick.md`; the 7-day parts went with D-187)
+- **The wait is the proof:** never an apology and never "fast". The promises (7 delivery days on food, 12 – 16 on the rest,
+  free delivery from $49.99, duties paid and nothing to pay at your door, right to your door, the pack from back home) each
+  come from Settings (`packages/shared/src/domain/homesick.ts`, `apps/web/features/shell/days.tsx`).
+- **"Delivery days" is the promise (founder, plan §10 Y-5, D-187): "Just use the term "delivery days" and quietly explain it
+  in faqs".** Store pages say the term and no calendar date; the FAQ's "What is a delivery day?" is the only place the
+  definition is spelled out (`packages/shared/src/info/pages.ts`; the numbers from `store_policy()`). No week strip, no
+  festival clock, no "open it Sat" lines.
+- **One promise per screen, inside something the page already has** (a header line, a card line, the pill, a summary
+  line): no banners, pop-ups or tickers (except Home's Diwali windows, D-174), no countdown, no blog.
 - **Pictures, not paragraphs (D-166):** a promise is drawn before it is written: the flight (founder 2026-10-30: a small
   band, India's outline and the US with its states, a straight dashed line between them, a side-view plane towing the
-  free line or the festival's last order day across at one steady speed, again and again, on a small light cloth with a
-  hairline wine border and wine words (founder 2026-10-31); paused off screen and resumed
-  from the same spot, parked with reduced motion; `features/visuals/flight.tsx`, the map from
-  `scripts/build-us-map.mjs`), the 7-day store's address label and
-  stamp, the duties stamp, the week strip. No new lines of copy on pages; the jokes stay in the emails, the
-  pill, the empty bag and the thank-you page. The founder's photos go in the slots of `features/visuals/slots.ts` (each
-  with its size and what it wants; an empty slot shows a labelled frame off the live site and nothing on it): the
-  7-day store's photo and seasonal poster, Home's wide picture, and (founder 2026-10-31: "think creatively of what we
-  can put in the whitespaces") on wide screens beside the one narrow column of Sign in and Create an account, About us,
-  How it works, Contact, the empty bag and Page not found (`picture-beside.tsx`; phones keep the column alone), and one in each of Home's Diwali windows (D-175).
+  free line across at one steady speed, again and again, on a small light cloth with a hairline wine border and wine words
+  (founder 2026-10-31); paused off screen and resumed from the same spot, parked with reduced motion;
+  `features/visuals/flight.tsx`, the map from `scripts/build-us-map.mjs`) and the duties stamp. No new lines of copy on
+  pages; the jokes stay in the emails, the pill, the empty bag and the thank-you page. The founder's photos go in the slots of
+  `features/visuals/slots.ts` (each with its size and what it wants; a slot with no photo is removed until it has one, plan
+  Y-8): the empty bag, Page not found (`picture-beside.tsx`) and each of Home's Diwali windows.
 - Say "Duties paid. Nothing to pay at your door.", never "no tariffs"; every such line follows `DUTIES_PAID` (Q-46).
-  Shops are "India's own shops", never named (D-003). The festival clock shows only while an order can arrive the
-  day before (Q-45).
+  Shops are "India's own shops", never named (D-003).
 - The words are Claude's drafts until the founder approves them (D-019, D-059).
 
 ### Visual system (principles)
@@ -340,11 +308,10 @@ region images, C2), mockups and dev pages use clearly marked placeholders, never
    under the map and in the footer), about 27 KB gzipped (approved, D-052).
 5. **Photography:** real product photos taken at listing time, consistent aspect ratio (decided with the mockups). No
    stock photos presented as products.
-6. **Motion:** as §Direction (D-049): Lenis smooth scroll + reveal/parallax, the only motion library allowed on the
-   storefront (no framer-motion), off for `prefers-reduced-motion`. Everything else CSS.
+6. **Motion:** as §Direction: the reveal and a gentle parallax, no smooth-scroll library and no framer-motion on the storefront, off for
+   `prefers-reduced-motion`. Everything else CSS.
    **Polish pass (D-116, D-117):** the free-delivery bar fills sideways with a glowing head (`.fd-bar`); phones have
-   Search where wider screens have Saved (`phone-search.tsx`); the page clips sideways overflow. Lenis's velocity is `--sv` on `<html>`; `.drift` grids and rows float apart by column while
-   the page scrolls fast. Element motion lives in `globals.css` (`.fd-*` free-delivery meter, `.press`, `.rise-in`,
+   Search where wider screens have Saved (`phone-search.tsx`); the page clips sideways overflow. Element motion lives in `globals.css` (`.fd-*` free-delivery meter, `.press`, `.rise-in`,
    `.draw-check`, `.quick-add`, `.live-dot`, `.write-in`, panel stagger) and `features/cart/fly-to-bag.ts` (Web Animations);
    the app uses Reanimated (`free-delivery-pill.tsx`, `meter-line.tsx`, the tab bar). Loops animate transform or opacity only.
 7. **Light only:** no dark mode on customer pages (D-050).
@@ -381,9 +348,9 @@ for "reduce motion" and when off screen.
 
 ### Admin look
 Plain, dense and fast. The same tokens, no brand decoration. Phone layouts for field jobs (`admin.md`).
-Since B7 the web admin follows the approved admin design (D-096, `design/pages/admin/`; the class strings in
+Since B7 the web admin follows the approved admin design (D-096; the class strings in
 `apps/web/features/admin/styles.ts`, the parts in `ui.tsx`, the frame in `frame.tsx`): Syne page titles (codes such as
-order and cycle numbers in Karla), Karla for everything else, paper panels, ink primary buttons, plain status chips in
+order numbers in Karla), Karla for everything else, paper panels, ink primary buttons, plain status chips in
 words and colours (`chips.tsx`), small uppercase group labels. A sidebar grouped by job with counts of what waits; a top
 bar with quick find (Ctrl+K), the desk's clock in both zones and the live dot; on phones a top bar with the menu, the
 page title and find. Times are in the admin's desk zone with the other zone beside them, never UTC (`time.ts`).

@@ -11,7 +11,7 @@ import { postJson } from './http';
 import { saveLastOrder, type SummaryLine } from './last-order';
 import { confirmOrder } from './order-confirm';
 
-import type { CheckoutQuote, CheckoutRequestBody, CheckoutStartResponse } from './types';
+import type { CheckoutQuote, CheckoutRequestBody, CheckoutStartResponse, StockProblemLine } from './types';
 
 /** How long pricing the bag may take before the customer is told and Continue comes back (launch QA A-3). */
 const START_TIMEOUT_MS = 20_000;
@@ -24,13 +24,26 @@ const startSchema: z.ZodType<CheckoutStartResponse> = z.object({
   ),
 });
 
+const stockLinesSchema = z.array(
+  z.object({
+    variantId: z.string(),
+    productName: z.string().nullable(),
+    variantLabel: z.string().nullable(),
+    imagePath: z.string().nullable(),
+    quantity: z.number().int(),
+    available: z.number().int(),
+  }),
+);
+const stockProblemSchema = z.object({ kind: z.literal('stock'), lines: stockLinesSchema });
+
 const successUrl = (query: string) => `/checkout/success?${query}`;
 
 /**
  * The payment half of /checkout: price the bag and hold one payment for the visit (A-5: the payment's secret goes
  * back with every re-price, so the server moves its amount), then finish the order once paid. Every failure comes
  * back as a message and the buttons work again (A-3); a paid customer always leaves the form for the thank-you page,
- * which keeps confirming (A-2, A-4).
+ * which keeps confirming (A-2, A-4). §10 Y-3: a line sold out or short comes back as `stock`: the payment form closes and
+ * stays closed until each line is removed or lowered; the payment itself is kept for the next re-price.
  */
 export function useCheckoutPayment(summarize: (quote: CheckoutQuote) => SummaryLine[]) {
   const router = useRouter();
@@ -44,19 +57,23 @@ export function useCheckoutPayment(summarize: (quote: CheckoutQuote) => SummaryL
   const [stale, setStale] = useState(false);
   /** The order was refused after payment and the payment refunded (sold out meanwhile): the message, final. */
   const [refused, setRefused] = useState<string | null>(null);
+  /** The bag's lines that cannot go ahead as they are (Y-3): payment stays locked while there is one. */
+  const [stock, setStock] = useState<StockProblemLine[]>([]);
 
   /**
-   * Prices the bag on the server and holds the payment for that exact total. True when it worked. heldSecret: the
-   * payment a refreshed tab already held (A-8).
+   * Prices the bag on the server and holds the payment for that exact total. heldSecret: the payment a refreshed tab
+   * already held (A-8). 'stock': the answer listed lines to fix (`stock`), no payment moved.
    */
   async function post(
     body: CheckoutRequestBody,
     heldSecret: string | null = null,
-  ): Promise<boolean> {
-    if (busy) return false;
+  ): Promise<'ok' | 'stock' | 'failed'> {
+    if (busy) return 'failed';
     setBusy(true);
     setError(null);
     setRequest(body);
+    // kept even if this answer lists stock problems: the re-price after the fix moves the same payment (A-5)
+    if (heldSecret) secret.current = heldSecret;
     const result = await postJson(
       '/api/checkout',
       { ...body, clientSecret: heldSecret ?? secret.current },
@@ -69,13 +86,18 @@ export function useCheckoutPayment(summarize: (quote: CheckoutQuote) => SummaryL
     if (!result.ok) {
       setError(result.message);
       setStale(true);
-      return false;
+      const problem = stockProblemSchema.safeParse(result.problem);
+      if (!problem.success) return 'failed';
+      setStock(problem.data.lines);
+      setStarted(null);
+      return 'stock';
     }
     const json = result.data;
     secret.current = json.clientSecret;
     setStarted(json);
     setStale(false);
     setRefused(null);
+    setStock([]);
     saveCheckout({
       clientSecret: json.clientSecret,
       paymentIntentId: json.paymentIntentId,
@@ -88,7 +110,23 @@ export function useCheckoutPayment(summarize: (quote: CheckoutQuote) => SummaryL
       quote: json.quote,
       state: body.address.state,
     });
-    return true;
+    return 'ok';
+  }
+
+  /** When checkout opens: the bag's stock, before any address. A failure says nothing: every re-price checks again. */
+  async function checkStock(lines: { variantId: string; quantity: number }[]): Promise<void> {
+    const result = await postJson('/api/checkout/stock', { lines }, z.object({ lines: stockLinesSchema }), {
+      timeoutMs: START_TIMEOUT_MS,
+    });
+    if (result.ok) setStock(result.data.lines);
+  }
+
+  /** A line was removed or lowered: off the list. */
+  function stockFixed(variantId: string): StockProblemLine[] {
+    const rest = stock.filter((l) => l.variantId !== variantId);
+    setStock(rest);
+    setError(null);
+    return rest;
   }
 
   async function paid(paymentIntentId: string, status: string): Promise<void> {
@@ -130,5 +168,5 @@ export function useCheckoutPayment(summarize: (quote: CheckoutQuote) => SummaryL
     setStale(false);
   }
 
-  return { started, request, busy, error, stale, refused, post, paid, drop };
+  return { started, request, busy, error, stale, refused, stock, post, paid, drop, checkStock, stockFixed };
 }

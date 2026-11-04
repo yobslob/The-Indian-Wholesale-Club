@@ -28,8 +28,6 @@ export const checkoutVariantSchema = z.object({
   image_path: z.string().nullable(),
   /** D-073: taxed or exempt depends on the delivery state's rule for this class. */
   tax_class: z.enum(['clothing', 'food', 'general']),
-  /** D-070: what the courier charges to carry one piece (express). Never the weight (INV-1). */
-  courier_cents: z.number().int(),
 });
 
 export const checkoutPromoSchema = z.object({
@@ -40,12 +38,26 @@ export const checkoutPromoSchema = z.object({
   min_order_cents: z.number().int(),
 });
 
+/** §10 Y-3: one asked line's stock, also when it is no longer on sale (name, label and photo null only if it is gone). */
+export const checkoutStockSchema = z.object({
+  variant_id: z.string().uuid(),
+  on_sale: z.boolean(),
+  available: z.number().int(),
+  product_name: z.string().nullable(),
+  label: z.string().nullable(),
+  image_path: z.string().nullable(),
+});
+
 export const checkoutContextSchema = z.object({
   variants: z.array(checkoutVariantSchema),
+  /** Every id asked, in the order asked. */
+  stock: z.array(checkoutStockSchema),
   promo: checkoutPromoSchema.nullable(),
   shipping: z.object({
     flat_cents: z.number().int().nullable(),
     free_min_cents: z.number().int().nullable(),
+    /** D-187: the bulk saving and the heavy-item discount start here. */
+    bulk_saving_from_cents: z.number().int().nullable(),
     /** D-109: smaller bags cannot check out. */
     min_order_cents: z.number().int().nullable().default(null),
   }),
@@ -62,22 +74,13 @@ export const checkoutContextSchema = z.object({
     .nullable(),
   /** D-072: a bag of only pieces already in the US: today + the US delivery days (null otherwise). */
   us_delivery: z.object({ est_delivery_from: z.string(), est_delivery_to: z.string() }).nullable().default(null),
-  /** D-148: a bag of only 7-day pieces: today + the 7-day days (null otherwise; then Express is null too). */
-  quick_delivery: z.object({ est_delivery_from: z.string(), est_delivery_to: z.string() }).nullable().default(null),
-  /** D-070: courier from Mumbai to the door, priced per order + per piece; its window counts from today. Never for a
-   * bag with a piece already in the US. */
-  express: z
-    .object({
-      base_cents: z.number().int(),
-      min_courier_cents: z.number().int(),
-      est_delivery_from: z.string(),
-      est_delivery_to: z.string(),
-    })
-    .nullable(),
+  /** D-187: the food shipment's window (today + the food delivery days); the bag's charges say whether the bag has one. */
+  food_delivery: z.object({ est_delivery_from: z.string(), est_delivery_to: z.string() }).nullable().default(null),
 });
 
 export type CheckoutVariant = z.infer<typeof checkoutVariantSchema>;
 export type CheckoutPromo = z.infer<typeof checkoutPromoSchema>;
+export type CheckoutStock = z.infer<typeof checkoutStockSchema>;
 export type CheckoutContext = z.infer<typeof checkoutContextSchema>;
 
 /** Everything needed to price a cart, in one round trip (migration 3, PR-2). */

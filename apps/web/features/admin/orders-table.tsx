@@ -24,10 +24,10 @@ export interface OrderRow {
   pieces: number;
   total: string;
   window: string;
-  /** Arrived in the US, or an express order still in India (D-070): it can be marked shipped. */
+  /** Arrived in the US: it can be marked shipped from the list. */
   canShip: boolean;
-  /** D-154: it has a 7-day shipment. */
-  quick: boolean;
+  /** D-187: it has a food shipment. */
+  food: boolean;
 }
 
 const th = 'border-line text-ink-muted whitespace-nowrap border-b px-2.5 pb-2 text-[11.5px] font-semibold uppercase tracking-[0.06em]';
@@ -146,7 +146,7 @@ export function OrdersTable({ rows }: { rows: OrderRow[] }): React.JSX.Element {
                   <td className={`${td} text-right`}>{r.pieces}</td>
                   <td className={`${td} whitespace-nowrap text-right`}>{r.total}</td>
                   <td className={`${td} whitespace-nowrap`}>
-                    {r.window} {r.quick ? <Chip tone="brand">7-day</Chip> : null}
+                    {r.window} {r.food ? <Chip tone="brand">Food</Chip> : null}
                   </td>
                 </tr>
               );

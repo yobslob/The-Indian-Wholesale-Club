@@ -37,14 +37,13 @@ export function nameProposals(
     name: string;
     product_type: string;
     status: string;
-    vendor_id: string | null;
     source_site?: string | null;
     shop_title?: string | null;
   }[],
 ): NameProposal[] {
   const byShop = new Map<string, string[]>();
-  // one shop's names together, across states (each state has its own vendor for a shop)
-  const shopOf = (r: { vendor_id: string | null; source_site?: string | null }): string => r.source_site ?? r.vendor_id ?? '';
+  // one shop's names together
+  const shopOf = (r: { source_site?: string | null }): string => r.source_site ?? '';
   const base = (r: { name: string; shop_title?: string | null }): string =>
     r.shop_title && r.shop_title !== r.name && cutFrom(r.name, r.shop_title) ? r.shop_title : r.name;
   for (const r of rows) byShop.set(shopOf(r), [...(byShop.get(shopOf(r)) ?? []), base(r)]);

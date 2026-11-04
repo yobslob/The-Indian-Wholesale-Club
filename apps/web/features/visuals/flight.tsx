@@ -6,17 +6,14 @@ import { US_MAP } from './us-map';
  * 49.99"; then "make it smaller the path to be straight, instead of a hut make US border outlined in states"): a small
  * band, India's gold outline on the left, the US with its states on the right, a straight dashed line between them,
  * and a side-view plane crossing it at a steady speed towing a cloth banner (flight-art.tsx). The banner says the
- * free-delivery line (from the store's policy) or, while a festival is near and an order can still make it, "For
- * Diwali, order by Oct 31" (festivalClock, D-161: never a promise it cannot keep). The US map rides in the page once as
+ * free-delivery line (from the store's policy). The US map rides in the page once as
  * a symbol, drawn on the server, never in the JavaScript; no image, no request.
  */
 export function Flight({
   free,
-  festival,
   compact = false,
 }: {
   free: string | null;
-  festival: 'quick' | 'any';
   /** Inside a card (Home's Diwali window, D-174): the phone drawing at every width, so the banner stays readable. */
   compact?: boolean;
 }): React.JSX.Element {
@@ -28,7 +25,7 @@ export function Flight({
           <path d={US_MAP.border} className="flight-us-border" vectorEffect="non-scaling-stroke" />
         </symbol>
       </svg>
-      <FlightArt free={free} festival={festival} compact={compact} />
+      <FlightArt free={free} compact={compact} />
     </section>
   );
 }

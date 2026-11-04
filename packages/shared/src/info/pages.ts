@@ -1,5 +1,5 @@
 import { h, p, ul, type Block, type InfoSlug } from './blocks';
-import { cancelSentence, dayRange, returnTiers, standardShipping, taxSentence, type InfoPolicy } from './policy';
+import { cancelSentence, dayRange, DELIVERY_DAY, deliveryDays, returnTiers, standardShipping, taxSentence, type InfoPolicy } from './policy';
 
 /**
  * The seven info pages' wording, moved unchanged from the website's components (B6, D-095). Every line keeps its
@@ -30,12 +30,24 @@ const howItWorks = (): Block[] => [
   },
 ];
 
+/** D-187: the days from store_policy(), said in delivery days ("What is a delivery day?" is the next question). */
+function arrivalAnswer(policy: InfoPolicy): string {
+  const fromTo = (from: number | null, to: number | null): string | null =>
+    deliveryDays(from, to)?.replace(' delivery days', '') ?? null;
+  const food = fromTo(policy.food_delivery_days_min, policy.food_delivery_days_max);
+  const rest = fromTo(policy.delivery_days_min, policy.delivery_days_max);
+  const when =
+    food && rest
+      ? `Food arrives in ${food} delivery days, clothing and home & gifts in ${rest}, counted from your order. A bag with both comes in two parcels. `
+      : '';
+  return `${when}Before you pay, you see the dates for your order.`;
+}
+
 /**
  * FAQ: answers restate the decisions (D-001, D-002, D-004, D-008, D-036, D-066, D-070 – D-073, D-076) with the numbers
  * from store_policy(). TODO(founder): approve this draft (written by Claude; storefront.md voice).
  */
 function faq(policy: InfoPolicy): Block[] {
-  const express = dayRange(policy.express_days_min, policy.express_days_max);
   const tiers = returnTiers(policy);
   const lastTier = policy.return_tiers.at(-1);
   const returns: Block[] = [];
@@ -50,11 +62,9 @@ function faq(policy: InfoPolicy): Block[] {
       items: [
         { q: 'What do you sell?', a: [p("Clothing, food and gifts from India's 28 states and 8 union territories. Pick the state you miss, or any state you love, and shop what it is known for.")] },
         { q: 'Where do the pieces come from?', a: [p('Most pieces are made in India: their page says so and shows the state they come from. A piece made elsewhere says only "Imported". Every piece is imported to the US for your order.')] },
-        {
-          q: 'When will my order arrive?',
-          a: [p(`Before you pay, you see the estimated delivery window for your order, and it is on every product page too.${express ? ` Express arrives in about ${express} from your order.` : ''} If the date moves, we email you the new one.`)],
-        },
-        { q: 'How much is shipping?', a: [p(`Standard shipping is ${standardShipping(policy)}. Express, when offered, depends on your bag and is shown at checkout. We deliver in the US only.`)] },
+        { q: 'When will my order arrive?', a: [p(arrivalAnswer(policy))] },
+        { q: 'What is a delivery day?', a: [p(DELIVERY_DAY)] },
+        { q: 'How much is shipping?', a: [p(`Shipping is ${standardShipping(policy)}. We deliver in the US only.`)] },
         { q: 'Do you charge sales tax?', a: [p(taxSentence(policy.tax))] },
         { q: 'What currency do you charge in?', a: [p('US dollars. Shipping and any sales tax are shown at checkout, before you pay.')] },
         {
@@ -76,12 +86,14 @@ function faq(policy: InfoPolicy): Block[] {
  * TODO(founder): approve this draft (written by Claude from D-070 – D-073, D-076 and D-008; storefront.md voice).
  */
 function shippingReturns(policy: InfoPolicy): Block[] {
-  const express = dayRange(policy.express_days_min, policy.express_days_max);
+  const food = deliveryDays(policy.food_delivery_days_min, policy.food_delivery_days_max);
+  const rest = deliveryDays(policy.delivery_days_min, policy.delivery_days_max);
   const usDays = dayRange(policy.us_delivery_days_min, policy.us_delivery_days_max);
   const tiers = returnTiers(policy);
   const lastTier = policy.return_tiers.at(-1);
-  const delivery = [[{ strong: 'Standard' }, `: ${standardShipping(policy)}. The window is on every product page and at checkout.`]];
-  if (express) delivery.push([{ strong: 'Express' }, `: about ${express} from your order, sent straight to your door. Its price depends on your bag and is shown at checkout.`]);
+  const delivery = [];
+  if (food) delivery.push([{ strong: 'Food' }, `: ${food}, counted from your order. To the 48 mainland states and DC; elsewhere it travels with the rest.`]);
+  if (rest) delivery.push([{ strong: 'Clothing and home & gifts' }, `: ${rest}, counted from your order.`]);
   if (usDays) delivery.push([{ strong: 'Already in the US' }, `: some pieces are marked so on their page. On their own they arrive in about ${usDays}.`]);
   const returns = [];
   if (policy.return_claim_days !== null)
@@ -91,9 +103,10 @@ function shippingReturns(policy: InfoPolicy): Block[] {
   returns.push([{ strong: 'Food' }, ' is final sale, unless they arrive damaged or are not what you ordered.']);
   return [
     h('Delivery'),
-    p('Every piece comes to you from India. Before you pay, you see the estimated delivery window for your order, and we tell you if it changes.'),
+    p('Before you pay, you see the dates for your order, and we tell you if they change. A bag with food and other pieces comes in two parcels.'),
     ul(...delivery),
-    p(`We deliver in the US only. ${taxSentence(policy.tax)}`),
+    p(DELIVERY_DAY),
+    p(`Shipping is ${standardShipping(policy)}. We deliver in the US only. ${taxSentence(policy.tax)}`),
     h('If your delivery date moves'),
     p('We email you the new window. You can keep your order with the new date, or cancel it and get everything back, from your order page.'),
     h('Cancelling'),

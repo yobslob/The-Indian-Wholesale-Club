@@ -10,14 +10,13 @@ import { useQuery } from '@/lib/use-query';
 const ICONS = {
   index: 'today-outline',
   orders: 'receipt-outline',
-  cycles: 'boat-outline',
   listings: 'pricetags-outline',
   more: 'ellipsis-horizontal',
 } as const;
 
 /**
- * The admin mode's five tabs (D-097): Today · Orders · Cycle · Listings · More, each with a count of what waits
- * (orders to ship, pickups to do, drafts, shops owed), refreshed every minute and after each change.
+ * The admin mode's four tabs (D-097, D-187): Today · Orders · Listings · More, with a count of what waits (pieces to
+ * order, orders to ship, drafts), refreshed every minute and after each change.
  */
 export default function AdminTabs(): React.JSX.Element {
   const { data: counts, reload } = useQuery('admin:waiting', () => getWaitingCounts(supabase));
@@ -29,11 +28,10 @@ export default function AdminTabs(): React.JSX.Element {
 
   return (
     <Tabs screenOptions={{ headerShown: false }} tabBar={(props) => <TabBar {...props} icons={ICONS} badgeLabel={(n) => `${n} waiting`} />}>
-      <Tabs.Screen name="index" options={{ title: 'Today' }} />
+      <Tabs.Screen name="index" options={{ title: 'Today', tabBarBadge: badge(counts?.toOrder) }} />
       <Tabs.Screen name="orders" options={{ title: 'Orders', tabBarBadge: badge(counts?.ordersToShip) }} />
-      <Tabs.Screen name="cycles" options={{ title: 'Cycle', tabBarBadge: badge(counts?.pickupsToDo) }} />
       <Tabs.Screen name="listings" options={{ title: 'Listings', tabBarBadge: badge(counts?.drafts) }} />
-      <Tabs.Screen name="more" options={{ title: 'More', tabBarBadge: badge(counts?.shopsOwed) }} />
+      <Tabs.Screen name="more" options={{ title: 'More' }} />
     </Tabs>
   );
 }
