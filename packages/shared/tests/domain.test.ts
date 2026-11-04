@@ -10,13 +10,10 @@ import {
   type PhotoPrint,
   CUSTOMER_STATUS_LABEL,
   attributesSchemaFor,
-  autoPrice,
   bulkProgress,
   bagChargesAt,
   promoDiscountCents,
   bulkSavingCents,
-  checkBag,
-  SAMPLE_BAGS,
   choose,
   clothingAttributesSchema,
   contrastRatio,
@@ -50,155 +47,6 @@ import {
   variantLabel,
   worstContrast,
 } from '../src/domain';
-import type { PricingSettings, ProductType } from '../src/domain';
-
-const settings = { fxInrPerUsd: 80, freightCentsPerKg: 1000, dutyPct: 10, marginPct: 50 };
-
-describe('autoPrice (D-119): the same numbers as supabase/tests/pricing_engine.test.sql', () => {
-  const guardOff = {
-    dutyPct: { clothing: 0, food: 0, home: 0 },
-    minProfitCents: { clothing: 0, food: 0, home: 0 },
-    minProfitPct: 0,
-    minProfitFoodPct: 0,
-    guardCardFeePct: 0,
-  };
-  const simple: PricingSettings = {
-    fxInrPerUsd: 100, fxBufferPct: 0, marginPct: 0, typeMarginPct: { clothing: 0 }, shopDivisor: 1, shipPaisePer100g: 10000,
-    ...guardOff,
-  };
-  // The founder's numbers (D-119, the final tuner) at ₹96.30 to the dollar.
-  const full: PricingSettings = {
-    fxInrPerUsd: 96.3, fxBufferPct: 4, marginPct: 50, typeMarginPct: { clothing: 50, food: 25, home: 60 },
-    shopDivisor: 0.9, shipPaisePer100g: 14600, minMarginPct: { clothing: 38, home: 45 },
-    taperCents: { clothing: { from: 2000, to: 15000 }, home: { from: 1500, to: 10000 } },
-    indiaHandlingPct: 10, foodFeePaise: 1500, foodParcelKg: 5, foodBilledPct: 140,
-    courierFirstKgPaise: 224200, courierNextKgPaise: 67850, parcelFixedPaise: 105000,
-    dutyPct: { clothing: 22, food: 16, home: 13 }, minProfitCents: { clothing: 400, food: 0, home: 400 },
-    minProfitPct: 8, minProfitFoodPct: 4, guardCardFeePct: 2.9,
-  };
-  const price = (rupees: number, g: number, productType: ProductType, s = full) =>
-    autoPrice({ shopPricePaise: rupees * 100, weightG: g, productType }, s)?.priceCents;
-
-  it('rounds up to the next .29, .49, .69, .79 or .99 (D-126)', () => {
-    assert.equal(autoPrice({ shopPricePaise: 100000, weightG: 1000 }, simple)?.priceCents, 2029); // $20.00
-    assert.equal(autoPrice({ shopPricePaise: 103000, weightG: 1000 }, simple)?.priceCents, 2049); // $20.30
-    assert.equal(autoPrice({ shopPricePaise: 105000, weightG: 1000 }, simple)?.priceCents, 2069); // $20.50
-    assert.equal(autoPrice({ shopPricePaise: 107000, weightG: 1000 }, simple)?.priceCents, 2079); // $20.70
-    assert.equal(autoPrice({ shopPricePaise: 108000, weightG: 1000 }, simple)?.priceCents, 2099); // $20.80
-    assert.equal(autoPrice({ shopPricePaise: 104900, weightG: 1000 }, simple)?.priceCents, 2049); // $20.49 stays
-  });
-
-  it('the founder\'s margin divides: cost ÷ (1 − 50%), shop ÷ 0.90', () => {
-    const half = { ...simple, typeMarginPct: { clothing: 50 } };
-    assert.equal(price(1000, 1000, 'clothing', half), 4029);
-    assert.equal(price(900, 1000, 'clothing', { ...half, shopDivisor: 0.9 }), 4029);
-  });
-
-  it('the worked examples: clothing and home taper, food has the guard', () => {
-    assert.equal(price(1299, 450, 'clothing'), 4529);
-    assert.equal(price(7500, 900, 'clothing'), 18069);
-    assert.equal(price(12000, 2500, 'clothing'), 29649);
-    assert.equal(price(1800, 1200, 'home'), 9129);
-    assert.equal(price(650, 400, 'home'), 3549);
-    assert.equal(price(90, 100, 'food'), 399);
-    assert.equal(price(150, 250, 'food'), 849);
-    assert.equal(price(220, 400, 'food'), 1329);
-  });
-
-  it('says which rule set the price', () => {
-    assert.equal(autoPrice({ shopPricePaise: 1200000, weightG: 2500, productType: 'clothing' }, full)?.rule, 'tapered');
-    assert.equal(autoPrice({ shopPricePaise: 15000, weightG: 250, productType: 'food' }, full)?.rule, 'guard');
-    assert.equal(price(150, 250, 'food', { ...full, ...guardOff }), 829);
-    assert.equal(autoPrice({ shopPricePaise: 15000, weightG: 250, productType: 'food' }, { ...full, ...guardOff })?.rule, 'recipe');
-  });
-
-  it('the taper keeps a big piece from doubling', () => {
-    const noTaper = { ...full, minMarginPct: {} };
-    assert.ok(price(12000, 2500, 'clothing', noTaper)! > 34000);
-    assert.equal(price(1299, 450, 'clothing', noTaper), 4549);
-  });
-
-  it('a type without its own margin uses the general one; with neither there is no price', () => {
-    assert.equal(price(150, 250, 'food', { ...full, marginPct: 25, typeMarginPct: { ...full.typeMarginPct, food: null } }), 849);
-    assert.equal(price(150, 250, 'food', { ...full, marginPct: null, typeMarginPct: { food: null } }), undefined);
-  });
-
-  it('returns null while a setting the recipe needs, the shop price or the weight is missing', () => {
-    assert.equal(autoPrice({ shopPricePaise: 1000, weightG: null }, full), null);
-    assert.equal(autoPrice({ shopPricePaise: null, weightG: 100 }, full), null);
-    assert.equal(price(1299, 450, 'clothing', { ...full, shopDivisor: null }), undefined);
-    assert.equal(price(90, 100, 'food', { ...full, shopDivisor: null }), 399);
-    assert.equal(price(90, 100, 'food', { ...full, courierFirstKgPaise: null }), undefined);
-    assert.ok(price(1299, 450, 'clothing', { ...full, minProfitPct: null }));
-  });
-
-  it('refuses impossible input', () => {
-    assert.throws(() => autoPrice({ shopPricePaise: -1, weightG: 100 }, full), RangeError);
-    assert.throws(() => autoPrice({ shopPricePaise: 100, weightG: 0 }, full), RangeError);
-    assert.throws(() => autoPrice({ shopPricePaise: 100, weightG: 100 }, { ...full, fxInrPerUsd: 0 }), RangeError);
-  });
-
-  it('the profit check: every sample bag over the line makes money at the founder\'s numbers', () => {
-    const charges = { freeMinCents: 14999, shippingCents: 1879, retailerCents: 199, bulk: { pct: 10, capCents: 2500 } };
-    for (const bag of SAMPLE_BAGS) {
-      const r = checkBag(bag, full, charges)!;
-      assert.ok(r, bag.name);
-      if (r.goodsCents >= 14999) assert.ok(r.profitCents > 0, `${bag.name} makes money`);
-      assert.equal(r.paysCents, r.goodsCents + r.chargesCents - r.bulkSavingCents);
-    }
-    assert.equal(checkBag(SAMPLE_BAGS[0]!, { ...full, shopDivisor: null }, charges), null);
-  });
-
-  describe('the small-food shelf (D-120, D-125), as pricing_engine.test.sql', () => {
-    const shelf: PricingSettings = {
-      ...full,
-      smallFoodMaxShopPaise: 20000, smallFoodMaxG: 250, smallFoodShipSharePct: 100,
-      smallFoodFloorCents: 199, smallFoodCeilingCents: 399,
-    };
-    const rule = (rupees: number, g: number, s = shelf) =>
-      autoPrice({ shopPricePaise: rupees * 100, weightG: g, productType: 'food' }, s)?.rule;
-
-    it('rounds a light, cheap piece to its step, never under its whole cost', () => {
-      assert.equal(price(20, 20, 'food', shelf), 199);
-      assert.equal(price(90, 100, 'food', shelf), 399);
-      assert.equal(price(50, 100, 'food', shelf), 349, 'its recipe is under the next step: the recipe');
-      assert.equal(rule(90, 100), 'small');
-    });
-
-    it('D-125: a piece whose whole cost is above the top step keeps its recipe (was $3.99, under cost)', () => {
-      assert.equal(price(150, 250, 'food', shelf), 849);
-      assert.equal(price(55, 200, 'food', shelf), 599);
-      assert.equal(rule(150, 250), 'guard');
-      assert.equal(price(220, 400, 'food', shelf), 1329);
-      assert.ok(price(90, 100, 'clothing', shelf)! > 399);
-    });
-
-    it('an empty number turns the shelf off', () => {
-      assert.equal(price(90, 100, 'food', { ...shelf, smallFoodShipSharePct: null }), 399);
-      assert.equal(rule(90, 100, { ...shelf, smallFoodCeilingCents: null }), 'guard');
-    });
-
-    it('D-122: a share below 100% takes part of the flight out of the price', () => {
-      const d122 = { ...shelf, foodShipSharePct: 70 };
-      assert.equal(price(100, 400, 'food', d122), 849);
-      assert.equal(price(230, 1000, 'food', d122), 2049);
-      assert.equal(price(100, 400, 'food', shelf), 1129, 'no share set: the whole flight (D-119, D-125)');
-    });
-
-    it('D-125: no sample bag loses, small or big, and Shipping makes up what a share below 100% leaves out', () => {
-      const charges = { freeMinCents: 14999, shippingCents: 1879, retailerCents: 99, retailerPct: 1.5, bulk: { pct: 10, capCents: 2500 } };
-      const one = (rupees: number, grams: number) => ({ name: 'one', note: '', pieces: [[rupees, grams, 'food']] as const });
-      for (const s of [shelf, { ...shelf, foodShipSharePct: 30, smallFoodShipSharePct: 30 }]) {
-        for (const bag of [...SAMPLE_BAGS, one(90, 100), one(100, 400), one(230, 1000)]) {
-          const r = checkBag(bag, s, charges)!;
-          assert.ok(r.profitCents >= 0, `${bag.name} at ${s.foodShipSharePct ?? 100}%: ${r.profitCents}`);
-        }
-      }
-      const masala = checkBag(one(90, 100), shelf, charges)!;
-      assert.ok(masala.chargesCents > 1879 + 99, 'one masala pays more than $18.79: a parcel costs about $34 to fly');
-    });
-  });
-});
 
 describe('bulk saving (D-119)', () => {
   const bulk = { pct: 10, capCents: 2500 };
@@ -511,7 +359,8 @@ describe('variant options (product page colour and size pickers)', () => {
 
 describe('a new listing (flows.md §2, C3)', () => {
   const base = {
-    vendor_id: '00000000-0000-4000-8000-000000000101',
+    source_url: 'https://www.myntra.com/field-kurta/1',
+    source_site: 'myntra.com',
     category_id: '00000000-0000-4000-8000-000000000201',
     name: 'Field kurta',
     slug: 'field-kurta-a1b2',
@@ -541,6 +390,15 @@ describe('a new listing (flows.md §2, C3)', () => {
       listingInputSchema.safeParse({ ...base, product_type: 'food', attributes: { fibre_content: 'x', care: 'y' } }).success,
       false,
     );
+  });
+
+  it('D-187: the shop is its link and site, both optional; empty region = all India', () => {
+    const attributes = { fibre_content: '100% cotton', care: 'Hand wash' };
+    const { source_url: _url, source_site: _site, ...bare } = base;
+    assert.equal(listingInputSchema.safeParse({ ...bare, product_type: 'clothing', attributes }).success, true);
+    const parsed = listingInputSchema.parse({ ...base, region_id: null, product_type: 'clothing', attributes });
+    assert.deepEqual([parsed.region_id, parsed.source_site], [null, 'myntra.com']);
+    assert.equal(listingInputSchema.safeParse({ ...base, source_url: 'not a link', product_type: 'clothing', attributes }).success, false);
   });
 
   it('refuses money that is not whole cents and unknown variant options', () => {

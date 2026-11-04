@@ -1,5 +1,5 @@
 /**
- * Who a clothing piece is for (D-140, plan F2): the vendor screens' four words (D-102). Customers filter by Women or
+ * Who a clothing piece is for (D-140, plan F2): four words. Customers filter by Women or
  * Men (unisex pieces show under both); Kids is kept but not offered at launch (founder: "no kids at launch").
  * `wearsFromName` mirrors the database's _wears_from_name() (migration 20261018100000), which fills it on save.
  */

@@ -10,8 +10,7 @@
     "./store": "./src/store/index.ts",
     "./account": "./src/account/index.ts",
     "./admin": "./src/admin/index.ts",
-    "./server": "./src/server/index.ts",
-    "./vendor": "./src/vendor/index.ts"
+    "./server": "./src/server/index.ts"
   },
   "scripts": {
     "typecheck": "tsc --noEmit"

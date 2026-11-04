@@ -1,7 +1,7 @@
 import assert from 'node:assert/strict';
 import { describe, it } from 'node:test';
 
-import { dateRange, deskTime, isoToZoned, shipmentShipState, shipState, zonedToIso } from '../src/admin';
+import { dateRange, deskTime, pieceStage, shipmentShipState, shipState } from '../src/admin';
 
 describe('admin times in the desk zone (D-096)', () => {
   // 2026-10-08 13:38 UTC = 9:38 AM in New Jersey (EDT) = 7:08 PM in India.
@@ -23,48 +23,51 @@ describe('admin times in the desk zone (D-096)', () => {
     assert.equal(deskTime(at, null).main, 'Oct 8, 9:38 AM');
   });
 
-  it('turns a cutoff typed in the desk zone into the instant, and back', () => {
-    assert.equal(zonedToIso('2026-10-10T23:59', 'us'), '2026-10-11T03:59:00.000Z'); // EDT, UTC-4
-    assert.equal(zonedToIso('2026-12-10T23:59', 'us'), '2026-12-11T04:59:00.000Z'); // EST, UTC-5
-    assert.equal(zonedToIso('2026-10-10T23:59', 'india'), '2026-10-10T18:29:00.000Z'); // IST, UTC+5:30
-    assert.equal(isoToZoned('2026-10-11T03:59:00.000Z', 'us'), '2026-10-10T23:59');
-    assert.equal(isoToZoned('2026-10-10T18:29:00.000Z', 'india'), '2026-10-10T23:59');
-  });
-
   it('writes delivery windows as calendar days', () => {
     assert.equal(dateRange('2026-10-30', '2026-11-04'), 'Oct 30 – Nov 4');
     assert.equal(dateRange(null, null), '—');
   });
 });
 
-describe('what a shipment can do now (D-154, as ship_shipment checks it)', () => {
-  const at = (status: string) => ({ status, arrived_at: null });
+describe('what a shipment can do now (D-154, D-187, as ship_shipment checks it)', () => {
+  const at = (status: string) => ({ status });
   const order = {
     status: 'confirmed',
-    shipping_method: 'standard',
-    cycle_id: null,
     items: [
-      { status: 'active', shipment_id: 'quick', pickup: at('picked') },
+      { status: 'active', shipment_id: 'food', pickup: at('picked') },
       { status: 'active', shipment_id: 'rest', pickup: at('pending') },
     ],
   };
-  const quick = { id: 'quick', kind: 'quick', status: 'open' };
-  const rest = { id: 'rest', kind: 'standard', status: 'open' };
+  const food = { id: 'food', status: 'open' };
+  const rest = { id: 'rest', status: 'open' };
 
-  it('a 7-day shipment leaves the hub once its own pieces are there', () => {
-    assert.equal(shipmentShipState(order, quick).canShip, true);
+  it('a shipment leaves the hub once its own pieces are there', () => {
+    assert.equal(shipmentShipState(order, food).canShip, true);
     assert.equal(shipmentShipState(order, rest).canShip, false);
-    assert.equal(shipmentShipState(order, { ...quick, status: 'shipped' }).canShip, false);
+    assert.equal(shipmentShipState(order, { ...food, status: 'shipped' }).canShip, false);
   });
 
-  it('an order in a cycle ships the other shipment once its export has arrived', () => {
-    const cycled = { ...order, cycle_id: 'c1', items: [{ status: 'active', shipment_id: 'rest', pickup: at('picked') }] };
-    assert.equal(shipmentShipState(cycled, rest).canShip, false);
-    assert.equal(shipmentShipState({ ...cycled, status: 'arrived' }, rest).canShip, true);
+  it('a piece no longer active does not hold its shipment back', () => {
+    const items = [{ status: 'unavailable', shipment_id: 'rest', pickup: at('unavailable') }];
+    assert.equal(shipmentShipState({ ...order, items }, rest).canShip, true);
   });
 
-  it('the whole order, as before: a pilot order (no cycle) ships once every piece is at the hub', () => {
+  it('the whole order ships once every piece is at the hub', () => {
     assert.equal(shipState(order).canShip, false);
     assert.equal(shipState({ ...order, items: order.items.map((i) => ({ ...i, pickup: at('picked') })) }).canShip, true);
+    assert.equal(shipState({ ...order, status: 'shipped', items: [] }).canShip, false);
+  });
+
+  it('a piece already in the US has no pickup and needs none', () => {
+    assert.equal(shipState({ status: 'arrived', items: [{ status: 'active', pickup: null }] }).canShip, true);
+  });
+});
+
+describe('where a sold piece stands (D-140)', () => {
+  it('To order → Ordered → At the hub', () => {
+    assert.equal(pieceStage({ status: 'pending', ordered_at: null }), 'to_order');
+    assert.equal(pieceStage({ status: 'pending', ordered_at: '2026-11-04T10:00:00Z' }), 'ordered');
+    assert.equal(pieceStage({ status: 'picked', ordered_at: '2026-11-04T10:00:00Z' }), 'at_hub');
+    assert.equal(pieceStage({ status: 'unavailable', ordered_at: null }), 'unavailable');
   });
 });

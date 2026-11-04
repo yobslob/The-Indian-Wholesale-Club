@@ -4,7 +4,7 @@ import type { ProductType } from './product-types';
 
 /**
  * products.attributes, per product type. These are shown to customers, so the
- * schemas are STRICT: an unknown key (e.g. a vendor detail) is rejected, never
+ * schemas are STRICT: an unknown key (e.g. an operations detail) is rejected, never
  * stored (D-003). Required fields reflect ops.md §Compliance.
  */
 export const clothingAttributesSchema = z

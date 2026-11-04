@@ -15,8 +15,8 @@ export const variantOptionsSchema = z
 export type VariantOptions = z.infer<typeof variantOptionsSchema>;
 
 /**
- * A new listing (flows.md §2, C3), as the admin builds it on the web or on a phone and sends it to
- * admin_create_listing(). One schema for both, so a listing is checked the same way wherever it is made.
+ * A new listing, as the importer builds it and sends it to admin_create_listing() (D-187: no listing with the camera,
+ * Y-4).
  * Money is integer cents / paise (CLAUDE.md rule 5).
  */
 export const listingVariantSchema = z.object({
@@ -34,7 +34,11 @@ export const listingVariantSchema = z.object({
 });
 
 const common = {
-  vendor_id: z.string().uuid(),
+  /** Empty = all India, no state (D-121). */
+  region_id: z.string().uuid().nullable().optional(),
+  /** The page it is bought from, and that shop's site (D-187: the shop is the site); neither for a piece without one. */
+  source_url: z.string().url().max(2000).optional(),
+  source_site: z.string().trim().min(1).max(120).optional(),
   category_id: z.string().uuid(),
   name: z.string().trim().min(2).max(120),
   slug: z.string().regex(/^[a-z0-9]+(-[a-z0-9]+)*$/).max(90),
