@@ -442,3 +442,309 @@ the effects are lighter. The app follows the same look with native motion (Reani
    **Polish pass (D-116, D-117):** the free-delivery bar fills sideways with a glowing head (`.fd-bar`); phones have
    Search where wider screens have Saved (`phone-search.tsx`); the page clips sideways overflow. Lenis's velocity is `--sv` on `<html>`; `.drift` grids and rows float apart by column while
    the page scrolls fast. Element motion lives in `globals.css` (`.fd-*` free-delivery meter, `.press`, `.rise-in`,
+
+---
+
+# From data-model.md
+
+| **vendor** | a vendor's owner, own vendor only (D-102) | `vendor_*` functions filtered by `my_vendor_id()` (role `vendor` + an active `vendor_accounts` row); no base table (INV-10) |
+| **worker** | the photo worker's account on the founder's laptop (D-103) | `worker_*` functions and the photo buckets (role `worker`) |
+
+| | `vendor_accounts` | a vendor's sign-in: the user, its vendor, the screens' language, active (D-102) | own row / admin |
+| | `vendor_sign_in_codes` | one-time QR / link codes, stored only as a hash, used once, expiring | functions only |
+| | `vendor_applications` | "Join as a vendor?" requests (country IN or US, Q-35), status | admin |
+
+| Supply | `vendors` | shop + owner, phone/WhatsApp, address, town, region, payment method + reference (D-029), licences, status, notes, photo; `online_site` = an online shop's host for imported listings (one vendor per shop and state, D-110) | admin |
+| | `cycles` | code, status, `cutoff_at`, est. export/arrival, actual dates, AWB, forwarder, freight, duty, FX | admin |
+| | `pickups` | one per ordered piece: vendor, cycle, variant, qty, shop price (the variant's own when it has one), status, who/when, photo, payout; `source_id` (the shop item in use), `ordered_at`, `ordered_by`, `paid_paise`, `shop_order_ref`, `shop_bill_path` (ordered from the shop, D-140) | admin |
+
+| | `vendor_payouts` | INR paid to a vendor. The amount is computed from the pickups it covers | admin |
+| | `vendor_submissions` | a piece a vendor sent: category, who wears it (women / men / kids / unisex: picks the house model; kids are never shown on a model), details in their words, sizes, shop price in ₹, status (adding → waiting → photos_ready → approved, or needs_retake / declined), the product it became | vendor via `vendor_*` / admin |
+| | `vendor_submission_photos` | front, back, close-up in bucket `vendor-uploads` (`<vendor>/<submission>/<file>`) with the phone's checks | vendor via functions / admin |
+| | `house_models` | the founder's models (D-104): wears women / men, the front and back pose in `product-media/house-models/<slug>/` | admin |
+| | `photo_jobs` | the GPU worker's queue: one per view of a clothing piece, candidates in bucket `photo-candidates` | worker via functions / admin |
+
+| | `pricing_settings` | one row: FX, freight/kg, duty %, margin %, domestic delivery days, stale-listing days, standard shipping + free threshold, express shipping + express days. Price-suggestion values and days start NULL (Q-15, Q-18); shipping prices set by migration 4 (D-041) | admin |
+
+leave it alone). Migration 12 (C3, flows.md §2): `admin_create_listing(jsonb)`
+creates a draft product (region from its shop) and its variants in one transaction, quantities stamped as confirmed;
+`admin_stale_variants()` lists live variants not re-confirmed within `pricing_settings.stale_listing_days` (nothing
+while that is unset, D-047). Both refuse non-admins and run as the caller. Migration 13 (C4, D-045, D-063, D-065):
+`pricing_settings.cycle_days` (days between cutoffs, unset until the founder sets it); `store_next_delivery()` and
+`checkout_context()` show the cycle an order would really join (the open one, or the one about to open in the minute
+between a cutoff and the roll), through the internal `_store_cycle()` and `_next_cycle_dates(cycle)`. Migration 14 (C4, D-064): `order_moves` (each
+move of an order to another cycle, its shipped confirmation and the faster-delivery offer; admin read-only, written
+by the functions below), `pricing_settings.fast_offer_cents`, and `store_my_order()` / `guest_order_lookup()` add
+`offer` (price and window only, from the internal `_order_offer(order)`). Internal helpers: `_window_from(order, cycle)`
+(the window an order would get from a cycle) and `_set_window(...)` (the INV-6 window change with its visible event).
+A trigger on an order becoming `shipped` lapses an open offer and adds the "coming
+sooner" event. Migration 15: `pickups.arrived_at` / `arrived_by` (picked pieces only). Migration 16: shipping and delivering go
+
+with its total and its first 12 cards (the app's Explore). Migration 19 (C6, D-047): `pricing_estimates` (which pricing
+settings hold Claude's researched estimates, with source, link and date; admin-only); a trigger drops a setting's row
+when its value changes (`_pricing_estimate_replaced`); `_load_pricing_estimates()` fills only empty settings (dev seed). Migration 20 (C7): `admin_sales(since)` and
+
+"Show more" re-reads without recording) and serves pages of up to 500; `create_order` shares the open-cycle lock and
+reserves pieces in variant-id order (PR-9); the `variant_availability` trigger fires only on stock columns and skips
+writes that change nothing; the minute timer (`_kick_email_outbox`) also runs in the two minutes after a cycle closes
+(the website then refreshes its cached "order by" time, `engineering.md` §Caching); indexes for
+`order_items.variant_id`, `wishlists.product_id` and newest-live-first. Migration 24 (D-075, D-069, D-074): the pricing
+engine. Every cost is a `pricing_settings` column (labelled in `pricing_estimates` while a placeholder);
+`_auto_price_cents(shop paise, weight g)` is the one price formula (`docs/pilot-numbers.md`), `products.price_auto` says
+whether a product follows it, and triggers reprice when a setting, a variant weight or a category's
+`default_weight_g` changes; `admin_price_preview()` lets admins preview it; `admin_create_listing()` prices a listing
+without a price. `_fx_refresh()` (pg_cron every 10 minutes, pg_net) fetches the ECB rate once a day through
+`fx_fetches` and refuses implausible jumps. `categories.tax_class` (clothing, food, general; D-073). `business_details`
+(exporter, importer, broker, FDA, contact: placeholders until saved; admin-only). `pricing_settings.spices_cleared` (now `food_cleared`, D-110) gates
+live food (trigger `_food_cleared_check` since D-110). Migration 25 (D-073, D-070): `tax_rates`
+(one row per state where IWC is registered, with the classes it taxes; New Jersey 6.625% on general goods; no row = no
+tax; admin-only); `checkout_context(variant_ids, promo, state)` adds each line's tax class and courier cost (never its
+weight), the state's rule and express as courier pricing with a window from today; express orders have no cycle, a
+window from the order date and their pickups at once (`pickups.cycle_id` may be null); `ship_order` sends an express
+order by courier once picked; a cancel refunds the tax (`_cancel_refund_cents`). Migration 26 (D-071, D-072): after the
+
+terms the Shipping & returns page states (shipping, express and US delivery days, the cancel fee, the claim window and
+return tiers, the tax states and classes), never a cost, margin or customer-care deduction. Migration 28:
+`checkout_context()` adds `us_delivery` (a bag of only US pieces: today + the US delivery days) and offers express only
+for bags with no US piece; trigger `_express_has_no_us_stock` on `order_items` refuses an express order with one
+(`express_unavailable`). Migration 29 (D-078, the demo round): `product_media.credit` (a free-licence photo's
+
+Migration 31 (D-099, the second speed audit): `admin_order_counts()` (every order by status, express orders still to
+send, shops owed for picked pieces) and `admin_cycle_totals(cycle)` (the cycle card's orders, pieces, shops and sales),
+admin only, counted in SQL because the API sends at most 1,000 rows; indexes for orders by status and newest, pickups
+by status, what each shop is owed, and a payout's pieces.
+
+Migration 75 (D-140, F5): `pricing_settings.shown_shipping_cents_per_kg` ("Shipping shown when free", $ a kg, the
+founder's number) and `store_bag_charges()`'s `shown_shipping_cents` (the bag's packed kg × it, at least the small-order
+Shipping; null while empty). Display only: never charged, stored or sent to Stripe.
+
+Migration `20261022120000_seven_day_delivery` (D-148): `pricing_settings.quick_delivery_days_min/_max` (7 and 7; empty
+= off) and `sourcing_shops.quick_delivery` (Blinkit, BigBasket, Zepto, Instamart). `_quick_listings()` (no SET clause,
+so it is inlined: live, not US stock, every active option's source in use, else the listing's `source_site`, on a
+quick-delivery shop; since `20261108090500_browse_reads` one pass over the active options grouped by listing, the same
+set, 46,345 → 2,513 buffers on a production-sized copy; since `20261108090600_quick_by_type` it is
+`_quick_listings_of(null)`, and `store_browse` reads `_quick_listings_of(its type)` and gives its cards their 7-day
+days from that set) and `_quick_days(product)` (internal). Customers: `store_quick_bag(variant ids)` (`{days_min,
+days_max}` when every piece is a 7-day piece, else null) and `store_quick_browse(category, offset, limit)` (the 7-day
+page: days, totals, categories with counts, light cards). `_store_product_card` and `store_browse` add `quick_days`;
+`store_product_page` adds `quick_delivery`; `store_policy` the two days (D-161, migration `20261031090000_policy_days`: also `delivery_days_min` / `_max`, the pilot's standard days, null in cycle mode); `checkout_context` adds `quick_delivery` and
+gives such a bag no Express; `create_order` gives a standard 7-day bag that window, no cycle and its pickups at once.
+No answer names a shop or a source. Tests: `seven_day.test.sql`.
+
+Migration `20261101090000_quick_sources` (D-162): `_quick_sourceable(product)` (internal: 7-day days set and every
+active option with a usable source has one on a quick-delivery shop); `_sourcing_settle` then picks the quick shop's
+source first, else the cheapest. `ops_quick_sources(apply, limit)` (service role only: the listings bought elsewhere
+that would switch, then the switch in batches, each listing's `source_checked_at` kept; `pnpm quick:sources`). Tests:
+`quick_sources.test.sql`.
+
+Migration `20261023120000_seven_day_shipments` (D-154, step 1): `pricing_settings.quick_delivery_min_cents` (4999, the
+7-day line), `shipping_cents_per_kg` (1862) and `quick_delivery_paused` (no 7-day pieces while true; `_quick_listings`
+reads it); the pilot window set to 12 – 16. `order_shipments` (an order's one or two shipments: `seq` 1 | 2, `kind`
+quick | standard | express, dates, `shipping_cents` its share, `status` open | shipped | delivered | cancelled, carrier,
+tracking, `shipped_at`; admin read, written by `create_order`; every older order got one, carrying its tracking) and
+`order_items.shipment_id`. `_bag_shipments(items, discount, state, line1)` (internal): the 7-day pieces after the
+promo against the line, `quick_only` / `split` / `gap_cents`, `outside` (not the 48 states or DC, or a PO box / APO),
+`billed_grams`, `shipping_cents` (one parcel) and `quick_shipping_cents` (its share by weight). `store_bag_charges(items,
+discount, state, line1)` returns Shipping at the $ a kg (else the fixed small-order Shipping), `past_line_cents` 0,
+`shown_shipping_cents` the same figure, `quick_free` and `shipments`; `create_order` stores the shipments it works
+out the same way (Express never splits). Tests: `shipments.test.sql`, `bag_charges.test.sql`.
+
+Migration `20261024090000_shipment_admin` (D-154, step 2): shipments run one at a time. `order_events.shipment_id`
+(the event is about that shipment; its `order_update` email row carries `shipment`, its seq). `ship_shipment(shipment,
+carrier, tracking)`: from the hub (a 7-day shipment; Express; any order without a cycle, the pilot) once its pieces
+are picked, else once the order's export has `arrived`; `deliver_shipment(shipment)`. The order follows its shipments
+(`_settle_order`, also after any piece's status changes): a shipment with nothing left to send is cancelled; the order
+is `shipped` once nothing is open, `delivered` once nothing is on its way, with the latest tracking. `ship_order` and
+`deliver_order` work on an order of one shipment (`order_has_two_shipments` otherwise), and so does
+`change_delivery_window`; an order of one shipment copies its window to it. `change_shipment_window(shipment, from,
+to, note)`: the delay notice for one shipment (the order's window spans its shipments); `_delay_shipment(order)` and
+`_delay_refund_cents(order)` (internal) scope `_delay_open` / `cancel_after_delay` to that shipment.
+`shipment_cancel_cents(shipment, reason)` and `admin_cancel_shipment(shipment, reason, amount, ref)`: one of two
+shipments cancelled (a 7-day one until its pieces are ordered or at the hub, the other until it leaves India): its
+pieces after their discount share, its Shipping share and their tax back (the cancel fee for the customer's own once at
+the hub). `customer_cancel` refuses (`quick_bought`), and `_order_actions.can_cancel` is false, once a 7-day shipment's
+pieces are bought; `_order_actions.delay_shipment`. `admin_to_order()` adds `buy_by` / `ship_by` (2 hours, 1 day) for a
+7-day piece; `admin_quick_watch()` counts open 7-day shipments, `not_bought` (2 hours) and `not_shipped` (a day).
+`_order_shipments_json(order)` (internal): `guest_order_lookup` and `store_my_order` add `shipments` (seq, kind,
+status, dates, Shipping share, carrier, tracking, `item_ids`); `store_order_events` and their events add `shipment`.
+Tests: `shipment_admin.test.sql`.
+
+Migration `20261025090000_bag_shipments` (D-154, step 3): `store_bag_charges` adds `quick_ids` (the asked options that
+are 7-day pieces) and `dates` (`quick_from` / `quick_to` from the 7-day days, `standard_from` / `standard_to` from
+`store_next_delivery()`), and its `shipments` no longer carries `billed_grams`, `quick_shipping_cents` or the option ids
+(step 1's answer had sent the bag's billed grams to the browser). Tests: `shipments.test.sql`.
+Migration `20261026090000_seven_day_store` (D-154, step 4): `store_browse(..., p_quick)` (last argument) keeps only
+7-day pieces and adds `quick_total` (the "Delivery: in 7 days" count, every other filter applied; `all_total` stays the
+whole type); `store_search(..., p_quick)` the same for search; `store_quick_front()` (null while 7-day delivery is off
+or paused) gives the 7-day front page: days, the line (`min_cents`), the categories with a photo each, and the rows
+`most_ordered` (units in paid orders this week, never shown), `under_5` and `new_this_week` (light cards, 12 each);
+`store_policy()` adds `quick_delivery_min_cents` and `quick_delivery_on`. Tests: `seven_day_store.test.sql`.
+Migration `20261027090000_seven_day_insights` (D-154, step 5): `order_shipments.promised_to` (the last day promised when
+the order was placed, set by the `order_shipments_promise` trigger, `_shipment_promise()`; a delay moves
+`est_delivery_to`, never this). `admin_quick_insights(since)` (admin only): paid orders, those with a 7-day shipment and
+those split, the 7-day pieces after the promo against the line (within $5, $5 – $15, more), per kind of shipment due /
+on time / late / late with a delay notice sent before the promised day / open past it (delivered = its `delivered`
+event, on the US Eastern calendar), 7-day pieces refunded as unavailable, and the split's extra courier cost in paise
+(`_courier_paise(grams)`: Settings' first and next kg, at least 1 kg then by the half kg). Tests:
+`seven_day_insights.test.sql`.
+
+Migration `20261029100000_quick_speed`: `store_quick_browse()` and `store_quick_front()` read the 7-day listings once
+into their own list before they meet `store_products` (joined straight to the view, the planner multiplied options by
+categories: 1.3 – 1.7 s with 5,100 7-day pieces on a production copy, now about 0.2 s), and the front page builds the
+cards of its three rows only. Same answers (checked against the old functions on the copy).
+
+Migration 69 (D-135): `products.coming_soon`, `coming_soon_note`, `liquid_checked_at`; trigger `products_coming_soon`
+(any status but archived ends it); `store_products` and `store_media` include archived coming-soon listings and
+`store_products` ends with `coming_soon`; `_store_product_card` and `store_browse` send it (no quick add for it).
+Worker only: `worker_liquid_plan(after, limit, all)` (food and home listings not yet checked) and
+`worker_set_liquids(items)` (marks each checked; archives a liquid as coming soon; returns how many). Tests:
+`coming_soon.test.sql`.
+
+Migration 54 (D-125): `store_bag_charges` works out Shipping per bag: the pieces' contribution (price less shop cost,
+duty, card fee, 2% returns) against the parcel's courier (first kg, each further half kg, box and clearance); below the
+line at least `small_order_shipping_cents`, past it `past_line_cents` (what a bag still needs, normally 0). The
+small-food shelf never prices under the guard on its whole cost. `food_ship_share_pct` empty again; the D-123 food
+weight columns are unused. Tests: `bag_charges.test.sql`, `pricing_engine.test.sql`.
+Migration 53 (D-123): `pricing_settings.retailer_pct`, `food_off_step_cents`, `food_off_step_pct`, `food_off_max_pct`;
+`store_bag_charges` also returns `retailer_pct`, `food_weight_cents` (the bag's food at the rate card × billed % × (1 −
+the food's share) ÷ the effective rate, by its weights) and the three food steps; checkout and the bag apply them with
+`bagChargesAt()` (packages/shared). Tests: `bag_charges.test.sql`.
+Migration 52 (D-122): `pricing_settings.food_ship_share_pct` (the share of its courier a food piece carries, empty =
+all); `_auto_price_cents` applies it; footwear's `default_weight_g` 600; `_store_pack(product, name, type)` and the cards
+(`_store_product_card`, `store_browse`) carry `pack`; `store_browse` returns `all_total`. Tests: `food_cards.test.sql`,
+`pricing_engine.test.sql`.
+
+Migration 50 (D-121): `products.region_id`, `order_items.region_name`, `sourcing_targets.region_id` and an online
+shop's `vendors.region_id` may be empty (an all-India listing; `vendors_region_or_online`: a shop in person still has
+its state; one all-India vendor per online shop). `store_products` left-joins the state; `store_region_page` and
+
+Migrations 48 – 49 (D-120): `pricing_settings` gains the small-food shelf, `small_food_max_shop_paise`,
+`small_food_max_g`, `small_food_ship_share_pct`, `small_food_floor_cents`, `small_food_ceiling_cents` (ceiling ≥
+floor); `_auto_price_cents` puts small food on whole-dollar steps from the floor to the ceiling (half its shipping
+share, the guard on its goods, never above its own recipe). `admin_publish_drafts()` (admin only) publishes every
+ready draft one by one and returns how many went live and what held the rest (`no_photo`, `no_option`, `no_stock`,
+`refused`, `live_missing_details`). Tests: `pricing_engine.test.sql`, `publish_drafts.test.sql`.
+Migration 47 (D-119): the pilot price in two recipes. `pricing_settings` gains, for clothing and home & gifts,
+`shop_divisor`, `ship_paise_per_100g`, `margin_clothing_min_pct` / `margin_home_min_pct` and the taper's
+`taper_<type>_from_cents` / `_to_cents` (the type margins are now a margin of the price, cost ÷ (1 − margin)); for food,
+`food_fee_paise`, `food_parcel_kg`, `food_billed_pct` (with `india_handling_pct` and the markup `margin_food_pct`); the
+courier rate card `courier_first_kg_paise`, `courier_next_kg_paise`, `parcel_fixed_paise`; the profit guard
+`duty_<type>_pct`, `min_profit_<type>_cents`, `min_profit_pct`, `min_profit_food_pct`, `guard_card_fee_pct`; the bulk
+saving `bulk_saving_pct`, `bulk_saving_cap_cents`. `_auto_price_cents(shop, weight, type)` applies the type's recipe,
+then lifts a price to the guard, then the .29/.49/.79/.99 ending (`_tapered_margin` is its helper; D-126 adds the .69
+ending, and `food_margin_max_pct` with `_band_price(cost, lo, hi)` prices food in its 17–20% band without the guard
+or the shelf). Migration 56 (D-127): `beta_pricing` puts the fixed beta formula in front of all of it (migration 57: to the cent; migration 58: converted at a fixed ₹92; migration 59, D-128: the founder's exact rules; migration 60: `admin_price_sheet()` for Products → Download Excel; see
+`docs/archive/pricing-full-formula.md` for the full one);
+`ship_alloc_paise_per_kg` is no longer read. `store_bag_charges` also returns the two bulk numbers;
+`orders.bulk_saving_cents` is the part of `discount_cents` that was the bulk saving (admin view). Tests:
+`pricing_engine.test.sql`, `bag_charges.test.sql`.
+
+Migration 43 (D-115): `pricing_settings.pilot_delivery_days_min/max` (the made-to-order pilot, 12 – 18); while both are
+set, `store_next_delivery()` returns today + those days with a null `order_by`, and a standard `create_order` needs no
+cycle (no `cycle_id`, window from today, pickups at once like express). Both empty = the cycle model.
+
+Migrations 38 – 39 (D-110): the type `spice` renamed `food` (`food_cleared`, trigger `_food_cleared_check`); imported
+listings: `products.source_url` (unique, https), `source_site`, `source_checked_at`, `source_in_stock` and
+`vendors.online_site`, all admin-only (no `store_*` object reads them; `supabase/tests/sourced_listings.test.sql`).
+
+Migrations 32 – 35 (D-102, D-103, vendor accounts): roles `vendor` and `worker`; `my_vendor_id()`, `is_vendor()`,
+`is_worker()`, the internal `_vendor_or_raise()` (refuses non-vendors); `admin_vendor_sign_in_code(user, days)` (a one-time code shown once; older unused ones stop working) and
+the service-only `_link_vendor_account(user, vendor, language, by)` and `_redeem_vendor_code(code)`. A vendor reads
+`vendor_me()`, `vendor_keep_ready()` (ordered pieces not yet collected: piece, size, count and the cycle's cutoff, never
+who bought it), `vendor_money()` (owed and paid in ₹), `vendor_pieces(offset, limit)` and `vendor_submission(id)`, and
+writes through `vendor_new_submission(type)`, `vendor_add_photo(...)`, `vendor_submit(id, details)` (checks photos,
+category, sizes and price, then queues the photo jobs) and `vendor_delete_submission(id)`; storage allows uploads only
+where `vendor_may_upload(path)` says. Admins review with `admin_approve_submission(id, listing, media)` (a draft
+product through `admin_create_listing`), `admin_request_retake`, `admin_decline_submission`, `admin_rerun_photo_job`.
+The worker uses `worker_claim_job()` (oldest queued, or one left running for 30 minutes; failed after 3 tries) and
+`worker_finish_job(job, candidates, error)`.
+
+| `create_order(jsonb)` | service (server, after Stripe verification) | §3: rolls a cycle past its cutoff first, checks prices + subtotal, reserves stock atomically, attaches the open cycle (or, D-065, the cycle that closed after the customer was priced, while it is collecting, with its pickups), stores the window. Raises `cycle_closed` (priced for a cycle that is already packed), `no_open_cycle`, `delivery_window_unconfigured`, `variant_unavailable`, `price_mismatch`, `insufficient_stock`, `subtotal_mismatch`, `express_unavailable`, `order_has_no_items` |
+| `cutoff_cycle(cycle)` | admin | §4.1: closes the cycle (the cutoff becomes the real closing time), creates one pickup per piece, opens the next cycle (D-045) |
+| `roll_cycles()` | service, pg_cron every minute | §1: closes the open cycle once its cutoff has passed and opens the next with its dates moved forward by `cycle_days` (else the last gap, D-063). Internal helpers `_cutoff_cycle`, `_open_next_cycle` |
+| `advance_cycle(cycle)` | admin | §1/§6: collecting → packed → exported → arrived → fulfilling → closed, moving its orders with it and writing internal events. Refuses `open` (use cutoff) and closing while an order is unfinished |
+| `move_order(order, cycle, note)` | admin | §6b: the order and its pieces join another cycle; a later one changes the window visibly (INV-6). Raises `order_cannot_move`, `cycle_not_accepting`, `same_cycle` |
+| `confirm_move_shipped(move)` | admin | §6b: the order left with that export; an earlier move makes the D-064 offer when its price is set. Raises `move_not_pending`, `move_superseded`, `cycle_not_exported` |
+| `accept_fast_offer(move, payment_intent)` | service (after Stripe verification) | §6b: the window moves to the one offered. Raises `offer_not_open` (the server refunds) |
+| `check_off_arrival(pickup, arrived)` | admin | §6.3: a picked piece arrived in the US (or the tick undone), once its cycle has arrived. Raises `pickup_not_picked`, `cycle_not_arrived` |
+| `ship_order(order, carrier, tracking)` | admin | §6.4: an arrived order ships (visible "Shipped" event). Raises `order_not_arrived`, `invalid_tracking` |
+| `deliver_order(order)` | admin | §6.4: a shipped order is delivered (visible event). Raises `order_not_shipped` |
+
+| `mark_pickup(pickup, status, photo, note)` | admin | §4.2–4: picked / unavailable (+ D-030 refund flag + customer event) |
+| `record_payout(vendor, pickups[], method, …)` | admin | §5: computes the amount from pickups, one payout per pickup |
+
+| INV-5 | at most one `open` cycle | partial unique index | `cycles.test.sql` (+ `cycle_advance.test.sql` for the later steps) |
+
+| INV-10 | a vendor account reads only its own vendor, only through `vendor_*` functions, and never a buyer, an order number, a customer price, a cost or an admin note; sign-in codes work once (D-102, D-103) | `my_vendor_id()` filters + no base-table RLS + `vendor_may_upload` | `vendor_accounts.test.sql` |
+
+- `demo.sql`: **dev only.** `is_placeholder = true`, 4 clothing products in Kerala/Rajasthan/Punjab, one open cycle,
+  placeholder domestic delivery days (3–7) and express days (1–2), `dev_preview = true`. (The $0 standard / $8 express
+  prices are real settings from migration 4, D-041.) Never run against production.
+
+  `catalogue/README.md`). The launch regions' items as listings: clothing live with colour × size variants, pantry as
+  drafts (D-032); prices, pieces and the per-region placeholder shop are placeholders (`is_placeholder = true`). Product
+  ids are `md5('iwc-catalogue:' || slug)`, so `pnpm catalogue:apply` can reload it into a running local DB without a reset.
+- `search.sql`: builds search's vocabulary from the seeded listings (`refresh_search_words()`, D-160; migrations run
+  before the seed). After `pnpm catalogue:apply` or `demo:load`, run it again (or wait for the 6-hourly job).
+
+---
+
+# From engineering.md
+
+  "Sold out" right after the last piece is bought. Within the page, the product page's buy button also follows Realtime
+  stock (PR-7). Similar items on *other* product pages catch up within the fallback; their Add is re-checked at checkout.
+- Cancels (`app/api/orders/choice/route.ts`, admin refunds) put pieces back: everything is refreshed (rare).
+- The cutoff (D-008): `roll_cycles()` closes a cycle by itself; the every-minute timer calls the website's job
+  (`app/api/internal/email-outbox/route.ts`) in the two minutes after any cycle closes, and the job refreshes the store
+  once the cached "order by" time has passed (`revalidateIfCutoffPassed`). Needs the Vault settings (`ops.md`).
+
+---
+
+# From ops.md
+
+- **Launch check (C8):** `pnpm launch:check` lists what still blocks going live (estimates, settings, placeholder or demo
+  data, unapproved state text, a dev cycle, the timers and Vault settings, stuck emails, open launch questions,
+  TODO(founder) markers on customer pages). Read-only. For production: `pnpm launch:check --url=<db url> --allow-remote`.
+- **Pricing estimates (D-047, C6):** `pnpm dev:estimates` loads Claude's researched estimates (`supabase/seed/estimates.sql`,
+  each with its source and date) into the local database without a reset, filling only empty settings; a local reset
+  loads them too. For the hosted dev database, run that file in the SQL editor. In production the pilot runs on them
+  (D-069): `pnpm prod:seed` loads them once with the regions and categories (below), and Settings shows each as a
+  placeholder until the founder saves their own number.
+  creates or refreshes the account with the role and the `admin_emails` row. Run it again after every `check.mjs db`
+  (the reset deletes local accounts). The website also needs the email in `ADMIN_EMAILS` in `apps/web/.env.local`.
+
+   `select cron.schedule('iwc-roll-cycles', '* * * * *', 'select public.roll_cycles()');`,
+   `select cron.schedule('iwc-email-outbox', '* * * * *', 'select public._kick_email_outbox()');`,
+   `select cron.schedule('iwc-fx-refresh', '*/10 * * * *', 'select public._fx_refresh()');`, and since search (D-160)
+   `select cron.schedule('iwc-search-words', '17 */6 * * *', 'select public.refresh_search_words()');` (the payment
+   sweep's `iwc-payment-sweep` comes with its migration when it runs on the new project; restored after it, schedule
+   it too: `select cron.schedule('iwc-payment-sweep', '*/10 * * * *', 'select public._kick_payment_sweep()');`); check
+
+## Demo round and placeholders (D-078, D-108; done)
+Production has no placeholder listings left (checked on the copy of 2026-10-21). The demo round and the placeholder
+clearing are in `docs/archive/ops-demo-round.md`; `pnpm demo:load` / `demo:clear` still work against a local database.
+
+### Photo worker (D-101, D-103; the founder runs every step on production)
+The AI product photos are made on the founder's laptop by `tools/photo-worker` (its README has setup and running).
+For production, once:
+1. Supabase dashboard (production) → Authentication → Add user: an email of your choice (e.g. a `+worker` alias)
+   and a long password, "Auto confirm". Then SQL editor: `update public.profiles set role = 'worker' where email =
+   '<that email>';`. The account can only take photo jobs and use the two photo buckets (`data-model.md`).
+2. `tools/photo-worker/.env` (you write it, never committed): `IWC_SUPABASE_URL` and `IWC_SUPABASE_ANON_KEY` (the
+   production project's public URL and anon key, as in the app), `IWC_WORKER_EMAIL`, `IWC_WORKER_PASSWORD`.
+3. The chosen house models (6 – 7, D-102) uploaded to `product-media/house-models/<slug>/front.jpg` and `back.jpg` with
+   a `house_models` row each (the admin screen comes with V3).
+4. Start it with Windows (README, Task Scheduler). When the laptop is off, pieces wait in the queue; nothing breaks.
+Locally, `pnpm dev:photo-e2e <front> <back> <close-up> --house=<front>,<back>` makes the worker account, signs in as a
+vendor, uploads a piece through the vendor's storage rules and queues its jobs.
+
+audit). Once: run the Deploy workflow (migration `20261102090000_photo_redo`), give the laptop the sourcing runner's
+`.env` (or `tools/photo-redo/.env` with the same keys), and keep the house models as one folder each in
+`C:\kod\iwc-photo-models\house-models\` (`w-1\front.jpg` …; `m-1\` … for men). Start with `--limit 30` per type and look at the review page.
+
+5. **7-day sources (D-162), once after the Deploy workflow has applied `20261101090000_quick_sources`:** on any PC with
+   the repo, `pnpm quick:sources -- --env=C:\iwc\move.env --allow-remote` (the same file as `photos:move`:
+   `NEXT_PUBLIC_SUPABASE_URL` and `SUPABASE_SERVICE_ROLE_KEY` of production; it writes nothing and lists how many
+   listings would be bought from the quick shops instead of a cheaper backup, a sample with both prices, and sites that
+   look like a quick shop but are not marked one), then the same with `--apply` (batches of 100 until none is left;
+   safe to run again). New and re-checked listings need nothing: the runner's database functions choose the quick shop.
