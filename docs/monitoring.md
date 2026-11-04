@@ -14,7 +14,7 @@ A number past its **budget** is a warning (look for the cause that week); past t
 | Vercel | Active CPU | 2 h | 3 h | a slow server render (see §3), image work on the server (there should be none) |
 | Vercel | Fast data transfer / origin transfer | 50 GB / 5 GB | 75 GB / 7.5 GB | photos served without the CDN (`x-vercel-cache` should say HIT, `ops.md` §Photos) |
 | Vercel | Image transformations | 0 | 1,000 | someone added `next/image` with Vercel's loader (D-140 forbids it) |
-| Supabase | Database size (Reports → Database) | 250 MB (78 MB of catalogue on 2026-10-21) | 400 MB | `stock_movements`, `search_queries` (B-23) or `rate_limit_hits` growing without a clean-up; search's `product_search` grows with the catalogue (about 0.5 KB a listing with its index, D-160) |
+| Supabase | Database size (Reports → Database) | 250 MB (78 MB of catalogue on 2026-10-21) | 400 MB | `stock_movements` or `rate_limit_hits` growing without a clean-up; search's `product_search` grows with the catalogue (about 0.5 KB a listing with its index, D-160); `iwc-tidy` not running (it clears run details over 7 days, done webhook events and sent emails over 30, error events and searches over 90, D-187) |
 | Supabase | Egress (Usage) | 2.5 GB | 4 GB | photos read from Supabase instead of R2, the photo move or the weight tools reading everything at once, big admin exports |
 | Supabase | Storage | 100 MB | 500 MB | uploads not moved to R2 (`pnpm photos:move -- --clean` lists and removes them) |
 | Supabase | Monthly active users | 25,000 | 40,000 | real growth: good news, plan the paid tier |
@@ -31,10 +31,9 @@ A number past its **budget** is a warning (look for the cause that week); past t
 | Photos | every photo from `/media/s/…avif`, a second request `x-vercel-cache: HIT` | `CHECK_LIVE_SITE=<site> node scripts/check.mjs http`; `curl -I` on one photo twice |
 | Payments | every paid Stripe payment has its order; no row in `failed_reconciliations` unresolved | Admin → Today (payments to check); Stripe → Payments vs Admin → Orders weekly |
 | Emails | nothing pending for more than 10 minutes | Admin → Today (stuck emails); query D below |
-| Timers | the pg_cron jobs (cycles, email outbox, FX, search words, payment sweep) ran in the last hour | query C below |
-| Exchange rate | refreshed today (D-075) | query E; Admin → Settings (the exchange rate) |
+| Timers | the pg_cron jobs `iwc-email-outbox`, `iwc-payment-sweep`, `iwc-search-words` ran in the last hours and `iwc-tidy` in the last day (D-187: nothing else runs; no per-minute cycle job, no exchange-rate refresh) | query C below |
 | Errors | Today shows no new server errors, or each is understood | Admin → Today; query F (Vercel keeps runtime logs only 1 hour on Hobby, so `admin_error_events` is the record) |
-| Catalogue | Weights to check, Drafts and Names to tidy stay small; no live listing without a weight | Admin → Products tabs; query G |
+| Catalogue | Weights to check, Drafts and Names to tidy (until it is removed at 0, plan Y-11) stay small; no live listing without a weight | Admin → Products tabs; query G |
 | Sourcing | the runner's last run is under a day old when it should run daily | Admin → Import → Auto-sourcing (last run) |
 
 ## 3. Resilience: what fails, what customers see, what to do
@@ -47,7 +46,6 @@ A number past its **budget** is a warning (look for the cause that week); past t
 | Stripe webhook failing | payments arrive without orders | `failed_reconciliations`, Today | fix the endpoint or secret (`ops.md` §Going live step 7); reconcile from Today |
 | Refund made in Stripe, dispute opened | the order's refund is recorded and the customer emailed; a dispute is kept in `payment_disputes` | an alert at once (§5 step 5); Today's red count | a dispute: answer it in Stripe → Disputes before its due date; a whole-order refund: cancel the order in the admin if nothing should ship |
 | Email timer not running | emails wait (the site's own actions still send at once) | query C, D | the Vault secrets and `cron.schedule` lines (`ops.md` §Email timer, §Moving step 5) |
-| Exchange-rate service down | prices keep the last rate; a jump over 10% is held for an admin (D-075) | query E | nothing; check Settings |
 | India PC or laptop off | no new listings, no weekly check; nothing breaks | runner's last run | turn it on; it carries on |
 | A bad deploy | the daily deploy took a red commit (it should not: it needs green CI) | the site, the uptime ping | Vercel → Deployments → the previous one → Promote (instant rollback) |
 | Data loss | the free plan keeps no downloadable backups | — | monthly: `npx supabase db dump` (roles, schema, data, as `ops.md` §Moving step 3) to a folder outside the repo; keep the last two |
@@ -111,14 +109,12 @@ select relname, pg_size_pretty(pg_total_relation_size(c.oid)) from pg_class c jo
 -- B. the slowest work (pg_stat_statements): anything over 100 ms on average is a candidate for a fix
 select calls, round(mean_exec_time::numeric, 1) as avg_ms, round(total_exec_time::numeric) as total_ms, left(query, 120)
   from pg_stat_statements order by total_exec_time desc limit 15;
--- C. the timers: each should have run in the last hour, none failing
+-- C. the timers: each should have run in its last period (iwc-tidy once a day, the others every few hours or more often), none failing
 select j.jobname, max(d.start_time) as last_run, count(*) filter (where d.status <> 'succeeded') as failed
   from cron.job j left join cron.job_run_details d on d.jobid = j.jobid and d.start_time > now() - interval '1 day'
  group by j.jobname;
 -- D. emails waiting
 select status, count(*), min(created_at) from public.email_outbox where status <> 'sent' group by status;
--- E. the exchange rate's last refresh
-select max(requested_at) filter (where applied) as last_applied, max(requested_at) as last_try from public.fx_fetches;
 -- F. server errors this week, by kind
 select event, count(*), max(created_at) from public.admin_error_events where created_at > now() - interval '7 days'
  group by event order by count(*) desc;
