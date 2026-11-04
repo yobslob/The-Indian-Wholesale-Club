@@ -14,7 +14,7 @@ export const API_BASE_URL =
 // Development only. The website's server (`pnpm --filter web dev`, port 3000), not Metro (8081).
 if (__DEV__) console.log(`[iwc] Website API: ${API_BASE_URL}`);
 
-export type ApiResult<T> = { ok: true; data: T } | { ok: false; status: number; error: string };
+export type ApiResult<T> = { ok: true; data: T } | { ok: false; status: number; error: string; problem?: unknown };
 
 /** POST JSON; sends the signed-in user's access token so the server can link the order to the account. */
 export async function apiPost<T>(path: string, body: unknown): Promise<ApiResult<T>> {
@@ -30,12 +30,13 @@ export async function apiPost<T>(path: string, body: unknown): Promise<ApiResult
       },
       body: JSON.stringify(body),
     });
-    const json = (await res.json().catch(() => null)) as (T & { error?: string }) | null;
+    const json = (await res.json().catch(() => null)) as (T & { error?: string; problem?: unknown }) | null;
     if (res.ok && json) return { ok: true, data: json };
     return {
       ok: false,
       status: res.status,
       error: json?.error ?? 'Something went wrong. Please try again.',
+      problem: json?.problem,
     };
   } catch {
     return { ok: false, status: 0, error: 'No connection. Please try again.' };

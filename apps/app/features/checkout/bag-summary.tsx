@@ -40,26 +40,20 @@ export function BagSummary({ title, lines, quote }: { title: string; lines: BagL
       {b && quote ? (
         <>
           {b.discountCents > 0 ? <Row label={`Discount (${quote.promoCode ?? ''})`} value={`−${formatUsd(b.discountCents)}`} /> : null}
-          {/* D-119: from the free-shipping line up, the bulk saving. */}
+          {/* D-119: the bulk saving, from its own line up (D-187). */}
           {(b.bulkSavingCents ?? 0) > 0 ? <Row label="Bulk saving" value={`−${formatUsd(b.bulkSavingCents)}`} /> : null}
-          {quote.shippingMethod === 'express' ? (
-            <Row label="Express shipping" value={formatUsd(b.shippingCents)} />
-          ) : (
-            <>
-              {/* D-111, D-124: Shipping (the parcel + the food in the bag), struck through once free. */}
-              <View className="flex-row justify-between gap-3">
-                <Text className="font-body text-ink-muted flex-1 text-sm">Shipping</Text>
-                <ChargeValue cents={b.shippingCents || (b.waivedCents?.shipping ?? 0)} free={b.shippingCents === 0} />
-              </View>
-              {b.retailerCents > 0 || (b.waivedCents?.retailer ?? 0) > 0 ? (
-                <View className="flex-row justify-between gap-3">
-                  <Text className="font-body text-ink-muted flex-1 text-sm">Retailer charges</Text>
-                  <ChargeValue cents={b.retailerCents || (b.waivedCents?.retailer ?? 0)} free={b.retailerCents === 0} />
-                </View>
-              ) : null}
-            </>
-          )}
-          {/* founder 2026-10-24: heavy cookware's other half, on standard and express alike */}
+          {/* D-111, D-124: Shipping (the parcel + the food in the bag), struck through once free. */}
+          <View className="flex-row justify-between gap-3">
+            <Text className="font-body text-ink-muted flex-1 text-sm">Shipping</Text>
+            <ChargeValue cents={b.shippingCents || (b.waivedCents?.shipping ?? 0)} free={b.shippingCents === 0} />
+          </View>
+          {b.retailerCents > 0 || (b.waivedCents?.retailer ?? 0) > 0 ? (
+            <View className="flex-row justify-between gap-3">
+              <Text className="font-body text-ink-muted flex-1 text-sm">Retailer charges</Text>
+              <ChargeValue cents={b.retailerCents || (b.waivedCents?.retailer ?? 0)} free={b.retailerCents === 0} />
+            </View>
+          ) : null}
+          {/* founder 2026-10-24: heavy cookware's other half */}
           {(b.heavyCents ?? 0) > 0 ? (
             <View className="flex-row justify-between gap-3">
               <Text className="font-body text-ink-muted flex-1 text-sm">Heavy-item shipping</Text>
@@ -73,10 +67,20 @@ export function BagSummary({ title, lines, quote }: { title: string; lines: BagL
           </View>
           {quote.promoRejected ? <Text className="text-caution font-body text-sm">That promo code can&apos;t be used on this order.</Text> : null}
           <View className="bg-paper rounded-xl px-3.5 py-3">
-            <Text className="font-body text-ink text-sm">
-              Estimated delivery:{' '}
-              <Text className="font-ui-semibold">{formatDeliveryWindow(quote.delivery.est_delivery_from, quote.delivery.est_delivery_to)}</Text>
-            </Text>
+            {quote.shipments?.length ? (
+              // D-187: a bag with food and other pieces comes in two parcels, each with its own window
+              quote.shipments.map((s) => (
+                <Text key={s.seq} className="font-body text-ink text-sm">
+                  Shipment {s.seq} · {s.kind === 'food' ? 'Food' : 'Clothing and home & gifts'}, estimated delivery:{' '}
+                  <Text className="font-ui-semibold">{formatDeliveryWindow(s.delivery.est_delivery_from, s.delivery.est_delivery_to)}</Text>
+                </Text>
+              ))
+            ) : (
+              <Text className="font-body text-ink text-sm">
+                Estimated delivery:{' '}
+                <Text className="font-ui-semibold">{formatDeliveryWindow(quote.delivery.est_delivery_from, quote.delivery.est_delivery_to)}</Text>
+              </Text>
+            )}
           </View>
         </>
       ) : (
