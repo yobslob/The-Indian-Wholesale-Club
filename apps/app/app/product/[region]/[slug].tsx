@@ -25,7 +25,7 @@ import { useQuery } from '@/lib/use-query';
  * storefront.md §The product page (D-051, D-082, D-095): the photos edge to edge (any opens the viewer), name with the
  * heart, add to bag with the delivery window, Details and Size chart behind + / −, the origin line, reviews as a row,
  * Similar items, Curated for you; the buy bar slides up once Add to bag has scrolled away. One store_product_page()
- * call + live availability.
+ * call; the stock is what it answered, and checkout checks it again (D-187).
  */
 export default function ProductScreen(): React.JSX.Element {
   const router = useRouter();
@@ -128,20 +128,13 @@ export default function ProductScreen(): React.JSX.Element {
               </Pressable>
             </View>
             {data.product.summary ? <Body muted>{data.product.summary}</Body> : null}
-            {data.product.coming_soon ? (
-              // D-135: shown, not sold yet: the heart above saves it
-              <View className="border-line gap-1 border-y py-4">
-                <Text className="font-display text-[22px] text-[#1D1A17]">Coming soon</Text>
-                <Body muted>Save it with the heart to find it again.</Body>
-              </View>
-            ) : data.variants.length > 0 ? (
+            {data.variants.length > 0 ? (
               <AddToBag
                 product={data.product}
                 variants={data.variants}
-                quick={data.quick_delivery !== null}
                 buttonRef={button}
                 onBar={onBar}
-                delivery={<DeliveryNote delivery={data.delivery} fromUs={data.ships_from_us} />}
+                delivery={<DeliveryNote productType={data.product.product_type} fromUs={data.ships_from_us} />}
               />
             ) : (
               <Body muted>Not available right now.</Body>

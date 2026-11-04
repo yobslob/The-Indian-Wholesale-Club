@@ -4,8 +4,6 @@ import { Pressable, Text, View } from 'react-native';
 
 import { choose, formatUsd, isAvailable, optionAxes, selectionOf } from '@repo/shared/domain';
 
-import { useLiveAvailability } from './use-live-availability';
-
 import type { BuyBarState } from './buy-bar';
 import type { Product, Variant } from '@repo/db/store';
 
@@ -37,7 +35,7 @@ function Choice({
 }
 
 /**
- * Variant picker + live availability + add to bag. Colour and size get a row each when the variants carry them
+ * Variant picker + add to bag, with the stock the screen read (checkout checks it again, D-187). Colour and size get a row each when the variants carry them
  * (`optionAxes`, shared with the website); otherwise one button per variant.
  */
 export function AddToBag({
@@ -46,16 +44,13 @@ export function AddToBag({
   delivery,
   buttonRef,
   onBar,
-  quick = false,
 }: {
   product: Pick<
     Product,
     'id' | 'name' | 'slug' | 'region_slug' | 'region_name' | 'primary_image_path'
   >;
   variants: Variant[];
-  /** A 7-day piece (D-154): the bag's goal knows it from the add (bag-goal.ts). */
-  quick?: boolean;
-  /** Shown just above the button (the delivery window, D-008). */
+  /** Shown just above the button (the delivery days, D-187). */
   delivery?: React.ReactNode;
   /** The row with Add to bag, so the screen can tell when it has scrolled away (the buy bar, D-082). */
   buttonRef?: React.RefObject<View>;
@@ -63,11 +58,6 @@ export function AddToBag({
   onBar?: (bar: BuyBarState | null) => void;
 }): React.JSX.Element {
   const router = useRouter();
-  const initial = useMemo(
-    () => Object.fromEntries(variants.map((v) => [v.id, v.available])),
-    [variants],
-  );
-  const available = useLiveAvailability(product.id, initial);
   const add = useBag((s) => s.add);
   const [variantId, setVariantId] = useState(
     () => variants.find((v) => v.available > 0)?.id ?? variants[0]?.id,
@@ -77,7 +67,7 @@ export function AddToBag({
 
   const axes = useMemo(() => optionAxes(variants), [variants]);
   const variant = variants.find((v) => v.id === variantId);
-  const left = variant ? (available[variant.id] ?? 0) : 0;
+  const left = variant?.available ?? 0;
   const addToBag = (): void => {
     if (!variant) return;
     add(
@@ -91,7 +81,6 @@ export function AddToBag({
         variantLabel: variant.label,
         unitPriceCents: variant.price_cents,
         imagePath: product.primary_image_path,
-        quick,
       },
       quantity,
     );
@@ -114,7 +103,7 @@ export function AddToBag({
     // addToBag is rebuilt each render; the bar needs it only when what it adds changes.
   }, [variant?.id, quantity, left, added, onBar]);
   if (!variant) return <Text className="text-ink-muted text-sm">Not available right now.</Text>;
-  const inStock = (v: Variant): boolean => (available[v.id] ?? 0) > 0;
+  const inStock = (v: Variant): boolean => v.available > 0;
   const selection = selectionOf(variant, axes);
   const select = (id: string): void => {
     setVariantId(id);

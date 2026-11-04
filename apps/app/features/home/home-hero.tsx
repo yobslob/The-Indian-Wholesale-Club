@@ -53,7 +53,7 @@ function Word({ word, index, size, scrollY, heroHeight }: { word: string; index:
  * The Home hero (D-079, D-095): the founder's photo under the status bar, "Indian Wholesale Club" stacked on its white
  * wall in #1D1A17, and "Miss local market? Start here." under it; scrolling fades the words out one after another.
  * The demo banner rides on top of the photo. `onStart` goes to Pick your home. D-161: "We go home so you don't have
- * to." with "India's shelves, at your door." (D-148's 7-day line gave way; the store switch carries the 7-day store).
+ * to." with "India's shelves, at your door."
  */
 export function HomeHero({
   scrollY,

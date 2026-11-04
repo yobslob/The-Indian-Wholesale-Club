@@ -1,29 +1,22 @@
 import { Text } from 'react-native';
 
-import { formatDeliveryWindow } from '@repo/shared/domain';
+import { formatDeliveryWindow, type ProductType } from '@repo/shared/domain';
 
-import type { DeliveryWindow } from '@repo/db/store';
-
-const orderBy = new Intl.DateTimeFormat('en-US', {
-  weekday: 'short',
-  month: 'short',
-  day: 'numeric',
-  hour: 'numeric',
-  minute: '2-digit',
-  timeZoneName: 'short',
-});
+import { useDeliveryLine } from '@/features/shell/days';
 
 /**
- * D-008 / D-035: the next delivery window, straight from the open cycle, in the phone's time zone. A piece already in
- * the US (D-072) has its own window: today + the US delivery days.
+ * D-187: "Arrives in 7 delivery days" for food, "Arrives in 12 – 16 delivery days" for the rest (Settings' days, never
+ * typed); the FAQ says what a delivery day is. A piece already in the US (D-072) has its own window: today + the US
+ * delivery days.
  */
 export function DeliveryNote({
-  delivery,
+  productType,
   fromUs = null,
 }: {
-  delivery: DeliveryWindow | null;
+  productType: ProductType;
   fromUs?: { est_delivery_from: string; est_delivery_to: string } | null;
-}): React.JSX.Element {
+}): React.JSX.Element | null {
+  const days = useDeliveryLine(productType);
   if (fromUs) {
     return (
       <Text className="font-body text-ink text-sm leading-5">
@@ -32,23 +25,5 @@ export function DeliveryNote({
       </Text>
     );
   }
-  if (!delivery) {
-    return (
-      <Text className="font-body text-ink-muted text-sm">
-        The next delivery window has not been announced yet.
-      </Text>
-    );
-  }
-  return (
-    <Text className="font-body text-ink text-sm leading-5">
-      Estimated delivery{' '}
-      {formatDeliveryWindow(delivery.est_delivery_from, delivery.est_delivery_to)}
-      {delivery.order_by ? (
-        <Text className="text-ink-muted">
-          {' '}
-          if you order by {orderBy.format(new Date(delivery.order_by))}
-        </Text>
-      ) : null}
-    </Text>
-  );
+  return days ? <Text className="font-body text-ink text-sm leading-5">Arrives in {days}</Text> : null;
 }

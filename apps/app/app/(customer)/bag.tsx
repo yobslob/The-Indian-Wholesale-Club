@@ -2,15 +2,7 @@ import { Link, useRouter } from 'expo-router';
 import { Pressable, Text, View } from 'react-native';
 
 import { getHome } from '@repo/db/store';
-import {
-  arrivalLine,
-  bagGroups,
-  bagShipmentState,
-  formatUsd,
-  parseBagShipments,
-  quickGapLine,
-  regionSegment,
-} from '@repo/shared/domain';
+import { bagGroups, bagShipmentState, formatUsd, parseBagShipments, regionSegment } from '@repo/shared/domain';
 
 import { Photo } from '@/components/photo';
 import { Body, Button, Label, Screen } from '@/components/ui';
@@ -18,6 +10,7 @@ import { ChargeRows, useBagCharges } from '@/features/cart/charges';
 import { bagSubtotalCents, MAX_QTY_PER_LINE, useBag, type BagLine } from '@/features/cart/store';
 import { ProductRow } from '@/features/catalog/product-row';
 import { StampGrid } from '@/features/regions/stamps';
+import { useDeliveryLine } from '@/features/shell/days';
 import { supabase } from '@/lib/supabase';
 import { useQuery } from '@/lib/use-query';
 
@@ -31,11 +24,11 @@ function EmptyBag(): React.JSX.Element {
         <>
           <View className="gap-3">
             <Label>Open now</Label>
-            <StampGrid regions={data.regions.filter((r) => r.is_live)} delivery={data.delivery} />
+            <StampGrid regions={data.regions.filter((r) => r.is_live)} />
           </View>
           <ProductRow
             title="Just listed"
-            products={data.just_listed}
+            products={data.just_listed_types.clothing ?? []}
             seeAll={{ type: 'clothing' }}
           />
         </>
@@ -47,15 +40,16 @@ function EmptyBag(): React.JSX.Element {
 /**
  * The Bag tab (D-086, D-095): a photo on each line (it and the name open the piece), − / number / + within 1 – 10,
  * Remove, the subtotal and Checkout. In the app the bag is its own tab, so there is no bag panel. Prices are
- * indicative; checkout re-prices on the server (D-038). D-154: once the bag holds 7-day pieces its lines sit under
- * their arrival dates (Shipment 1 and Shipment 2 when they travel apart), as on the website.
+ * indicative; checkout re-prices on the server (D-038). D-187: its lines sit under their delivery days: a bag with food
+ * and other pieces is two shipments (Shipment 1 · Food, Shipment 2 · Clothing and home & gifts), as on the website.
  */
 export default function BagScreen(): React.JSX.Element {
   const router = useRouter();
   const { lines, setQuantity } = useBag();
   const facts = parseBagShipments(useBagCharges());
   const state = bagShipmentState(facts);
-  const gap = state === 'under' ? quickGapLine(facts) : null;
+  const foodDays = useDeliveryLine('food');
+  const otherDays = useDeliveryLine('clothing');
   const step = 'h-10 w-10 items-center justify-center';
   const lineList = (list: BagLine[]): React.JSX.Element => (
     <View className="border-line border-t">
@@ -147,29 +141,27 @@ export default function BagScreen(): React.JSX.Element {
         <EmptyBag />
       ) : (
         <>
-          {state === 'none'
+          {!facts
             ? lineList(lines)
             : bagGroups(lines, facts).map((g) => (
                 <View key={g.seq ?? 0} className="gap-2">
                   <Text
-                    className={`font-ui-semibold text-[14px] ${g.kind === 'quick' ? 'text-brand' : 'text-ink'}`}
+                    className={`font-ui-semibold text-[14px] ${g.kind === 'food' ? 'text-brand' : 'text-ink'}`}
                   >
-                    {[g.seq ? `Shipment ${g.seq}` : null, arrivalLine(g.from, g.to)]
+                    {[
+                      g.seq ? `Shipment ${g.seq}` : null,
+                      g.seq ? (g.kind === 'food' ? 'Food' : 'Clothing and home & gifts') : null,
+                      g.kind === 'food' ? foodDays : otherDays,
+                    ]
                       .filter(Boolean)
                       .join(' · ')}
-                    <Text className="font-ui text-ink-muted"> · for most US addresses</Text>
+                    {state === 'none' ? null : (
+                      <Text className="font-ui text-ink-muted"> · for most US addresses</Text>
+                    )}
                   </Text>
                   {lineList(g.lines)}
                 </View>
               ))}
-          {gap ? (
-            <View className="gap-1">
-              <Text className="font-ui-semibold text-brand text-[13px]">{gap}</Text>
-              <Link href="/7-day-delivery" className="font-ui text-ink text-[13px] underline">
-                Shop the 7-day store
-              </Link>
-            </View>
-          ) : null}
           <View className="gap-1">
             <View className="flex-row items-baseline justify-between gap-3">
               <Text className="font-ui text-ink text-base">Subtotal</Text>

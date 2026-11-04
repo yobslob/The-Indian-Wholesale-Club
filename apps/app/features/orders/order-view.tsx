@@ -11,7 +11,6 @@ import {
   trackingUrl,
 } from '@repo/shared/domain';
 
-import { FasterOffer } from './faster-offer';
 import { OrderChoices } from './order-choices';
 import { ReturnChoices } from './return-choices';
 
@@ -51,7 +50,7 @@ function Timeline({ order, step }: { order: OrderDetail; step: number }): React.
 
 /**
  * One order as the customer sees it (flows.md §8, D-088, D-095), the same content as the website's order page: a
- * status card (number, status, delivery window, Track the parcel once shipped, the timeline), the offer and choices
+ * status card (number, status, delivery window, Track the parcel once shipped, the timeline), the choices
  * when they apply, the pieces with photos, the totals and the updates. OrderDetail holds only customer-safe fields
  * (store_my_order / guest_order_lookup), so nothing internal can show (D-003).
  */
@@ -60,7 +59,7 @@ export function OrderView({
   onChanged,
 }: {
   order: OrderDetail;
-  /** Reload after the customer takes the faster-delivery offer (D-064). */
+  /** Reload after the customer cancels or keeps the order. */
   onChanged?: () => void;
 }): React.JSX.Element {
   const o = order.order;
@@ -93,7 +92,6 @@ export function OrderView({
         {step >= 0 ? <Timeline order={order} step={step} /> : null}
       </View>
 
-      {order.offer ? <FasterOffer offer={order.offer} orderNumber={o.order_number} email={o.email} onChanged={onChanged} /> : null}
       {order.actions ? (
         <OrderChoices
           actions={order.actions}

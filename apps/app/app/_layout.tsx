@@ -9,6 +9,7 @@ import { SafeAreaView } from 'react-native-safe-area-context';
 import tokens from '@repo/tokens';
 
 import { Button } from '@/components/ui';
+import { DaysProvider } from '@/features/shell/days';
 import { FONTS } from '@/lib/fonts';
 import { SessionProvider } from '@/lib/session';
 import { StripeProvider } from '@/lib/stripe';
@@ -33,8 +34,10 @@ export default function RootLayout(): React.JSX.Element | null {
   return (
     <StripeProvider publishableKey={process.env.EXPO_PUBLIC_STRIPE_PUBLISHABLE_KEY ?? ''}>
       <SessionProvider>
-        <StatusBar style="dark" />
-        <Stack screenOptions={{ headerShown: false, contentStyle: { backgroundColor: tokens.colors.canvas } }} />
+        <DaysProvider>
+          <StatusBar style="dark" />
+          <Stack screenOptions={{ headerShown: false, contentStyle: { backgroundColor: tokens.colors.canvas } }} />
+        </DaysProvider>
       </SessionProvider>
     </StripeProvider>
   );

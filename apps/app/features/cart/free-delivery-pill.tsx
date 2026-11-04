@@ -13,7 +13,7 @@ import Animated, {
   withTiming,
 } from 'react-native-reanimated';
 
-import { dayName, formatUsd } from '@repo/shared/domain';
+import { formatUsd } from '@repo/shared/domain';
 import tokens from '@repo/tokens';
 
 import { freeDelivery, useBagCharges } from './charges';
@@ -35,10 +35,10 @@ export function FreeDeliveryBar({ onPress }: { onPress: () => void }): React.JSX
   const charges = useBagCharges();
   const visible = lines.length > 0 && charges !== null && charges.free_min_cents !== null;
   const { bulk, goal } = freeDelivery(lines, charges);
-  // One goal, one bar (bag-goal.ts): a bag of only 7-day pieces works towards, then has, free 7-day delivery
-  const free = goal.kind === 'free' || goal.kind === 'quick-free';
-  const share = goal.kind === 'none' ? 0 : goal.kind === 'free' ? 1 : goal.share;
-  const leftCents = goal.kind === 'quick-gap' || goal.kind === 'free-gap' ? goal.leftCents : 0;
+  // One goal, one bar (bag-goal.ts)
+  const free = goal.kind === 'free';
+  const share = goal.kind === 'none' ? 0 : goal.share;
+  const leftCents = goal.kind === 'free-gap' ? goal.leftCents : 0;
   // D-119: past the line the words say the bulk saving; the bar stays full (founder 2026-10-30: never back to the start)
   const saving = goal.kind === 'free' && bulk.capCents > 0 && bulk.savingCents > 0;
   const count = bagCount(lines);
@@ -117,12 +117,8 @@ export function FreeDeliveryBar({ onPress }: { onPress: () => void }): React.JSX
       accessibilityLabel={
         saving
           ? `Saving ${formatUsd(bulk.savingCents)}${bulk.capped ? ', the biggest saving' : ''}. Bag, ${count} items`
-          : goal.kind === 'quick-free'
-          ? `Free 7-day delivery${goal.arrivesBy ? `, arrives by ${goal.arrivesBy}` : ''}. Bag, ${count} items`
           : free
           ? `Free delivery unlocked. Bag, ${count} items`
-          : goal.kind === 'quick-gap'
-          ? `Add ${formatUsd(leftCents)} more for free 7-day delivery. Bag, ${count} items`
           : `Add ${formatUsd(leftCents)} more to unlock free delivery. Bag, ${count} items`
       }
       onPress={onPress}
@@ -161,11 +157,6 @@ export function FreeDeliveryBar({ onPress }: { onPress: () => void }): React.JSX
               <Text className="font-ui-semibold">FREE DELIVERY</Text> + saving{' '}
               <Text className="font-ui-semibold">{formatUsd(bulk.savingCents)}</Text>
             </>
-          ) : goal.kind === 'quick-free' ? (
-            <>
-              <Text className="font-ui-semibold">FREE 7-DAY DELIVERY</Text>
-              {goal.arrivesByDay ? ` · home by ${dayName(goal.arrivesByDay)}` : ' unlocked'}
-            </>
           ) : free ? (
             <>
               <Text className="font-ui-semibold">FREE DELIVERY</Text> · the flight&rsquo;s on us
@@ -174,13 +165,7 @@ export function FreeDeliveryBar({ onPress }: { onPress: () => void }): React.JSX
             <>
               {/* D-161: the homesick plan's words */}
               <Text className="font-ui-semibold">{formatUsd(leftCents)}</Text>
-              {goal.kind === 'quick-gap' ? (
-                <>
-                  {' '}more for <Text className="font-ui-semibold">FREE 7-DAY DELIVERY</Text>
-                </>
-              ) : (
-                ' more and the flight’s on us'
-              )}
+              {' more and the flight’s on us'}
             </>
           )}
         </Text>
