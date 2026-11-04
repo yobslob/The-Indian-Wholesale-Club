@@ -33,7 +33,6 @@ const answerSchema = z.object({
       image: z.string().nullable(),
     }),
   ),
-  house_model: z.string().nullable(),
 });
 
 /** What goes up for one photo: the new picture and its mark, or the shop's as it is (no mark: the redo takes it later). */

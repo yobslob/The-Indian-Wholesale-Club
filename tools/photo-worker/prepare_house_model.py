@@ -3,8 +3,8 @@ from behind. This splits it into front.jpg and back.jpg (each pose alone on its 
 
     .venv\\Scripts\\python prepare_house_model.py <image> <slug>     e.g.  ... w_1.jpg w-1
 
-Writes <IWC_MODELS>\\house-models\\<slug>\\front.jpg and back.jpg; they then go to product-media/house-models/<slug>/
-with a house_models row (the admin's House models screen, V3; locally `pnpm dev:photo-e2e --house=front,back`).
+Writes <IWC_MODELS>\\house-models\\<slug>\\front.jpg and back.jpg: w-… wears women's, m-… men's. That folder is all the
+redo needs (D-187).
 """
 
 import sys

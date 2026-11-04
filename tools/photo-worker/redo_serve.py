@@ -5,9 +5,11 @@ they are uploaded, so they never wait for `pnpm photos:redo` (fetch, redo.py, re
 
 The runner starts it by itself when it is not running (tools/sourcing-runner/src/redo.ts). This machine only
 (127.0.0.1), one listing at a time (the GPU's). POST /listing with {"type", "wears", "photos": [base64 …]} answers
-{"photos": [{"status", "mode", "pass", "note", "image"}], "house_model"}: the same work as redo.py (clothing: a face
-swapped to the house model or cut at the chin, a photo without a face reframed, a portrait left for the founder;
-food and home: the light refresh). The models are let go after 10 idle minutes and the service ends after 30.
+{"photos": [{"status", "mode", "pass", "note", "image"}]}: the same work as redo.py (clothing: a face swapped to the
+house model or cut at the chin, a photo without a face reframed, a portrait left for the founder; food and home: the
+light refresh). With no house model on this machine a clothing listing answers an error, so the runner uploads its
+photos as they are and redo.py takes them later. The models are let go after 10 idle minutes and the service ends
+after 30.
 """
 
 import argparse
@@ -29,7 +31,7 @@ from iwc_worker.parts import Parts
 from iwc_worker.pipeline import Pipeline
 from iwc_worker.redo_clothing import ClothingRedo
 from iwc_worker.refresh import flat, refresh
-from redo import house_models, pick_model
+from redo import NO_MODELS, load_models, pick_model
 
 HERE = Path(__file__).resolve().parent
 UNLOAD_AFTER = 10 * 60
@@ -42,7 +44,7 @@ class Work:
         self.pipe = Pipeline()
         self.parts = Parts()
         self.clothing: ClothingRedo | None = None
-        self.models: dict | None = None
+        self.models: dict = {}
         self.last = time.time()
         self.lock = threading.Lock()
 
@@ -58,16 +60,18 @@ class Work:
                 out.append(result("made", "fresh", bool(checks["pass"]), checks["style"], new))
             except Exception as error:  # one photo's failure leaves it as it is
                 out.append(result("failed", None, False, str(error)[:200]))
-        return {"photos": out, "house_model": None}
+        return {"photos": out}
 
     def _clothing(self, images: list[Image.Image], wears: str | None) -> dict:
         if self.clothing is None:
             self.clothing = ClothingRedo(self.parts, self.pipe)
-        if self.models is None:
-            self.models = house_models(self.parts)
+        if not self.models:  # read again each time until there are some: a model added needs no restart
+            self.models = load_models(self.parts)
         # kids are never given a house model's face (D-102): theirs are always cut off
         slug = None
-        if wears != "kids" and self.models:
+        if wears != "kids":
+            if not self.models:
+                raise RuntimeError(NO_MODELS)
             slug = pick_model(self.models, "men" if wears == "men" else "women", self.parts, images)
         house = self.models.get(slug, {}).get("image") if slug else None
         out = []
@@ -82,8 +86,7 @@ class Work:
                 log.error("clothing photo: %s", error)
                 log.debug(traceback.format_exc())
                 out.append(result("failed", None, False, str(error)[:200]))
-        used = any(p["mode"] == "face" for p in out)
-        return {"photos": out, "house_model": slug if used else None}
+        return {"photos": out}
 
     def idle(self) -> bool:
         """Lets the models go after 10 idle minutes; True once the service should end."""

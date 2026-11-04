@@ -14,8 +14,7 @@ import type { Store } from './store';
 /**
  * `fetch`: the next listings with photos to do, each photo's 1200 copy from the photo store (the original is not
  * kept, D-141) saved as before.png with its item.json. Pages on from where the last fetch stopped (`--again` starts
- * over: photos already here are skipped, so only the ones not done, a failed one, come back). The active house
- * models go to out/house-models.json for the GPU step.
+ * over: photos already here are skipped, so only the ones not done, a failed one, come back).
  */
 export async function fetchPhotos(
   out: string,
@@ -30,7 +29,6 @@ export async function fetchPhotos(
   let got = 0;
   while (got < opts.limit) {
     const plan = await db.plan(type, after, 25);
-    writeFileSync(join(out, 'house-models.json'), `${JSON.stringify(plan.house_models, null, 2)}\n`);
     if (!plan.listings.length) {
       log(`${type}: no more listings with photos to do`);
       break;
