@@ -61,13 +61,9 @@ const OPEN_ORDER_STATUSES: Enum<'order_status'>[] = [
 
 export interface TodaySummary {
   ordersByStatus: Partial<Record<Enum<'order_status'>, number>>;
-  pendingPickups: number;
-  unpaidPickedPickups: number;
   draftProducts: number;
-  /** Live variants to re-check with the shop; null until the founder sets the number of days (D-047). */
+  /** Live variants to re-check; null until the founder sets the number of days (D-047). */
   staleVariants: number | null;
-  /** D-070: express orders still in India (to pick up and send by courier). */
-  expressToSend: number;
 }
 
 async function countRows(
@@ -79,18 +75,8 @@ async function countRows(
 }
 
 export async function getTodaySummary(client: IwcClient): Promise<TodaySummary> {
-  const [counts, pendingPickups, unpaidPickedPickups, draftProducts, staleDays, stale] = await Promise.all([
+  const [counts, draftProducts, staleDays, stale] = await Promise.all([
     getOrderCounts(client),
-    countRows(
-      client.from('pickups').select('id', { count: 'exact', head: true }).eq('status', 'pending'),
-    ),
-    countRows(
-      client
-        .from('pickups')
-        .select('id', { count: 'exact', head: true })
-        .eq('status', 'picked')
-        .is('payout_id', null),
-    ),
     countRows(
       client.from('products').select('id', { count: 'exact', head: true }).eq('status', 'draft'),
     ),
@@ -103,60 +89,42 @@ export async function getTodaySummary(client: IwcClient): Promise<TodaySummary> 
     if (n) ordersByStatus[status] = n;
   }
   const staleVariants = unwrap(staleDays).stale_listing_days === null ? null : unwrap(stale).length;
-  return {
-    ordersByStatus,
-    pendingPickups,
-    unpaidPickedPickups,
-    draftProducts,
-    staleVariants,
-    expressToSend: counts.expressToSend,
-  };
+  return { ordersByStatus, draftProducts, staleVariants };
 }
 
 /** D-096: what waits behind each section of the admin's sidebar. Head counts only, one round trip each, in parallel. */
 export interface WaitingCounts {
   ordersToShip: number;
-  /** A cycle's pickups still to do (the pilot's pieces have no cycle: see toOrder). */
-  pickupsToDo: number;
   /** D-140: sold pieces still to order from their shop (pending, not yet ordered). */
   toOrder: number;
   drafts: number;
-  shopsOwed: number;
   reviews: number;
   returns: number;
-  /** Vendor pieces whose AI photos are made: an admin picks and publishes (D-103). */
-  vendorPieces: number;
-  /** "Join as a vendor?" requests not yet answered (D-102). */
-  joinRequests: number;
 }
 
 export async function getWaitingCounts(client: IwcClient): Promise<WaitingCounts> {
   const head = { count: 'exact', head: true } as const;
-  const [ordersToShip, pickupsToDo, toOrder, drafts, owed, reviews, returns, vendorPieces, joinRequests] = await Promise.all([
+  const [ordersToShip, toOrder, drafts, reviews, returns] = await Promise.all([
     countRows(client.from('orders').select('id', head).eq('status', 'arrived')),
-    countRows(client.from('pickups').select('id', head).eq('status', 'pending').not('cycle_id', 'is', null)),
     // the To order list's own rule (paid, open orders, active lines), so the sidebar and the list agree
     client.rpc('admin_to_order', undefined, { get: true }).then((r) => unwrap(r).length),
     countRows(client.from('products').select('id', head).eq('status', 'draft')),
-    getOrderCounts(client),
     countRows(client.from('reviews').select('id', head).eq('status', 'pending')),
     countRows(client.from('returns').select('id', head).eq('status', 'requested')),
-    countRows(client.from('vendor_submissions').select('id', head).eq('status', 'photos_ready')),
-    countRows(client.from('vendor_applications').select('id', head).eq('status', 'new')),
   ]);
-  return { ordersToShip, pickupsToDo, toOrder, drafts, shopsOwed: owed.shopsOwed, reviews, returns, vendorPieces, joinRequests };
+  return { ordersToShip, toOrder, drafts, reviews, returns };
 }
 
 /**
  * Quick find (D-096, Ctrl+K): orders by number, email or the name they ship to; products by name; customers by
- * email or name; shops by name or town. Five of each, admin only (RLS). The words are stripped of PostgREST's
- * filter characters before they reach `or()`.
+ * email or name. Five of each, admin only (RLS). The words are stripped of PostgREST's filter characters before they
+ * reach `or()`.
  */
 export async function adminQuickFind(client: IwcClient, words: string) {
   const q = filterWords(words);
-  if (q.length < 2) return { orders: [], products: [], customers: [], vendors: [] };
+  if (q.length < 2) return { orders: [], products: [], customers: [] };
   const like = `%${q}%`;
-  const [orders, products, customers, vendors] = await Promise.all([
+  const [orders, products, customers] = await Promise.all([
     client
       .from('orders')
       .select('id, order_number, email, status, shipping_address, created_at')
@@ -170,9 +138,8 @@ export async function adminQuickFind(client: IwcClient, words: string) {
       .order('updated_at', { ascending: false })
       .limit(5),
     client.from('profiles').select('id, email, full_name').eq('role', 'customer').or(`email.ilike.${like},full_name.ilike.${like}`).limit(5),
-    client.from('vendors').select('id, shop_name, town, region:regions(name)').or(`shop_name.ilike.${like},town.ilike.${like}`).limit(5),
   ]);
-  return { orders: unwrap(orders), products: unwrap(products), customers: unwrap(customers), vendors: unwrap(vendors) };
+  return { orders: unwrap(orders), products: unwrap(products), customers: unwrap(customers) };
 }
 
 // ---------------------------------------------------------------- Insights (real numbers only, no fabricated analytics)
@@ -181,7 +148,6 @@ const salesLineSchema = z.object({
   name: z.string(),
   pieces: z.number(),
   revenue_cents: z.number(),
-  shop_cost_paise: z.number().optional(),
 });
 const salesSchema = z.object({
   totals: z.object({ orders: z.number(), pieces: z.number(), revenue_cents: z.number() }),
@@ -192,7 +158,7 @@ const salesSchema = z.object({
 export type Sales = z.infer<typeof salesSchema>;
 
 /**
- * Pieces and revenue by state, category and shop, computed in SQL (admin_sales): active lines of paid orders that
+ * Pieces and revenue by state, category and shop (the listing's site), computed in SQL (admin_sales): active lines of paid orders that
  * were not cancelled, placed since `since` (all time when null). Revenue is before tax and shipping.
  */
 export async function getSales(client: IwcClient, since: Date | null): Promise<Sales> {
@@ -246,36 +212,6 @@ export async function getSearchFixes(client: IwcClient, since: Date | null): Pro
 /** D-160: a customer's word joins the synonyms of the word search read it as (Insights' "Add as a synonym"). */
 export async function addSearchSynonym(client: IwcClient, term: string, means: string): Promise<void> {
   unwrap(await client.rpc('admin_add_synonym', { p_term: term, p_means: means }));
-}
-
-const quickShipmentsSchema = z.object({
-  kind: z.enum(['quick', 'standard', 'express']),
-  due: z.number(),
-  on_time: z.number(),
-  late: z.number(),
-  late_noticed: z.number(),
-  overdue: z.number(),
-});
-const quickInsightsSchema = z.object({
-  line_cents: z.number().nullable(),
-  orders: z.number(),
-  with_quick: z.number(),
-  split: z.number(),
-  past_line: z.object({ within_5: z.number(), within_15: z.number(), more: z.number() }),
-  shipments: z.array(quickShipmentsSchema),
-  unavailable: z.object({ pieces: z.number(), cents: z.number() }),
-  split_extra_paise: z.number(),
-});
-export type QuickInsights = z.infer<typeof quickInsightsSchema>;
-
-/**
- * D-154 step 5: how the 7-day promise is kept, for paid orders placed since `since` (admin_quick_insights): orders with
- * a 7-day shipment and split ones, 7-day pieces stopping just past the line, on time per kind of shipment (late ones
- * with their notice), 7-day pieces refunded as unavailable, and the split's extra courier cost.
- */
-export async function getQuickInsights(client: IwcClient, since: Date | null): Promise<QuickInsights> {
-  const data = unwrap(await client.rpc('admin_quick_insights', since ? { p_since: since.toISOString() } : {}, { get: true }));
-  return quickInsightsSchema.parse(data);
 }
 
 const attentionSchema = z.object({

@@ -2,40 +2,6 @@ import { listingInputSchema, type ListingInput, type WeightSource } from '@repo/
 
 import { unwrap, unwrapPage, type Enum, type Insert, type IwcClient, type Update } from '../client';
 
-// ---------------------------------------------------------------- vendors (D-003: admin only)
-
-const VENDOR_COLUMNS = `id, shop_name, owner_name, phone, whatsapp, email, address, town, region_id, payment_method, payment_reference,
-  licences, status, notes, photo_path, is_placeholder, onboarded_at, created_at, updated_at, region:regions(slug, name)`;
-
-export interface VendorFilter {
-  regionId?: string;
-  status?: Enum<'vendor_status'>;
-}
-
-export async function listVendors(client: IwcClient, filter: VendorFilter = {}) {
-  let query = client.from('vendors').select(VENDOR_COLUMNS);
-  if (filter.regionId) query = query.eq('region_id', filter.regionId);
-  if (filter.status) query = query.eq('status', filter.status);
-  return unwrap(await query.order('shop_name'));
-}
-
-/** The shops as a filter's choices (D-136): their id and name only. */
-export async function listShopChoices(client: IwcClient) {
-  return unwrap(await client.from('vendors').select('id, shop_name').order('shop_name'));
-}
-
-export async function getVendor(client: IwcClient, id: string) {
-  return unwrap(await client.from('vendors').select(VENDOR_COLUMNS).eq('id', id).maybeSingle());
-}
-
-export async function createVendor(client: IwcClient, input: Insert<'vendors'>) {
-  return unwrap(await client.from('vendors').insert(input).select('id').single());
-}
-
-export async function updateVendor(client: IwcClient, id: string, patch: Update<'vendors'>) {
-  unwrap(await client.from('vendors').update(patch).eq('id', id));
-}
-
 // ---------------------------------------------------------------- regions + categories
 
 export async function listRegionsAdmin(client: IwcClient) {
@@ -131,15 +97,15 @@ export async function updateCategory(client: IwcClient, id: string, patch: Updat
 
 // ---------------------------------------------------------------- products + variants
 
-const PRODUCT_LIST_COLUMNS = `id, slug, name, product_type, status, coming_soon, price_cents, shop_price_paise, is_placeholder, is_us_stock, updated_at, wears,
-  region:regions(slug, name), vendor:vendors(id, shop_name),
+const PRODUCT_LIST_COLUMNS = `id, slug, name, product_type, status, coming_soon, price_cents, shop_price_paise, is_placeholder, is_us_stock, updated_at, wears, source_site,
+  region:regions(slug, name),
   variants:product_variants(id, label, qty_listed, qty_reserved, qty_confirmed_at, is_active, weight_g, weight_source),
   category:categories(default_weight_g),
   media:product_media(storage_path, is_primary, sort_order)`;
 
 /** The web Products table's columns only: no photos, and of each option what the weight and stock cells show. */
-const PRODUCT_TABLE_COLUMNS = `id, name, product_type, status, coming_soon, price_cents, shop_price_paise, is_placeholder, is_us_stock, wears,
-  region:regions(name), vendor:vendors(shop_name),
+const PRODUCT_TABLE_COLUMNS = `id, name, product_type, status, coming_soon, price_cents, shop_price_paise, is_placeholder, is_us_stock, wears, source_site,
+  region:regions(name),
   variants:product_variants(qty_listed, qty_reserved, is_active, weight_g, weight_source),
   category:categories(default_weight_g)`;
 
@@ -153,7 +119,8 @@ export interface AdminProductFilter {
   /** D-136: all-India listings only (no state). */
   noRegion?: boolean;
   categoryId?: string;
-  vendorId?: string;
+  /** The shop's site, e.g. myntra.com (D-187: the shop is the site). */
+  site?: string;
   /** D-136: the customer price range, in cents. */
   minCents?: number;
   maxCents?: number;
@@ -182,7 +149,7 @@ function adminProductQuery<C extends typeof PRODUCT_LIST_COLUMNS | typeof PRODUC
   if (filter.regionId) query = query.eq('region_id', filter.regionId);
   if (filter.noRegion) query = query.is('region_id', null);
   if (filter.categoryId) query = query.eq('category_id', filter.categoryId);
-  if (filter.vendorId) query = query.eq('vendor_id', filter.vendorId);
+  if (filter.site) query = query.eq('source_site', filter.site);
   if (filter.minCents !== undefined) query = query.gte('price_cents', filter.minCents);
   if (filter.maxCents !== undefined) query = query.lte('price_cents', filter.maxCents);
   if (filter.usStock) query = query.eq('is_us_stock', true);
@@ -239,7 +206,7 @@ export async function getAdminProduct(client: IwcClient, id: string) {
     await client
       .from('products')
       .select(
-        `id, slug, name, product_type, region_id, category_id, vendor_id, summary, description, story, craft, attributes,
+        `id, slug, name, product_type, region_id, category_id, summary, description, story, craft, attributes,
           price_cents, price_auto, shop_price_paise, origin_town, has_origin_label, status, coming_soon, coming_soon_note, is_placeholder, published_at, is_curated, heavy_item,
           source_url, source_site, source_checked_at,
           created_at, updated_at,
@@ -255,7 +222,7 @@ export async function getAdminProduct(client: IwcClient, id: string) {
 }
 
 /**
- * A new listing (flows.md §2, C3): the draft product and its variants in one database transaction
+ * A new listing, from the importer: the draft product and its variants in one database transaction
  * (admin_create_listing), checked against the shared schema first. Returns the product id; photos go on after.
  */
 export async function createListing(client: IwcClient, input: ListingInput): Promise<string> {
@@ -268,7 +235,7 @@ export async function createListing(client: IwcClient, input: ListingInput): Pro
   return id;
 }
 
-/** Live variants whose quantity is due a re-check with the shop (pricing_settings.stale_listing_days). */
+/** Live variants whose quantity is due a re-check (pricing_settings.stale_listing_days). */
 export async function listStaleVariants(client: IwcClient) {
   return unwrap(await client.rpc('admin_stale_variants', undefined, { get: true }));
 }
@@ -281,7 +248,7 @@ export async function updateProduct(client: IwcClient, id: string, patch: Update
   unwrap(await client.from('products').update(patch).eq('id', id));
 }
 
-/** Publishing stamps published_at the first time. The DB refuses live food until it is cleared (D-074). */
+/** Publishing stamps published_at the first time. */
 export async function setProductStatus(
   client: IwcClient,
   id: string,
@@ -333,7 +300,7 @@ export async function listPriceSheet(
       ...(filter.regionId ? { p_region: filter.regionId } : {}),
       ...(filter.noRegion ? { p_no_region: true } : {}),
       ...(filter.categoryId ? { p_category: filter.categoryId } : {}),
-      ...(filter.vendorId ? { p_vendor: filter.vendorId } : {}),
+      ...(filter.site ? { p_site: filter.site } : {}),
       ...(filter.minCents !== undefined ? { p_min_cents: filter.minCents } : {}),
       ...(filter.maxCents !== undefined ? { p_max_cents: filter.maxCents } : {}),
     }),
@@ -471,7 +438,7 @@ export async function listNamesToReview(client: IwcClient) {
   const page = (from: number, count: boolean) =>
     client
       .from('products')
-      .select('id, name, product_type, status, vendor_id, source_site, shop_title', count ? { count: 'exact' } : undefined)
+      .select('id, name, product_type, status, source_site, shop_title', count ? { count: 'exact' } : undefined)
       .in('product_type', ['clothing', 'home'])
       // only names that came from a shop's page; names written for IWC are left alone
       .not('source_url', 'is', null)
