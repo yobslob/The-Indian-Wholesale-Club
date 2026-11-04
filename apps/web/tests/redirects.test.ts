@@ -19,6 +19,7 @@ const { compile, pathToRegexp } = require_('next/dist/compiled/path-to-regexp') 
   compile: (pattern: string, options?: { validate: boolean }) => (params: Record<string, string | string[]>) => string;
 };
 const config = require_('../next.config.js') as {
+  headers: () => Promise<{ source: string; headers: { key: string; value: string }[] }[]>;
   redirects: () => Promise<Rule[]>;
   rewrites: () => Promise<{ beforeFiles: { source: string; destination: string; has?: { key: string }[] }[] }>;
 };
@@ -77,5 +78,35 @@ describe("See all's cached route (R-6)", () => {
       assert.ok(!(r.has ?? []).some((h) => h.key === 'show'));
     }
     assert.ok(!beforeFiles.some((r) => r.source.includes('7-day')));
+  });
+});
+
+describe('the Content-Security-Policy and the socket (§10 Y-3)', () => {
+  /** The value a path gets: every matching rule applies and the last wins, as in Next. */
+  async function csp(path: string): Promise<string> {
+    let value = '';
+    for (const rule of await config.headers()) {
+      if (!pathToRegexp(rule.source, []).test(path)) continue;
+      value = rule.headers.find((h) => h.key === 'Content-Security-Policy')?.value ?? value;
+    }
+    return value;
+  }
+
+  for (const path of ['/', '/food', '/states/kerala/a-piece', '/cart', '/checkout', '/search', '/orders/lookup'])
+    it(`${path}: no websocket`, async () => {
+      const value = await csp(path);
+      assert.match(value, /connect-src/);
+      assert.doesNotMatch(value, /ws:|wss:/);
+    });
+
+  for (const path of ['/admin', '/admin/orders', '/admin/import'])
+    it(`${path}: may open the live feed's socket`, async () => {
+      assert.match(await csp(path), /connect-src[^;]* wss?:/);
+    });
+
+  it('the importer keeps its own policy (any image, no Stripe)', async () => {
+    const value = await csp('/admin/import');
+    assert.match(value, /img-src 'self' data: blob: https:/);
+    assert.doesNotMatch(value, /stripe/);
   });
 });

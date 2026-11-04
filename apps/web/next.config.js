@@ -125,6 +125,22 @@ const STRIPE = {
   img: 'https://*.link.com',
 };
 
+const supabaseWs = supabaseOrigin.replace(/^http/, 'ws');
+
+/** The Content-Security-Policy of every page but the importer; `connectExtra`: what else it may connect to. */
+const siteCsp = (connectExtra) =>
+  [
+    "default-src 'self'",
+    `script-src 'self' 'unsafe-inline'${devEval} ${STRIPE.script}`,
+    `frame-src 'self' ${STRIPE.frame}`,
+    "style-src 'self' 'unsafe-inline'",
+    "font-src 'self' data:",
+    `img-src 'self' data: blob: ${supabaseOrigin} ${STRIPE.img}`,
+    `connect-src 'self' ${supabaseOrigin}${connectExtra} ${STRIPE.connect}`,
+    ...LOCKED_DOWN,
+    ...REPORTING,
+  ].join('; ');
+
 /** @type {import('next').NextConfig} */
 const nextConfig = {
   // No "X-Powered-By: Next.js" on every answer: it only tells a scanner what to try.
@@ -170,25 +186,14 @@ const nextConfig = {
       },
       {
         // Every page but the importer, whose preview shows the source site's photos before they are copied (D-110).
+        // No websocket here: store pages open no live connection (§10 Y-3).
         source: '/((?!admin/import).*)',
-        headers: [
-          {
-            key: 'Content-Security-Policy',
-            value: [
-              "default-src 'self'",
-              `script-src 'self' 'unsafe-inline'${devEval} ${STRIPE.script}`,
-              `frame-src 'self' ${STRIPE.frame}`,
-              "style-src 'self' 'unsafe-inline'",
-              "font-src 'self' data:",
-              `img-src 'self' data: blob: ${supabaseOrigin} ${STRIPE.img}`,
-              `connect-src 'self' ${supabaseOrigin} ${STRIPE.connect}`,
-              ...LOCKED_DOWN,
-              ...REPORTING,
-            ].join('; '),
-          },
-          REPORTING_ENDPOINTS,
-          ...SECURITY_HEADERS,
-        ],
+        headers: [{ key: 'Content-Security-Policy', value: siteCsp('') }, REPORTING_ENDPOINTS, ...SECURITY_HEADERS],
+      },
+      {
+        // Later rules win. Only the admin's live Today (features/admin/live-feed.tsx) may open the Supabase socket.
+        source: '/admin/:path*',
+        headers: [{ key: 'Content-Security-Policy', value: siteCsp(` ${supabaseWs}`) }],
       },
       {
         source: '/admin/import',
@@ -201,7 +206,7 @@ const nextConfig = {
               "style-src 'self' 'unsafe-inline'",
               "font-src 'self' data:",
               `img-src 'self' data: blob: https: ${supabaseOrigin}`,
-              `connect-src 'self' ${supabaseOrigin}`,
+              `connect-src 'self' ${supabaseOrigin} ${supabaseWs}`,
               ...LOCKED_DOWN,
             ].join('; '),
           },

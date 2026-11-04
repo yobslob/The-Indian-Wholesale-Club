@@ -20,7 +20,7 @@ test.describe('stock at checkout', () => {
     await restoreDemoStock(request);
   });
 
-  const list = (page: import('@playwright/test').Page) => page.getByRole('region', { name: 'Pieces to sort out' });
+  const list = (page: import('@playwright/test').Page) => page.getByRole('alert', { name: 'Pieces to sort out' });
 
   test('sold out when checkout opens: named at the top, Remove empties the bag', async ({ page, request }) => {
     await addDemoToBag(page);

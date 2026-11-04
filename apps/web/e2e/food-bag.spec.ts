@@ -1,7 +1,7 @@
 import { expect, test, type APIRequestContext, type Page } from '@playwright/test';
 
 import { openOrderAsGuest } from './buy';
-import { DEMO_PRODUCT, E2E_ADMIN, E2E_SLUG_PREFIX, serviceClient, stripeTestKeysPresent } from './env';
+import { DEMO_PRODUCT, E2E_ADMIN, E2E_CUSTOMER, E2E_SLUG_PREFIX, serviceClient, stripeTestKeysPresent } from './env';
 import { orderNumberShown } from './flows';
 import { CARDS, continueToPayment, ownCaller, payWith } from './pay';
 
@@ -75,7 +75,7 @@ async function details(page: Page, zip: string, place: string): Promise<void> {
   await page.locator('input[name="phone"]').fill('(732) 555-0142');
   await page.getByRole('button', { name: 'Continue', exact: true }).click();
   await page.locator('input[name="fullName"]').fill('E2E Customer');
-  await page.locator('input[name="email"]').fill('e2e-customer@example.com');
+  await page.locator('input[name="email"]').fill(E2E_CUSTOMER.email);
   await page.locator('input[name="zipCode"]').fill(zip);
   await expect(page.getByText(`✓ ${place}`)).toBeVisible();
   await page.locator('input[name="line1"]').fill('1 Test Street');
