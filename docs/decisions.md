@@ -15,10 +15,10 @@ To change a decision, add a new one (`Supersedes D-xxx`) and mark the old line `
 - **D-002** 2026-09-27 · founder: Regions are the core concept, all 36 treated the same
 - **D-003** 2026-09-27 · founder: No operations info on the customer side
 - **D-004** 2026-09-27 · proposed: Honest origin labelling; the old "stealth origin" layer is removed forever · the state is optional since D-121
-- **D-005** 2026-09-27 · founder: Order-first supply in cycles
+- **D-005** 2026-09-27 · founder: Order-first supply in cycles · SUPERSEDED by D-187
 - **D-006** 2026-09-27 · founder: Hidden admin on web and app
 - **D-007** 2026-09-27 · founder: Two operators
-- **D-008** 2026-09-27 · proposed: Delivery estimates come from cycle data and are honest
+- **D-008** 2026-09-27 · proposed: Delivery estimates come from cycle data and are honest · its cycle half SUPERSEDED by D-187
 - **D-009** 2026-09-27 · founder: Brand
 - **D-010** 2026-09-27 · founder: The app shares the web's backend
 - **D-011** 2026-09-27 · founder: Speed and real tests are top requirements
@@ -55,7 +55,7 @@ To change a decision, add a new one (`Supersedes D-xxx`) and mark the old line `
 - **D-042** 2026-09-28 · founder (was Q-17): Refunds
 - **D-043** 2026-09-28 · Claude, proposed (R6): what the app does itself and what goes through the website's server
 - **D-044** 2026-09-29 · Claude, proposed (R7): deploys are manual, CI is the gate
-- **D-045** 2026-09-29 · founder (was Q-20): Cycles close and open on their own; the admin mirrors what happened physically
+- **D-045** 2026-09-29 · founder (was Q-20): Cycles close and open on their own; the admin mirrors what happened physically · SUPERSEDED by D-187
 - **D-046** 2026-09-29 · founder (was Q-9, in part): Vercel until launch; domain and support email at the very end
 - **D-047** 2026-09-29 · founder (was Q-15): Estimates for the pricing settings until the founder's own research
 - **D-048** 2026-09-29 · founder (was Q-18): Express delivery takes 15–18 days
@@ -74,8 +74,8 @@ To change a decision, add a new one (`Supersedes D-xxx`) and mark the old line `
 - **D-061** 2026-10-01 · founder (was Q-29): No brand names
 - **D-062** 2026-10-01 · founder: Horizontal rows everywhere, "See all" opens the full list
 - **D-063** 2026-10-03 · founder: The next cycle's dates come from a "days between cutoffs" setting
-- **D-064** 2026-10-03 · founder: A piece that leaves earlier is first offered as discounted faster delivery
-- **D-065** 2026-10-03 · founder: A payment that lands seconds after the cutoff still joins that cycle
+- **D-064** 2026-10-03 · founder: A piece that leaves earlier is first offered as discounted faster delivery · SUPERSEDED by D-187
+- **D-065** 2026-10-03 · founder: A payment that lands seconds after the cutoff still joins that cycle · SUPERSEDED by D-187
 - **D-066** 2026-10-03 · founder (narrows Q-3): Tracking links for USPS, UPS and FedEx while the carrier is undecided
 - **D-067** 2026-10-06 · founder: Long lists load a page at a time
 - **D-068** 2026-10-06 · Claude, under D-011 (speed is a feature), proposed: speed and concurrency rules from the audit
@@ -112,9 +112,9 @@ To change a decision, add a new one (`Supersedes D-xxx`) and mark the old line `
 - **D-099** 2026-10-09 · Claude, under D-011 (speed is a feature) and D-068, proposed: the second speed audit, after the design pass
 - **D-100** 2026-10-10 · founder: Product photos: the close-up is the real photo; the details say the model photo is AI-generated
 - **D-101** 2026-10-10 · Claude, proposed: The product photo pipeline runs on the founder's GPU, free models only
-- **D-102** 2026-10-10 · founder (was Q-34): Vendors get their own sign-in; the photo pipeline is approved · Supersedes D-018
-- **D-103** 2026-10-10 · Claude, proposed: How vendor accounts and the photo worker are built
-- **D-104** 2026-10-10 · founder: The house models are the founder's own; two poses, two photos
+- **D-102** 2026-10-10 · founder (was Q-34): Vendors get their own sign-in; the photo pipeline is approved · Supersedes D-018 · SUPERSEDED by D-187
+- **D-103** 2026-10-10 · Claude, proposed: How vendor accounts and the photo worker are built · SUPERSEDED by D-187
+- **D-104** 2026-10-10 · founder: The house models are the founder's own; two poses, two photos · SUPERSEDED by D-187
 - **D-105** 2026-10-10 · founder + Claude, proposed: The vendor integration as built; women_black chosen
 - **D-106** 2026-10-11 · founder: A third product type, Home & gifts (amends D-002)
 - **D-107** 2026-10-11 · founder: Spices are introduced on the store
@@ -158,7 +158,7 @@ To change a decision, add a new one (`Supersedes D-xxx`) and mark the old line `
 - **D-145** 2026-10-21 · founder: stay on Vercel's free plan; fewer page-cache writes
 - **D-146** 2026-10-22 · founder: every listing gets a weight, then everything is published; one press each for Weights to check, Drafts and Names to tidy
 - **D-147** 2026-10-22 · founder: new Vercel and Supabase accounts, used within their free limits; a production metrics plan; one tidy set of docs
-- **D-148** 2026-10-22 · founder: 7-day delivery: a page of the quick-delivery shops' pieces, Home's new line, and the first Blinkit batch · its mixed-bag rule (one normal piece makes the whole bag normal) SUPERSEDED by D-154 · Home's line SUPERSEDED by D-161
+- **D-148** 2026-10-22 · founder: 7-day delivery: a page of the quick-delivery shops' pieces, Home's new line, and the first Blinkit batch · its mixed-bag rule (one normal piece makes the whole bag normal) SUPERSEDED by D-154 · Home's line SUPERSEDED by D-161 · SUPERSEDED by D-187
 - **D-149** 2026-10-23 · founder: the sourcing runner rests a shop that blocks it · its rests SUPERSEDED by D-158 (knowing a robot check stays)
 - **D-150** 2026-10-23 · founder: the 7-day targets search all four quick shops (answers Q-43)
 
@@ -226,7 +226,7 @@ What it means for the build (`PAGES_PER_HOUR`, `paceWaitMs`, `retryAfterMs` in
 *Interpretation (proposed, confirm when convenient):* the limits are Claude's, from the log; they can be raised for a
 shop that keeps answering.
 
-**D-154 · 2026-10-23 · founder (was Q-41): 7-day delivery is its own store; one bag, two shipments from $49.99; Shipping at $18.62 a billed kg**
+**D-154 · 2026-10-23 · founder (was Q-41): 7-day delivery is its own store; one bag, two shipments from $49.99; Shipping at $18.62 a billed kg** · its store and its $49.99 line SUPERSEDED by D-187
 Supersedes D-148's mixed-bag rule and the Shipping top-up of D-125 / D-126 (and D-140's display-only struck figure).
 - Founder, verbatim (approving `7-day delivery study and build plan.md`, 23 Oct 2026, by @Jollwin): "Now read this
   design carefully and design this into our existing website without breaking any code."
@@ -453,7 +453,7 @@ What it means for the build (Claude's design, awaiting the founder's look):
 - What is recorded stays as before (the words and the number found, no person); in addition the words a search was
   answered with after a fix, and whether only some words matched (counted with the searches that found nothing).
 
-**D-161 · 2026-10-26 · founder: the homesick design: the wait becomes the proof; every promise rides on what the page already has** · Supersedes D-079's and D-148's Home line · its tab dates, festival line, India time, Where's home, postmarks, diary lines, away tab title and joke copy SUPERSEDED by D-166
+**D-161 · 2026-10-26 · founder: the homesick design: the wait becomes the proof; every promise rides on what the page already has** · Supersedes D-079's and D-148's Home line · its tab dates, festival line, India time, Where's home, postmarks, diary lines, away tab title and joke copy SUPERSEDED by D-166 · its 7-day parts SUPERSEDED by D-187
 Founder, verbatim: "If we don't standout then why will people use our website, providers are already selling to people there in 1 hour delivery, 1 day delivery but we are selling in 7-day or 12-16 days. So we have to target the homesickness emotion, we have to show them the product is coming directly from indian shops directly to their door, so that they buy on monday and they will know it that it is coming on the weekend so that they won't have to go out. We don't have to overkill or fill the whole website or distract the user or make it a blogging page but We have to fill their subconscious with these thing like 7 days shipping from india directly to your door, no tariffs, no shipping over 49.99 in 7 day store, no shipping over 99.99 and door delivery. Introduce new ideas, be very creative about these things, we have to fight with these static website, think outside of the box, not just these points but generate your own new points and be very creative about them. I am giving you the whole plan for this whole design."
 With it the founder handed over "IWC: the homesick design plan" (Oct 26, kept as `docs/archive/plan-homesick.md`): its
 seven settled decisions (shops said in general, never named; the diary in plain steps; "Duties paid. Nothing to pay
@@ -622,7 +622,7 @@ What it means for the build (`tools/photo-worker/iwc_worker/faceswap.py`, `redo_
 *Claude's choices in it (proposed, confirm when convenient):* HyperSwap over inswapper (sharper; inswapper kept a bindi
 more often and stays behind `--swapper inswapper`); `redo.py --again` keeps the photos the founder approved.
 
-**D-166 · 2026-10-30 · founder: faster cards and endless scroll; the tabs say only "IWC" and "7-day store"; the homesick design told in pictures, not text** · Changes D-161, D-136's Show more, D-154's tabs
+**D-166 · 2026-10-30 · founder: faster cards and endless scroll; the tabs say only "IWC" and "7-day store"; the homesick design told in pictures, not text** · Changes D-161, D-136's Show more, D-154's tabs · its 7-day parts SUPERSEDED by D-187
 Founder, verbatim: "The design is better but a lot of code broke internally without showing any errors and passing all the tests, a lot of inconsistencies, a lot of AI slop got introduced our website looked 'made without AI' before. Also the functioning got worse, Now when I load and click + on any product it takes so long, when I click + for a multi varient product its weight shower takes so long, The load more issue again, it takes the user back to top and it takes so long to load more products, let's do this instead as soon as the user screen bottom reaches on row above the load more, it is already triggered, so the user gets an illusion of never ending scroll until the inventory runs out and if the user reaches ther first show a loading icon only, the stores name should be IWC and 7-day store only no subtext on the top tabs. The free delivery bar comes so late after adding a product. Now coming to design, When I said I want it to look like it is coming from India I didn't mean I want it to fill it with whole lots of texts and AI slop cues. I want it visually I want you to generate ideas of your own, ideas that are very very creative and out of the box, something like a plane flying from india to us carrying a banner of diwali or free delivery on 49.99 I want to make the website more visual rather than AI slop. You don't have to generate images just leave a placeholder there and I will fill. I want to modify and make the 7 day store as visually powerful as IWC look right now, 7 day store is just filled with text although the sections are perfectly named."
 What it means for the build (2026-10-30, website; not deployed):
 - **The +:** a several-option card's options are read while it comes near the screen, every card in that moment in one
@@ -936,7 +936,7 @@ given (no conversion).
     same rule. Claude does not write to the hosted database: the founder runs `scripts/stock-every-live-piece-to-10.sql`
     once in Supabase's SQL editor. The sourcing runner's next shop check sets stock from the shops again (D-118).
 
-**D-181 · 2026-11-03 · founder: the 7-day store inside every state's Food and Home & gifts; a state's own pieces first**
+**D-181 · 2026-11-03 · founder: the 7-day store inside every state's Food and Home & gifts; a state's own pieces first** · its 7-day parts SUPERSEDED by D-187
 - Founder, verbatim: "Now the priority is that 7 days store should be available everywhere on each state's food and home
   decor like a strip in between(like finishing touches on clothing)(but just enough to reach the 7 day page like a CTA or
   like a horizontal row with some products) second was goa was not showing food, neither are state's pages showing
@@ -980,7 +980,7 @@ given (no conversion).
   - After Diwali the poster's headline is out of date: Q-60. "Host your Diwali under $99" also still shows in the Diwali
     night further down the page (D-179), kept as it was.
 
-**D-183 · 2026-11-04 · founder: Home's hero becomes the 7-day store's poster; no "$99" on the first screen; shorter windows on phones** · Supersedes D-182's poster offer, its 7-day row and its "about" line (D-182's one-screen rule and 160 KB budget stay)
+**D-183 · 2026-11-04 · founder: Home's hero becomes the 7-day store's poster; no "$99" on the first screen; shorter windows on phones** · Supersedes D-182's poster offer, its 7-day row and its "about" line (D-182's one-screen rule and 160 KB budget stay) · its 7-day parts SUPERSEDED by D-187
 - Founder, verbatim: "This is strictly regarding the frontend hero section. Mostly are on phone webapps, People are clicking off because it is too much text and high 99$ prices, So I am suggesting changes : we should remove the host your diwali banner because it is already under global grid, think of something creative something out of the box, use the power of vocabulary, some CTA for the 7-day store showing $49.99 we gotta change the "Host your Diwali under $99 SHOP UNDER $99" Also the window banners are looking too stretched in mobile view, we need to remove the 7 day store part from hero section bottom and show it on headline somehow, keep the Indian wholesale club part as it is but remove the subtext, these were just suggestions, you should be very creative about them and redesign our hero section."
 - What it means:
   - **The poster is the 7-day store's front door.** "Host your Diwali under $99." and "Shop under $99" leave the hero
@@ -1005,7 +1005,7 @@ given (no conversion).
     beside "7 days" would read as a promise. Alternatives kept in that file.
   - Q-60 narrows: only the picture's Diwali look dates after Nov 8, not its words.
 
-**D-184 · 2026-11-04 · founder: the hero keeps the poster's lettering and its Diwali date; no seal; the $49.99 under a smaller button** · Changes D-183's kicker, headline font, seal and button
+**D-184 · 2026-11-04 · founder: the hero keeps the poster's lettering and its Diwali date; no seal; the $49.99 under a smaller button** · Changes D-183's kicker, headline font, seal and button · its 7-day parts SUPERSEDED by D-187
 - Founder, verbatim: "Perfect, it's just that the font before was the final one and instead of the 7 day store write diwali. Sun, nov 8 like it was before, the stamp disturbs whole miniimilism, rest it good just let's try to show the 49.99 in some other way, maybe the CTA button or something else? also make the cta pill smaller."
 - What it means:
   - **The kicker is the Diwali date again,** "Diwali · Sun, Nov 8" with the hairline under it, from `diwali-hooks.ts` as in
@@ -1020,7 +1020,7 @@ given (no conversion).
   - *Interpretation (proposed, confirm on the live site):* with the date over "From India to your door in 7 days.", a
     shopper may read it as arriving by Diwali; an order placed from Nov 2 lands after Nov 8. The words do not promise it.
 
-**D-185 · 2026-11-04 · founder: the hero in the poster's own fonts; the button is the free line** · Changes D-184's fonts and button
+**D-185 · 2026-11-04 · founder: the hero in the poster's own fonts; the button is the free line** · Changes D-184's fonts and button · its 7-day parts SUPERSEDED by D-187
 - Founder, verbatim: [an image: a table of the poster's fonts: "Host your" / "under $99": Cormorant Garamond · "Diwali" (italic): Cormorant Garamond Italic · "Indian Wholesale Club": Cormorant Garamond · Description text: Inter or Montserrat · "DIWALI · SUN, NOV 8": Montserrat Medium, letter-spaced · "SHOP UNDER $99": Montserrat SemiBold, letter-spaced] "put the fonts as stated(Although the references are old but the fonts stay the same), then this is just too much text so remove bring it home and put free delivery line into the CTA. And then give me a lot of ideas very very creative for the header line."
 - What it means:
   - **Fonts, in the hero only:** Cormorant Garamond 500 for the headline and "Indian Wholesale Club" (was Lora and
@@ -1036,9 +1036,17 @@ given (no conversion).
   - The headline ideas asked for were answered in the conversation; the headline stays "Mithai. Masala. *Memories.*"
     until the founder picks another (`hero-words.ts`).
 
-**D-186 · 2026-11-04 · founder: the hero says the 7 days and the $49.99 line are for food**
+**D-186 · 2026-11-04 · founder: the hero says the 7 days and the $49.99 line are for food** · its 7-day parts SUPERSEDED by D-187
 - Founder, verbatim: "Make a small change we have to show that we are only delivering food in 7 days and on food only 49.99, so add a small(on food) and rest is good push all the commits then I will run the deploy, also e2e failed"
 - What it means: the days line reads "From India to your door in 7 days (on food).", "(on food)" small (`hero-words.ts`),
   only while the 7-day store is open. *Interpretation (proposed):* one "(on food)" right over the button covers both; the
   button keeps "Free delivery from $49.99", since adding it there too widened the button onto the woman's arm on a phone.
   The rules themselves (Settings, the bag) are unchanged.
+
+**D-187 · 2026-11-04 · founder: Simple store: one store, food 7 and the rest 12 – 16 business days, free shipping from $49.99; no 7-day store, vendors, cycles, payouts or house-models table** · Supersedes D-005, D-008's cycle half, D-045, D-064, D-065, D-102 – D-104, D-148, D-154's store and line, and the 7-day parts of D-161, D-166, D-181, D-183 – D-186
+- Founder, verbatim: "I have been adding on and on as soon as I got ideas and building up this website, but I forgot the most important part clearing up that clutter and mess that I left behind. Therefore Make a very smart removal plan which My subagents will perform. The Honest truth about this website is that we buy from online webstores and resell it on our website providing faster shipping and very efficient interface. Now we will clear all the clutter and make a very simple interface. We will remove the 7-day store, We will remove the entire concept of shops and vendors and everything related to that, no cycles, no payouts, no house models. We will simply show that clothing takes 12-16 delivery days and food takes 7 delivery days to arrive. Then we will define the defination of delivery days in somewhere in faqs, delivery days is considered as the business working days except for the delays of flights. We will remove the concept of 99.99$, we will give free shipping over 49.99$ on everything. rest of it I want to keep the same, just remove the 7 day store page and put the categories exactly as they are under the global grid, then diwali banner then what everyone missed this week then the kirana counter then the just listed clothing then home decor. Just keep everything simple so we don't hit the limits anymore. keep everything light, so everything loads fast and efficiently while giving the customer a seamless experience"
+- The same day, to Claude's questions: Home & gifts delivery: "12–16, like clothing". Faces on new clothing photos: "We still want new clothing to have a model to replace with", the models live as "Folders on the laptop only". Old tables: "Drop them in the same release". Home order: "Yes, keep map and band at end" ("global grid" = Home's drifting photo mosaic; Just listed Food goes because the two food rows cover it). Bulk saving and heavy-item 20% off: "Keep them at $99.99" (only shipping moves to $49.99).
+- The founder's answers to the plan's §10, verbatim: "1. Remove express option. 2. yes 3. show it at checkout and also show which product is unavailable and give a remove option. 4. yes 5. Just use the term "delivery days" and quietly explain it in faqs, so you can easily promise using this term and it will still be valid, It basically defines that an order can be delayed due to flight delay. 6. yes. 7. no 8. yes 9. yes no need to load 10. remove it because the payment is already made 11. yes 12. no 13. yes 14. move to archive now but keep track of what was done before in short. 15. We'll see it after diwali leave as is."
+- What it means: the contract is `docs/simple-store-plan.md` §1, §2 (what stays) and §10. A delivery day is a working day, Monday to Friday, counted from the order day; flight delays are not part of the promise. Food 7 delivery days; clothing and home & gifts 12 – 16; a bag with both always ships in two shipments; free shipping from $49.99 on every bag; bulk saving and the heavy-item discount from a new setting at $99.99 (money unchanged); no Express; store pages say "delivery days" and no calendar date, checkout and the order page keep the order's estimated window; stock is checked at checkout instead of live on product pages. Existing orders keep their promised dates (INV-6).
+- *Interpretation (the plan's §7 defaults, used because the founder gave no other answer; confirm before release):* the packing list and commercial invoice go with the Cycle pages (invoices A/B/C per order stay); every food listing promises 7 delivery days, including food bought from slower shops; US public holidays count as delivery days; food that cannot reach the hub fast enough stays live.
+- Release, the founder (2026-11-04): the migrations waiting for the Deploy workflow ship in the same release as this one.
