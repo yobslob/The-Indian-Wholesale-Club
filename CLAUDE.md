@@ -7,25 +7,25 @@ Rules cite decision IDs (`D-xxx`, index in `docs/decisions.md`).
 - A US storefront (web + Android app, iOS later; one Supabase backend) for Indians in the US and Americans who love India,
   who miss home. [D-001] The customer picks one of India's **36 regions** (states and UTs, shown alike) and buys its
   **clothing, food and home & gifts**. [D-002, D-106, D-110]
-- **Live since 2026-10-06, real orders since mid-October (pilot, made to order):** listings are imported from Indian
-  online shops (Myntra, Amazon India, Blinkit…) by the admin's importer and the sourcing runner; a sold piece is
-  ordered to the hub (1–10 days) and flown to the US (8–11 days). Prices follow the shop's price by the founder's
-  beta rules. [D-110, D-115, D-118, D-128]
-- **Target (retailer model):** shops in India are signed up, list their pieces (vendor accounts), orders are collected
-  from them and exported together every 20–23 days. [D-005, D-102]
+- **We buy from Indian online shops and resell (live since 2026-10-06, made to order):** listings are imported from them
+  (Myntra, Amazon India, Blinkit…) by the admin's importer and the sourcing runner; a sold piece is ordered to the hub
+  (1–10 days) and flown to the US (8–11 days). Prices follow the shop's price by the founder's beta rules. Food takes 7
+  delivery days, the rest 12 – 16; free shipping from $49.99. [D-110, D-115, D-118, D-128, D-187]
+- **The simple store (D-187) is built on branch `cleanup/simple-store` and not released until the founder runs
+  `docs/release-simple-store.md`:** `docs/status.md` says what is live today.
 - Two operators: the **founder** (US side) and the **COO** (India side). [D-007]
 - **Hosting (D-147):** a new Vercel account (Hobby) and a new Supabase project (free) since 2026-10-21/22, photos in
   Cloudflare R2. The first accounts hit their free limits; every limit now has a budget (`docs/monitoring.md`). Any
   change that adds page-cache writes, database size or egress says so in its commit.
 
 ## Non-negotiables (stop and ask before breaking one)
-1. **No operations info on any customer surface:** no shops, sources, pickups, payouts, weights or India logistics in
+1. **No operations info on any customer surface:** no shops, sources, pickups, weights or India logistics in
    pages, the app, emails, API responses or page source. IWC is the seller. [D-003, D-017]
 2. **Honest origin:** show "Made in India" and the state when the listing has one (an all-India listing has none);
    never invent or mask where goods come from. [D-004, D-121]
 3. **Invisible admin:** no links or hints; access checked on the server (role + email allowlist). [D-006]
-4. **Delivery dates come from cycle data**, or in the made-to-order pilot from its delivery days in Settings; never
-   hard-coded. [D-008, D-115]
+4. **Delivery dates come from Settings' food and standard delivery days, counted in business days (D-187); never
+   hard-coded.** [D-008]
 5. **Money is an integer:** USD in `*_cents`, INR in `*_paise`. Prices: never change the pricing rules unasked. [D-128, D-140]
 6. **Speed and free limits are features:** read `docs/engineering.md` §Performance before adding a query, dependency
    or client component, and `docs/monitoring.md` §1 before anything that refreshes pages or reads in bulk. [D-011, D-145]
@@ -42,24 +42,25 @@ should be; report a mismatch instead of picking a side. "Done/works/fixed" needs
 | where things stand, what's next, last verification | `docs/status.md` (short) |
 | what IWC is, the words to use (glossary) | `docs/product.md` |
 | schema, queries, RLS, seed | `docs/data-model.md` (+ the migration itself) |
-| cycles, orders, pickups, stock, payouts | `docs/flows.md` |
+| orders, buying from the shops, shipping, stock | `docs/flows.md` |
 | customer pages (web or app), brand, voice, tokens, motion | `docs/storefront.md` |
-| admin (web or app), importing, auto-sourcing, vendor accounts | `docs/admin.md` |
+| admin (web or app), importing, auto-sourcing | `docs/admin.md` |
 | prices, fees, every pricing number and where it is set | `docs/pilot-numbers.md` |
 | performance, tests, tooling, code style | `docs/engineering.md` |
 | accounts and limits, env vars, deploy, DB, the founder's tools, legal | `docs/ops.md` |
+| releasing the simple store | `docs/release-simple-store.md` |
 | production metrics, budgets, health checks, failure playbook | `docs/monitoring.md` |
 | why a rule exists | `docs/decisions.md` (index + recent in full) |
 | a decision's full text, old plans ("plan F10" = `docs/archive/plan-design-v6.md`), history | search in `docs/archive/` (not read otherwise) |
 
 ## Repo map
-`apps/web` Next.js store `app/(store)` + hidden admin `app/admin` + vendor `app/vendor`, code in `features/` ·
-`apps/app` Expo app · `packages/shared` pure logic (`domain`, `sourcing`, `info`, `vendor`) · `packages/db` typed
-queries (`store`/`account`/`admin`/`server`/`vendor`) · `packages/tokens` design tokens · `supabase/` migrations, seed,
+`apps/web` Next.js store `app/(store)` + hidden admin `app/admin`, code in `features/` ·
+`apps/app` Expo app · `packages/shared` pure logic (`domain`, `sourcing`, `info`) · `packages/db` typed
+queries (`store`/`account`/`admin`/`server`) · `packages/tokens` design tokens · `supabase/` migrations, seed,
 SQL tests · `scripts/` (`check.mjs` = verification, `docs-audit.mjs`, the founder's one-off and ops scripts) ·
 `tools/` the founder's machines: `sourcing-runner` (India PC), `weight-estimator` (laptop GPU), `photo-worker` (GPU) and `photo-redo` (every listing's photos made again, D-163) ·
-`catalogue/` the demo catalogue behind the local seed. `design/` (mockups the dev scripts still read) and
-`docs/archive/` are history; `.ignore` keeps them out of searches.
+`catalogue/` the demo catalogue behind the local seed. `docs/archive/` is history; `.ignore` keeps it out of searches. The
+old mockups left the repo: `C:\kod\iwc-removed-2026-11-04\design.zip`.
 
 ## Working here
 - Repo `C:\kod\root` (Windows 11, Docker Desktop, pnpm 9). Verify with `node scripts/check.mjs` (all, ~5 min) or

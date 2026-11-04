@@ -53,7 +53,7 @@ A number past its **budget** is a warning (look for the cause that week); past t
 ## 4. The rhythm
 - **Every day (automatic):** the uptime ping; Today's attention panel when an admin opens the panel.
 - **Every Monday, 15 minutes (the founder):** the §1 numbers (Vercel Usage, Supabase Usage and Reports, R2 Metrics,
-  GitHub Billing) written into the table at the end of this page; Admin → Today; Products tabs counts; queries A – G
+  GitHub Billing) written into the table at the end of this page; Admin → Today; Products tabs counts; queries A – H
   in Supabase's SQL editor. Anything past a budget: tell Claude with the number and the screen.
 - **Every month (first Monday):** `pnpm photos:redo audit` on the laptop (read-only; lists R2 by folder and the listing
   photos no listing shows; if any, `pnpm photos:redo audit --delete` removes those over a day old);

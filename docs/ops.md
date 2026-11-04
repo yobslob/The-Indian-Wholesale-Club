@@ -287,7 +287,7 @@ its README says how they run). `tools/photo-worker/.env` is unused.
 Every listing's photos made again on the laptop: `tools/photo-redo/README.md` (fetch, make, review, publish, and the R2
 audit). Once: run the Deploy workflow (migration `20261102090000_photo_redo`), give the laptop the sourcing runner's
 `.env` (or `tools/photo-redo/.env` with the same keys). **The models are only folders on the laptop (D-187):**
-`C:\kod\iwc-photo-models\house-models\` (`IWC_MODELS`), `w-1\front.jpg` … for women, `m-1\front.jpg` … for men, `_…` set aside. To add a
+`C:\kod\iwc-photo-models\house-models\` (`IWC_MODELS` is the folder above it), `w-1\front.jpg` … for women, `m-1\front.jpg` … for men, `_…` set aside. To add a
 model, add a folder with `front.jpg`; to remove one, remove its folder; any other name is skipped with a warning. With no usable
 model, `redo.py --type clothing` stops before touching the work folder. Start with `--limit 30` per type and look at the review page.
 
