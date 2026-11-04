@@ -1,8 +1,8 @@
-# Admin: hidden web panel, app admin mode, vendor accounts
+# Admin: hidden web panel and app admin mode
 
 Users: founder (US desk) and COO (India desk), both `role = 'admin'` with the same access (D-007, D-027).
-Vendors' owners have their own sign-in to upload their pieces (D-102, built V1 – V6, §Vendor screens); every vendor upload
-waits for an admin. Pilot listings are imported from online shops (D-110, §Import from shops).
+Listings are imported from online shops (D-110, §Import from shops) and by the sourcing runner (D-118, §Auto-sourcing).
+Vendor screens, cycles, payouts and the rest that went with D-187: `docs/archive/retired-2026-11-simple-store.md`.
 
 ## Access model (D-006)
 **Web**
@@ -21,7 +21,7 @@ waits for an admin. Pilot listings are imported from online shops (D-110, §Impo
 **App** (built in R6: `apps/app/app/admin/`)
 - One app for everyone and one sign-in screen. After sign-in, the app asks the database `is_admin()` (role **and** email
   in `admin_emails`, `apps/app/lib/session.tsx`). The phone never decides this itself.
-- Only if the server says yes does it mount the admin navigator (since B8, D-097: Today · Orders · Cycle · Listings · More) in
+- Only if the server says yes does it mount the admin navigator (Today · Orders · Listings · More, D-097, D-187) in
   place of the customer tabs; anyone else opening `/admin` is sent to the store. The admin's Today screen has "View the
   store"; the Profile tab then shows "Back to admin", rendered only for that server-confirmed admin.
 - Admin screens are bundled in the app binary (mobile apps can't hide code), so all protection is server-side, as on the web (D-043):
@@ -31,40 +31,35 @@ waits for an admin. Pilot listings are imported from online shops (D-110, §Impo
   changes (stock after a pickup, a confirmed quantity) within the 5-minute cache fallback (`engineering.md` PR-1).
 
 ## Desks (D-007)
-`profiles.desk` orders Today (C7): the admin's own desk's jobs first (India: pickups, payouts, drafts, re-checks; US:
-confirmed orders, orders to ship), the other desk's below. Both admins can open every section (D-027). Today also shows
-new orders and order status changes live (Supabase Realtime on `orders`, PR-7), website and app, and a "Needs
-attention" card when there are recent server errors, payments to check or stuck customer emails (B-8). App admin
-writes refresh the website's store pages at once (`POST /admin/revalidate`, B-17).
+`profiles.desk` orders Today (C7): the admin's own desk's jobs first (India: food shipments, pieces to order, on the way, to
+weigh, prices held, drafts, re-checks; US: orders to ship, returns), the other desk's below. Both admins can open every
+section (D-027). Today also shows new orders and order status changes live (Supabase Realtime on `orders`, PR-7), website
+and app, and a "Needs attention" card when there are recent server errors, payments to check, open disputes or stuck
+customer emails (B-8). App admin writes refresh the website's store pages at once (`POST /admin/revalidate`, B-17).
 
 ## Sections (web skeleton since R5: working screens on real data, plain styling)
 | Section | Job | Main desk | Web | App |
 |---|---|---|---|---|
-| **Today** | what needs doing now: pickups due, stale listings, payouts due / exports to receive, orders to ship, delay warnings | both | ✓ | ✓ |
-| **To order** (D-140) | `/admin/to-order`: every sold piece of a paid, open order not yet ordered from its shop, one card per shop, oldest first, with the shop item in use (the variant's source, D-118), its price at sale and now, stock and delivery days; **Order all from this shop** (Amazon's add-to-cart link, a Shopify shop's `/cart/` link; other shops open each piece) and **Mark all ordered** (one shop order number and one bill for the lot, what was paid per piece). Tabs **On the way to the hub** (At the hub with its weight, or Not ordered after all) and **At the hub, to weigh** (D-130). **7-day pieces come first** in their own lane, each with "buy in …" (2 hours from the order, red once late) and "ship in …" (the next day) (D-154). The card answers at once and comes back with a line if the server refuses | India | ✓ | ✓ (Order it online / Mark ordered on the order screen) |
-| **Vendors** | onboard a shop in about a minute (name, owner, phone/WhatsApp, region, payment method, licences, photo), history; its vendor accounts with the one-time QR / link, the screens' language, switch off (D-102); "Join as a vendor?" requests | India | ✓ | ✓ |
-| **Listings** | add products with the camera (`flows.md` §2), confirm quantities, drafts → live | India | ✓ (incl. the re-check list) | ✓ (new listing with the camera, publish, confirm qty; 50 with "Show more", D-067) |
-| **Cycles** | current cycle timeline and dates, cutoff, per-shop pickup checklists, packing list + commercial invoice export, export/arrival | both | ✓ (closes and opens by itself, D-045; dates corrected on the cycle; orders moved in, confirmed as shipped (D-064); export details; arrival check-off; packing list + commercial invoice (print/PDF and CSV; Q-30 fields marked)) | ✓ (pickups, cutoff, next step, arrival check-off) |
-| **Payouts** | payable per vendor, record payouts | India | ✓ | ✓ |
-| **Orders** | all orders, detail + internal timeline, pack & ship once arrived (carrier with tracking link, D-066), refunds, delay notices, move to another cycle (D-045) | US | ✓ | ✓ (pack & ship) |
+| **Today** | what needs doing now: the food watch (food shipments not bought within 2 hours, not shipped by the next day), pieces to order, on the way, to weigh, prices held, drafts, stale listings (always shown since D-187; the pilot hid them), orders to ship, returns, payments to check, disputes | both | ✓ | ✓ |
+| **To order** (D-140) | `/admin/to-order`: every sold piece of a paid, open order not yet ordered from its shop, one card per shop, oldest first, with the shop item in use (the variant's source, D-118), its price at sale and now, stock and delivery days; **Order all from this shop** (Amazon's add-to-cart link, a Shopify shop's `/cart/` link; other shops open each piece) and **Mark all ordered** (one shop order number and one bill for the lot, what was paid per piece). Tabs **On the way to the hub** (At the hub with its weight, or Not ordered after all) and **At the hub, to weigh** (D-130). **Food comes first** in its own lane, each piece with "buy in …" (2 hours from the order, red once late) and "ship in …" (the next day) (D-154, D-187). A piece with no site groups under "Shop not known". The card answers at once and comes back with a line if the server refuses | India | ✓ | ✓ (Order it online / Mark ordered on the order screen) |
+| **Listings** | `/admin/listings`: the Re-check tab, live variants not re-confirmed within the stale-listing days, 50 at a time. New listings come from the importer and the runner (plan §10 Y-4: no camera, no New listing, no Add many); a listing's own page edits it. Drafts are under Products | India | ✓ | ✓ (Drafts / Live / Paused; a listing's screen publishes, pauses and confirms pieces) |
+| **Orders** | all orders, detail + internal timeline, pack & ship (carrier with tracking link, D-066), refunds, delay notices | US | ✓ | ✓ (pack & ship) |
 | **Regions** | edit and approve region content (greeting and its script, tagline, story, accent, image, `is_live`; changing approved text sends it back to draft, enforced in the database); the main photo uploads to `product-media/regions/<slug>/`; album photos (each with alt text, removable) to `regions/<slug>/album/` (`region_photos`, D-051); an accent below WCAG AA on the page backgrounds is refused | both | ✓ | — |
 | **Home photos** | D-169: the only photos in Home's drifting mosaic (`home_photos`, up to 60): choose many at once, each with its line (alt text, started from the file's name), uploaded one by one to `product-media/home/album/` (8 MB each); the grid is Home's own layout: drag a photo onto another tile or move it earlier, later, first or last, then Save order; change a line or remove a photo (its files too); Home's cache entry refreshed once per batch | both | ✓ | — |
-| **Catalog** | products, categories, prices, bulk edits; a product's **Heavy-item shipping** yes/no (D-155: priced on half its weight, the other half added in the bag; every home piece named a cooker starts as yes); Settings → Bag charges has its % off from the line (20); a product's state may be empty (All states, D-121; the import form offers it); **filters** within every tab (type, state or All-India, category, shop, a US price range, sort: recently updated, newest added, price both ways, name; a select applies at once without a page load, D-136); **Categories to check** (D-159: `/admin/catalog/categories`): food and home listings whose names plainly say another category of their type, with that category ticked and changeable (Move the ticked), and the ones not their type at all (pet food, hair oil, rakhis, Mysore pak under Home & gifts) to archive; the sourcing runner skips such results; **Names to tidy** (D-140, L1: `/admin/catalog/names`): imported clothing and home listings whose names still carry
+| **Catalog** | products, categories, prices, bulk edits; a product's **Heavy-item shipping** yes/no (D-155: priced on half its weight, the other half added in the bag; every home piece named a cooker starts as yes); Settings → Bag charges has its % off from the $99.99 line (20); a product's state may be empty (All states, D-121; the import form offers it); **filters** within every tab (type, state or All-India, category, shop (`source_site`, the shops of `sourcing_shops`), a US price range, sort: recently updated, newest added, price both ways, name; a select applies at once without a page load, D-136); **Categories to check** (D-159: `/admin/catalog/categories`): food and home listings whose names plainly say another category of their type, with that category ticked and changeable (Move the ticked), and the ones not their type at all (pet food, hair oil, rakhis, Mysore pak under Home & gifts) to archive; the sourcing runner skips such results; **Names to tidy** (D-140, L1: `/admin/catalog/names`): imported clothing and home listings whose names still carry
 a brand or shop (guessed per shop from a start three names share, or a leading all-capital name; never a count, a
 material or a product word, nor words that also turn up inside other names), beside IWC's name for them, each editable
 and ticked; Rename keeps the old name as the shop title (admin only); **Rename all** (D-146) renames every proposal on every page, 250 a batch; a name that would be only a shop word ("Collections") is never proposed. D-143: only the brand or shop goes, every other
 word stays; a name the first D-140 rules cut down is made again from the shop's title. New imports and the runner name
-pieces this way from the start (`cleanTitle`); food keeps its brand (D-139). **For** (D-140): who a clothing piece is for, a filter (with "not set yet") and a picker in each row that saves at once; the new-listing form, Add many (per batch) and the importer (pre-filled from Myntra's gender or the name) ask for it, and a clothing listing cannot go live without it; **Download Excel** (every tab: name, Indian price, category, weight, US price and margin of that view, its filters included, D-128, D-136); a **Weight** column and the **Weights to check** tab (options with no weight, a matching item's, one recorded before sources were kept, an unusual one for the category, or a shop's weight the weight estimator doubts; weigh it or type it per option or for all sizes at once, the box already holding the estimator's suggestion; a listing goes live only when every option has its weight, D-129, D-131); **Publish all drafts** on the Drafts tab (D-120, D-146: first gives every option without a weight one, as Assign all does, then publishes every draft with a photo, an option and a piece to sell, 400 a batch; it says how many went live, what held the rest and how many still lack details customers see) and **Archive the drafts that can't go live** (no photo, no active option or nothing to sell; nothing is deleted), so Drafts holds only the next batch; **Assign all and publish** on Weights to check (D-146: clothing by class, food by its label, the rest the middle weight of the 7 most similar pieces weighed before, else the category's usual weight, marked Estimated; every weight the tab shows accepted; then Publish all drafts; batches of 40 listings with the count on screen); "Curated for you" picks per product (D-056); product photos (upload with alt text, main photo, remove) to `product-media/products/<id>/`; the pager (D-140) | both | ✓ | — |
+pieces this way from the start (`cleanTitle`); food keeps its brand (D-139). **For** (D-140): who a clothing piece is for, a filter (with "not set yet") and a picker in each row that saves at once; the importer (pre-filled from Myntra's gender or the name) asks for it, and a clothing listing cannot go live without it; **Download Excel** (every tab: name, Indian price, category, weight, US price and margin of that view, its filters included, D-128, D-136); a **Weight** column and the **Weights to check** tab (options with no weight, a matching item's, one recorded before sources were kept, an unusual one for the category, or a shop's weight the weight estimator doubts; weigh it or type it per option or for all sizes at once, the box already holding the estimator's suggestion; a listing goes live only when every option has its weight, D-129, D-131); **Publish all drafts** on the Drafts tab (D-120, D-146: first gives every option without a weight one, as Assign all does, then publishes every draft with a photo, an option and a piece to sell, 400 a batch; it says how many went live, what held the rest and how many still lack details customers see) and **Archive the drafts that can't go live** (no photo, no active option or nothing to sell; nothing is deleted), so Drafts holds only the next batch; **Assign all and publish** on Weights to check (D-146: clothing by class, food by its label, the rest the middle weight of the 7 most similar pieces weighed before, else the category's usual weight, marked Estimated; every weight the tab shows accepted; then Publish all drafts; batches of 40 listings with the count on screen); "Curated for you" picks per product (D-056); product photos (upload with alt text, main photo, remove) to `product-media/products/<id>/`; the pager (D-140). **Names to tidy and Rename all stay until production's count is 0** (plan Y-11: the founder's call) | both | ✓ | — |
 | **Reviews** | approve or reject customer reviews before they appear (D-052, D-056); "verified buyer" is set by the database | both | ✓ | — |
 | **Customers** | customer list, orders per customer | US | ✓ | — |
 | **Promotions** | promo codes (kept from the old admin) | US | ✓ | — |
-| **Insights** | sales by state, category and shop (with what the shops were paid), for 30 days, 90 days or all time; searches that found nothing (what to list next; since D-160 also those that found only some of their words), top searches, most saved pieces; D-160: **found after a spelling fix** (the customer's words search read as the nearest listed word) with **Add … = …** (web only), which makes the customer's word a synonym (`admin_add_synonym`); D-154: **7-day delivery**: orders with a 7-day shipment and split ones, where the 7-day pieces stop against the $49.99 line, on time per kind of shipment against the date promised at order (late ones with their notice sent first, ones still open past their day), 7-day pieces refunded as unavailable, the split's extra courier cost. Real numbers only, computed in SQL (`admin_sales`, `admin_demand`, `admin_quick_insights`, `admin_search_fixes`) | both | ✓ | — |
-| **Vendor pieces** | pieces vendors sent (D-102, D-103): their real photos, the AI candidates per pose, pick, name, care, price (empty = from the shop price), publish; or make a pose again on another model, ask for new photos, decline (§Vendor screens) | both | ✓ | — |
-| **House models** | the founder's models (D-104): front and back pose each, switch on / off | both | ✓ | — |
-| **Settings** | pricing settings, each estimate labelled with its source and date until the founder saves their own (D-047); the pilot price's two recipes, the courier rate card, the profit guard, the bulk saving and the small-food shelf ($1.99 – $3.99, D-120), with a **profit check** under them that reprices sample pieces and bags as the numbers are typed (web, D-119); **7-day delivery: Pause / Switch back on** (D-154: paused, no 7-day tags, page or split; placed orders keep their dates) (admins are managed in the DB + `ADMIN_EMAILS`, `ops.md`) | both | ✓ | — |
+| **Insights** | sales by state, category and shop (the shop is the site, `products.source_site`), for 30 days, 90 days or all time; searches that found nothing (what to list next; since D-160 also those that found only some of their words), top searches, most saved pieces. Searches are kept for 90 days (`iwc-tidy`, plan Y-13), so the search section says so; sales come from orders and keep All time; D-160: **found after a spelling fix** (the customer's words search read as the nearest listed word) with **Add … = …** (web only), which makes the customer's word a synonym (`admin_add_synonym`). Real numbers only, computed in SQL (`admin_sales`, `admin_demand`, `admin_search_fixes`) | both | ✓ | — |
+| **Settings** | one list (`features/admin/settings-fields.ts`, `pilot-numbers.md`): Prices, Bag charges (Free shipping from, Bulk saving and heavy-item discount from), Delivery (food and clothing/home delivery days, "business days"; Already in the US, calendar days), After the sale, Listings. A save writes only what changed, and an unchanged form refreshes no store page (admins are managed in the DB + `ADMIN_EMAILS`, `ops.md`) | both | ✓ | — |
 
-**The order page (D-140):** each piece says where it stands (To order → Ordered → At the hub → In the US; a shop's piece
-in a cycle reads To pick), with **Order it ↗** (the shop item in use) and **Mark ordered…** (paid ₹, the shop's order
+**The order page (D-140):** each piece says where it stands (To order → Ordered → At the hub; the "In the US" chip stays
+only for old rows, `flows.md` §4; a piece with no pickup reads Already in the US), with **Order it ↗** (the shop item in use) and **Mark ordered…** (paid ₹, the shop's order
 number, a bill photo or PDF; Undo while it is not at the hub), and its cost and margin under its price. **Shop bill ·
 invoice C** below the pieces: a row per piece at the price paid, Delivery, extra rows (a packing fee, a coupon as a
 minus), the total as it is typed, a note; photos of the bill dropped, picked, taken with the camera or pasted (Ctrl+V),
@@ -74,58 +69,53 @@ is weighed at the hub), the shop bill, and the margins A − B (not shown until 
 what was paid less tax and refunds. **Print A / B / C** (`/admin/orders/<id>/invoice/a|b|c`): numbered A-, B-, C- and
 the order number, to print or save as PDF; refunds show on A as a credit note. The customer prints invoice A from their
 order page (the page prints only the invoice).
-**Two shipments (D-154):** an order whose 7-day pieces travel apart carries a **7-day** chip (Orders list and page) and,
-on its page, a **Shipments** panel: each shipment with its pieces, promised dates and the days left, its Shipping share,
-the 7-day one's buy-by and ship-by while open, its own **Pack & ship** (from the hub once its pieces are there) and
-**Mark delivered**, its own **New dates…** (the delay notice) and its own **Cancel shipment N…** (the customer asked,
-or because of us, with the amount first; a 7-day shipment only until its pieces are bought). The order-wide date
-change and the bulk ship stop for such an order; the whole-order cancel "because the customer asked" disappears once
-the 7-day pieces are bought. The timeline names the shipment. **Today** (India desk, first): 7-day shipments to send,
-with how many were not bought within 2 hours or not shipped by the next day. The app's order screen sends an order of
-two shipments to the web admin. Emails: the confirmation lists Shipment 1 and Shipment 2 with their dates and pieces;
-each shipment's shipped, delivered, new-date and cancelled email names it and shows its pieces.
+**Two shipments (D-154, D-187):** a split order carries a chip (Orders list and page) and, on its page, a **Shipments**
+panel, Food and Clothing and home (old orders: Express): each shipment with its pieces, promised dates and the days left,
+its Shipping share, the food one's buy-by and ship-by while open, its own **Pack & ship** (once its pieces are at the hub)
+and **Mark delivered**, its own **New dates…** (the delay notice) and its own **Cancel shipment N…** (the customer asked,
+or because of us, with the amount first; a food shipment only until its pieces are bought). The order-wide date change and
+the bulk ship stop for such an order; the whole-order cancel "because the customer asked" disappears once the food pieces
+are bought. The timeline names the shipment. **Today** (India desk, first): food shipments to send, with how many were not
+bought within 2 hours or not shipped by the next day. The app's order screen sends an order of two shipments to the web
+admin. Emails: the confirmation lists Shipment 1 (food) and Shipment 2 with their dates and pieces; each shipment's shipped,
+delivered, new-date and cancelled email names it and shows its pieces.
 **New orders (D-140, A1):** every paid order emails each admin on the allowlist (`admin_new_order`: number, pieces,
 total, where it goes, a button to it); an open admin panel shows a toast with a short chime. App push notifications are
 not built (no `expo-notifications` yet).
-The order page refunds unavailable pieces and cancels orders before cutoff, with the amounts from the D-042 rules shown on
+The order page refunds unavailable pieces and cancels orders before they ship, with the amounts from the D-042 rules shown on
 the buttons (Stripe first, then the database). Since D-140 (A5) the app's order screen refunds an unavailable piece too, through the website's `POST /admin/refund` (the
 admin's own token; the Stripe key stays on the server); cancels stay on the web panel.
 
-**App admin mode, what each screen does (B8, D-097, on the web's look):** five tabs with counts of what waits
-(Orders to ship, Pickups to do, Drafts, Shops owed) and a search button on each that opens **quick find**; times in the
-desk's zone and plain chips (`@repo/shared/admin`, one source with the web panel). **Today**: the cycle countdown,
-totals and progress, Needs attention, the desk's queue with one big button per job, live orders, View the store.
-**Orders**: search, chips with counts, cards; a long press selects, with Mark shipped… (a sheet, one tracking number
-each) and Delivered (asks first). **Order**: pieces with photos and pickup state, Call / Text / Email, the timeline, the
-one main action at the bottom (Pack & ship sheet, Mark delivered); express pieces picked there; refunds, cancels and new
-delivery dates on the web panel. **Cycle** tab: the cycle being worked on, its progress and next step (Cut off asks
-first), pickups by shop (Call, WhatsApp, Map, Picked / Unavailable, which asks first), the arrival check-off, other
-cycles. **Listings**: New (Take photos or many from the gallery, the photo grid, live $ price, Save draft / Publish), Add
-many (one draft card per photo, Join the draft above, the shop, category, fabric and care set once), Drafts / Live /
-Paused with what each draft still needs; a listing's screen publishes, pauses and confirms pieces. **More**: Payouts
-(Record payout asks first in a sheet with the amount), Vendors (Add a vendor as a sheet with a shop photo, kept in the
-private `vendor-docs` bucket), View the store, Sign out. Creating cycles and editing a listing's words stay on the web
-panel.
+**App admin mode, what each screen does (D-097, D-187, on the web's look):** four tabs with counts of what waits (Orders to
+ship, Drafts) and a search button on each that opens **quick find** (`find`: orders, products, customers); times in the
+desk's zone and plain chips (`@repo/shared/admin`, one source with the web panel). **Today**: Needs attention, the desk's
+queue with one big button per job, live orders, View the store. **Orders**: search, chips with counts, cards; a long press
+selects, with Mark shipped… (a sheet, one tracking number each; the database refuses unpicked ones and the sheet reports them)
+and Delivered (asks first). **Order** (`order/[id]`): pieces with photos and where each stands, Order it / Mark ordered, at the
+hub and weigh (`hub-weigh.tsx`, `piece-order.tsx`), Call / Text / Email, the timeline, the one main action at the bottom
+(Pack & ship sheet, Mark delivered); refunds of an unavailable piece through the website; cancels and new delivery dates on
+the web panel. **Listings**: Drafts / Live / Paused with what each draft still needs; a listing's screen (`listing/[id]`)
+publishes, pauses and confirms pieces. **More**: View the store, Sign out. No camera listing (web and runner only; the
+camera permission is off in app 1.1.0). **The old app 1.0.0's admin mode breaks with this release** (`docs/release-simple-store.md`).
 
-**Not built yet** (coding phase): photo upload for receipts and licences (products: web admin since C1, the phone camera since C3; a shop's photo in the app since B8), customer emails for
-refunds and cancellations, delay warnings on Today, live (Realtime) order/stock feed, packing list +
-commercial invoice export, bulk edits of products (orders: bulk ship / deliver since B7), category editing. In the app: cycle creation, refunds, editing a listing's text.
+**Not built yet:** customer emails for refunds and cancellations from the app, delay warnings on Today, bulk edits of
+products (orders: bulk ship / deliver since B7), category editing, a queue of hub orders ready to ship (`flows.md` §6). In the
+app: refunds other than an unavailable piece, editing a listing's text.
 
 ## The web admin's look and daily screens (B7, D-096)
-Built 2026-10-09 from `design/pages/admin/` (code in `apps/web/features/admin/`):
+Built 2026-10-09 from the approved admin mockups (code in `apps/web/features/admin/`; the mockups are in `C:\kod\iwc-removed-2026-11-04\design.zip`):
 - **Frame** (`frame.tsx`): the sidebar grouped Daily · Catalog · People with counts of what waits (`getWaitingCounts`);
-  the top bar with **quick find** (Ctrl+K: `adminQuickFind`, five each of orders, products, customers, shops), the
-  desk's clock in both zones and the live dot (one Realtime channel for the whole admin, `live-feed.tsx`). Phones: menu,
+- **Frame** (`frame.tsx`): the sidebar grouped Daily · Catalog · People with counts of what waits (`getWaitingCounts`);
+  the top bar with **quick find** (Ctrl+K: `adminQuickFind`, five each of orders, products, customers), the
   title, find.
-- **Today in the made-to-order pilot (D-140, A2):** with no cycle open (D-115) there is no "customers cannot check out"
-  warning; the India desk's queue starts with Pieces to order (and how long the oldest has waited), Ordered on the way
-  to the hub, At the hub to weigh and Prices held for you; cycle pickups and the hand re-check of shop quantities show
-  only while a cycle is open (imported listings are re-checked by the runner, D-118); the US desk's first job is Orders
-  in the US to send on.
+- **Today (D-140, A2, D-187):** the India desk's queue starts with food shipments to send (the food watch), then Pieces to
+  order (and how long the oldest has waited), Ordered on the way to the hub, At the hub to weigh, Prices held for you, drafts
+  and the re-check of quantities; the US desk's first job is Orders in the US to send on. That count is status `arrived`,
+  which only US-clearance orders reach: a hub order ready to go is found on its order page (`flows.md` §6).
 - **Times** in the admin's desk zone (`profiles.desk`; none set → New Jersey first) with the other zone beside them,
-  never UTC (`time.ts`); cycle cutoffs are typed in that zone.
+  never UTC (`time.ts`).
 - **The pager (D-140, `pager/`)** on every list (Products and its tabs, Imported listings, Targets, Prices held,
-  Orders, Customers, Reviews, Returns, Vendor pieces): "1–50 of 3,412" from an exact count of the filtered rows, page
+  Orders, Customers, Reviews, Returns): "1–50 of 3,412" from an exact count of the filtered rows, page
   numbers with gaps, Previous / Next, Go to page, 25 / 50 / 100 a page (remembered per list in a cookie), ← / → turn
   pages when no field has focus; `?page=` and `?size=` sit in the address with the filters, so Back and links work.
   Paging is a soft navigation (the scroll stays) with the running stitch along the top while it loads; table headers
@@ -139,32 +129,18 @@ Built 2026-10-09 from `design/pages/admin/` (code in `apps/web/features/admin/`)
   in their own `Section` (`features/admin/section.tsx`): heading, tabs and filters show first, and a part whose read
   fails says so with **Load again** while the rest stays (tabs fall back to tabs without numbers). New slow parts go in a
   `Section`; a part takes the client from `requireAdminPage()` (one check per request), never as a prop.
-- **Chips** in plain words (`chips.tsx`). **Today**: the open cycle's countdown, totals and progress, Needs attention,
-  each desk's queue. **Orders**: search, chips with counts, ticked rows → Mark shipped… (one carrier and tracking
-  number each) / Mark delivered, pages of 50. **Order page**: only the actions that apply; every refund and cancel (and
-  a return's refund, and Record payout) asks first in a box with the amount and, for the customer's, the email they get
-  (`confirm.tsx`). Marking a piece Unavailable at pickup asks first too, since the customer is emailed.
-- **Cycle**: the progress bar with the next step as the main button; pickups as one card per shop (Call, WhatsApp, Map).
-- **Weighing at the hub (D-130)**: a weight box (g, one piece, packed; optional) next to every Picked (cycle cards and the
-  order page, web and app) and "Weigh it" under a picked piece not yet weighed; the card then shows what it changed
-  (the weight it replaced and the new price). The order page also shows Picked for pieces without a cycle (the pilot).
-- **New listing in one step** (`listing/`): photos shrink to 2400 px in the browser and upload as soon as they are
-  dropped, with the admin's session, to `product-media/products/drafts/<batch>/`; saving records them on the product.
-  Photos dropped on a form that is then abandoned stay in that folder (unused, not shown anywhere). **Add many**: one
-  draft per photo row; the shop, the fabric and the care are typed once for the batch (every draft needs them, ops.md
-  §Compliance) and can be changed per piece on its page. Clothing only.
+- **Chips** in plain words (`chips.tsx`). **Today**: Needs attention, each desk's queue. **Orders**: search, chips with
+  counts, ticked rows → Mark shipped… (one carrier and tracking number each; only `arrived` orders) / Mark delivered, pages of
+  50. **Order page**: only the actions that apply; every refund and cancel (and a return's refund) asks first in a box with the
+  amount and, for the customer's, the email they get (`confirm.tsx`). Marking a piece Unavailable asks first too, since the
+  customer is emailed.
+- **Weighing at the hub (D-130)**: a weight box (g, one piece, packed; optional) next to At the hub (the order page and To
+  order's At the hub, to weigh; web and app) and "Weigh it" under a piece not yet weighed; the card then shows what it changed
+  (the weight it replaced and the new price).
 
-## Payment test (web, 2026-11-03)
-`/admin/settings/payment-test`, linked from nowhere, admin only (the panel's server check): whether the Stripe account
-behind the deployment's keys is live, can take payments and pay out, where payouts go (bank or debit card, last four),
-its balance and what Stripe still asks for; then **Make a $1 test payment** through the store's own card form
-(`PaymentForm`, so the domain's security rules and the live publishable key are tested too) and the result read back
-from Stripe: status, card brand and last four, **Refund this $1** (Stripe keeps its fee). Test payments carry
-`metadata.kind = 'admin_test'`: the webhook skips them (the kind lives in `features/checkout/test-payment.ts`) (no order, no "Paid, but no order" alert), the payment sweep
-never sees them (no stored checkout), and only this page refunds them.
 
 ## Design principles for the admin
-1. **One screen per job.** "Pick up at Shop X" is one checklist, not a table with filters.
+1. **One screen per job.** To order is one list per shop, not a table with filters.
 2. **Phone-first for field work:** big tap targets, camera upload, works on weak networks (drafts saved locally
    and synced later is a coding-phase feature).
 3. **Keyboard-friendly tables on desktop:** search, bulk select, inline edits.
@@ -192,16 +168,16 @@ in `packages/shared/src/sourcing/`, the reads and writes in `packages/db/src/adm
   shop's stock is unknown), packed weight and the price on the shop in ₹, with the dollar price worked out live
   (D-109, D-119). The weight says where it came from (the page's packed, item or net weight, an item's pack, or typed)
   and what on the page contradicts it; without one it saves as a draft (D-129). Save draft or Publish.
-- **Where it lives.** A listing of the shop's online vendor for that state (`vendors.online_site`, made on first use),
-  with `products.source_url`, `source_site`, `source_checked_at`, `source_in_stock` (admin only).
+- **Where it lives.** A listing with `products.source_url`, `source_site`, `source_checked_at`, `source_in_stock` (admin
+  only). The importer sends the state (or none), source link and site; there is no vendor row (D-187).
 - **Keeping prices right.** Importing a page again finds its listing by the cleaned address: the price, the sizes in
   stock and the check date are updated (sizes the shop no longer has stop selling; pieces already ordered stay); tick
   "Also replace" to take the new name, words and photos too. **Imported listings** (`/admin/import/listings`, its own
   tab since D-140) lists every imported listing with the pager, search and filters (shop, state, type, status, not
   checked for a week / a month), the one checked longest ago first unless sorted otherwise, with a link to open it.
-- **When one sells.** The cycle's pickup cards (web and app) show "Order it online" for an imported piece: the India
-  desk orders it there to the hub, then marks it picked as usual. The product's page lists **Where to order it**: every
-  shop item each variant can be ordered as, the one in use first ("ordered from here", D-118).
+- **When one sells.** To order (web and app) shows the piece under its shop with its link: the India desk orders it there to
+  the hub. The product's page lists **Where to order it**: every shop item each variant can be ordered as, the one in use
+  first ("ordered from here", D-118).
 - **Variants with their own prices (D-118).** A page with a variation picker (Amazon's flavours or packs, Flipkart's
   options, Myntra's sizes, a Shopify shop's colours and sizes) is saved as one listing with a variant per item, each
   priced from its own shop price; the form lists them. Every import also records its shop items, so the weekly check
@@ -227,7 +203,7 @@ runner in `tools/sourcing-runner/` (its README says how to set it up on the PC a
   `food-branded-200.csv` is branded snacks, biscuits, chocolates, instant food, masalas and tea, ₹1 – ₹200, every food
   shop (119 targets, up to 1,410 listings; dairy products, meat, frozen food and liquids left out). D-162:
   `diwali-home-gifts.csv` is Diwali's home & gifts (100 targets, up to 1,515 listings, every name "Diwali: …"): 25 on
-  the four quick shops (7-day pieces, no band), 36 all-India and 39 state crafts on Amazon and Flipkart (₹1 – ₹900); Must
+  the four fast shops (no band), 36 all-India and 39 state crafts on Amazon and Flipkart (₹1 – ₹900); Must
   match leaves out lit, battery and plug pieces, fireworks, camphor, matches, cow dung, feathers, loose colours, samagri
   kits, hampers, food and pure silver coins; a state only for a handmade craft the title names (Q-47). D-167:
   `diwali-outfits.csv` is Diwali's clothing (63 targets, up to 860 listings, every name "Diwali: …"), as the Myntra list:
@@ -247,26 +223,25 @@ runner in `tools/sourcing-runner/` (its README says how to set it up on the PC a
   shop's robot check only fails that page; no shop rests or is paced (D-158): a target left empty by a refusal goes
   back to the queue, a refused listing keeps its price and stock, nothing is marked nothing fit or out of stock (D-149,
   the runner's README). One run takes every queued target, a claim of Targets per run at a time, until none is left. A target uploaded again is
-  not added twice but takes the row's shops it lacked, never fewer (D-150: the 7-day targets, Blinkit only, then
-  `7-day-four-shops.csv`). Each
+  not added twice but takes the row's shops it lacked, never fewer (D-150: the Blinkit targets, Blinkit only, then
+  `7-day-four-shops.csv`, a file name from before D-187). Each
   target shows its state: waiting, being searched, found (how many listings), nothing fit (with why), paused; Search
   again, Pause, Remove.
 - **Found and waiting.** What the runner adds arrives as drafts (in Products → Drafts) unless "go live by themselves"
-  is on. **Publish the ready** publishes every found draft with a photo and every detail customers must see (food only
-  once it is cleared, D-074); the product page has **Details customers see** to finish the others.
+  is on. **Publish the ready** publishes every found draft with a photo and every detail customers must see; the product
+  page has **Details customers see** to finish the others.
 - **Prices held for you.** A price that jumped beyond the rule stops that shop item and waits here: accept the new
   price, or stop using that shop (the next cheapest in-stock source takes over).
-- **7-day delivery (D-148).** `sourcing_shops.quick_delivery` marks the shops whose pieces reach the hub within the
-  hour (Blinkit, BigBasket, Zepto, Instamart; set by the migration, no screen yet); a live listing whose every option
-  on sale is bought there is a 7-day piece on the store. Settings → Standard delivery → "7-day delivery: days from the
-  order" holds the promise (7 and 7; empty switches it off). The first batch: `tools/sourcing-runner/out/blinkit-7-day.csv`
-  (gitignored; 113 Blinkit targets, up to 2,972 listings, only what can be sent: no dairy, meat, eggs, frozen food,
-  liquids, honey, oils, electronics, lights, batteries, cow dung, feathers, fireworks, camphor, loose powders, lighters
-  or matches), added through Add targets from a CSV and run with `pnpm sourcing run --type food` / `--type home`.
-  **Bought there (D-162):** a listing that can be bought whole from the quick shops (every option with a usable source
-  has one there: in stock, no price held, inside the delivery limit) is bought there, even when a backup elsewhere is
-  cheaper, when it is added and at every weekly check (`_sourcing_settle`); a quick shop sold out or held hands the
-  piece to its backup and the tag goes. Listings settled before: `pnpm quick:sources` (`ops.md` §Sourcing runner).
+- **Fast shops (D-148, D-162, D-187; admin only).** `sourcing_shops.quick_delivery` marks the shops whose pieces reach the
+  hub within the hour (Blinkit, BigBasket, Zepto, Instamart; set by a migration, no screen yet). Food is bought from them
+  when it can be, which is what makes 7 delivery days true: a listing that can be bought whole from the fast shops (every
+  option with a usable source has one there: in stock, no price held, inside the delivery limit) is bought there, even when a
+  backup elsewhere is cheaper, when it is added and at every weekly check (`_sourcing_settle`, `_quick_sourceable`, which
+  covers home listings too, so their prices don't move); a fast shop sold out or held hands the piece to its backup. Listings
+  settled before: `pnpm quick:sources` (`ops.md` §Sourcing runner). The first batch's CSV was
+  `tools/sourcing-runner/out/blinkit-7-day.csv` (gitignored), added through Add targets from a CSV and run with
+  `pnpm sourcing run --type food` / `--type home`. **Every food listing promises 7 delivery days whichever shop it comes from**
+  (plan §7): Today's food watch flags late buys.
 - **Shops.** Each shop the runner searches, the types it sells, the delivery days used when its page shows none, on or
   off, its last good run and its last problem (a shop that changed its page shows up here first).
 - **Rules.** Delivery limit (days), listings per target, how often listings are checked, pieces on sale per variant,
@@ -289,12 +264,12 @@ runner in `tools/sourcing-runner/` (its README says how to set it up on the PC a
   new weight). An option no label states keeps what it has (the page search above, then the hub). An admin's typed
   weight cannot replace one weighed at the hub: the weight box asks to weigh it again. The product page shows the
   source "Net weight on its label (D-135)" and where it was read.
-- **Liquids are not sent (D-135).** The runner checks every food and home listing once (each new one as it adds it,
+- **Liquids are not sent (D-135, D-187).** The runner checks every food and home listing once (each new one as it adds it,
   the rest at the end of each run; alone: `pnpm sourcing liquids --dry`): a liquid (a juice, sharbat, soda, oil,
   syrup, sauce, attar, rose water, anything sold by the ml or litre, or a page saying "Item Form: Liquid"; never
-  pickles, pastes or powders) is archived and shown to customers as **coming soon**: no price, no Add, the heart to
-  save it. Products → Archived marks it "coming soon on the store"; its page says why and has **Hide it from the
-  store** / **Show it as coming soon**. Publishing it again ends its coming soon, and the check never undoes that.
+  pickles, pastes or powders) is archived as **coming soon**, and every store read leaves it out: its product page answers
+  404 (plan Y-9). Products → Archived marks it, read-only (the Show/Hide toggle went). Publishing it again ends its coming
+  soon, and the check never undoes that.
 - **Home & gifts from their own pages (D-134).** Each run (and `pnpm sourcing home`, `--dry` for the sheet
   `tools/sourcing-runner/home-weights.csv`) reads every home option's own page (on Amazon each size and colour is its
   own item, with its "Item details" and "Measurements" dropdowns, now read by the capture too): the packed weight
@@ -311,47 +286,3 @@ runner in `tools/sourcing-runner/` (its README says how to set it up on the PC a
   `--audit` compares the shops' weights, `--redo` re-estimates after many weighings, `eval` says how close it comes
   (`tools/weight-estimator/README.md`).
 
-## Vendor screens: a shop's own sign-in (D-102, D-103; was §Vendor screens)
-
-Users: a vendor's owner (the founder's "retailer"; glossary: **vendor account**). They upload their own pieces and
-see only their own: never a customer, another vendor, the customer price or IWC's costs (INV-10). Every vendor read is
-a `vendor_*` database function filtered by the caller's vendor (`data-model.md`); the base tables stay admin-only.
-
-### Access
-- **Web** `/vendor` (`apps/web/app/vendor/`, code in `features/vendor/`): never linked from the store, `noindex`, its
-  own route group (its code loads only there). Lint keeps vendor code out of the storefront and admin code out of
-  vendor pages (`apps/web/.eslintrc.js`).
-- **Sign-in:** an admin makes the account on the Vendors page and shows its one-time QR code / link (works once, 7
-  days; a new one replaces the old). Opening it signs the phone in: the website's server redeems the code
-  (`/vendor/api/sign-in`, rate-limited, service role) and hands back a token the browser turns into a session. No
-  password, no SMS. Every page checks `is_vendor()` on the server (`features/vendor/guard.ts`).
-- **"Join as a vendor?"** only on the vendor sign-in page (`/vendor/join`, never on a customer surface, D-003): shops in
-  India pick their state; a US store's request waits for Q-35. Requests land on the admin's Vendors page.
-- **App** (`apps/app/app/vendor/`, `features/vendor/`): the same screens as a vendor mode, mounted only after the
-  server confirms `is_vendor()` (`lib/session.tsx`); the customer tabs send a vendor there. Sign-in by the code on
-  `vendor-login` (opened by the app link `iwc://vendor-login?code=…`, or typed), redeemed by the website's server
-  (D-043); never linked from a customer screen. Photos from the camera or the gallery, checked on the phone like the
-  website (`jpeg-js` reads the pixels). The language switch is kept on the phone. Lint keeps vendor and customer
-  code apart (`apps/app/.eslintrc.js`).
-
-### Screens (phone first: one job per screen, pictures before words, 44 px+ targets)
-| Screen | Route | What |
-|---|---|---|
-| Home | `/vendor` | four tiles: Add a piece, Keep ready (count), My pieces (retakes asked), Money (₹ owed) |
-| Add a piece | `/vendor/new` | what it is (category tiles) and who wears it → front, back, close-up photos one at a time with an outline, each checked at once on the phone (`@repo/shared/vendor` `checkPhoto`: size, light, blur) and sent as soon as it is taken → sizes with + / −, the shop price in ₹, optional fabric / care / colour → Send |
-| My pieces | `/vendor/pieces`, `/vendor/pieces/[id]` | what was sent and what is in the store, with a picture of its state; a piece IWC asked about opens the same steps with what it has, so only the needed photos are taken again |
-| Keep ready | `/vendor/ready` | ordered pieces IWC will collect: piece, size, how many, "after <cutoff>" (never who bought them) |
-| Money | `/vendor/money` | owed in ₹ for collected pieces, the latest collected pieces, payouts |
-
-**Languages (D-102, D-105):** English, Hindi, Bengali, Tamil, Telugu, Marathi, Gujarati, Kannada, Malayalam, Punjabi,
-Odia and Assamese (`@repo/shared/vendor` `messages/`); a region whose language is not among them gets Hindi. The
-switch on every screen offers English, Hindi and the shop's region language (kept in a cookie on the web, on the
-phone in the app). Every language but English is a Claude draft until someone fluent checks it; a unit test keeps
-every word and its {placeholders} in each.
-
-### Photos (D-100, D-101, D-104)
-The vendor's photos go to the private `vendor-uploads` bucket, shrunk to 2400 px on the phone. The GPU worker
-(`tools/photo-worker`) makes three candidates per pose on a house model; the admin picks on **Vendor pieces**
-(`/admin/vendor-pieces`), writes the English name and care, and publishes. The picked photos and the real close-up are
-copied to `product-media` (the AI ones flagged `is_ai`, so the product's Details say so); the candidates and the raw
-photos are then deleted.
