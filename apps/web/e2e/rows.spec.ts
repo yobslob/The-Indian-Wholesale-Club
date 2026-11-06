@@ -24,7 +24,7 @@ test("a state's inventory has See all's filters and keeps the state's address", 
   await page.goto('/states/delhi');
   const filters = page.getByRole('complementary', { name: 'Filters' });
   await expect(filters.getByRole('heading', { name: 'State' })).toHaveCount(0);
-  await filters.getByRole('link', { name: /^Kurtas/ }).click();
+  await page.getByRole('navigation', { name: 'Groups' }).getByRole('link', { name: /^Kurtas/ }).click();
   await expect(page).toHaveURL(/\/states\/delhi\?category=kurtas$/);
   await expect(page.getByRole('heading', { level: 2, name: /Kurtas/ })).toBeVisible();
   const cards = page.locator('[data-card-grid] > article');
@@ -38,6 +38,32 @@ test("a state's inventory has See all's filters and keeps the state's address", 
   await page.goBack();
   await expect(page).toHaveURL(/\/states\/delhi$/);
   await expect(page.getByRole('tab', { name: /^Clothing/ })).toHaveAttribute('aria-selected', 'true');
+});
+
+// D-190: the groups' rail on a phone: beside the cards, a tap swaps them in place, and it stays in view while they scroll
+test("the groups' rail filters in place on a phone and stays beside the cards", async ({ page }) => {
+  await page.setViewportSize({ width: 375, height: 812 });
+  await page.goto('/clothing');
+  await page.evaluate(() => ((window as unknown as { kept: boolean }).kept = true));
+  const rail = page.getByRole('navigation', { name: 'Groups' });
+  await expect(rail.getByRole('link', { name: 'All', exact: true })).toHaveAttribute('aria-current', 'true');
+  await rail.getByRole('link', { name: /^Sarees/ }).click();
+  await expect(page).toHaveURL(/\/clothing\?category=sarees$/);
+  await expect(page.getByRole('heading', { level: 1 })).toContainText('Sarees');
+  await expect(rail.getByRole('link', { name: /^Sarees/ })).toHaveAttribute('aria-current', 'true');
+  expect(await page.evaluate(() => (window as unknown as { kept?: boolean }).kept)).toBe(true);
+  // two cards a row, no sideways scroll
+  const cards = page.locator('[data-card-grid] > article');
+  await expect(cards.nth(3)).toBeVisible();
+  const [a, b] = await Promise.all([cards.nth(0).boundingBox(), cards.nth(1).boundingBox()]);
+  expect(a!.y).toBe(b!.y);
+  expect(await page.evaluate(() => document.documentElement.scrollWidth <= window.innerWidth)).toBe(true);
+  // the icons come from one cached file
+  await expect(rail.locator('use').first()).toHaveAttribute('href', /^\/icons\/groups\.svg#/);
+  await cards.nth(3).scrollIntoViewIfNeeded();
+  await page.evaluate(() => window.scrollBy(0, 300));
+  const top = await page.evaluate(() => parseFloat(getComputedStyle(document.documentElement).getPropertyValue('--top-h')) || 56);
+  expect((await rail.boundingBox())!.y).toBeLessThan(top + 20);
 });
 
 test('See all pages draw 24 cards at a time, the next as the last row comes into view (2026-10-30)', async ({
@@ -62,7 +88,7 @@ test('filters and the endless scroll change only the cards, never the page (D-13
   await page.evaluate(() => ((window as unknown as { kept: boolean }).kept = true));
   const cards = page.locator('main article');
   const panel = page.getByRole('complementary', { name: 'Filters' });
-  await panel.getByRole('link', { name: /^Kurtas/ }).click();
+  await page.getByRole('navigation', { name: 'Groups' }).getByRole('link', { name: /^Kurtas/ }).click();
   await expect(page).toHaveURL(/\/clothing\?category=kurtas$/);
   await expect(page.getByRole('heading', { level: 1 })).toContainText('Kurtas');
   await panel.getByRole('button', { name: 'M', exact: true }).click();

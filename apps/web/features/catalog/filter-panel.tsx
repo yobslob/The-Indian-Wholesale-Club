@@ -15,7 +15,7 @@ import type { ProductType } from '@repo/shared/domain';
 const FIRST_STATES = 8;
 
 /**
- * See all's filter groups (D-136): For (clothing: Women · Men, D-140), Category, State, Price (a slider and four
+ * See all's filter groups (D-136): For (clothing: Women · Men, D-140), State, Price (a slider and four
  * ready-made ranges) and Size (Pack for food) as boxes that combine, grouped by kind (D-140). Every choice is a real link to its address (new tabs, no JavaScript, crawlers); a
  * plain click applies it in place through `onChange`, without loading the page.
  */
@@ -84,31 +84,6 @@ export function FilterPanel({
           </ul>
         </section>
       ) : null}
-      {meta.categories.length > 1 || query.category ? (
-        <section className={styles.group} aria-labelledby="f-category">
-          <div className={styles.head}>
-            <h3 id="f-category">Category</h3>
-          </div>
-          <ul className={styles.list}>
-            <li>
-              <a {...link({ category: undefined })} className={styles.item} aria-current={!query.category}>
-                <i aria-hidden="true" />
-                Everything
-              </a>
-            </li>
-            {meta.categories.map((c) => (
-              <li key={c.slug}>
-                <a {...link({ category: c.slug })} className={styles.item} aria-current={query.category === c.slug}>
-                  <i aria-hidden="true" />
-                  {c.name}
-                  <span>{c.count}</span>
-                </a>
-              </li>
-            ))}
-          </ul>
-        </section>
-      ) : null}
-
       {states ? (
         <section className={styles.group} aria-labelledby="f-state">
           <div className={styles.head}>

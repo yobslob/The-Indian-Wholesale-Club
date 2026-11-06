@@ -3,7 +3,7 @@
 import Link from 'next/link';
 import { useEffect, useMemo, useRef, useState } from 'react';
 
-import { displayOption, displayTitle, formatUsd, optionAxes, optionPriceLabel, selectionOf } from '@repo/shared/domain';
+import { displayOption, displayTitle, formatUsd, optionAxes, optionPriceLabel, priceRange, selectionOf, wasCents } from '@repo/shared/domain';
 
 import { flyToBag } from '@/features/cart/fly-to-bag';
 import { MAX_QTY_PER_LINE } from '@/features/cart/limits';
@@ -18,7 +18,7 @@ import type { Product, Variant } from '@repo/db/store';
 interface Props {
   product: Pick<
     Product,
-    'id' | 'name' | 'slug' | 'region_slug' | 'region_name' | 'primary_image_path' | 'product_type'
+    'id' | 'name' | 'slug' | 'region_slug' | 'region_name' | 'primary_image_path' | 'product_type' | 'offer'
   >;
   variants: Variant[];
   /** Shown just above the button (the delivery window, D-008). */
@@ -80,6 +80,10 @@ export function AddToCart({ product, variants, delivery }: Props): React.JSX.Ele
   };
   const inBagNow = mounted && picked ? (lines.find((l) => l.variantId === variant.id)?.quantity ?? 0) : 0;
   const price = optionPriceLabel(variants, picked ? variant : null);
+  // D-190: follows the price shown, the picked option's or the lowest
+  const was = product.offer
+    ? wasCents(picked ? variant.price_cents : (priceRange(variants)?.fromCents ?? variant.price_cents), product.product_type)
+    : null;
 
   const left = variant.available;
   const soldOut = left <= 0;
@@ -108,9 +112,12 @@ export function AddToCart({ product, variants, delivery }: Props): React.JSX.Ele
 
   return (
     <div className="space-y-4">
-      <p data-testid="product-price" className="font-ui text-[22px] font-semibold leading-none">
-        {price}
-      </p>
+      <div className="font-ui flex items-baseline text-[22px] font-semibold leading-none">
+        {was ? <s className="was">{formatUsd(was)}</s> : null}
+        <p data-testid="product-price" className={was ? 'now m-0' : 'm-0'}>
+          {price}
+        </p>
+      </div>
       {/* founder 2026-10-24: heavy cookware's other half, added in the bag and at checkout */}
       {variant.heavy_cents > 0 ? (
         <p className="font-ui -mt-1 flex flex-wrap items-center gap-2 text-sm">

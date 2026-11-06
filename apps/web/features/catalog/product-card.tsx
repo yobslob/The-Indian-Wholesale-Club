@@ -1,4 +1,4 @@
-import { displayTitle, fromLabel, optionPriceLabel, productPath } from '@repo/shared/domain';
+import { displayTitle, formatUsd, fromLabel, optionPriceLabel, priceRange, productPath, wasCents } from '@repo/shared/domain';
 
 import { SaveButton } from '@/features/account/save-button';
 import { mediaUrl } from '@/lib/site';
@@ -27,10 +27,11 @@ const SIZES = {
     md: '(min-width: 1280px) 25vw, 50vw',
     sm: '(min-width: 1280px) 20vw, (min-width: 768px) 34vw, 50vw',
   },
-  // See all's grid beside the filter panel (D-136): three columns from lg (1024), four from 2xl (1536)
+  // See all's grid beside the filter panel (D-136): three columns from lg (1024), four from 2xl (1536); two beside the
+  // groups' rail on a phone (D-190), which leaves each card about 38% of the screen
   side: {
-    md: '(min-width: 1536px) 20vw, (min-width: 1024px) 25vw, 50vw',
-    sm: '(min-width: 1536px) 20vw, (min-width: 1024px) 25vw, 50vw',
+    md: '(min-width: 1536px) 20vw, (min-width: 1024px) 25vw, (min-width: 640px) 50vw, 38vw',
+    sm: '(min-width: 1536px) 20vw, (min-width: 1024px) 25vw, (min-width: 640px) 50vw, 38vw',
   },
 } as const;
 
@@ -67,6 +68,8 @@ export function ProductCard({
   const price = product.options?.length
     ? optionPriceLabel(product.options)
     : fromLabel(product.price_cents, product.price_varies === true);
+  // D-190: struck through beside the price it is worked out from (`.was`, globals.css)
+  const lowest = product.options?.length ? (priceRange(product.options)?.fromCents ?? product.price_cents) : product.price_cents;
   return (
     <article className="product-card relative min-w-0">
       <div className="relative">
@@ -129,8 +132,10 @@ export function ProductCard({
           {name}
         </CardLink>
         <span className={`product-card-meta text-ink-muted ${small ? 'text-[13px]' : 'text-sm'}`}>
-          {price}
-          {product.region_name ? ` · ${product.region_name}` : null}
+          {product.offer ? <s className="was">{formatUsd(wasCents(lowest, product.product_type))}</s> : null}
+          {product.offer ? <span className="now">{price}</span> : price}
+          {/* the dot is .card-state's (globals.css): beside the groups' rail the state takes its own line */}
+          {product.region_name ? <span className="card-state">{product.region_name}</span> : null}
         </span>
         <span className="product-card-days" data-days={product.product_type === 'food' ? 'food' : 'standard'} />
       </div>

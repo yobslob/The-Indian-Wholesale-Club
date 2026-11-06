@@ -62,6 +62,8 @@
   color: var(--muted);
 }
 .bar[data-stuck] {
+  /* D-190: at the right, where it covers neither the groups' rail nor a card's name */
+  justify-content: flex-end;
   background: transparent;
   pointer-events: none;
 }
@@ -78,6 +80,9 @@
 .bar[data-stuck] .summary {
   max-width: 0;
   opacity: 0;
+}
+.bar[data-stuck] .summary {
+  flex: none;
 }
 
 /* The Filter panel's lists (the panel itself is the menu's, globals.css .site-panel). */
