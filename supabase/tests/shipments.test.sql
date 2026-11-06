@@ -63,8 +63,14 @@ select tests.assert(pg_temp.ship('five snacks', 0, 'NY', '12 Post Road') @> '{"f
   'a street that only looks like a box (Post Road, Apollo St) and DC keep the 7 days');
 
 -- Shipping: one parcel, the whole bag; split by weight.
-select tests.assert(pg_temp.ship('five snacks') @> '{"billed_grams": 1000, "shipping_cents": 1862}'::jsonb,
-  '500 g is billed 1 kg: $18.62');
+select tests.assert(pg_temp.ship('a kurta') @> '{"billed_grams": 1000, "shipping_cents": 1862}'::jsonb,
+  'one 1 kg piece is billed 1 kg: $18.62');
+select tests.assert(pg_temp.ship('five snacks') @> '{"billed_grams": 1400, "shipping_cents": 2607}'::jsonb,
+  'D-190: five 100 g snacks: the first billed 1 kg, the other four their own 400 g: $26.07');
+select tests.assert(public._bag_shipments(jsonb_build_array(jsonb_build_object('variant_id', tests.id('v_kurta'), 'quantity', 1),
+                                                            jsonb_build_object('variant_id', tests.id('v_snack'), 'quantity', 1)))
+  @> '{"billed_grams": 1500, "shipping_cents": 2793}'::jsonb,
+  'D-190: never under the whole bag by the half kg: a 1 kg piece and a 100 g piece are 1.5 kg, not 1.1');
 select tests.assert(pg_temp.ship('five snacks and a kurta')
   @> '{"billed_grams": 1500, "shipping_cents": 2793, "food_shipping_cents": 931}'::jsonb,
   'a split bag pays one parcel (1.5 kg, $27.93, not $18.62 + $18.62); the food shipment carries its third');

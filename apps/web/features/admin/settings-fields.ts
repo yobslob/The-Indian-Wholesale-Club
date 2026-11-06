@@ -28,15 +28,22 @@ export const SETTING_GROUPS: SettingGroup[] = [
     fields: [
       { key: 'home_est_g_per_rupee', label: 'Home & gifts without a weight: grams per shop rupee (D-121; at most the category\'s weight)', kind: 'number' },
       { key: 'home_est_min_g', label: 'Home & gifts without a weight: at least (g)', kind: 'int' },
+      {
+        key: 'offer_pct',
+        label: 'Struck-through prices: % of listings (D-190; 0 = none)',
+        kind: 'int',
+        required: true,
+        hint: 'Display only, on a random set of the listings priced by the rules. The price charged does not change.',
+      },
     ],
   },
   {
     title: 'Bag charges: shipping, retailer charges, bulk saving (D-111, D-119, D-123, D-187)',
-    note: 'Shipping is the $ a kg × the bag\'s billed kg (at least 1 kg, then by the half kg, food at its billed %), one parcel for the whole bag even when it ships as two (D-154). Below the free-shipping line a bag pays it and the retailer charges (a % of the goods, at least the amount set); from the line up both show struck through at $0.00. The bulk saving and the heavy-item discount start at their own line: the saving grows with every dollar over it until its cap.',
+    note: 'Shipping is the $ a kg × the bag\'s billed kg: its heaviest piece at least 1 kg, then by the half kg, and every other piece its own weight, food at its billed %, never under the whole bag by the half kg (D-190), one parcel for the whole bag even when it ships as two (D-154). Below the free-shipping line a bag pays it and the retailer charges (a % of the goods, at least the amount set); from the line up both show struck through at $0.00. The bulk saving and the heavy-item discount start at their own line: the saving grows with every dollar over it until its cap.',
     fields: [
       { key: 'free_shipping_min_cents', label: 'Free shipping from ($)', kind: 'usd' },
       { key: 'bulk_saving_from_cents', label: 'Bulk saving and heavy-item discount from ($)', kind: 'usd' },
-      { key: 'shipping_cents_per_kg', label: 'Shipping per billed kg ($, D-154)', kind: 'usd', hint: 'Empty = the fixed Shipping below.' },
+      { key: 'shipping_cents_per_kg', label: 'Shipping per billed kg ($, D-154, D-190)', kind: 'usd', hint: 'Empty = the fixed Shipping below.' },
       { key: 'small_order_shipping_cents', label: 'Shipping when no $ a kg is set ($)', kind: 'usd' },
       { key: 'food_billed_pct', label: 'Food: billed weight, % of the label\'s weight (jars, bulky packs)', kind: 'pct' },
       { key: 'small_order_retailer_cents', label: 'Retailer charges, at least ($)', kind: 'usd' },

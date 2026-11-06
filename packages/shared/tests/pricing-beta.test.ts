@@ -5,7 +5,7 @@
 import assert from 'node:assert/strict';
 import { describe, it } from 'node:test';
 
-import { autoPrice, betaDivisor, betaSubtotalInr, fallbackWeightG, pricingSettingsFrom } from '../src/domain';
+import { autoPrice, betaDivisor, betaSubtotalInr, fallbackWeightG, pricingSettingsFrom, wasCents } from '../src/domain';
 import type { ProductType } from '../src/domain/product-types';
 
 const price = (rupees: number, g: number, t: ProductType) => autoPrice({ shopPricePaise: rupees * 100, weightG: g, productType: t });
@@ -60,6 +60,18 @@ describe('prices by the founder\'s exact rules (D-128)', () => {
       const m = 1 - (betaSubtotalInr(r * 100, g) * 100) / 92 / p.priceCents;
       assert.ok(Math.abs(m - want) < 0.001, `${t} ₹${r}: ${(m * 100).toFixed(2)}%`);
     }
+  });
+
+  it('D-190: the struck figure is the price plus the margin over cost, for each type', () => {
+    for (const [type, shop, g] of [['food', 10000, 100], ['clothing', 69900, 450], ['home', 200000, 1500]] as const) {
+      const p = autoPrice({ shopPricePaise: shop, weightG: g, productType: type })!;
+      const y = p.priceCents;
+      // within a cent or two of the founder's y + (y − x): both come from rounded cents
+      assert.ok(Math.abs(wasCents(y, type) - (y + (y - p.costCents))) <= 2, type);
+    }
+    assert.equal(wasCents(1000, 'food'), 1200);
+    assert.equal(wasCents(1000, 'clothing'), 1400);
+    assert.equal(wasCents(1000, 'home'), 1500);
   });
 
   it('a type it does not know prices as clothing; no shop price or weight, no price', () => {
