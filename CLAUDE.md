@@ -12,6 +12,7 @@ Rules cite decision IDs (`D-xxx`, index in `docs/decisions.md`).
   (1–10 days) and flown to the US (8–11 days). Prices follow the shop's price by the founder's beta rules. Food takes 7
   delivery days, the rest 12 – 16; free shipping from $49.99. [D-110, D-115, D-118, D-128, D-187]
 - **The simple store (D-187) went live on 2026-11-04:** `docs/status.md` says what is live today.
+- **Mobile web first:** design and user experience aim at the website on a phone; the app complements it. [D-190]
 - Two operators: the **founder** (US side) and the **COO** (India side). [D-007]
 - **Hosting (D-147):** a new Vercel account (Hobby) and a new Supabase project (free) since 2026-10-21/22, photos in
   Cloudflare R2. The first accounts hit their free limits; every limit now has a budget (`docs/monitoring.md`). Any

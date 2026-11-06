@@ -520,3 +520,5 @@ breaking it and watching the test fail ("mutation check", `status.md`).
   ids are `md5('iwc-catalogue:' || slug)`, so `pnpm catalogue:apply` can reload it into a running local DB without a reset.
 - `search.sql`: builds search's vocabulary from the seeded listings (`refresh_search_words()`, D-160; migrations run
   before the seed). After `pnpm catalogue:apply`, run it again (or wait for the 6-hourly job).
+
+Migration 20261110090000 (D-190): `_bag_shipments` bills the heaviest piece at least 1 kg, then by the half kg, and every other piece its own weight, never under the whole bag by the half kg. `pricing_settings.offer_pct` (55; 0 = none) and `_offer_key(product)` (internal; `{"offer": true}` or `{}`, picked from the id, only `price_auto` listings that are not US stock) add `offer` to the cards and `store_product_page`'s product. `store_home`'s `categories` are a fixed list of tiles, each with an optional `for`, and `whole` on Gifts (all of its type).

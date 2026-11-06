@@ -7,8 +7,10 @@ Short on purpose (the audit warns past 10 KB): **replace** lines when something 
 ## What is live today: the simple store
 - **Live:** https://indianwholesaleclub.com (web), with real customers: the simple store (D-187), merged as
   [PR #1](https://github.com/yobslob/The-Indian-Wholesale-Club/pull/1) and deployed on 2026-11-04 (21:47 UTC).
-- **Not released:** branch `optimize/lighter-site` (D-189) cuts Vercel's usage. **It saves nothing until it is merged and
-  deployed**, and the founder is continuing design work on it. Website only, no migration.
+- **Not released:** branch `optimize/lighter-site`: Vercel's usage cuts (D-189; **they save nothing until merged and
+  deployed**) and D-190 (mobile web first: Shop by category, Shipping that follows every piece, the groups' rail, struck-through
+  prices). The founder is continuing design work on it. **It now has a migration** (`20261110090000`): run the Deploy
+  workflow with the merge. Shipping changes for customers the moment the migration runs.
 - **Accounts (D-147):** Vercel (Hobby) and Supabase (free) since 2026-10-21/22, photos in Cloudflare R2. Budgets and the
   weekly check: `monitoring.md`. The free database's memory is already over (1.57 of 1.4 GB, swap 406 MB on 2026-11-04,
   and it stopped answering for about 45 minutes that day).
@@ -33,8 +35,10 @@ Short on purpose (the audit warns past 10 KB): **replace** lines when something 
   `TODO(D-187)`); **its admin mode breaks** with the release.
 
 ## Next for the founder
-1. **Vercel Pro,** then merge `optimize/lighter-site` (D-189) when its savings are wanted live; each deploy empties the page
-   cache, so deploy it once at a quiet hour. Check ISR writes against reads the next day (`monitoring.md`).
+1. **Vercel Pro,** then merge `optimize/lighter-site` (D-189, D-190) and run the Deploy workflow; each deploy empties the page
+   cache, so deploy it once at a quiet hour. Check ISR writes against reads the next day (`monitoring.md`). A new app
+   build carries the struck prices and the tiles' men / women; until then those tiles open the whole category there.
+   Photos for the six clothing tiles are optional (`tile-photos.ts`; else each shows its newest piece).
 2. **Names to tidy:** production's count (Y-11; the page and Rename all go only at 0).
 3. In the order of use (each from the archived status, still open and not re-checked here):
    - **The photo redo** (D-164): pull on the laptop, `pnpm photos:redo fetch --type food --again` and `--type home
@@ -84,4 +88,4 @@ Short on purpose (the audit warns past 10 KB): **replace** lines when something 
 <!-- The verifier (plan §5 Phase 3 · Agent V) records the branch's full check here. Replace this table's row. -->
 | Date | Commit | Where | Result |
 |---|---|---|---|
-| 2026-11-06 | `52d1180` (branch `optimize/lighter-site`; only the founder's untracked `hero_updated.png` beside it) | Claude Code, Windows 11, local Supabase | `node scripts/check.mjs`: docs, typecheck, test, db (all SQL files, 0 failed), build, http (nothing over budget; `/` 14 ms, 131 KB JS), e2e 82 passed, 0 failed, 2 skipped (the multi-price spec has no local fixture, `@stripe-listen` needs `stripe listen`), bundle all OK. Lint failed on one import-order warning in the app; fixed, then docs, typecheck, lint and test re-run and OK. Not tested: production, the app on a device, and how much Vercel's usage actually falls, which only shows the day after the deploy. Earlier on 2026-11-05: 3 payment e2e failures in one full run, cause not established; not seen in any full run since. |
+| 2026-11-06 | D-190 (branch `optimize/lighter-site`; the founder's untracked `hero_updated.png` beside it) | Claude Code, Windows 11, local Supabase | `node scripts/check.mjs`: docs, typecheck, lint, test, build, http (nothing over budget; `/` 19 ms, 131 KB JS; `/clothing` 18 ms, 144 KB JS; `/search?q=saree` 138 ms), e2e 83 passed, 0 failed, 2 skipped (the multi-price spec has no local fixture, `@stripe-listen` needs `stripe listen`), bundle OK. In that run the db step failed on `search_speed.test.sql`: its time budget counted the whole file. Fixed in the test; docs, typecheck, lint, test and db (67 SQL files, 0 failed) re-run and OK, the rest not re-run as only that test changed. The 4242 payment e2e failed once in the run before (the card field in Stripe's iframe), cause not established; it passed 3 of 3 alone and in this run. Checked by hand at 375 px on the demo catalogue: rail, tiles, wine prices, Shipping in the bag. Not tested: production, the app on a device, food and home pages with real photos (the demo catalogue holds clothing only, without photos; Gifts only by SQL test), how much Vercel's usage falls. |

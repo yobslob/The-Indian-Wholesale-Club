@@ -2919,3 +2919,69 @@ given (no conversion).
   Each window gets a button: small spaced capitals and an arrow in a hairline ring that fills on hover (Shop under $99
   on the night, a real link; Shop clothing, Shop snacks and Find your state in the arches, drawn inside the arch's own
   link so the whole window stays the target).
+
+**D-177 · 2026-11-02 · founder: the Diwali night across the top, the three arches under it, no sliding** · Changes D-174's layout
+- Founder, verbatim: "Okay it is looking very very good but I want the host your diwali as it is and then the three
+  windows below it. no sliding".
+- What it means: at every width the night spans the row and the three arches sit side by side under it; the phones'
+  sideways swipe is gone. From 640 px the night lays out sideways (words left, flight right). The arches' ratio
+  changes with the width so the words, the button and the diya always fit (checked from 320 to 1920 px); on phones
+  the arches are slim, the words smaller and each button just its arrow ring.
+
+**D-178 · 2026-11-02 · founder: every listing's description written again on the laptop, fast and checked**
+- Founder, verbatim: "Generate a very optimized, efficient, smart and productive description make which changes all
+  the products descriptions by running on local machine(if cloud is costing limits.) We want to avoid any copyrights
+  therefore we need to tweak every products description, some products literally have their original price in their
+  description, some have emojis and mostly are not formatted."
+- What it means (migration `20261107090000_description_redo`, not deployed; `tools/description-redo`, its README):
+  - **All on the laptop, the photo redo's way (D-163):** `pnpm descriptions:redo fetch` (pages of 25 through the
+    worker account), `make` (Ollama with `qwen2.5:7b`, the weight estimator's model, so nothing is downloaded; eight
+    at once), `review` (http://127.0.0.1:4319: the shop's words and the new ones side by side; approve, reject, edit),
+    `publish` (one small write per listing, only while its words are still the ones read); `run` fetches and writes
+    page after page; `status`. Resumable at every step; the work folder keeps only the old words once a listing is live.
+  - **Each listing gets** a new summary (one line) and description: a short paragraph in the store's voice, then up
+    to seven `• Label: value` fact lines (the way the product page already shows bullets). Plain text, no markdown.
+    Facts the page shows under the words (fabric, care, material, ingredients) are not repeated.
+  - **Never on a customer surface (D-003):** prices, MRP, offers, the shop, sellers, brands (clothing and home, D-143;
+    food keeps its brand, D-139), links, phone numbers, shipping, returns, India logistics, emojis. The shop's
+    sentences about these are cut before the model reads anything; every new text is checked again, and the database
+    function itself refuses a price or a link.
+  - **No invented facts (D-012):** every number must be in the listing and every stated measure kept; no material,
+    food, allergen, claim, occasion or place the listing does not state; every fact line's words from the listing (an
+    ingredients line word for word); "India" only for a piece made in India (D-171). Health claims from shops
+    (pain relief, immunity, antioxidants) are dropped. A text that fails is asked again with the reasons (three tries),
+    then waits on the review page as flagged.
+  - **New wording:** at most 20 % of the prose's four-word runs and 7 words in a row may match the shop's text.
+  - **D-012's `content_status` does not apply:** `products` has none (only `regions` does, D-019). The founder's
+    approval on the review page is the gate; `products.description_redo` records which listings carry the redo's words
+    (`rewritten`) or the founder's (`edited`). `publish --auto` sends the ones that passed every check unreviewed: the
+    checks cannot catch every soft invention in a paragraph (the trial had a jacket "light and breathable"), so the
+    README asks for a look first.
+  - **Trial (2026-11-02, 24 live listings read from the store's public view, nothing written):** 20 passed every
+    check, 4 flagged (an invented care line, a fact left out twice, a fact line copying the shop's sentence); 25.6
+    listings a minute, about 9 hours for 13,000 listings.
+  - **Free plans:** Supabase reads about 2 KB a listing in pages of 25 and writes one row each; Vercel: no page-cache
+    write asked for (store pages pick up the words within their cache fallback).
+
+**D-179 · 2026-11-03 · founder (was Q-52 – Q-59): the launch QA questions answered**
+- Founder, verbatim: "yes Q-53 is true, In Q-58 insert the banner windows between hero and the global grid and the
+  host your party banner where it is right now., 54 is false, 55 is false, in 56 wherever anything is congested
+  instead of removing the whole column just make the buttons or text small according to the card, keep both in 57, 52
+  is false, 59 is true."
+- What it means:
+  - **Q-52 (checkout order): no change.** Phone first, then email and address.
+  - **Q-53 ("Imported" on India-made pieces): yes.** The India line reads "Made in India · from Kerala" ("Made in
+    India" for an all-India listing); a piece made elsewhere still reads "Imported" alone (D-171).
+    *Interpretation (proposed, confirm when you next see a product page):* the question offered dropping "Imported" or
+    saying "Shipped from India"; built as dropped, the smaller change. "Shipped from India" is a one-line swap.
+  - **Q-54 (delivery line in the bag, free line on cards, retailer charges folded in): no change.**
+  - **Q-55 (default sort "Most loved"): no change.** /food and /clothing open on Low to high.
+  - **Q-56 (phone cards): three a row everywhere.** Below 420 px food and home & gifts keep three cards a row (the
+    two-a-row of 2026-11-03 is undone); what is crowded is made smaller to fit the card: a 28 px heart and + each with
+    a 44 px tap area reaching past its edge, tags on one line left of the heart, 12 px names, 11 px prices.
+  - **Q-57 ("Duties paid" sentence and stamp): keep both.**
+  - **Q-58 (Home's first screen): the three Diwali arches go between the hero and the album** (the "global grid", the
+    drifting mosaic), under their toran; the night with the plane ("Host your Diwali under $99", the "host your party
+    banner") stays where it was, after the album and before Pick your home. Changes D-174/D-177's single section into
+    two (`DiwaliArches`, `DiwaliNight`).
+  - **Q-59 (Lenis off on touch screens): yes, keep it so.**
