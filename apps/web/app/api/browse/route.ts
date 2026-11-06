@@ -28,10 +28,10 @@ export async function GET(request: Request): Promise<NextResponse> {
   const filter = toBrowseFilter(productType.data, parseBrowseQuery(params), from, count);
   // the first 480 from the data cache, as before; deeper pages fresh, so the cache never grows with the scroll
   const page = await (from + count <= MOST ? browseCached(filter) : browseFresh(filter));
-  // The same answer for everyone (light cards, no stock): Vercel's CDN keeps it a minute, like /api/card-options, so a
+  // The same answer for everyone (light cards, no stock): Vercel's CDN keeps it an hour (D-189), so a
   // filter or Show more someone opened before answers from the edge (about 20 ms, no function run) instead of a
   // function and a data-cache read (about 250 ms). Free: CDN caching is not the page cache (monitoring.md).
   return NextResponse.json(page, {
-    headers: { 'Cache-Control': 'public, max-age=0, s-maxage=60, stale-while-revalidate=60' },
+    headers: { 'Cache-Control': 'public, max-age=0, s-maxage=3600, stale-while-revalidate=3600' },
   });
 }
