@@ -4,14 +4,16 @@ import Link from 'next/link';
 import { useRouter } from 'next/navigation';
 import { useEffect, useRef } from 'react';
 
-/** How long the mouse rests on a link before its page is read ahead. */
-const REST_MS = 120;
+/** How long a mouse or a finger rests on a link before its page is read ahead. */
+const REST_MS = 250;
 
 /**
  * Read a link's page ahead when the shopper means it: at once for a finger or the keyboard, and for the mouse only once
  * it rests on the link. A mouse crossing a grid of cards started a read of every card it passed: each a product page
  * built for the first time, several at once, which the free database could not keep up with (2026-11-03: product
  * pages failing after 8 s and searches giving up while it caught up). Resting also spares those pages' cache writes.
+ * D-189: the same for a finger. Most scrolls on a phone start on a card, and reading ahead on touchstart built and stored
+ * the page of every card a thumb landed on. A tap needs no head start: the page comes straight from the CDN.
  */
 export function useIntentPrefetch(href: string) {
   const router = useRouter();
@@ -25,14 +27,20 @@ export function useIntentPrefetch(href: string) {
     cancel();
     router.prefetch(href);
   };
+  const rest = (): void => {
+    cancel();
+    timer.current = setTimeout(warm, REST_MS);
+  };
   return {
     onPointerEnter: (e: React.PointerEvent): void => {
-      if (e.pointerType !== 'mouse') return; // a finger reads ahead on touchstart
-      cancel();
-      timer.current = setTimeout(warm, REST_MS);
+      if (e.pointerType !== 'mouse') return; // a finger waits in onTouchStart
+      rest();
     },
     onPointerLeave: cancel,
-    onTouchStart: warm,
+    onTouchStart: rest,
+    onTouchMove: cancel,
+    onTouchEnd: cancel,
+    onTouchCancel: cancel,
     onFocus: warm,
   };
 }
