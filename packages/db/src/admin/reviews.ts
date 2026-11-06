@@ -29,11 +29,14 @@ export async function setReviewStatus(
   reviewId: string,
   status: 'approved' | 'rejected',
   adminId: string,
-) {
-  unwrap(
+): Promise<string> {
+  const row = unwrap(
     await client
       .from('reviews')
       .update({ status, moderated_at: new Date().toISOString(), moderated_by: adminId })
-      .eq('id', reviewId),
+      .eq('id', reviewId)
+      .select('product_id')
+      .single(),
   );
+  return row.product_id;
 }

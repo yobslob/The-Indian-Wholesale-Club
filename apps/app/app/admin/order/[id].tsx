@@ -206,7 +206,7 @@ export default function AdminOrderScreen(): React.JSX.Element {
         busy={action.busy}
         onClose={() => setUnavailable(null)}
         onConfirm={() =>
-          void action.run(() => markPickup(supabase, unavailable!.id, 'unavailable')).then(() => setUnavailable(null))
+          void action.run(() => markPickup(supabase, unavailable!.id, 'unavailable'), { pickups: [unavailable!.id] }).then(() => setUnavailable(null))
         }
       >
         The shop doesn&apos;t have it any more. The customer is emailed that it isn&apos;t coming; refund it on the web panel.

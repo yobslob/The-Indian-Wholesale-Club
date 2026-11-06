@@ -34,7 +34,7 @@ export default function AdminListingScreen(): React.JSX.Element {
   }
   const photos = p.media.slice().sort((a, b) => Number(b.is_primary) - Number(a.is_primary) || a.sort_order - b.sort_order);
   const [need, tone] = listingNeeds(p);
-  const set = (status: 'live' | 'paused') => () => void action.run(() => setProductStatus(supabase, p.id, status));
+  const set = (status: 'live' | 'paused') => () => void action.run(() => setProductStatus(supabase, p.id, status), { listings: [p.id] });
 
   return (
     <Screen title="Listing" refreshing={loading} onRefresh={reload}>
@@ -71,7 +71,7 @@ export default function AdminListingScreen(): React.JSX.Element {
         {p.variants
           .filter((v) => v.is_active)
           .map((v) => (
-            <QtyConfirm key={`${v.id}:${v.qty_listed}:${v.qty_confirmed_at ?? ''}`} variant={v} onDone={reload} />
+            <QtyConfirm key={`${v.id}:${v.qty_listed}:${v.qty_confirmed_at ?? ''}`} productId={p.id} variant={v} onDone={reload} />
           ))}
       </Panel>
       <Body muted>Its name, story and details are edited on the web panel.</Body>

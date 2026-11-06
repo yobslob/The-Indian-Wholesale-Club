@@ -1,6 +1,6 @@
 'use server';
 
-import { revalidatePath, revalidateTag } from 'next/cache';
+import { revalidatePath } from 'next/cache';
 import { z } from 'zod';
 
 import {
@@ -14,7 +14,7 @@ import {
   type CancelReason,
 } from '@repo/db/admin';
 
-import { STORE_TAG } from '@/features/catalog/data';
+import { revalidateOrderPieces } from '@/features/catalog/revalidate';
 import { stripeServer } from '@/lib/stripe';
 
 import { sendEmailsSoon } from '../emails-soon';
@@ -68,7 +68,7 @@ export async function cancelOrderAction(orderId: string, reason: CancelReason): 
     refundRef = refund.id;
   }
   await recordCancellation(client, { orderId, reason: why, amountCents: amount, refundRef });
-  revalidateTag(STORE_TAG); // the pieces are available again
+  await revalidateOrderPieces(client, orderId); // the pieces are available again
   done(orderId);
 }
 
@@ -91,6 +91,6 @@ export async function cancelShipmentAction(orderId: string, shipmentId: string, 
     refundRef = refund.id;
   }
   await recordShipmentCancel(client, { shipmentId, reason: why, amountCents: amount, refundRef });
-  revalidateTag(STORE_TAG); // its pieces are available again
+  await revalidateOrderPieces(client, orderId); // its pieces are available again
   done(orderId);
 }

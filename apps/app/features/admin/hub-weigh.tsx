@@ -4,6 +4,7 @@ import { Text, TextInput, View } from 'react-native';
 import { markPickup, weighPickup } from '@repo/db/admin';
 
 import { AdminButton } from './ui';
+import type { StoreRefresh } from './use-action';
 
 import { supabase } from '@/lib/supabase';
 
@@ -31,7 +32,7 @@ export function PickWithWeight({
   name: string;
   big?: boolean;
   busy: boolean;
-  run: (task: () => Promise<unknown>) => Promise<boolean>;
+  run: (task: () => Promise<unknown>, refresh?: StoreRefresh) => Promise<boolean>;
   onUnavailable: () => void;
 }): React.JSX.Element {
   const [text, setText] = useState('');
@@ -55,7 +56,7 @@ export function PickWithWeight({
             void run(async () => {
               await markPickup(supabase, pickupId, 'picked');
               if (grams) await weighPickup(supabase, pickupId, grams);
-            })
+            }, grams ? { pickups: [pickupId] } : undefined)
           }
         />
       </View>
@@ -80,7 +81,7 @@ export function WeighPicked({
   note: string | null;
   name: string;
   busy: boolean;
-  run: (task: () => Promise<unknown>) => Promise<boolean>;
+  run: (task: () => Promise<unknown>, refresh?: StoreRefresh) => Promise<boolean>;
 }): React.JSX.Element {
   const [text, setText] = useState('');
   const grams = gramsOf(text);
@@ -99,7 +100,7 @@ export function WeighPicked({
         kind="secondary"
         label="Weigh it"
         disabled={busy || grams === null}
-        onPress={() => void run(() => weighPickup(supabase, pickupId, grams!))}
+        onPress={() => void run(() => weighPickup(supabase, pickupId, grams!), { pickups: [pickupId] })}
       />
     </View>
   );

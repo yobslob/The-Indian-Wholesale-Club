@@ -8,6 +8,7 @@ import { orderDetailSchema, type OrderDetail } from '../store/schemas';
 import type { Json } from '../database.types';
 
 export * from './checkout';
+export * from './order-pages';
 
 export interface CreateOrderItemInput {
   variantId: string;

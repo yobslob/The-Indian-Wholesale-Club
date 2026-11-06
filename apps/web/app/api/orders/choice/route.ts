@@ -9,7 +9,7 @@ import {
   lookupGuestOrder,
 } from '@repo/db/server';
 
-import { revalidateAfterRelease } from '@/features/catalog/revalidate';
+import { revalidateOrderPieces } from '@/features/catalog/revalidate';
 import { sendDueEmails } from '@/lib/email/send';
 import { errorMessage, logger } from '@/lib/logger';
 import { limitRequest } from '@/lib/rate-limit';
@@ -73,7 +73,7 @@ export async function POST(request: Request): Promise<NextResponse<{ ok: true } 
     }
     const input = { orderId: order.id, amountCents: amount, refundRef };
     await (delay ? cancelAfterDelay(service, input) : customerCancel(service, input));
-    revalidateAfterRelease(); // reserved pieces went back to stock
+    await revalidateOrderPieces(service, order.id); // reserved pieces went back to stock
     await sendDueEmails(service);
     return NextResponse.json({ ok: true });
   } catch (error) {

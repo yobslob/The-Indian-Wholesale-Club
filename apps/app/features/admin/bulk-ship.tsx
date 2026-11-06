@@ -8,7 +8,6 @@ import tokens from '@repo/tokens';
 import { AdminButton, Sheet } from './ui';
 
 import { ErrorText } from '@/components/ui';
-import { apiPost } from '@/lib/api';
 import { supabase } from '@/lib/supabase';
 
 export interface ShipTarget {
@@ -30,7 +29,6 @@ async function each(ids: string[], run: (id: string) => Promise<void>): Promise<
       failed.push(id);
     }
   }
-  void apiPost('/admin/revalidate', {});
   return failed;
 }
 
