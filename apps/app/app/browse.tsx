@@ -31,12 +31,14 @@ export default function BrowseScreen(): React.JSX.Element {
   const type: ProductType = isProductType(params.type) ? params.type : 'clothing';
   const region = slugOrNothing(params.region);
   const category = slugOrNothing(params.category);
-  const key = `browse:${type}:${region ?? ''}:${category ?? ''}`;
+  // D-190: from Home's Shirts, Tops and Kurtis tiles; the app has no For filter yet, so the address alone sets it
+  const forWho = params.for === 'women' || params.for === 'men' ? params.for : undefined;
+  const key = `browse:${type}:${region ?? ''}:${category ?? ''}:${forWho ?? ''}`;
   const [meta, setMeta] = useState<Pick<BrowsePage, 'total' | 'all_total' | 'regions' | 'categories'> | null>(null);
   const [open, setOpen] = useState(false);
   const [stuck, setStuck] = useState(false);
   const { items: data, error, loading, loadingMore, loadMore, reload } = usePagedQuery(key, async (offset, limit) => {
-    const page = await browseProducts(supabase, { productType: type, regionSlug: region, categorySlug: category, offset, limit });
+    const page = await browseProducts(supabase, { productType: type, regionSlug: region, categorySlug: category, forWho, offset, limit });
     if (offset === 0) setMeta({ total: page.total, all_total: page.all_total, regions: page.regions, categories: page.categories });
     return page.products;
   });
@@ -132,7 +134,7 @@ export default function BrowseScreen(): React.JSX.Element {
         categories={[{ slug: undefined, name: 'Everything' }, ...(meta?.categories ?? [])]}
         state={region}
         category={category}
-        onPick={(next) => router.setParams({ region: next.region ?? '', category: next.category ?? '' })}
+        onPick={(next) => router.setParams({ region: next.region ?? '', category: next.category ?? '', for: '' })}
       />
     </SafeAreaView>
   );

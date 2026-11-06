@@ -11,7 +11,7 @@ import Animated, {
   withTiming,
 } from 'react-native-reanimated';
 
-import { formatUsd, regionSegment } from '@repo/shared/domain';
+import { formatUsd, regionSegment, wasCents } from '@repo/shared/domain';
 import tokens from '@repo/tokens';
 
 import type { ProductCard as ProductCardData, RegionProductCard } from '@repo/db/store';
@@ -171,7 +171,9 @@ export const ProductCard = memo(function ProductCard({
           {product.name}
         </Text>
         <Text className="font-body text-ink-muted text-[12.5px]">
-          {formatUsd(product.price_cents)}
+          {/* D-190: as on the website's card */}
+          {product.offer ? <Text className="line-through">{formatUsd(wasCents(product.price_cents, product.product_type))} </Text> : null}
+          <Text className={product.offer ? 'font-ui-semibold text-brand' : undefined}>{formatUsd(product.price_cents)}</Text>
           {product.region_name ? ` · ${product.region_name}` : null}
         </Text>
         {days ? <Text className="font-body text-ink-muted text-[12px]">{days}</Text> : null}
