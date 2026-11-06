@@ -27,8 +27,8 @@ Vendor screens, cycles, payouts and the rest that went with D-187: `docs/archive
 - Admin screens are bundled in the app binary (mobile apps can't hide code), so all protection is server-side, as on the web (D-043):
   every admin read and write goes through `@repo/db/admin` with the user's own session, and RLS refuses non-admins (INV-7).
   The customer screens can't import admin code (lint rule in `apps/app/.eslintrc.js`).
-- The app admin writes straight to the database, so it cannot refresh the website's cache: storefront pages pick up app
-  changes (stock after a pickup, a confirmed quantity) within the 5-minute cache fallback (`engineering.md` PR-1).
+- The app admin writes straight to the database, then names what moved in `POST /admin/revalidate`, and the website
+  refreshes only those pages (D-189, `engineering.md` §Caching). Anything else catches up within the day's fallback.
 
 ## Desks (D-007)
 `profiles.desk` orders Today (C7): the admin's own desk's jobs first (India: food shipments, pieces to order, on the way, to

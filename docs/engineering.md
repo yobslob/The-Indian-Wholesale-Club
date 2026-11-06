@@ -87,8 +87,8 @@ Baseline numbers come from the founder's first `node scripts/check.mjs` run and 
 ## Caching (D-068)
 | What | Cached? | Tags | Refreshed by |
 |---|---|---|---|
-| Home, region page, product page | yes (`unstable_cache` + the page's static render) | `store` + `store:home` / `store:region:<slug>` (and `store:regions` on every state page) / `store:product:<region>/<slug>` | a sale (`revalidateAfterSale`: the products sold, their regions, Home), an admin change to listings (D-145, `features/admin/refresh-listings.ts`: their own pages, their state pages, Home, See all; a draft's edit nothing; over 100 listings everything), a cancel and any other admin change (everything), else 1 hour (D-171: 5 minutes until 2026-10-31) |
-| See all (`/clothing`, `/food`, `/home-and-gifts`) | yes | `store` + `store:listings` | admin changes, else 1 hour. Light cards without stock, so a sale never changes them. Each address with its filters is a cached page (rewritten to `app/(store)/see-all/…`, not rendered per request: 61 – 169 ms before, 7 – 13 ms after, 2026-10-15); a filter combination nobody opened yet is built on its first visit. D-136: the filters and the endless scroll (D-166) fetch `GET /api/browse` (CDN-kept a minute; each filter set and page within the first 480 pieces is its own `store_browse()` entry in the data cache, deeper pages are read fresh so scrolling far never grows it) and swap or append only the cards, never touching the address |
+| Home, region page, product page | yes (`unstable_cache` + the page's static render) | `store` + `store:home` / `store:region:<slug>` (and `store:regions` on every state page) / `store:product:<region>/<slug>` | a sale (`revalidateAfterSale`: the products sold, their regions, Home), an admin change to listings (D-145, `features/admin/refresh-listings.ts`: their own pages, their state pages, Home, See all; a draft's edit nothing; over 100 listings everything), a cancel (its own pieces' pages, D-189), a piece weighed, a quantity confirmed, a review or a source's price (`refreshProductPages`: the listing's own page and its state's), a bulk publish, Settings or a state's content (everything), else a day (D-189; an hour from D-171, 5 minutes before that) |
+| See all (`/clothing`, `/food`, `/home-and-gifts`) | yes | `store` + `store:listings` | admin changes, else a day (D-189). Light cards without stock, so a sale never changes them. Each address with its filters is a cached page (rewritten to `app/(store)/see-all/…`, not rendered per request: 61 – 169 ms before, 7 – 13 ms after, 2026-10-15); a filter combination nobody opened yet is built on its first visit. D-136: the filters and the endless scroll (D-166) fetch `GET /api/browse` (CDN-kept a minute; each filter set and page within the first 480 pieces is its own `store_browse()` entry in the data cache, deeper pages are read fresh so scrolling far never grows it) and swap or append only the cards, never touching the address |
 | Search | no (per query; one `store_search_page()` read, 6 – 40 ms on 7,200 listings, D-160). Its suggestions' list (`/api/search/hints`) is CDN-kept an hour, never per keystroke | | |
 | Cart, checkout, orders, account, every API route, admin | **never** (session or service clients, `cookies()`, POST routes) | | |
 - A sale is refreshed from `features/checkout/finalize.ts` once the order exists (browser or webhook, whichever is first),
@@ -97,20 +97,20 @@ Baseline numbers come from the founder's first `node scripts/check.mjs` run and 
   "Sold out" right after the last piece is bought. Similar items on *other* product pages catch up within the fallback; their Add is
   checked at checkout (plan Y-3).
 - Cancels (`app/api/orders/choice/route.ts`, admin refunds) put pieces back: everything is refreshed (rare).
-- App admin writes go straight to the database and refresh the website through `POST /admin/revalidate` (B-17).
+- App admin writes go straight to the database and name what moved in `POST /admin/revalidate` (B-17, D-189): `listings`, `products` or `pickups`. An empty body refreshes nothing, and most admin work (shipping, tracking, picking) names nothing. It used to refresh the whole store after every admin action.
 - Bump `SHAPE` in `features/catalog/data.ts` whenever a cached store_* result changes shape.
 - D-145: Vercel counts page-cache writes by size (8 KB units, 200,000 a month free), and every page is stored twice
   (its HTML and its data). Cached store reads keep a card's options out (`slim-cards.ts`: their number and whether all are
   sold out; one option stays), and the + reads them from `GET /api/card-options`: D-166, while a several-option card
   comes near the screen, every such card of that moment in one `?ids=` request (up to 48), so the + opens at once.
-  ProductCard passes the + only the fields it uses, not the whole card. Its links prefetch on touch, focus or a mouse resting
-  120 ms on them (`card-link.tsx`, `intent-link.tsx`, 2026-11-03: a mouse crossing a grid built a product page per card
+  ProductCard passes the + only the fields it uses, not the whole card. Its links prefetch on focus or a finger or mouse resting
+  250 ms on them (D-189: a scroll that starts on a card reads nothing ahead; `card-link.tsx`, `intent-link.tsx`, 2026-11-03: a mouse crossing a grid built a product page per card
   it passed, several at once, more than the free database could answer in 8 s), never for every card in view (each
   viewport prefetch was a product page's request). The website deploys once a day (ops.md §Deploy): each deploy starts the page
   cache afresh. The same for every See all read: its Size / Pack list is kept to the 60 biggest when it runs past 100
   (`size-facet.ts`: Food's 1,687 packs were 540 KB of /food's HTML).
 - Public, visitor-free JSON answers carry `s-maxage` so Vercel's CDN answers repeats without running a function (free;
-  not the page cache): `/api/card-options`, `/api/browse` and `/api/goes-well` a minute, `/api/bag-charges` a minute,
+  not the page cache): `/api/browse` an hour, `/api/card-options` 5 minutes (D-189), `/api/goes-well` a minute, `/api/bag-charges` a minute,
   `/api/search/hints` an hour (D-160), `/api/zip` a year. Never on an answer that depends on the session or carries personal data.
 - The saved hearts (`features/account/saved-store.ts`) load Supabase's browser client only when a session cookie is
   there: a signed-out visitor (most of them) never downloads it (about 70 KB of script on every store page before).

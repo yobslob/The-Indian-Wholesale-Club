@@ -4,27 +4,23 @@ Short on purpose (the audit warns past 10 KB): **replace** lines when something 
 `git log`, `docs/archive/status-to-2026-11-04.md` (what was built and every verification run from 2026-10-22 to
 2026-11-04) and the older `docs/archive/status-to-2026-10-21.md`, `status-log-to-2026-10-11.md`.
 
-## What is live today: the OLD store
-- **Live:** https://indianwholesaleclub.com (web) and the Android app 1.0.0, with real customers. It is still the store
-  from before D-187: the 7-day store, Express, the $99.99 free line, the old database.
-- **Not released:** the simple store (D-187) is **built on branch `cleanup/simple-store`**, not merged, not deployed. No
-  migration of it has touched production. Until the founder runs `docs/release-simple-store.md`, every doc in this repo
-  describes what the branch does, not what customers see.
+## What is live today: the simple store
+- **Live:** https://indianwholesaleclub.com (web), with real customers: the simple store (D-187), merged as
+  [PR #1](https://github.com/yobslob/The-Indian-Wholesale-Club/pull/1) and deployed on 2026-11-04 (21:47 UTC).
+- **Not released:** branch `optimize/lighter-site` (D-189) cuts Vercel's usage. **It saves nothing until it is merged and
+  deployed**, and the founder is continuing design work on it. Website only, no migration.
 - **Accounts (D-147):** Vercel (Hobby) and Supabase (free) since 2026-10-21/22, photos in Cloudflare R2. Budgets and the
   weekly check: `monitoring.md`. The free database's memory is already over (1.57 of 1.4 GB, swap 406 MB on 2026-11-04,
   and it stopped answering for about 45 minutes that day).
 - **Deploys:** the website once a day at 09:00 UTC from a green `main` (D-145); migrations only through the Deploy
   workflow, which the founder runs.
-- **Waiting for the Deploy workflow:** the three new migrations (`20261109090000_simple_rules`,
-  `20261109090100_simple_reads`, `20261109090200_simple_drops`). The Deploy of 2026-11-03 on `88b2f82` found production up
-  to date, so nothing older is waiting (D-187's "same release" note no longer applies).
 - **Catalogue (production copy of 2026-10-21; more has been added since):** 8,032 listings, 5,761 live (clothing 664,
   food 4,093, home 1,004), about 21,000 options, all photos in R2.
 
-## What the branch changes (D-187; the contract is `docs/archive/simple-store-plan.md` §1, §2, §10)
+## What the simple store changed (D-187; the contract is `docs/archive/simple-store-plan.md` §1, §2, §10)
 - **One store.** No 7-day store, vendors, vendor accounts, cycles, payouts, Express, the `house_models` table, the
   paused full price formula, the exchange-rate refresh, live stock on product pages, listing with the camera, festival
-  clock, week strip, Lenis, the hidden $1 payment page. 14 tables and two pg_cron jobs gone; one daily clean-up job
+  clock, week strip, Lenis. 14 tables and two pg_cron jobs gone; one daily clean-up job
   (`iwc-tidy`) added.
 - **Delivery days:** food 7, clothing and home & gifts 12 – 16, Monday to Friday from the order day. A bag with both
   always ships as two shipments. Orders already placed keep their dates. Already in the US stays calendar days.
@@ -33,13 +29,14 @@ Short on purpose (the audit warns past 10 KB): **replace** lines when something 
 - **Stock is checked at checkout** (Remove / Keep n, payment locked until sorted) on the website and in the app.
 - **Home:** hero → Diwali arches → mosaic → Shop by category → Diwali night → What everyone missed this week → The
   kirana counter → Just listed Clothing → Just listed Home & gifts → Pick your home → the delivery band.
-- **App 1.1.0** is built for this and not yet published. The old app keeps working as a customer app (shims marked
+- **App 1.1.0** is built for this; whether it is published is not recorded here. The old app keeps working as a customer app (shims marked
   `TODO(D-187)`); **its admin mode breaks** with the release.
 
 ## Next for the founder
-1. **The release: `docs/release-simple-store.md`, in order.** Before it: production's **Names to tidy** count (Y-11; the
-   page and Rename all go only at 0), the backup, the pre-check, the checksum.
-2. After the release, in the order of use (each from the archived status, still open and not re-checked here):
+1. **Vercel Pro,** then merge `optimize/lighter-site` (D-189) when its savings are wanted live; each deploy empties the page
+   cache, so deploy it once at a quiet hour. Check ISR writes against reads the next day (`monitoring.md`).
+2. **Names to tidy:** production's count (Y-11; the page and Rename all go only at 0).
+3. In the order of use (each from the archived status, still open and not re-checked here):
    - **The photo redo** (D-164): pull on the laptop, `pnpm photos:redo fetch --type food --again` and `--type home
      --again`, `redo.py` per type, review, publish (`tools/photo-redo/README.md`). Men's faces work now (`m-1`, `m-2`).
    - **The description redo** (D-178): `pnpm descriptions:redo run --limit 100`, review, publish, then 3,000 a night.
