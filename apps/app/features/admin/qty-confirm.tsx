@@ -23,9 +23,11 @@ export interface VariantQty {
  * The database logs it in the stock ledger and stamps it as re-confirmed (INV-4).
  */
 export function QtyConfirm({
+  productId,
   variant,
   onDone,
 }: {
+  productId: string;
   variant: VariantQty;
   onDone: () => void;
 }): React.JSX.Element {
@@ -56,7 +58,7 @@ export function QtyConfirm({
           label="Confirm pieces"
           disabled={action.busy || !valid}
           onPress={() =>
-            void action.run(() => setListedQty(supabase, variant.id, value, 'confirmed in app'))
+            void action.run(() => setListedQty(supabase, variant.id, value, 'confirmed in app'), { products: [productId] })
           }
         />
       </View>

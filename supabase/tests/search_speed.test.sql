@@ -29,6 +29,9 @@ create function pg_temp.names(p jsonb) returns text[] language sql as $$
   select coalesce(array_agg(e ->> 'name' order by n), '{}') from jsonb_array_elements(p -> 'products') with ordinality x(e, n)
 $$;
 
+-- The budget counts from the start of the statement, and db-test.mjs sends this whole file as one: on a slow machine the
+-- rows above would use it up. The tests that are about the budget set their own, below.
+set local iwc.search_budget_ms = '600000';
 set local role anon;
 select tests.assert(
   (select (r ->> 'total')::int = 1000 and (r ->> 'all_total')::int = 1000 and (r ->> 'capped')::boolean
@@ -82,7 +85,7 @@ select tests.assert(
   (select r ->> 'mode' = 'all' and not (r ->> 'slow')::boolean and jsonb_array_length(r -> 'products') = 24
    from (select public.store_search_page('qorvane', p_record => false) r) x),
   'a search its words answer is answered whatever the budget');
-reset iwc.search_budget_ms;
+set local iwc.search_budget_ms = '600000';
 reset role;
 
 -- The suggestions count categories and states from product_search.

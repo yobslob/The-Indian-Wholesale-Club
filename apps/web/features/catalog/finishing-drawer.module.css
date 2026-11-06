@@ -44,6 +44,11 @@
     margin-inline: calc(-1 * var(--gut));
     border-radius: 0;
   }
+  /* D-190: to the screen's right edge only; the groups' rail keeps the left */
+  :global([data-railed]) .drawer {
+    margin-left: 0;
+    border-radius: 18px 0 0 18px;
+  }
   .from {
     display: block;
   }

@@ -1,6 +1,6 @@
 'use server';
 
-import { revalidatePath, revalidateTag } from 'next/cache';
+import { revalidatePath } from 'next/cache';
 import { z } from 'zod';
 
 import {
@@ -21,10 +21,8 @@ import {
 import { attributesSchemaFor, PRODUCT_TYPES } from '@repo/shared/domain';
 import { parseTargetsCsv } from '@repo/shared/sourcing/auto';
 
-import { STORE_TAG } from '@/features/catalog/data';
-
 import { requireAdminAction } from '../../guard';
-import { refreshListings } from '../../refresh-listings';
+import { refreshListings, refreshProductPages } from '../../refresh-listings';
 
 /** Auto-sourcing (D-118): the admin's side of the runner. Every write is checked again by RLS (is_admin()). */
 
@@ -156,8 +154,7 @@ export async function deleteTargetAction(targetId: string): Promise<void> {
 
 export async function reviewSourceAction(sourceId: string, accept: boolean): Promise<void> {
   const { client } = await requireAdminAction();
-  await reviewSource(client, id.parse(sourceId), accept);
-  revalidateTag(STORE_TAG);
+  await refreshProductPages(client, [await reviewSource(client, id.parse(sourceId), accept)]);
   revalidatePath(PAGE);
 }
 

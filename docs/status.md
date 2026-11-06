@@ -4,27 +4,25 @@ Short on purpose (the audit warns past 10 KB): **replace** lines when something 
 `git log`, `docs/archive/status-to-2026-11-04.md` (what was built and every verification run from 2026-10-22 to
 2026-11-04) and the older `docs/archive/status-to-2026-10-21.md`, `status-log-to-2026-10-11.md`.
 
-## What is live today: the OLD store
-- **Live:** https://indianwholesaleclub.com (web) and the Android app 1.0.0, with real customers. It is still the store
-  from before D-187: the 7-day store, Express, the $99.99 free line, the old database.
-- **Not released:** the simple store (D-187) is **built on branch `cleanup/simple-store`**, not merged, not deployed. No
-  migration of it has touched production. Until the founder runs `docs/release-simple-store.md`, every doc in this repo
-  describes what the branch does, not what customers see.
+## What is live today: the simple store
+- **Live:** https://indianwholesaleclub.com (web), with real customers: the simple store (D-187), merged as
+  [PR #1](https://github.com/yobslob/The-Indian-Wholesale-Club/pull/1) and deployed on 2026-11-04 (21:47 UTC).
+- **Not released:** branch `optimize/lighter-site`: Vercel's usage cuts (D-189; **they save nothing until merged and
+  deployed**) and D-190 (mobile web first: Shop by category, Shipping that follows every piece, the groups' rail, struck-through
+  prices). The founder is continuing design work on it. **It now has a migration** (`20261110090000`): run the Deploy
+  workflow with the merge. Shipping changes for customers the moment the migration runs.
 - **Accounts (D-147):** Vercel (Hobby) and Supabase (free) since 2026-10-21/22, photos in Cloudflare R2. Budgets and the
   weekly check: `monitoring.md`. The free database's memory is already over (1.57 of 1.4 GB, swap 406 MB on 2026-11-04,
   and it stopped answering for about 45 minutes that day).
 - **Deploys:** the website once a day at 09:00 UTC from a green `main` (D-145); migrations only through the Deploy
   workflow, which the founder runs.
-- **Waiting for the Deploy workflow:** the three new migrations (`20261109090000_simple_rules`,
-  `20261109090100_simple_reads`, `20261109090200_simple_drops`). The Deploy of 2026-11-03 on `88b2f82` found production up
-  to date, so nothing older is waiting (D-187's "same release" note no longer applies).
 - **Catalogue (production copy of 2026-10-21; more has been added since):** 8,032 listings, 5,761 live (clothing 664,
   food 4,093, home 1,004), about 21,000 options, all photos in R2.
 
-## What the branch changes (D-187; the contract is `docs/archive/simple-store-plan.md` §1, §2, §10)
+## What the simple store changed (D-187; the contract is `docs/archive/simple-store-plan.md` §1, §2, §10)
 - **One store.** No 7-day store, vendors, vendor accounts, cycles, payouts, Express, the `house_models` table, the
   paused full price formula, the exchange-rate refresh, live stock on product pages, listing with the camera, festival
-  clock, week strip, Lenis, the hidden $1 payment page. 14 tables and two pg_cron jobs gone; one daily clean-up job
+  clock, week strip, Lenis. 14 tables and two pg_cron jobs gone; one daily clean-up job
   (`iwc-tidy`) added.
 - **Delivery days:** food 7, clothing and home & gifts 12 – 16, Monday to Friday from the order day. A bag with both
   always ships as two shipments. Orders already placed keep their dates. Already in the US stays calendar days.
@@ -33,13 +31,16 @@ Short on purpose (the audit warns past 10 KB): **replace** lines when something 
 - **Stock is checked at checkout** (Remove / Keep n, payment locked until sorted) on the website and in the app.
 - **Home:** hero → Diwali arches → mosaic → Shop by category → Diwali night → What everyone missed this week → The
   kirana counter → Just listed Clothing → Just listed Home & gifts → Pick your home → the delivery band.
-- **App 1.1.0** is built for this and not yet published. The old app keeps working as a customer app (shims marked
+- **App 1.1.0** is built for this; whether it is published is not recorded here. The old app keeps working as a customer app (shims marked
   `TODO(D-187)`); **its admin mode breaks** with the release.
 
 ## Next for the founder
-1. **The release: `docs/release-simple-store.md`, in order.** Before it: production's **Names to tidy** count (Y-11; the
-   page and Rename all go only at 0), the backup, the pre-check, the checksum.
-2. After the release, in the order of use (each from the archived status, still open and not re-checked here):
+1. **Vercel Pro,** then merge `optimize/lighter-site` (D-189, D-190) and run the Deploy workflow; each deploy empties the page
+   cache, so deploy it once at a quiet hour. Check ISR writes against reads the next day (`monitoring.md`). A new app
+   build carries the struck prices and the tiles' men / women; until then those tiles open the whole category there.
+   Photos for the six clothing tiles are optional (`tile-photos.ts`; else each shows its newest piece).
+2. **Names to tidy:** production's count (Y-11; the page and Rename all go only at 0).
+3. In the order of use (each from the archived status, still open and not re-checked here):
    - **The photo redo** (D-164): pull on the laptop, `pnpm photos:redo fetch --type food --again` and `--type home
      --again`, `redo.py` per type, review, publish (`tools/photo-redo/README.md`). Men's faces work now (`m-1`, `m-2`).
    - **The description redo** (D-178): `pnpm descriptions:redo run --limit 100`, review, publish, then 3,000 a night.
@@ -87,4 +88,4 @@ Short on purpose (the audit warns past 10 KB): **replace** lines when something 
 <!-- The verifier (plan §5 Phase 3 · Agent V) records the branch's full check here. Replace this table's row. -->
 | Date | Commit | Where | Result |
 |---|---|---|---|
-| 2026-11-05 | `b7e4709` (only the founder's untracked `hero_updated.png` beside it) | Claude Code, Windows 11, local Supabase | `node scripts/check.mjs`, all steps OK: docs 0.3 s, typecheck 33 s, lint 28 s, test 5 s, db 54 s, build 75 s, http 4 s (nothing over budget), e2e 463 s (81 passed, 0 failed, 2 skipped: the multi-price spec has no local fixture, `@stripe-listen` needs `stripe listen`), bundle 23 s. **Earlier, on `5c3c9e8`:** the verifier's first full run had 3 payment e2e failures in `phone-flows` (4242, 3-D Secure approved and failed: payment or start-of-checkout errors; cause not established, the server's log was not kept). The next two full e2e runs passed. Watch checkout errors after the release. Not tested: production, the app on a device, a webhook delivered by Stripe, a sent email. |
+| 2026-11-06 | D-190 (branch `optimize/lighter-site`; the founder's untracked `hero_updated.png` beside it) | Claude Code, Windows 11, local Supabase | `node scripts/check.mjs`: docs, typecheck, lint, test, build, http (nothing over budget; `/` 19 ms, 131 KB JS; `/clothing` 18 ms, 144 KB JS; `/search?q=saree` 138 ms), e2e 83 passed, 0 failed, 2 skipped (the multi-price spec has no local fixture, `@stripe-listen` needs `stripe listen`), bundle OK. In that run the db step failed on `search_speed.test.sql`: its time budget counted the whole file. Fixed in the test; docs, typecheck, lint, test and db (67 SQL files, 0 failed) re-run and OK, the rest not re-run as only that test changed. The 4242 payment e2e failed once in the run before (the card field in Stripe's iframe), cause not established; it passed 3 of 3 alone and in this run. Checked by hand at 375 px on the demo catalogue: rail, tiles, wine prices, Shipping in the bag. Not tested: production, the app on a device, food and home pages with real photos (the demo catalogue holds clothing only, without photos; Gifts only by SQL test), how much Vercel's usage falls. |

@@ -14,12 +14,13 @@ Every automatic price = (shop ₹ ÷ 0.90 + weight g × ₹2) ÷ the category's 
 - **Home & gifts without a weight (D-121):** priced at shop ₹ × 1.5 g (at least 200 g, at most the category's typical
   weight). Footwear without a weight: 600 g (D-122).
 - Products → Download Excel gives name, Indian price, category, weight, US price and margin.
+- **Struck-through prices (D-190):** Settings → Prices, 55% of the listings priced by the rules (0 = none; picked from the listing's id). The struck figure = price × 1.2 food, × 1.4 clothing, × 1.5 home & gifts, the price plus its margin. Display only: what is charged is the price.
 
 ## The bag's charges (Settings → Bag charges)
 | Number | On production | Notes |
 |---|---|---|
 | **Free shipping from** | $49.99, every bag (D-187) | `free_shipping_min_cents`. At and over it, Shipping and Retailer charges show struck through at $0.00 |
-| **Shipping** below the line | $18.62 × the bag's billed kg (D-154) | its packed weight, food at 110% of its label, at least 1 kg, then by the half kg; one parcel for the whole bag even when it ships as two. 1 kg $18.62, 1.5 kg $27.93, 2.5 kg $46.55 |
+| **Shipping** below the line | $18.62 × the bag's billed kg (D-154, D-190) | its heaviest piece at least 1 kg, then by the half kg, and every other piece its own weight, food at 110% of its label, never under the whole bag by the half kg; one parcel for the whole bag even when it ships as two. One piece $18.62; 5 masalas of 100 g $26.81; 2 kurtas of 450 g $27.00; a 1 kg piece and a 100 g piece $27.93. The same figure shows struck through from the free line up |
 | **Retailer charges** below the line | $0.99 | Settings |
 | **Bulk saving and heavy-item discount from** | $99.99 (D-187: "Keep them at $99.99") | `bulk_saving_from_cents`. Its own line since D-187, money unchanged |
 | **Bulk saving** | 10% of the amount over that line, up to $25 (D-119) | a $120 bag saves $2.00 |

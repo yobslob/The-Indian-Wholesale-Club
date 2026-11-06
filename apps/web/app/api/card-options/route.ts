@@ -13,13 +13,13 @@ const ids = z
   .transform((v) => v.split(',').filter(Boolean))
   .pipe(z.array(id).min(1).max(48));
 
-const CACHE = { 'Cache-Control': 'public, max-age=0, s-maxage=60, stale-while-revalidate=300' };
+const CACHE = { 'Cache-Control': 'public, max-age=0, s-maxage=300, stale-while-revalidate=3600' };
 
 /**
  * Cards' options (D-145; the page does not carry them, slim-cards.ts): `?id=` one piece, read when its + is pressed;
  * `?ids=a,b,…` (up to 48) the several-option cards a page has on screen, read while the shopper looks so a + opens at
  * once (2026-10-30), answered as { [product id]: options }. The store's own variants view, so nothing a customer may not
- * see (D-003, D-017). Vercel's CDN keeps each answer a minute (free, unlike the page cache); the numbers left are for
+ * see (D-003, D-017). Vercel's CDN keeps each answer 5 minutes (D-189; free, unlike the page cache); the numbers left are for
  * display only, checkout re-checks stock on the server.
  */
 export async function GET(request: Request): Promise<NextResponse> {

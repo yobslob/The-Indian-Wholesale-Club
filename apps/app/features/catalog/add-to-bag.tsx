@@ -2,7 +2,7 @@ import { useRouter } from 'expo-router';
 import { useEffect, useMemo, useState } from 'react';
 import { Pressable, Text, View } from 'react-native';
 
-import { choose, formatUsd, isAvailable, optionAxes, selectionOf } from '@repo/shared/domain';
+import { choose, formatUsd, isAvailable, optionAxes, selectionOf, wasCents } from '@repo/shared/domain';
 
 import type { BuyBarState } from './buy-bar';
 import type { Product, Variant } from '@repo/db/store';
@@ -47,7 +47,7 @@ export function AddToBag({
 }: {
   product: Pick<
     Product,
-    'id' | 'name' | 'slug' | 'region_slug' | 'region_name' | 'primary_image_path'
+    'id' | 'name' | 'slug' | 'region_slug' | 'region_name' | 'primary_image_path' | 'product_type' | 'offer'
   >;
   variants: Variant[];
   /** Shown just above the button (the delivery days, D-187). */
@@ -115,7 +115,13 @@ export function AddToBag({
 
   return (
     <View className="gap-3">
-      <Text className="font-ui-semibold text-ink text-[22px]">{formatUsd(variant.price_cents)}</Text>
+      <Text className="font-ui-semibold text-ink text-[22px]">
+        {/* D-190: as on the website's product page */}
+        {product.offer ? (
+          <Text className="font-body text-ink-muted text-[18px] line-through">{formatUsd(wasCents(variant.price_cents, product.product_type))} </Text>
+        ) : null}
+        <Text className={product.offer ? 'text-brand' : undefined}>{formatUsd(variant.price_cents)}</Text>
+      </Text>
       {/* founder 2026-10-24: heavy cookware's other half, added in the bag and at checkout */}
       {variant.heavy_cents > 0 ? (
         <View className="flex-row flex-wrap items-center gap-2">

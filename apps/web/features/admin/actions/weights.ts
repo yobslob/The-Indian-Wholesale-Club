@@ -1,15 +1,13 @@
 'use server';
 
-import { revalidatePath, revalidateTag } from 'next/cache';
+import { revalidatePath } from 'next/cache';
 import { z } from 'zod';
 
-import { setVariantWeight, weighPickup } from '@repo/db/admin';
-
-import { STORE_TAG } from '@/features/catalog/data';
+import { listPickupProductIds, setVariantWeight, weighPickup } from '@repo/db/admin';
 
 import { requireAdminAction } from '../guard';
 import { gramsFrom } from '../hub-grams';
-import { refreshListings } from '../refresh-listings';
+import { refreshListings, refreshProductPages } from '../refresh-listings';
 
 const id = z.string().uuid();
 const weightForm = z.object({
@@ -43,7 +41,7 @@ export async function weighPickupAction(pickupId: string, path: string, form: Fo
   const grams = gramsFrom(form);
   if (grams === null) return;
   await weighPickup(client, id.parse(pickupId), grams);
-  revalidateTag(STORE_TAG);
+  await refreshProductPages(client, await listPickupProductIds(client, [pickupId]));
   revalidatePath(z.string().startsWith('/admin/').parse(path));
 }
 

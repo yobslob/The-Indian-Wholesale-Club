@@ -172,8 +172,11 @@ export async function pageHeldSources(client: IwcClient, offset = 0, limit = 25)
   );
 }
 
-export async function reviewSource(client: IwcClient, sourceId: string, accept: boolean) {
+/** Accept or decline a source's new price; answers its listing, whose pages may have moved (D-189). */
+export async function reviewSource(client: IwcClient, sourceId: string, accept: boolean): Promise<string> {
   unwrap(await client.rpc('admin_sourcing_review', { p_source: sourceId, p_accept: accept }));
+  const row = unwrap(await client.from('product_sources').select('product_id').eq('id', sourceId).single());
+  return row.product_id;
 }
 
 /** A listing's sources, for its admin page and the India desk (where to order it). */

@@ -38,6 +38,15 @@ export function betaDivisor(type: ProductType | null | undefined): number {
   return type === 'food' || type === 'home' ? BETA_PRICING.divisor[type] : BETA_PRICING.divisor.clothing;
 }
 
+/**
+ * D-190: the struck-through figure on a listing the database marks `offer`: price + (price − the piece's cost before
+ * margin), which is price × (2 − the category's divisor) (food 1.2, clothing 1.4, home & gifts 1.5). Display only: never
+ * charged, stored or sent to Stripe.
+ */
+export function wasCents(priceCents: number, type: ProductType | null | undefined): number {
+  return Math.round(priceCents * (2 - betaDivisor(type)));
+}
+
 export interface PriceBreakdown {
   /** The piece's cost before margin (cents). */
   costCents: number;

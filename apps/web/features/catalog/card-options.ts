@@ -70,7 +70,8 @@ const BATCH = 48;
 
 function flush(): void {
   timer = null;
-  const all = queue;
+  // In id order, so the same cards ask at the same address and the CDN can answer them (D-189).
+  const all = queue.sort();
   queue = [];
   for (let i = 0; i < all.length; i += BATCH) {
     const ids = all.slice(i, i + BATCH);

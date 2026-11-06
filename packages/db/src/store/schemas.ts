@@ -67,6 +67,8 @@ export const productCardSchema = z.object({
    */
   choices: z.number().int().optional(),
   sold_out: z.boolean().optional(),
+  /** D-190: shows a struck-through price (wasCents); absent otherwise. Optional until migration 20261110090000. */
+  offer: z.boolean().optional(),
 });
 
 /** Set only when the product has exactly one variant and it is in stock: a card's "Add" puts it in the bag. */
@@ -138,6 +140,10 @@ export const homeSchema = z.object({
       product_type: productType,
       count: z.number().int(),
       image_path: z.string().nullable(),
+      /** D-190: Shirts and Tops share a category; the tile opens it for men or women. Optional until migration 20261110090000. */
+      for: z.enum(['women', 'men']).nullable().optional(),
+      /** D-190: Gifts opens all of its type, not a category (`slug` is where an older app, which ignores this, lands). */
+      whole: z.boolean().optional(),
     }),
   ),
   /** D-187: What everyone missed this week: most ordered in the last 7 days, 12 at most (ranking only, D-003). */

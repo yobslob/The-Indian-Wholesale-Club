@@ -16,6 +16,8 @@ import {
 import { FilterPanel } from './filter-panel';
 import styles from './filters.module.css';
 import { DRAWER_EVERY, DRAWER_SIZE, FinishingDrawer } from './finishing-drawer';
+import { GroupRail } from './group-rail';
+import railStyles from './group-rail.module.css';
 import { MoreOnScroll } from './more-on-scroll';
 import { PhoneFilter } from './phone-filter';
 import { ProductCard } from './product-card';
@@ -33,7 +35,7 @@ const counted = (meta: { total: number; drawer_total: number }): string =>
     : pieces(meta.total);
 
 /**
- * A See all page's heading, filters and cards (D-136): the filter panel on the left from 1024 px (the Filter bar and
+ * A See all page's heading, groups' rail (D-190), filters and cards (D-136): the filter panel on the left from 1024 px (the Filter bar and
  * side panel below that), what is chosen as chips with ×, the sort, the grid and its endless scroll. Choosing anything swaps
  * only the cards (use-browse.ts); the page around them stays as it is. D-144: low to high by default, and on Clothing
  * the finishing touches in a drawer after the second row of every 24 cards.
@@ -93,6 +95,8 @@ export function BrowseView({
     );
   };
   const clearAll = withFilter(query, { state: query.inState, category: undefined, who: undefined, min: undefined, max: undefined, sizes: [] });
+  // D-190: one group has nothing to jump to
+  const railed = meta.categories.length > 1 || Boolean(query.category);
   const panel = (
     <FilterPanel productType={productType} query={query} meta={meta} onChange={change} states={!inState} />
   );
@@ -112,7 +116,9 @@ export function BrowseView({
       >
         {panel}
       </PhoneFilter>
-      <div className="lg:grid lg:grid-cols-[232px_minmax(0,1fr)] lg:gap-[clamp(28px,3vw,52px)]">
+      <div data-railed={railed ? '' : undefined} className={railed ? railStyles.withRail : undefined}>
+        {railed ? <GroupRail productType={productType} query={query} meta={meta} onChange={change} /> : null}
+      <div className="min-w-0 lg:grid lg:grid-cols-[232px_minmax(0,1fr)] lg:gap-[clamp(28px,3vw,52px)]">
         <aside aria-label="Filters" className="hidden lg:block">
           <div
             className="no-scrollbar sticky top-[calc(var(--top-h)+20px)] max-h-[calc(100dvh-var(--top-h)-40px)] overflow-y-auto pb-6 pr-1"
@@ -212,6 +218,7 @@ export function BrowseView({
             />
           ) : null}
         </div>
+      </div>
       </div>
     </>
   );

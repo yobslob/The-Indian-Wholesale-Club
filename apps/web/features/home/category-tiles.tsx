@@ -12,8 +12,9 @@ import type { HomeData } from '@repo/db/store';
 
 /**
  * D-187: Home's category tiles, biggest first, each with its photo and its count: the founder's own (tile-photos.ts),
- * else the photo of its newest piece. A tile opens that category's See all page (/food?category=sweets). From
- * store_home(), so no read of its own. Server-drawn.
+ * else the photo of its newest piece. A tile opens that category's See all page (/food?category=sweets); Shirts and
+ * Tops share a category and open it for men or women, and Gifts opens all of Home & gifts (D-190). From store_home(), so
+ * no read of its own. Server-drawn.
  */
 export function CategoryTiles({ categories }: { categories: HomeData['categories'] }): React.JSX.Element | null {
   if (categories.length < 2) return null;
@@ -24,10 +25,16 @@ export function CategoryTiles({ categories }: { categories: HomeData['categories
       </h2>
       <ul className="m-0 grid list-none grid-cols-3 gap-[var(--gap)] p-0 sm:grid-cols-4 lg:grid-cols-6">
         {categories.map((c) => {
-          const photo = TILE_PHOTOS[c.slug] ?? (c.image_path ? mediaUrl(c.image_path) : null);
+          const key = c.whole ? 'gifts' : c.for ? `${c.slug}:${c.for}` : c.slug;
+          const photo = TILE_PHOTOS[key] ?? (c.image_path ? mediaUrl(c.image_path) : null);
+          const path = PRODUCT_TYPE_PATH[c.product_type];
           return (
-            <li key={c.slug}>
-              <Link href={`${PRODUCT_TYPE_PATH[c.product_type]}?category=${c.slug}`} prefetch={false} className="group block">
+            <li key={key}>
+              <Link
+                href={c.whole ? path : `${path}?category=${c.slug}${c.for ? `&for=${c.for}` : ''}`}
+                prefetch={false}
+                className="group block"
+              >
                 {/* founder 2026-10-31: no shelf under the tiles */}
                 <span className="bg-land relative block aspect-square overflow-hidden rounded-lg">
                   {photo ? (

@@ -19,10 +19,16 @@ export function CategoryTiles({ categories }: { categories: HomeData['categories
       <View className="flex-row flex-wrap justify-between gap-y-4">
         {categories.map((c) => (
           <Pressable
-            key={c.slug}
+            key={c.whole ? 'gifts' : c.for ? `${c.slug}:${c.for}` : c.slug}
             accessibilityRole="link"
             accessibilityLabel={`${c.name}, ${c.count} ${c.count === 1 ? 'piece' : 'pieces'}`}
-            onPress={() => router.push({ pathname: '/browse', params: { type: c.product_type, category: c.slug } })}
+            onPress={() =>
+              router.push({
+                pathname: '/browse',
+                // D-190: Shirts and Tops share a category and open it for men or women; Gifts is the whole type
+                params: { type: c.product_type, ...(c.whole ? {} : { category: c.slug }), ...(c.for ? { for: c.for } : {}) },
+              })
+            }
             className="w-[31.5%] gap-2"
           >
             <View className="bg-land aspect-square overflow-hidden rounded-lg">

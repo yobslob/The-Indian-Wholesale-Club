@@ -1,0 +1,84 @@
+/* D-190: the groups' rail down the left of a See all or state page. */
+
+/* The rail beside everything else; on a phone it reaches the screen's left edge, which leaves the cards the most room. */
+.withRail {
+  display: grid;
+  grid-template-columns: 72px minmax(0, 1fr);
+  column-gap: 10px;
+  align-items: start;
+  margin-left: calc(-1 * var(--gut));
+}
+
+.rail {
+  position: sticky;
+  top: calc(var(--top-h) + 8px);
+  max-height: calc(100dvh - var(--top-h) - 16px);
+  overflow-y: auto;
+  overscroll-behavior: contain;
+  border-right: 1px solid var(--line);
+}
+.rail ul {
+  margin: 0;
+  padding: 0 0 24px;
+  list-style: none;
+}
+
+.group {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 4px;
+  min-height: 44px;
+  padding: 8px 4px;
+  border-right: 3px solid transparent;
+  font-size: 11px;
+  font-weight: 500;
+  line-height: 1.2;
+  text-align: center;
+  overflow-wrap: anywhere;
+  color: var(--muted);
+}
+.group:hover {
+  color: var(--ink);
+}
+.group[aria-current] {
+  border-right-color: var(--brand);
+  font-weight: 700;
+  color: var(--ink);
+}
+
+.icon {
+  flex: none;
+  width: 36px;
+  height: 36px;
+  padding: 7px;
+  border-radius: 999px;
+  background: var(--land);
+  color: var(--ink);
+  fill: none;
+  stroke: currentColor;
+  stroke-width: 1.6;
+  stroke-linecap: round;
+  stroke-linejoin: round;
+}
+.group[aria-current] .icon {
+  background: var(--ink);
+  color: var(--paper);
+}
+
+/* The page's own stand-in while it loads (browse-skeleton.tsx). */
+.ghost {
+  height: 60vh;
+  border-right: 1px solid var(--line);
+}
+
+@media (min-width: 1024px) {
+  .withRail {
+    grid-template-columns: 84px minmax(0, 1fr);
+    column-gap: clamp(20px, 2vw, 32px);
+    margin-left: 0;
+  }
+  .group {
+    font-size: 12px;
+  }
+}

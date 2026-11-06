@@ -59,7 +59,7 @@ async function refreshStore(request: APIRequestContext): Promise<void> {
   const auth = createClient(process.env.NEXT_PUBLIC_SUPABASE_URL ?? '', process.env.NEXT_PUBLIC_SUPABASE_ANON_KEY ?? '');
   const { data, error } = await auth.auth.signInWithPassword(E2E_ADMIN);
   if (error || !data.session) throw error ?? new Error('no admin session');
-  expect((await request.post('/admin/revalidate', { headers: { authorization: `Bearer ${data.session.access_token}` } })).status()).toBe(200);
+  expect((await request.post('/admin/revalidate', { headers: { authorization: `Bearer ${data.session.access_token}` }, data: { all: true } })).status()).toBe(200);
 }
 
 const addSnack = async (page: Page): Promise<void> => {

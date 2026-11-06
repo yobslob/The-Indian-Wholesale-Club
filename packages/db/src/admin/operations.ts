@@ -141,7 +141,7 @@ export async function getPricingSettings(client: IwcClient) {
           clearance_discount_pct, min_order_cents, small_order_shipping_cents, small_order_retailer_cents,
           delivery_days_min, delivery_days_max, food_delivery_days_min, food_delivery_days_max, food_billed_pct,
           bulk_saving_pct, bulk_saving_cap_cents, bulk_saving_from_cents, home_est_g_per_rupee, home_est_min_g,
-          retailer_pct, shipping_cents_per_kg, heavy_line_off_pct, updated_at`,
+          retailer_pct, shipping_cents_per_kg, heavy_line_off_pct, offer_pct, updated_at`,
       )
       .eq('id', 1)
       .single(),

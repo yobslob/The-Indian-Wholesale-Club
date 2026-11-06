@@ -28,9 +28,10 @@ import { slimCards } from './slim-cards';
  * STORE_REVALIDATE_SECONDS.
  */
 export const STORE_TAG = 'store';
-// D-171 (founder 2026-10-31: 153,000 of 200,000 page-cache writes used): an hour, not 5 minutes. Every page visited
-// after its fallback is rebuilt and written again; sales, cancels and admin changes still refresh their pages at once.
-export const STORE_REVALIDATE_SECONDS = 3600;
+// D-189: a day (an hour since D-171). Every page visited after its fallback is rebuilt and written again, changed or
+// not; sales, cancels and admin changes still refresh their pages at once. What waits for the fallback: a price the
+// sourcing runner moved (checkout always charges and checks the current one).
+export const STORE_REVALIDATE_SECONDS = 86_400;
 
 export const homeTag = 'store:home';
 export const regionTag = (regionSlug: string): string => `store:region:${regionSlug}`;
@@ -137,7 +138,7 @@ export const browseStateCached = (filter: BrowseFilter & { regionSlug: string })
     () => browseRead(filter),
   );
 
-/** Demo mode (D-078): the banner on every store page. Refreshed with STORE_TAG or within the hour (STORE_REVALIDATE_SECONDS). */
+/** Demo mode (D-078): the banner on every store page. Refreshed with STORE_TAG or within the day (STORE_REVALIDATE_SECONDS). */
 export const isDemoStoreCached = () => cached(['store-demo'], [], () => isDemoStore(storeClient()));
 
 /** The Shipping & returns page's numbers (migration 27); a settings save refreshes it with STORE_TAG. */

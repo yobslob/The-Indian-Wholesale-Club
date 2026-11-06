@@ -13,10 +13,17 @@ export const TILE_PHOTOS: Record<string, string | null> = {
   'pickles-and-chutneys': '/visuals/pickles-and-chutneys.jpg',
   'whole-spices': '/visuals/whole-spices.jpg',
   'tea-and-drinks': '/visuals/tea-and-drinks.jpg',
-  'ground-spices': null,
   'papad-and-wadi': '/visuals/papad-and-wadi.jpg',
-  // Home & gifts
+  // Home & gifts; Gifts is the whole of Home & gifts, no category of its own (D-190)
   'pooja-and-spiritual': '/visuals/pooja-and-spiritual.jpg',
   'handicrafts-and-decor': '/visuals/handicrafts-and-decor.jpg',
   'thaali-and-serveware': null,
+  gifts: null,
+  // Clothing (D-190); Shirts and Tops share a category, so their keys name who they are for
+  'shirts-and-tops:men': null,
+  'shirts-and-tops:women': null,
+  'jeans-and-trousers': null,
+  'co-ords-and-dresses': null,
+  'kurtas:women': null,
+  sarees: null,
 };

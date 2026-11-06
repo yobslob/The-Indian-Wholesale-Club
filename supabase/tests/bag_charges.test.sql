@@ -30,7 +30,7 @@ select tests.assert(public.store_bag_charges('[]'::jsonb) ->> 'retailer_cents' =
 select tests.assert_fails('select public.store_bag_charges(''{}''::jsonb)', 'invalid_bag', 'a bag is a list');
 reset role;
 
--- D-154: $18.62 a billed kg: at least 1 kg, then by the half kg, food at its billed % (here 110%).
+-- D-154, D-190: $18.62 a billed kg: the heaviest piece at least 1 kg, then by the half kg, the rest their own weight, food at its billed % (here 110%).
 update public.pricing_settings set shipping_cents_per_kg = 1862, food_billed_pct = 110 where id = 1;
 insert into public.products (slug, name, product_type, region_id, category_id, price_cents, shop_price_paise, status)
 values ('test-masala-bag', 'Test masala', 'food', tests.id('region'), tests.id('cat_food'), 400, 5000, 'live'),
@@ -49,11 +49,11 @@ select tests.assert(
   public.store_bag_charges(jsonb_build_array(jsonb_build_object('variant_id', tests.id('v_masala'), 'quantity', 1)))
   @> '{"shipping_cents": 1862, "shown_shipping_cents": 1862, "past_line_cents": 0}'::jsonb,
   'D-154: one masala is billed 1 kg: $18.62, the same figure struck through once free');
--- ten masalas: 1 kg of label, 1.1 kg billed, so 1.5 kg
+-- ten masalas: 100 g each at 110%
 select tests.assert(
   (public.store_bag_charges(jsonb_build_array(jsonb_build_object('variant_id', tests.id('v_masala'), 'quantity', 10)))
-   ->> 'shipping_cents')::int = 2793,
-  'D-154: by the half kg, food at its billed %: 1.1 kg is billed 1.5 kg, $27.93');
+   ->> 'shipping_cents')::int = 3705,
+  'D-190: the first masala is billed 1 kg, the other nine their own weight at the billed %: 1.99 kg, $37.05');
 -- ten 5 kg sacks ($160, past the line): 55 kg billed; nothing more than the per-kg figure, no top-up
 select tests.assert(
   public.store_bag_charges(jsonb_build_array(jsonb_build_object('variant_id', tests.id('v_sack'), 'quantity', 10)))

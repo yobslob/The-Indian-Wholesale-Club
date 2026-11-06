@@ -74,10 +74,10 @@ create function pg_temp.w(p_days integer) returns date language sql as $$ select
 
 -- food $30: 7 delivery days, Shipping charged (the free line is $49.99 and it is under)
 select tests.assert(
-  (select (c ->> 'free_min_cents')::int = 4999 and (c ->> 'shipping_cents')::int = 1862
+  (select (c ->> 'free_min_cents')::int = 4999 and (c ->> 'shipping_cents')::int = 2793
           and c -> 'shipments' @> '{"food_only": true, "split": false, "food_cents": 3000}'::jsonb
    from public.store_bag_charges(pg_temp.items(6, 0)) c),
-  'food $30: one food shipment; the charge is $18.62 and $30 is under the line');
+  'food $30: one food shipment; six 100 g pieces are 1.5 kg (D-190), $27.93, and $30 is under the line');
 select pg_temp.place('food30', 6, 0, 'NY', 1862);
 select tests.assert(pg_temp.shipments('food30') = array['food:' || pg_temp.w(7) || ':' || pg_temp.w(7) || ':1862'],
   'food $30: the order is one food shipment in 7 delivery days, Shipping on it');
@@ -101,12 +101,12 @@ select tests.assert(pg_temp.shipments('mixed55') = array['food:' || pg_temp.w(7)
                                                          'standard:' || pg_temp.w(12) || ':' || pg_temp.w(16) || ':0'],
   'clothing $40 + food $15: shipment 1 food, shipment 2 the rest, both free');
 
--- clothing $30 + food $10: charged as one parcel, two shipments (2 kg is 2 billed kg: 3 × 500 g + 2 × 100 g = 1.7 → 2)
-select tests.assert((public.store_bag_charges(pg_temp.items(2, 3)) ->> 'shipping_cents')::int = 3724,
-  'clothing $30 + food $10: one parcel, 2 billed kg');
-select pg_temp.place('mixed40', 2, 3, 'NY', 3724);
+-- clothing $30 + food $10: charged as one parcel, two shipments (D-190: the first kurta is billed 1 kg, the rest their own 1.2 kg: 2.2 kg, $40.96)
+select tests.assert((public.store_bag_charges(pg_temp.items(2, 3)) ->> 'shipping_cents')::int = 4096,
+  'clothing $30 + food $10: one parcel, 2.2 billed kg');
+select pg_temp.place('mixed40', 2, 3, 'NY', 4096);
 select tests.assert(
-  (select count(*) = 2 and sum(shipping_cents) = 3724 and min(est_delivery_to) = pg_temp.w(7) and max(est_delivery_to) = pg_temp.w(16)
+  (select count(*) = 2 and sum(shipping_cents) = 4096 and min(est_delivery_to) = pg_temp.w(7) and max(est_delivery_to) = pg_temp.w(16)
    from public.order_shipments where order_id = tests.id('mixed40')),
   'clothing $30 + food $10: two shipments; their Shipping shares add up to the one parcel');
 

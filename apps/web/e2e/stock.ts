@@ -27,7 +27,7 @@ export async function setDemoStock(request: APIRequestContext, left: number, oth
   const auth = createClient(process.env.NEXT_PUBLIC_SUPABASE_URL ?? '', process.env.NEXT_PUBLIC_SUPABASE_ANON_KEY ?? '');
   const { data, error: signInError } = await auth.auth.signInWithPassword(E2E_ADMIN);
   if (signInError || !data.session) throw signInError ?? new Error('no admin session');
-  const res = await request.post('/admin/revalidate', { headers: { authorization: `Bearer ${data.session.access_token}` } });
+  const res = await request.post('/admin/revalidate', { headers: { authorization: `Bearer ${data.session.access_token}` }, data: { all: true } });
   expect(res.status()).toBe(200);
 }
 
