@@ -33,6 +33,8 @@ export const WIDE = {
   /** Lakshmi Puja, the main day of Diwali 2026 (Y-15: seasonal, the founder decides after Diwali). */
   day: '2026-11-08' as string | null,
   hook: 'Host your Diwali under $99.',
+  /** The hook's other side (founder 2026-11-07), turning over with it. */
+  flip: 'Get 10% off on your first order.',
   cta: 'Shop under $99',
   href: '/home-and-gifts?max=99',
   slot: 'diwali-night' as const satisfies SlotId,
