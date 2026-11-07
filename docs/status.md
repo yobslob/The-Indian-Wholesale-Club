@@ -8,7 +8,8 @@ Short on purpose (the audit warns past 10 KB): **replace** lines when something 
 - **Live:** https://indianwholesaleclub.com (web), with real customers: the simple store (D-187), merged as
   [PR #1](https://github.com/yobslob/The-Indian-Wholesale-Club/pull/1) and deployed on 2026-11-04 (21:47 UTC).
 - **Merged and deployed 2026-11-06 (08:38 UTC):** D-189 and D-190, [PR #2](https://github.com/yobslob/The-Indian-Wholesale-Club/pull/2). Vercel is on Pro (founder, 2026-11-07); ISR writes against reads not checked here yet.
-- **Not released:** D-191 and D-192 on branch `optimize/lighter-site` (sub-categories, coupons chosen in the bag, coins, one bill, retailer charges always paid, Popular, weights, tiles). **Two migrations** (`20261111090000`, `20261111090100`): run the Deploy workflow with the merge. Money changes the moment they and the site are live.
+- **Merged and deployed 2026-11-07 (00:33 UTC):** D-191, [PR #3](https://github.com/yobslob/The-Indian-Wholesale-Club/pull/3), with its two migrations (the Deploy workflow succeeded). Its checkout still strikes the Retailer charges on the first screens above the free line, until D-192 is live.
+- **Not released:** D-192 on branch `optimize/lighter-site` (coupons chosen in the bag, one bill, a card for each shipment). No migration: it reaches customers with the site.
 - **Accounts (D-147):** Vercel Pro, Supabase free since 2026-10-21/22, photos in Cloudflare R2. Budgets and the
   weekly check: `monitoring.md`. The free database's memory is already over (1.57 of 1.4 GB, swap 406 MB on 2026-11-04,
   and it stopped answering for about 45 minutes that day).
@@ -33,7 +34,7 @@ Short on purpose (the audit warns past 10 KB): **replace** lines when something 
   `TODO(D-187)`); **its admin mode breaks** with the release.
 
 ## Next for the founder
-1. **D-191, D-192:** merge and run the Deploy workflow at a quiet hour; each deploy empties the page cache. A new app build carries the bill's coins, Popular and the sub-category chips. Your choices: the retailer % (1.5 on the 5 Nov copy, so the charge grows with the bag; Settings → Bag charges), the noodles photo's printed "₹15", the sub-categories' own photos (`sub-photos.ts`). Popular is an experiment: compare orders and average bag in Admin before and after.
+1. **D-192:** merge and deploy at a quiet hour; each deploy empties the page cache. **D-191:** a new app build carries the bill's coins, Popular and the sub-category chips. Your choices: the retailer % (1.5 on the 5 Nov copy, so the charge grows with the bag; Settings → Bag charges), the noodles photo's printed "₹15", the sub-categories' own photos (`sub-photos.ts`). Popular is an experiment: compare orders and average bag in Admin before and after.
 2. **Names to tidy:** production's count (Y-11; the page and Rename all go only at 0).
 3. In the order of use (each from the archived status, still open and not re-checked here):
    - **The photo redo** (D-164): pull on the laptop, `pnpm photos:redo fetch --type food --again` and `--type home
