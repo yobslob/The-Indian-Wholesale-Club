@@ -45,6 +45,7 @@ Reading `process.env.X` for a variable not listed here = add it here in the same
 | `ADMIN_ALERT_WEBHOOK_URL` | web server | optional ops alerts |
 | `NEXT_PUBLIC_APP_URL`, `NEXT_PUBLIC_SITE_URL` | web | absolute URLs |
 | `LEGACY_HOSTS` | web middleware (run time) | optional, comma separated host names (e.g. `the-indian-wholesale-club.vercel.app,<new project>.vercel.app`): their **pages** send GET/HEAD with 308 to `NEXT_PUBLIC_SITE_URL`, carrying the bag (E-1, §Going live on the domain); `/api/*`, `/media/*`, `/auth/*`, `/_next/*`, files and every POST are served there as they are. Only `*.vercel.app` names reach the middleware; never list a preview address. Unset: nothing moves |
+| `NEXT_PUBLIC_LOOK_PHOTOS` | web | optional; `off` turns off each look's own photos (D-194). Read at build time, so it needs a redeploy |
 | `NEXT_PUBLIC_CONTACT_EMAIL` | web | support address shown on /contact and in emails (Q-9). `CONTACT_EMAIL` is no longer read since R5 |
 | `EXPO_PUBLIC_SUPABASE_URL`, `EXPO_PUBLIC_SUPABASE_ANON_KEY`, `EXPO_PUBLIC_API_URL`, `EXPO_PUBLIC_STRIPE_PUBLISHABLE_KEY` | app | app clients |
 No longer read by any code (safe to delete from your own `.env` files): `CARRIER_WEBHOOK_SECRET`, `NEXT_PUBLIC_RAZORPAY_KEY_ID`,

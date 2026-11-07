@@ -73,6 +73,7 @@ confusion. If you need a concept that isn't here, add it (and a decision if it's
 | **region** | one of India's 28 states or 8 UTs, all treated the same (D-002) | `regions`, `region_id`, `/states/[region]` | the region's name; "state", "home" | `state` in code (clashes with React state and the US address field), province |
 | **product** | a sellable item as customers see it ("Kasavu saree") | `products` | product name | item, listing |
 | **variant** | one buyable option of a product (size/colour or weight), with its own SKU and stock | `product_variants` | size / weight picker | SKU as a synonym for variant |
+| **look** | what a variant looks like: its options without `size` (D-194). Navy-S and Navy-M are one look; "Single" and "Family pack" are two. A photo belongs to a look through `product_media.variant_id`; an untagged photo is shared | `lookKey()`, `photosForLook()` | never shown as a word | variant photo, swatch |
 | **product type** | `clothing`, `food` or `home` (D-106, D-110). Decides which attributes and options apply | `product_type` | "Clothing", "Food", "Home & gifts" | kind, spice (renamed food, D-110) |
 | **category** | a browse group inside a type (Sarees, Kurtas, Masalas…) | `categories` | category name | collection |
 | **source** | the online shop's product page an imported pilot listing was copied from (D-110). **Admin only** | `products.source_url`, `source_site`, `source_checked_at` | never shown | link, origin (origin is the region, D-004) |

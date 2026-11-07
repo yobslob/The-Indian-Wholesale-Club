@@ -89,6 +89,8 @@ Framer Motion page transitions (speed, `engineering.md`).
 → Leaving soon** (almost out of stock). Curated for you = admin picks per region, Leaving soon = 1–2 left (D-056); Most wanted = most pieces ordered in the last 30 days (D-058); the album has no pause control (founder, D-052).
 
 ## The product page
+**Looks (D-194):** tapping a colour, pack, flavour or type chip swaps the gallery and the viewer to that look's photos (150 ms fade, none with reduced motion; the box keeps its size). A size never changes them. A look with no photo of its own, and a listing with one look, show every photo as before. The page opens on the main photo's look when that photo is tagged and in stock, otherwise as before. The bag line and the card's + carry the look's photo.
+
 Gallery → name, price → variant picker → availability → **delivery days** ("7 delivery days" or "12 – 16 delivery days"; Already in the US: its date window) → add to cart → details: description,
 craft, attributes, care or storage → origin line: "Made in India · from <Region>" ("Made in India" for an all-India
 listing, D-121; "Imported" alone for a piece made outside India, D-171; D-179 dropped "· Imported" from the India line).
