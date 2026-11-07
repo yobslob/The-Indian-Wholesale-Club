@@ -8,7 +8,7 @@ import { sizeLabel } from '@repo/shared/domain';
 import {
   browseHref,
   priceLabel,
-  sortsFor,
+  SORT_CHOICES,
   WHO_LABEL,
   withFilter,
   type BrowseQuery,
@@ -35,9 +35,9 @@ const counted = (meta: { total: number; drawer_total: number }): string =>
     : pieces(meta.total);
 
 /**
- * A See all page's heading, groups' rail (D-190), filters and cards (D-136): the filter panel on the left from 1024 px (the Filter bar and
+ * A See all page's heading, sub-categories' rail (D-191), filters and cards (D-136): the filter panel on the left from 1024 px (the Filter bar and
  * side panel below that), what is chosen as chips with ×, the sort, the grid and its endless scroll. Choosing anything swaps
- * only the cards (use-browse.ts); the page around them stays as it is. D-144: low to high by default, and on Clothing
+ * only the cards (use-browse.ts); the page around them stays as it is. D-191: Popular by default. D-144: on Clothing
  * the finishing touches in a drawer after the second row of every 24 cards.
  */
 export function BrowseView({
@@ -62,9 +62,10 @@ export function BrowseView({
   const inState = Boolean(query.inState);
   const stateName = inState ? undefined : meta.regions.find((s) => s.slug === query.state)?.name;
   const categoryName = meta.categories.find((c) => c.slug === query.category)?.name;
+  const subName = meta.subcategories.find((s) => s.slug === query.sub)?.name;
   const price = priceLabel(query);
   const whoName = query.who ? WHO_LABEL[query.who] : undefined;
-  const chosen = Boolean((query.state && !inState) || query.category || price || query.sizes.length || query.who);
+  const chosen = Boolean((query.state && !inState) || query.category || query.sub || price || query.sizes.length || query.who);
 
   /** A filter applied: the cards swap in place; if the reader is far down, back to the top of the cards. */
   const change = (next: BrowseQuery): void => {
@@ -94,9 +95,9 @@ export function BrowseView({
       </a>
     );
   };
-  const clearAll = withFilter(query, { state: query.inState, category: undefined, who: undefined, min: undefined, max: undefined, sizes: [] });
-  // D-190: one group has nothing to jump to
-  const railed = meta.categories.length > 1 || Boolean(query.category);
+  const clearAll = withFilter(query, { state: query.inState, category: undefined, sub: undefined, who: undefined, min: undefined, max: undefined, sizes: [] });
+  // D-191: only where there are sub-categories to jump between
+  const railed = meta.subcategories.length > 1 || Boolean(query.sub);
   const panel = (
     <FilterPanel productType={productType} query={query} meta={meta} onChange={change} states={!inState} />
   );
@@ -104,13 +105,13 @@ export function BrowseView({
   return (
     <>
       <Heading className="font-heading text-ink text-[clamp(32px,3vw,52px)] font-medium leading-tight tracking-[-0.03em]">
-        {categoryName ?? title}
+        {subName ?? categoryName ?? title}
         {whoName ? <span className="text-ink-muted"> · {whoName}</span> : null}
         {stateName ? <span className="text-ink-muted"> · {stateName}</span> : null}
       </Heading>
       {productType === 'clothing' && meta.wears ? <WhoTiles query={query} counts={meta.wears} onChange={change} /> : null}
       <PhoneFilter
-        chosen={`${whoName ? `${whoName} · ` : ''}${inState ? '' : `${stateName ?? 'All states'} · `}${categoryName ?? 'Everything'}${price ? ` · ${price}` : ''}`}
+        chosen={`${whoName ? `${whoName} · ` : ''}${inState ? '' : `${stateName ?? 'All states'} · `}${subName ?? categoryName ?? 'Everything'}${price ? ` · ${price}` : ''}`}
         count={counted(meta)}
         onClear={chosen ? () => change(clearAll) : null}
       >
@@ -134,7 +135,8 @@ export function BrowseView({
             {chosen ? (
               <div className={`${styles.chips} order-last w-full md:order-none md:w-auto`}>
                 {whoName ? chip(whoName, { who: undefined }) : null}
-                {categoryName ? chip(categoryName, { category: undefined }) : null}
+                {categoryName ? chip(categoryName, { category: undefined, sub: undefined }) : null}
+                {subName ? chip(subName, { sub: undefined }) : null}
                 {stateName ? chip(stateName, { state: undefined }) : null}
                 {price ? chip(price, { min: undefined, max: undefined }) : null}
                 {query.sizes.map((s) => chip(sizeLabel(s), { sizes: query.sizes.filter((x) => x !== s) }))}
@@ -153,11 +155,11 @@ export function BrowseView({
             <label className="font-ui ml-auto inline-flex items-center gap-2 text-sm">
               <span className="text-ink-muted">Sort by</span>
               <select
-                value={productType !== 'clothing' && query.sort === 'price-asc' ? 'low' : query.sort}
+                value={query.sort}
                 onChange={(e) => change(withFilter(query, { sort: e.target.value as BrowseSort }))}
                 className="border-line bg-paper hover:border-ink min-h-10 rounded-pill border px-3 font-medium"
               >
-                {sortsFor(productType).map((s) => (
+                {SORT_CHOICES.map((s) => (
                   <option key={s.value} value={s.value}>
                     {s.label}
                   </option>

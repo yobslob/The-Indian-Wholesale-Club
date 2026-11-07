@@ -53,7 +53,7 @@ export function freeDelivery(lines: BagLine[], charges: KeyedCharges | null) {
   return {
     free,
     line,
-    /** D-125: the charges at this bag's goods (Shipping and the retailer charges, paid or struck through). */
+    /** D-125: the charges at this bag's goods (Shipping, paid or struck through, and the retailer charges). */
     at,
     /** Heavy-item shipping (founder 2026-10-24): paid, and its whole struck through once the saving's line took its % off. */
     heavy: heavyShippingAt(charges ? heavyOf(charges) : null, bulkFrom !== null && subtotal >= bulkFrom),
@@ -110,7 +110,7 @@ export function ChargeRows(): React.JSX.Element | null {
   const lines = useBag((s) => s.lines);
   const charges = useBagCharges();
   if (!charges) return null;
-  const { free, bulk, at, heavy, goal } = freeDelivery(lines, charges);
+  const { bulk, at, heavy, goal } = freeDelivery(lines, charges);
   const every = `every ${formatUsd(bulk.perDollarCents ?? 0)} more saves $1 more, up to ${formatUsd(bulk.capCents)}`;
   const bulkFrom = charges.bulk_saving_from_cents;
   // the website's words (charge-lines.tsx)
@@ -131,13 +131,8 @@ export function ChargeRows(): React.JSX.Element | null {
         cents={at.shippingCents || at.waivedShippingCents}
         free={at.shippingFree}
       />
-      {at.retailerCents + at.waivedRetailerCents > 0 ? (
-        <ChargeRow
-          label="Retailer charges"
-          cents={at.retailerCents || at.waivedRetailerCents}
-          free={free}
-        />
-      ) : null}
+      {/* D-191: always paid, never struck through */}
+      {at.retailerCents > 0 ? <ChargeRow label="Retailer charges" cents={at.retailerCents} free={false} /> : null}
       {heavy.cents > 0 ? (
         <View className="flex-row justify-between gap-3">
           <Text className="font-body text-ink-muted flex-1 text-sm">Heavy-item shipping</Text>

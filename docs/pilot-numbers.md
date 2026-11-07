@@ -19,11 +19,13 @@ Every automatic price = (shop ₹ ÷ 0.90 + weight g × ₹2) ÷ the category's 
 ## The bag's charges (Settings → Bag charges)
 | Number | On production | Notes |
 |---|---|---|
-| **Free shipping from** | $49.99, every bag (D-187) | `free_shipping_min_cents`. At and over it, Shipping and Retailer charges show struck through at $0.00 |
+| **Free shipping from** | $49.99, every bag (D-187) | `free_shipping_min_cents`, on the bag before any coupon or coins (D-191). At and over it, Shipping shows struck through at $0.00 |
 | **Shipping** below the line | $18.62 × the bag's billed kg (D-154, D-190) | its heaviest piece at least 1 kg, then by the half kg, and every other piece its own weight, food at 110% of its label, never under the whole bag by the half kg; one parcel for the whole bag even when it ships as two. One piece $18.62; 5 masalas of 100 g $26.81; 2 kurtas of 450 g $27.00; a 1 kg piece and a 100 g piece $27.93. The same figure shows struck through from the free line up |
-| **Retailer charges** below the line | $0.99 | Settings |
+| **Retailer charges** on every bag from India, never struck (D-191) | at least $0.99, or the retailer % of the goods | Settings. The % was 1.5 on the 5 Nov copy: $2.99 on a $199 bag; empty it for the fixed amount |
 | **Bulk saving and heavy-item discount from** | $99.99 (D-187: "Keep them at $99.99") | `bulk_saving_from_cents`. Its own line since D-187, money unchanged |
-| **Bulk saving** | 10% of the amount over that line, up to $25 (D-119) | a $120 bag saves $2.00 |
+| **Bulk saving** | 10% of the amount over that line, up to $25 (D-119) | a $120 bag saves $2.00. None while a coupon is on (D-191) |
+| **Coupons** (D-191; Admin → Promotions turns one off) | WELCOME10 10% up to $9, no paid order yet; SAVE7 $7 from $99; SAVE12 $12 from $150; SAVE20 $20 from $199 | on the bag's subtotal. One replaces the bulk saving and is offered only when worth more |
+| **Coins** (D-191, accounts only) | 30 – 90 to start, 1 coin = 1 cent; after a paid order the wallet holds what it held plus 1 – 8 | all used on every order, on top of a coupon, before tax. `profiles.coins` |
 | **Heavy-item shipping** | 20% off from that line (D-155) | below it, paid in full |
 
 ## Delivery (Settings → Delivery; D-187, `flows.md` §1)
@@ -70,8 +72,8 @@ Change in the database (`categories.default_weight_g`) or ask Claude; listed in 
 | Shawls | 700 | Jeans & Trousers | 700 | Co-ords & Dresses | 600 |
 | Dhotis & Mundus | 500 | Kurtas & Kurtis | 450 | Kids | 400 |
 | Turbans & Headwear | 400 | Shirts, Tees & Tops | 350 | Dupattas & Stoles | 350 |
-| Accessories | 300 | Rice, Flours & Staples | 1,100 | Pickles & Chutneys | 600 |
-| Sweets | 600 | Snacks & Namkeen | 450 | Papad & Wadi | 400 |
+| Accessories | 300 | Noodles, Soups & Staples | 1,100 | Pickles & Chutneys | 600 |
+| Sweets | 600 | Snacks & Namkeen, Bakery & Biscuits | 450 | Papad & Wadi | 400 |
 | Tea & Drinks | 300 | Whole / Ground Spices, Masala Blends | 250 | | |
 
 ## 10. Business and compliance details (Settings → Business and compliance details, D-074)

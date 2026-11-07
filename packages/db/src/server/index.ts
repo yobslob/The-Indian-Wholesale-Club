@@ -31,6 +31,8 @@ export interface CreateOrderInput {
   bulkSavingCents?: number;
   /** Heavy-item shipping: the part of shippingCents that is the heavy pieces' charge (founder 2026-10-24). */
   heavyShippingCents?: number;
+  /** D-191: the coins used, inside discountCents (one coin is one cent). */
+  coinsUsed?: number;
   taxCents: number;
   totalCents: number;
   paymentIntentId: string;
@@ -98,7 +100,7 @@ export async function createOrder(
   const row = Array.isArray(data) ? data[0] : undefined;
   if (!row) throw new DbError('create_order_empty', 'create_order returned no row');
   // The splits are for the admin's records only (the total already counts them), so they are written beside the order.
-  if (input.retailerChargeCents || input.bulkSavingCents || input.heavyShippingCents) {
+  if (input.retailerChargeCents || input.bulkSavingCents || input.heavyShippingCents || input.coinsUsed) {
     unwrap(
       await service
         .from('orders')
@@ -106,6 +108,7 @@ export async function createOrder(
           retailer_charge_cents: input.retailerChargeCents ?? 0,
           bulk_saving_cents: input.bulkSavingCents ?? 0,
           heavy_shipping_cents: input.heavyShippingCents ?? 0,
+          coins_used: input.coinsUsed ?? 0,
         })
         .eq('id', row.order_id),
     );

@@ -34,7 +34,7 @@ weight (D-129); clothing also needs who it is for and its care. Food follows its
 
 ## 3. Placing an order (customer)
 1. The cart holds variants. At checkout, the server computes totals from the catalog (never from the browser): subtotal,
-   promo, the bag's charges (`pilot-numbers.md`: free shipping from $49.99, bulk saving and the heavy-item discount from
+   coupon and coins (D-191), the bag's charges (`pilot-numbers.md`: free shipping from $49.99, bulk saving and the heavy-item discount from
    $99.99) and sales tax by the delivery state (D-073: only where IWC is registered, New Jersey, and only on taxed
    classes; clothing and food are exempt there, so most orders carry none). Standard is the only shipping; an order
    placed with Express before D-187 keeps its dates and its label.

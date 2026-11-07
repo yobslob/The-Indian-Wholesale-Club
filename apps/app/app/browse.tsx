@@ -1,7 +1,7 @@
 import Ionicons from '@expo/vector-icons/Ionicons';
 import { useLocalSearchParams, useRouter } from 'expo-router';
 import { useCallback, useState } from 'react';
-import { ActivityIndicator, FlatList, Pressable, Text, View } from 'react-native';
+import { ActivityIndicator, FlatList, Pressable, ScrollView, Text, View } from 'react-native';
 import { SafeAreaView } from 'react-native-safe-area-context';
 
 import { browseProducts, type BrowsePage, type ProductCard as ProductCardData } from '@repo/db/store';
@@ -20,8 +20,8 @@ const slugOrNothing = (v: unknown): string | undefined =>
 const STUCK_AT = 120;
 
 /**
- * Browse: the "See all" screen behind every row (D-062, D-084, D-095). Every live product of one type, newest first,
- * narrowed by state and category through the Filter bar (what is chosen and the count), which shrinks to a round icon
+ * Browse: the "See all" screen behind every row (D-062, D-084, D-095). Every live product of one type, Popular first (D-191),
+ * its sub-categories in a row of chips, narrowed by state and category through the Filter bar (what is chosen and the count), which shrinks to a round icon
  * button once the list is scrolled; both open the Filter panel. Loaded 24 at a time as the list nears its end
  * (store_browse: the page, the total and the filter counts in one round trip), in a virtualized two-column grid.
  */
@@ -31,15 +31,16 @@ export default function BrowseScreen(): React.JSX.Element {
   const type: ProductType = isProductType(params.type) ? params.type : 'clothing';
   const region = slugOrNothing(params.region);
   const category = slugOrNothing(params.category);
+  const sub = slugOrNothing(params.sub);
   // D-190: from Home's Shirts, Tops and Kurtis tiles; the app has no For filter yet, so the address alone sets it
   const forWho = params.for === 'women' || params.for === 'men' ? params.for : undefined;
-  const key = `browse:${type}:${region ?? ''}:${category ?? ''}:${forWho ?? ''}`;
-  const [meta, setMeta] = useState<Pick<BrowsePage, 'total' | 'all_total' | 'regions' | 'categories'> | null>(null);
+  const key = `browse:${type}:${region ?? ''}:${category ?? ''}:${sub ?? ''}:${forWho ?? ''}`;
+  const [meta, setMeta] = useState<Pick<BrowsePage, 'total' | 'all_total' | 'regions' | 'categories' | 'subcategories'> | null>(null);
   const [open, setOpen] = useState(false);
   const [stuck, setStuck] = useState(false);
   const { items: data, error, loading, loadingMore, loadMore, reload } = usePagedQuery(key, async (offset, limit) => {
-    const page = await browseProducts(supabase, { productType: type, regionSlug: region, categorySlug: category, forWho, offset, limit });
-    if (offset === 0) setMeta({ total: page.total, all_total: page.all_total, regions: page.regions, categories: page.categories });
+    const page = await browseProducts(supabase, { productType: type, regionSlug: region, categorySlug: category, subSlug: sub, forWho, sort: 'popular', offset, limit });
+    if (offset === 0) setMeta({ total: page.total, all_total: page.all_total, regions: page.regions, categories: page.categories, subcategories: page.subcategories });
     return page.products;
   });
   const renderItem = useCallback(({ item }: { item: ProductCardData }) => <ProductCard product={item} layout="fill" />, []);
@@ -79,7 +80,7 @@ export default function BrowseScreen(): React.JSX.Element {
                   key={t}
                   accessibilityRole="button"
                   accessibilityState={{ selected: t === type }}
-                  onPress={() => router.setParams({ type: t, category: '' })}
+                  onPress={() => router.setParams({ type: t, category: '', sub: '' })}
                   className={`min-h-10 justify-center rounded-pill px-4 ${t === type ? 'bg-ink' : ''}`}
                 >
                   <Text className={`font-ui-semibold text-[13px] ${t === type ? 'text-paper' : 'text-ink'}`}>
@@ -109,6 +110,24 @@ export default function BrowseScreen(): React.JSX.Element {
                 <Text className="font-ui text-ink-muted text-xs">{count}</Text>
               </View>
             </View>
+            {(meta?.subcategories.length ?? 0) > 1 ? (
+              <ScrollView horizontal showsHorizontalScrollIndicator={false} contentContainerClassName="gap-2">
+                {[{ slug: '', name: 'All' }, ...(meta?.subcategories ?? [])].map((s) => {
+                  const on = (sub ?? '') === s.slug;
+                  return (
+                    <Pressable
+                      key={s.slug || 'all'}
+                      accessibilityRole="button"
+                      accessibilityState={{ selected: on }}
+                      onPress={() => router.setParams({ sub: s.slug })}
+                      className={`border-line min-h-10 justify-center rounded-pill border px-3.5 ${on ? 'bg-ink' : ''}`}
+                    >
+                      <Text className={`font-ui text-[13px] ${on ? 'text-paper' : 'text-ink'}`}>{s.name}</Text>
+                    </Pressable>
+                  );
+                })}
+              </ScrollView>
+            ) : null}
             {error ? <ErrorText>{error}</ErrorText> : null}
             {!data && loading ? <Loading /> : null}
           </View>
@@ -134,7 +153,7 @@ export default function BrowseScreen(): React.JSX.Element {
         categories={[{ slug: undefined, name: 'Everything' }, ...(meta?.categories ?? [])]}
         state={region}
         category={category}
-        onPick={(next) => router.setParams({ region: next.region ?? '', category: next.category ?? '', for: '' })}
+        onPick={(next) => router.setParams({ region: next.region ?? '', category: next.category ?? '', sub: '', for: '' })}
       />
     </SafeAreaView>
   );

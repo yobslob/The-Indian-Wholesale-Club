@@ -112,7 +112,8 @@ describe('priceCart (D-187)', () => {
     // 10% of what is over $99.99, on a $120 bag
     assert.equal(r.quote.breakdown.bulkSavingCents, 200);
     assert.equal(r.quote.breakdown.shippingCents, 0, 'free from $49.99');
-    assert.equal(r.quote.breakdown.totalCents, 11800);
+    assert.equal(r.quote.breakdown.totalCents, 11800 + r.quote.breakdown.retailerCents, 'D-191: the retailer charges stay');
+    assert.ok(r.quote.breakdown.retailerCents > 0);
   });
 
   it('takes 20% off Heavy-item shipping from $99.99, not from the free line', async () => {

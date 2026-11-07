@@ -40,8 +40,8 @@ export function ReducedValue({ cents, shownCents }: { cents: number; shownCents:
 
 /**
  * The bag's Shipping and Retailer charges under its subtotal (D-111, D-125): Shipping is at least the parcel's amount,
- * more when the bag's pieces cannot pay for the parcel; both are paid below the free-delivery line and struck through
- * above it. Heavy-item shipping, when the bag has a heavy piece (founder 2026-10-24), is always paid, less its % from
+ * more when the bag's pieces cannot pay for the parcel, paid below the free-delivery line and struck through above it; the
+ * Retailer charges are always paid (D-191). Heavy-item shipping, when the bag has a heavy piece (founder 2026-10-24), is always paid, less its % from
  * $99.99 (D-187). Checkout prices them again on the server.
  */
 export function ChargeLines(): React.JSX.Element | null {
@@ -49,7 +49,7 @@ export function ChargeLines(): React.JSX.Element | null {
   const charges = useBagCharges();
   const days = useDays();
   if (!charges) return null;
-  const { free, bulk, bulkFrom, at, heavy, goal } = freeDelivery(lines, charges, days);
+  const { bulk, bulkFrom, at, heavy, goal } = freeDelivery(lines, charges, days);
   const row = 'flex items-baseline justify-between gap-3 text-[14px]';
   return (
     <div className="font-ui grid gap-1" aria-live="polite">
@@ -57,10 +57,10 @@ export function ChargeLines(): React.JSX.Element | null {
         <span>Shipping</span>
         <ChargeValue cents={at.shippingCents || at.waivedShippingCents} free={at.shippingFree} />
       </p>
-      {at.retailerCents + at.waivedRetailerCents > 0 ? (
+      {at.retailerCents > 0 ? (
         <p className={row}>
           <span>Retailer charges</span>
-          <ChargeValue cents={at.retailerCents || at.waivedRetailerCents} free={free} />
+          <span>{formatUsd(at.retailerCents)}</span>
         </p>
       ) : null}
       {heavy.cents > 0 ? (
@@ -150,9 +150,7 @@ export function PendingChargeRows(): React.JSX.Element | null {
   return (
     <>
       {row('Shipping', at.shippingCents || at.waivedShippingCents, at.shippingFree)}
-      {at.retailerCents + at.waivedRetailerCents > 0
-        ? row('Retailer charges', at.retailerCents || at.waivedRetailerCents)
-        : null}
+      {at.retailerCents > 0 ? row('Retailer charges', at.retailerCents) : null}
       {heavy.cents > 0 ? (
         <div className="flex justify-between">
           <dt className="text-ink-muted">Heavy-item shipping</dt>

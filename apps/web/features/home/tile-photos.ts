@@ -7,23 +7,23 @@
 export const TILE_PHOTOS: Record<string, string | null> = {
   // Food
   'snacks-and-namkeen': '/visuals/snacks-and-namkeen.jpg',
-  sweets: null,
+  'bakery-and-biscuits': null,
+  sweets: '/visuals/sweets.jpg',
   'rice-flours-and-staples': '/visuals/rice-flours-and-staples.jpg',
   'masala-blends': '/visuals/masala-blends.jpg',
   'pickles-and-chutneys': '/visuals/pickles-and-chutneys.jpg',
   'whole-spices': '/visuals/whole-spices.jpg',
   'tea-and-drinks': '/visuals/tea-and-drinks.jpg',
   'papad-and-wadi': '/visuals/papad-and-wadi.jpg',
-  // Home & gifts; Gifts is the whole of Home & gifts, no category of its own (D-190)
+  // Home & gifts
   'pooja-and-spiritual': '/visuals/pooja-and-spiritual.jpg',
   'handicrafts-and-decor': '/visuals/handicrafts-and-decor.jpg',
-  'thaali-and-serveware': null,
-  gifts: null,
+  'thaali-and-serveware': '/visuals/Thaali-and-serveware.jpg',
   // Clothing (D-190); Shirts and Tops share a category, so their keys name who they are for
-  'shirts-and-tops:men': null,
-  'shirts-and-tops:women': null,
-  'jeans-and-trousers': null,
-  'co-ords-and-dresses': null,
-  'kurtas:women': null,
-  sarees: null,
+  'shirts-and-tops:men': '/visuals/shirts.jpg',
+  'shirts-and-tops:women': '/visuals/tops.jpg',
+  'jeans-and-trousers': '/visuals/pants.jpg',
+  'co-ords-and-dresses': '/visuals/dresses.jpg',
+  'kurtas:women': '/visuals/kurtis.jpg',
+  sarees: '/visuals/sarees.jpg',
 };

@@ -2,13 +2,15 @@
 
 import { useEffect, useState } from 'react';
 
-import { formatUsd, formatUsPhone, usPhoneDigits } from '@repo/shared/domain';
+import { bulkSavingCents, formatUsd, formatUsPhone, promoDiscountCents, usPhoneDigits } from '@repo/shared/domain';
 
 import { EmptyLine } from '@/features/cart/cart-view';
+import { useBagCharges } from '@/features/cart/charges';
 import { cartCount, cartSubtotalCents, useCart } from '@/features/cart/store';
 
-import { BagSummary } from './bag-summary';
+import { BagSummary, BillRows } from './bag-summary';
 import { readCheckout, takePaymentNotice } from './checkout-session';
+import { CouponBox } from './coupon-box';
 import { DeliveryStep, deliverySummary, type Delivery } from './delivery-step';
 import { PaymentStep } from './payment-step';
 import { PhoneStep } from './phone-step';
@@ -73,6 +75,7 @@ function deliveryOf(body: CheckoutRequestBody): Delivery {
  */
 export function CheckoutFlow({ saved }: { saved: SavedDetails | null }): React.JSX.Element {
   const lines = useCart((s) => s.lines);
+  const charges = useBagCharges();
   const savedPromo = useCart((s) => s.promoCode);
   const [mounted, setMounted] = useState(false);
   const first = saved?.addresses[0] ?? null;
@@ -154,7 +157,14 @@ export function CheckoutFlow({ saved }: { saved: SavedDetails | null }): React.J
       },
       lines: lines.map((l) => ({ variantId: l.variantId, quantity: l.quantity })),
       promoCode: d.promoCode || null,
+      useCoins: true,
     });
+  }
+
+  /** D-191: a coupon put on or taken off. A bag already priced is priced again at once; the payment's amount moves with it. */
+  function applyCoupon(code: string | null): void {
+    setDelivery((d) => ({ ...d, promoCode: code ?? '' }));
+    if (started && request) void go({ ...request, promoCode: code });
   }
 
   /** Y-3: Remove (keep 0) or Keep n. The bag changes at once; with the last line fixed the server prices it again. */
@@ -177,12 +187,35 @@ export function CheckoutFlow({ saved }: { saved: SavedDetails | null }): React.J
   };
   const stateOf = (n: 1 | 2 | 3): 'open' | 'done' | 'later' =>
     n === at ? 'open' : n < at ? 'done' : 'later';
-  const total = quote ? quote.breakdown.totalCents : cartSubtotalCents(lines);
+  const subtotal = cartSubtotalCents(lines);
+  const total = quote ? quote.breakdown.totalCents : subtotal;
+  const offers = payment.offers;
+  const chosen = delivery.promoCode.trim().toUpperCase() || null;
+  const bulkCents = charges ? bulkSavingCents(subtotal, charges.bulkFromCents, charges.bulk) : 0;
+  const onBag = quote ? quote.promoCode : chosen;
+  const chosenCoupon = offers?.coupons.find((c) => c.code === chosen) ?? null;
+  const rejected =
+    quote && chosen && !quote.promoCode
+      ? quote.breakdown.promoBeatenByBulk
+        ? 'Your bulk saving is bigger than this coupon, so we kept it.'
+        : "That code can't be used on this order."
+      : null;
 
   return (
     <div className="grid items-start gap-[clamp(16px,2.4vw,40px)] min-[900px]:grid-cols-[minmax(0,1.25fr)_minmax(0,1fr)]">
       <div>
         <StockProblems problems={payment.stock} bag={lines} busy={busy} onFix={fixLine} />
+        {offers ? (
+          <CouponBox
+            offers={offers}
+            subtotalCents={subtotal}
+            bulkCents={bulkCents}
+            applied={onBag}
+            rejected={rejected}
+            busy={busy}
+            onApply={applyCoupon}
+          />
+        ) : null}
         <Step
           n={1}
           title="Phone"
@@ -225,6 +258,12 @@ export function CheckoutFlow({ saved }: { saved: SavedDetails | null }): React.J
           />
         </Step>
         <Step n={3} title="Payment" state={stateOf(3)}>
+          {/* D-191: the bag is folded on a phone: the bill, coins and all, right above Pay */}
+          {quote ? (
+            <dl className="font-ui border-line mb-4 grid gap-2 border-b pb-4 text-sm min-[900px]:hidden">
+              <BillRows quote={quote} />
+            </dl>
+          ) : null}
           <PaymentStep
             payment={payment}
             delivery={delivery}
@@ -258,6 +297,15 @@ export function CheckoutFlow({ saved }: { saved: SavedDetails | null }): React.J
             lines={summaryLines}
             subtotalCents={cartSubtotalCents(lines)}
             quote={quote}
+            preview={
+              offers
+                ? {
+                    couponCode: chosen,
+                    couponCents: chosenCoupon ? promoDiscountCents(subtotal, chosenCoupon) : 0,
+                    coins: Math.min(offers.coins ?? 0, subtotal),
+                  }
+                : undefined
+            }
           />
         </div>
       </aside>

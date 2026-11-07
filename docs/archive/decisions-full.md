@@ -2985,3 +2985,34 @@ given (no conversion).
     banner") stays where it was, after the album and before Pick your home. Changes D-174/D-177's single section into
     two (`DiwaliArches`, `DiwaliNight`).
   - **Q-59 (Lenis off on touch screens): yes, keep it so.**
+
+**D-180 · 2026-11-03 · founder: Home's hero line points to the 7-day store; every live piece in stock at 10**
+- Founder, verbatim: "Instead of "we go home so you don't have to and the link below it" Change these home sub-line to
+  say Want it in 7 days? Get it here >> (with these two signs expanding and contracting making a smooth animation)
+  also put all items in stock except for liquids, all items to 10"
+- What it means:
+  - **The hero:** "Want it in 7 days?" (the bold line) and "Get it here" with two arrows drifting a few pixels right and back (made minimal the same day: "make the >> animation minimilistic"), a link
+    to `/7-day-delivery` (`home-hero.tsx`). The arrows stop with reduced motion. While 7-day delivery is off or paused
+    the 7-day store 404s, so the hero keeps D-161's two lines then (a proposal, not the founder's words).
+  - **Stock:** every active option of every live listing at 10 available (`qty_listed` = held by open orders + 10),
+    logged as an adjustment. Liquids are not live (D-135 archives them as coming soon), so they are left out by the
+    same rule. Claude does not write to the hosted database: the founder runs `scripts/stock-every-live-piece-to-10.sql`
+    once in Supabase's SQL editor. The sourcing runner's next shop check sets stock from the shops again (D-118).
+
+**D-181 · 2026-11-03 · founder: the 7-day store inside every state's Food and Home & gifts; a state's own pieces first** · its 7-day parts SUPERSEDED by D-187
+- Founder, verbatim: "Now the priority is that 7 days store should be available everywhere on each state's food and home
+  decor like a strip in between(like finishing touches on clothing)(but just enough to reach the 7 day page like a CTA or
+  like a horizontal row with some products) second was goa was not showing food, neither are state's pages showing
+  their own products first, so fix that now low to high comes secondary there first priority is their own products"
+- What it means:
+  - **The 7-day band:** on a state's page, its Food and Home & gifts lists carry one light band after their second row
+    of cards, "Arrives in 7 days" with a sideways row of 12 pieces from the 7-day store's own Food or Home & gifts page
+    (its first page, low to high) and "Shop the 7-day store →" ("7-day store" on phones) to that page
+    (`features/seven-day/quick-band.tsx`). Only while 7-day delivery is open, not when the "In 7 days" filter is on, and
+    left out when the 7-day store has none of that type. See all's own Food and Home pages do not have it (only the
+    state pages were asked for).
+  - **Own pieces first:** on a state's page (and See all with a state chosen) the state's own pieces come before the
+    all-India ones under every sort; the sort orders each half. Before, only Newest and the default did (D-140 L2).
+  - **Goa's Food:** not a Goa fault. The store reads the database as `anon`, which Supabase stops after 3 s; a Food list
+    took 1.3 – 2 s alone, so a few opened at once failed and the tab said "These pieces did not load"
+    (`20261108090500_browse_reads` makes the read about 2.4 × faster).

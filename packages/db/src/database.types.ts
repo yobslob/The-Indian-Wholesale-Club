@@ -274,14 +274,14 @@ isOneToOne: false
                   ]
                 },"orders": {
                   Row: {
-                    "bulk_saving_cents": number,"carrier": string | null,"created_at": string,"currency": string,"discount_cents": number,"email": string,"est_delivery_from": string | null,"est_delivery_to": string | null,"fulfilment_mode": Database["public"]['Enums']["fulfilment_mode"],"heavy_shipping_cents": number,"id": string,"notes": string | null,"order_number": string,"payment_intent_id": string | null,"payment_status": Database["public"]['Enums']["payment_status"],"promo_code_id": string | null,"refunded_cents": number,"retailer_charge_cents": number,"shipping_address": NonNullable<Json>,"shipping_cents": number,"shipping_method": Database["public"]['Enums']["shipping_method"],"status": Database["public"]['Enums']["order_status"],"subtotal_cents": number,"tax_cents": number,"total_cents": number,"tracking_number": string | null,"updated_at": string,"user_id": string | null,"_in_india": boolean | null
+                    "bulk_saving_cents": number,"carrier": string | null,"coins_used": number,"created_at": string,"currency": string,"discount_cents": number,"email": string,"est_delivery_from": string | null,"est_delivery_to": string | null,"fulfilment_mode": Database["public"]['Enums']["fulfilment_mode"],"heavy_shipping_cents": number,"id": string,"notes": string | null,"order_number": string,"payment_intent_id": string | null,"payment_status": Database["public"]['Enums']["payment_status"],"promo_code_id": string | null,"refunded_cents": number,"retailer_charge_cents": number,"shipping_address": NonNullable<Json>,"shipping_cents": number,"shipping_method": Database["public"]['Enums']["shipping_method"],"status": Database["public"]['Enums']["order_status"],"subtotal_cents": number,"tax_cents": number,"total_cents": number,"tracking_number": string | null,"updated_at": string,"user_id": string | null,"_in_india": boolean | null
                   }
                   ComputedFields: "_in_india"
                   Insert: {
-                    "bulk_saving_cents"?: number,"carrier"?: string | null,"created_at"?: string,"currency"?: string,"discount_cents"?: number,"email": string,"est_delivery_from"?: string | null,"est_delivery_to"?: string | null,"fulfilment_mode"?: Database["public"]['Enums']["fulfilment_mode"],"heavy_shipping_cents"?: number,"id"?: string,"notes"?: string | null,"order_number"?: string,"payment_intent_id"?: string | null,"payment_status"?: Database["public"]['Enums']["payment_status"],"promo_code_id"?: string | null,"refunded_cents"?: number,"retailer_charge_cents"?: number,"shipping_address": NonNullable<Json>,"shipping_cents"?: number,"shipping_method"?: Database["public"]['Enums']["shipping_method"],"status"?: Database["public"]['Enums']["order_status"],"subtotal_cents": number,"tax_cents"?: number,"total_cents": number,"tracking_number"?: string | null,"updated_at"?: string,"user_id"?: string | null
+                    "bulk_saving_cents"?: number,"carrier"?: string | null,"coins_used"?: number,"created_at"?: string,"currency"?: string,"discount_cents"?: number,"email": string,"est_delivery_from"?: string | null,"est_delivery_to"?: string | null,"fulfilment_mode"?: Database["public"]['Enums']["fulfilment_mode"],"heavy_shipping_cents"?: number,"id"?: string,"notes"?: string | null,"order_number"?: string,"payment_intent_id"?: string | null,"payment_status"?: Database["public"]['Enums']["payment_status"],"promo_code_id"?: string | null,"refunded_cents"?: number,"retailer_charge_cents"?: number,"shipping_address": NonNullable<Json>,"shipping_cents"?: number,"shipping_method"?: Database["public"]['Enums']["shipping_method"],"status"?: Database["public"]['Enums']["order_status"],"subtotal_cents": number,"tax_cents"?: number,"total_cents": number,"tracking_number"?: string | null,"updated_at"?: string,"user_id"?: string | null
                   }
                   Update: {
-                    "bulk_saving_cents"?: number,"carrier"?: string | null,"created_at"?: string,"currency"?: string,"discount_cents"?: number,"email"?: string,"est_delivery_from"?: string | null,"est_delivery_to"?: string | null,"fulfilment_mode"?: Database["public"]['Enums']["fulfilment_mode"],"heavy_shipping_cents"?: number,"id"?: string,"notes"?: string | null,"order_number"?: string,"payment_intent_id"?: string | null,"payment_status"?: Database["public"]['Enums']["payment_status"],"promo_code_id"?: string | null,"refunded_cents"?: number,"retailer_charge_cents"?: number,"shipping_address"?: NonNullable<Json>,"shipping_cents"?: number,"shipping_method"?: Database["public"]['Enums']["shipping_method"],"status"?: Database["public"]['Enums']["order_status"],"subtotal_cents"?: number,"tax_cents"?: number,"total_cents"?: number,"tracking_number"?: string | null,"updated_at"?: string,"user_id"?: string | null
+                    "bulk_saving_cents"?: number,"carrier"?: string | null,"coins_used"?: number,"created_at"?: string,"currency"?: string,"discount_cents"?: number,"email"?: string,"est_delivery_from"?: string | null,"est_delivery_to"?: string | null,"fulfilment_mode"?: Database["public"]['Enums']["fulfilment_mode"],"heavy_shipping_cents"?: number,"id"?: string,"notes"?: string | null,"order_number"?: string,"payment_intent_id"?: string | null,"payment_status"?: Database["public"]['Enums']["payment_status"],"promo_code_id"?: string | null,"refunded_cents"?: number,"retailer_charge_cents"?: number,"shipping_address"?: NonNullable<Json>,"shipping_cents"?: number,"shipping_method"?: Database["public"]['Enums']["shipping_method"],"status"?: Database["public"]['Enums']["order_status"],"subtotal_cents"?: number,"tax_cents"?: number,"total_cents"?: number,"tracking_number"?: string | null,"updated_at"?: string,"user_id"?: string | null
                   }
                   Relationships: [
                     {
@@ -458,6 +458,38 @@ isOneToOne: false
       referencedColumns: ["id"]
     }
                   ]
+                },"product_place": {
+                  Row: {
+                    "band": number,"product_id": string,"score": number,"sold_90d": number,"subcategory_id": string | null
+                  }
+                  ComputedFields: never
+                  Insert: {
+                    "band"?: number,"product_id": string,"score"?: number,"sold_90d"?: number,"subcategory_id"?: string | null
+                  }
+                  Update: {
+                    "band"?: number,"product_id"?: string,"score"?: number,"sold_90d"?: number,"subcategory_id"?: string | null
+                  }
+                  Relationships: [
+                    {
+      foreignKeyName: "product_place_product_id_fkey"
+      columns: ["product_id"]
+isOneToOne: true
+      referencedRelation: "products"
+      referencedColumns: ["id"]
+    },{
+      foreignKeyName: "product_place_product_id_fkey"
+      columns: ["product_id"]
+isOneToOne: true
+      referencedRelation: "store_products"
+      referencedColumns: ["id"]
+    },{
+      foreignKeyName: "product_place_subcategory_id_fkey"
+      columns: ["subcategory_id"]
+isOneToOne: false
+      referencedRelation: "subcategories"
+      referencedColumns: ["id"]
+    }
+                  ]
                 },"product_search": {
                   Row: {
                     "category_id": string,"doc": unknown,"is_placeholder": boolean,"listed": boolean,"product_id": string,"product_type": Database["public"]['Enums']["product_type"],"published_at": string | null,"region_id": string | null
@@ -606,28 +638,28 @@ isOneToOne: false
                   ]
                 },"profiles": {
                   Row: {
-                    "created_at": string,"desk": Database["public"]['Enums']["ops_desk"] | null,"email": string | null,"full_name": string | null,"id": string,"phone": string | null,"role": Database["public"]['Enums']["app_role"],"updated_at": string
+                    "coins": number,"created_at": string,"desk": Database["public"]['Enums']["ops_desk"] | null,"email": string | null,"full_name": string | null,"id": string,"phone": string | null,"role": Database["public"]['Enums']["app_role"],"updated_at": string
                   }
                   ComputedFields: never
                   Insert: {
-                    "created_at"?: string,"desk"?: Database["public"]['Enums']["ops_desk"] | null,"email"?: string | null,"full_name"?: string | null,"id": string,"phone"?: string | null,"role"?: Database["public"]['Enums']["app_role"],"updated_at"?: string
+                    "coins"?: number,"created_at"?: string,"desk"?: Database["public"]['Enums']["ops_desk"] | null,"email"?: string | null,"full_name"?: string | null,"id": string,"phone"?: string | null,"role"?: Database["public"]['Enums']["app_role"],"updated_at"?: string
                   }
                   Update: {
-                    "created_at"?: string,"desk"?: Database["public"]['Enums']["ops_desk"] | null,"email"?: string | null,"full_name"?: string | null,"id"?: string,"phone"?: string | null,"role"?: Database["public"]['Enums']["app_role"],"updated_at"?: string
+                    "coins"?: number,"created_at"?: string,"desk"?: Database["public"]['Enums']["ops_desk"] | null,"email"?: string | null,"full_name"?: string | null,"id"?: string,"phone"?: string | null,"role"?: Database["public"]['Enums']["app_role"],"updated_at"?: string
                   }
                   Relationships: [
                     
                   ]
                 },"promo_codes": {
                   Row: {
-                    "code": string,"created_at": string,"discount_type": Database["public"]['Enums']["discount_type"],"discount_value": number,"id": string,"is_active": boolean,"max_uses": number | null,"min_order_cents": number,"updated_at": string,"uses_count": number,"valid_from": string | null,"valid_until": string | null
+                    "code": string,"created_at": string,"discount_type": Database["public"]['Enums']["discount_type"],"discount_value": number,"id": string,"is_active": boolean,"is_public": boolean,"max_discount_cents": number | null,"max_uses": number | null,"min_order_cents": number,"new_customers_only": boolean,"updated_at": string,"uses_count": number,"valid_from": string | null,"valid_until": string | null
                   }
                   ComputedFields: never
                   Insert: {
-                    "code": string,"created_at"?: string,"discount_type": Database["public"]['Enums']["discount_type"],"discount_value": number,"id"?: string,"is_active"?: boolean,"max_uses"?: number | null,"min_order_cents"?: number,"updated_at"?: string,"uses_count"?: number,"valid_from"?: string | null,"valid_until"?: string | null
+                    "code": string,"created_at"?: string,"discount_type": Database["public"]['Enums']["discount_type"],"discount_value": number,"id"?: string,"is_active"?: boolean,"is_public"?: boolean,"max_discount_cents"?: number | null,"max_uses"?: number | null,"min_order_cents"?: number,"new_customers_only"?: boolean,"updated_at"?: string,"uses_count"?: number,"valid_from"?: string | null,"valid_until"?: string | null
                   }
                   Update: {
-                    "code"?: string,"created_at"?: string,"discount_type"?: Database["public"]['Enums']["discount_type"],"discount_value"?: number,"id"?: string,"is_active"?: boolean,"max_uses"?: number | null,"min_order_cents"?: number,"updated_at"?: string,"uses_count"?: number,"valid_from"?: string | null,"valid_until"?: string | null
+                    "code"?: string,"created_at"?: string,"discount_type"?: Database["public"]['Enums']["discount_type"],"discount_value"?: number,"id"?: string,"is_active"?: boolean,"is_public"?: boolean,"max_discount_cents"?: number | null,"max_uses"?: number | null,"min_order_cents"?: number,"new_customers_only"?: boolean,"updated_at"?: string,"uses_count"?: number,"valid_from"?: string | null,"valid_until"?: string | null
                   }
                   Relationships: [
                     
@@ -1044,6 +1076,20 @@ isOneToOne: false
       referencedColumns: ["id"]
     }
                   ]
+                },"subcategories": {
+                  Row: {
+                    "category_slug": string,"id": string,"name": string,"slug": string,"sort_order": number,"words": string | null
+                  }
+                  ComputedFields: never
+                  Insert: {
+                    "category_slug": string,"id"?: string,"name": string,"slug": string,"sort_order": number,"words"?: string | null
+                  }
+                  Update: {
+                    "category_slug"?: string,"id"?: string,"name"?: string,"slug"?: string,"sort_order"?: number,"words"?: string | null
+                  }
+                  Relationships: [
+                    
+                  ]
                 },"tax_rates": {
                   Row: {
                     "checked_on": string,"rate_pct": number,"source": string,"state": string,"taxes_clothing": boolean,"taxes_food": boolean,"taxes_general": boolean
@@ -1456,6 +1502,9 @@ isOneToOne: false
 "_order_shipments_json":
 { Args: { "p_order": string }; Returns: Json
                            },
+"_pack_by_weight":
+{ Args: { "p_product": string,"p_type": Database["public"]['Enums']["product_type"] }; Returns: string
+                           },
 "_priced_weight":
 { Args: { "p_heavy": boolean,"p_weight_g": number }; Returns: number
                            },
@@ -1476,6 +1525,9 @@ isOneToOne: false
                            },
 "_redo_wanted":
 { Args: { "p_media": Omit<Database["public"]['Tables']["product_media"]['Row'], Database["public"]['Tables']["product_media"]['ComputedFields']>,"p_type": Database["public"]['Enums']["product_type"] }; Returns: boolean
+                           },
+"_refresh_places":
+{ Args: Record<PropertyKey, never>; Returns: number
                            },
 "_reprice_products":
 { Args: { "p_product"?: string }; Returns: number
@@ -1698,7 +1750,7 @@ isOneToOne: false
 { Args: { "p_from": string,"p_note"?: string,"p_shipment": string,"p_to": string }; Returns: undefined
                            },
 "checkout_context":
-{ Args: { "p_promo_code"?: string,"p_state"?: string,"p_variant_ids": (string)[] }; Returns: Json
+{ Args: { "p_email"?: string,"p_promo_code"?: string,"p_state"?: string,"p_user"?: string,"p_variant_ids": (string)[] }; Returns: Json
                            },
 "claim_payment_sweep":
 { Args: { "p_limit"?: number }; Returns: {
@@ -1789,7 +1841,7 @@ isOneToOne: false
 { Args: { "p_discount_cents"?: number,"p_items": Json,"p_line1"?: string,"p_state"?: string }; Returns: Json
                            },
 "store_browse":
-{ Args: { "p_category"?: string,"p_for"?: string,"p_limit"?: number,"p_max_cents"?: number,"p_min_cents"?: number,"p_offset"?: number,"p_region"?: string,"p_sizes"?: string,"p_sort"?: string,"p_type": string }; Returns: Json
+{ Args: { "p_category"?: string,"p_for"?: string,"p_limit"?: number,"p_max_cents"?: number,"p_min_cents"?: number,"p_offset"?: number,"p_region"?: string,"p_sizes"?: string,"p_sort"?: string,"p_sub"?: string,"p_type": string }; Returns: Json
                            },
 "store_home":
 { Args: Record<PropertyKey, never>; Returns: Json

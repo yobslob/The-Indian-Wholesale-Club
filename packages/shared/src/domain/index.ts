@@ -2,6 +2,7 @@ export * from './address';
 export * from './attributes';
 export * from './checkout';
 export * from './contrast';
+export * from './coupons';
 export type * from './checkout-api';
 export * from './delivery';
 export * from './listing';

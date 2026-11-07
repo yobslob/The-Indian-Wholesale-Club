@@ -63,11 +63,10 @@ export async function POST(
 
   try {
     const service = serviceClient();
-    // Website: session cookies. App: Bearer token. Only links the order to the account. Read alongside the pricing.
-    const [priced, user] = await Promise.all([
-      priceCart(service, parsed.data),
-      requestUser(request),
-    ]);
+    // Website: session cookies. App: Bearer token. Links the order to the account, and the account's coins and standing
+    // price it (D-191), so it is read first.
+    const user = await requestUser(request);
+    const priced = await priceCart(service, parsed.data, user?.id ?? null);
     if (!priced.ok) {
       return NextResponse.json(
         { error: problemMessage(priced.problem), problem: priced.problem },
@@ -86,9 +85,10 @@ export async function POST(
         unitPriceCents: l.unitPriceCents,
       })),
       subtotalCents: quote.breakdown.subtotalCents,
-      // D-119: the order's discount is the promo and the bulk saving; the saving's part is kept beside it.
-      discountCents: quote.breakdown.discountCents + quote.breakdown.bulkSavingCents,
+      // D-119, D-191: the order's discount is the coupon, the bulk saving and the coins; their parts are kept beside it.
+      discountCents: quote.breakdown.discountCents + quote.breakdown.bulkSavingCents + quote.breakdown.coinsUsed,
       bulkSavingCents: quote.breakdown.bulkSavingCents,
+      coinsUsed: quote.breakdown.coinsUsed,
       // D-111: the retailer charges travel inside the order's shipping; their part is kept beside it. So does
       // Heavy-item shipping (founder 2026-10-24).
       shippingCents:

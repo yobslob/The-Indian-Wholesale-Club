@@ -36,6 +36,18 @@ export const checkoutPromoSchema = z.object({
   discount_type: z.enum(['percentage', 'fixed']),
   discount_value: z.number().int(),
   min_order_cents: z.number().int(),
+  /** D-191: a percentage coupon's most. */
+  max_discount_cents: z.number().int().nullable().default(null),
+});
+
+/** D-191: a public coupon, for checkout's coupon box. */
+export const checkoutCouponSchema = z.object({
+  code: z.string(),
+  discount_type: z.enum(['percentage', 'fixed']),
+  discount_value: z.number().int(),
+  min_order_cents: z.number().int(),
+  max_discount_cents: z.number().int().nullable(),
+  new_customers_only: z.boolean(),
 });
 
 /** §10 Y-3: one asked line's stock, also when it is no longer on sale (name, label and photo null only if it is gone). */
@@ -53,6 +65,10 @@ export const checkoutContextSchema = z.object({
   /** Every id asked, in the order asked. */
   stock: z.array(checkoutStockSchema),
   promo: checkoutPromoSchema.nullable(),
+  /** D-191: the coupon box's coupons, whether this customer has no paid order yet, and their coins (null: no account). */
+  coupons: z.array(checkoutCouponSchema).default([]),
+  is_new_customer: z.boolean().default(true),
+  coins: z.number().int().nullable().default(null),
   shipping: z.object({
     flat_cents: z.number().int().nullable(),
     free_min_cents: z.number().int().nullable(),
@@ -83,18 +99,21 @@ export type CheckoutPromo = z.infer<typeof checkoutPromoSchema>;
 export type CheckoutStock = z.infer<typeof checkoutStockSchema>;
 export type CheckoutContext = z.infer<typeof checkoutContextSchema>;
 
-/** Everything needed to price a cart, in one round trip (migration 3, PR-2). */
+/** Everything needed to price a cart, in one round trip (migration 3, PR-2). `who`: the customer, for coupons and coins. */
 export async function getCheckoutContext(
   service: IwcClient,
   variantIds: string[],
   promoCode: string | null,
   state: string | null = null,
+  who: { userId?: string | null; email?: string | null } = {},
 ): Promise<CheckoutContext> {
   const data = unwrap(
     await service.rpc('checkout_context', {
       p_variant_ids: variantIds,
       ...(promoCode ? { p_promo_code: promoCode } : {}),
       ...(state ? { p_state: state } : {}),
+      ...(who.userId ? { p_user: who.userId } : {}),
+      ...(who.email ? { p_email: who.email } : {}),
     }),
   );
   return checkoutContextSchema.parse(data);

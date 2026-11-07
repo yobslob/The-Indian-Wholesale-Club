@@ -3,13 +3,15 @@ import { PRODUCT_TYPE_PATH, sortBySize, type ProductType } from '@repo/shared/do
 import type { BrowseFilter, BrowsePage, BrowseSort } from '@repo/db/store';
 
 /**
- * The See all pages' filters as the address carries them (D-136): ?state=, ?category=, ?for= (women or men, clothing,
- * D-140), ?min= and ?max= (whole dollars), ?size= (repeated), ?sort= (absent: low to high, D-144). Pure: the page, the
+ * The See all pages' filters as the address carries them (D-136): ?state=, ?category=, ?sub= (D-191), ?for= (women or men,
+ * clothing, D-140), ?min= and ?max= (whole dollars), ?size= (repeated), ?sort= (absent: Popular, D-191). Pure: the page, the
  * /api/browse route and the filter panel share it. An old ?show= or ?delivery= link lands on the first page (R-6).
  */
 export interface BrowseQuery {
   state?: string;
   category?: string;
+  /** D-191: a sub-category, from the rail. */
+  sub?: string;
   /** D-140: clothing for women or men (unisex pieces show under both); no Kids at launch. */
   who?: Who;
   min?: number;
@@ -32,18 +34,15 @@ export const PAGE = 24;
 export const MOST = 480;
 
 /**
- * The Sort by choices (D-144). The default, 'low', is low to high; on Clothing it is one of each kind, then the next
- * of each, with the finishing touches in a drawer, so a strict low to high stays a choice there. Elsewhere 'low' is
- * that strict list, so 'price-asc' is not offered twice.
+ * The Sort by choices. D-191: Popular by default: what sells, at moderate prices, one of each category then the next of each
+ * (store_browse), replacing low to high (D-144), which buried the higher-priced pieces past where anyone scrolls.
  */
-export function sortsFor(productType: ProductType): { value: BrowseSort; label: string }[] {
-  return [
-    { value: 'low', label: productType === 'clothing' ? 'Low to high, every kind' : 'Price: low to high' },
-    ...(productType === 'clothing' ? [{ value: 'price-asc' as const, label: 'Price: low to high' }] : []),
-    { value: 'price-desc', label: 'Price: high to low' },
-    { value: 'new', label: 'Newest' },
-  ];
-}
+export const SORT_CHOICES: { value: BrowseSort; label: string }[] = [
+  { value: 'popular', label: 'Popular' },
+  { value: 'price-asc', label: 'Price: low to high' },
+  { value: 'price-desc', label: 'Price: high to low' },
+  { value: 'new', label: 'Newest' },
+];
 
 type Raw = URLSearchParams | Record<string, string | string[] | undefined>;
 
@@ -61,8 +60,9 @@ const whole = (min: number, max: number) => ({
 });
 const dollars = whole(0, 100_000);
 const size = { safeParse: (v: string) => ({ success: v.trim().length >= 1 && v.trim().length <= 40 }) };
-const SORTS: BrowseSort[] = ['low', 'new', 'price-asc', 'price-desc'];
-const sort = { parse: (v: string): BrowseSort => SORTS.find((x) => x === v) ?? 'low' };
+const SORTS: BrowseSort[] = ['popular', 'new', 'price-asc', 'price-desc'];
+// a saved ?sort=low link lands on the same list
+const sort = { parse: (v: string): BrowseSort => (v === 'low' ? 'price-asc' : (SORTS.find((x) => x === v) ?? 'popular')) };
 
 const all = (raw: Raw, key: string): string[] => {
   if (raw instanceof URLSearchParams) return raw.getAll(key);
@@ -81,11 +81,12 @@ export function parseBrowseQuery(raw: Raw): BrowseQuery {
   return {
     state: slug.parse(one(raw, 'state')),
     category: slug.parse(one(raw, 'category')),
+    ...(slug.parse(one(raw, 'sub')) ? { sub: slug.parse(one(raw, 'sub')) } : {}),
     ...(who ? { who } : {}),
     min,
     max,
     sizes,
-    sort: sort.parse(one(raw, 'sort') ?? 'low'),
+    sort: sort.parse(one(raw, 'sort') ?? 'popular'),
   };
 }
 
@@ -94,11 +95,12 @@ export function browseSearch(q: BrowseQuery): string {
   const p = new URLSearchParams();
   if (q.state) p.set('state', q.state);
   if (q.category) p.set('category', q.category);
+  if (q.sub) p.set('sub', q.sub);
   if (q.who) p.set('for', q.who);
   if (q.min !== undefined) p.set('min', String(q.min));
   if (q.max !== undefined) p.set('max', String(q.max));
   for (const s of q.sizes) p.append('size', s);
-  if (q.sort !== 'low') p.set('sort', q.sort);
+  if (q.sort !== 'popular') p.set('sort', q.sort);
   return p.toString();
 }
 
@@ -124,6 +126,7 @@ export const toBrowseFilter = (productType: ProductType, q: BrowseQuery, offset:
   productType,
   regionSlug: q.state,
   categorySlug: q.category,
+  subSlug: q.sub,
   minCents: q.min !== undefined ? q.min * 100 : undefined,
   // whole dollars: "$20 to $30" includes a $30.00 piece
   maxCents: q.max !== undefined ? q.max * 100 : undefined,
@@ -136,14 +139,15 @@ export const toBrowseFilter = (productType: ProductType, q: BrowseQuery, offset:
 
 /** True when any filter beyond the state and the category is set (those only the server's cached page knows). */
 export const hasExtraFilters = (q: BrowseQuery): boolean =>
-  q.min !== undefined || q.max !== undefined || q.sizes.length > 0 || q.sort !== 'low';
+  Boolean(q.sub) || q.min !== undefined || q.max !== undefined || q.sizes.length > 0 || q.sort !== 'popular';
 
 export const sameQuery = (a: BrowseQuery, b: BrowseQuery): boolean => browseSearch(a) === browseSearch(b);
 
-/** The next query once a filter changes: a new state drops the category (a category lives within a state). */
+/** The next query once a filter changes: a new state drops the category (a category lives within a state), a new category its sub-category. */
 export function withFilter(q: BrowseQuery, change: Partial<BrowseQuery>): BrowseQuery {
   const next: BrowseQuery = { ...q, ...change };
   if ('state' in change && change.state !== q.state) next.category = undefined;
+  if ('category' in next && next.category !== q.category && !('sub' in change)) delete next.sub;
   return next;
 }
 

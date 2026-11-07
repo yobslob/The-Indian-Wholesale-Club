@@ -4,7 +4,7 @@
 begin;
 select tests.setup();
 insert into public.promo_codes (code, discount_type, discount_value, min_order_cents)
-values ('WELCOME10', 'percentage', 10, 0);
+values ('TESTTEN', 'percentage', 10, 0);
 insert into public.promo_codes (code, discount_type, discount_value, valid_until)
 values ('EXPIRED', 'fixed', 500, now() - interval '1 day');
 insert into public.promo_codes (code, discount_type, discount_value, max_uses, uses_count)
@@ -26,7 +26,7 @@ reset role;
 
 set local role service_role;
 select set_config('tests.ctx', public.checkout_context(
-  array[tests.id('v_live'), tests.id('v_live2'), tests.id('v_placeholder')], 'welcome10')::text, true);
+  array[tests.id('v_live'), tests.id('v_live2'), tests.id('v_placeholder')], 'testten')::text, true);
 
 select tests.assert(jsonb_array_length(current_setting('tests.ctx')::jsonb -> 'variants') = 2,
   'INV-8: only the two live variants are returned, the placeholder is not buyable');
@@ -41,7 +41,7 @@ select tests.assert(
    where v ->> 'variant_id' = tests.id('v_live2')::text) = '6000',
   'a variant price override wins over the product price');
 select tests.assert(
-  (current_setting('tests.ctx')::jsonb -> 'promo' ->> 'code') = 'WELCOME10'
+  (current_setting('tests.ctx')::jsonb -> 'promo' ->> 'code') = 'TESTTEN'
   and (current_setting('tests.ctx')::jsonb -> 'promo' ->> 'discount_value') = '10',
   'a usable promo code is found case-insensitively');
 select tests.assert(

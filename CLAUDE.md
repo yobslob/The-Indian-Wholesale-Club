@@ -14,13 +14,14 @@ Rules cite decision IDs (`D-xxx`, index in `docs/decisions.md`).
 - **The simple store (D-187) went live on 2026-11-04:** `docs/status.md` says what is live today.
 - **Mobile web first:** design and user experience aim at the website on a phone; the app complements it. [D-190]
 - Two operators: the **founder** (US side) and the **COO** (India side). [D-007]
-- **Hosting (D-147):** a new Vercel account (Hobby) and a new Supabase project (free) since 2026-10-21/22, photos in
-  Cloudflare R2. The first accounts hit their free limits; every limit now has a budget (`docs/monitoring.md`). Any
-  change that adds page-cache writes, database size or egress says so in its commit.
+- **Hosting (D-147, D-191):** a new Vercel account (Pro, founder 2026-11-07) and a new Supabase project (free) since
+  2026-10-21/22, photos in Cloudflare R2. Work as if still limited, except where it improves the customer's experience;
+  every limit has a budget (`docs/monitoring.md`). Any change that adds page-cache writes, database size or egress says
+  so in its commit.
 
 ## Non-negotiables (stop and ask before breaking one)
-1. **No operations info on any customer surface:** no shops, sources, pickups, weights or India logistics in
-   pages, the app, emails, API responses or page source. IWC is the seller. [D-003, D-017]
+1. **No operations info on any customer surface:** no shops, sources, pickups, billed weights or India logistics in
+   pages, the app, emails, API responses or page source; a piece's own pack weight shows (D-129, D-191). IWC is the seller. [D-003, D-017]
 2. **Honest origin:** show "Made in India" and the state when the listing has one (an all-India listing has none);
    never invent or mask where goods come from. [D-004, D-121]
 3. **Invisible admin:** no links or hints; access checked on the server (role + email allowlist). [D-006]
