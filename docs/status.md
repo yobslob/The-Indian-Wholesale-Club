@@ -36,7 +36,7 @@ Short on purpose (the audit warns past 10 KB): **replace** lines when something 
   `TODO(D-187)`); **its admin mode breaks** with the release.
 
 ## Next for the founder
-1. **D-194:** merge and deploy at a quiet hour; each deploy empties the page cache. Then run query L in Supabase's SQL editor (`monitoring.md` §6) and send the three results: they size the backfill (`plan-look-photos.md` Phase 0). **D-191:** a new app build carries the bill's coins, Popular and the sub-category chips. Your choices: the retailer % (1.5 on the 5 Nov copy, so the charge grows with the bag; Settings → Bag charges), the noodles photo's printed "₹15", the sub-categories' own photos (`sub-photos.ts`). Popular is an experiment: compare orders and average bag in Admin before and after.
+1. **D-194:** merge and deploy at a quiet hour; each deploy empties the page cache. Query L1 – L3 are in (`plan-look-photos.md` Phase 0 results); L4 and L5 and today's R2 GB are still wanted. **D-191:** a new app build carries the bill's coins, Popular and the sub-category chips. Your choices: the retailer % (1.5 on the 5 Nov copy, so the charge grows with the bag; Settings → Bag charges), the noodles photo's printed "₹15", the sub-categories' own photos (`sub-photos.ts`). Popular is an experiment: compare orders and average bag in Admin before and after.
 2. **Names to tidy:** production's count (Y-11; the page and Rename all go only at 0).
 3. In the order of use (each from the archived status, still open and not re-checked here):
    - **The photo redo** (D-164): pull on the laptop, `pnpm photos:redo fetch --type food --again` and `--type home

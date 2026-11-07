@@ -158,6 +158,21 @@ from (select distinct v.id, v.product_type, v.source_site, v.look from v
         and not exists (select 1 from v v3 join public.product_media m on m.variant_id = v3.vid
                         where v3.id = v.id and v3.look = v.look)) x
 group by 1, 2 order by 3 desc;
+-- L4. what the looks are: which option makes them, by type
+select p.product_type, k as option, count(distinct p.id) as listings, count(*) as variants
+from public.products p join public.product_variants pv on pv.product_id = p.id
+cross join lateral jsonb_object_keys(pv.options - 'size') k
+where p.status = 'live' and not p.is_placeholder and pv.is_active group by 1, 2 order by 1, 3 desc;
+-- L5. pages for the sample (admin only, never on a customer surface): 7 random listings per type from Amazon with looks and no look photo, plus 3 each from Savana and Swiggy
+with v as (
+  select p.id, p.product_type, p.source_site, p.source_url, count(distinct pv.options - 'size') as looks
+  from public.products p join public.product_variants pv on pv.product_id = p.id
+  where p.status = 'live' and not p.is_placeholder and pv.is_active and p.source_url is not null
+    and not exists (select 1 from public.product_media m where m.product_id = p.id and m.variant_id is not null)
+  group by 1, 2, 3, 4 having count(distinct pv.options - 'size') > 1),
+r as (select *, row_number() over (partition by product_type, source_site order by random()) as n from v)
+select product_type, source_site, looks, source_url from r
+where (source_site = 'amazon.in' and n <= 7) or (source_site in ('savana.com', 'swiggy.com') and n <= 3) order by 1, 2;
 ```
 
 ## 7. Fixing what is found

@@ -1,7 +1,7 @@
 # Plan: every colour, pack and style shows its own photos
 
-*Written 2026-11-07 by Claude, using the repo at `optimize/lighter-site` and the shops' page formats. Status: **Phases 1 and 2 built (D-194), not released; Phase 0 waits for the
-founder's numbers; Phases 3 and 4 not started.** §8's defaults are in use. For the agent that carries it out: read all of it before starting. Each phase can
+*Written 2026-11-07 by Claude, using the repo at `optimize/lighter-site` and the shops' page formats. Status: **Phases 1 and 2 built (D-194), not released; Phase 0's numbers are at the
+end of this file, its page sample still to do; Phases 3 and 4 not started.** §8's defaults are in use. For the agent that carries it out: read all of it before starting. Each phase can
 ship by itself and leaves the store working.*
 
 The founder, verbatim (2026-11-07), to be filed with `/record-answer` as the next D-number once §8 is answered:
@@ -28,7 +28,7 @@ also keep the listing's main photo. The customer can't see what they are buying.
 | The store view already exposes it: `store_media` selects `m.variant_id` | `20261109090100_simple_reads.sql` l. 12 |
 | `store_product_page()` already sends every photo with its `variant_id`, and every variant with its `options`, to the product page | `20261111090100_subcategories_popular_packs.sql` (`'media'`, `'variants'`) |
 | The sourcing runner **already tags some photos**: the page's first 8 photos go in untagged, then one photo per item that has its own image (`v.image`), tagged through `item_key → product_sources.variant_id` | `packages/shared/src/sourcing/auto/listing.ts` l. 288–296, `worker_sourcing_media` |
-| Which readers give a per-item image: Shopify (`featured_image`), Zepto / Instamart (`variant.images`), grocery readers, Savana (`goodsThumb`, a thumbnail). **Amazon gives none** (`amazonVariants` passes no image), Myntra has none (one colour per style), Flipkart's other values are read for price only | `packages/shared/src/sourcing/variants.ts`, `auto/readers/*.ts` |
+| Which readers give a per-item image: Shopify (`featured_image`), Zepto / Instamart (`variant.images`), grocery readers, Savana (`goodsThumb`, a thumbnail). **Amazon gives none** (`amazonVariants` passes no image), Myntra's other colours are read from their own pages and tagged (corrected by Phase 0: 845 tagged photos), Flipkart's other values are read for price only | `packages/shared/src/sourcing/variants.ts`, `auto/readers/*.ts` |
 | The bookmarklet takes Amazon's `colorImages` = the **selected colour's** photos only | `packages/shared/src/sourcing/bookmarklet.ts` l. 44 |
 | The gallery ignores `variant_id`: main photo + 3 small, in `is_primary, sort_order` order; tagged photos just show up as extra photos | `apps/web/features/catalog/product-gallery.tsx` |
 | The gallery and the picker are **siblings** on the server page: the picked variant lives inside `AddToCart` and the gallery can't see it | `app/(store)/states/[region]/[product]/page.tsx`, `features/catalog/add-to-cart.tsx` |
@@ -246,7 +246,7 @@ runner):
    - **Flipkart:** the other values' pages the runner already reads for price; take their first image.
    - **Shopify / NEWME / Zepto / Instamart / grocery:** the variant's own image, already in the reader.
    - **Savana:** the colour group's image; use the original, not `goodsThumb`, if one exists.
-   - **Myntra:** nothing (one colour per listing). Don't merge styles (§3 F).
+   - **Myntra:** its other colours are already tagged (Phase 0). The looks left are mostly the page's own colour, which needs a tag and no upload; a colour with neither is read from its own page. Don't merge styles (§3 F).
 3. Download with the existing `copyPhotos` rules (shop's referer, image types, 2 KB – 10 MB). **Reject images under
    600 px on the short side** (a thumbnail looks broken at 1200 px).
 4. Duplicate check (`pictureGroups` / same-picture, D-142) against the listing's stored photos (fetch them from
@@ -329,4 +329,35 @@ founder sets), and no store page got slower (`check.mjs http`, Lighthouse on two
 - A 2nd–4th photo per colour if R2 moves to a paid tier.
 
 ## Phase 0 results
-*(the agent fills this in: L1–L3 tables, the 20-page sample per shop, the R2 sum, the orphan total)*
+Production, read-only, founder 2026-11-07. L1 minus its photos equals L3's total in every type, so the three agree.
+
+**L1, listings with 2+ looks**
+
+| Type | Listings | Looks | Looks with a photo | Listings with none |
+|---|---|---:|---:|---:|
+| Clothing | 506 | 2,241 | 845 (38%) | 209 |
+| Food | 1,964 | 6,747 | 742 (11%) | 1,628 |
+| Home & gifts | 1,374 | 7,147 | 14 (0.2%) | 1,368 |
+
+**L2, tagged photos today:** Myntra clothing 845; food: Blinkit 376, Zepto 191, BigBasket 166, Swiggy 10; home: Blinkit 9, BigBasket 5.
+
+**L3, looks without a photo:** home Amazon 7,133; food Amazon 5,255, Swiggy 750; clothing Amazon 848, Myntra 298, Savana 250. Total 14,534.
+
+**What it means**
+- **Phases 1 and 2 alone** give photos to 845 clothing looks on 297 listings and 742 food looks on 336 listings. Home barely changes.
+- **Amazon is the whole backfill:** 13,236 of 14,534 looks. Whether it can be read decides Phase 3, so the sample comes first.
+- **R2 sum at ~70 KB a photo.** The page's own look needs a tag and no upload, about one look per listing, so these are upper bounds before the duplicate check:
+
+| Type | New photos at most | Space at most |
+|---|---:|---:|
+| Clothing | 890 | 0.06 GB |
+| Food | 4,041 | 0.28 GB |
+| Home & gifts | 5,759 | 0.40 GB |
+| All | 10,690 | 0.75 GB |
+
+  Clothing and food fit the 0.5 GB cap with about 0.16 GB left, roughly 2,300 home photos. All three would reach about 9.14 GB from 8.39 GB, under the 9.3 GB stop.
+- **Home has 5.2 looks per listing**, though the founder expects most pieces to be singular. Query L4 says what those looks are, before any are stored.
+
+**Real listings checked:** 14 live clothing pages (8 with 2+ looks, 6 with tagged photos). Three were copied to the local database with their real photos, and every colour was tapped on a simulated Pixel 7: each colour with a tagged photo showed that colour, the photo box and the page height never changed. Finding: the page's own colour's photos are untagged, so they stay as small photos under another colour's main photo.
+
+**Still to do:** queries L4 and L5, the page sample, today's R2 GB, the orphan report.
