@@ -7,12 +7,14 @@ import { displayOption, displayTitle, formatUsd, optionPriceLabel } from '@repo/
 
 import { mediaUrl } from '@/lib/site';
 
-import { chipLabel, coloursOf, inSizeOrder, LOW_STOCK, showsPrices } from './card-options';
-import { StorePhoto } from './store-photo';
+import { chipLabel, colourPhoto, coloursOf, inSizeOrder, LOW_STOCK, optionPhoto, showsPrices } from './card-options';
+import { preloadPhoto, StorePhoto } from './store-photo';
 
 import type { CardOption, ProductCard } from '@repo/db/store';
 
 type Product = Pick<ProductCard, 'id' | 'name' | 'product_type' | 'primary_image_path'>;
+
+const CARD_PHOTO_SIZES = '(min-width: 1280px) 25vw, 50vw';
 
 /** Arrow keys move between a group's chips (a roving focus, D-140). */
 function onArrows(e: React.KeyboardEvent<HTMLElement>): void {
@@ -29,6 +31,7 @@ function onArrows(e: React.KeyboardEvent<HTMLElement>): void {
  * out, the chips arriving one after another; a piece in colours shows its colours first. Sold-out chips are struck
  * and cannot be tapped; a dot marks "only a few left". A tap adds that option and rolls the ribbon back. Escape, a tap
  * outside or the card leaving the screen closes it. Reduced motion: it simply appears (globals.css).
+ * D-194: a colour with its own photo shows it on the card until the ribbon closes; the card itself never changes.
  */
 export function OptionRibbon({
   product,
@@ -46,6 +49,17 @@ export function OptionRibbon({
   const [colour, setColour] = useState<string | null>(colours.length ? null : '');
   const prices = showsPrices(options, product.product_type);
   const shown = colour === null ? [] : inSizeOrder(options.filter((o) => !colour || o.options?.colour === colour));
+  const lookOnCard = colour ? colourPhoto(options, colour) : null;
+
+  // few photos, so the card can change at once
+  useEffect(() => {
+    for (const c of colours) {
+      const photo = colourPhoto(options, c);
+      if (photo) preloadPhoto(mediaUrl(photo), CARD_PHOTO_SIZES);
+    }
+    // the colours follow the options
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [options]);
 
   useEffect(() => {
     const el = ref.current;
@@ -72,6 +86,12 @@ export function OptionRibbon({
 
   const chip = 'card-chip font-ui inline-flex min-h-11 min-w-11 items-center justify-center gap-1 rounded-full border px-3 text-[13px] font-semibold md:min-h-10 md:min-w-10';
   return (
+    <>
+    {lookOnCard ? (
+      <span data-testid="card-look" aria-hidden="true" className="pointer-events-none absolute inset-0 z-[1] overflow-hidden rounded-lg">
+        <StorePhoto key={lookOnCard} src={mediaUrl(lookOnCard)} alt="" sizes={CARD_PHOTO_SIZES} className="look-in object-cover" />
+      </span>
+    ) : null}
     <div ref={ref} role="dialog" aria-label={`Choose for ${product.name}`} className="card-ribbon absolute inset-x-1.5 bottom-1.5 z-[3] rounded-[16px] p-2">
       {colour === null ? (
         <div role="group" aria-label="Colour" className="flex flex-wrap gap-1.5" onKeyDown={onArrows}>
@@ -115,6 +135,7 @@ export function OptionRibbon({
         </div>
       )}
     </div>
+    </>
   );
 }
 
@@ -136,7 +157,18 @@ export function OptionSheet({
   onClose: () => void;
 }): React.JSX.Element {
   const close = useRef<HTMLButtonElement>(null);
+  // D-194: the small photo follows the last option added here, until the sheet closes
+  const [lastLook, setLastLook] = useState<string | null>(null);
+  const small = lastLook ?? product.primary_image_path;
   const prices = showsPrices(options, product.product_type) || product.product_type !== 'clothing';
+  useEffect(() => {
+    for (const o of options) {
+      const photo = optionPhoto(o);
+      if (photo) preloadPhoto(mediaUrl(photo), '48px');
+    }
+    // once, as the sheet opens
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, []);
   useEffect(() => {
     close.current?.focus();
     const key = (e: KeyboardEvent): void => {
@@ -154,7 +186,7 @@ export function OptionSheet({
       <div className="card-sheet bg-canvas absolute inset-x-0 bottom-0 max-h-[80dvh] overflow-y-auto rounded-t-[22px] px-4 pb-[max(16px,env(safe-area-inset-bottom))] pt-4 md:inset-x-auto md:right-6 md:bottom-6 md:w-[380px] md:rounded-[22px]">
         <div className="mb-3 flex items-center gap-3">
           <span className="bg-land relative block h-16 w-12 flex-none overflow-hidden rounded-[10px]">
-            {product.primary_image_path ? <StorePhoto src={mediaUrl(product.primary_image_path)} alt="" sizes="48px" className="object-cover" /> : null}
+            {small ? <StorePhoto key={small} src={mediaUrl(small)} alt="" sizes="48px" className="object-cover" /> : null}
           </span>
           <span className="font-ui flex-1 text-[15px] leading-snug">
             <b className="block">{product.name}</b>
@@ -192,7 +224,10 @@ export function OptionSheet({
                   className={step}
                   disabled={out || n >= o.available}
                   aria-label={`Add ${displayOption(o.label)}`}
-                  onClick={(e) => onChange(o, n + 1, e.currentTarget)}
+                  onClick={(e) => {
+                    onChange(o, n + 1, e.currentTarget);
+                    setLastLook(optionPhoto(o) ?? lastLook);
+                  }}
                 >
                   +
                 </button>

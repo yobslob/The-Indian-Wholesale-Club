@@ -43,6 +43,8 @@ export const cardOptionSchema = z.object({
   options: z.record(z.string()).default({}),
   price_cents: z.number().int(),
   available: z.number().int(),
+  /** D-194: its look's photo, from /api/card-options only; absent on cached cards and older answers. */
+  image_path: z.string().nullable().optional(),
 });
 
 export const productCardSchema = z.object({
