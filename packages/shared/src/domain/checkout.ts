@@ -278,13 +278,3 @@ export function formatUsd(cents: number): string {
   return new Intl.NumberFormat('en-US', { style: 'currency', currency: 'USD' }).format(cents / 100);
 }
 
-/**
- * D-140 (F5): "You're saving $X": the struck Shipping and the bulk saving (0 below the free line).
- * A note only: every total stays exact.
- */
-export function bagSavingCents(
-  at: { waivedShippingCents: number },
-  bulkSavingCents: number,
-): number {
-  return at.waivedShippingCents + Math.max(bulkSavingCents, 0);
-}

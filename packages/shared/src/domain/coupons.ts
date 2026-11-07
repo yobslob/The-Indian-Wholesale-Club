@@ -58,13 +58,55 @@ export function bestCoupon(
   return best;
 }
 
-/** The nearest coupon this bag has not reached yet, and how much more it takes; null when none is left. */
+/**
+ * The nearest coupon this bag has not reached that would truly be its best there and beats what it saves now (`beatCents`),
+ * so "Add $39 more for $7 off" is never said to someone whose $9 coupon would still win. Null when none is left.
+ */
 export function nextCoupon(
   offers: Pick<CheckoutOffers, 'coupons' | 'isNewCustomer'>,
   subtotalCents: number,
+  beatCents = 0,
 ): { coupon: PublicCoupon; moreCents: number } | null {
   const ahead = offers.coupons
-    .filter((c) => canUse(c, offers) && c.minOrderCents > subtotalCents)
+    .filter(
+      (c) =>
+        canUse(c, offers) &&
+        c.minOrderCents > subtotalCents &&
+        promoDiscountCents(c.minOrderCents, c) > beatCents &&
+        bestCoupon(offers, c.minOrderCents)?.code === c.code,
+    )
     .sort((a, b) => a.minOrderCents - b.minOrderCents)[0];
   return ahead ? { coupon: ahead, moreCents: ahead.minOrderCents - subtotalCents } : null;
+}
+
+/** Where a coupon stands on this bag: what the coupon list draws, coloured with Apply or greyed with the reason. */
+export type CouponStanding =
+  | { kind: 'usable'; offCents: number }
+  | { kind: 'short'; moreCents: number }
+  | { kind: 'first-order' }
+  | { kind: 'bulk-bigger' };
+
+export function couponStanding(
+  c: PublicCoupon,
+  offers: Pick<CheckoutOffers, 'isNewCustomer'>,
+  subtotalCents: number,
+  bulkCents = 0,
+): CouponStanding {
+  if (!canUse(c, offers)) return { kind: 'first-order' };
+  if (subtotalCents < c.minOrderCents) return { kind: 'short', moreCents: c.minOrderCents - subtotalCents };
+  const offCents = promoDiscountCents(subtotalCents, c);
+  return offCents > bulkCents ? { kind: 'usable', offCents } : { kind: 'bulk-bigger' };
+}
+
+/** The list's order: what can be used now, the most off first; then the nearest to reach; then the rest. */
+export function sortedCoupons(
+  offers: Pick<CheckoutOffers, 'coupons' | 'isNewCustomer'>,
+  subtotalCents: number,
+  bulkCents = 0,
+): { coupon: PublicCoupon; standing: CouponStanding }[] {
+  const rank = (s: CouponStanding): number =>
+    s.kind === 'usable' ? 1e9 - s.offCents : s.kind === 'short' ? 2e9 + s.moreCents : s.kind === 'bulk-bigger' ? 4e9 : 5e9;
+  return offers.coupons
+    .map((coupon) => ({ coupon, standing: couponStanding(coupon, offers, subtotalCents, bulkCents) }))
+    .sort((a, b) => rank(a.standing) - rank(b.standing));
 }

@@ -47,6 +47,9 @@ import {
   variantLabel,
   worstContrast,
   bestCoupon,
+  billOf,
+  couponStanding,
+  sortedCoupons,
   couponTerms,
   couponTitle,
   nextCoupon,
@@ -602,6 +605,36 @@ describe('D-191: coupons and coins', () => {
   it('says how far the next one is', () => {
     assert.deepEqual(nextCoupon({ coupons, isNewCustomer: false }, 9000), { coupon: coupons[1], moreCents: 900 });
     assert.equal(nextCoupon({ coupons, isNewCustomer: false }, 20000), null);
+  });
+
+  it('D-192: never promises a next coupon that would not be the best there', () => {
+    assert.equal(nextCoupon({ coupons, isNewCustomer: true }, 6000)?.coupon.code, 'SAVE12', "at $99 the new customer's $9 still beats $7");
+    assert.equal(nextCoupon({ coupons, isNewCustomer: false }, 9000, 800)?.coupon.code, 'SAVE12', '$7 would not beat the $8 saved now');
+  });
+
+  it('D-192: says where each coupon stands, usable ones first', () => {
+    const offers = { coupons, isNewCustomer: false };
+    assert.deepEqual(couponStanding(coupons[1]!, offers, 10000), { kind: 'usable', offCents: 700 });
+    assert.deepEqual(couponStanding(coupons[2]!, offers, 10000), { kind: 'short', moreCents: 5000 });
+    assert.deepEqual(couponStanding(welcome, offers, 10000), { kind: 'first-order' });
+    assert.deepEqual(couponStanding(coupons[1]!, offers, 10000, 700), { kind: 'bulk-bigger' });
+    assert.deepEqual(sortedCoupons(offers, 15000).map((c) => c.coupon.code), ['SAVE12', 'SAVE7', 'SAVE20', 'WELCOME10']);
+  });
+
+  it('D-192: the bill adds up top to bottom; the saving is apart; tax only once known', () => {
+    const shipping = { ...settings, smallOrder: { shippingCents: 1862, retailerCents: 99, retailerPct: 1.5 } };
+    const q = quoteCheckout([{ unitPriceCents: 12000, quantity: 1, taxable: true }], coupons[1]!, shipping, { ratePct: 10 }, 30)!;
+    const priced = billOf(q, 'SAVE7', true);
+    assert.equal(priced.retailerCents, 180, 'never waived, above the free line too');
+    assert.equal(priced.bulkCents, 0, 'a coupon replaces the bulk saving');
+    assert.equal(
+      priced.subtotalCents - priced.couponCents - priced.bulkCents - priced.coins + priced.shippingCents + priced.retailerCents + priced.heavyCents + (priced.taxCents ?? 0),
+      priced.totalCents,
+    );
+    assert.equal(priced.savingCents, priced.shippingWasCents + 700 + 30);
+    const early = billOf(quoteCheckout([{ unitPriceCents: 12000, quantity: 1 }], coupons[1]!, shipping, null, 30)!, 'SAVE7', false);
+    assert.equal(early.taxCents, null);
+    assert.equal(early.totalCents, priced.totalCents - priced.taxCents!, "the bag's total is checkout's, less the tax");
   });
 
   it('words a coupon', () => {
