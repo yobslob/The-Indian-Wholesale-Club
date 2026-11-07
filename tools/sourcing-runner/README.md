@@ -144,6 +144,28 @@ pnpm sourcing run --targets --type clothing --shops savana.com --photo-gb 1.8
 pnpm sourcing run --targets --type clothing --shops newme.asia --photo-gb 0.3                    if space is left
 ```
 
+## Looks: each colour and pack gets its own photo (D-194)
+
+Needs migration 20261112090000 (the Deploy workflow) and `IWC_PHOTO_STORE_*`. One type per machine, at a quiet US hour.
+
+```bash
+pnpm sourcing looks --type food --site amazon.in --limit 20 --dry-run
+```
+
+A dry run reads the pages and compares the pictures, and writes only its CSV. `method` says how each look's picture was found (`colour-map`, `swatch`, `item-page`, `page`, `item`) and `action` what would happen.
+
+```bash
+pnpm sourcing looks --type clothing --limit 200 --photo-gb 0.15
+```
+
+`--after <id>` goes on where the last run ended (it prints the id). `--per-look 2` takes a second photo. A picture the listing already has only gets a tag; only a new one uses space. A shop's robot check ends that shop for the run; a database timeout ends the run. `out/looks-<type>-<time>.csv` lists every action.
+
+```bash
+pnpm sourcing looks --undo out/looks-clothing-<time>.csv
+```
+
+After each run: R2 GB on the dashboard (stop at 9.3 GB), Supabase Reports, and 10 of the CSV's listings on the live site.
+
 ## When a shop changes
 
 Shops change their pages. The run log shows each shop's pages and failures, and the admin page shows each shop's

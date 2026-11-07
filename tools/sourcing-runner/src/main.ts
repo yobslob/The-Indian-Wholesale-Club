@@ -2,6 +2,7 @@ import { PRODUCT_TYPES } from '@repo/shared/domain';
 
 import { openBrowser, profileFor } from './browser';
 import { PhotoBudget, startBudget } from './budget';
+import { runLooks, undoLooks } from './looks';
 import { runChecks } from './check';
 import { sortNewClothing } from './classes';
 import { DEFAULT_SHOPS, type RunContext } from './context';
@@ -405,6 +406,71 @@ async function liquids(): Promise<number> {
   log(`done: ${n} liquid listings ${args.includes('--dry') ? 'found' : 'archived'}`);
   return 0;
 }
+/**
+ * D-194: each look of a live listing gets its own photo (`--dry-run`: reads and compares, writes only its CSV).
+ * `--undo out/looks-….csv` takes a run back. One type per machine, at a quiet hour (docs/plan-look-photos.md).
+ */
+async function looks(): Promise<number> {
+  const env = loadEnv(true);
+  const db = await Db.signIn(env);
+  const undo = flag(args, '--undo');
+  if (undo) {
+    const { removed, untagged } = await undoLooks(db, undo);
+    log(`done: ${removed} photos removed, ${untagged} tags taken off`);
+    return 0;
+  }
+  const type = PRODUCT_TYPES.find((t) => t === flag(args, '--type'));
+  if (!type) throw new Error('Usage: pnpm sourcing looks --type clothing|food|home [--limit 200] [--photo-gb 0.2] [--per-look 1] [--site amazon.in] [--after <id>] [--dry-run] | --undo <csv>');
+  const gb = flag(args, '--photo-gb');
+  const dryRun = args.includes('--dry-run');
+  if (!dryRun && gb === null) throw new Error('--photo-gb is required: the photo store space this run may use, in GB (0.15)');
+  startBudget(dryRun || gb === null ? null : Number(gb));
+  const context = await openBrowser(env, { images: false, profile: profileFor(env, type) });
+  const ctx: RunContext = {
+    db,
+    plan: {
+      settings: {
+        max_delivery_days: 3,
+        listings_per_target: 3,
+        check_every_days: 7,
+        qty_per_variant: 5,
+        targets_per_run: 1,
+        max_rise_pct: 60,
+        max_drop_pct: 50,
+        auto_publish: false,
+      },
+      shops: DEFAULT_SHOPS,
+      targets: [],
+      checks: [],
+      known: [],
+    },
+    lanes: new Lanes(context),
+    stats: new ShopStats(),
+    known: new Set(),
+    now: new Date(),
+    budget: PhotoBudget.load(),
+  };
+  try {
+    const t = await runLooks(ctx, db, {
+      type,
+      limit: Math.min(Number(flag(args, '--limit')) || 50, 500),
+      perLook: Math.min(Math.max(Number(flag(args, '--per-look')) || 1, 1), 2),
+      dryRun,
+      site: flag(args, '--site'),
+      after: flag(args, '--after'),
+      siteUrl: env.IWC_SITE_URL,
+    });
+    log(
+      `done: ${t.listings} listings, ${t.tagged} tagged, ${t.added} added, ${t.skipped} skipped, ${(t.bytes / 1024 ** 3).toFixed(3)} GB` +
+        (t.next ? `; go on with --after ${t.next}` : ''),
+    );
+    log(`shops: ${JSON.stringify(ctx.stats.toJSON())}`);
+  } finally {
+    await context.close();
+  }
+  return 0;
+}
+
 /** `run` in this process: the photo budget it starts with (D-171), then its runners one after another (memory.ts). */
 function supervise(runArgs: string[]): Promise<number> {
   const gb = flag(runArgs, '--photo-gb');
@@ -413,7 +479,9 @@ function supervise(runArgs: string[]): Promise<number> {
 }
 
 const main =
-  command === 'liquids'
+  command === 'looks'
+    ? looks()
+    : command === 'liquids'
     ? liquids()
     : command === 'home'
       ? home()
@@ -434,7 +502,7 @@ const main =
                   : null;
 if (!main) {
   console.log(
-    'Usage: pnpm sourcing setup [--type clothing|food|home] | doctor | classes | food [--all] | home [--dry] [--all] [--limit N] | liquids [--dry] [--all] | run [--checks|--targets] [--type clothing|food|home [--shops nishorama.com]] | try "<query>" --type food|clothing|home [--match "regex"]',
+    'Usage: pnpm sourcing setup [--type clothing|food|home] | looks --type clothing|food|home | doctor | classes | food [--all] | home [--dry] [--all] [--limit N] | liquids [--dry] [--all] | run [--checks|--targets] [--type clothing|food|home [--shops nishorama.com]] | try "<query>" --type food|clothing|home [--match "regex"]',
   );
   process.exit(2);
 }

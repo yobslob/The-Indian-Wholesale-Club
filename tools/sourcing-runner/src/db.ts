@@ -5,6 +5,7 @@ import { z } from 'zod';
 
 import { PRODUCT_TYPES } from '@repo/shared/domain';
 import {
+  lookPlanSchema,
   planSchema,
   weightPlanSchema,
   type SourcingPlan,
@@ -125,6 +126,39 @@ export class Db implements FoodPassDb {
       p_media: media,
       p_publish: publish,
     });
+  }
+
+  /** D-194, `pnpm sourcing looks`: live listings with a look without a photo, 25 at most. */
+  async lookPlan(type: ProductType, after: string | null, limit: number) {
+    return lookPlanSchema.parse(
+      await this.rpc('worker_look_photo_plan', { p_type: type, p_after: after, p_limit: limit }),
+    );
+  }
+
+  lookAdd(product: string, media: { path: string; variant_id: string; alt_text: string }[]): Promise<string[]> {
+    return this.rpc('worker_look_photos_add', { p_product: product, p_media: media });
+  }
+
+  /** A shared photo becomes a look's; `null` takes the tag off. False when the photo was not free to change. */
+  lookTag(product: string, media: string, variant: string | null): Promise<boolean> {
+    return this.rpc('worker_look_photo_tag', { p_product: product, p_media: media, p_variant: variant });
+  }
+
+  lookUndo(media: string[]): Promise<string[]> {
+    return this.rpc('worker_look_photos_undo', { p_media: media });
+  }
+
+  /** A look's photo goes to the photo store or nowhere: a live listing's folder in Supabase's storage is closed. */
+  async uploadStored(product: string, bytes: Buffer, contentType: string): Promise<string> {
+    if (!this.photos) throw new Error('IWC_PHOTO_STORE_* is not set in tools/sourcing-runner/.env');
+    const ext = contentType.includes('png') ? 'png' : contentType.includes('webp') ? 'webp' : 'jpg';
+    const path = `products/${product}/s/${randomUUID()}.${ext}`;
+    await this.photos.put(path, bytes);
+    return path;
+  }
+
+  async removeStored(path: string): Promise<void> {
+    await this.photos?.remove(path);
   }
 
   /** Who a new clothing listing is for (its trigger reads the name or category; D-102); null when not known. */

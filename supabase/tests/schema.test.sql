@@ -65,7 +65,7 @@ select tests.assert(
           'store_region_page', 'store_search', 'store_search_hints', 'store_search_page', 'store_type_rows',
           
           
-          'worker_clothing_plan', 'worker_description_plan', 'worker_description_set', 'worker_estimate_plan', 'worker_food_plan', 'worker_home_plan', 'worker_liquid_plan', 'worker_may_add_photos', 'worker_photo_redo_drop', 'worker_photo_redo_plan',
+          'worker_clothing_plan', 'worker_description_plan', 'worker_description_set', 'worker_estimate_plan', 'worker_food_plan', 'worker_home_plan', 'worker_liquid_plan', 'worker_look_photo_plan', 'worker_look_photo_tag', 'worker_look_photos_add', 'worker_look_photos_undo', 'worker_may_add_photos', 'worker_photo_redo_drop', 'worker_photo_redo_plan',
           'worker_photo_redo_scene', 'worker_photo_redo_set', 'worker_photo_stems_in_use', 'worker_product_wears', 'worker_set_class_weights',
           'worker_set_estimates', 'worker_set_food_weights', 'worker_set_home_weights', 'worker_set_liquids', 'worker_set_origin', 'worker_set_weights', 'worker_sourcing_add',
           'worker_sourcing_checked', 'worker_sourcing_log', 'worker_sourcing_media', 'worker_sourcing_plan',
