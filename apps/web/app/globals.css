@@ -2222,6 +2222,21 @@ s.was::before {
   .dw-wide h2 {
     perspective: 900px;
   }
+  /* D-194: the main photo as a picked look's photo takes its place; the box keeps its size */
+  .look-in {
+    animation: look-in 150ms ease-out both;
+  }
+  @keyframes look-in {
+    from {
+      opacity: 0;
+    }
+  }
+  @media (prefers-reduced-motion: reduce) {
+    .look-in {
+      animation: none;
+    }
+  }
+
   .dw-flip {
     display: grid;
     transform-style: preserve-3d;

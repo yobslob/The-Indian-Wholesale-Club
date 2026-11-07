@@ -63,7 +63,7 @@ export default async function ProductPage({
       {/* E-2b: schema.org Product + offers and BreadcrumbList (product-seo.ts) */}
       <script type="application/ld+json" dangerouslySetInnerHTML={{ __html: productJsonLdText(page) }} />
       <div className="grid items-start gap-[var(--gap)] md:grid-cols-[minmax(0,1.05fr)_minmax(0,1fr)] min-[1100px]:grid-cols-[auto_minmax(0,1fr)]">
-        <ProductGallery media={media} name={name} />
+        <ProductGallery productId={product.id} media={media} variants={variants} name={name} />
         <aside
           aria-label="Buy"
           className="bg-surface rounded-lg p-[clamp(22px,2.6vw,44px)] md:sticky md:top-[calc(var(--top-h)+16px)]"
@@ -103,6 +103,7 @@ export default async function ProductPage({
             <AddToCart
               product={product}
               variants={variants}
+              media={media}
               delivery={<DeliveryNote days={days} fromUs={ships_from_us ? usDays : null} />}
             />
           ) : (

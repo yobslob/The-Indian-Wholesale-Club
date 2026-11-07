@@ -1,5 +1,18 @@
 import { hasCopies, photoJpegUrl, photoSrcSet } from '@repo/shared/domain';
 
+const loadedAhead = new Set<string>();
+
+/** Starts a photo's download before it is shown, with the same copies and `sizes` StorePhoto asks for (D-194). */
+export function preloadPhoto(src: string, sizes: string): void {
+  if (loadedAhead.has(src)) return;
+  loadedAhead.add(src);
+  const image = new Image();
+  if (hasCopies(src)) {
+    image.sizes = sizes;
+    image.srcset = photoSrcSet(src);
+  } else image.src = src;
+}
+
 /**
  * A photo in its frame (D-140, the photo fix), on the store and in the admin panel. A stored photo is its AVIF copies
  * from the photo store (packages/shared media.ts): the browser picks 640 or 1200 pixels for the `sizes` given, and a

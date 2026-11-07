@@ -1,16 +1,20 @@
 'use client';
 
 import dynamic from 'next/dynamic';
-import { useRef, useState } from 'react';
+import { useMemo, useRef, useState } from 'react';
+
+import { initialLook, photosForLook } from '@repo/shared/domain';
 
 import { mediaUrl } from '@/lib/site';
 
+import { lookPhotosOn } from './look-flag';
+import { GALLERY_MAIN_SIZES, useLook } from './look-store';
 import { StorePhoto } from './store-photo';
 // The viewer loads on the first click on a photo, not with the product page (engineering.md §Budgets).
 const loadViewer = () => import('./photo-viewer');
 const PhotoViewer = dynamic(() => loadViewer().then((m) => m.PhotoViewer));
 
-import type { Media } from '@repo/db/store';
+import type { Media, Variant } from '@repo/db/store';
 
 /** Wide screens: the full-length photo as tall as the screen allows, three stacked beside it (D-051). */
 const tall = 'min-[1100px]:h-[min(calc(100svh-110px),900px)] min-[1100px]:min-h-[480px]';
@@ -18,11 +22,27 @@ const tall = 'min-[1100px]:h-[min(calc(100svh-110px),900px)] min-[1100px]:min-h-
 /**
  * Product photos (D-051, D-082): one full-length photo with up to three small ones; from 1100 px the small ones stack
  * beside it, below that they sit in a row under it (tablets get two columns, phones one). Any photo opens the full-size
- * viewer at that photo, which moves through every photo of the product.
+ * viewer at that photo, which moves through every photo of the product. D-194: they follow the look picked in the
+ * buying panel, and the box keeps its size, so nothing on the page moves.
  */
-export function ProductGallery({ media, name }: { media: Media[]; name: string }): React.JSX.Element {
+export function ProductGallery({
+  productId,
+  media: all,
+  variants,
+  name,
+}: {
+  productId: string;
+  media: Media[];
+  variants: Variant[];
+  name: string;
+}): React.JSX.Element {
   const [open, setOpen] = useState<number | null>(null);
   const opener = useRef<HTMLButtonElement | null>(null);
+  const picked = useLook((s) => s.looks[productId] ?? null);
+  const media = useMemo(
+    () => (lookPhotosOn ? photosForLook(all, variants, picked ?? initialLook(variants, all)) : all),
+    [all, variants, picked],
+  );
 
   if (media.length === 0) {
     return (
@@ -49,11 +69,12 @@ export function ProductGallery({ media, name }: { media: Media[]; name: string }
           className="bg-surface focus-visible:outline-brand relative aspect-[3/4] w-full cursor-zoom-in overflow-hidden rounded-lg min-[1100px]:h-full min-[1100px]:w-auto"
         >
           <StorePhoto
+            key={main.storage_path}
             src={mediaUrl(main.storage_path)}
             alt={main.alt_text || name}
             priority
-            sizes="(min-width: 1100px) 40vw, (min-width: 768px) 52vw, 100vw"
-            className="object-cover"
+            sizes={GALLERY_MAIN_SIZES}
+            className={picked === null ? 'object-cover' : 'look-in object-cover'}
           />
         </button>
         {small.length > 0 ? (
