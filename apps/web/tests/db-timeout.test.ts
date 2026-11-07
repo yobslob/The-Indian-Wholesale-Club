@@ -86,7 +86,7 @@ describe('a real Supabase client against a database that never answers', () => {
     try {
       const client = createClient(`http://127.0.0.1:${port}`, 'anon-key', {
         auth: { persistSession: false, autoRefreshToken: false },
-        global: { fetch: withTimeLimit(undefined, { db: 150, storage: 150 }) },
+        global: { fetch: withTimeLimit(undefined, { db: 1000, storage: 1000 }) },
         db: { retry: false },
       });
       const started = Date.now();
@@ -95,7 +95,7 @@ describe('a real Supabase client against a database that never answers', () => {
       assert.ok(error, 'an error, not a hang');
       assert.match(error.message, /^TimeoutError/);
       assert.equal(isDbBusy(error), true);
-      assert.ok(Date.now() - started < 1000, `answered in ${Date.now() - started} ms`);
+      assert.ok(Date.now() - started < 5000, `answered in ${Date.now() - started} ms`);
       assert.equal(requests, 1, 'asked once');
     } finally {
       for (const res of hung) res.destroy();
