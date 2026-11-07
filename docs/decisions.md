@@ -4,7 +4,7 @@ Every rule in the docs cites one of these IDs. **This file is the index**; the f
 founder's verbatim words and what each means for the build) is in `docs/archive/decisions-full.md`: open it only for
 the entry you need (search for its ID). New entries go at the end of this file in full, with the founder's words
 verbatim (typos kept). When Recent holds more than about ten entries, the oldest move to the archive in full and
-leave a one-line index entry here (done for D-109 – D-139 on 2026-10-22, D-140 – D-143 on 2026-10-23, D-144 – D-145 on 2026-10-24, D-146 – D-150 on 2026-10-26, D-151 – D-176 on 2026-11-05).
+leave a one-line index entry here (done for D-109 – D-139 on 2026-10-22, D-140 – D-143 on 2026-10-23, D-144 – D-145 on 2026-10-24, D-146 – D-150 on 2026-10-26, D-151 – D-176 on 2026-11-05, D-177 – D-179 on 2026-11-06, D-180 – D-181 on 2026-11-07).
 
 **By:** `founder` = binding · `approved` = Claude's proposal the founder approved · `proposed` = awaiting the founder.
 To change a decision, add a new one (`Supersedes D-xxx`) and mark the old line `SUPERSEDED by D-yyy`.
@@ -190,39 +190,10 @@ To change a decision, add a new one (`Supersedes D-xxx`) and mark the old line `
 - **D-177** 2026-11-02 · founder: the Diwali night across the top, the three arches under it, no sliding · Changes D-174's layout
 - **D-178** 2026-11-02 · founder: every listing's description written again on the laptop, fast and checked
 - **D-179** 2026-11-03 · founder (was Q-52 – Q-59): the launch QA questions answered
+- **D-180** 2026-11-03 · founder: Home's hero line points to the 7-day store; every live piece in stock at 10
+- **D-181** 2026-11-03 · founder: the 7-day store inside every state's Food and Home & gifts; a state's own pieces first
 
 ## Recent (full text)
-
-**D-180 · 2026-11-03 · founder: Home's hero line points to the 7-day store; every live piece in stock at 10**
-- Founder, verbatim: "Instead of "we go home so you don't have to and the link below it" Change these home sub-line to
-  say Want it in 7 days? Get it here >> (with these two signs expanding and contracting making a smooth animation)
-  also put all items in stock except for liquids, all items to 10"
-- What it means:
-  - **The hero:** "Want it in 7 days?" (the bold line) and "Get it here" with two arrows drifting a few pixels right and back (made minimal the same day: "make the >> animation minimilistic"), a link
-    to `/7-day-delivery` (`home-hero.tsx`). The arrows stop with reduced motion. While 7-day delivery is off or paused
-    the 7-day store 404s, so the hero keeps D-161's two lines then (a proposal, not the founder's words).
-  - **Stock:** every active option of every live listing at 10 available (`qty_listed` = held by open orders + 10),
-    logged as an adjustment. Liquids are not live (D-135 archives them as coming soon), so they are left out by the
-    same rule. Claude does not write to the hosted database: the founder runs `scripts/stock-every-live-piece-to-10.sql`
-    once in Supabase's SQL editor. The sourcing runner's next shop check sets stock from the shops again (D-118).
-
-**D-181 · 2026-11-03 · founder: the 7-day store inside every state's Food and Home & gifts; a state's own pieces first** · its 7-day parts SUPERSEDED by D-187
-- Founder, verbatim: "Now the priority is that 7 days store should be available everywhere on each state's food and home
-  decor like a strip in between(like finishing touches on clothing)(but just enough to reach the 7 day page like a CTA or
-  like a horizontal row with some products) second was goa was not showing food, neither are state's pages showing
-  their own products first, so fix that now low to high comes secondary there first priority is their own products"
-- What it means:
-  - **The 7-day band:** on a state's page, its Food and Home & gifts lists carry one light band after their second row
-    of cards, "Arrives in 7 days" with a sideways row of 12 pieces from the 7-day store's own Food or Home & gifts page
-    (its first page, low to high) and "Shop the 7-day store →" ("7-day store" on phones) to that page
-    (`features/seven-day/quick-band.tsx`). Only while 7-day delivery is open, not when the "In 7 days" filter is on, and
-    left out when the 7-day store has none of that type. See all's own Food and Home pages do not have it (only the
-    state pages were asked for).
-  - **Own pieces first:** on a state's page (and See all with a state chosen) the state's own pieces come before the
-    all-India ones under every sort; the sort orders each half. Before, only Newest and the default did (D-140 L2).
-  - **Goa's Food:** not a Goa fault. The store reads the database as `anon`, which Supabase stops after 3 s; a Food list
-    took 1.3 – 2 s alone, so a few opened at once failed and the tab said "These pieces did not load"
-    (`20261108090500_browse_reads` makes the read about 2.4 × faster).
 
 **D-182 · 2026-11-04 · founder: Home's hero is the Diwali poster and the two doors; the first-load JS budget is 160 KB**
 - Founder, verbatim: "yes they failed, now raise everyone's budget to 160kb, and then solve this second problem: as
@@ -343,3 +314,30 @@ To change a decision, add a new one (`Supersedes D-xxx`) and mark the old line `
 - **Struck-through prices:** on cards and the product page, website and app, the struck price muted and the price in wine (`brand`). Struck figure = y + (y − x) = price × (2 − the category's divisor): food 1.2, clothing 1.4, home & gifts 1.5 (`wasCents`). Which listings: picked from the id, `offer_pct` % of them (Settings → Prices, 55; 0 turns it off), only those priced by the rules; hand-priced listings have no cost to work from and US clearance has its own price. *Interpretation (proposed):* no "% off", "Sale" or "You save" wording, no change to the bag, checkout, orders, invoices, Stripe or the search engines' price data: what is charged stays y.
 - **Claude's flag, closed by the founder (as with D-140's F5):** Claude flagged that the struck figure is one no customer has been charged (FTC 16 CFR 233.1, state rules such as California's Business & Professions Code §17501) and that struck − price equals the margin. The founder answered that the signed documents have been submitted and that the gap stays the margin, the words above; Claude has not seen the documents. Settings at 0 removes every struck price at once.
 - **Cost (item 6):** no read from the browser; one small read per card drawn; a picked card adds about 13 bytes of data and 30 of HTML; Home's cached answer gains about 700 bytes; the rail uses the page's own read and one cached static file; no new index, table or scheduled page-cache write. The new tile addresses add at most six cached pages.
+
+**D-191 · 2026-11-07 · founder: sub-categories with photos, coupons, coins, a weight on every food piece, retailer charges always paid, Popular by default** · Changes D-190's rail, D-144's sort, D-111's retailer charges and the free line's reading (D-187); D-129's weight on every product finally reaches every food card
+Founder, verbatim: "1. Make all these new updates with keeping the minimization of the metric rates in mind, using everything efficiently and optimization without disturbing the user's experience, also updating you as I have bought the vercel pro plan but still we have to work like we're very limited except for when something enhances user's experience.
+2. You didn't have to move the category from filters to sub-category, the category stays there in filters, by Sub category I meant to introduce sub categories: like in Snacks and Namkeen(Chips & Wafers, Bhujia & Mixtures, Namkeen snacks, Nachos, Healthy snacks, Popcorn, Papad & Fryums, Premium) in bakery and buiscuits (Cookies, Choco Fills, Cream Biscuits, Healthy & Digestive, Sweet & Salty, Glucose & Marie, Rusks & Wafers) and more like these in every category. each sub-category with a photo take one by default(first product as I will update later)
+3. Remove the strikethrough from retailers charge from every possible case it is a must add price from now on.
+4. On blinkit there is a weight for everything, Now I want the same for IWC(mainly 7 day stuff, most of them don't have proper weights)
+5. then we have to introduce coupons(10% off on new customers upto 9$, $7 discount on hitting 99$ bag, and $12 discount on hitting $150 then $20 dollars off on hitting 199$ bag) and wallet(actual real discount but small amount of money, show it as coins here 1 coin is 1 cent) for everyone. Give everyone random amount of coins between 30-90 coins and when they successfully order refill their wallet with (the same amount of coins they had before checking out+a random number(from 1-8)) When someone checksout they get to see the conversion in the billing(on the left they see what amount of coins used and on the right they see amount of equivalent dollars that are getting cut.) always show the most effiecient coupon for the bag on the top of coupon placeholder with an apply button and a view all coupons button which pops up just a small tab showing coupons instead of a whole new page.
+6. Instead of rice, flour and staple give a valid name for soup and noodles category, then replace the current category photos with the ones I updated in /visuals also merge gifts and pooja and name them pooja & essentials.
+7. Then finally we are loosing a ton of retention bcs of price low to high by default we have thousands of product in a single category but a person only sees max 100 products so those rest just go in vain there are such valuable and sellable high value items sitting at the bottom of the catalogue bcs of low to high filter we are loosing a ton of retention bcs of price low to high by default we should try experimenting without this by popularity or by most selling products with still considering moderate prices."
+Founder's answers to Claude's questions, verbatim: coins for guests: "Accounts only (Recommended)". A coupon, coins and the bulk saving on one bag: "show bulk savings when coupon isn't applied and remove bulk savings as soon as a coupon is applied". What the free line reads: "Bag before discounts (Recommended)". Reading the catalogue tables of the copy in C:\kod\move\new: "yes you can access data files keeping in mind to not burn all of your tokens on reading big files".
+What it means for the build (migrations `20261111090000_coupons_coins.sql`, `20261111090100_subcategories_popular_packs.sql`):
+- **Retailer charges:** paid on every bag from India at every size, never struck, never in "You're saving" (`bagChargesAt`, the bag, checkout, the app). What the setting says still holds: at least $0.99 or the retailer % of the goods.
+- **The free line reads the bag before a coupon or coins**, so neither can bring Shipping back; the bulk saving's and the heavy discount's lines read it too.
+- **Coupons:** four public promo codes (`promo_codes.is_public`, `new_customers_only`, `max_discount_cents`): WELCOME10 10% up to $9 for someone with no paid order on the account or email; SAVE7 $7 from $99; SAVE12 $12 from $150; SAVE20 $20 from $199, each measured on the bag's subtotal. A coupon replaces the bulk saving; one worth no more than it stays off, with a line saying so, and is not offered as the best. Checkout's coupon box: the best for the bag on top with Apply, "View all coupons" as a small tab with a field for any other code; Apply on a priced bag moves the same payment.
+- **Coins:** `profiles.coins`, drawn 30 – 90 per account; 1 coin = 1 cent. Accounts only: a guest sees "Sign in to use your coins". All of them apply on every order, on top of a coupon, and come off before tax. A paid order sets the wallet to what it held plus 1 – 8 (trigger on `orders`, in `create_order`'s transaction; a refused order changes nothing). The bill: "85 coins used" on the left, "−$0.85" on the right; on a phone the bill also sits above Pay. `orders.coins_used` is the only record.
+- **Sub-categories:** `subcategories` (word rules on the listing's name, first match wins, the last takes the rest), `product_place` (each listing's). The founder's own lists for Snacks & Namkeen and Bakery & Biscuits; `?sub=` on See all; the rail shows the category's sub-categories, or all of a type's when no category is chosen; each photo is its first piece's until `sub-photos.ts` names one. Category is back in Filters. Refreshed daily inside `iwc-tidy`, so a new listing joins its sub-category the next morning.
+- **Popular** is the default on See all and state pages, website and app: pieces ordered in 90 days, weighted towards moderate prices for the category (0.7 – 2 × its middle price 3×, 0.4 – 4 × 2×, else 1×); ties by moderate first, then a weekly turn, so the long tail changes every week; with no category, one of each category then the next. Low to high, high to low and Newest stay choices; `?sort=low` lands on low to high. To go back, change one default (`browse-query.ts`).
+- **Weights:** every food card and page shows one: the label's or the shop's, else the option's weight, as "About 200 g" when it is an estimate. Home & gifts only when the weight is known. On the 5 Nov copy: 8,538 food listings all show one, 3,887 of them "About". The billed weight stays hidden (D-003).
+- **Tiles:** Rice, Flours & Staples is now **Noodles, Soups & Staples**; Pooja & Spiritual is **Pooja & Essentials**; the Gifts tile is gone. The founder's photos on every tile that has one, cut from 37 MB to 1.2 MB (640 px JPEGs); originals in `C:\kod\iwc-visuals-originals-2026-11-07`. Their addresses keep their slugs, so old links work.
+- **Cost (item 1):** coupons, coins and the customer's standing come inside checkout's existing read (`checkout_context`), sign-in is now awaited before pricing rather than beside it. `store_browse`, one read as before: 425 ms against 377 ms for the old sort on 8,538 food listings on this machine, about 7 KB more JSON on a whole type's first page, nothing new in the page cache. Database: about 1 MB for `product_place`, and a refresh of about 2.4 s a day that writes only what changed. Home is 36 MB lighter if every tile loads.
+*Interpretation (proposed, confirm when convenient):*
+- **"a valid name for soup and noodles category":** the category holds 1,230 listings, of which noodles, soups and pasta are about 210; the rest are dal, rice, atta and the like. "Noodles & Soups" would be untrue of most of them, so it is Noodles, Soups & Staples, with those as its first sub-categories. Renaming it or splitting it is a small change.
+- **"bakery and buiscuits":** no such category existed; **Bakery & Biscuits** is new, taking 496 biscuit and cookie listings out of Snacks & Namkeen on the migration and any new ones each morning, with a tile (its newest piece's photo).
+- **"merge gifts and pooja":** the Gifts tile had no category of its own, so the merge is Pooja & Spiritual renamed and the Gifts tile removed; Home & gifts keeps its name.
+- **"Premium"** holds nuts, dry fruit and names that say premium or gourmet; **"every category":** the eight categories under 50 pieces have none (Lehengas, Dupattas, Shawls, Dhotis, Jackets, Turbans, Accessories, Fabrics), and no rail shows there. The other sub-category names and rules are Claude's, drawn from the words in real listing names: 126 in all, in the migration.
+- **Coupon codes** WELCOME10, SAVE7, SAVE12, SAVE20 are Claude's names. Production already had a WELCOME10 (10% from $200, 100 uses, until 2026-12-31): the migration replaces its terms with the founder's and removes the limit and the end date.
+Claude's flags, not decided: production's retailer % was 1.5 on the 5 Nov copy, so the always-paid charge grows with the bag ($2.99 on a $199 bag, $4.50 on $300), not a flat $0.99; Settings → Bag charges, empty for the fixed amount. The new noodles tile photo shows a pack printed "₹15", a rupee price beside dollar prices. The app gets the bill, coins, Popular, sub-category chips and tiles but no coupon box: it keeps typing a code.

@@ -25,7 +25,7 @@ Realtime publication, D-187). Tables with cost or operations data are never quer
 
 | Group | Table | Purpose | Visibility |
 |---|---|---|---|
-| People | `profiles` | one per auth user (created by trigger): name, phone, `role`, `desk`* (D-007). Users may edit only `full_name`, `phone` | owner / admin |
+| People | `profiles` | one per auth user (created by trigger): name, phone, `role`, `desk`* (D-007), `coins` (D-191: changed only by `_refill_coins`). Users may edit only `full_name`, `phone` | owner / admin |
 | | `admin_emails` | the DB copy of the admin allowlist, the second gate of `is_admin()` (INV-7). Mirrors the `ADMIN_EMAILS` env var | service |
 | | `addresses` | US shipping addresses (one default per user) | owner |
 | Places | `regions` | the 36 regions (D-002): slug, name, sort, `is_live`, greeting (native + ISO 15924 script + Latin + meaning), languages, tagline, story, hero image, accent colour, `content_status` (D-019) | store (text only if approved) / admin |
@@ -45,7 +45,7 @@ Realtime publication, D-187). Tables with cost or operations data are never quer
 | Orders | `orders` | number `IWC-YYMMDD-<10 hex>`, email, internal `status`, `fulfilment_mode` (`order_first`, D-024), `shipping_method` (D-041), `est_delivery_from/_to` (D-008), totals in cents (USD only, D-036), `refunded_cents` (D-042), Stripe ids, address snapshot, tracking, carrier, `notes`* | owner via `store_orders` / admin |
 | | `order_items` | snapshot (product, variant label, region name), qty, unit price, status (`active`/`unavailable`/`refunded`); the cost snapshot taken when it is placed (D-140): `shop_price_paise`*, `weight_g`*, `weight_source`*, `inr_per_usd`*, `pricing_rule`* | owner via `store_order_items` / admin |
 | | `order_events` | timeline: `kind` + `visible_to_customer`. The app turns `kind` into copy (no customer text stored in SQL). `internal_note`* | owner (visible rows) / admin |
-| | `promo_codes` | codes, limits, validity. Redeemed via `increment_promo_uses()` | admin |
+| | `promo_codes` | codes, limits, validity; D-191: `max_discount_cents`, `new_customers_only`, `is_public` (fills checkout's coupon box). Redeemed via `increment_promo_uses()` | admin |
 | | `wishlists` | saved products | owner |
 | Settings | `app_settings` | `dev_preview` (true only via `seed/demo.sql`: store shows placeholders + draft text) | admin |
 | Ops | `webhook_events`, `pending_orders`, `failed_reconciliations`, `email_outbox`, `admin_error_events` | kept from the old schema. `webhook_events.status` (`processing`/`done`) + `claimed_at`: a claim unfinished after 2 minutes is taken over (F-1); `pending_orders.swept_at`/`sweep_note`: the payment sweep's last look and why it stopped (F-2), `reconciled_by` browser/webhook/sweep | service |
@@ -521,4 +521,5 @@ breaking it and watching the test fail ("mutation check", `status.md`).
 - `search.sql`: builds search's vocabulary from the seeded listings (`refresh_search_words()`, D-160; migrations run
   before the seed). After `pnpm catalogue:apply`, run it again (or wait for the 6-hourly job).
 
+Migrations 20261111090000, 20261111090100 (D-191): `profiles.coins`, `orders.coins_used` (inside `discount_cents`), `_refill_coins` (trigger on `orders`); `checkout_context(ids, promo, state, user, email)` adds `coupons`, `is_new_customer`, `coins` and refuses a first-order code to someone who has paid before. `subcategories` (`category_slug`, `slug`, `name`, `sort_order`, `words`: a regular expression's alternatives on the name, null = the rest) and `product_place` (`subcategory_id`, `sold_90d`, `band`, `score`), both read only through `store_browse`; `_refresh_places()` fills them and moves new biscuits to Bakery & Biscuits, daily inside `_tidy`, writing only what changed. `store_browse` adds `p_sub`, the `subcategories` list and `p_sort => 'popular'`. `_store_pack` reaches home & gifts and falls back on `_pack_by_weight` ("About 200 g" for an estimate; home only a known weight); `store_product_page`'s product carries `pack`. Tests: `coupons_coins`, `subcategories_popular`.
 Migration 20261110090000 (D-190): `_bag_shipments` bills the heaviest piece at least 1 kg, then by the half kg, and every other piece its own weight, never under the whole bag by the half kg. `pricing_settings.offer_pct` (55; 0 = none) and `_offer_key(product)` (internal; `{"offer": true}` or `{}`, picked from the id, only `price_auto` listings that are not US stock) add `offer` to the cards and `store_product_page`'s product. `store_home`'s `categories` are a fixed list of tiles, each with an optional `for`, and `whole` on Gifts (all of its type).
