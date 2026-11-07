@@ -14,6 +14,8 @@ import { MAX_QTY_PER_LINE } from './limits';
 import { useCart, type CartLine } from './store';
 
 const stepButton = 'grid size-11 place-items-center text-lg font-medium disabled:cursor-default disabled:text-line';
+/** D-192: each shipment is its own card, lifted off the page. */
+const card = 'bg-paper border-line rounded-lg border px-4';
 
 /** − / number / + within 1 – 10 (D-086); Remove takes a line out. */
 function Stepper({ line }: { line: CartLine }): React.JSX.Element {
@@ -61,21 +63,27 @@ export function BagLines({ compact = false }: { compact?: boolean }): React.JSX.
   // a bag from India has retailer charges: pieces already in the US (D-072) have other days, and no line here
   const fromIndia = (charges?.small.retailerCents ?? 0) > 0;
   const state = bagShipmentState(facts);
-  if (state === 'none' && !fromIndia) return <LineList lines={lines} compact={compact} top={!compact} />;
+  if (state === 'none' && !fromIndia) {
+    return (
+      <div className={card}>
+        <LineList lines={lines} compact={compact} />
+      </div>
+    );
+  }
   return (
-    <div className="font-ui">
+    <div className="font-ui grid gap-3">
       {bagGroups(lines, facts).map((g) => {
         const food = g.kind === 'food';
         const d = food ? days.food : days.standard;
         return (
-          <section key={g.seq ?? 0} aria-label={g.seq ? `Shipment ${g.seq}` : 'Your bag'} className="pt-3 first:pt-0">
-            <h3 className={`m-0 pb-2 text-[14px] font-semibold ${food ? 'text-brand' : 'text-ink'}`}>
+          <section key={g.seq ?? 0} aria-label={g.seq ? `Shipment ${g.seq}` : 'Your bag'} className={card}>
+            <h3 className={`border-line m-0 border-b py-3 text-[14px] font-semibold ${food ? 'text-brand' : 'text-ink'}`}>
               {[g.seq ? `Shipment ${g.seq}` : null, food ? 'Food' : 'Clothing and home & gifts', deliveryDaysLabel(d?.min, d?.max)]
                 .filter(Boolean)
                 .join(' · ')}
               {food ? <span className="text-ink-muted font-normal"> · for most US addresses</span> : null}
             </h3>
-            <LineList lines={g.lines} compact={compact} top />
+            <LineList lines={g.lines} compact={compact} />
           </section>
         );
       })}
@@ -83,16 +91,17 @@ export function BagLines({ compact = false }: { compact?: boolean }): React.JSX.
   );
 }
 
-function LineList({ lines, compact, top }: { lines: CartLine[]; compact: boolean; top: boolean }): React.JSX.Element {
+function LineList({ lines, compact }: { lines: CartLine[]; compact: boolean }): React.JSX.Element {
   const remove = useCart((s) => s.remove);
   const grid = compact
     ? 'grid-cols-[auto_minmax(0,1fr)_auto] [grid-template-areas:"pic_nm_pr""pic_step_rm"]'
     : 'grid-cols-[auto_minmax(0,1fr)_auto] [grid-template-areas:"pic_nm_pr""pic_step_rm"] sm:grid-cols-[auto_minmax(0,1fr)_auto_auto_auto] sm:[grid-template-areas:"pic_nm_step_pr_rm"]';
   return (
-    <ul className={`border-line m-0 list-none p-0 ${top ? 'border-t' : ''}`}>      {lines.map((line) => {
+    <ul className="m-0 list-none p-0">
+      {lines.map((line) => {
         const href = productPath(line.regionSlug, line.productSlug);
         return (
-          <li key={line.variantId} className={`border-line font-ui grid items-center gap-x-5 gap-y-3 border-b py-4 ${grid}`}>
+          <li key={line.variantId} className={`border-line font-ui grid items-center gap-x-3 gap-y-3 border-b py-4 last:border-b-0 sm:gap-x-5 ${grid}`}>
             <LinePhoto path={line.imagePath} href={href} className={`rounded-xl [grid-area:pic] ${compact ? 'w-16' : 'w-16 sm:w-[72px]'}`} />
             <div className="min-w-0 [grid-area:nm]">
               <Link href={href} className="text-[15px] font-semibold leading-snug hover:underline">

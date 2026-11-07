@@ -5,9 +5,13 @@ import { useEffect, useState } from 'react';
 
 import { formatUsd } from '@repo/shared/domain';
 
+import { BagGoalLine } from './bag-goal-line';
 import { BagLines } from './bag-lines';
-import { ChargeLines } from './charge-lines';
-import { cartSubtotalCents, useCart } from './store';
+import { BillCard, billTotalLabel } from './bill-card';
+import { useBagCharges } from './charges';
+import { CouponCard } from './coupon-card';
+import { useCart } from './store';
+import { useBagBill, type BagBill } from './use-bag-bill';
 
 export const checkoutButton = 'bg-brand text-on-brand font-ui inline-grid h-[52px] place-items-center rounded-pill px-7 text-base font-semibold';
 
@@ -24,22 +28,26 @@ export function EmptyLine(): React.JSX.Element {
   );
 }
 
-/**
- * Subtotal, the small-order charges (D-111) and the line about what checkout adds (prices are indicative until the
- * server prices the bag, D-038).
- */
-export function Subtotal(): React.JSX.Element {
-  const lines = useCart((s) => s.lines);
+/** D-192: the goal, the coupons and the bill, in that order, on the bag page and in the panel alike. */
+export function BagExtras({ bag, onShop }: { bag: BagBill; onShop?: () => void }): React.JSX.Element {
+  const charges = useBagCharges();
+  const free = charges?.freeMinCents ?? null;
   return (
-    <div className="grid min-w-[240px] gap-2">
-      <p className="font-ui m-0 flex items-baseline justify-between gap-3 text-base font-medium">
-        Subtotal <b className="font-bold">{formatUsd(cartSubtotalCents(lines))}</b>
-      </p>
-      <ChargeLines />
-      <small className="text-ink-muted font-body block text-[13px] font-normal">
-        Tax and delivery dates are shown at checkout.
-      </small>
+    <div className="grid gap-3">
+      <BagGoalLine couponOn={bag.coupon !== null} onShop={onShop} />
+      <CouponCard bag={bag} freeGap={free !== null && bag.subtotalCents < free} onShop={onShop} />
+      <BillCard bill={bag.bill} subtotalCents={bag.subtotalCents} updating={bag.updating} signInHref={bag.offers?.coins === null ? '/login?next=/cart' : undefined} />
     </div>
+  );
+}
+
+/** What the last line of the bill says and how far it has got; Subtotal until the charges are in. */
+export function TotalNow({ bag }: { bag: BagBill }): React.JSX.Element {
+  return (
+    <span className="font-ui block leading-tight">
+      <small className="text-ink-muted block text-[12.5px]">{bag.bill ? billTotalLabel(bag.bill) : 'Subtotal'}</small>
+      <b className="text-[17px] font-bold">{formatUsd(bag.bill?.totalCents ?? bag.subtotalCents)}</b>
+    </span>
   );
 }
 
@@ -66,7 +74,8 @@ function BagSkeleton(): React.JSX.Element {
 }
 
 /**
- * The bag page (D-086): photo lines with − / + and the subtotal; an empty bag shows `empty` (the open states and Just
+ * The bag page (D-086, D-192): the lines in their cards; the goal, coupons and bill beside them on wide screens and under
+ * them on a phone, where the total and Checkout stay under the thumb. An empty bag shows `empty` (the open states and Just
  * listed, drawn on the server) under its sentence, so it is never a dead end.
  */
 export function CartView({ empty }: { empty: React.ReactNode }): React.JSX.Element {
@@ -83,13 +92,25 @@ export function CartView({ empty }: { empty: React.ReactNode }): React.JSX.Eleme
       </div>
     );
   }
+  return <FilledBag />;
+}
+
+function FilledBag(): React.JSX.Element {
+  const bag = useBagBill();
   return (
     <div>
-      <BagLines />
-      {/* The totals and Checkout together under the prices' column (D-116): the eye ends where the button is. */}
-      <div className="grid gap-4 pt-[22px] sm:ml-auto sm:max-w-[380px]">
-        <Subtotal />
-        <Link href="/checkout" className={`${checkoutButton} press w-full`}>
+      <div className="grid items-start gap-3 min-[900px]:grid-cols-[minmax(0,1.25fr)_minmax(0,1fr)] min-[900px]:gap-8">
+        <BagLines />
+        <div className="grid gap-3 min-[900px]:sticky min-[900px]:top-[calc(var(--top-h)+16px)]">
+          <BagExtras bag={bag} />
+          <Link href="/checkout" className={`${checkoutButton} press hidden w-full min-[900px]:inline-grid`}>
+            Checkout
+          </Link>
+        </div>
+      </div>
+      <div className="bg-paper border-line sticky bottom-[max(8px,env(safe-area-inset-bottom))] z-10 mt-3 flex items-center justify-between gap-4 rounded-[20px] border py-2 pl-4 pr-2 shadow-[0_6px_24px_rgba(30,27,22,0.16)] min-[900px]:hidden">
+        <TotalNow bag={bag} />
+        <Link href="/checkout" className={`${checkoutButton} press h-12 px-8`}>
           Checkout
         </Link>
       </div>

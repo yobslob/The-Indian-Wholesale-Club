@@ -6,7 +6,6 @@ import { create } from 'zustand';
 import {
   bagChargesAt,
   bagGoal,
-  bagSavingCents,
   bulkProgress,
   heavyShippingAt,
   parseBagShipments,
@@ -164,12 +163,4 @@ export function freeDelivery(lines: CartLine[], charges: BagCharges | null, shel
     /** The one goal the pill and the bag show (bag-goal.ts): never two bars. */
     goal: bagGoal({ subtotalCents: subtotal, freeMinCents: line, bulk }),
   };
-}
-
-/** D-140 (F5): "You're saving $X" for this bag: the struck Shipping and the bulk saving (0 below the line). */
-export function bagSaving(lines: CartLine[], charges: BagCharges | null, shell?: ShellDays): number {
-  const f = freeDelivery(lines, charges, shell);
-  // the $99.99 line's part of Heavy-item shipping counts too
-  const heavyOff = f.heavy.shownCents ? f.heavy.shownCents - f.heavy.cents : 0;
-  return f.free || f.at.shippingFree ? bagSavingCents(f.at, f.bulk.savingCents) + heavyOff : 0;
 }

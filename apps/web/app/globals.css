@@ -979,6 +979,11 @@ html[data-free-bar] .site-footer {
   padding-bottom: 84px;
 }
 
+/* D-192: the panel lives in the header's layer, under the pill: the pill steps aside so it never covers Checkout */
+body:has(#bag-panel[data-open]) .fd-pill {
+  display: none;
+}
+
 /*
  * A page on its way (motion.tsx, founder 2026-10-30): a thin brand line along the very top from the tap until the page
  * is drawn. It waits 120 ms, so a page that comes at once shows nothing, then creeps towards the end and never reaches

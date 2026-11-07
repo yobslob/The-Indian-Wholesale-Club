@@ -4,6 +4,7 @@ import { useRouter } from 'next/navigation';
 import { useRef, useState } from 'react';
 import { z } from 'zod';
 
+import { forgetOffers, setOffers } from '@/features/cart/offers';
 import { useCart } from '@/features/cart/store';
 
 import { clearCheckout, saveCheckout } from './checkout-session';
@@ -60,8 +61,6 @@ export function useCheckoutPayment(summarize: (quote: CheckoutQuote) => SummaryL
   const [refused, setRefused] = useState<string | null>(null);
   /** The bag's lines that cannot go ahead as they are (Y-3): payment stays locked while there is one. */
   const [stock, setStock] = useState<StockProblemLine[]>([]);
-  /** D-191: the coupon box's coupons and the coins: from checkout's first read, then each priced answer. */
-  const [offers, setOffers] = useState<CheckoutOffers | null>(null);
 
   /**
    * Prices the bag on the server and holds the payment for that exact total. heldSecret: the payment a refreshed tab
@@ -144,6 +143,7 @@ export function useCheckoutPayment(summarize: (quote: CheckoutQuote) => SummaryL
       return;
     }
     clearCheckout();
+    forgetOffers(); // the wallet and the customer's standing have moved
     const outcome = await confirmOrder(paymentIntentId);
     if (outcome.kind === 'refused') {
       // Refunded in full; the bag stays so the customer can change it and try again.
@@ -177,5 +177,5 @@ export function useCheckoutPayment(summarize: (quote: CheckoutQuote) => SummaryL
     setStale(false);
   }
 
-  return { started, request, busy, error, stale, refused, stock, offers, post, paid, drop, checkStock, stockFixed };
+  return { started, request, busy, error, stale, refused, stock, post, paid, drop, checkStock, stockFixed };
 }

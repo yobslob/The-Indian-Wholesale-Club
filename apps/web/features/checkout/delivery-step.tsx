@@ -14,7 +14,6 @@ export interface Delivery {
   state: string;
   line1: string;
   line2: string;
-  promoCode: string;
 }
 
 type Lookup =
@@ -27,8 +26,8 @@ export function deliverySummary(d: Delivery): string {
 
 /**
  * Step 2 (D-087): name, email (confirmations and guest tracking), the ZIP code with the city and state filled in from
- * our own list (D-098, /api/zip; editable, and an unknown ZIP asks for them), street and apartment. Coupons are in their
- * own box (D-191). Continue to payment hands the details up; the parent prices the bag on the server.
+ * our own list (D-098, /api/zip; editable, and an unknown ZIP asks for them), street and apartment. Coupons are chosen
+ * in the bag (D-192). Continue to payment hands the details up; the parent prices the bag on the server.
  */
 export function DeliveryStep({
   value,
@@ -92,7 +91,6 @@ export function DeliveryStep({
           state,
           line1: text('line1'),
           line2: text('line2'),
-          promoCode: value.promoCode,
         });
       }}
     >
