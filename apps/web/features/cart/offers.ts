@@ -37,6 +37,11 @@ const useOffersStore = create<{ at: number; offers: CheckoutOffers | null; statu
   return { at: last?.at ?? 0, offers: last?.offers ?? null, status: 'idle' };
 });
 
+/** The last read said this customer already has a paid order. Unknown until a bag or checkout has read it. */
+export function isKnownReturning(): boolean {
+  return useOffersStore.getState().offers?.isNewCustomer === false;
+}
+
 /** Fresh offers from checkout's read or a priced answer. */
 export function setOffers(offers: CheckoutOffers): void {
   const at = Date.now();

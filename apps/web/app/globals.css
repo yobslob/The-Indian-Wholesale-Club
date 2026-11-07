@@ -156,8 +156,8 @@
 
 /*
  * The region album (features/regions/region-album.tsx, D-051, D-052): a mosaic that drifts sideways by itself. Not
- * interactive, no pause control (founder's decision); still for reduced motion, paused while off screen
- * (data-album="off", set by motion.tsx). The track holds the mosaic twice so the loop has no seam.
+ * interactive, no pause control (founder's decision); still for reduced motion, and it keeps moving off screen
+ * (D-193). The track holds the mosaic twice so the loop has no seam.
  */
 @layer components {
   .album {
@@ -171,10 +171,7 @@
     display: flex;
     gap: var(--gap);
     width: max-content;
-    animation: album var(--album-duration, 110s) linear infinite;
-  }
-  .album[data-album='off'] .album-track {
-    animation-play-state: paused;
+    animation: album var(--album-duration, 75s) linear infinite;
   }
   .album-mosaic {
     display: grid;
@@ -2221,6 +2218,291 @@ s.was::before {
     animation-play-state: paused;
   }
 
+  /* D-193: the night's words turn over, both stacked in one cell so the height never moves. */
+  .dw-wide h2 {
+    perspective: 900px;
+  }
+  .dw-flip {
+    display: grid;
+    transform-style: preserve-3d;
+    animation: dw-flip 8s ease-in-out infinite;
+  }
+  .dw-flip > span {
+    grid-area: 1 / 1;
+    backface-visibility: hidden;
+  }
+  .dw-flip > span + span {
+    transform: rotateX(180deg);
+    color: #f2cf7a; /* the gold, lighter: it runs onto the photo */
+  }
+  @keyframes dw-flip {
+    0%,
+    43% {
+      transform: rotateX(0deg);
+    }
+    50%,
+    93% {
+      transform: rotateX(180deg);
+    }
+    100% {
+      transform: rotateX(360deg);
+    }
+  }
+  /* the first-order band (D-193): a voucher, green to a gold line, white inside, green words */
+  .dw[data-album='off'] .dw-flip {
+    animation-play-state: paused;
+  }
+  .fo-band {
+    display: block;
+    padding: 9px;
+    border-radius: 22px;
+    background: var(--dw-peacock);
+  }
+  .fo-band:focus-visible {
+    outline: 2px solid theme('colors.ink');
+    outline-offset: 3px;
+  }
+  .fo-inner {
+    display: grid;
+    grid-template-columns: auto 1fr;
+    align-items: center;
+    gap: 12px clamp(14px, 2.4vw, 32px);
+    position: relative;
+    overflow: hidden;
+    padding: 30px clamp(16px, 2.6vw, 36px) clamp(16px, 2vw, 24px);
+    border: 1.5px solid var(--dw-gold);
+    border-radius: 14px;
+    color: var(--dw-peacock);
+    background: theme('colors.paper');
+  }
+  /* the night's lights and fireworks, in colours that show on white; the words stay over them */
+  .fo-inner > :not(.dw-lights, .dw-burst) {
+    position: relative;
+    z-index: 1;
+  }
+  .fo-inner .dw-lights svg {
+    stroke: var(--dw-gold);
+  }
+  .fo-inner .dw-lights i {
+    --c: #e0862a;
+    box-shadow: 0 0 5px var(--c);
+  }
+  .fo-inner .dw-lights i:nth-of-type(3n + 2) {
+    --c: #7a2e23;
+  }
+  .fo-inner .dw-lights i:nth-of-type(3n) {
+    --c: #c9962f;
+  }
+  .fo-inner .dw-burst {
+    top: 16px;
+    right: 3%;
+    width: clamp(44px, 5vw, 72px);
+    stroke: #e0862a;
+  }
+  .fo-inner .dw-burst--b {
+    top: 22px;
+    right: 24%;
+    width: clamp(28px, 3vw, 44px);
+    stroke: #7a2e23;
+  }
+  .fo-env {
+    position: relative;
+    display: block;
+    width: clamp(76px, 9vw, 112px);
+  }
+  .fo-env svg {
+    display: block;
+    width: 100%;
+    height: auto;
+  }
+  .fo-coin {
+    position: absolute;
+    left: 50%;
+    top: 56%;
+    display: grid;
+    place-items: center;
+    width: 44%;
+    aspect-ratio: 1;
+    border-radius: 50%;
+    transform: translate(-50%, -50%);
+    font-size: clamp(11px, 1.3vw, 16px);
+    font-weight: 700;
+    color: theme('colors.ink');
+    background: #e3b552;
+    box-shadow: inset 0 0 0 1.5px var(--dw-gold);
+  }
+  .fo-words {
+    display: block;
+    min-width: 0;
+  }
+  .fo-kick {
+    display: block;
+    margin-bottom: 4px;
+    font-size: 12px;
+    font-weight: 600;
+    opacity: 0.8;
+  }
+  .fo-head {
+    display: block;
+    font-size: clamp(21px, 2.5vw, 36px);
+    font-weight: 500;
+    line-height: 1.1;
+    letter-spacing: -0.025em;
+    text-wrap: balance;
+  }
+  .fo-go {
+    grid-column: 1 / -1;
+    display: grid;
+    place-items: center;
+    min-height: 44px;
+    padding: 0 22px;
+    border-radius: 999px;
+    font-size: 14px;
+    font-weight: 700;
+    white-space: nowrap;
+    color: theme('colors.paper');
+    background: var(--dw-peacock);
+  }
+  @media (min-width: 640px) {
+    .fo-inner {
+      grid-template-columns: auto 1fr auto;
+    }
+    .fo-go {
+      grid-column: 3;
+    }
+    /* in the open middle, clear of the button */
+    .fo-inner .dw-burst {
+      top: 26px;
+      right: 20%;
+    }
+    .fo-inner .dw-burst--b {
+      top: 34px;
+      right: 32%;
+    }
+  }
+
+  /* the first-order ad (D-193): hangs from the navbar wherever the page is scrolled, behind the header's own parts, moving
+     nothing. Only what is drawn takes a tap or a swipe, and a swipe there never scrolls the page. */
+  .foa {
+    position: absolute;
+    inset: 100% 0 auto;
+    z-index: -1;
+    height: 170px;
+    overflow: hidden;
+    pointer-events: none;
+  }
+  .foa-ad {
+    position: absolute;
+    top: 0;
+    right: 4px;
+    padding: 0;
+    border: 0;
+    background: none;
+    cursor: pointer;
+    user-select: none;
+    -webkit-touch-callout: none;
+    animation: foa-drop 650ms cubic-bezier(0.3, 0.7, 0.4, 1) both;
+  }
+  .foa-ad[data-up] {
+    animation: foa-rise 280ms ease-in both;
+  }
+  .foa-ad:focus-visible {
+    outline: 2px solid theme('colors.brand');
+    outline-offset: 2px;
+  }
+  .foa-ad svg {
+    display: block;
+    overflow: visible;
+    pointer-events: none;
+    transform-origin: var(--ax) 0;
+  }
+  .foa-ad svg * {
+    pointer-events: visiblePainted;
+    touch-action: none;
+  }
+  @media (min-width: 768px) {
+    .foa-ad {
+      right: 24px;
+    }
+  }
+  .foa-sway > svg {
+    animation: foa-sway 1900ms ease-out 500ms both;
+  }
+  .foa-insist > svg {
+    animation: foa-insist 900ms ease-in-out 700ms both;
+  }
+  .foa-bangles {
+    animation: foa-jingle 900ms ease-in-out 700ms both;
+  }
+  .foa-blink {
+    transform-box: fill-box;
+    transform-origin: center;
+    animation: foa-blink 4s infinite;
+  }
+  @keyframes foa-drop {
+    from {
+      transform: translateY(-110%);
+    }
+    70% {
+      transform: translateY(5px);
+    }
+    to {
+      transform: none;
+    }
+  }
+  @keyframes foa-rise {
+    to {
+      transform: translateY(-110%);
+    }
+  }
+  @keyframes foa-sway {
+    0%,
+    100% {
+      transform: none;
+    }
+    20% {
+      transform: rotate(4deg);
+    }
+    45% {
+      transform: rotate(-2.5deg);
+    }
+    70% {
+      transform: rotate(1.2deg);
+    }
+  }
+  @keyframes foa-insist {
+    0%,
+    50%,
+    100% {
+      transform: none;
+    }
+    25%,
+    75% {
+      transform: translateY(6px);
+    }
+  }
+  @keyframes foa-jingle {
+    0%,
+    50%,
+    100% {
+      transform: none;
+    }
+    25%,
+    75% {
+      transform: translateY(3px);
+    }
+  }
+  @keyframes foa-blink {
+    0%,
+    95%,
+    100% {
+      transform: none;
+    }
+    97% {
+      transform: scaleY(0.1);
+    }
+  }
+
   /* from tablets up the night lays out sideways: the words on the left, the flight on the right */
   @media (min-width: 640px) {
     .dw-wide {
@@ -2399,7 +2681,8 @@ s.was::before {
   .dw-arch,
   .dw-art,
   .dw-go-ring,
-  .dw-go-ring svg {
+  .dw-go-ring svg,
+  .dw-flip {
     animation: none;
     transition: none;
   }

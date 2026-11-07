@@ -3,6 +3,7 @@ import { getStorePolicyCached, isDemoStoreCached } from '@/features/catalog/data
 import { deliveryDaysLabel } from '@/features/catalog/delivery-days';
 import { DaysProvider, type ShellDays } from '@/features/shell/days';
 import { DemoBanner } from '@/features/shell/demo-banner';
+import { FirstOrderAd } from '@/features/shell/first-order-ad';
 import { IndiaSymbol } from '@/features/shell/india-mark';
 import { Motion } from '@/features/shell/motion';
 import { SiteFooter } from '@/features/shell/site-footer';
@@ -12,7 +13,7 @@ import { TopHeight } from '@/features/shell/top-height';
 /**
  * Storefront shell: server-rendered, no session reads (pages stay static, PR-1).
  * The @info slot draws an info page as a glass panel over the page it was opened from (D-092).
- * Client islands here: the bag count, the free-delivery bar (D-111), the motion layer (reveal, parallax; off for reduced
+ * Client islands here: the first-order ad hanging from the navbar (D-193), the bag count, the free-delivery bar (D-111), the motion layer (reveal, parallax; off for reduced
  * motion) and the header height for rows pinned under it (top-height.tsx). D-187: the delivery days and the free line
  * for the client parts (days.tsx), and the days as CSS variables for every card's delivery line, so a cached card carries
  * no words of its own (`.product-card-days`, globals.css). No admin link anywhere (D-006).
@@ -50,6 +51,7 @@ export default async function StoreLayout({
       <div className="site-top">
         {demo ? <DemoBanner /> : null}
         <SiteHeader />
+        <FirstOrderAd />
       </div>
       <main id="main" className="store-main">
         {children}

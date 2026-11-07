@@ -30,7 +30,7 @@ const TONE: Record<Tone, string> = {
   paper: 'dw-arch--paper',
 };
 
-function StringLights(): React.JSX.Element {
+export function StringLights(): React.JSX.Element {
   // the wire is a quadratic curve; a bulb at t sits on it at 4·sag·t(1−t)
   return (
     <div className="dw-lights" aria-hidden="true">
@@ -70,7 +70,11 @@ export function DiwaliNight({ free }: { free: string | null }): React.JSX.Elemen
           <div className="dw-wide-words">
             {WIDE.day ? <p className="dw-kicker font-ui">Diwali · {dayDate(WIDE.day)}</p> : null}
             <h2 className="font-heading text-[clamp(26px,2.5vw,40px)] font-medium leading-[1.05] tracking-[-0.025em]">
-              {WIDE.hook}
+              {/* D-193: the words turn over between the two; both are in the page for screen readers */}
+              <span className="dw-flip">
+                <span>{WIDE.hook} </span>
+                <span>{WIDE.flip}</span>
+              </span>
             </h2>
             <Link href={WIDE.href} prefetch={false} className="dw-go dw-go--night font-ui">
               {WIDE.cta}

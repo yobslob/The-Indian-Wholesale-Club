@@ -4,6 +4,7 @@ import { getHomeCached, getStorePolicyCached } from '@/features/catalog/data';
 import { CategoryTiles } from '@/features/home/category-tiles';
 import { DeliveryBand } from '@/features/home/delivery-band';
 import { DiwaliArches, DiwaliNight } from '@/features/home/diwali-windows';
+import { FirstOrderBand } from '@/features/home/first-order-band';
 import { HomeHero } from '@/features/home/home-hero';
 import { HomeRow } from '@/features/home/home-row';
 import { JustListed } from '@/features/home/just-listed';
@@ -17,7 +18,7 @@ export const metadata: Metadata = { alternates: { canonical: '/' } };
 
 /**
  * Home (D-187, the founder's order): the hero, the three Diwali arches, the album of all of India (the drifting mosaic),
- * the category tiles, the Diwali night with the flight inside, What everyone missed this week, The kirana counter, Just
+ * the first-order band, the category tiles, the Diwali night with the flight inside, What everyone missed this week, The kirana counter, Just
  * listed Clothing and Home & gifts, Pick your home and the delivery band.
  * One cached store_home() call (PR-1, PR-2). Runs edge to edge (data-bleed); sections keep the gutter. Launch QA C-2: the
  * first screen, the Diwali windows, the tiles, the headings and the band are server-rendered; the album, Pick your home's
@@ -39,6 +40,7 @@ export default async function HomePage(): Promise<React.JSX.Element> {
         {/* D-179: the three Diwali arches right under the hero, a price on the first screens */}
         <DiwaliArches />
         {home.album.length >= ALBUM_MINIMUM ? <LazyAlbum photos={home.album} /> : null}
+        <FirstOrderBand />
         <CategoryTiles categories={home.categories} />
         <DiwaliNight
           free={

@@ -11,6 +11,9 @@ type Photo = RegionPage['album'][number];
 /** Below this the album would repeat one or two photos over and over; the page leaves it out. */
 export const ALBUM_MINIMUM = 3;
 
+/** One pattern's drift (D-193: faster than the old 110 s). */
+const ALBUM_SECONDS = 75;
+
 function Mosaic({ photos, hidden }: { photos: Photo[]; hidden?: boolean }): React.JSX.Element {
   const tiles = albumTiles(photos.length).map((t) => ({ ...t, photo: photos[t.photo]! }));
   return (
@@ -36,7 +39,7 @@ function Mosaic({ photos, hidden }: { photos: Photo[]; hidden?: boolean }): Reac
 /**
  * The region album (D-051, D-052): the region's photos as a mosaic that drifts sideways by itself, between Most
  * wanted and Curated for you. Not interactive and no pause control (founder's decision); still for reduced
- * motion, paused off screen (features/shell/motion.tsx). Server-rendered, no client code of its own.
+ * motion, and it keeps moving off screen (D-193). Server-rendered, no client code of its own.
  * Home shows it (D-113; since D-169 the founder's own Home photos, in the admin's order) with `reveal`: it opens with the clip-and-scale reveal and floats with a
  * gentle parallax as the page scrolls (motion.tsx's [data-reveal] and [data-speed]).
  */
@@ -59,9 +62,8 @@ export function RegionAlbum({
     >
       <div
         className="album"
-        data-album="on"
         data-speed={reveal ? '0.05' : undefined}
-        style={{ ['--album-duration' as string]: `${110 * patterns}s` }}
+        style={{ ['--album-duration' as string]: `${ALBUM_SECONDS * patterns}s` }}
       >
         <div className="album-track">
           <Mosaic photos={photos} />

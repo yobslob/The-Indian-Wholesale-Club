@@ -8,8 +8,9 @@ Short on purpose (the audit warns past 10 KB): **replace** lines when something 
 - **Live:** https://indianwholesaleclub.com (web), with real customers: the simple store (D-187), merged as
   [PR #1](https://github.com/yobslob/The-Indian-Wholesale-Club/pull/1) and deployed on 2026-11-04 (21:47 UTC).
 - **Merged and deployed 2026-11-06 (08:38 UTC):** D-189 and D-190, [PR #2](https://github.com/yobslob/The-Indian-Wholesale-Club/pull/2). Vercel is on Pro (founder, 2026-11-07); ISR writes against reads not checked here yet.
-- **Merged and deployed 2026-11-07 (00:33 UTC):** D-191, [PR #3](https://github.com/yobslob/The-Indian-Wholesale-Club/pull/3), with its two migrations (the Deploy workflow succeeded). Its checkout still strikes the Retailer charges on the first screens above the free line, until D-192 is live.
-- **Not released:** D-192 on branch `optimize/lighter-site` (coupons chosen in the bag, one bill, a card for each shipment). No migration: it reaches customers with the site.
+- **Merged and deployed 2026-11-07 (00:33 UTC):** D-191, [PR #3](https://github.com/yobslob/The-Indian-Wholesale-Club/pull/3), with its two migrations (the Deploy workflow succeeded).
+- **Merged and deployed 2026-11-07 (02:52 UTC):** D-192, [PR #4](https://github.com/yobslob/The-Indian-Wholesale-Club/pull/4) (coupons chosen in the bag, one bill, a card for each shipment).
+- **Not released:** D-193 on branch `optimize/lighter-site` (the first-order band, the Diwali flip, four ads under the navbar, the album faster and never paused). No migration: it reaches customers with the site.
 - **Accounts (D-147):** Vercel Pro, Supabase free since 2026-10-21/22, photos in Cloudflare R2. Budgets and the
   weekly check: `monitoring.md`. The free database's memory is already over (1.57 of 1.4 GB, swap 406 MB on 2026-11-04,
   and it stopped answering for about 45 minutes that day).
@@ -28,13 +29,13 @@ Short on purpose (the audit warns past 10 KB): **replace** lines when something 
 - **Free shipping from $49.99** on every bag; bulk saving and the heavy-item discount stay at $99.99. No price changes
   (rehearsed: 0 differences of 29,212 options).
 - **Stock is checked at checkout** (Remove / Keep n, payment locked until sorted) on the website and in the app.
-- **Home:** hero → Diwali arches → mosaic → Shop by category → Diwali night → What everyone missed this week → The
+- **Home:** hero → Diwali arches → mosaic → the first-order band (D-193) → Shop by category → Diwali night → What everyone missed this week → The
   kirana counter → Just listed Clothing → Just listed Home & gifts → Pick your home → the delivery band.
 - **App 1.1.0** is built for this; whether it is published is not recorded here. The old app keeps working as a customer app (shims marked
   `TODO(D-187)`); **its admin mode breaks** with the release.
 
 ## Next for the founder
-1. **D-192:** merge and deploy at a quiet hour; each deploy empties the page cache. **D-191:** a new app build carries the bill's coins, Popular and the sub-category chips. Your choices: the retailer % (1.5 on the 5 Nov copy, so the charge grows with the bag; Settings → Bag charges), the noodles photo's printed "₹15", the sub-categories' own photos (`sub-photos.ts`). Popular is an experiment: compare orders and average bag in Admin before and after.
+1. **D-193:** merge and deploy at a quiet hour; each deploy empties the page cache. **D-191:** a new app build carries the bill's coins, Popular and the sub-category chips. Your choices: the retailer % (1.5 on the 5 Nov copy, so the charge grows with the bag; Settings → Bag charges), the noodles photo's printed "₹15", the sub-categories' own photos (`sub-photos.ts`). Popular is an experiment: compare orders and average bag in Admin before and after.
 2. **Names to tidy:** production's count (Y-11; the page and Rename all go only at 0).
 3. In the order of use (each from the archived status, still open and not re-checked here):
    - **The photo redo** (D-164): pull on the laptop, `pnpm photos:redo fetch --type food --again` and `--type home
@@ -84,4 +85,4 @@ Short on purpose (the audit warns past 10 KB): **replace** lines when something 
 <!-- The verifier (plan §5 Phase 3 · Agent V) records the branch's full check here. Replace this table's row. -->
 | Date | Commit | Where | Result |
 |---|---|---|---|
-| 2026-11-07 | D-192 on top of D-191 (branch `optimize/lighter-site`, not committed when run) | Claude Code, Windows 11, local Supabase | `node scripts/check.mjs`: docs, typecheck, lint, test, db, build, http (nothing over budget; `/` 14 ms, 133 KB JS; `/clothing` 16 ms, 146 KB JS; `/search?q=saree` 145 ms), bundle OK. **E2E: no uninterrupted pass.** Two full runs hit the step's 900 s limit with failures on Stripe's own frames (card form, 3-D Secure, slow pricing), different tests each time; `js.stripe.com` took 18 to 774 s from this machine during them, 1 to 4 s afterwards. Re-run in parts once it recovered, every spec the second run failed or never reached: coupons, customer-choices, one-payment, pay-cards (14 of 15, the one failure passed on its re-run), then pay-faults, payment-test, phone-flows, price-consistency, read-ahead, rows, saved-address, saved (26 passed, 1 skipped), then search-speed, search, sold-out-paying, sold-out, webhook (9 passed, 1 skipped). The other specs last passed in the second full run. Checked by hand at 375 px: bag, panel, coupon sheet, Apply, two shipment cards, checkout to Pay, a refused WELCOME10; the bag's total matched the server's to the cent (4.04). Not tested: migrations on a production copy, production, the app on a device (typecheck only), a real phone, a state with sales tax by hand. |
+| 2026-11-07 | D-193 on top of D-192 (branch `optimize/lighter-site`, not committed when run) | Claude Code, Windows 11, local Supabase | `node scripts/check.mjs docs typecheck lint test build http e2e`: all pass but e2e, nothing over budget (`/` 12 ms, 133 KB JS). e2e 92 passed, 2 skipped, 2 failed in `customer-choices.spec.ts` on checkout's "Too many requests" for the test customer after an interrupted run; with the local `rate_limit_hits` rows cleared, that spec passed alone (3 of 3). `db` and `bundle` not run: no migration, no app change. Touch swipes checked on a simulated Pixel 7 against the dev server, not on a physical phone. |
