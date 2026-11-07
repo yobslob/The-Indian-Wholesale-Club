@@ -46,6 +46,10 @@ import {
   trackingUrl,
   variantLabel,
   worstContrast,
+  bestCoupon,
+  couponTerms,
+  couponTitle,
+  nextCoupon,
 } from '../src/domain';
 
 describe('bulk saving (D-119)', () => {
@@ -72,7 +76,9 @@ describe('bulk saving (D-119)', () => {
     assert.equal(q.taxCents, 1950);
     assert.equal(q.totalCents, 20000 - 500 + 1950);
     const promo = quoteCheckout([{ unitPriceCents: 20000, quantity: 1 }], { discountType: 'fixed', discountValue: 4000, minOrderCents: 0 }, shipping)!;
-    assert.equal(promo.bulkSavingCents, 100, 'the saving counts from the discounted subtotal');
+    assert.deepEqual([promo.discountCents, promo.bulkSavingCents], [4000, 0], 'D-191: a coupon worth more replaces the saving');
+    const small = quoteCheckout([{ unitPriceCents: 20000, quantity: 1 }], { discountType: 'fixed', discountValue: 300, minOrderCents: 0 }, shipping)!;
+    assert.deepEqual([small.discountCents, small.bulkSavingCents, small.promoApplied, small.promoBeatenByBulk], [0, 500, false, true], 'one worth less stays off and the bag keeps the saving');
   });
 });
 
@@ -154,17 +160,18 @@ describe('checkout quote (flows.md §3, D-041, D-073)', () => {
   const shipping = { flatCents: 900, freeMinCents: 10000 };
   const nj = { ratePct: 6.625 };
 
-  it('D-111: a small order pays its charges; from the free line up they are waived and shown', () => {
+  it('D-111, D-191: a small order pays its charges; from the free line up Shipping is waived and shown, the retailer charges stay', () => {
     const smallOrder = { shippingCents: 1979, retailerCents: 199 };
     const settings = { flatCents: 0, freeMinCents: 14999, smallOrder };
     const small = quoteCheckout([{ unitPriceCents: 3929, quantity: 1 }], null, settings)!;
     assert.deepEqual([small.shippingCents, small.retailerCents, small.totalCents], [1979, 199, 3929 + 1979 + 199]);
     const big = quoteCheckout([{ unitPriceCents: 3929, quantity: 4 }], null, settings)!;
-    assert.deepEqual([big.shippingCents, big.retailerCents, big.totalCents], [0, 0, 3929 * 4]);
-    assert.deepEqual(big.waivedCents, { shipping: 1979, retailer: 199 });
-    // A promo that takes the bag under the line brings the charges back.
+    assert.deepEqual([big.shippingCents, big.retailerCents, big.totalCents], [0, 199, 3929 * 4 + 199]);
+    assert.deepEqual(big.waivedCents, { shipping: 1979, retailer: 0 });
+    // D-191: the free line reads the bag before a coupon, so a coupon cannot bring Shipping back.
     const promo = { discountType: 'percentage' as const, discountValue: 10, minOrderCents: 0 };
-    assert.equal(quoteCheckout([{ unitPriceCents: 3929, quantity: 4 }], promo, settings)!.retailerCents, 199);
+    const coupon = quoteCheckout([{ unitPriceCents: 3929, quantity: 4 }], promo, settings)!;
+    assert.deepEqual([coupon.shippingCents, coupon.discountCents], [0, 1572]);
   });
 
   it('D-125: Shipping as the bag works it out; struck through and free from the line, unless the bag still needs it', () => {
@@ -174,16 +181,16 @@ describe('checkout quote (flows.md §3, D-041, D-073)', () => {
     assert.deepEqual([at(10000).shippingCents, at(10000).retailerCents], [3679, 150]);
     const big = at(30000);
     assert.deepEqual(
-      [big.shippingCents, big.waivedShippingCents, big.retailerCents, big.waivedRetailerCents],
-      [0, 3679, 0, 450],
-      'past the line: struck through and free',
+      [big.shippingCents, big.waivedShippingCents, big.retailerCents],
+      [0, 3679, 450],
+      'past the line: Shipping struck through and free, the retailer charges paid (D-191)',
     );
     const owes = at(30000, { ...smallOrder, pastLineCents: 1229 });
     assert.deepEqual([owes.shippingCents, owes.waivedShippingCents], [1229, 0], 'a bag that cannot pay its way past the line still pays it');
     const settings = { flatCents: 0, freeMinCents: 14999, smallOrder };
     const q = quoteCheckout([{ unitPriceCents: 30000, quantity: 1 }], null, settings)!;
-    assert.deepEqual([q.shippingCents, q.retailerCents, q.totalCents], [0, 0, 30000]);
-    assert.deepEqual(q.waivedCents, { shipping: 3679, retailer: 450 });
+    assert.deepEqual([q.shippingCents, q.retailerCents, q.totalCents], [0, 450, 30450]);
+    assert.deepEqual(q.waivedCents, { shipping: 3679, retailer: 0 });
     const small = quoteCheckout([{ unitPriceCents: 399, quantity: 1 }], null, settings)!;
     assert.deepEqual([small.shippingCents, small.retailerCents, small.totalCents], [3679, 99, 399 + 3679 + 99]);
   });
@@ -194,6 +201,7 @@ describe('checkout quote (flows.md §3, D-041, D-073)', () => {
       subtotalCents: 5000,
       discountCents: 0,
       bulkSavingCents: 0,
+      coinsUsed: 0,
       shippingCents: 900,
       retailerCents: 0,
       waivedCents: { shipping: 0, retailer: 0 },
@@ -202,6 +210,7 @@ describe('checkout quote (flows.md §3, D-041, D-073)', () => {
       taxCents: 0,
       totalCents: 5900,
       promoApplied: false,
+      promoBeatenByBulk: false,
     });
   });
 
@@ -533,10 +542,12 @@ describe('D-187: one free-shipping line for every bag, the bulk saving at its ow
     assert.deepEqual([q.shippingCents, q.retailerCents, q.bulkSavingCents, q.totalCents], [1862, 99, 0, 3000 + 1862 + 99]);
   });
 
-  it('food $50, or clothing $40 + food $15: free, nothing saved yet', () => {
+  it('food $50, or clothing $40 + food $15: Shipping free, the retailer charges paid, no saving yet', () => {
     for (const lines of [[{ unitPriceCents: 5000, quantity: 1 }], [{ unitPriceCents: 4000, quantity: 1 }, { unitPriceCents: 1500, quantity: 1 }]]) {
       const q = quoteCheckout(lines, null, settings)!;
-      assert.deepEqual([q.shippingCents, q.retailerCents, q.bulkSavingCents], [0, 0, 0]);
+      assert.equal(q.shippingCents, 0);
+      assert.ok(q.retailerCents >= 99, 'D-191');
+      assert.equal(q.bulkSavingCents, 0);
       assert.equal(q.waivedCents.shipping, 1862);
     }
   });
@@ -548,13 +559,13 @@ describe('D-187: one free-shipping line for every bag, the bulk saving at its ow
 
   it('a $120 bag: free, and the bulk saving counts from $99.99', () => {
     const q = quoteCheckout([{ unitPriceCents: 12000, quantity: 1 }], null, settings)!;
-    assert.deepEqual([q.shippingCents, q.bulkSavingCents, q.totalCents], [0, 200, 11800]);
+    assert.deepEqual([q.shippingCents, q.bulkSavingCents, q.retailerCents, q.totalCents], [0, 200, 180, 11980]);
   });
 
-  it('a promo that takes a bag under the line brings the charges back', () => {
+  it('D-191: a coupon never brings Shipping back: the line reads the bag before it', () => {
     const pct = { discountType: 'percentage' as const, discountValue: 10, minOrderCents: 0 };
     const q = quoteCheckout([{ unitPriceCents: 5000, quantity: 1 }], pct, settings)!;
-    assert.deepEqual([q.discountCents, q.shippingCents, q.retailerCents], [500, 1862, 99]);
+    assert.deepEqual([q.discountCents, q.shippingCents, q.totalCents], [500, 0, 4500 + q.retailerCents]);
   });
 
   it("the promo's discount", () => {
@@ -563,6 +574,57 @@ describe('D-187: one free-shipping line for every bag, the bulk saving at its ow
     assert.equal(promoDiscountCents(5000, { ...pct, discountType: 'fixed', discountValue: 700 }), 700);
     assert.equal(promoDiscountCents(5000, { ...pct, minOrderCents: 6000 }), 0);
     assert.equal(promoDiscountCents(5000, null), 0);
+    assert.equal(promoDiscountCents(20000, { ...pct, maxDiscountCents: 900 }), 900, 'D-191: 10% up to $9');
+  });
+});
+
+describe('D-191: coupons and coins', () => {
+  const welcome = { code: 'WELCOME10', discountType: 'percentage' as const, discountValue: 10, minOrderCents: 0, maxDiscountCents: 900, newCustomersOnly: true };
+  const fixed = (code: string, off: number, min: number) => ({ code, discountType: 'fixed' as const, discountValue: off, minOrderCents: min, maxDiscountCents: null, newCustomersOnly: false });
+  const coupons = [welcome, fixed('SAVE7', 700, 9900), fixed('SAVE12', 1200, 15000), fixed('SAVE20', 2000, 19900)];
+  const settings = { flatCents: 0, freeMinCents: 4999, bulkFromCents: 9999, smallOrder: { shippingCents: 1862, retailerCents: 99 }, bulkSaving: { pct: 10, capCents: 2500 } };
+  const best = (cents: number, isNewCustomer: boolean, bulk = 0) => bestCoupon({ coupons, isNewCustomer }, cents, bulk)?.code ?? null;
+
+  it('puts the coupon that takes the most off this bag on top', () => {
+    assert.equal(best(3000, true), 'WELCOME10');
+    assert.equal(best(3000, false), null);
+    assert.equal(best(9900, true), 'WELCOME10', '$9 beats $7');
+    assert.equal(best(9900, false), 'SAVE7');
+    assert.equal(best(15000, true), 'SAVE12');
+    assert.equal(best(19900, false), 'SAVE20');
+  });
+
+  it('never offers one the bulk saving beats, since the coupon would replace it', () => {
+    assert.equal(best(35000, false, 2500), null, 'a $350 bag: the $25 saving beats $20');
+    assert.equal(best(19900, false, 990), 'SAVE20');
+  });
+
+  it('says how far the next one is', () => {
+    assert.deepEqual(nextCoupon({ coupons, isNewCustomer: false }, 9000), { coupon: coupons[1], moreCents: 900 });
+    assert.equal(nextCoupon({ coupons, isNewCustomer: false }, 20000), null);
+  });
+
+  it('words a coupon', () => {
+    assert.equal(couponTitle(welcome), '10% off, up to $9');
+    assert.equal(couponTerms(welcome), 'On your first order');
+    assert.equal(couponTitle(coupons[1]!), '$7 off');
+    assert.equal(couponTerms(coupons[1]!), 'On bags of $99 or more');
+  });
+
+  it('coins come off the goods after the coupon, one coin one cent, before tax', () => {
+    const q = quoteCheckout([{ unitPriceCents: 3000, quantity: 1, taxable: true }], null, settings, { ratePct: 10 }, 85)!;
+    assert.equal(q.coinsUsed, 85);
+    assert.equal(q.taxCents, Math.round(((3000 - 85 + 1862 + 99) * 10) / 100));
+    assert.equal(q.totalCents, 3000 - 85 + 1862 + 99 + q.taxCents);
+  });
+
+  it('a coupon and coins together; a coupon replaces the bulk saving; never below the charges', () => {
+    const save20 = { discountType: 'fixed' as const, discountValue: 2000, minOrderCents: 19900 };
+    const q = quoteCheckout([{ unitPriceCents: 19900, quantity: 1 }], save20, settings, null, 90)!;
+    assert.deepEqual([q.discountCents, q.bulkSavingCents, q.coinsUsed, q.shippingCents, q.retailerCents], [2000, 0, 90, 0, 99]);
+    assert.equal(q.totalCents, 19900 - 2000 - 90 + 99);
+    const tiny = quoteCheckout([{ unitPriceCents: 50, quantity: 1 }], null, settings, null, 90)!;
+    assert.deepEqual([tiny.coinsUsed, tiny.totalCents], [50, 1862 + 99], 'no more coins than the goods');
   });
 });
 

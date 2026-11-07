@@ -15,6 +15,8 @@ export interface QuotePromo {
   discountType: 'percentage' | 'fixed';
   discountValue: number;
   minOrderCents: number;
+  /** D-191: a percentage coupon's most (10% up to $9); null or absent = no limit. */
+  maxDiscountCents?: number | null;
 }
 
 /** Standard is the only shipping (D-187); orders placed earlier with Express keep their label. */
@@ -24,13 +26,13 @@ export type ShippingMethod = 'standard' | 'express';
 export interface ShippingSettings {
   /** Shipping per order (D-041: 0 = free). */
   flatCents: number | null;
-  /** Ships free from this discounted subtotal (NULL = no threshold). */
+  /** Ships free from this subtotal, before any coupon or coins (D-191; NULL = no threshold). */
   freeMinCents: number | null;
   /** D-187: the bulk saving and the heavy-item discount start here ($99.99, Settings), not at the free line. */
   bulkFromCents?: number | null;
   /**
-   * D-111: below `freeMinCents`, a parcel pays these (store_bag_charges); from it up they are waived. Null or absent =
-   * no small-order charges.
+   * D-111: below `freeMinCents`, a parcel pays Shipping (store_bag_charges), and from it up that is waived; the retailer
+   * charges are always paid (D-191). Null or absent = no charges.
    */
   smallOrder?: SmallOrderCharges | null;
   /** D-119: from `bulkFromCents` up, the bulk saving (a % of the amount over the line, up to a cap). */
@@ -119,8 +121,8 @@ export interface SmallOrderCharges {
 
 /**
  * A bag's charges at a goods amount (D-111, D-112, D-123, D-125), for the bag, the pill, checkout and the profit check
- * alike. Below the free-shipping line Shipping and the retailer charges are paid; from it up both are struck through
- * (`waived*`) and free, except what a bag past the line still needs to pay its way (`pastLineCents`, D-125).
+ * alike. Below the free-shipping line Shipping is paid; from it up it is struck through (`waived*`) and free, except what
+ * a bag past the line still needs to pay its way (`pastLineCents`, D-125). The retailer charges are always paid (D-191).
  */
 export function bagChargesAt(
   goodsCents: number,
@@ -143,8 +145,7 @@ export function bagChargesAt(
     /** Shipping as paid, and as it would be (struck through) when free. */
     shippingCents: free ? past : shipping,
     waivedShippingCents: free && past === 0 ? Math.max(shipping, small?.shownShippingCents ?? 0) : 0,
-    retailerCents: free ? 0 : retailer,
-    waivedRetailerCents: free ? retailer : 0,
+    retailerCents: retailer,
   };
 }
 
@@ -155,15 +156,17 @@ export interface QuoteTax {
 
 export interface CheckoutBreakdown {
   subtotalCents: number;
-  /** The promo's discount (the bulk saving is apart, below). */
+  /** The coupon's discount (the bulk saving and the coins are apart, below). */
   discountCents: number;
-  /** D-119: the bulk saving from $99.99 up (D-187). */
+  /** D-119: the bulk saving from $99.99 up (D-187); none while a coupon is on (D-191). */
   bulkSavingCents: number;
+  /** D-191: the coins used; one coin is one cent off. */
+  coinsUsed: number;
   /** Shipping paid (the flat rate, plus a small order's parcel shipping, D-111). */
   shippingCents: number;
-  /** D-111: a small order's retailer charges (0 from the free-shipping line up). */
+  /** D-111, D-191: the retailer charges, paid on every bag from India. */
   retailerCents: number;
-  /** D-111: what the small-order charges would have been, shown struck through once they are free. */
+  /** D-111: what Shipping would have been, shown struck through once free. `retailer` is always 0 (D-191). */
   waivedCents: { shipping: number; retailer: number };
   /** Heavy-item shipping paid, and its whole shown struck through when $99.99 took some off (0: not shown). */
   heavyCents: number;
@@ -171,6 +174,8 @@ export interface CheckoutBreakdown {
   taxCents: number;
   totalCents: number;
   promoApplied: boolean;
+  /** D-191: the coupon was left off because the bulk saving is at least as much. */
+  promoBeatenByBulk: boolean;
 }
 
 function assertCents(value: number, name: string): void {
@@ -188,6 +193,7 @@ export function quoteCheckout(
   promo: QuotePromo | null,
   shipping: ShippingSettings,
   tax: QuoteTax | null = null,
+  coins = 0,
 ): CheckoutBreakdown | null {
   if (lines.length === 0) throw new RangeError('A quote needs at least one line');
   let subtotalCents = 0;
@@ -205,29 +211,35 @@ export function quoteCheckout(
   assertCents(price, 'flatCents');
   if (shipping.freeMinCents !== null) assertCents(shipping.freeMinCents, 'freeMinCents');
 
-  const promoApplied = promo !== null && subtotalCents >= promo.minOrderCents;
-  if (promo && promoApplied) assertCents(promo.discountValue, 'discountValue');
-  const discountCents = promoDiscountCents(subtotalCents, promo);
-
-  const discounted = subtotalCents - discountCents;
-  const freeShipping = shipping.freeMinCents !== null && discounted >= shipping.freeMinCents;
-  const small = shipping.smallOrder ?? null;
-  if (small) {
-    assertCents(small.shippingCents, 'smallOrder.shippingCents');
-    assertCents(small.retailerCents, 'smallOrder.retailerCents');
-  }
-  const charges = bagChargesAt(discounted, shipping.freeMinCents, small);
-  const shippingCents = freeShipping ? charges.shippingCents : price + charges.shippingCents;
-  const retailerCents = freeShipping ? 0 : charges.retailerCents;
+  if (promo) assertCents(promo.discountValue, 'discountValue');
   if (shipping.bulkSaving) {
     assertCents(shipping.bulkSaving.capCents, 'bulkSaving.capCents');
     if (!(shipping.bulkSaving.pct >= 0)) throw new RangeError('bulkSaving.pct must be >= 0');
   }
   const bulkFrom = shipping.bulkFromCents ?? null;
-  const bulkCents = bulkSavingCents(discounted, bulkFrom, shipping.bulkSaving);
-  const goods = discounted - bulkCents;
+  // D-191: a coupon replaces the bulk saving, so one worth no more than it stays off and the bag keeps the saving
+  const bulkOnly = bulkSavingCents(subtotalCents, bulkFrom, shipping.bulkSaving);
+  const coupon = promoDiscountCents(subtotalCents, promo);
+  const promoReached = promo !== null && subtotalCents >= promo.minOrderCents;
+  const promoApplied = promoReached && (coupon > bulkOnly || coupon === 0);
+  const discountCents = promoApplied ? coupon : 0;
+  const bulkCents = discountCents > 0 ? 0 : bulkOnly;
+
+  // D-191: the free line reads the bag itself, so a coupon or coins can never bring Shipping back
+  const freeShipping = shipping.freeMinCents !== null && subtotalCents >= shipping.freeMinCents;
+  const small = shipping.smallOrder ?? null;
+  if (small) {
+    assertCents(small.shippingCents, 'smallOrder.shippingCents');
+    assertCents(small.retailerCents, 'smallOrder.retailerCents');
+  }
+  const charges = bagChargesAt(subtotalCents, shipping.freeMinCents, small);
+  const shippingCents = freeShipping ? charges.shippingCents : price + charges.shippingCents;
+  const retailerCents = charges.retailerCents;
+  const beforeCoins = subtotalCents - discountCents - bulkCents;
+  const coinsUsed = Math.min(Math.max(Math.trunc(coins), 0), beforeCoins);
+  const goods = beforeCoins - coinsUsed;
   // D-187: the same $99.99 takes its % off Heavy-item shipping
-  const heavy = heavyShippingAt(shipping.heavy, bulkFrom !== null && discounted >= bulkFrom);
+  const heavy = heavyShippingAt(shipping.heavy, bulkFrom !== null && subtotalCents >= bulkFrom);
   const taxableShare = subtotalCents === 0 ? 0 : taxableCents / subtotalCents;
   const taxCents = tax
     ? Math.round(((goods + shippingCents + retailerCents + heavy.cents) * taxableShare * tax.ratePct) / 100)
@@ -237,26 +249,28 @@ export function quoteCheckout(
     subtotalCents,
     discountCents,
     bulkSavingCents: bulkCents,
+    coinsUsed,
     shippingCents,
     retailerCents,
     waivedCents:
       freeShipping && small
-        ? { shipping: charges.waivedShippingCents, retailer: charges.waivedRetailerCents }
+        ? { shipping: charges.waivedShippingCents, retailer: 0 }
         : { shipping: 0, retailer: 0 },
     heavyCents: heavy.cents,
     heavyShownCents: heavy.shownCents,
     taxCents,
     totalCents: goods + shippingCents + retailerCents + heavy.cents + taxCents,
     promoApplied,
+    promoBeatenByBulk: promoReached && !promoApplied,
   };
 }
 
 /** The promo's discount on a subtotal (0 below its minimum). The server works it out before asking for the bag's charges. */
 export function promoDiscountCents(subtotalCents: number, promo: QuotePromo | null): number {
   if (!promo || subtotalCents < promo.minOrderCents || promo.discountValue < 0) return 0;
-  return promo.discountType === 'percentage'
-    ? Math.round((subtotalCents * Math.min(promo.discountValue, 100)) / 100)
-    : Math.min(promo.discountValue, subtotalCents);
+  if (promo.discountType !== 'percentage') return Math.min(promo.discountValue, subtotalCents);
+  const off = Math.round((subtotalCents * Math.min(promo.discountValue, 100)) / 100);
+  return promo.maxDiscountCents ? Math.min(off, promo.maxDiscountCents) : off;
 }
 
 /** "$12.50" from cents. */
@@ -265,12 +279,12 @@ export function formatUsd(cents: number): string {
 }
 
 /**
- * D-140 (F5): "You're saving $X": the struck Shipping and retailer charges and the bulk saving (0 below the free line).
+ * D-140 (F5): "You're saving $X": the struck Shipping and the bulk saving (0 below the free line).
  * A note only: every total stays exact.
  */
 export function bagSavingCents(
-  at: { waivedShippingCents: number; waivedRetailerCents: number },
+  at: { waivedShippingCents: number },
   bulkSavingCents: number,
 ): number {
-  return at.waivedShippingCents + at.waivedRetailerCents + Math.max(bulkSavingCents, 0);
+  return at.waivedShippingCents + Math.max(bulkSavingCents, 0);
 }

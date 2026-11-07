@@ -46,7 +46,7 @@ export const SETTING_GROUPS: SettingGroup[] = [
       { key: 'shipping_cents_per_kg', label: 'Shipping per billed kg ($, D-154, D-190)', kind: 'usd', hint: 'Empty = the fixed Shipping below.' },
       { key: 'small_order_shipping_cents', label: 'Shipping when no $ a kg is set ($)', kind: 'usd' },
       { key: 'food_billed_pct', label: 'Food: billed weight, % of the label\'s weight (jars, bulky packs)', kind: 'pct' },
-      { key: 'small_order_retailer_cents', label: 'Retailer charges, at least ($)', kind: 'usd' },
+      { key: 'small_order_retailer_cents', label: 'Retailer charges, at least ($; always paid, D-191)', kind: 'usd' },
       { key: 'retailer_pct', label: 'Retailer charges: % of the goods (D-123; empty = the fixed amount above)', kind: 'pct' },
       { key: 'bulk_saving_pct', label: 'Bulk saving: % of the amount over its line', kind: 'pct' },
       { key: 'bulk_saving_cap_cents', label: 'Largest bulk saving ($)', kind: 'usd' },

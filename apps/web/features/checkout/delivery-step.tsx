@@ -27,8 +27,8 @@ export function deliverySummary(d: Delivery): string {
 
 /**
  * Step 2 (D-087): name, email (confirmations and guest tracking), the ZIP code with the city and state filled in from
- * our own list (D-098, /api/zip; editable, and an unknown ZIP asks for them), street, apartment and the promo code
- * behind "Add a promo code". Continue to payment hands the details up; the parent prices the bag on the server.
+ * our own list (D-098, /api/zip; editable, and an unknown ZIP asks for them), street and apartment. Coupons are in their
+ * own box (D-191). Continue to payment hands the details up; the parent prices the bag on the server.
  */
 export function DeliveryStep({
   value,
@@ -48,7 +48,6 @@ export function DeliveryStep({
     value.city ? { kind: 'found', city: value.city, state: value.state } : { kind: 'idle' },
   );
   const [editPlace, setEditPlace] = useState(false);
-  const [promo, setPromo] = useState(Boolean(value.promoCode));
 
   useEffect(() => {
     if (!/^\d{5}$/.test(zip) || (zip === value.zipCode && value.city)) return;
@@ -93,7 +92,7 @@ export function DeliveryStep({
           state,
           line1: text('line1'),
           line2: text('line2'),
-          promoCode: text('promoCode'),
+          promoCode: value.promoCode,
         });
       }}
     >
@@ -211,20 +210,6 @@ export function DeliveryStep({
           className={input}
         />
       </label>
-      {promo ? (
-        <label className={field}>
-          Promo code
-          <input name="promoCode" defaultValue={value.promoCode} className={input} />
-        </label>
-      ) : (
-        <button
-          type="button"
-          onClick={() => setPromo(true)}
-          className="font-ui mb-4 text-sm font-medium underline underline-offset-[3px]"
-        >
-          Add a promo code
-        </button>
-      )}
       {error ? (
         <p className="text-danger mb-3 text-sm" role="alert">
           {error}

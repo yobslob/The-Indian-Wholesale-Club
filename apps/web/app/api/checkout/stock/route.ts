@@ -4,9 +4,11 @@ import { z } from 'zod';
 import { getCheckoutContext } from '@repo/db/server';
 
 import { MAX_QTY_PER_LINE } from '@/features/cart/limits';
+import { offersOf } from '@/features/checkout/pricing';
 import { stockProblems } from '@/features/checkout/stock';
 import { errorMessage, logger } from '@/lib/logger';
 import { limitRequest } from '@/lib/rate-limit';
+import { requestUser } from '@/lib/request-user';
 import { serviceClient } from '@/lib/supabase/service';
 
 import type { CheckoutErrorResponse, CheckoutStockResponse } from '@/features/checkout/types';
@@ -33,8 +35,13 @@ export async function POST(request: Request): Promise<NextResponse<CheckoutStock
     for (const l of parsed.data.lines) {
       quantities.set(l.variantId, Math.min((quantities.get(l.variantId) ?? 0) + l.quantity, MAX_QTY_PER_LINE));
     }
-    const context = await getCheckoutContext(serviceClient(), [...quantities.keys()], null);
-    return NextResponse.json({ lines: stockProblems(context, quantities) });
+    // D-191: in this same read, the coupon box's coupons and the account's coins
+    const user = await requestUser(request);
+    const context = await getCheckoutContext(serviceClient(), [...quantities.keys()], null, null, {
+      userId: user?.id ?? null,
+      email: user?.email ?? null,
+    });
+    return NextResponse.json({ lines: stockProblems(context, quantities), offers: offersOf(context) });
   } catch (error) {
     logger.warn('checkout.stock_failed', { error: errorMessage(error) });
     return NextResponse.json({ error: 'We could not check your bag just now.' }, { status: 503 });

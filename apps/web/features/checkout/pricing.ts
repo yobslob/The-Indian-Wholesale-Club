@@ -19,7 +19,8 @@ import { stockProblems } from './stock';
 import type { CheckoutProblem, CheckoutQuote } from './types';
 import type { ProductPageRef } from '@/features/catalog/revalidate';
 import type { IwcClient } from '@repo/db';
-import type { QuotedShipment } from '@repo/shared/domain';
+import type { CheckoutContext } from '@repo/db/server';
+import type { CheckoutOffers, QuotedShipment } from '@repo/shared/domain';
 
 export const checkoutRequestSchema = z.object({
   email: emailSchema,
@@ -34,6 +35,8 @@ export const checkoutRequestSchema = z.object({
     .min(1)
     .max(50),
   promoCode: z.string().trim().max(40).nullish(),
+  // D-191: only a bill that draws the coins' line asks for them
+  useCoins: z.boolean().optional(),
   // TODO(D-187): drop when app <next version> is the minimum: the old app sends it; standard is the only shipping (Y-1)
   shippingMethod: z.enum(['standard', 'express']).optional(),
 });
@@ -51,6 +54,22 @@ export type PriceResult =
     }
   | { ok: false; problem: CheckoutProblem };
 
+/** D-191: what the coupon box shows this customer. */
+export function offersOf(context: CheckoutContext): CheckoutOffers {
+  return {
+    coupons: context.coupons.map((c) => ({
+      code: c.code,
+      discountType: c.discount_type,
+      discountValue: c.discount_value,
+      minOrderCents: c.min_order_cents,
+      maxDiscountCents: c.max_discount_cents,
+      newCustomersOnly: c.new_customers_only,
+    })),
+    isNewCustomer: context.is_new_customer,
+    coins: context.coins,
+  };
+}
+
 /**
  * flows.md §3 steps 1–2: prices the cart from the catalog (never from the browser), applies the promo and the delivery
  * state's sales tax (D-073), and attaches the delivery window shown before payment (D-008). A line that cannot go ahead
@@ -59,6 +78,7 @@ export type PriceResult =
 export async function priceCart(
   service: IwcClient,
   request: CheckoutRequest,
+  userId: string | null = null,
 ): Promise<PriceResult> {
   const quantities = new Map<string, number>();
   for (const line of request.lines) {
@@ -73,6 +93,7 @@ export async function priceCart(
     ids,
     request.promoCode ?? null,
     request.address.state,
+    { userId, email: request.email },
   );
   const byId = new Map(context.variants.map((v) => [v.variant_id, v]));
 
@@ -118,6 +139,7 @@ export async function priceCart(
         discountType: promo.discount_type,
         discountValue: promo.discount_value,
         minOrderCents: promo.min_order_cents,
+        maxDiscountCents: promo.max_discount_cents,
       }
     : null;
   // D-154: the address decides whether the food travels apart, so the bag's charges and shipments are asked for once
@@ -133,8 +155,8 @@ export async function priceCart(
     },
   );
   const shipments = charges.shipments ?? null;
-  // D-041: standard is free (a setting). D-111: below the free-shipping line a parcel pays its own shipping and the
-  // retailer charges. D-187: the bulk saving and the heavy-item discount start at their own line, not at the free one.
+  // D-041: standard is free (a setting). D-111: below the free-shipping line a parcel pays its own shipping; the retailer
+  // charges always (D-191). D-187: the bulk saving and the heavy-item discount start at their own line, not at the free one.
   const shipping = {
     flatCents: context.shipping.flat_cents,
     freeMinCents: context.shipping.free_min_cents,
@@ -145,7 +167,8 @@ export async function priceCart(
     // D-119: the bulk saving (worked out on the discounted subtotal, never from the browser).
     bulkSaving: { pct: charges.bulk_saving_pct, capCents: charges.bulk_saving_cap_cents },
   };
-  const breakdown = quoteCheckout(quoteLines, quotePromo, shipping, quoteTax);
+  const coins = request.useCoins ? (context.coins ?? 0) : 0;
+  const breakdown = quoteCheckout(quoteLines, quotePromo, shipping, quoteTax, coins);
   // No price for shipping yet: checkout stays closed rather than guessing a fee.
   if (!breakdown) return { ok: false, problem: { kind: 'closed' } };
   // A smallest order is still a setting (D-109); since D-111 it is unset and small bags pay the charges instead.
@@ -204,6 +227,7 @@ export async function priceCart(
       },
       promoCode: promo && breakdown.promoApplied ? promo.code : null,
       promoRejected: entered !== null && !(promo && breakdown.promoApplied),
+      offers: offersOf(context),
       shipments: split,
       outside: shipments?.outside ?? false,
     },

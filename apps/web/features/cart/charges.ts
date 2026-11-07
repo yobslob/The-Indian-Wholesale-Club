@@ -154,7 +154,7 @@ export function freeDelivery(lines: CartLine[], charges: BagCharges | null, shel
     free,
     /** Where the bulk saving and the heavy-item discount start. */
     bulkFrom,
-    /** D-125: the charges at this bag's goods (Shipping and the retailer charges, paid or struck through). */
+    /** D-125: the charges at this bag's goods (Shipping, paid or struck through, and the retailer charges). */
     at,
     /** Heavy-item shipping: paid, and its whole struck through once its line took its % off. */
     heavy: heavyShippingAt(charges?.heavy, bulkFrom !== null && subtotal >= bulkFrom),
@@ -166,7 +166,7 @@ export function freeDelivery(lines: CartLine[], charges: BagCharges | null, shel
   };
 }
 
-/** D-140 (F5): "You're saving $X" for this bag: the struck charges and the bulk saving (0 below the line). */
+/** D-140 (F5): "You're saving $X" for this bag: the struck Shipping and the bulk saving (0 below the line). */
 export function bagSaving(lines: CartLine[], charges: BagCharges | null, shell?: ShellDays): number {
   const f = freeDelivery(lines, charges, shell);
   // the $99.99 line's part of Heavy-item shipping counts too

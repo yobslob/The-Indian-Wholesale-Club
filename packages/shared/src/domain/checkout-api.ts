@@ -3,6 +3,7 @@
  * server's /api/checkout, /api/checkout/stock, /api/orders and /api/orders/lookup). Types only.
  */
 import type { CheckoutBreakdown } from './checkout';
+import type { CheckoutOffers } from './coupons';
 
 export interface CheckoutRequestBody {
   email: string;
@@ -17,6 +18,8 @@ export interface CheckoutRequestBody {
   };
   lines: { variantId: string; quantity: number }[];
   promoCode?: string | null;
+  /** D-191: use the account's coins (an older app does not send it: its bill has no line for them). */
+  useCoins?: boolean;
 }
 
 export interface QuotedLine {
@@ -52,6 +55,8 @@ export interface CheckoutQuote {
   promoCode: string | null;
   /** A code was entered but is not valid right now. */
   promoRejected: boolean;
+  /** D-191: the coupons to offer this customer and their coins. */
+  offers?: CheckoutOffers;
   /** D-187: two shipments when the bag has food and other pieces (each with its dates and pieces); null for one. */
   shipments?: QuotedShipment[] | null;
   /** The bag has food but the address is outside the 48 states and DC (or a PO box, APO): one shipment. */
@@ -92,6 +97,8 @@ export interface CheckoutStockRequest {
 }
 export interface CheckoutStockResponse {
   lines: StockProblemLine[];
+  /** D-191: the coupon box's coupons and the coins, shown from the moment checkout opens. */
+  offers?: CheckoutOffers;
 }
 
 /** Why checkout cannot go ahead. Messages for customers never mention operations (D-003). */

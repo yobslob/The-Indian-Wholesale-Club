@@ -12,6 +12,7 @@ import { saveLastOrder, type SummaryLine } from './last-order';
 import { confirmOrder } from './order-confirm';
 
 import type { CheckoutQuote, CheckoutRequestBody, CheckoutStartResponse, StockProblemLine } from './types';
+import type { CheckoutOffers } from '@repo/shared/domain';
 
 /** How long pricing the bag may take before the customer is told and Continue comes back (launch QA A-3). */
 const START_TIMEOUT_MS = 20_000;
@@ -59,6 +60,8 @@ export function useCheckoutPayment(summarize: (quote: CheckoutQuote) => SummaryL
   const [refused, setRefused] = useState<string | null>(null);
   /** The bag's lines that cannot go ahead as they are (Y-3): payment stays locked while there is one. */
   const [stock, setStock] = useState<StockProblemLine[]>([]);
+  /** D-191: the coupon box's coupons and the coins: from checkout's first read, then each priced answer. */
+  const [offers, setOffers] = useState<CheckoutOffers | null>(null);
 
   /**
    * Prices the bag on the server and holds the payment for that exact total. heldSecret: the payment a refreshed tab
@@ -95,6 +98,7 @@ export function useCheckoutPayment(summarize: (quote: CheckoutQuote) => SummaryL
     const json = result.data;
     secret.current = json.clientSecret;
     setStarted(json);
+    if (json.quote.offers) setOffers(json.quote.offers);
     setStale(false);
     setRefused(null);
     setStock([]);
@@ -115,10 +119,15 @@ export function useCheckoutPayment(summarize: (quote: CheckoutQuote) => SummaryL
 
   /** When checkout opens: the bag's stock, before any address. A failure says nothing: every re-price checks again. */
   async function checkStock(lines: { variantId: string; quantity: number }[]): Promise<void> {
-    const result = await postJson('/api/checkout/stock', { lines }, z.object({ lines: stockLinesSchema }), {
-      timeoutMs: START_TIMEOUT_MS,
-    });
-    if (result.ok) setStock(result.data.lines);
+    const result = await postJson(
+      '/api/checkout/stock',
+      { lines },
+      z.object({ lines: stockLinesSchema, offers: z.custom<CheckoutOffers>().optional() }),
+      { timeoutMs: START_TIMEOUT_MS },
+    );
+    if (!result.ok) return;
+    setStock(result.data.lines);
+    if (result.data.offers) setOffers(result.data.offers);
   }
 
   /** A line was removed or lowered: off the list. */
@@ -168,5 +177,5 @@ export function useCheckoutPayment(summarize: (quote: CheckoutQuote) => SummaryL
     setStale(false);
   }
 
-  return { started, request, busy, error, stale, refused, stock, post, paid, drop, checkStock, stockFixed };
+  return { started, request, busy, error, stale, refused, stock, offers, post, paid, drop, checkStock, stockFixed };
 }
