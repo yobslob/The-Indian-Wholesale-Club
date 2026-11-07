@@ -25,7 +25,7 @@ Every automatic price = (shop ₹ ÷ 0.90 + weight g × ₹2) ÷ the category's 
 | **Bulk saving and heavy-item discount from** | $99.99 (D-187: "Keep them at $99.99") | `bulk_saving_from_cents`. Its own line since D-187, money unchanged |
 | **Bulk saving** | 10% of the amount over that line, up to $25 (D-119) | a $120 bag saves $2.00. None while a coupon is on (D-191) |
 | **Coupons** (D-191; Admin → Promotions turns one off) | WELCOME10 10% up to $9, no paid order yet; SAVE7 $7 from $99; SAVE12 $12 from $150; SAVE20 $20 from $199 | on the bag's subtotal. One replaces the bulk saving and is offered only when worth more |
-| **Coins** (D-191, accounts only) | 30 – 90 to start, 1 coin = 1 cent; after a paid order the wallet holds what it held plus 1 – 8 | all used on every order, on top of a coupon, before tax. `profiles.coins` |
+| **Coins** (D-191, accounts only) | 30 – 90 to start, 1 coin = 1 cent; after a paid order the wallet holds what it held plus 1 – 8; the rate is not shown to customers (D-192) | all used on every order, on top of a coupon, before tax. `profiles.coins` |
 | **Heavy-item shipping** | 20% off from that line (D-155) | below it, paid in full |
 
 ## Delivery (Settings → Delivery; D-187, `flows.md` §1)

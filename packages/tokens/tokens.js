@@ -16,6 +16,7 @@ module.exports = {
     region: '#7A2E23', // fallback for a region's accent; the real value comes from regions.accent_color
     land: '#E0D6C4', // the India map's regions that are not open yet
     positive: '#166534',
+    'positive-soft': '#D5EFD8', // D-192: what can be used or was saved: a coupon, the saving under the total
     caution: '#8A5A00',
     danger: '#B91C1C',
   },

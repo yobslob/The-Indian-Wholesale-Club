@@ -8,7 +8,8 @@ Short on purpose (the audit warns past 10 KB): **replace** lines when something 
 - **Live:** https://indianwholesaleclub.com (web), with real customers: the simple store (D-187), merged as
   [PR #1](https://github.com/yobslob/The-Indian-Wholesale-Club/pull/1) and deployed on 2026-11-04 (21:47 UTC).
 - **Merged and deployed 2026-11-06 (08:38 UTC):** D-189 and D-190, [PR #2](https://github.com/yobslob/The-Indian-Wholesale-Club/pull/2). Vercel is on Pro (founder, 2026-11-07); ISR writes against reads not checked here yet.
-- **Not released:** D-191 on branch `optimize/lighter-site` (sub-categories, coupons, coins, retailer charges always paid, Popular, weights, tiles). **Two migrations** (`20261111090000`, `20261111090100`): run the Deploy workflow with the merge. Money changes the moment they and the site are live.
+- **Merged and deployed 2026-11-07 (00:33 UTC):** D-191, [PR #3](https://github.com/yobslob/The-Indian-Wholesale-Club/pull/3), with its two migrations (the Deploy workflow succeeded). Its checkout still strikes the Retailer charges on the first screens above the free line, until D-192 is live.
+- **Not released:** D-192 on branch `optimize/lighter-site` (coupons chosen in the bag, one bill, a card for each shipment). No migration: it reaches customers with the site.
 - **Accounts (D-147):** Vercel Pro, Supabase free since 2026-10-21/22, photos in Cloudflare R2. Budgets and the
   weekly check: `monitoring.md`. The free database's memory is already over (1.57 of 1.4 GB, swap 406 MB on 2026-11-04,
   and it stopped answering for about 45 minutes that day).
@@ -33,7 +34,7 @@ Short on purpose (the audit warns past 10 KB): **replace** lines when something 
   `TODO(D-187)`); **its admin mode breaks** with the release.
 
 ## Next for the founder
-1. **D-191:** merge and run the Deploy workflow at a quiet hour; each deploy empties the page cache. A new app build carries the bill's coins, Popular and the sub-category chips. Your choices: the retailer % (1.5 on the 5 Nov copy, so the charge grows with the bag; Settings → Bag charges), the noodles photo's printed "₹15", the sub-categories' own photos (`sub-photos.ts`). Popular is an experiment: compare orders and average bag in Admin before and after.
+1. **D-192:** merge and deploy at a quiet hour; each deploy empties the page cache. **D-191:** a new app build carries the bill's coins, Popular and the sub-category chips. Your choices: the retailer % (1.5 on the 5 Nov copy, so the charge grows with the bag; Settings → Bag charges), the noodles photo's printed "₹15", the sub-categories' own photos (`sub-photos.ts`). Popular is an experiment: compare orders and average bag in Admin before and after.
 2. **Names to tidy:** production's count (Y-11; the page and Rename all go only at 0).
 3. In the order of use (each from the archived status, still open and not re-checked here):
    - **The photo redo** (D-164): pull on the laptop, `pnpm photos:redo fetch --type food --again` and `--type home
@@ -59,7 +60,7 @@ Short on purpose (the audit warns past 10 KB): **replace** lines when something 
      right. Fixing it needs a new card key.
 
 ## Not built yet
-- App: the coupon box (it keeps typing a code, D-191); push notifications for new orders; the card's − n +, the For filter and the jewellery drawer.
+- App: the bag's coupons and the one bill (it keeps typing a code, D-191, D-192); push notifications for new orders; the card's − n +, the For filter and the jewellery drawer.
 - Admin: "Select all n matching" bulk actions and search on Reviews and Returns.
 - Size charts from the shops (Q-39); invoice A with the confirmation email; `CHECK_LIVE_SITE`'s production photo check.
 - From the backlog: the Expo SDK 52 upgrade (B-9); checkout's round-trip budget (B-21); review photos through fixed copies
@@ -83,4 +84,4 @@ Short on purpose (the audit warns past 10 KB): **replace** lines when something 
 <!-- The verifier (plan §5 Phase 3 · Agent V) records the branch's full check here. Replace this table's row. -->
 | Date | Commit | Where | Result |
 |---|---|---|---|
-| 2026-11-07 | D-191 (branch `optimize/lighter-site`, not committed when run; the founder's untracked `hero_updated.png` beside it) | Claude Code, Windows 11, local Supabase | `node scripts/check.mjs`: docs, typecheck, lint, test, db (69 SQL files, 0 failed), build, http (nothing over budget; `/` 13 ms, 131 KB JS; `/clothing` 16 ms, 145 KB JS; `/search?q=saree` 74 ms), bundle OK; e2e 84 passed, 1 failed, 2 skipped. The failure: `one-payment` double click on Pay timed out filling Stripe's card field, cause not established; it passed 3 of 3 alone straight after, the second time this has happened in a full run (2026-11-06). Added after that run and passed alone: a paid signed-in order with Stripe's test card (coins on the bill, `coins_used`, wallet + 1 to 8); typecheck and lint not re-run for that one test. Checked by hand at 375 px on the demo catalogue: tiles and photos, rail, coupon box and tab. On the 5 Nov production copy's catalogue, locally: sub-categories' counts, every food listing has a weight, `store_browse` 425 ms against 377 ms, Popular's first cards. Not tested: the migrations on a production copy, production, the app on a device (typecheck only), the rail with real photos, how Popular changes sales. |
+| 2026-11-07 | D-192 on top of D-191 (branch `optimize/lighter-site`, not committed when run) | Claude Code, Windows 11, local Supabase | `node scripts/check.mjs`: docs, typecheck, lint, test, db, build, http (nothing over budget; `/` 14 ms, 133 KB JS; `/clothing` 16 ms, 146 KB JS; `/search?q=saree` 145 ms), bundle OK. **E2E: no uninterrupted pass.** Two full runs hit the step's 900 s limit with failures on Stripe's own frames (card form, 3-D Secure, slow pricing), different tests each time; `js.stripe.com` took 18 to 774 s from this machine during them, 1 to 4 s afterwards. Re-run in parts once it recovered, every spec the second run failed or never reached: coupons, customer-choices, one-payment, pay-cards (14 of 15, the one failure passed on its re-run), then pay-faults, payment-test, phone-flows, price-consistency, read-ahead, rows, saved-address, saved (26 passed, 1 skipped), then search-speed, search, sold-out-paying, sold-out, webhook (9 passed, 1 skipped). The other specs last passed in the second full run. Checked by hand at 375 px: bag, panel, coupon sheet, Apply, two shipment cards, checkout to Pay, a refused WELCOME10; the bag's total matched the server's to the cent (4.04). Not tested: migrations on a production copy, production, the app on a device (typecheck only), a real phone, a state with sales tax by hand. |

@@ -11,6 +11,7 @@ declare const tokens: {
     | 'region'
     | 'land'
     | 'positive'
+    | 'positive-soft'
     | 'caution'
     | 'danger',
     string

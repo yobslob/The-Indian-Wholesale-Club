@@ -55,6 +55,16 @@ export function readCheckout(bag: { variantId: string; quantity: number }[]): Sa
   }
 }
 
+/** D-192: the details typed for an earlier version of this bag: back from changing the bag, they are not asked for twice. */
+export function readDetails(): SavedCheckout['request'] | null {
+  try {
+    const parsed = savedSchema.safeParse(JSON.parse(sessionStorage.getItem(KEY) ?? 'null'));
+    return parsed.success ? parsed.data.request : null;
+  } catch {
+    return null;
+  }
+}
+
 export function sameBag(
   a: readonly { variantId: string; quantity: number }[],
   b: readonly { variantId: string; quantity: number }[],

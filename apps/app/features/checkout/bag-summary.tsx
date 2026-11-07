@@ -42,8 +42,8 @@ export function BagSummary({ title, lines, quote }: { title: string; lines: BagL
           {b.discountCents > 0 ? <Row label={`Coupon (${quote.promoCode ?? ''})`} value={`−${formatUsd(b.discountCents)}`} /> : null}
           {/* D-119: the bulk saving, from its own line up (D-187). */}
           {(b.bulkSavingCents ?? 0) > 0 ? <Row label="Bulk saving" value={`−${formatUsd(b.bulkSavingCents)}`} /> : null}
-          {/* D-191: the coins used on the left, the dollars they take off on the right */}
-          {(b.coinsUsed ?? 0) > 0 ? <Row label={`${b.coinsUsed} ${b.coinsUsed === 1 ? 'coin' : 'coins'} used`} value={`−${formatUsd(b.coinsUsed)}`} /> : null}
+          {/* D-192: the wallet on the left, the dollars it takes off on the right */}
+          {(b.coinsUsed ?? 0) > 0 ? <Row label={`Wallet (${b.coinsUsed} ${b.coinsUsed === 1 ? 'coin' : 'coins'})`} value={`−${formatUsd(b.coinsUsed)}`} /> : null}
           {/* D-111, D-124: Shipping (the parcel + the food in the bag), struck through once free. */}
           <View className="flex-row justify-between gap-3">
             <Text className="font-body text-ink-muted flex-1 text-sm">Shipping</Text>

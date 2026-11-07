@@ -7,13 +7,14 @@ import { useEffect, useRef } from 'react';
 import { HeaderIcon } from '@/features/shell/header-icons';
 
 import { BagLines } from './bag-lines';
-import { checkoutButton, EmptyLine, Subtotal } from './cart-view';
+import { BagExtras, checkoutButton, EmptyLine, TotalNow } from './cart-view';
 import { GoesWellWith } from './goes-well';
 import { cartCount, useCart } from './store';
+import { useBagBill } from './use-bag-bill';
 
 /**
  * The bag as a side panel (D-086), opened by the header's bag icon, in and out with the menu's motion (D-079,
- * globals.css .site-panel): "Your bag (n)", the lines, the subtotal, Checkout and View bag. Escape, ×, a tap on the
+ * globals.css .site-panel): "Your bag (n)", the lines, the coupons and bill (D-192), the total, Checkout and View bag. Escape, ×, a tap on the
  * dimmed page or going to another page close it.
  */
 export function BagPanel({ open, onClose }: { open: boolean; onClose: (refocus: boolean) => void }): React.JSX.Element {
@@ -52,30 +53,41 @@ export function BagPanel({ open, onClose }: { open: boolean; onClose: (refocus: 
             <HeaderIcon name="close" />
           </button>
         </header>
-        <div className="flex-1 overflow-y-auto px-5">
-          {lines.length > 0 ? (
-            <>
-              <BagLines compact />
-              {open ? <GoesWellWith /> : null}
-            </>
-          ) : (
-            <div className="py-6">
-              <EmptyLine />
-            </div>
-          )}
-        </div>
         {lines.length > 0 ? (
-          <footer className="border-line grid gap-3 border-t px-5 pb-5 pt-4">
-            <Subtotal />
-            <Link href="/checkout" className={`${checkoutButton} w-full px-0`}>
-              Checkout
-            </Link>
-            <Link href="/cart" className="justify-self-center text-sm font-medium underline underline-offset-[3px]">
-              View bag
-            </Link>
-          </footer>
-        ) : null}
+          <FilledPanel open={open} onShop={() => onClose(true)} />
+        ) : (
+          <div className="flex-1 overflow-y-auto px-5 py-6">
+            <EmptyLine />
+          </div>
+        )}
       </aside>
+    </>
+  );
+}
+
+/** D-192: the same goal, coupons and bill as the bag page; the coupons are read once the panel is opened, not on hover. */
+function FilledPanel({ open, onShop }: { open: boolean; onShop: () => void }): React.JSX.Element {
+  const bag = useBagBill(open);
+  return (
+    <>
+      <div className="flex-1 overflow-y-auto px-4 pb-4 pt-3">
+        <BagLines compact />
+        <div className="mt-3">
+          <BagExtras bag={bag} onShop={onShop} />
+        </div>
+        {open ? <GoesWellWith /> : null}
+      </div>
+      <footer className="border-line flex items-center justify-between gap-4 border-t px-5 pb-[max(14px,env(safe-area-inset-bottom))] pt-3">
+        <span className="grid gap-0.5">
+          <TotalNow bag={bag} />
+          <Link href="/cart" className="text-[13px] font-medium underline underline-offset-[3px]">
+            View bag
+          </Link>
+        </span>
+        <Link href="/checkout" className={`${checkoutButton} h-12 px-8`}>
+          Checkout
+        </Link>
+      </footer>
     </>
   );
 }

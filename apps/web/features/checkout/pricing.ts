@@ -56,15 +56,28 @@ export type PriceResult =
 
 /** D-191: what the coupon box shows this customer. */
 export function offersOf(context: CheckoutContext): CheckoutOffers {
+  const coupons = context.coupons.map((c) => ({
+    code: c.code,
+    discountType: c.discount_type,
+    discountValue: c.discount_value,
+    minOrderCents: c.min_order_cents,
+    maxDiscountCents: c.max_discount_cents,
+    newCustomersOnly: c.new_customers_only,
+  }));
+  // D-192: a code typed by hand and not on the public list joins this customer's list once the database has let it through
+  const typed = context.promo;
+  if (typed && !coupons.some((c) => c.code === typed.code)) {
+    coupons.push({
+      code: typed.code,
+      discountType: typed.discount_type,
+      discountValue: typed.discount_value,
+      minOrderCents: typed.min_order_cents,
+      maxDiscountCents: typed.max_discount_cents,
+      newCustomersOnly: false,
+    });
+  }
   return {
-    coupons: context.coupons.map((c) => ({
-      code: c.code,
-      discountType: c.discount_type,
-      discountValue: c.discount_value,
-      minOrderCents: c.min_order_cents,
-      maxDiscountCents: c.max_discount_cents,
-      newCustomersOnly: c.new_customers_only,
-    })),
+    coupons,
     isNewCustomer: context.is_new_customer,
     coins: context.coins,
   };

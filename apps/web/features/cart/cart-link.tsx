@@ -2,10 +2,12 @@
 
 import dynamic from 'next/dynamic';
 import Link from 'next/link';
+import { usePathname } from 'next/navigation';
 import { useCallback, useEffect, useRef, useState } from 'react';
 
 import { HeaderIcon } from '@/features/shell/header-icons';
 
+import { rememberShopping } from './shopping-path';
 import { cartCount, useCart } from './store';
 
 // The panel (its lines, charges and shipments) is fetched the moment a finger or pointer reaches the icon, not with
@@ -30,6 +32,8 @@ export function CartLink(): React.JSX.Element {
   }, []);
   const link = useRef<HTMLAnchorElement>(null);
   useEffect(() => setMounted(true), []);
+  const path = usePathname();
+  useEffect(() => rememberShopping(path, window.location.search), [path]);
   const count = mounted ? cartCount(lines) : 0;
   // The count pops when the bag grows (D-116), not when it first appears after hydration.
   const seen = useRef<number | null>(null);
