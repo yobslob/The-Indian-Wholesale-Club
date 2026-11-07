@@ -39,20 +39,18 @@ export function BagSummary({ title, lines, quote }: { title: string; lines: BagL
       <Row label="Subtotal" value={formatUsd(b?.subtotalCents ?? subtotal)} />
       {b && quote ? (
         <>
-          {b.discountCents > 0 ? <Row label={`Discount (${quote.promoCode ?? ''})`} value={`−${formatUsd(b.discountCents)}`} /> : null}
+          {b.discountCents > 0 ? <Row label={`Coupon (${quote.promoCode ?? ''})`} value={`−${formatUsd(b.discountCents)}`} /> : null}
           {/* D-119: the bulk saving, from its own line up (D-187). */}
           {(b.bulkSavingCents ?? 0) > 0 ? <Row label="Bulk saving" value={`−${formatUsd(b.bulkSavingCents)}`} /> : null}
+          {/* D-191: the coins used on the left, the dollars they take off on the right */}
+          {(b.coinsUsed ?? 0) > 0 ? <Row label={`${b.coinsUsed} ${b.coinsUsed === 1 ? 'coin' : 'coins'} used`} value={`−${formatUsd(b.coinsUsed)}`} /> : null}
           {/* D-111, D-124: Shipping (the parcel + the food in the bag), struck through once free. */}
           <View className="flex-row justify-between gap-3">
             <Text className="font-body text-ink-muted flex-1 text-sm">Shipping</Text>
             <ChargeValue cents={b.shippingCents || (b.waivedCents?.shipping ?? 0)} free={b.shippingCents === 0} />
           </View>
-          {b.retailerCents > 0 || (b.waivedCents?.retailer ?? 0) > 0 ? (
-            <View className="flex-row justify-between gap-3">
-              <Text className="font-body text-ink-muted flex-1 text-sm">Retailer charges</Text>
-              <ChargeValue cents={b.retailerCents || (b.waivedCents?.retailer ?? 0)} free={b.retailerCents === 0} />
-            </View>
-          ) : null}
+          {/* D-191: always paid, never struck through */}
+          {b.retailerCents > 0 ? <Row label="Retailer charges" value={formatUsd(b.retailerCents)} /> : null}
           {/* founder 2026-10-24: heavy cookware's other half */}
           {(b.heavyCents ?? 0) > 0 ? (
             <View className="flex-row justify-between gap-3">

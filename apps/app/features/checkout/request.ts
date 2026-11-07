@@ -57,6 +57,7 @@ export function toCheckoutRequest(
       address: address.data,
       lines: lines.map((l) => ({ variantId: l.variantId, quantity: l.quantity })),
       promoCode: details.promoCode.trim() || null,
+      useCoins: true, // D-191: this bill draws their line
     },
   };
 }
