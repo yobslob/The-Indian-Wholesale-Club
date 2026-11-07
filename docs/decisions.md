@@ -192,34 +192,9 @@ To change a decision, add a new one (`Supersedes D-xxx`) and mark the old line `
 - **D-179** 2026-11-03 · founder (was Q-52 – Q-59): the launch QA questions answered
 - **D-180** 2026-11-03 · founder: Home's hero line points to the 7-day store; every live piece in stock at 10
 - **D-181** 2026-11-03 · founder: the 7-day store inside every state's Food and Home & gifts; a state's own pieces first
+- **D-182** 2026-11-04 · founder: Home's hero is the Diwali poster and the two doors; the first-load JS budget is 160 KB
 
 ## Recent (full text)
-
-**D-182 · 2026-11-04 · founder: Home's hero is the Diwali poster and the two doors; the first-load JS budget is 160 KB**
-- Founder, verbatim: "yes they failed, now raise everyone's budget to 160kb, and then solve this second problem: as
-  everyone is using it on their phones, my customers complained about scrolling too much to get to the interactive part
-  yet I want to keep it minimilistic and not to fill it with AI slop then it will look like a blogging page. the girl
-  that this ain't vibe an ecommerce website but they liked the host your diwali part, so redesign my hero section
-  accordingly such that it is properly defined what the 7 day store is how to get to it and what the iwc is and still
-  keeping it designing and minimalistic. I had an inspo to use a colorful image instead, I added it to visuals for you
-  to inspect, it's name is hero_updated."
-- What it means:
-  - **Budget:** every storefront page may load 160 KB of gzipped JS up front (`check.mjs`, was 150 KB, D-011's speed
-    rule otherwise unchanged).
-  - **The hero:** one screen at every size, so a phone can open the store without scrolling. The poster (a link to
-    `/home-and-gifts?max=99`) over a dark panel, or beside it on landscape screens: Indian Wholesale Club with Clothing,
-    Food, Home & gifts and States, then the 7-day store with "Get it here" and D-180's two arrows. Replaces the stacked
-    brand name on the white wall (D-052 – D-055, D-079) and D-180's two lines; the header's logo now always shows.
-    The Android and iPhone app's hero is unchanged.
-  - *Interpretation (proposed, confirm on the live site):* the poster's small date and "SHOP UNDER $99" were painted out
-    of `hero_updated.png` and redrawn as live text (about 7 px tall in the picture on a phone, and not a real link); the
-    large headline stays in the picture, because the site has no serif with a true italic. The source PNG (3.1 MB) is
-    not served: `public/images/home-hero-diwali.avif` (91 KB) and `.webp` (115 KB) are.
-  - *Interpretation (Claude's draft, the founder to confirm the words):* "Clothing, food and gifts from all 36 states of
-    India, at your door in 12–16 days." (the days from Settings). The 7-day line is the 7-day page's approved one, "Snacks,
-    masalas and sweets from home, at your door in 7 days." (days from Settings).
-  - After Diwali the poster's headline is out of date: Q-60. "Host your Diwali under $99" also still shows in the Diwali
-    night further down the page (D-179), kept as it was.
 
 **D-183 · 2026-11-04 · founder: Home's hero becomes the 7-day store's poster; no "$99" on the first screen; shorter windows on phones** · Supersedes D-182's poster offer, its 7-day row and its "about" line (D-182's one-screen rule and 160 KB budget stay) · its 7-day parts SUPERSEDED by D-187
 - Founder, verbatim: "This is strictly regarding the frontend hero section. Mostly are on phone webapps, People are clicking off because it is too much text and high 99$ prices, So I am suggesting changes : we should remove the host your diwali banner because it is already under global grid, think of something creative something out of the box, use the power of vocabulary, some CTA for the 7-day store showing $49.99 we gotta change the "Host your Diwali under $99 SHOP UNDER $99" Also the window banners are looking too stretched in mobile view, we need to remove the 7 day store part from hero section bottom and show it on headline somehow, keep the Indian wholesale club part as it is but remove the subtext, these were just suggestions, you should be very creative about them and redesign our hero section."
@@ -341,3 +316,23 @@ What it means for the build (migrations `20261111090000_coupons_coins.sql`, `202
 - **"Premium"** holds nuts, dry fruit and names that say premium or gourmet; **"every category":** the eight categories under 50 pieces have none (Lehengas, Dupattas, Shawls, Dhotis, Jackets, Turbans, Accessories, Fabrics), and no rail shows there. The other sub-category names and rules are Claude's, drawn from the words in real listing names: 126 in all, in the migration.
 - **Coupon codes** WELCOME10, SAVE7, SAVE12, SAVE20 are Claude's names. Production already had a WELCOME10 (10% from $200, 100 uses, until 2026-12-31): the migration replaces its terms with the founder's and removes the limit and the end date.
 Claude's flags, not decided: production's retailer % was 1.5 on the 5 Nov copy, so the always-paid charge grows with the bag ($2.99 on a $199 bag, $4.50 on $300), not a flat $0.99; Settings → Bag charges, empty for the fixed amount. The new noodles tile photo shows a pack printed "₹15", a rupee price beside dollar prices. The app gets the bill, coins, Popular, sub-category chips and tiles but no coupon box: it keeps typing a code.
+
+**D-192 · 2026-11-07 · founder: the coupons in the bag, one bill that adds up, a card for each shipment** · Changes D-191's coupon box and coins line
+
+Founder, verbatim: "Everything turned out good except for the coupons and totalling, It is very very trash, confusing and skeptical, in some places the retailer charge is cut-off then it is automatically added in last, the coupons are vvery very not ergonomic the design is very bad, the coupons that can't be used should be greyed out and which can be used should be in a coloured background, no need to tell 1 coin = 1 cent or sales tax will be at last, no need to tell these extra text. If there are two shipments show them in two cards like how they are shown today but in cards, so that they get seperated from background, apply button should be there on applyable coupons and then the coupon work should be done in the bag only. When showed add $x more for $7 off put a go back to shopping button besides it. Instead of 30 coins used write wallet(30 /coins-icon/)Why do I have to tell you all of this, you should be figuring out the best design by yourself. Make the best ergonomic and resilient payment design that you can."
+
+What it means for the build:
+- **The strikethrough the founder saw was real:** checkout's rows before pricing struck the Retailer charges above the free line, then pricing added them back. D-191's claim that they were never struck was wrong. Three pieces of code drew the bill; now one does (`BillCard`, `billOf`).
+- **One sum:** the bag works its bill out with `quoteCheckout`, the server's own function, with the same charges and coupon. Shipping does not depend on the coupon or the address, so checkout adds only the state's sales tax. The rows run down to the total: subtotal, what comes off, what is paid, tax once known. The last line says **Bag total** until tax is known, then **Total**. No sentence explains this.
+- **Coupons in the bag only** (page and panel): the best in colour with Apply, the next as "Add $x more for $7 off" beside **Back to shopping** (where the customer last shopped; in the panel it closes the panel). View all coupons rises as a sheet: usable in colour with Apply, the rest grey with the reason. Applying needs no request. A picked coupon the bag no longer reaches stays picked, greyed, and counts again when the bag grows. Typed codes are checked by the server in the sheet.
+- **Checkout has no coupon box.** A coupon the server refuses once it knows the customer (WELCOME10 on an email with a paid order) comes off with one sentence and a link back to the bag.
+- **Wallet:** "Wallet (30 [coin])" on the bill; a guest sees "Wallet [coin] Sign in". "1 coin = 1¢", "Tax and delivery dates are shown at checkout" and "after your details" are gone.
+- **Shipments:** each in its own card, in the bag and at checkout.
+- **Resilience:** the bill shows its shape rather than a figure that may move while the charges load, dims while a changed bag is re-read, and coupons that fail to load say so with Try again and never block Checkout. Details typed at checkout survive going back to change the bag (this tab only). The free-delivery pill no longer covers the panel's Checkout on a phone, an older fault.
+- **Phone:** the total and Checkout stay under the thumb on the bag page; the shipments and bill sit above Pay.
+- **Cost:** the bag now reads the coupons and coins: one `/api/checkout/stock` call (one database read, one function call) per tab in five minutes, and only when a bag page or panel is opened. No database growth, no page-cache write.
+*Interpretation (proposed, confirm when convenient):*
+- **"You're saving"** moved under the total, outside the sum, and now counts the coupon and coins too (D-140 had it above the total, counting struck Shipping and the bulk saving).
+- **Free Shipping** reads "Free" beside the struck figure, in place of "$0.00".
+- **The panel** counts as the bag, so it has the coupons too; otherwise the header's bag icon would skip them.
+- **The app** keeps its own screens: only the wallet's words changed there, as text without the icon.
