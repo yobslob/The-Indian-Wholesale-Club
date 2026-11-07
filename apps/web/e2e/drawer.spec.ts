@@ -1,7 +1,7 @@
 import { expect, test } from '@playwright/test';
 
 /**
- * D-144 (plan F11): See all opens low to high; on Clothing the accessories and turbans leave the list for a drawer
+ * D-144 (plan F11), D-191: See all opens on Popular; on Clothing the accessories and turbans leave the list for a drawer
  * after the second row of cards. Runs on the dev catalogue (supabase/seed/catalogue.sql: garlands, bangles, phetas).
  */
 test.use({ reducedMotion: 'reduce' });
@@ -13,7 +13,7 @@ test('the drawer sits between the second and third rows, on a phone and a laptop
   ] as const) {
     await page.setViewportSize({ width, height: 900 });
     await page.goto('/clothing');
-    await expect(page.getByLabel('Sort by')).toHaveValue('low');
+    await expect(page.getByLabel('Sort by')).toHaveValue('popular');
     const cards = page.locator('[data-card-grid] > article');
     await expect(cards).toHaveCount(24);
     const drawer = page.locator('[data-drawer]');
@@ -58,7 +58,7 @@ test('Newest is still a choice', async ({ page }) => {
   // chosen before the page answered, Newest stayed unapplied (2026-11-04, also on b5af3ec): choose again until it takes
   const sort = page.getByLabel('Sort by');
   await expect(async () => {
-    await sort.selectOption('low');
+    await sort.selectOption('price-asc');
     await sort.selectOption('new');
     await expect(page).toHaveURL(/\/clothing\?sort=new$/, { timeout: 1000 });
   }).toPass({ timeout: 15_000 });

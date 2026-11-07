@@ -1,9 +1,9 @@
-/* D-190: the groups' rail down the left of a See all or state page. */
+/* D-191: the sub-categories' rail down the left of a See all or state page. */
 
 /* The rail beside everything else; on a phone it reaches the screen's left edge, which leaves the cards the most room. */
 .withRail {
   display: grid;
-  grid-template-columns: 72px minmax(0, 1fr);
+  grid-template-columns: 76px minmax(0, 1fr);
   column-gap: 10px;
   align-items: start;
   margin-left: calc(-1 * var(--gut));
@@ -47,23 +47,19 @@
   color: var(--ink);
 }
 
-.icon {
+.photo {
+  position: relative;
+  display: block;
   flex: none;
-  width: 36px;
-  height: 36px;
-  padding: 7px;
-  border-radius: 999px;
+  width: 52px;
+  height: 52px;
+  overflow: hidden;
+  border-radius: 14px;
   background: var(--land);
-  color: var(--ink);
-  fill: none;
-  stroke: currentColor;
-  stroke-width: 1.6;
-  stroke-linecap: round;
-  stroke-linejoin: round;
 }
-.group[aria-current] .icon {
-  background: var(--ink);
-  color: var(--paper);
+.group[aria-current] .photo {
+  outline: 2px solid var(--brand);
+  outline-offset: 1px;
 }
 
 /* The page's own stand-in while it loads (browse-skeleton.tsx). */
@@ -74,7 +70,7 @@
 
 @media (min-width: 1024px) {
   .withRail {
-    grid-template-columns: 84px minmax(0, 1fr);
+    grid-template-columns: 92px minmax(0, 1fr);
     column-gap: clamp(20px, 2vw, 32px);
     margin-left: 0;
   }

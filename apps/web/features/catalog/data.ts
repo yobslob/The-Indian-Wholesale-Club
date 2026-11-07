@@ -49,8 +49,9 @@ export const listingsTag = 'store:listings';
  */
 // v16: store_browse adds 'wears' and the For filter; v17: cards carry their options; v18: Home's band (D-140);
 // v19: store_browse's drawer (D-144); v20: cards keep their options out of the cache and the page (D-145);
-// v21: the product carries made_in_india (D-171); v22: the simple store's Home, cards and policy (D-187)
-const SHAPE = 'v22';
+// v21: the product carries made_in_india (D-171); v22: the simple store's Home, cards and policy (D-187);
+// v23: store_browse's sub-categories, the product's pack, Home's tiles (D-191)
+const SHAPE = 'v23';
 
 /**
  * During a deploy's build only: a read past the database's 3 s limit waits and tries again. Next's own retries (a page
@@ -104,6 +105,7 @@ const browseKey = (filter: BrowseFilter): string[] => [
   filter.productType,
   filter.regionSlug ?? '',
   filter.categorySlug ?? '',
+  filter.subSlug ?? '',
   String(filter.minCents ?? ''),
   String(filter.maxCents ?? ''),
   (filter.sizes ?? []).join('|'),

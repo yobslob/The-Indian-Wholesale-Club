@@ -18,7 +18,7 @@ import type { Product, Variant } from '@repo/db/store';
 interface Props {
   product: Pick<
     Product,
-    'id' | 'name' | 'slug' | 'region_slug' | 'region_name' | 'primary_image_path' | 'product_type' | 'offer'
+    'id' | 'name' | 'slug' | 'region_slug' | 'region_name' | 'primary_image_path' | 'product_type' | 'offer' | 'pack'
   >;
   variants: Variant[];
   /** Shown just above the button (the delivery window, D-008). */
@@ -117,6 +117,12 @@ export function AddToCart({ product, variants, delivery }: Props): React.JSX.Ele
         <p data-testid="product-price" className={was ? 'now m-0' : 'm-0'}>
           {price}
         </p>
+        {/* D-191: its weight, like the cards; a piece with several packs says it on each */}
+        {product.pack && variants.length === 1 ? (
+          <span data-testid="product-pack" className="text-ink-muted ml-2.5 text-sm font-normal">
+            {product.pack}
+          </span>
+        ) : null}
       </div>
       {/* founder 2026-10-24: heavy cookware's other half, added in the bag and at checkout */}
       {variant.heavy_cents > 0 ? (

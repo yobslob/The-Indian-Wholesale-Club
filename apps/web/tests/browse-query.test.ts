@@ -9,7 +9,7 @@ import {
   priceRanges,
   sizeGroups,
   sortSizes,
-  sortsFor,
+  SORT_CHOICES,
   toBrowseFilter,
   withFilter,
 } from '../features/catalog/browse-query';
@@ -18,7 +18,7 @@ describe("See all's filters in the address (D-136)", () => {
   it('reads every filter and leaves out what is malformed', () => {
     const q = parseBrowseQuery(new URLSearchParams('state=kerala&category=Bad!&min=60&max=20&size=M&size=XL&size=M&sort=price-asc&show=48'));
     assert.deepEqual(q, { state: 'kerala', category: undefined, min: 20, max: 60, sizes: ['M', 'XL'], sort: 'price-asc' });
-    assert.equal(parseBrowseQuery({ sort: 'cheapest' }).sort, 'low');
+    assert.equal(parseBrowseQuery({ sort: 'cheapest' }).sort, 'popular');
   });
 
   it('R-6, D-187: an old ?show= or ?delivery= link lands on the first page, and neither stays in the address', () => {
@@ -32,13 +32,13 @@ describe("See all's filters in the address (D-136)", () => {
     assert.equal(browseHref('food', parseBrowseQuery({})), '/food');
   });
 
-  it('opens low to high; Newest is a choice in the address (D-144)', () => {
-    assert.equal(parseBrowseQuery({}).sort, 'low');
-    assert.equal(browseHref('clothing', parseBrowseQuery({ sort: 'low' })), '/clothing');
+  it('opens on Popular; Newest is a choice in the address; an old ?sort=low keeps its list (D-191)', () => {
+    assert.equal(parseBrowseQuery({}).sort, 'popular');
+    assert.equal(browseHref('clothing', parseBrowseQuery({ sort: 'popular' })), '/clothing');
+    assert.equal(browseHref('clothing', parseBrowseQuery({ sort: 'low' })), '/clothing?sort=price-asc');
     assert.equal(browseHref('clothing', parseBrowseQuery({ sort: 'new' })), '/clothing?sort=new');
-    assert.equal(toBrowseFilter('food', parseBrowseQuery({}), 0, 24).sort, 'low');
-    assert.deepEqual(sortsFor('clothing').map((s) => s.value), ['low', 'price-asc', 'price-desc', 'new']);
-    assert.deepEqual(sortsFor('food').map((s) => s.value), ['low', 'price-desc', 'new']);
+    assert.equal(toBrowseFilter('food', parseBrowseQuery({}), 0, 24).sort, 'popular');
+    assert.deepEqual(SORT_CHOICES.map((s) => s.value), ['popular', 'price-asc', 'price-desc', 'new']);
   });
 
   it('a new state drops the category and every change starts again at the first page', () => {
