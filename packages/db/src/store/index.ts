@@ -99,20 +99,22 @@ export async function getProductPage(
 const PRODUCT_CARD_COLUMNS =
   'id, slug, name, product_type, region_slug, region_name, category_slug, category_name, price_cents, primary_image_path';
 
-/** D-144: 'low' is the website's default (cheapest first; on Clothing one of each, then step up, with the drawer). */
-export const BROWSE_SORTS = ['low', 'new', 'price-asc', 'price-desc'] as const;
+/** D-191: 'popular' is the default. 'low' stays for an older app (cheapest first; on Clothing one of each, D-144). */
+export const BROWSE_SORTS = ['popular', 'low', 'new', 'price-asc', 'price-desc'] as const;
 export type BrowseSort = (typeof BROWSE_SORTS)[number];
 
 export interface BrowseFilter {
   productType: ProductType;
   regionSlug?: string;
   categorySlug?: string;
+  /** D-191: a sub-category. */
+  subSlug?: string;
   /** D-136: the card price range, in cents (pieces without a shown price drop out). */
   minCents?: number;
   maxCents?: number;
   /** D-136: option values (size, or food's pack); a piece matches when any of its options is one. */
   sizes?: string[];
-  /** D-136: newest first when absent (the app); D-144: the website sends 'low'. */
+  /** D-136: newest first when absent (an older app); D-191: the website and the app send 'popular'. */
   sort?: BrowseSort;
   /** D-140: clothing for women or men (unisex pieces show under both). */
   forWho?: 'women' | 'men';
@@ -134,6 +136,7 @@ export async function browseProducts(client: IwcClient, filter: BrowseFilter): P
         p_type: filter.productType,
         ...(filter.regionSlug ? { p_region: filter.regionSlug } : {}),
         ...(filter.categorySlug ? { p_category: filter.categorySlug } : {}),
+        ...(filter.subSlug ? { p_sub: filter.subSlug } : {}),
         ...(filter.minCents !== undefined ? { p_min_cents: filter.minCents } : {}),
         ...(filter.maxCents !== undefined ? { p_max_cents: filter.maxCents } : {}),
         ...(filter.sizes?.length ? { p_sizes: filter.sizes.join('|') } : {}),

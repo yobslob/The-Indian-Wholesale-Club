@@ -70,12 +70,6 @@ select tests.assert((select c @> '[{"name": "Kurtis", "slug": "kurtas", "for": "
   'Kurtis: women''s only');
 select tests.assert((select c @> '[{"name": "Handicrafts & Decor", "slug": "handicrafts-and-decor", "count": 1}]'::jsonb from home),
   'Handicrafts & Decor keeps its own name and count');
-select tests.assert((select exists (select 1 from jsonb_array_elements(c) t
-                                    where t ->> 'name' = 'Gifts' and t ->> 'product_type' = 'home' and (t ->> 'whole')::boolean
-                                      and (t ->> 'count')::int = (select count(*) from public.store_products where product_type = 'home'))
-                     from home),
-  'Gifts is all of Home & gifts');
-select tests.assert((select count(*) = 1 from home, jsonb_array_elements(c) t where t ? 'whole'), 'only Gifts is a whole type');
 select tests.assert((select not exists (select 1 from jsonb_array_elements(c) t where t ->> 'slug' = 'ground-spices') from home),
   'Ground Spices has no tile');
 

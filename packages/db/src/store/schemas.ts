@@ -143,7 +143,6 @@ export const homeSchema = z.object({
       /** D-190: Shirts and Tops share a category; the tile opens it for men or women. Optional until migration 20261110090000. */
       for: z.enum(['women', 'men']).nullable().optional(),
       /** D-190: Gifts opens all of its type, not a category (`slug` is where an older app, which ignores this, lands). */
-      whole: z.boolean().optional(),
     }),
   ),
   /** D-187: What everyone missed this week: most ordered in the last 7 days, 12 at most (ranking only, D-003). */
@@ -357,6 +356,18 @@ export const browsePageSchema = z.object({
   regions: z.array(filterCountSchema),
   /** The categories within the chosen state (the category filter), biggest first. */
   categories: z.array(filterCountSchema),
+  /** D-191: the rail: the sub-categories in view, each with its first piece's photo. */
+  subcategories: z
+    .array(
+      z.object({
+        slug: z.string(),
+        name: z.string(),
+        category_slug: z.string(),
+        count: z.number().int(),
+        image_path: z.string().nullable(),
+      }),
+    )
+    .default([]),
   /** D-136 (optional until migration 20261016210000): pieces in all states with the price and size filters applied. */
   states_total: z.number().int().optional(),
   /** D-136: every size (or food pack) with its pieces, each counted with the other filters applied. */
