@@ -1,4 +1,4 @@
-import type { AmazonRow, FlipkartCard } from '@repo/shared/sourcing/auto';
+import type { AmazonLookRaw, AmazonRow, FlipkartCard } from '@repo/shared/sourcing/auto';
 import type { Page } from 'playwright';
 
 /**
@@ -60,6 +60,65 @@ export function myntraProducts(page: Page): Promise<unknown> {
       __myx?: { searchData?: { results?: { products?: unknown[] } } };
     };
     return (w.__myx?.searchData?.results?.products ?? []).slice(0, 40);
+  });
+}
+
+/**
+ * D-194: what an Amazon page says about its looks. The image block's colour map when the page carries one, the picker's
+ * swatches, and the page's own main photo.
+ */
+export function amazonLookData(page: Page): Promise<AmazonLookRaw> {
+  return page.evaluate(() => {
+    // the JSON object that starts after `"key":`, read bracket by bracket
+    const objectAfter = (text: string, key: string): unknown => {
+      const at = text.indexOf(`"${key}":{`);
+      if (at < 0) return null;
+      const start = text.indexOf('{', at);
+      let depth = 0;
+      let inString = false;
+      for (let i = start; i < text.length; i++) {
+        const c = text[i];
+        if (inString) {
+          if (c === '\\') i++;
+          else if (c === '"') inString = false;
+        } else if (c === '"') inString = true;
+        else if (c === '{') depth++;
+        else if (c === '}' && --depth === 0) {
+          try {
+            return JSON.parse(text.slice(start, i + 1));
+          } catch {
+            return null;
+          }
+        }
+      }
+      return null;
+    };
+    const colourImages: Record<string, string[]> = {};
+    const script = Array.from(document.querySelectorAll('script'))
+      .map((s) => s.textContent ?? '')
+      .find((x) => x.includes('"colorImages":{'));
+    const map = script ? objectAfter(script, 'colorImages') : null;
+    if (map && typeof map === 'object') {
+      for (const [colour, photos] of Object.entries(map as Record<string, unknown>)) {
+        if (colour === 'initial' || !Array.isArray(photos)) continue;
+        const urls = photos
+          .map((p: { hiRes?: string | null; large?: string | null }) => p?.hiRes ?? p?.large ?? '')
+          .filter((u: string) => u.startsWith('https://'));
+        if (urls.length) colourImages[colour] = urls.slice(0, 4);
+      }
+    }
+    const main = document.querySelector('#landingImage');
+    return {
+      asin: (document.querySelector('#ASIN') as HTMLInputElement | null)?.value || null,
+      main: main?.getAttribute('data-old-hires') || main?.getAttribute('src') || null,
+      colourImages,
+      swatches: Array.from(
+        document.querySelectorAll('#twister li[data-asin],[id^="inline-twister-row-"] li[data-asin],[id^="variation_"] li[data-asin]'),
+      ).map((li) => ({
+        asin: li.getAttribute('data-asin') ?? '',
+        image: li.querySelector('img')?.getAttribute('src') ?? null,
+      })),
+    };
   });
 }
 

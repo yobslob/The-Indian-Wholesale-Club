@@ -48,6 +48,8 @@ export const rawCaptureSchema = z.object({
                 price: str(100).optional(),
                 mrp: str(100).optional(),
                 available: z.boolean().optional(),
+                /** D-194: the swatch's picture, for that look's photo. */
+                image: str(2000).optional(),
               }),
             )
             .max(300)

@@ -26,6 +26,7 @@ export function OptionRows({
   picked,
   inStock,
   onSelect,
+  onWarm,
 }: {
   variants: Variant[];
   axes: OptionAxis[];
@@ -33,9 +34,16 @@ export function OptionRows({
   variantId: string;
   picked: boolean;
   inStock: (v: Variant) => boolean;
-  onSelect: (id: string) => void;
+  /** `axis` is the row tapped; none when each variant has its own button. */
+  onSelect: (id: string, axis?: OptionAxis['key']) => void;
+  /** A finger or mouse is on a choice: the variant it would pick, so its photo can start loading (D-194). */
+  onWarm?: (id: string) => void;
 }): React.JSX.Element {
   const sizeAxis = axes.some((a) => a.key === 'size');
+  const warm = (key: OptionAxis['key'], value: string): void => {
+    const next = key === 'size' ? undefined : choose(variants, axes, selection, key, value, inStock);
+    if (next) onWarm?.(next.id);
+  };
   return (
     <>
       {axes.map((axis) => {
@@ -54,9 +62,11 @@ export function OptionRows({
                 <button
                   key={value}
                   type="button"
+                  onPointerEnter={() => warm(axis.key, value)}
+                  onPointerDown={() => warm(axis.key, value)}
                   onClick={() => {
                     const next = choose(variants, axes, selection, axis.key, value, inStock);
-                    if (next) onSelect(next.id);
+                    if (next) onSelect(next.id, axis.key);
                   }}
                   aria-pressed={!open && current === value}
                   className={pillClass(!open && current === value, !isAvailable(variants, axes, selection, axis.key, value, inStock))}
@@ -76,6 +86,8 @@ export function OptionRows({
               <button
                 key={v.id}
                 type="button"
+                onPointerEnter={() => onWarm?.(v.id)}
+                onPointerDown={() => onWarm?.(v.id)}
                 onClick={() => onSelect(v.id)}
                 aria-pressed={picked && v.id === variantId}
                 className={pillClass(picked && v.id === variantId, !inStock(v))}

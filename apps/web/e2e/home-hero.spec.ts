@@ -82,7 +82,9 @@ test("D-187: Home's sections in the founder's order, with no second store", asyn
 
   if (tops.some((t) => t.s === '#categories')) {
     await expect(page.getByRole('heading', { name: 'Shop by category' })).toBeVisible();
-    await expect(page.locator('#categories a').first()).toHaveAttribute('href', /^\/(clothing|food|home-and-gifts)\?category=/);
+    // D-195: Traditional wear first, then the categories
+    await expect(page.locator('#categories a').first()).toHaveAttribute('href', '/clothing?state=any-state');
+    await expect(page.locator('#categories a').nth(1)).toHaveAttribute('href', /^\/(clothing|food|home-and-gifts)\?category=/);
     // D-190: Tops and Kurtis open their category for women; Ground Spices has no tile
     await expect(page.locator('#categories a', { hasText: 'Tops' })).toHaveAttribute('href', '/clothing?category=shirts-and-tops&for=women');
     await expect(page.locator('#categories a[href*="ground-spices"]')).toHaveCount(0);

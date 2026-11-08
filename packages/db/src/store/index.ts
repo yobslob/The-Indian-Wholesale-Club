@@ -5,7 +5,7 @@
  */
 import { z } from 'zod';
 
-import type { HeavyShipping, ProductType, SmallOrderCharges } from '@repo/shared/domain';
+import { withLookPhotos, type HeavyShipping, type ProductType, type SmallOrderCharges } from '@repo/shared/domain';
 
 import { unwrap, type IwcClient } from '../client';
 
@@ -377,20 +377,41 @@ export async function getBagCharges(
 }
 
 /**
+ * The tagged photos of some listings, main photo first (D-194). Only the + reads this, and a failed read just leaves
+ * the options without a look's photo, so the + still opens.
+ */
+async function taggedPhotos(client: IwcClient, productIds: string[]) {
+  const { data } = await client
+    .from('store_media')
+    .select('product_id, variant_id, storage_path')
+    .in('product_id', productIds)
+    .not('variant_id', 'is', null)
+    .order('is_primary', { ascending: false })
+    .order('sort_order')
+    .limit(1000);
+  return (data ?? []).map((m) => ({
+    product_id: m.product_id,
+    variant_id: m.variant_id,
+    storage_path: m.storage_path ?? '',
+  }));
+}
+
+/**
  * The options a card's + offers (D-140, F9), read when the + is pressed instead of sent with every card (D-145): the
  * same 20 the store's card functions list, in their order (migration 20261018120000).
  */
 export async function getCardOptions(client: IwcClient, productId: string): Promise<CardOption[]> {
-  const rows = unwrap(
-    await client
+  const [read, photos] = await Promise.all([
+    client
       .from('store_variants')
       .select('id, label, options, price_cents, available')
       .eq('product_id', productId)
       .order('sort_order')
       .order('label')
       .limit(20),
-  );
-  return z.array(cardOptionSchema).parse(rows);
+    taggedPhotos(client, [productId]),
+  ]);
+  return withLookPhotos(z.array(cardOptionSchema).parse(unwrap(read)), photos);
 }
 
 /**
@@ -406,18 +427,24 @@ export async function getCardOptionsFor(
     ids.map((id) => [id, [] as CardOption[]]),
   );
   if (ids.length === 0) return out;
-  const rows = unwrap(
-    await client
+  const [read, photos] = await Promise.all([
+    client
       .from('store_variants')
       .select('product_id, id, label, options, price_cents, available')
       .in('product_id', ids)
       .order('sort_order')
       .order('label')
       .limit(1000),
-  );
-  for (const row of rows) {
+    taggedPhotos(client, ids),
+  ]);
+  for (const row of unwrap(read)) {
     const list = out[row.product_id];
     if (list && list.length < 20) list.push(cardOptionSchema.parse(row));
+  }
+  if (photos.length === 0) return out;
+  for (const id of ids) {
+    const own = photos.filter((m) => m.product_id === id);
+    if (own.length > 0) out[id] = withLookPhotos(out[id] ?? [], own);
   }
   return out;
 }

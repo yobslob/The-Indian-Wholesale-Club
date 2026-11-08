@@ -97,7 +97,8 @@ test('filters and the endless scroll change only the cards, never the page (D-13
   await page.getByLabel('Sort by').selectOption('new');
   await expect(cards).toHaveCount(24);
   // the next 24 arrive below; the page stays where the shopper is (it used to load again from the top)
-  await cards.last().scrollIntoViewIfNeeded();
+  // the sort may still be replacing the list these 24 were counted from
+  await expect(() => cards.last().scrollIntoViewIfNeeded({ timeout: 2000 })).toPass({ timeout: 15_000 });
   const y = await page.evaluate(() => window.scrollY);
   await expect(cards).toHaveCount(48);
   expect(Math.abs((await page.evaluate(() => window.scrollY)) - y)).toBeLessThan(40);

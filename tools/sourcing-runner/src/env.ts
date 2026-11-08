@@ -30,6 +30,8 @@ const schema = z.object({
   IWC_PHOTO_STORE_KEY_ID: z.string().min(1).optional(),
   IWC_PHOTO_STORE_SECRET: z.string().min(1).optional(),
   IWC_PHOTO_STORE_REGION: z.string().default('auto'),
+  /** D-194: where `looks` reads the stored photos' 640-pixel copies from, to compare pictures. */
+  IWC_SITE_URL: z.string().url().default('https://indianwholesaleclub.com'),
 });
 
 export type Env = z.infer<typeof schema>;

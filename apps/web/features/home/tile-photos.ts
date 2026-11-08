@@ -19,6 +19,8 @@ export const TILE_PHOTOS: Record<string, string | null> = {
   'pooja-and-spiritual': '/visuals/pooja-and-spiritual.jpg',
   'handicrafts-and-decor': '/visuals/handicrafts-and-decor.jpg',
   'thaali-and-serveware': '/visuals/Thaali-and-serveware.jpg',
+  // D-195: Traditional wear opens Clothing from every state
+  'traditional-wear': '/visuals/diwali-clothing.jpg',
   // Clothing (D-190); Shirts and Tops share a category, so their keys name who they are for
   'shirts-and-tops:men': '/visuals/shirts.jpg',
   'shirts-and-tops:women': '/visuals/tops.jpg',

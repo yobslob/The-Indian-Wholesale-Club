@@ -363,3 +363,26 @@ What it means for the build:
 - **Where it does not show:** product pages (their photo is where it would hang), the bag, checkout, login and sign-up, account and order pages, and info pages. Also not once WELCOME10 is on the bag, or the bag's last read says the customer has a paid order (that read needs a bag or checkout to have been opened in this tab; a returning customer who has not opened one still sees it).
 - **"Bohni · first sale, good price"** on the band is Claude's draft (D-019): the founder removed only the subtext and kept it.
 Claude's flags, not decided: with the subtext gone, neither the band, the flip nor the ads say the coupon stops at $9, so "10% off" overstates it on a bag over $90 until the bag shows "10% off, up to $9". A tap only hides the ad (the founder's choice over Claude's idea of a tap putting the coupon on), so a customer still presses Apply in the bag. The words are in the code: WELCOME10 turned off in Admin → Promotions leaves them up until they are changed.
+
+**D-194 · 2026-11-07 · founder: every colour, pack and style shows its own photos** · The plan is `docs/plan-look-photos.md`.
+
+Founder, verbatim: "We have a greater problem to solve in many of the products: 1. In clothing most products have different colors, but on clicking it is showing the same photo on the card. 2. In food, many products have a single piece chocolate double piece chocolate or a family pack but on all clicks it only shows what was scraped. 3. In home n decor, almost all pieces are singular but there could be some which have variety but singular set of photos. […] this solution should not affect any part of the rest of the website in any way, the customer's experience should be seamless(I have hardly got my website on its feet again, don't shake it)". Then, 2026-11-07: "to solve that problem follow the plan in docs/plan-look-photos.md".
+
+- **A look** is a variant's options without `size`; a photo belongs to a look through `product_media.variant_id`, an untagged photo is shared (`packages/shared` `looks.ts`).
+- **The product page** swaps the gallery and viewer to the picked look; the bag line takes its photo. **The card's +** shows a colour's photo on the card until the ribbon closes, and its bag line takes that photo. `/api/card-options` adds `image_path`; cached cards stay as they are (D-145).
+- **A look with no photo, or a listing with one look, shows exactly what it did.**
+- *Interpretation (proposed, confirm when Phase 3 starts):* the plan's §8 defaults, because no other answer came: one photo per look; the card's photo changes too, back on close; 0.5 GB of R2, hard stop at 9.3 GB on the dashboard; the orphan report only reports; clothing → food → home & gifts; no colour in the URL.
+- *Interpretation:* the plan says a page opens on the look of the variant `AddToCart` picks. When the main photo is untagged that would put a tagged photo ahead of it and change the first paint, against "don't shake it". So such a page opens with every photo in today's order, and the first swap comes with the first tap.
+- **Built, not run:** `pnpm sourcing looks` (the backfill), new Amazon listings' look photos, the admin's **For**. The founder runs every step on production. Amazon listings, most clothing colours and food packs, have no photo per look until then, so they look as before.
+- *Interpretation:* the founder said "Keep working and keep going on" without choosing about the small photos under a picked colour, so they stay as built. Hiding them moves the page by 158 px on a phone.
+- **Cost:** page cache: no new write; measured bytes in `status.md`. Database: one more small read per uncached `/api/card-options` answer (CDN 5 minutes); one migration with worker functions only, about 2 MB at 7,000 photos. R2: nothing until the backfill runs, at most 0.75 GB by the plan's sum. `NEXT_PUBLIC_LOOK_PHOTOS=off` and a redeploy turns it off.
+
+**D-195 · 2026-11-08 · founder: Traditional wear, every state's clothing from one tile**
+
+Founder, verbatim: "Add a new option of traditional wear in categories on which clicking it opens clothing but with the filter of clothes from all states only with a tag of the state below, once done then create the pr"
+
+- **Home's Shop by category** starts with a **Traditional wear** tile ("From every state"), shown when there is clothing. It opens `/clothing?state=any-state`: Clothing with only the pieces from a state, none of the all-India ones. Each card names its state below the photo, as cards already do.
+- The page's heading is "Traditional wear"; its chip "From every state" and Clear all go back to all of Clothing. Picking a state in the filter goes to that state, as before. Food and Home & gifts read the same address as their state-made pieces, with their usual heading.
+- `store_browse` takes `p_region = 'any-state'` (migration 20261112090100); nothing else in it changes.
+- *Interpretation (proposed):* "categories" is Home's Shop by category; the tile goes first, with `/visuals/diwali-clothing.jpg` until the founder sets one (`tile-photos.ts`).
+- **Cost:** one more cached See all page per type opened this way, built on first visit; no new read, no database growth, no new JS.

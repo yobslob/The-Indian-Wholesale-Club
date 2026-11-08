@@ -10,7 +10,7 @@ import { MAX_QTY_PER_LINE } from '@/features/cart/limits';
 import { useCart } from '@/features/cart/store';
 import { mediaUrl } from '@/lib/site';
 
-import { bagLine, loadCardOptions, preloadCardOptions, ribbonWidth } from './card-options';
+import { bagLine, loadCardOptions, optionPhoto, preloadCardOptions, ribbonWidth } from './card-options';
 
 import type { CardOption, ProductCard, QuickAdd as QuickAddData } from '@repo/db/store';
 
@@ -149,7 +149,8 @@ export function QuickAdd({
         return;
       }
       add(bagLine(product, o), next - now);
-      flyToBag(from, image);
+      const photo = optionPhoto(o);
+      flyToBag(from, photo ? mediaUrl(photo) : image);
     } else setQuantity(o.id, next);
   };
   const narrow = (): boolean => (self.current?.closest('article')?.clientWidth ?? 999) < 160;

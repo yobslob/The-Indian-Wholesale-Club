@@ -7,6 +7,7 @@ export * from './coupons';
 export type * from './checkout-api';
 export * from './delivery';
 export * from './listing';
+export * from './looks';
 export * from './media';
 export * from './same-picture';
 export * from './order-status';

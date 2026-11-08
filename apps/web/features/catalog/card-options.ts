@@ -1,5 +1,7 @@
 import { displayOption, formatUsd, sortBySize } from '@repo/shared/domain';
 
+import { lookPhotosOn } from './look-flag';
+
 import type { CardOption, ProductCard } from '@repo/db/store';
 
 /**
@@ -36,12 +38,19 @@ export function showsPrices(options: CardOption[], type: ProductCard['product_ty
   return type !== 'clothing' || new Set(options.map((o) => o.price_cents)).size > 1;
 }
 
+/** The photo of an option's look, or null: then the listing's main photo stands in (D-194). */
+export const optionPhoto = (o: Pick<CardOption, 'image_path'>): string | null => (lookPhotosOn ? (o.image_path ?? null) : null);
+
+/** The photo of a colour's look, when the colour has one (D-194). */
+export const colourPhoto = (options: CardOption[], colour: string): string | null =>
+  options.filter((o) => o.options?.colour === colour).map(optionPhoto).find((p) => p !== null) ?? null;
+
 /** The bag line for an option. */
 export function bagLine(
   product: Pick<ProductCard, 'id' | 'name' | 'slug' | 'region_slug' | 'region_name' | 'primary_image_path'> & {
     product_type?: string;
   },
-  o: Pick<CardOption, 'id' | 'label' | 'price_cents'>,
+  o: Pick<CardOption, 'id' | 'label' | 'price_cents' | 'image_path'>,
 ) {
   return {
     variantId: o.id,
@@ -52,7 +61,7 @@ export function bagLine(
     regionName: product.region_name,
     variantLabel: o.label,
     unitPriceCents: o.price_cents,
-    imagePath: product.primary_image_path,
+    imagePath: optionPhoto(o) ?? product.primary_image_path,
     ...(product.product_type ? { productType: product.product_type } : {}),
   };
 }

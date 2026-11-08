@@ -1927,6 +1927,18 @@ isOneToOne: false
 "worker_liquid_plan":
 { Args: { "p_after"?: string,"p_all"?: boolean,"p_limit"?: number }; Returns: Json
                            },
+"worker_look_photo_plan":
+{ Args: { "p_after"?: string,"p_limit"?: number,"p_type": Database["public"]['Enums']["product_type"] }; Returns: Json
+                           },
+"worker_look_photo_tag":
+{ Args: { "p_media": string,"p_product": string,"p_variant": string }; Returns: boolean
+                           },
+"worker_look_photos_add":
+{ Args: { "p_media": Json,"p_product": string }; Returns: Json
+                           },
+"worker_look_photos_undo":
+{ Args: { "p_media": (string)[] }; Returns: (string)[]
+                           },
 "worker_may_add_photos":
 { Args: { "p_product": string }; Returns: boolean
                            },

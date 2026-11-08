@@ -130,6 +130,49 @@ select count(*) as searches, count(*) filter (where results = 0) as found_nothin
   from public.search_queries where created_at > now() - interval '7 days';
 select pg_size_pretty(pg_total_relation_size('public.product_search')) as product_search,
        pg_size_pretty(pg_total_relation_size('public.search_words')) as words, (select count(*) from public.search_words) as n;
+-- L1. looks (D-194): listings with 2+ looks (options without size), by type, and how many already have a photo per look
+with v as (
+  select p.id, p.product_type, pv.id as vid, (pv.options - 'size') as look
+  from public.products p join public.product_variants pv on pv.product_id = p.id
+  where p.status = 'live' and not p.is_placeholder and pv.is_active),
+looks as (select id, product_type, count(distinct look) as n from v group by 1, 2 having count(distinct look) > 1),
+tagged as (
+  select v.id, count(distinct v.look) as with_photo
+  from v join public.product_media m on m.variant_id = v.vid group by 1)
+select l.product_type, count(*) as listings, sum(l.n) as looks,
+       sum(coalesce(t.with_photo, 0)) as looks_with_photo,
+       count(*) filter (where coalesce(t.with_photo, 0) = 0) as listings_with_none
+from looks l left join tagged t on t.id = l.id group by 1 order by 1;
+-- L2. tagged photos today, by type and shop
+select p.product_type, coalesce(p.source_site, '(none)') as site, count(*) as tagged_photos
+from public.product_media m join public.products p on p.id = m.product_id
+where m.variant_id is not null and p.status = 'live' group by 1, 2 order by 3 desc;
+-- L3. looks still without a photo, by type and shop (the backfill's size)
+with v as (
+  select p.id, p.product_type, p.source_site, pv.id as vid, (pv.options - 'size') as look
+  from public.products p join public.product_variants pv on pv.product_id = p.id
+  where p.status = 'live' and not p.is_placeholder and pv.is_active)
+select product_type, source_site, count(*) as looks_without_photo
+from (select distinct v.id, v.product_type, v.source_site, v.look from v
+      where exists (select 1 from v v2 where v2.id = v.id and v2.look <> v.look)
+        and not exists (select 1 from v v3 join public.product_media m on m.variant_id = v3.vid
+                        where v3.id = v.id and v3.look = v.look)) x
+group by 1, 2 order by 3 desc;
+-- L4. what the looks are: which option makes them, by type
+select p.product_type, k as option, count(distinct p.id) as listings, count(*) as variants
+from public.products p join public.product_variants pv on pv.product_id = p.id
+cross join lateral jsonb_object_keys(pv.options - 'size') k
+where p.status = 'live' and not p.is_placeholder and pv.is_active group by 1, 2 order by 1, 3 desc;
+-- L5. pages for the sample (admin only, never on a customer surface): 7 random listings per type from Amazon with looks and no look photo, plus 3 each from Savana and Swiggy
+with v as (
+  select p.id, p.product_type, p.source_site, p.source_url, count(distinct pv.options - 'size') as looks
+  from public.products p join public.product_variants pv on pv.product_id = p.id
+  where p.status = 'live' and not p.is_placeholder and pv.is_active and p.source_url is not null
+    and not exists (select 1 from public.product_media m where m.product_id = p.id and m.variant_id is not null)
+  group by 1, 2, 3, 4 having count(distinct pv.options - 'size') > 1),
+r as (select *, row_number() over (partition by product_type, source_site order by random()) as n from v)
+select product_type, source_site, looks, source_url from r
+where (source_site = 'amazon.in' and n <= 7) or (source_site in ('savana.com', 'swiggy.com') and n <= 3) order by 1, 2;
 ```
 
 ## 7. Fixing what is found

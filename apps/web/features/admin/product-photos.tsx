@@ -1,6 +1,9 @@
+import { lookChoices, lookKey } from '@repo/shared/domain';
+
 import {
   deleteProductPhotoAction,
   setMainPhotoAction,
+  setPhotoLookAction,
   uploadProductPhotoAction,
 } from '@/features/admin/actions/product-photos';
 import { button, Field, input } from '@/features/admin/ui';
@@ -13,13 +16,30 @@ interface Photo {
   alt_text: string;
   sort_order: number;
   is_primary: boolean;
+  variant_id: string | null;
+}
+
+interface PhotoVariant {
+  id: string;
+  options: Record<string, unknown>;
 }
 
 /**
  * The product's photos on its admin page: the main one first, then in upload order (the store shows them the
  * same way). Every photo needs alt text. Photos are best at 3 : 4 portrait (storefront.md §Visual system 5).
  */
-export function ProductPhotos({ productId, media }: { productId: string; media: Photo[] }): React.JSX.Element {
+export function ProductPhotos({
+  productId,
+  media,
+  variants,
+}: {
+  productId: string;
+  media: Photo[];
+  variants: PhotoVariant[];
+}): React.JSX.Element {
+  // D-194: whose photo it is, when the listing has looks
+  const choices = lookChoices(variants);
+  const lookOf = new Map(variants.map((v) => [v.id, lookKey(v.options)]));
   const photos = media.slice().sort((a, b) => Number(b.is_primary) - Number(a.is_primary) || a.sort_order - b.sort_order);
   return (
     <section className="border-line max-w-3xl space-y-3 rounded-[14px] border bg-paper px-[18px] py-4">
@@ -45,6 +65,27 @@ export function ProductPhotos({ productId, media }: { productId: string; media: 
                   </button>
                 </form>
               )}
+              {choices.length > 0 ? (
+                <form action={setPhotoLookAction.bind(null, productId, p.id)} className="flex items-end gap-2">
+                  <Field label="For">
+                    <select
+                      name="variantId"
+                      className={input}
+                      defaultValue={choices.find((c) => p.variant_id && c.look === lookOf.get(p.variant_id))?.variantId ?? ''}
+                    >
+                      <option value="">Every look</option>
+                      {choices.map((c) => (
+                        <option key={c.variantId} value={c.variantId}>
+                          {c.label}
+                        </option>
+                      ))}
+                    </select>
+                  </Field>
+                  <button type="submit" className="min-h-11 underline">
+                    Save
+                  </button>
+                </form>
+              ) : null}
               <form action={deleteProductPhotoAction.bind(null, productId, p.id)}>
                 <button type="submit" className="text-danger min-h-11 underline">
                   Remove

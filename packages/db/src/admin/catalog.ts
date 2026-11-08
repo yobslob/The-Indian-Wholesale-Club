@@ -425,6 +425,11 @@ export async function setPrimaryProductMedia(client: IwcClient, productId: strin
   unwrap(await client.from('product_media').update({ is_primary: true }).eq('id', mediaId).eq('product_id', productId));
 }
 
+/** D-194: whose photo it is, through one variant of that look; null shares it with every look. */
+export async function setProductMediaVariant(client: IwcClient, mediaId: string, variantId: string | null) {
+  unwrap(await client.from('product_media').update({ variant_id: variantId }).eq('id', mediaId));
+}
+
 /** D-140: who a clothing piece is for, set by an admin (null clears it; a live piece then keeps its value). */
 export async function setProductWears(client: IwcClient, id: string, wears: 'women' | 'men' | 'kids' | 'unisex') {
   unwrap(await client.from('products').update({ wears }).eq('id', id));

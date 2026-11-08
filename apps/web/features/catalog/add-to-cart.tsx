@@ -3,7 +3,19 @@
 import Link from 'next/link';
 import { useEffect, useMemo, useRef, useState } from 'react';
 
-import { displayOption, displayTitle, formatUsd, optionAxes, optionPriceLabel, priceRange, selectionOf, wasCents } from '@repo/shared/domain';
+import {
+  displayOption,
+  displayTitle,
+  formatUsd,
+  initialLook,
+  lookKey,
+  lookPhoto,
+  optionAxes,
+  optionPriceLabel,
+  priceRange,
+  selectionOf,
+  wasCents,
+} from '@repo/shared/domain';
 
 import { flyToBag } from '@/features/cart/fly-to-bag';
 import { MAX_QTY_PER_LINE } from '@/features/cart/limits';
@@ -11,9 +23,12 @@ import { useCart } from '@/features/cart/store';
 import { mediaUrl } from '@/lib/site';
 
 import { BuyBar } from './buy-bar';
+import { lookPhotosOn } from './look-flag';
+import { GALLERY_MAIN_SIZES, useLook } from './look-store';
 import { OptionRows } from './option-rows';
+import { preloadPhoto } from './store-photo';
 
-import type { Product, Variant } from '@repo/db/store';
+import type { Media, Product, Variant } from '@repo/db/store';
 
 interface Props {
   product: Pick<
@@ -21,6 +36,8 @@ interface Props {
     'id' | 'name' | 'slug' | 'region_slug' | 'region_name' | 'primary_image_path' | 'product_type' | 'offer' | 'pack'
   >;
   variants: Variant[];
+  /** The listing's photos: the bag line takes the picked look's (D-194). */
+  media: Media[];
   /** Shown just above the button (the delivery window, D-008). */
   delivery?: React.ReactNode;
 }
@@ -37,12 +54,19 @@ const stepButton = 'grid size-11 place-items-center text-lg font-medium disabled
  * Launch QA B-1: until a pick the price is "From $x" (the lowest in stock) when the options differ, so the price shown
  * is never one the bag then changes; after the pick it is that option's price, the one the bag line gets.
  */
-export function AddToCart({ product, variants, delivery }: Props): React.JSX.Element {
+export function AddToCart({ product, variants, media, delivery }: Props): React.JSX.Element {
   const add = useCart((s) => s.add);
   const lines = useCart((s) => s.lines);
-  const [variantId, setVariantId] = useState(
-    () => variants.find((v) => v.available > 0)?.id ?? variants[0]?.id,
-  );
+  const setLook = useLook((s) => s.setLook);
+  const clearLook = useLook((s) => s.clearLook);
+  const [variantId, setVariantId] = useState(() => {
+    // D-194: the first choice matches the photo the page opens on
+    const start = lookPhotosOn ? initialLook(variants, media) : null;
+    const first = (v: Variant): boolean => v.available > 0 && (start === null || lookKey(v.options) === start);
+    return variants.find(first)?.id ?? variants[0]?.id;
+  });
+  // the picked look ends with the visit to this page, like the picked option
+  useEffect(() => () => clearLook(product.id), [clearLook, product.id]);
   // L3: picked by the customer (a piece with one option needs no pick)
   const [picked, setPicked] = useState(variants.length <= 1);
   const [nudge, setNudge] = useState(0);
@@ -65,7 +89,14 @@ export function AddToCart({ product, variants, delivery }: Props): React.JSX.Ele
   if (!variant) return <p className="text-ink-muted text-sm">Not available right now.</p>;
   const inStock = (v: Variant): boolean => v.available > 0;
   const selection = selectionOf(variant, axes);
-  const select = (id: string): void => {
+  const photoOf = (v: Variant): string | null => (lookPhotosOn ? lookPhoto(lookKey(v.options), media, variants) : null);
+  const select = (id: string, axis?: string): void => {
+    const next = variants.find((v) => v.id === id);
+    // D-194: a size never changes the photos, unless choosing it had to move to another colour. Any other tap shows its
+    // look, also the one chosen by default, which the page didn't open on.
+    if (lookPhotosOn && next && (axis !== 'size' || lookKey(next.options) !== lookKey(variant.options))) {
+      setLook(product.id, lookKey(next.options));
+    }
     setVariantId(id);
     setPicked(true);
     setQuantity(1);
@@ -90,6 +121,7 @@ export function AddToCart({ product, variants, delivery }: Props): React.JSX.Ele
   const maxQty = Math.max(1, Math.min(left, MAX_QTY_PER_LINE));
   const addToBag = (from: Element | null = button.current): void => {
     if (mustChoose) return showChoices();
+    const photo = photoOf(variant) ?? product.primary_image_path;
     add(
       {
         variantId: variant.id,
@@ -100,14 +132,14 @@ export function AddToCart({ product, variants, delivery }: Props): React.JSX.Ele
         regionName: product.region_name,
         variantLabel: variant.label,
         unitPriceCents: variant.price_cents,
-        imagePath: product.primary_image_path,
+        imagePath: photo,
         productType: product.product_type,
       },
       quantity,
     );
     setAdded(true);
     setFlash((n) => n + 1);
-    flyToBag(from, product.primary_image_path ? mediaUrl(product.primary_image_path) : null);
+    flyToBag(from, photo ? mediaUrl(photo) : null);
   };
 
   return (
@@ -141,6 +173,11 @@ export function AddToCart({ product, variants, delivery }: Props): React.JSX.Ele
           picked={picked}
           inStock={inStock}
           onSelect={select}
+          onWarm={(id) => {
+            const next = variants.find((v) => v.id === id);
+            const photo = next && photoOf(next);
+            if (photo) preloadPhoto(mediaUrl(photo), GALLERY_MAIN_SIZES);
+          }}
         />
       </div>
 

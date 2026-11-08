@@ -137,7 +137,11 @@ export default async function AdminProductPage({
         </button>
       </form>
 
-      <ProductPhotos productId={product.id} media={product.media} />
+      <ProductPhotos
+        productId={product.id}
+        media={product.media}
+        variants={product.variants.map((v) => ({ id: v.id, options: v.options as Record<string, unknown> }))}
+      />
 
       <form
         action={updateProductAction.bind(null, product.id)}

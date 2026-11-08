@@ -85,6 +85,16 @@ function sh(cmd) {
   }
 }
 
+/** A failed step's failing tests with the reason under each (node's test runner and Playwright), at most 60 lines. */
+function failedLines(out) {
+  const lines = out.split(/\r?\n/);
+  const found = [];
+  lines.forEach((line, i) => {
+    if (/^\s*not ok \d+/.test(line) || /^✖ failing tests/.test(line) || /^\s*\d+\) \[/.test(line)) found.push(...lines.slice(i, i + 12));
+  });
+  return found.slice(0, 60);
+}
+
 function run(cmd) {
   return new Promise((resolve) => {
     const started = Date.now();
@@ -105,6 +115,8 @@ function run(cmd) {
         ok: code === 0,
         durationMs: Date.now() - started,
         outputTail: out.split(/\r?\n/).slice(-40).join('\n'),
+        // which tests failed, wherever they are in the output: turbo prints each package's tests as a block
+        failed: code === 0 ? undefined : failedLines(out),
       });
     });
   });
@@ -243,6 +255,7 @@ for (const step of selected) {
   report.steps[step] = step === 'http' ? await httpStep() : await run(COMMANDS[step]);
   const r = report.steps[step];
   console.log(`${r.ok ? 'OK ' : 'FAIL'} ${(r.durationMs / 1000).toFixed(1)}s`);
+  for (const line of r.failed ?? []) console.log(`  ${line}`);
 }
 report.finishedAt = new Date().toISOString();
 

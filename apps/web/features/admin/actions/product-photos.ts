@@ -9,6 +9,7 @@ import {
   getAdminProduct,
   getProductMedia,
   setPrimaryProductMedia,
+  setProductMediaVariant,
 } from '@repo/db/admin';
 
 import { removePhotos, storePhoto } from '@/lib/photo-copies';
@@ -68,6 +69,22 @@ export async function setMainPhotoAction(productId: string, mediaId: string): Pr
   const { client } = await requireAdminAction();
   await setPrimaryProductMedia(client, id.parse(productId), id.parse(mediaId));
   await done(client, productId);
+}
+
+/** D-194: whose photo it is: one look (through its first variant) or every look (empty). */
+export async function setPhotoLookAction(productId: string, mediaId: string, form: FormData): Promise<void> {
+  const { client } = await requireAdminAction();
+  const pid = id.parse(productId);
+  const media = await getProductMedia(client, id.parse(mediaId));
+  if (!media || media.product_id !== pid) throw new Error('photo not found');
+  const value = String(form.get('variantId') ?? '');
+  const variantId = value ? id.parse(value) : null;
+  if (variantId) {
+    const product = await getAdminProduct(client, pid);
+    if (!product?.variants.some((v) => v.id === variantId)) throw new Error('that option is not on this product');
+  }
+  await setProductMediaVariant(client, media.id, variantId);
+  await done(client, pid);
 }
 
 /** Removes the photo and its file. Removing the main photo makes the next one main. */

@@ -10,7 +10,8 @@ Short on purpose (the audit warns past 10 KB): **replace** lines when something 
 - **Merged and deployed 2026-11-06 (08:38 UTC):** D-189 and D-190, [PR #2](https://github.com/yobslob/The-Indian-Wholesale-Club/pull/2). Vercel is on Pro (founder, 2026-11-07); ISR writes against reads not checked here yet.
 - **Merged and deployed 2026-11-07 (00:33 UTC):** D-191, [PR #3](https://github.com/yobslob/The-Indian-Wholesale-Club/pull/3), with its two migrations (the Deploy workflow succeeded).
 - **Merged and deployed 2026-11-07 (02:52 UTC):** D-192, [PR #4](https://github.com/yobslob/The-Indian-Wholesale-Club/pull/4) (coupons chosen in the bag, one bill, a card for each shipment).
-- **Not released:** D-193 on branch `optimize/lighter-site` (the first-order band, the Diwali flip, four ads under the navbar, the album faster and never paused). No migration: it reaches customers with the site.
+- **Merged and deployed 2026-11-07 (05:56 UTC):** D-193, [PR #5](https://github.com/yobslob/The-Indian-Wholesale-Club/pull/5) (the first-order band, the Diwali flip, four ads under the navbar, the album faster and never paused).
+- **Not released:** D-195 (Traditional wear on Home, migration 20261112090100) and D-194 Phases 1 to 4 on branch `look-photos` (`docs/plan-look-photos.md`: each colour, pack and style shows its own photos where one is stored; `pnpm sourcing looks` fills in the rest). One worker-only migration; nothing run on production.
 - **Accounts (D-147):** Vercel Pro, Supabase free since 2026-10-21/22, photos in Cloudflare R2. Budgets and the
   weekly check: `monitoring.md`. The free database's memory is already over (1.57 of 1.4 GB, swap 406 MB on 2026-11-04,
   and it stopped answering for about 45 minutes that day).
@@ -29,13 +30,13 @@ Short on purpose (the audit warns past 10 KB): **replace** lines when something 
 - **Free shipping from $49.99** on every bag; bulk saving and the heavy-item discount stay at $99.99. No price changes
   (rehearsed: 0 differences of 29,212 options).
 - **Stock is checked at checkout** (Remove / Keep n, payment locked until sorted) on the website and in the app.
-- **Home:** hero → Diwali arches → mosaic → the first-order band (D-193) → Shop by category → Diwali night → What everyone missed this week → The
+- **Home:** hero → Diwali arches → mosaic → the first-order band (D-193) → Shop by category (Traditional wear first, D-195) → Diwali night → What everyone missed this week → The
   kirana counter → Just listed Clothing → Just listed Home & gifts → Pick your home → the delivery band.
 - **App 1.1.0** is built for this; whether it is published is not recorded here. The old app keeps working as a customer app (shims marked
   `TODO(D-187)`); **its admin mode breaks** with the release.
 
 ## Next for the founder
-1. **D-193:** merge and deploy at a quiet hour; each deploy empties the page cache. **D-191:** a new app build carries the bill's coins, Popular and the sub-category chips. Your choices: the retailer % (1.5 on the 5 Nov copy, so the charge grows with the bag; Settings → Bag charges), the noodles photo's printed "₹15", the sub-categories' own photos (`sub-photos.ts`). Popular is an experiment: compare orders and average bag in Admin before and after.
+1. **D-194:** merge and run the Deploy workflow at a quiet hour (migration 20261112090000; each deploy empties the page cache). Then re-add the Add to IWC bookmark, send today's R2 GB and run `pnpm sourcing looks --type food --site amazon.in --limit 20 --dry-run` (`plan-look-photos.md`). **D-191:** a new app build carries the bill's coins, Popular and the sub-category chips. Your choices: the retailer % (1.5 on the 5 Nov copy, so the charge grows with the bag; Settings → Bag charges), the noodles photo's printed "₹15", the sub-categories' own photos (`sub-photos.ts`). Popular is an experiment: compare orders and average bag in Admin before and after.
 2. **Names to tidy:** production's count (Y-11; the page and Rename all go only at 0).
 3. In the order of use (each from the archived status, still open and not re-checked here):
    - **The photo redo** (D-164): pull on the laptop, `pnpm photos:redo fetch --type food --again` and `--type home
@@ -61,6 +62,7 @@ Short on purpose (the audit warns past 10 KB): **replace** lines when something 
      right. Fixing it needs a new card key.
 
 ## Not built yet
+- **D-194:** the dry runs and the backfill itself (founder's machine), the orphan report, the Looks without a photo filter. Until the backfill, Amazon listings look as before. The app gets the swap in its next build; its product screen ignores the tags today.
 - App: the bag's coupons and the one bill (it keeps typing a code, D-191, D-192); push notifications for new orders; the card's − n +, the For filter and the jewellery drawer.
 - Admin: "Select all n matching" bulk actions and search on Reviews and Returns.
 - Size charts from the shops (Q-39); invoice A with the confirmation email; `CHECK_LIVE_SITE`'s production photo check.
@@ -85,4 +87,4 @@ Short on purpose (the audit warns past 10 KB): **replace** lines when something 
 <!-- The verifier (plan §5 Phase 3 · Agent V) records the branch's full check here. Replace this table's row. -->
 | Date | Commit | Where | Result |
 |---|---|---|---|
-| 2026-11-07 | D-193 on top of D-192 (branch `optimize/lighter-site`, not committed when run) | Claude Code, Windows 11, local Supabase | `node scripts/check.mjs docs typecheck lint test build http e2e`: all pass but e2e, nothing over budget (`/` 12 ms, 133 KB JS). e2e 92 passed, 2 skipped, 2 failed in `customer-choices.spec.ts` on checkout's "Too many requests" for the test customer after an interrupted run; with the local `rate_limit_hits` rows cleared, that spec passed alone (3 of 3). `db` and `bundle` not run: no migration, no app change. Touch swipes checked on a simulated Pixel 7 against the dev server, not on a physical phone. |
+| 2026-11-08 | D-195 and D-194 Phases 1 to 4 on top of D-193 (branch `look-photos`) | Claude Code, Windows 11, local Supabase | `node scripts/check.mjs docs typecheck lint test db build http` pass, nothing over budget (`/` 15 ms, 133 KB JS; product page 142 KB; `/states/kerala` 150 KB); SQL 71 of 71. Full e2e: 99 passed, 2 skipped, 3 failed (the Home order test, edited during the run, and one coupon and one food-bag checkout test); those spec files passed alone (8 of 8). Earlier full runs on this branch failed only in checkout specs, on the test customer's "Too many requests" and a lost connection to Stripe. Look photos checked with three live listings' real photos on a local copy (simulated Pixel 7). `pnpm sourcing looks` not run against any shop or production; `bundle` not run (no app change). |
