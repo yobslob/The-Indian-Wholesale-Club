@@ -1,5 +1,6 @@
 import { variantLabel, type VariantOptions } from '../domain/listing';
 import { OPTION_KEYS, type OptionKey } from '../domain/variant-options';
+import { amazonFullSize } from './auto/looks';
 
 import { oneLine, parseRupeesToPaise } from './text';
 import { parseWeight } from './weight';
@@ -104,6 +105,8 @@ export function amazonVariants(
       price,
       parseRupeesToPaise(s?.mrp),
       own ? pageInStock : s ? s.available !== false && price !== null : null,
+      // D-194: the picker's picture at its own size; the listing tags it to this look. The page's own look has its gallery.
+      !own && s?.image ? amazonFullSize(s.image) : null,
     );
   });
 }

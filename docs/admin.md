@@ -295,3 +295,5 @@ runner in `tools/sourcing-runner/` (its README says how to set it up on the PC a
   `--audit` compares the shops' weights, `--redo` re-estimates after many weighings, `eval` says how close it comes
   (`tools/weight-estimator/README.md`).
 
+## Looks: whose photo it is (D-194)
+Products → a listing → Photos: on a listing with 2+ looks, each photo has a **For**: "Every look" or one look. Save sets `variant_id` to that look's first variant, and the product page shows the photo with that look. The rule is in `docs/storefront.md`. `pnpm sourcing looks` does this in bulk (`tools/sourcing-runner/README.md`), and query L3 (`monitoring.md` §6) counts the looks still without a photo.

@@ -1,4 +1,5 @@
 import { pictureGroups, sharpest, type ProductType } from '@repo/shared/domain';
+import { MIN_LOOK_PHOTO_PX } from '@repo/shared/sourcing/auto';
 
 import { errorText, log } from './log';
 import { photoPrint } from './photo-store';
@@ -22,7 +23,7 @@ export async function copyPhotos(
   referer: string,
 ): Promise<{ path: string; alt_text: string; item_key?: string; redo?: 'face' | 'fresh' }[]> {
   const got: { photo: (typeof photos)[number]; body: Buffer; type: string }[] = [];
-  for (const photo of photos.slice(0, 16)) {
+  for (const photo of photos.slice(0, 20)) {
     try {
       const res = await ctx.lanes.browser.request.get(photo.url, {
         timeout: 30_000,
@@ -42,7 +43,14 @@ export async function copyPhotos(
       log(`  photo not copied: ${errorText(error)}`);
     }
   }
-  const prints = await Promise.all(got.map((g) => photoPrint(g.body)));
+  const allPrints = await Promise.all(got.map((g) => photoPrint(g.body)));
+  // D-194: a look's photo too small to show at the page's size stays out; the page's own photos are as the shop has them
+  const big = got.flatMap((g, i) => {
+    const p = allPrints[i];
+    return g.photo.itemKey && p && Math.min(p.width, p.height) < MIN_LOOK_PHOTO_PX ? [] : [i];
+  });
+  got.splice(0, got.length, ...big.map((i) => got[i]!));
+  const prints = big.map((i) => allPrints[i]!);
   const groups = pictureGroups(prints, got.map((g) => g.photo.itemKey));
   if (groups.length < got.length) log(`  ${got.length - groups.length} photo(s) the shop shows twice, kept once`);
   const chosen = groups.map((group) => {

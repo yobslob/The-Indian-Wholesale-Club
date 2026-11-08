@@ -1,7 +1,7 @@
 # Plan: every colour, pack and style shows its own photos
 
-*Written 2026-11-07 by Claude, using the repo at `optimize/lighter-site` and the shops' page formats. Status: **Phases 1 and 2 built (D-194), not released; Phase 0's numbers are at the
-end of this file, its page sample still to do; Phases 3 and 4 not started.** §8's defaults are in use. For the agent that carries it out: read all of it before starting. Each phase can
+*Written 2026-11-07 by Claude, using the repo at `optimize/lighter-site` and the shops' page formats. Status: **Phases 1 to 4 built (D-194), nothing released and nothing run on production. The
+page sample is still to do: it is now the first dry run of Phase 3.** §8's defaults are in use. For the agent that carries it out: read all of it before starting. Each phase can
 ship by itself and leaves the store working.*
 
 The founder, verbatim (2026-11-07), to be filed with `/record-answer` as the next D-number once §8 is answered:
@@ -360,4 +360,21 @@ Production, read-only, founder 2026-11-07. L1 minus its photos equals L3's total
 
 **Real listings checked:** 14 live clothing pages (8 with 2+ looks, 6 with tagged photos). Three were copied to the local database with their real photos, and every colour was tapped on a simulated Pixel 7: each colour with a tagged photo showed that colour, the photo box and the page height never changed. Finding: the page's own colour's photos are untagged, so they stay as small photos under another colour's main photo.
 
-**Still to do:** queries L4 and L5, the page sample, today's R2 GB, the orphan report.
+**L4, which option makes the looks** (listings, variants): clothing: colour 1,138, 10,003; style 3, 14. Food: pack 4,081, 8,001; flavour 492, 2,400; style 87, 316; colour 36, 198. Home: colour 940, 5,117; style 510, 2,234; pack 512, 1,703; flavour 1, 3. So home's looks are real colours and styles, not noise.
+
+**The page sample (L5's 27 pages):** not read. The session's safety check refused a script that opened Chrome with its automation flags hidden, so an agent doesn't run it. Running the runner is the founder's call, and the dry run gives the same answers:
+
+```bash
+pnpm sourcing looks --type food --site amazon.in --limit 20 --dry-run
+```
+
+The CSV's `method` column says which way works per shop. Amazon's colour map and swatches are written from the page's known format and tested on fixtures only, so **go on with real runs only after a dry run**.
+
+**Where the build differs from the plan**
+- Phase 4 step 1: the page's own gallery stays untagged on new listings. Tagging it would remove the small photos under other looks, and on a phone that moves the page by 158 px at the first tap. It follows the founder's choice on the small photos (default: keep them).
+- Phase 4 step 2: the bookmarklet carries the swatch pictures, but a pasted or bookmarked import still saves only the page's photos. The admin's **For** tags them by hand.
+- Phase 4 step 3: the **Looks without a photo** filter on Products isn't built: it needs a new read on a hot table for what query L3 already says.
+- Phase 3 step 5: `looks` doesn't call the photo redo service. Its photos go up unmarked, so the redo's plan picks them up later.
+- Phase 3 step 2: Flipkart has no missing looks (L3), so it has no reader of its own; item pages cover any later ones.
+
+**Still to do:** the deploy with migration 20261112090000, the dry runs, real runs, today's R2 GB, the orphan report.

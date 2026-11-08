@@ -49,7 +49,7 @@ if(q('#productTitle')){
   return {asin:(li.getAttribute('data-asin')||'').slice(0,20),dim:id.slice(0,60),label:t(li.querySelector('.swatch-title-text-display,.twisterTextDiv,img')||li).slice(0,190)||(li.querySelector('img')||{}).alt||'',
    price:(t(li.querySelector('.apex-pricetopay-value'))||t(li.querySelector('.a-price:not(.a-text-price) .a-offscreen,.twisterSwatchPrice'))).slice(0,90),
    mrp:t(li.querySelector('.apex-basisprice-value .a-offscreen,.a-text-price[data-a-strike="true"] .a-offscreen')).slice(0,90),
-   available:!/unavailable|disabled/i.test(li.className)&&!/currently unavailable|out of stock/i.test(t(li))};}).filter(function(s){return /^[A-Z0-9]{10}$/.test(s.asin);});
+   image:((li.querySelector('img')||{}).src||'').slice(0,1990),available:!/unavailable|disabled/i.test(li.className)&&!/currently unavailable|out of stock/i.test(t(li))};}).filter(function(s){return /^[A-Z0-9]{10}$/.test(s.asin);});
  if(tw.values)a.twister=tw;
  var li=q('#landingImage');if(li&&!a.images.length)a.images.push(li.getAttribute('data-old-hires')||li.src);
  c.delivery=t(q('#mir-layout-DELIVERY_BLOCK')||q('#deliveryBlockMessage')||q('#ddmDeliveryMessage')).slice(0,290);

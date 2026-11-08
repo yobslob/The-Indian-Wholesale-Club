@@ -11,7 +11,7 @@ Short on purpose (the audit warns past 10 KB): **replace** lines when something 
 - **Merged and deployed 2026-11-07 (00:33 UTC):** D-191, [PR #3](https://github.com/yobslob/The-Indian-Wholesale-Club/pull/3), with its two migrations (the Deploy workflow succeeded).
 - **Merged and deployed 2026-11-07 (02:52 UTC):** D-192, [PR #4](https://github.com/yobslob/The-Indian-Wholesale-Club/pull/4) (coupons chosen in the bag, one bill, a card for each shipment).
 - **Merged and deployed 2026-11-07 (05:56 UTC):** D-193, [PR #5](https://github.com/yobslob/The-Indian-Wholesale-Club/pull/5) (the first-order band, the Diwali flip, four ads under the navbar, the album faster and never paused).
-- **Not released:** D-194 Phases 1 and 2 on branch `look-photos` (`docs/plan-look-photos.md`: each colour, pack and style shows its own photos where one is stored). No migration; no new photos yet.
+- **Not released:** D-194 Phases 1 to 4 on branch `look-photos` (`docs/plan-look-photos.md`: each colour, pack and style shows its own photos where one is stored; `pnpm sourcing looks` fills in the rest). One worker-only migration; nothing run on production.
 - **Accounts (D-147):** Vercel Pro, Supabase free since 2026-10-21/22, photos in Cloudflare R2. Budgets and the
   weekly check: `monitoring.md`. The free database's memory is already over (1.57 of 1.4 GB, swap 406 MB on 2026-11-04,
   and it stopped answering for about 45 minutes that day).
@@ -36,7 +36,7 @@ Short on purpose (the audit warns past 10 KB): **replace** lines when something 
   `TODO(D-187)`); **its admin mode breaks** with the release.
 
 ## Next for the founder
-1. **D-194:** merge and deploy at a quiet hour; each deploy empties the page cache. Query L1 – L3 are in (`plan-look-photos.md` Phase 0 results); L4 and L5 and today's R2 GB are still wanted. **D-191:** a new app build carries the bill's coins, Popular and the sub-category chips. Your choices: the retailer % (1.5 on the 5 Nov copy, so the charge grows with the bag; Settings → Bag charges), the noodles photo's printed "₹15", the sub-categories' own photos (`sub-photos.ts`). Popular is an experiment: compare orders and average bag in Admin before and after.
+1. **D-194:** merge and run the Deploy workflow at a quiet hour (migration 20261112090000; each deploy empties the page cache). Then re-add the Add to IWC bookmark, send today's R2 GB and run `pnpm sourcing looks --type food --site amazon.in --limit 20 --dry-run` (`plan-look-photos.md`). **D-191:** a new app build carries the bill's coins, Popular and the sub-category chips. Your choices: the retailer % (1.5 on the 5 Nov copy, so the charge grows with the bag; Settings → Bag charges), the noodles photo's printed "₹15", the sub-categories' own photos (`sub-photos.ts`). Popular is an experiment: compare orders and average bag in Admin before and after.
 2. **Names to tidy:** production's count (Y-11; the page and Rename all go only at 0).
 3. In the order of use (each from the archived status, still open and not re-checked here):
    - **The photo redo** (D-164): pull on the laptop, `pnpm photos:redo fetch --type food --again` and `--type home
@@ -62,7 +62,7 @@ Short on purpose (the audit warns past 10 KB): **replace** lines when something 
      right. Fixing it needs a new card key.
 
 ## Not built yet
-- **D-194:** Phase 0's numbers and 20-page sample (the founder's machine and production), the orphan report, the backfill (Phase 3), new listings (Phase 4). Until the backfill, Amazon listings look as before. The app gets the swap in its next build; its product screen ignores the tags today.
+- **D-194:** the dry runs and the backfill itself (founder's machine), the orphan report, the Looks without a photo filter. Until the backfill, Amazon listings look as before. The app gets the swap in its next build; its product screen ignores the tags today.
 - App: the bag's coupons and the one bill (it keeps typing a code, D-191, D-192); push notifications for new orders; the card's − n +, the For filter and the jewellery drawer.
 - Admin: "Select all n matching" bulk actions and search on Reviews and Returns.
 - Size charts from the shops (Q-39); invoice A with the confirmation email; `CHECK_LIVE_SITE`'s production photo check.
@@ -87,4 +87,4 @@ Short on purpose (the audit warns past 10 KB): **replace** lines when something 
 <!-- The verifier (plan §5 Phase 3 · Agent V) records the branch's full check here. Replace this table's row. -->
 | Date | Commit | Where | Result |
 |---|---|---|---|
-| 2026-11-07 | D-194 Phases 1 and 2 on top of D-193 (branch `look-photos`) | Claude Code, Windows 11, local Supabase | `node scripts/check.mjs docs typecheck lint test build http` pass, nothing over budget (`/` 11 ms, 133 KB JS; product page 142 KB; `/states/kerala` 150 KB); `db` passed before the last small changes. Full e2e on the code before the last file split: 96 passed, 2 skipped, 4 failed in `customer-choices`, `one-payment` and `phone-flows`: "Too many requests" for the test customer and a slow Stripe page. Those three specs passed alone with the local `rate_limit_hits` cleared (13 of 13), and `look-photos`, `card-bag` and `rows` passed on the final build (15 of 15). `bundle` not run: no app change. Phone check on a simulated Pixel 7 with stand-in photos, not on a physical phone; no real tagged listing checked, as the local database has none. |
+| 2026-11-08 | D-194 Phases 1 to 4 on top of D-193 (branch `look-photos`) | Claude Code, Windows 11, local Supabase | `node scripts/check.mjs docs typecheck lint test db build http` pass, nothing over budget (`/` 10 ms, 133 KB JS; product page 142 KB; `/states/kerala` 150 KB); SQL 70 of 70 with `look_photos.test.sql`; the runner type-checks. Full e2e: 99 passed, 2 skipped, 2 failed in `customer-choices` on "Too many requests" for the test customer, which passed alone with the local `rate_limit_hits` cleared (3 of 3). An earlier full run stopped at 15 minutes while this machine could not reach Stripe. Real listings: three live clothing listings copied locally, every colour tapped on a simulated Pixel 7 with their real photos. `pnpm sourcing looks` not run against any shop or production; `bundle` not run (no app change). |

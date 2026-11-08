@@ -67,6 +67,20 @@ export function lookPhoto(look: string, media: LookMedia[], variants: LookVarian
   return media.find((m) => m.variant_id !== null && looks.get(m.variant_id) === look)?.storage_path ?? null;
 }
 
+/** The choices for a photo in the admin panel: each look with its first variant, which its tag points at. */
+export function lookChoices(variants: LookVariant[]): { look: string; label: string; variantId: string }[] {
+  const seen = new Map<string, { look: string; label: string; variantId: string }>();
+  for (const v of variants) {
+    const look = lookKey(v.options);
+    if (seen.has(look)) continue;
+    const words = Object.entries(v.options ?? {})
+      .filter(([k, x]) => k !== 'size' && typeof x === 'string')
+      .map(([, x]) => displayOption(x as string));
+    seen.set(look, { look, label: words.join(' · '), variantId: v.id });
+  }
+  return seen.size < 2 ? [] : [...seen.values()];
+}
+
 /** Each option with its look's photo, for the card's + (`media` holds this listing's tagged photos, first photo first). */
 export function withLookPhotos<O extends LookVariant>(
   options: O[],

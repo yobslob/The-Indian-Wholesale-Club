@@ -1,7 +1,7 @@
 import assert from 'node:assert/strict';
 import { describe, it } from 'node:test';
 
-import { initialLook, lookKey, lookPhoto, looksOf, photosForLook, withLookPhotos } from '../src/domain/looks';
+import { initialLook, lookChoices, lookKey, lookPhoto, looksOf, photosForLook, withLookPhotos } from '../src/domain/looks';
 
 const v = (id: string, options: Record<string, string>, available = 2) => ({ id, options, available });
 const m = (storage_path: string, variant_id: string | null = null) => ({ storage_path, variant_id });
@@ -87,6 +87,18 @@ describe('the look a page opens on (D-194)', () => {
   });
   it('is none for a listing with one look', () => {
     assert.equal(initialLook([v('s', { size: 'S' }), v('m', { size: 'M' })], [m('a', 's')]), null);
+  });
+});
+
+describe('the choices in the admin panel (D-194)', () => {
+  it('lists each look once, with its first variant', () => {
+    assert.deepEqual(lookChoices(kurta), [
+      { look: NAVY, label: 'Navy', variantId: 'n-s' },
+      { look: MAROON, label: 'Maroon', variantId: 'r-s' },
+    ]);
+  });
+  it('has none for a listing with one look', () => {
+    assert.deepEqual(lookChoices([v('s', { size: 'S' }), v('m', { size: 'M' })]), []);
   });
 });
 

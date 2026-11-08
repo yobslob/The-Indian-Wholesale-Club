@@ -1,5 +1,7 @@
 import { expect, test, type Page } from '@playwright/test';
 
+import { E2E_ADMIN } from './env';
+
 /** D-194: the two demo listings with looks (supabase/seed/demo.sql). Their photo files don't exist locally. */
 const KURTA = '/states/punjab/demo-looks-kurta';
 const MASALA = '/states/punjab/demo-looks-masala';
@@ -114,4 +116,28 @@ test('on a card, a colour shows its photo until the ribbon closes, and the bag l
   await expect(page.getByRole('group', { name: 'Demo Looks Kurta: 1 in your bag' })).toBeVisible();
   const path = await page.evaluate(() => JSON.parse(localStorage.getItem('iwc-cart') ?? '{}').state.lines[0].imagePath as string);
   expect(path).toContain('/s/maroon.');
+});
+
+test('in the admin panel a photo can be one look’s or every look’s', async ({ page }) => {
+  await answerPhotos(page);
+  await page.goto('/admin');
+  await page.getByLabel('Email').fill(E2E_ADMIN.email);
+  await page.getByLabel('Password').fill(E2E_ADMIN.password);
+  await page.getByRole('button', { name: 'Sign in' }).click();
+  await expect(page).not.toHaveURL(/\/login$/);
+  await page.goto('/admin/catalog/00000000-0000-4000-8000-000000000301');
+  const forms = page.locator('form').filter({ has: page.getByRole('combobox', { name: 'For' }) });
+  const chosen = (n: number) => forms.nth(n).getByRole('combobox', { name: 'For' }).locator('option:checked');
+  const choose = async (label: string, shows: string): Promise<void> => {
+    await forms.nth(1).getByRole('combobox', { name: 'For' }).selectOption({ label });
+    await forms.nth(1).getByRole('button', { name: 'Save' }).click();
+    await expect(async () => {
+      await page.reload();
+      await expect(chosen(1)).toHaveText(shows, { timeout: 1000 });
+    }).toPass({ timeout: 15_000 });
+  };
+  await expect(chosen(1)).toHaveText('Every look');
+  await expect(chosen(2)).toHaveText('Navy');
+  await choose('Maroon', 'Maroon');
+  await choose('Every look', 'Every look');
 });
