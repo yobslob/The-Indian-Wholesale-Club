@@ -376,3 +376,13 @@ Founder, verbatim: "We have a greater problem to solve in many of the products: 
 - **Built, not run:** `pnpm sourcing looks` (the backfill), new Amazon listings' look photos, the admin's **For**. The founder runs every step on production. Amazon listings, most clothing colours and food packs, have no photo per look until then, so they look as before.
 - *Interpretation:* the founder said "Keep working and keep going on" without choosing about the small photos under a picked colour, so they stay as built. Hiding them moves the page by 158 px on a phone.
 - **Cost:** page cache: no new write; measured bytes in `status.md`. Database: one more small read per uncached `/api/card-options` answer (CDN 5 minutes); one migration with worker functions only, about 2 MB at 7,000 photos. R2: nothing until the backfill runs, at most 0.75 GB by the plan's sum. `NEXT_PUBLIC_LOOK_PHOTOS=off` and a redeploy turns it off.
+
+**D-195 · 2026-11-08 · founder: Traditional wear, every state's clothing from one tile**
+
+Founder, verbatim: "Add a new option of traditional wear in categories on which clicking it opens clothing but with the filter of clothes from all states only with a tag of the state below, once done then create the pr"
+
+- **Home's Shop by category** starts with a **Traditional wear** tile ("From every state"), shown when there is clothing. It opens `/clothing?state=any-state`: Clothing with only the pieces from a state, none of the all-India ones. Each card names its state below the photo, as cards already do.
+- The page's heading is "Traditional wear"; its chip "From every state" and Clear all go back to all of Clothing. Picking a state in the filter goes to that state, as before. Food and Home & gifts read the same address as their state-made pieces, with their usual heading.
+- `store_browse` takes `p_region = 'any-state'` (migration 20261112090100); nothing else in it changes.
+- *Interpretation (proposed):* "categories" is Home's Shop by category; the tile goes first, with `/visuals/diwali-clothing.jpg` until the founder sets one (`tile-photos.ts`).
+- **Cost:** one more cached See all page per type opened this way, built on first visit; no new read, no database growth, no new JS.

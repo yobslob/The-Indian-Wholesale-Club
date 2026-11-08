@@ -25,6 +25,10 @@ export interface BrowseQuery {
   inState?: string;
 }
 
+/** D-195: the State filter's "every state, no all-India piece": Traditional wear (store_browse reads it). */
+export const ANY_STATE = 'any-state';
+export const TRADITIONAL_WEAR = 'Traditional wear';
+
 export const WHO = ['women', 'men'] as const;
 export type Who = (typeof WHO)[number];
 export const WHO_LABEL: Record<Who, string> = { women: 'Women', men: 'Men' };

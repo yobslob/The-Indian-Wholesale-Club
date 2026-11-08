@@ -3,7 +3,7 @@ import { notFound } from 'next/navigation';
 import { PRODUCT_TYPE_LABEL, PRODUCT_TYPE_PATH, PRODUCT_TYPES, type ProductType } from '@repo/shared/domain';
 
 import { BrowseByType } from '@/features/catalog/browse-by-type';
-import { browseHref, parseBrowseQuery } from '@/features/catalog/browse-query';
+import { ANY_STATE, browseHref, parseBrowseQuery, TRADITIONAL_WEAR } from '@/features/catalog/browse-query';
 import { TYPE_EMPTY } from '@/features/catalog/type-toggle';
 
 import type { Metadata } from 'next';
@@ -38,10 +38,14 @@ async function read(params: Params) {
   return { productType, query };
 }
 
+/** D-195: Clothing from every state is Traditional wear. */
+const titleOf = (productType: ProductType, state: string | undefined): string =>
+  productType === 'clothing' && state === ANY_STATE ? TRADITIONAL_WEAR : PRODUCT_TYPE_LABEL[productType];
+
 export async function generateMetadata({ params }: { params: Params }): Promise<Metadata> {
   const { productType, query } = await read(params);
   // the address customers use, never this route's
-  return { title: PRODUCT_TYPE_LABEL[productType], alternates: { canonical: browseHref(productType, query) } };
+  return { title: titleOf(productType, query.state), alternates: { canonical: browseHref(productType, query) } };
 }
 
 export default async function SeeAllPage({ params }: { params: Params }): Promise<React.JSX.Element> {
@@ -49,7 +53,7 @@ export default async function SeeAllPage({ params }: { params: Params }): Promis
   return (
     <BrowseByType
       productType={productType}
-      title={PRODUCT_TYPE_LABEL[productType]}
+      title={titleOf(productType, query.state)}
       emptyText={TYPE_EMPTY[productType]}
       query={query}
     />

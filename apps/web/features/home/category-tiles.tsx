@@ -2,6 +2,7 @@ import Link from 'next/link';
 
 import { PRODUCT_TYPE_PATH } from '@repo/shared/domain';
 
+import { ANY_STATE, TRADITIONAL_WEAR } from '@/features/catalog/browse-query';
 import { sectionHeading } from '@/features/catalog/product-row';
 import { StorePhoto } from '@/features/catalog/store-photo';
 import { mediaUrl } from '@/lib/site';
@@ -14,6 +15,7 @@ import type { HomeData } from '@repo/db/store';
  * D-187: Home's category tiles, biggest first, each with its photo and its count: the founder's own (tile-photos.ts),
  * else the photo of its newest piece. A tile opens that category's See all page (/food?category=sweets); Shirts and
  * Tops share a category and open it for men or women (D-190). From store_home(), so no read of its own. Server-drawn.
+ * D-195: Traditional wear comes first when there is clothing: Clothing with only the pieces from a state.
  */
 export function CategoryTiles({ categories }: { categories: HomeData['categories'] }): React.JSX.Element | null {
   if (categories.length < 2) return null;
@@ -23,6 +25,24 @@ export function CategoryTiles({ categories }: { categories: HomeData['categories
         Shop by category
       </h2>
       <ul className="m-0 grid list-none grid-cols-3 gap-[var(--gap)] p-0 sm:grid-cols-4 lg:grid-cols-6">
+        {categories.some((c) => c.product_type === 'clothing') ? (
+          <li>
+            <Link href={`/clothing?state=${ANY_STATE}`} prefetch={false} className="group block">
+              <span className="bg-land relative block aspect-square overflow-hidden rounded-lg">
+                {TILE_PHOTOS['traditional-wear'] ? (
+                  <StorePhoto
+                    src={TILE_PHOTOS['traditional-wear']}
+                    alt=""
+                    sizes="(min-width: 1024px) 16vw, (min-width: 640px) 25vw, 33vw"
+                    className="object-cover transition-transform duration-500 group-hover:scale-[1.04]"
+                  />
+                ) : null}
+              </span>
+              <span className="font-ui text-ink mt-2 block text-sm font-semibold leading-tight">{TRADITIONAL_WEAR}</span>
+              <span className="text-ink-muted font-ui block text-xs">From every state</span>
+            </Link>
+          </li>
+        ) : null}
         {categories.map((c) => {
           const key = c.for ? `${c.slug}:${c.for}` : c.slug;
           const photo = TILE_PHOTOS[key] ?? (c.image_path ? mediaUrl(c.image_path) : null);

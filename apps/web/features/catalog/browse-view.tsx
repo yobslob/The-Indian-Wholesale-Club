@@ -5,7 +5,7 @@ import { useRef } from 'react';
 import { sizeLabel } from '@repo/shared/domain';
 
 
-import {
+import { ANY_STATE,
   browseHref,
   priceLabel,
   SORT_CHOICES,
@@ -60,7 +60,12 @@ export function BrowseView({
 
   // D-157: on a state's own page the state is the page's: no State filter, chip or name in the heading
   const inState = Boolean(query.inState);
-  const stateName = inState ? undefined : meta.regions.find((s) => s.slug === query.state)?.name;
+  // D-195: every state's pieces (Traditional wear) has its own chip
+  const stateName = inState
+    ? undefined
+    : query.state === ANY_STATE
+      ? 'From every state'
+      : meta.regions.find((s) => s.slug === query.state)?.name;
   const categoryName = meta.categories.find((c) => c.slug === query.category)?.name;
   const subName = meta.subcategories.find((s) => s.slug === query.sub)?.name;
   const price = priceLabel(query);
