@@ -170,3 +170,5 @@ $$;
 
 revoke all on function public.store_browse(text, text, text, integer, integer, integer, integer, text, text, text, text) from public;
 grant execute on function public.store_browse(text, text, text, integer, integer, integer, integer, text, text, text, text) to anon, authenticated, service_role;
+
+notify pgrst, 'reload schema';
