@@ -316,7 +316,7 @@ founder sets), and no store page got slower (`check.mjs http`, Lighthouse on two
 |---|---|---|
 | Q1 | Photos per look in the backfill: 1, or 2 for clothing (front + back)? | clothing 1, food 1, home 1. A 2nd for clothing only if R2 allows after the first pass |
 | Q2 | Should the **card's** photo change while a colour is chosen in the + picker, or only the picker's thumbnail? | the card's photo too, back on close |
-| Q3 | R2 space this work may use | 0.5 GB, hard stop at 9.3 GB total on the dashboard |
+| Q3 | R2 space this work may use | 0.5 GB, hard stop at 9.3 GB total on the dashboard. **Answered 2026-11-09:** the founder will pay past the free 10 GB; each run's `--photo-gb` is the cap |
 | Q4 | After the orphan report (Phase 0b), may unused photos be deleted? | report only, then ask |
 | Q5 | Order of the backfill | clothing → food → home & gifts |
 | Q6 | Should the URL remember the picked colour (`?colour=navy`) for sharing? | no (later idea; it needs care with the page cache) |
@@ -329,7 +329,7 @@ founder sets), and no store page got slower (`check.mjs http`, Lighthouse on two
 - A 2nd–4th photo per colour if R2 moves to a paid tier.
 
 ## Phase 0 results
-**These first numbers came from the old database** (the project before D-147), founder 2026-11-09: L1 – L4 and the first runner attempts ran against it. Run L1 – L4 again on the live project (`ttobhpcidixxdteczccv`) before sizing the backfill. Kept below for comparison only. L1 minus its photos equals L3's total in every type, so the three agree.
+**Run again on the live project** (`ttobhpcidixxdteczccv`, founder 2026-11-09): L1 – L4 came back the same in every cell as the first run, which the founder had thought was the old database's. So the numbers below are the live store's, and the sizing stands. L1 minus its photos equals L3's total in every type, so the three agree.
 
 **L1, listings with 2+ looks**
 
@@ -390,6 +390,8 @@ The CSV's `method` column says which way works per shop. Amazon's colour map and
 - **How Amazon food shows a pack:** only on its own item page. The swatch was found once and the colour map never, as expected for packs without pictures in the picker.
 - **No robot check** in 20 listings and about 100 pages.
 - **The cap:** every no-image is the 4-item-page limit. `--item-pages 8` reads more of them, at one more Amazon page each.
-- **Per listing:** about 1.8 new photos, so about 125 KB of R2. The full size waits for L1 – L3 on the live project.
+- **Per listing:** about 1.8 new photos, so about 125 KB of R2. At that rate the 3,844 listings with looks need about 6,900 photos, about 0.48 GB, under the 0.75 GB upper bound; a higher `--item-pages` finds more.
 
-**Still to do:** L1 – L4 on the live project, today's R2 GB, a first real run, the clothing and home dry runs, the orphan report.
+**R2 (founder 2026-11-09):** 8.39 GB in use, and willing to pay past the free 10 GB. Cloudflare bills R2 by use, about $0.015 per GB a month past 10 GB, so the whole backfill, even with `--per-look 2` for clothing, stays near or under the free 10 GB. The 0.5 GB cap and the 9.3 GB stop give way to each run's `--photo-gb` and the dashboard after each run.
+
+**Still to do:** the clothing and home dry runs, a first real run, the orphan report.
