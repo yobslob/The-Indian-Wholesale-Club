@@ -61,6 +61,8 @@ export class Db implements FoodPassDb {
   private constructor(
     private readonly client: SupabaseClient,
     private readonly photos: PhotoStore | null,
+    /** The database's host, for messages (never a key). */
+    private readonly host: string,
   ) {}
 
   static async signIn(env: Env): Promise<Db> {
@@ -83,7 +85,7 @@ export class Db implements FoodPassDb {
     }
     const photos = PhotoStore.from(env);
     if (!photos) log('No photo store set (IWC_PHOTO_STORE_*): new photos go to Supabase storage and the admin panel moves them.');
-    return new Db(client, photos);
+    return new Db(client, photos, new URL(env.IWC_SUPABASE_URL).hostname);
   }
 
   private async rpc<T>(fn: string, args: Record<string, unknown>): Promise<T> {
@@ -130,9 +132,19 @@ export class Db implements FoodPassDb {
 
   /** D-194, `pnpm sourcing looks`: live listings with a look without a photo, 25 at most. */
   async lookPlan(type: ProductType, after: string | null, limit: number) {
-    return lookPlanSchema.parse(
-      await this.rpc('worker_look_photo_plan', { p_type: type, p_after: after, p_limit: limit }),
-    );
+    try {
+      return lookPlanSchema.parse(
+        await this.rpc('worker_look_photo_plan', { p_type: type, p_after: after, p_limit: limit }),
+      );
+    } catch (error) {
+      if (!/could not find the function|schema cache/i.test(String(error))) throw error;
+      throw new Error(
+        `${this.host} has no worker_look_photo_plan (migration 20261112090000). Check that IWC_SUPABASE_URL in ` +
+          `tools/sourcing-runner/.env is the project the Deploy workflow pushes to (Supabase → Project Settings → its ` +
+          `URL), and in that project's SQL editor: select proname from pg_proc where proname like 'worker_look%'; (4 rows). ` +
+          `If the 4 are there, run notify pgrst, 'reload schema'; and try again.`,
+      );
+    }
   }
 
   lookAdd(product: string, media: { path: string; variant_id: string; alt_text: string }[]): Promise<string[]> {
