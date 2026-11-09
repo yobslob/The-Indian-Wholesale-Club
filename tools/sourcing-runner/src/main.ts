@@ -73,6 +73,7 @@ async function setup(args: string[]): Promise<void> {
 async function doctor(): Promise<number> {
   const env = loadEnv(true);
   const host = new URL(env.IWC_SUPABASE_URL).hostname;
+  log(`database: ${host} (the project in Supabase → Project Settings must have this URL)`);
   const { lookup } = await import('node:dns/promises');
   const step = async (name: string, work: () => Promise<string>): Promise<boolean> => {
     try {

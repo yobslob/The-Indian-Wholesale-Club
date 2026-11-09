@@ -26,8 +26,11 @@ test('+ on a kurta opens the ribbon, M adds M, and the card shows − 1 +', asyn
   await page.reload();
   const pill = page.getByRole('group', { name: `${name}: 1 in your bag` });
   await expect(pill).toBeVisible();
+  // another piece may have the same name (2026-11-09: two Mirror-work kurtas on the first page): its + is counted too
+  const pluses = page.getByRole('button', { name: `Choose a size of ${name}` });
+  const before = await pluses.count();
   await pill.getByRole('button', { name: `One less ${name}` }).click();
-  await expect(page.getByRole('button', { name: `Choose a size of ${name}` })).toBeVisible();
+  await expect(pluses).toHaveCount(before + 1);
 });
 
 test('+ on a piece with one choice adds it at once', async ({ page }) => {
