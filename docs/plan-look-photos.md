@@ -329,7 +329,7 @@ founder sets), and no store page got slower (`check.mjs http`, Lighthouse on two
 - A 2nd–4th photo per colour if R2 moves to a paid tier.
 
 ## Phase 0 results
-Production, read-only, founder 2026-11-07. L1 minus its photos equals L3's total in every type, so the three agree.
+**These first numbers came from the old database** (the project before D-147), founder 2026-11-09: L1 – L4 and the first runner attempts ran against it. Run L1 – L4 again on the live project (`ttobhpcidixxdteczccv`) before sizing the backfill. Kept below for comparison only. L1 minus its photos equals L3's total in every type, so the three agree.
 
 **L1, listings with 2+ looks**
 
@@ -377,4 +377,19 @@ The CSV's `method` column says which way works per shop. Amazon's colour map and
 - Phase 3 step 5: `looks` doesn't call the photo redo service. Its photos go up unmarked, so the redo's plan picks them up later.
 - Phase 3 step 2: Flipkart has no missing looks (L3), so it has no reader of its own; item pages cover any later ones.
 
-**Still to do:** the deploy with migration 20261112090000, the dry runs, real runs, today's R2 GB, the orphan report.
+**First dry run on the live project** (founder 2026-11-09, `pnpm sourcing looks --type food --site amazon.in --limit 20 --dry-run`): 20 Amazon food listings, 105 looks.
+
+| Action | Looks | What it means |
+|---|---:|---|
+| would-tag | 21 | the listing already has that picture: a tag, no upload (20 the page's own look, 1 an item page) |
+| would-add | 36 | a new picture, all from item pages: about 2.5 MB stored at ~70 KB each |
+| same-as-other | 20 | the shop shows one picture for several packs: nothing stored |
+| no-image | 27 | in 9 listings with 6+ looks, past the 4 item pages a listing may read |
+| too-small | 1 | under 600 px |
+
+- **How Amazon food shows a pack:** only on its own item page. The swatch was found once and the colour map never, as expected for packs without pictures in the picker.
+- **No robot check** in 20 listings and about 100 pages.
+- **The cap:** every no-image is the 4-item-page limit. `--item-pages 8` reads more of them, at one more Amazon page each.
+- **Per listing:** about 1.8 new photos, so about 125 KB of R2. The full size waits for L1 – L3 on the live project.
+
+**Still to do:** L1 – L4 on the live project, today's R2 GB, a first real run, the clothing and home dry runs, the orphan report.

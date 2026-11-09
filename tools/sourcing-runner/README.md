@@ -158,7 +158,7 @@ A dry run reads the pages and compares the pictures, and writes only its CSV. `m
 pnpm sourcing looks --type clothing --limit 200 --photo-gb 0.15
 ```
 
-`--after <id>` goes on where the last run ended (it prints the id). `--per-look 2` takes a second photo. A picture the listing already has only gets a tag; only a new one uses space. A shop's robot check ends that shop for the run; a database timeout ends the run. `out/looks-<type>-<time>.csv` lists every action.
+`--after <id>` goes on where the last run ended (it prints the id). `--per-look 2` takes a second photo. `--item-pages 8` lets a listing read up to 8 item pages (default 4, at most 10) for looks its own page doesn't show; each is one more page from the shop. A picture the listing already has only gets a tag; only a new one uses space. A shop's robot check ends that shop for the run; a database timeout ends the run. `out/looks-<type>-<time>.csv` lists every action.
 
 ```bash
 pnpm sourcing looks --undo out/looks-clothing-<time>.csv
