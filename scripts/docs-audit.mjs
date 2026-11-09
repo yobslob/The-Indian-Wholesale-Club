@@ -194,6 +194,15 @@ for (const name of objects) {
     problems.push(`docs/data-model.md: ${name} (migrations) is not described`);
 }
 
+// 5b. A migration from 2026-11-12 on that makes a function asks the API to reload its schema, or the API answers
+// "Could not find the function … in the schema cache" until it reloads by itself (2026-11-08, after D-194's deploy).
+for (const [file, text] of Object.entries(code)) {
+  const version = file.match(/^supabase\/migrations\/(\d{14})_/)?.[1];
+  if (!version || version < '20261112000000') continue;
+  if (/create\s+(?:or\s+replace\s+)?function/i.test(text) && !/notify\s+pgrst\s*,\s*'reload schema'/i.test(text))
+    problems.push(`${file}: makes a function but doesn't end with notify pgrst, 'reload schema'`);
+}
+
 // 6. Environment variables read by code.
 const ops = docs['docs/ops.md'];
 const envVars = new Map();

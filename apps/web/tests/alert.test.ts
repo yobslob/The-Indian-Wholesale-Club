@@ -87,9 +87,15 @@ describe('sendAlert', () => {
       new Promise<Response>((_resolve, reject) => {
         init.signal?.addEventListener('abort', () => reject(init.signal?.reason));
       })) as unknown as typeof fetch;
-    const started = Date.now();
-    assert.equal(await sendAlert('x', {}, { url: URL, fetchImpl: hanging, timeoutMs: 50 }), false);
-    assert.ok(Date.now() - started < 2000);
+    // AbortSignal.timeout's timer doesn't keep Node running: this one does, until the abort has come
+    const awake = setInterval(() => undefined, 1000);
+    try {
+      const started = Date.now();
+      assert.equal(await sendAlert('x', {}, { url: URL, fetchImpl: hanging, timeoutMs: 50 }), false);
+      assert.ok(Date.now() - started < 2000);
+    } finally {
+      clearInterval(awake);
+    }
   });
 });
 

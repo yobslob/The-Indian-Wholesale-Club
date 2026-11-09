@@ -151,3 +151,5 @@ grant execute on function public.worker_look_photo_plan(public.product_type, uui
 grant execute on function public.worker_look_photos_add(uuid, jsonb) to authenticated;
 grant execute on function public.worker_look_photo_tag(uuid, uuid, uuid) to authenticated;
 grant execute on function public.worker_look_photos_undo(uuid[]) to authenticated;
+
+notify pgrst, 'reload schema';
