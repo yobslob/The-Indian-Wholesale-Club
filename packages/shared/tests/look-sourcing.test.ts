@@ -103,6 +103,21 @@ describe('what a picture is to the listing (D-194)', () => {
   });
 });
 
+describe('the page’s own look (D-194, dry runs 2026-11-09)', () => {
+  const picture = (fill: number, width = 1000, height = 1200) => ({ width, height, pixels: new Uint8Array(256 * 256 * 3).fill(fill) });
+  it('tags the matching photo when there is one', () => {
+    const stored = [{ id: 'main', print: picture(10), look: null }, { id: 'b', print: picture(90), look: null }];
+    assert.deepEqual(lookAction(picture(90), stored, { mainId: 'main' }), { action: 'tag', photo: 'b' });
+  });
+  it('tags the main photo when the photos were made again and match nothing, and never stores one', () => {
+    assert.deepEqual(lookAction(picture(200), [{ id: 'main', print: picture(10), look: null }], { mainId: 'main' }), { action: 'tag', photo: 'main' });
+    assert.deepEqual(lookAction(picture(200, 300, 300), [{ id: 'main', print: picture(10), look: null }], { mainId: 'main' }), { action: 'tag', photo: 'main' });
+  });
+  it('leaves it when the main photo is already another look’s', () => {
+    assert.deepEqual(lookAction(picture(200), [{ id: 'main', print: picture(10), look: 'colour=red' }], { mainId: 'main' }), { action: 'own-look' });
+  });
+});
+
 describe('the run’s CSV (D-194)', () => {
   it('gives --undo what was added and tagged, and nothing else', () => {
     const csv = [

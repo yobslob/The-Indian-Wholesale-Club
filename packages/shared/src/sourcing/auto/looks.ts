@@ -112,7 +112,7 @@ export function amazonLookImages(raw: AmazonLookRaw, missing: MissingLook[]): Ma
   return out;
 }
 
-export type LookAction = 'tag' | 'same-as-other' | 'too-small' | 'add';
+export type LookAction = 'tag' | 'same-as-other' | 'too-small' | 'add' | 'own-look';
 
 /** A stored photo's print and whose it is: null for a shared photo, else the look it is tagged to. */
 export interface StoredPrint {
@@ -129,10 +129,20 @@ export const MIN_LOOK_PHOTO_PX = 600;
  * look already has says nothing about this look (the shop uses one picture for every pack), and only a new picture
  * big enough is stored.
  */
-export function lookAction(print: PhotoPrint, stored: StoredPrint[]): { action: LookAction; photo?: string } {
+export function lookAction(
+  print: PhotoPrint,
+  stored: StoredPrint[],
+  own?: { mainId: string | null },
+): { action: LookAction; photo?: string } {
   const same = stored.filter((s) => s.print && samePicture(print, s.print));
   const shared = same.find((s) => s.look === null);
   if (shared) return { action: 'tag', photo: shared.id };
+  // The page's own look already has the listing's photos, often made again by the photo redo (D-164), so the shop's
+  // picture no longer matches them. Its main photo becomes the look's instead; nothing is ever stored for it.
+  if (own) {
+    const main = stored.find((s) => s.id === own.mainId && s.look === null);
+    return main ? { action: 'tag', photo: main.id } : { action: 'own-look' };
+  }
   if (same.length > 0) return { action: 'same-as-other' };
   return { action: Math.min(print.width, print.height) < MIN_LOOK_PHOTO_PX ? 'too-small' : 'add' };
 }
