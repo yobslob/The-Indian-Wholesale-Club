@@ -34,8 +34,8 @@ import type { Db } from './db';
  */
 
 const MAX_BYTES = 10 * 1024 * 1024;
-/** Other pages read per listing, on top of its own. */
-const ITEM_PAGES_PER_LISTING = 4;
+/** Other pages read per listing, on top of its own, unless `--item-pages` says otherwise (at most 10). */
+export const ITEM_PAGES_PER_LISTING = 4;
 const PAUSE_MS = 2_500;
 const sleep = (ms: number): Promise<void> => new Promise((r) => setTimeout(r, ms));
 
@@ -43,6 +43,8 @@ export interface LooksOptions {
   type: ProductType;
   limit: number;
   perLook: number;
+  /** Item pages a listing may read for looks its own page doesn't show. */
+  itemPages: number;
   dryRun: boolean;
   site: string | null;
   after: string | null;
@@ -109,7 +111,7 @@ async function itemPagePhoto(ctx: RunContext, site: string, url: string): Promis
 }
 
 /** Where each missing look's picture is, reading the listing's page once and a few item pages after it. */
-async function findImages(ctx: RunContext, listing: LookListing, site: string, referer: string) {
+async function findImages(ctx: RunContext, listing: LookListing, site: string, referer: string, itemPages: number) {
   const reader = shopOf(ctx, site)?.reader ?? null;
   const ownKey = itemKeyOf(listing.source_url);
   const missing = missingLooks(listing, ownKey);
@@ -135,7 +137,7 @@ async function findImages(ctx: RunContext, listing: LookListing, site: string, r
   // Packs without pictures in the picker: an item's own page is the only place, a few per listing.
   let pages = 0;
   for (const m of missing) {
-    if (images.has(m.look) || pages >= ITEM_PAGES_PER_LISTING) continue;
+    if (images.has(m.look) || pages >= itemPages) continue;
     const url = m.variants.map((v) => v.item_url).find((u) => u && u !== listing.source_url && u !== referer);
     if (!url) continue;
     pages++;
@@ -155,7 +157,7 @@ async function workListing(
   totals: LooksTotals,
 ): Promise<void> {
   const referer = listing.source_url;
-  const { missing, images } = await findImages(ctx, listing, site, referer);
+  const { missing, images } = await findImages(ctx, listing, site, referer, opts.itemPages);
   const stored = images.size > 0 ? await storedPrints(listing, opts.siteUrl) : [];
   const newPhotos: { path: string; variant_id: string; alt_text: string; look: MissingLook; bytes: number; method: string }[] = [];
 

@@ -2,7 +2,7 @@ import { PRODUCT_TYPES } from '@repo/shared/domain';
 
 import { openBrowser, profileFor } from './browser';
 import { PhotoBudget, startBudget } from './budget';
-import { runLooks, undoLooks } from './looks';
+import { ITEM_PAGES_PER_LISTING, runLooks, undoLooks } from './looks';
 import { runChecks } from './check';
 import { sortNewClothing } from './classes';
 import { DEFAULT_SHOPS, type RunContext } from './context';
@@ -421,7 +421,7 @@ async function looks(): Promise<number> {
     return 0;
   }
   const type = PRODUCT_TYPES.find((t) => t === flag(args, '--type'));
-  if (!type) throw new Error('Usage: pnpm sourcing looks --type clothing|food|home [--limit 200] [--photo-gb 0.2] [--per-look 1] [--site amazon.in] [--after <id>] [--dry-run] | --undo <csv>');
+  if (!type) throw new Error('Usage: pnpm sourcing looks --type clothing|food|home [--limit 200] [--photo-gb 0.2] [--per-look 1] [--item-pages 4] [--site amazon.in] [--after <id>] [--dry-run] | --undo <csv>');
   const gb = flag(args, '--photo-gb');
   const dryRun = args.includes('--dry-run');
   if (!dryRun && gb === null) throw new Error('--photo-gb is required: the photo store space this run may use, in GB (0.15)');
@@ -456,6 +456,7 @@ async function looks(): Promise<number> {
       type,
       limit: Math.min(Number(flag(args, '--limit')) || 50, 500),
       perLook: Math.min(Math.max(Number(flag(args, '--per-look')) || 1, 1), 2),
+      itemPages: Math.min(Math.max(Number(flag(args, '--item-pages')) || ITEM_PAGES_PER_LISTING, 0), 10),
       dryRun,
       site: flag(args, '--site'),
       after: flag(args, '--after'),
