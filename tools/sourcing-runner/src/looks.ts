@@ -3,6 +3,7 @@ import { join } from 'node:path';
 
 import { lookKey, mediaPath, photoUrl, type PhotoPrint, type ProductType } from '@repo/shared/domain';
 import {
+  amazonFullSize,
   amazonLookImages,
   itemKeyOf,
   LOOK_CSV_HEADER,
@@ -159,6 +160,8 @@ async function workListing(
   const referer = listing.source_url;
   const { missing, images } = await findImages(ctx, listing, site, referer, opts.itemPages);
   const stored = images.size > 0 ? await storedPrints(listing, opts.siteUrl) : [];
+  const ownKey = itemKeyOf(listing.source_url);
+  const mainId = listing.photos.find((p) => p.is_primary)?.id ?? null;
   const newPhotos: { path: string; variant_id: string; alt_text: string; look: MissingLook; bytes: number; method: string }[] = [];
 
   for (const m of missing) {
@@ -168,15 +171,19 @@ async function workListing(
       totals.skipped++;
       continue;
     }
+    // the page's own look, found on its page or its own item: never a new photo (lookAction)
+    const own = m.variants.some((v) => v.item_key === ownKey || v.item_url === listing.source_url);
     for (const url of found.urls.slice(0, opts.perLook)) {
-      const got = await fetchPicture(ctx, url, referer);
+      // Amazon's picture at its own size first (dry runs 2026-11-09: most "too small" were 500-pixel previews)
+      const full = amazonFullSize(url);
+      const got = (await fetchPicture(ctx, full, referer)) ?? (full !== url ? await fetchPicture(ctx, url, referer) : null);
       const print = got ? await photoPrint(got.body) : null;
       if (!got || !print) {
         row({ listing: listing.id, look: m.look, action: 'no-image', method: found.method });
         totals.skipped++;
         continue;
       }
-      const { action, photo } = lookAction(print, stored);
+      const { action, photo } = lookAction(print, stored, own ? { mainId } : undefined);
       if (action === 'tag') {
         if (!opts.dryRun) await db.lookTag(listing.id, photo!, m.variants[0]!.id);
         const entry = stored.find((s) => s.id === photo);

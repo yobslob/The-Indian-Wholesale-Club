@@ -15,7 +15,7 @@ Short on purpose (the audit warns past 10 KB): **replace** lines when something 
 - **Merged and deployed 2026-11-09 (08:36 UTC):** [PR #7](https://github.com/yobslob/The-Indian-Wholesale-Club/pull/7), migration 20261113090000 (the API reloads). The Deploy run failed only at the Android build: EAS's free plan has no Android builds left until 2026-12-01.
 - **Merged 2026-11-09:** [PR #8](https://github.com/yobslob/The-Indian-Wholesale-Club/pull/8) (the card test, the runner's database hints).
 - **Merged 2026-11-09:** [PR #9](https://github.com/yobslob/The-Indian-Wholesale-Club/pull/9) (`--item-pages`, the first dry run).
-- **Not released:** branch `looks-r2-paid`: docs only (R2 paid past 10 GB, the live L1 – L4).
+- **Not released:** branch `looks-r2-paid` (PR #10, docs) and branch `looks-own-full`: the page's own look never gets a new photo, and Amazon pictures are tried at full size first (from the clothing and home dry runs).
 - **Accounts (D-147):** Vercel Pro, Supabase free since 2026-10-21/22, photos in Cloudflare R2. Budgets and the
   weekly check: `monitoring.md`. The free database's memory is already over (1.57 of 1.4 GB, swap 406 MB on 2026-11-04,
   and it stopped answering for about 45 minutes that day).
@@ -40,7 +40,7 @@ Short on purpose (the audit warns past 10 KB): **replace** lines when something 
   `TODO(D-187)`); **its admin mode breaks** with the release.
 
 ## Next for the founder
-1. **D-194:** the clothing and home dry runs (`pnpm sourcing looks --type clothing --site amazon.in --limit 20 --dry-run`, then `--type home`), then a first real run with `--photo-gb 0.05`. R2 is billed past the free 10 GB, by use. Re-add the Add to IWC bookmark. **D-191:** a new app build carries the bill's coins, Popular and the sub-category chips. Your choices: the retailer % (1.5 on the 5 Nov copy, so the charge grows with the bag; Settings → Bag charges), the noodles photo's printed "₹15", the sub-categories' own photos (`sub-photos.ts`). Popular is an experiment: compare orders and average bag in Admin before and after.
+1. **D-194:** after `looks-own-full` is merged, the clothing and home dry runs again (`pnpm sourcing looks --type clothing --site amazon.in --limit 20 --dry-run`, then `--type home`). Food can start now with `--photo-gb 0.05`. Re-add the Add to IWC bookmark. **D-191:** a new app build carries the bill's coins, Popular and the sub-category chips. Your choices: the retailer % (1.5 on the 5 Nov copy, so the charge grows with the bag; Settings → Bag charges), the noodles photo's printed "₹15", the sub-categories' own photos (`sub-photos.ts`). Popular is an experiment: compare orders and average bag in Admin before and after.
 2. **Names to tidy:** production's count (Y-11; the page and Rename all go only at 0).
 3. In the order of use (each from the archived status, still open and not re-checked here):
    - **The photo redo** (D-164): pull on the laptop, `pnpm photos:redo fetch --type food --again` and `--type home

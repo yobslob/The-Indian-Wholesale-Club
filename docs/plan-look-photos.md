@@ -392,6 +392,22 @@ The CSV's `method` column says which way works per shop. Amazon's colour map and
 - **The cap:** every no-image is the 4-item-page limit. `--item-pages 8` reads more of them, at one more Amazon page each.
 - **Per listing:** about 1.8 new photos, so about 125 KB of R2. At that rate the 3,844 listings with looks need about 6,900 photos, about 0.48 GB, under the 0.75 GB upper bound; a higher `--item-pages` finds more.
 
+**Clothing and home dry runs** (founder 2026-11-09, Amazon, 20 listings each):
+
+| | Clothing (115 looks) | Home & gifts (101 looks) |
+|---|---:|---:|
+| would-tag | 18 | 0 |
+| would-add | 69 (52 from the colour map) | 70 (32 from the colour map) |
+| same-as-other | 6 | 10 |
+| too-small | 18 (11 colour-map previews) | 21 (10 swatches) |
+| no-image | 4 | 0 |
+
+- **The colour map works for clothing and home**, as it doesn't for food.
+- **A fault, fixed after these runs:** the page's own look got a new photo 12 times in clothing and 16 in home (`would-add` with `page`). The listing's photos were made again by the photo redo (D-164), so the shop's picture matched none of them, and the same piece would have gone up twice. Now the page's own look never gets a new photo: its main photo is tagged to it instead.
+- **"Too small":** most were Amazon's 500-pixel previews. The runner now tries each Amazon picture at its own size first (the size token taken off), then the preview.
+- **Per listing, after the fix:** about 2.9 new photos in clothing and 2.7 in home. With food's 1.8, the whole backfill is about 8,700 photos, about 0.6 GB.
+- **Run the clothing and home dry runs again** to see the fix before any real run there.
+
 **R2 (founder 2026-11-09):** 8.39 GB in use, and willing to pay past the free 10 GB. Cloudflare bills R2 by use, about $0.015 per GB a month past 10 GB, so the whole backfill, even with `--per-look 2` for clothing, stays near or under the free 10 GB. The 0.5 GB cap and the 9.3 GB stop give way to each run's `--photo-gb` and the dashboard after each run.
 
 **Still to do:** the clothing and home dry runs, a first real run, the orphan report.
