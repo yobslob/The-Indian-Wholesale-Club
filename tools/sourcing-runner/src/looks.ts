@@ -4,6 +4,7 @@ import { join } from 'node:path';
 import { lookKey, mediaPath, photoUrl, type PhotoPrint, type ProductType } from '@repo/shared/domain';
 import {
   amazonFullSize,
+  isOwnLook,
   amazonLookImages,
   itemKeyOf,
   LOOK_CSV_HEADER,
@@ -172,7 +173,7 @@ async function workListing(
       continue;
     }
     // the page's own look, found on its page or its own item: never a new photo (lookAction)
-    const own = m.variants.some((v) => v.item_key === ownKey || v.item_url === listing.source_url);
+    const own = isOwnLook(m, found.method, listing.source_url, ownKey);
     for (const url of found.urls.slice(0, opts.perLook)) {
       // Amazon's picture at its own size first (dry runs 2026-11-09: most "too small" were 500-pixel previews)
       const full = amazonFullSize(url);
