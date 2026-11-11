@@ -388,3 +388,19 @@ Founder, verbatim: "Add a new option of traditional wear in categories on which 
 - `store_browse` takes `p_region = 'any-state'` (migration 20261112090100); nothing else in it changes.
 - *Interpretation (proposed):* "categories" is Home's Shop by category; the tile goes first, with `/visuals/diwali-clothing.jpg` until the founder sets one (`tile-photos.ts`).
 - **Cost:** one more cached See all page per type opened this way, built on first visit; no new read, no database growth, no new JS.
+
+**D-196 · 2026-11-10 · founder: Home's theme goes from Diwali to Homecoming, for Thanksgiving; the four ads stay** · Closes Y-15; narrows Q-60
+
+Founder, verbatim: "I want to change my theme from diwali to homecoming except for the four ads(nimbu mirchi, aunty's hand, monkey and discount strip). work on the frontend and change the theme to thanksgiving."
+
+- **The season** is one place now: `features/home/homecoming-hooks.ts` (`SEASON`: Thanksgiving, Thu, Nov 26, 2026). The hero's kicker and the wide card read it; the files `diwali-*.tsx` are `homecoming-*.tsx`, the CSS prefix `dw-` is `hc-`.
+- **Hero:** "Thanksgiving · Thu, Nov 26", then "Pass the" and *achaar.* The delivery days and the free line still come from Settings.
+- **The arches:** the same three windows, words and prices (D-174, D-175), under a garland of autumn leaves with cranberries where the toran was; pumpkin, olive and cream where saffron, peacock and cream were; a pumpkin on the sill where the diya was.
+- **The wide card:** a dusk where the Diwali night was: a garland of leaves for the string lights, two drifting leaves for the fireworks, "Thanksgiving · Thu, Nov 26", "Host your Thanksgiving under $99." turning over with the first-order line; the flight, the button and `/home-and-gifts?max=99` as they were.
+- **The first-order band** keeps the founder's colours and words (D-193); only its Diwali lights and fireworks became the garland and leaves.
+- **Untouched:** the four ads under the navbar (`features/shell/first-order-art.tsx`), every price, the offer, the order of Home, the app (it had no Diwali theme).
+- *Interpretation (proposed, confirm when convenient):* "homecoming" is the theme's name and "thanksgiving" its occasion, one theme. Thanksgiving is when America goes home for dinner; for those who cannot, home comes to the table.
+- *Claude's drafts (D-019), in `hero-words.ts` and `homecoming-hooks.ts`:* "Pass the achaar." (it replaces "Mithai. Masala. Memories.") and "Host your Thanksgiving under $99." (the founder's hook with the festival's name swapped).
+- **Pictures (Q-60):** the founder's Thanksgiving poster (below) replaces the Diwali one; the dinner-table photo suits the dusk; the Snacks arch still shows diyas. The arch photo files keep their `diwali-*` names; the slots are `homecoming-*`.
+- **Founder, the same day, verbatim:** "Here is the thanksgiving poster but the text you chose is very bad find something better and aviod ai slop." So: the poster is `public/images/home-hero-thanksgiving.avif` (37 KB) and `.webp` (80 KB), cropped to 2 : 3 at its own 1000 × 1500, no upscaling. Its wall is light, so the hero's words are dark ink with the leaves' rust for the kicker, the hairline and the italic, and the free-line button is dark brown with a gold ring; they sit higher (from 11 % down, was 18.5 %), clear of the vase. The landscape seam fades over 14 % (was 6 %). "Home is coming to dinner." is gone; the drafted headline is "Pass the *achaar.*", the Thanksgiving table's "pass the gravy" asked for what that table never has. The header keeps its white words on the dark fade. The Diwali poster files stay in `public/images/` unused.
+- **Cost:** no database read, no new request, no image, no new JS; one fewer animation (the diya's flame). Each deploy empties the page cache as usual.

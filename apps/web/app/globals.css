@@ -1766,31 +1766,34 @@ s.was::before {
 }
 
 /*
- * The Diwali windows (diwali-windows.tsx, D-174): a toran over a row of festive windows. The wide one is a Diwali
- * night (string lights, two fireworks, the flight crossing it in light colours); each arch is a pointed Mughal arch
- * (the mask below; its inset line is ARCH_INNER in diwali-art.tsx) with its drawing, its hook and a diya on the sill.
+ * Home's season windows (homecoming-windows.tsx; D-174, dressed for Homecoming and Thanksgiving since D-196): a garland
+ * of autumn leaves over a row of windows. The wide one is a dusk (a garland of leaves, two leaves drifting down, the
+ * flight crossing it in light colours); each arch is a pointed Mughal arch (the mask below; its inset line is
+ * ARCH_INNER in homecoming-art.tsx) with its drawing, its hook and a pumpkin on the sill. The season's colours are the
+ * three variables under .hc; --hc-green is the first-order band's own (D-193) and stays.
  * Loops move transform and opacity only, pause off screen (data-album="off", motion.tsx) and stop with reduced motion.
  */
 @layer components {
-  .dw {
-    --dw-gold: #c9962f;
-    --dw-saffron: #e0862a;
-    --dw-peacock: #1d5752;
+  .hc {
+    --hc-gold: #c9962f;
+    --hc-pumpkin: #d0742f;
+    --hc-olive: #46562a;
+    --hc-green: #1d5752;
     position: relative;
     padding-top: 20px;
     margin-block: clamp(8px, 1.4vw, 20px);
   }
-  .dw-toran {
+  .hc-bunting {
     position: absolute;
     inset: 0 0 auto;
     height: 26px;
     z-index: 2;
     pointer-events: none;
-    background: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 36 26'%3E%3Cpath d='M0 3H36' stroke='%238a5a00' stroke-width='1.2'/%3E%3Cpath d='M27 3C32 8 31.5 16 27 22C22.5 16 22 8 27 3Z' fill='%23466b34'/%3E%3Cpath d='M27 5V20' stroke='%2393ad6e' stroke-width='.6'/%3E%3Ccircle cx='9' cy='9' r='6' fill='%23e07b1a'/%3E%3Ccircle cx='9' cy='9' r='3.8' fill='%23f2a43a'/%3E%3Ccircle cx='9' cy='9' r='1.4' fill='%23b8560f'/%3E%3C/svg%3E")
+    background: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 36 26'%3E%3Cpath d='M0 3H36' stroke='%238a5a00' stroke-width='1.2'/%3E%3Cpath d='M9 3C14 8 13.5 16 9 22C4.5 16 4 8 9 3Z' fill='%23c4622b'/%3E%3Cpath d='M9 5V20' stroke='%23e8a877' stroke-width='.6'/%3E%3Cpath d='M27 3C32 8 31.5 16 27 22C22.5 16 22 8 27 3Z' fill='%23d9a441'/%3E%3Cpath d='M27 5V20' stroke='%23f3d795' stroke-width='.6'/%3E%3Ccircle cx='18' cy='6.6' r='2.5' fill='%238e1f2b'/%3E%3Ccircle cx='18.8' cy='5.8' r='.7' fill='%23c45a63'/%3E%3C/svg%3E")
       repeat-x 0 0 / 36px 26px;
   }
   /* founder 2026-11-02 (D-177): the night across the top, the three arches in a row under it, at every width */
-  .dw-row {
+  .hc-row {
     display: grid;
     grid-template-columns: repeat(3, 1fr);
     gap: clamp(8px, 1.2vw, 18px);
@@ -1798,7 +1801,7 @@ s.was::before {
   }
 
   /* the night */
-  .dw-wide {
+  .hc-wide {
     position: relative;
     overflow: hidden;
     display: flex;
@@ -1810,31 +1813,35 @@ s.was::before {
     grid-column: 1 / -1;
     color: theme('colors.paper');
     background:
-      radial-gradient(110% 90% at 88% 0%, color-mix(in srgb, var(--dw-gold) 30%, transparent), transparent 62%),
+      radial-gradient(110% 90% at 88% 0%, color-mix(in srgb, #e08a3c 38%, transparent), transparent 62%),
       linear-gradient(160deg, color-mix(in srgb, theme('colors.brand') 92%, #000), color-mix(in srgb, theme('colors.brand') 52%, #0e0604));
   }
-  .dw-wide-words {
+  .hc-wide-words {
     position: relative;
     z-index: 1;
   }
-  .dw-wide h2 {
+  /* readable where a long day's name runs onto the founder's photo */
+  .hc-wide .hc-kicker {
+    text-shadow: 0 1px 10px rgb(20 6 4 / 0.7);
+  }
+  .hc-wide h2 {
     max-width: 15ch;
     text-wrap: balance;
     /* readable where it runs onto the founder's photo */
     text-shadow: 0 1px 16px rgb(20 6 4 / 0.55);
   }
-  .dw-kicker {
+  .hc-kicker {
     display: block;
     margin-bottom: 8px;
     font-size: 11px;
     font-weight: 700;
     letter-spacing: 0.16em;
     text-transform: uppercase;
-    color: var(--dw-gold);
+    color: var(--hc-gold);
   }
   /* D-176: the buttons. Small caps words and an arrow in a hairline ring; on hover the ring fills and the arrow
      nudges on. On the night a real link; in an arch a drawing of the arch's own link. */
-  .dw-go {
+  .hc-go {
     display: inline-flex;
     align-items: center;
     gap: 10px;
@@ -1846,7 +1853,7 @@ s.was::before {
     white-space: nowrap;
     color: var(--fg, theme('colors.paper'));
   }
-  .dw-go-ring {
+  .hc-go-ring {
     display: grid;
     place-items: center;
     width: 26px;
@@ -1857,7 +1864,7 @@ s.was::before {
       background-color 200ms ease,
       color 200ms ease;
   }
-  .dw-go-ring svg {
+  .hc-go-ring svg {
     width: 12px;
     height: 12px;
     fill: none;
@@ -1867,75 +1874,75 @@ s.was::before {
     stroke-linejoin: round;
     transition: transform 200ms cubic-bezier(0.2, 0.8, 0.2, 1);
   }
-  .dw-go--night .dw-go-ring {
-    border-color: var(--dw-gold);
-    background: var(--dw-gold);
+  .hc-go--night .hc-go-ring {
+    border-color: var(--hc-gold);
+    background: var(--hc-gold);
     color: theme('colors.ink');
   }
-  :is(.dw-go--night:hover, .dw-arch:hover) .dw-go-ring svg {
+  :is(.hc-go--night:hover, .hc-arch:hover) .hc-go-ring svg {
     transform: translateX(2px);
   }
-  .dw-arch:hover .dw-go-ring {
+  .hc-arch:hover .hc-go-ring {
     background: var(--fg);
   }
-  .dw-arch--saffron:hover .dw-go-ring {
-    color: #f0a24a;
+  .hc-arch--pumpkin:hover .hc-go-ring {
+    color: #e29a52;
   }
-  .dw-arch--peacock:hover .dw-go-ring {
-    color: var(--dw-peacock);
+  .hc-arch--olive:hover .hc-go-ring {
+    color: var(--hc-olive);
   }
-  .dw-arch--paper:hover .dw-go-ring {
+  .hc-arch--paper:hover .hc-go-ring {
     color: theme('colors.paper');
   }
-  .dw-arch .dw-go {
+  .hc-arch .hc-go {
     position: relative;
     z-index: 1;
     margin-top: 12px;
     font-size: 10.5px;
   }
-  .dw-go--night:focus-visible,
-  .dw-sky .flight-band a:focus-visible {
+  .hc-go--night:focus-visible,
+  .hc-sky .flight-band a:focus-visible {
     outline: 2px solid theme('colors.paper');
     outline-offset: 4px;
     border-radius: 999px;
   }
-  .dw-sky .flight-band {
+  .hc-sky .flight-band {
     margin: 0;
   }
-  .dw-sky .flight-art {
+  .hc-sky .flight-art {
     max-height: 118px;
   }
-  .dw-sky .flight-us {
+  .hc-sky .flight-us {
     color: theme('colors.paper');
   }
-  .dw-sky .flight-us-border {
+  .hc-sky .flight-us-border {
     fill: color-mix(in srgb, theme('colors.paper') 7%, transparent);
   }
-  .dw-sky .flight-route {
+  .hc-sky .flight-route {
     stroke: color-mix(in srgb, theme('colors.paper') 40%, transparent);
   }
-  .dw-sky .flight-plane {
+  .hc-sky .flight-plane {
     fill: theme('colors.paper');
   }
-  .dw-sky .flight-windows {
+  .hc-sky .flight-windows {
     fill: theme('colors.brand');
   }
-  .dw-sky .flight-rope {
+  .hc-sky .flight-rope {
     stroke: color-mix(in srgb, theme('colors.paper') 70%, transparent);
   }
-  .dw-sky .flight-cloth path {
+  .hc-sky .flight-cloth path {
     fill: theme('colors.paper');
-    stroke: var(--dw-gold);
+    stroke: var(--hc-gold);
   }
 
-  /* string lights along the night's top edge: a wire and bulbs that twinkle out of step */
-  .dw-lights {
+  /* a garland along the card's top edge: a thread and autumn leaves hanging by their tips, swaying out of step */
+  .hc-garland {
     position: absolute;
     inset: 0 0 auto;
     height: 14px;
     pointer-events: none;
   }
-  .dw-lights svg {
+  .hc-garland svg {
     width: 100%;
     height: 10px;
     overflow: visible;
@@ -1943,47 +1950,53 @@ s.was::before {
     stroke: color-mix(in srgb, theme('colors.paper') 30%, transparent);
     stroke-width: 1px;
   }
-  .dw-lights i {
-    --c: #ffc457;
+  .hc-garland i {
+    --c: #e39a3c;
     position: absolute;
-    width: 5px;
-    height: 7px;
-    margin-left: -2.5px;
-    border-radius: 50% 50% 45% 45%;
+    width: 8px;
+    height: 8px;
+    /* a leaf: two round corners and two points, hung by one point */
+    border-radius: 0 78% 0 78%;
     background: var(--c);
-    box-shadow: 0 0 7px var(--c);
-    animation: dw-twinkle 1.6s ease-in-out infinite alternate;
+    transform-origin: 0 0;
+    transform: rotate(45deg);
+    animation: hc-sway 2.4s ease-in-out infinite alternate;
     animation-delay: calc(var(--i) * -0.37s);
   }
-  .dw-lights i:nth-of-type(3n + 2) {
-    --c: #ff8a4c;
+  .hc-garland i:nth-of-type(3n + 2) {
+    --c: #d0632b;
   }
-  .dw-lights i:nth-of-type(3n) {
-    --c: #fff3d6;
+  .hc-garland i:nth-of-type(3n) {
+    --c: #f0d28a;
   }
-  .dw-burst {
+  .hc-leaf {
+    --fall: 150px;
     position: absolute;
-    top: 18%;
-    right: 7%;
-    width: clamp(48px, 5vw, 76px);
+    top: 10%;
+    right: 9%;
+    width: clamp(14px, 1.5vw, 22px);
     height: auto;
-    fill: none;
-    stroke: var(--dw-gold);
-    stroke-width: 1.6;
-    stroke-linecap: round;
+    fill: #e39a3c;
     opacity: 0;
-    animation: dw-burst 3.4s ease-out infinite;
+    animation: hc-drift 7s linear infinite;
   }
-  .dw-burst--b {
-    top: 8%;
-    right: 26%;
-    width: clamp(30px, 3vw, 46px);
-    stroke: #ff9a5a;
-    animation-delay: 1.5s;
+  .hc-leaf-rib {
+    fill: none;
+    stroke: rgb(0 0 0 / 0.28);
+    stroke-width: 1;
+    stroke-linecap: round;
+  }
+  .hc-leaf--b {
+    top: 3%;
+    right: 27%;
+    width: clamp(11px, 1.1vw, 16px);
+    fill: #d0632b;
+    animation-duration: 9s;
+    animation-delay: -3.5s;
   }
 
   /* the arches */
-  .dw-arch {
+  .hc-arch {
     position: relative;
     display: block;
     aspect-ratio: 100 / 133;
@@ -1991,16 +2004,16 @@ s.was::before {
       transform 320ms cubic-bezier(0.2, 0.8, 0.2, 1),
       filter 320ms ease;
   }
-  .dw-arch:hover {
+  .hc-arch:hover {
     transform: translateY(-4px);
     filter: drop-shadow(0 12px 16px color-mix(in srgb, theme('colors.ink') 16%, transparent));
   }
-  .dw-arch:focus-visible {
+  .hc-arch:focus-visible {
     outline: 2px solid theme('colors.ink');
     outline-offset: 4px;
     border-radius: 8px;
   }
-  .dw-arch-shape {
+  .hc-arch-shape {
     position: absolute;
     inset: 0;
     display: flex;
@@ -2015,31 +2028,32 @@ s.was::before {
     mask: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 100 133' preserveAspectRatio='none'%3E%3Cpath d='M0 133V46C0 26 18 16 34 12C44 9.5 48 5 50 0C52 5 56 9.5 66 12C82 16 100 26 100 46V133Z'/%3E%3C/svg%3E")
       0 0 / 100% 100% no-repeat;
   }
-  .dw-arch--saffron {
-    --bg: linear-gradient(180deg, #f2a54d, var(--dw-saffron));
+  .hc-arch--pumpkin {
+    --bg: linear-gradient(180deg, #e29a52, var(--hc-pumpkin));
     --fg: theme('colors.ink');
     --line: color-mix(in srgb, theme('colors.brand') 55%, transparent);
     --art: theme('colors.ink');
+    --sill: #f3c77a;
   }
-  .dw-arch--peacock {
-    --bg: linear-gradient(180deg, #2b6e67, var(--dw-peacock));
+  .hc-arch--olive {
+    --bg: linear-gradient(180deg, #66763a, var(--hc-olive));
     --fg: theme('colors.paper');
-    --line: var(--dw-gold);
-    --art: var(--dw-gold);
+    --line: var(--hc-gold);
+    --art: var(--hc-gold);
   }
-  .dw-arch--paper {
-    --bg: radial-gradient(90% 60% at 50% 100%, color-mix(in srgb, var(--dw-gold) 22%, transparent), transparent 70%),
-      color-mix(in srgb, var(--dw-gold) 7%, theme('colors.paper'));
+  .hc-arch--paper {
+    --bg: radial-gradient(90% 60% at 50% 100%, color-mix(in srgb, var(--hc-gold) 22%, transparent), transparent 70%),
+      color-mix(in srgb, var(--hc-gold) 7%, theme('colors.paper'));
     --fg: theme('colors.brand');
-    --line: var(--dw-gold);
-    --art: var(--dw-gold);
+    --line: var(--hc-gold);
+    --art: var(--hc-gold);
   }
-  .dw-arch .dw-kicker {
+  .hc-arch .hc-kicker {
     margin-bottom: 0;
     color: var(--fg);
     opacity: 0.8;
   }
-  .dw-arch-line {
+  .hc-arch-line {
     position: absolute;
     inset: 0;
     width: 100%;
@@ -2049,7 +2063,7 @@ s.was::before {
     stroke-width: 1.2px;
     pointer-events: none;
   }
-  .dw-art {
+  .hc-art {
     width: clamp(52px, 5.2vw, 80px);
     height: auto;
     margin-block: auto 8px;
@@ -2060,40 +2074,40 @@ s.was::before {
     stroke-linejoin: round;
     transition: transform 320ms cubic-bezier(0.2, 0.8, 0.2, 1);
   }
-  .dw-arch:hover .dw-art {
+  .hc-arch:hover .hc-art {
     transform: translateY(-3px) rotate(-4deg);
   }
-  .dw-dots {
+  .hc-dots {
     stroke-width: 3.4;
   }
-  .dw-art--map use {
+  .hc-art--map use {
     stroke-width: 1.3px;
   }
-  .dw-pin {
-    fill: var(--dw-saffron);
+  .hc-pin {
+    fill: var(--hc-pumpkin);
     stroke: none;
     transform-box: fill-box;
     transform-origin: center;
-    animation: dw-pin 2.8s ease-in-out infinite;
+    animation: hc-pin 2.8s ease-in-out infinite;
   }
-  .dw-hook {
+  .hc-hook {
     display: flex;
     flex-direction: column;
     align-items: center;
     line-height: 1;
   }
-  .dw-lead {
+  .hc-lead {
     margin-bottom: 4px;
     font-size: 12px;
     letter-spacing: 0.04em;
     opacity: 0.85;
   }
-  .dw-big {
+  .hc-big {
     font-size: clamp(32px, 3.2vw, 52px);
     font-weight: 500;
     letter-spacing: -0.03em;
   }
-  .dw-hook--words {
+  .hc-hook--words {
     max-width: 13ch;
     text-wrap: balance;
     font-size: clamp(16px, 1.4vw, 22px);
@@ -2102,7 +2116,7 @@ s.was::before {
     letter-spacing: -0.015em;
   }
   /* "Sorry for being this good.": a paper chit tied under the price, swaying a little */
-  .dw-tag {
+  .hc-tag {
     position: relative;
     max-width: 92%;
     margin-top: 14px;
@@ -2117,9 +2131,9 @@ s.was::before {
     text-wrap: balance;
     transform: rotate(-5deg);
     transform-origin: 0 50%;
-    animation: dw-swing 2.6s ease-in-out infinite alternate;
+    animation: hc-swing 2.6s ease-in-out infinite alternate;
   }
-  .dw-tag::before {
+  .hc-tag::before {
     content: '';
     position: absolute;
     top: 50%;
@@ -2128,32 +2142,26 @@ s.was::before {
     height: 4px;
     margin-top: -2px;
     border-radius: 50%;
-    background: var(--dw-peacock);
+    background: var(--hc-olive);
   }
-  .dw-diya {
+  .hc-pumpkin {
     width: clamp(28px, 2.4vw, 36px);
     margin-top: auto;
     overflow: visible;
+    fill: var(--sill, #d9742b);
+    stroke: #8a3d14;
+    stroke-width: 1;
   }
-  .dw-diya-bowl {
-    fill: #a8492b;
-  }
-  .dw-diya-lip {
+  .hc-pumpkin-stem {
     fill: none;
-    stroke: var(--dw-gold);
-    stroke-width: 1.2;
-  }
-  .dw-diya-flame {
-    fill: #ffc24d;
-    filter: drop-shadow(0 0 4px #ffae3a);
-    transform-box: fill-box;
-    transform-origin: 50% 100%;
-    animation: dw-flicker 0.9s ease-in-out infinite alternate;
+    stroke: #4b5a2a;
+    stroke-width: 2.2;
+    stroke-linecap: round;
   }
   /* D-175: the founder's photos. In an arch it fills the top (the arch's mask cuts it to the window) and fades into the
      window's colour; the drawing steps aside. On the night it fills the right side, fading left and down. An empty
      slot off the live site is a small labelled frame (visual-slot.tsx). */
-  .dw-photo {
+  .hc-photo {
     position: absolute;
     inset: 0 0 auto;
     width: 100%;
@@ -2163,7 +2171,7 @@ s.was::before {
     -webkit-mask-image: linear-gradient(to bottom, #000 62%, transparent);
     mask-image: linear-gradient(to bottom, #000 62%, transparent);
   }
-  .dw-photo.visual-slot {
+  .hc-photo.visual-slot {
     padding: 34% 8% 8%;
     border: 0;
     -webkit-mask-image: none;
@@ -2171,32 +2179,32 @@ s.was::before {
     opacity: 0.85;
   }
   /* the frame names the slot and its size only; the brief is in slots.ts */
-  .dw-photo.visual-slot p {
+  .hc-photo.visual-slot p {
     display: block;
     max-width: none;
     padding: 6px 10px;
     font-size: 0;
     white-space: nowrap;
   }
-  .dw-photo.visual-slot p :is(b, span) {
+  .hc-photo.visual-slot p :is(b, span) {
     display: block;
     font-size: 11px;
   }
-  /* the words, the drawing and the diya stay over the photo */
-  .dw-sky,
-  .dw-arch-shape > :is(.dw-kicker, .dw-art, .dw-hook, .dw-diya) {
+  /* the words, the drawing and the pumpkin stay over the photo */
+  .hc-sky,
+  .hc-arch-shape > :is(.hc-kicker, .hc-art, .hc-hook, .hc-pumpkin) {
     position: relative;
     z-index: 1;
   }
   /* the words start below the arch's point, or below the photo; a share of the height, whatever the arch's ratio */
-  .dw-arch-shape::before {
+  .hc-arch-shape::before {
     content: '';
     flex: 0 0 21%;
   }
-  .dw-arch--photo .dw-arch-shape::before {
+  .hc-arch--photo .hc-arch-shape::before {
     flex-basis: 49%;
   }
-  .dw-photo--night {
+  .hc-photo--night {
     inset: 0 0 0 auto;
     width: 52%;
     height: 100%;
@@ -2209,17 +2217,17 @@ s.was::before {
       linear-gradient(to right, transparent, #000 30%), linear-gradient(to top, transparent 4%, #000 48%);
     mask-composite: intersect;
   }
-  .dw-photo--night.visual-slot {
+  .hc-photo--night.visual-slot {
     padding: 8%;
     border-left: 2px dashed color-mix(in srgb, theme('colors.paper') 40%, transparent);
     background: color-mix(in srgb, theme('colors.paper') 10%, transparent);
   }
-  .dw[data-album='off'] :is(.dw-lights i, .dw-burst, .dw-pin, .dw-tag, .dw-diya-flame) {
+  .hc[data-album='off'] :is(.hc-garland i, .hc-leaf, .hc-pin, .hc-tag) {
     animation-play-state: paused;
   }
 
   /* D-193: the night's words turn over, both stacked in one cell so the height never moves. */
-  .dw-wide h2 {
+  .hc-wide h2 {
     perspective: 900px;
   }
   /* D-194: the main photo as a picked look's photo takes its place; the box keeps its size */
@@ -2237,20 +2245,20 @@ s.was::before {
     }
   }
 
-  .dw-flip {
+  .hc-flip {
     display: grid;
     transform-style: preserve-3d;
-    animation: dw-flip 8s ease-in-out infinite;
+    animation: hc-flip 8s ease-in-out infinite;
   }
-  .dw-flip > span {
+  .hc-flip > span {
     grid-area: 1 / 1;
     backface-visibility: hidden;
   }
-  .dw-flip > span + span {
+  .hc-flip > span + span {
     transform: rotateX(180deg);
     color: #f2cf7a; /* the gold, lighter: it runs onto the photo */
   }
-  @keyframes dw-flip {
+  @keyframes hc-flip {
     0%,
     43% {
       transform: rotateX(0deg);
@@ -2264,14 +2272,14 @@ s.was::before {
     }
   }
   /* the first-order band (D-193): a voucher, green to a gold line, white inside, green words */
-  .dw[data-album='off'] .dw-flip {
+  .hc[data-album='off'] .hc-flip {
     animation-play-state: paused;
   }
   .fo-band {
     display: block;
     padding: 9px;
     border-radius: 22px;
-    background: var(--dw-peacock);
+    background: var(--hc-green);
   }
   .fo-band:focus-visible {
     outline: 2px solid theme('colors.ink');
@@ -2285,40 +2293,38 @@ s.was::before {
     position: relative;
     overflow: hidden;
     padding: 30px clamp(16px, 2.6vw, 36px) clamp(16px, 2vw, 24px);
-    border: 1.5px solid var(--dw-gold);
+    border: 1.5px solid var(--hc-gold);
     border-radius: 14px;
-    color: var(--dw-peacock);
+    color: var(--hc-green);
     background: theme('colors.paper');
   }
-  /* the night's lights and fireworks, in colours that show on white; the words stay over them */
-  .fo-inner > :not(.dw-lights, .dw-burst) {
+  /* the season's garland and leaves, in colours that show on white; the words stay over them */
+  .fo-inner > :not(.hc-garland, .hc-leaf) {
     position: relative;
     z-index: 1;
   }
-  .fo-inner .dw-lights svg {
-    stroke: var(--dw-gold);
+  .fo-inner .hc-garland svg {
+    stroke: var(--hc-gold);
   }
-  .fo-inner .dw-lights i {
+  .fo-inner .hc-garland i {
     --c: #e0862a;
-    box-shadow: 0 0 5px var(--c);
   }
-  .fo-inner .dw-lights i:nth-of-type(3n + 2) {
+  .fo-inner .hc-garland i:nth-of-type(3n + 2) {
     --c: #7a2e23;
   }
-  .fo-inner .dw-lights i:nth-of-type(3n) {
+  .fo-inner .hc-garland i:nth-of-type(3n) {
     --c: #c9962f;
   }
-  .fo-inner .dw-burst {
-    top: 16px;
-    right: 3%;
-    width: clamp(44px, 5vw, 72px);
-    stroke: #e0862a;
+  .fo-inner .hc-leaf {
+    --fall: 64px;
+    top: 8px;
+    right: 5%;
+    fill: #e0862a;
   }
-  .fo-inner .dw-burst--b {
-    top: 22px;
+  .fo-inner .hc-leaf--b {
+    top: 4px;
     right: 24%;
-    width: clamp(28px, 3vw, 44px);
-    stroke: #7a2e23;
+    fill: #7a2e23;
   }
   .fo-env {
     position: relative;
@@ -2344,7 +2350,7 @@ s.was::before {
     font-weight: 700;
     color: theme('colors.ink');
     background: #e3b552;
-    box-shadow: inset 0 0 0 1.5px var(--dw-gold);
+    box-shadow: inset 0 0 0 1.5px var(--hc-gold);
   }
   .fo-words {
     display: block;
@@ -2376,7 +2382,7 @@ s.was::before {
     font-weight: 700;
     white-space: nowrap;
     color: theme('colors.paper');
-    background: var(--dw-peacock);
+    background: var(--hc-green);
   }
   @media (min-width: 640px) {
     .fo-inner {
@@ -2386,12 +2392,10 @@ s.was::before {
       grid-column: 3;
     }
     /* in the open middle, clear of the button */
-    .fo-inner .dw-burst {
-      top: 26px;
+    .fo-inner .hc-leaf {
       right: 20%;
     }
-    .fo-inner .dw-burst--b {
-      top: 34px;
+    .fo-inner .hc-leaf--b {
       right: 32%;
     }
   }
@@ -2520,145 +2524,150 @@ s.was::before {
 
   /* from tablets up the night lays out sideways: the words on the left, the flight on the right */
   @media (min-width: 640px) {
-    .dw-wide {
+    .hc-wide {
       flex-direction: row;
       align-items: flex-end;
       min-height: clamp(230px, 21vw, 300px);
     }
-    .dw-wide-words {
+    .hc-wide-words {
       align-self: flex-start;
     }
-    .dw-sky {
+    .hc-sky {
       flex: 0 0 56%;
     }
   }
-  /* the arches' ratios are set so the words, the button and the diya always fit (checked from 320 to 1920 px) */
+  /* the arches' ratios are set so the words, the button and the pumpkin always fit (checked from 320 to 1920 px) */
   @media (min-width: 640px) and (max-width: 819px) {
-    .dw-arch {
+    .hc-arch {
       aspect-ratio: 100 / 160;
     }
-    .dw-big {
+    .hc-big {
       font-size: 28px;
     }
-    .dw-tag {
+    .hc-tag {
       font-size: 10px;
     }
   }
   @media (min-width: 820px) and (max-width: 1023px) {
-    .dw-arch {
+    .hc-arch {
       aspect-ratio: 100 / 145;
     }
   }
   /* wide screens: lower, broader arches (the arch shape stretches with its box) */
   @media (min-width: 1024px) {
-    .dw-arch {
+    .hc-arch {
       aspect-ratio: 100 / 108;
     }
-    .dw-big {
+    .hc-big {
       font-size: clamp(40px, 3.6vw, 58px);
     }
-    .dw-hook--words {
+    .hc-hook--words {
       font-size: clamp(20px, 1.8vw, 27px);
     }
   }
   @media (min-width: 1280px) {
-    .dw-arch {
+    .hc-arch {
       aspect-ratio: 100 / 94;
     }
   }
   /* phones: three arches side by side, the words smaller and the buttons just their arrow. Founder 2026-11-04 (D-183):
      the 1 : 2 windows looked "too stretched", so they are about 1 : 1.56 now; to fit, the photo takes a little less of
-     the top and the diya steps off the sill (the arrow stays: it says the window opens). */
+     the top and the pumpkin steps off the sill (the arrow stays: it says the window opens). */
   @media (max-width: 639px) {
-    .dw-wide {
+    .hc-wide {
       min-height: 280px;
     }
-    .dw-arch {
+    .hc-arch {
       aspect-ratio: 100 / 156;
     }
-    .dw-arch-shape {
+    .hc-arch-shape {
       padding: 0 6% 9%;
     }
-    .dw-arch--photo .dw-arch-shape::before {
+    .hc-arch--photo .hc-arch-shape::before {
       flex-basis: 45%;
     }
-    .dw-arch .dw-photo {
+    .hc-arch .hc-photo {
       height: 52%;
     }
-    .dw-arch .dw-kicker {
+    .hc-arch .hc-kicker {
       font-size: 8px;
       letter-spacing: 0.1em;
     }
-    .dw-lead {
+    .hc-lead {
       margin-bottom: 1px;
       font-size: 9px;
     }
-    .dw-big {
+    .hc-big {
       font-size: 20px;
     }
-    .dw-hook--words {
+    .hc-hook--words {
       max-width: none;
       font-size: 12px;
     }
-    .dw-tag {
+    .hc-tag {
       margin-top: 5px;
       padding: 2px 5px 2px 10px;
       font-size: 8px;
     }
-    .dw-tag::before {
+    .hc-tag::before {
       left: 4px;
     }
-    .dw-arch .dw-go {
+    .hc-arch .hc-go {
       gap: 0;
       margin-top: auto;
       font-size: 0;
       letter-spacing: 0;
     }
-    .dw-arch .dw-go-ring {
+    .hc-arch .hc-go-ring {
       width: 22px;
       height: 22px;
     }
-    .dw-arch .dw-diya {
+    .hc-arch .hc-pumpkin {
       display: none;
     }
   }
   @media (max-width: 379px) {
-    .dw-arch {
+    .hc-arch {
       aspect-ratio: 100 / 166;
     }
-    .dw-hook--words {
+    .hc-hook--words {
       font-size: 11px;
     }
   }
   @media (max-width: 339px) {
-    .dw-arch {
+    .hc-arch {
       aspect-ratio: 100 / 176;
     }
   }
 
-  @keyframes dw-twinkle {
+  @keyframes hc-sway {
     from {
-      opacity: 0.35;
+      transform: rotate(31deg);
     }
     to {
-      opacity: 1;
+      transform: rotate(59deg);
     }
   }
-  @keyframes dw-burst {
+  @keyframes hc-drift {
     0% {
-      transform: scale(0.25);
+      transform: translate(0, -10px) rotate(-20deg);
       opacity: 0;
     }
-    8% {
-      opacity: 1;
+    12% {
+      opacity: 0.95;
     }
-    55%,
+    50% {
+      transform: translate(-18px, calc(var(--fall) * 0.47)) rotate(70deg);
+    }
+    82% {
+      opacity: 0.9;
+    }
     100% {
-      transform: scale(1);
+      transform: translate(8px, var(--fall)) rotate(160deg);
       opacity: 0;
     }
   }
-  @keyframes dw-pin {
+  @keyframes hc-pin {
     0%,
     100% {
       transform: scale(0.7);
@@ -2669,39 +2678,26 @@ s.was::before {
       opacity: 1;
     }
   }
-  @keyframes dw-swing {
+  @keyframes hc-swing {
     to {
       transform: rotate(-1.5deg);
-    }
-  }
-  @keyframes dw-flicker {
-    0% {
-      transform: scale(1, 1) rotate(-2deg);
-    }
-    50% {
-      transform: scale(0.92, 1.08) rotate(1deg);
-      opacity: 0.9;
-    }
-    100% {
-      transform: scale(1.04, 0.94) rotate(3deg);
     }
   }
 }
 
 @media (prefers-reduced-motion: reduce) {
-  .dw-lights i,
-  .dw-pin,
-  .dw-tag,
-  .dw-diya-flame,
-  .dw-arch,
-  .dw-art,
-  .dw-go-ring,
-  .dw-go-ring svg,
-  .dw-flip {
+  .hc-garland i,
+  .hc-pin,
+  .hc-tag,
+  .hc-arch,
+  .hc-art,
+  .hc-go-ring,
+  .hc-go-ring svg,
+  .hc-flip {
     animation: none;
     transition: none;
   }
-  .dw-burst {
+  .hc-leaf {
     display: none;
   }
 }

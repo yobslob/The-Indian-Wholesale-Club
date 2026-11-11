@@ -9,7 +9,7 @@ export { enhanceMotion } from './motion-reveal';
 
 /**
  * The storefront's motion (storefront.md §Direction, D-049; the browser's own scrolling since §10 Y-6): images that
- * reveal as they enter the viewport, a gentle parallax on [data-speed] elements and Diwali windows that pause off screen
+ * reveal as they enter the viewport, a gentle parallax on [data-speed] elements and Home's season windows that pause off screen
  * (motion-reveal.ts). Progressive enhancement only: with prefers-reduced-motion nothing runs (no parallax,
  * every image simply visible), and without JavaScript everything is visible.
  */
