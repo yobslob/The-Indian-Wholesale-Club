@@ -1,6 +1,6 @@
 import { expect, type APIRequestContext } from '@playwright/test';
 
-import { DEMO_PRODUCT, E2E_ADMIN, serviceClient } from './env';
+import { DEMO_PRODUCT, DEMO_STOCK, E2E_ADMIN, serviceClient } from './env';
 
 /**
  * Sets the demo product's pieces left (the first variant gets `left`, the others `others`), then refreshes the store,
@@ -32,4 +32,4 @@ export async function setDemoStock(request: APIRequestContext, left: number, oth
 }
 
 /** As global setup leaves the demo product, for the flows after a test that changed it. */
-export const restoreDemoStock = (request: APIRequestContext): Promise<void> => setDemoStock(request, 5, 5);
+export const restoreDemoStock = (request: APIRequestContext): Promise<void> => setDemoStock(request, DEMO_STOCK, DEMO_STOCK);

@@ -1,4 +1,4 @@
-import { assertSafeEnvironment, DEMO_PRODUCT, E2E_ADMIN, E2E_CUSTOMER, serviceClient } from './env';
+import { assertSafeEnvironment, DEMO_PRODUCT, DEMO_STOCK, E2E_ADMIN, E2E_CUSTOMER, serviceClient } from './env';
 
 type Service = ReturnType<typeof serviceClient>;
 
@@ -55,7 +55,7 @@ export default async function globalSetup(): Promise<void> {
   for (const v of variants) {
     const { error } = await service.rpc('admin_set_listed_qty', {
       p_variant: v.id,
-      p_qty_listed: v.qty_reserved + 5,
+      p_qty_listed: v.qty_reserved + DEMO_STOCK,
       p_note: 'E2E top-up (local only)',
     });
     if (error) throw error;
