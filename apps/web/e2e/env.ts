@@ -12,6 +12,12 @@ export const E2E_CUSTOMER = { email: 'e2e-customer@iwc.test', password: 'e2e-cus
 /** The demo product from supabase/seed/demo.sql (dev only). */
 export const DEMO_PRODUCT = { region: 'kerala', slug: 'demo-kerala-kasavu-saree' };
 
+/**
+ * Pieces of each demo option left free to buy, at the start of a run and after a test that changed the stock. The
+ * flows between two restores buy more than 5 (food-bag found it sold out on 2026-11-11), so it is well above that.
+ */
+export const DEMO_STOCK = 40;
+
 /** Products created by the admin test start with this slug, so teardown can find them. */
 export const E2E_SLUG_PREFIX = 'e2e-';
 

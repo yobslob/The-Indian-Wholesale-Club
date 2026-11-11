@@ -1,6 +1,7 @@
-import { displayTitle, formatUsd, fromLabel, optionPriceLabel, priceRange, productPath, wasCents } from '@repo/shared/domain';
+import { displayTitle, priceRange, productPath } from '@repo/shared/domain';
 
 import { SaveButton } from '@/features/account/save-button';
+import { Money } from '@/features/shell/market';
 import { mediaUrl } from '@/lib/site';
 
 import { CardLink } from './card-link';
@@ -64,12 +65,14 @@ export function ProductCard({
   const small = size === 'sm';
   // launch QA B-9: an all lower-case shop title reads in title case (display only)
   const name = displayTitle(product.name);
-  // launch QA B-1: the price its options say, "From" the lowest in stock when they differ (as the product page says it)
-  const price = product.options?.length
-    ? optionPriceLabel(product.options)
-    : fromLabel(product.price_cents, product.price_varies === true);
+  // launch QA B-1: the price its options say, "From" the lowest in stock when they differ (as the product page says it);
+  // D-197: in the visitor's dollars
+  const range = product.options?.length ? priceRange(product.options) : null;
+  const price = (
+    <Money cents={range?.fromCents ?? product.price_cents} from={range ? range.varies : product.price_varies === true} />
+  );
   // D-190: struck through beside the price it is worked out from (`.was`, globals.css)
-  const lowest = product.options?.length ? (priceRange(product.options)?.fromCents ?? product.price_cents) : product.price_cents;
+  const lowest = range?.fromCents ?? product.price_cents;
   return (
     <article className="product-card relative min-w-0">
       <div className="relative">
@@ -132,7 +135,11 @@ export function ProductCard({
           {name}
         </CardLink>
         <span className={`product-card-meta text-ink-muted ${small ? 'text-[13px]' : 'text-sm'}`}>
-          {product.offer ? <s className="was">{formatUsd(wasCents(lowest, product.product_type))}</s> : null}
+          {product.offer ? (
+            <s className="was">
+              <Money cents={lowest} wasOf={product.product_type} />
+            </s>
+          ) : null}
           {product.offer ? <span className="now">{price}</span> : price}
           {/* the dot is .card-state's (globals.css): beside the groups' rail the state takes its own line */}
           {product.region_name ? <span className="card-state">{product.region_name}</span> : null}

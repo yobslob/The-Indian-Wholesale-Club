@@ -2,7 +2,7 @@ import { expect, test, type APIRequestContext } from '@playwright/test';
 
 import { buyDemoProduct } from './buy';
 import { DEMO_PRODUCT, stripeTestKeysPresent } from './env';
-import { setDemoStock } from './stock';
+import { restoreDemoStock, setDemoStock } from './stock';
 
 /**
  * Flow 8 (engineering.md §Caching): a sale refreshes the cached pages that show its stock. The demo product is left
@@ -35,6 +35,6 @@ test('buying the last piece shows "Sold out" on the cached pages at once', async
     const card = region.slice(from, region.indexOf('</article>', from)); // this product's card only
     expect(card).toContain('Sold out');
   } finally {
-    await setDemoStock(request, 5, 5); // as global setup leaves it, for the flows after this one
+    await restoreDemoStock(request); // as global setup leaves it, for the flows after this one
   }
 });

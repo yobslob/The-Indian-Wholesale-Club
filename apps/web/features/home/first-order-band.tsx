@@ -1,23 +1,23 @@
 import Link from 'next/link';
 
-import { Burst } from './diwali-art';
-import { StringLights } from './diwali-windows';
 import { FIRST_ORDER } from './first-order';
+import { Leaf } from './homecoming-art';
+import { Garland } from './homecoming-windows';
 
 /**
  * The first-order band (D-193), between the album and Shop by category: a voucher, green to a gold line, white inside, green
- * words, under the Diwali night's string lights and fireworks. A shagun envelope, the money envelope given at every family
- * occasion, with 10% where its one-rupee coin goes. Server-drawn, no image and no request; the lights and fireworks pause
+ * words, under the season's garland and drifting leaves (D-196; Diwali's lights and fireworks before). A shagun envelope, the money envelope given at every family
+ * occasion, with 10% where its one-rupee coin goes. Server-drawn, no image and no request; the garland and leaves pause
  * off screen (`data-album`, motion.tsx) and stop with reduced motion.
  */
 export function FirstOrderBand(): React.JSX.Element {
   return (
-    <section aria-label="Your first order" className="dw fo" data-album="">
+    <section aria-label="Your first order" className="hc fo" data-album="">
       <Link href={FIRST_ORDER.href} prefetch={false} className="fo-band">
         <span className="fo-inner">
-          <StringLights />
-          <Burst className="dw-burst--a" />
-          <Burst className="dw-burst--b" />
+          <Garland />
+          <Leaf className="hc-leaf--a" />
+          <Leaf className="hc-leaf--b" />
           <span className="fo-env" aria-hidden="true">
             <svg viewBox="0 0 96 68">
               <rect width="96" height="68" rx="6" fill="#7a2e23" />

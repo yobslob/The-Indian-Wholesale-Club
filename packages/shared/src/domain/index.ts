@@ -28,3 +28,4 @@ export * from './homesick';
 export * from './sizes';
 export * from './display-text';
 export * from './price-label';
+export * from './markets';

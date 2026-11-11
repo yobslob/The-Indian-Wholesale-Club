@@ -84,6 +84,15 @@ export const SETTING_GROUPS: SettingGroup[] = [
     ],
   },
   {
+    title: 'Prices abroad (D-197)',
+    note: 'Visitors in Canada, Australia and New Zealand see every product\'s price in their own dollars: the US price × the rate below, to the cent, with CA$, A$ or NZ$ in front. The US sees $ as always. Checkout and orders stay in US dollars. Empty = that country sees US dollars. Saving a change refreshes the store\'s pages.',
+    fields: [
+      { key: 'fx_usd_cad', label: 'Canada: CA$ per US$1', kind: 'number' },
+      { key: 'fx_usd_aud', label: 'Australia: A$ per US$1', kind: 'number' },
+      { key: 'fx_usd_nzd', label: 'New Zealand: NZ$ per US$1', kind: 'number' },
+    ],
+  },
+  {
     title: 'Listings',
     fields: [
       { key: 'stale_listing_days', label: 'Re-check shop quantities after (days)', kind: 'int' },

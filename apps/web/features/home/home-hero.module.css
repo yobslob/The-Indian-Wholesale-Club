@@ -3,14 +3,17 @@
  * (portrait) or beside it (landscape). One screen at every size. The header sits over the poster, white on its soft fade.
  *
  * --W / --H repeat what object-fit: cover does with the crop kept at the top left, so the words sit on the picture's
- * dark wall (left of the woman, above the diyas: about 4 – 47 % across, 17 – 71 % down; the picture is 1024 x 1536)
- * and grow with the picture, not with the window.
+ * wall and grow with the picture, not with the window. D-196: the Thanksgiving poster (1000 x 1500) has a light wall,
+ * so the words are dark; they stay left of the woman and above the vase (about 6 – 50 % across, 11 – 49 % down).
  */
 .hero {
   --h: clamp(560px, 100svh, 1200px);
   --wall: #2a170c;
   --gold: #e3b873;
   --cream: #f6eee3;
+  /* D-196: the words on the poster's light wall, and the rust of its leaves */
+  --on-wall: #2b1a10;
+  --rust: #93391a;
   position: relative;
   display: grid;
   grid-template-rows: minmax(0, 1fr) auto;
@@ -52,12 +55,13 @@
 .offer {
   position: absolute;
   z-index: 1;
-  top: max(calc(var(--H) * 0.185), calc(var(--top-h, 102px) + 10px));
+  top: max(calc(var(--H) * 0.11), calc(var(--top-h, 102px) + 12px));
   left: calc(var(--W) * 0.064);
   display: flex;
   flex-direction: column;
   align-items: flex-start;
   width: calc(var(--W) * 0.42);
+  color: var(--on-wall);
 }
 
 /* D-185: the poster's own type. Montserrat for every small word, letter-spaced where the poster spaced it */
@@ -78,7 +82,7 @@
   letter-spacing: 0.16em;
   text-transform: uppercase;
   white-space: nowrap;
-  color: var(--gold);
+  color: var(--rust);
 }
 /* the poster's hairline under the date */
 .kicker::after {
@@ -87,7 +91,7 @@
   width: 2.6em;
   height: 1px;
   margin-top: 0.9em;
-  background: var(--gold);
+  background: var(--rust);
 }
 
 /* Cormorant Garamond, the last beat in its gold italic, at the poster's size ("Host your" was 39 % of its width) */
@@ -104,19 +108,19 @@
   font-size: 1.04em;
   font-style: italic;
   font-weight: 500;
-  color: var(--gold);
+  color: var(--rust);
 }
 
 .when {
   margin-top: calc(var(--W) * 0.035);
   font-size: clamp(12px, calc(var(--W) * 0.032), 17px);
   line-height: 1.4;
-  color: rgb(246 238 227 / 0.84);
+  color: rgb(43 26 16 / 0.8);
   text-wrap: balance;
 }
 .when b {
   font-weight: 600;
-  color: var(--cream);
+  color: var(--on-wall);
 }
 /* D-186: "(on food)", small, so the 7 days and the free line under it read as food's */
 .when small {
@@ -133,8 +137,8 @@
   margin-top: calc(var(--W) * 0.045);
   padding: 0.5em 0.42em 0.5em 1.25em;
   border-radius: 999px;
-  background: var(--gold);
-  color: var(--wall);
+  background: var(--wall);
+  color: var(--cream);
   font-size: clamp(11px, calc(var(--W) * 0.033), 17px);
   font-weight: 600;
   white-space: nowrap;
@@ -157,8 +161,8 @@
   width: 2em;
   aspect-ratio: 1;
   border-radius: 50%;
-  background: var(--wall);
-  color: var(--gold);
+  background: var(--gold);
+  color: var(--wall);
 }
 .cta svg {
   width: 0.9em;
@@ -166,7 +170,7 @@
   transition: transform 0.25s cubic-bezier(0.2, 0.8, 0.2, 1);
 }
 .poster:hover .cta {
-  background: #f0cd90;
+  background: #4a2a16;
 }
 .poster:hover .cta svg {
   transform: translateX(2px);
@@ -232,9 +236,9 @@
   .poster::after {
     content: none;
   }
-  /* the seam: the photo's wall fades into the panel's */
+  /* the seam: the photo's wall fades into the panel's (D-196: wider, the Thanksgiving wall is light) */
   .photo {
-    mask-image: linear-gradient(to right, transparent, #000 6%);
+    mask-image: linear-gradient(to right, transparent, #000 14%);
   }
   .panel {
     align-self: center;

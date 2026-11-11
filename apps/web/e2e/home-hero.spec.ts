@@ -19,7 +19,7 @@ for (const [width, height] of [
       hero.getByRole('link', { name: 'Food', exact: true }),
       hero.getByRole('link', { name: 'Home & gifts', exact: true }),
       hero.getByRole('link', { name: 'States', exact: true }),
-      hero.getByRole('link', { name: /Mithai/ }),
+      hero.getByRole('link', { name: /Pass the/ }),
     ];
     for (const link of links) {
       const box = await link.boundingBox();
@@ -42,11 +42,14 @@ test('the doors go where they say, and the header turns cream past the hero', as
   await page.setViewportSize({ width: 390, height: 664 });
   await page.goto('/');
   const hero = page.locator('[data-home-hero]');
-  const poster = hero.getByRole('link', { name: /Mithai/ });
+  const poster = hero.getByRole('link', { name: /Pass the/ });
+  // D-196: the season's own date and headline
+  await expect(poster).toContainText(/Thanksgiving · Thu, Nov 26/);
+  await expect(poster).toContainText(/Pass the\s*achaar\./);
   await expect(poster).toHaveAttribute('href', '/food');
   await expect(poster).toContainText(/Free delivery from \$49\.99/);
   await expect(poster).toContainText(/From India to your door in 7\s+delivery days \(on food\)/);
-  // D-183: the old offer is gone from the hero (it stays in the Diwali night further down)
+  // D-183: the old offer is gone from the hero (it stays in the season's dusk further down)
   await expect(hero.getByText(/under \$99/i)).toHaveCount(0);
   const color = (): Promise<string> => page.locator('.site-header').evaluate((el) => getComputedStyle(el).color);
   expect(await color()).toBe('rgb(255, 255, 255)');
@@ -59,9 +62,9 @@ test("D-187: Home's sections in the founder's order, with no second store", asyn
   await page.goto('/');
   const order = [
     '[data-home-hero]',
-    'section[aria-label="Shop for Diwali"]',
+    'section[aria-label="Shop for Thanksgiving"]',
     '#categories',
-    'section[aria-label="Diwali at IWC"]',
+    'section[aria-label="Homecoming at IWC"]',
     '#most-ordered',
     '#under-5',
     '#just-listed',

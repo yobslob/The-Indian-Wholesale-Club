@@ -12,12 +12,17 @@ import type { CardOption, ProductCard } from '@repo/db/store';
 export const LOW_STOCK = 3;
 
 /** The chip's words for an option. */
-export function chipLabel(o: CardOption, type: ProductCard['product_type'], showPrice: boolean): string {
+export function chipLabel(
+  o: CardOption,
+  type: ProductCard['product_type'],
+  showPrice: boolean,
+  fmt: (cents: number) => string = formatUsd,
+): string {
   const opt = o.options ?? {};
   const raw = type === 'clothing' ? (opt.size ?? opt.pack ?? o.label) : (opt.pack ?? opt.flavour ?? opt.style ?? opt.size ?? o.label);
   // launch QA B-3, B-9: a size in its one spelling ("0–6 months", "XL"), a lower-case shop word title-cased
   const base = displayOption(raw);
-  return showPrice ? `${base} · ${formatUsd(o.price_cents)}` : base;
+  return showPrice ? `${base} · ${fmt(o.price_cents)}` : base;
 }
 
 /** The options in size order (launch QA B-3); options without a size keep the shop's order. */

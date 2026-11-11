@@ -1,3 +1,5 @@
+import { MARKET_SCRIPT } from '@repo/shared/domain';
+
 import { siteUrl } from '@/lib/env';
 import { SITE_NAME } from '@/lib/site';
 
@@ -21,7 +23,11 @@ export const viewport: Viewport = { width: 'device-width', initialScale: 1 };
 /** Fonts: the founder's set (storefront.md §Direction), self-hosted with next/font (app/fonts.ts). */
 export default function RootLayout({ children }: { children: React.ReactNode }): React.JSX.Element {
   return (
-    <html lang="en" className={fontVariables}>
+    <html lang="en" className={fontVariables} suppressHydrationWarning>
+      <head>
+        {/* D-197: the visitor's currency, before the first paint (no request, no permission) */}
+        <script dangerouslySetInnerHTML={{ __html: MARKET_SCRIPT }} />
+      </head>
       <body className="bg-canvas text-ink font-body min-h-screen antialiased">{children}</body>
     </html>
   );

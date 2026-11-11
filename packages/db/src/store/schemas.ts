@@ -421,6 +421,10 @@ export const storePolicySchema = z.object({
   food_delivery_days_max: z.number().int().nullable(),
   us_delivery_days_min: z.number().int().nullable(),
   us_delivery_days_max: z.number().int().nullable(),
+  /** D-197: US dollars to each currency, for the prices shown abroad; null = not set (US dollars shown). */
+  fx: z
+    .object({ ca: z.coerce.number().nullable(), au: z.coerce.number().nullable(), nz: z.coerce.number().nullable() })
+    .default({ ca: null, au: null, nz: null }),
   cancel_fee_pct: z.coerce.number().nullable(),
   return_claim_days: z.number().int().nullable(),
   return_tiers: z.array(z.object({ days: z.number().int(), kept_pct: z.coerce.number() })),

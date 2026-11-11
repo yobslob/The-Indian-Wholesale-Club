@@ -2,7 +2,7 @@
  * The pictures the founder fills in (founder 2026-10-30: "You don't have to generate images just leave a placeholder
  * there and I will fill."). To fill one: put the file in apps/web/public/visuals/ (AVIF, WebP or JPEG) and set its `src`
  * ("/visuals/empty-bag.jpg"), `alt`, and its width and height (the photo's own, so it is not cropped). The founder's
- * photos fill Page not found, the empty bag and the Diwali windows. A slot comes back when it has its photo (§10 Y-8):
+ * photos fill Page not found, the empty bag and Home's season windows. A slot comes back when it has its photo (§10 Y-8):
  * an empty one shows a labelled frame on local and preview builds and nothing at all on the live site.
  */
 export interface Slot {
@@ -27,25 +27,26 @@ export const SLOTS = {
     brief: 'Beside an empty bag: an empty steel thali with its katoris on a table, waiting to be filled.',
   },
   // D-175 (founder 2026-10-31: "Leave image placeholders in it where I can Insert my photos one photo per card"): the
-  // Diwali windows on Home (diwali-windows.tsx), the founder's photos since 2026-10-31. Cropped to fill; while empty the
-  // window shows its drawing.
-  'diwali-night': {
+  // season windows on Home (homecoming-windows.tsx), the founder's photos since 2026-10-31. Cropped to fill; while empty
+  // the window shows its drawing. D-196: the season is Homecoming; the files are still the Diwali ones (their names
+  // too) until the founder gives new ones, and `homecoming-snacks` still shows diyas.
+  'homecoming-table': {
     src: '/visuals/diwali-night.jpg',
-    alt: 'Two friends laughing at a Diwali party, one feeding the other a sweet.',
+    alt: 'Two friends laughing at a dinner table, one feeding the other a sweet.',
     width: 1080,
     height: 1350,
     brief:
-      'The wide Diwali window: a balcony or doorway at night, diyas and fairy lights, people in festive clothes. Fills the card\'s right side, fading into the wine on its left and bottom (keep the subject right of centre).',
+      'The wide window: family or friends round a full table at dusk, a homecoming dinner. Fills the card\'s right side, fading into the wine on its left and bottom (keep the subject right of centre).',
   },
-  'diwali-clothing': {
+  'homecoming-clothing': {
     src: '/visuals/diwali-clothing.jpg',
     alt: 'A woman in gold and silver glass bangles, her wrists crossed over her eyes.',
     width: 736,
     height: 970,
     brief:
-      'The Clothing arch: a kurta or saree up close, or someone wearing one, warm light. Fills the arch\'s top, its bottom fading into saffron.',
+      'The Clothing arch: a kurta or saree up close, or someone wearing one, warm light. Fills the arch\'s top, its bottom fading into pumpkin.',
   },
-  'diwali-snacks': {
+  'homecoming-snacks': {
     src: '/visuals/diwali-snacks.jpg',
     alt: 'Lit diyas round a bowl of flowers, with plates of kaju katli, namkeen and chocolates.',
     width: 736,
@@ -53,7 +54,7 @@ export const SLOTS = {
     brief:
       'The Snacks arch: namkeen, bhujia or chips spilling on a table, or a paper cone of bhel. Fills the arch\'s top, fading into green.',
   },
-  'diwali-nearby': {
+  'homecoming-nearby': {
     src: '/visuals/snacks-nearby.jpg',
     alt: 'A packet of Maggi masala noodles beside a steaming bowl of them.',
     width: 1200,
