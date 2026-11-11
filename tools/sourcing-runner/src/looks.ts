@@ -4,6 +4,7 @@ import { join } from 'node:path';
 import { lookKey, mediaPath, photoUrl, type PhotoPrint, type ProductType } from '@repo/shared/domain';
 import {
   amazonFullSize,
+  isConnectionDown,
   isOwnLook,
   amazonLookImages,
   itemKeyOf,
@@ -60,9 +61,18 @@ export interface LooksTotals {
   skipped: number;
   bytes: number;
   next: string | null;
+  /** The plan had no listing left for this type. */
+  ended: boolean;
+  /** Why the run stopped early: the photo budget or a database timeout. */
+  stopped: string | null;
+  /** A shop's robot check: the run doesn't try that shop again. */
+  blocked: boolean;
+  /** The connection dropped: `next` is the last listing finished, to go on from once it is back. */
+  offline: boolean;
 }
 
 class RunStop extends Error {}
+class ConnectionDown extends Error {}
 const stopIfTimeout = (error: unknown): void => {
   if (/statement timeout|57014|canceling statement/i.test(errorText(error))) {
     throw new RunStop(`the database timed out: stopping the run (${errorText(error).slice(0, 120)})`);
@@ -236,7 +246,18 @@ async function workListing(
 }
 
 export async function runLooks(ctx: RunContext, db: Db, opts: LooksOptions): Promise<LooksTotals> {
-  const totals: LooksTotals = { listings: 0, tagged: 0, added: 0, skipped: 0, bytes: 0, next: null };
+  const totals: LooksTotals = {
+    listings: 0,
+    tagged: 0,
+    added: 0,
+    skipped: 0,
+    bytes: 0,
+    next: opts.after,
+    ended: false,
+    stopped: null,
+    blocked: false,
+    offline: false,
+  };
   const dir = join(ROOT, 'out');
   mkdirSync(dir, { recursive: true });
   const stamp = new Date().toISOString().slice(0, 16).replace(/[:T]/g, '-');
@@ -248,9 +269,19 @@ export async function runLooks(ctx: RunContext, db: Db, opts: LooksOptions): Pro
 
   try {
     while (totals.listings < opts.limit) {
-      const { listings } = await db.lookPlan(opts.type, after, Math.min(25, opts.limit - totals.listings));
-      if (listings.length === 0) break;
+      let listings: LookListing[];
+      try {
+        ({ listings } = await db.lookPlan(opts.type, after, Math.min(25, opts.limit - totals.listings)));
+      } catch (error) {
+        if (isConnectionDown(errorText(error))) throw new ConnectionDown(errorText(error));
+        throw error;
+      }
+      if (listings.length === 0) {
+        totals.ended = true;
+        break;
+      }
       for (const listing of listings) {
+        const before = after;
         after = listing.id;
         totals.next = listing.id;
         const site = listing.source_site ?? '';
@@ -265,9 +296,15 @@ export async function runLooks(ctx: RunContext, db: Db, opts: LooksOptions): Pro
         } catch (error) {
           if (error instanceof RunStop) throw error;
           stopIfTimeout(error);
+          if (isConnectionDown(errorText(error))) {
+            // not this listing's fault: it is done again once the connection is back
+            totals.next = before;
+            throw new ConnectionDown(errorText(error));
+          }
           if (isBlocked(error)) {
             // D-149: a refusal is the shop's answer for this run
             refused.add(site);
+            totals.blocked = true;
             ctx.stats.page(site, error);
             log(`  ${site} refused the runner: no more of its listings this run`);
             row({ listing: listing.id, look: '', action: 'blocked' });
@@ -281,8 +318,13 @@ export async function runLooks(ctx: RunContext, db: Db, opts: LooksOptions): Pro
       }
     }
   } catch (error) {
-    if (!(error instanceof RunStop)) throw error;
-    log(`stopped: ${error.message}`);
+    if (error instanceof ConnectionDown) {
+      totals.offline = true;
+      log(`  the connection dropped: ${error.message.slice(0, 160)}`);
+    } else if (error instanceof RunStop) {
+      totals.stopped = error.message;
+      log(`stopped: ${error.message}`);
+    } else throw error;
   }
   log(`looks: wrote ${file}`);
   return totals;

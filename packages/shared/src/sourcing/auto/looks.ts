@@ -156,6 +156,16 @@ export function lookAction(
   return { action: Math.min(print.width, print.height) < MIN_LOOK_PHOTO_PX ? 'too-small' : 'add' };
 }
 
+/**
+ * Whether an error means this machine lost its connection, not that one page failed (the food run of 2026-11-10 stopped
+ * on "ENOTFOUND … supabase.co" after Amazon's "net::ERR_FAILED"). A slow page (a timeout) is the page's own failure.
+ */
+export function isConnectionDown(error: string): boolean {
+  return /net::ERR_(FAILED|INTERNET_DISCONNECTED|NAME_NOT_RESOLVED|NETWORK_CHANGED|CONNECTION_(RESET|REFUSED|CLOSED|ABORTED|TIMED_OUT)|ADDRESS_UNREACHABLE)|ENOTFOUND|EAI_AGAIN|ECONNRESET|ECONNREFUSED|ENETUNREACH|EHOSTUNREACH|fetch failed|AggregateError|socket hang up/i.test(
+    error,
+  );
+}
+
 export const LOOK_CSV_HEADER = 'listing,look,action,method,media_id,path,bytes';
 
 /** One line of `out/looks-*.csv`, what `--undo` reads back. */

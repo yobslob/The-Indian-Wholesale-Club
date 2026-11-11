@@ -415,6 +415,8 @@ The CSV's `method` column says which way works per shop. Amazon's colour map and
 - **Time:** food reads up to 4 item pages per listing (its packs show only there) and stores photos, about 30 s a listing; clothing and home find most looks in the page's colour map, about 15 s.
 - **R2 at about 100 KB a photo:** the whole backfill is about 0.9 GB, about 9.3 GB in all.
 
+**Runs on 2026-11-10 and 11, continued:** food 96 more listings (104 tagged, 121 added, 11.3 MB) until this machine lost its connection; home 44 listings (40 tagged, 111 added, 16.5 MB, its process closed before it finished); clothing dry run after PR #12: no new photo for the page's own look (20 tags, 6 own looks left as they were because their main photo is another colour's). From here the runner goes on by itself: `--until-done` waits out a lost connection and keeps where each type got to.
+
 **R2 (founder 2026-11-09):** 8.39 GB in use, and willing to pay past the free 10 GB. Cloudflare bills R2 by use, about $0.015 per GB a month past 10 GB, so the whole backfill, even with `--per-look 2` for clothing, stays near or under the free 10 GB. The 0.5 GB cap and the 9.3 GB stop give way to each run's `--photo-gb` and the dashboard after each run.
 
 **Still to do:** the clothing and home dry runs, a first real run, the orphan report.
