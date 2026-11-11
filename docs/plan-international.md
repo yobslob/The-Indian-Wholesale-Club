@@ -37,7 +37,7 @@ Both pieces, with the e2e stock fix, are three commits on branch `prices-abroad`
 1. **Done 2026-11-11:** `node scripts/check.mjs`, every step OK but e2e (103 passed, 2 skipped, 2 failed); the two failures were the
    test customer's "Too many requests" in `customer-choices.spec.ts`, which passed 3/3 alone (`status.md`).
 2. **Done 2026-11-11:** three commits (Thanksgiving, prices abroad, e2e stock) on `prices-abroad` and one PR;
-   `apps/web/public/visuals/hero_updated.png` stays out of git. The founder merges it.
+   the founder's 3 MB source picture of the poster (hero_updated.png in public/visuals, unused) stays out of git.
 3. **The founder runs the Deploy workflow** for migration `20261114090000_market_rates.sql`. Until then the site works,
    but abroad it shows US dollars, because `store_policy().fx` is empty.
 4. **Check on the live site:** `https://indianwholesaleclub.com/clothing?market=ca` should show CA$ on cards and the
