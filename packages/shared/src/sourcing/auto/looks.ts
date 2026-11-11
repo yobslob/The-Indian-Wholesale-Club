@@ -71,6 +71,15 @@ export function missingLooks(listing: LookListing, ownKey: string | null): Missi
 
 export type LookMethod = 'page' | 'colour-map' | 'swatch' | 'item' | 'item-page';
 
+/**
+ * Whether a look is the page's own: its picture is the page's own (`page`), or one of its items is the listing's address.
+ * Amazon may open a listing's address on another colour than the address's item (clothing dry run 2026-11-09: 12 of 20
+ * listings), so the page's own picture counts whatever the address says.
+ */
+export function isOwnLook(m: MissingLook, method: LookMethod | null, sourceUrl: string, ownKey: string | null): boolean {
+  return method === 'page' || m.variants.some((v) => v.item_url === sourceUrl || (ownKey !== null && v.item_key === ownKey));
+}
+
 export interface LookImages {
   urls: string[];
   method: LookMethod;
@@ -145,6 +154,16 @@ export function lookAction(
   }
   if (same.length > 0) return { action: 'same-as-other' };
   return { action: Math.min(print.width, print.height) < MIN_LOOK_PHOTO_PX ? 'too-small' : 'add' };
+}
+
+/**
+ * Whether an error means this machine lost its connection, not that one page failed (the food run of 2026-11-10 stopped
+ * on "ENOTFOUND … supabase.co" after Amazon's "net::ERR_FAILED"). A slow page (a timeout) is the page's own failure.
+ */
+export function isConnectionDown(error: string): boolean {
+  return /net::ERR_(FAILED|INTERNET_DISCONNECTED|NAME_NOT_RESOLVED|NETWORK_CHANGED|CONNECTION_(RESET|REFUSED|CLOSED|ABORTED|TIMED_OUT)|ADDRESS_UNREACHABLE)|ENOTFOUND|EAI_AGAIN|ECONNRESET|ECONNREFUSED|ENETUNREACH|EHOSTUNREACH|fetch failed|AggregateError|socket hang up/i.test(
+    error,
+  );
 }
 
 export const LOOK_CSV_HEADER = 'listing,look,action,method,media_id,path,bytes';

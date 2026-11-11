@@ -408,6 +408,15 @@ The CSV's `method` column says which way works per shop. Amazon's colour map and
 - **Per listing, after the fix:** about 2.9 new photos in clothing and 2.7 in home. With food's 1.8, the whole backfill is about 8,700 photos, about 0.6 GB.
 - **Run the clothing and home dry runs again** to see the fix before any real run there.
 
+**Runs on 2026-11-10** (founder):
+- **First real run, food:** 50 Amazon listings, 221 looks: 54 tagged, 73 photos added (7.5 MB stored, about 100 KB a photo, not 70), 42 the same picture as another pack, 48 past the 4 item pages, 3 too small, 1 page that didn't open in 35 s (the next run goes on `--after` it). Checked on the live site the same morning: `/api/card-options` gives each pack its new photo (`c22662d2…` for "Pack of 3" on `00a7806c…`).
+- **Home dry run after the fix:** the page's own look is tagged in all 19 listings that have one; 58 new photos, 17 too small (10 of them swatches with no bigger picture).
+- **Clothing dry run after the fix:** the page's own look still got a new photo 12 times. Amazon opened those listings' addresses on another colour (a parent item), so the address's item wasn't the page's look. Fixed: the look found as the page's own picture always counts as the page's own.
+- **Time:** food reads up to 4 item pages per listing (its packs show only there) and stores photos, about 30 s a listing; clothing and home find most looks in the page's colour map, about 15 s.
+- **R2 at about 100 KB a photo:** the whole backfill is about 0.9 GB, about 9.3 GB in all.
+
+**Runs on 2026-11-10 and 11, continued:** food 96 more listings (104 tagged, 121 added, 11.3 MB) until this machine lost its connection; home 44 listings (40 tagged, 111 added, 16.5 MB, its process closed before it finished); clothing dry run after PR #12: no new photo for the page's own look (20 tags, 6 own looks left as they were because their main photo is another colour's). From here the runner goes on by itself: `--until-done` waits out a lost connection and keeps where each type got to.
+
 **R2 (founder 2026-11-09):** 8.39 GB in use, and willing to pay past the free 10 GB. Cloudflare bills R2 by use, about $0.015 per GB a month past 10 GB, so the whole backfill, even with `--per-look 2` for clothing, stays near or under the free 10 GB. The 0.5 GB cap and the 9.3 GB stop give way to each run's `--photo-gb` and the dashboard after each run.
 
 **Still to do:** the clothing and home dry runs, a first real run, the orphan report.

@@ -1,3 +1,5 @@
+import { readFileSync, writeFileSync } from 'node:fs';
+import { join } from 'node:path';
 import { PRODUCT_TYPES } from '@repo/shared/domain';
 
 import { openBrowser, profileFor } from './browser';
@@ -7,7 +9,7 @@ import { runChecks } from './check';
 import { sortNewClothing } from './classes';
 import { DEFAULT_SHOPS, type RunContext } from './context';
 import { Db } from './db';
-import { loadEnv } from './env';
+import { ROOT, loadEnv } from './env';
 import { findForTarget } from './find';
 import { weighFood } from './food';
 import { weighHome } from './home';
@@ -420,55 +422,113 @@ async function looks(): Promise<number> {
     log(`done: ${removed} photos removed, ${untagged} tags taken off`);
     return 0;
   }
-  const type = PRODUCT_TYPES.find((t) => t === flag(args, '--type'));
-  if (!type) throw new Error('Usage: pnpm sourcing looks --type clothing|food|home [--limit 200] [--photo-gb 0.2] [--per-look 1] [--item-pages 4] [--site amazon.in] [--after <id>] [--dry-run] | --undo <csv>');
+  const typeArg = flag(args, '--type');
+  const types = typeArg === 'all' ? (['food', 'home', 'clothing'] as const) : PRODUCT_TYPES.filter((t) => t === typeArg);
+  if (types.length === 0)
+    throw new Error(
+      'Usage: pnpm sourcing looks --type clothing|food|home|all [--until-done] [--limit 200] [--photo-gb 0.2] [--per-look 1] [--item-pages 4] [--site amazon.in] [--after <id>] [--from-start] [--dry-run] | --undo <csv>',
+    );
   const gb = flag(args, '--photo-gb');
   const dryRun = args.includes('--dry-run');
+  const untilDone = args.includes('--until-done');
   if (!dryRun && gb === null) throw new Error('--photo-gb is required: the photo store space this run may use, in GB (0.15)');
   startBudget(dryRun || gb === null ? null : Number(gb));
-  const context = await openBrowser(env, { images: false, profile: profileFor(env, type) });
-  const ctx: RunContext = {
-    db,
-    plan: {
-      settings: {
-        max_delivery_days: 3,
-        listings_per_target: 3,
-        check_every_days: 7,
-        qty_per_variant: 5,
-        targets_per_run: 1,
-        max_rise_pct: 60,
-        max_drop_pct: 50,
-        auto_publish: false,
-      },
-      shops: DEFAULT_SHOPS,
-      targets: [],
-      checks: [],
-      known: [],
-    },
-    lanes: new Lanes(context),
-    stats: new ShopStats(),
-    known: new Set(),
-    now: new Date(),
-    budget: PhotoBudget.load(),
+  // D-194: --until-done goes on where the last one stopped, type by type (out/looks-progress.json)
+  const progressFile = join(ROOT, 'out', `looks-progress${dryRun ? '-dry' : ''}.json`);
+  const progress: Record<string, string> = (() => {
+    try {
+      return args.includes('--from-start') ? {} : (JSON.parse(readFileSync(progressFile, 'utf8')) as Record<string, string>);
+    } catch {
+      return {};
+    }
+  })();
+  const remember = (type: string, at: string | null): void => {
+    if (!untilDone) return;
+    if (at) progress[type] = at;
+    else delete progress[type];
+    writeFileSync(progressFile, JSON.stringify(progress, null, 2));
   };
-  try {
-    const t = await runLooks(ctx, db, {
-      type,
-      limit: Math.min(Number(flag(args, '--limit')) || 50, 500),
-      perLook: Math.min(Math.max(Number(flag(args, '--per-look')) || 1, 1), 2),
-      itemPages: Math.min(Math.max(Number(flag(args, '--item-pages')) || ITEM_PAGES_PER_LISTING, 0), 10),
-      dryRun,
-      site: flag(args, '--site'),
-      after: flag(args, '--after'),
-      siteUrl: env.IWC_SITE_URL,
-    });
-    log(
-      `done: ${t.listings} listings, ${t.tagged} tagged, ${t.added} added, ${t.skipped} skipped, ${(t.bytes / 1024 ** 3).toFixed(3)} GB` +
-        (t.next ? `; go on with --after ${t.next}` : ''),
-    );
-    log(`shops: ${JSON.stringify(ctx.stats.toJSON())}`);
-  } finally {
-    await context.close();
+  const wait = (ms: number): Promise<void> => new Promise((r) => setTimeout(r, ms));
+  let after = flag(args, '--after');
+
+  for (const type of types) {
+    if (untilDone && !after && progress[type] === 'done') {
+      log(`looks: ${type} was finished before (--from-start does it again)`);
+      continue;
+    }
+    if (untilDone && !after && progress[type]) after = progress[type]!;
+    let offline = 0;
+    for (;;) {
+      const context = await openBrowser(env, { images: false, profile: profileFor(env, type) });
+      const ctx: RunContext = {
+        db,
+        plan: {
+          settings: {
+            max_delivery_days: 3,
+            listings_per_target: 3,
+            check_every_days: 7,
+            qty_per_variant: 5,
+            targets_per_run: 1,
+            max_rise_pct: 60,
+            max_drop_pct: 50,
+            auto_publish: false,
+          },
+          shops: DEFAULT_SHOPS,
+          targets: [],
+          checks: [],
+          known: [],
+        },
+        lanes: new Lanes(context),
+        stats: new ShopStats(),
+        known: new Set(),
+        now: new Date(),
+        budget: PhotoBudget.load(),
+      };
+      let t;
+      try {
+        t = await runLooks(ctx, db, {
+          type,
+          // until done: 200 listings a go, each with a fresh browser, so a long run stays light
+          limit: untilDone ? 200 : Math.min(Number(flag(args, '--limit')) || 50, 500),
+          perLook: Math.min(Math.max(Number(flag(args, '--per-look')) || 1, 1), 2),
+          itemPages: Math.min(Math.max(Number(flag(args, '--item-pages')) || ITEM_PAGES_PER_LISTING, 0), 10),
+          dryRun,
+          site: flag(args, '--site'),
+          after,
+          siteUrl: env.IWC_SITE_URL,
+        });
+      } finally {
+        await context.close();
+      }
+      log(
+        `done: ${type}, ${t.listings} listings, ${t.tagged} tagged, ${t.added} added, ${t.skipped} skipped, ${(t.bytes / 1024 ** 3).toFixed(3)} GB` +
+          (t.next && !t.ended ? `; go on with --after ${t.next}` : ''),
+      );
+      log(`shops: ${JSON.stringify(ctx.stats.toJSON())}`);
+      remember(type, t.ended ? 'done' : t.next);
+      if (!untilDone) return 0;
+      if (t.stopped || t.blocked) {
+        log(`looks: stopping (${t.stopped ?? 'a shop showed a robot check'}). The same command goes on from here.`);
+        return 1;
+      }
+      if (t.offline) {
+        // D-194: wait for the connection, up to an hour, then go on from the last listing finished
+        if (++offline > 30) {
+          log('looks: no connection for an hour. The same command goes on from here.');
+          return 1;
+        }
+        log(`looks: waiting 2 minutes for the connection (${offline} of 30)`);
+        after = t.next;
+        await wait(120_000);
+        continue;
+      }
+      offline = 0;
+      if (t.ended) break;
+      after = t.next;
+      await wait(10_000);
+    }
+    log(`looks: ${type} finished`);
+    after = null;
   }
   return 0;
 }

@@ -4,6 +4,8 @@ import { describe, it } from 'node:test';
 import { lookKey } from '../src/domain/looks';
 import {
   amazonFullSize,
+  isConnectionDown,
+  isOwnLook,
   amazonLookImages,
   lookAction,
   lookCsvRow,
@@ -115,6 +117,32 @@ describe('the page’s own look (D-194, dry runs 2026-11-09)', () => {
   });
   it('leaves it when the main photo is already another look’s', () => {
     assert.deepEqual(lookAction(picture(200), [{ id: 'main', print: picture(10), look: 'colour=red' }], { mainId: 'main' }), { action: 'own-look' });
+  });
+});
+
+describe('which look is the page’s own (D-194, clothing dry run 2026-11-09)', () => {
+  const [navy, red] = missingLooks(listing(kurta), null);
+  it('is the look whose picture is the page’s own, even when the address names another item', () => {
+    assert.equal(isOwnLook(red!, 'page', 'https://www.amazon.in/dp/PARENTASIN', 'PARENTASIN'), true);
+  });
+  it('is the look of the address’s item', () => {
+    assert.equal(isOwnLook(navy!, 'colour-map', 'https://www.amazon.in/dp/AAAAAAAAA1', 'AAAAAAAAA1'), true);
+  });
+  it('is no other look', () => {
+    assert.equal(isOwnLook(red!, 'colour-map', 'https://www.amazon.in/dp/AAAAAAAAA1', 'AAAAAAAAA1'), false);
+    assert.equal(isOwnLook(red!, null, 'https://www.amazon.in/dp/AAAAAAAAA1', null), false);
+  });
+});
+
+describe('a lost connection, told from a failed page (D-194, food run 2026-11-10)', () => {
+  it('knows the machine went offline', () => {
+    assert.equal(isConnectionDown('page.goto: net::ERR_FAILED at https://www.amazon.in/dp/B013QO7YAA'), true);
+    assert.equal(isConnectionDown('fetch failed (ENOTFOUND: getaddrinfo ENOTFOUND ttobhpcidixxdteczccv.supabase.co)'), true);
+    assert.equal(isConnectionDown('worker_look_photo_plan: AggregateError:'), true);
+  });
+  it('leaves a slow page and the database’s own answers alone', () => {
+    assert.equal(isConnectionDown('page.goto: Timeout 35000ms exceeded.'), false);
+    assert.equal(isConnectionDown('worker_look_photos_add: look_has_enough_photos'), false);
   });
 });
 

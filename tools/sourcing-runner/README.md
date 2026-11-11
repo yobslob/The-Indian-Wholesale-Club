@@ -160,6 +160,14 @@ pnpm sourcing looks --type clothing --limit 200 --photo-gb 0.15
 
 `--after <id>` goes on where the last run ended (it prints the id). `--per-look 2` takes a second photo. `--item-pages 8` lets a listing read up to 8 item pages (default 4, at most 10) for looks its own page doesn't show; each is one more page from the shop. A picture the listing already has only gets a tag; only a new one uses space. The page's own look never gets a new photo: when the shop's picture matches none of the listing's photos (the photo redo made them again), the main photo is tagged to it (`own-look` when the main photo is already another look's). Amazon pictures are tried at their own size first. A shop's robot check ends that shop for the run; a database timeout ends the run. `out/looks-<type>-<time>.csv` lists every action.
 
+**Leave it running (all three types, Amazon):**
+
+```bash
+pnpm sourcing looks --type all --site amazon.in --until-done --photo-gb 10
+```
+
+It goes 200 listings at a time with a fresh browser, food, then home & gifts, then clothing. Where each type got to is kept in `out/looks-progress.json`, so the same command goes on from there after a stop. If the connection drops it waits (2 minutes at a time, up to an hour) and goes on from the last listing it finished. It stops on a shop's robot check, a database timeout or a spent `--photo-gb`; run the same command later. `--from-start` goes over every listing again.
+
 ```bash
 pnpm sourcing looks --undo out/looks-clothing-<time>.csv
 ```

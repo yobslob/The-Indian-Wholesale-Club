@@ -17,8 +17,7 @@ Short on purpose (the audit warns past 10 KB): **replace** lines when something 
 - **Merged 2026-11-09:** [PR #9](https://github.com/yobslob/The-Indian-Wholesale-Club/pull/9) (`--item-pages`, the first dry run).
 - **Merged 2026-11-09:** PR #10 and [PR #11](https://github.com/yobslob/The-Indian-Wholesale-Club/pull/11) (the page's own look never gets a new photo; Amazon at full size first).
 - **Backfill started 2026-11-10:** food, 50 listings: 54 tagged, 73 photos added (7.5 MB), checked on the live site.
-- **Not released (branch `prices-abroad`, 2026-11-11):** D-197 and D-198, prices in CA$, A$ and NZ$ for visitors from Canada, Australia and New Zealand, caps, coupons and savings still in $ (migration 20261114090000; checkout stays in US dollars). Until the Deploy workflow applies the migration, the site shows US dollars abroad. Handoff and the live checks after deploy: `docs/plan-international.md` §3.
-- **Not released (same branch):** D-196, Home dressed for Homecoming (Thanksgiving) with the founder's poster; and the e2e demo stock raised to 40 (`DEMO_STOCK`).
+- **Merged 2026-11-11, not deployed:** [PR #14](https://github.com/yobslob/The-Indian-Wholesale-Club/pull/14): D-197 and D-198, prices in CA$, A$ and NZ$ for visitors from Canada, Australia and New Zealand, caps, coupons and savings still in $ (migration 20261114090000; checkout stays in US dollars); D-196, Home dressed for Homecoming (Thanksgiving) with the founder's poster; the e2e demo stock raised to 40 (`DEMO_STOCK`). Until the Deploy workflow applies the migration, the site shows US dollars abroad. Handoff and the live checks after deploy: `docs/plan-international.md` §3.
 - **Backfill so far (2026-11-10):** food 146 listings (158 tagged, 194 added, about 19 MB), home 44 (40 tagged, 111 added, 16.5 MB), checked on the live site.
 - **Not released:** branch `looks-page-own` (PR #12) and branch `looks-until-done`: `pnpm sourcing looks --type all --until-done`, which waits out a lost connection and keeps where each type got to.
 - **Accounts (D-147):** Vercel Pro, Supabase free since 2026-10-21/22, photos in Cloudflare R2. Budgets and the
@@ -39,13 +38,13 @@ Short on purpose (the audit warns past 10 KB): **replace** lines when something 
 - **Free shipping from $49.99** on every bag; bulk saving and the heavy-item discount stay at $99.99. No price changes
   (rehearsed: 0 differences of 29,212 options).
 - **Stock is checked at checkout** (Remove / Keep n, payment locked until sorted) on the website and in the app.
-- **Home:** hero → Diwali arches → mosaic → the first-order band (D-193) → Shop by category (Traditional wear first, D-195) → Diwali night → What everyone missed this week → The
+- **Home (dressed for Homecoming, D-196, once released):** hero → the season's arches → mosaic → the first-order band (D-193) → Shop by category (Traditional wear first, D-195) → the season's dusk → What everyone missed this week → The
   kirana counter → Just listed Clothing → Just listed Home & gifts → Pick your home → the delivery band.
 - **App 1.1.0** is built for this; whether it is published is not recorded here. The old app keeps working as a customer app (shims marked
   `TODO(D-187)`); **its admin mode breaks** with the release.
 
 ## Next for the founder
-1. **D-194:** after `looks-own-full` is merged, the clothing and home dry runs again (`pnpm sourcing looks --type clothing --site amazon.in --limit 20 --dry-run`, then `--type home`). Food can start now with `--photo-gb 0.05`. Re-add the Add to IWC bookmark. **D-191:** a new app build carries the bill's coins, Popular and the sub-category chips. Your choices: the retailer % (1.5 on the 5 Nov copy, so the charge grows with the bag; Settings → Bag charges), the noodles photo's printed "₹15", the sub-categories' own photos (`sub-photos.ts`). Popular is an experiment: compare orders and average bag in Admin before and after.
+1. **D-194:** after PRs #12 and #13 are merged, leave `pnpm sourcing looks --type all --site amazon.in --until-done --photo-gb 10` running (`tools/sourcing-runner/README.md`). Re-add the Add to IWC bookmark. **D-191:** a new app build carries the bill's coins, Popular and the sub-category chips. Your choices: the retailer % (1.5 on the 5 Nov copy, so the charge grows with the bag; Settings → Bag charges), the noodles photo's printed "₹15", the sub-categories' own photos (`sub-photos.ts`). Popular is an experiment: compare orders and average bag in Admin before and after.
 2. **Names to tidy:** production's count (Y-11; the page and Rename all go only at 0).
 3. In the order of use (each from the archived status, still open and not re-checked here):
    - **The photo redo** (D-164): pull on the laptop, `pnpm photos:redo fetch --type food --again` and `--type home
@@ -57,8 +56,8 @@ Short on purpose (the audit warns past 10 KB): **replace** lines when something 
    - **Admin's backlog** (D-146, D-159): Weights to check → Assign all and publish; Drafts → Archive the drafts that
      can't go live; Categories to check; Products → For: not set yet.
    - **Monitoring:** the set-up once (`monitoring.md` §5), then the Monday 15 minutes.
-3. **Answer when convenient:** `questions.md`, above all Q-46 (nothing to pay at the door?), Q-60 (Home's poster after
-   Diwali, Nov 8) and Y-15 (Diwali on Home after Nov 8: the founder decides after Diwali). Also the plan's §7 defaults,
+3. **Answer when convenient:** `questions.md`, above all Q-46 (nothing to pay at the door?), Q-60 (the Snacks arch
+   still shows a Diwali picture under the Homecoming theme, D-196; the hero's drafted words). Also the plan's §7 defaults,
    used because no other answer came: packing list and commercial invoice removed; every food listing promises 7 delivery
    days, slower shops too; US public holidays count as delivery days; food that cannot reach the hub fast stays live.
 4. **Founder's choices seen while building:**
