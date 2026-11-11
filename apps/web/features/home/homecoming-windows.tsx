@@ -2,6 +2,7 @@ import Link from 'next/link';
 
 import { dayDate } from '@repo/shared/domain';
 
+import { Money } from '@/features/shell/market';
 import { Flight } from '@/features/visuals/flight';
 import { VisualSlot, slotShown } from '@/features/visuals/visual-slot';
 
@@ -117,7 +118,7 @@ export function HomecomingArches(): React.JSX.Element {
               {a.lead ? (
                 <span className="hc-hook">
                   <span className="hc-lead font-ui">{a.lead}</span>
-                  <span className="hc-big font-heading">{a.big}</span>
+                  <span className="hc-big font-heading">{a.cents !== undefined ? <Money cents={a.cents} /> : a.big}</span>
                 </span>
               ) : (
                 <span className="hc-hook hc-hook--words font-heading">{a.big}</span>

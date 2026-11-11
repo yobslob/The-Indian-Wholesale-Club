@@ -42,6 +42,7 @@ export function HomeHero({
 }): React.JSX.Element {
   const food = span(foodDays.min, foodDays.max);
   const days = food ?? span(storeDays.min, storeDays.max);
+  // a cap: in US dollars in every country (D-198)
   const free = freeCents ? formatUsd(freeCents) : null;
   return (
     <section className={`${styles.hero} ${heroSerif.variable} ${heroSans.variable}`} data-home-hero>

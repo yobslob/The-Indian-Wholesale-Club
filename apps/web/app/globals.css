@@ -240,6 +240,15 @@
     padding: 0;
   }
 
+  /* D-197: store pages are cached with US prices; a price drawn for another market than the visitor's
+     (html[data-market], set before the first paint) stays hidden until it is redrawn (features/shell/market.tsx), so a
+     Canadian never sees a US price first. The US is never hidden. */
+  html[data-market='ca'] .money:not([data-m='ca']),
+  html[data-market='au'] .money:not([data-m='au']),
+  html[data-market='nz'] .money:not([data-m='nz']) {
+    visibility: hidden;
+  }
+
   /* The banner and the header ride together (D-079): sticky on every page, on the photo on Home. */
   .site-top {
     position: sticky;

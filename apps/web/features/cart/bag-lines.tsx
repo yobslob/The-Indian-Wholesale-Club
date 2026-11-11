@@ -2,11 +2,12 @@
 
 import Link from 'next/link';
 
-import { bagGroups, bagShipmentState, displayOption, displayTitle, formatUsd, productPath } from '@repo/shared/domain';
+import { bagGroups, bagShipmentState, displayOption, displayTitle, productPath } from '@repo/shared/domain';
 
 import { deliveryDaysLabel } from '@/features/catalog/delivery-days';
 import { StorePhoto } from '@/features/catalog/store-photo';
 import { useDays } from '@/features/shell/days';
+import { useMoney } from '@/features/shell/market';
 import { mediaUrl } from '@/lib/site';
 
 import { useBagCharges } from './charges';
@@ -92,6 +93,7 @@ export function BagLines({ compact = false }: { compact?: boolean }): React.JSX.
 }
 
 function LineList({ lines, compact }: { lines: CartLine[]; compact: boolean }): React.JSX.Element {
+  const { format: fmt } = useMoney();
   const remove = useCart((s) => s.remove);
   const grid = compact
     ? 'grid-cols-[auto_minmax(0,1fr)_auto] [grid-template-areas:"pic_nm_pr""pic_step_rm"]'
@@ -116,7 +118,7 @@ function LineList({ lines, compact }: { lines: CartLine[]; compact: boolean }): 
               <Stepper line={line} />
             </div>
             <span className="min-w-[70px] text-right text-[15px] font-medium [grid-area:pr]">
-              {formatUsd(line.unitPriceCents * line.quantity)}
+              {fmt(line.unitPriceCents * line.quantity)}
             </span>
             <button
               type="button"

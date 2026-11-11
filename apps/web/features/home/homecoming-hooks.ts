@@ -22,6 +22,8 @@ export interface Arch {
   lead: string | null;
   /** The words of a hook that is all words. */
   big: string;
+  /** D-197: the price under "starting from", in US cents, drawn in the visitor's dollars. */
+  cents?: number;
   href: string;
   tone: Tone;
   art: Art;
@@ -48,6 +50,7 @@ export const WIDE = {
   hook: 'Host your Thanksgiving under $99.',
   /** The hook's other side (founder 2026-11-07), turning over with it. */
   flip: 'Get 10% off on your first order.',
+  /** A cap, written in US dollars in every country (D-198). */
   cta: 'Shop under $99',
   href: '/home-and-gifts?max=99',
   slot: 'homecoming-table' as const satisfies SlotId,
@@ -59,6 +62,7 @@ export const ARCHES: readonly Arch[] = [
     kicker: 'Clothing',
     lead: 'starting from',
     big: '$11.45',
+    cents: 1145,
     href: '/clothing',
     cta: 'Shop clothing',
     tone: 'pumpkin',
@@ -70,6 +74,7 @@ export const ARCHES: readonly Arch[] = [
     kicker: 'Snacks',
     lead: 'starting from',
     big: '$0.39',
+    cents: 39,
     href: '/food?category=snacks-and-namkeen',
     cta: 'Shop snacks',
     tone: 'olive',

@@ -10,6 +10,7 @@ import { EmptyLine } from '@/features/cart/cart-view';
 import { setOffers } from '@/features/cart/offers';
 import { cartCount, cartSubtotalCents, useCart } from '@/features/cart/store';
 import { useBagBill } from '@/features/cart/use-bag-bill';
+import { CheckoutCurrencyNote } from '@/features/shell/market';
 
 import { BagSummary, billOfQuote, QuoteDelivery } from './bag-summary';
 import { readCheckout, readDetails, takePaymentNotice } from './checkout-session';
@@ -240,6 +241,8 @@ export function CheckoutFlow({ saved }: { saved: SavedDetails | null }): React.J
         ) : null}
       </aside>
       <div>
+        {/* D-197: abroad, the card is still charged in US dollars */}
+        <CheckoutCurrencyNote />
         <StockProblems problems={payment.stock} bag={lines} busy={busy} onFix={fixLine} />
         <Step
           n={1}
@@ -295,7 +298,7 @@ export function CheckoutFlow({ saved }: { saved: SavedDetails | null }): React.J
           {quote && !wide ? (
             <div className="mb-4 grid gap-3">
               <QuoteDelivery quote={quote} lines={summaryLines} />
-              <BillCard bill={billOfQuote(quote)} subtotalCents={subtotal} />
+              <BillCard bill={billOfQuote(quote)} subtotalCents={subtotal} usd />
             </div>
           ) : null}
           <PaymentStep

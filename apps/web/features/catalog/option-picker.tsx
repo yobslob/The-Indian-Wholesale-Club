@@ -3,8 +3,9 @@
 import { useEffect, useRef, useState } from 'react';
 import { createPortal } from 'react-dom';
 
-import { displayOption, displayTitle, formatUsd, optionPriceLabel } from '@repo/shared/domain';
+import { displayOption, displayTitle, optionPriceLabel } from '@repo/shared/domain';
 
+import { useMoney } from '@/features/shell/market';
 import { mediaUrl } from '@/lib/site';
 
 import { chipLabel, colourPhoto, coloursOf, inSizeOrder, LOW_STOCK, optionPhoto, showsPrices } from './card-options';
@@ -44,6 +45,7 @@ export function OptionRibbon({
   onPick: (o: CardOption, from: HTMLElement) => void;
   onClose: () => void;
 }): React.JSX.Element {
+  const { format } = useMoney();
   const ref = useRef<HTMLDivElement>(null);
   const colours = coloursOf(options);
   const [colour, setColour] = useState<string | null>(colours.length ? null : '');
@@ -122,12 +124,12 @@ export function OptionRibbon({
                 key={o.id}
                 type="button"
                 disabled={out}
-                aria-label={`${chipLabel(o, product.product_type, prices)}${out ? ', sold out' : low ? `, only ${o.available} left` : ''}`}
+                aria-label={`${chipLabel(o, product.product_type, prices, format)}${out ? ', sold out' : low ? `, only ${o.available} left` : ''}`}
                 className={`${chip} relative ${out ? 'border-line text-ink-muted line-through opacity-60' : 'border-line bg-paper text-ink hover:border-ink'}`}
                 style={{ animationDelay: `${i * 28}ms` }}
                 onClick={(e) => onPick(o, e.currentTarget)}
               >
-                {chipLabel(o, product.product_type, prices)}
+                {chipLabel(o, product.product_type, prices, format)}
                 {low ? <i aria-hidden="true" className="bg-caution absolute right-1 top-1 h-1.5 w-1.5 rounded-full" /> : null}
               </button>
             );
@@ -156,6 +158,7 @@ export function OptionSheet({
   onChange: (o: CardOption, next: number, from: HTMLElement) => void;
   onClose: () => void;
 }): React.JSX.Element {
+  const { format } = useMoney();
   const close = useRef<HTMLButtonElement>(null);
   // D-194: the small photo follows the last option added here, until the sheet closes
   const [lastLook, setLastLook] = useState<string | null>(null);
@@ -191,7 +194,7 @@ export function OptionSheet({
           <span className="font-ui flex-1 text-[15px] leading-snug">
             <b className="block">{product.name}</b>
             {/* launch QA B-1: the price as the card and the product page say it, before a size is chosen */}
-            <span className="text-ink-muted text-[13.5px]">{optionPriceLabel(options)}</span>
+            <span className="text-ink-muted text-[13.5px]">{optionPriceLabel(options, null, format)}</span>
           </span>
           <button ref={close} type="button" onClick={onClose} aria-label="Close" className="grid h-11 w-11 place-items-center rounded-full text-[20px]">
             ×
@@ -205,7 +208,7 @@ export function OptionSheet({
               <li key={o.id} className="font-ui flex items-center gap-3 py-2.5">
                 <span className={`flex-1 text-[14.5px] ${out ? 'text-ink-muted line-through' : ''}`}>
                   {displayOption(o.label)}
-                  {prices ? <span className="text-ink-muted"> · {formatUsd(o.price_cents)}</span> : null}
+                  {prices ? <span className="text-ink-muted"> · {format(o.price_cents)}</span> : null}
                   {!out && o.available <= LOW_STOCK ? <small className="text-caution block text-[12px]">Only {o.available} left</small> : null}
                   {out ? <small className="block text-[12px] no-underline">Sold out</small> : null}
                 </span>

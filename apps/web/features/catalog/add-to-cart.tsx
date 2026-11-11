@@ -6,7 +6,6 @@ import { useEffect, useMemo, useRef, useState } from 'react';
 import {
   displayOption,
   displayTitle,
-  formatUsd,
   initialLook,
   lookKey,
   lookPhoto,
@@ -14,12 +13,12 @@ import {
   optionPriceLabel,
   priceRange,
   selectionOf,
-  wasCents,
 } from '@repo/shared/domain';
 
 import { flyToBag } from '@/features/cart/fly-to-bag';
 import { MAX_QTY_PER_LINE } from '@/features/cart/limits';
 import { useCart } from '@/features/cart/store';
+import { Money, useMoney } from '@/features/shell/market';
 import { mediaUrl } from '@/lib/site';
 
 import { BuyBar } from './buy-bar';
@@ -55,6 +54,8 @@ const stepButton = 'grid size-11 place-items-center text-lg font-medium disabled
  * is never one the bag then changes; after the pick it is that option's price, the one the bag line gets.
  */
 export function AddToCart({ product, variants, media, delivery }: Props): React.JSX.Element {
+  // D-197: before any early return (rules of hooks)
+  const money = useMoney();
   const add = useCart((s) => s.add);
   const lines = useCart((s) => s.lines);
   const setLook = useLook((s) => s.setLook);
@@ -110,11 +111,9 @@ export function AddToCart({ product, variants, media, delivery }: Props): React.
     setNudge((n) => n + 1);
   };
   const inBagNow = mounted && picked ? (lines.find((l) => l.variantId === variant.id)?.quantity ?? 0) : 0;
-  const price = optionPriceLabel(variants, picked ? variant : null);
+  const price = optionPriceLabel(variants, picked ? variant : null, money.format);
   // D-190: follows the price shown, the picked option's or the lowest
-  const was = product.offer
-    ? wasCents(picked ? variant.price_cents : (priceRange(variants)?.fromCents ?? variant.price_cents), product.product_type)
-    : null;
+  const was = product.offer ? (picked ? variant.price_cents : (priceRange(variants)?.fromCents ?? variant.price_cents)) : null;
 
   const left = variant.available;
   const soldOut = left <= 0;
@@ -145,8 +144,17 @@ export function AddToCart({ product, variants, media, delivery }: Props): React.
   return (
     <div className="space-y-4">
       <div className="font-ui flex items-baseline text-[22px] font-semibold leading-none">
-        {was ? <s className="was">{formatUsd(was)}</s> : null}
-        <p data-testid="product-price" className={was ? 'now m-0' : 'm-0'}>
+        {was ? (
+          <s className="was">
+            <Money cents={was} wasOf={product.product_type} />
+          </s>
+        ) : null}
+        {/* D-197: hidden until drawn in the visitor's dollars (.money) */}
+        <p
+          data-testid="product-price"
+          data-m={money.ready ? money.market : undefined}
+          className={was ? 'money now m-0' : 'money m-0'}
+        >
           {price}
         </p>
         {/* D-191: its weight, like the cards; a piece with several packs says it on each */}
@@ -160,7 +168,9 @@ export function AddToCart({ product, variants, media, delivery }: Props): React.
       {variant.heavy_cents > 0 ? (
         <p className="font-ui -mt-1 flex flex-wrap items-center gap-2 text-sm">
           <span className="bg-paper border-line text-ink rounded-pill border px-2.5 py-1 text-xs font-semibold">Heavy-item shipping</span>
-          <span className="text-ink-muted">+ {formatUsd(variant.heavy_cents)}, added at checkout</span>
+          <span className="text-ink-muted">
+            + <Money cents={variant.heavy_cents} />, added at checkout
+          </span>
         </p>
       ) : null}
 

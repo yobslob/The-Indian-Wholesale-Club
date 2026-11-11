@@ -16,6 +16,9 @@ Every automatic price = (shop ₹ ÷ 0.90 + weight g × ₹2) ÷ the category's 
 - Products → Download Excel gives name, Indian price, category, weight, US price and margin.
 - **Struck-through prices (D-190):** Settings → Prices, 55% of the listings priced by the rules (0 = none; picked from the listing's id). The struck figure = price × 1.2 food, × 1.4 clothing, × 1.5 home & gifts, the price plus its margin. Display only: what is charged is the price.
 
+## Prices abroad (Settings → Prices abroad, D-197)
+CA$, A$ and NZ$ per US$1: 1.4130, 1.4570, 1.8060 (mid-market, 2026-11-06/07). Visitors there see every price × the rate, to the cent; nothing charged changes (checkout stays in US dollars). Empty = that country sees US dollars.
+
 ## The bag's charges (Settings → Bag charges)
 | Number | On production | Notes |
 |---|---|---|

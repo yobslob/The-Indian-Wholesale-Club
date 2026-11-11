@@ -298,6 +298,9 @@ region images, C2), mockups and dev pages use clearly marked placeholders, never
   Shops are "India's own shops", never named (D-003).
 - The words are Claude's drafts until the founder approves them (D-019, D-059).
 
+### Prices abroad (D-197, D-198)
+Visitors from Canada, Australia and New Zealand see every price in their own dollars: the US price × the rate in Settings → Prices abroad, to the cent, as CA$, A$ or NZ$; the US sees "$". **The caps stay as written, in "$", everywhere** (D-198): the free-delivery line, "under $99", "Under $5", the coupons and the savings lines. A struck price is the shown price × its type's factor in every currency (`formatWas`), so the same products strike the same figure on cards, product pages and buy bars. The country comes from `?market=` (kept in the `iwc_market` cookie), that cookie, or the device's time zone, read before the first paint by `MARKET_SCRIPT` in `app/layout.tsx`; the footer's "Prices in" switch changes it. Converted prices go through `Money` or `useMoney()` (`features/shell/market.tsx`); a cached page arrives with US prices and a non-US visitor's stay hidden (`.money`) until redrawn. Checkout, orders, emails, invoices, the info pages, the account's orders and the app stay in US dollars; checkout says so in one line abroad.
+
 ### Visual system (principles)
 1. **Neutral, warm base with one brand colour.** Content and photos carry the colour.
 2. **Per-region accent:** each region has `accent_color`, applied through one CSS variable (`--region-accent`) on its pages.

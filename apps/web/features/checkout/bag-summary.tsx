@@ -55,7 +55,13 @@ export function BagSummary({
       </div>
       {quote && !linesOnly ? <QuoteDelivery quote={quote} lines={lines} /> : null}
       {linesOnly ? null : (
-        <BillCard bill={quote ? billOfQuote(quote) : (bill ?? null)} subtotalCents={subtotalCents} updating={updating} signInHref={quote ? undefined : signInHref} />
+        <BillCard
+          bill={quote ? billOfQuote(quote) : (bill ?? null)}
+          subtotalCents={subtotalCents}
+          updating={updating}
+          signInHref={quote ? undefined : signInHref}
+          usd
+        />
       )}
     </div>
   );
