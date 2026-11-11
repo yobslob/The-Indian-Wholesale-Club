@@ -3,10 +3,10 @@ import { formatUsd } from '@repo/shared/domain';
 import { getHomeCached, getStorePolicyCached } from '@/features/catalog/data';
 import { CategoryTiles } from '@/features/home/category-tiles';
 import { DeliveryBand } from '@/features/home/delivery-band';
-import { DiwaliArches, DiwaliNight } from '@/features/home/diwali-windows';
 import { FirstOrderBand } from '@/features/home/first-order-band';
 import { HomeHero } from '@/features/home/home-hero';
 import { HomeRow } from '@/features/home/home-row';
+import { HomecomingArches, HomecomingDusk } from '@/features/home/homecoming-windows';
 import { JustListed } from '@/features/home/just-listed';
 import { LazyAlbum, LazyPickHome } from '@/features/home/lazy-sections';
 import { ALBUM_MINIMUM } from '@/features/regions/region-album';
@@ -17,11 +17,11 @@ import type { Metadata } from 'next';
 export const metadata: Metadata = { alternates: { canonical: '/' } };
 
 /**
- * Home (D-187, the founder's order): the hero, the three Diwali arches, the album of all of India (the drifting mosaic),
- * the first-order band, the category tiles, the Diwali night with the flight inside, What everyone missed this week, The kirana counter, Just
+ * Home (D-187, the founder's order; dressed for Homecoming, D-196): the hero, the season's three arches, the album of all of India (the drifting mosaic),
+ * the first-order band, the category tiles, the season's dusk with the flight inside, What everyone missed this week, The kirana counter, Just
  * listed Clothing and Home & gifts, Pick your home and the delivery band.
  * One cached store_home() call (PR-1, PR-2). Runs edge to edge (data-bleed); sections keep the gutter. Launch QA C-2: the
- * first screen, the Diwali windows, the tiles, the headings and the band are server-rendered; the album, Pick your home's
+ * first screen, the season's windows, the tiles, the headings and the band are server-rendered; the album, Pick your home's
  * map and stamps and every row's cards are drawn in the browser as they come near (features/home/lazy-sections.tsx), from
  * data the page carries, so the page stays one cached page.
  */
@@ -37,12 +37,12 @@ export default async function HomePage(): Promise<React.JSX.Element> {
       />
 
       <div className="px-[var(--gut)]">
-        {/* D-179: the three Diwali arches right under the hero, a price on the first screens */}
-        <DiwaliArches />
+        {/* D-179: the season's three arches right under the hero, a price on the first screens */}
+        <HomecomingArches />
         {home.album.length >= ALBUM_MINIMUM ? <LazyAlbum photos={home.album} /> : null}
         <FirstOrderBand />
         <CategoryTiles categories={home.categories} />
-        <DiwaliNight
+        <HomecomingDusk
           free={
             home.band?.free_min_cents
               ? `Free delivery from ${formatUsd(home.band.free_min_cents)}`

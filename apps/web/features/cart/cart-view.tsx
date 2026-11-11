@@ -3,7 +3,7 @@
 import Link from 'next/link';
 import { useEffect, useState } from 'react';
 
-import { formatUsd } from '@repo/shared/domain';
+import { useMoney } from '@/features/shell/market';
 
 import { BagGoalLine } from './bag-goal-line';
 import { BagLines } from './bag-lines';
@@ -43,10 +43,11 @@ export function BagExtras({ bag, onShop }: { bag: BagBill; onShop?: () => void }
 
 /** What the last line of the bill says and how far it has got; Subtotal until the charges are in. */
 export function TotalNow({ bag }: { bag: BagBill }): React.JSX.Element {
+  const { format: fmt } = useMoney();
   return (
     <span className="font-ui block leading-tight">
       <small className="text-ink-muted block text-[12.5px]">{bag.bill ? billTotalLabel(bag.bill) : 'Subtotal'}</small>
-      <b className="text-[17px] font-bold">{formatUsd(bag.bill?.totalCents ?? bag.subtotalCents)}</b>
+      <b className="text-[17px] font-bold">{fmt(bag.bill?.totalCents ?? bag.subtotalCents)}</b>
     </span>
   );
 }

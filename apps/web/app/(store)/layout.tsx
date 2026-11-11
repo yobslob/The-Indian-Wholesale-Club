@@ -1,3 +1,5 @@
+import { NO_RATES } from '@repo/shared/domain';
+
 import { FreeDeliveryBar } from '@/features/cart/free-delivery-bar';
 import { getStorePolicyCached, isDemoStoreCached } from '@/features/catalog/data';
 import { deliveryDaysLabel } from '@/features/catalog/delivery-days';
@@ -5,6 +7,7 @@ import { DaysProvider, type ShellDays } from '@/features/shell/days';
 import { DemoBanner } from '@/features/shell/demo-banner';
 import { FirstOrderAd } from '@/features/shell/first-order-ad';
 import { IndiaSymbol } from '@/features/shell/india-mark';
+import { MarketProvider } from '@/features/shell/market';
 import { Motion } from '@/features/shell/motion';
 import { SiteFooter } from '@/features/shell/site-footer';
 import { SiteHeader } from '@/features/shell/site-header';
@@ -48,6 +51,7 @@ export default async function StoreLayout({
     <>
       <style dangerouslySetInnerHTML={{ __html: cardDays }} />
       <DaysProvider value={days} />
+      <MarketProvider value={policy?.fx ?? NO_RATES} />
       <div className="site-top">
         {demo ? <DemoBanner /> : null}
         <SiteHeader />

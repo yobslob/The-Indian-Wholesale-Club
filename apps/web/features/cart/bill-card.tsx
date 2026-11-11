@@ -1,6 +1,10 @@
+'use client';
+
 import Link from 'next/link';
 
 import { formatUsd, type Bill } from '@repo/shared/domain';
+
+import { useMoney } from '@/features/shell/market';
 
 /** The wallet's little coin (D-192). */
 export function CoinIcon(): React.JSX.Element {
@@ -21,9 +25,9 @@ function Row({ label, children, good = false }: { label: React.ReactNode; childr
   );
 }
 
-const Was = ({ cents }: { cents: number }): React.JSX.Element => (
-  <s className="text-ink-muted mr-1.5" aria-label={`was ${formatUsd(cents)}`}>
-    {formatUsd(cents)}
+const Was = ({ text }: { text: string }): React.JSX.Element => (
+  <s className="text-ink-muted mr-1.5" aria-label={`was ${text}`}>
+    {text}
   </s>
 );
 
@@ -40,27 +44,31 @@ export function BillCard({
   subtotalCents,
   updating = false,
   signInHref,
+  usd = false,
 }: {
   bill: Bill | null;
   subtotalCents: number;
   updating?: boolean;
   /** A guest's way to the wallet, where signing in still helps. */
   signInHref?: string;
+  /** Checkout: in US dollars, what the card is charged (D-197); the bag shows the visitor's dollars. */
+  usd?: boolean;
 }): React.JSX.Element {
+  const { format: fmt } = useMoney(usd);
   return (
     <section aria-label="Bill" className="bg-paper border-line font-ui rounded-lg border p-4 text-sm">
       <dl className={`m-0 grid gap-2 transition-opacity ${updating ? 'opacity-60' : ''}`} aria-busy={updating || bill === null}>
-        <Row label="Subtotal">{formatUsd(bill?.subtotalCents ?? subtotalCents)}</Row>
+        <Row label="Subtotal">{fmt(bill?.subtotalCents ?? subtotalCents)}</Row>
         {bill ? (
           <>
             {bill.couponCents > 0 ? (
               <Row good label={`Coupon (${bill.couponCode ?? ''})`}>
-                −{formatUsd(bill.couponCents)}
+                −{fmt(bill.couponCents)}
               </Row>
             ) : null}
             {bill.bulkCents > 0 ? (
               <Row good label="Bulk saving">
-                −{formatUsd(bill.bulkCents)}
+                −{fmt(bill.bulkCents)}
               </Row>
             ) : null}
             {bill.coins > 0 ? (
@@ -72,7 +80,7 @@ export function BillCard({
                   </>
                 }
               >
-                −{formatUsd(bill.coins)}
+                −{fmt(bill.coins)}
               </Row>
             ) : signInHref ? (
               <Row
@@ -89,25 +97,25 @@ export function BillCard({
             ) : null}
             <Row label="Shipping">
               {bill.shippingCents > 0 ? (
-                formatUsd(bill.shippingCents)
+                fmt(bill.shippingCents)
               ) : (
                 <>
-                  {bill.shippingWasCents > 0 ? <Was cents={bill.shippingWasCents} /> : null}
+                  {bill.shippingWasCents > 0 ? <Was text={fmt(bill.shippingWasCents)} /> : null}
                   <span className="text-positive font-medium">Free</span>
                 </>
               )}
             </Row>
-            {bill.retailerCents > 0 ? <Row label="Retailer charges">{formatUsd(bill.retailerCents)}</Row> : null}
+            {bill.retailerCents > 0 ? <Row label="Retailer charges">{fmt(bill.retailerCents)}</Row> : null}
             {bill.heavyCents > 0 ? (
               <Row label="Heavy-item shipping">
-                {bill.heavyWasCents > 0 ? <Was cents={bill.heavyWasCents} /> : null}
-                {formatUsd(bill.heavyCents)}
+                {bill.heavyWasCents > 0 ? <Was text={fmt(bill.heavyWasCents)} /> : null}
+                {fmt(bill.heavyCents)}
               </Row>
             ) : null}
-            {bill.taxCents !== null ? <Row label="Sales tax">{formatUsd(bill.taxCents)}</Row> : null}
+            {bill.taxCents !== null ? <Row label="Sales tax">{fmt(bill.taxCents)}</Row> : null}
             <div className="border-line text-ink mt-1 flex items-baseline justify-between gap-3 border-t pt-3 text-base font-bold">
               <dt>{billTotalLabel(bill)}</dt>
-              <dd className="m-0">{formatUsd(bill.totalCents)}</dd>
+              <dd className="m-0">{fmt(bill.totalCents)}</dd>
             </div>
           </>
         ) : (

@@ -1,6 +1,6 @@
 'use client';
 
-import { formatUsd } from '@repo/shared/domain';
+import { Money } from '@/features/shell/market';
 
 import { browseHref, withFilter, type BrowseQuery } from './browse-query';
 import styles from './finishing-drawer.module.css';
@@ -48,7 +48,7 @@ export function FinishingDrawer({
         <h2 id={`${id}-h`} className="font-heading m-0 text-[clamp(22px,1.8vw,30px)] font-medium leading-tight tracking-[-0.02em]">
           Finishing touches{' '}
           <span className={styles.from}>
-            <span className={styles.dot}>· </span>from {formatUsd(from).replace(/\.00$/, '')}
+            <span className={styles.dot}>· </span>from <Money cents={from} whole />
           </span>
         </h2>
         <a

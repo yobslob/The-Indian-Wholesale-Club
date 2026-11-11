@@ -3,6 +3,7 @@ import Link from 'next/link';
 import { INFO_LINKS, isInfoPath, SITE_NAME } from '@/lib/site';
 
 import { IntentLink } from './intent-link';
+import { MarketSwitch } from './market';
 
 const COLUMNS = [
   {
@@ -94,6 +95,7 @@ export function SiteFooter(): React.JSX.Element {
         </div>
         <div className="mt-9 flex flex-wrap justify-between gap-3 border-t border-[#3A332D] pt-4 text-xs text-[#A89F92]">
           <span>© {SITE_NAME}</span>
+          <MarketSwitch />
           <span>Map data: {MAP_CREDIT}</span>
         </div>
       </div>
@@ -109,6 +111,9 @@ export function SiteFooter(): React.JSX.Element {
         <p className="text-[11px] text-[#A89F92]">
           © {SITE_NAME} · Map: {MAP_CREDIT}
         </p>
+        <div className="mt-3 text-[11px] text-[#A89F92]">
+          <MarketSwitch />
+        </div>
       </div>
     </footer>
   );

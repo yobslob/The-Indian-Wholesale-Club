@@ -23,13 +23,17 @@ export function priceRange(options: readonly PricedOption[]): { fromCents: numbe
   return { fromCents: Math.min(...prices), varies: new Set(prices).size > 1 };
 }
 
-/** "From $16.30" when the options differ in price, else "$16.30". */
-export const fromLabel = (cents: number, varies: boolean): string =>
-  varies ? `From ${formatUsd(cents)}` : formatUsd(cents);
+/** "From $16.30" when the options differ in price, else "$16.30"; `fmt`: the visitor's currency (D-197). */
+export const fromLabel = (cents: number, varies: boolean, fmt: (cents: number) => string = formatUsd): string =>
+  varies ? `From ${fmt(cents)}` : fmt(cents);
 
 /** The label for a product's options: the picked option's price once there is one, else `fromLabel` of the range. */
-export function optionPriceLabel(options: readonly PricedOption[], picked?: Pick<PricedOption, 'price_cents'> | null): string {
-  if (picked) return formatUsd(picked.price_cents);
+export function optionPriceLabel(
+  options: readonly PricedOption[],
+  picked?: Pick<PricedOption, 'price_cents'> | null,
+  fmt: (cents: number) => string = formatUsd,
+): string {
+  if (picked) return fmt(picked.price_cents);
   const range = priceRange(options);
-  return range ? fromLabel(range.fromCents, range.varies) : '';
+  return range ? fromLabel(range.fromCents, range.varies, fmt) : '';
 }

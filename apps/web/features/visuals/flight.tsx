@@ -14,7 +14,7 @@ export function Flight({
   compact = false,
 }: {
   free: string | null;
-  /** Inside a card (Home's Diwali window, D-174): the phone drawing at every width, so the banner stays readable. */
+  /** Inside a card (Home's wide season window, D-174): the phone drawing at every width, so the banner stays readable. */
   compact?: boolean;
 }): React.JSX.Element {
   return (

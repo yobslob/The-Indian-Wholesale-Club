@@ -1,6 +1,6 @@
 /**
  * The reveal, the parallax and the album pause (D-049, D-052) for one page: images still below the fold are hidden
- * and reveal as they enter, [data-speed] elements float a little with the scroll, and a Diwali window
+ * and reveal as they enter, [data-speed] elements float a little with the scroll, and a season window on Home
  * ([data-album]) animates only while on screen. Only what is below the fold is ever hidden, so nothing on screen
  * flickers, and without JavaScript everything is visible. Nothing here runs with reduced motion (motion.tsx).
  *

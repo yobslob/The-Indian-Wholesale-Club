@@ -2,6 +2,8 @@
 
 import { useEffect, useState } from 'react';
 
+import { useMoney } from '@/features/shell/market';
+
 /** The bar's height on a phone (its button 48 px and padding), so the page's button counts as seen only above it. */
 const BAR_PX = 76;
 
@@ -32,6 +34,7 @@ export function BuyBar({
   /** Called with the bar's button, where the add-to-bag flight starts (D-116). */
   onAdd: (from: Element) => void;
 }): React.JSX.Element {
+  const money = useMoney();
   const [shown, setShown] = useState(false);
 
   useEffect(() => {
@@ -65,7 +68,9 @@ export function BuyBar({
     >
       <div className="font-ui min-w-0 flex-1">
         <b className="block truncate text-sm font-semibold">{name}</b>
-        <span className="text-ink-muted block truncate text-[13px]">{detail}</span>
+        <span className="money text-ink-muted block truncate text-[13px]" data-m={money.ready ? money.market : undefined}>
+          {detail}
+        </span>
       </div>
       <button
         type="button"

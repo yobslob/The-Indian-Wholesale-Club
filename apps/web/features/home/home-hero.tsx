@@ -2,11 +2,11 @@ import Link from 'next/link';
 
 import { dayDate, formatUsd, PRODUCT_TYPE_LABEL, PRODUCT_TYPE_PATH, PRODUCT_TYPES } from '@repo/shared/domain';
 
-import { WIDE } from './diwali-hooks';
 import { heroSans, heroSerif } from './hero-font';
 import { HeroScroll } from './hero-scroll';
 import { HERO } from './hero-words';
 import styles from './home-hero.module.css';
+import { SEASON } from './homecoming-hooks';
 
 /** "7", or "12 – 16" when the days are a window. */
 const span = (min: number | null, max: number | null): string | null =>
@@ -21,11 +21,12 @@ const ARROW = (
 /**
  * Home hero (D-183 – D-185, D-187; before it D-182, D-052 – D-055, D-079, D-161, D-180): one screen that opens the store.
  * The poster's words live on the picture's dark wall (the picture carries none since D-183) in the poster's own type
- * (Cormorant Garamond and Montserrat, hero-font.ts): the Diwali date, the headline with its gold italic, the delivery
+ * (Cormorant Garamond and Montserrat, hero-font.ts): the season's date (Thanksgiving, D-196), the headline with its gold italic, the delivery
  * days, and a small gold button that is the free line; the whole poster is one link to Food. Under it on phones, beside
  * it on landscape screens: Indian Wholesale Club and its four doors. Delivery days and the free line come from Settings
  * (non-negotiable 4). Server component; the only script is HeroScroll, for the
- * header's colour. The picture is a static file with no resizer in between (D-140): AVIF 86 KB, WebP 109 KB.
+ * header's colour. The picture is a static file with no resizer in between (D-140): the founder's Thanksgiving poster
+ * (D-196), AVIF 37 KB, WebP 80 KB.
  */
 export function HomeHero({
   foodDays,
@@ -41,27 +42,30 @@ export function HomeHero({
 }): React.JSX.Element {
   const food = span(foodDays.min, foodDays.max);
   const days = food ?? span(storeDays.min, storeDays.max);
+  // a cap: in US dollars in every country (D-198)
   const free = freeCents ? formatUsd(freeCents) : null;
   return (
     <section className={`${styles.hero} ${heroSerif.variable} ${heroSans.variable}`} data-home-hero>
       <Link href="/food" prefetch={false} className={styles.poster}>
         <picture>
-          <source srcSet="/images/home-hero-7day.avif" type="image/avif" />
+          <source srcSet="/images/home-hero-thanksgiving.avif" type="image/avif" />
           {/* eslint-disable-next-line @next/next/no-img-element -- static photo, already at its size (D-140) */}
           <img
-            src="/images/home-hero-7day.webp"
+            src="/images/home-hero-thanksgiving.webp"
             alt=""
-            width={1024}
-            height={1536}
+            width={1000}
+            height={1500}
             fetchPriority="high"
             decoding="sync"
             className={styles.photo}
           />
         </picture>
         <span className={styles.offer}>
-          {/* the date says Diwali; screen readers hear the store's own words first */}
-          {WIDE.day ? <span className="sr-only">{HERO.storeClosed}. </span> : null}
-          <span className={styles.kicker}>{WIDE.day ? `Diwali · ${dayDate(WIDE.day)}` : HERO.storeClosed}</span>
+          {/* the date names the season; screen readers hear the store's own words first */}
+          {SEASON.day ? <span className="sr-only">{HERO.storeClosed}. </span> : null}
+          <span className={styles.kicker}>
+            {SEASON.day ? `${SEASON.name} · ${dayDate(SEASON.day)}` : HERO.storeClosed}
+          </span>
           <span className={styles.headline}>
             {HERO.lines.map((line) => (
               <span key={line}>{line}</span>
