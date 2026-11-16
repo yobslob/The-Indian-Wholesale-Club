@@ -127,7 +127,19 @@ export function CheckoutCurrencyNote(): React.JSX.Element | null {
   );
 }
 
-export function MarketSwitch(): React.JSX.Element {
+/** D-199: the menu's first line abroad, the flag and the switch; nothing in the US (the footer has the switch). */
+export function MenuMarket(): React.JSX.Element | null {
+  const { market } = useMoney();
+  if (market === 'us') return null;
+  return (
+    <div className="site-panel-market">
+      <span className="site-flag" aria-hidden="true" />
+      <MarketSwitch light />
+    </div>
+  );
+}
+
+export function MarketSwitch({ light = false }: { light?: boolean }): React.JSX.Element {
   const { market } = useMoney();
   return (
     <label className="inline-flex items-center gap-2">
@@ -138,7 +150,11 @@ export function MarketSwitch(): React.JSX.Element {
           const next = e.target.value;
           if (isMarket(next)) setMarket(next);
         }}
-        className="text-canvas rounded border border-[#3A332D] bg-transparent px-1.5 py-1 text-xs"
+        className={
+          light
+            ? 'text-ink border-line rounded border bg-transparent px-1.5 py-1 text-sm'
+            : 'text-canvas rounded border border-[#3A332D] bg-transparent px-1.5 py-1 text-xs'
+        }
       >
         {MARKETS.map((m) => (
           <option key={m} value={m} className="text-ink">
