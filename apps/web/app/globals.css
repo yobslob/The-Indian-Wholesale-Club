@@ -249,6 +249,34 @@
     visibility: hidden;
   }
 
+  /* D-199: the visitor's flag abroad, on the Profile icon and in the menu; nothing in the US. CSS only, from
+     html[data-market], so cached pages stay the same for everyone and only the visitor's flag is fetched. */
+  .site-flag {
+    display: none;
+    width: 16px;
+    height: 8px;
+    border-radius: 2px;
+    background: center / cover no-repeat;
+    box-shadow: 0 0 0 1.5px theme('colors.paper');
+  }
+  html[data-market='ca'] .site-flag {
+    display: block;
+    background-image: url('/flags/ca.svg');
+  }
+  html[data-market='au'] .site-flag {
+    display: block;
+    background-image: url('/flags/au.svg');
+  }
+  html[data-market='nz'] .site-flag {
+    display: block;
+    background-image: url('/flags/nz.svg');
+  }
+  .site-icon > .site-flag {
+    position: absolute;
+    right: 5px;
+    bottom: 9px;
+  }
+
   /* The banner and the header ride together (D-079): sticky on every page, on the photo on Home. */
   .site-top {
     position: sticky;
@@ -745,6 +773,13 @@
   /* The review panel (D-090): the same panel, a little wider for the form. */
   .review-panel {
     width: min(94%, 480px);
+  }
+  .site-panel-market {
+    display: flex;
+    align-items: center;
+    gap: 10px;
+    min-height: 44px;
+    font-size: 14px;
   }
   .site-panel-search {
     display: flex;

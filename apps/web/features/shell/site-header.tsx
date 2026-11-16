@@ -6,6 +6,7 @@ import { isInfoPath } from '@/lib/site';
 import { HeaderIcon } from './header-icons';
 import { IntentLink } from './intent-link';
 import { LogoText } from './logo';
+import { MenuMarket } from './market';
 import { NavLink } from './nav-link';
 import { PhoneSearch } from './phone-search';
 import { SearchPill } from './search-pill';
@@ -69,8 +70,11 @@ export function SiteHeader(): React.JSX.Element {
           <CartLink />
           <IntentLink href="/account" className="site-icon" aria-label="Profile">
             <HeaderIcon name="person" />
+            {/* D-199: the visitor's flag abroad (CSS from html[data-market]); the menu's first line says it in words */}
+            <span className="site-flag" aria-hidden="true" />
           </IntentLink>
           <SiteMenu>
+            <MenuMarket />
             <form action="/search" role="search" className="site-panel-search">
               <HeaderIcon name="search" />
               <input type="search" name="q" placeholder="Search" aria-label="Search" />

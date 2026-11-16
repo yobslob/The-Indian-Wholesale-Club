@@ -144,6 +144,20 @@ pnpm sourcing run --targets --type clothing --shops savana.com --photo-gb 1.8
 pnpm sourcing run --targets --type clothing --shops newme.asia --photo-gb 0.3                    if space is left
 ```
 
+## More food from the four fast shops (D-200)
+
+`targets/food-quick-shops.csv`: 306 targets on Blinkit, BigBasket, Zepto and Instamart, ₹1 – ₹500, up to 6,745
+listings. Upload it in Admin → Import → Auto-sourcing, then:
+
+```
+pnpm sourcing try "mdh masala" --type food                  nothing written
+pnpm sourcing run --targets --type food --photo-gb 5
+```
+
+Each new listing's photos go through the photo redo service and each pack's own picture is tagged to its pack, as for
+every run. The run's log says when the redo service is off (photos then go up as they are: `pnpm photos:redo` later).
+What arrives is a draft unless "go live by themselves" is on: **Publish the ready** in Auto-sourcing.
+
 ## Looks: each colour and pack gets its own photo (D-194)
 
 Needs migration 20261112090000 (the Deploy workflow) and `IWC_PHOTO_STORE_*`. One type per machine, at a quiet US hour.

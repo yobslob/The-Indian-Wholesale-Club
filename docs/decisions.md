@@ -429,3 +429,20 @@ What it means for the build:
 - **The struck price (D-190):** the same products are struck in every country (the offer flag is the listing's), and the struck figure is worked out by the same rule from the price as shown: the shown price × the type's factor (`formatWas`, `Money wasOf`), so a card, its product page and its buy bar always strike the same figure; the US is unchanged.
 - *Interpretation (proposed, confirm when convenient):* the bill's coupon and bulk-saving rows convert with the rest of the bill so the rows add up to the total; "the coupons and savings" read as the coupon card, the saving lines and "You're saving".
 - **The two failures of 2026-11-11:** the typecheck (a test's store policy lacked the new `fx`) and food-bag's e2e (the demo saree sold out mid-run: global setup and restores left only 5; now `DEMO_STOCK` = 40 in `e2e/env.ts`). Neither came from the currency.
+
+**D-199 · 2026-11-16 · founder: abroad, the visitor's flag shows which country's prices are on**
+
+Founder, verbatim: "I want a country logo showing which country is currently on, but in mobile view we ain't got any space left, so suggest where should we put it." Then, on the suggestion (a small flag on the Profile icon and a line at the top of the menu): "yes do both".
+
+- **The Profile icon** carries a 16 × 8 px flag at its lower right, ringed in paper so it reads on the Home photo; the header's width and the icons' places do not change. **The phone menu's first line** is the flag and the "Prices in" switch (the footer's, in the menu's colours).
+- **Canada, Australia and New Zealand only.** A US visitor sees the header and menu exactly as before.
+- **CSS from `<html data-market>`** (`.site-flag`, globals.css): store pages stay one cached copy for everyone and only the visitor's flag is fetched. The flags are small SVGs in `public/flags/` (emoji flags show as letters on Windows).
+- **Cost:** no database read, page-cache write or function call; about 0.5 – 1.5 KB for the one flag a visitor abroad fetches (from the CDN), nothing in the US; a few bytes of HTML a page.
+
+**D-200 · 2026-11-16 · founder: 4,000 – 6,000 more food listings from the four fast shops**
+
+Founder, verbatim: "I want to add more food in the inventory so what csv should I add for the (blinkit, zepto, instamart, bigbasket)? and then what command should I run? also make sure when a product is added its image is modified as I did for others and also it's other variants images are also added if available, I want to add atleast 4-6k more products". Then: "yes do both".
+
+- **The list:** `tools/sourcing-runner/targets/food-quick-shops.csv` (306 targets, up to 6,745 listings; Claude's draft, D-137 style: review before uploading). All states, Blinkit, BigBasket, Zepto and Instamart, ₹1 – ₹500, every name "Quick: …" so none is an earlier food target (D-150 would only add shops to it). Snacks, biscuits, rusks and cakes (filed under Snacks & Namkeen; the database moves biscuits to Bakery & Biscuits), sweets and mouth fresheners, 15 masala brands × 8 masalas, spices, staples and instant mixes, pickles, papad, tea and coffee. Must match leaves out dairy, liquids, frozen food, bread and meat (meat allowed only in a masala's name). Its test: `packages/shared/tests/food-quick-shops.test.ts`.
+- **Photos as before, nothing new built:** a run that adds listings sends each one's photos through the photo redo service (D-168); each pack's own picture is stored and tagged to its pack (D-194, `listing.ts`), so picking a pack shows its photo.
+- **Cost:** R2, roughly 0.1 MB per photo (the backfill's measure), so a few GB at 5,000 listings; `--photo-gb` caps a run. Database: a few tens of MB at 5,000 listings (search about 0.5 KB a listing). No page-cache write beyond the pages' own refresh.

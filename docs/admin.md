@@ -222,7 +222,9 @@ runner in `tools/sourcing-runner/` (its README says how to set it up on the PC a
   words name a department (Savana: its activity id, `collection:12825 pages:1-3`, 20 pieces a page) or collection
   (NEWME: `collection:dresses pages:1-2`, 30 a page) and its pages, best sellers first. On these two shops only, a piece
   whose page says another country (China) is listed with it and shows customers "Imported" (D-004 elsewhere); Savana's
-  pages have no care: it is given from the fabric where certain and the rest is left out (D-172). Amazon and
+  pages have no care: it is given from the fabric where certain and the rest is left out (D-172). D-200:
+  `food-quick-shops.csv` is food on the four fast shops, ₹1 – ₹500, every name "Quick: …" (306 targets, up to 6,745
+  listings; dairy, liquids, frozen food and meat left out, meat allowed in a masala's name). Amazon and
   Flipkart searches use the shop's own price filter and read one result page per 10 listings a target wants (up to
   four). Zepto and Instamart are read from their own search answer (one page) and their item pages' data, each pack an
   option (D-152). For a Shopify shop, Search words may name one of its collections, `collection:kurtis`:
