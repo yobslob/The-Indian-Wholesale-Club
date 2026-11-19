@@ -107,11 +107,11 @@ select tests.assert(public.worker_set_estimates(jsonb_build_array(
     jsonb_build_object('variant_id', tests.id('vp'), 'weight_g', 500, 'sure', true, 'note', 'x'))) ->> 'estimates' = '0',
   'an option an admin weighed or typed is left alone');
 
--- The runner: a shop's own page replaces an estimate; a matching item's does not.
+-- The runner: a shop's own page replaces an estimate; since D-202 so do matching items that agree.
 select tests.assert(public.worker_set_weights(jsonb_build_array(
     jsonb_build_object('variant_id', tests.id('vm'), 'weight_g', 400, 'source', 'shop', 'note', 'myntra'),
-    jsonb_build_object('variant_id', tests.id('vl'), 'weight_g', 900, 'source', 'similar', 'note', 'amazon'))) = 1,
-  'a shop''s page replaces an estimate, a matching item''s does not');
+    jsonb_build_object('variant_id', tests.id('vl'), 'weight_g', 900, 'source', 'similar', 'note', 'amazon'))) = 2,
+  'a shop''s page replaces an estimate, and (D-202) so do matching items''');
 
 -- The known weights: the shop's and the admin's, never an estimate.
 create temp table refs on commit drop as

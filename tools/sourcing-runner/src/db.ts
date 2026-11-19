@@ -233,9 +233,26 @@ export class Db implements FoodPassDb {
     );
   }
 
-  /** D-129: listings whose options have no weight (or only a matching item's). */
-  async weightPlan(limit: number): Promise<WeightPlan> {
-    return weightPlanSchema.parse(await this.rpc('worker_weight_plan', { p_limit: limit }));
+  /**
+   * D-129: listings whose options have no weight (or only a matching item's or an estimate), of the types given.
+   * D-202: never-tried first, then the longest ago (`weightsTried` marks them), so the whole backlog gets its turn.
+   */
+  async weightPlan(limit: number, types: ProductType[] | null = null): Promise<WeightPlan> {
+    const { data, error } = await this.client.rpc('worker_weight_plan', { p_limit: limit, p_types: types });
+    if (!error) return weightPlanSchema.parse(data);
+    // before the deploy of 20261120090000_weights_found the plan takes only a limit
+    if (!/worker_weight_plan/.test(error.message)) throw new Error(`worker_weight_plan: ${error.message}`);
+    const old = weightPlanSchema.parse(await this.rpc('worker_weight_plan', { p_limit: limit }));
+    return types ? old.filter((l) => types.includes(l.product_type)) : old;
+  }
+
+  /** D-202: these listings' shop pages (`page`) or photos (`label`) were read; false before the deploy. */
+  async weightsTried(products: string[], what: 'page' | 'label'): Promise<boolean> {
+    if (!products.length) return true;
+    const { error } = await this.client.rpc('worker_weights_tried', { p_products: products, p_what: what });
+    if (error && !/worker_weights_tried/.test(error.message))
+      throw new Error(`worker_weights_tried: ${error.message}`);
+    return !error;
   }
 
   setWeights(weights: WeightWrite[]): Promise<number> {
@@ -274,7 +291,7 @@ export class Db implements FoodPassDb {
     // before the deploy that adds it, a dry run reads the listings missing a weight (D-129's plan)
     if (!/worker_home_plan/.test(error.message))
       throw new Error(`worker_home_plan: ${error.message}`);
-    return (await this.weightPlan(200)).filter((l) => l.product_type === 'home').slice(0, limit);
+    return (await this.weightPlan(200, ['home'])).slice(0, limit);
   }
 
   setHomeWeights(weights: HomeWrite[]): Promise<number> {

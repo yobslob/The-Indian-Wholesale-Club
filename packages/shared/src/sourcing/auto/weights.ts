@@ -1,7 +1,9 @@
 import { z } from 'zod';
 
 import { PRODUCT_TYPES, type ProductType } from '../../domain/product-types';
+import { netLabel } from '../estimate/food';
 import { vesselWeight } from '../estimate/home';
+import { readNet } from '../net';
 import { agreedWeight, bestWeight, readWeights, type WeightReading } from '../weight';
 
 import { words } from './match';
@@ -60,11 +62,38 @@ export const wantsWeight = (v: WeightPlanListing['variants'][number]): boolean =
  * A weight a page states for the whole piece (clothing never takes one from its title; a bottle's or lunch box's
  * litres are what it holds, never its weight: vesselWeight).
  */
-export function pieceWeight(product: Pick<SourcedProduct, 'title' | 'specs'>, type: ProductType): WeightReading | null {
+export function pieceWeight(
+  product: Pick<SourcedProduct, 'title' | 'specs'> & Partial<Pick<SourcedProduct, 'bullets' | 'description'>>,
+  type: ProductType,
+): WeightReading | null {
+  if (type === 'food') {
+    const net = foodPageNet(product);
+    if (net) return net;
+  }
   const vessel = type === 'home' && vesselWeight(product.title) !== null;
   const best = bestWeight(readWeights(product).filter((r) => !(vessel && r.liquid)));
   if (!best || (type === 'clothing' && best.kind === 'title')) return null;
   return best;
+}
+
+/**
+ * D-202: a food page's net quantity, which Indian shops must show: its "Net Quantity" row, else a "Net Wt." in its
+ * bullets or description (English or Hindi). Before the item's or package's weight, which include the pack. The note
+ * reads "Net Quantity: …", so the food pass (weighFood, D-135) takes it as the label's and shows it to customers.
+ */
+export function foodPageNet(
+  product: Pick<SourcedProduct, 'title' | 'specs'> & Partial<Pick<SourcedProduct, 'bullets' | 'description'>>,
+): WeightReading | null {
+  const row = readWeights(product).find((r) => r.kind === 'net');
+  if (row) return row;
+  for (const text of [...(product.bullets ?? []), product.description ?? '']) {
+    const parts = readNet(text);
+    if (!parts) continue;
+    const grams = Math.round(parts.reduce((g, p) => g + p.unitGrams * p.count, 0));
+    if (grams >= 1 && grams <= 30_000)
+      return { grams, kind: 'net', note: `Net Quantity: ${netLabel(parts)}`, liquid: parts.some((p) => p.liquid) };
+  }
+  return null;
 }
 
 /**
@@ -119,7 +148,8 @@ export function weightsFromSimilar(
   const note = net
     ? `Net quantity: ${grams} g (${found.length} matching items on ${sites} agree)`
     : `${found.length} matching items on ${sites} (${found.map((f) => f.reading.grams).join(', ')} g)`;
+  // D-202: pages that agree on a food's net quantity also replace an estimate
   return listing.variants
-    .filter((v) => v.weight_g === null && !('pack' in v.options))
+    .filter((v) => (v.weight_g === null || (net && v.weight_source === 'estimated')) && !('pack' in v.options))
     .map((v) => ({ variant_id: v.id, weight_g: grams, source: 'similar' as const, note: note.slice(0, 200) }));
 }

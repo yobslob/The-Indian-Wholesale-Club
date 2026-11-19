@@ -47,6 +47,31 @@ export class Ollama {
     return out;
   }
 
+  /**
+   * D-202: a vision model's answer about one photo (a JPEG, base64): JSON when a schema is given, else plain text.
+   * Deterministic like `ask`; a photo is about 1,500 tokens, so the context is larger.
+   */
+  async see(
+    model: string,
+    prompt: string,
+    jpegBase64: string,
+    schema: unknown | null,
+  ): Promise<string> {
+    const body = await this.post<{ message?: { content?: string } }>(
+      '/api/chat',
+      {
+        model,
+        messages: [{ role: 'user', content: prompt, images: [jpegBase64] }],
+        ...(schema ? { format: schema } : {}),
+        stream: false,
+        keep_alive: '30m',
+        options: { temperature: 0, seed: 7, num_ctx: 4096, num_predict: schema ? 200 : 900 },
+      },
+      240,
+    );
+    return body.message?.content ?? '';
+  }
+
   /** The model's JSON answer; deterministic (temperature 0, one seed), so a re-run gives the same weight. */
   async ask(
     system: string,

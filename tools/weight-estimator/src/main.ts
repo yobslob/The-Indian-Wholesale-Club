@@ -15,7 +15,9 @@ import { dbEnv, errorText, log, modelEnv, needDbEnv } from './env';
 import { estimateListing, groupText, pool, type Estimator } from './estimate';
 import { evaluate } from './eval';
 import { weighFood } from './food';
+import { readLabels } from './labels';
 import { Ollama } from './ollama';
+import { checkFoodPrices } from './prices';
 import { Vectors } from './vectors';
 
 import type { ProductType } from '@repo/shared/domain';
@@ -33,6 +35,9 @@ import type { ProductType } from '@repo/shared/domain';
  *            --limit 50  at most 50 listings      --dry  write nothing, print every estimate
  *   pnpm weights try "Kanjivaram silk saree with blouse" --type clothing --category Sarees [--pack "500 g"]
  *   pnpm weights eval [--limit 200]   how close it comes to the weights IWC knows (each left out in turn)
+ *   pnpm weights labels --eval --limit 200   D-202: read the photos of food whose weight is known; how often they agree
+ *   pnpm weights labels [--dry] [--all] [--limit N]   read food labels' net quantity from the photos (labels.ts)
+ *   pnpm weights prices [--dry]       D-202: estimates far from what similar labelled food costs a kilo (prices.ts)
  *   pnpm weights doctor               Ollama, its models, a timed question, the worker sign-in
  */
 
@@ -184,6 +189,13 @@ async function doctor(): Promise<number> {
       log(`${found ? 'ok  ' : 'FAIL'}  model ${m}${found ? '' : `: run  ollama pull ${m}`}`);
       ok &&= found;
     }
+    // D-202: the label reader's models are needed only by `labels`
+    for (const m of new Set([env.IWC_LABEL_MODEL, env.IWC_OCR_MODEL || env.IWC_LABEL_MODEL])) {
+      const found = have.some((h) => h === m || h === `${m}:latest`);
+      log(
+        `${found ? 'ok  ' : 'skip'}  label model ${m}${found ? '' : `: for pnpm weights labels, run  ollama pull ${m}`}`,
+      );
+    }
   } catch (error) {
     log(
       `FAIL  Ollama at ${env.OLLAMA_HOST}: ${errorText(error)} (installed and running? README.md)`,
@@ -260,13 +272,22 @@ async function main(): Promise<number> {
       dry: args.includes('--dry'),
       all: args.includes('--all'),
     });
+  if (command === 'labels')
+    return readLabels(await Db.signIn(needDbEnv()), {
+      dry: args.includes('--dry'),
+      all: args.includes('--all'),
+      evaluate: args.includes('--eval'),
+      limit: Number(arg(args, '--limit') ?? Infinity),
+    });
+  if (command === 'prices')
+    return checkFoodPrices(await Db.signIn(needDbEnv()), { dry: args.includes('--dry') });
   if (command === 'doctor') return doctor();
   if (command === 'eval') {
     const db = await Db.signIn(needDbEnv());
     return evaluate(db, await estimator(db), Number(arg(args, '--limit') ?? 200));
   }
   console.log(
-    `pnpm weights food [--dry] [--all] | classes [--dry] [--all] [--fast] | run [--redo | --audit] [--limit N] [--dry] | try "<name>" | eval | doctor (modes: ${ESTIMATE_MODES.join(', ')})`,
+    `pnpm weights labels [--eval | --dry] [--all] [--limit N] | prices [--dry] | food [--dry] [--all] | classes [--dry] [--all] [--fast] | run [--redo | --audit] [--limit N] [--dry] | try "<name>" | eval | doctor (modes: ${ESTIMATE_MODES.join(', ')})`,
   );
   return command ? 1 : 0;
 }

@@ -158,6 +158,18 @@ Each new listing's photos go through the photo redo service and each pack's own 
 every run. The run's log says when the redo service is off (photos then go up as they are: `pnpm photos:redo` later).
 What arrives is a draft unless "go live by themselves" is on: **Publish the ready** in Auto-sourcing.
 
+**The second round (D-201):** `targets/food-more.csv`, 862 targets on those four shops and Amazon and Flipkart,
+₹1 – ₹600, up to 24,055 listings (the first round added about 36 % of what it asked). Upload it the same way, then:
+
+```
+pnpm sourcing try "haldiram bhujia" --type food --shops amazon.in --listings 5     nothing written
+pnpm sourcing run --targets --type food --photo-gb 8
+```
+
+Amazon reads one result page per 10 listings a target wants (up to four), so this run is long: leave it running;
+Ctrl+C hands the unsearched targets back and the same command goes on. Watch Supabase → Reports → Database (about
+10 KB a listing) and R2's GB on the dashboard while it runs.
+
 ## Looks: each colour and pack gets its own photo (D-194)
 
 Needs migration 20261112090000 (the Deploy workflow) and `IWC_PHOTO_STORE_*`. One type per machine, at a quiet US hour.

@@ -8,6 +8,7 @@ export * from './url';
 export * from './delivery';
 export * from './variants';
 export * from './weight';
+export * from './net';
 export * from './liquid';
 export * from './cart';
 export * from './title';

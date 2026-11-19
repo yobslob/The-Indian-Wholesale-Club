@@ -23,6 +23,39 @@ pnpm weights food           write each option's net weight and net quantity (the
 pnpm weights food --all     work them all out again (after the rules change)
 ```
 
+**Food labels and the price check (D-202):** about half the food listings had only an estimate, and an estimate from
+similar names is often far off (Deepak Jau Sattu: 140 g estimated, 500 g on its label; priced $5.12 instead of $14.90).
+Customers no longer see an estimate; these two give food its real weight.
+
+`pnpm weights labels` reads the net quantity printed on each listing's own photos with a vision model on this GPU.
+For each photo (its 1200-pixel copy, read through the site like any visitor; no R2 key):
+1. the vision model is asked for the net quantity as printed ("500 g", "200 g x 2"), never a serving size or per 100 g;
+2. where it sees one, every word on the photo is written out (the second reader) and read by the same rule as a shop
+   page: only a number right after "Net Wt.", "Net Weight", "Net Quantity", शुद्ध भार, नेट वजन or कुल मात्रा;
+3. a weight is written only when both agree (within 2%) and the price check does not doubt it (a kilo four times
+   dearer or cheaper than similar labelled items); it goes in as the label's weight (source packed: shown and priced).
+It stops at the first photo that gives it (most listings: the second photo), leaves several sizes that share photos
+alone (unless a photo is tagged with its option), and counts an option "Pack of 3" three times.
+```
+ollama pull qwen3-vl:8b-instruct     once, about 6 GB (the plain qwen3-vl:8b tag is the slower "thinking" model)
+pnpm weights labels --eval --limit 200
+                    measure first: listings whose weight their own words state; label-eval.csv says per listing
+                    whether the photo agrees ("same"), differs or said nothing. Write only when "differs" is rare.
+pnpm weights labels --dry --limit 200     the sheet label-weights.csv only (weight and price before and after)
+pnpm weights labels                       every food listing not read yet (overnight; stop and start any time:
+                                          read listings are marked); --all reads them all again
+pnpm weights prices --dry                 the price check's sheet price-check.csv
+pnpm weights prices                       write the corrections (estimates, not shown to customers)
+```
+Settings (optional): `IWC_LABEL_MODEL` (default `qwen3-vl:8b-instruct`; `qwen3-vl:4b-instruct` if 8 GB runs out),
+`IWC_OCR_MODEL` (another model for the second reader, e.g. a small OCR model, so the two are more independent;
+default the label model), `IWC_SITE_URL` (where photos are read; default the live site). Weights replaced are kept in
+`label-weights-before.jsonl` and `price-check-before.jsonl`. Every written weight reprices the listing at once (D-128).
+The price check (no GPU) learns what a kilo costs from options with a label, weighed or typed weight, finds the three
+to seven labelled items most like each estimated one (the same words in the name, its category first), and replaces
+an estimate that makes a kilo cost over twice or under half theirs with the shop's price ÷ their price a gram, rounded
+to a pack size. Run it after the label reader, for what the photos could not give.
+
 
 Gives every listing a realistic packed weight, on the founder's laptop GPU (RTX 4060, 8 GB), quickly enough for
 thousands of listings. The price is worked out from the weight (D-128), so a guessed weight is a guessed price.

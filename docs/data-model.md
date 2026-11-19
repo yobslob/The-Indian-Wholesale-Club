@@ -345,6 +345,16 @@ reads about 370 are Postgres' own catalogue after a restart). Tests: `search_spe
 Migration 80 (D-141, the photo store): a photo in Cloudflare R2 is recorded with an `s/` path
 (`products/<id>/s/<name>.jpg`, packages/shared media.ts). `worker_sourcing_media` accepts `products/<id>/s/<name>` as
 well as `products/<id>/<name>`; album photos may be `regions/<slug>/album/s/<name>`.
+Migration `20261120090000_weights_found` (D-202): `products.weight_tried_at` (the runner last re-read its shop pages)
+and `label_tried_at` (the label reader last read its photos). `worker_weight_plan(limit, types)` takes the product
+types wanted and orders never-tried first, then the longest ago; `worker_weights_tried(products, 'page' | 'label')`
+marks them. `worker_set_weights` lets matching items that agree (`similar`) replace an estimate. `_pack_by_weight`
+shows only a weight someone read or weighed (shop, packed, weighed, admin): no "About …" estimates on cards or the
+product page. Worker only, for the founder's laptop: `worker_label_plan(after, limit, mode)` (food with photos whose
+active options have no read weight, with their photos, main first; `new` / `all` / `known` for the eval) and
+`worker_food_prices(after, limit)` (every food option's weight, source and shop price, for the price check, which
+writes through `worker_set_estimates`; the label reader writes through `worker_set_food_weights`). Tests:
+`weights_found.test.sql`.
 Migration 69 (D-135): `products.coming_soon`, `coming_soon_note`, `liquid_checked_at`; trigger `products_coming_soon`
 (any status but archived ends it). Since D-187 no `store_*` read shows such a piece. Worker only:
 `worker_liquid_plan(after, limit, all)` (food and home listings not yet checked) and `worker_set_liquids(items)` (marks each
@@ -521,7 +531,7 @@ breaking it and watching the test fail ("mutation check", `status.md`).
 - `search.sql`: builds search's vocabulary from the seeded listings (`refresh_search_words()`, D-160; migrations run
   before the seed). After `pnpm catalogue:apply`, run it again (or wait for the 6-hourly job).
 
-Migrations 20261111090000, 20261111090100 (D-191): `profiles.coins`, `orders.coins_used` (inside `discount_cents`), `_refill_coins` (trigger on `orders`); `checkout_context(ids, promo, state, user, email)` adds `coupons`, `is_new_customer`, `coins` and refuses a first-order code to someone who has paid before. `subcategories` (`category_slug`, `slug`, `name`, `sort_order`, `words`: a regular expression's alternatives on the name, null = the rest) and `product_place` (`subcategory_id`, `sold_90d`, `band`, `score`), both read only through `store_browse`; `_refresh_places()` fills them and moves new biscuits to Bakery & Biscuits, daily inside `_tidy`, writing only what changed. `store_browse` adds `p_sub`, the `subcategories` list and `p_sort => 'popular'`. `_store_pack` reaches home & gifts and falls back on `_pack_by_weight` ("About 200 g" for an estimate; home only a known weight); `store_product_page`'s product carries `pack`. Tests: `coupons_coins`, `subcategories_popular`.
+Migrations 20261111090000, 20261111090100 (D-191): `profiles.coins`, `orders.coins_used` (inside `discount_cents`), `_refill_coins` (trigger on `orders`); `checkout_context(ids, promo, state, user, email)` adds `coupons`, `is_new_customer`, `coins` and refuses a first-order code to someone who has paid before. `subcategories` (`category_slug`, `slug`, `name`, `sort_order`, `words`: a regular expression's alternatives on the name, null = the rest) and `product_place` (`subcategory_id`, `sold_90d`, `band`, `score`), both read only through `store_browse`; `_refresh_places()` fills them and moves new biscuits to Bakery & Biscuits, daily inside `_tidy`, writing only what changed. `store_browse` adds `p_sub`, the `subcategories` list and `p_sort => 'popular'`. `_store_pack` reaches home & gifts and falls back on `_pack_by_weight` (a known weight only since D-202; it showed "About 200 g" for a food estimate); `store_product_page`'s product carries `pack`. Tests: `coupons_coins`, `subcategories_popular`.
 Migration 20261114090000 (D-197): `pricing_settings.fx_usd_cad`, `fx_usd_aud`, `fx_usd_nzd` (numeric, > 0, null = not set), the rates prices are shown at abroad, seeded 1.4130 / 1.4570 / 1.8060; `store_policy()` adds `fx: {ca, au, nz}`. Display only: no price, order or charge reads them.
 
 Migration 20261110090000 (D-190): `_bag_shipments` bills the heaviest piece at least 1 kg, then by the half kg, and every other piece its own weight, never under the whole bag by the half kg. `pricing_settings.offer_pct` (55; 0 = none) and `_offer_key(product)` (internal; `{"offer": true}` or `{}`, picked from the id, only `price_auto` listings that are not US stock) add `offer` to the cards and `store_product_page`'s product. `store_home`'s `categories` are a fixed list of tiles, each with an optional `for`, and `whole` on Gifts (all of its type).

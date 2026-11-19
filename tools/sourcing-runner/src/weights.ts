@@ -76,19 +76,24 @@ export async function fillWeights(
   type: ProductType | null = null,
 ): Promise<number> {
   if (!ctx.db) return 0;
-  // home is read by weighHome (D-134), with its packing
-  const plan = (await ctx.db.weightPlan(limit)).filter(
-    (l) => (!type || l.product_type === type) && l.product_type !== 'home',
-  );
+  // home is read by weighHome (D-134), with its packing; the plan asks the database for these types only (D-202)
+  const types: ProductType[] = type ? (type === 'home' ? [] : [type]) : ['food', 'clothing'];
+  if (!types.length) return 0;
+  const plan = await ctx.db.weightPlan(limit, types);
   if (plan.length)
     log(`weights: ${plan.length} listing${plan.length === 1 ? '' : 's'} without a sure weight`);
   let filled = 0;
+  const tried: string[] = [];
   for (const listing of plan) {
+    tried.push(listing.product_id);
     try {
       const own = await ownPage(ctx, listing);
       const covered = new Set(own.map((w) => w.variant_id));
-      // other shops' matching items only fill an option with no weight (never over an estimate, D-131)
-      const stillMissing = listing.variants.some((v) => v.weight_g === null && !covered.has(v.id));
+      // other shops' matching items fill an option with no weight, and since D-202 a food estimate (several pages
+      // that agree on a label's net quantity beat a guess from similar names; clothing keeps its class)
+      const stillMissing = listing.variants.some(
+        (v) => replaceable(v, listing.product_type) && !covered.has(v.id),
+      );
       const similar = stillMissing
         ? (await elsewhere(ctx, listing)).filter((w) => !covered.has(w.variant_id))
         : [];
@@ -102,5 +107,13 @@ export async function fillWeights(
       log(`  "${listing.name.slice(0, 60)}": ${errorText(error)}`);
     }
   }
+  // D-202: tried listings go to the back of the queue, found or not, so the next run reads the next ones
+  await ctx.db
+    .weightsTried(tried, 'page')
+    .catch((error: unknown) => log(`  marking tried: ${errorText(error)}`));
   return filled;
 }
+
+/** An option a matching item may weigh: none yet, or (D-202) a food estimate. */
+const replaceable = (v: WeightPlanListing['variants'][number], type: ProductType): boolean =>
+  v.weight_g === null || (type === 'food' && v.weight_source === 'estimated');

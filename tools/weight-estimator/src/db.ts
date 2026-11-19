@@ -3,12 +3,16 @@ import { createClient, type SupabaseClient } from '@supabase/supabase-js';
 import {
   clothingPlanSchema,
   foodPlanSchema,
+  foodPricesSchema,
+  labelPlanSchema,
   estimatePlanSchema,
   referencesSchema,
   type ClassWrite,
   type ClothingListing,
   type FoodListing,
   type FoodPassDb,
+  type FoodPriceListing,
+  type LabelListing,
   type FoodWrite,
   type EstimateListing,
   type EstimateMode,
@@ -111,5 +115,28 @@ export class Db implements FoodPassDb {
 
   setEstimates(estimates: EstimateWrite[]): Promise<{ estimates: number; weights: number }> {
     return this.rpc('worker_set_estimates', { p_estimates: estimates });
+  }
+
+  /** D-202: up to `limit` food listings with photos whose weight nobody read (`known`: the eval's), id order. */
+  async labelPlan(
+    after: string | null,
+    limit: number,
+    mode: 'new' | 'all' | 'known',
+  ): Promise<LabelListing[]> {
+    return labelPlanSchema.parse(
+      await this.rpc('worker_label_plan', { p_after: after, p_limit: limit, p_mode: mode }),
+    );
+  }
+
+  /** D-202: the label reader read these listings' photos (they leave its `new` plan). */
+  labelTried(products: string[]): Promise<number> {
+    return this.rpc('worker_weights_tried', { p_products: products, p_what: 'label' });
+  }
+
+  /** D-202: up to 500 food listings with every option's weight, source and shop price, in id order after `after`. */
+  async foodPrices(after: string | null): Promise<FoodPriceListing[]> {
+    return foodPricesSchema.parse(
+      await this.rpc('worker_food_prices', { p_after: after, p_limit: 500 }),
+    );
   }
 }

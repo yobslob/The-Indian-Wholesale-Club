@@ -336,6 +336,14 @@ reads shop pages, so it runs in the sourcing runner's browser: `pnpm sourcing ho
 `pnpm sourcing liquids --dry`, then `pnpm sourcing liquids` after migration `20261016200000_coming_soon`. Nothing on the
 website depends on the laptop.
 
+**Food labels and the price check (D-202)**, after the Deploy workflow has applied `20261120090000_weights_found`:
+`ollama pull qwen3-vl:8b-instruct` once (about 6 GB; `IWC_LABEL_MODEL=qwen3-vl:4b-instruct` if 8 GB is too tight,
+`IWC_OCR_MODEL` names another model for the second reader, `IWC_SITE_URL` where photos are read, default the live
+site). First `pnpm weights labels --eval --limit 200` (photos of food whose weight its own words state: how often the
+label agrees; `label-eval.csv`), then `pnpm weights labels --dry --limit 200` (`label-weights.csv`), then
+`pnpm weights labels` (overnight; the replaced weights are kept in `label-weights-before.jsonl`). Then
+`pnpm weights prices --dry` (`price-check.csv`) and `pnpm weights prices`. A written weight reprices at once (D-128).
+
 ## Git
 GitHub `yobslob/The-Indian-Wholesale-Club`, branch `main` (D-014). Claude commits in `C:\kod\root` and the founder pushes.
 Baseline tag `pre-restructure` = the whole pre-IWC codebase (stealth layer included, for reference only).
