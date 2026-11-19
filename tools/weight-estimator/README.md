@@ -56,6 +56,20 @@ to seven labelled items most like each estimated one (the same words in the name
 an estimate that makes a kilo cost over twice or under half theirs with the shop's price ÷ their price a gram, rounded
 to a pack size. Run it after the label reader, for what the photos could not give.
 
+**Labels: speed.** The vision model fits the 4060's 8 GB only with Ollama answering one question at a time: with
+`OLLAMA_NUM_PARALLEL=8` (set for `pnpm weights run`) Ollama keeps room for eight answers, a third of the model runs on
+the CPU and a listing takes 100 – 200 s; at 2 it already spills. For a labels run, quit Ollama (tray icon → Quit) and
+start it in a PowerShell window with one slot (the other two settings carry over), then run labels in another window:
+```
+$env:OLLAMA_NUM_PARALLEL=1; ollama serve
+```
+Close that window and start Ollama from the Start menu again for `pnpm weights run`. `labels` says `SLOW` after its
+first listing when the model is not all on the GPU. It reads one listing at a time (the next photo downloads while
+the GPU reads one; at most one photo a listing is downloaded and not read), and the transcription stops at the line
+that states the net quantity (the first statement decides, so what follows changes nothing). Measured 2026-11-20, the
+first 20 `--eval` listings: 57 s a listing at 8 slots (the slowest 285 s), **16 s** at one slot with the early stop,
+the same verdict on every listing.
+
 
 Gives every listing a realistic packed weight, on the founder's laptop GPU (RTX 4060, 8 GB), quickly enough for
 thousands of listings. The price is worked out from the weight (D-128), so a guessed weight is a guessed price.

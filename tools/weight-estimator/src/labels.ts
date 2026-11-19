@@ -4,6 +4,7 @@ import { join } from 'node:path';
 import sharp from 'sharp';
 
 import { autoPrice, copyFor, formatGrams, hasCopies, mediaPath } from '@repo/shared/domain';
+import { readNet } from '@repo/shared/sourcing';
 import {
   LABEL_PROMPT,
   LABEL_SCHEMA,
@@ -19,7 +20,6 @@ import {
 } from '@repo/shared/sourcing/estimate';
 
 import { errorText, log, modelEnv, ROOT } from './env';
-import { pool } from './estimate';
 import { Ollama } from './ollama';
 import { loadPriceIndex, priceDoubt } from './prices';
 
@@ -36,6 +36,18 @@ import type { Db } from './db';
  */
 
 const MAX_PHOTOS = 6;
+
+/**
+ * The transcription is enough once a whole line states a net quantity: the first one that reads decides (readNet),
+ * so the ingredients and nutrition table after it change nothing. Returns the text up to that line, or null.
+ */
+function untilNet(text: string): string | null {
+  const done = text.slice(0, text.lastIndexOf('\n'));
+  return done && readNet(done) ? done : null;
+}
+
+/** Below this share in the GPU's memory the model runs several times slower (README, Labels: speed). */
+const ON_GPU = 0.98;
 const cell = (v: string | number): string => `"${String(v).replace(/"/g, '""')}"`;
 const usd = (cents: number | null | undefined): string =>
   cents == null ? '' : `$${(cents / 100).toFixed(2)}`;
@@ -63,11 +75,19 @@ async function readListing(
   doubt: NonNullable<Parameters<typeof decideLabel>[2]>['doubt'],
 ): Promise<LabelResult[]> {
   const readings: PhotoReading[] = [];
-  for (const photo of listing.photos.slice(0, MAX_PHOTOS)) {
-    const jpeg = await photoJpeg(site, photo.path).catch((error: unknown) => {
-      log(`    ${errorText(error)}`);
-      return null;
-    });
+  const photos = listing.photos.slice(0, MAX_PHOTOS);
+  const fetchPhoto = (i: number) =>
+    i < photos.length
+      ? photoJpeg(site, photos[i]!.path).catch((error: unknown) => {
+          log(`    ${errorText(error)}`);
+          return null;
+        })
+      : null;
+  // the next photo downloads while the GPU reads this one (at most one photo a listing more than it reads)
+  let next = fetchPhoto(0);
+  for (const [i, photo] of photos.entries()) {
+    const jpeg = await next;
+    next = fetchPhoto(i + 1);
     if (!jpeg) continue;
     const parsed = labelAnswerSchema.safeParse(
       JSON.parse((await ollama.see(models.label, LABEL_PROMPT, jpeg, LABEL_SCHEMA)) || 'null'),
@@ -75,7 +95,7 @@ async function readListing(
     const answer = parsed.success ? parsed.data : null;
     // the second reader only where the first saw a net quantity: half the time on photos of the food itself
     const transcript = answer?.shows_net_quantity
-      ? await ollama.see(models.ocr, TRANSCRIBE_PROMPT, jpeg, null)
+      ? await ollama.see(models.ocr, TRANSCRIBE_PROMPT, jpeg, null, untilNet)
       : null;
     readings.push({ path: photo.path, variant_id: photo.variant_id, answer, transcript });
     const results = decideLabel(listing, readings, { doubt, every });
@@ -112,13 +132,14 @@ export async function readLabels(
   let listings = 0;
   let written = 0;
   let failedInARow = 0;
+  let gpuChecked = false;
   while (listings < opts.limit) {
     const page = await db.labelPlan(after, Math.min(25, opts.limit - listings), mode);
     if (!page.length) break;
     after = page[page.length - 1]!.product_id;
     const done: LabelResult[] = [];
-    // two listings at once: one's photos download while the other's are read
-    await pool(page, 2, async (listing) => {
+    // one listing at a time: the GPU holds one reader at full speed (two at once spill onto the CPU, README)
+    for (const listing of page) {
       const t0 = Date.now();
       try {
         const results = await readListing(
@@ -142,7 +163,8 @@ export async function readLabels(
             `5 listings in a row failed (last: ${errorText(error)}); see pnpm weights doctor`,
           );
       }
-    });
+      if (!gpuChecked) gpuChecked = await checkGpu(ollama, models.label);
+    }
     listings += page.length;
     rows.push(...done);
     if (write) {
@@ -184,6 +206,19 @@ export async function readLabels(
     );
   } else log(`sheet: ${sheet}. ${write ? `${written} options written.` : 'Nothing written.'}`);
   return 0;
+}
+
+/** Once the model is loaded: says so when part of it runs on the CPU, the reason a listing takes minutes. */
+async function checkGpu(ollama: Ollama, model: string): Promise<boolean> {
+  const share = await ollama.onGpu(model).catch(() => null);
+  if (share === null) return false;
+  if (share < ON_GPU)
+    log(
+      `SLOW  ${model} is only ${Math.round(share * 100)}% on the GPU: the rest runs on the CPU, about 6 times slower. ` +
+        `Ollama keeps room for OLLAMA_NUM_PARALLEL answers at once; quit Ollama, set OLLAMA_NUM_PARALLEL=1, start it ` +
+        `again and run this again (README, Labels: speed; set it back to 8 for pnpm weights run).`,
+    );
+  return true;
 }
 
 function writeSheet(file: string, rows: LabelResult[], evaluate: boolean): void {
@@ -229,5 +264,5 @@ function writeSheet(file: string, rows: LabelResult[], evaluate: boolean): void 
       .map(cell)
       .join(',');
   });
-  writeFileSync(file, `﻿${[head.map(cell).join(','), ...lines].join('\r\n')}\r\n`, 'utf8');
+  writeFileSync(file, `\uFEFF${[head.map(cell).join(','), ...lines].join('\r\n')}\r\n`, 'utf8');
 }

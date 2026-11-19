@@ -343,6 +343,8 @@ site). First `pnpm weights labels --eval --limit 200` (photos of food whose weig
 label agrees; `label-eval.csv`), then `pnpm weights labels --dry --limit 200` (`label-weights.csv`), then
 `pnpm weights labels` (overnight; the replaced weights are kept in `label-weights-before.jsonl`). Then
 `pnpm weights prices --dry` (`price-check.csv`) and `pnpm weights prices`. A written weight reprices at once (D-128).
+Run labels with Ollama started as `$env:OLLAMA_NUM_PARALLEL=1; ollama serve` (the 8 slots `pnpm weights run`
+wants push a third of the vision model onto the CPU: 100 – 200 s a listing instead of about 16; README, Labels: speed).
 
 ## Git
 GitHub `yobslob/The-Indian-Wholesale-Club`, branch `main` (D-014). Claude commits in `C:\kod\root` and the founder pushes.

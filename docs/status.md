@@ -74,7 +74,7 @@ Short on purpose (the audit warns past 10 KB): **replace** lines when something 
      right. Fixing it needs a new card key.
 
 ## Not built yet
-- **D-202:** barcodes and Open Food Facts (E) and the label reader inside the new-listing pipeline (G), after the eval; the label reader has not run on real photos yet (no GPU in the sandbox).
+- **D-202:** barcodes and Open Food Facts (E) and the label reader inside the new-listing pipeline (G), after the eval; the label reader ran on real photos on the laptop (2026-11-20, 20 `--eval` listings: 16 s each with Ollama at one slot, 57 s at the 8 slots `pnpm weights run` uses; 2 read, both the known weight, 0 differ, 18 nothing read: mostly no net quantity on the photos or only one reader found it).
 - **D-194:** the dry runs and the backfill itself (founder's machine), the orphan report, the Looks without a photo filter. Until the backfill, Amazon listings look as before. The app gets the swap in its next build; its product screen ignores the tags today.
 - App: the bag's coupons and the one bill (it keeps typing a code, D-191, D-192); push notifications for new orders; the card's − n +, the For filter and the jewellery drawer.
 - Admin: "Select all n matching" bulk actions and search on Reviews and Returns.
