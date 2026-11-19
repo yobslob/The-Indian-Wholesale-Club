@@ -7,3 +7,5 @@ export * from './food';
 export * from './food-run';
 export * from './home';
 export * from './assign';
+export * from './price-check';
+export * from './label';

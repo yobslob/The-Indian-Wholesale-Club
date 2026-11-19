@@ -1,0 +1,58 @@
+import { parseComboParts, parseWeightParts, type WeightParts } from './weight';
+
+/**
+ * D-202: the net quantity a pack's own words state ("Net Wt. 500 g", "NET WEIGHT : 500g", "नेट वजन 500 ग्राम"), read
+ * from a label's transcription, a shop page's bullets or a description. Every packaged food in India must print it
+ * (Legal Metrology (Packaged Commodities) Rules, 2011) and online shops must show it, so a number counts only right
+ * after one of these words: a label also prints a serving size ("Serving size 25 g") and "per 100 g", which are not
+ * the pack.
+ */
+
+const NET_WORDS = [
+  '(?<![a-z])net\\s*(?:wt|weight|wght|quantity|qty|content|contents|mass|vol(?:ume)?)\\.?(?:\\s*\\(\\s*(?:g|gm|kg)\\s*\\))?',
+  // Hindi: shuddh bhaar / shuddh vajan / net vajan / kul maatra / shuddh maatra
+  'शुद्ध\\s*(?:भार|वजन|वज़न|मात्रा)',
+  'नेट\\s*(?:वजन|वज़न|भार|मात्रा)',
+  'कुल\\s*(?:मात्रा|भार|वजन)',
+];
+const NET_RE = new RegExp(
+  `(?:${NET_WORDS.join('|')})\\s*(?:[:\\-–=/|]\\s*)?([^\\n;|]{1,40})`,
+  'giu',
+);
+
+/** Devanagari digits and Hindi unit words as the weight reader knows them ("५०० ग्राम" is 500 g). */
+export function latinNumbers(text: string): string {
+  return text
+    .replace(/[०-९]/g, (d) => String(d.charCodeAt(0) - 0x0966))
+    .replace(/\s*(?:कि\.?\s*ग्रा\.?|किलोग्राम|किलो)/g, ' kg')
+    .replace(/\s*(?:ग्राम|ग्रा\.?)/g, ' g')
+    .replace(/\s*(?:मि\.?\s*ली\.?|मिलीलीटर)/g, ' ml')
+    .replace(/\s*लीटर/g, ' l');
+}
+
+/** The text after each net word, in order: "500 g", "2 x 200 g (400 g)". */
+export function netStatements(text: string): string[] {
+  return [...text.matchAll(NET_RE)].map((m) => m[1]!.trim()).filter(Boolean);
+}
+
+/** What does not belong to the pack's own quantity, when it sits in the same few words. */
+const NOT_THE_PACK = /\b(serving|per\s*100|each\s*serve)/i;
+
+/**
+ * The net quantity the text states after a net word, as units ("2 × 200 g"), or null: no net word, or no weight
+ * after it. The first statement that reads wins; a statement about a serving is skipped.
+ */
+export function readNet(text: string | null | undefined): WeightParts[] | null {
+  if (!text) return null;
+  for (const statement of netStatements(latinNumbers(text))) {
+    // one sentence: "Net Wt: 500 g. Serving size 25 g." is 500 g
+    const said = statement.split(/\.\s|\s{2,}/)[0]!;
+    if (NOT_THE_PACK.test(said)) continue;
+    // "200g + 50g free" is the whole pack; else the first weight said ("2 x 200 g (400 g)" is 2 × 200 g)
+    const combo = parseComboParts(said);
+    if (combo) return combo;
+    const one = parseWeightParts(said.split(/[,(]/)[0]!) ?? parseWeightParts(said);
+    if (one && one.unitGrams >= 1) return [one];
+  }
+  return null;
+}

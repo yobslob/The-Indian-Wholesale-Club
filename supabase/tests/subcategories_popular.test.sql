@@ -97,10 +97,10 @@ select tests.assert(
 create function pg_temp.pack(p_slug text) returns text language sql as $$
   select public._store_pack(p.id, p.name, p.product_type) from public.products p where p.slug = p_slug
 $$;
-select tests.assert(pg_temp.pack('s-chips') = 'About 150 g', 'an estimate says About');
+select tests.assert(pg_temp.pack('s-chips') is null, 'D-202: an estimate is not shown (it was "About 150 g")');
 select tests.assert(pg_temp.pack('s-sev') = '150 g', 'a known weight says so');
 select tests.assert(pg_temp.pack('s-other') = '400 g', 'the label''s words first');
-update public.product_variants set weight_g = 1250, weight_source = 'shop' where sku = 'SP-s-sev';
+update public.product_variants set weight_g = 1250, weight_source = 'shop', weight_note = 'Item Weight: 1.25 kg' where sku = 'SP-s-sev';
 select tests.assert(pg_temp.pack('s-sev') like '%1.25 kg', 'kilos read as kilos');
 select tests.assert(
   has_function_privilege('anon', 'public._pack_by_weight(uuid, public.product_type)', 'execute') is false,

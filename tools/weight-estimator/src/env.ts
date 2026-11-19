@@ -31,6 +31,12 @@ const modelSchema = z.object({
   IWC_WEIGHT_MODEL: z.string().default('qwen2.5:7b'),
   /** The model that finds similar items. */
   IWC_EMBED_MODEL: z.string().default('nomic-embed-text'),
+  /** D-202: the vision model that reads a label's net quantity (README.md, Labels). */
+  IWC_LABEL_MODEL: z.string().default('qwen3-vl:8b-instruct'),
+  /** D-202: the model that writes out every word on a photo (the second reader); empty: the label model. */
+  IWC_OCR_MODEL: z.string().default(''),
+  /** D-202: where the photos are read from (their AVIF copies, through the site's CDN). */
+  IWC_SITE_URL: z.string().url().default('https://the-indian-wholesale-club.vercel.app'),
   /** Listings asked at once: Ollama answers them together on the GPU when its OLLAMA_NUM_PARALLEL allows (README). */
   IWC_WEIGHT_PARALLEL: z.coerce.number().int().min(1).max(16).default(8),
 });

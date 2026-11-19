@@ -1,6 +1,7 @@
 import { z } from 'zod';
 
 import { formatGrams } from '../../domain/weight';
+import { readNet } from '../net';
 import { parseComboParts, parseWeightParts, weightKindOf, type WeightParts } from '../weight';
 
 /**
@@ -80,7 +81,6 @@ export function noteReading(note: string | null): { kind: string | null; text: s
 }
 
 const PACK_OF = /\b(?:pack|set|combo|box) of (\d{1,2})\b/;
-const NET_LINE = /\bnet\s*(?:wt|weight|quantity|qty|contents?)\.?\s*[:\-–]?\s*([^\n,;|]{1,30})/i;
 
 /**
  * Where the option's net quantity is stated, most its own first: its options ("pack", "size"), its label, the page
@@ -105,20 +105,13 @@ export function foodNet(
   }
   // an option "Pack of 2" of a "Bhujia 400 g" is two of the name's packs
   const count = Number(own.map(([t]) => t.toLowerCase().match(PACK_OF)?.[1]).find(Boolean) ?? 1);
-  const later: [string, string][] = [[listing.name, 'its name']];
-  const line = (listing.description ?? '').match(NET_LINE);
-  if (line) later.push([line[1]!, 'its description']);
-  for (const [text, from] of later) {
-    const parts = readParts(text);
-    if (parts)
-      return sane(
-        parts.length === 1 && parts[0]!.count === 1 && count > 1
-          ? [{ ...parts[0]!, count }]
-          : parts,
-        from,
-      );
-  }
-  return null;
+  const times = (parts: WeightParts[]): WeightParts[] =>
+    parts.length === 1 && parts[0]!.count === 1 && count > 1 ? [{ ...parts[0]!, count }] : parts;
+  const named = readParts(listing.name);
+  if (named) return sane(times(named), 'its name');
+  // D-202: a "Net Wt." line in its description, English or Hindi, never a serving size
+  const said = readNet(listing.description);
+  return said ? sane(times(said), 'its description') : null;
 }
 
 /** A net quantity from 1 g to 30 kg in all; anything else is a misread. */
