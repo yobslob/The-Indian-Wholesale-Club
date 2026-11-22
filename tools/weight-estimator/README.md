@@ -32,18 +32,34 @@ For each photo (its 1200-pixel copy, read through the site like any visitor; no 
 1. the vision model is asked for the net quantity as printed ("500 g", "200 g x 2"), never a serving size or per 100 g;
 2. where it sees one, every word on the photo is written out (the second reader) and read by the same rule as a shop
    page: only a number right after "Net Wt.", "Net Weight", "Net Quantity", शुद्ध भार, नेट वजन or कुल मात्रा;
-3. a weight is written only when both agree (within 2%) and the price check does not doubt it (a kilo four times
-   dearer or cheaper than similar labelled items); it goes in as the label's weight (source packed: shown and priced).
+3. a weight is written only when both agree (within 2%) and none of the checks holds it back; it goes in as the
+   label's weight (source packed: shown and priced). Held back, on the sheet with why:
+   - the listing may hold several packs: "combo", "twin pack", "2 pouches", or "Pack of 2" in the name that its
+     option does not count (one pack's label would price it below cost: the first eval's main miss);
+   - the name states another weight ("Coconut Chutney, 200 gm" with a 50 g sachet's label);
+   - the price check doubts it: a kilo over 1.8 times dearer than similar labelled items (`LABEL_DEARER`, Q-62:
+     the side a single pack's label falls on) or under a quarter.
 It stops at the first photo that gives it (most listings: the second photo), leaves several sizes that share photos
-alone (unless a photo is tagged with its option), and counts an option "Pack of 3" three times.
+alone (unless a photo is tagged with its option), and counts an option "Pack of 3" three times. Every photo's two
+readings are kept in `.cache/label-readings.jsonl`: a second run (the eval after a check changes, `--all`) reads only
+photos it has not seen, in seconds, with no GPU and no download.
 ```
 ollama pull qwen3-vl:8b-instruct     once, about 6 GB (the plain qwen3-vl:8b tag is the slower "thinking" model)
 pnpm weights labels --eval --limit 200
-                    measure first: listings whose weight their own words state; label-eval.csv says per listing
-                    whether the photo agrees ("same"), differs or said nothing. Write only when "differs" is rare.
+                    measure first: listings whose weight their own words state, with the checks a real run uses
+                    (except the name's weight: these listings' known weights come from it). It says how many a real
+                    run would write and how many of those differ from the known weight, and how many the checks
+                    held back; label-eval.csv says why per listing. Write only when "a different one" is rare.
 pnpm weights labels --dry --limit 200     the sheet label-weights.csv only (weight and price before and after)
 pnpm weights labels                       every food listing not read yet (overnight; stop and start any time:
                                           read listings are marked); --all reads them all again
+pnpm weights labels --dry --cached        the sheet and summary from the photos read so far (seconds, no GPU):
+                                          what was read, held back and why, the drops over 40% to look at, how
+                                          many listings are not read yet. Without --dry it writes those (minutes).
+```
+The sheet is rewritten after every 25 listings, so a run that stops keeps what it read, and a network blip from the
+database is tried again for 8 minutes before the run gives up.
+```
 pnpm weights prices --dry                 the price check's sheet price-check.csv
 pnpm weights prices                       write the corrections (estimates, not shown to customers)
 ```

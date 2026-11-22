@@ -221,6 +221,39 @@ describe("the label reader's decision (D-202)", () => {
     assert.equal(labelMatches(evalRun[0]!), 'same', 'the eval reads known ones and compares');
   });
 
+  it("holds back one pack's label on a listing that may hold several (the eval's misses)", () => {
+    const named = (name: string, v: Partial<LabelListing['variants'][number]> = {}) => ({
+      ...labelListing([v]),
+      name,
+    });
+    const read = (l: LabelListing, every = false) =>
+      decideLabel(l, [photo('250 g', 'Net Wt. 250 g')], { every })[0]!;
+    assert.match(
+      read(named('Ahaar Vrat Combo Kuttu Atta & Singhara Atta')).result,
+      /several packs/,
+    );
+    assert.match(read(named('Jau Sattu (Pack of 2)')).result, /several packs \("Pack of 2"\)/);
+    assert.match(read(named('Jau Sattu, 2 pouches')).result, /several packs/);
+    // a count the option states is counted, not held
+    const counted = read(named('Jau Sattu (Pack of 2)', { label: 'Pack of 2', options: {} }));
+    assert.equal(counted.result, 'read');
+    assert.equal(counted.grams, 500);
+    // a flavour joined by "&" and pieces inside one pack are one pack
+    assert.equal(read(named('Cornitos Cheese & Herbs Nachos')).result, 'read');
+    assert.equal(read(named('Bikano Gulab Jamun 20 pcs')).result, 'read');
+  });
+
+  it("holds back a label the name's own weight contradicts, except in the eval", () => {
+    const chutney = { ...labelListing(), name: 'Mealsumm Coconut Chutney, 200 gm' };
+    const label = [photo('50 g', 'NET WT. 50 g')];
+    assert.match(decideLabel(chutney, label)[0]!.result, /the name says 200 g/);
+    assert.equal(labelWrites(decideLabel(chutney, label)).length, 0);
+    // the eval's known weights come from these very words: checking them would hide its misses
+    assert.equal(decideLabel(chutney, label, { every: true })[0]!.result, 'read');
+    const agrees = { ...labelListing(), name: 'Mealsumm Coconut Chutney, 50 gm' };
+    assert.equal(decideLabel(agrees, label)[0]!.result, 'read');
+  });
+
   it('a weight the price check doubts goes on the sheet, not in the database', () => {
     const results = decideLabel(labelListing(), [photo('5 g', 'Net Wt. 5 g')], {
       doubt: () => '₹17,400 a kg',

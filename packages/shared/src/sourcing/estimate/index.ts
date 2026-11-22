@@ -9,3 +9,4 @@ export * from './home';
 export * from './assign';
 export * from './price-check';
 export * from './label';
+export * from './label-packs';

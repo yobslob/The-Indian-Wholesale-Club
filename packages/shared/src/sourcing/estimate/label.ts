@@ -5,6 +5,7 @@ import { readNet } from '../net';
 import { parseComboParts, parseWeightParts, type WeightParts } from '../weight';
 
 import { netGrams, netLabel, type FoodWrite } from './food';
+import { nameDisagrees, PACK_OF, severalPacks } from './label-packs';
 
 /**
  * D-202, the label reader: a food listing whose weight nobody read gets the net quantity printed on its own photos
@@ -105,7 +106,6 @@ export function agreed(reading: PhotoReading): { parts: WeightParts[] } | { why:
   return { parts: said };
 }
 
-const PACK_OF = /\b(?:pack|set|combo|box) of (\d{1,2})\b/i;
 const UNCONFIRMED = (v: LabelVariant): boolean =>
   v.is_active &&
   (v.weight_g === null ||
@@ -133,7 +133,10 @@ export function decideLabel(
   opts: {
     /** Why the price check doubts this weight, or null. */
     doubt?: (listing: LabelListing, variant: LabelVariant, grams: number) => string | null;
-    /** The eval: read every active option, also those whose weight is known. */
+    /**
+     * The eval: read every active option, also those whose weight is known. It skips the name's weight check: its
+     * listings' known weights come from their own words, so that check would hide the very misses it measures.
+     */
     every?: boolean;
   } = {},
 ): LabelResult[] {
@@ -174,13 +177,17 @@ export function decideLabel(
     const grams = netGrams(parts, listing.name);
     if (grams < 1 || grams > 30_000) continue;
     const doubted = opts.doubt?.(listing, target, grams) ?? null;
+    const held =
+      severalPacks(listing.name, target, count, got.parts) ??
+      (opts.every ? null : nameDisagrees(listing.name, grams)) ??
+      (doubted ? `price check doubts it: ${doubted}` : null);
     out.set(target.id, {
       listing,
       variant: target,
       parts,
       grams,
       photo: r.path,
-      result: doubted ? `price check doubts it: ${doubted}` : 'read',
+      result: held ?? 'read',
     });
   }
   if (!out.size) {

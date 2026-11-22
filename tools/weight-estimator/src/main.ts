@@ -36,7 +36,7 @@ import type { ProductType } from '@repo/shared/domain';
  *   pnpm weights try "Kanjivaram silk saree with blouse" --type clothing --category Sarees [--pack "500 g"]
  *   pnpm weights eval [--limit 200]   how close it comes to the weights IWC knows (each left out in turn)
  *   pnpm weights labels --eval --limit 200   D-202: read the photos of food whose weight is known; how often they agree
- *   pnpm weights labels [--dry] [--all] [--limit N]   read food labels' net quantity from the photos (labels.ts)
+ *   pnpm weights labels [--dry] [--all] [--cached] [--limit N]   read food labels' net quantity from the photos (labels.ts)
  *   pnpm weights prices [--dry]       D-202: estimates far from what similar labelled food costs a kilo (prices.ts)
  *   pnpm weights doctor               Ollama, its models, a timed question, the worker sign-in
  */
@@ -277,6 +277,7 @@ async function main(): Promise<number> {
       dry: args.includes('--dry'),
       all: args.includes('--all'),
       evaluate: args.includes('--eval'),
+      cached: args.includes('--cached'),
       limit: Number(arg(args, '--limit') ?? Infinity),
     });
   if (command === 'prices')
@@ -287,7 +288,7 @@ async function main(): Promise<number> {
     return evaluate(db, await estimator(db), Number(arg(args, '--limit') ?? 200));
   }
   console.log(
-    `pnpm weights labels [--eval | --dry] [--all] [--limit N] | prices [--dry] | food [--dry] [--all] | classes [--dry] [--all] [--fast] | run [--redo | --audit] [--limit N] [--dry] | try "<name>" | eval | doctor (modes: ${ESTIMATE_MODES.join(', ')})`,
+    `pnpm weights labels [--eval | --dry] [--all] [--cached] [--limit N] | prices [--dry] | food [--dry] [--all] | classes [--dry] [--all] [--fast] | run [--redo | --audit] [--limit N] [--dry] | try "<name>" | eval | doctor (modes: ${ESTIMATE_MODES.join(', ')})`,
   );
   return command ? 1 : 0;
 }
