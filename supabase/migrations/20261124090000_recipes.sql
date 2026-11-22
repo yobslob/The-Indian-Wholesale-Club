@@ -116,12 +116,13 @@ end $$;
 create trigger recipes_publish_guard before insert or update on public.recipes
   for each row execute function public._recipe_publish_guard();
 
+-- is_admin() once per query, not per row (20261106090000_admin_rls_once)
 alter table public.recipes enable row level security;
 alter table public.recipe_ingredients enable row level security;
 create policy admin_all on public.recipes for all to authenticated
-  using (public.is_admin()) with check (public.is_admin());
+  using ((select public.is_admin())) with check ((select public.is_admin()));
 create policy admin_all on public.recipe_ingredients for all to authenticated
-  using (public.is_admin()) with check (public.is_admin());
+  using ((select public.is_admin())) with check ((select public.is_admin()));
 revoke all on public.recipes, public.recipe_ingredients from anon, authenticated;
 grant select, insert, update, delete on public.recipes, public.recipe_ingredients to authenticated;
 revoke all on function public._recipe_ingredient_guard(), public._recipe_blockers(uuid),
