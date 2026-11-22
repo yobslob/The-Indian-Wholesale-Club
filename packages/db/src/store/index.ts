@@ -34,6 +34,7 @@ import {
   typeRowSchema,
 } from './schemas';
 
+export * from './recipes';
 export * from './schemas';
 export * from './search';
 
