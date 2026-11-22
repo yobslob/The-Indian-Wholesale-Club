@@ -87,8 +87,20 @@ function India(): React.JSX.Element {
   );
 }
 
+/** D-203: a kadai with three wisps of steam, the Cook at home window's drawing while it has no photo. */
+function Kadai(): React.JSX.Element {
+  return (
+    <svg className="hc-art" viewBox="0 0 64 64" aria-hidden="true">
+      <path d="M24 20c-3-4 3-6 0-10M32 18c-3-4 3-6 0-10M40 20c-3-4 3-6 0-10" />
+      <path d="M8 30h48c0 13-11 22-24 22S8 43 8 30z" />
+      <path d="M8 33c-3 0-5-2-5-4M56 33c3 0 5-2 5-4M25 52l-2 5h18l-2-5" />
+    </svg>
+  );
+}
+
 export function WindowArt({ art }: { art: Art }): React.JSX.Element {
   if (art === 'kurta') return <Kurta />;
+  if (art === 'kadai') return <Kadai />;
   if (art === 'cone') return <Cone />;
   return <India />;
 }

@@ -107,6 +107,11 @@ select tests.act_as(tests.id('cust_a'));
 select tests.assert_fails('select public.admin_pin_recipe(null)', 'admin_only', 'customers can''t pin');
 select tests.assert(not exists (select 1 from public.recipes), 'RLS: a customer sees no recipe rows');
 select tests.act_as(tests.id('admin'));
+update public.recipes set status = 'draft' where id = tests.id('r_live');
+update public.recipes set status = 'live' where id = tests.id('r_live');
+select tests.assert((select status = 'live' from public.recipes where id = tests.id('r_live')),
+  'the admin publishes through RLS (the guard runs as its owner)');
+select tests.assert(public.admin_recipe_blockers(tests.id('r_live')) = '{}', 'nothing blocks a ready recipe');
 select public.admin_pin_recipe(tests.id('r_live'));
 select tests.assert(
   (select count(*) = 1 from public.admin_recipe_matches('test pav bhaji')), 'Match finds a live, in-stock food option');

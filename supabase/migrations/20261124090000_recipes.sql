@@ -91,9 +91,10 @@ language sql stable security definer set search_path = public, pg_temp as $$
 $$;
 
 -- The guard checks the new row's own photo and words (they may be set in the same update as the publish) and reads
--- the stored lines for the rest.
+-- the stored lines for the rest. Security definer: it runs inside the admin's write, and the blockers are the owner's
+-- alone (no one else may call them).
 create function public._recipe_publish_guard() returns trigger
-language plpgsql set search_path = public, pg_temp as $$
+language plpgsql security definer set search_path = public, pg_temp as $$
 declare
   v_why text[] := '{}';
 begin

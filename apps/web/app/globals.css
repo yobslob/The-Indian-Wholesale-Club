@@ -2684,6 +2684,84 @@ s.was::before {
     }
   }
 
+  /* D-203, Cook at home: with a recipe on Home the middle window is the main one: a third wider (1fr 1.32fr 1fr at every
+     width), about a tenth taller (its ratio 1.2 × the others', so 1.32 wider ÷ 1.2 = 1.1 taller), bottoms aligned, a
+     soft shadow and a filled button. */
+  .hc-row--main {
+    grid-template-columns: 1fr 1.32fr 1fr;
+    align-items: end;
+  }
+  .hc-arch--main {
+    aspect-ratio: 120 / 133;
+    filter: drop-shadow(0 10px 18px color-mix(in srgb, theme('colors.ink') 14%, transparent));
+  }
+  .hc-arch--main .hc-go-ring,
+  .hc-arch--main:hover .hc-go-ring {
+    border-color: theme('colors.brand');
+    background: theme('colors.brand');
+    color: theme('colors.on-brand');
+  }
+  .hc-photo--dish {
+    overflow: hidden;
+  }
+  .hc-was {
+    display: block;
+    margin-top: 2px;
+    font-size: 12px;
+    font-weight: 500;
+    letter-spacing: 0;
+    opacity: 0.7;
+  }
+  /* the dish's name and line under the photo: wide screens only */
+  .hc-dish {
+    display: none;
+  }
+  @media (min-width: 1024px) {
+    .hc-arch--main {
+      aspect-ratio: 120 / 108;
+    }
+    .hc-dish {
+      position: relative;
+      z-index: 1;
+      display: flex;
+      flex-direction: column;
+      gap: 2px;
+      margin-bottom: 6px;
+    }
+    .hc-dish-name {
+      font-size: clamp(18px, 1.6vw, 24px);
+      line-height: 1.1;
+    }
+    .hc-dish-line {
+      max-width: 28ch;
+      font-size: 12px;
+      opacity: 0.8;
+    }
+  }
+  @media (min-width: 1280px) {
+    .hc-arch--main {
+      aspect-ratio: 120 / 94;
+    }
+  }
+  @media (max-width: 639px) {
+    .hc-arch--main {
+      aspect-ratio: 120 / 156;
+    }
+    .hc-was {
+      font-size: 10px;
+    }
+  }
+  @media (max-width: 379px) {
+    .hc-arch--main {
+      aspect-ratio: 120 / 166;
+    }
+  }
+  @media (max-width: 339px) {
+    .hc-arch--main {
+      aspect-ratio: 120 / 176;
+    }
+  }
+
   @keyframes hc-sway {
     from {
       transform: rotate(31deg);

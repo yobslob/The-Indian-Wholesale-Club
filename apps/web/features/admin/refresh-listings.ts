@@ -5,6 +5,7 @@ import { revalidateTag } from 'next/cache';
 import { listListingPages } from '@repo/db/admin';
 import { regionSegment } from '@repo/shared/domain';
 
+import { refreshRecipesForListings } from '@/features/admin/refresh-recipes';
 import { homeTag, listingsTag, productTag, regionsTag, regionTag, STORE_TAG } from '@/features/catalog/data';
 
 type Client = Parameters<typeof listListingPages>[0];
@@ -33,6 +34,7 @@ export async function refreshListings(client: Client, ids: string[], shownChange
   if (pages.some((p) => !p.region_slug)) revalidateTag(regionsTag);
   else for (const region of new Set(pages.map((p) => p.region_slug!))) revalidateTag(regionTag(region));
   for (const p of pages) revalidateTag(productTag(regionSegment(p.region_slug), p.slug));
+  await refreshRecipesForListings(client, ids); // D-203: the kits that hold them
 }
 
 /**
@@ -48,4 +50,5 @@ export async function refreshProductPages(client: Client, ids: string[]): Promis
     revalidateTag(regionTag(region));
   }
   for (const p of pages) revalidateTag(productTag(regionSegment(p.region_slug), p.slug));
+  await refreshRecipesForListings(client, ids); // D-203: the kits that hold them
 }

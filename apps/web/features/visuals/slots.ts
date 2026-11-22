@@ -54,6 +54,14 @@ export const SLOTS = {
     brief:
       'The Snacks arch: namkeen, bhujia or chips spilling on a table, or a paper cone of bhel. Fills the arch\'s top, fading into green.',
   },
+  // D-203: Cook at home's window when the pinned recipe has no photo yet (the recipe's own photo comes first)
+  'homecoming-recipes': {
+    src: null,
+    alt: '',
+    width: 736,
+    height: 980,
+    brief: 'The Cook at home arch: a plate of the dish on a home kitchen counter, top half of the frame.',
+  },
   'homecoming-nearby': {
     src: '/visuals/snacks-nearby.jpg',
     alt: 'A packet of Maggi masala noodles beside a steaming bowl of them.',

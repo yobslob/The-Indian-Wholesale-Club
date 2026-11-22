@@ -1,4 +1,7 @@
+import { kitLead } from '@repo/shared/domain';
+
 import type { SlotId } from '@/features/visuals/slots';
+import type { HomeRecipe } from '@repo/db/store';
 
 /**
  * Home's season: the windows' words and where each opens. The season is Homecoming, for Thanksgiving (founder
@@ -12,7 +15,7 @@ import type { SlotId } from '@/features/visuals/slots';
  */
 
 export type Tone = 'pumpkin' | 'olive' | 'paper';
-export type Art = 'kurta' | 'cone' | 'india';
+export type Art = 'kurta' | 'cone' | 'india' | 'kadai';
 
 export interface Arch {
   id: string;
@@ -33,6 +36,16 @@ export interface Arch {
   tag?: string;
   /** The founder's photo for the window's top (slots.ts); the drawing shows while it is empty. */
   slot: SlotId;
+  /** D-203, Cook at home: the main window (wider, taller, a filled button) and what only it carries. */
+  recipe?: {
+    /** The dish photo (R2), before the slot. */
+    photo: string | null;
+    name: string;
+    /** "<one line> · <state>", under the photo on wide screens. */
+    line: string;
+    /** The whole window's name for screen readers, with the kit price drawn in. */
+    label: string;
+  };
 }
 
 export const SEASON = {
@@ -94,3 +107,34 @@ export const ARCHES: readonly Arch[] = [
     slot: 'homecoming-nearby',
   },
 ];
+
+/**
+ * D-203 (founder 2026-11-23: "clothing window on the left, snacks window on the right … whatever you design of this will
+ * be in the middle"; "middle one is the main one"; the words approved as drafted): with a live recipe pinned to Home,
+ * Cook at home takes the middle and Get snacks from your neighbourhood leaves the row. Without one, today's windows
+ * (ship dark).
+ */
+export function archesFor(recipe: HomeRecipe | null): readonly Arch[] {
+  if (!recipe) return ARCHES;
+  const [clothing, snacks] = ARCHES as [Arch, Arch, Arch];
+  const cook: Arch = {
+    id: 'recipe',
+    kicker: 'Cook at home',
+    lead: kitLead(recipe.name),
+    big: '',
+    cents: recipe.kit_cents,
+    href: `/recipes/${recipe.slug}`,
+    cta: 'Get the recipe',
+    tone: 'paper',
+    art: 'kadai',
+    tag: "Recipe's on us.",
+    slot: 'homecoming-recipes',
+    recipe: {
+      photo: recipe.photo_path,
+      name: recipe.name,
+      line: [recipe.blurb, recipe.region_name ?? 'All of India'].filter(Boolean).join(' · '),
+      label: `Cook ${recipe.name.toLowerCase()} at home: recipe and kit`,
+    },
+  };
+  return [clothing, cook, snacks];
+}

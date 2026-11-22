@@ -7,6 +7,8 @@ import {
   browseProducts,
   getHome,
   getProductPage,
+  getRecipe,
+  getRecipes,
   getRegionHead,
   getStorePolicy,
   isDemoStore,
@@ -41,6 +43,9 @@ export const productTag = (regionSlug: string, productSlug: string): string =>
 export const regionsTag = 'store:regions';
 /** The See all pages and the sitemap: whatever lists every listing (D-145). */
 export const listingsTag = 'store:listings';
+/** D-203: the recipe shelf (and the sitemap's recipes), and one recipe's page. */
+export const recipesTag = 'store:recipes';
+export const recipeTag = (slug: string): string => `store:recipe:${slug}`;
 
 /**
  * Part of every cache key. Bump it whenever a store_* result changes shape (a migration adds a field): cached
@@ -80,8 +85,17 @@ async function patientInBuild<T>(load: () => Promise<T>): Promise<T> {
 const cached = <T>(key: string[], tags: string[], load: () => Promise<T>): Promise<T> =>
   unstable_cache(async () => slimCards(await patientInBuild(load)), [...key, SHAPE], { tags: [STORE_TAG, ...tags], revalidate: STORE_REVALIDATE_SECONDS })();
 
-// v2: Home's album (D-113); a new key so no entry cached before it (without the album) is read back.
-export const getHomeCached = () => cached(['store-home-v2'], [homeTag], () => getHome(storeClient()));
+// v2: Home's album (D-113); a new key so no entry cached before it (without the album) is read back. v3: its recipe
+// (D-203), only Home's own entry read again.
+export const getHomeCached = () => cached(['store-home-v3'], [homeTag], () => getHome(storeClient()));
+
+/** D-203: the shelf, refreshed when a recipe is published, changed or its kit's pieces change (features/admin/refresh-recipes.ts). */
+export const getRecipesCached = () => cached(['store-recipes'], [recipesTag], () => getRecipes(storeClient()));
+
+/** One recipe's page; null when it isn't live. The title and the page share one read (React's cache). */
+export const getRecipeCached = cache((slug: string) =>
+  cached(['store-recipe', slug], [recipeTag(slug)], () => getRecipe(storeClient(), slug)),
+);
 
 /** D-157: a state's page head (no card lists), refreshed like the region page with the state. */
 export const getRegionHeadCached = (regionSlug: string) =>
