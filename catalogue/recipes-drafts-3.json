@@ -1,0 +1,1471 @@
+[
+  {
+    "slug": "bisi-bele-bath",
+    "name": "Bisi Bele Bath",
+    "kind": "dinner",
+    "state": "Karnataka",
+    "rank": 41,
+    "blurb": "Rice, lentils and vegetables in one pot with a tangy spice blend. Karnataka’s one-pot meal.",
+    "minutes": 50,
+    "soak_hours": null,
+    "serves": 4,
+    "effort": "medium",
+    "ingredients": [
+      {
+        "label": "Bisi bele bath powder",
+        "amount": "3 tbsp",
+        "source": "iwc",
+        "match_words": "bisi bele bath powder"
+      },
+      {
+        "label": "Toor dal",
+        "amount": "½ cup",
+        "source": "iwc",
+        "match_words": "toor dal"
+      },
+      {
+        "label": "Sona masoori rice",
+        "amount": "½ cup",
+        "source": "iwc",
+        "match_words": "sona masoori"
+      },
+      {
+        "label": "Tamarind",
+        "amount": "a small ball",
+        "source": "iwc",
+        "match_words": "tamarind"
+      },
+      {
+        "label": "Cashews",
+        "amount": "10",
+        "source": "iwc",
+        "match_words": "cashews"
+      },
+      {
+        "label": "Vegetables",
+        "amount": "2 cups",
+        "source": "local"
+      },
+      {
+        "label": "Ghee",
+        "amount": "3 tbsp",
+        "source": "local"
+      }
+    ],
+    "steps": [
+      {
+        "text": "Pressure cook the rice and dal together, soft.",
+        "minutes": 15
+      },
+      {
+        "text": "Cook the vegetables in tamarind water with salt.",
+        "minutes": 10
+      },
+      {
+        "text": "Add the powder and the rice-dal; stir in hot water until it pours slowly.",
+        "minutes": 10
+      },
+      {
+        "text": "Fry cashews in ghee and pour over.",
+        "minutes": 2
+      }
+    ]
+  },
+  {
+    "slug": "medu-vada",
+    "name": "Medu Vada",
+    "kind": "breakfast",
+    "state": "Tamil Nadu",
+    "rank": 42,
+    "blurb": "Crisp lentil doughnuts, soft inside. Dunk them in sambar.",
+    "minutes": 40,
+    "soak_hours": 4,
+    "serves": 4,
+    "effort": "medium",
+    "ingredients": [
+      {
+        "label": "Urad dal",
+        "amount": "1 cup",
+        "source": "iwc",
+        "match_words": "urad dal"
+      },
+      {
+        "label": "Black pepper",
+        "amount": "1 tsp",
+        "source": "iwc",
+        "match_words": "black pepper"
+      },
+      {
+        "label": "Hing",
+        "amount": "a pinch",
+        "source": "iwc",
+        "match_words": "hing"
+      },
+      {
+        "label": "Onions",
+        "amount": "1 small",
+        "source": "local"
+      },
+      {
+        "label": "Ginger",
+        "amount": "1 inch",
+        "source": "local"
+      },
+      {
+        "label": "Curry leaves",
+        "amount": "a sprig",
+        "source": "local"
+      },
+      {
+        "label": "Oil",
+        "amount": "for frying",
+        "source": "local"
+      }
+    ],
+    "steps": [
+      {
+        "text": "Soak the dal 4 hours. Grind with very little water until fluffy.",
+        "minutes": 10
+      },
+      {
+        "text": "Beat in salt, pepper, hing, onion, ginger and curry leaves.",
+        "minutes": 3
+      },
+      {
+        "text": "With wet hands shape a ring and slide it into hot oil.",
+        "minutes": 2
+      },
+      {
+        "text": "Fry until deep golden.",
+        "minutes": 15
+      }
+    ]
+  },
+  {
+    "slug": "upma",
+    "name": "Upma",
+    "kind": "breakfast",
+    "state": "Tamil Nadu",
+    "rank": 43,
+    "blurb": "Roasted semolina cooked with a tempering. Ten minutes from tin to plate.",
+    "minutes": 20,
+    "soak_hours": null,
+    "serves": 3,
+    "effort": "easy",
+    "ingredients": [
+      {
+        "label": "Sooji",
+        "amount": "1 cup",
+        "source": "iwc",
+        "match_words": "sooji"
+      },
+      {
+        "label": "Urad dal",
+        "amount": "1 tsp",
+        "source": "iwc",
+        "match_words": "urad dal"
+      },
+      {
+        "label": "Chana dal",
+        "amount": "1 tsp",
+        "source": "iwc",
+        "match_words": "chana dal"
+      },
+      {
+        "label": "Mustard seeds",
+        "amount": "1 tsp",
+        "source": "iwc",
+        "match_words": "mustard seeds"
+      },
+      {
+        "label": "Cashews",
+        "amount": "8",
+        "source": "iwc",
+        "match_words": "cashews"
+      },
+      {
+        "label": "Onions",
+        "amount": "1",
+        "source": "local"
+      },
+      {
+        "label": "Green chillies",
+        "amount": "2",
+        "source": "local"
+      },
+      {
+        "label": "Ghee or oil",
+        "amount": "2 tbsp",
+        "source": "local"
+      }
+    ],
+    "steps": [
+      {
+        "text": "Roast the sooji dry until it smells nutty. Set aside.",
+        "minutes": 5
+      },
+      {
+        "text": "Fry mustard seeds, both dals, cashews, onion and chillies in ghee.",
+        "minutes": 4
+      },
+      {
+        "text": "Add 2½ cups water and salt; bring to the boil.",
+        "minutes": 3
+      },
+      {
+        "text": "Pour in the sooji, stirring; cover and cook on low.",
+        "minutes": 3
+      }
+    ]
+  },
+  {
+    "slug": "poha",
+    "name": "Poha",
+    "kind": "breakfast",
+    "state": "Madhya Pradesh",
+    "rank": 44,
+    "blurb": "Flattened rice with onion, peanuts and lemon. Indore’s breakfast, done in 15 minutes.",
+    "minutes": 20,
+    "soak_hours": null,
+    "serves": 3,
+    "effort": "easy",
+    "ingredients": [
+      {
+        "label": "Thick poha",
+        "amount": "2 cups",
+        "source": "iwc",
+        "match_words": "poha"
+      },
+      {
+        "label": "Peanuts",
+        "amount": "¼ cup",
+        "source": "iwc",
+        "match_words": "peanuts"
+      },
+      {
+        "label": "Mustard seeds",
+        "amount": "1 tsp",
+        "source": "iwc",
+        "match_words": "mustard seeds"
+      },
+      {
+        "label": "Turmeric",
+        "amount": "½ tsp",
+        "source": "iwc",
+        "match_words": "turmeric"
+      },
+      {
+        "label": "Sev",
+        "amount": "to top",
+        "source": "iwc",
+        "match_words": "sev"
+      },
+      {
+        "label": "Jeeravan masala",
+        "amount": "1 tsp",
+        "source": "iwc",
+        "match_words": "jeeravan masala"
+      },
+      {
+        "label": "Onions",
+        "amount": "1",
+        "source": "local"
+      },
+      {
+        "label": "Lemon",
+        "amount": "1",
+        "source": "local"
+      },
+      {
+        "label": "Coriander",
+        "amount": "a handful",
+        "source": "local"
+      },
+      {
+        "label": "Oil",
+        "amount": "2 tbsp",
+        "source": "local"
+      }
+    ],
+    "steps": [
+      {
+        "text": "Rinse the poha and leave it to soften.",
+        "minutes": 5
+      },
+      {
+        "text": "Fry the peanuts, then mustard seeds and onion.",
+        "minutes": 5
+      },
+      {
+        "text": "Add turmeric, salt, a pinch of sugar and the poha. Toss and cover.",
+        "minutes": 4
+      },
+      {
+        "text": "Top with sev, jeeravan, coriander and lemon.",
+        "minutes": 1
+      }
+    ]
+  },
+  {
+    "slug": "uttapam",
+    "name": "Uttapam",
+    "kind": "breakfast",
+    "state": "Tamil Nadu",
+    "rank": 45,
+    "blurb": "A thick rice pancake topped with onion and tomato. Uses up dosa batter.",
+    "minutes": 30,
+    "soak_hours": 6,
+    "serves": 4,
+    "effort": "easy",
+    "ingredients": [
+      {
+        "label": "Dosa rice",
+        "amount": "2 cups",
+        "source": "iwc",
+        "match_words": "dosa rice"
+      },
+      {
+        "label": "Urad dal",
+        "amount": "½ cup",
+        "source": "iwc",
+        "match_words": "urad dal"
+      },
+      {
+        "label": "Fenugreek seeds",
+        "amount": "½ tsp",
+        "source": "iwc",
+        "match_words": "fenugreek seeds"
+      },
+      {
+        "label": "Onions",
+        "amount": "2",
+        "source": "local"
+      },
+      {
+        "label": "Tomatoes",
+        "amount": "2",
+        "source": "local"
+      },
+      {
+        "label": "Oil",
+        "amount": "for the pan",
+        "source": "local"
+      }
+    ],
+    "steps": [
+      {
+        "text": "Make a dosa batter: soak, grind, ferment overnight (or use leftover batter).",
+        "minutes": null
+      },
+      {
+        "text": "Spread a ladle thick on a hot pan.",
+        "minutes": 1
+      },
+      {
+        "text": "Press chopped onion, tomato and chilli on top; oil the edges.",
+        "minutes": 2
+      },
+      {
+        "text": "Cook covered, flip, cook the top.",
+        "minutes": 5
+      }
+    ]
+  },
+  {
+    "slug": "rava-dosa",
+    "name": "Rava Dosa",
+    "kind": "breakfast",
+    "state": "Karnataka",
+    "rank": 46,
+    "blurb": "A crisp, lacy semolina dosa. No grinding, no fermenting.",
+    "minutes": 35,
+    "soak_hours": 0.5,
+    "serves": 4,
+    "effort": "easy",
+    "ingredients": [
+      {
+        "label": "Sooji",
+        "amount": "½ cup",
+        "source": "iwc",
+        "match_words": "sooji"
+      },
+      {
+        "label": "Rice flour",
+        "amount": "½ cup",
+        "source": "iwc",
+        "match_words": "rice flour"
+      },
+      {
+        "label": "Cumin seeds",
+        "amount": "1 tsp",
+        "source": "iwc",
+        "match_words": "cumin seeds"
+      },
+      {
+        "label": "Black pepper",
+        "amount": "1 tsp, crushed",
+        "source": "iwc",
+        "match_words": "black pepper"
+      },
+      {
+        "label": "Onions",
+        "amount": "1",
+        "source": "local"
+      },
+      {
+        "label": "Buttermilk",
+        "amount": "¼ cup",
+        "source": "local"
+      },
+      {
+        "label": "Oil",
+        "amount": "for the pan",
+        "source": "local"
+      }
+    ],
+    "steps": [
+      {
+        "text": "Mix sooji, rice flour, a spoon of maida, buttermilk, salt and water into a thin batter. Rest 30 minutes.",
+        "minutes": null
+      },
+      {
+        "text": "Stir in cumin, pepper, onion and chilli.",
+        "minutes": 2
+      },
+      {
+        "text": "Pour from height over a very hot pan to make a lace.",
+        "minutes": 1
+      },
+      {
+        "text": "Drizzle oil and cook until golden; don’t flip.",
+        "minutes": 4
+      }
+    ]
+  },
+  {
+    "slug": "ven-pongal",
+    "name": "Ven Pongal",
+    "kind": "breakfast",
+    "state": "Tamil Nadu",
+    "rank": 47,
+    "blurb": "Rice and moong dal cooked soft with ghee, pepper and cumin.",
+    "minutes": 30,
+    "soak_hours": null,
+    "serves": 4,
+    "effort": "easy",
+    "ingredients": [
+      {
+        "label": "Raw rice",
+        "amount": "¾ cup",
+        "source": "iwc",
+        "match_words": "sona masoori"
+      },
+      {
+        "label": "Moong dal",
+        "amount": "¼ cup",
+        "source": "iwc",
+        "match_words": "moong dal"
+      },
+      {
+        "label": "Black pepper",
+        "amount": "1 tsp",
+        "source": "iwc",
+        "match_words": "black pepper"
+      },
+      {
+        "label": "Cumin seeds",
+        "amount": "1 tsp",
+        "source": "iwc",
+        "match_words": "cumin seeds"
+      },
+      {
+        "label": "Cashews",
+        "amount": "10",
+        "source": "iwc",
+        "match_words": "cashews"
+      },
+      {
+        "label": "Ghee",
+        "amount": "3 tbsp",
+        "source": "local"
+      },
+      {
+        "label": "Ginger",
+        "amount": "1 inch",
+        "source": "local"
+      }
+    ],
+    "steps": [
+      {
+        "text": "Dry-roast the moong dal lightly.",
+        "minutes": 3
+      },
+      {
+        "text": "Pressure cook rice and dal with 4 cups water and salt until mushy.",
+        "minutes": 15
+      },
+      {
+        "text": "Fry pepper, cumin, cashews, ginger and curry leaves in ghee.",
+        "minutes": 2
+      },
+      {
+        "text": "Stir into the pongal with more ghee.",
+        "minutes": 2
+      }
+    ]
+  },
+  {
+    "slug": "aloo-paratha",
+    "name": "Aloo Paratha",
+    "kind": "breakfast",
+    "state": "Punjab",
+    "rank": 48,
+    "blurb": "Flatbread stuffed with spiced potato, with butter on top.",
+    "minutes": 45,
+    "soak_hours": null,
+    "serves": 4,
+    "effort": "easy",
+    "ingredients": [
+      {
+        "label": "Atta",
+        "amount": "2 cups",
+        "source": "iwc",
+        "match_words": "atta"
+      },
+      {
+        "label": "Ajwain",
+        "amount": "½ tsp",
+        "source": "iwc",
+        "match_words": "ajwain"
+      },
+      {
+        "label": "Amchur",
+        "amount": "1 tsp",
+        "source": "iwc",
+        "match_words": "amchur"
+      },
+      {
+        "label": "Garam masala",
+        "amount": "½ tsp",
+        "source": "iwc",
+        "match_words": "garam masala"
+      },
+      {
+        "label": "Potatoes",
+        "amount": "3",
+        "source": "local"
+      },
+      {
+        "label": "Butter",
+        "amount": "4 tbsp",
+        "source": "local"
+      },
+      {
+        "label": "Green chillies",
+        "amount": "2",
+        "source": "local"
+      }
+    ],
+    "steps": [
+      {
+        "text": "Knead the atta with salt and water into a soft dough.",
+        "minutes": 10
+      },
+      {
+        "text": "Mash the potatoes with chillies, ajwain, amchur, garam masala and salt.",
+        "minutes": 10
+      },
+      {
+        "text": "Fill a ball of dough, seal and roll out gently.",
+        "minutes": 10
+      },
+      {
+        "text": "Cook on a hot pan with butter on both sides.",
+        "minutes": 15
+      }
+    ]
+  },
+  {
+    "slug": "thepla",
+    "name": "Methi Thepla",
+    "kind": "breakfast",
+    "state": "Gujarat",
+    "rank": 49,
+    "blurb": "Soft, spiced fenugreek flatbread from Gujarat. Keeps for days, travels well.",
+    "minutes": 40,
+    "soak_hours": null,
+    "serves": 4,
+    "effort": "easy",
+    "ingredients": [
+      {
+        "label": "Atta",
+        "amount": "2 cups",
+        "source": "iwc",
+        "match_words": "atta"
+      },
+      {
+        "label": "Besan",
+        "amount": "¼ cup",
+        "source": "iwc",
+        "match_words": "besan"
+      },
+      {
+        "label": "Kasuri methi",
+        "amount": "3 tbsp",
+        "source": "iwc",
+        "match_words": "kasuri methi"
+      },
+      {
+        "label": "Ajwain",
+        "amount": "½ tsp",
+        "source": "iwc",
+        "match_words": "ajwain"
+      },
+      {
+        "label": "Turmeric",
+        "amount": "½ tsp",
+        "source": "iwc",
+        "match_words": "turmeric"
+      },
+      {
+        "label": "Yogurt",
+        "amount": "¼ cup",
+        "source": "local"
+      },
+      {
+        "label": "Oil",
+        "amount": "3 tbsp",
+        "source": "local"
+      }
+    ],
+    "steps": [
+      {
+        "text": "Knead atta, besan, kasuri methi, spices, yogurt, oil and salt into a soft dough.",
+        "minutes": 10
+      },
+      {
+        "text": "Rest 15 minutes.",
+        "minutes": 15
+      },
+      {
+        "text": "Roll thin.",
+        "minutes": 10
+      },
+      {
+        "text": "Cook on a hot pan with a little oil until spotted.",
+        "minutes": 15
+      }
+    ]
+  },
+  {
+    "slug": "besan-chilla",
+    "name": "Besan Chilla",
+    "kind": "breakfast",
+    "state": "All of India",
+    "rank": 50,
+    "blurb": "A savoury gram flour pancake. Breakfast in 15 minutes.",
+    "minutes": 20,
+    "soak_hours": null,
+    "serves": 2,
+    "effort": "easy",
+    "ingredients": [
+      {
+        "label": "Besan",
+        "amount": "1 cup",
+        "source": "iwc",
+        "match_words": "besan"
+      },
+      {
+        "label": "Ajwain",
+        "amount": "¼ tsp",
+        "source": "iwc",
+        "match_words": "ajwain"
+      },
+      {
+        "label": "Turmeric",
+        "amount": "¼ tsp",
+        "source": "iwc",
+        "match_words": "turmeric"
+      },
+      {
+        "label": "Kashmiri chilli powder",
+        "amount": "½ tsp",
+        "source": "iwc",
+        "match_words": "kashmiri chilli powder"
+      },
+      {
+        "label": "Onions",
+        "amount": "1",
+        "source": "local"
+      },
+      {
+        "label": "Tomatoes",
+        "amount": "1",
+        "source": "local"
+      },
+      {
+        "label": "Oil",
+        "amount": "for the pan",
+        "source": "local"
+      }
+    ],
+    "steps": [
+      {
+        "text": "Whisk besan, spices, salt and water into a smooth batter.",
+        "minutes": 3
+      },
+      {
+        "text": "Stir in chopped onion, tomato and coriander.",
+        "minutes": 2
+      },
+      {
+        "text": "Spread thin on a hot oiled pan; cook both sides golden.",
+        "minutes": 10
+      }
+    ]
+  },
+  {
+    "slug": "puri-bhaji",
+    "name": "Puri Bhaji",
+    "kind": "breakfast",
+    "state": "All of India",
+    "rank": 51,
+    "blurb": "Puffed fried bread with a soft, yellow potato curry.",
+    "minutes": 45,
+    "soak_hours": null,
+    "serves": 4,
+    "effort": "easy",
+    "ingredients": [
+      {
+        "label": "Atta",
+        "amount": "2 cups",
+        "source": "iwc",
+        "match_words": "atta"
+      },
+      {
+        "label": "Sooji",
+        "amount": "2 tbsp",
+        "source": "iwc",
+        "match_words": "sooji"
+      },
+      {
+        "label": "Turmeric",
+        "amount": "½ tsp",
+        "source": "iwc",
+        "match_words": "turmeric"
+      },
+      {
+        "label": "Mustard seeds",
+        "amount": "1 tsp",
+        "source": "iwc",
+        "match_words": "mustard seeds"
+      },
+      {
+        "label": "Hing",
+        "amount": "a pinch",
+        "source": "iwc",
+        "match_words": "hing"
+      },
+      {
+        "label": "Potatoes",
+        "amount": "4",
+        "source": "local"
+      },
+      {
+        "label": "Oil",
+        "amount": "for frying",
+        "source": "local"
+      },
+      {
+        "label": "Green chillies",
+        "amount": "2",
+        "source": "local"
+      }
+    ],
+    "steps": [
+      {
+        "text": "Knead atta, sooji and salt into a stiff dough.",
+        "minutes": 10
+      },
+      {
+        "text": "Boil and crumble the potatoes.",
+        "minutes": 15
+      },
+      {
+        "text": "Fry mustard seeds, hing, chillies and turmeric; add potatoes, salt and water; simmer soft.",
+        "minutes": 10
+      },
+      {
+        "text": "Roll small discs and fry until they puff.",
+        "minutes": 15
+      }
+    ]
+  },
+  {
+    "slug": "sabudana-khichdi",
+    "name": "Sabudana Khichdi",
+    "kind": "breakfast",
+    "state": "Maharashtra",
+    "rank": 52,
+    "blurb": "Sago pearls with peanuts and potato. A fasting-day favourite that’s good any day.",
+    "minutes": 30,
+    "soak_hours": 6,
+    "serves": 3,
+    "effort": "easy",
+    "ingredients": [
+      {
+        "label": "Sabudana",
+        "amount": "1 cup",
+        "source": "iwc",
+        "match_words": "sabudana"
+      },
+      {
+        "label": "Peanuts",
+        "amount": "½ cup",
+        "source": "iwc",
+        "match_words": "peanuts"
+      },
+      {
+        "label": "Cumin seeds",
+        "amount": "1 tsp",
+        "source": "iwc",
+        "match_words": "cumin seeds"
+      },
+      {
+        "label": "Sendha namak",
+        "amount": "to taste",
+        "source": "iwc",
+        "match_words": "rock salt"
+      },
+      {
+        "label": "Potatoes",
+        "amount": "1",
+        "source": "local"
+      },
+      {
+        "label": "Green chillies",
+        "amount": "2",
+        "source": "local"
+      },
+      {
+        "label": "Lemon",
+        "amount": "½",
+        "source": "local"
+      },
+      {
+        "label": "Ghee",
+        "amount": "2 tbsp",
+        "source": "local"
+      }
+    ],
+    "steps": [
+      {
+        "text": "Rinse the sabudana and soak in just enough water to cover, 6 hours.",
+        "minutes": null
+      },
+      {
+        "text": "Roast and coarsely crush the peanuts.",
+        "minutes": 5
+      },
+      {
+        "text": "Fry cumin, chillies and diced potato in ghee until soft.",
+        "minutes": 8
+      },
+      {
+        "text": "Add sabudana, peanuts and rock salt; toss on low until the pearls turn clear.",
+        "minutes": 6
+      },
+      {
+        "text": "Squeeze lemon over.",
+        "minutes": null
+      }
+    ]
+  },
+  {
+    "slug": "bhel-puri",
+    "name": "Bhel Puri",
+    "kind": "snacks",
+    "state": "Maharashtra",
+    "rank": 53,
+    "blurb": "Puffed rice tossed with chutneys, onion and sev. Chowpatty on a plate.",
+    "minutes": 15,
+    "soak_hours": null,
+    "serves": 3,
+    "effort": "easy",
+    "ingredients": [
+      {
+        "label": "Murmura",
+        "amount": "3 cups",
+        "source": "iwc",
+        "match_words": "puffed rice"
+      },
+      {
+        "label": "Sev",
+        "amount": "½ cup",
+        "source": "iwc",
+        "match_words": "sev"
+      },
+      {
+        "label": "Papdi",
+        "amount": "8",
+        "source": "iwc",
+        "match_words": "papdi"
+      },
+      {
+        "label": "Tamarind chutney",
+        "amount": "3 tbsp",
+        "source": "iwc",
+        "match_words": "tamarind chutney"
+      },
+      {
+        "label": "Chaat masala",
+        "amount": "1 tsp",
+        "source": "iwc",
+        "match_words": "chaat masala"
+      },
+      {
+        "label": "Onions",
+        "amount": "1",
+        "source": "local"
+      },
+      {
+        "label": "Tomatoes",
+        "amount": "1",
+        "source": "local"
+      },
+      {
+        "label": "Potatoes",
+        "amount": "1 boiled",
+        "source": "local"
+      },
+      {
+        "label": "Coriander",
+        "amount": "a handful",
+        "source": "local"
+      },
+      {
+        "label": "Lemon",
+        "amount": "½",
+        "source": "local"
+      }
+    ],
+    "steps": [
+      {
+        "text": "Chop the onion, tomato, potato and coriander.",
+        "minutes": 5
+      },
+      {
+        "text": "Toss the murmura with everything but the sev, just before eating.",
+        "minutes": 2
+      },
+      {
+        "text": "Top with sev and crushed papdi.",
+        "minutes": 1
+      }
+    ]
+  },
+  {
+    "slug": "sev-puri",
+    "name": "Sev Puri",
+    "kind": "snacks",
+    "state": "Maharashtra",
+    "rank": 54,
+    "blurb": "Flat puris loaded with potato, chutneys and a heap of sev.",
+    "minutes": 15,
+    "soak_hours": null,
+    "serves": 3,
+    "effort": "easy",
+    "ingredients": [
+      {
+        "label": "Papdi",
+        "amount": "20",
+        "source": "iwc",
+        "match_words": "papdi"
+      },
+      {
+        "label": "Sev",
+        "amount": "1 cup",
+        "source": "iwc",
+        "match_words": "sev"
+      },
+      {
+        "label": "Tamarind chutney",
+        "amount": "3 tbsp",
+        "source": "iwc",
+        "match_words": "tamarind chutney"
+      },
+      {
+        "label": "Chaat masala",
+        "amount": "1 tsp",
+        "source": "iwc",
+        "match_words": "chaat masala"
+      },
+      {
+        "label": "Potatoes",
+        "amount": "2 boiled",
+        "source": "local"
+      },
+      {
+        "label": "Onions",
+        "amount": "1",
+        "source": "local"
+      },
+      {
+        "label": "Green chutney herbs",
+        "amount": "mint and coriander",
+        "source": "local"
+      }
+    ],
+    "steps": [
+      {
+        "text": "Blend mint and coriander with chilli and salt for green chutney.",
+        "minutes": 5
+      },
+      {
+        "text": "Lay the papdi out; top each with potato and onion.",
+        "minutes": 5
+      },
+      {
+        "text": "Add both chutneys, chaat masala and a heap of sev.",
+        "minutes": 2
+      }
+    ]
+  },
+  {
+    "slug": "papdi-chaat",
+    "name": "Papdi Chaat",
+    "kind": "snacks",
+    "state": "Delhi",
+    "rank": 55,
+    "blurb": "Crisp papdi with yogurt, chutneys and potato. Delhi’s street snack.",
+    "minutes": 20,
+    "soak_hours": null,
+    "serves": 3,
+    "effort": "easy",
+    "ingredients": [
+      {
+        "label": "Papdi",
+        "amount": "20",
+        "source": "iwc",
+        "match_words": "papdi"
+      },
+      {
+        "label": "Chaat masala",
+        "amount": "1 tsp",
+        "source": "iwc",
+        "match_words": "chaat masala"
+      },
+      {
+        "label": "Tamarind chutney",
+        "amount": "3 tbsp",
+        "source": "iwc",
+        "match_words": "tamarind chutney"
+      },
+      {
+        "label": "Roasted cumin powder",
+        "amount": "1 tsp",
+        "source": "iwc",
+        "match_words": "roasted cumin"
+      },
+      {
+        "label": "Yogurt",
+        "amount": "1 cup",
+        "source": "local"
+      },
+      {
+        "label": "Potatoes",
+        "amount": "2 boiled",
+        "source": "local"
+      },
+      {
+        "label": "Chickpeas (boiled)",
+        "amount": "½ cup",
+        "source": "local"
+      },
+      {
+        "label": "Pomegranate",
+        "amount": "a handful",
+        "source": "local"
+      }
+    ],
+    "steps": [
+      {
+        "text": "Whisk the yogurt with salt and a little sugar.",
+        "minutes": 2
+      },
+      {
+        "text": "Lay out the papdi; add potato and chickpeas.",
+        "minutes": 5
+      },
+      {
+        "text": "Spoon over yogurt, both chutneys, cumin and chaat masala.",
+        "minutes": 2
+      },
+      {
+        "text": "Top with pomegranate.",
+        "minutes": null
+      }
+    ]
+  },
+  {
+    "slug": "aloo-tikki-chaat",
+    "name": "Aloo Tikki Chaat",
+    "kind": "snacks",
+    "state": "Delhi",
+    "rank": 56,
+    "blurb": "Crisp potato patties under yogurt and chutneys.",
+    "minutes": 40,
+    "soak_hours": null,
+    "serves": 4,
+    "effort": "easy",
+    "ingredients": [
+      {
+        "label": "Chaat masala",
+        "amount": "1 tsp",
+        "source": "iwc",
+        "match_words": "chaat masala"
+      },
+      {
+        "label": "Tamarind chutney",
+        "amount": "3 tbsp",
+        "source": "iwc",
+        "match_words": "tamarind chutney"
+      },
+      {
+        "label": "Thick poha",
+        "amount": "¼ cup",
+        "source": "iwc",
+        "match_words": "poha"
+      },
+      {
+        "label": "Roasted cumin powder",
+        "amount": "1 tsp",
+        "source": "iwc",
+        "match_words": "roasted cumin"
+      },
+      {
+        "label": "Potatoes",
+        "amount": "4",
+        "source": "local"
+      },
+      {
+        "label": "Yogurt",
+        "amount": "1 cup",
+        "source": "local"
+      },
+      {
+        "label": "Mint",
+        "amount": "a handful",
+        "source": "local"
+      },
+      {
+        "label": "Coriander",
+        "amount": "a handful",
+        "source": "local"
+      },
+      {
+        "label": "Oil",
+        "amount": "for the pan",
+        "source": "local"
+      }
+    ],
+    "steps": [
+      {
+        "text": "Mash boiled potatoes with soaked poha, salt and chilli. Shape patties.",
+        "minutes": 15
+      },
+      {
+        "text": "Shallow-fry slowly until crisp on both sides.",
+        "minutes": 15
+      },
+      {
+        "text": "Top with yogurt, chutneys, cumin and chaat masala.",
+        "minutes": 3
+      }
+    ]
+  },
+  {
+    "slug": "dahi-bhalla",
+    "name": "Dahi Bhalla",
+    "kind": "snacks",
+    "state": "Delhi",
+    "rank": 57,
+    "blurb": "Soft lentil dumplings soaked in cool yogurt, with sweet and sour chutney.",
+    "minutes": 60,
+    "soak_hours": 4,
+    "serves": 4,
+    "effort": "medium",
+    "ingredients": [
+      {
+        "label": "Urad dal",
+        "amount": "1 cup",
+        "source": "iwc",
+        "match_words": "urad dal"
+      },
+      {
+        "label": "Chaat masala",
+        "amount": "1 tsp",
+        "source": "iwc",
+        "match_words": "chaat masala"
+      },
+      {
+        "label": "Roasted cumin powder",
+        "amount": "1 tsp",
+        "source": "iwc",
+        "match_words": "roasted cumin"
+      },
+      {
+        "label": "Tamarind chutney",
+        "amount": "3 tbsp",
+        "source": "iwc",
+        "match_words": "tamarind chutney"
+      },
+      {
+        "label": "Yogurt",
+        "amount": "2 cups",
+        "source": "local"
+      },
+      {
+        "label": "Mint",
+        "amount": "a handful",
+        "source": "local"
+      },
+      {
+        "label": "Oil",
+        "amount": "for frying",
+        "source": "local"
+      }
+    ],
+    "steps": [
+      {
+        "text": "Soak the dal 4 hours; grind fluffy with salt.",
+        "minutes": 10
+      },
+      {
+        "text": "Drop spoonfuls into hot oil and fry golden.",
+        "minutes": 15
+      },
+      {
+        "text": "Soak the bhallas in warm water 20 minutes, then squeeze gently.",
+        "minutes": 20
+      },
+      {
+        "text": "Cover with whisked sweetened yogurt, chutneys, cumin and chaat masala.",
+        "minutes": 3
+      }
+    ]
+  },
+  {
+    "slug": "pyaaz-kachori",
+    "name": "Pyaaz Kachori",
+    "kind": "snacks",
+    "state": "Rajasthan",
+    "rank": 58,
+    "blurb": "Flaky fried pastry with a spiced onion filling, from Jodhpur.",
+    "minutes": 75,
+    "soak_hours": null,
+    "serves": 8,
+    "effort": "weekend",
+    "ingredients": [
+      {
+        "label": "Maida",
+        "amount": "2 cups",
+        "source": "iwc",
+        "match_words": "maida"
+      },
+      {
+        "label": "Besan",
+        "amount": "3 tbsp",
+        "source": "iwc",
+        "match_words": "besan"
+      },
+      {
+        "label": "Saunf",
+        "amount": "1 tsp",
+        "source": "iwc",
+        "match_words": "fennel seeds"
+      },
+      {
+        "label": "Kalonji",
+        "amount": "½ tsp",
+        "source": "iwc",
+        "match_words": "kalonji"
+      },
+      {
+        "label": "Amchur",
+        "amount": "1 tsp",
+        "source": "iwc",
+        "match_words": "amchur"
+      },
+      {
+        "label": "Onions",
+        "amount": "3",
+        "source": "local"
+      },
+      {
+        "label": "Oil",
+        "amount": "for the dough and frying",
+        "source": "local"
+      }
+    ],
+    "steps": [
+      {
+        "text": "Rub ¼ cup oil into the maida and salt; knead soft and rest.",
+        "minutes": 15
+      },
+      {
+        "text": "Fry fennel and kalonji, add onions; cook soft, add besan, amchur and spices. Cool.",
+        "minutes": 15
+      },
+      {
+        "text": "Fill flattened balls, seal and press flat.",
+        "minutes": 15
+      },
+      {
+        "text": "Fry on low heat until golden and flaky.",
+        "minutes": 25
+      }
+    ]
+  },
+  {
+    "slug": "dhokla",
+    "name": "Khaman Dhokla",
+    "kind": "snacks",
+    "state": "Gujarat",
+    "rank": 59,
+    "blurb": "Spongy steamed gram flour cake with a mustard seed tempering.",
+    "minutes": 35,
+    "soak_hours": null,
+    "serves": 4,
+    "effort": "easy",
+    "ingredients": [
+      {
+        "label": "Besan",
+        "amount": "1½ cups",
+        "source": "iwc",
+        "match_words": "besan"
+      },
+      {
+        "label": "Eno fruit salt",
+        "amount": "1 tsp",
+        "source": "iwc",
+        "match_words": "eno"
+      },
+      {
+        "label": "Citric acid",
+        "amount": "½ tsp",
+        "source": "iwc",
+        "match_words": "citric acid"
+      },
+      {
+        "label": "Mustard seeds",
+        "amount": "1 tsp",
+        "source": "iwc",
+        "match_words": "mustard seeds"
+      },
+      {
+        "label": "Green chillies",
+        "amount": "2",
+        "source": "local"
+      },
+      {
+        "label": "Curry leaves",
+        "amount": "a sprig",
+        "source": "local"
+      },
+      {
+        "label": "Oil",
+        "amount": "2 tbsp",
+        "source": "local"
+      }
+    ],
+    "steps": [
+      {
+        "text": "Whisk besan, citric acid, salt, sugar and water into a thick batter.",
+        "minutes": 5
+      },
+      {
+        "text": "Stir in the Eno and pour straight into a greased tin.",
+        "minutes": 2
+      },
+      {
+        "text": "Steam until a knife comes out clean.",
+        "minutes": 15
+      },
+      {
+        "text": "Temper mustard seeds, chillies and curry leaves in oil with a little sugared water; pour over and cut.",
+        "minutes": 3
+      }
+    ]
+  },
+  {
+    "slug": "khandvi",
+    "name": "Khandvi",
+    "kind": "snacks",
+    "state": "Gujarat",
+    "rank": 60,
+    "blurb": "Thin rolls of gram flour and buttermilk with a mustard and sesame tempering.",
+    "minutes": 35,
+    "soak_hours": null,
+    "serves": 4,
+    "effort": "medium",
+    "ingredients": [
+      {
+        "label": "Besan",
+        "amount": "½ cup",
+        "source": "iwc",
+        "match_words": "besan"
+      },
+      {
+        "label": "Mustard seeds",
+        "amount": "1 tsp",
+        "source": "iwc",
+        "match_words": "mustard seeds"
+      },
+      {
+        "label": "Sesame seeds",
+        "amount": "1 tsp",
+        "source": "iwc",
+        "match_words": "sesame seeds"
+      },
+      {
+        "label": "Desiccated coconut",
+        "amount": "2 tbsp",
+        "source": "iwc",
+        "match_words": "desiccated coconut"
+      },
+      {
+        "label": "Buttermilk",
+        "amount": "1½ cups",
+        "source": "local"
+      },
+      {
+        "label": "Oil",
+        "amount": "1 tbsp",
+        "source": "local"
+      }
+    ],
+    "steps": [
+      {
+        "text": "Whisk besan into the buttermilk with turmeric, salt and ginger.",
+        "minutes": 3
+      },
+      {
+        "text": "Cook on low, stirring all the time, until very thick.",
+        "minutes": 12
+      },
+      {
+        "text": "Spread thin on the back of a greased plate while hot.",
+        "minutes": 5
+      },
+      {
+        "text": "Cool, cut strips and roll them.",
+        "minutes": 5
+      },
+      {
+        "text": "Pour a tempering of mustard, sesame and coconut over.",
+        "minutes": 2
+      }
+    ]
+  }
+]

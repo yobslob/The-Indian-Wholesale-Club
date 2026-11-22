@@ -1,0 +1,1409 @@
+[
+  {
+    "slug": "dabeli",
+    "name": "Kutchi Dabeli",
+    "kind": "snacks",
+    "state": "Gujarat",
+    "rank": 61,
+    "blurb": "A sweet-spicy potato filling in a bun, with peanuts and pomegranate. Kutch’s street food.",
+    "minutes": 30,
+    "soak_hours": null,
+    "serves": 4,
+    "effort": "easy",
+    "ingredients": [
+      {
+        "label": "Dabeli masala",
+        "amount": "2 tbsp",
+        "source": "iwc",
+        "match_words": "dabeli masala"
+      },
+      {
+        "label": "Masala peanuts",
+        "amount": "½ cup",
+        "source": "iwc",
+        "match_words": "masala peanuts"
+      },
+      {
+        "label": "Sev",
+        "amount": "½ cup",
+        "source": "iwc",
+        "match_words": "sev"
+      },
+      {
+        "label": "Tamarind chutney",
+        "amount": "3 tbsp",
+        "source": "iwc",
+        "match_words": "tamarind chutney"
+      },
+      {
+        "label": "Potatoes",
+        "amount": "3",
+        "source": "local"
+      },
+      {
+        "label": "Pav",
+        "amount": "8",
+        "source": "local"
+      },
+      {
+        "label": "Pomegranate",
+        "amount": "a handful",
+        "source": "local"
+      },
+      {
+        "label": "Onions",
+        "amount": "1",
+        "source": "local"
+      }
+    ],
+    "steps": [
+      {
+        "text": "Mash boiled potatoes with dabeli masala, tamarind chutney and a little water; cook through.",
+        "minutes": 10
+      },
+      {
+        "text": "Spread in a plate; top with peanuts and pomegranate.",
+        "minutes": 2
+      },
+      {
+        "text": "Fill split pav, toast with butter and roll the edges in sev.",
+        "minutes": 10
+      }
+    ]
+  },
+  {
+    "slug": "onion-pakora",
+    "name": "Onion Pakora",
+    "kind": "snacks",
+    "state": "All of India",
+    "rank": 62,
+    "blurb": "Crisp onion fritters for a rainy evening.",
+    "minutes": 25,
+    "soak_hours": null,
+    "serves": 4,
+    "effort": "easy",
+    "ingredients": [
+      {
+        "label": "Besan",
+        "amount": "1 cup",
+        "source": "iwc",
+        "match_words": "besan"
+      },
+      {
+        "label": "Rice flour",
+        "amount": "2 tbsp",
+        "source": "iwc",
+        "match_words": "rice flour"
+      },
+      {
+        "label": "Ajwain",
+        "amount": "½ tsp",
+        "source": "iwc",
+        "match_words": "ajwain"
+      },
+      {
+        "label": "Kashmiri chilli powder",
+        "amount": "1 tsp",
+        "source": "iwc",
+        "match_words": "kashmiri chilli powder"
+      },
+      {
+        "label": "Onions",
+        "amount": "3",
+        "source": "local"
+      },
+      {
+        "label": "Oil",
+        "amount": "for frying",
+        "source": "local"
+      }
+    ],
+    "steps": [
+      {
+        "text": "Slice the onions thin and rub with salt; leave 10 minutes.",
+        "minutes": 10
+      },
+      {
+        "text": "Add besan, rice flour, ajwain and chilli; only a splash of water.",
+        "minutes": 3
+      },
+      {
+        "text": "Drop small clumps into hot oil and fry crisp.",
+        "minutes": 10
+      }
+    ]
+  },
+  {
+    "slug": "mirchi-bajji",
+    "name": "Mirchi Bajji",
+    "kind": "snacks",
+    "state": "Andhra Pradesh",
+    "rank": 63,
+    "blurb": "Big green chillies in gram flour batter, fried crisp. Andhra’s tea-time snack.",
+    "minutes": 30,
+    "soak_hours": null,
+    "serves": 4,
+    "effort": "easy",
+    "ingredients": [
+      {
+        "label": "Besan",
+        "amount": "1 cup",
+        "source": "iwc",
+        "match_words": "besan"
+      },
+      {
+        "label": "Rice flour",
+        "amount": "2 tbsp",
+        "source": "iwc",
+        "match_words": "rice flour"
+      },
+      {
+        "label": "Ajwain",
+        "amount": "½ tsp",
+        "source": "iwc",
+        "match_words": "ajwain"
+      },
+      {
+        "label": "Tamarind",
+        "amount": "a small piece",
+        "source": "iwc",
+        "match_words": "tamarind"
+      },
+      {
+        "label": "Large green chillies",
+        "amount": "8",
+        "source": "local"
+      },
+      {
+        "label": "Oil",
+        "amount": "for frying",
+        "source": "local"
+      }
+    ],
+    "steps": [
+      {
+        "text": "Slit the chillies, seed them and stuff with a little tamarind and salt.",
+        "minutes": 10
+      },
+      {
+        "text": "Whisk besan, rice flour, ajwain and salt into a thick batter.",
+        "minutes": 3
+      },
+      {
+        "text": "Dip and fry until golden.",
+        "minutes": 12
+      }
+    ]
+  },
+  {
+    "slug": "jhalmuri",
+    "name": "Jhalmuri",
+    "kind": "snacks",
+    "state": "West Bengal",
+    "rank": 64,
+    "blurb": "Puffed rice with mustard oil, onion and chanachur. Kolkata’s paper cone.",
+    "minutes": 10,
+    "soak_hours": null,
+    "serves": 2,
+    "effort": "easy",
+    "ingredients": [
+      {
+        "label": "Murmura",
+        "amount": "3 cups",
+        "source": "iwc",
+        "match_words": "puffed rice"
+      },
+      {
+        "label": "Chanachur",
+        "amount": "½ cup",
+        "source": "iwc",
+        "match_words": "chanachur"
+      },
+      {
+        "label": "Roasted peanuts",
+        "amount": "¼ cup",
+        "source": "iwc",
+        "match_words": "peanuts"
+      },
+      {
+        "label": "Chaat masala",
+        "amount": "1 tsp",
+        "source": "iwc",
+        "match_words": "chaat masala"
+      },
+      {
+        "label": "Mustard oil",
+        "amount": "1 tbsp",
+        "source": "local"
+      },
+      {
+        "label": "Onions",
+        "amount": "1",
+        "source": "local"
+      },
+      {
+        "label": "Cucumber",
+        "amount": "½",
+        "source": "local"
+      },
+      {
+        "label": "Lemon",
+        "amount": "½",
+        "source": "local"
+      }
+    ],
+    "steps": [
+      {
+        "text": "Chop the onion, cucumber and chilli fine.",
+        "minutes": 5
+      },
+      {
+        "text": "Toss everything in a bowl with the mustard oil and lemon.",
+        "minutes": 2
+      },
+      {
+        "text": "Eat at once, before it softens.",
+        "minutes": null
+      }
+    ]
+  },
+  {
+    "slug": "kathi-roll",
+    "name": "Kathi Roll",
+    "kind": "snacks",
+    "state": "West Bengal",
+    "rank": 65,
+    "blurb": "Spiced chicken or paneer rolled in an egg-coated paratha. Kolkata’s roll.",
+    "minutes": 45,
+    "soak_hours": 1,
+    "serves": 4,
+    "effort": "medium",
+    "ingredients": [
+      {
+        "label": "Maida",
+        "amount": "2 cups",
+        "source": "iwc",
+        "match_words": "maida"
+      },
+      {
+        "label": "Chaat masala",
+        "amount": "1 tsp",
+        "source": "iwc",
+        "match_words": "chaat masala"
+      },
+      {
+        "label": "Tikka masala",
+        "amount": "2 tbsp",
+        "source": "iwc",
+        "match_words": "tikka masala"
+      },
+      {
+        "label": "Chicken or paneer",
+        "amount": "400 g",
+        "source": "local"
+      },
+      {
+        "label": "Eggs",
+        "amount": "4",
+        "source": "local"
+      },
+      {
+        "label": "Onions",
+        "amount": "2",
+        "source": "local"
+      },
+      {
+        "label": "Lemon",
+        "amount": "1",
+        "source": "local"
+      },
+      {
+        "label": "Oil",
+        "amount": "for the pan",
+        "source": "local"
+      }
+    ],
+    "steps": [
+      {
+        "text": "Marinate the chicken or paneer in tikka masala, yogurt and salt. An hour.",
+        "minutes": null
+      },
+      {
+        "text": "Knead maida, salt, oil and water into a soft dough.",
+        "minutes": 10
+      },
+      {
+        "text": "Pan-fry the filling until charred.",
+        "minutes": 10
+      },
+      {
+        "text": "Cook a paratha, pour a beaten egg over it and flip.",
+        "minutes": 3
+      },
+      {
+        "text": "Fill with the meat, onion, chaat masala and lemon; roll.",
+        "minutes": 2
+      }
+    ]
+  },
+  {
+    "slug": "momos",
+    "name": "Momos",
+    "kind": "snacks",
+    "state": "Sikkim",
+    "rank": 66,
+    "blurb": "Steamed dumplings with a fiery red chutney. Sikkim and the hills.",
+    "minutes": 75,
+    "soak_hours": null,
+    "serves": 4,
+    "effort": "weekend",
+    "ingredients": [
+      {
+        "label": "Maida",
+        "amount": "2 cups",
+        "source": "iwc",
+        "match_words": "maida"
+      },
+      {
+        "label": "Momo chutney",
+        "amount": "to serve",
+        "source": "iwc",
+        "match_words": "momo chutney"
+      },
+      {
+        "label": "White pepper",
+        "amount": "½ tsp",
+        "source": "iwc",
+        "match_words": "white pepper"
+      },
+      {
+        "label": "Cabbage or chicken",
+        "amount": "300 g",
+        "source": "local"
+      },
+      {
+        "label": "Garlic",
+        "amount": "4 cloves",
+        "source": "local"
+      },
+      {
+        "label": "Ginger",
+        "amount": "1 inch",
+        "source": "local"
+      },
+      {
+        "label": "Spring onions",
+        "amount": "3",
+        "source": "local"
+      }
+    ],
+    "steps": [
+      {
+        "text": "Knead maida, salt and water into a firm dough; rest.",
+        "minutes": 10
+      },
+      {
+        "text": "Mix chopped cabbage or chicken with garlic, ginger, spring onion, pepper and salt.",
+        "minutes": 15
+      },
+      {
+        "text": "Roll small thin rounds, fill and pleat.",
+        "minutes": 25
+      },
+      {
+        "text": "Steam on a greased tray.",
+        "minutes": 12
+      },
+      {
+        "text": "Serve with momo chutney.",
+        "minutes": null
+      }
+    ]
+  },
+  {
+    "slug": "thukpa",
+    "name": "Thukpa",
+    "kind": "dinner",
+    "state": "Ladakh",
+    "rank": 67,
+    "blurb": "A noodle soup with vegetables or chicken, warm and plain. Ladakh’s bowl.",
+    "minutes": 35,
+    "soak_hours": null,
+    "serves": 3,
+    "effort": "easy",
+    "ingredients": [
+      {
+        "label": "Atta noodles",
+        "amount": "200 g",
+        "source": "iwc",
+        "match_words": "atta noodles"
+      },
+      {
+        "label": "Black pepper",
+        "amount": "1 tsp",
+        "source": "iwc",
+        "match_words": "black pepper"
+      },
+      {
+        "label": "Dried red chilli",
+        "amount": "2",
+        "source": "iwc",
+        "match_words": "red chilli whole"
+      },
+      {
+        "label": "Vegetables or chicken",
+        "amount": "300 g",
+        "source": "local"
+      },
+      {
+        "label": "Garlic",
+        "amount": "4 cloves",
+        "source": "local"
+      },
+      {
+        "label": "Ginger",
+        "amount": "1 inch",
+        "source": "local"
+      }
+    ],
+    "steps": [
+      {
+        "text": "Boil the noodles and drain.",
+        "minutes": 6
+      },
+      {
+        "text": "Fry garlic, ginger and chilli; add vegetables or chicken.",
+        "minutes": 6
+      },
+      {
+        "text": "Add 5 cups water, pepper and salt; simmer.",
+        "minutes": 15
+      },
+      {
+        "text": "Put noodles in bowls and ladle the soup over.",
+        "minutes": 2
+      }
+    ]
+  },
+  {
+    "slug": "gobi-manchurian",
+    "name": "Gobi Manchurian",
+    "kind": "snacks",
+    "state": "All of India",
+    "rank": 68,
+    "blurb": "Crisp cauliflower in a garlicky Indo-Chinese sauce.",
+    "minutes": 40,
+    "soak_hours": null,
+    "serves": 4,
+    "effort": "medium",
+    "ingredients": [
+      {
+        "label": "Cornflour",
+        "amount": "½ cup",
+        "source": "iwc",
+        "match_words": "cornflour"
+      },
+      {
+        "label": "Maida",
+        "amount": "¼ cup",
+        "source": "iwc",
+        "match_words": "maida"
+      },
+      {
+        "label": "Manchurian masala",
+        "amount": "1 tbsp",
+        "source": "iwc",
+        "match_words": "manchurian masala"
+      },
+      {
+        "label": "Cauliflower",
+        "amount": "1",
+        "source": "local"
+      },
+      {
+        "label": "Garlic",
+        "amount": "6 cloves",
+        "source": "local"
+      },
+      {
+        "label": "Spring onions",
+        "amount": "3",
+        "source": "local"
+      },
+      {
+        "label": "Soy sauce",
+        "amount": "2 tbsp",
+        "source": "local"
+      },
+      {
+        "label": "Oil",
+        "amount": "for frying",
+        "source": "local"
+      }
+    ],
+    "steps": [
+      {
+        "text": "Blanch the florets 2 minutes.",
+        "minutes": 5
+      },
+      {
+        "text": "Coat in a batter of cornflour, maida, salt and water; fry crisp.",
+        "minutes": 15
+      },
+      {
+        "text": "Fry garlic and spring onion; add soy sauce, the masala and a slurry of cornflour.",
+        "minutes": 5
+      },
+      {
+        "text": "Toss the cauliflower through.",
+        "minutes": 2
+      }
+    ]
+  },
+  {
+    "slug": "veg-hakka-noodles",
+    "name": "Veg Hakka Noodles",
+    "kind": "dinner",
+    "state": "All of India",
+    "rank": 69,
+    "blurb": "Stir-fried noodles with crunchy vegetables, the Indo-Chinese way.",
+    "minutes": 25,
+    "soak_hours": null,
+    "serves": 3,
+    "effort": "easy",
+    "ingredients": [
+      {
+        "label": "Hakka noodles",
+        "amount": "200 g",
+        "source": "iwc",
+        "match_words": "hakka noodles"
+      },
+      {
+        "label": "White pepper",
+        "amount": "½ tsp",
+        "source": "iwc",
+        "match_words": "white pepper"
+      },
+      {
+        "label": "Cabbage",
+        "amount": "2 cups shredded",
+        "source": "local"
+      },
+      {
+        "label": "Carrots",
+        "amount": "1",
+        "source": "local"
+      },
+      {
+        "label": "Capsicum",
+        "amount": "1",
+        "source": "local"
+      },
+      {
+        "label": "Soy sauce",
+        "amount": "2 tbsp",
+        "source": "local"
+      },
+      {
+        "label": "Vinegar",
+        "amount": "1 tsp",
+        "source": "local"
+      },
+      {
+        "label": "Oil",
+        "amount": "3 tbsp",
+        "source": "local"
+      }
+    ],
+    "steps": [
+      {
+        "text": "Boil the noodles just done; rinse and toss with oil.",
+        "minutes": 6
+      },
+      {
+        "text": "Stir-fry the vegetables on high heat.",
+        "minutes": 4
+      },
+      {
+        "text": "Add noodles, soy sauce, vinegar, pepper and salt; toss hard.",
+        "minutes": 3
+      }
+    ]
+  },
+  {
+    "slug": "chilli-chicken",
+    "name": "Chilli Chicken",
+    "kind": "dinner",
+    "state": "All of India",
+    "rank": 70,
+    "blurb": "Crisp chicken tossed with peppers, chilli and soy.",
+    "minutes": 40,
+    "soak_hours": 0.5,
+    "serves": 4,
+    "effort": "medium",
+    "ingredients": [
+      {
+        "label": "Cornflour",
+        "amount": "½ cup",
+        "source": "iwc",
+        "match_words": "cornflour"
+      },
+      {
+        "label": "Kashmiri chilli",
+        "amount": "4 dried",
+        "source": "iwc",
+        "match_words": "kashmiri chilli whole"
+      },
+      {
+        "label": "Chicken",
+        "amount": "500 g",
+        "source": "local"
+      },
+      {
+        "label": "Capsicum",
+        "amount": "1",
+        "source": "local"
+      },
+      {
+        "label": "Onions",
+        "amount": "1",
+        "source": "local"
+      },
+      {
+        "label": "Soy sauce",
+        "amount": "2 tbsp",
+        "source": "local"
+      },
+      {
+        "label": "Garlic",
+        "amount": "6 cloves",
+        "source": "local"
+      },
+      {
+        "label": "Oil",
+        "amount": "for frying",
+        "source": "local"
+      }
+    ],
+    "steps": [
+      {
+        "text": "Coat the chicken in cornflour, egg, soy and salt; rest 30 minutes.",
+        "minutes": null
+      },
+      {
+        "text": "Fry crisp.",
+        "minutes": 12
+      },
+      {
+        "text": "Stir-fry garlic, chillies, onion and capsicum on high heat.",
+        "minutes": 4
+      },
+      {
+        "text": "Add soy sauce, a little water and the chicken; toss.",
+        "minutes": 3
+      }
+    ]
+  },
+  {
+    "slug": "paneer-tikka",
+    "name": "Paneer Tikka",
+    "kind": "snacks",
+    "state": "All of India",
+    "rank": 71,
+    "blurb": "Paneer, peppers and onion marinated and charred. Starter or dinner.",
+    "minutes": 45,
+    "soak_hours": 1,
+    "serves": 4,
+    "effort": "easy",
+    "ingredients": [
+      {
+        "label": "Tandoori masala",
+        "amount": "2 tbsp",
+        "source": "iwc",
+        "match_words": "tandoori masala"
+      },
+      {
+        "label": "Kashmiri chilli powder",
+        "amount": "1 tsp",
+        "source": "iwc",
+        "match_words": "kashmiri chilli powder"
+      },
+      {
+        "label": "Chaat masala",
+        "amount": "1 tsp",
+        "source": "iwc",
+        "match_words": "chaat masala"
+      },
+      {
+        "label": "Besan",
+        "amount": "1 tbsp",
+        "source": "iwc",
+        "match_words": "besan"
+      },
+      {
+        "label": "Paneer",
+        "amount": "400 g",
+        "source": "local"
+      },
+      {
+        "label": "Yogurt",
+        "amount": "½ cup",
+        "source": "local"
+      },
+      {
+        "label": "Capsicum",
+        "amount": "1",
+        "source": "local"
+      },
+      {
+        "label": "Onions",
+        "amount": "1",
+        "source": "local"
+      }
+    ],
+    "steps": [
+      {
+        "text": "Roast the besan in a dry pan a minute.",
+        "minutes": 2
+      },
+      {
+        "text": "Mix yogurt, besan, tandoori masala, chilli and salt. Coat paneer, capsicum and onion; an hour.",
+        "minutes": null
+      },
+      {
+        "text": "Skewer and grill or pan-roast until charred.",
+        "minutes": 12
+      },
+      {
+        "text": "Sprinkle chaat masala.",
+        "minutes": null
+      }
+    ]
+  },
+  {
+    "slug": "chicken-tikka",
+    "name": "Chicken Tikka",
+    "kind": "snacks",
+    "state": "All of India",
+    "rank": 72,
+    "blurb": "Boneless chicken marinated in spiced yogurt and grilled.",
+    "minutes": 45,
+    "soak_hours": 2,
+    "serves": 4,
+    "effort": "easy",
+    "ingredients": [
+      {
+        "label": "Tikka masala",
+        "amount": "2 tbsp",
+        "source": "iwc",
+        "match_words": "tikka masala"
+      },
+      {
+        "label": "Kashmiri chilli powder",
+        "amount": "1 tsp",
+        "source": "iwc",
+        "match_words": "kashmiri chilli powder"
+      },
+      {
+        "label": "Kasuri methi",
+        "amount": "1 tsp",
+        "source": "iwc",
+        "match_words": "kasuri methi"
+      },
+      {
+        "label": "Chicken",
+        "amount": "600 g",
+        "source": "local"
+      },
+      {
+        "label": "Yogurt",
+        "amount": "½ cup",
+        "source": "local"
+      },
+      {
+        "label": "Lemon",
+        "amount": "1",
+        "source": "local"
+      }
+    ],
+    "steps": [
+      {
+        "text": "Mix yogurt, tikka masala, chilli, kasuri methi, lemon and salt. Coat the chicken; 2 hours.",
+        "minutes": null
+      },
+      {
+        "text": "Skewer and grill or roast at 230 °C until charred.",
+        "minutes": 15
+      },
+      {
+        "text": "Rest 2 minutes; squeeze lemon over.",
+        "minutes": 2
+      }
+    ]
+  },
+  {
+    "slug": "kadhi-pakora",
+    "name": "Kadhi Pakora",
+    "kind": "dinner",
+    "state": "Punjab",
+    "rank": 73,
+    "blurb": "Tangy yogurt and gram flour curry with soft fritters.",
+    "minutes": 50,
+    "soak_hours": null,
+    "serves": 4,
+    "effort": "medium",
+    "ingredients": [
+      {
+        "label": "Besan",
+        "amount": "¾ cup",
+        "source": "iwc",
+        "match_words": "besan"
+      },
+      {
+        "label": "Ajwain",
+        "amount": "½ tsp",
+        "source": "iwc",
+        "match_words": "ajwain"
+      },
+      {
+        "label": "Fenugreek seeds",
+        "amount": "½ tsp",
+        "source": "iwc",
+        "match_words": "fenugreek seeds"
+      },
+      {
+        "label": "Turmeric",
+        "amount": "½ tsp",
+        "source": "iwc",
+        "match_words": "turmeric"
+      },
+      {
+        "label": "Yogurt",
+        "amount": "2 cups",
+        "source": "local"
+      },
+      {
+        "label": "Onions",
+        "amount": "2",
+        "source": "local"
+      },
+      {
+        "label": "Oil",
+        "amount": "for frying",
+        "source": "local"
+      }
+    ],
+    "steps": [
+      {
+        "text": "Make pakoras: besan, onion, ajwain, salt and a little water; fry golden.",
+        "minutes": 15
+      },
+      {
+        "text": "Whisk the yogurt with 3 tbsp besan, turmeric and 4 cups water.",
+        "minutes": 3
+      },
+      {
+        "text": "Temper fenugreek in oil, add the yogurt mix and simmer, stirring, until it thickens.",
+        "minutes": 25
+      },
+      {
+        "text": "Add the pakoras for the last 5 minutes.",
+        "minutes": 5
+      }
+    ]
+  },
+  {
+    "slug": "aloo-gobi",
+    "name": "Aloo Gobi",
+    "kind": "dinner",
+    "state": "Punjab",
+    "rank": 74,
+    "blurb": "Potatoes and cauliflower cooked dry with turmeric and cumin.",
+    "minutes": 35,
+    "soak_hours": null,
+    "serves": 4,
+    "effort": "easy",
+    "ingredients": [
+      {
+        "label": "Turmeric",
+        "amount": "½ tsp",
+        "source": "iwc",
+        "match_words": "turmeric"
+      },
+      {
+        "label": "Cumin seeds",
+        "amount": "1 tsp",
+        "source": "iwc",
+        "match_words": "cumin seeds"
+      },
+      {
+        "label": "Garam masala",
+        "amount": "½ tsp",
+        "source": "iwc",
+        "match_words": "garam masala"
+      },
+      {
+        "label": "Amchur",
+        "amount": "½ tsp",
+        "source": "iwc",
+        "match_words": "amchur"
+      },
+      {
+        "label": "Potatoes",
+        "amount": "2",
+        "source": "local"
+      },
+      {
+        "label": "Cauliflower",
+        "amount": "1",
+        "source": "local"
+      },
+      {
+        "label": "Tomatoes",
+        "amount": "1",
+        "source": "local"
+      },
+      {
+        "label": "Oil",
+        "amount": "3 tbsp",
+        "source": "local"
+      }
+    ],
+    "steps": [
+      {
+        "text": "Fry cumin in oil; add potatoes and cook 5 minutes.",
+        "minutes": 5
+      },
+      {
+        "text": "Add cauliflower, turmeric and salt; cover and cook on low.",
+        "minutes": 15
+      },
+      {
+        "text": "Add tomato, garam masala and amchur; cook dry.",
+        "minutes": 5
+      }
+    ]
+  },
+  {
+    "slug": "baingan-bharta",
+    "name": "Baingan Bharta",
+    "kind": "dinner",
+    "state": "Punjab",
+    "rank": 75,
+    "blurb": "Smoky roasted eggplant mashed with onion, tomato and garlic.",
+    "minutes": 40,
+    "soak_hours": null,
+    "serves": 4,
+    "effort": "easy",
+    "ingredients": [
+      {
+        "label": "Cumin seeds",
+        "amount": "1 tsp",
+        "source": "iwc",
+        "match_words": "cumin seeds"
+      },
+      {
+        "label": "Kashmiri chilli powder",
+        "amount": "1 tsp",
+        "source": "iwc",
+        "match_words": "kashmiri chilli powder"
+      },
+      {
+        "label": "Garam masala",
+        "amount": "½ tsp",
+        "source": "iwc",
+        "match_words": "garam masala"
+      },
+      {
+        "label": "Eggplant",
+        "amount": "1 large",
+        "source": "local"
+      },
+      {
+        "label": "Onions",
+        "amount": "1",
+        "source": "local"
+      },
+      {
+        "label": "Tomatoes",
+        "amount": "2",
+        "source": "local"
+      },
+      {
+        "label": "Garlic",
+        "amount": "4 cloves",
+        "source": "local"
+      },
+      {
+        "label": "Mustard oil",
+        "amount": "2 tbsp",
+        "source": "local"
+      }
+    ],
+    "steps": [
+      {
+        "text": "Roast the eggplant over a flame until black and soft. Peel and mash.",
+        "minutes": 15
+      },
+      {
+        "text": "Fry cumin, garlic and onion in mustard oil.",
+        "minutes": 5
+      },
+      {
+        "text": "Add tomatoes and spices; cook down.",
+        "minutes": 8
+      },
+      {
+        "text": "Add the eggplant and cook until it comes together.",
+        "minutes": 5
+      }
+    ]
+  },
+  {
+    "slug": "bhindi-masala",
+    "name": "Bhindi Masala",
+    "kind": "dinner",
+    "state": "All of India",
+    "rank": 76,
+    "blurb": "Okra cooked dry with onion and a little sourness.",
+    "minutes": 30,
+    "soak_hours": null,
+    "serves": 3,
+    "effort": "easy",
+    "ingredients": [
+      {
+        "label": "Amchur",
+        "amount": "1 tsp",
+        "source": "iwc",
+        "match_words": "amchur"
+      },
+      {
+        "label": "Chaat masala",
+        "amount": "½ tsp",
+        "source": "iwc",
+        "match_words": "chaat masala"
+      },
+      {
+        "label": "Kashmiri chilli powder",
+        "amount": "1 tsp",
+        "source": "iwc",
+        "match_words": "kashmiri chilli powder"
+      },
+      {
+        "label": "Okra",
+        "amount": "400 g",
+        "source": "local"
+      },
+      {
+        "label": "Onions",
+        "amount": "1",
+        "source": "local"
+      },
+      {
+        "label": "Oil",
+        "amount": "3 tbsp",
+        "source": "local"
+      }
+    ],
+    "steps": [
+      {
+        "text": "Wash and dry the okra well, then slice.",
+        "minutes": 5
+      },
+      {
+        "text": "Fry in oil, uncovered, until it stops being sticky.",
+        "minutes": 12
+      },
+      {
+        "text": "Add onion and chilli; cook golden.",
+        "minutes": 6
+      },
+      {
+        "text": "Finish with amchur and chaat masala.",
+        "minutes": null
+      }
+    ]
+  },
+  {
+    "slug": "sarson-ka-saag",
+    "name": "Sarson ka Saag and Makki di Roti",
+    "kind": "dinner",
+    "state": "Punjab",
+    "rank": 77,
+    "blurb": "Slow mustard greens with butter, and corn flatbread. Punjab’s winter.",
+    "minutes": 90,
+    "soak_hours": null,
+    "serves": 4,
+    "effort": "weekend",
+    "ingredients": [
+      {
+        "label": "Makki atta",
+        "amount": "2 cups",
+        "source": "iwc",
+        "match_words": "makki atta"
+      },
+      {
+        "label": "Ajwain",
+        "amount": "½ tsp",
+        "source": "iwc",
+        "match_words": "ajwain"
+      },
+      {
+        "label": "Mustard greens",
+        "amount": "2 bunches",
+        "source": "local"
+      },
+      {
+        "label": "Spinach",
+        "amount": "1 bunch",
+        "source": "local"
+      },
+      {
+        "label": "Butter",
+        "amount": "4 tbsp",
+        "source": "local"
+      },
+      {
+        "label": "Ginger",
+        "amount": "1 inch",
+        "source": "local"
+      },
+      {
+        "label": "Garlic",
+        "amount": "6 cloves",
+        "source": "local"
+      }
+    ],
+    "steps": [
+      {
+        "text": "Boil the greens with ginger, garlic and salt until very soft.",
+        "minutes": 40
+      },
+      {
+        "text": "Blend coarsely with a spoon of makki atta and simmer.",
+        "minutes": 15
+      },
+      {
+        "text": "Temper with butter, garlic and chilli.",
+        "minutes": 3
+      },
+      {
+        "text": "Knead makki atta with warm water and ajwain; pat out rotis by hand and cook with butter.",
+        "minutes": 25
+      }
+    ]
+  },
+  {
+    "slug": "jeera-rice",
+    "name": "Jeera Rice",
+    "kind": "dinner",
+    "state": "All of India",
+    "rank": 78,
+    "blurb": "Basmati rice with cumin and ghee. Goes with every curry.",
+    "minutes": 25,
+    "soak_hours": 0.5,
+    "serves": 4,
+    "effort": "easy",
+    "ingredients": [
+      {
+        "label": "Basmati rice",
+        "amount": "1½ cups",
+        "source": "iwc",
+        "match_words": "basmati rice"
+      },
+      {
+        "label": "Cumin seeds",
+        "amount": "1½ tsp",
+        "source": "iwc",
+        "match_words": "cumin seeds"
+      },
+      {
+        "label": "Bay leaf",
+        "amount": "1",
+        "source": "iwc",
+        "match_words": "bay leaf"
+      },
+      {
+        "label": "Ghee",
+        "amount": "2 tbsp",
+        "source": "local"
+      }
+    ],
+    "steps": [
+      {
+        "text": "Soak the rice 30 minutes.",
+        "minutes": null
+      },
+      {
+        "text": "Fry cumin and bay leaf in ghee.",
+        "minutes": 1
+      },
+      {
+        "text": "Add the drained rice, 2¾ cups water and salt.",
+        "minutes": 2
+      },
+      {
+        "text": "Cover and cook on low until the water is gone; rest 5 minutes.",
+        "minutes": 15
+      }
+    ]
+  },
+  {
+    "slug": "khichdi",
+    "name": "Khichdi",
+    "kind": "dinner",
+    "state": "All of India",
+    "rank": 79,
+    "blurb": "Rice and moong dal cooked soft with ghee. The meal for any day.",
+    "minutes": 30,
+    "soak_hours": null,
+    "serves": 3,
+    "effort": "easy",
+    "ingredients": [
+      {
+        "label": "Rice",
+        "amount": "½ cup",
+        "source": "iwc",
+        "match_words": "sona masoori"
+      },
+      {
+        "label": "Moong dal",
+        "amount": "½ cup",
+        "source": "iwc",
+        "match_words": "moong dal"
+      },
+      {
+        "label": "Turmeric",
+        "amount": "½ tsp",
+        "source": "iwc",
+        "match_words": "turmeric"
+      },
+      {
+        "label": "Cumin seeds",
+        "amount": "1 tsp",
+        "source": "iwc",
+        "match_words": "cumin seeds"
+      },
+      {
+        "label": "Hing",
+        "amount": "a pinch",
+        "source": "iwc",
+        "match_words": "hing"
+      },
+      {
+        "label": "Ghee",
+        "amount": "2 tbsp",
+        "source": "local"
+      }
+    ],
+    "steps": [
+      {
+        "text": "Rinse rice and dal together.",
+        "minutes": 2
+      },
+      {
+        "text": "Fry cumin and hing in ghee; add rice, dal, turmeric, salt and 4 cups water.",
+        "minutes": 3
+      },
+      {
+        "text": "Pressure cook until soft and porridge-like.",
+        "minutes": 15
+      },
+      {
+        "text": "Top with more ghee.",
+        "minutes": null
+      }
+    ]
+  },
+  {
+    "slug": "litti-chokha",
+    "name": "Litti Chokha",
+    "kind": "dinner",
+    "state": "Bihar",
+    "rank": 80,
+    "blurb": "Wheat balls stuffed with spiced sattu, with smoky mashed vegetables. Bihar’s pride.",
+    "minutes": 75,
+    "soak_hours": null,
+    "serves": 4,
+    "effort": "weekend",
+    "ingredients": [
+      {
+        "label": "Sattu",
+        "amount": "1 cup",
+        "source": "iwc",
+        "match_words": "sattu"
+      },
+      {
+        "label": "Atta",
+        "amount": "2 cups",
+        "source": "iwc",
+        "match_words": "atta"
+      },
+      {
+        "label": "Ajwain",
+        "amount": "1 tsp",
+        "source": "iwc",
+        "match_words": "ajwain"
+      },
+      {
+        "label": "Kalonji",
+        "amount": "1 tsp",
+        "source": "iwc",
+        "match_words": "kalonji"
+      },
+      {
+        "label": "Achaar masala",
+        "amount": "1 tbsp",
+        "source": "iwc",
+        "match_words": "achar masala"
+      },
+      {
+        "label": "Eggplant",
+        "amount": "1",
+        "source": "local"
+      },
+      {
+        "label": "Potatoes",
+        "amount": "2",
+        "source": "local"
+      },
+      {
+        "label": "Tomatoes",
+        "amount": "2",
+        "source": "local"
+      },
+      {
+        "label": "Mustard oil",
+        "amount": "3 tbsp",
+        "source": "local"
+      },
+      {
+        "label": "Ghee",
+        "amount": "4 tbsp",
+        "source": "local"
+      }
+    ],
+    "steps": [
+      {
+        "text": "Knead the atta with salt and water.",
+        "minutes": 10
+      },
+      {
+        "text": "Mix sattu with mustard oil, ajwain, kalonji, achaar masala, lemon and salt.",
+        "minutes": 5
+      },
+      {
+        "text": "Stuff balls of dough and bake at 200 °C until hard and spotted.",
+        "minutes": 30
+      },
+      {
+        "text": "Roast the eggplant and tomatoes, boil the potatoes; mash with mustard oil, onion and chilli.",
+        "minutes": 20
+      },
+      {
+        "text": "Dip the littis in ghee.",
+        "minutes": 2
+      }
+    ]
+  }
+]

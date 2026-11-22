@@ -1,0 +1,1715 @@
+[
+  {
+    "slug": "chicken-biryani",
+    "name": "Chicken Biryani",
+    "kind": "dinner",
+    "state": "All of India",
+    "rank": 1,
+    "blurb": "Chicken and rice cooked in layers with whole spices and saffron. A Sunday pot.",
+    "minutes": 90,
+    "soak_hours": 0.5,
+    "serves": 4,
+    "effort": "weekend",
+    "ingredients": [
+      {
+        "label": "Basmati rice",
+        "amount": "2 cups",
+        "source": "iwc",
+        "match_words": "basmati rice"
+      },
+      {
+        "label": "Biryani masala",
+        "amount": "3 tbsp",
+        "source": "iwc",
+        "match_words": "biryani masala"
+      },
+      {
+        "label": "Saffron",
+        "amount": "a pinch",
+        "source": "iwc",
+        "match_words": "saffron"
+      },
+      {
+        "label": "Fried onions",
+        "amount": "1 cup",
+        "source": "iwc",
+        "match_words": "fried onions"
+      },
+      {
+        "label": "Green cardamom",
+        "amount": "4 pods",
+        "source": "iwc",
+        "match_words": "green cardamom"
+      },
+      {
+        "label": "Bay leaf",
+        "amount": "2",
+        "source": "iwc",
+        "match_words": "bay leaf"
+      },
+      {
+        "label": "Chicken",
+        "amount": "750 g",
+        "source": "local"
+      },
+      {
+        "label": "Yogurt",
+        "amount": "1 cup",
+        "source": "local"
+      },
+      {
+        "label": "Onions",
+        "amount": "2",
+        "source": "local"
+      },
+      {
+        "label": "Ghee",
+        "amount": "4 tbsp",
+        "source": "local"
+      },
+      {
+        "label": "Mint",
+        "amount": "a handful",
+        "source": "local"
+      },
+      {
+        "label": "Coriander",
+        "amount": "a handful",
+        "source": "local"
+      }
+    ],
+    "steps": [
+      {
+        "text": "Soak the rice for 30 minutes. Soak the saffron in 3 tbsp warm milk.",
+        "minutes": 30
+      },
+      {
+        "text": "Mix the chicken with yogurt, biryani masala, half the fried onions, mint and salt. Rest it.",
+        "minutes": 30
+      },
+      {
+        "text": "Boil the rice with cardamom, bay leaf and salt until 70% done. Drain.",
+        "minutes": 10
+      },
+      {
+        "text": "Fry the sliced onions in ghee, add the chicken and cook until nearly done.",
+        "minutes": 20
+      },
+      {
+        "text": "Layer the rice over the chicken. Top with saffron milk, the rest of the fried onions, mint and ghee.",
+        "minutes": 5
+      },
+      {
+        "text": "Cover tightly and cook on the lowest heat.",
+        "minutes": 25
+      }
+    ]
+  },
+  {
+    "slug": "hyderabadi-biryani",
+    "name": "Hyderabadi Biryani",
+    "kind": "dinner",
+    "state": "Telangana",
+    "rank": 2,
+    "blurb": "Raw marinated meat under part-cooked rice, sealed and steamed together. Patient, not hard.",
+    "minutes": 120,
+    "soak_hours": 4,
+    "serves": 4,
+    "effort": "weekend",
+    "ingredients": [
+      {
+        "label": "Basmati rice",
+        "amount": "2 cups",
+        "source": "iwc",
+        "match_words": "basmati rice"
+      },
+      {
+        "label": "Hyderabadi biryani masala",
+        "amount": "3 tbsp",
+        "source": "iwc",
+        "match_words": "hyderabadi biryani masala"
+      },
+      {
+        "label": "Saffron",
+        "amount": "a pinch",
+        "source": "iwc",
+        "match_words": "saffron"
+      },
+      {
+        "label": "Fried onions",
+        "amount": "1 cup",
+        "source": "iwc",
+        "match_words": "fried onions"
+      },
+      {
+        "label": "Shahi jeera",
+        "amount": "1 tsp",
+        "source": "iwc",
+        "match_words": "shahi jeera"
+      },
+      {
+        "label": "Chicken or mutton",
+        "amount": "750 g",
+        "source": "local"
+      },
+      {
+        "label": "Yogurt",
+        "amount": "1 cup",
+        "source": "local"
+      },
+      {
+        "label": "Ghee",
+        "amount": "4 tbsp",
+        "source": "local"
+      },
+      {
+        "label": "Mint",
+        "amount": "a handful",
+        "source": "local"
+      },
+      {
+        "label": "Lemon",
+        "amount": "1",
+        "source": "local"
+      }
+    ],
+    "steps": [
+      {
+        "text": "Marinate the meat with yogurt, the masala, half the fried onions, mint, lemon and salt. 4 hours or overnight.",
+        "minutes": null
+      },
+      {
+        "text": "Soak the rice 30 minutes. Boil it with shahi jeera and salt until 70% done, then drain.",
+        "minutes": 40
+      },
+      {
+        "text": "Spread the marinated meat in a heavy pot. Cover with the rice.",
+        "minutes": 5
+      },
+      {
+        "text": "Top with saffron milk, fried onions, mint and ghee.",
+        "minutes": 5
+      },
+      {
+        "text": "Seal the lid with dough or foil. Cook on high for 5 minutes, then lowest heat.",
+        "minutes": 50
+      },
+      {
+        "text": "Rest 10 minutes before opening.",
+        "minutes": 10
+      }
+    ]
+  },
+  {
+    "slug": "butter-chicken",
+    "name": "Butter Chicken",
+    "kind": "dinner",
+    "state": "Delhi",
+    "rank": 3,
+    "blurb": "Grilled chicken in a mild, buttery tomato gravy. The one everyone orders.",
+    "minutes": 60,
+    "soak_hours": 1,
+    "serves": 4,
+    "effort": "medium",
+    "ingredients": [
+      {
+        "label": "Butter chicken masala",
+        "amount": "2 tbsp",
+        "source": "iwc",
+        "match_words": "butter chicken masala"
+      },
+      {
+        "label": "Kashmiri chilli powder",
+        "amount": "1 tsp",
+        "source": "iwc",
+        "match_words": "kashmiri chilli powder"
+      },
+      {
+        "label": "Kasuri methi",
+        "amount": "1 tbsp",
+        "source": "iwc",
+        "match_words": "kasuri methi"
+      },
+      {
+        "label": "Garam masala",
+        "amount": "½ tsp",
+        "source": "iwc",
+        "match_words": "garam masala"
+      },
+      {
+        "label": "Chicken",
+        "amount": "600 g",
+        "source": "local"
+      },
+      {
+        "label": "Butter",
+        "amount": "4 tbsp",
+        "source": "local"
+      },
+      {
+        "label": "Cream",
+        "amount": "½ cup",
+        "source": "local"
+      },
+      {
+        "label": "Tomatoes",
+        "amount": "5",
+        "source": "local"
+      },
+      {
+        "label": "Ginger-garlic paste",
+        "amount": "1 tbsp",
+        "source": "local"
+      },
+      {
+        "label": "Yogurt",
+        "amount": "½ cup",
+        "source": "local"
+      }
+    ],
+    "steps": [
+      {
+        "text": "Marinate the chicken with yogurt, chilli powder, half the masala and salt. An hour.",
+        "minutes": null
+      },
+      {
+        "text": "Grill or pan-fry the chicken until charred at the edges.",
+        "minutes": 15
+      },
+      {
+        "text": "Cook the tomatoes with ginger-garlic and a little water until soft. Blend smooth.",
+        "minutes": 15
+      },
+      {
+        "text": "Melt the butter, add the purée and the rest of the masala. Simmer.",
+        "minutes": 10
+      },
+      {
+        "text": "Add the chicken, cream and crushed kasuri methi. Finish with garam masala.",
+        "minutes": 10
+      }
+    ]
+  },
+  {
+    "slug": "chicken-tikka-masala",
+    "name": "Chicken Tikka Masala",
+    "kind": "dinner",
+    "state": "All of India",
+    "rank": 4,
+    "blurb": "Smoky chicken pieces in a creamy onion-tomato sauce. Britain’s favourite, India’s recipe.",
+    "minutes": 60,
+    "soak_hours": 1,
+    "serves": 4,
+    "effort": "medium",
+    "ingredients": [
+      {
+        "label": "Tikka masala",
+        "amount": "2 tbsp",
+        "source": "iwc",
+        "match_words": "tikka masala"
+      },
+      {
+        "label": "Tandoori masala",
+        "amount": "1 tbsp",
+        "source": "iwc",
+        "match_words": "tandoori masala"
+      },
+      {
+        "label": "Kashmiri chilli powder",
+        "amount": "1 tsp",
+        "source": "iwc",
+        "match_words": "kashmiri chilli powder"
+      },
+      {
+        "label": "Kasuri methi",
+        "amount": "1 tbsp",
+        "source": "iwc",
+        "match_words": "kasuri methi"
+      },
+      {
+        "label": "Chicken",
+        "amount": "600 g",
+        "source": "local"
+      },
+      {
+        "label": "Yogurt",
+        "amount": "½ cup",
+        "source": "local"
+      },
+      {
+        "label": "Cream",
+        "amount": "½ cup",
+        "source": "local"
+      },
+      {
+        "label": "Tomatoes",
+        "amount": "4",
+        "source": "local"
+      },
+      {
+        "label": "Onions",
+        "amount": "2",
+        "source": "local"
+      },
+      {
+        "label": "Oil",
+        "amount": "3 tbsp",
+        "source": "local"
+      }
+    ],
+    "steps": [
+      {
+        "text": "Marinate the chicken with yogurt, tandoori masala and salt. An hour.",
+        "minutes": null
+      },
+      {
+        "text": "Grill or pan-fry until charred.",
+        "minutes": 15
+      },
+      {
+        "text": "Fry the onions golden in oil. Add the tomatoes, tikka masala and chilli powder; cook down.",
+        "minutes": 20
+      },
+      {
+        "text": "Add a cup of water and the chicken. Simmer.",
+        "minutes": 10
+      },
+      {
+        "text": "Stir in cream and kasuri methi.",
+        "minutes": 5
+      }
+    ]
+  },
+  {
+    "slug": "masala-dosa",
+    "name": "Masala Dosa",
+    "kind": "breakfast",
+    "state": "Karnataka",
+    "rank": 5,
+    "blurb": "A thin, crisp rice crepe around spiced potatoes. Make the batter tonight, eat tomorrow.",
+    "minutes": 60,
+    "soak_hours": 6,
+    "serves": 4,
+    "effort": "weekend",
+    "ingredients": [
+      {
+        "label": "Dosa rice",
+        "amount": "3 cups",
+        "source": "iwc",
+        "match_words": "dosa rice"
+      },
+      {
+        "label": "Urad dal",
+        "amount": "1 cup",
+        "source": "iwc",
+        "match_words": "urad dal"
+      },
+      {
+        "label": "Chana dal",
+        "amount": "1 tbsp",
+        "source": "iwc",
+        "match_words": "chana dal"
+      },
+      {
+        "label": "Fenugreek seeds",
+        "amount": "1 tsp",
+        "source": "iwc",
+        "match_words": "fenugreek seeds"
+      },
+      {
+        "label": "Mustard seeds",
+        "amount": "1 tsp",
+        "source": "iwc",
+        "match_words": "mustard seeds"
+      },
+      {
+        "label": "Sambar powder",
+        "amount": "1 tsp",
+        "source": "iwc",
+        "match_words": "sambar powder"
+      },
+      {
+        "label": "Potatoes",
+        "amount": "4",
+        "source": "local"
+      },
+      {
+        "label": "Onions",
+        "amount": "2",
+        "source": "local"
+      },
+      {
+        "label": "Oil",
+        "amount": "for the pan",
+        "source": "local"
+      },
+      {
+        "label": "Curry leaves",
+        "amount": "a sprig",
+        "source": "local"
+      }
+    ],
+    "steps": [
+      {
+        "text": "Soak the rice and dal with fenugreek separately, 6 hours. Grind smooth, mix, salt and leave overnight to ferment.",
+        "minutes": null
+      },
+      {
+        "text": "Boil and mash the potatoes roughly.",
+        "minutes": 20
+      },
+      {
+        "text": "Fry mustard seeds, chana dal and curry leaves in oil. Add onions, turmeric, the potatoes and salt.",
+        "minutes": 10
+      },
+      {
+        "text": "Spread a ladle of batter thin on a hot pan. Oil the edges.",
+        "minutes": 2
+      },
+      {
+        "text": "Fill with the potatoes, fold and serve with sambar.",
+        "minutes": 2
+      }
+    ]
+  },
+  {
+    "slug": "idli",
+    "name": "Idli",
+    "kind": "breakfast",
+    "state": "Tamil Nadu",
+    "rank": 6,
+    "blurb": "Soft steamed rice cakes. India’s breakfast, and the easiest batter there is.",
+    "minutes": 30,
+    "soak_hours": 6,
+    "serves": 4,
+    "effort": "easy",
+    "ingredients": [
+      {
+        "label": "Idli rava",
+        "amount": "2 cups",
+        "source": "iwc",
+        "match_words": "idli rava"
+      },
+      {
+        "label": "Urad dal",
+        "amount": "1 cup",
+        "source": "iwc",
+        "match_words": "urad dal"
+      },
+      {
+        "label": "Thick poha",
+        "amount": "¼ cup",
+        "source": "iwc",
+        "match_words": "poha"
+      },
+      {
+        "label": "Chutney podi",
+        "amount": "to serve",
+        "source": "iwc",
+        "match_words": "chutney podi"
+      },
+      {
+        "label": "Sambar powder",
+        "amount": "for the sambar",
+        "source": "iwc",
+        "match_words": "sambar powder"
+      },
+      {
+        "label": "Oil",
+        "amount": "to grease",
+        "source": "local"
+      },
+      {
+        "label": "Coconut",
+        "amount": "for chutney",
+        "source": "local"
+      }
+    ],
+    "steps": [
+      {
+        "text": "Soak the urad dal and poha 6 hours; rinse the idli rava and soak it too.",
+        "minutes": null
+      },
+      {
+        "text": "Grind the dal and poha fluffy. Mix in the squeezed rava and salt. Ferment overnight.",
+        "minutes": null
+      },
+      {
+        "text": "Grease the idli plates and fill them three-quarters.",
+        "minutes": 5
+      },
+      {
+        "text": "Steam until a knife comes out clean.",
+        "minutes": 12
+      },
+      {
+        "text": "Rest 2 minutes, then lift out. Serve with podi, chutney or sambar.",
+        "minutes": 2
+      }
+    ]
+  },
+  {
+    "slug": "masala-chai",
+    "name": "Masala Chai",
+    "kind": "drinks",
+    "state": "All of India",
+    "rank": 7,
+    "blurb": "Tea boiled with milk, sugar and spice. Five minutes, every morning.",
+    "minutes": 10,
+    "soak_hours": null,
+    "serves": 2,
+    "effort": "easy",
+    "ingredients": [
+      {
+        "label": "Assam tea",
+        "amount": "2 tsp",
+        "source": "iwc",
+        "match_words": "assam tea"
+      },
+      {
+        "label": "Chai masala",
+        "amount": "½ tsp",
+        "source": "iwc",
+        "match_words": "chai masala"
+      },
+      {
+        "label": "Green cardamom",
+        "amount": "2 pods",
+        "source": "iwc",
+        "match_words": "green cardamom"
+      },
+      {
+        "label": "Dry ginger powder",
+        "amount": "a pinch",
+        "source": "iwc",
+        "match_words": "dry ginger powder"
+      },
+      {
+        "label": "Milk",
+        "amount": "1 cup",
+        "source": "local"
+      },
+      {
+        "label": "Sugar",
+        "amount": "2 tsp",
+        "source": "local"
+      }
+    ],
+    "steps": [
+      {
+        "text": "Boil 1 cup water with crushed cardamom, chai masala and ginger.",
+        "minutes": 2
+      },
+      {
+        "text": "Add the tea and boil a minute.",
+        "minutes": 1
+      },
+      {
+        "text": "Add milk and sugar. Bring it up to a rolling boil twice.",
+        "minutes": 4
+      },
+      {
+        "text": "Strain into cups.",
+        "minutes": 1
+      }
+    ]
+  },
+  {
+    "slug": "paneer-butter-masala",
+    "name": "Paneer Butter Masala",
+    "kind": "dinner",
+    "state": "All of India",
+    "rank": 8,
+    "blurb": "Paneer in a smooth, mildly sweet tomato-cashew gravy.",
+    "minutes": 40,
+    "soak_hours": null,
+    "serves": 4,
+    "effort": "easy",
+    "ingredients": [
+      {
+        "label": "Paneer butter masala",
+        "amount": "2 tbsp",
+        "source": "iwc",
+        "match_words": "paneer butter masala"
+      },
+      {
+        "label": "Kashmiri chilli powder",
+        "amount": "1 tsp",
+        "source": "iwc",
+        "match_words": "kashmiri chilli powder"
+      },
+      {
+        "label": "Kasuri methi",
+        "amount": "1 tbsp",
+        "source": "iwc",
+        "match_words": "kasuri methi"
+      },
+      {
+        "label": "Cashews",
+        "amount": "12",
+        "source": "iwc",
+        "match_words": "cashews"
+      },
+      {
+        "label": "Paneer",
+        "amount": "400 g",
+        "source": "local"
+      },
+      {
+        "label": "Butter",
+        "amount": "3 tbsp",
+        "source": "local"
+      },
+      {
+        "label": "Cream",
+        "amount": "¼ cup",
+        "source": "local"
+      },
+      {
+        "label": "Tomatoes",
+        "amount": "4",
+        "source": "local"
+      }
+    ],
+    "steps": [
+      {
+        "text": "Cook the tomatoes and cashews in a little water until soft. Blend smooth.",
+        "minutes": 15
+      },
+      {
+        "text": "Melt the butter, add the purée, masala and chilli. Simmer until it thickens.",
+        "minutes": 10
+      },
+      {
+        "text": "Add the paneer cubes and a splash of water.",
+        "minutes": 5
+      },
+      {
+        "text": "Finish with cream and crushed kasuri methi.",
+        "minutes": 2
+      }
+    ]
+  },
+  {
+    "slug": "palak-paneer",
+    "name": "Palak Paneer",
+    "kind": "dinner",
+    "state": "Punjab",
+    "rank": 9,
+    "blurb": "Paneer in a bright spinach purée with garlic and cumin.",
+    "minutes": 40,
+    "soak_hours": null,
+    "serves": 4,
+    "effort": "easy",
+    "ingredients": [
+      {
+        "label": "Garam masala",
+        "amount": "½ tsp",
+        "source": "iwc",
+        "match_words": "garam masala"
+      },
+      {
+        "label": "Kasuri methi",
+        "amount": "1 tsp",
+        "source": "iwc",
+        "match_words": "kasuri methi"
+      },
+      {
+        "label": "Cumin seeds",
+        "amount": "1 tsp",
+        "source": "iwc",
+        "match_words": "cumin seeds"
+      },
+      {
+        "label": "Paneer",
+        "amount": "300 g",
+        "source": "local"
+      },
+      {
+        "label": "Spinach",
+        "amount": "2 bunches",
+        "source": "local"
+      },
+      {
+        "label": "Cream",
+        "amount": "2 tbsp",
+        "source": "local"
+      },
+      {
+        "label": "Onions",
+        "amount": "1",
+        "source": "local"
+      },
+      {
+        "label": "Garlic",
+        "amount": "5 cloves",
+        "source": "local"
+      },
+      {
+        "label": "Oil",
+        "amount": "2 tbsp",
+        "source": "local"
+      }
+    ],
+    "steps": [
+      {
+        "text": "Blanch the spinach 2 minutes, cool it in cold water and blend.",
+        "minutes": 5
+      },
+      {
+        "text": "Fry cumin, garlic and onion in oil until golden.",
+        "minutes": 8
+      },
+      {
+        "text": "Add the spinach, salt and garam masala. Simmer.",
+        "minutes": 5
+      },
+      {
+        "text": "Add paneer and kasuri methi. Finish with cream.",
+        "minutes": 5
+      }
+    ]
+  },
+  {
+    "slug": "dal-makhani",
+    "name": "Dal Makhani",
+    "kind": "dinner",
+    "state": "Punjab",
+    "rank": 10,
+    "blurb": "Black lentils and kidney beans cooked slow with butter and cream.",
+    "minutes": 120,
+    "soak_hours": 8,
+    "serves": 6,
+    "effort": "weekend",
+    "ingredients": [
+      {
+        "label": "Whole urad dal",
+        "amount": "1 cup",
+        "source": "iwc",
+        "match_words": "whole urad"
+      },
+      {
+        "label": "Rajma",
+        "amount": "¼ cup",
+        "source": "iwc",
+        "match_words": "rajma"
+      },
+      {
+        "label": "Kashmiri chilli powder",
+        "amount": "1 tsp",
+        "source": "iwc",
+        "match_words": "kashmiri chilli powder"
+      },
+      {
+        "label": "Garam masala",
+        "amount": "½ tsp",
+        "source": "iwc",
+        "match_words": "garam masala"
+      },
+      {
+        "label": "Kasuri methi",
+        "amount": "1 tsp",
+        "source": "iwc",
+        "match_words": "kasuri methi"
+      },
+      {
+        "label": "Butter",
+        "amount": "4 tbsp",
+        "source": "local"
+      },
+      {
+        "label": "Cream",
+        "amount": "½ cup",
+        "source": "local"
+      },
+      {
+        "label": "Tomatoes",
+        "amount": "3",
+        "source": "local"
+      },
+      {
+        "label": "Ginger-garlic paste",
+        "amount": "1 tbsp",
+        "source": "local"
+      }
+    ],
+    "steps": [
+      {
+        "text": "Soak the dal and rajma overnight.",
+        "minutes": null
+      },
+      {
+        "text": "Pressure cook with salt until very soft.",
+        "minutes": 40
+      },
+      {
+        "text": "Cook butter, ginger-garlic, tomato purée and chilli until the butter separates.",
+        "minutes": 15
+      },
+      {
+        "text": "Add the dal and simmer on low, stirring now and then. The longer the better.",
+        "minutes": 45
+      },
+      {
+        "text": "Add cream, garam masala and kasuri methi.",
+        "minutes": 5
+      }
+    ]
+  },
+  {
+    "slug": "chole-bhature",
+    "name": "Chole Bhature",
+    "kind": "breakfast",
+    "state": "Punjab",
+    "rank": 11,
+    "blurb": "Dark, tangy chickpeas with puffed fried bread. A Sunday in Delhi and Punjab.",
+    "minutes": 90,
+    "soak_hours": 8,
+    "serves": 4,
+    "effort": "weekend",
+    "ingredients": [
+      {
+        "label": "Kabuli chana",
+        "amount": "1½ cups",
+        "source": "iwc",
+        "match_words": "kabuli chana"
+      },
+      {
+        "label": "Chole masala",
+        "amount": "2 tbsp",
+        "source": "iwc",
+        "match_words": "chole masala"
+      },
+      {
+        "label": "Anardana powder",
+        "amount": "1 tsp",
+        "source": "iwc",
+        "match_words": "anardana powder"
+      },
+      {
+        "label": "Maida",
+        "amount": "2 cups",
+        "source": "iwc",
+        "match_words": "maida"
+      },
+      {
+        "label": "Sooji",
+        "amount": "2 tbsp",
+        "source": "iwc",
+        "match_words": "sooji"
+      },
+      {
+        "label": "Assam tea",
+        "amount": "1 tbsp (in a bag)",
+        "source": "iwc",
+        "match_words": "assam tea"
+      },
+      {
+        "label": "Yogurt",
+        "amount": "¼ cup",
+        "source": "local"
+      },
+      {
+        "label": "Onions",
+        "amount": "2",
+        "source": "local"
+      },
+      {
+        "label": "Tomatoes",
+        "amount": "2",
+        "source": "local"
+      },
+      {
+        "label": "Oil",
+        "amount": "for frying",
+        "source": "local"
+      }
+    ],
+    "steps": [
+      {
+        "text": "Soak the chana overnight. Pressure cook with salt and a tea bag for colour.",
+        "minutes": 30
+      },
+      {
+        "text": "Knead maida, sooji, yogurt, salt and a little oil into a soft dough. Rest 2 hours.",
+        "minutes": 10
+      },
+      {
+        "text": "Fry onions and tomatoes until soft. Add chole masala and anardana, then the chana.",
+        "minutes": 20
+      },
+      {
+        "text": "Simmer and mash a few chickpeas to thicken.",
+        "minutes": 10
+      },
+      {
+        "text": "Roll the dough into ovals and fry in hot oil until they puff.",
+        "minutes": 15
+      }
+    ]
+  },
+  {
+    "slug": "amritsari-kulcha",
+    "name": "Amritsari Kulcha",
+    "kind": "dinner",
+    "state": "Punjab",
+    "rank": 12,
+    "blurb": "Flaky stuffed bread from Amritsar, with chole on the side.",
+    "minutes": 60,
+    "soak_hours": 2,
+    "serves": 4,
+    "effort": "medium",
+    "ingredients": [
+      {
+        "label": "Maida",
+        "amount": "2 cups",
+        "source": "iwc",
+        "match_words": "maida"
+      },
+      {
+        "label": "Ajwain",
+        "amount": "½ tsp",
+        "source": "iwc",
+        "match_words": "ajwain"
+      },
+      {
+        "label": "Kalonji",
+        "amount": "1 tsp",
+        "source": "iwc",
+        "match_words": "kalonji"
+      },
+      {
+        "label": "Amchur",
+        "amount": "½ tsp",
+        "source": "iwc",
+        "match_words": "amchur"
+      },
+      {
+        "label": "Chole masala",
+        "amount": "1 tsp",
+        "source": "iwc",
+        "match_words": "chole masala"
+      },
+      {
+        "label": "Potatoes",
+        "amount": "3",
+        "source": "local"
+      },
+      {
+        "label": "Butter",
+        "amount": "4 tbsp",
+        "source": "local"
+      },
+      {
+        "label": "Yogurt",
+        "amount": "¼ cup",
+        "source": "local"
+      },
+      {
+        "label": "Onions",
+        "amount": "1",
+        "source": "local"
+      }
+    ],
+    "steps": [
+      {
+        "text": "Knead maida, yogurt, salt and a little butter into a soft dough. Rest 2 hours.",
+        "minutes": 10
+      },
+      {
+        "text": "Mash the potatoes with onion, ajwain, amchur, chole masala and salt.",
+        "minutes": 10
+      },
+      {
+        "text": "Fill a ball of dough, roll it out and press kalonji on top.",
+        "minutes": 10
+      },
+      {
+        "text": "Cook on a hot pan or in the oven until brown spots appear.",
+        "minutes": 10
+      },
+      {
+        "text": "Brush with butter and serve.",
+        "minutes": 2
+      }
+    ]
+  },
+  {
+    "slug": "butter-garlic-naan",
+    "name": "Butter Garlic Naan",
+    "kind": "dinner",
+    "state": "All of India",
+    "rank": 13,
+    "blurb": "Soft naan on a home pan, brushed with garlic butter.",
+    "minutes": 45,
+    "soak_hours": 2,
+    "serves": 4,
+    "effort": "easy",
+    "ingredients": [
+      {
+        "label": "Maida",
+        "amount": "2 cups",
+        "source": "iwc",
+        "match_words": "maida"
+      },
+      {
+        "label": "Kalonji",
+        "amount": "1 tsp",
+        "source": "iwc",
+        "match_words": "kalonji"
+      },
+      {
+        "label": "Baking soda",
+        "amount": "¼ tsp",
+        "source": "iwc",
+        "match_words": "baking soda"
+      },
+      {
+        "label": "Yogurt",
+        "amount": "½ cup",
+        "source": "local"
+      },
+      {
+        "label": "Butter",
+        "amount": "3 tbsp",
+        "source": "local"
+      },
+      {
+        "label": "Garlic",
+        "amount": "5 cloves",
+        "source": "local"
+      },
+      {
+        "label": "Coriander",
+        "amount": "a handful",
+        "source": "local"
+      }
+    ],
+    "steps": [
+      {
+        "text": "Knead maida, yogurt, baking soda, salt and warm water into a soft dough. Rest 2 hours.",
+        "minutes": 10
+      },
+      {
+        "text": "Roll into ovals; press chopped garlic, coriander and kalonji on top.",
+        "minutes": 10
+      },
+      {
+        "text": "Wet the back, stick it to a hot iron pan, and when it bubbles flip the pan over the flame.",
+        "minutes": 15
+      },
+      {
+        "text": "Brush with melted butter.",
+        "minutes": 2
+      }
+    ]
+  },
+  {
+    "slug": "pav-bhaji",
+    "name": "Pav Bhaji",
+    "kind": "snacks",
+    "state": "Maharashtra",
+    "rank": 14,
+    "blurb": "Mashed vegetables in butter and masala, with soft toasted pav. Mumbai’s street dinner.",
+    "minutes": 40,
+    "soak_hours": null,
+    "serves": 4,
+    "effort": "easy",
+    "ingredients": [
+      {
+        "label": "Pav bhaji masala",
+        "amount": "2½ tbsp",
+        "source": "iwc",
+        "match_words": "pav bhaji masala"
+      },
+      {
+        "label": "Kashmiri chilli powder",
+        "amount": "1 tsp",
+        "source": "iwc",
+        "match_words": "kashmiri chilli powder"
+      },
+      {
+        "label": "Kasuri methi",
+        "amount": "1 tsp",
+        "source": "iwc",
+        "match_words": "kasuri methi"
+      },
+      {
+        "label": "Amchur",
+        "amount": "½ tsp",
+        "source": "iwc",
+        "match_words": "amchur"
+      },
+      {
+        "label": "Kala namak",
+        "amount": "a pinch",
+        "source": "iwc",
+        "match_words": "kala namak"
+      },
+      {
+        "label": "Potatoes",
+        "amount": "4",
+        "source": "local"
+      },
+      {
+        "label": "Tomatoes",
+        "amount": "3",
+        "source": "local"
+      },
+      {
+        "label": "Onions",
+        "amount": "2",
+        "source": "local"
+      },
+      {
+        "label": "Capsicum",
+        "amount": "1",
+        "source": "local"
+      },
+      {
+        "label": "Peas",
+        "amount": "½ cup",
+        "source": "local"
+      },
+      {
+        "label": "Butter",
+        "amount": "5 tbsp",
+        "source": "local"
+      },
+      {
+        "label": "Pav",
+        "amount": "8",
+        "source": "local"
+      },
+      {
+        "label": "Lemon",
+        "amount": "1",
+        "source": "local"
+      }
+    ],
+    "steps": [
+      {
+        "text": "Boil the potatoes and peas. Mash.",
+        "minutes": 15
+      },
+      {
+        "text": "Cook onions, capsicum and tomatoes in butter until soft.",
+        "minutes": 10
+      },
+      {
+        "text": "Add the masala, chilli, amchur and the mash. Mash it all together with a little water.",
+        "minutes": 10
+      },
+      {
+        "text": "Finish with kasuri methi, a knob of butter and lemon.",
+        "minutes": 2
+      },
+      {
+        "text": "Toast the pav in butter with a pinch of masala.",
+        "minutes": 3
+      }
+    ]
+  },
+  {
+    "slug": "vada-pav",
+    "name": "Vada Pav",
+    "kind": "snacks",
+    "state": "Maharashtra",
+    "rank": 15,
+    "blurb": "A spiced potato fritter in a soft bun, with garlic chutney. Mumbai’s lunch.",
+    "minutes": 45,
+    "soak_hours": null,
+    "serves": 4,
+    "effort": "medium",
+    "ingredients": [
+      {
+        "label": "Besan",
+        "amount": "1 cup",
+        "source": "iwc",
+        "match_words": "besan"
+      },
+      {
+        "label": "Dry garlic chutney",
+        "amount": "2 tbsp",
+        "source": "iwc",
+        "match_words": "garlic chutney"
+      },
+      {
+        "label": "Mustard seeds",
+        "amount": "1 tsp",
+        "source": "iwc",
+        "match_words": "mustard seeds"
+      },
+      {
+        "label": "Turmeric",
+        "amount": "½ tsp",
+        "source": "iwc",
+        "match_words": "turmeric"
+      },
+      {
+        "label": "Hing",
+        "amount": "a pinch",
+        "source": "iwc",
+        "match_words": "hing"
+      },
+      {
+        "label": "Potatoes",
+        "amount": "4",
+        "source": "local"
+      },
+      {
+        "label": "Pav",
+        "amount": "8",
+        "source": "local"
+      },
+      {
+        "label": "Green chillies",
+        "amount": "3",
+        "source": "local"
+      },
+      {
+        "label": "Garlic",
+        "amount": "6 cloves",
+        "source": "local"
+      },
+      {
+        "label": "Oil",
+        "amount": "for frying",
+        "source": "local"
+      }
+    ],
+    "steps": [
+      {
+        "text": "Boil and mash the potatoes.",
+        "minutes": 15
+      },
+      {
+        "text": "Fry mustard seeds, hing, crushed garlic and chillies; add turmeric and the potatoes. Shape balls.",
+        "minutes": 10
+      },
+      {
+        "text": "Whisk besan, turmeric, salt and water into a thick batter.",
+        "minutes": 3
+      },
+      {
+        "text": "Dip the balls and fry until golden.",
+        "minutes": 10
+      },
+      {
+        "text": "Split the pav, spread garlic chutney, add a vada.",
+        "minutes": 3
+      }
+    ]
+  },
+  {
+    "slug": "misal-pav",
+    "name": "Misal Pav",
+    "kind": "breakfast",
+    "state": "Maharashtra",
+    "rank": 16,
+    "blurb": "Sprouted moth beans in a fiery gravy, topped with farsan. Pune’s breakfast.",
+    "minutes": 50,
+    "soak_hours": 8,
+    "serves": 4,
+    "effort": "medium",
+    "ingredients": [
+      {
+        "label": "Matki",
+        "amount": "1 cup",
+        "source": "iwc",
+        "match_words": "matki"
+      },
+      {
+        "label": "Misal masala",
+        "amount": "2 tbsp",
+        "source": "iwc",
+        "match_words": "misal masala"
+      },
+      {
+        "label": "Goda masala",
+        "amount": "1 tsp",
+        "source": "iwc",
+        "match_words": "goda masala"
+      },
+      {
+        "label": "Farsan",
+        "amount": "1 cup",
+        "source": "iwc",
+        "match_words": "farsan"
+      },
+      {
+        "label": "Kashmiri chilli powder",
+        "amount": "1 tsp",
+        "source": "iwc",
+        "match_words": "kashmiri chilli powder"
+      },
+      {
+        "label": "Onions",
+        "amount": "2",
+        "source": "local"
+      },
+      {
+        "label": "Tomatoes",
+        "amount": "2",
+        "source": "local"
+      },
+      {
+        "label": "Pav",
+        "amount": "8",
+        "source": "local"
+      },
+      {
+        "label": "Lemon",
+        "amount": "1",
+        "source": "local"
+      },
+      {
+        "label": "Oil",
+        "amount": "3 tbsp",
+        "source": "local"
+      }
+    ],
+    "steps": [
+      {
+        "text": "Soak the matki overnight and let it sprout a day in a cloth.",
+        "minutes": null
+      },
+      {
+        "text": "Pressure cook the sprouts with salt and turmeric.",
+        "minutes": 10
+      },
+      {
+        "text": "Fry onions, tomatoes, both masalas and chilli in oil until the oil floats.",
+        "minutes": 15
+      },
+      {
+        "text": "Add the sprouts and water for a thin, red gravy. Simmer.",
+        "minutes": 15
+      },
+      {
+        "text": "Serve topped with farsan, onion and lemon, with pav.",
+        "minutes": 2
+      }
+    ]
+  },
+  {
+    "slug": "samosa",
+    "name": "Samosa",
+    "kind": "snacks",
+    "state": "All of India",
+    "rank": 17,
+    "blurb": "Crisp pastry around spiced potatoes and peas.",
+    "minutes": 75,
+    "soak_hours": null,
+    "serves": 12,
+    "effort": "weekend",
+    "ingredients": [
+      {
+        "label": "Maida",
+        "amount": "2 cups",
+        "source": "iwc",
+        "match_words": "maida"
+      },
+      {
+        "label": "Ajwain",
+        "amount": "½ tsp",
+        "source": "iwc",
+        "match_words": "ajwain"
+      },
+      {
+        "label": "Garam masala",
+        "amount": "1 tsp",
+        "source": "iwc",
+        "match_words": "garam masala"
+      },
+      {
+        "label": "Amchur",
+        "amount": "1 tsp",
+        "source": "iwc",
+        "match_words": "amchur"
+      },
+      {
+        "label": "Khajur imli chutney",
+        "amount": "to serve",
+        "source": "iwc",
+        "match_words": "tamarind chutney"
+      },
+      {
+        "label": "Potatoes",
+        "amount": "4",
+        "source": "local"
+      },
+      {
+        "label": "Peas",
+        "amount": "½ cup",
+        "source": "local"
+      },
+      {
+        "label": "Oil",
+        "amount": "for the dough and frying",
+        "source": "local"
+      },
+      {
+        "label": "Green chillies",
+        "amount": "2",
+        "source": "local"
+      }
+    ],
+    "steps": [
+      {
+        "text": "Rub 4 tbsp oil into the maida, ajwain and salt. Knead stiff with water and rest.",
+        "minutes": 10
+      },
+      {
+        "text": "Boil and crumble the potatoes. Fry with peas, chillies, garam masala, amchur and salt.",
+        "minutes": 15
+      },
+      {
+        "text": "Roll ovals, halve them, shape cones, fill and seal.",
+        "minutes": 20
+      },
+      {
+        "text": "Fry on low heat until golden and blistered.",
+        "minutes": 25
+      },
+      {
+        "text": "Serve with imli chutney.",
+        "minutes": null
+      }
+    ]
+  },
+  {
+    "slug": "pani-puri",
+    "name": "Pani Puri",
+    "kind": "snacks",
+    "state": "All of India",
+    "rank": 18,
+    "blurb": "Crisp puris filled with potato and tangy mint water. Burst in one bite.",
+    "minutes": 30,
+    "soak_hours": null,
+    "serves": 4,
+    "effort": "easy",
+    "ingredients": [
+      {
+        "label": "Ready-to-fry puris",
+        "amount": "1 pack",
+        "source": "iwc",
+        "match_words": "pani puri puris"
+      },
+      {
+        "label": "Pani puri masala",
+        "amount": "3 tbsp",
+        "source": "iwc",
+        "match_words": "pani puri masala"
+      },
+      {
+        "label": "Kala namak",
+        "amount": "1 tsp",
+        "source": "iwc",
+        "match_words": "kala namak"
+      },
+      {
+        "label": "Tamarind",
+        "amount": "a small ball",
+        "source": "iwc",
+        "match_words": "tamarind"
+      },
+      {
+        "label": "Boondi",
+        "amount": "¼ cup",
+        "source": "iwc",
+        "match_words": "boondi"
+      },
+      {
+        "label": "Potatoes",
+        "amount": "3",
+        "source": "local"
+      },
+      {
+        "label": "Mint",
+        "amount": "a bunch",
+        "source": "local"
+      },
+      {
+        "label": "Coriander",
+        "amount": "a bunch",
+        "source": "local"
+      },
+      {
+        "label": "Chickpeas (boiled)",
+        "amount": "½ cup",
+        "source": "local"
+      }
+    ],
+    "steps": [
+      {
+        "text": "Fry the puris until they puff, if they are unfried.",
+        "minutes": 10
+      },
+      {
+        "text": "Blend mint and coriander. Mix with 4 cups cold water, the masala, kala namak and tamarind water. Chill.",
+        "minutes": 10
+      },
+      {
+        "text": "Mash the potatoes with chickpeas, salt and a pinch of masala.",
+        "minutes": 5
+      },
+      {
+        "text": "Crack a puri, fill it, top with boondi and dip it in the water.",
+        "minutes": null
+      }
+    ]
+  },
+  {
+    "slug": "chicken-65",
+    "name": "Chicken 65",
+    "kind": "snacks",
+    "state": "Tamil Nadu",
+    "rank": 19,
+    "blurb": "Spicy fried chicken bites with curry leaves, from Chennai.",
+    "minutes": 45,
+    "soak_hours": 1,
+    "serves": 4,
+    "effort": "easy",
+    "ingredients": [
+      {
+        "label": "Chicken 65 masala",
+        "amount": "2 tbsp",
+        "source": "iwc",
+        "match_words": "chicken 65 masala"
+      },
+      {
+        "label": "Kashmiri chilli powder",
+        "amount": "1 tsp",
+        "source": "iwc",
+        "match_words": "kashmiri chilli powder"
+      },
+      {
+        "label": "Rice flour",
+        "amount": "2 tbsp",
+        "source": "iwc",
+        "match_words": "rice flour"
+      },
+      {
+        "label": "Chicken",
+        "amount": "500 g",
+        "source": "local"
+      },
+      {
+        "label": "Yogurt",
+        "amount": "¼ cup",
+        "source": "local"
+      },
+      {
+        "label": "Ginger-garlic paste",
+        "amount": "1 tbsp",
+        "source": "local"
+      },
+      {
+        "label": "Curry leaves",
+        "amount": "2 sprigs",
+        "source": "local"
+      },
+      {
+        "label": "Oil",
+        "amount": "for frying",
+        "source": "local"
+      }
+    ],
+    "steps": [
+      {
+        "text": "Mix the chicken with yogurt, ginger-garlic, the masala, chilli, rice flour and salt. An hour.",
+        "minutes": null
+      },
+      {
+        "text": "Fry in hot oil in small batches until crisp.",
+        "minutes": 15
+      },
+      {
+        "text": "Toss with fried curry leaves and green chillies.",
+        "minutes": 3
+      }
+    ]
+  },
+  {
+    "slug": "tandoori-chicken",
+    "name": "Tandoori Chicken",
+    "kind": "dinner",
+    "state": "All of India",
+    "rank": 20,
+    "blurb": "Chicken marinated in yogurt and spice, roasted until charred. No tandoor needed.",
+    "minutes": 75,
+    "soak_hours": 4,
+    "serves": 4,
+    "effort": "medium",
+    "ingredients": [
+      {
+        "label": "Tandoori masala",
+        "amount": "3 tbsp",
+        "source": "iwc",
+        "match_words": "tandoori masala"
+      },
+      {
+        "label": "Kashmiri chilli powder",
+        "amount": "1 tsp",
+        "source": "iwc",
+        "match_words": "kashmiri chilli powder"
+      },
+      {
+        "label": "Chaat masala",
+        "amount": "1 tsp",
+        "source": "iwc",
+        "match_words": "chaat masala"
+      },
+      {
+        "label": "Kasuri methi",
+        "amount": "1 tsp",
+        "source": "iwc",
+        "match_words": "kasuri methi"
+      },
+      {
+        "label": "Chicken legs",
+        "amount": "1 kg",
+        "source": "local"
+      },
+      {
+        "label": "Yogurt",
+        "amount": "¾ cup",
+        "source": "local"
+      },
+      {
+        "label": "Lemon",
+        "amount": "1",
+        "source": "local"
+      },
+      {
+        "label": "Ginger-garlic paste",
+        "amount": "1 tbsp",
+        "source": "local"
+      },
+      {
+        "label": "Oil",
+        "amount": "2 tbsp",
+        "source": "local"
+      }
+    ],
+    "steps": [
+      {
+        "text": "Slash the chicken. Rub with lemon, chilli and salt for 20 minutes.",
+        "minutes": 20
+      },
+      {
+        "text": "Mix yogurt, ginger-garlic, tandoori masala, kasuri methi and oil. Coat the chicken; 4 hours or overnight.",
+        "minutes": null
+      },
+      {
+        "text": "Roast at 220 °C, turning once, until charred at the edges.",
+        "minutes": 40
+      },
+      {
+        "text": "Sprinkle chaat masala and lemon.",
+        "minutes": 2
+      }
+    ]
+  }
+]
