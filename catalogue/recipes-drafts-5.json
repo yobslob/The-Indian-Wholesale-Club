@@ -1,0 +1,1257 @@
+[
+  {
+    "slug": "dal-baati-churma",
+    "name": "Dal Baati Churma",
+    "kind": "dinner",
+    "state": "Rajasthan",
+    "rank": 81,
+    "blurb": "Baked wheat balls with five-lentil dal and sweet crumbs. Rajasthan’s feast.",
+    "minutes": 120,
+    "soak_hours": null,
+    "serves": 4,
+    "effort": "weekend",
+    "ingredients": [
+      {
+        "label": "Atta",
+        "amount": "2 cups",
+        "source": "iwc",
+        "match_words": "atta"
+      },
+      {
+        "label": "Sooji",
+        "amount": "¼ cup",
+        "source": "iwc",
+        "match_words": "sooji"
+      },
+      {
+        "label": "Panchmel dal",
+        "amount": "1 cup",
+        "source": "iwc",
+        "match_words": "panchmel dal"
+      },
+      {
+        "label": "Jaggery",
+        "amount": "½ cup",
+        "source": "iwc",
+        "match_words": "jaggery"
+      },
+      {
+        "label": "Green cardamom",
+        "amount": "4 pods",
+        "source": "iwc",
+        "match_words": "green cardamom"
+      },
+      {
+        "label": "Ghee",
+        "amount": "¾ cup",
+        "source": "local"
+      }
+    ],
+    "steps": [
+      {
+        "text": "Knead atta, sooji, ¼ cup ghee and salt stiff. Shape balls and bake at 200 °C, turning, until cracked and golden.",
+        "minutes": 45
+      },
+      {
+        "text": "Cook the dal soft; temper with ghee, cumin, chilli and hing.",
+        "minutes": 35
+      },
+      {
+        "text": "Crush two baatis, fry in ghee, and mix with jaggery and cardamom for churma.",
+        "minutes": 15
+      },
+      {
+        "text": "Break the baatis, soak in ghee and serve with dal and churma.",
+        "minutes": null
+      }
+    ]
+  },
+  {
+    "slug": "gulab-jamun",
+    "name": "Gulab Jamun",
+    "kind": "sweets",
+    "state": "All of India",
+    "rank": 82,
+    "blurb": "Soft fried dumplings in cardamom syrup. The easy way, from a mix.",
+    "minutes": 45,
+    "soak_hours": null,
+    "serves": 6,
+    "effort": "easy",
+    "ingredients": [
+      {
+        "label": "Gulab jamun mix",
+        "amount": "1 pack",
+        "source": "iwc",
+        "match_words": "gulab jamun mix"
+      },
+      {
+        "label": "Green cardamom",
+        "amount": "4 pods",
+        "source": "iwc",
+        "match_words": "green cardamom"
+      },
+      {
+        "label": "Saffron",
+        "amount": "a pinch",
+        "source": "iwc",
+        "match_words": "saffron"
+      },
+      {
+        "label": "Sugar",
+        "amount": "2 cups",
+        "source": "local"
+      },
+      {
+        "label": "Oil or ghee",
+        "amount": "for frying",
+        "source": "local"
+      }
+    ],
+    "steps": [
+      {
+        "text": "Boil sugar and 2 cups water with cardamom and saffron for 5 minutes.",
+        "minutes": 8
+      },
+      {
+        "text": "Knead the mix gently with a little water; shape smooth balls without cracks.",
+        "minutes": 10
+      },
+      {
+        "text": "Fry on low heat, turning, until deep brown.",
+        "minutes": 15
+      },
+      {
+        "text": "Drop them into the warm syrup and soak an hour.",
+        "minutes": null
+      }
+    ]
+  },
+  {
+    "slug": "rasmalai",
+    "name": "Rasmalai",
+    "kind": "sweets",
+    "state": "West Bengal",
+    "rank": 83,
+    "blurb": "Soft cheese discs in sweet saffron milk.",
+    "minutes": 120,
+    "soak_hours": null,
+    "serves": 6,
+    "effort": "weekend",
+    "ingredients": [
+      {
+        "label": "Saffron",
+        "amount": "a pinch",
+        "source": "iwc",
+        "match_words": "saffron"
+      },
+      {
+        "label": "Green cardamom",
+        "amount": "4 pods",
+        "source": "iwc",
+        "match_words": "green cardamom"
+      },
+      {
+        "label": "Pistachios",
+        "amount": "2 tbsp",
+        "source": "iwc",
+        "match_words": "pistachios"
+      },
+      {
+        "label": "Milk",
+        "amount": "2 litres",
+        "source": "local"
+      },
+      {
+        "label": "Sugar",
+        "amount": "1½ cups",
+        "source": "local"
+      },
+      {
+        "label": "Lemon",
+        "amount": "2",
+        "source": "local"
+      }
+    ],
+    "steps": [
+      {
+        "text": "Boil 1 litre milk, curdle it with lemon juice, strain and rinse the chhena.",
+        "minutes": 15
+      },
+      {
+        "text": "Knead until smooth; shape small flat discs.",
+        "minutes": 10
+      },
+      {
+        "text": "Cook them in boiling light syrup, covered, until they double.",
+        "minutes": 15
+      },
+      {
+        "text": "Reduce the other litre of milk with sugar, saffron and cardamom by half.",
+        "minutes": 40
+      },
+      {
+        "text": "Squeeze the discs gently and soak them in the milk. Chill; top with pistachios.",
+        "minutes": null
+      }
+    ]
+  },
+  {
+    "slug": "rasgulla",
+    "name": "Rasgulla",
+    "kind": "sweets",
+    "state": "All of India",
+    "rank": 84,
+    "blurb": "Spongy cheese balls in light syrup.",
+    "minutes": 60,
+    "soak_hours": null,
+    "serves": 6,
+    "effort": "medium",
+    "ingredients": [
+      {
+        "label": "Green cardamom",
+        "amount": "3 pods",
+        "source": "iwc",
+        "match_words": "green cardamom"
+      },
+      {
+        "label": "Milk",
+        "amount": "1 litre",
+        "source": "local"
+      },
+      {
+        "label": "Sugar",
+        "amount": "1 cup",
+        "source": "local"
+      },
+      {
+        "label": "Lemon",
+        "amount": "1",
+        "source": "local"
+      }
+    ],
+    "steps": [
+      {
+        "text": "Boil the milk, curdle with lemon juice, strain and rinse the chhena. Hang it 30 minutes.",
+        "minutes": 35
+      },
+      {
+        "text": "Knead until smooth and greasy-soft; roll crack-free balls.",
+        "minutes": 10
+      },
+      {
+        "text": "Boil sugar, cardamom and 4 cups water; add the balls, cover and boil.",
+        "minutes": 15
+      },
+      {
+        "text": "Cool in the syrup.",
+        "minutes": null
+      }
+    ]
+  },
+  {
+    "slug": "jalebi",
+    "name": "Jalebi",
+    "kind": "sweets",
+    "state": "All of India",
+    "rank": 85,
+    "blurb": "Crisp spirals soaked in saffron syrup. Best eaten hot.",
+    "minutes": 60,
+    "soak_hours": 8,
+    "serves": 6,
+    "effort": "medium",
+    "ingredients": [
+      {
+        "label": "Maida",
+        "amount": "1 cup",
+        "source": "iwc",
+        "match_words": "maida"
+      },
+      {
+        "label": "Saffron",
+        "amount": "a pinch",
+        "source": "iwc",
+        "match_words": "saffron"
+      },
+      {
+        "label": "Green cardamom",
+        "amount": "3 pods",
+        "source": "iwc",
+        "match_words": "green cardamom"
+      },
+      {
+        "label": "Sugar",
+        "amount": "1½ cups",
+        "source": "local"
+      },
+      {
+        "label": "Yogurt",
+        "amount": "2 tbsp",
+        "source": "local"
+      },
+      {
+        "label": "Ghee or oil",
+        "amount": "for frying",
+        "source": "local"
+      }
+    ],
+    "steps": [
+      {
+        "text": "Mix maida, yogurt and water into a thick batter. Leave overnight to sour.",
+        "minutes": null
+      },
+      {
+        "text": "Make a one-string syrup with sugar, water, saffron and cardamom.",
+        "minutes": 10
+      },
+      {
+        "text": "Pipe spirals into medium-hot ghee and fry crisp.",
+        "minutes": 20
+      },
+      {
+        "text": "Dip in warm syrup for a minute.",
+        "minutes": null
+      }
+    ]
+  },
+  {
+    "slug": "gajar-ka-halwa",
+    "name": "Gajar ka Halwa",
+    "kind": "sweets",
+    "state": "Punjab",
+    "rank": 86,
+    "blurb": "Grated carrots cooked slowly in milk, sugar and ghee. Winter’s dessert.",
+    "minutes": 90,
+    "soak_hours": null,
+    "serves": 6,
+    "effort": "medium",
+    "ingredients": [
+      {
+        "label": "Green cardamom",
+        "amount": "5 pods",
+        "source": "iwc",
+        "match_words": "green cardamom"
+      },
+      {
+        "label": "Cashews",
+        "amount": "10",
+        "source": "iwc",
+        "match_words": "cashews"
+      },
+      {
+        "label": "Almonds",
+        "amount": "10",
+        "source": "iwc",
+        "match_words": "almonds"
+      },
+      {
+        "label": "Raisins",
+        "amount": "1 tbsp",
+        "source": "iwc",
+        "match_words": "raisins"
+      },
+      {
+        "label": "Carrots",
+        "amount": "1 kg",
+        "source": "local"
+      },
+      {
+        "label": "Milk",
+        "amount": "1 litre",
+        "source": "local"
+      },
+      {
+        "label": "Sugar",
+        "amount": "¾ cup",
+        "source": "local"
+      },
+      {
+        "label": "Ghee",
+        "amount": "4 tbsp",
+        "source": "local"
+      }
+    ],
+    "steps": [
+      {
+        "text": "Grate the carrots.",
+        "minutes": 15
+      },
+      {
+        "text": "Cook them in the milk, stirring now and then, until the milk is gone.",
+        "minutes": 50
+      },
+      {
+        "text": "Add sugar and cook until dry again.",
+        "minutes": 10
+      },
+      {
+        "text": "Stir in ghee, cardamom, nuts and raisins.",
+        "minutes": 5
+      }
+    ]
+  },
+  {
+    "slug": "kheer",
+    "name": "Kheer",
+    "kind": "sweets",
+    "state": "All of India",
+    "rank": 87,
+    "blurb": "Rice cooked slowly in milk with cardamom and saffron.",
+    "minutes": 60,
+    "soak_hours": null,
+    "serves": 4,
+    "effort": "easy",
+    "ingredients": [
+      {
+        "label": "Basmati rice",
+        "amount": "¼ cup",
+        "source": "iwc",
+        "match_words": "basmati rice"
+      },
+      {
+        "label": "Green cardamom",
+        "amount": "4 pods",
+        "source": "iwc",
+        "match_words": "green cardamom"
+      },
+      {
+        "label": "Saffron",
+        "amount": "a pinch",
+        "source": "iwc",
+        "match_words": "saffron"
+      },
+      {
+        "label": "Almonds",
+        "amount": "10",
+        "source": "iwc",
+        "match_words": "almonds"
+      },
+      {
+        "label": "Milk",
+        "amount": "1 litre",
+        "source": "local"
+      },
+      {
+        "label": "Sugar",
+        "amount": "½ cup",
+        "source": "local"
+      }
+    ],
+    "steps": [
+      {
+        "text": "Rinse and soak the rice 20 minutes.",
+        "minutes": null
+      },
+      {
+        "text": "Boil the milk, add the rice and simmer, stirring often, until thick.",
+        "minutes": 40
+      },
+      {
+        "text": "Add sugar, cardamom and saffron.",
+        "minutes": 5
+      },
+      {
+        "text": "Top with sliced almonds. Warm or chilled.",
+        "minutes": null
+      }
+    ]
+  },
+  {
+    "slug": "besan-ladoo",
+    "name": "Besan Ladoo",
+    "kind": "sweets",
+    "state": "All of India",
+    "rank": 88,
+    "blurb": "Roasted gram flour, ghee and sugar rolled into balls.",
+    "minutes": 45,
+    "soak_hours": null,
+    "serves": 15,
+    "effort": "easy",
+    "ingredients": [
+      {
+        "label": "Besan",
+        "amount": "2 cups",
+        "source": "iwc",
+        "match_words": "besan"
+      },
+      {
+        "label": "Green cardamom",
+        "amount": "5 pods",
+        "source": "iwc",
+        "match_words": "green cardamom"
+      },
+      {
+        "label": "Almonds",
+        "amount": "10",
+        "source": "iwc",
+        "match_words": "almonds"
+      },
+      {
+        "label": "Sugar",
+        "amount": "1 cup powdered",
+        "source": "local"
+      },
+      {
+        "label": "Ghee",
+        "amount": "¾ cup",
+        "source": "local"
+      }
+    ],
+    "steps": [
+      {
+        "text": "Roast the besan in ghee on low, stirring, until golden and nutty.",
+        "minutes": 25
+      },
+      {
+        "text": "Cool until just warm.",
+        "minutes": 10
+      },
+      {
+        "text": "Mix in powdered sugar, cardamom and chopped almonds.",
+        "minutes": 3
+      },
+      {
+        "text": "Roll into balls.",
+        "minutes": 10
+      }
+    ]
+  },
+  {
+    "slug": "modak",
+    "name": "Ukadiche Modak",
+    "kind": "sweets",
+    "state": "Maharashtra",
+    "rank": 89,
+    "blurb": "Steamed rice dumplings filled with coconut and jaggery. Ganesh’s favourite.",
+    "minutes": 75,
+    "soak_hours": null,
+    "serves": 12,
+    "effort": "weekend",
+    "ingredients": [
+      {
+        "label": "Rice flour",
+        "amount": "1 cup",
+        "source": "iwc",
+        "match_words": "rice flour"
+      },
+      {
+        "label": "Jaggery",
+        "amount": "¾ cup",
+        "source": "iwc",
+        "match_words": "jaggery"
+      },
+      {
+        "label": "Desiccated coconut",
+        "amount": "1 cup",
+        "source": "iwc",
+        "match_words": "desiccated coconut"
+      },
+      {
+        "label": "Green cardamom",
+        "amount": "4 pods",
+        "source": "iwc",
+        "match_words": "green cardamom"
+      },
+      {
+        "label": "Ghee",
+        "amount": "1 tbsp",
+        "source": "local"
+      },
+      {
+        "label": "Coconut (fresh)",
+        "amount": "1 cup",
+        "source": "local"
+      }
+    ],
+    "steps": [
+      {
+        "text": "Cook coconut and jaggery until sticky; add cardamom.",
+        "minutes": 15
+      },
+      {
+        "text": "Boil 1 cup water with ghee and salt; stir in the rice flour, cover and rest.",
+        "minutes": 10
+      },
+      {
+        "text": "Knead smooth while warm.",
+        "minutes": 5
+      },
+      {
+        "text": "Shape cups, pleat around the filling and close.",
+        "minutes": 25
+      },
+      {
+        "text": "Steam 12 minutes.",
+        "minutes": 12
+      }
+    ]
+  },
+  {
+    "slug": "thekua",
+    "name": "Thekua",
+    "kind": "sweets",
+    "state": "Bihar",
+    "rank": 90,
+    "blurb": "Crisp wheat and jaggery cookies from Bihar’s Chhath.",
+    "minutes": 50,
+    "soak_hours": null,
+    "serves": 20,
+    "effort": "easy",
+    "ingredients": [
+      {
+        "label": "Atta",
+        "amount": "2 cups",
+        "source": "iwc",
+        "match_words": "atta"
+      },
+      {
+        "label": "Jaggery",
+        "amount": "¾ cup",
+        "source": "iwc",
+        "match_words": "jaggery"
+      },
+      {
+        "label": "Desiccated coconut",
+        "amount": "¼ cup",
+        "source": "iwc",
+        "match_words": "desiccated coconut"
+      },
+      {
+        "label": "Saunf",
+        "amount": "1 tsp",
+        "source": "iwc",
+        "match_words": "fennel seeds"
+      },
+      {
+        "label": "Green cardamom",
+        "amount": "4 pods",
+        "source": "iwc",
+        "match_words": "green cardamom"
+      },
+      {
+        "label": "Ghee or oil",
+        "amount": "¼ cup and for frying",
+        "source": "local"
+      }
+    ],
+    "steps": [
+      {
+        "text": "Melt the jaggery in ¼ cup water; cool.",
+        "minutes": 8
+      },
+      {
+        "text": "Rub ghee into atta, coconut, fennel and cardamom; knead stiff with the jaggery water.",
+        "minutes": 10
+      },
+      {
+        "text": "Press pieces into a mould or a fork for the pattern.",
+        "minutes": 15
+      },
+      {
+        "text": "Fry on low heat until deep brown and crisp.",
+        "minutes": 20
+      }
+    ]
+  },
+  {
+    "slug": "phirni",
+    "name": "Phirni",
+    "kind": "sweets",
+    "state": "All of India",
+    "rank": 91,
+    "blurb": "Ground rice set in milk with cardamom, served cold in clay pots.",
+    "minutes": 45,
+    "soak_hours": null,
+    "serves": 4,
+    "effort": "easy",
+    "ingredients": [
+      {
+        "label": "Basmati rice",
+        "amount": "3 tbsp",
+        "source": "iwc",
+        "match_words": "basmati rice"
+      },
+      {
+        "label": "Green cardamom",
+        "amount": "4 pods",
+        "source": "iwc",
+        "match_words": "green cardamom"
+      },
+      {
+        "label": "Saffron",
+        "amount": "a pinch",
+        "source": "iwc",
+        "match_words": "saffron"
+      },
+      {
+        "label": "Pistachios",
+        "amount": "2 tbsp",
+        "source": "iwc",
+        "match_words": "pistachios"
+      },
+      {
+        "label": "Milk",
+        "amount": "750 ml",
+        "source": "local"
+      },
+      {
+        "label": "Sugar",
+        "amount": "⅓ cup",
+        "source": "local"
+      }
+    ],
+    "steps": [
+      {
+        "text": "Soak the rice 30 minutes; grind it coarse.",
+        "minutes": null
+      },
+      {
+        "text": "Simmer the milk, stir in the rice paste and cook, stirring, until thick.",
+        "minutes": 20
+      },
+      {
+        "text": "Add sugar, cardamom and saffron.",
+        "minutes": 5
+      },
+      {
+        "text": "Pour into bowls, top with pistachios and chill.",
+        "minutes": null
+      }
+    ]
+  },
+  {
+    "slug": "shrikhand",
+    "name": "Shrikhand",
+    "kind": "sweets",
+    "state": "Maharashtra",
+    "rank": 92,
+    "blurb": "Hung yogurt sweetened with saffron and cardamom.",
+    "minutes": 20,
+    "soak_hours": 6,
+    "serves": 4,
+    "effort": "easy",
+    "ingredients": [
+      {
+        "label": "Saffron",
+        "amount": "a pinch",
+        "source": "iwc",
+        "match_words": "saffron"
+      },
+      {
+        "label": "Green cardamom",
+        "amount": "4 pods",
+        "source": "iwc",
+        "match_words": "green cardamom"
+      },
+      {
+        "label": "Pistachios",
+        "amount": "2 tbsp",
+        "source": "iwc",
+        "match_words": "pistachios"
+      },
+      {
+        "label": "Yogurt",
+        "amount": "1 kg",
+        "source": "local"
+      },
+      {
+        "label": "Sugar",
+        "amount": "½ cup powdered",
+        "source": "local"
+      }
+    ],
+    "steps": [
+      {
+        "text": "Hang the yogurt in a cloth in the fridge 6 hours.",
+        "minutes": null
+      },
+      {
+        "text": "Whisk the thick yogurt with sugar until smooth.",
+        "minutes": 5
+      },
+      {
+        "text": "Add saffron soaked in warm milk and cardamom.",
+        "minutes": 2
+      },
+      {
+        "text": "Chill; top with pistachios.",
+        "minutes": null
+      }
+    ]
+  },
+  {
+    "slug": "kaju-katli",
+    "name": "Kaju Katli",
+    "kind": "sweets",
+    "state": "All of India",
+    "rank": 93,
+    "blurb": "Thin cashew fudge diamonds.",
+    "minutes": 40,
+    "soak_hours": null,
+    "serves": 20,
+    "effort": "medium",
+    "ingredients": [
+      {
+        "label": "Cashews",
+        "amount": "1 cup",
+        "source": "iwc",
+        "match_words": "cashews"
+      },
+      {
+        "label": "Green cardamom",
+        "amount": "2 pods",
+        "source": "iwc",
+        "match_words": "green cardamom"
+      },
+      {
+        "label": "Sugar",
+        "amount": "½ cup",
+        "source": "local"
+      },
+      {
+        "label": "Ghee",
+        "amount": "1 tsp",
+        "source": "local"
+      }
+    ],
+    "steps": [
+      {
+        "text": "Grind the cashews to a fine powder in short bursts.",
+        "minutes": 3
+      },
+      {
+        "text": "Boil sugar and ¼ cup water to one string.",
+        "minutes": 8
+      },
+      {
+        "text": "Stir in the powder on low until it leaves the pan.",
+        "minutes": 6
+      },
+      {
+        "text": "Knead with ghee while warm; roll thin between sheets and cut diamonds.",
+        "minutes": 15
+      }
+    ]
+  },
+  {
+    "slug": "mysore-pak",
+    "name": "Mysore Pak",
+    "kind": "sweets",
+    "state": "Karnataka",
+    "rank": 94,
+    "blurb": "Gram flour fudge made with a lot of ghee. Mysore’s sweet.",
+    "minutes": 40,
+    "soak_hours": null,
+    "serves": 16,
+    "effort": "medium",
+    "ingredients": [
+      {
+        "label": "Besan",
+        "amount": "1 cup",
+        "source": "iwc",
+        "match_words": "besan"
+      },
+      {
+        "label": "Green cardamom",
+        "amount": "2 pods",
+        "source": "iwc",
+        "match_words": "green cardamom"
+      },
+      {
+        "label": "Sugar",
+        "amount": "1½ cups",
+        "source": "local"
+      },
+      {
+        "label": "Ghee",
+        "amount": "1½ cups",
+        "source": "local"
+      }
+    ],
+    "steps": [
+      {
+        "text": "Sieve the besan; mix with ½ cup melted ghee.",
+        "minutes": 3
+      },
+      {
+        "text": "Boil sugar and ½ cup water to one string.",
+        "minutes": 8
+      },
+      {
+        "text": "Add the besan, then hot ghee a ladle at a time, stirring hard, until it foams and leaves the pan.",
+        "minutes": 15
+      },
+      {
+        "text": "Pour into a greased tin; cut while warm.",
+        "minutes": 10
+      }
+    ]
+  },
+  {
+    "slug": "sooji-halwa",
+    "name": "Sooji Halwa",
+    "kind": "sweets",
+    "state": "All of India",
+    "rank": 95,
+    "blurb": "Semolina roasted in ghee and cooked with sugar syrup. Ten minutes.",
+    "minutes": 20,
+    "soak_hours": null,
+    "serves": 4,
+    "effort": "easy",
+    "ingredients": [
+      {
+        "label": "Sooji",
+        "amount": "½ cup",
+        "source": "iwc",
+        "match_words": "sooji"
+      },
+      {
+        "label": "Green cardamom",
+        "amount": "3 pods",
+        "source": "iwc",
+        "match_words": "green cardamom"
+      },
+      {
+        "label": "Cashews",
+        "amount": "8",
+        "source": "iwc",
+        "match_words": "cashews"
+      },
+      {
+        "label": "Raisins",
+        "amount": "1 tbsp",
+        "source": "iwc",
+        "match_words": "raisins"
+      },
+      {
+        "label": "Sugar",
+        "amount": "½ cup",
+        "source": "local"
+      },
+      {
+        "label": "Ghee",
+        "amount": "¼ cup",
+        "source": "local"
+      }
+    ],
+    "steps": [
+      {
+        "text": "Boil 1½ cups water with the sugar.",
+        "minutes": 4
+      },
+      {
+        "text": "Roast the sooji in ghee until golden and fragrant.",
+        "minutes": 8
+      },
+      {
+        "text": "Pour in the syrup carefully, stirring.",
+        "minutes": 3
+      },
+      {
+        "text": "Add cardamom, cashews and raisins; cook until it leaves the pan.",
+        "minutes": 3
+      }
+    ]
+  },
+  {
+    "slug": "shankarpali",
+    "name": "Shankarpali",
+    "kind": "sweets",
+    "state": "Maharashtra",
+    "rank": 96,
+    "blurb": "Sweet, crisp diamond biscuits for Diwali in Maharashtra.",
+    "minutes": 50,
+    "soak_hours": null,
+    "serves": 20,
+    "effort": "easy",
+    "ingredients": [
+      {
+        "label": "Maida",
+        "amount": "2 cups",
+        "source": "iwc",
+        "match_words": "maida"
+      },
+      {
+        "label": "Sooji",
+        "amount": "2 tbsp",
+        "source": "iwc",
+        "match_words": "sooji"
+      },
+      {
+        "label": "Green cardamom",
+        "amount": "3 pods",
+        "source": "iwc",
+        "match_words": "green cardamom"
+      },
+      {
+        "label": "Sugar",
+        "amount": "½ cup",
+        "source": "local"
+      },
+      {
+        "label": "Ghee",
+        "amount": "¼ cup",
+        "source": "local"
+      },
+      {
+        "label": "Milk",
+        "amount": "½ cup",
+        "source": "local"
+      },
+      {
+        "label": "Oil",
+        "amount": "for frying",
+        "source": "local"
+      }
+    ],
+    "steps": [
+      {
+        "text": "Warm the milk, sugar and ghee until the sugar melts; cool.",
+        "minutes": 5
+      },
+      {
+        "text": "Knead into the maida, sooji and cardamom; rest 30 minutes.",
+        "minutes": 35
+      },
+      {
+        "text": "Roll out, cut diamonds.",
+        "minutes": 10
+      },
+      {
+        "text": "Fry on low until golden and crisp.",
+        "minutes": 15
+      }
+    ]
+  },
+  {
+    "slug": "filter-coffee",
+    "name": "Filter Coffee",
+    "kind": "drinks",
+    "state": "Tamil Nadu",
+    "rank": 97,
+    "blurb": "Strong South Indian coffee, frothed with hot milk.",
+    "minutes": 15,
+    "soak_hours": null,
+    "serves": 2,
+    "effort": "easy",
+    "ingredients": [
+      {
+        "label": "Filter coffee powder",
+        "amount": "3 tbsp",
+        "source": "iwc",
+        "match_words": "filter coffee powder"
+      },
+      {
+        "label": "Milk",
+        "amount": "1 cup",
+        "source": "local"
+      },
+      {
+        "label": "Sugar",
+        "amount": "2 tsp",
+        "source": "local"
+      }
+    ],
+    "steps": [
+      {
+        "text": "Put the coffee in the top of the filter, press lightly and pour in ½ cup boiling water. Leave 10 minutes.",
+        "minutes": 10
+      },
+      {
+        "text": "Boil the milk.",
+        "minutes": 3
+      },
+      {
+        "text": "Mix decoction, milk and sugar; pour between two cups to froth.",
+        "minutes": 1
+      }
+    ]
+  },
+  {
+    "slug": "mango-lassi",
+    "name": "Mango Lassi",
+    "kind": "drinks",
+    "state": "Punjab",
+    "rank": 98,
+    "blurb": "Mango and yogurt, blended cold.",
+    "minutes": 5,
+    "soak_hours": null,
+    "serves": 2,
+    "effort": "easy",
+    "ingredients": [
+      {
+        "label": "Green cardamom",
+        "amount": "1 pod",
+        "source": "iwc",
+        "match_words": "green cardamom"
+      },
+      {
+        "label": "Saffron",
+        "amount": "a few strands",
+        "source": "iwc",
+        "match_words": "saffron"
+      },
+      {
+        "label": "Mango pulp or mangoes",
+        "amount": "1 cup",
+        "source": "local"
+      },
+      {
+        "label": "Yogurt",
+        "amount": "1 cup",
+        "source": "local"
+      },
+      {
+        "label": "Sugar",
+        "amount": "1 tbsp",
+        "source": "local"
+      }
+    ],
+    "steps": [
+      {
+        "text": "Blend mango, yogurt, sugar and cardamom with a few ice cubes.",
+        "minutes": 2
+      },
+      {
+        "text": "Pour; top with saffron.",
+        "minutes": null
+      }
+    ]
+  },
+  {
+    "slug": "thandai",
+    "name": "Thandai",
+    "kind": "drinks",
+    "state": "All of India",
+    "rank": 99,
+    "blurb": "Cold milk with almonds, fennel and spice. Holi’s drink.",
+    "minutes": 20,
+    "soak_hours": 2,
+    "serves": 4,
+    "effort": "easy",
+    "ingredients": [
+      {
+        "label": "Thandai masala",
+        "amount": "3 tbsp",
+        "source": "iwc",
+        "match_words": "thandai masala"
+      },
+      {
+        "label": "Almonds",
+        "amount": "15",
+        "source": "iwc",
+        "match_words": "almonds"
+      },
+      {
+        "label": "Saunf",
+        "amount": "1 tbsp",
+        "source": "iwc",
+        "match_words": "fennel seeds"
+      },
+      {
+        "label": "Poppy seeds",
+        "amount": "1 tbsp",
+        "source": "iwc",
+        "match_words": "poppy seeds"
+      },
+      {
+        "label": "Black pepper",
+        "amount": "½ tsp",
+        "source": "iwc",
+        "match_words": "black pepper"
+      },
+      {
+        "label": "Milk",
+        "amount": "1 litre",
+        "source": "local"
+      },
+      {
+        "label": "Sugar",
+        "amount": "⅓ cup",
+        "source": "local"
+      }
+    ],
+    "steps": [
+      {
+        "text": "Soak almonds, fennel, poppy seeds and pepper 2 hours; grind to a paste.",
+        "minutes": null
+      },
+      {
+        "text": "Boil and cool the milk with sugar.",
+        "minutes": 10
+      },
+      {
+        "text": "Stir in the paste and thandai masala; strain if you like it smooth.",
+        "minutes": 5
+      },
+      {
+        "text": "Chill.",
+        "minutes": null
+      }
+    ]
+  },
+  {
+    "slug": "beetroot-kanji",
+    "name": "Beetroot Kanji",
+    "kind": "drinks",
+    "state": "All of India",
+    "rank": 100,
+    "blurb": "A tangy fermented beetroot drink with mustard. North India’s winter tonic.",
+    "minutes": 15,
+    "soak_hours": null,
+    "serves": 6,
+    "effort": "easy",
+    "ingredients": [
+      {
+        "label": "Mustard seeds",
+        "amount": "2 tbsp",
+        "source": "iwc",
+        "match_words": "mustard seeds"
+      },
+      {
+        "label": "Kala namak",
+        "amount": "1 tsp",
+        "source": "iwc",
+        "match_words": "kala namak"
+      },
+      {
+        "label": "Kashmiri chilli powder",
+        "amount": "½ tsp",
+        "source": "iwc",
+        "match_words": "kashmiri chilli powder"
+      },
+      {
+        "label": "Beetroot",
+        "amount": "2",
+        "source": "local"
+      },
+      {
+        "label": "Black carrots",
+        "amount": "2 (optional)",
+        "source": "local"
+      },
+      {
+        "label": "Water",
+        "amount": "1.5 litres",
+        "source": "local"
+      }
+    ],
+    "steps": [
+      {
+        "text": "Cut the beetroot and carrots into sticks.",
+        "minutes": 10
+      },
+      {
+        "text": "Coarsely crush the mustard seeds.",
+        "minutes": 2
+      },
+      {
+        "text": "Put everything in a glass jar with water and salt; cover with a cloth.",
+        "minutes": 3
+      },
+      {
+        "text": "Leave in the sun 3 – 4 days, stirring daily, until sour.",
+        "minutes": null
+      }
+    ]
+  }
+]

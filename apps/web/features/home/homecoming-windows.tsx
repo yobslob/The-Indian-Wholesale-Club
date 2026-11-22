@@ -2,12 +2,16 @@ import Link from 'next/link';
 
 import { dayDate } from '@repo/shared/domain';
 
+import { StorePhoto } from '@/features/catalog/store-photo';
 import { Money } from '@/features/shell/market';
 import { Flight } from '@/features/visuals/flight';
 import { VisualSlot, slotShown } from '@/features/visuals/visual-slot';
+import { mediaUrl } from '@/lib/site';
 
 import { Arrow, ArchLine, Leaf, Pumpkin, WindowArt } from './homecoming-art';
-import { ARCHES, SEASON, WIDE, type Tone } from './homecoming-hooks';
+import { archesFor, SEASON, WIDE, type Arch, type Tone } from './homecoming-hooks';
+
+import type { HomeRecipe } from '@repo/db/store';
 
 /**
  * Home's windows, dressed for the season: Homecoming, for Thanksgiving (D-196; built for Diwali, founder 2026-10-31,
@@ -96,36 +100,75 @@ export function HomecomingDusk({ free }: { free: string | null }): React.JSX.Ele
   );
 }
 
-/** The three arch windows under their toran: Clothing, Snacks and the neighbourhood's shelves (D-174 – D-176). */
-export function HomecomingArches(): React.JSX.Element {
+/** Whether a window draws a photo in its top: the recipe's own, else its slot (slots.ts). */
+const hasPhoto = (a: Arch): boolean => Boolean(a.recipe?.photo) || slotShown(a.slot);
+
+/**
+ * The three arch windows under their toran: Clothing, Snacks and the neighbourhood's shelves (D-174 – D-176); with a
+ * recipe on Home, Clothing, Cook at home (the main one) and Snacks (D-203).
+ */
+export function HomecomingArches({ recipe = null }: { recipe?: HomeRecipe | null }): React.JSX.Element {
+  const arches = archesFor(recipe);
   return (
     <section aria-label={SEASON.arches} className="hc" data-album="">
       <div className="hc-bunting" aria-hidden="true" />
-      <div className="hc-row">
-        {ARCHES.map((a) => (
+      <div className={`hc-row${recipe ? ' hc-row--main' : ''}`}>
+        {arches.map((a) => (
           <Link
             key={a.id}
             href={a.href}
             prefetch={false}
-            className={`hc-arch ${TONE[a.tone]}${slotShown(a.slot) ? ' hc-arch--photo' : ''}`}
+            className={`hc-arch ${TONE[a.tone]}${hasPhoto(a) ? ' hc-arch--photo' : ''}${a.recipe ? ' hc-arch--main' : ''}`}
           >
             <span className="hc-arch-shape">
-              {/* D-175: the founder's photo fills the arch's top (the view through the window); else the drawing */}
-              <VisualSlot id={a.slot} className="hc-photo" />
+              {/* D-175: the founder's photo fills the arch's top (the view through the window); else the drawing.
+                  D-203: the recipe's own dish photo first. */}
+              {a.recipe?.photo ? (
+                <span className="hc-photo hc-photo--dish" aria-hidden="true">
+                  <StorePhoto src={mediaUrl(a.recipe.photo)} alt="" sizes="(min-width: 768px) 34vw, 40vw" className="object-cover" />
+                </span>
+              ) : (
+                <VisualSlot id={a.slot} className="hc-photo" />
+              )}
               <ArchLine />
-              <span className="hc-kicker font-ui">{a.kicker}</span>
-              {slotShown(a.slot) ? null : <WindowArt art={a.art} />}
+              {a.recipe ? <span className="sr-only">{a.recipe.label}, </span> : null}
+              <span className="hc-kicker font-ui" aria-hidden={a.recipe ? true : undefined}>
+                {a.kicker}
+              </span>
+              {hasPhoto(a) ? null : <WindowArt art={a.art} />}
+              {a.recipe ? (
+                <span className="hc-dish" aria-hidden="true">
+                  <span className="hc-dish-name font-display">{a.recipe.name}</span>
+                  <span className="hc-dish-line font-ui">{a.recipe.line}</span>
+                </span>
+              ) : null}
               {a.lead ? (
                 <span className="hc-hook">
-                  <span className="hc-lead font-ui">{a.lead}</span>
-                  <span className="hc-big font-heading">{a.cents !== undefined ? <Money cents={a.cents} /> : a.big}</span>
+                  <span className="hc-lead font-ui" aria-hidden={a.recipe ? true : undefined}>
+                    {a.lead}
+                  </span>
+                  <span className="hc-big font-heading">
+                    {a.cents !== undefined ? <Money cents={a.cents} /> : a.big}
+                    {/* D-203 answer 5: every kit struck through, display only */}
+                    {a.recipe && a.cents !== undefined ? (
+                      <s className="hc-was font-ui">
+                        <span className="sr-only">, was </span>
+                        <Money cents={a.cents} wasOf="food" />
+                      </s>
+                    ) : null}
+                  </span>
                 </span>
               ) : (
                 <span className="hc-hook hc-hook--words font-heading">{a.big}</span>
               )}
-              {a.tag ? <span className="hc-tag font-ui">{a.tag}</span> : null}
+              {a.tag ? (
+                <span className="hc-tag font-ui" aria-hidden={a.recipe ? true : undefined}>
+                  {a.tag}
+                </span>
+              ) : null}
               {/* D-176: the button is the arch's own link, drawn; the whole window stays the target */}
               <span className="hc-go font-ui">
+                {a.recipe ? ', ' : null}
                 {a.cta}
                 <Arrow />
               </span>

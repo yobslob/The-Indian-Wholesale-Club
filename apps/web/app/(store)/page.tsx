@@ -37,8 +37,9 @@ export default async function HomePage(): Promise<React.JSX.Element> {
       />
 
       <div className="px-[var(--gut)]">
-        {/* D-179: the season's three arches right under the hero, a price on the first screens */}
-        <HomecomingArches />
+        {/* D-179: the season's three arches right under the hero, a price on the first screens; D-203: Cook at home in
+            the middle once a recipe is on Home */}
+        <HomecomingArches recipe={home.recipe} />
         {home.album.length >= ALBUM_MINIMUM ? <LazyAlbum photos={home.album} /> : null}
         <FirstOrderBand />
         <CategoryTiles categories={home.categories} />

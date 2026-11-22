@@ -47,6 +47,8 @@ Realtime publication, D-187). Tables with cost or operations data are never quer
 | | `order_events` | timeline: `kind` + `visible_to_customer`. The app turns `kind` into copy (no customer text stored in SQL). `internal_note`* | owner (visible rows) / admin |
 | | `promo_codes` | codes, limits, validity; D-191: `max_discount_cents`, `new_customers_only`, `is_public` (fills checkout's coupon box). Redeemed via `increment_promo_uses()` | admin |
 | | `wishlists` | saved products | owner |
+| Recipes | `recipes` | D-203, Cook at home: slug, name, region (null = All of India), `kind` (snacks, breakfast, dinner, sweets, drinks), `blurb`, `minutes`, `soak_hours`, `serves`, `effort` (easy, medium, weekend), `photo_path` (the founder's, R2), `steps` (`[{text, minutes}]`, its shape checked), `status` (draft, live, archived), `content_status` (D-012: Claude's words stay `draft` until approved), `home_rank` (Home's middle window), `sort`, `is_placeholder`, `published_at` | admin; customers via `store_recipes`, `store_recipe` |
+| | `recipe_ingredients` | a recipe's lines: `label`, `amount` (text), `source` (`iwc`: a food option in the kit; `local`: bought down the road, never a listing), `variant_id` (its `product_id` follows it, by trigger; food only), `match_words` (Match's search words, and the Blinkit pantry list's), `grams_used` (later: cost per plate). No optional lines: every IWC line is in the kit | admin |
 | Settings | `app_settings` | `dev_preview` (true only via `seed/demo.sql`: store shows placeholders + draft text) | admin |
 | Ops | `webhook_events`, `pending_orders`, `failed_reconciliations`, `email_outbox`, `admin_error_events` | kept from the old schema. `webhook_events.status` (`processing`/`done`) + `claimed_at`: a claim unfinished after 2 minutes is taken over (F-1); `pending_orders.swept_at`/`sweep_note`: the payment sweep's last look and why it stopped (F-2), `reconciled_by` browser/webhook/sweep | service |
 | Ops | `payment_disputes` | Stripe disputes (chargebacks) from the webhook: amount, reason, status, evidence due date, the order; `closed_at` once won/lost (launch QA F-3, migration 20261108090300). `failed_reconciliations` keeps one open row per PaymentIntent (trigger `failed_reconciliations_once`) | service |
@@ -470,6 +472,8 @@ collapses internal statuses into what customers see (`flows.md` §8). Two small 
 `dev_preview()` (is the dev preview on) and `is_product_visible(product)` (the one "may a customer see this product"
 rule, used by the `variant_availability` read policy so the mirror never reveals hidden products).
 
+Migration 20261124090000 (D-203, `docs/plan-recipes.md`): tables `recipes` and `recipe_ingredients` (admins only, RLS `is_admin()`). `store_recipes(kind)`: live recipes with approved words and at least one available piece, as cards with `kit_cents` (the available pieces' store prices added up, never stored; the struck figure is drawn from it on the page, D-203) and `kit_count`. `store_recipe(slug)`: one recipe, its steps and lines; an IWC line carries only what the bag's line needs plus `available` and `option_count`, a local line only its label and amount; null when not shown. `store_home()` adds `recipe` (`_store_home_recipe()`: the lowest `home_rank` the shelf would show, else null, and Home keeps today's windows). Placeholders show only in dev (INV-8). **The publish rule** (`_recipe_publish_guard`, `_recipe_blockers`): a recipe goes live only with approved words, a photo, at least one IWC line and every IWC line on a live, active food option (one waiting for its Blinkit listing holds it back); later breakage doesn't unpublish (the line shows unavailable, the kit drops it, Today counts it). Leaving `live` clears `home_rank`. Admin: `admin_pin_recipe(id)` (one recipe on Home at a time; null clears), `admin_recipe_blockers(id)` (the editor's strip), `admin_recipe_matches(words, limit)` (live, in-stock food options whose names hold every word, cheapest first), `admin_recipes_missing_piece()` (Today's count). Test: `recipes`.
+
 ## Business functions (the only way to do these things)
 | Function | Who | Does (flows.md) |
 |---|---|---|
@@ -528,6 +532,7 @@ breaking it and watching the test fail ("mutation check", `status.md`).
   `catalogue/README.md`). The launch regions' items as listings: clothing live with colour × size variants, pantry as
   drafts (D-032); prices and pieces are placeholders (`is_placeholder = true`). Product
   ids are `md5('iwc-catalogue:' || slug)`, so `pnpm catalogue:apply` can reload it into a running local DB without a reset.
+- `recipes.sql`: **dev only.** Four placeholder recipes (Pav Bhaji pinned to Home, Masala Chai, Poha, Rajma Chawal) and seven live placeholder pantry listings for their kits, one sold out (D-203).
 - `search.sql`: builds search's vocabulary from the seeded listings (`refresh_search_words()`, D-160; migrations run
   before the seed). After `pnpm catalogue:apply`, run it again (or wait for the 6-hourly job).
 

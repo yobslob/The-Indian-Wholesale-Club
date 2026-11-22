@@ -32,6 +32,7 @@ function groups(): [string, Item[]][] {
         { href: '/admin/import', label: 'Import from shops' },
         { href: '/admin/regions', label: 'Regions' },
         { href: '/admin/home-photos', label: 'Home photos' },
+      { href: '/admin/recipes', label: 'Recipes' },
         { href: '/admin/reviews', label: 'Reviews', count: 'reviews', hint: 'To approve', soft: true },
         { href: '/admin/promotions', label: 'Promotions' },
       ],

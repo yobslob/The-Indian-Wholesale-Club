@@ -588,14 +588,14 @@ isOneToOne: false
                   ]
                 },"products": {
                   Row: {
-                    "attributes": NonNullable<Json>,"category_id": string,"coming_soon": boolean,"coming_soon_note": string | null,"craft": string | null,"created_at": string,"created_by": string | null,"description": string | null,"description_redo": string | null,"has_origin_label": boolean,"heavy_item": boolean,"id": string,"is_curated": boolean,"is_placeholder": boolean,"is_us_stock": boolean,"liquid_checked_at": string | null,"made_in": string,"name": string,"origin_town": string | null,"price_auto": boolean,"price_cents": number,"product_type": Database["public"]['Enums']["product_type"],"published_at": string | null,"region_id": string | null,"search": unknown,"shop_price_paise": number | null,"shop_title": string | null,"slug": string,"source_checked_at": string | null,"source_in_stock": boolean | null,"source_site": string | null,"source_url": string | null,"sourcing_target_id": string | null,"status": Database["public"]['Enums']["product_status"],"story": string | null,"summary": string | null,"updated_at": string,"wears": string | null
+                    "attributes": NonNullable<Json>,"category_id": string,"coming_soon": boolean,"coming_soon_note": string | null,"craft": string | null,"created_at": string,"created_by": string | null,"description": string | null,"description_redo": string | null,"has_origin_label": boolean,"heavy_item": boolean,"id": string,"is_curated": boolean,"is_placeholder": boolean,"is_us_stock": boolean,"label_tried_at": string | null,"liquid_checked_at": string | null,"made_in": string,"name": string,"origin_town": string | null,"price_auto": boolean,"price_cents": number,"product_type": Database["public"]['Enums']["product_type"],"published_at": string | null,"region_id": string | null,"search": unknown,"shop_price_paise": number | null,"shop_title": string | null,"slug": string,"source_checked_at": string | null,"source_in_stock": boolean | null,"source_site": string | null,"source_url": string | null,"sourcing_target_id": string | null,"status": Database["public"]['Enums']["product_status"],"story": string | null,"summary": string | null,"updated_at": string,"wears": string | null,"weight_tried_at": string | null
                   }
                   ComputedFields: never
                   Insert: {
-                    "attributes"?: NonNullable<Json>,"category_id": string,"coming_soon"?: boolean,"coming_soon_note"?: string | null,"craft"?: string | null,"created_at"?: string,"created_by"?: string | null,"description"?: string | null,"description_redo"?: string | null,"has_origin_label"?: boolean,"heavy_item"?: boolean,"id"?: string,"is_curated"?: boolean,"is_placeholder"?: boolean,"is_us_stock"?: boolean,"liquid_checked_at"?: string | null,"made_in"?: string,"name": string,"origin_town"?: string | null,"price_auto"?: boolean,"price_cents": number,"product_type": Database["public"]['Enums']["product_type"],"published_at"?: string | null,"region_id"?: string | null,"search"?: never,"shop_price_paise"?: number | null,"shop_title"?: string | null,"slug": string,"source_checked_at"?: string | null,"source_in_stock"?: boolean | null,"source_site"?: string | null,"source_url"?: string | null,"sourcing_target_id"?: string | null,"status"?: Database["public"]['Enums']["product_status"],"story"?: string | null,"summary"?: string | null,"updated_at"?: string,"wears"?: string | null
+                    "attributes"?: NonNullable<Json>,"category_id": string,"coming_soon"?: boolean,"coming_soon_note"?: string | null,"craft"?: string | null,"created_at"?: string,"created_by"?: string | null,"description"?: string | null,"description_redo"?: string | null,"has_origin_label"?: boolean,"heavy_item"?: boolean,"id"?: string,"is_curated"?: boolean,"is_placeholder"?: boolean,"is_us_stock"?: boolean,"label_tried_at"?: string | null,"liquid_checked_at"?: string | null,"made_in"?: string,"name": string,"origin_town"?: string | null,"price_auto"?: boolean,"price_cents": number,"product_type": Database["public"]['Enums']["product_type"],"published_at"?: string | null,"region_id"?: string | null,"search"?: never,"shop_price_paise"?: number | null,"shop_title"?: string | null,"slug": string,"source_checked_at"?: string | null,"source_in_stock"?: boolean | null,"source_site"?: string | null,"source_url"?: string | null,"sourcing_target_id"?: string | null,"status"?: Database["public"]['Enums']["product_status"],"story"?: string | null,"summary"?: string | null,"updated_at"?: string,"wears"?: string | null,"weight_tried_at"?: string | null
                   }
                   Update: {
-                    "attributes"?: NonNullable<Json>,"category_id"?: string,"coming_soon"?: boolean,"coming_soon_note"?: string | null,"craft"?: string | null,"created_at"?: string,"created_by"?: string | null,"description"?: string | null,"description_redo"?: string | null,"has_origin_label"?: boolean,"heavy_item"?: boolean,"id"?: string,"is_curated"?: boolean,"is_placeholder"?: boolean,"is_us_stock"?: boolean,"liquid_checked_at"?: string | null,"made_in"?: string,"name"?: string,"origin_town"?: string | null,"price_auto"?: boolean,"price_cents"?: number,"product_type"?: Database["public"]['Enums']["product_type"],"published_at"?: string | null,"region_id"?: string | null,"search"?: never,"shop_price_paise"?: number | null,"shop_title"?: string | null,"slug"?: string,"source_checked_at"?: string | null,"source_in_stock"?: boolean | null,"source_site"?: string | null,"source_url"?: string | null,"sourcing_target_id"?: string | null,"status"?: Database["public"]['Enums']["product_status"],"story"?: string | null,"summary"?: string | null,"updated_at"?: string,"wears"?: string | null
+                    "attributes"?: NonNullable<Json>,"category_id"?: string,"coming_soon"?: boolean,"coming_soon_note"?: string | null,"craft"?: string | null,"created_at"?: string,"created_by"?: string | null,"description"?: string | null,"description_redo"?: string | null,"has_origin_label"?: boolean,"heavy_item"?: boolean,"id"?: string,"is_curated"?: boolean,"is_placeholder"?: boolean,"is_us_stock"?: boolean,"label_tried_at"?: string | null,"liquid_checked_at"?: string | null,"made_in"?: string,"name"?: string,"origin_town"?: string | null,"price_auto"?: boolean,"price_cents"?: number,"product_type"?: Database["public"]['Enums']["product_type"],"published_at"?: string | null,"region_id"?: string | null,"search"?: never,"shop_price_paise"?: number | null,"shop_title"?: string | null,"slug"?: string,"source_checked_at"?: string | null,"source_in_stock"?: boolean | null,"source_site"?: string | null,"source_url"?: string | null,"sourcing_target_id"?: string | null,"status"?: Database["public"]['Enums']["product_status"],"story"?: string | null,"summary"?: string | null,"updated_at"?: string,"wears"?: string | null,"weight_tried_at"?: string | null
                   }
                   Relationships: [
                     {
@@ -677,6 +677,76 @@ isOneToOne: false
                   }
                   Relationships: [
                     
+                  ]
+                },"recipe_ingredients": {
+                  Row: {
+                    "amount": string,"grams_used": number | null,"id": string,"label": string,"match_words": string,"product_id": string | null,"recipe_id": string,"sort": number,"source": string,"variant_id": string | null
+                  }
+                  ComputedFields: never
+                  Insert: {
+                    "amount"?: string,"grams_used"?: number | null,"id"?: string,"label": string,"match_words"?: string,"product_id"?: string | null,"recipe_id": string,"sort"?: number,"source": string,"variant_id"?: string | null
+                  }
+                  Update: {
+                    "amount"?: string,"grams_used"?: number | null,"id"?: string,"label"?: string,"match_words"?: string,"product_id"?: string | null,"recipe_id"?: string,"sort"?: number,"source"?: string,"variant_id"?: string | null
+                  }
+                  Relationships: [
+                    {
+      foreignKeyName: "recipe_ingredients_product_id_fkey"
+      columns: ["product_id"]
+isOneToOne: false
+      referencedRelation: "products"
+      referencedColumns: ["id"]
+    },{
+      foreignKeyName: "recipe_ingredients_product_id_fkey"
+      columns: ["product_id"]
+isOneToOne: false
+      referencedRelation: "store_products"
+      referencedColumns: ["id"]
+    },{
+      foreignKeyName: "recipe_ingredients_recipe_id_fkey"
+      columns: ["recipe_id"]
+isOneToOne: false
+      referencedRelation: "recipes"
+      referencedColumns: ["id"]
+    },{
+      foreignKeyName: "recipe_ingredients_variant_id_fkey"
+      columns: ["variant_id"]
+isOneToOne: false
+      referencedRelation: "product_variants"
+      referencedColumns: ["id"]
+    },{
+      foreignKeyName: "recipe_ingredients_variant_id_fkey"
+      columns: ["variant_id"]
+isOneToOne: false
+      referencedRelation: "store_variants"
+      referencedColumns: ["id"]
+    }
+                  ]
+                },"recipes": {
+                  Row: {
+                    "blurb": string,"content_status": string,"created_at": string,"effort": string,"home_rank": number | null,"id": string,"is_placeholder": boolean,"kind": string,"minutes": number,"name": string,"photo_path": string | null,"published_at": string | null,"region_id": string | null,"serves": number,"slug": string,"soak_hours": number | null,"sort": number,"status": string,"steps": NonNullable<Json>,"updated_at": string
+                  }
+                  ComputedFields: never
+                  Insert: {
+                    "blurb"?: string,"content_status"?: string,"created_at"?: string,"effort"?: string,"home_rank"?: number | null,"id"?: string,"is_placeholder"?: boolean,"kind": string,"minutes"?: number,"name": string,"photo_path"?: string | null,"published_at"?: string | null,"region_id"?: string | null,"serves"?: number,"slug": string,"soak_hours"?: number | null,"sort"?: number,"status"?: string,"steps"?: NonNullable<Json>,"updated_at"?: string
+                  }
+                  Update: {
+                    "blurb"?: string,"content_status"?: string,"created_at"?: string,"effort"?: string,"home_rank"?: number | null,"id"?: string,"is_placeholder"?: boolean,"kind"?: string,"minutes"?: number,"name"?: string,"photo_path"?: string | null,"published_at"?: string | null,"region_id"?: string | null,"serves"?: number,"slug"?: string,"soak_hours"?: number | null,"sort"?: number,"status"?: string,"steps"?: NonNullable<Json>,"updated_at"?: string
+                  }
+                  Relationships: [
+                    {
+      foreignKeyName: "recipes_region_id_fkey"
+      columns: ["region_id"]
+isOneToOne: false
+      referencedRelation: "regions"
+      referencedColumns: ["id"]
+    },{
+      foreignKeyName: "recipes_region_id_fkey"
+      columns: ["region_id"]
+isOneToOne: false
+      referencedRelation: "store_regions"
+      referencedColumns: ["id"]
+    }
                   ]
                 },"region_photos": {
                   Row: {
@@ -1520,6 +1590,9 @@ isOneToOne: false
 "_quick_sourceable":
 { Args: { "p_product": string }; Returns: boolean
                            },
+"_recipe_blockers":
+{ Args: { "p_id": string }; Returns: (string)[]
+                           },
 "_record_cancel":
 { Args: { "p_amount": number,"p_note": string,"p_order": string }; Returns: undefined
                            },
@@ -1590,11 +1663,19 @@ isOneToOne: false
 "_store_card_options":
 { Args: { "p_product": string }; Returns: Json
                            },
+"_store_home_recipe":
+{ Args: Record<PropertyKey, never>; Returns: Json
+                           },
 "_store_pack":
 { Args: { "p_name": string,"p_product": string,"p_type": Database["public"]['Enums']["product_type"] }; Returns: string
                            },
 "_store_product_card":
 { Args: { "p_product_id": string }; Returns: Json
+                           },
+"_store_recipe_kit":
+{ Args: { "p_id": string }; Returns: {
+              "kit_cents": number,"kit_count": number
+            }[]
                            },
 "_tidy":
 { Args: Record<PropertyKey, never>; Returns: Json
@@ -1668,6 +1749,9 @@ isOneToOne: false
 "admin_order_home_photos":
 { Args: { "p_ids": (string)[] }; Returns: undefined
                            },
+"admin_pin_recipe":
+{ Args: { "p_id": string }; Returns: undefined
+                           },
 "admin_price_preview":
 { Args: { "p_shop_paise": number,"p_type": Database["public"]['Enums']["product_type"],"p_weight_g": number }; Returns: number
                            },
@@ -1678,6 +1762,17 @@ isOneToOne: false
                            },
 "admin_publish_drafts":
 { Args: { "p_limit"?: number }; Returns: Json
+                           },
+"admin_recipe_blockers":
+{ Args: { "p_id": string }; Returns: (string)[]
+                           },
+"admin_recipe_matches":
+{ Args: { "p_limit"?: number,"p_words": string }; Returns: {
+              "available": number,"price_cents": number,"product_id": string,"product_name": string,"variant_id": string,"variant_label": string
+            }[]
+                           },
+"admin_recipes_missing_piece":
+{ Args: Record<PropertyKey, never>; Returns: number
                            },
 "admin_rename_listings":
 { Args: { "p_items": Json }; Returns: number
@@ -1860,6 +1955,12 @@ isOneToOne: false
 "store_product_page":
 { Args: { "p_product_slug": string,"p_region_slug": string }; Returns: Json
                            },
+"store_recipe":
+{ Args: { "p_slug": string }; Returns: Json
+                           },
+"store_recipes":
+{ Args: { "p_kind"?: string }; Returns: Json
+                           },
 "store_region_head":
 { Args: { "p_region_slug": string }; Returns: Json
                            },
@@ -1921,8 +2022,14 @@ isOneToOne: false
 "worker_food_plan":
 { Args: { "p_after"?: string,"p_all"?: boolean,"p_limit"?: number }; Returns: Json
                            },
+"worker_food_prices":
+{ Args: { "p_after"?: string,"p_limit"?: number }; Returns: Json
+                           },
 "worker_home_plan":
 { Args: { "p_all"?: boolean,"p_limit"?: number }; Returns: Json
+                           },
+"worker_label_plan":
+{ Args: { "p_after"?: string,"p_limit"?: number,"p_mode"?: string }; Returns: Json
                            },
 "worker_liquid_plan":
 { Args: { "p_after"?: string,"p_all"?: boolean,"p_limit"?: number }; Returns: Json
@@ -2003,10 +2110,13 @@ isOneToOne: false
 { Args: { "p_note"?: string,"p_target": string }; Returns: undefined
                            },
 "worker_weight_plan":
-{ Args: { "p_limit"?: number }; Returns: Json
+{ Args: { "p_limit"?: number,"p_types"?: (Database["public"]['Enums']["product_type"])[] }; Returns: Json
                            },
 "worker_weight_references":
 { Args: { "p_after"?: string,"p_limit"?: number }; Returns: Json
+                           },
+"worker_weights_tried":
+{ Args: { "p_products": (string)[],"p_what": string }; Returns: number
                            }
           }
           Enums: {

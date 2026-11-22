@@ -44,7 +44,14 @@ export async function loadPriceIndex(db: Db): Promise<PriceIndex> {
   return indexReferences(refs);
 }
 
-/** For the label reader: a label weight that makes a kilo cost four times more or less than similar items, doubted. */
+/**
+ * For the label reader: a label weight that makes a kilo cost LABEL_DEARER times more than similar items, or four
+ * times less, is doubted. Dearer is the side one pack's label on a listing of several packs falls on (the eval of
+ * 2026-11-20: Chitale's 1.2 kg read as 400 g, three times dearer), and it would price the listing below its cost.
+ * TODO(founder): Q-62 confirms the limit (Claude's, from the eval).
+ */
+export const LABEL_DEARER = 1.8;
+
 export function priceDoubt(index: PriceIndex) {
   return (
     listing: LabelListing,
@@ -56,7 +63,7 @@ export function priceDoubt(index: PriceIndex) {
     if (near.length < 3) return null;
     const perKg = (variant.shop_price_paise / grams) * 10;
     const typical = near.map((r) => r.perKg).sort((a, b) => a - b)[Math.floor(near.length / 2)]!;
-    return perKg > typical * 4 || perKg < typical / 4
+    return perKg > typical * LABEL_DEARER || perKg < typical / 4
       ? `₹${Math.round(perKg)} a kg; similar labelled items ₹${Math.round(typical)}`
       : null;
   };
@@ -147,5 +154,5 @@ function writeSheet(file: string, rows: PriceCheckRow[]): void {
         .map(cell)
         .join(','),
     );
-  writeFileSync(file, `﻿${[head.map(cell).join(','), ...lines].join('\r\n')}\r\n`, 'utf8');
+  writeFileSync(file, `\uFEFF${[head.map(cell).join(','), ...lines].join('\r\n')}\r\n`, 'utf8');
 }

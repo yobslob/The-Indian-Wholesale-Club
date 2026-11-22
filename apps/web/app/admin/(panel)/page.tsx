@@ -5,6 +5,7 @@ import {
   getTodaySummary,
   moneyAtRisk,
   pilotPipelineCounts,
+  recipesMissingPiece,
   toOrderSummary,
 } from '@repo/db/admin';
 import { deskOrder, greeting, type Desk } from '@repo/shared/admin';
@@ -26,13 +27,14 @@ const DESK_NAME: Record<Desk, string> = { us: 'US desk', india: 'India desk' };
  */
 export default async function TodayPage(): Promise<React.JSX.Element> {
   const { client, desk } = await requireAdminPage();
-  const [summary, counts, attention, toOrder, pipeline, food] = await Promise.all([
+  const [summary, counts, attention, toOrder, pipeline, food, recipesMissing] = await Promise.all([
     getTodaySummary(client),
     waitingCounts(client),
     getAttention(client),
     toOrderSummary(client),
     pilotPipelineCounts(client),
     foodWatch(client),
+    recipesMissingPiece(client),
   ]);
   const atRisk = food.not_bought + food.not_shipped;
   const alerts = attentionLines(attention);
@@ -44,6 +46,8 @@ export default async function TodayPage(): Promise<React.JSX.Element> {
     us: [
       { n: status('arrived'), what: 'Orders in the US to send on', sub: 'Pack and ship to the customer', go: 'Pack & ship', href: '/admin/orders?status=arrived', urgent: true },
       { n: counts.returns, what: 'Returns to collect', go: 'Open returns', href: '/admin/returns' },
+      // D-203: a live recipe whose kit lost a piece (archived or sold out) still shows; its line says not available
+      { n: recipesMissing, what: 'Recipes with a missing piece', sub: 'Pick another listing for the line', go: 'Open recipes', href: '/admin/recipes?health=missing' },
     ],
     india: [
       // D-154: food is bought within 2 hours and ships the next day; the 7 delivery days depend on it

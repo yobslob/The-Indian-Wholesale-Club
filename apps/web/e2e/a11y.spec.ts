@@ -5,8 +5,8 @@ import { DEMO_PRODUCT } from './env';
 import { addDemoToBag } from './pay';
 
 /**
- * Launch QA plan §8 item 12: axe finds no serious or critical WCAG 2.1 A/AA problem on Home, /food, a product, the bag
- * and checkout. Reduced motion, so nothing is caught half-way through an entrance. Stripe's card frame is Stripe's;
+ * Launch QA plan §8 item 12: axe finds no serious or critical WCAG 2.1 A/AA problem on Home, /food, a product, the recipe
+ * shelf and a recipe (D-203), the bag and checkout. Reduced motion, so nothing is caught half-way through an entrance. Stripe's card frame is Stripe's;
  * checkout is checked at its first step, before the frame loads.
  */
 test.use({ reducedMotion: 'reduce' });
@@ -25,6 +25,9 @@ const PAGES: [string, string][] = [
   ['Home', '/'],
   ['Food', '/food'],
   ['a product', `/states/${DEMO_PRODUCT.region}/${DEMO_PRODUCT.slug}`],
+  // D-203: the local seed's placeholder recipes
+  ['the recipe shelf', '/recipes'],
+  ['a recipe', '/recipes/pav-bhaji'],
 ];
 
 for (const [name, path] of PAGES) {

@@ -1,4 +1,4 @@
-import { getHomeCached } from '@/features/catalog/data';
+import { getHomeCached, getRecipesCached } from '@/features/catalog/data';
 import { siteUrl } from '@/lib/env';
 import { errorMessage, logger } from '@/lib/logger';
 import { storeClient } from '@/lib/supabase/store';
@@ -17,8 +17,13 @@ export async function GET(_request: Request, { params }: { params: Promise<{ par
   try {
     let entries: SitemapEntry[];
     if (part === null) {
-      const { regions } = await getHomeCached();
-      entries = [...STATIC_PATHS.map((p) => ({ loc: `${base}${p}` })), ...regions.map((r) => ({ loc: `${base}/states/${r.slug}` }))];
+      const [{ regions }, recipes] = await Promise.all([getHomeCached(), getRecipesCached()]);
+      entries = [
+        ...STATIC_PATHS.map((p) => ({ loc: `${base}${p}` })),
+        ...regions.map((r) => ({ loc: `${base}/states/${r.slug}` })),
+        // D-203: the shelf and each live recipe, once there is one
+        ...(recipes.length ? [{ loc: `${base}/recipes` }, ...recipes.map((r) => ({ loc: `${base}/recipes/${r.slug}` }))] : []),
+      ];
     } else {
       entries = await listingPart(storeClient(), part, base);
       if (entries.length === 0 && part > 0) return new Response('Not found', { status: 404 });

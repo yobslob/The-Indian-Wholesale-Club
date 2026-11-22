@@ -1,0 +1,101 @@
+rank,slug,name,kind,state,signal,iwc_pantry,local
+1,chicken-biryani,Chicken Biryani,dinner,All of India,Swiggy 2025 most ordered (93M biryanis; 57.7M chicken); US favourite,basmati rice;biryani masala;saffron;fried onions;green cardamom;bay leaf,chicken;yogurt;onions;ghee;mint;coriander
+2,hyderabadi-biryani,Hyderabadi Biryani,dinner,Telangana,TasteAtlas world top 100;Swiggy 2025,basmati rice;hyderabadi biryani masala;saffron;fried onions;shahi jeera,chicken or mutton;yogurt;ghee;mint;lemon
+3,butter-chicken,Butter Chicken,dinner,Delhi,TasteAtlas world top 100 (murgh makhani);US favourite,butter chicken masala;kashmiri chilli powder;kasuri methi;garam masala,chicken;butter;cream;tomatoes;ginger-garlic
+4,chicken-tikka-masala,Chicken Tikka Masala,dinner,All of India,US most ordered Indian dish,tikka masala;tandoori masala;kashmiri chilli powder;kasuri methi,chicken;yogurt;cream;tomatoes;onions
+5,masala-dosa,Masala Dosa,breakfast,Karnataka,Swiggy 2025 (veg dosa 26.2M orders);TasteAtlas top Indian,dosa rice;urad dal;chana dal;mustard seeds;curry leaves (dried);sambar powder,potatoes;onions;oil
+6,idli,Idli,breakfast,Tamil Nadu,Google 2025 most searched recipe in India;Swiggy 2025 top breakfast,idli rava;urad dal;poha;sambar powder;chutney podi,oil;coconut (fresh)
+7,masala-chai,Masala Chai,drinks,All of India,Swiggy 2025 (chai ordered 3x other drinks),assam tea;chai masala;green cardamom;dry ginger powder,milk;sugar
+8,paneer-butter-masala,Paneer Butter Masala,dinner,All of India,US favourite,paneer butter masala;kashmiri chilli powder;kasuri methi;cashews,paneer;butter;cream;tomatoes
+9,palak-paneer,Palak Paneer,dinner,Punjab,TasteAtlas top 100 Indian;US favourite (saag paneer),garam masala;kasuri methi;cumin seeds,paneer;spinach;cream;onions;garlic
+10,dal-makhani,Dal Makhani,dinner,Punjab,TasteAtlas top Indian dishes 2025 (top three),whole urad dal;rajma;kashmiri chilli powder;garam masala;kasuri methi,butter;cream;tomatoes;ginger-garlic
+11,chole-bhature,Chole Bhature,breakfast,Punjab,TasteAtlas world best breakfasts 2025 (#32);street food top 100,kabuli chana;chole masala;anardana powder;maida;sooji;tea (for the dark colour),yogurt;onions;tomatoes;oil
+12,amritsari-kulcha,Amritsari Kulcha,dinner,Punjab,TasteAtlas world top 100 dishes (#17);street food top 10,maida;ajwain;kalonji;chole masala;kabuli chana;amchur,potatoes;butter;yogurt;onions
+13,butter-garlic-naan,Butter Garlic Naan,dinner,All of India,TasteAtlas #1 Indian food;US favourite,maida;kalonji;baking soda,yogurt;butter;garlic;coriander
+14,pav-bhaji,Pav Bhaji,snacks,Maharashtra,Iconic street food,pav bhaji masala;kashmiri chilli powder;kasuri methi;amchur;kala namak,potatoes;tomatoes;onions;capsicum;peas;butter;pav;lemon
+15,vada-pav,Vada Pav,snacks,Maharashtra,Iconic street food,besan;dry garlic chutney;mustard seeds;turmeric;hing,potatoes;pav;green chillies;garlic;oil
+16,misal-pav,Misal Pav,breakfast,Maharashtra,TasteAtlas world best breakfasts 2025 (#18),matki (moth beans);misal masala;goda masala;farsan mix;kashmiri chilli powder,onions;tomatoes;pav;lemon;oil
+17,samosa,Samosa,snacks,All of India,US favourite;classic street food,maida;ajwain;garam masala;amchur;tamarind;khajur imli chutney,potatoes;peas;oil;green chillies
+18,pani-puri,Pani Puri,snacks,All of India,Iconic street food,ready-to-fry puris;pani puri masala;kala namak;tamarind;boondi,potatoes;mint;coriander;kabuli chana (boiled)
+19,chicken-65,Chicken 65,snacks,Tamil Nadu,Classic,chicken 65 masala;kashmiri chilli powder;rice flour;curry leaves (dried),chicken;yogurt;ginger-garlic;oil
+20,tandoori-chicken,Tandoori Chicken,dinner,All of India,TasteAtlas world best chicken dishes (#14),tandoori masala;kashmiri chilli powder;chaat masala;kasuri methi,chicken;yogurt;lemon;ginger-garlic
+21,chana-masala,Chana Masala,dinner,Punjab,US favourite;classic,kabuli chana;chana masala;anardana powder;amchur,onions;tomatoes;ginger;oil
+22,rajma-chawal,Rajma Chawal,dinner,Punjab,Classic home favourite,rajma;basmati rice;rajma masala;garam masala,onions;tomatoes;ginger-garlic;ghee
+23,dal-tadka,Dal Tadka,dinner,All of India,Classic,toor dal;moong dal;cumin seeds;hing;kashmiri chilli powder,ghee;garlic;tomatoes;onions
+24,shahi-paneer,Shahi Paneer,dinner,All of India,TasteAtlas world top 100 dishes,shahi paneer masala;cashews;green cardamom;saffron,paneer;cream;onions;yogurt
+25,malai-kofta,Malai Kofta,dinner,All of India,US favourite,cashews;garam masala;kasuri methi;raisins,paneer;potatoes;cream;tomatoes
+26,kadai-paneer,Kadai Paneer,dinner,Punjab,Classic,kadai masala;whole coriander;kashmiri chilli,paneer;capsicum;onions;tomatoes
+27,chicken-curry,Chicken Curry,dinner,All of India,US favourite;classic,chicken masala;garam masala;turmeric;bay leaf,chicken;onions;tomatoes;ginger-garlic;oil
+28,chicken-korma,Chicken Korma,dinner,All of India,US favourite,korma masala;cashews;green cardamom;garam masala,chicken;yogurt;onions;cream
+29,rogan-josh,Rogan Josh,dinner,Jammu and Kashmir,Classic,kashmiri chilli powder;saunf powder;dry ginger powder;rogan josh masala,mutton;yogurt;mustard oil
+30,mutton-curry,Mutton Curry,dinner,All of India,Classic,meat masala;garam masala;bay leaf;black cardamom,mutton;onions;tomatoes;yogurt
+31,egg-curry,Egg Curry,dinner,All of India,Classic,egg curry masala;kashmiri chilli powder;garam masala,eggs;onions;tomatoes;oil
+32,keema-matar,Keema Matar,dinner,All of India,Classic,meat masala;garam masala;kasuri methi,minced mutton or chicken;peas;onions;tomatoes
+33,goan-fish-curry,Goan Fish Curry,dinner,Goa,Classic,goan fish curry masala;kokum;tamarind;desiccated coconut,fish;coconut milk;onions
+34,macher-jhol,Macher Jhol,dinner,West Bengal,Classic,panch phoron;turmeric;kashmiri chilli powder,fish;potatoes;mustard oil;green chillies
+35,chicken-chettinad,Chicken Chettinad,dinner,Tamil Nadu,Classic,chettinad masala;kalpasi (stone flower);fennel seeds;dry red chillies,chicken;onions;tomatoes;coconut
+36,appam-stew,Appam with Stew,breakfast,Kerala,Classic,appam rice;desiccated coconut;whole spices,coconut milk;vegetables or chicken;yeast
+37,puttu-kadala,Puttu and Kadala Curry,breakfast,Kerala,Classic,puttu podi;kala chana;kerala garam masala;desiccated coconut,coconut (fresh);onions;oil
+38,kerala-parotta,Kerala Parotta,dinner,Kerala,TasteAtlas world street food top 10,maida,oil;milk;sugar;egg (optional)
+39,sambar,Sambar,dinner,Tamil Nadu,Classic,toor dal;sambar powder;tamarind;mustard seeds;hing,drumsticks or vegetables;tomatoes;oil
+40,rasam,Rasam,dinner,Tamil Nadu,Classic,rasam powder;tamarind;toor dal;black pepper;hing,tomatoes;garlic;coriander;ghee
+41,bisi-bele-bath,Bisi Bele Bath,dinner,Karnataka,Classic,bisi bele bath powder;toor dal;sona masoori rice;tamarind;cashews,vegetables;ghee
+42,medu-vada,Medu Vada,breakfast,Tamil Nadu,Classic,urad dal;black pepper;curry leaves (dried);hing,onions;ginger;oil
+43,upma,Upma,breakfast,Tamil Nadu,Classic,sooji;urad dal;chana dal;mustard seeds;cashews,onions;green chillies;ghee or oil
+44,poha,Poha,breakfast,Madhya Pradesh,Iconic street food (Indore),thick poha;peanuts;mustard seeds;turmeric;sev;jeeravan masala,onions;lemon;coriander;oil
+45,uttapam,Uttapam,breakfast,Tamil Nadu,Classic,dosa rice;urad dal;fenugreek seeds,onions;tomatoes;oil
+46,rava-dosa,Rava Dosa,breakfast,Karnataka,Classic,sooji;rice flour;cumin seeds;black pepper,onions;buttermilk;oil
+47,ven-pongal,Ven Pongal,breakfast,Tamil Nadu,Festival favourite,raw rice;moong dal;black pepper;cumin;cashews,ghee;ginger
+48,aloo-paratha,Aloo Paratha,breakfast,Punjab,TasteAtlas world best breakfasts 2025 (paratha #23),atta;ajwain;amchur;garam masala,potatoes;butter;green chillies
+49,thepla,Methi Thepla,breakfast,Gujarat,Classic,atta;besan;kasuri methi;ajwain;turmeric,yogurt;oil
+50,besan-chilla,Besan Chilla,breakfast,All of India,Classic,besan;ajwain;turmeric;kashmiri chilli powder,onions;tomatoes;oil
+51,puri-bhaji,Puri Bhaji,breakfast,All of India,Classic,atta;sooji;turmeric;mustard seeds;hing,potatoes;oil
+52,sabudana-khichdi,Sabudana Khichdi,breakfast,Maharashtra,Classic (fasting favourite),sabudana;peanuts;cumin seeds;sendha namak,potatoes;green chillies;lemon;ghee
+53,bhel-puri,Bhel Puri,snacks,Maharashtra,Iconic street food,murmura;sev;papdi;tamarind chutney;chaat masala,onions;tomatoes;potatoes;coriander;lemon
+54,sev-puri,Sev Puri,snacks,Maharashtra,Iconic street food,papdi;sev;tamarind chutney;chaat masala,potatoes;onions;green chutney herbs
+55,papdi-chaat,Papdi Chaat,snacks,Delhi,Iconic street food,papdi;chaat masala;tamarind chutney;roasted cumin,yogurt;potatoes;kabuli chana;pomegranate
+56,aloo-tikki-chaat,Aloo Tikki Chaat,snacks,Delhi,Iconic street food,chaat masala;tamarind chutney;thick poha (binder);roasted cumin,potatoes;yogurt;mint;coriander;oil
+57,dahi-bhalla,Dahi Bhalla,snacks,Delhi,Iconic street food,urad dal;chaat masala;roasted cumin;tamarind chutney,yogurt;mint;oil
+58,pyaaz-kachori,Pyaaz Kachori,snacks,Rajasthan,Iconic street food (Jaipur),maida;besan;saunf;kalonji;amchur,onions;oil
+59,dhokla,Khaman Dhokla,snacks,Gujarat,Classic,besan;eno fruit salt;citric acid;mustard seeds,green chillies;curry leaves;oil
+60,khandvi,Khandvi,snacks,Gujarat,Classic,besan;mustard seeds;sesame seeds;desiccated coconut,buttermilk;oil
+61,dabeli,Kutchi Dabeli,snacks,Gujarat,Iconic street food,dabeli masala;masala peanuts;sev;tamarind chutney,potatoes;pav;pomegranate;onions
+62,onion-pakora,Onion Pakora,snacks,All of India,Classic,besan;rice flour;ajwain;kashmiri chilli powder,onions;oil
+63,mirchi-bajji,Mirchi Bajji,snacks,Andhra Pradesh,Iconic street food,besan;rice flour;ajwain;tamarind,large green chillies;oil
+64,jhalmuri,Jhalmuri,snacks,West Bengal,Iconic street food (Kolkata),murmura;chanachur;roasted peanuts;chaat masala,mustard oil;onions;cucumber;lemon
+65,kathi-roll,Kathi Roll,snacks,West Bengal,Iconic street food (Kolkata),maida;chaat masala;tikka masala,chicken or paneer;eggs;onions;lemon
+66,momos,Momos,snacks,Sikkim,Iconic street food;Swiggy 2025 (Tibetan 12M+ orders),maida;momo chutney;white pepper,cabbage or chicken;garlic;ginger;spring onions
+67,thukpa,Thukpa,dinner,Ladakh,Classic,noodles (atta);black pepper;dried red chilli,vegetables or chicken;garlic;ginger
+68,gobi-manchurian,Gobi Manchurian,snacks,All of India,Classic (Indo-Chinese),cornflour;maida;manchurian masala,cauliflower;garlic;spring onions;soy sauce;oil
+69,veg-hakka-noodles,Veg Hakka Noodles,dinner,All of India,Classic (Indo-Chinese),hakka noodles;white pepper,cabbage;carrots;capsicum;soy sauce;vinegar;oil
+70,chilli-chicken,Chilli Chicken,dinner,All of India,Classic (Indo-Chinese),cornflour;kashmiri chilli,chicken;capsicum;onions;soy sauce;garlic
+71,paneer-tikka,Paneer Tikka,snacks,All of India,TasteAtlas world top 100 (tikka),tandoori masala;kashmiri chilli powder;chaat masala;besan,paneer;yogurt;capsicum;onions
+72,chicken-tikka,Chicken Tikka,snacks,All of India,TasteAtlas world top 100 (tikka),tikka masala;kashmiri chilli powder;kasuri methi,chicken;yogurt;lemon
+73,kadhi-pakora,Kadhi Pakora,dinner,Punjab,Classic,besan;ajwain;fenugreek seeds;turmeric,yogurt;onions;oil
+74,aloo-gobi,Aloo Gobi,dinner,Punjab,US favourite,turmeric;cumin seeds;garam masala;amchur,potatoes;cauliflower;tomatoes;oil
+75,baingan-bharta,Baingan Bharta,dinner,Punjab,US favourite,cumin seeds;kashmiri chilli powder;garam masala,eggplant;onions;tomatoes;garlic;mustard oil
+76,bhindi-masala,Bhindi Masala,dinner,All of India,Classic,amchur;chaat masala;kashmiri chilli powder,okra;onions;oil
+77,sarson-ka-saag,Sarson ka Saag and Makki di Roti,dinner,Punjab,Classic winter favourite,makki atta;ajwain,mustard greens;spinach;butter;ginger;garlic
+78,jeera-rice,Jeera Rice,dinner,All of India,Classic,basmati rice;cumin seeds;bay leaf,ghee
+79,khichdi,Khichdi,dinner,All of India,Classic,rice;moong dal;turmeric;cumin seeds;hing,ghee
+80,litti-chokha,Litti Chokha,dinner,Bihar,Classic,sattu;atta;ajwain;kalonji;achaar masala,eggplant;potatoes;tomatoes;mustard oil;ghee
+81,dal-baati-churma,Dal Baati Churma,dinner,Rajasthan,Classic,atta;sooji;panchmel dal;jaggery;cardamom,ghee
+82,gulab-jamun,Gulab Jamun,sweets,All of India,Swiggy 2025 most ordered dessert (Bolt),gulab jamun mix;green cardamom;saffron,sugar;oil or ghee
+83,rasmalai,Rasmalai,sweets,West Bengal,Classic,saffron;green cardamom;pistachios,milk;sugar;lemon
+84,rasgulla,Rasgulla,sweets,All of India,Classic,green cardamom,milk;sugar;lemon
+85,jalebi,Jalebi,sweets,All of India,Classic,maida;saffron;green cardamom,sugar;yogurt;ghee or oil
+86,gajar-ka-halwa,Gajar ka Halwa,sweets,Punjab,Classic winter favourite,green cardamom;cashews;almonds;raisins,carrots;milk;sugar;ghee
+87,kheer,Kheer,sweets,All of India,Classic,basmati rice;green cardamom;saffron;almonds,milk;sugar
+88,besan-ladoo,Besan Ladoo,sweets,All of India,Festival favourite,besan;green cardamom;almonds,sugar;ghee
+89,modak,Ukadiche Modak,sweets,Maharashtra,Google 2025 trending recipe (#3),rice flour;jaggery;desiccated coconut;green cardamom,ghee;coconut (fresh)
+90,thekua,Thekua,sweets,Bihar,Google 2025 trending recipe,atta;jaggery;desiccated coconut;saunf;cardamom,ghee or oil
+91,phirni,Phirni,sweets,All of India,TasteAtlas top Indian dishes 2025 (top three),basmati rice;green cardamom;saffron;pistachios,milk;sugar
+92,shrikhand,Shrikhand,sweets,Maharashtra,TasteAtlas world best breakfasts top 100,saffron;green cardamom;pistachios,yogurt;sugar
+93,kaju-katli,Kaju Katli,sweets,All of India,Festival favourite,cashews;green cardamom,sugar;ghee
+94,mysore-pak,Mysore Pak,sweets,Karnataka,Classic,besan;green cardamom,sugar;ghee
+95,sooji-halwa,Sooji Halwa,sweets,All of India,Classic,sooji;green cardamom;cashews;raisins,sugar;ghee
+96,shankarpali,Shankarpali,sweets,Maharashtra,Google 2024 trending recipe,maida;sooji;green cardamom,sugar;ghee;milk;oil
+97,filter-coffee,Filter Coffee,drinks,Tamil Nadu,Classic,south indian filter coffee powder (with chicory),milk;sugar
+98,mango-lassi,Mango Lassi,drinks,Punjab,US favourite,green cardamom;saffron,mango pulp or mangoes;yogurt;sugar
+99,thandai,Thandai,drinks,All of India,Festival favourite (Holi),thandai masala;almonds;saunf;poppy seeds;black pepper,milk;sugar
+100,beetroot-kanji,Beetroot Kanji,drinks,All of India,Google 2025 trending recipe (beetroot kanji),mustard seeds (rai);kala namak;kashmiri chilli powder,beetroot;black carrots (optional);water

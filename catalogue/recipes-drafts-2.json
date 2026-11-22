@@ -1,0 +1,1533 @@
+[
+  {
+    "slug": "chana-masala",
+    "name": "Chana Masala",
+    "kind": "dinner",
+    "state": "Punjab",
+    "rank": 21,
+    "blurb": "Chickpeas in a tangy onion-tomato gravy. Weeknight dinner.",
+    "minutes": 45,
+    "soak_hours": 8,
+    "serves": 4,
+    "effort": "easy",
+    "ingredients": [
+      {
+        "label": "Kabuli chana",
+        "amount": "1 cup",
+        "source": "iwc",
+        "match_words": "kabuli chana"
+      },
+      {
+        "label": "Chana masala",
+        "amount": "2 tbsp",
+        "source": "iwc",
+        "match_words": "chana masala"
+      },
+      {
+        "label": "Anardana powder",
+        "amount": "1 tsp",
+        "source": "iwc",
+        "match_words": "anardana powder"
+      },
+      {
+        "label": "Amchur",
+        "amount": "½ tsp",
+        "source": "iwc",
+        "match_words": "amchur"
+      },
+      {
+        "label": "Onions",
+        "amount": "2",
+        "source": "local"
+      },
+      {
+        "label": "Tomatoes",
+        "amount": "2",
+        "source": "local"
+      },
+      {
+        "label": "Ginger",
+        "amount": "1 inch",
+        "source": "local"
+      },
+      {
+        "label": "Oil",
+        "amount": "3 tbsp",
+        "source": "local"
+      }
+    ],
+    "steps": [
+      {
+        "text": "Soak the chana overnight. Pressure cook with salt until soft.",
+        "minutes": 25
+      },
+      {
+        "text": "Fry onions and ginger golden, add tomatoes and chana masala and cook down.",
+        "minutes": 15
+      },
+      {
+        "text": "Add the chana with some of its water, anardana and amchur. Simmer.",
+        "minutes": 10
+      }
+    ]
+  },
+  {
+    "slug": "rajma-chawal",
+    "name": "Rajma Chawal",
+    "kind": "dinner",
+    "state": "Punjab",
+    "rank": 22,
+    "blurb": "Kidney beans in a thick tomato gravy, over rice. Punjab’s comfort food.",
+    "minutes": 60,
+    "soak_hours": 8,
+    "serves": 4,
+    "effort": "easy",
+    "ingredients": [
+      {
+        "label": "Rajma",
+        "amount": "1 cup",
+        "source": "iwc",
+        "match_words": "rajma"
+      },
+      {
+        "label": "Basmati rice",
+        "amount": "1½ cups",
+        "source": "iwc",
+        "match_words": "basmati rice"
+      },
+      {
+        "label": "Rajma masala",
+        "amount": "2 tbsp",
+        "source": "iwc",
+        "match_words": "rajma masala"
+      },
+      {
+        "label": "Garam masala",
+        "amount": "½ tsp",
+        "source": "iwc",
+        "match_words": "garam masala"
+      },
+      {
+        "label": "Onions",
+        "amount": "2",
+        "source": "local"
+      },
+      {
+        "label": "Tomatoes",
+        "amount": "3",
+        "source": "local"
+      },
+      {
+        "label": "Ginger-garlic paste",
+        "amount": "1 tbsp",
+        "source": "local"
+      },
+      {
+        "label": "Ghee",
+        "amount": "2 tbsp",
+        "source": "local"
+      }
+    ],
+    "steps": [
+      {
+        "text": "Soak the rajma overnight. Pressure cook with salt until soft.",
+        "minutes": 30
+      },
+      {
+        "text": "Fry onions in ghee, add ginger-garlic, tomatoes and rajma masala. Cook down.",
+        "minutes": 15
+      },
+      {
+        "text": "Add the rajma and its water. Simmer, mashing a few beans.",
+        "minutes": 15
+      },
+      {
+        "text": "Cook the rice. Finish the rajma with garam masala.",
+        "minutes": 15
+      }
+    ]
+  },
+  {
+    "slug": "dal-tadka",
+    "name": "Dal Tadka",
+    "kind": "dinner",
+    "state": "All of India",
+    "rank": 23,
+    "blurb": "Yellow lentils with a sizzle of ghee, garlic and cumin.",
+    "minutes": 35,
+    "soak_hours": null,
+    "serves": 4,
+    "effort": "easy",
+    "ingredients": [
+      {
+        "label": "Toor dal",
+        "amount": "¾ cup",
+        "source": "iwc",
+        "match_words": "toor dal"
+      },
+      {
+        "label": "Moong dal",
+        "amount": "¼ cup",
+        "source": "iwc",
+        "match_words": "moong dal"
+      },
+      {
+        "label": "Cumin seeds",
+        "amount": "1 tsp",
+        "source": "iwc",
+        "match_words": "cumin seeds"
+      },
+      {
+        "label": "Hing",
+        "amount": "a pinch",
+        "source": "iwc",
+        "match_words": "hing"
+      },
+      {
+        "label": "Kashmiri chilli powder",
+        "amount": "½ tsp",
+        "source": "iwc",
+        "match_words": "kashmiri chilli powder"
+      },
+      {
+        "label": "Ghee",
+        "amount": "2 tbsp",
+        "source": "local"
+      },
+      {
+        "label": "Garlic",
+        "amount": "4 cloves",
+        "source": "local"
+      },
+      {
+        "label": "Tomatoes",
+        "amount": "1",
+        "source": "local"
+      },
+      {
+        "label": "Onions",
+        "amount": "1",
+        "source": "local"
+      }
+    ],
+    "steps": [
+      {
+        "text": "Pressure cook both dals with turmeric and salt.",
+        "minutes": 15
+      },
+      {
+        "text": "Fry onion and tomato, add the dal and simmer.",
+        "minutes": 10
+      },
+      {
+        "text": "Heat ghee; add cumin, hing, garlic and chilli. Pour over the dal.",
+        "minutes": 2
+      }
+    ]
+  },
+  {
+    "slug": "shahi-paneer",
+    "name": "Shahi Paneer",
+    "kind": "dinner",
+    "state": "All of India",
+    "rank": 24,
+    "blurb": "Paneer in a creamy, lightly sweet cashew and onion gravy.",
+    "minutes": 40,
+    "soak_hours": null,
+    "serves": 4,
+    "effort": "easy",
+    "ingredients": [
+      {
+        "label": "Shahi paneer masala",
+        "amount": "2 tbsp",
+        "source": "iwc",
+        "match_words": "shahi paneer masala"
+      },
+      {
+        "label": "Cashews",
+        "amount": "15",
+        "source": "iwc",
+        "match_words": "cashews"
+      },
+      {
+        "label": "Green cardamom",
+        "amount": "3 pods",
+        "source": "iwc",
+        "match_words": "green cardamom"
+      },
+      {
+        "label": "Saffron",
+        "amount": "a pinch",
+        "source": "iwc",
+        "match_words": "saffron"
+      },
+      {
+        "label": "Paneer",
+        "amount": "400 g",
+        "source": "local"
+      },
+      {
+        "label": "Cream",
+        "amount": "½ cup",
+        "source": "local"
+      },
+      {
+        "label": "Onions",
+        "amount": "2",
+        "source": "local"
+      },
+      {
+        "label": "Yogurt",
+        "amount": "¼ cup",
+        "source": "local"
+      }
+    ],
+    "steps": [
+      {
+        "text": "Boil the onions and cashews 10 minutes. Blend smooth.",
+        "minutes": 12
+      },
+      {
+        "text": "Cook the paste with cardamom and the masala until it smells sweet.",
+        "minutes": 8
+      },
+      {
+        "text": "Stir in whisked yogurt, then paneer and a splash of water.",
+        "minutes": 5
+      },
+      {
+        "text": "Finish with cream and saffron.",
+        "minutes": 3
+      }
+    ]
+  },
+  {
+    "slug": "malai-kofta",
+    "name": "Malai Kofta",
+    "kind": "dinner",
+    "state": "All of India",
+    "rank": 25,
+    "blurb": "Soft paneer and potato balls in a creamy tomato gravy.",
+    "minutes": 60,
+    "soak_hours": null,
+    "serves": 4,
+    "effort": "medium",
+    "ingredients": [
+      {
+        "label": "Cashews",
+        "amount": "15",
+        "source": "iwc",
+        "match_words": "cashews"
+      },
+      {
+        "label": "Garam masala",
+        "amount": "1 tsp",
+        "source": "iwc",
+        "match_words": "garam masala"
+      },
+      {
+        "label": "Kasuri methi",
+        "amount": "1 tsp",
+        "source": "iwc",
+        "match_words": "kasuri methi"
+      },
+      {
+        "label": "Raisins",
+        "amount": "1 tbsp",
+        "source": "iwc",
+        "match_words": "raisins"
+      },
+      {
+        "label": "Paneer",
+        "amount": "200 g",
+        "source": "local"
+      },
+      {
+        "label": "Potatoes",
+        "amount": "2",
+        "source": "local"
+      },
+      {
+        "label": "Cream",
+        "amount": "½ cup",
+        "source": "local"
+      },
+      {
+        "label": "Tomatoes",
+        "amount": "4",
+        "source": "local"
+      },
+      {
+        "label": "Oil",
+        "amount": "for frying",
+        "source": "local"
+      }
+    ],
+    "steps": [
+      {
+        "text": "Mash paneer and boiled potatoes with salt and a spoon of cornflour. Stuff with raisins and shape balls.",
+        "minutes": 15
+      },
+      {
+        "text": "Fry the koftas golden.",
+        "minutes": 10
+      },
+      {
+        "text": "Cook tomatoes and cashews, blend, and simmer with garam masala.",
+        "minutes": 20
+      },
+      {
+        "text": "Add cream and kasuri methi. Pour over the koftas just before eating.",
+        "minutes": 3
+      }
+    ]
+  },
+  {
+    "slug": "kadai-paneer",
+    "name": "Kadai Paneer",
+    "kind": "dinner",
+    "state": "Punjab",
+    "rank": 26,
+    "blurb": "Paneer, peppers and onions in a coarse, fresh-ground masala.",
+    "minutes": 35,
+    "soak_hours": null,
+    "serves": 4,
+    "effort": "easy",
+    "ingredients": [
+      {
+        "label": "Kadai masala",
+        "amount": "2 tbsp",
+        "source": "iwc",
+        "match_words": "kadai masala"
+      },
+      {
+        "label": "Whole coriander",
+        "amount": "1 tbsp",
+        "source": "iwc",
+        "match_words": "whole coriander"
+      },
+      {
+        "label": "Kashmiri chilli",
+        "amount": "3 dried",
+        "source": "iwc",
+        "match_words": "kashmiri chilli whole"
+      },
+      {
+        "label": "Paneer",
+        "amount": "300 g",
+        "source": "local"
+      },
+      {
+        "label": "Capsicum",
+        "amount": "2",
+        "source": "local"
+      },
+      {
+        "label": "Onions",
+        "amount": "2",
+        "source": "local"
+      },
+      {
+        "label": "Tomatoes",
+        "amount": "3",
+        "source": "local"
+      },
+      {
+        "label": "Oil",
+        "amount": "3 tbsp",
+        "source": "local"
+      }
+    ],
+    "steps": [
+      {
+        "text": "Dry-roast coriander and chillies, crush coarsely.",
+        "minutes": 3
+      },
+      {
+        "text": "Fry onions, then tomatoes with the kadai masala until thick.",
+        "minutes": 12
+      },
+      {
+        "text": "Add capsicum and cook it still crisp.",
+        "minutes": 5
+      },
+      {
+        "text": "Add paneer and the crushed spice.",
+        "minutes": 3
+      }
+    ]
+  },
+  {
+    "slug": "chicken-curry",
+    "name": "Chicken Curry",
+    "kind": "dinner",
+    "state": "All of India",
+    "rank": 27,
+    "blurb": "Home-style chicken in onion, tomato and spice. The everyday one.",
+    "minutes": 50,
+    "soak_hours": null,
+    "serves": 4,
+    "effort": "easy",
+    "ingredients": [
+      {
+        "label": "Chicken masala",
+        "amount": "2 tbsp",
+        "source": "iwc",
+        "match_words": "chicken masala"
+      },
+      {
+        "label": "Garam masala",
+        "amount": "½ tsp",
+        "source": "iwc",
+        "match_words": "garam masala"
+      },
+      {
+        "label": "Turmeric",
+        "amount": "½ tsp",
+        "source": "iwc",
+        "match_words": "turmeric"
+      },
+      {
+        "label": "Bay leaf",
+        "amount": "2",
+        "source": "iwc",
+        "match_words": "bay leaf"
+      },
+      {
+        "label": "Chicken",
+        "amount": "750 g",
+        "source": "local"
+      },
+      {
+        "label": "Onions",
+        "amount": "3",
+        "source": "local"
+      },
+      {
+        "label": "Tomatoes",
+        "amount": "2",
+        "source": "local"
+      },
+      {
+        "label": "Ginger-garlic paste",
+        "amount": "1 tbsp",
+        "source": "local"
+      },
+      {
+        "label": "Oil",
+        "amount": "4 tbsp",
+        "source": "local"
+      }
+    ],
+    "steps": [
+      {
+        "text": "Fry bay leaves and onions until deep brown.",
+        "minutes": 12
+      },
+      {
+        "text": "Add ginger-garlic, tomatoes, turmeric and the masala. Cook until the oil separates.",
+        "minutes": 10
+      },
+      {
+        "text": "Add the chicken and brown it.",
+        "minutes": 8
+      },
+      {
+        "text": "Add water, cover and simmer until tender.",
+        "minutes": 20
+      },
+      {
+        "text": "Finish with garam masala.",
+        "minutes": null
+      }
+    ]
+  },
+  {
+    "slug": "chicken-korma",
+    "name": "Chicken Korma",
+    "kind": "dinner",
+    "state": "All of India",
+    "rank": 28,
+    "blurb": "Chicken in a mild yogurt and cashew gravy. Gentle, not bland.",
+    "minutes": 55,
+    "soak_hours": null,
+    "serves": 4,
+    "effort": "medium",
+    "ingredients": [
+      {
+        "label": "Korma masala",
+        "amount": "2 tbsp",
+        "source": "iwc",
+        "match_words": "korma masala"
+      },
+      {
+        "label": "Cashews",
+        "amount": "15",
+        "source": "iwc",
+        "match_words": "cashews"
+      },
+      {
+        "label": "Green cardamom",
+        "amount": "4 pods",
+        "source": "iwc",
+        "match_words": "green cardamom"
+      },
+      {
+        "label": "Garam masala",
+        "amount": "½ tsp",
+        "source": "iwc",
+        "match_words": "garam masala"
+      },
+      {
+        "label": "Chicken",
+        "amount": "750 g",
+        "source": "local"
+      },
+      {
+        "label": "Yogurt",
+        "amount": "¾ cup",
+        "source": "local"
+      },
+      {
+        "label": "Onions",
+        "amount": "2",
+        "source": "local"
+      },
+      {
+        "label": "Cream",
+        "amount": "¼ cup",
+        "source": "local"
+      },
+      {
+        "label": "Oil",
+        "amount": "3 tbsp",
+        "source": "local"
+      }
+    ],
+    "steps": [
+      {
+        "text": "Fry the onions golden; blend with the soaked cashews.",
+        "minutes": 15
+      },
+      {
+        "text": "Fry cardamom, add the paste and korma masala.",
+        "minutes": 5
+      },
+      {
+        "text": "Add chicken and whisked yogurt on low heat.",
+        "minutes": 10
+      },
+      {
+        "text": "Simmer covered until tender.",
+        "minutes": 20
+      },
+      {
+        "text": "Finish with cream and garam masala.",
+        "minutes": 3
+      }
+    ]
+  },
+  {
+    "slug": "rogan-josh",
+    "name": "Rogan Josh",
+    "kind": "dinner",
+    "state": "Jammu and Kashmir",
+    "rank": 29,
+    "blurb": "Kashmir’s red mutton curry: fennel, dry ginger and Kashmiri chilli, no onion.",
+    "minutes": 100,
+    "soak_hours": null,
+    "serves": 4,
+    "effort": "weekend",
+    "ingredients": [
+      {
+        "label": "Kashmiri chilli powder",
+        "amount": "2 tbsp",
+        "source": "iwc",
+        "match_words": "kashmiri chilli powder"
+      },
+      {
+        "label": "Saunf powder",
+        "amount": "1 tbsp",
+        "source": "iwc",
+        "match_words": "fennel powder"
+      },
+      {
+        "label": "Dry ginger powder",
+        "amount": "1 tsp",
+        "source": "iwc",
+        "match_words": "dry ginger powder"
+      },
+      {
+        "label": "Rogan josh masala",
+        "amount": "1 tbsp",
+        "source": "iwc",
+        "match_words": "rogan josh masala"
+      },
+      {
+        "label": "Mutton",
+        "amount": "750 g",
+        "source": "local"
+      },
+      {
+        "label": "Yogurt",
+        "amount": "1 cup",
+        "source": "local"
+      },
+      {
+        "label": "Mustard oil",
+        "amount": "5 tbsp",
+        "source": "local"
+      }
+    ],
+    "steps": [
+      {
+        "text": "Heat mustard oil to smoking, then cool it a little. Brown the mutton.",
+        "minutes": 15
+      },
+      {
+        "text": "Stir chilli powder into a little water and add it.",
+        "minutes": 2
+      },
+      {
+        "text": "Add whisked yogurt slowly, stirring.",
+        "minutes": 5
+      },
+      {
+        "text": "Add fennel, ginger and the masala with water. Cover and simmer until tender.",
+        "minutes": 70
+      }
+    ]
+  },
+  {
+    "slug": "mutton-curry",
+    "name": "Mutton Curry",
+    "kind": "dinner",
+    "state": "All of India",
+    "rank": 30,
+    "blurb": "Slow-cooked mutton in a dark onion gravy.",
+    "minutes": 100,
+    "soak_hours": null,
+    "serves": 4,
+    "effort": "weekend",
+    "ingredients": [
+      {
+        "label": "Meat masala",
+        "amount": "2 tbsp",
+        "source": "iwc",
+        "match_words": "meat masala"
+      },
+      {
+        "label": "Garam masala",
+        "amount": "1 tsp",
+        "source": "iwc",
+        "match_words": "garam masala"
+      },
+      {
+        "label": "Bay leaf",
+        "amount": "2",
+        "source": "iwc",
+        "match_words": "bay leaf"
+      },
+      {
+        "label": "Black cardamom",
+        "amount": "2",
+        "source": "iwc",
+        "match_words": "black cardamom"
+      },
+      {
+        "label": "Mutton",
+        "amount": "750 g",
+        "source": "local"
+      },
+      {
+        "label": "Onions",
+        "amount": "3",
+        "source": "local"
+      },
+      {
+        "label": "Tomatoes",
+        "amount": "2",
+        "source": "local"
+      },
+      {
+        "label": "Yogurt",
+        "amount": "½ cup",
+        "source": "local"
+      },
+      {
+        "label": "Oil",
+        "amount": "4 tbsp",
+        "source": "local"
+      }
+    ],
+    "steps": [
+      {
+        "text": "Fry the whole spices and onions very brown.",
+        "minutes": 15
+      },
+      {
+        "text": "Add the mutton and brown it well.",
+        "minutes": 10
+      },
+      {
+        "text": "Add tomatoes, yogurt and meat masala. Cook until the oil separates.",
+        "minutes": 10
+      },
+      {
+        "text": "Pressure cook or simmer with water until tender.",
+        "minutes": 60
+      },
+      {
+        "text": "Finish with garam masala.",
+        "minutes": null
+      }
+    ]
+  },
+  {
+    "slug": "egg-curry",
+    "name": "Egg Curry",
+    "kind": "dinner",
+    "state": "All of India",
+    "rank": 31,
+    "blurb": "Boiled eggs in a quick onion-tomato gravy. Ready in half an hour.",
+    "minutes": 30,
+    "soak_hours": null,
+    "serves": 3,
+    "effort": "easy",
+    "ingredients": [
+      {
+        "label": "Egg curry masala",
+        "amount": "2 tbsp",
+        "source": "iwc",
+        "match_words": "egg curry masala"
+      },
+      {
+        "label": "Kashmiri chilli powder",
+        "amount": "1 tsp",
+        "source": "iwc",
+        "match_words": "kashmiri chilli powder"
+      },
+      {
+        "label": "Garam masala",
+        "amount": "½ tsp",
+        "source": "iwc",
+        "match_words": "garam masala"
+      },
+      {
+        "label": "Eggs",
+        "amount": "6",
+        "source": "local"
+      },
+      {
+        "label": "Onions",
+        "amount": "2",
+        "source": "local"
+      },
+      {
+        "label": "Tomatoes",
+        "amount": "2",
+        "source": "local"
+      },
+      {
+        "label": "Oil",
+        "amount": "3 tbsp",
+        "source": "local"
+      }
+    ],
+    "steps": [
+      {
+        "text": "Boil the eggs 10 minutes, peel and score them.",
+        "minutes": 12
+      },
+      {
+        "text": "Fry the eggs briefly with chilli.",
+        "minutes": 2
+      },
+      {
+        "text": "Fry onions, add tomatoes and the masala and cook down.",
+        "minutes": 12
+      },
+      {
+        "text": "Add water and the eggs; simmer. Finish with garam masala.",
+        "minutes": 5
+      }
+    ]
+  },
+  {
+    "slug": "keema-matar",
+    "name": "Keema Matar",
+    "kind": "dinner",
+    "state": "All of India",
+    "rank": 32,
+    "blurb": "Minced meat and peas, dry and spiced. Good with pav or roti.",
+    "minutes": 40,
+    "soak_hours": null,
+    "serves": 4,
+    "effort": "easy",
+    "ingredients": [
+      {
+        "label": "Meat masala",
+        "amount": "2 tbsp",
+        "source": "iwc",
+        "match_words": "meat masala"
+      },
+      {
+        "label": "Garam masala",
+        "amount": "½ tsp",
+        "source": "iwc",
+        "match_words": "garam masala"
+      },
+      {
+        "label": "Kasuri methi",
+        "amount": "1 tsp",
+        "source": "iwc",
+        "match_words": "kasuri methi"
+      },
+      {
+        "label": "Minced mutton or chicken",
+        "amount": "500 g",
+        "source": "local"
+      },
+      {
+        "label": "Peas",
+        "amount": "1 cup",
+        "source": "local"
+      },
+      {
+        "label": "Onions",
+        "amount": "2",
+        "source": "local"
+      },
+      {
+        "label": "Tomatoes",
+        "amount": "2",
+        "source": "local"
+      },
+      {
+        "label": "Oil",
+        "amount": "3 tbsp",
+        "source": "local"
+      }
+    ],
+    "steps": [
+      {
+        "text": "Fry the onions golden.",
+        "minutes": 8
+      },
+      {
+        "text": "Add the mince and break it up as it browns.",
+        "minutes": 10
+      },
+      {
+        "text": "Add tomatoes and meat masala; cook until dry.",
+        "minutes": 10
+      },
+      {
+        "text": "Add peas and a little water; cook until done.",
+        "minutes": 8
+      },
+      {
+        "text": "Finish with garam masala and kasuri methi.",
+        "minutes": null
+      }
+    ]
+  },
+  {
+    "slug": "goan-fish-curry",
+    "name": "Goan Fish Curry",
+    "kind": "dinner",
+    "state": "Goa",
+    "rank": 33,
+    "blurb": "Fish in coconut, kokum and red chilli. Sour, hot and quick.",
+    "minutes": 35,
+    "soak_hours": null,
+    "serves": 4,
+    "effort": "easy",
+    "ingredients": [
+      {
+        "label": "Goan fish curry masala",
+        "amount": "2 tbsp",
+        "source": "iwc",
+        "match_words": "fish curry masala"
+      },
+      {
+        "label": "Kokum",
+        "amount": "4 pieces",
+        "source": "iwc",
+        "match_words": "kokum"
+      },
+      {
+        "label": "Tamarind",
+        "amount": "a small piece",
+        "source": "iwc",
+        "match_words": "tamarind"
+      },
+      {
+        "label": "Desiccated coconut",
+        "amount": "½ cup",
+        "source": "iwc",
+        "match_words": "desiccated coconut"
+      },
+      {
+        "label": "Fish",
+        "amount": "500 g",
+        "source": "local"
+      },
+      {
+        "label": "Coconut milk",
+        "amount": "1 cup",
+        "source": "local"
+      },
+      {
+        "label": "Onions",
+        "amount": "1",
+        "source": "local"
+      },
+      {
+        "label": "Oil",
+        "amount": "2 tbsp",
+        "source": "local"
+      }
+    ],
+    "steps": [
+      {
+        "text": "Rub the fish with salt and turmeric.",
+        "minutes": 5
+      },
+      {
+        "text": "Grind the coconut with the masala and water to a smooth paste.",
+        "minutes": 3
+      },
+      {
+        "text": "Fry the onion, add the paste and simmer.",
+        "minutes": 8
+      },
+      {
+        "text": "Add coconut milk, kokum and tamarind water.",
+        "minutes": 5
+      },
+      {
+        "text": "Slide in the fish and cook gently until it flakes.",
+        "minutes": 8
+      }
+    ]
+  },
+  {
+    "slug": "macher-jhol",
+    "name": "Macher Jhol",
+    "kind": "dinner",
+    "state": "West Bengal",
+    "rank": 34,
+    "blurb": "Bengal’s light fish and potato curry with panch phoron.",
+    "minutes": 40,
+    "soak_hours": null,
+    "serves": 4,
+    "effort": "easy",
+    "ingredients": [
+      {
+        "label": "Panch phoron",
+        "amount": "1 tsp",
+        "source": "iwc",
+        "match_words": "panch phoron"
+      },
+      {
+        "label": "Turmeric",
+        "amount": "1 tsp",
+        "source": "iwc",
+        "match_words": "turmeric"
+      },
+      {
+        "label": "Kashmiri chilli powder",
+        "amount": "1 tsp",
+        "source": "iwc",
+        "match_words": "kashmiri chilli powder"
+      },
+      {
+        "label": "Fish",
+        "amount": "500 g",
+        "source": "local"
+      },
+      {
+        "label": "Potatoes",
+        "amount": "2",
+        "source": "local"
+      },
+      {
+        "label": "Mustard oil",
+        "amount": "4 tbsp",
+        "source": "local"
+      },
+      {
+        "label": "Green chillies",
+        "amount": "3",
+        "source": "local"
+      }
+    ],
+    "steps": [
+      {
+        "text": "Rub the fish with salt and turmeric; fry lightly in mustard oil and set aside.",
+        "minutes": 10
+      },
+      {
+        "text": "Fry panch phoron, then the potato wedges.",
+        "minutes": 8
+      },
+      {
+        "text": "Add turmeric, chilli and water; simmer until the potatoes soften.",
+        "minutes": 12
+      },
+      {
+        "text": "Add the fish and slit chillies; simmer a few minutes.",
+        "minutes": 5
+      }
+    ]
+  },
+  {
+    "slug": "chicken-chettinad",
+    "name": "Chicken Chettinad",
+    "kind": "dinner",
+    "state": "Tamil Nadu",
+    "rank": 35,
+    "blurb": "A peppery, dark chicken curry from Tamil Nadu’s Chettinad.",
+    "minutes": 60,
+    "soak_hours": null,
+    "serves": 4,
+    "effort": "medium",
+    "ingredients": [
+      {
+        "label": "Chettinad masala",
+        "amount": "2 tbsp",
+        "source": "iwc",
+        "match_words": "chettinad masala"
+      },
+      {
+        "label": "Kalpasi",
+        "amount": "a pinch",
+        "source": "iwc",
+        "match_words": "stone flower"
+      },
+      {
+        "label": "Fennel seeds",
+        "amount": "1 tsp",
+        "source": "iwc",
+        "match_words": "fennel seeds"
+      },
+      {
+        "label": "Dry red chillies",
+        "amount": "4",
+        "source": "iwc",
+        "match_words": "red chilli whole"
+      },
+      {
+        "label": "Chicken",
+        "amount": "750 g",
+        "source": "local"
+      },
+      {
+        "label": "Onions",
+        "amount": "2",
+        "source": "local"
+      },
+      {
+        "label": "Tomatoes",
+        "amount": "2",
+        "source": "local"
+      },
+      {
+        "label": "Coconut",
+        "amount": "¼ cup grated",
+        "source": "local"
+      },
+      {
+        "label": "Oil",
+        "amount": "4 tbsp",
+        "source": "local"
+      }
+    ],
+    "steps": [
+      {
+        "text": "Dry-roast fennel, chillies, kalpasi and coconut; grind with water.",
+        "minutes": 8
+      },
+      {
+        "text": "Fry the onions brown, add tomatoes and the chettinad masala.",
+        "minutes": 12
+      },
+      {
+        "text": "Add chicken and the ground paste.",
+        "minutes": 5
+      },
+      {
+        "text": "Simmer covered until tender and dark.",
+        "minutes": 30
+      }
+    ]
+  },
+  {
+    "slug": "appam-stew",
+    "name": "Appam with Stew",
+    "kind": "breakfast",
+    "state": "Kerala",
+    "rank": 36,
+    "blurb": "Lacy rice pancakes with a mild coconut stew. Kerala’s Sunday breakfast.",
+    "minutes": 60,
+    "soak_hours": 6,
+    "serves": 4,
+    "effort": "weekend",
+    "ingredients": [
+      {
+        "label": "Appam rice",
+        "amount": "2 cups",
+        "source": "iwc",
+        "match_words": "raw rice"
+      },
+      {
+        "label": "Desiccated coconut",
+        "amount": "1 cup",
+        "source": "iwc",
+        "match_words": "desiccated coconut"
+      },
+      {
+        "label": "Whole spices",
+        "amount": "cinnamon, clove, cardamom",
+        "source": "iwc",
+        "match_words": "whole garam masala"
+      },
+      {
+        "label": "Coconut milk",
+        "amount": "2 cups",
+        "source": "local"
+      },
+      {
+        "label": "Vegetables or chicken",
+        "amount": "400 g",
+        "source": "local"
+      },
+      {
+        "label": "Yeast",
+        "amount": "½ tsp",
+        "source": "local"
+      },
+      {
+        "label": "Sugar",
+        "amount": "1 tsp",
+        "source": "local"
+      }
+    ],
+    "steps": [
+      {
+        "text": "Soak the rice 6 hours. Grind with coconut, yeast and sugar. Ferment overnight.",
+        "minutes": null
+      },
+      {
+        "text": "Fry the whole spices, add vegetables or chicken and thin coconut milk; simmer until cooked.",
+        "minutes": 20
+      },
+      {
+        "text": "Add thick coconut milk at the end; don’t boil.",
+        "minutes": 3
+      },
+      {
+        "text": "Swirl a ladle of batter in a hot appam pan; cover and cook.",
+        "minutes": 3
+      }
+    ]
+  },
+  {
+    "slug": "puttu-kadala",
+    "name": "Puttu and Kadala Curry",
+    "kind": "breakfast",
+    "state": "Kerala",
+    "rank": 37,
+    "blurb": "Steamed rice and coconut cylinders with black chickpea curry.",
+    "minutes": 60,
+    "soak_hours": 8,
+    "serves": 4,
+    "effort": "medium",
+    "ingredients": [
+      {
+        "label": "Puttu podi",
+        "amount": "2 cups",
+        "source": "iwc",
+        "match_words": "puttu podi"
+      },
+      {
+        "label": "Kala chana",
+        "amount": "1 cup",
+        "source": "iwc",
+        "match_words": "kala chana"
+      },
+      {
+        "label": "Kerala garam masala",
+        "amount": "1 tsp",
+        "source": "iwc",
+        "match_words": "garam masala"
+      },
+      {
+        "label": "Desiccated coconut",
+        "amount": "½ cup",
+        "source": "iwc",
+        "match_words": "desiccated coconut"
+      },
+      {
+        "label": "Coconut (fresh)",
+        "amount": "1 cup",
+        "source": "local"
+      },
+      {
+        "label": "Onions",
+        "amount": "2",
+        "source": "local"
+      },
+      {
+        "label": "Oil",
+        "amount": "3 tbsp",
+        "source": "local"
+      }
+    ],
+    "steps": [
+      {
+        "text": "Soak the kala chana overnight; pressure cook with salt.",
+        "minutes": 25
+      },
+      {
+        "text": "Fry onions, roast coconut with the masala and grind; add to the chana and simmer.",
+        "minutes": 15
+      },
+      {
+        "text": "Sprinkle warm salted water into the puttu podi until it feels like wet sand.",
+        "minutes": 5
+      },
+      {
+        "text": "Layer podi and coconut in a puttu maker and steam.",
+        "minutes": 8
+      }
+    ]
+  },
+  {
+    "slug": "kerala-parotta",
+    "name": "Kerala Parotta",
+    "kind": "dinner",
+    "state": "Kerala",
+    "rank": 38,
+    "blurb": "Flaky layered flatbread. The dough wants time; the rest is folding.",
+    "minutes": 120,
+    "soak_hours": 2,
+    "serves": 6,
+    "effort": "weekend",
+    "ingredients": [
+      {
+        "label": "Maida",
+        "amount": "3 cups",
+        "source": "iwc",
+        "match_words": "maida"
+      },
+      {
+        "label": "Oil",
+        "amount": "½ cup",
+        "source": "local"
+      },
+      {
+        "label": "Milk",
+        "amount": "½ cup",
+        "source": "local"
+      },
+      {
+        "label": "Sugar",
+        "amount": "1 tsp",
+        "source": "local"
+      },
+      {
+        "label": "Egg",
+        "amount": "1 (optional)",
+        "source": "local"
+      }
+    ],
+    "steps": [
+      {
+        "text": "Knead maida, milk, sugar, salt, egg and water into a very soft dough. Rest 2 hours under oil.",
+        "minutes": 10
+      },
+      {
+        "text": "Divide, oil each ball, stretch very thin on an oiled counter.",
+        "minutes": 15
+      },
+      {
+        "text": "Pleat and coil into a spiral; rest 15 minutes.",
+        "minutes": 15
+      },
+      {
+        "text": "Flatten and cook on a hot pan with oil until golden.",
+        "minutes": 20
+      },
+      {
+        "text": "Crush between your hands to open the layers.",
+        "minutes": 2
+      }
+    ]
+  },
+  {
+    "slug": "sambar",
+    "name": "Sambar",
+    "kind": "dinner",
+    "state": "Tamil Nadu",
+    "rank": 39,
+    "blurb": "Lentils and vegetables in tamarind and sambar powder. With idli, dosa or rice.",
+    "minutes": 45,
+    "soak_hours": null,
+    "serves": 6,
+    "effort": "easy",
+    "ingredients": [
+      {
+        "label": "Toor dal",
+        "amount": "¾ cup",
+        "source": "iwc",
+        "match_words": "toor dal"
+      },
+      {
+        "label": "Sambar powder",
+        "amount": "2 tbsp",
+        "source": "iwc",
+        "match_words": "sambar powder"
+      },
+      {
+        "label": "Tamarind",
+        "amount": "a lime-sized ball",
+        "source": "iwc",
+        "match_words": "tamarind"
+      },
+      {
+        "label": "Mustard seeds",
+        "amount": "1 tsp",
+        "source": "iwc",
+        "match_words": "mustard seeds"
+      },
+      {
+        "label": "Hing",
+        "amount": "a pinch",
+        "source": "iwc",
+        "match_words": "hing"
+      },
+      {
+        "label": "Drumsticks or vegetables",
+        "amount": "2 cups",
+        "source": "local"
+      },
+      {
+        "label": "Tomatoes",
+        "amount": "2",
+        "source": "local"
+      },
+      {
+        "label": "Oil",
+        "amount": "1 tbsp",
+        "source": "local"
+      },
+      {
+        "label": "Curry leaves",
+        "amount": "a sprig",
+        "source": "local"
+      }
+    ],
+    "steps": [
+      {
+        "text": "Pressure cook the dal with turmeric.",
+        "minutes": 15
+      },
+      {
+        "text": "Cook the vegetables in tamarind water with tomatoes, salt and sambar powder.",
+        "minutes": 15
+      },
+      {
+        "text": "Add the mashed dal and simmer.",
+        "minutes": 10
+      },
+      {
+        "text": "Temper mustard seeds, hing and curry leaves in oil; pour over.",
+        "minutes": 2
+      }
+    ]
+  },
+  {
+    "slug": "rasam",
+    "name": "Rasam",
+    "kind": "dinner",
+    "state": "Tamil Nadu",
+    "rank": 40,
+    "blurb": "A thin, peppery tamarind soup. For rice, or by the cup.",
+    "minutes": 25,
+    "soak_hours": null,
+    "serves": 4,
+    "effort": "easy",
+    "ingredients": [
+      {
+        "label": "Rasam powder",
+        "amount": "1½ tbsp",
+        "source": "iwc",
+        "match_words": "rasam powder"
+      },
+      {
+        "label": "Tamarind",
+        "amount": "a small ball",
+        "source": "iwc",
+        "match_words": "tamarind"
+      },
+      {
+        "label": "Toor dal",
+        "amount": "2 tbsp",
+        "source": "iwc",
+        "match_words": "toor dal"
+      },
+      {
+        "label": "Black pepper",
+        "amount": "1 tsp",
+        "source": "iwc",
+        "match_words": "black pepper"
+      },
+      {
+        "label": "Hing",
+        "amount": "a pinch",
+        "source": "iwc",
+        "match_words": "hing"
+      },
+      {
+        "label": "Tomatoes",
+        "amount": "2",
+        "source": "local"
+      },
+      {
+        "label": "Garlic",
+        "amount": "4 cloves",
+        "source": "local"
+      },
+      {
+        "label": "Coriander",
+        "amount": "a handful",
+        "source": "local"
+      },
+      {
+        "label": "Ghee",
+        "amount": "1 tbsp",
+        "source": "local"
+      }
+    ],
+    "steps": [
+      {
+        "text": "Cook the dal soft.",
+        "minutes": 12
+      },
+      {
+        "text": "Boil tamarind water with crushed tomatoes, garlic, pepper, rasam powder and salt.",
+        "minutes": 8
+      },
+      {
+        "text": "Add the dal and 2 cups water; bring it to a froth, don’t boil hard.",
+        "minutes": 3
+      },
+      {
+        "text": "Temper with ghee, mustard seeds and hing; add coriander.",
+        "minutes": 2
+      }
+    ]
+  }
+]
