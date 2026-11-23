@@ -138,6 +138,50 @@ isOneToOne: false
                   Relationships: [
                     
                   ]
+                },"home_gifts": {
+                  Row: {
+                    "call_name": string,"created_at": string,"failed_reason": string | null,"hold_until": string | null,"id": string,"inr_paise": number,"inr_per_usd": number,"loved_one_id": string | null,"note": string,"order_id": string,"profile_id": string | null,"refund_id": string | null,"region_name": string | null,"relation": string,"sender_first_name": string,"sent_at": string | null,"sent_by": string | null,"status": string,"updated_at": string,"upi": string,"usd_cents": number,"utr": string | null,"_home_gift_held": boolean | null
+                  }
+                  ComputedFields: "_home_gift_held"
+                  Insert: {
+                    "call_name": string,"created_at"?: string,"failed_reason"?: string | null,"hold_until"?: string | null,"id"?: string,"inr_paise": number,"inr_per_usd": number,"loved_one_id"?: string | null,"note"?: string,"order_id": string,"profile_id"?: string | null,"refund_id"?: string | null,"region_name"?: string | null,"relation": string,"sender_first_name"?: string,"sent_at"?: string | null,"sent_by"?: string | null,"status": string,"updated_at"?: string,"upi": string,"usd_cents": number,"utr"?: string | null
+                  }
+                  Update: {
+                    "call_name"?: string,"created_at"?: string,"failed_reason"?: string | null,"hold_until"?: string | null,"id"?: string,"inr_paise"?: number,"inr_per_usd"?: number,"loved_one_id"?: string | null,"note"?: string,"order_id"?: string,"profile_id"?: string | null,"refund_id"?: string | null,"region_name"?: string | null,"relation"?: string,"sender_first_name"?: string,"sent_at"?: string | null,"sent_by"?: string | null,"status"?: string,"updated_at"?: string,"upi"?: string,"usd_cents"?: number,"utr"?: string | null
+                  }
+                  Relationships: [
+                    {
+      foreignKeyName: "home_gifts_loved_one_id_fkey"
+      columns: ["loved_one_id"]
+isOneToOne: false
+      referencedRelation: "loved_ones"
+      referencedColumns: ["id"]
+    },{
+      foreignKeyName: "home_gifts_order_id_fkey"
+      columns: ["order_id"]
+isOneToOne: true
+      referencedRelation: "orders"
+      referencedColumns: ["id"]
+    },{
+      foreignKeyName: "home_gifts_order_id_fkey"
+      columns: ["order_id"]
+isOneToOne: true
+      referencedRelation: "store_orders"
+      referencedColumns: ["id"]
+    },{
+      foreignKeyName: "home_gifts_profile_id_fkey"
+      columns: ["profile_id"]
+isOneToOne: false
+      referencedRelation: "profiles"
+      referencedColumns: ["id"]
+    },{
+      foreignKeyName: "home_gifts_sent_by_fkey"
+      columns: ["sent_by"]
+isOneToOne: false
+      referencedRelation: "profiles"
+      referencedColumns: ["id"]
+    }
+                  ]
                 },"home_photos": {
                   Row: {
                     "alt_text": string,"created_at": string,"id": string,"sort_order": number,"storage_path": string
@@ -151,6 +195,38 @@ isOneToOne: false
                   }
                   Relationships: [
                     
+                  ]
+                },"loved_ones": {
+                  Row: {
+                    "archived_at": string | null,"call_name": string,"created_at": string,"id": string,"note": string,"profile_id": string,"region_id": string | null,"relation": string,"upi": string
+                  }
+                  ComputedFields: never
+                  Insert: {
+                    "archived_at"?: string | null,"call_name": string,"created_at"?: string,"id"?: string,"note"?: string,"profile_id": string,"region_id"?: string | null,"relation": string,"upi": string
+                  }
+                  Update: {
+                    "archived_at"?: string | null,"call_name"?: string,"created_at"?: string,"id"?: string,"note"?: string,"profile_id"?: string,"region_id"?: string | null,"relation"?: string,"upi"?: string
+                  }
+                  Relationships: [
+                    {
+      foreignKeyName: "loved_ones_profile_id_fkey"
+      columns: ["profile_id"]
+isOneToOne: false
+      referencedRelation: "profiles"
+      referencedColumns: ["id"]
+    },{
+      foreignKeyName: "loved_ones_region_id_fkey"
+      columns: ["region_id"]
+isOneToOne: false
+      referencedRelation: "regions"
+      referencedColumns: ["id"]
+    },{
+      foreignKeyName: "loved_ones_region_id_fkey"
+      columns: ["region_id"]
+isOneToOne: false
+      referencedRelation: "store_regions"
+      referencedColumns: ["id"]
+    }
                   ]
                 },"order_events": {
                   Row: {
@@ -274,14 +350,14 @@ isOneToOne: false
                   ]
                 },"orders": {
                   Row: {
-                    "bulk_saving_cents": number,"carrier": string | null,"coins_used": number,"created_at": string,"currency": string,"discount_cents": number,"email": string,"est_delivery_from": string | null,"est_delivery_to": string | null,"fulfilment_mode": Database["public"]['Enums']["fulfilment_mode"],"heavy_shipping_cents": number,"id": string,"notes": string | null,"order_number": string,"payment_intent_id": string | null,"payment_status": Database["public"]['Enums']["payment_status"],"promo_code_id": string | null,"refunded_cents": number,"retailer_charge_cents": number,"shipping_address": NonNullable<Json>,"shipping_cents": number,"shipping_method": Database["public"]['Enums']["shipping_method"],"status": Database["public"]['Enums']["order_status"],"subtotal_cents": number,"tax_cents": number,"total_cents": number,"tracking_number": string | null,"updated_at": string,"user_id": string | null,"_in_india": boolean | null
+                    "bulk_saving_cents": number,"carrier": string | null,"coins_used": number,"created_at": string,"currency": string,"discount_cents": number,"email": string,"est_delivery_from": string | null,"est_delivery_to": string | null,"fulfilment_mode": Database["public"]['Enums']["fulfilment_mode"],"heavy_shipping_cents": number,"home_gift_cents": number,"id": string,"notes": string | null,"order_number": string,"payment_intent_id": string | null,"payment_status": Database["public"]['Enums']["payment_status"],"promo_code_id": string | null,"refunded_cents": number,"retailer_charge_cents": number,"shipping_address": NonNullable<Json>,"shipping_cents": number,"shipping_method": Database["public"]['Enums']["shipping_method"],"status": Database["public"]['Enums']["order_status"],"subtotal_cents": number,"tax_cents": number,"total_cents": number,"tracking_number": string | null,"updated_at": string,"user_id": string | null,"_in_india": boolean | null
                   }
                   ComputedFields: "_in_india"
                   Insert: {
-                    "bulk_saving_cents"?: number,"carrier"?: string | null,"coins_used"?: number,"created_at"?: string,"currency"?: string,"discount_cents"?: number,"email": string,"est_delivery_from"?: string | null,"est_delivery_to"?: string | null,"fulfilment_mode"?: Database["public"]['Enums']["fulfilment_mode"],"heavy_shipping_cents"?: number,"id"?: string,"notes"?: string | null,"order_number"?: string,"payment_intent_id"?: string | null,"payment_status"?: Database["public"]['Enums']["payment_status"],"promo_code_id"?: string | null,"refunded_cents"?: number,"retailer_charge_cents"?: number,"shipping_address": NonNullable<Json>,"shipping_cents"?: number,"shipping_method"?: Database["public"]['Enums']["shipping_method"],"status"?: Database["public"]['Enums']["order_status"],"subtotal_cents": number,"tax_cents"?: number,"total_cents": number,"tracking_number"?: string | null,"updated_at"?: string,"user_id"?: string | null
+                    "bulk_saving_cents"?: number,"carrier"?: string | null,"coins_used"?: number,"created_at"?: string,"currency"?: string,"discount_cents"?: number,"email": string,"est_delivery_from"?: string | null,"est_delivery_to"?: string | null,"fulfilment_mode"?: Database["public"]['Enums']["fulfilment_mode"],"heavy_shipping_cents"?: number,"home_gift_cents"?: number,"id"?: string,"notes"?: string | null,"order_number"?: string,"payment_intent_id"?: string | null,"payment_status"?: Database["public"]['Enums']["payment_status"],"promo_code_id"?: string | null,"refunded_cents"?: number,"retailer_charge_cents"?: number,"shipping_address": NonNullable<Json>,"shipping_cents"?: number,"shipping_method"?: Database["public"]['Enums']["shipping_method"],"status"?: Database["public"]['Enums']["order_status"],"subtotal_cents": number,"tax_cents"?: number,"total_cents": number,"tracking_number"?: string | null,"updated_at"?: string,"user_id"?: string | null
                   }
                   Update: {
-                    "bulk_saving_cents"?: number,"carrier"?: string | null,"coins_used"?: number,"created_at"?: string,"currency"?: string,"discount_cents"?: number,"email"?: string,"est_delivery_from"?: string | null,"est_delivery_to"?: string | null,"fulfilment_mode"?: Database["public"]['Enums']["fulfilment_mode"],"heavy_shipping_cents"?: number,"id"?: string,"notes"?: string | null,"order_number"?: string,"payment_intent_id"?: string | null,"payment_status"?: Database["public"]['Enums']["payment_status"],"promo_code_id"?: string | null,"refunded_cents"?: number,"retailer_charge_cents"?: number,"shipping_address"?: NonNullable<Json>,"shipping_cents"?: number,"shipping_method"?: Database["public"]['Enums']["shipping_method"],"status"?: Database["public"]['Enums']["order_status"],"subtotal_cents"?: number,"tax_cents"?: number,"total_cents"?: number,"tracking_number"?: string | null,"updated_at"?: string,"user_id"?: string | null
+                    "bulk_saving_cents"?: number,"carrier"?: string | null,"coins_used"?: number,"created_at"?: string,"currency"?: string,"discount_cents"?: number,"email"?: string,"est_delivery_from"?: string | null,"est_delivery_to"?: string | null,"fulfilment_mode"?: Database["public"]['Enums']["fulfilment_mode"],"heavy_shipping_cents"?: number,"home_gift_cents"?: number,"id"?: string,"notes"?: string | null,"order_number"?: string,"payment_intent_id"?: string | null,"payment_status"?: Database["public"]['Enums']["payment_status"],"promo_code_id"?: string | null,"refunded_cents"?: number,"retailer_charge_cents"?: number,"shipping_address"?: NonNullable<Json>,"shipping_cents"?: number,"shipping_method"?: Database["public"]['Enums']["shipping_method"],"status"?: Database["public"]['Enums']["order_status"],"subtotal_cents"?: number,"tax_cents"?: number,"total_cents"?: number,"tracking_number"?: string | null,"updated_at"?: string,"user_id"?: string | null
                   }
                   Relationships: [
                     {
@@ -402,14 +478,14 @@ isOneToOne: false
                   ]
                 },"pricing_settings": {
                   Row: {
-                    "bulk_saving_cap_cents": number | null,"bulk_saving_from_cents": number | null,"bulk_saving_pct": number | null,"cancel_fee_pct": number | null,"clearance_discount_pct": number | null,"delivery_days_max": number | null,"delivery_days_min": number | null,"domestic_days_max": number | null,"domestic_days_min": number | null,"export_cancel_deduction_pct": number | null,"food_billed_pct": number | null,"food_delivery_days_max": number | null,"food_delivery_days_min": number | null,"free_shipping_min_cents": number | null,"fx_usd_aud": number | null,"fx_usd_cad": number | null,"fx_usd_nzd": number | null,"heavy_line_off_pct": number | null,"home_est_g_per_rupee": number | null,"home_est_min_g": number | null,"id": number,"leaving_soon_max": number,"min_order_cents": number | null,"offer_pct": number,"retailer_pct": number | null,"return_claim_days": number | null,"return_tier1_days": number | null,"return_tier1_pct": number | null,"return_tier2_days": number | null,"return_tier2_pct": number | null,"return_tier3_days": number | null,"return_tier3_pct": number | null,"shipping_cents_per_kg": number | null,"shipping_flat_cents": number | null,"small_order_retailer_cents": number | null,"small_order_shipping_cents": number | null,"stale_listing_days": number | null,"updated_at": string,"updated_by": string | null
+                    "bulk_saving_cap_cents": number | null,"bulk_saving_from_cents": number | null,"bulk_saving_pct": number | null,"cancel_fee_pct": number | null,"clearance_discount_pct": number | null,"delivery_days_max": number | null,"delivery_days_min": number | null,"domestic_days_max": number | null,"domestic_days_min": number | null,"export_cancel_deduction_pct": number | null,"food_billed_pct": number | null,"food_delivery_days_max": number | null,"food_delivery_days_min": number | null,"free_shipping_min_cents": number | null,"fx_usd_aud": number | null,"fx_usd_cad": number | null,"fx_usd_nzd": number | null,"heavy_line_off_pct": number | null,"home_est_g_per_rupee": number | null,"home_est_min_g": number | null,"id": number,"leaving_soon_max": number,"min_order_cents": number | null,"offer_pct": number,"retailer_pct": number | null,"return_claim_days": number | null,"return_tier1_days": number | null,"return_tier1_pct": number | null,"return_tier2_days": number | null,"return_tier2_pct": number | null,"return_tier3_days": number | null,"return_tier3_pct": number | null,"send_home_hold_hours": number | null,"send_home_inr_per_usd": number | null,"send_home_max_cents": number | null,"send_home_month_cap_cents": number | null,"shipping_cents_per_kg": number | null,"shipping_flat_cents": number | null,"small_order_retailer_cents": number | null,"small_order_shipping_cents": number | null,"stale_listing_days": number | null,"updated_at": string,"updated_by": string | null
                   }
                   ComputedFields: never
                   Insert: {
-                    "bulk_saving_cap_cents"?: number | null,"bulk_saving_from_cents"?: number | null,"bulk_saving_pct"?: number | null,"cancel_fee_pct"?: number | null,"clearance_discount_pct"?: number | null,"delivery_days_max"?: number | null,"delivery_days_min"?: number | null,"domestic_days_max"?: number | null,"domestic_days_min"?: number | null,"export_cancel_deduction_pct"?: number | null,"food_billed_pct"?: number | null,"food_delivery_days_max"?: number | null,"food_delivery_days_min"?: number | null,"free_shipping_min_cents"?: number | null,"fx_usd_aud"?: number | null,"fx_usd_cad"?: number | null,"fx_usd_nzd"?: number | null,"heavy_line_off_pct"?: number | null,"home_est_g_per_rupee"?: number | null,"home_est_min_g"?: number | null,"id"?: number,"leaving_soon_max"?: number,"min_order_cents"?: number | null,"offer_pct"?: number,"retailer_pct"?: number | null,"return_claim_days"?: number | null,"return_tier1_days"?: number | null,"return_tier1_pct"?: number | null,"return_tier2_days"?: number | null,"return_tier2_pct"?: number | null,"return_tier3_days"?: number | null,"return_tier3_pct"?: number | null,"shipping_cents_per_kg"?: number | null,"shipping_flat_cents"?: number | null,"small_order_retailer_cents"?: number | null,"small_order_shipping_cents"?: number | null,"stale_listing_days"?: number | null,"updated_at"?: string,"updated_by"?: string | null
+                    "bulk_saving_cap_cents"?: number | null,"bulk_saving_from_cents"?: number | null,"bulk_saving_pct"?: number | null,"cancel_fee_pct"?: number | null,"clearance_discount_pct"?: number | null,"delivery_days_max"?: number | null,"delivery_days_min"?: number | null,"domestic_days_max"?: number | null,"domestic_days_min"?: number | null,"export_cancel_deduction_pct"?: number | null,"food_billed_pct"?: number | null,"food_delivery_days_max"?: number | null,"food_delivery_days_min"?: number | null,"free_shipping_min_cents"?: number | null,"fx_usd_aud"?: number | null,"fx_usd_cad"?: number | null,"fx_usd_nzd"?: number | null,"heavy_line_off_pct"?: number | null,"home_est_g_per_rupee"?: number | null,"home_est_min_g"?: number | null,"id"?: number,"leaving_soon_max"?: number,"min_order_cents"?: number | null,"offer_pct"?: number,"retailer_pct"?: number | null,"return_claim_days"?: number | null,"return_tier1_days"?: number | null,"return_tier1_pct"?: number | null,"return_tier2_days"?: number | null,"return_tier2_pct"?: number | null,"return_tier3_days"?: number | null,"return_tier3_pct"?: number | null,"send_home_hold_hours"?: number | null,"send_home_inr_per_usd"?: number | null,"send_home_max_cents"?: number | null,"send_home_month_cap_cents"?: number | null,"shipping_cents_per_kg"?: number | null,"shipping_flat_cents"?: number | null,"small_order_retailer_cents"?: number | null,"small_order_shipping_cents"?: number | null,"stale_listing_days"?: number | null,"updated_at"?: string,"updated_by"?: string | null
                   }
                   Update: {
-                    "bulk_saving_cap_cents"?: number | null,"bulk_saving_from_cents"?: number | null,"bulk_saving_pct"?: number | null,"cancel_fee_pct"?: number | null,"clearance_discount_pct"?: number | null,"delivery_days_max"?: number | null,"delivery_days_min"?: number | null,"domestic_days_max"?: number | null,"domestic_days_min"?: number | null,"export_cancel_deduction_pct"?: number | null,"food_billed_pct"?: number | null,"food_delivery_days_max"?: number | null,"food_delivery_days_min"?: number | null,"free_shipping_min_cents"?: number | null,"fx_usd_aud"?: number | null,"fx_usd_cad"?: number | null,"fx_usd_nzd"?: number | null,"heavy_line_off_pct"?: number | null,"home_est_g_per_rupee"?: number | null,"home_est_min_g"?: number | null,"id"?: number,"leaving_soon_max"?: number,"min_order_cents"?: number | null,"offer_pct"?: number,"retailer_pct"?: number | null,"return_claim_days"?: number | null,"return_tier1_days"?: number | null,"return_tier1_pct"?: number | null,"return_tier2_days"?: number | null,"return_tier2_pct"?: number | null,"return_tier3_days"?: number | null,"return_tier3_pct"?: number | null,"shipping_cents_per_kg"?: number | null,"shipping_flat_cents"?: number | null,"small_order_retailer_cents"?: number | null,"small_order_shipping_cents"?: number | null,"stale_listing_days"?: number | null,"updated_at"?: string,"updated_by"?: string | null
+                    "bulk_saving_cap_cents"?: number | null,"bulk_saving_from_cents"?: number | null,"bulk_saving_pct"?: number | null,"cancel_fee_pct"?: number | null,"clearance_discount_pct"?: number | null,"delivery_days_max"?: number | null,"delivery_days_min"?: number | null,"domestic_days_max"?: number | null,"domestic_days_min"?: number | null,"export_cancel_deduction_pct"?: number | null,"food_billed_pct"?: number | null,"food_delivery_days_max"?: number | null,"food_delivery_days_min"?: number | null,"free_shipping_min_cents"?: number | null,"fx_usd_aud"?: number | null,"fx_usd_cad"?: number | null,"fx_usd_nzd"?: number | null,"heavy_line_off_pct"?: number | null,"home_est_g_per_rupee"?: number | null,"home_est_min_g"?: number | null,"id"?: number,"leaving_soon_max"?: number,"min_order_cents"?: number | null,"offer_pct"?: number,"retailer_pct"?: number | null,"return_claim_days"?: number | null,"return_tier1_days"?: number | null,"return_tier1_pct"?: number | null,"return_tier2_days"?: number | null,"return_tier2_pct"?: number | null,"return_tier3_days"?: number | null,"return_tier3_pct"?: number | null,"send_home_hold_hours"?: number | null,"send_home_inr_per_usd"?: number | null,"send_home_max_cents"?: number | null,"send_home_month_cap_cents"?: number | null,"shipping_cents_per_kg"?: number | null,"shipping_flat_cents"?: number | null,"small_order_retailer_cents"?: number | null,"small_order_shipping_cents"?: number | null,"stale_listing_days"?: number | null,"updated_at"?: string,"updated_by"?: string | null
                   }
                   Relationships: [
                     {
@@ -638,14 +714,14 @@ isOneToOne: false
                   ]
                 },"profiles": {
                   Row: {
-                    "coins": number,"created_at": string,"desk": Database["public"]['Enums']["ops_desk"] | null,"email": string | null,"full_name": string | null,"id": string,"phone": string | null,"role": Database["public"]['Enums']["app_role"],"updated_at": string
+                    "coins": number,"created_at": string,"desk": Database["public"]['Enums']["ops_desk"] | null,"email": string | null,"full_name": string | null,"id": string,"phone": string | null,"role": Database["public"]['Enums']["app_role"],"send_home_in_bag": boolean,"updated_at": string
                   }
                   ComputedFields: never
                   Insert: {
-                    "coins"?: number,"created_at"?: string,"desk"?: Database["public"]['Enums']["ops_desk"] | null,"email"?: string | null,"full_name"?: string | null,"id": string,"phone"?: string | null,"role"?: Database["public"]['Enums']["app_role"],"updated_at"?: string
+                    "coins"?: number,"created_at"?: string,"desk"?: Database["public"]['Enums']["ops_desk"] | null,"email"?: string | null,"full_name"?: string | null,"id": string,"phone"?: string | null,"role"?: Database["public"]['Enums']["app_role"],"send_home_in_bag"?: boolean,"updated_at"?: string
                   }
                   Update: {
-                    "coins"?: number,"created_at"?: string,"desk"?: Database["public"]['Enums']["ops_desk"] | null,"email"?: string | null,"full_name"?: string | null,"id"?: string,"phone"?: string | null,"role"?: Database["public"]['Enums']["app_role"],"updated_at"?: string
+                    "coins"?: number,"created_at"?: string,"desk"?: Database["public"]['Enums']["ops_desk"] | null,"email"?: string | null,"full_name"?: string | null,"id"?: string,"phone"?: string | null,"role"?: Database["public"]['Enums']["app_role"],"send_home_in_bag"?: boolean,"updated_at"?: string
                   }
                   Relationships: [
                     
@@ -1287,6 +1363,20 @@ isOneToOne: false
       referencedColumns: ["id","product_type"]
     }
                   ]
+                },"store_home_gifts": {
+                  Row: {
+                    "call_name": string,"created_at": string,"customer_status": string | null,"id": string,"inr_paise": number,"loved_one_id": string | null,"order_number": string,"region_name": string | null,"relation": string,"sent_at": string | null,"upi_masked": string | null,"usd_cents": number,"utr_last4": string | null
+                  }
+                  ComputedFields: never
+                  Relationships: [
+                    {
+      foreignKeyName: "home_gifts_loved_one_id_fkey"
+      columns: ["loved_one_id"]
+isOneToOne: false
+      referencedRelation: "loved_ones"
+      referencedColumns: ["id"]
+    }
+                  ]
                 },"store_media": {
                   Row: {
                     "alt_text": string,"credit": string | null,"id": string,"is_ai": boolean,"is_primary": boolean,"product_id": string,"sort_order": number,"storage_path": string,"variant_id": string | null
@@ -1373,14 +1463,14 @@ isOneToOne: false
                   ]
                 },"store_orders": {
                   Row: {
-                    "carrier": string | null,"created_at": string,"currency": string,"customer_status": string | null,"discount_cents": number,"email": string,"est_delivery_from": string | null,"est_delivery_to": string | null,"id": string,"order_number": string,"payment_status": Database["public"]['Enums']["payment_status"],"refunded_cents": number,"shipping_address": NonNullable<Json>,"shipping_cents": number,"shipping_method": Database["public"]['Enums']["shipping_method"],"subtotal_cents": number,"tax_cents": number,"total_cents": number,"tracking_number": string | null
+                    "carrier": string | null,"created_at": string,"currency": string,"customer_status": string | null,"discount_cents": number,"email": string,"est_delivery_from": string | null,"est_delivery_to": string | null,"home_gift_cents": number,"id": string,"order_number": string,"payment_status": Database["public"]['Enums']["payment_status"],"refunded_cents": number,"shipping_address": NonNullable<Json>,"shipping_cents": number,"shipping_method": Database["public"]['Enums']["shipping_method"],"subtotal_cents": number,"tax_cents": number,"total_cents": number,"tracking_number": string | null
                   }
                   ComputedFields: never
                   Insert: {
-                           "carrier"?: string | null,"created_at"?: string | null,"currency"?: string | null,"customer_status"?: never,"discount_cents"?: number | null,"email"?: string | null,"est_delivery_from"?: string | null,"est_delivery_to"?: string | null,"id"?: string | null,"order_number"?: string | null,"payment_status"?: Database["public"]['Enums']["payment_status"] | null,"refunded_cents"?: number | null,"shipping_address"?: Json | null,"shipping_cents"?: number | null,"shipping_method"?: Database["public"]['Enums']["shipping_method"] | null,"subtotal_cents"?: number | null,"tax_cents"?: number | null,"total_cents"?: number | null,"tracking_number"?: string | null
+                           "carrier"?: string | null,"created_at"?: string | null,"currency"?: string | null,"customer_status"?: never,"discount_cents"?: number | null,"email"?: string | null,"est_delivery_from"?: string | null,"est_delivery_to"?: string | null,"home_gift_cents"?: number | null,"id"?: string | null,"order_number"?: string | null,"payment_status"?: Database["public"]['Enums']["payment_status"] | null,"refunded_cents"?: number | null,"shipping_address"?: Json | null,"shipping_cents"?: number | null,"shipping_method"?: Database["public"]['Enums']["shipping_method"] | null,"subtotal_cents"?: number | null,"tax_cents"?: number | null,"total_cents"?: number | null,"tracking_number"?: string | null
                          }
                         Update: {
-                           "carrier"?: string | null,"created_at"?: string | null,"currency"?: string | null,"customer_status"?: never,"discount_cents"?: number | null,"email"?: string | null,"est_delivery_from"?: string | null,"est_delivery_to"?: string | null,"id"?: string | null,"order_number"?: string | null,"payment_status"?: Database["public"]['Enums']["payment_status"] | null,"refunded_cents"?: number | null,"shipping_address"?: Json | null,"shipping_cents"?: number | null,"shipping_method"?: Database["public"]['Enums']["shipping_method"] | null,"subtotal_cents"?: number | null,"tax_cents"?: number | null,"total_cents"?: number | null,"tracking_number"?: string | null
+                           "carrier"?: string | null,"created_at"?: string | null,"currency"?: string | null,"customer_status"?: never,"discount_cents"?: number | null,"email"?: string | null,"est_delivery_from"?: string | null,"est_delivery_to"?: string | null,"home_gift_cents"?: number | null,"id"?: string | null,"order_number"?: string | null,"payment_status"?: Database["public"]['Enums']["payment_status"] | null,"refunded_cents"?: number | null,"shipping_address"?: Json | null,"shipping_cents"?: number | null,"shipping_method"?: Database["public"]['Enums']["shipping_method"] | null,"subtotal_cents"?: number | null,"tax_cents"?: number | null,"total_cents"?: number | null,"tracking_number"?: string | null
                          }
                         Relationships: [
                     
@@ -1503,6 +1593,9 @@ isOneToOne: false
             "_add_business_days":
 { Args: { "p_day": string,"p_days": number }; Returns: string
                            },
+"_add_home_gift":
+{ Args: { "p_gift": Json,"p_order": string }; Returns: undefined
+                           },
 "_auto_price_cents":
 { Args: { "p_shop_paise": number,"p_type": Database["public"]['Enums']["product_type"],"p_weight_g": number }; Returns: number
                            },
@@ -1514,6 +1607,11 @@ isOneToOne: false
                            },
 "_cancel_shipment":
 { Args: { "p_amount": number,"p_note": string,"p_shipment": string,"p_why": string }; Returns: undefined
+                           },
+"_create_order_goods":
+{ Args: { "p_order": Json }; Returns: {
+              "order_id": string,"order_number": string
+            }[]
                            },
 "_customer_cancel_cents":
 { Args: { "p_order": string }; Returns: number
@@ -1542,6 +1640,15 @@ isOneToOne: false
 "_food_bought":
 { Args: { "p_order": string }; Returns: boolean
                            },
+"_gift_customer_status":
+{ Args: { "p_status": string }; Returns: string
+                           },
+"_guest_order_lookup_goods":
+{ Args: { "p_email": string,"p_order_number": string }; Returns: Json
+                           },
+"_home_gift_held":
+{ Args: { "p_gift": Omit<Database["public"]['Tables']["home_gifts"]['Row'], Database["public"]['Tables']["home_gifts"]['ComputedFields']> }; Returns: boolean
+                           },
 "_in_india":
 { Args: { "p_order": Omit<Database["public"]['Tables']["orders"]['Row'], Database["public"]['Tables']["orders"]['ComputedFields']> }; Returns: boolean
                            },
@@ -1563,10 +1670,16 @@ isOneToOne: false
 "_main_photo":
 { Args: { "p_product": string }; Returns: string
                            },
+"_mask_upi":
+{ Args: { "p_upi": string }; Returns: string
+                           },
 "_offer_key":
 { Args: { "p_product_id": string }; Returns: Json
                            },
 "_order_actions":
+{ Args: { "p_order": string }; Returns: Json
+                           },
+"_order_home_gift":
 { Args: { "p_order": string }; Returns: Json
                            },
 "_order_shipments_json":
@@ -1638,6 +1751,9 @@ isOneToOne: false
                            },
 "_search_term":
 { Args: { "p_prefix": boolean,"p_words": string }; Returns: unknown
+                           },
+"_sent_gift_cents":
+{ Args: { "p_order": string }; Returns: number
                            },
 "_set_stock_context":
 { Args: { "p_note": string,"p_reason": Database["public"]['Enums']["stock_reason"],"p_ref_id": string,"p_ref_type": string }; Returns: undefined
@@ -1740,6 +1856,12 @@ isOneToOne: false
 "admin_food_watch":
 { Args: Record<PropertyKey, never>; Returns: Json
                            },
+"admin_home_gift_failed":
+{ Args: { "p_gift": string,"p_reason": string,"p_refund_id": string,"p_refunded_total": number }; Returns: undefined
+                           },
+"admin_home_gift_sent":
+{ Args: { "p_gift": string,"p_utr": string }; Returns: undefined
+                           },
 "admin_mark_ordered":
 { Args: { "p_bill_path"?: string,"p_lines": Json,"p_shop_order_ref"?: string }; Returns: number
                            },
@@ -1795,6 +1917,9 @@ isOneToOne: false
 "admin_search_fixes":
 { Args: { "p_since"?: string }; Returns: Json
                            },
+"admin_send_home":
+{ Args: { "p_tab": string }; Returns: Json
+                           },
 "admin_set_listed_qty":
 { Args: { "p_note"?: string,"p_qty_listed": number,"p_variant": string }; Returns: undefined
                            },
@@ -1846,6 +1971,9 @@ isOneToOne: false
                            },
 "checkout_context":
 { Args: { "p_email"?: string,"p_promo_code"?: string,"p_state"?: string,"p_user"?: string,"p_variant_ids": (string)[] }; Returns: Json
+                           },
+"checkout_send_home":
+{ Args: { "p_email": string,"p_loved_one": string,"p_user": string }; Returns: Json
                            },
 "claim_payment_sweep":
 { Args: { "p_limit"?: number }; Returns: {
@@ -1944,6 +2072,9 @@ isOneToOne: false
 "store_my_order":
 { Args: { "p_order_number": string }; Returns: Json
                            },
+"store_my_people":
+{ Args: Record<PropertyKey, never>; Returns: Json
+                           },
 "store_next_delivery":
 { Args: Record<PropertyKey, never>; Returns: {
               "est_delivery_from": string,"est_delivery_to": string,"order_by": string
@@ -2003,6 +2134,9 @@ isOneToOne: false
                            },
 "store_search_page":
 { Args: { "p_category"?: string,"p_limit"?: number,"p_offset"?: number,"p_query": string,"p_quick"?: boolean,"p_record"?: boolean,"p_region"?: string,"p_sort"?: string,"p_type"?: string }; Returns: Json
+                           },
+"store_send_home":
+{ Args: Record<PropertyKey, never>; Returns: Json
                            },
 "store_type_rows":
 { Args: { "p_type": string }; Returns: Json

@@ -43,7 +43,7 @@ select tests.assert(
    where n.nspname = 'public' and has_function_privilege('anon', p.oid, 'execute'))
   = array['dev_preview', 'is_product_visible', 'store_bag_charges', 'store_browse', 'store_home', 'store_next_delivery', 'store_policy',
           'store_product_page', 'store_recipe', 'store_recipes', 'store_region_head', 'store_region_page',
-          'store_search', 'store_search_hints', 'store_search_page', 'store_type_rows'],
+          'store_search', 'store_search_hints', 'store_search_page', 'store_send_home', 'store_type_rows'],
   'anon can execute only the store-facing functions');
 
 select tests.assert(
@@ -52,18 +52,18 @@ select tests.assert(
    where n.nspname = 'public' and has_function_privilege('authenticated', p.oid, 'execute'))
   = array['admin_accept_weights', 'admin_add_synonym', 'admin_archive_unready_drafts', 'admin_assign_weights', 'admin_attention', 'admin_cancel_after_export',
           'admin_cancel_after_export_cents', 'admin_cancel_shipment', 'admin_create_listing',
-          'admin_demand', 'admin_food_watch', 'admin_mark_ordered', 'admin_order_counts', 'admin_order_home_photos', 'admin_pin_recipe', 'admin_price_preview', 'admin_price_sheet', 'admin_publish_drafts',
+          'admin_demand', 'admin_food_watch', 'admin_home_gift_failed', 'admin_home_gift_sent', 'admin_mark_ordered', 'admin_order_counts', 'admin_order_home_photos', 'admin_pin_recipe', 'admin_price_preview', 'admin_price_sheet', 'admin_publish_drafts',
           'admin_recipe_blockers', 'admin_recipe_matches', 'admin_recipes_missing_piece',
           'admin_rename_listings', 'admin_return_received', 'admin_return_refunded',
-          'admin_return_rejected', 'admin_sales', 'admin_save_shop_bill', 'admin_search_fixes', 'admin_set_listed_qty', 'admin_set_shop_bill_final',
+          'admin_return_rejected', 'admin_sales', 'admin_save_shop_bill', 'admin_search_fixes', 'admin_send_home', 'admin_set_listed_qty', 'admin_set_shop_bill_final',
           'admin_shop_bill', 'admin_sourcing_review', 'admin_stale_variants', 'admin_to_order', 'admin_unmark_ordered',
           'admin_weigh_pickup', 'admin_weight_plan', 'admin_weights_to_check', 'cancel_after_delay', 'cancel_order', 'cancel_refund_cents',
           'change_delivery_window', 'change_shipment_window', 'deliver_order', 'deliver_shipment',
           'dev_preview', 'is_admin', 'is_product_visible', 'is_worker', 'item_refund_cents',
           'keep_after_delay', 'mark_pickup', 'refund_order_item',
-          'review_eligibility', 'ship_order', 'ship_shipment', 'shipment_cancel_cents', 'store_bag_charges', 'store_browse', 'store_home', 'store_my_order', 'store_next_delivery',
+          'review_eligibility', 'ship_order', 'ship_shipment', 'shipment_cancel_cents', 'store_bag_charges', 'store_browse', 'store_home', 'store_my_order', 'store_my_people', 'store_next_delivery',
           'store_policy', 'store_product_page', 'store_recipe', 'store_recipes', 'store_region_head',
-          'store_region_page', 'store_search', 'store_search_hints', 'store_search_page', 'store_type_rows',
+          'store_region_page', 'store_search', 'store_search_hints', 'store_search_page', 'store_send_home', 'store_type_rows',
           
           
           'worker_clothing_plan', 'worker_description_plan', 'worker_description_set', 'worker_estimate_plan', 'worker_food_plan', 'worker_food_prices', 'worker_home_plan', 'worker_label_plan', 'worker_liquid_plan', 'worker_look_photo_plan', 'worker_look_photo_tag', 'worker_look_photos_add', 'worker_look_photos_undo', 'worker_may_add_photos', 'worker_photo_redo_drop', 'worker_photo_redo_plan',
