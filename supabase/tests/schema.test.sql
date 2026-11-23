@@ -53,7 +53,7 @@ select tests.assert(
   = array['admin_accept_weights', 'admin_add_synonym', 'admin_archive_unready_drafts', 'admin_assign_weights', 'admin_attention', 'admin_cancel_after_export',
           'admin_cancel_after_export_cents', 'admin_cancel_shipment', 'admin_create_listing',
           'admin_demand', 'admin_food_watch', 'admin_mark_ordered', 'admin_order_counts', 'admin_order_home_photos', 'admin_pin_recipe', 'admin_price_preview', 'admin_price_sheet', 'admin_publish_drafts',
-          'admin_recipe_blockers', 'admin_recipe_matches', 'admin_recipes_missing_piece',
+          'admin_recipe_blockers', 'admin_recipe_matches', 'admin_recipes_missing_piece', 'admin_recipes_publish_all',
           'admin_rename_listings', 'admin_return_received', 'admin_return_refunded',
           'admin_return_rejected', 'admin_sales', 'admin_save_shop_bill', 'admin_search_fixes', 'admin_set_listed_qty', 'admin_set_shop_bill_final',
           'admin_shop_bill', 'admin_sourcing_review', 'admin_stale_variants', 'admin_to_order', 'admin_unmark_ordered',

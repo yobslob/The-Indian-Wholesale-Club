@@ -10,7 +10,12 @@ import { secondaryButton } from '../styles';
 export function RecipeDraftsUpload(): React.JSX.Element {
   const router = useRouter();
   const [busy, setBusy] = useState(false);
-  const [result, setResult] = useState<{ error: string | null; added: string[]; skipped: string[] } | null>(null);
+  const [result, setResult] = useState<{
+    error: string | null;
+    added: string[];
+    replaced: string[];
+    skipped: string[];
+  } | null>(null);
 
   async function send(files: FileList | null): Promise<void> {
     const file = files?.[0];
@@ -19,7 +24,7 @@ export function RecipeDraftsUpload(): React.JSX.Element {
     const r = await addDraftsAction(await file.text());
     setBusy(false);
     setResult(r);
-    if (r.added.length) router.refresh();
+    if (r.added.length || r.replaced.length) router.refresh();
   }
 
   return (
@@ -40,7 +45,12 @@ export function RecipeDraftsUpload(): React.JSX.Element {
       {result ? (
         <div className="text-sm" role="status">
           {result.error ? <p className="text-danger">{result.error}</p> : null}
-          {!result.error ? <p>{result.added.length} added.</p> : null}
+          {!result.error ? (
+            <p>
+              {result.added.length} added
+              {result.replaced.length ? `, ${result.replaced.length} drafts replaced` : ''}.
+            </p>
+          ) : null}
           {result.skipped.length ? (
             <p className="text-ink-muted">Left out: {result.skipped.join('; ')}</p>
           ) : null}

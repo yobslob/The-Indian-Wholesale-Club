@@ -41,19 +41,30 @@ select tests.assert(
 select tests.assert_fails(
   format($q$update public.recipes set status = 'live' where id = %L$q$, tests.id('r_live')),
   'words_not_approved', 'publish refuses unapproved words');
+-- D-204: no photo needed, and a line still waiting for a listing doesn't hold the rest back
+insert into public.recipe_ingredients (recipe_id, sort, label, source) values (tests.id('r_live'), 4, 'Kasuri methi', 'iwc');
+insert into public.recipe_ingredients (recipe_id, sort, label, amount, source, variant_id, instead_of) values
+  (tests.id('r_live'), 5, 'Pav bhaji masala, dry', '1 tsp', 'iwc', tests.id('v_masala'), 'Butter'),
+  (tests.id('r_live'), 6, 'Toor dal, dry', '1 tsp', 'iwc', tests.id('v_dal'), 'Butter');
+update public.recipes set status = 'live', content_status = 'approved' where id = tests.id('r_live');
+select tests.assert((select published_at is not null and photo_path is null from public.recipes where id = tests.id('r_live')),
+  'a recipe with approved words and a piece to sell publishes without a photo');
+do $$
+declare v_id uuid;
+begin
+  insert into public.recipes (slug, name, kind, content_status) values ('test-nothing', 'Nothing to sell', 'snacks', 'approved')
+  returning id into v_id;
+  perform tests.remember('r_nothing', v_id);
+  insert into public.recipe_ingredients (recipe_id, label, source, instead_of, variant_id) values
+    (v_id, 'Kasuri methi', 'iwc', null, null), (v_id, 'Masala swap', 'iwc', 'Ghee', tests.id('v_masala'));
+end $$;
 select tests.assert_fails(
-  format($q$update public.recipes set status = 'live', content_status = 'approved' where id = %L$q$, tests.id('r_live')),
-  'no_photo', 'publish refuses a recipe without a photo');
-insert into public.recipe_ingredients (recipe_id, label, source) values (tests.id('r_live'), 'Kasuri methi', 'iwc');
+  format($q$update public.recipes set status = 'live' where id = %L$q$, tests.id('r_nothing')),
+  'no_iwc_line', 'publish refuses a recipe whose only listed piece is a swap');
 select tests.assert_fails(
-  format($q$update public.recipes set status = 'live', content_status = 'approved', photo_path = 's/r.avif'
-            where id = %L$q$, tests.id('r_live')),
-  'line_without_live_listing', 'publish refuses an IWC line without a listing (one waiting for Blinkit)');
-delete from public.recipe_ingredients where label = 'Kasuri methi';
-update public.recipes set status = 'live', content_status = 'approved', photo_path = 's/r.avif'
-where id = tests.id('r_live');
-select tests.assert((select published_at is not null from public.recipes where id = tests.id('r_live')),
-  'a ready recipe publishes');
+  format($q$insert into public.recipe_ingredients (recipe_id, label, source, instead_of) values (%L, 'Mint', 'local', 'Mint')$q$,
+         tests.id('r_live')),
+  'recipe_ingredients_swap_is_iwc', 'a swap is an IWC line');
 select tests.assert_fails(
   $q$insert into public.recipes (slug, name, kind, status, content_status, photo_path)
      values ('test-straight-live', 'Straight live', 'snacks', 'live', 'approved', 's/x.avif')$q$,
@@ -79,17 +90,25 @@ select tests.assert_fails('select * from public.recipe_ingredients', '42501', 'I
 select tests.assert(
   (select (r ->> 'kit_cents')::int = 399 and (r ->> 'kit_count')::int = 1
    from jsonb_array_elements(public.store_recipes()) r where r ->> 'slug' = 'test-pav-bhaji'),
-  'the kit is the available pieces'' store prices; the sold-out one drops out');
+  'the kit is the available pieces'' store prices; the sold-out one and the swaps drop out');
 select tests.assert(
-  (select count(*) = 3 from jsonb_array_elements(public.store_recipe('test-pav-bhaji') -> 'lines')),
-  'a recipe page shows every line');
+  (select count(*) = 5 from jsonb_array_elements(public.store_recipe('test-pav-bhaji') -> 'lines')),
+  'a recipe page shows every line but a swap that can''t be bought');
+select tests.assert(
+  (select l ->> 'source' = 'local' from jsonb_array_elements(public.store_recipe('test-pav-bhaji') -> 'lines') l
+   where l ->> 'label' = 'Kasuri methi'),
+  'a line without a listing reads as one to buy locally');
+select tests.assert(
+  (select l ->> 'instead_of' = 'Butter' and (l ->> 'available')::boolean
+   from jsonb_array_elements(public.store_recipe('test-pav-bhaji') -> 'lines') l where l ->> 'label' = 'Pav bhaji masala, dry'),
+  'a swap says what it stands in for');
 select tests.assert(
   (select not (l ->> 'available')::boolean from jsonb_array_elements(public.store_recipe('test-pav-bhaji') -> 'lines') l
    where l ->> 'label' = 'Toor dal'),
   'a sold-out piece shows as unavailable');
 select tests.assert(
   (select l ->> 'price_cents' is null from jsonb_array_elements(public.store_recipe('test-pav-bhaji') -> 'lines') l
-   where l ->> 'source' = 'local'),
+   where l ->> 'label' = 'Butter'),
   'a local line has no price');
 select tests.assert(
   not exists (select 1 from tests.json_keys(public.store_recipe('test-pav-bhaji')) k
@@ -99,12 +118,18 @@ select tests.assert(
   not exists (select 1 from tests.json_keys(public.store_recipes()) k where k = any (tests.forbidden_keys())),
   'INV-1: no operations fields on the shelf');
 select tests.assert(jsonb_array_length(public.store_recipes('sweets')) = 0, 'the shelf filters by kind');
-select tests.assert(public.store_home() -> 'recipe' = 'null'::jsonb, 'Home has no recipe until one is pinned');
+select tests.assert(
+  exists (select 1 from jsonb_array_elements(public.store_home() -> 'recipes') c where c ->> 'slug' = 'test-pav-bhaji'),
+  'Home''s row lists the live recipes');
+select tests.assert(
+  not exists (select 1 from tests.json_keys(public.store_home() -> 'recipes') k where k = any (tests.forbidden_keys())),
+  'INV-1: no operations fields in Home''s row');
 reset role;
 
 set local role authenticated;
 select tests.act_as(tests.id('cust_a'));
 select tests.assert_fails('select public.admin_pin_recipe(null)', 'admin_only', 'customers can''t pin');
+select tests.assert_fails('select public.admin_recipes_publish_all()', 'admin_only', 'customers can''t publish');
 select tests.assert(not exists (select 1 from public.recipes), 'RLS: a customer sees no recipe rows');
 select tests.act_as(tests.id('admin'));
 update public.recipes set status = 'draft' where id = tests.id('r_live');
@@ -117,6 +142,34 @@ select tests.assert(
   (select count(*) = 1 from public.admin_recipe_matches('test pav bhaji')), 'Match finds a live, in-stock food option');
 select tests.assert(
   (select count(*) = 0 from public.admin_recipe_matches('test toor dal')), 'Match skips a sold-out option');
+-- Publish all (D-204): the cheapest in-stock match fills an empty line, the words are approved, it goes live
+reset role;
+do $$
+declare v_id uuid;
+begin
+  insert into public.recipes (slug, name, kind) values ('test-poha-all', 'Test poha', 'breakfast') returning id into v_id;
+  perform tests.remember('r_all', v_id);
+  insert into public.recipe_ingredients (recipe_id, sort, label, source, match_words) values
+    (v_id, 1, 'Masala', 'iwc', 'test pav bhaji'), (v_id, 2, 'Moon dust', 'iwc', 'zzz no such thing'),
+    (v_id, 3, 'Dal', 'iwc', 'test toor dal');
+end $$;
+set local role authenticated;
+select tests.act_as(tests.id('admin'));
+create temp table publish_run on commit drop as select public.admin_recipes_publish_all(null, 50) as j;
+select tests.assert((select j -> 'published' ? 'test-poha-all' from publish_run), 'Publish all publishes a draft');
+select tests.assert(
+  (select j -> 'blocked' @> '[{"slug": "test-nothing", "why": ["no_iwc_line"]}]' from publish_run),
+  'Publish all leaves one with nothing to sell and says why');
+select tests.assert(
+  (select variant_id = tests.id('v_masala') from public.recipe_ingredients where recipe_id = tests.id('r_all') and label = 'Masala'),
+  'an empty line takes the cheapest in-stock match');
+select tests.assert(
+  (select bool_and(variant_id is null) from public.recipe_ingredients
+   where recipe_id = tests.id('r_all') and label in ('Moon dust', 'Dal')),
+  'a line with no in-stock match stays empty');
+select tests.assert(
+  (select content_status = 'approved' and status = 'live' from public.recipes where id = tests.id('r_all')),
+  'its words are approved and it is live');
 create temp table missing_before on commit drop as select public.admin_recipes_missing_piece() as n;
 reset role;
 update public.product_variants set qty_listed = 5 where id = tests.id('v_dal');
@@ -128,7 +181,7 @@ reset role;
 update public.product_variants set qty_listed = 0 where id = tests.id('v_dal');
 
 set local role anon;
-select tests.assert((public.store_home() -> 'recipe' ->> 'kit_cents')::int = 399, 'the pinned recipe is on Home');
+select tests.assert(public.store_home() -> 'recipes' -> 0 ->> 'slug' = 'test-pav-bhaji', 'the pinned recipe leads Home''s row');
 reset role;
 
 -- Hidden: drafts, unapproved words, archived, placeholders outside dev, and a kit with nothing to sell

@@ -24,58 +24,28 @@ export const SLOTS = {
     alt: 'Jhumkas, gold bangles, a hair clip and rupee notes laid out on a pair of jeans.',
     width: 736,
     height: 981,
-    brief: 'Beside an empty bag: an empty steel thali with its katoris on a table, waiting to be filled.',
+    brief:
+      'Beside an empty bag: an empty steel thali with its katoris on a table, waiting to be filled.',
   },
   // D-175 (founder 2026-10-31: "Leave image placeholders in it where I can Insert my photos one photo per card"): the
-  // season windows on Home (homecoming-windows.tsx), the founder's photos since 2026-10-31. Cropped to fill; while empty
-  // the window shows its drawing. D-196: the season is Homecoming; the files are still the Diwali ones (their names
-  // too) until the founder gives new ones, and `homecoming-snacks` still shows diyas.
+  // the season window on Home (homecoming-windows.tsx), the founder's photo since 2026-10-31. Cropped to fill. D-196: the
+  // season is Homecoming; the file is still the Diwali one until the founder gives a new one. D-204: the three arch
+  // windows and their slots left Home.
   'homecoming-table': {
     src: '/visuals/diwali-night.jpg',
     alt: 'Two friends laughing at a dinner table, one feeding the other a sweet.',
     width: 1080,
     height: 1350,
     brief:
-      'The wide window: family or friends round a full table at dusk, a homecoming dinner. Fills the card\'s right side, fading into the wine on its left and bottom (keep the subject right of centre).',
-  },
-  'homecoming-clothing': {
-    src: '/visuals/diwali-clothing.jpg',
-    alt: 'A woman in gold and silver glass bangles, her wrists crossed over her eyes.',
-    width: 736,
-    height: 970,
-    brief:
-      'The Clothing arch: a kurta or saree up close, or someone wearing one, warm light. Fills the arch\'s top, its bottom fading into pumpkin.',
-  },
-  'homecoming-snacks': {
-    src: '/visuals/diwali-snacks.jpg',
-    alt: 'Lit diyas round a bowl of flowers, with plates of kaju katli, namkeen and chocolates.',
-    width: 736,
-    height: 1275,
-    brief:
-      'The Snacks arch: namkeen, bhujia or chips spilling on a table, or a paper cone of bhel. Fills the arch\'s top, fading into green.',
-  },
-  // D-203: Cook at home's window when the pinned recipe has no photo yet (the recipe's own photo comes first)
-  'homecoming-recipes': {
-    src: null,
-    alt: '',
-    width: 736,
-    height: 980,
-    brief: 'The Cook at home arch: a plate of the dish on a home kitchen counter, top half of the frame.',
-  },
-  'homecoming-nearby': {
-    src: '/visuals/snacks-nearby.jpg',
-    alt: 'A packet of Maggi masala noodles beside a steaming bowl of them.',
-    width: 1200,
-    height: 1499,
-    brief:
-      'The neighbourhood arch: a small kirana shop front or a mohalla lane at dusk. Fills the arch\'s top, fading into cream.',
+      "The wide window: family or friends round a full table at dusk, a homecoming dinner. Fills the card's right side, fading into the wine on its left and bottom (keep the subject right of centre).",
   },
   'not-found': {
     src: '/visuals/not-found.jpg',
     alt: 'Embroidered lehengas and festive outfits hanging on a rail in a boutique.',
     width: 736,
     height: 1308,
-    brief: 'Beside Page not found: an empty auto-rickshaw parked in a quiet lane, nobody around. Lost, but calm.',
+    brief:
+      'Beside Page not found: an empty auto-rickshaw parked in a quiet lane, nobody around. Lost, but calm.',
   },
 } satisfies Record<string, Slot>;
 

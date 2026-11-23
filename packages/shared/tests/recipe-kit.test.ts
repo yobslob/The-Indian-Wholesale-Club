@@ -1,7 +1,7 @@
 import assert from 'node:assert/strict';
 import { describe, it } from 'node:test';
 
-import { kitLead, kitPiecesToAdd, kitTotal, kitWasCents, recipeTime } from '../src/domain';
+import { kitPiecesToAdd, kitTotal, kitWasCents, recipeTime } from '../src/domain';
 
 const masala = { variantId: 'm', priceCents: 399, available: true };
 const dal = { variantId: 'd', priceCents: 250, available: true };
@@ -26,11 +26,6 @@ describe('a recipe kit (D-203)', () => {
       kitPiecesToAdd([masala, dal, gone, masala], ticked, new Set(['d'])).map((p) => p.variantId),
       ['m'],
     );
-  });
-
-  it('the window’s lead fits the name', () => {
-    assert.equal(kitLead('Pav Bhaji'), 'Pav Bhaji kit');
-    assert.equal(kitLead('Hyderabadi Biryani'), 'the whole kit');
   });
 
   it('the time fact', () => {

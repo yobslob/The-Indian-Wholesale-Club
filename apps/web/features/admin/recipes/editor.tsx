@@ -56,7 +56,11 @@ export function RecipeEditor({
   const kit = kitTotal(
     f.lines
       .filter((l) => l.source === 'iwc')
-      .map((l) => ({ variantId: l.variant_id, priceCents: l.listing?.price_cents ?? null, available: l.listing?.health === 'ok' })),
+      .map((l) => ({
+        variantId: l.variant_id,
+        priceCents: l.listing?.price_cents ?? null,
+        available: l.listing?.health === 'ok',
+      })),
   );
 
   const save = (): void =>
@@ -64,7 +68,14 @@ export function RecipeEditor({
       const r = await saveRecipeAction(recipeId, {
         ...f,
         steps: f.steps.filter((s) => s.text.trim()),
-        lines: f.lines.map(({ label: l, amount, source, variant_id, match_words }) => ({ label: l, amount, source, variant_id, match_words })),
+        lines: f.lines.map(({ label: l, amount, source, variant_id, match_words, instead_of }) => ({
+          label: l,
+          amount,
+          source,
+          variant_id,
+          match_words,
+          instead_of: source === 'iwc' && instead_of.trim() ? instead_of.trim() : null,
+        })),
       });
       if (r.error) return setMessage({ error: true, text: r.error });
       setMessage({ error: false, text: 'Saved.' });
@@ -81,7 +92,11 @@ export function RecipeEditor({
             {photo ? (
               <div className="flex items-center gap-3">
                 {/* eslint-disable-next-line @next/next/no-img-element -- the admin's own preview */}
-                <img src={photo.url} alt="" className="bg-surface size-20 rounded-md object-cover" />
+                <img
+                  src={photo.url}
+                  alt=""
+                  className="bg-surface size-20 rounded-md object-cover"
+                />
                 <span className="text-ink-muted break-all text-xs">{photo.path}</span>
               </div>
             ) : (
@@ -92,15 +107,29 @@ export function RecipeEditor({
         ) : null}
         <label className="space-y-1">
           <span className={label}>Name</span>
-          <input className={input} value={f.name} maxLength={80} onChange={(e) => set({ name: e.target.value })} />
+          <input
+            className={input}
+            value={f.name}
+            maxLength={80}
+            onChange={(e) => set({ name: e.target.value })}
+          />
         </label>
         <label className="space-y-1">
           <span className={label}>Address (slug, also the photo&rsquo;s file name)</span>
-          <input className={input} value={f.slug} maxLength={80} onChange={(e) => set({ slug: e.target.value.toLowerCase() })} />
+          <input
+            className={input}
+            value={f.slug}
+            maxLength={80}
+            onChange={(e) => set({ slug: e.target.value.toLowerCase() })}
+          />
         </label>
         <label className="space-y-1">
           <span className={label}>State</span>
-          <select className={input} value={f.region_id ?? ''} onChange={(e) => set({ region_id: e.target.value || null })}>
+          <select
+            className={input}
+            value={f.region_id ?? ''}
+            onChange={(e) => set({ region_id: e.target.value || null })}
+          >
             <option value="">All of India</option>
             {regions.map((r) => (
               <option key={r.id} value={r.id}>
@@ -111,7 +140,11 @@ export function RecipeEditor({
         </label>
         <label className="space-y-1">
           <span className={label}>Kind</span>
-          <select className={input} value={f.kind} onChange={(e) => set({ kind: e.target.value as Fields['kind'] })}>
+          <select
+            className={input}
+            value={f.kind}
+            onChange={(e) => set({ kind: e.target.value as Fields['kind'] })}
+          >
             <option value="snacks">Snacks</option>
             <option value="breakfast">Breakfast</option>
             <option value="dinner">Dinner</option>
@@ -121,12 +154,23 @@ export function RecipeEditor({
         </label>
         <label className="space-y-1 md:col-span-2">
           <span className={label}>The one line ({f.blurb.length}/200)</span>
-          <input className={input} value={f.blurb} maxLength={200} onChange={(e) => set({ blurb: e.target.value })} />
+          <input
+            className={input}
+            value={f.blurb}
+            maxLength={200}
+            onChange={(e) => set({ blurb: e.target.value })}
+          />
         </label>
         <div className="grid grid-cols-2 gap-3 md:col-span-2 md:grid-cols-5">
           <label className="space-y-1">
             <span className={label}>Minutes</span>
-            <input className={input} type="number" min={1} value={f.minutes} onChange={(e) => set({ minutes: num(e.target.value) })} />
+            <input
+              className={input}
+              type="number"
+              min={1}
+              value={f.minutes}
+              onChange={(e) => set({ minutes: num(e.target.value) })}
+            />
           </label>
           <label className="space-y-1">
             <span className={label}>Soak hours</span>
@@ -136,16 +180,28 @@ export function RecipeEditor({
               min={0}
               step={0.5}
               value={f.soak_hours ?? ''}
-              onChange={(e) => set({ soak_hours: e.target.value === '' ? null : Number(e.target.value) })}
+              onChange={(e) =>
+                set({ soak_hours: e.target.value === '' ? null : Number(e.target.value) })
+              }
             />
           </label>
           <label className="space-y-1">
             <span className={label}>Serves</span>
-            <input className={input} type="number" min={1} value={f.serves} onChange={(e) => set({ serves: num(e.target.value) })} />
+            <input
+              className={input}
+              type="number"
+              min={1}
+              value={f.serves}
+              onChange={(e) => set({ serves: num(e.target.value) })}
+            />
           </label>
           <label className="space-y-1">
             <span className={label}>Effort</span>
-            <select className={input} value={f.effort} onChange={(e) => set({ effort: e.target.value as Fields['effort'] })}>
+            <select
+              className={input}
+              value={f.effort}
+              onChange={(e) => set({ effort: e.target.value as Fields['effort'] })}
+            >
               <option value="easy">Easy</option>
               <option value="medium">Medium</option>
               <option value="weekend">Weekend</option>
@@ -153,7 +209,13 @@ export function RecipeEditor({
           </label>
           <label className="space-y-1">
             <span className={label}>Shelf order</span>
-            <input className={input} type="number" min={0} value={f.sort} onChange={(e) => set({ sort: num(e.target.value) })} />
+            <input
+              className={input}
+              type="number"
+              min={0}
+              value={f.sort}
+              onChange={(e) => set({ sort: num(e.target.value) })}
+            />
           </label>
         </div>
       </section>
@@ -180,7 +242,11 @@ export function RecipeEditor({
                 value={s.text}
                 maxLength={600}
                 aria-label={`Step ${i + 1}`}
-                onChange={(e) => set({ steps: f.steps.map((x, k) => (k === i ? { ...x, text: e.target.value } : x)) })}
+                onChange={(e) =>
+                  set({
+                    steps: f.steps.map((x, k) => (k === i ? { ...x, text: e.target.value } : x)),
+                  })
+                }
               />
               <input
                 className={input}
@@ -190,16 +256,30 @@ export function RecipeEditor({
                 aria-label={`Step ${i + 1} minutes`}
                 value={s.minutes ?? ''}
                 onChange={(e) =>
-                  set({ steps: f.steps.map((x, k) => (k === i ? { ...x, minutes: e.target.value === '' ? null : Number(e.target.value) } : x)) })
+                  set({
+                    steps: f.steps.map((x, k) =>
+                      k === i
+                        ? { ...x, minutes: e.target.value === '' ? null : Number(e.target.value) }
+                        : x,
+                    ),
+                  })
                 }
               />
-              <button type="button" className={`${linkButton} text-sm`} onClick={() => set({ steps: f.steps.filter((_, k) => k !== i) })}>
+              <button
+                type="button"
+                className={`${linkButton} text-sm`}
+                onClick={() => set({ steps: f.steps.filter((_, k) => k !== i) })}
+              >
                 Remove
               </button>
             </li>
           ))}
         </ol>
-        <button type="button" className={secondaryButton} onClick={() => set({ steps: [...f.steps, { text: '', minutes: null }] })}>
+        <button
+          type="button"
+          className={secondaryButton}
+          onClick={() => set({ steps: [...f.steps, { text: '', minutes: null }] })}
+        >
           Add a step
         </button>
       </section>
@@ -209,7 +289,10 @@ export function RecipeEditor({
           {pending ? 'Saving…' : recipeId ? 'Save' : 'Create the recipe'}
         </button>
         {message ? (
-          <span role="status" className={message.error ? 'text-danger text-sm' : 'text-positive text-sm'}>
+          <span
+            role="status"
+            className={message.error ? 'text-danger text-sm' : 'text-positive text-sm'}
+          >
             {message.text}
           </span>
         ) : null}

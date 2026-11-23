@@ -9,6 +9,7 @@ import {
   createRecipe,
   getRecipeAdmin,
   pinRecipe,
+  publishAllRecipes,
   recipeMatches,
   recipeSlugs,
   saveRecipeLines,
@@ -33,35 +34,52 @@ import { requireAdminAction } from '../guard';
 type Result = { error: string | null };
 const PAGE = '/admin/recipes';
 const id = z.string().uuid();
-const IMAGE_TYPES: Record<string, string> = { 'image/jpeg': 'jpg', 'image/png': 'png', 'image/webp': 'webp', 'image/avif': 'avif' };
+const IMAGE_TYPES: Record<string, string> = {
+  'image/jpeg': 'jpg',
+  'image/png': 'png',
+  'image/webp': 'webp',
+  'image/avif': 'avif',
+};
 const MAX_IMAGE_BYTES = 8 * 1024 * 1024;
 
 const fail = (error: unknown): Result => ({
-  error: error instanceof z.ZodError ? (error.issues[0]?.message ?? 'not valid') : readable(errorMessage(error)),
+  error:
+    error instanceof z.ZodError
+      ? (error.issues[0]?.message ?? 'not valid')
+      : readable(errorMessage(error)),
 });
 
 /** The database's publish rule names what's missing; the admin reads it in words. */
 const BLOCKER_WORDS: Record<string, string> = {
   words_not_approved: 'the words are not approved',
-  no_photo: 'it has no photo',
-  no_iwc_line: 'nothing in its kit',
-  line_without_live_listing: 'a kit line has no live listing',
+  no_iwc_line: 'nothing in its kit can be bought yet',
 };
 function readable(message: string): string {
   const m = /recipe_not_ready: (.+)/.exec(message);
   if (!m) return message;
-  return `Can't publish yet: ${m[1]!.split(', ').map((b) => BLOCKER_WORDS[b] ?? b).join('; ')}.`;
+  return `Can't publish yet: ${m[1]!
+    .split(', ')
+    .map((b) => BLOCKER_WORDS[b] ?? b)
+    .join('; ')}.`;
 }
 
-async function afterChange(client: Parameters<typeof getRecipeAdmin>[0], recipeId: string, wasShown: boolean): Promise<void> {
+async function afterChange(
+  client: Parameters<typeof getRecipeAdmin>[0],
+  recipeId: string,
+  wasShown: boolean,
+): Promise<void> {
   const r = await getRecipeAdmin(client, recipeId);
   revalidatePath(PAGE);
   revalidatePath(`${PAGE}/${recipeId}`);
-  if (r && (wasShown || r.status === 'live')) refreshRecipes([r.slug], r.home_rank !== null || wasShown);
+  if (r && (wasShown || r.status === 'live'))
+    refreshRecipes([r.slug], r.home_rank !== null || wasShown);
 }
 
 const fieldsSchema = z.object({
-  slug: z.string().trim().regex(/^[a-z0-9]+(-[a-z0-9]+)*$/, 'the address: lowercase words joined by -'),
+  slug: z
+    .string()
+    .trim()
+    .regex(/^[a-z0-9]+(-[a-z0-9]+)*$/, 'the address: lowercase words joined by -'),
   name: z.string().trim().min(1, 'a name').max(80),
   region_id: z.string().uuid().nullable(),
   kind: z.enum(['snacks', 'breakfast', 'dinner', 'sweets', 'drinks']),
@@ -70,7 +88,14 @@ const fieldsSchema = z.object({
   soak_hours: z.number().min(0).max(48).nullable(),
   serves: z.number().int().min(1).max(50),
   effort: z.enum(['easy', 'medium', 'weekend']),
-  steps: z.array(z.object({ text: z.string().trim().min(1, 'a step needs words').max(600), minutes: z.number().int().min(0).max(1440).nullable() })).max(30),
+  steps: z
+    .array(
+      z.object({
+        text: z.string().trim().min(1, 'a step needs words').max(600),
+        minutes: z.number().int().min(0).max(1440).nullable(),
+      }),
+    )
+    .max(30),
   sort: z.number().int().min(0).max(100_000),
 });
 const linesSchema = z
@@ -81,6 +106,7 @@ const linesSchema = z
       source: z.enum(['iwc', 'local']),
       variant_id: z.string().uuid().nullable(),
       match_words: z.string().trim().max(120),
+      instead_of: z.string().trim().min(1).max(80).nullable().default(null),
     }),
   )
   .max(40);
@@ -88,7 +114,10 @@ const linesSchema = z
 export type RecipeForm = z.input<typeof fieldsSchema> & { lines: z.input<typeof linesSchema> };
 
 /** Saves the editor (fields and lines). A new recipe returns its id. */
-export async function saveRecipeAction(recipeId: string | null, form: RecipeForm): Promise<Result & { id?: string }> {
+export async function saveRecipeAction(
+  recipeId: string | null,
+  form: RecipeForm,
+): Promise<Result & { id?: string }> {
   try {
     const { client } = await requireAdminAction();
     const fields = fieldsSchema.parse(form);
@@ -103,7 +132,8 @@ export async function saveRecipeAction(recipeId: string | null, form: RecipeForm
     await updateRecipe(client, recipeId, fields);
     await saveRecipeLines(client, recipeId, lines);
     await afterChange(client, recipeId, before?.status === 'live');
-    if (before && before.slug !== fields.slug && before.status === 'live') refreshRecipes([before.slug], false);
+    if (before && before.slug !== fields.slug && before.status === 'live')
+      refreshRecipes([before.slug], false);
     return { error: null, id: recipeId };
   } catch (error) {
     return fail(error);
@@ -122,7 +152,10 @@ export async function approveRecipeAction(recipeId: string, approved: boolean): 
   }
 }
 
-export async function setRecipeStatusAction(recipeId: string, status: 'draft' | 'live' | 'archived'): Promise<Result> {
+export async function setRecipeStatusAction(
+  recipeId: string,
+  status: 'draft' | 'live' | 'archived',
+): Promise<Result> {
   try {
     const { client } = await requireAdminAction();
     const before = await getRecipeAdmin(client, id.parse(recipeId));
@@ -149,11 +182,19 @@ export async function pinRecipeAction(recipeId: string | null): Promise<Result> 
   }
 }
 
-export async function setLineListingAction(recipeId: string, lineId: string, variantId: string | null): Promise<Result> {
+export async function setLineListingAction(
+  recipeId: string,
+  lineId: string,
+  variantId: string | null,
+): Promise<Result> {
   try {
     const { client } = await requireAdminAction();
     const before = await getRecipeAdmin(client, id.parse(recipeId));
-    await setRecipeLineListing(client, id.parse(lineId), variantId === null ? null : id.parse(variantId));
+    await setRecipeLineListing(
+      client,
+      id.parse(lineId),
+      variantId === null ? null : id.parse(variantId),
+    );
     await afterChange(client, recipeId, before?.status === 'live');
     return { error: null };
   } catch (error) {
@@ -182,17 +223,60 @@ export async function suggestMatchesAction(recipeId: string): Promise<Record<str
   return out;
 }
 
-/** Add drafts from a file (plan §7): a JSON list of drafted recipes; each starts as a draft with draft words. */
-export async function addDraftsAction(json: string): Promise<{ error: string | null; added: string[]; skipped: string[] }> {
+/** Add drafts from a file (plan §7): a JSON list of drafted recipes; each starts as a draft with draft words (one still
+ * a draft is replaced, D-204). */
+export async function addDraftsAction(
+  json: string,
+): Promise<{ error: string | null; added: string[]; replaced: string[]; skipped: string[] }> {
   try {
     const { client } = await requireAdminAction();
     const drafts = recipeDraftFileSchema.parse(JSON.parse(json));
-    const { added, skipped } = await addRecipeDrafts(client, drafts);
+    const { added, replaced, skipped } = await addRecipeDrafts(client, drafts);
     revalidatePath(PAGE);
-    return { error: null, added: added.map((a) => a.slug), skipped: skipped.map((s) => `${s.slug}: ${s.why}`) };
+    return {
+      error: null,
+      added: added.map((a) => a.slug),
+      replaced,
+      skipped: skipped.map((s) => `${s.slug}: ${s.why}`),
+    };
   } catch (error) {
     const e = error instanceof SyntaxError ? { error: 'not a JSON file' } : fail(error);
-    return { ...e, added: [], skipped: [] };
+    return { ...e, added: [], replaced: [], skipped: [] };
+  }
+}
+
+/**
+ * Publish all (D-204): one batch of draft recipes after the last batch (the button repeats it, D-146): empty lines take the
+ * cheapest in-stock match, the words are approved and each recipe with a piece to sell goes live. Refreshes the shelf,
+ * the new pages and Home's row.
+ */
+export async function publishAllAction(
+  after: string | null,
+): Promise<
+  Result & {
+    published: string[];
+    blocked: { slug: string; why: string[] }[];
+    filled: number;
+    next: string | null;
+  }
+> {
+  try {
+    const { client } = await requireAdminAction();
+    const r = await publishAllRecipes(
+      client,
+      after === null ? null : z.string().max(80).parse(after),
+    );
+    if (r.published.length > 0) refreshRecipes(r.published, true);
+    revalidatePath(PAGE);
+    return {
+      error: null,
+      published: r.published,
+      blocked: r.blocked,
+      filled: r.lines_filled,
+      next: r.next,
+    };
+  } catch (error) {
+    return { ...fail(error), published: [], blocked: [], filled: 0, next: null };
   }
 }
 
@@ -211,11 +295,21 @@ export async function recipePhotoByNameAction(form: FormData): Promise<Result & 
     if (file.size > MAX_IMAGE_BYTES) return { error: 'larger than 8 MB' };
     const all = await recipeSlugs(client);
     const slug = slugFromFileName(file.name);
-    const recipe = typeof forId === 'string' && forId ? all.find((r) => r.id === forId) : all.find((r) => r.slug === slug);
+    const recipe =
+      typeof forId === 'string' && forId
+        ? all.find((r) => r.id === forId)
+        : all.find((r) => r.slug === slug);
     if (!recipe) return { error: `no recipe called "${slug}"` };
-    const path = await storePhoto(client, 'product-media', `recipes/${recipe.slug}/${crypto.randomUUID()}.${ext}`, file, file.type);
+    const path = await storePhoto(
+      client,
+      'product-media',
+      `recipes/${recipe.slug}/${crypto.randomUUID()}.${ext}`,
+      file,
+      file.type,
+    );
     await setRecipePhoto(client, recipe.id, path);
-    if (recipe.photo_path) await removePhotos(client, 'product-media', [recipe.photo_path]).catch(() => undefined);
+    if (recipe.photo_path)
+      await removePhotos(client, 'product-media', [recipe.photo_path]).catch(() => undefined);
     await afterChange(client, recipe.id, recipe.status === 'live');
     return { error: null, slug: recipe.slug };
   } catch (error) {
