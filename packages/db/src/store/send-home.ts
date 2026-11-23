@@ -27,6 +27,7 @@ export const sendHomeSchema = z
   .object({
     inr_per_usd: z.coerce.number().positive(),
     max_cents: z.number().int().positive(),
+    signed_in: z.boolean(),
     in_bag: z.boolean(),
     loved_ones: z.array(
       lovedOneSchema.extend({ last_inr_paise: z.number().int().nullable(), last_at: isoDateTime.nullable() }),

@@ -327,6 +327,7 @@ language sql stable security definer set search_path = public, pg_temp as $$
   select case when s.send_home_inr_per_usd is null then null else jsonb_build_object(
     'inr_per_usd', s.send_home_inr_per_usd,
     'max_cents', coalesce(s.send_home_max_cents, 10000),  -- Q-65: $100 until the founder sets it
+    'signed_in', auth.uid() is not null,
     'in_bag', coalesce((select p.send_home_in_bag from public.profiles p where p.id = auth.uid()), true),
     'loved_ones', coalesce((
       select jsonb_agg(jsonb_build_object(

@@ -22,6 +22,7 @@ export function BagSummary({
   updating,
   signInHref,
   linesOnly = false,
+  gift = null,
 }: {
   title: string;
   lines: SummaryLine[];
@@ -33,6 +34,8 @@ export function BagSummary({
   signInHref?: string;
   /** On a phone at Payment the shipments and bill are already above Pay. */
   linesOnly?: boolean;
+  /** D-205: the Send home line's words and its Remove. */
+  gift?: { detail: string | null; onRemove?: () => void } | null;
 }): React.JSX.Element {
   return (
     <div className="grid gap-3">
@@ -61,6 +64,7 @@ export function BagSummary({
           updating={updating}
           signInHref={quote ? undefined : signInHref}
           usd
+          gift={gift}
         />
       )}
     </div>
