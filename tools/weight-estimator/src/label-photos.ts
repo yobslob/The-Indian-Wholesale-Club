@@ -103,6 +103,8 @@ export interface ReadContext {
   doubt: NonNullable<Parameters<typeof decideLabel>[2]>['doubt'];
   /** `--cached`: decide from saved readings only (no GPU, no download); null when a photo it needs is not read yet. */
   cachedOnly: boolean;
+  /** `--front`: a weight alone on a line confirms the vision model's reading (decideLabel). */
+  front: boolean;
 }
 
 /** Reads a listing's photos until both readers agree for every option it can weigh (most stop at the second photo). */
@@ -110,7 +112,7 @@ export async function readListing(
   ctx: ReadContext,
   listing: LabelListing,
 ): Promise<LabelResult[] | null> {
-  const { ollama, models, cache, site, every, doubt } = ctx;
+  const { ollama, models, cache, site, every, doubt, front } = ctx;
   const readings: PhotoReading[] = [];
   const photos = listing.photos.slice(0, MAX_PHOTOS);
   const fetchPhoto = (i: number) =>
@@ -141,10 +143,10 @@ export async function readListing(
       cache.put(photo.path, saved);
     }
     readings.push({ path: photo.path, variant_id: photo.variant_id, ...saved });
-    const results = decideLabel(listing, readings, { doubt, every });
+    const results = decideLabel(listing, readings, { doubt, every, front });
     // one option: done at its first agreed photo; several: every photo, each may be tagged with its own
     if (listing.variants.filter((v) => v.is_active).length === 1 && results.some((r) => r.grams))
       return results;
   }
-  return decideLabel(listing, readings, { doubt, every });
+  return decideLabel(listing, readings, { doubt, every, front });
 }

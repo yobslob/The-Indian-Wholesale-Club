@@ -241,6 +241,32 @@ describe("the label reader's decision (D-202)", () => {
     // a flavour joined by "&" and pieces inside one pack are one pack
     assert.equal(read(named('Cornitos Cheese & Herbs Nachos')).result, 'read');
     assert.equal(read(named('Bikano Gulab Jamun 20 pcs')).result, 'read');
+    // a free pack or a second one (the backlog's dry run); "Sugar Free" is no pack
+    assert.match(read(named("Iyer's White Finger Papad Buy 1 Get 1")).result, /several packs/);
+    assert.match(read(named('Malanivega Toor Dal with Free Biryani Rice')).result, /several packs/);
+    assert.match(read(named('Haldiram Bhujia + Free Gift')).result, /several packs/);
+    assert.equal(read(named('Sunfeast Farmlite Sugar Free Hazelnut & Oat')).result, 'read');
+    assert.equal(read(named('Gluten Free Jowar Atta')).result, 'read');
+  });
+
+  it('with --front, a weight alone on a line confirms the vision model, never on its own', () => {
+    const front = photo(
+      '100 g',
+      'EVEREST\nCumin\nFinest quality, pure Cumin Powder\n100g (3.56 oz)',
+    );
+    assert.match(decideLabel(labelListing(), [front])[0]!.result, /only one reader/);
+    assert.equal(decideLabel(labelListing(), [front], { front: true })[0]!.grams, 100);
+    // "10g / PROTEIN" is a line "10g", but the vision model read 50 grams: no agreement
+    const protein = photo('50 GRAMS', 'POPTEIN\n10g\nPROTEIN\nPer Serve');
+    assert.match(decideLabel(labelListing(), [protein], { front: true })[0]!.result, /only one/);
+  });
+
+  it("holds back a label under 20 g: one tea bag's or sachet's, not the box's", () => {
+    const tea = { ...labelListing(), name: 'Vahdam Chamomile Green Tea' };
+    const bag = decideLabel(tea, [photo('2 g', 'Net Wt. 2 g')])[0]!;
+    assert.match(bag.result, /under 20 g/);
+    assert.equal(labelWrites([bag]).length, 0);
+    assert.equal(decideLabel(tea, [photo('20 g', 'Net Wt. 20 g')])[0]!.result, 'read');
   });
 
   it("holds back a label the name's own weight contradicts, except in the eval", () => {
@@ -255,8 +281,8 @@ describe("the label reader's decision (D-202)", () => {
   });
 
   it('a weight the price check doubts goes on the sheet, not in the database', () => {
-    const results = decideLabel(labelListing(), [photo('5 g', 'Net Wt. 5 g')], {
-      doubt: () => '₹17,400 a kg',
+    const results = decideLabel(labelListing(), [photo('50 g', 'Net Wt. 50 g')], {
+      doubt: () => '₹1,740 a kg',
     });
     assert.match(results[0]!.result, /price check doubts/);
     assert.equal(labelWrites(results).length, 0);

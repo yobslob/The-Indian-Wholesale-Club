@@ -278,6 +278,7 @@ async function main(): Promise<number> {
       all: args.includes('--all'),
       evaluate: args.includes('--eval'),
       cached: args.includes('--cached'),
+      front: args.includes('--front'),
       limit: Number(arg(args, '--limit') ?? Infinity),
     });
   if (command === 'prices')

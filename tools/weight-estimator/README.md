@@ -34,8 +34,11 @@ For each photo (its 1200-pixel copy, read through the site like any visitor; no 
    page: only a number right after "Net Wt.", "Net Weight", "Net Quantity", शुद्ध भार, नेट वजन or कुल मात्रा;
 3. a weight is written only when both agree (within 2%) and none of the checks holds it back; it goes in as the
    label's weight (source packed: shown and priced). Held back, on the sheet with why:
-   - the listing may hold several packs: "combo", "twin pack", "2 pouches", or "Pack of 2" in the name that its
-     option does not count (one pack's label would price it below cost: the first eval's main miss);
+   - the listing may hold several packs: "combo", "twin pack", "2 pouches", "Buy 1 Get 1", "with free …", or
+     "Pack of 2" in the name that its option does not count (one pack's label would price it below cost: the first
+     eval's main miss);
+   - the label says under 20 g: most often one tea bag's or sachet's weight, not the box's (saffron's real 1 g pack
+     is held too, and keeps its estimate);
    - the name states another weight ("Coconut Chutney, 200 gm" with a 50 g sachet's label);
    - the price check doubts it: a kilo over 1.8 times dearer than similar labelled items (`LABEL_DEARER`, Q-62:
      the side a single pack's label falls on) or under a quarter.
@@ -59,6 +62,11 @@ pnpm weights labels --dry --cached        the sheet and summary from the photos 
 ```
 The sheet is rewritten after every 25 listings, so a run that stops keeps what it read, and a network blip from the
 database is tried again for 8 minutes before the run gives up.
+
+`--front` (off by default, not used): a line of the transcription that is only a weight ("500 g", "100g (3.56 oz)" on
+a pack's front, without "Net Wt.") confirms the vision model's reading. Measured 2026-11-23 from the cache: about 523
+more weights on the backlog, but on the eval 4 of its 13 extra writes were wrong (Maniarr's three flavours read as one
+90 g pack each, not 270 g), about 30% against 9% without it. Not written; kept for a better check.
 ```
 pnpm weights prices --dry                 the price check's sheet price-check.csv
 pnpm weights prices                       write the corrections (estimates, not shown to customers)

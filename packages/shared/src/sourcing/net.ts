@@ -56,3 +56,21 @@ export function readNet(text: string | null | undefined): WeightParts[] | null {
   }
   return null;
 }
+
+/** A line that is a weight and nothing else: "500 g", "100g (3.56 oz)", "50 GRAMS", "1 KG.". */
+const WEIGHT_LINE =
+  /^\s*(\d+(?:\.\d+)?)\s*(?:g|gm|gms|gram|grams|gr|kg|kgs|ml|l|ltr|litre|liter)\.?\s*(?:\([^)]*\))?\s*$/i;
+
+/**
+ * D-202, the label reader's front-of-pack test (`--front`): the weights a transcription prints on a line of their
+ * own, as a pack's front does without "Net Wt." (843 photos of the backlog). Read only to confirm the vision model's
+ * own reading; never alone, since a line "10g" may be protein per serve.
+ */
+export function weightLines(text: string | null | undefined): WeightParts[] {
+  if (!text) return [];
+  return latinNumbers(text)
+    .split('\n')
+    .filter((line) => WEIGHT_LINE.test(line))
+    .map((line) => parseWeightParts(line.split('(')[0]!))
+    .filter((p): p is WeightParts => p !== null && p.unitGrams >= 1);
+}

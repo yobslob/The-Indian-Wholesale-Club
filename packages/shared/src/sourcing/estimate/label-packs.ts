@@ -13,9 +13,24 @@ import { netGrams } from './food';
 /** "Pack of 3" in an option or a name: the pack count. */
 export const PACK_OF = /\b(?:pack|set|combo|box) of (\d{1,2})\b/i;
 
-/** Words that say a listing holds more than one pack. */
+/**
+ * Words that say a listing holds more than one pack. The backlog's dry run (2026-11-23) added the free ones: "Iyer's
+ * White Finger Papad Buy 1 Get 1" read as one 200 g pack, "Toor Dal with Free Biryani Rice" as the rice's 190 g.
+ * "Sugar Free" and "Gluten Free" are not a free pack.
+ */
 const SEVERAL_PACKS =
-  /\bcombo\b|\b(?:twin|duo|family) packs?\b|\b([2-9]|\d{2})\s*(?:packs|packets|pouches|jars|bottles|boxes|tins|cans)\b/i;
+  /\bcombo\b|\b(?:twin|duo|family) packs?\b|\b([2-9]|\d{2})\s*(?:packs|packets|pouches|jars|bottles|boxes|tins|cans)\b|\bbuy\s*\d+\s*get\s*\d+|\bb\dg\d\b|\bbogo\b|(?:\bwith|\bplus|\+|&)\s*(?:a\s+)?free\b|\bfree\s+(?:gift|pack|packet|pouch|bottle|jar|box)/i;
+
+/**
+ * A label under 20 g is most often one tea bag's or sachet's ("Vahdam Chamomile ... Green Tea": 2 g for the box), not
+ * the pack's. Saffron's 1 g pack is real, and goes on the sheet with them: it keeps its estimate.
+ */
+export const LABEL_MIN_G = 20;
+
+export const tooSmall = (grams: number): string | null =>
+  grams < LABEL_MIN_G
+    ? `under ${LABEL_MIN_G} g: one bag or sachet's weight, not the pack's?`
+    : null;
 
 /**
  * Why one pack's label may not be the option's weight, or null. A pack count the option states is already counted

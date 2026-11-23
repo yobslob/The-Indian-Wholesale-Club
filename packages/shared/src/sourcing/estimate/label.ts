@@ -1,11 +1,11 @@
 import { z } from 'zod';
 
 import { formatGrams } from '../../domain/weight';
-import { readNet } from '../net';
+import { readNet, weightLines } from '../net';
 import { parseComboParts, parseWeightParts, type WeightParts } from '../weight';
 
 import { netGrams, netLabel, type FoodWrite } from './food';
-import { nameDisagrees, PACK_OF, severalPacks } from './label-packs';
+import { nameDisagrees, PACK_OF, severalPacks, tooSmall } from './label-packs';
 
 /**
  * D-202, the label reader: a food listing whose weight nobody read gets the net quantity printed on its own photos
@@ -93,10 +93,22 @@ export function answerParts(answer: LabelAnswer | null): WeightParts[] | null {
   return one && one.unitGrams >= 1 ? [one] : null;
 }
 
-/** Both readings of a photo, when they agree (within 2%: "500 g" and "500g"); else why not. */
-export function agreed(reading: PhotoReading): { parts: WeightParts[] } | { why: string } {
+/**
+ * Both readings of a photo, when they agree (within 2%: "500 g" and "500g"); else why not. With `front`, a line of
+ * the transcription that is only the weight the vision model read ("500 g" on a pack's front) also agrees.
+ */
+export function agreed(
+  reading: PhotoReading,
+  front = false,
+): { parts: WeightParts[] } | { why: string } {
   const seen = answerParts(reading.answer);
-  const said = readNet(reading.transcript);
+  const onFront =
+    front && seen
+      ? weightLines(reading.transcript).find(
+          (p) => Math.abs(p.unitGrams * p.count - total(seen)) <= total(seen) * 0.02,
+        )
+      : undefined;
+  const said = readNet(reading.transcript) ?? (onFront ? [onFront] : null);
   if (!seen && !said) return { why: 'no net quantity on it' };
   if (!seen || !said) return { why: `only one reader found it (${netLabel((seen ?? said)!)})` };
   const a = total(seen);
@@ -138,6 +150,8 @@ export function decideLabel(
      * listings' known weights come from their own words, so that check would hide the very misses it measures.
      */
     every?: boolean;
+    /** `--front`: a weight alone on a line confirms the vision model's reading (agreed()). */
+    front?: boolean;
   } = {},
 ): LabelResult[] {
   const active = listing.variants.filter((v) => v.is_active);
@@ -145,7 +159,7 @@ export function decideLabel(
   const out = new Map<string, LabelResult>();
   const whyNot: string[] = [];
   for (const r of readings) {
-    const got = agreed(r);
+    const got = agreed(r, opts.front);
     if ('why' in got) {
       whyNot.push(got.why);
       continue;
@@ -179,6 +193,7 @@ export function decideLabel(
     const doubted = opts.doubt?.(listing, target, grams) ?? null;
     const held =
       severalPacks(listing.name, target, count, got.parts) ??
+      tooSmall(grams) ??
       (opts.every ? null : nameDisagrees(listing.name, grams)) ??
       (doubted ? `price check doubts it: ${doubted}` : null);
     out.set(target.id, {
