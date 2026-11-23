@@ -93,6 +93,16 @@ export const SETTING_GROUPS: SettingGroup[] = [
     ],
   },
   {
+    title: 'Send home (D-205)',
+    note: 'A gift in rupees to someone in India, added in the bag beside the goods (never part of the free line, savings, coupons or tax) and paid out by hand from Admin → Send home. Empty rate = Send home is off everywhere. The rupees a gift promises are its dollars × the rate, to the rupee, fixed at payment (Q-65).',
+    fields: [
+      { key: 'send_home_inr_per_usd', label: 'Rupees per gift dollar (₹; empty = off)', kind: 'number' },
+      { key: 'send_home_max_cents', label: 'Largest gift ($; empty = $100)', kind: 'usd' },
+      { key: 'send_home_month_cap_cents', label: 'Most one customer sends in a month ($; empty = no cap)', kind: 'usd' },
+      { key: 'send_home_hold_hours', label: "A first order's gift waits (hours; empty = 0, Q-66)", kind: 'int' },
+    ],
+  },
+  {
     title: 'Listings',
     fields: [
       { key: 'stale_listing_days', label: 'Re-check shop quantities after (days)', kind: 'int' },

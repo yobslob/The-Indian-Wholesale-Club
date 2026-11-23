@@ -4,6 +4,7 @@
  */
 import type { CheckoutBreakdown } from './checkout';
 import type { CheckoutOffers } from './coupons';
+import type { Relation } from './send-home';
 
 export interface CheckoutRequestBody {
   email: string;
@@ -20,6 +21,23 @@ export interface CheckoutRequestBody {
   promoCode?: string | null;
   /** D-191: use the account's coins (an older app does not send it: its bill has no line for them). */
   useCoins?: boolean;
+  /** D-205: a Send home gift (the website only; the app does not send one yet). */
+  gift?: CheckoutGiftBody | null;
+}
+
+/** D-205: the gift the bag chose: a saved loved one by id, or one typed in the sheet. */
+export interface CheckoutGiftBody {
+  cents: number;
+  lovedOneId?: string | null;
+  lovedOne?: {
+    relation: Relation;
+    callName: string;
+    upi: string;
+    regionId?: string | null;
+    note?: string;
+  } | null;
+  /** Remember this loved one for the next order (signed in only). */
+  save?: boolean;
 }
 
 export interface QuotedLine {
@@ -61,6 +79,8 @@ export interface CheckoutQuote {
   shipments?: QuotedShipment[] | null;
   /** The bag has food but the address is outside the 48 states and DC (or a PO box, APO): one shipment. */
   outside?: boolean;
+  /** D-205: the gift as the server priced it (its rupees promised now); null or absent: none. */
+  homeGift?: { usdCents: number; inrPaise: number; callName: string; relation: Relation } | null;
 }
 
 export interface QuotedShipment {
@@ -107,7 +127,9 @@ export type CheckoutProblem =
   | { kind: 'stock'; lines: StockProblemLine[] }
   /** The bag is below the smallest order (D-109). */
   | { kind: 'below_minimum'; minOrderCents: number; subtotalCents: number }
-  | { kind: 'closed' };
+  | { kind: 'closed' }
+  /** D-205: the Send home gift cannot go as it is (its cap, its UPI, no one named); the bag can remove it. */
+  | { kind: 'gift'; message: string };
 
 export interface CheckoutErrorResponse {
   error: string;

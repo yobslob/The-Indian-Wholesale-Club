@@ -8,6 +8,9 @@ export interface OrderMoneyInput {
   total_cents: number;
   tax_cents: number;
   refunded_cents: number;
+  /** D-205: the Send home gift inside the total, never revenue. */
+  home_gift_cents?: number;
+  home_gift?: { status: string; usd_cents: number } | null;
   items: {
     id: string;
     status: string;
@@ -48,7 +51,8 @@ export function orderMoney(order: OrderMoneyInput, bill: { status: string; lines
       return [i.id, { costPaise: paise, costCents: cents, marginPct: cents === null ? null : marginPct(i.total_price_cents, cents) }];
     }),
   );
-  const revenueCents = orderRevenueCents(order);
+  const gift = order.home_gift;
+  const revenueCents = orderRevenueCents(order, gift && (gift.status === 'refunded' || gift.status === 'cancelled') ? gift.usd_cents : 0);
   const cPaise = bill ? shopBillTotalPaise(bill.lines) : null;
   const cCents = cPaise === null ? null : paiseToCents(cPaise, rate);
   return {

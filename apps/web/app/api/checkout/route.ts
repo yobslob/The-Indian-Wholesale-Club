@@ -29,6 +29,7 @@ const PROBLEM_MESSAGE = {
 const reuseSchema = z.object({ clientSecret: z.string().max(200).nullish() });
 
 function problemMessage(problem: CheckoutProblem): string {
+  if (problem.kind === 'gift') return problem.message;
   if (problem.kind === 'below_minimum')
     return `Orders start at ${formatUsd(problem.minOrderCents)}, with free shipping. Add ${formatUsd(problem.minOrderCents - problem.subtotalCents)} more to check out.`;
   return PROBLEM_MESSAGE[problem.kind];
@@ -100,6 +101,8 @@ export async function POST(
       promoCodeId: priced.promoCodeId,
       shippingMethod: quote.shippingMethod,
       pages: priced.pages,
+      // D-205: the gift travels with the stored checkout, so device, webhook and sweep make it with the order
+      homeGift: priced.homeGift,
     };
 
     const intent = await startPayment(stripeServer(), service, {

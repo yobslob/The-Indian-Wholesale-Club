@@ -60,9 +60,15 @@ export function shopBillTotalPaise(lines: { unit_paise: number; quantity: number
   return lines.reduce((s, l) => s + l.unit_paise * l.quantity, 0);
 }
 
-/** What the order brought in for margins: what was paid, less the tax (not ours) and anything refunded. */
-export function orderRevenueCents(o: { total_cents: number; tax_cents: number; refunded_cents: number }): number {
-  return o.total_cents - o.tax_cents - o.refunded_cents;
+/**
+ * What the order brought in for margins: what was paid, less the tax (not ours) and anything refunded. A Send home gift
+ * is never revenue (D-205): its dollars come off, and so does its own refund when it was given back.
+ */
+export function orderRevenueCents(
+  o: { total_cents: number; tax_cents: number; refunded_cents: number; home_gift_cents?: number },
+  giftRefundedCents = 0,
+): number {
+  return o.total_cents - (o.home_gift_cents ?? 0) - o.tax_cents - (o.refunded_cents - giftRefundedCents);
 }
 
 /** "42%" of revenue, or null with no revenue. */

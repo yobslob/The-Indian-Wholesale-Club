@@ -248,6 +248,7 @@ export function OrderView({ order }: { order: OrderDetail }): React.JSX.Element 
             discountCents: o.discount_cents,
             shippingCents: o.shipping_cents,
             taxCents: o.tax_cents,
+            homeGiftCents: o.home_gift_cents,
             totalCents: o.total_cents,
             refundedCents: o.refunded_cents,
             sellerName: SITE_NAME,

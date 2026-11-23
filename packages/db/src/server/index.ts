@@ -5,10 +5,13 @@
 import { DbError, toDbError, unwrap, type IwcClient } from '../client';
 import { orderDetailSchema, type OrderDetail } from '../store/schemas';
 
+import { homeGiftPayload, type HomeGiftInput } from './send-home';
+
 import type { Json } from '../database.types';
 
 export * from './checkout';
 export * from './order-pages';
+export * from './send-home';
 
 export interface CreateOrderItemInput {
   variantId: string;
@@ -39,6 +42,8 @@ export interface CreateOrderInput {
   promoCodeId: string | null;
   /** Standard only since D-187 (Y-1); a payment already priced with Express when the release lands stays Express. */
   shippingMethod?: 'standard' | 'express';
+  /** D-205: the Send home gift, inside totalCents and beside the goods. */
+  homeGift?: HomeGiftInput | null;
 }
 
 /** Business reasons create_order can refuse (docs/data-model.md, business functions). */
@@ -88,6 +93,7 @@ export async function createOrder(
     payment_intent_id: input.paymentIntentId,
     promo_code_id: input.promoCodeId,
     shipping_method: input.shippingMethod ?? 'standard',
+    ...(input.homeGift ? { home_gift: homeGiftPayload(input.homeGift) } : {}),
   };
   const { data, error } = await service.rpc('create_order', { p_order: payload });
   if (error) {

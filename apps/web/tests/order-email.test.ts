@@ -47,6 +47,7 @@ const order: OrderDetail = {
     created_at: '2026-09-28T10:00:00Z',
     shipping_method: 'standard',
     refunded_cents: 0,
+    home_gift_cents: 0,
   },
   items: [
     {
@@ -66,6 +67,7 @@ const order: OrderDetail = {
   events: [],
   shipments: [],
   actions: null,
+  home_gift: null,
 };
 
 describe('order confirmation email (storefront.md §Emails)', () => {

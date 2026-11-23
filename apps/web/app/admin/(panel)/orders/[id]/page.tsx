@@ -1,3 +1,4 @@
+import Link from 'next/link';
 import { notFound } from 'next/navigation';
 
 import {
@@ -10,7 +11,7 @@ import {
 } from '@repo/db/admin';
 import { dateRange } from '@repo/shared/admin';
 import { adminEventText } from '@repo/shared/admin';
-import { formatUsd } from '@repo/shared/domain';
+import { formatInr, formatUsd } from '@repo/shared/domain';
 
 import { cancelAfterExportAction } from '@/features/admin/actions/after-sales';
 import { addNoteAction, changeWindowAction } from '@/features/admin/actions/orders';
@@ -27,6 +28,16 @@ import { ShopBillPanel } from '@/features/admin/shop-bill/shop-bill-panel';
 import { dangerButton, Field, input, PageHead, Panel, When } from '@/features/admin/ui';
 
 type Params = Promise<{ id: string }>;
+
+/** D-205: a gift's state in the desk's words. */
+const GIFT_STATUS: Record<string, string> = {
+  on_hold: 'on hold',
+  to_send: 'to send',
+  sent: 'sent',
+  failed: "couldn't send",
+  refunded: "couldn't send, refunded",
+  cancelled: 'cancelled with the order',
+};
 
 const WINDOW_CAN_MOVE = ['confirmed', 'collecting', 'packed', 'in_transit', 'arrived'];
 
@@ -296,6 +307,18 @@ export default async function AdminOrderPage({ params }: { params: Params }): Pr
                 <dt>Sales tax</dt>
                 <dd>{formatUsd(order.tax_cents)}</dd>
               </div>
+              {order.home_gift ? (
+                <div>
+                  <dt>
+                    <Link href="/admin/send-home" className="underline">
+                      Sent home (D-205)
+                    </Link>
+                    : {formatInr(order.home_gift.inr_paise)} to {order.home_gift.call_name}, {GIFT_STATUS[order.home_gift.status] ?? order.home_gift.status}
+                    {order.home_gift.utr ? ` · UTR ${order.home_gift.utr}` : ''}
+                  </dt>
+                  <dd>{formatUsd(order.home_gift.usd_cents)}</dd>
+                </div>
+              ) : null}
               <div className="border-line border-t pt-2 text-[16px] font-bold [&>dt]:!text-ink">
                 <dt>Total paid</dt>
                 <dd>{formatUsd(order.total_cents)}</dd>
