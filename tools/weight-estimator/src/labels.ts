@@ -46,7 +46,14 @@ async function retry<T>(what: string, call: () => Promise<T>): Promise<T> {
 
 export async function readLabels(
   db: Db,
-  opts: { dry: boolean; all: boolean; evaluate: boolean; cached: boolean; limit: number },
+  opts: {
+    dry: boolean;
+    all: boolean;
+    evaluate: boolean;
+    cached: boolean;
+    front: boolean;
+    limit: number;
+  },
 ): Promise<number> {
   const env = modelEnv();
   const ollama = new Ollama(env);
@@ -71,6 +78,7 @@ export async function readLabels(
     // reference: similarReferences leaves the listing out)
     doubt: priceDoubt(index),
     cachedOnly: opts.cached,
+    front: opts.front,
   };
   const write = !opts.dry && !opts.evaluate;
   const mode = opts.evaluate ? 'known' : opts.all ? 'all' : 'new';

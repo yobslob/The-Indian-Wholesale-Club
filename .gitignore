@@ -102,7 +102,7 @@ tools/weight-estimator/food-weights.csv
 tools/weight-estimator/food-weights-before.jsonl
 # D-202: the label reader's and price check's sheets and the weights they replaced
 tools/weight-estimator/label-eval.csv
-tools/weight-estimator/label-weights.csv
+tools/weight-estimator/label-weights*.csv
 tools/weight-estimator/label-weights-before.jsonl
 tools/weight-estimator/price-check.csv
 tools/weight-estimator/price-check-before.jsonl

@@ -30,6 +30,7 @@ export function kind(result: string): string {
   if (result === 'read') return 'read';
   if (result.startsWith('may hold several packs')) return 'held: may hold several packs';
   if (result.startsWith('the name says')) return "held: the name's weight differs";
+  if (result.startsWith('under ')) return 'held: under 20 g';
   if (result.startsWith('price check doubts')) return 'held: the price check doubts it';
   if (result.startsWith('only one reader')) return 'only one reader found it';
   if (result.startsWith('the readers disagree')) return 'the readers disagree';
