@@ -31,3 +31,4 @@ export * from './price-label';
 export * from './markets';
 export * from './recipe-kit';
 export * from './recipe-drafts';
+export * from './send-home';
