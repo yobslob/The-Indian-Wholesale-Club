@@ -52,9 +52,19 @@ export async function listRegionPhotos(client: IwcClient, regionId: string) {
 }
 
 /** Adds a photo at the end of the album. */
-export async function addRegionPhoto(client: IwcClient, regionId: string, storagePath: string, altText: string) {
+export async function addRegionPhoto(
+  client: IwcClient,
+  regionId: string,
+  storagePath: string,
+  altText: string,
+) {
   const last = unwrap(
-    await client.from('region_photos').select('sort_order').eq('region_id', regionId).order('sort_order', { ascending: false }).limit(1),
+    await client
+      .from('region_photos')
+      .select('sort_order')
+      .eq('region_id', regionId)
+      .order('sort_order', { ascending: false })
+      .limit(1),
   );
   unwrap(
     await client.from('region_photos').insert({
@@ -67,8 +77,13 @@ export async function addRegionPhoto(client: IwcClient, regionId: string, storag
 }
 
 /** Removes an album photo and returns its storage path (the caller deletes the file). */
-export async function removeRegionPhoto(client: IwcClient, photoId: string): Promise<string | null> {
-  const rows = unwrap(await client.from('region_photos').delete().eq('id', photoId).select('storage_path'));
+export async function removeRegionPhoto(
+  client: IwcClient,
+  photoId: string,
+): Promise<string | null> {
+  const rows = unwrap(
+    await client.from('region_photos').delete().eq('id', photoId).select('storage_path'),
+  );
   return rows[0]?.storage_path ?? null;
 }
 
@@ -81,7 +96,9 @@ export async function listCategories(client: IwcClient) {
   return unwrap(
     await client
       .from('categories')
-      .select('id, product_type, slug, name, parent_id, sort_order, is_active, default_weight_g, tax_class')
+      .select(
+        'id, product_type, slug, name, parent_id, sort_order, is_active, default_weight_g, tax_class',
+      )
       .order('product_type')
       .order('sort_order'),
   );
@@ -109,7 +126,13 @@ const PRODUCT_TABLE_COLUMNS = `id, name, product_type, status, coming_soon, pric
   variants:product_variants(qty_listed, qty_reserved, is_active, weight_g, weight_source),
   category:categories(default_weight_g)`;
 
-export const ADMIN_PRODUCT_SORTS = ['updated', 'newest', 'price-asc', 'price-desc', 'name'] as const;
+export const ADMIN_PRODUCT_SORTS = [
+  'updated',
+  'newest',
+  'price-asc',
+  'price-desc',
+  'name',
+] as const;
 export type AdminProductSort = (typeof ADMIN_PRODUCT_SORTS)[number];
 
 export interface AdminProductFilter {
@@ -173,7 +196,10 @@ function adminProductQuery<C extends typeof PRODUCT_LIST_COLUMNS | typeof PRODUC
     } as const
   )[filter.sort ?? 'updated'];
   // id breaks ties so pages never repeat or skip a product
-  return query.order(column, { ascending }).order('id').range(offset, offset + limit - 1);
+  return query
+    .order(column, { ascending })
+    .order('id')
+    .range(offset, offset + limit - 1);
 }
 
 export async function listAdminProducts(client: IwcClient, filter: AdminProductFilter = {}) {
@@ -189,10 +215,14 @@ export async function pageAdminProducts(client: IwcClient, filter: AdminProductF
 }
 
 /** How many products are in each status: the Listings tabs' counts (D-096). */
-export async function countProductsByStatus(client: IwcClient): Promise<Record<Enum<'product_status'>, number>> {
+export async function countProductsByStatus(
+  client: IwcClient,
+): Promise<Record<Enum<'product_status'>, number>> {
   const head = { count: 'exact', head: true } as const;
   const statuses = ['draft', 'live', 'paused', 'archived'] as const;
-  const counts = await Promise.all(statuses.map((s) => client.from('products').select('id', head).eq('status', s)));
+  const counts = await Promise.all(
+    statuses.map((s) => client.from('products').select('id', head).eq('status', s)),
+  );
   return Object.fromEntries(
     statuses.map((s, i) => {
       if (counts[i]!.error) throw new Error(counts[i]!.error!.message);
@@ -279,33 +309,41 @@ export interface PublishDraftsResult {
  * wait for the next); the rest are counted by what they lack.
  */
 export async function publishDrafts(client: IwcClient, limit = 400): Promise<PublishDraftsResult> {
-  return unwrap(await client.rpc('admin_publish_drafts', { p_limit: limit })) as unknown as PublishDraftsResult;
+  return unwrap(
+    await client.rpc('admin_publish_drafts', { p_limit: limit }),
+  ) as unknown as PublishDraftsResult;
 }
 
 /**
  * D-128: Products → Download Excel: one row per product in the page's view (status tab, US clearance, search) with the
- * shop price and weight that gave it its price, and the price.
+ * shop price and weight that gave it its price, and the price. The API returns at most 1,000 rows a call (max_rows),
+ * so the sheet is read 1,000 at a time: one call cut every sheet off at 1,000 products (found 2026-11-23).
  */
 export async function listPriceSheet(
   client: IwcClient,
   filter: AdminProductFilter = {}, // the order, limit and offset are the sheet's own
 ) {
-  return unwrap(
-    await client.rpc('admin_price_sheet', {
-      ...(filter.status ? { p_status: filter.status } : {}),
-      p_us_stock: filter.usStock ?? false,
-      ...(filter.search?.trim() ? { p_search: filter.search.trim() } : {}),
-      // D-136: the Products page's filters
-      ...(filter.productType ? { p_type: filter.productType } : {}),
-      ...(filter.regionId ? { p_region: filter.regionId } : {}),
-      ...(filter.noRegion ? { p_no_region: true } : {}),
-      ...(filter.categoryId ? { p_category: filter.categoryId } : {}),
-      ...(filter.site ? { p_site: filter.site } : {}),
-      ...(filter.minCents !== undefined ? { p_min_cents: filter.minCents } : {}),
-      ...(filter.maxCents !== undefined ? { p_max_cents: filter.maxCents } : {}),
-    }),
-  );
+  const args = {
+    ...(filter.status ? { p_status: filter.status } : {}),
+    p_us_stock: filter.usStock ?? false,
+    ...(filter.search?.trim() ? { p_search: filter.search.trim() } : {}),
+    // D-136: the Products page's filters
+    ...(filter.productType ? { p_type: filter.productType } : {}),
+    ...(filter.regionId ? { p_region: filter.regionId } : {}),
+    ...(filter.noRegion ? { p_no_region: true } : {}),
+    ...(filter.categoryId ? { p_category: filter.categoryId } : {}),
+    ...(filter.site ? { p_site: filter.site } : {}),
+    ...(filter.minCents !== undefined ? { p_min_cents: filter.minCents } : {}),
+    ...(filter.maxCents !== undefined ? { p_max_cents: filter.maxCents } : {}),
+  };
+  const rows = [];
+  for (let from = 0; ; from += PAGE) {
+    const page = unwrap(await client.rpc('admin_price_sheet', args).range(from, from + PAGE - 1));
+    rows.push(...page);
+    if (page.length < PAGE) return rows;
+  }
 }
+const PAGE = 1000;
 
 export interface WeightToCheck {
   id: string;
@@ -415,23 +453,51 @@ export async function deleteProductMedia(client: IwcClient, id: string) {
 /** One photo row (to find its file before removing it). */
 export async function getProductMedia(client: IwcClient, id: string) {
   return unwrap(
-    await client.from('product_media').select('id, product_id, storage_path, is_primary').eq('id', id).maybeSingle(),
+    await client
+      .from('product_media')
+      .select('id, product_id, storage_path, is_primary')
+      .eq('id', id)
+      .maybeSingle(),
   );
 }
 
 /** Makes one photo the product's main photo (the database allows one per product, so the old one goes first). */
-export async function setPrimaryProductMedia(client: IwcClient, productId: string, mediaId: string) {
-  unwrap(await client.from('product_media').update({ is_primary: false }).eq('product_id', productId).eq('is_primary', true));
-  unwrap(await client.from('product_media').update({ is_primary: true }).eq('id', mediaId).eq('product_id', productId));
+export async function setPrimaryProductMedia(
+  client: IwcClient,
+  productId: string,
+  mediaId: string,
+) {
+  unwrap(
+    await client
+      .from('product_media')
+      .update({ is_primary: false })
+      .eq('product_id', productId)
+      .eq('is_primary', true),
+  );
+  unwrap(
+    await client
+      .from('product_media')
+      .update({ is_primary: true })
+      .eq('id', mediaId)
+      .eq('product_id', productId),
+  );
 }
 
 /** D-194: whose photo it is, through one variant of that look; null shares it with every look. */
-export async function setProductMediaVariant(client: IwcClient, mediaId: string, variantId: string | null) {
+export async function setProductMediaVariant(
+  client: IwcClient,
+  mediaId: string,
+  variantId: string | null,
+) {
   unwrap(await client.from('product_media').update({ variant_id: variantId }).eq('id', mediaId));
 }
 
 /** D-140: who a clothing piece is for, set by an admin (null clears it; a live piece then keeps its value). */
-export async function setProductWears(client: IwcClient, id: string, wears: 'women' | 'men' | 'kids' | 'unisex') {
+export async function setProductWears(
+  client: IwcClient,
+  id: string,
+  wears: 'women' | 'men' | 'kids' | 'unisex',
+) {
   unwrap(await client.from('products').update({ wears }).eq('id', id));
 }
 
@@ -443,7 +509,10 @@ export async function listNamesToReview(client: IwcClient) {
   const page = (from: number, count: boolean) =>
     client
       .from('products')
-      .select('id, name, product_type, status, source_site, shop_title', count ? { count: 'exact' } : undefined)
+      .select(
+        'id, name, product_type, status, source_site, shop_title',
+        count ? { count: 'exact' } : undefined,
+      )
       .in('product_type', ['clothing', 'home'])
       // only names that came from a shop's page; names written for IWC are left alone
       .not('source_url', 'is', null)
@@ -453,7 +522,9 @@ export async function listNamesToReview(client: IwcClient) {
       .range(from, from + 999);
   const first = unwrapPage(await page(0, true));
   const rest = await Promise.all(
-    Array.from({ length: Math.ceil(Math.max(first.total - 1000, 0) / 1000) }, (_, i) => page((i + 1) * 1000, false)),
+    Array.from({ length: Math.ceil(Math.max(first.total - 1000, 0) / 1000) }, (_, i) =>
+      page((i + 1) * 1000, false),
+    ),
   );
   return [...first.rows, ...rest.flatMap((r) => unwrap(r))];
 }
@@ -462,7 +533,10 @@ export async function listNamesToReview(client: IwcClient) {
  * D-140 (L1): new names for listings, up to 500 at once in one statement (D-146); the old one is kept as the shop's
  * title when none was kept yet. Returns how many changed.
  */
-export async function renameListings(client: IwcClient, items: { id: string; name: string }[]): Promise<number> {
+export async function renameListings(
+  client: IwcClient,
+  items: { id: string; name: string }[],
+): Promise<number> {
   if (items.length === 0) return 0;
   return unwrap(await client.rpc('admin_rename_listings', { p_items: items }));
 }
