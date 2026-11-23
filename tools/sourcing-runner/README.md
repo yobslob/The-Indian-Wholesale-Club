@@ -61,7 +61,8 @@ pnpm sourcing run --type food                              at once: each claims 
 pnpm sourcing run --weights    only new clothing by class (D-132, by the name rules) and the weights listings
                                lack (D-129), home from its own pages (D-134), the liquid check (D-135), then food's
                                net weights (D-135);
-                               every full run ends with them too
+                               every full run ends with them too (40 listings' pages a run; --limit 3000 reads
+                               the whole queue in one go, 200 at a time, D-204)
 pnpm sourcing try "kasuri methi" --type food    a dry run: what it would add (nothing is written)
 pnpm sourcing try "kurta set women" --type clothing --shops myntra.com --min 600 --max 1600 --listings 10
                                                  the same for one shop and a price band (D-121)

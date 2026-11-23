@@ -1,7 +1,7 @@
 import { z } from 'zod';
 
 import { formatGrams } from '../../domain/weight';
-import { readNet } from '../net';
+import { readDescribed, readNet } from '../net';
 import { parseComboParts, parseWeightParts, weightKindOf, type WeightParts } from '../weight';
 
 /**
@@ -85,11 +85,13 @@ const PACK_OF = /\b(?:pack|set|combo|box) of (\d{1,2})\b/;
 /**
  * Where the option's net quantity is stated, most its own first: its options ("pack", "size"), its label, the page
  * reading kept with its weight (a shop page's or matching items' net, pack or title reading), then the listing's
- * name, then a "Net weight:" line in its description (the last two only for an option whose own words state none).
+ * name, then a "Net weight:" line in its description, then its "Unit:" line or opening sentence (D-204; the last
+ * three only for an option whose own words state none). `alone`: the listing's only option.
  */
 export function foodNet(
   listing: Pick<FoodListing, 'name' | 'description'>,
   v: Pick<FoodVariant, 'label' | 'options' | 'weight_source' | 'weight_note'>,
+  alone = false,
 ): FoodNet | null {
   const own: [string, string][] = [
     ...Object.entries(v.options).map(([k, value]) => [value, `its ${k}`] as [string, string]),
@@ -111,7 +113,12 @@ export function foodNet(
   if (named) return sane(times(named), 'its name');
   // D-202: a "Net Wt." line in its description, English or Hindi, never a serving size
   const said = readNet(listing.description);
-  return said ? sane(times(said), 'its description') : null;
+  if (said) return sane(times(said), 'its description');
+  // D-204: the description's "Unit: 1 pc (500 g)" or opening "…, 150 g X 3": the listing's pack, so not for an option
+  // that names a pack or size of its own (unless it is the only one)
+  if (!alone && ('pack' in v.options || 'size' in v.options)) return null;
+  const described = readDescribed(listing.description, listing.name);
+  return described ? sane(times(described.parts), described.how) : null;
 }
 
 /** A net quantity from 1 g to 30 kg in all; anything else is a misread. */
@@ -150,7 +157,7 @@ export interface FoodResult {
 /** Every option of one food listing: the real weight its label states, or why it keeps what it has. */
 export function weighFood(listing: FoodListing): FoodResult[] {
   return listing.variants.map((v) => {
-    const net = foodNet(listing, v);
+    const net = foodNet(listing, v, listing.variants.length === 1);
     if (!net)
       return {
         variant: v,

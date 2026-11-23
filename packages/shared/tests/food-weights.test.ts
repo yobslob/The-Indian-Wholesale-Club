@@ -280,3 +280,83 @@ describe('the runner prices new food on its net weight (D-135)', () => {
     assert.deepEqual([v?.weight_source, v?.net_qty, v?.weight_g], ['packed', '500 g', 500]);
   });
 });
+
+describe('the pack size its description states without a net word (D-204)', () => {
+  const besan =
+    '24 Mantra Organic Besan, 1 pack (500 g). Farm-sourced and chemical-free. Product type: Besan. ' +
+    'Unit: 1 pc (500 g). Packaging type: Pouch. Shelf life: 6 months.';
+  it('reads a shop’s “Unit:” line', () => {
+    const r = one(
+      listing(
+        '24 Mantra Organic Besan',
+        [{ weight_g: 450, weight_source: 'estimated' }],
+        'staples',
+        besan,
+      ),
+    );
+    assert.deepEqual(
+      [r.net?.label, r.net?.from, r.grams],
+      ['500 g', "its description's unit line", 500],
+    );
+  });
+  it('reads the opening “<name>, 1 kg X 2.” only when it starts with the name', () => {
+    assert.equal(
+      one(
+        listing(
+          'Sunfeast Glucose Plus Biscuits',
+          [{}],
+          'biscuits',
+          'Sunfeast Glucose Plus Biscuits, 1 kg X 2.',
+        ),
+      ).grams,
+      2000,
+    );
+    assert.equal(
+      one(listing('Roasted Chana', [{}], 'snacks', 'A crunchy snack. Contains 5 g of fibre.')).net,
+      null,
+    );
+    assert.equal(
+      one(listing('Roasted Chana', [{}], 'snacks', 'Roasted Chana, rich in 5 g protein.')).net,
+      null,
+    );
+  });
+  it('never a pack it is unsure of, a broken description, or another option’s size', () => {
+    assert.equal(
+      one(listing('Kimia Dates', [{}], 'dry-fruits', 'Kimia Dates, 1 pack (380 g or 400 g).')).net,
+      null,
+    );
+    assert.equal(one(listing('Bikaji Moong Dal', [{}], 'snacks', '98 near me.')).net, null);
+    const sized = weighFood(
+      listing(
+        'Bikano Bhujia',
+        [
+          { label: 'Pack of 2', options: { pack: 'Pack of 2' } },
+          { label: 'Pack of 3', options: { pack: 'Pack of 3' } },
+        ],
+        'snacks',
+        'Bikano Bhujia, 1 pack (400 g).',
+      ),
+    );
+    assert.deepEqual(
+      sized.map((r) => r.net),
+      [null, null],
+    );
+  });
+  it('a flavour option takes the listing’s pack size', () => {
+    const r = weighFood(
+      listing(
+        'Ready Masala',
+        [
+          { label: 'Butter Chicken', options: { flavour: 'Butter Chicken' } },
+          { label: 'Biryani', options: { flavour: 'Biryani' } },
+        ],
+        'masala-blends',
+        'Ready Masala, 1 pack (90 g).',
+      ),
+    );
+    assert.deepEqual(
+      r.map((x) => x.grams),
+      [90, 90],
+    );
+  });
+});

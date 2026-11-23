@@ -69,7 +69,10 @@ async function elsewhere(ctx: RunContext, listing: WeightPlanListing): Promise<W
   return weightsFromSimilar(listing, found);
 }
 
-/** Fills what it can; returns how many options got a weight. */
+/**
+ * Fills what it can for up to `limit` listings (`run --weights --limit 3000` goes through the whole queue, 200 at a
+ * time); returns how many options got a weight.
+ */
 export async function fillWeights(
   ctx: RunContext,
   limit: number,
@@ -79,9 +82,32 @@ export async function fillWeights(
   // home is read by weighHome (D-134), with its packing; the plan asks the database for these types only (D-202)
   const types: ProductType[] = type ? (type === 'home' ? [] : [type]) : ['food', 'clothing'];
   if (!types.length) return 0;
-  const plan = await ctx.db.weightPlan(limit, types);
-  if (plan.length)
-    log(`weights: ${plan.length} listing${plan.length === 1 ? '' : 's'} without a sure weight`);
+  const seen = new Set<string>();
+  let filled = 0;
+  while (seen.size < limit) {
+    // tried listings go to the back of the queue, so the next page is new ones; a listing seen this go ends it
+    const plan = (await ctx.db.weightPlan(Math.min(200, limit - seen.size), types)).filter(
+      (l) => !seen.has(l.product_id),
+    );
+    if (!plan.length) break;
+    log(
+      `weights: ${plan.length} listing${plan.length === 1 ? '' : 's'} without a sure weight` +
+        (seen.size ? ` (${seen.size} read this go)` : ''),
+    );
+    const page = await fillPage(ctx, plan);
+    filled += page.filled;
+    for (const l of plan) seen.add(l.product_id);
+    // not marked (a database before 20261120090000, or a blip): the same listings would come back; stop here
+    if (!page.marked) break;
+  }
+  return filled;
+}
+
+async function fillPage(
+  ctx: RunContext,
+  plan: WeightPlanListing[],
+): Promise<{ filled: number; marked: boolean }> {
+  const db = ctx.db!;
   let filled = 0;
   const tried: string[] = [];
   for (const listing of plan) {
@@ -98,7 +124,7 @@ export async function fillWeights(
         ? (await elsewhere(ctx, listing)).filter((w) => !covered.has(w.variant_id))
         : [];
       const writes = [...own, ...similar];
-      const n = writes.length ? await ctx.db.setWeights(writes) : 0;
+      const n = writes.length ? await db.setWeights(writes) : 0;
       filled += n;
       log(
         `  "${listing.name.slice(0, 60)}": ${n ? `${n} weight${n === 1 ? '' : 's'} (${writes.map((w) => `${w.weight_g} g ${w.source}`).join(', ')})` : 'no weight found: weigh it at the hub'}`,
@@ -108,10 +134,11 @@ export async function fillWeights(
     }
   }
   // D-202: tried listings go to the back of the queue, found or not, so the next run reads the next ones
-  await ctx.db
-    .weightsTried(tried, 'page')
-    .catch((error: unknown) => log(`  marking tried: ${errorText(error)}`));
-  return filled;
+  const marked = await db.weightsTried(tried, 'page').catch((error: unknown) => {
+    log(`  marking tried: ${errorText(error)}`);
+    return false;
+  });
+  return { filled, marked };
 }
 
 /** An option a matching item may weigh: none yet, or (D-202) a food estimate. */

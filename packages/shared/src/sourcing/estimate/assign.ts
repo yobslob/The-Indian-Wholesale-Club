@@ -65,7 +65,8 @@ export function assignWeights(listings: WeightPlanListing[]): WeightAssignment[]
     }
     if (l.product_type === 'food') {
       return missing.map((v) => {
-        const net = foodNet({ name: l.name, description: l.description }, v);
+        const alone = l.variants.filter((x) => x.is_active).length === 1;
+        const net = foodNet({ name: l.name, description: l.description }, v, alone);
         if (!net) return { variant_id: v.id, weight_g: null };
         return {
           variant_id: v.id,

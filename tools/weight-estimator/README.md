@@ -11,7 +11,8 @@ category or by the model). Which weight wins: the hub's scale, then an admin's, 
 later replaces a class weight. Customers never see any of it: the weights are for pricing only. About 278 listings in 12 s. The estimator below weighs **food and home & gifts** only (food: what its label does not state, D-133; home: what no page states, D-134).
 
 **Food weighs its label's net quantity (D-133, D-135):** `pnpm weights food` gives every food option the real weight
-its label states (its option, its label, the shop page's reading, its name; "2 × 200 g" is 400 g; a litre of ghee
+its label states (its option, its label, the shop page's reading, its name, then its description: a "Net Wt." line,
+a shop's "Unit: 1 pc (500 g)" line or the opening "<name>, 150 g X 3", D-204; "2 × 200 g" is 400 g; a litre of ghee
 910 g), with no packaging. No model, no Ollama: about 1,000 listings in 4 s. Which weight wins: the hub's scale, then
 an admin's, then this. An option whose net quantity nothing states keeps what it has. Every option goes in
 `food-weights.csv` (net quantity, where it was read, the weight before and after); "Look at it" marks a weight that

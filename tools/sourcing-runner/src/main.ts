@@ -34,7 +34,7 @@ import type { SourcingPlan } from '@repo/shared/sourcing/auto';
  *                                        can run at once in two terminals, each with its own browser profile
  *   pnpm sourcing run --targets --photo-gb 1.8    at most 1.8 GB of new photos in the store this run (D-171)
  *   pnpm sourcing run --weights          only clothing by class (D-132) and the weights listings lack (D-129; `run`
- *                                        ends with them too)
+ *                                        ends with them too; --limit 3000: that many listings, 40 by default)
  *   pnpm sourcing classes                only clothing by class (D-132): no browser, no shops, no new listings
  *   pnpm sourcing food [--all]           only food's packed weights (D-133): no browser, no shops, no new listings
  *   pnpm sourcing home [--dry] [--all]   only home weights from each option's own page (D-134; --dry: home-weights.csv)
@@ -250,7 +250,9 @@ async function run(args: string[]): Promise<number> {
     // D-134: home from each option's own page first (the D-129 search below then skips home)
     const home =
       onlyOne || (type && type !== 'home') ? 0 : await weighHome(ctx, { limit: 40, dry: false });
-    const weights = onlyOne ? 0 : await fillWeights(ctx, 40, type);
+    // `--weights --limit 3000`: the whole queue in one go (D-204); a daily run reads 40
+    const weightLimit = weightsOnly ? Number(flag(args, '--limit')) || 40 : 40;
+    const weights = onlyOne ? 0 : await fillWeights(ctx, weightLimit, type);
     // D-135: liquids out of sale (shown as coming soon) before their weights matter
     const liquid = onlyOne || type === 'clothing' ? 0 : await checkLiquids(db, { dry: false });
     const packed = onlyOne || (type && type !== 'food') ? 0 : await weighFood(db);
@@ -564,7 +566,7 @@ const main =
                   : null;
 if (!main) {
   console.log(
-    'Usage: pnpm sourcing setup [--type clothing|food|home] | looks --type clothing|food|home | doctor | classes | food [--all] | home [--dry] [--all] [--limit N] | liquids [--dry] [--all] | run [--checks|--targets] [--type clothing|food|home [--shops nishorama.com]] | try "<query>" --type food|clothing|home [--match "regex"]',
+    'Usage: pnpm sourcing setup [--type clothing|food|home] | looks --type clothing|food|home | doctor | classes | food [--all] | home [--dry] [--all] [--limit N] | liquids [--dry] [--all] | run [--checks|--targets|--weights [--limit N]] [--type clothing|food|home [--shops nishorama.com]] | try "<query>" --type food|clothing|home [--match "regex"]',
   );
   process.exit(2);
 }
