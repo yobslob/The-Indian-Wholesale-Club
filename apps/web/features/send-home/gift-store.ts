@@ -18,8 +18,9 @@ export interface TypedLovedOne {
 }
 
 /**
- * D-208: where this bag's 5% saving goes. `keep` (Coins) unless the customer names someone; a returning sender starts on
- * their last loved one (set once by the bag's card, `started`). `cents` is the saving as the card last worked it out,
+ * D-208, D-211: where this bag's 5% saving goes. Every bag starts on Send it home (D-211; `keep` false once the card has
+ * `started`): a returning sender on their last loved one, a first-timer with no one picked yet (Checkout asks who, or
+ * they tap Keep it). `keep` (Coins) after Keep it. `cents` is the saving as the card last worked it out,
  * for the sheet's rupees. Kept for the tab; cleared when an order is placed or the bag empties.
  */
 interface GiftState {
@@ -36,6 +37,8 @@ interface GiftState {
   start: (lovedOneId: string | null, lovedOne: TypedLovedOne | null) => void;
   setCents: (cents: number) => void;
   keepIt: () => void;
+  /** D-211: back to Send it home, with whoever was picked before. */
+  sendIt: () => void;
   pickSaved: (id: string) => void;
   pickTyped: (one: TypedLovedOne, save: boolean) => void;
   reset: () => void;
@@ -50,19 +53,20 @@ export const useGiftStore = create<GiftState>()(
       asking: null,
       ask: (relation, then = null) => set({ asking: { relation, then } }),
       close: () => set({ asking: null }),
-      start: (lovedOneId, lovedOne) => set({ started: true, lovedOneId, lovedOne, keep: !lovedOneId && !lovedOne }),
+      start: (lovedOneId, lovedOne) => set({ started: true, lovedOneId, lovedOne, keep: false }),
       setCents: (cents) => set({ cents }),
       keepIt: () => set({ keep: true }),
+      sendIt: () => set({ keep: false }),
       pickSaved: (id) => set({ lovedOneId: id, lovedOne: null, keep: false }),
       pickTyped: (one, save) => set({ lovedOne: one, lovedOneId: null, save, keep: false }),
       reset: () => set({ ...EMPTY, asking: null }),
     }),
     {
       name: 'iwc-gift',
-      version: 2,
+      version: 3,
       storage: createJSONStorage(() => sessionStorage),
       partialize: ({ started, keep, cents, lovedOneId, lovedOne, save }) => ({ started, keep, cents, lovedOneId, lovedOne, save }),
-      // a bag from before D-208 starts again
+      // a bag from before D-211 starts again (it began on Keep it)
       migrate: () => EMPTY,
     },
   ),

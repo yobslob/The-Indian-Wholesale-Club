@@ -34,10 +34,10 @@ His answers to Claude's questions the same day (each asked as a choice):
 ## 1. The idea in one paragraph
 
 IWC stops taking a customer's money to send it anywhere. Instead every bag earns **5% of its goods back**, paid by IWC.
-In the bag, the Send home card (same place, same look) says it plainly: **"You're saving $4.25 on this bag."** and asks
-one thing: send it home, or keep it. Tap Maa, Papa, Didi or Someone else and IWC sends **₹391** to their UPI after the
-order is paid, exactly as the India desk sends gifts today. Do nothing (or tap **Keep it**) and **425 Coins** land in the
-customer's wallet for the next order. Coupons go. Separately, the store opens to **every country ShipGlobal serves**:
+In the bag, the Send home card (same place) says it plainly: **"You get $4.25 back"** and asks one thing (D-211):
+**Keep it** or **Send it home**. It starts on Send it home: tap Maa, Papa, Didi or Someone else and IWC sends **₹391**
+to their UPI after the order is paid, exactly as the India desk sends gifts today. Tap **Keep it** and **425 Coins**
+land in the customer's wallet for the next order. Coupons go. Separately, the store opens to **every country ShipGlobal serves**:
 each country's prices carry its own ShipGlobal freight (rounded up to the next ₹500 a kg), and the visitor's flag sits
 on the Profile icon everywhere, the US included, with the country switch on the Profile page.
 
@@ -50,8 +50,8 @@ on the Profile icon everywhere, the US included, with the country switch on the 
    as without it.
 2. **Two outcomes, one per order:** *send home* (IWC pays `saveCents × the day's rate` in rupees to a loved one's UPI,
    D-206's daily rate, to the rupee; no 3% kept: it is IWC's own money) or *keep* (`saveCents` Coins, 1 coin = 1 cent,
-   D-191). **Keep is the default:** a first-timer who taps nothing keeps it; a returning sender starts on their last
-   loved one (they can tap Keep it).
+   D-191). **Send it home is the default (D-211, superseding "Keep is the default"):** a returning sender starts on
+   their last loved one; a first-timer with nobody picked is asked who at Checkout (or taps Keep it).
 3. **When it is given:** recorded at payment by `create_order` (one row per order), *Coins* credited and *gifts* joining
    the desk's To send when the order is paid (D-206's hold rules stay for gifts). An order cancelled before delivery
    takes the saving back: unsent gift cancelled, Coins removed (never below 0). A sent gift is kept (Q-66's default).
@@ -62,9 +62,12 @@ on the Profile icon everywhere, the US included, with the country switch on the 
    gift, checkout's "Remove", and the bill's "Sent home" line go; the bill gains no line. The thank-you page, the order
    page and `/account/people` say what happened: "₹391 is on its way to Maa." or "425 Coins added."
 6. **Words** (D-012 drafts, in `features/send-home/words.ts`, simple and straight as the founder asked):
-   - Card: kicker **"Your 5%"**, headline **"You're saving $4.25 on this bag."**, one line **"Send it home as ₹391, or
-     keep it for your next order."**, chips **Maa · Papa · Didi · Someone else · Keep it** (Keep it picked by default).
-   - Picked a person: headline stays, line becomes **"₹391 goes to Maa's UPI after you pay."**
+   - Card (D-211): **"You get $4.25 back"**, **"5% of your items, paid by IWC. Your total stays the same."**, then
+     **"Where should it go?"** with two rows: **Keep it** ("425 Coins, off your next order", $4.25) and **Send it home**
+     ("IWC sends it to family in India, by UPI", ₹391; picked by default), the names under "To" only while it is picked.
+   - Picked a person: the row becomes **"Send it to Maa"**, "IWC sends it to Maa's UPI after you pay."
+   - The bill, under the total and outside the sum: **"After you pay, your 5% back · ₹391 to Maa"** (or "$4.25 to your
+     Coins").
    - Checkout (above Pay): **"Your $4.25 saving goes to Maa"** or **"Your $4.25 saving goes to your Coins"**, with
      **Change**.
    - Never "cashback", "refund", "transfer", "remittance", "donation" (glossary).
@@ -141,11 +144,11 @@ on the Profile icon everywhere, the US included, with the country switch on the 
 
 ## 4. Design (words in §2 rule 6; the look is D-205's)
 
-- **The bag card:** the same card in the same place. Top: kicker "Your 5%", headline "You're saving $4.25 on this bag."
-  (Syne 600, 16 px), under it the trade on one line, **$4.25 → ₹391**, joined by the gold sewing arc (as today). Then
-  the line "Send it home as ₹391, or keep it for your next order." and one row of chips: **Maa · Papa · Didi · Someone
-  else · Keep it** (five chips: at 390 px two rows, Keep it alone on the second, full width, outlined; picked = the
-  brand border on canvas, as today). No ×, no amount chips, no "round up". A person chip opens the existing "Who's it
+- **The bag card (D-211, the design canvas's screen 8):** the same light card with the wine border, in the same place.
+  Top: a gold-ringed "5%" badge, **"You get $4.25 back"** (Syne 700, 17 px) and the line under it. Then "Where should it
+  go?" and two radio rows (60 px tall, the amount on the right of each, picked = the brand border on canvas and a filled
+  ink dot): Keep it and Send it home. While Send it home is picked, its row holds "To" and four chips: **Maa · Papa ·
+  Didi · Someone else** (or the saved loved ones). No ×, no amount chips, no "round up". A person chip opens the existing "Who's it
   for?" sheet (its button now **"Send ₹391 to Maa"**, its last line **"Keep it instead"**).
 - **Checkout:** one quiet line above Pay (no box): "Your $4.25 saving goes to Maa · Change".
 - **Thank-you:** the postcard when sent home (as today); when kept, the same card size with "425 Coins added. They come

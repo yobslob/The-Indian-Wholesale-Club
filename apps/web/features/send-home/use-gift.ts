@@ -31,7 +31,9 @@ export interface SavingView {
   cents: number;
   /** What it is in rupees today; null while Send home is closed (then it can only be kept). */
   inrPaise: number | null;
-  /** Null: kept as Coins. */
+  /** D-211: Send it home is picked (and open); false = Keep it, as Coins. */
+  sending: boolean;
+  /** Who it goes to; null while sending = nobody picked yet (Checkout asks), or kept. */
   person: GiftPerson | null;
 }
 
@@ -43,8 +45,9 @@ export function useSavingView(goodsCents: number | null): SavingView | null {
   const cents = savingCents(goodsCents, settings.save_pct);
   if (cents <= 0) return null;
   const inrPaise = giftInrPaise(cents, settings.inr_per_usd);
-  const person = !state.keep && inrPaise !== null ? personOf(state, settings) : null;
-  return { settings, cents, inrPaise, person };
+  const sending = !state.keep && inrPaise !== null;
+  const person = sending ? personOf(state, settings) : null;
+  return { settings, cents, inrPaise, sending, person };
 }
 
 /** The checkout request's `gift`: who the saving goes home to; null = kept as Coins (D-208). */
