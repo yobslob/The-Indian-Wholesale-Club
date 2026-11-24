@@ -4,7 +4,7 @@ import { useActionState, useState } from 'react';
 
 import { formatInr, formatUsd, upiNote, upiPayLink } from '@repo/shared/domain';
 
-import { giftFailedAction, markGiftSentAction, type GiftActionState } from '@/features/admin/actions/send-home';
+import { giftFailedAction, markGiftSentAction, savingGiftFailedAction, type GiftActionState } from '@/features/admin/actions/send-home';
 import { ConfirmButton } from '@/features/admin/confirm';
 import { button, input, panel, secondaryButton } from '@/features/admin/styles';
 import { UpiCheck } from '@/features/send-home/upi-check';
@@ -118,7 +118,20 @@ export function GiftCard({
           ) : null}
         </>
       ) : null}
-      {open ? (
+      {open && gift.funded_by === 'iwc' ? (
+        <ConfirmButton
+          label={W.failedSaving(usd)}
+          title="Couldn't send"
+          confirm="Put it in Coins"
+          action={savingGiftFailedAction.bind(null, gift.id, 'Could not send: wrong or closed UPI')}
+          mail={{
+            subject: SEND_HOME_WORDS.emails.failedSubjectSaving,
+            text: SEND_HOME_WORDS.emails.failedBodySaving(gift.usd_cents.toLocaleString('en-US')),
+          }}
+        >
+          {W.failedSavingConfirm(usd)}
+        </ConfirmButton>
+      ) : open ? (
         <ConfirmButton
           label={W.failed(usd)}
           title="Couldn't send"

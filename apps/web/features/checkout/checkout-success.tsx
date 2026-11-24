@@ -3,10 +3,10 @@
 import Link from 'next/link';
 import { useEffect, useState } from 'react';
 
-import { doorDate, formatInr } from '@repo/shared/domain';
+import { doorDate } from '@repo/shared/domain';
 
 import { Postcard } from '@/features/send-home/postcard';
-import { SEND_HOME_WORDS } from '@/features/send-home/words';
+import { SavingNote } from '@/features/send-home/saving-note';
 
 import { BagSummary } from './bag-summary';
 import { CalendarLink } from './calendar-link';
@@ -51,6 +51,7 @@ export function CheckoutSuccess({
     [orderNumber, paymentIntentId],
   );
 
+  const saved = order?.quote.saving ?? null;
   // D-161: the day it lands, from the priced bag (two shipments: both dates; the calendar spans them)
   const ships = order?.quote.shipments;
   const door = order
@@ -106,10 +107,18 @@ export function CheckoutSuccess({
         {signedIn ? null : (
           <p className="text-ink-muted text-sm">You&apos;ll need the email you used to open it.</p>
         )}
-        {/* D-205 §4.5: the gift's postcard, from this tab's priced bag */}
-        {order?.quote.homeGift ? (
+        {/* D-208: the 5% saving, from this tab's priced bag: the postcard when it went home, else the Coins */}
+        {saved?.to === 'home' && saved.inrPaise !== null && saved.callName ? (
           <div className="pt-2">
-            <Postcard gift={order.quote.homeGift} state={order.state ?? null} signedIn={signedIn} />
+            <Postcard
+              gift={{ inrPaise: saved.inrPaise, callName: saved.callName, relation: saved.relation ?? 'other' }}
+              state={order?.state ?? null}
+              signedIn={signedIn}
+            />
+          </div>
+        ) : saved ? (
+          <div className="pt-2">
+            <SavingNote cents={saved.cents} credited={signedIn} />
           </div>
         ) : null}
       </div>
@@ -120,11 +129,6 @@ export function CheckoutSuccess({
             lines={order.lines}
             subtotalCents={order.quote.breakdown.subtotalCents}
             quote={order.quote}
-            gift={
-              order.quote.homeGift
-                ? { detail: SEND_HOME_WORDS.bill.lineTo(formatInr(order.quote.homeGift.inrPaise), order.quote.homeGift.callName) }
-                : null
-            }
           />
         </div>
       ) : null}

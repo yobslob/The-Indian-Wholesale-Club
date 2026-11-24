@@ -140,14 +140,14 @@ isOneToOne: false
                   ]
                 },"home_gifts": {
                   Row: {
-                    "call_name": string,"created_at": string,"failed_reason": string | null,"hold_until": string | null,"id": string,"inr_paise": number,"inr_per_usd": number,"keep_pct": number,"loved_one_id": string | null,"note": string,"order_id": string,"profile_id": string | null,"refund_id": string | null,"region_name": string | null,"relation": string,"sender_first_name": string,"sent_at": string | null,"sent_by": string | null,"status": string,"updated_at": string,"upi": string,"usd_cents": number,"utr": string | null,"_home_gift_held": boolean | null
+                    "call_name": string,"created_at": string,"failed_reason": string | null,"funded_by": string,"hold_until": string | null,"id": string,"inr_paise": number,"inr_per_usd": number,"keep_pct": number,"loved_one_id": string | null,"note": string,"order_id": string,"profile_id": string | null,"refund_id": string | null,"region_name": string | null,"relation": string,"sender_first_name": string,"sent_at": string | null,"sent_by": string | null,"status": string,"updated_at": string,"upi": string,"usd_cents": number,"utr": string | null,"_home_gift_held": boolean | null
                   }
                   ComputedFields: "_home_gift_held"
                   Insert: {
-                    "call_name": string,"created_at"?: string,"failed_reason"?: string | null,"hold_until"?: string | null,"id"?: string,"inr_paise": number,"inr_per_usd": number,"keep_pct"?: number,"loved_one_id"?: string | null,"note"?: string,"order_id": string,"profile_id"?: string | null,"refund_id"?: string | null,"region_name"?: string | null,"relation": string,"sender_first_name"?: string,"sent_at"?: string | null,"sent_by"?: string | null,"status": string,"updated_at"?: string,"upi": string,"usd_cents": number,"utr"?: string | null
+                    "call_name": string,"created_at"?: string,"failed_reason"?: string | null,"funded_by"?: string,"hold_until"?: string | null,"id"?: string,"inr_paise": number,"inr_per_usd": number,"keep_pct"?: number,"loved_one_id"?: string | null,"note"?: string,"order_id": string,"profile_id"?: string | null,"refund_id"?: string | null,"region_name"?: string | null,"relation": string,"sender_first_name"?: string,"sent_at"?: string | null,"sent_by"?: string | null,"status": string,"updated_at"?: string,"upi": string,"usd_cents": number,"utr"?: string | null
                   }
                   Update: {
-                    "call_name"?: string,"created_at"?: string,"failed_reason"?: string | null,"hold_until"?: string | null,"id"?: string,"inr_paise"?: number,"inr_per_usd"?: number,"keep_pct"?: number,"loved_one_id"?: string | null,"note"?: string,"order_id"?: string,"profile_id"?: string | null,"refund_id"?: string | null,"region_name"?: string | null,"relation"?: string,"sender_first_name"?: string,"sent_at"?: string | null,"sent_by"?: string | null,"status"?: string,"updated_at"?: string,"upi"?: string,"usd_cents"?: number,"utr"?: string | null
+                    "call_name"?: string,"created_at"?: string,"failed_reason"?: string | null,"funded_by"?: string,"hold_until"?: string | null,"id"?: string,"inr_paise"?: number,"inr_per_usd"?: number,"keep_pct"?: number,"loved_one_id"?: string | null,"note"?: string,"order_id"?: string,"profile_id"?: string | null,"refund_id"?: string | null,"region_name"?: string | null,"relation"?: string,"sender_first_name"?: string,"sent_at"?: string | null,"sent_by"?: string | null,"status"?: string,"updated_at"?: string,"upi"?: string,"usd_cents"?: number,"utr"?: string | null
                   }
                   Relationships: [
                     {
@@ -322,6 +322,50 @@ isOneToOne: false
       referencedColumns: ["id"]
     }
                   ]
+                },"order_savings": {
+                  Row: {
+                    "created_at": string,"credited_at": string | null,"email": string,"gift_failed": boolean,"home_gift_id": string | null,"order_id": string,"outcome": string,"profile_id": string | null,"save_cents": number,"save_pct": number,"taken_back_at": string | null
+                  }
+                  ComputedFields: never
+                  Insert: {
+                    "created_at"?: string,"credited_at"?: string | null,"email": string,"gift_failed"?: boolean,"home_gift_id"?: string | null,"order_id": string,"outcome": string,"profile_id"?: string | null,"save_cents": number,"save_pct": number,"taken_back_at"?: string | null
+                  }
+                  Update: {
+                    "created_at"?: string,"credited_at"?: string | null,"email"?: string,"gift_failed"?: boolean,"home_gift_id"?: string | null,"order_id"?: string,"outcome"?: string,"profile_id"?: string | null,"save_cents"?: number,"save_pct"?: number,"taken_back_at"?: string | null
+                  }
+                  Relationships: [
+                    {
+      foreignKeyName: "order_savings_home_gift_id_fkey"
+      columns: ["home_gift_id"]
+isOneToOne: false
+      referencedRelation: "home_gifts"
+      referencedColumns: ["id"]
+    },{
+      foreignKeyName: "order_savings_home_gift_id_fkey"
+      columns: ["home_gift_id"]
+isOneToOne: false
+      referencedRelation: "store_home_gifts"
+      referencedColumns: ["id"]
+    },{
+      foreignKeyName: "order_savings_order_id_fkey"
+      columns: ["order_id"]
+isOneToOne: true
+      referencedRelation: "orders"
+      referencedColumns: ["id"]
+    },{
+      foreignKeyName: "order_savings_order_id_fkey"
+      columns: ["order_id"]
+isOneToOne: true
+      referencedRelation: "store_orders"
+      referencedColumns: ["id"]
+    },{
+      foreignKeyName: "order_savings_profile_id_fkey"
+      columns: ["profile_id"]
+isOneToOne: false
+      referencedRelation: "profiles"
+      referencedColumns: ["id"]
+    }
+                  ]
                 },"order_shipments": {
                   Row: {
                     "carrier": string | null,"created_at": string,"est_delivery_from": string | null,"est_delivery_to": string | null,"id": string,"kind": string,"order_id": string,"promised_to": string | null,"seq": number,"shipped_at": string | null,"shipping_cents": number,"status": string,"tracking_number": string | null
@@ -478,14 +522,14 @@ isOneToOne: false
                   ]
                 },"pricing_settings": {
                   Row: {
-                    "bulk_saving_cap_cents": number | null,"bulk_saving_from_cents": number | null,"bulk_saving_pct": number | null,"cancel_fee_pct": number | null,"clearance_discount_pct": number | null,"delivery_days_max": number | null,"delivery_days_min": number | null,"domestic_days_max": number | null,"domestic_days_min": number | null,"export_cancel_deduction_pct": number | null,"food_billed_pct": number | null,"food_delivery_days_max": number | null,"food_delivery_days_min": number | null,"free_shipping_min_cents": number | null,"fx_usd_aud": number | null,"fx_usd_cad": number | null,"fx_usd_nzd": number | null,"heavy_line_off_pct": number | null,"home_est_g_per_rupee": number | null,"home_est_min_g": number | null,"id": number,"leaving_soon_max": number,"min_order_cents": number | null,"offer_pct": number,"retailer_pct": number | null,"return_claim_days": number | null,"return_tier1_days": number | null,"return_tier1_pct": number | null,"return_tier2_days": number | null,"return_tier2_pct": number | null,"return_tier3_days": number | null,"return_tier3_pct": number | null,"send_home_hold_hours": number | null,"send_home_inr_per_usd": number | null,"send_home_keep_pct": number | null,"send_home_month_cap_cents": number | null,"send_home_open": number | null,"send_home_rate_at": string | null,"shipping_cents_per_kg": number | null,"shipping_flat_cents": number | null,"small_order_retailer_cents": number | null,"small_order_shipping_cents": number | null,"stale_listing_days": number | null,"updated_at": string,"updated_by": string | null
+                    "bulk_saving_cap_cents": number | null,"bulk_saving_from_cents": number | null,"bulk_saving_pct": number | null,"cancel_fee_pct": number | null,"clearance_discount_pct": number | null,"delivery_days_max": number | null,"delivery_days_min": number | null,"domestic_days_max": number | null,"domestic_days_min": number | null,"export_cancel_deduction_pct": number | null,"food_billed_pct": number | null,"food_delivery_days_max": number | null,"food_delivery_days_min": number | null,"free_shipping_min_cents": number | null,"fx_usd_aud": number | null,"fx_usd_cad": number | null,"fx_usd_nzd": number | null,"heavy_line_off_pct": number | null,"home_est_g_per_rupee": number | null,"home_est_min_g": number | null,"id": number,"leaving_soon_max": number,"min_order_cents": number | null,"offer_pct": number,"retailer_pct": number | null,"return_claim_days": number | null,"return_tier1_days": number | null,"return_tier1_pct": number | null,"return_tier2_days": number | null,"return_tier2_pct": number | null,"return_tier3_days": number | null,"return_tier3_pct": number | null,"save_pct": number | null,"send_home_hold_hours": number | null,"send_home_inr_per_usd": number | null,"send_home_keep_pct": number | null,"send_home_month_cap_cents": number | null,"send_home_open": number | null,"send_home_rate_at": string | null,"shipping_cents_per_kg": number | null,"shipping_flat_cents": number | null,"small_order_retailer_cents": number | null,"small_order_shipping_cents": number | null,"stale_listing_days": number | null,"updated_at": string,"updated_by": string | null
                   }
                   ComputedFields: never
                   Insert: {
-                    "bulk_saving_cap_cents"?: number | null,"bulk_saving_from_cents"?: number | null,"bulk_saving_pct"?: number | null,"cancel_fee_pct"?: number | null,"clearance_discount_pct"?: number | null,"delivery_days_max"?: number | null,"delivery_days_min"?: number | null,"domestic_days_max"?: number | null,"domestic_days_min"?: number | null,"export_cancel_deduction_pct"?: number | null,"food_billed_pct"?: number | null,"food_delivery_days_max"?: number | null,"food_delivery_days_min"?: number | null,"free_shipping_min_cents"?: number | null,"fx_usd_aud"?: number | null,"fx_usd_cad"?: number | null,"fx_usd_nzd"?: number | null,"heavy_line_off_pct"?: number | null,"home_est_g_per_rupee"?: number | null,"home_est_min_g"?: number | null,"id"?: number,"leaving_soon_max"?: number,"min_order_cents"?: number | null,"offer_pct"?: number,"retailer_pct"?: number | null,"return_claim_days"?: number | null,"return_tier1_days"?: number | null,"return_tier1_pct"?: number | null,"return_tier2_days"?: number | null,"return_tier2_pct"?: number | null,"return_tier3_days"?: number | null,"return_tier3_pct"?: number | null,"send_home_hold_hours"?: number | null,"send_home_inr_per_usd"?: number | null,"send_home_keep_pct"?: number | null,"send_home_month_cap_cents"?: number | null,"send_home_open"?: number | null,"send_home_rate_at"?: string | null,"shipping_cents_per_kg"?: number | null,"shipping_flat_cents"?: number | null,"small_order_retailer_cents"?: number | null,"small_order_shipping_cents"?: number | null,"stale_listing_days"?: number | null,"updated_at"?: string,"updated_by"?: string | null
+                    "bulk_saving_cap_cents"?: number | null,"bulk_saving_from_cents"?: number | null,"bulk_saving_pct"?: number | null,"cancel_fee_pct"?: number | null,"clearance_discount_pct"?: number | null,"delivery_days_max"?: number | null,"delivery_days_min"?: number | null,"domestic_days_max"?: number | null,"domestic_days_min"?: number | null,"export_cancel_deduction_pct"?: number | null,"food_billed_pct"?: number | null,"food_delivery_days_max"?: number | null,"food_delivery_days_min"?: number | null,"free_shipping_min_cents"?: number | null,"fx_usd_aud"?: number | null,"fx_usd_cad"?: number | null,"fx_usd_nzd"?: number | null,"heavy_line_off_pct"?: number | null,"home_est_g_per_rupee"?: number | null,"home_est_min_g"?: number | null,"id"?: number,"leaving_soon_max"?: number,"min_order_cents"?: number | null,"offer_pct"?: number,"retailer_pct"?: number | null,"return_claim_days"?: number | null,"return_tier1_days"?: number | null,"return_tier1_pct"?: number | null,"return_tier2_days"?: number | null,"return_tier2_pct"?: number | null,"return_tier3_days"?: number | null,"return_tier3_pct"?: number | null,"save_pct"?: number | null,"send_home_hold_hours"?: number | null,"send_home_inr_per_usd"?: number | null,"send_home_keep_pct"?: number | null,"send_home_month_cap_cents"?: number | null,"send_home_open"?: number | null,"send_home_rate_at"?: string | null,"shipping_cents_per_kg"?: number | null,"shipping_flat_cents"?: number | null,"small_order_retailer_cents"?: number | null,"small_order_shipping_cents"?: number | null,"stale_listing_days"?: number | null,"updated_at"?: string,"updated_by"?: string | null
                   }
                   Update: {
-                    "bulk_saving_cap_cents"?: number | null,"bulk_saving_from_cents"?: number | null,"bulk_saving_pct"?: number | null,"cancel_fee_pct"?: number | null,"clearance_discount_pct"?: number | null,"delivery_days_max"?: number | null,"delivery_days_min"?: number | null,"domestic_days_max"?: number | null,"domestic_days_min"?: number | null,"export_cancel_deduction_pct"?: number | null,"food_billed_pct"?: number | null,"food_delivery_days_max"?: number | null,"food_delivery_days_min"?: number | null,"free_shipping_min_cents"?: number | null,"fx_usd_aud"?: number | null,"fx_usd_cad"?: number | null,"fx_usd_nzd"?: number | null,"heavy_line_off_pct"?: number | null,"home_est_g_per_rupee"?: number | null,"home_est_min_g"?: number | null,"id"?: number,"leaving_soon_max"?: number,"min_order_cents"?: number | null,"offer_pct"?: number,"retailer_pct"?: number | null,"return_claim_days"?: number | null,"return_tier1_days"?: number | null,"return_tier1_pct"?: number | null,"return_tier2_days"?: number | null,"return_tier2_pct"?: number | null,"return_tier3_days"?: number | null,"return_tier3_pct"?: number | null,"send_home_hold_hours"?: number | null,"send_home_inr_per_usd"?: number | null,"send_home_keep_pct"?: number | null,"send_home_month_cap_cents"?: number | null,"send_home_open"?: number | null,"send_home_rate_at"?: string | null,"shipping_cents_per_kg"?: number | null,"shipping_flat_cents"?: number | null,"small_order_retailer_cents"?: number | null,"small_order_shipping_cents"?: number | null,"stale_listing_days"?: number | null,"updated_at"?: string,"updated_by"?: string | null
+                    "bulk_saving_cap_cents"?: number | null,"bulk_saving_from_cents"?: number | null,"bulk_saving_pct"?: number | null,"cancel_fee_pct"?: number | null,"clearance_discount_pct"?: number | null,"delivery_days_max"?: number | null,"delivery_days_min"?: number | null,"domestic_days_max"?: number | null,"domestic_days_min"?: number | null,"export_cancel_deduction_pct"?: number | null,"food_billed_pct"?: number | null,"food_delivery_days_max"?: number | null,"food_delivery_days_min"?: number | null,"free_shipping_min_cents"?: number | null,"fx_usd_aud"?: number | null,"fx_usd_cad"?: number | null,"fx_usd_nzd"?: number | null,"heavy_line_off_pct"?: number | null,"home_est_g_per_rupee"?: number | null,"home_est_min_g"?: number | null,"id"?: number,"leaving_soon_max"?: number,"min_order_cents"?: number | null,"offer_pct"?: number,"retailer_pct"?: number | null,"return_claim_days"?: number | null,"return_tier1_days"?: number | null,"return_tier1_pct"?: number | null,"return_tier2_days"?: number | null,"return_tier2_pct"?: number | null,"return_tier3_days"?: number | null,"return_tier3_pct"?: number | null,"save_pct"?: number | null,"send_home_hold_hours"?: number | null,"send_home_inr_per_usd"?: number | null,"send_home_keep_pct"?: number | null,"send_home_month_cap_cents"?: number | null,"send_home_open"?: number | null,"send_home_rate_at"?: string | null,"shipping_cents_per_kg"?: number | null,"shipping_flat_cents"?: number | null,"small_order_retailer_cents"?: number | null,"small_order_shipping_cents"?: number | null,"stale_listing_days"?: number | null,"updated_at"?: string,"updated_by"?: string | null
                   }
                   Relationships: [
                     {
@@ -714,14 +758,14 @@ isOneToOne: false
                   ]
                 },"profiles": {
                   Row: {
-                    "coins": number,"created_at": string,"desk": Database["public"]['Enums']["ops_desk"] | null,"email": string | null,"full_name": string | null,"id": string,"phone": string | null,"role": Database["public"]['Enums']["app_role"],"send_home_in_bag": boolean,"updated_at": string
+                    "coins": number,"created_at": string,"desk": Database["public"]['Enums']["ops_desk"] | null,"email": string | null,"full_name": string | null,"id": string,"phone": string | null,"role": Database["public"]['Enums']["app_role"],"saved_coins": number,"send_home_in_bag": boolean,"updated_at": string
                   }
                   ComputedFields: never
                   Insert: {
-                    "coins"?: number,"created_at"?: string,"desk"?: Database["public"]['Enums']["ops_desk"] | null,"email"?: string | null,"full_name"?: string | null,"id": string,"phone"?: string | null,"role"?: Database["public"]['Enums']["app_role"],"send_home_in_bag"?: boolean,"updated_at"?: string
+                    "coins"?: number,"created_at"?: string,"desk"?: Database["public"]['Enums']["ops_desk"] | null,"email"?: string | null,"full_name"?: string | null,"id": string,"phone"?: string | null,"role"?: Database["public"]['Enums']["app_role"],"saved_coins"?: number,"send_home_in_bag"?: boolean,"updated_at"?: string
                   }
                   Update: {
-                    "coins"?: number,"created_at"?: string,"desk"?: Database["public"]['Enums']["ops_desk"] | null,"email"?: string | null,"full_name"?: string | null,"id"?: string,"phone"?: string | null,"role"?: Database["public"]['Enums']["app_role"],"send_home_in_bag"?: boolean,"updated_at"?: string
+                    "coins"?: number,"created_at"?: string,"desk"?: Database["public"]['Enums']["ops_desk"] | null,"email"?: string | null,"full_name"?: string | null,"id"?: string,"phone"?: string | null,"role"?: Database["public"]['Enums']["app_role"],"saved_coins"?: number,"send_home_in_bag"?: boolean,"updated_at"?: string
                   }
                   Relationships: [
                     
@@ -1613,6 +1657,9 @@ isOneToOne: false
               "order_id": string,"order_number": string
             }[]
                            },
+"_credit_saving":
+{ Args: { "p_order": string }; Returns: undefined
+                           },
 "_customer_cancel_cents":
 { Args: { "p_order": string }; Returns: number
                            },
@@ -1683,6 +1730,9 @@ isOneToOne: false
 { Args: { "p_order": string }; Returns: Json
                            },
 "_order_home_gift":
+{ Args: { "p_order": string }; Returns: Json
+                           },
+"_order_saving":
 { Args: { "p_order": string }; Returns: Json
                            },
 "_order_shipments_json":
@@ -1925,6 +1975,9 @@ isOneToOne: false
                            },
 "admin_save_shop_bill":
 { Args: { "p_bill": string,"p_lines": Json,"p_note"?: string }; Returns: undefined
+                           },
+"admin_saving_gift_failed":
+{ Args: { "p_gift": string,"p_reason": string }; Returns: undefined
                            },
 "admin_search_fixes":
 { Args: { "p_since"?: string }; Returns: Json

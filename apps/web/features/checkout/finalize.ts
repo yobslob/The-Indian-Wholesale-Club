@@ -73,6 +73,28 @@ export const pendingCheckoutSchema = z.object({
     })
     .nullable()
     .default(null),
+  /** D-208: the order's 5% saving, paid by IWC and not in totalCents: kept as Coins, or sent home (absent before it). */
+  saving: z
+    .object({
+      cents: z.number().int().positive(),
+      pct: z.number().positive(),
+      gift: z
+        .object({
+          inrPerUsd: z.number().positive(),
+          inrPaise: z.number().int().positive(),
+          relation: z.enum(RELATIONS),
+          callName: z.string(),
+          upi: z.string(),
+          regionId: z.string().uuid().nullable(),
+          note: z.string(),
+          senderFirstName: z.string(),
+          lovedOneId: z.string().uuid().nullable(),
+          save: z.boolean(),
+        })
+        .nullable(),
+    })
+    .nullable()
+    .default(null),
 });
 export type PendingCheckout = z.infer<typeof pendingCheckoutSchema>;
 

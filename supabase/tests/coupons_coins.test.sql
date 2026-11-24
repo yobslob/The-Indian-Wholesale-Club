@@ -1,6 +1,8 @@
 -- D-191: the coupons checkout offers, who may use them, the coins, and the wallet's refill after an order.
 begin;
 select tests.setup();
+-- D-208 switched every coupon off; the machinery stays for past orders, so it is still tested with them on
+update public.promo_codes set is_active = true;
 
 select tests.assert(
   (select count(*) = 4 from public.promo_codes where is_public and code in ('WELCOME10', 'SAVE7', 'SAVE12', 'SAVE20')),

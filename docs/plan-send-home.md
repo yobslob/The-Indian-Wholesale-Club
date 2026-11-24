@@ -1,5 +1,7 @@
 # Plan: Send home, a small gift to someone in India with every order (handoff for the next agent)
 
+> **2026-11-24, D-208:** customers no longer pay for a gift. Every bag saves 5%, which IWC sends home or puts into Coins; the desk, sheet, UPI checker and daily rate stay. `docs/plan-world.md` holds where they differ.
+
 *Written 2026-11-24 by Claude from the repo at `main` (e4d4e19) and the founder's idea of the same day. Status: **nothing
 built.** Read all of it, then `CLAUDE.md`. Each phase ships alone and leaves the store working. The mockups (the bag's
 card for a first-time and a returning sender, the "Who's it for?" sheet, the thank-you postcard, what the loved one sees,

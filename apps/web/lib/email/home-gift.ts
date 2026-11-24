@@ -15,9 +15,20 @@ export function homeGiftEmail(
   order: OrderDetail,
   ctx: EmailContext,
 ): { subject: string; html: string } | null {
+  const W = SEND_HOME_WORDS.emails;
+  // D-208: a saving the desk could not send went into Coins (its gift no longer shows on the order)
+  const saving = order.saving;
+  if (kind === 'home_gift_failed' && saving?.gift_failed) {
+    const subject = W.failedSubjectSaving;
+    const n = order.order.order_number;
+    const body = [
+      paragraph(escapeHtml(W.failedBodySaving(saving.save_cents.toLocaleString('en-US')))),
+      button(`${ctx.siteUrl}/orders/${encodeURIComponent(n)}`, 'See your order'),
+    ].join('\n');
+    return { subject, html: frame(ctx, { title: subject, orderLine: `Order ${n}`, heading: 'In your Coins', body }) };
+  }
   const gift = order.home_gift;
   if (!gift) return null;
-  const W = SEND_HOME_WORDS.emails;
   const inr = formatInr(gift.inr_paise);
   const n = order.order.order_number;
   const sent = kind === 'home_gift_sent';

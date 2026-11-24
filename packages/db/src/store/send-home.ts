@@ -25,8 +25,10 @@ export type LovedOne = z.infer<typeof lovedOneSchema>;
 
 export const sendHomeSchema = z
   .object({
-    /** Rupees per gift dollar as promised (D-206: the day's rate less what IWC keeps). */
-    inr_per_usd: z.coerce.number().positive(),
+    /** D-208: the % of the goods every order saves (5). */
+    save_pct: z.coerce.number().positive(),
+    /** Rupees per dollar sent home (D-206: the day's rate; D-208: IWC keeps nothing); null = Send home closed. */
+    inr_per_usd: z.coerce.number().positive().nullable(),
     signed_in: z.boolean(),
     in_bag: z.boolean(),
     loved_ones: z.array(
@@ -34,7 +36,7 @@ export const sendHomeSchema = z
     ),
   })
   .nullable();
-/** Null = Send home is off (no rate set). */
+/** Null = no saving (Settings' save % empty). */
 export type SendHome = z.infer<typeof sendHomeSchema>;
 
 export const giftStatusSchema = z.enum(['sending', 'sent', 'refunded']);
@@ -52,8 +54,22 @@ export const orderHomeGiftSchema = z.object({
   utr_last4: z.string().nullable(),
   sent_at: isoDateTime.nullable(),
   so_far: z.object({ inr_paise: z.number().int(), times: z.number().int() }),
+  /** D-208: iwc = the order's saving sent home; customer = a gift paid with the order (before 2026-11-24). */
+  funded_by: z.enum(['customer', 'iwc']).default('customer'),
 });
 export type OrderHomeGift = z.infer<typeof orderHomeGiftSchema>;
+
+/** D-208: an order's 5% saving and where it went. */
+export const orderSavingSchema = z.object({
+  save_cents: z.number().int(),
+  outcome: z.enum(['gift', 'coins']),
+  /** Coins in the wallet (false for a guest until an account with their email exists). */
+  credited: z.boolean(),
+  taken_back: z.boolean(),
+  /** The desk could not send it, so it became Coins. */
+  gift_failed: z.boolean(),
+});
+export type OrderSaving = z.infer<typeof orderSavingSchema>;
 
 export const myPeopleSchema = z
   .object({
@@ -65,6 +81,8 @@ export const myPeopleSchema = z
       usd_cents: z.number().int(),
       since: isoDateTime.nullable(),
     }),
+    /** D-208: what the customer kept as Coins. */
+    kept: z.object({ cents: z.number().int(), times: z.number().int() }).default({ cents: 0, times: 0 }),
     loved_ones: z.array(lovedOneSchema.extend({ sent_inr_paise: z.number().int(), times: z.number().int() })),
     history: z.array(
       z.object({

@@ -26,9 +26,9 @@ CA$, A$ and NZ$ per US$1: 1.4130, 1.4570, 1.8060 (mid-market, 2026-11-06/07). Vi
 | **Shipping** below the line | $18.62 × the bag's billed kg (D-154, D-190) | its heaviest piece at least 1 kg, then by the half kg, and every other piece its own weight, food at 110% of its label, never under the whole bag by the half kg; one parcel for the whole bag even when it ships as two. One piece $18.62; 5 masalas of 100 g $26.81; 2 kurtas of 450 g $27.00; a 1 kg piece and a 100 g piece $27.93. The same figure shows struck through from the free line up |
 | **Retailer charges** on every bag from India, never struck (D-191) | at least $0.99, or the retailer % of the goods | Settings. The % was 1.5 on the 5 Nov copy: $2.99 on a $199 bag; empty it for the fixed amount |
 | **Bulk saving and heavy-item discount from** | $99.99 (D-187: "Keep them at $99.99") | `bulk_saving_from_cents`. Its own line since D-187, money unchanged |
-| **Bulk saving** | 10% of the amount over that line, up to $25 (D-119) | a $120 bag saves $2.00. None while a coupon is on (D-191) |
-| **Coupons** (D-191; Admin → Promotions turns one off) | WELCOME10 10% up to $9, no paid order yet; SAVE7 $7 from $99; SAVE12 $12 from $150; SAVE20 $20 from $199 | on the bag's subtotal. One replaces the bulk saving and is offered only when worth more |
-| **Coins** (D-191, accounts only) | 30 – 90 to start, 1 coin = 1 cent; after a paid order the wallet holds what it held plus 1 – 8; the rate is not shown to customers (D-192) | all used on every order, on top of a coupon, before tax. `profiles.coins` |
+| **Bulk saving** | 10% of the amount over that line, up to $25 (D-119) | a $120 bag saves $2.00 |
+| **Your 5%** (D-208, replaces coupons) | 5% of the goods (the pieces after the bulk saving, before shipping, charges, Coins and tax), to the cent; $85 of goods saves $4.25 | Settings `save_pct` (empty = none). Paid by IWC, never in the total: sent home in rupees at the day's rate (no % kept, `send_home_keep_pct` 0) or kept as Coins (the default). Coupons are off since D-208 (the codes stay for past orders) |
+| **Coins** (D-191, accounts only) | 30 – 90 to start, 1 coin = 1 cent; after a paid order the wallet holds what it held plus 1 – 8; the rate is not shown to customers (D-192) | all used on every order, before tax. `profiles.coins`; the part from kept savings (`saved_coins`, D-208) is spent by the next order, the D-191 part never |
 | **Heavy-item shipping** | 20% off from that line (D-155) | below it, paid in full |
 
 ## Delivery (Settings → Delivery; D-187, `flows.md` §1)

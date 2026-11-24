@@ -1,5 +1,7 @@
 # Plan: the store in Canada, Australia and New Zealand (handoff for the next agent)
 
+> **2026-11-24, D-208:** IWC opens in every country ShipGlobal serves, with freight by country. `docs/plan-world.md` holds; this plan is history where they differ.
+
 Updated 2026-11-11 by Claude. Read this file, then `decisions.md` D-197 and D-198, then `CLAUDE.md`. Nothing else is
 needed to pick this up.
 

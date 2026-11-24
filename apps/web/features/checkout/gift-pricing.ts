@@ -2,17 +2,20 @@ import 'server-only';
 
 import { z } from 'zod';
 
-import { getCheckoutSendHome, type HomeGiftInput } from '@repo/db/server';
-import { formatUsd, giftInrPaise, giftLineOf, RELATIONS, upiOf } from '@repo/shared/domain';
+import { giftInrPaise, giftLineOf, RELATIONS, upiOf } from '@repo/shared/domain';
 
 import { SEND_HOME_WORDS } from '@/features/send-home/words';
 
-import type { IwcClient } from '@repo/db';
+import type { CheckoutSendHome, SavingInput } from '@repo/db/server';
 
-/** D-205: the gift a checkout asks for (zod at the boundary; the server re-prices everything itself). */
+
+/**
+ * D-208: who the order's saving goes home to (zod at the boundary). Absent or null: the customer keeps it as Coins.
+ * `cents` is what the old bag sent for a paid gift (D-205): read no more, the server works the saving out itself.
+ */
 export const checkoutGiftSchema = z
   .object({
-    cents: z.number().int().min(100).max(100_000),
+    cents: z.number().int().optional(),
     lovedOneId: z.string().uuid().nullish(),
     lovedOne: z
       .object({
@@ -28,30 +31,25 @@ export const checkoutGiftSchema = z
   .nullish();
 export type CheckoutGift = z.infer<typeof checkoutGiftSchema>;
 
-export type GiftResult = { ok: true; gift: HomeGiftInput | null } | { ok: false; message: string };
+export type SavingResult = { ok: true; saving: SavingInput | null } | { ok: false; message: string };
 
 /**
- * plan §2 rules 3, 4, 11, D-206: the rate, the monthly cap and the UPI checked again here, the rupees worked out here
- * (never from the browser). Send home closed: the gift is dropped and the quote shows the bag without it. That the gift
- * is no more than the order is checked by the caller, which has the order's total.
+ * D-208: the order's saving (worked out by the caller from the goods): sent home at the day's rate when the customer
+ * named someone and Send home is open, else kept as Coins. The rupees are worked out here, never in the browser.
  */
-export async function priceGift(
-  service: IwcClient,
-  gift: NonNullable<CheckoutGift>,
-  who: { userId: string | null; email: string; fullName: string },
-): Promise<GiftResult> {
-  const words = SEND_HOME_WORDS.problems;
-  const settings = await getCheckoutSendHome(service, {
-    userId: who.userId,
-    email: who.email,
-    lovedOneId: gift.lovedOneId ?? null,
-  });
-  // D-206: the promised rate is the day's less what IWC keeps; null = Send home is closed, so the gift is dropped
-  const inrPaise = giftInrPaise(gift.cents, settings.rupees_per_usd);
-  if (settings.rupees_per_usd === null || settings.inr_per_usd === null || inrPaise === null) return { ok: true, gift: null };
-  if (settings.month_cap_cents !== null && settings.month_used_cents + gift.cents > settings.month_cap_cents)
-    return { ok: false, message: words.monthCap(formatUsd(settings.month_cap_cents)) };
+export function priceSaving(
+  settings: CheckoutSendHome,
+  saveCents: number,
+  gift: CheckoutGift,
+  who: { userId: string | null; fullName: string },
+): SavingResult {
+  if (saveCents <= 0 || settings.save_pct === null) return { ok: true, saving: null };
+  const keep = { ok: true as const, saving: { cents: saveCents, pct: settings.save_pct, gift: null } };
+  const inrPaise = giftInrPaise(saveCents, settings.inr_per_usd);
+  // nobody named, or Send home closed (no fresh rate): the saving is kept
+  if (!gift || settings.rupees_per_usd === null || settings.inr_per_usd === null || inrPaise === null) return keep;
 
+  const words = SEND_HOME_WORDS.problems;
   const saved = settings.loved_one;
   const typed = gift.lovedOne ?? null;
   const person = saved
@@ -65,19 +63,21 @@ export async function priceGift(
   const firstName = (settings.sender_first_name || who.fullName).trim().split(/\s+/)[0] ?? '';
   return {
     ok: true,
-    gift: {
-      usdCents: gift.cents,
-      inrPerUsd: settings.inr_per_usd,
-      keepPct: settings.keep_pct,
-      inrPaise,
-      relation: person.relation,
-      callName: person.callName.trim().slice(0, 20),
-      upi: upi.value,
-      regionId: person.regionId,
-      note: giftLineOf(person.note),
-      senderFirstName: firstName.slice(0, 40),
-      lovedOneId: saved?.id ?? null,
-      save: Boolean(who.userId && !saved && gift.save),
+    saving: {
+      cents: saveCents,
+      pct: settings.save_pct,
+      gift: {
+        inrPerUsd: settings.inr_per_usd,
+        inrPaise,
+        relation: person.relation,
+        callName: person.callName.trim().slice(0, 20),
+        upi: upi.value,
+        regionId: person.regionId,
+        note: giftLineOf(person.note),
+        senderFirstName: firstName.slice(0, 40),
+        lovedOneId: saved?.id ?? null,
+        save: Boolean(who.userId && !saved && gift.save),
+      },
     },
   };
 }

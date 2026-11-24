@@ -18,31 +18,30 @@ export interface TypedLovedOne {
 }
 
 /**
- * D-205: this bag's gift. `started` once the bag's card has shown (only then is anything added: the card is where the
- * customer sees it); on by default (rule 7) unless the account's switch is off; × removes it for the rest of this bag.
- * Kept for the tab; cleared when an order is placed or the bag empties.
+ * D-208: where this bag's 5% saving goes. `keep` (Coins) unless the customer names someone; a returning sender starts on
+ * their last loved one (set once by the bag's card, `started`). `cents` is the saving as the card last worked it out,
+ * for the sheet's rupees. Kept for the tab; cleared when an order is placed or the bag empties.
  */
 interface GiftState {
   started: boolean;
-  removed: boolean;
-  /** Fixed once added (rule 3): a bag that changes later never moves it. */
+  keep: boolean;
   cents: number;
   lovedOneId: string | null;
   lovedOne: TypedLovedOne | null;
   save: boolean;
-  /** The sheet is open: for a relation (a chip) or none (Someone else, Checkout), and where to go after. Not kept. */
+  /** The sheet is open, for a relation (a chip) or none (Someone else). Not kept. */
   asking: { relation: Relation | null; then: 'checkout' | null } | null;
   ask: (relation: Relation | null, then?: 'checkout' | null) => void;
   close: () => void;
-  start: (cents: number, removed: boolean, lovedOneId: string | null, lovedOne: TypedLovedOne | null) => void;
+  start: (lovedOneId: string | null, lovedOne: TypedLovedOne | null) => void;
   setCents: (cents: number) => void;
-  setRemoved: (removed: boolean) => void;
+  keepIt: () => void;
   pickSaved: (id: string) => void;
   pickTyped: (one: TypedLovedOne, save: boolean) => void;
   reset: () => void;
 }
 
-const EMPTY = { started: false, removed: false, cents: 0, lovedOneId: null, lovedOne: null, save: false };
+const EMPTY = { started: false, keep: true, cents: 0, lovedOneId: null, lovedOne: null, save: false };
 
 export const useGiftStore = create<GiftState>()(
   persist(
@@ -51,18 +50,20 @@ export const useGiftStore = create<GiftState>()(
       asking: null,
       ask: (relation, then = null) => set({ asking: { relation, then } }),
       close: () => set({ asking: null }),
-      start: (cents, removed, lovedOneId, lovedOne) => set({ started: true, cents, removed, lovedOneId, lovedOne }),
-      setCents: (cents) => set({ cents, removed: false }),
-      setRemoved: (removed) => set({ removed }),
-      pickSaved: (id) => set({ lovedOneId: id, lovedOne: null, removed: false }),
-      pickTyped: (one, save) => set({ lovedOne: one, lovedOneId: null, save, removed: false }),
+      start: (lovedOneId, lovedOne) => set({ started: true, lovedOneId, lovedOne, keep: !lovedOneId && !lovedOne }),
+      setCents: (cents) => set({ cents }),
+      keepIt: () => set({ keep: true }),
+      pickSaved: (id) => set({ lovedOneId: id, lovedOne: null, keep: false }),
+      pickTyped: (one, save) => set({ lovedOne: one, lovedOneId: null, save, keep: false }),
       reset: () => set({ ...EMPTY, asking: null }),
     }),
     {
       name: 'iwc-gift',
-      version: 1,
+      version: 2,
       storage: createJSONStorage(() => sessionStorage),
-      partialize: ({ started, removed, cents, lovedOneId, lovedOne, save }) => ({ started, removed, cents, lovedOneId, lovedOne, save }),
+      partialize: ({ started, keep, cents, lovedOneId, lovedOne, save }) => ({ started, keep, cents, lovedOneId, lovedOne, save }),
+      // a bag from before D-208 starts again
+      migrate: () => EMPTY,
     },
   ),
 );

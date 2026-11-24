@@ -8,7 +8,7 @@ import { isInfoPath } from '@/lib/site';
 import type { ComponentType } from 'react';
 
 /**
- * Pages where it would only get in the way: the bag has the coupon itself, the rest are forms or a customer's own pages.
+ * Pages where it would only get in the way: the bag has the 5% card itself, the rest are forms or a customer's own pages.
  * A product page (/states/<state>/<piece>) has its photo where the ad would hang.
  */
 const NOT_ON = /^\/((cart|checkout|login|signup|account|orders)(\/|$)|states\/[^/]+\/[^/]+)/;

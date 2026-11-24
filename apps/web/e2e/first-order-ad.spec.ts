@@ -1,6 +1,6 @@
 import { expect, test } from '@playwright/test';
 
-const AD = 'button[aria-label^="10% off your first order"]';
+const AD = 'button[aria-label^="Every bag saves 5%"]';
 
 /** D-193: the ad comes down three seconds after a page opens, wherever the page is scrolled to, and stays on the navbar. */
 test('the first-order ad comes down after 3 seconds while scrolled, hangs from the navbar and moves nothing', async ({ page }) => {

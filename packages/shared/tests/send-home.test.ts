@@ -14,6 +14,7 @@ import {
   promisedRate,
   quoteCheckout,
   roundUpGiftCents,
+  savingCents,
   upiNote,
   upiOf,
   upiPayLink,
@@ -157,5 +158,17 @@ describe('Send home beside the goods (plan §2 rule 2)', () => {
   it('refuses a gift that is not whole cents', () => {
     assert.throws(() => quoteCheckout(lines(1000), null, settings, null, 0, -1), RangeError);
     assert.throws(() => quoteCheckout(lines(1000), null, settings, null, 0, 1.5), RangeError);
+  });
+});
+
+describe('the 5% saving (D-208)', () => {
+  it('is the % of the goods, to the cent', () => {
+    assert.equal(savingCents(8500, 5), 425);
+    assert.equal(savingCents(8533, 5), 427);
+    assert.equal(savingCents(1, 5), 0);
+  });
+  it('is nothing without a % or goods', () => {
+    assert.equal(savingCents(8500, null), 0);
+    assert.equal(savingCents(0, 5), 0);
   });
 });

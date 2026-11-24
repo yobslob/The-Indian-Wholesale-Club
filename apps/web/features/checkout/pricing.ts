@@ -2,28 +2,26 @@ import 'server-only';
 
 import { z } from 'zod';
 
-import { getCheckoutContext } from '@repo/db/server';
+import { getCheckoutContext, getCheckoutSendHome } from '@repo/db/server';
 import { getBagCharges, heavyOf, smallOrderOf } from '@repo/db/store';
 import {
   emailSchema,
-  formatUsd,
-  giftFitsOrder,
   promoDiscountCents,
   quoteCheckout,
+  savingCents,
   shippingAddressSchema,
   type ShippingAddress,
 } from '@repo/shared/domain';
 
 import { MAX_QTY_PER_LINE } from '@/features/cart/limits';
-import { SEND_HOME_WORDS } from '@/features/send-home/words';
 
-import { checkoutGiftSchema, priceGift } from './gift-pricing';
+import { checkoutGiftSchema, priceSaving } from './gift-pricing';
 import { stockProblems } from './stock';
 
 import type { CheckoutProblem, CheckoutQuote } from './types';
 import type { ProductPageRef } from '@/features/catalog/revalidate';
 import type { IwcClient } from '@repo/db';
-import type { HomeGiftInput } from '@repo/db/server';
+import type { SavingInput } from '@repo/db/server';
 import type { CheckoutContext } from '@repo/db/server';
 import type { CheckoutOffers, QuotedShipment } from '@repo/shared/domain';
 
@@ -44,7 +42,7 @@ export const checkoutRequestSchema = z.object({
   useCoins: z.boolean().optional(),
   // TODO(D-187): drop when app <next version> is the minimum: the old app sends it; standard is the only shipping (Y-1)
   shippingMethod: z.enum(['standard', 'express']).optional(),
-  // D-205: a Send home gift, priced again on the server
+  // D-208: who the order's 5% saving goes home to; absent = kept as Coins
   gift: checkoutGiftSchema,
 });
 
@@ -55,8 +53,8 @@ export type PriceResult =
       ok: true;
       quote: CheckoutQuote;
       promoCodeId: string | null;
-      /** D-205: the gift as it will be stored with the payment and the order. */
-      homeGift: HomeGiftInput | null;
+      /** D-208: the order's saving as it will be stored with the payment and the order (never in the total). */
+      saving: SavingInput | null;
       address: ShippingAddress;
       /** The product pages whose stock this order will move (refreshed after the sale, revalidate.ts). */
       pages: ProductPageRef[];
@@ -110,12 +108,10 @@ export async function priceCart(
     );
   }
   const ids = [...quantities.keys()];
-  // D-205: the gift's read runs beside checkout's own, so a bag with a gift waits no longer
-  const [context, gifted] = await Promise.all([
+  // D-208: the saving's settings (and a saved loved one) are read beside checkout's own context, so no wait is added
+  const [context, sendHome] = await Promise.all([
     getCheckoutContext(service, ids, request.promoCode ?? null, request.address.state, { userId, email: request.email }),
-    request.gift
-      ? priceGift(service, request.gift, { userId, email: request.email, fullName: request.address.fullName })
-      : Promise.resolve({ ok: true as const, gift: null }),
+    getCheckoutSendHome(service, { userId, email: request.email, lovedOneId: request.gift?.lovedOneId ?? null }),
   ]);
   const byId = new Map(context.variants.map((v) => [v.variant_id, v]));
 
@@ -190,16 +186,17 @@ export async function priceCart(
     bulkSaving: { pct: charges.bulk_saving_pct, capCents: charges.bulk_saving_cap_cents },
   };
   const coins = request.useCoins ? (context.coins ?? 0) : 0;
-  if (!gifted.ok) return { ok: false, problem: { kind: 'gift', message: gifted.message } };
-  const homeGift = gifted.gift;
-  const goodsOnly = quoteCheckout(quoteLines, quotePromo, shipping, quoteTax, coins);
+  const breakdown = quoteCheckout(quoteLines, quotePromo, shipping, quoteTax, coins);
   // No price for shipping yet: checkout stays closed rather than guessing a fee.
-  if (!goodsOnly) return { ok: false, problem: { kind: 'closed' } };
-  // D-206: a gift is never worth more than the order itself
-  if (homeGift && !giftFitsOrder(homeGift.usdCents, goodsOnly.totalCents)) {
-    return { ok: false, problem: { kind: 'gift', message: SEND_HOME_WORDS.problems.tooMuch(formatUsd(goodsOnly.totalCents)) } };
-  }
-  const breakdown = homeGift ? quoteCheckout(quoteLines, quotePromo, shipping, quoteTax, coins, homeGift.usdCents)! : goodsOnly;
+  if (!breakdown) return { ok: false, problem: { kind: 'closed' } };
+  // D-208: 5% of the goods (after the bulk saving, before shipping, charges, Coins and tax), paid by IWC: not in the total
+  const goodsCents = breakdown.subtotalCents - breakdown.discountCents - breakdown.bulkSavingCents;
+  const priced = priceSaving(sendHome, savingCents(goodsCents, sendHome.save_pct), request.gift ?? null, {
+    userId,
+    fullName: request.address.fullName,
+  });
+  if (!priced.ok) return { ok: false, problem: { kind: 'gift', message: priced.message } };
+  const saving = priced.saving;
   // A smallest order is still a setting (D-109); since D-111 it is unset and small bags pay the charges instead.
   const minOrderCents = context.shipping.min_order_cents;
   if (minOrderCents !== null && breakdown.subtotalCents < minOrderCents) {
@@ -238,7 +235,7 @@ export async function priceCart(
   return {
     ok: true,
     promoCodeId: promo && breakdown.promoApplied ? promo.id : null,
-    homeGift,
+    saving,
     address: request.address,
     pages: [...new Map(context.variants.map((v) => [v.product_id, v])).values()].map((v) => ({
       regionSlug: v.region_slug,
@@ -260,8 +257,15 @@ export async function priceCart(
       offers: offersOf(context),
       shipments: split,
       outside: shipments?.outside ?? false,
-      homeGift: homeGift
-        ? { usdCents: homeGift.usdCents, inrPaise: homeGift.inrPaise, callName: homeGift.callName, relation: homeGift.relation }
+      homeGift: null,
+      saving: saving
+        ? {
+            cents: saving.cents,
+            to: saving.gift ? 'home' : 'coins',
+            inrPaise: saving.gift?.inrPaise ?? null,
+            callName: saving.gift?.callName ?? null,
+            relation: saving.gift?.relation ?? null,
+          }
         : null,
     },
   };

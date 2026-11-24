@@ -101,8 +101,9 @@ export async function POST(
       promoCodeId: priced.promoCodeId,
       shippingMethod: quote.shippingMethod,
       pages: priced.pages,
-      // D-205: the gift travels with the stored checkout, so device, webhook and sweep make it with the order
-      homeGift: priced.homeGift,
+      // D-208: the saving travels with the stored checkout, so device, webhook and sweep make it with the order
+      homeGift: null,
+      saving: priced.saving,
     };
 
     const intent = await startPayment(stripeServer(), service, {

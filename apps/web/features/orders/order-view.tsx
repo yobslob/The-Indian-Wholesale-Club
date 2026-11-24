@@ -10,6 +10,7 @@ import {
 
 import { LinePhoto } from '@/features/cart/bag-lines';
 import { OrderGift } from '@/features/send-home/order-gift';
+import { SavingNote } from '@/features/send-home/saving-note';
 import { SEND_HOME_WORDS } from '@/features/send-home/words';
 import { SITE_NAME } from '@/lib/site';
 
@@ -191,6 +192,16 @@ export function OrderView({ order }: { order: OrderDetail }): React.JSX.Element 
       )}
 
       {order.home_gift ? <OrderGift gift={order.home_gift} /> : null}
+      {/* D-208: a saving kept as Coins (or one that could not go home, or was taken back with a cancel) */}
+      {order.saving && (order.saving.outcome === 'coins' || order.saving.taken_back) && !(order.home_gift && !order.saving.taken_back) ? (
+        <SavingNote
+          cents={order.saving.save_cents}
+          credited={order.saving.credited}
+          giftFailed={order.saving.gift_failed}
+          takenBack={order.saving.taken_back}
+          name={order.home_gift?.call_name ?? null}
+        />
+      ) : null}
 
       <dl className="font-ui ml-auto grid max-w-[360px] gap-1.5 text-sm">
         <div className="flex justify-between">

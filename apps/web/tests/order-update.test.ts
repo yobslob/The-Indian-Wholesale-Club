@@ -48,6 +48,7 @@ const base: OrderDetail = {
   shipments: [],
   actions: { can_cancel: false, cancel_refund_cents: null, delay_open: true, delay_refund_cents: 5400, returns: [] },
   home_gift: null,
+  saving: null,
 };
 const url = 'https://iwc.example/orders/IWC-261006-ABCDEF0123';
 const ctx: EmailContext = {
@@ -136,6 +137,7 @@ const split: OrderDetail = {
   ],
   actions: { can_cancel: false, cancel_refund_cents: null, delay_open: true, delay_refund_cents: 6862, delay_shipment: 2, returns: [] },
   home_gift: null,
+  saving: null,
 };
 
 describe('two shipments (D-154)', () => {

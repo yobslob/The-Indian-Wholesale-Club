@@ -58,6 +58,8 @@ export function orderConfirmationHtml(order: OrderDetail, ctx: EmailContext): st
       : [window ? paragraph(`Estimated delivery: <strong>${escapeHtml(window)}</strong>`) : '', pieces(order.items, ctx)]),
     totals(rows),
     gift ? paragraph(escapeHtml(SEND_HOME_WORDS.emails.confirmation(formatInr(gift.inr_paise), gift.call_name))) : '',
+    // D-208: the 5% saving kept as Coins
+    order.saving?.outcome === 'coins' ? paragraph(escapeHtml(SEND_HOME_WORDS.emails.kept(order.saving.save_cents.toLocaleString('en-US')))) : '',
     small(`Shipping to:<br>${addressLines(o.shipping_address).map(escapeHtml).join('<br>')}`),
     button(`${ctx.siteUrl}/orders/${encodeURIComponent(o.order_number)}`, 'See your order'),
   ].join('\n');
