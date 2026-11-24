@@ -90,6 +90,10 @@ export const SEND_HOME_WORDS = {
     inBag: 'Offer Send home in my bag',
     inBagHint: 'Off: your bag starts without the gift.',
     off: 'Send home is not open right now.',
+    relation: 'Who are they to you?',
+    keepUpi: 'Leave it empty to keep the UPI saved.',
+    formBad: 'Check the name and the UPI.',
+    saveFailed: 'Could not save. Is this UPI already saved for someone else?',
   },
   problems: {
     tooMuch: (order: string) => `A gift home can be up to your order's own total, ${order}. Change the amount or remove it.`,
