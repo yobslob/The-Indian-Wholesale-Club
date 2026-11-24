@@ -32,6 +32,8 @@ const deskGiftSchema = z.object({
   sent_at: z.string().nullable(),
   utr: z.string().nullable(),
   failed_reason: z.string().nullable(),
+  /** D-208: iwc = an order's saving (nothing to refund: it becomes Coins); customer = paid with the order (D-205). */
+  funded_by: z.enum(['customer', 'iwc']).default('customer'),
 });
 export type DeskGift = z.infer<typeof deskGiftSchema>;
 
@@ -70,6 +72,11 @@ export async function recordHomeGiftFailed(
       p_refunded_total: input.refundedTotalCents as number,
     }),
   );
+}
+
+/** D-208: a saving's gift that could not go: into the customer's Coins (nothing to refund, IWC paid it). */
+export async function recordSavingGiftFailed(client: IwcClient, giftId: string, reason: string): Promise<void> {
+  unwrap(await client.rpc('admin_saving_gift_failed', { p_gift: giftId, p_reason: reason }));
 }
 
 /** One gift with its order's payment, for the refund (Couldn't send). */

@@ -70,13 +70,26 @@ const charges = (over: Record<string, unknown> = {}) => ({
   ...over,
 });
 
-/** The database as priceCart reads it: its two functions, nothing else. */
-function fakeClient(ctx: unknown, bag: unknown): { client: IwcClient; calls: string[] } {
+/** D-208: the saving's settings: 5%, Send home closed (so the saving is kept as Coins). */
+const SEND_HOME = {
+  save_pct: 5,
+  rupees_per_usd: null,
+  inr_per_usd: null,
+  keep_pct: 0,
+  month_cap_cents: null,
+  month_used_cents: 0,
+  loved_one: null,
+  sender_first_name: null,
+};
+
+/** The database as priceCart reads it: its three functions, nothing else. */
+function fakeClient(ctx: unknown, bag: unknown, sendHome: unknown = SEND_HOME): { client: IwcClient; calls: string[] } {
   const calls: string[] = [];
   const client = {
     rpc: (name: string) => {
       calls.push(name);
-      return Promise.resolve({ data: name === 'checkout_context' ? ctx : bag, error: null });
+      const data = name === 'checkout_context' ? ctx : name === 'checkout_send_home' ? sendHome : bag;
+      return Promise.resolve({ data, error: null });
     },
   } as unknown as IwcClient;
   return { client, calls };
@@ -176,7 +189,7 @@ describe('priceCart (D-187)', () => {
     const { client, calls } = fakeClient(ctx, charges());
     const r = await priceCart(client, schema.parse(body([{ variantId: KURTA, quantity: 3 }, { variantId: FOOD, quantity: 1 }])));
     assert.equal(r.ok, false);
-    assert.deepEqual(calls, ['checkout_context'], 'no charges read, no payment');
+    assert.deepEqual(calls.filter((c) => c !== 'checkout_send_home'), ['checkout_context'], 'no charges read, no payment');
     if (!r.ok && r.problem.kind === 'stock') {
       assert.deepEqual(
         r.problem.lines.map((l) => [l.variantId, l.quantity, l.available]),
@@ -209,5 +222,52 @@ describe('stockProblems (Y-3)', () => {
       q(KURTA, 1),
     )[0];
     assert.equal(line?.productName, null);
+  });
+});
+
+describe('the 5% saving at checkout (D-208)', () => {
+  let priceCart: typeof PriceCart;
+  let schema: typeof RequestSchema;
+  before(async () => {
+    const M = Module as unknown as { _load: (request: string, ...rest: unknown[]) => unknown };
+    const load = M._load;
+    M._load = (request, ...rest) => (request === 'server-only' ? {} : load(request, ...rest));
+    const pricing = await import('../features/checkout/pricing');
+    priceCart = pricing.priceCart;
+    schema = pricing.checkoutRequestSchema;
+  });
+
+  const OPEN = { ...SEND_HOME, rupees_per_usd: 92, inr_per_usd: 92 };
+  const MAA = { relation: 'maa', callName: 'Maa', upi: '9847012345', note: 'Namaste' };
+  const run = async (sendHome: unknown, extra: Record<string, unknown> = {}) =>
+    priceCart(fakeClient(context([variant(KURTA, 8500)]), charges(), sendHome).client, schema.parse(body([{ variantId: KURTA, quantity: 1 }], extra)));
+
+  it('is 5% of the goods, kept as Coins by default, and never in the total', async () => {
+    const r = await run(SEND_HOME);
+    const plain = await run({ ...SEND_HOME, save_pct: null });
+    assert.ok(r.ok && plain.ok);
+    assert.deepEqual(r.quote.saving, { cents: 425, to: 'coins', inrPaise: null, callName: null, relation: null });
+    assert.deepEqual(r.saving, { cents: 425, pct: 5, gift: null });
+    assert.equal(r.quote.breakdown.totalCents, plain.quote.breakdown.totalCents, 'the customer pays the same');
+    assert.equal(plain.saving, null, 'no % set: no saving');
+  });
+
+  it("goes home in rupees at the day's rate when someone is named and Send home is open", async () => {
+    const r = await run(OPEN, { gift: { lovedOne: MAA, save: false } });
+    assert.ok(r.ok);
+    assert.deepEqual(r.quote.saving, { cents: 425, to: 'home', inrPaise: 39100, callName: 'Maa', relation: 'maa' });
+    assert.equal(r.saving?.gift?.upi, '9847012345');
+  });
+
+  it('is kept when Send home is closed, even with someone named', async () => {
+    const r = await run(SEND_HOME, { gift: { lovedOne: MAA } });
+    assert.ok(r.ok);
+    assert.equal(r.quote.saving?.to, 'coins');
+  });
+
+  it('asks again for a UPI that is not one', async () => {
+    const r = await run(OPEN, { gift: { lovedOne: { ...MAA, upi: 'nope' } } });
+    assert.equal(r.ok, false);
+    if (!r.ok) assert.equal(r.problem.kind, 'gift');
   });
 });

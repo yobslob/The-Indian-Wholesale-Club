@@ -6,6 +6,8 @@ import { unwrap, type IwcClient } from '../client';
 
 /** D-205: what checkout's server needs to price a Send home gift (service role). */
 const checkoutSendHomeSchema = z.object({
+  /** D-208: the % of the goods every order saves; null = no saving. */
+  save_pct: z.coerce.number().positive().nullable().default(null),
   /** D-206: rupees per gift dollar as promised (the day's rate less what IWC keeps); null = off. */
   rupees_per_usd: z.coerce.number().positive().nullable(),
   /** The day's rate and the % kept, stored on the gift. */
@@ -74,6 +76,23 @@ export function homeGiftPayload(gift: HomeGiftInput) {
     sender_first_name: gift.senderFirstName,
     loved_one_id: gift.lovedOneId,
     save: gift.save,
+  };
+}
+
+/** D-208: an order's saving as create_order stores it: kept as Coins, or sent home (gift: the snapshot, its dollars the saving's). */
+export interface SavingInput {
+  cents: number;
+  pct: number;
+  gift: Omit<HomeGiftInput, 'usdCents' | 'keepPct'> | null;
+}
+
+export function savingPayload(saving: SavingInput) {
+  const { gift } = saving;
+  return {
+    cents: saving.cents,
+    pct: saving.pct,
+    outcome: gift ? 'gift' : 'coins',
+    gift: gift ? homeGiftPayload({ ...gift, usdCents: saving.cents, keepPct: 0 }) : null,
   };
 }
 

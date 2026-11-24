@@ -3,7 +3,7 @@ import { z } from 'zod';
 import { PRODUCT_TYPES } from '@repo/shared/domain';
 
 import { recipeCardSchema } from './recipes';
-import { orderHomeGiftSchema } from './send-home';
+import { orderHomeGiftSchema, orderSavingSchema } from './send-home';
 
 /**
  * Shapes of everything the customer side reads (store_* views and functions).
@@ -340,6 +340,7 @@ export const orderDetailSchema = z.object({
   actions: orderActionsSchema.nullable().default(null),
   /** D-205: the order's Send home gift, with what has gone home so far. */
   home_gift: orderHomeGiftSchema.nullable().default(null),
+  saving: orderSavingSchema.nullable().default(null),
 });
 
 export type DeliveryWindow = z.infer<typeof deliveryWindowSchema>;

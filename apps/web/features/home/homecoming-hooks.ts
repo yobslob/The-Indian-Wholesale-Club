@@ -22,8 +22,8 @@ export const SEASON = {
 export const WIDE = {
   /** The founder's hook (D-174) with the festival's name swapped (D-196, Claude's draft, D-019). */
   hook: 'Host your Thanksgiving under $99.',
-  /** The hook's other side (founder 2026-11-07), turning over with it. */
-  flip: 'Get 10% off on your first order.',
+  /** The hook's other side (founder 2026-11-07), turning over with it; D-209's Maa–Behen ad (Claude's draft, D-012). */
+  flip: 'Every bag saves 5% for Maa or Behen.',
   /** A cap, written in US dollars in every country (D-198). */
   cta: 'Shop under $99',
   href: '/home-and-gifts?max=99',

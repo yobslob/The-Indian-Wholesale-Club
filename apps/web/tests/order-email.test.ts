@@ -68,6 +68,7 @@ const order: OrderDetail = {
   shipments: [],
   actions: null,
   home_gift: null,
+  saving: null,
 };
 
 describe('order confirmation email (storefront.md §Emails)', () => {

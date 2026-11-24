@@ -107,7 +107,7 @@ test('food under and over $49.99, then a saree: one bar, two shipments, delivery
   for (let i = 0; i < 4; i += 1) await page.getByRole('button', { name: 'One more' }).click();
   // $50: free
   await expect(main.getByText(/more for free delivery/)).toHaveCount(0);
-  await expect(main.getByText("You're saving")).toBeVisible();
+  await expect(main.getByText("You're saving", { exact: true })).toBeVisible();
 
   await addSaree(page);
   await page.goto('/cart');

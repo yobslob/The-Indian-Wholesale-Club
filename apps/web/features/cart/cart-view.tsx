@@ -4,15 +4,11 @@ import Link from 'next/link';
 import { useEffect, useState } from 'react';
 
 import { SendHomeCard } from '@/features/send-home/bag-card';
-import { CheckoutLink } from '@/features/send-home/checkout-link';
-import { useGiftDetail } from '@/features/send-home/use-gift';
 import { useMoney } from '@/features/shell/market';
 
 import { BagGoalLine } from './bag-goal-line';
 import { BagLines } from './bag-lines';
 import { BillCard, billTotalLabel } from './bill-card';
-import { useBagCharges } from './charges';
-import { CouponCard } from './coupon-card';
 import { useCart } from './store';
 import { useBagBill, type BagBill } from './use-bag-bill';
 
@@ -32,24 +28,19 @@ export function EmptyLine(): React.JSX.Element {
 }
 
 /**
- * D-192: the goal, the coupons and the bill, in that order, on the bag page and in the panel alike. D-205: on the bag page
- * only, Send home's card sits above the bill.
+ * D-192: the goal and the bill, on the bag page and in the panel alike (D-208: coupons gone). On the bag page only, the
+ * 5% saving's card (D-208, in D-205's place) sits above the bill.
  */
 export function BagExtras({ bag, onShop, gift = false }: { bag: BagBill; onShop?: () => void; gift?: boolean }): React.JSX.Element {
-  const charges = useBagCharges();
-  const free = charges?.freeMinCents ?? null;
-  const detail = useGiftDetail(bag.goodsTotalCents);
   return (
     <div className="grid gap-3">
-      <BagGoalLine couponOn={bag.coupon !== null} onShop={onShop} />
-      <CouponCard bag={bag} freeGap={free !== null && bag.subtotalCents < free} onShop={onShop} />
-      {gift ? <SendHomeCard baseTotalCents={bag.goodsTotalCents} /> : null}
+      <BagGoalLine onShop={onShop} />
+      {gift ? <SendHomeCard goodsCents={bag.saveBaseCents} /> : null}
       <BillCard
         bill={bag.bill}
         subtotalCents={bag.subtotalCents}
         updating={bag.updating}
         signInHref={bag.offers?.coins === null ? '/login?next=/cart' : undefined}
-        gift={{ detail }}
       />
     </div>
   );
@@ -89,7 +80,7 @@ function BagSkeleton(): React.JSX.Element {
 }
 
 /**
- * The bag page (D-086, D-192): the lines in their cards; the goal, coupons and bill beside them on wide screens and under
+ * The bag page (D-086, D-192): the lines in their cards; the goal, the saving and the bill beside them on wide screens and under
  * them on a phone, where the total and Checkout stay under the thumb. An empty bag shows `empty` (the open states and Just
  * listed, drawn on the server) under its sentence, so it is never a dead end.
  */
@@ -118,12 +109,16 @@ function FilledBag(): React.JSX.Element {
         <BagLines />
         <div className="grid gap-3 min-[900px]:sticky min-[900px]:top-[calc(var(--top-h)+16px)]">
           <BagExtras bag={bag} gift />
-          <CheckoutLink className={`${checkoutButton} press hidden w-full min-[900px]:inline-grid`}>Checkout</CheckoutLink>
+          <Link href="/checkout" className={`${checkoutButton} press hidden w-full min-[900px]:inline-grid`}>
+            Checkout
+          </Link>
         </div>
       </div>
       <div className="bg-paper border-line sticky bottom-[max(8px,env(safe-area-inset-bottom))] z-10 mt-3 flex items-center justify-between gap-4 rounded-[20px] border py-2 pl-4 pr-2 shadow-[0_6px_24px_rgba(30,27,22,0.16)] min-[900px]:hidden">
         <TotalNow bag={bag} />
-        <CheckoutLink className={`${checkoutButton} press h-12 px-8`}>Checkout</CheckoutLink>
+        <Link href="/checkout" className={`${checkoutButton} press h-12 px-8`}>
+          Checkout
+        </Link>
       </div>
     </div>
   );

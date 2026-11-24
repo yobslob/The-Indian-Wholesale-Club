@@ -3,7 +3,7 @@
 import { revalidatePath } from 'next/cache';
 import { z } from 'zod';
 
-import { getHomeGiftForRefund, markHomeGiftSent, recordHomeGiftFailed } from '@repo/db/admin';
+import { getHomeGiftForRefund, markHomeGiftSent, recordHomeGiftFailed, recordSavingGiftFailed } from '@repo/db/admin';
 
 import { checkDayRate } from '@/features/send-home/day-rate';
 import { stripeServer } from '@/lib/stripe';
@@ -66,6 +66,13 @@ export async function giftFailedAction(giftId: string, reason: string): Promise<
     refundedTotalCents: refundedTotal,
   });
   done(gift.order_id);
+}
+
+/** D-208, Couldn't send a saving's gift: it goes into the customer's Coins and they hear so (the database does both). */
+export async function savingGiftFailedAction(giftId: string, reason: string): Promise<void> {
+  const { client } = await requireAdminAction();
+  await recordSavingGiftFailed(client, id.parse(giftId), reason.slice(0, 200));
+  done();
 }
 
 /** D-206: check the day's rate now (the timer does it every morning). The database refuses a rate that jumped. */

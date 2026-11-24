@@ -19,7 +19,7 @@ const hint = 'font-ui text-ink-muted text-[12px] font-normal';
 /**
  * D-205, "Who's it for?" (plan §4.2): a bottom sheet on phones, a dialog on wide screens. Rupees only, never dollars
  * (the founder). The relation chips fill the name the customer calls them, which they can change; the UPI is checked as
- * typed; "Remove the gift and continue" is always there, so payment never opens with an unnamed gift.
+ * typed. D-208: the rupees are the order's 5% saving, sent by IWC; "Keep it instead" puts it in Coins.
  */
 export function WhoSheet({ relation, then }: { relation: Relation | null; then: 'checkout' | null }): React.JSX.Element {
   const router = useRouter();
@@ -174,7 +174,7 @@ export function WhoSheet({ relation, then }: { relation: Relation | null; then: 
         <button
           type="button"
           onClick={() => {
-            store.setRemoved(true);
+            store.keepIt();
             finish();
           }}
           className="font-ui text-ink mt-2 min-h-11 w-full text-[14px] font-medium underline underline-offset-[3px]"

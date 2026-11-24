@@ -4,7 +4,7 @@ import { getMyPeople } from '@repo/db/store';
 import { formatInr, formatUsd, upiOwnerWord } from '@repo/shared/domain';
 
 import { customerOrNull } from '@/features/account/session';
-import { removeLovedOneAction, setInBagAction } from '@/features/send-home/people-actions';
+import { removeLovedOneAction } from '@/features/send-home/people-actions';
 import { PersonForm } from '@/features/send-home/person-form';
 import { SEND_HOME_WORDS } from '@/features/send-home/words';
 import { storeClient } from '@/lib/supabase/store';
@@ -44,6 +44,8 @@ export default async function PeoplePage({ searchParams }: { searchParams: Searc
           {t.times > 0 && t.since ? W.totalLine(t.times, month.format(new Date(t.since)), formatUsd(t.usd_cents)) : W.nothingYet}
         </p>
       </section>
+      {/* D-208: what the 5% saving put in Coins */}
+      {people.kept.times > 0 ? <p className="font-ui text-ink-muted m-0 text-[14px]">{W.kept(people.kept.cents.toLocaleString('en-US'), people.kept.times)}</p> : null}
       {!people.on && t.times === 0 ? <p className="text-ink-muted">{W.off}</p> : null}
 
       <section className="grid gap-3">
@@ -108,22 +110,6 @@ export default async function PeoplePage({ searchParams }: { searchParams: Searc
         </section>
       ) : null}
 
-      <form action={setInBagAction} className="bg-paper border-line flex items-center justify-between gap-4 rounded-lg border p-4">
-        <span>
-          <b className="font-ui block text-[15px]">{W.inBag}</b>
-          <span className="font-ui text-ink-muted text-[13px]">{W.inBagHint}</span>
-        </span>
-        <input type="hidden" name="on" value={people.in_bag ? '0' : '1'} />
-        <button
-          type="submit"
-          role="switch"
-          aria-checked={people.in_bag}
-          aria-label={W.inBag}
-          className={`relative h-8 w-14 shrink-0 rounded-pill transition-colors ${people.in_bag ? 'bg-brand' : 'bg-line'}`}
-        >
-          <span className={`bg-paper absolute top-1 size-6 rounded-full transition-[left] ${people.in_bag ? 'left-7' : 'left-1'}`} />
-        </button>
-      </form>
     </div>
   );
 }

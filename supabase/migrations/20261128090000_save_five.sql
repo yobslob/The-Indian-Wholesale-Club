@@ -405,3 +405,5 @@ language sql stable security definer set search_path = public, pg_temp as $$
       from (select * from public.store_home_gifts order by created_at desc limit 50) h), '[]'::jsonb))
   from public.pricing_settings s where s.id = 1 and auth.uid() is not null;
 $$;
+
+notify pgrst, 'reload schema';

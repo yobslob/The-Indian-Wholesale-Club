@@ -2,13 +2,10 @@
 
 import { useEffect, useRef, useState } from 'react';
 
-import { isKnownReturning } from '@/features/cart/offers';
-import { useCart } from '@/features/cart/store';
-
 /**
  * The four ads (D-193), drawn here so they cost no image and no request of their own. Each is tight to its drawing: `ax`
  * is where it hangs from, in its own coordinates.
- * Words: the founder's offer, WELCOME10 (features/home/first-order.ts).
+ * Words: D-209's Maa–Behen ad for the 5% every bag saves (D-208), in D-193's drawings; Claude's draft (D-012).
  */
 const WINE = '#7a2e23';
 const GOLD = '#c9962f';
@@ -35,10 +32,10 @@ function Words({ x, y }: { x: number; y: number }): React.JSX.Element {
   return (
     <>
       <text x={x} y={y} textAnchor="middle" fontSize="13.5" fontWeight={700} fill={WINE}>
-        10% OFF
+        SAVE 5%
       </text>
       <text x={x} y={y + 12} textAnchor="middle" fontSize="10" fontWeight={500} fill={INK}>
-        first order
+        for Maa, Behen
       </text>
     </>
   );
@@ -59,17 +56,17 @@ function Strip(): React.JSX.Element {
   return (
     <svg width="40" height="108" viewBox="0 0 40 108" aria-hidden="true">
       <path d="M20-120V3" stroke={INK} strokeWidth="1.5" />
-      {packet(1, [['FIRST', 21.5, 10.5]])}
-      {packet(37, [['ORDER', 21.5, 10.5]])}
+      {packet(1, [['MAA', 21.5, 10.5]])}
+      {packet(37, [['BEHEN', 21.5, 10.5]])}
       {packet(73, [
-        ['10%', 16, 13],
-        ['OFF', 27, 10],
+        ['5%', 16, 13],
+        ['HOME', 27, 10],
       ])}
     </svg>
   );
 }
 
-/** The monkey who ran off with 10% of the bill, hanging by his tail, the bill out to the open side. */
+/** The monkey who ran off with 5% of the bill (for Maa), hanging by his tail, the bill out to the open side. */
 function Monkey(): React.JSX.Element {
   return (
     <svg width="82" height="122" viewBox="0 0 82 122" aria-hidden="true">
@@ -122,10 +119,10 @@ function Aunty(): React.JSX.Element {
         <path d="M80 82 113 100 146 82" fill="none" stroke={GOLD} strokeWidth="1" />
         <circle cx="113" cy="97" r="11" fill={COIN} stroke={GOLD} />
         <text x="113" y="100.5" textAnchor="middle" fontSize="9.5" fontWeight={700} fill={INK}>
-          10%
+          5%
         </text>
         <text x="113" y="120" textAnchor="middle" fontSize="9" fontWeight={700} fill={COIN}>
-          off first order
+          for Maa, Behen
         </text>
         {[121, 125, 129, 133].map((x) => (
           <g key={x}>
@@ -191,7 +188,6 @@ const RISE_MS = 280;
 const SWIPE_PX = 8;
 
 export function FirstOrderArt({ path }: { path: string }): React.JSX.Element | null {
-  const applied = useCart((s) => s.promoCode) === 'WELCOME10';
   const [phase, setPhase] = useState<'down' | 'up' | 'gone'>('down');
   const pressed = useRef<{ x: number; y: number } | null>(null);
   const hide = (): void => {
@@ -205,15 +201,15 @@ export function FirstOrderArt({ path }: { path: string }): React.JSX.Element | n
     return () => window.clearTimeout(timer);
   }, [phase]);
 
-  // Someone with a paid order, or with the coupon on already, has nothing to learn from it.
-  if (phase === 'gone' || applied || isKnownReturning()) return null;
+  // D-208: every bag saves 5%, so it is for everyone (no longer a first order's offer)
+  if (phase === 'gone') return null;
   const ad = adFor(path);
   const { Art } = ad;
   return (
     <div className="foa font-ui">
       <button
         type="button"
-        aria-label="10% off your first order. Tap to hide."
+        aria-label="Every bag saves 5%: send it to Maa or Behen. Tap to hide."
         className={`foa-ad ${ad.kind}`}
         data-up={phase === 'up' ? '' : undefined}
         style={{ '--ax': `${ad.ax}px` } as React.CSSProperties}

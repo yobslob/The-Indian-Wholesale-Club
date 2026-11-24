@@ -21,13 +21,14 @@ export interface CheckoutRequestBody {
   promoCode?: string | null;
   /** D-191: use the account's coins (an older app does not send it: its bill has no line for them). */
   useCoins?: boolean;
-  /** D-205: a Send home gift (the website only; the app does not send one yet). */
+  /** D-208: who the 5% saving goes home to (the website only; the app keeps it as Coins). */
   gift?: CheckoutGiftBody | null;
 }
 
-/** D-205: the gift the bag chose: a saved loved one by id, or one typed in the sheet. */
+/** D-208: who the order's saving goes home to: a saved loved one by id, or one typed in the sheet (absent: kept). */
 export interface CheckoutGiftBody {
-  cents: number;
+  /** D-205's paid gift sent its dollars; the server no longer reads them. */
+  cents?: number;
   lovedOneId?: string | null;
   lovedOne?: {
     relation: Relation;
@@ -81,6 +82,8 @@ export interface CheckoutQuote {
   outside?: boolean;
   /** D-205: the gift as the server priced it (its rupees promised now); null or absent: none. */
   homeGift?: { usdCents: number; inrPaise: number; callName: string; relation: Relation } | null;
+  /** D-208: the order's 5% saving, paid by IWC (not in the total): sent home (its rupees and who) or kept as Coins. */
+  saving?: { cents: number; to: 'home' | 'coins'; inrPaise: number | null; callName: string | null; relation: Relation | null } | null;
 }
 
 export interface QuotedShipment {
@@ -128,7 +131,7 @@ export type CheckoutProblem =
   /** The bag is below the smallest order (D-109). */
   | { kind: 'below_minimum'; minOrderCents: number; subtotalCents: number }
   | { kind: 'closed' }
-  /** D-205: the Send home gift cannot go as it is (its cap, its UPI, no one named); the bag can remove it. */
+  /** D-208: the saving cannot go home as asked (its UPI, no one named); the customer can keep it instead. */
   | { kind: 'gift'; message: string };
 
 export interface CheckoutErrorResponse {

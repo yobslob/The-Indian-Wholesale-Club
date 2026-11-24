@@ -1,27 +1,34 @@
 /**
- * D-205, Send home: every line customers and the India desk read, in one place so the founder can change them here
+ * D-205, D-208, Send home and the 5% saving: every line customers and the India desk read, in one place so the founder can change them here
  * (plan §2 rule 13). All of it is Claude's draft (D-012, the D-059 voice: short, plain, frank) until he approves it.
  * Never "tip", "donation", "remittance" or "transfer" (docs/product.md §Glossary).
  */
 export const SEND_HOME_WORDS = {
+  /** D-208: the bag's card for the 5% saving (Claude's draft, as plan-world §2 rule 6 has it). */
   card: {
-    kicker: 'Send home',
-    kickerAdded: 'Send home · added',
-    headFirst: (usd: string) => `Send ${usd} to your loved ones`,
-    headAgain: (usd: string, name: string) => `Send ${usd} to ${name}`,
-    straight: 'straight into their UPI',
-    into: (owner: 'her' | 'his' | 'their') => `into ${owner} UPI`,
-    roundUp: (total: string) => `round up to ${total}`,
-    other: 'Other',
-    otherLabel: 'Gift in dollars',
-    lastTime: (inr: string, date: string) => `Last time: ${inr} on ${date}.`,
-    nothingYet: (name: string) => `Nothing sent to ${name} yet.`,
-    changeAmount: 'Change amount',
+    kicker: 'Your 5%',
+    head: (usd: string) => `You're saving ${usd} on this bag.`,
+    ask: (inr: string) => `Send it home as ${inr}, or keep it for your next order.`,
+    to: (inr: string, name: string) => `${inr} goes to ${name}'s UPI after you pay.`,
+    closed: 'It goes into your Coins for your next order.',
+    keep: 'Keep it',
     someoneElse: 'Someone else',
-    remove: 'Remove the gift',
-    removedAsk: (inr: string) => `${inr} for your loved ones at home?`,
-    add: (usd: string) => `Add ${usd}`,
-    whoChips: 'Who is it for?',
+    whoChips: 'Where your saving goes',
+    lastTime: (inr: string, date: string) => `Last time: ${inr} on ${date}.`,
+  },
+  /** D-208: checkout's one line above Pay. */
+  checkout: {
+    toPerson: (usd: string, name: string) => `Your ${usd} saving goes to ${name}`,
+    toCoins: (usd: string) => `Your ${usd} saving goes to your Coins`,
+    change: 'Change',
+  },
+  /** D-208: what happened to the saving, on the thank-you and order pages. */
+  saved: {
+    kicker: 'Your 5%',
+    kept: (coins: string) => `${coins} Coins added. They come off your next order.`,
+    keptGuest: (coins: string) => `${coins} Coins are waiting for you. Make an account with this email to use them.`,
+    fromGift: (coins: string, name: string) => `We couldn't send it to ${name}, so ${coins} Coins went into your wallet.`,
+    takenBack: 'This order was cancelled, so its saving was too.',
   },
   bill: {
     line: 'Sent home',
@@ -44,7 +51,7 @@ export const SEND_HOME_WORDS = {
     remember: (name: string) => `Remember ${name || 'them'} for my next order`,
     rememberGuest: 'Kept on this device only.',
     send: (inr: string, name: string) => `Send ${inr} to ${name || 'them'}`,
-    removeAndGo: 'Remove the gift and continue',
+    removeAndGo: 'Keep it instead',
     close: 'Close',
   },
   upiCheck: {
@@ -87,6 +94,7 @@ export const SEND_HOME_WORDS = {
     removePerson: 'Remove',
     history: 'History',
     status: { sending: 'Sending', sent: (owner: 'her' | 'his' | 'their') => `In ${owner} UPI`, refunded: "Couldn't send: refunded" },
+    kept: (coins: string, times: number) => `Kept as Coins: ${coins} from ${times} ${times === 1 ? 'order' : 'orders'}.`,
     inBag: 'Offer Send home in my bag',
     inBagHint: 'Off: your bag starts without the gift.',
     off: 'Send home is not open right now.',
@@ -98,8 +106,8 @@ export const SEND_HOME_WORDS = {
   problems: {
     tooMuch: (order: string) => `A gift home can be up to your order's own total, ${order}. Change the amount or remove it.`,
     monthCap: (cap: string) => `Gifts home are up to ${cap} a month. Change the amount or remove it.`,
-    noOne: "Tell us who it's for, or remove the gift.",
-    badUpi: "That UPI ID or number doesn't look right. Check it, or remove the gift.",
+    noOne: "Tell us who it's for, or keep the saving instead.",
+    badUpi: "That UPI ID or number doesn't look right. Check it, or keep the saving instead.",
   },
   admin: {
     title: 'Send home',
@@ -114,6 +122,8 @@ export const SEND_HOME_WORDS = {
     markSent: 'Mark sent',
     failed: (usd: string) => `Couldn't send (wrong UPI) · refund the ${usd}`,
     failedConfirm: (usd: string) => `Refund the ${usd} gift to the customer's card? The goods stay as they are.`,
+    failedSaving: (usd: string) => `Couldn't send (wrong UPI) · put the ${usd} in their Coins`,
+    failedSavingConfirm: (usd: string) => `Put this ${usd} saving in the customer's Coins instead? Nothing is refunded: IWC paid it.`,
     heldUntil: (when: string) => `On hold until ${when} (a first order)`,
     heldDispute: 'On hold: this customer has an open dispute',
     empty: 'Nothing here.',
@@ -132,5 +142,9 @@ export const SEND_HOME_WORDS = {
     failedBody: (inr: string, name: string, usd: string) =>
       `We couldn't send ${inr} to ${name}: their UPI didn't take it. Your ${usd} is back on your card. Your order goes ahead as it was.`,
     confirmation: (inr: string, name: string) => `${inr} is on its way to ${name}.`,
+    failedSubjectSaving: "We couldn't send your saving home",
+    failedBodySaving: (coins: string) =>
+      `We couldn't send your 5% saving home: the UPI didn't take it. It went into your Coins instead: ${coins} Coins off your next order.`,
+    kept: (coins: string) => `Your 5% saving: ${coins} Coins, off your next order.`,
   },
 } as const;

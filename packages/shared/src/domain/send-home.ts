@@ -70,6 +70,15 @@ export function promisedRate(inrPerUsd: number | null, keepPct: number): number 
   return inrPerUsd * (1 - Math.min(Math.max(keepPct, 0), 50) / 100);
 }
 
+/**
+ * D-208: every order saves this much, paid by IWC: the % of its goods (after the bulk saving, before shipping, charges,
+ * Coins and tax), to the cent. 0 while Settings has no %.
+ */
+export function savingCents(goodsCents: number, pct: number | null): number {
+  if (pct === null || !(pct > 0) || !(goodsCents > 0)) return 0;
+  return Math.round((goodsCents * pct) / 100);
+}
+
 /** The rupees a gift promises, in paise, rounded to the rupee (plan §2 rule 4), at the promised rate. Null when off. */
 export function giftInrPaise(usdCents: number, inrPerUsd: number | null): number | null {
   if (inrPerUsd === null || !(inrPerUsd > 0)) return null;

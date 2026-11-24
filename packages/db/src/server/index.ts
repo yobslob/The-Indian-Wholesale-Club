@@ -5,7 +5,7 @@
 import { DbError, toDbError, unwrap, type IwcClient } from '../client';
 import { orderDetailSchema, type OrderDetail } from '../store/schemas';
 
-import { homeGiftPayload, type HomeGiftInput } from './send-home';
+import { homeGiftPayload, savingPayload, type HomeGiftInput, type SavingInput } from './send-home';
 
 import type { Json } from '../database.types';
 
@@ -44,6 +44,8 @@ export interface CreateOrderInput {
   shippingMethod?: 'standard' | 'express';
   /** D-205: the Send home gift, inside totalCents and beside the goods. */
   homeGift?: HomeGiftInput | null;
+  /** D-208: the order's 5% saving, paid by IWC (never in totalCents): kept as Coins or sent home. */
+  saving?: SavingInput | null;
 }
 
 /** Business reasons create_order can refuse (docs/data-model.md, business functions). */
@@ -94,6 +96,9 @@ export async function createOrder(
     promo_code_id: input.promoCodeId,
     shipping_method: input.shippingMethod ?? 'standard',
     ...(input.homeGift ? { home_gift: homeGiftPayload(input.homeGift) } : {}),
+    ...(input.saving ? { saving: savingPayload(input.saving) } : {}),
+    // D-208: create_order spends the kept part of the coins used (they are also written beside the order below)
+    coins_used: input.coinsUsed ?? 0,
   };
   const { data, error } = await service.rpc('create_order', { p_order: payload });
   if (error) {

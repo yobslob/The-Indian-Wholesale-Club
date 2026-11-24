@@ -1,19 +1,16 @@
 'use client';
 
-import Link from 'next/link';
 import { useEffect, useRef, useState, useSyncExternalStore } from 'react';
 
-import { formatInr, formatUsd, formatUsPhone, usPhoneDigits, type CheckoutOffers } from '@repo/shared/domain';
+import { formatUsd, formatUsPhone, usPhoneDigits } from '@repo/shared/domain';
 
 import { BillCard } from '@/features/cart/bill-card';
 import { EmptyLine } from '@/features/cart/cart-view';
 import { setOffers } from '@/features/cart/offers';
 import { cartCount, cartSubtotalCents, useCart } from '@/features/cart/store';
 import { useBagBill } from '@/features/cart/use-bag-bill';
-import { useGiftStore } from '@/features/send-home/gift-store';
-import { SheetHost } from '@/features/send-home/sheet-host';
-import { giftNeedsName, giftRequestBody, useGiftDetail } from '@/features/send-home/use-gift';
-import { SEND_HOME_WORDS } from '@/features/send-home/words';
+import { SavingLine } from '@/features/send-home/checkout-line';
+import { giftRequestBody } from '@/features/send-home/use-gift';
 import { CheckoutCurrencyNote } from '@/features/shell/market';
 
 import { BagSummary, billOfQuote, QuoteDelivery } from './bag-summary';
@@ -53,14 +50,6 @@ function deliveryOf(body: Pick<CheckoutRequestBody, 'address' | 'email'>): Deliv
   return { fullName: a.fullName, email: body.email, zipCode: a.zipCode, city: a.city, state: a.state, line1: a.line1, line2: a.line2 ?? '' };
 }
 
-/** D-192: why the server took a coupon off once it knew the customer: said once, with the way back to the bag. */
-function whyOff(code: string, quote: CheckoutQuote, offers: CheckoutOffers | null | undefined): string {
-  const c = offers?.coupons.find((x) => x.code === code);
-  if (quote.breakdown.promoBeatenByBulk) return `Your bulk saving is bigger than ${code}, so we kept it.`;
-  if (c?.newCustomersOnly && offers && !offers.isNewCustomer) return `${code} is for a first order, so it came off.`;
-  return `${code} can't be used on this order, so it came off.`;
-}
-
 /**
  * /checkout (D-087): 1. phone → 2. delivery → 3. payment on one page, each opening when the one before is done and
  * folding to a line with Edit; the bag beside them (a "Bag (n) · $…" bar on phones). Continue to payment prices the bag
@@ -70,13 +59,12 @@ function whyOff(code: string, quote: CheckoutQuote, offers: CheckoutOffers | nul
  * known), the other saved addresses can be picked, and the address of a paid order is saved (finalize.ts).
  * §10 Y-3: when it opens and on every re-price the server says each line's stock; a problem line is listed at the top
  * with Remove or Keep n, payment stays locked until the last is fixed, and fixing it prices the bag again at once.
- * D-192: coupons are chosen in the bag only. The bill here is the bag's own until the server prices it, with sales tax the
- * only line that joins; a coupon the server then refuses comes off with one sentence and the way back to the bag.
+ * D-192: the bill here is the bag's own until the server prices it, with sales tax the only line that joins. D-208: no
+ * coupons; one line above Pay says where the 5% saving goes, with Change back to the bag.
  */
 export function CheckoutFlow({ saved }: { saved: SavedDetails | null }): React.JSX.Element {
   const lines = useCart((s) => s.lines);
   const bag = useBagBill(false);
-  const bagGiftDetail = useGiftDetail(bag.goodsTotalCents);
   const wide = useWide();
   const [mounted, setMounted] = useState(false);
   const first = saved?.addresses[0] ?? null;
@@ -86,7 +74,6 @@ export function CheckoutFlow({ saved }: { saved: SavedDetails | null }): React.J
   const [delivery, setDelivery] = useState<Delivery>(() => deliveryFrom(first, saved?.email ?? ''));
   const [picked, setPicked] = useState(first?.id ?? 'new');
   const [notice, setNotice] = useState<string | null>(null);
-  const [couponOff, setCouponOff] = useState<string | null>(null);
   const [formVersion, setFormVersion] = useState(0);
   const [bagOpen, setBagOpen] = useState(false);
 
@@ -115,8 +102,6 @@ export function CheckoutFlow({ saved }: { saved: SavedDetails | null }): React.J
 
   useEffect(() => {
     setMounted(true);
-    // D-205 rule 7: payment never opens with an unnamed gift: who it's for, or remove it, first
-    if (giftNeedsName()) useGiftStore.getState().ask(null);
     // A-8 / A-4: resume a checkout this tab started for this same bag, with any message from a failed payment.
     const state = useCart.getState();
     const resume = readCheckout(state.lines);
@@ -142,25 +127,20 @@ export function CheckoutFlow({ saved }: { saved: SavedDetails | null }): React.J
     setFormVersion((v) => v + 1);
     setNotice(message);
     setAt(2);
-    // the coupon is the bag's: it may have changed since this payment was held, whose amount then moves
-    void go({ ...resume.request, promoCode: state.promoCode, useCoins: true, gift: giftRequestBody() }, resume.clientSecret);
+    // where the saving goes is the bag's: it may have changed since this payment was held
+    void go({ ...resume.request, promoCode: null, useCoins: true, gift: giftRequestBody() }, resume.clientSecret);
     // Once, on arrival.
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, []);
 
-  // Each priced answer knows the customer better than the bag did: their offers, and whether the coupon stays.
+  // Each priced answer knows the customer better than the bag did: their coins.
   const quote = started?.quote ?? null;
   const told = useRef<CheckoutQuote | null>(null);
   useEffect(() => {
     if (!quote || told.current === quote) return;
     told.current = quote;
     if (quote.offers) setOffers(quote.offers);
-    const code = request?.promoCode;
-    if (quote.promoRejected && code) {
-      setCouponOff(whyOff(code, quote, quote.offers));
-      useCart.getState().setPromoCode(null);
-    }
-  }, [quote, request]);
+  }, [quote]);
 
   if (!mounted) return <p className="text-ink-muted text-sm">Loading your bag…</p>;
   if (lines.length === 0 && !started) return <EmptyLine />;
@@ -169,7 +149,6 @@ export function CheckoutFlow({ saved }: { saved: SavedDetails | null }): React.J
 
   function priceWith(d: Delivery): void {
     setDelivery(d);
-    setCouponOff(null);
     void go({
       email: d.email,
       address: {
@@ -182,17 +161,10 @@ export function CheckoutFlow({ saved }: { saved: SavedDetails | null }): React.J
         phone: phone ? formatUsPhone(phone) : null,
       },
       lines: lines.map((l) => ({ variantId: l.variantId, quantity: l.quantity })),
-      // what counts on the bag; with no offers to judge by, the server decides
-      promoCode: bag.offers ? (bag.coupon?.code ?? null) : bag.picked,
+      promoCode: null,
       useCoins: true,
       gift: giftRequestBody(),
     });
-  }
-
-  /** D-205 (§4.4): Remove on the bill's Send home line takes the gift off and prices the bag again at once. */
-  function removeGift(): void {
-    useGiftStore.getState().setRemoved(true);
-    if (request) void go({ ...request, gift: null });
   }
 
   /** Y-3: Remove (keep 0) or Keep n. The bag changes at once; with the last line fixed the server prices it again. */
@@ -218,10 +190,6 @@ export function CheckoutFlow({ saved }: { saved: SavedDetails | null }): React.J
   const subtotal = cartSubtotalCents(lines);
   const total = quote ? quote.breakdown.totalCents : (bag.bill?.totalCents ?? subtotal);
   const signIn = bag.offers?.coins === null ? '/login?next=/checkout' : undefined;
-  const giftDetail = quote?.homeGift
-    ? SEND_HOME_WORDS.bill.lineTo(formatInr(quote.homeGift.inrPaise), quote.homeGift.callName)
-    : bagGiftDetail;
-  const gift = { detail: giftDetail, onRemove: removeGift };
 
   return (
     <div className="grid items-start gap-[clamp(12px,2.4vw,40px)] min-[900px]:grid-cols-[minmax(0,1.25fr)_minmax(0,1fr)]">
@@ -254,7 +222,6 @@ export function CheckoutFlow({ saved }: { saved: SavedDetails | null }): React.J
               updating={bag.updating}
               signInHref={signIn}
               linesOnly={!wide && quote !== null}
-              gift={gift}
             />
           </div>
         ) : null}
@@ -305,19 +272,12 @@ export function CheckoutFlow({ saved }: { saved: SavedDetails | null }): React.J
           />
         </Step>
         <Step n={3} title="Payment" state={stateOf(3)}>
-          {couponOff ? (
-            <p role="status" className="bg-caution/10 text-ink font-ui mb-3 rounded-[14px] px-3.5 py-2.5 text-sm">
-              {couponOff}{' '}
-              <Link href="/cart" className="font-semibold underline underline-offset-[3px]">
-                Choose another in your bag
-              </Link>
-            </p>
-          ) : null}
+          <SavingLine quote={quote} goodsCents={bag.saveBaseCents} />
           {/* D-192: the bag is folded on a phone: the shipments and the bill, right above Pay */}
           {quote && !wide ? (
             <div className="mb-4 grid gap-3">
               <QuoteDelivery quote={quote} lines={summaryLines} />
-              <BillCard bill={billOfQuote(quote)} subtotalCents={subtotal} usd gift={gift} />
+              <BillCard bill={billOfQuote(quote)} subtotalCents={subtotal} usd />
             </div>
           ) : null}
           <PaymentStep
@@ -328,7 +288,6 @@ export function CheckoutFlow({ saved }: { saved: SavedDetails | null }): React.J
             onPrice={(body) => void go(body)}
           />
         </Step>
-        <SheetHost />
       </div>
     </div>
   );

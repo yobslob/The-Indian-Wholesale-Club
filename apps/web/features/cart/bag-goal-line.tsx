@@ -12,9 +12,9 @@ import { useCart } from './store';
 /**
  * The bag's one goal, as the pill says it (bag-goal.ts; founder 2026-10-24: one bar, never two), in its own card above the
  * coupons, so the bill below it is nothing but a sum (D-192). Past the free line, how the bulk saving grows from its own line
- * ($99.99, D-187) and where it stops; while a coupon is on there is no bulk saving (D-191), so nothing to say about it.
+ * ($99.99, D-187) and where it stops. (D-208: no coupons any more.)
  */
-export function BagGoalLine({ couponOn, onShop }: { couponOn: boolean; onShop?: () => void }): React.JSX.Element | null {
+export function BagGoalLine({ onShop }: { onShop?: () => void }): React.JSX.Element | null {
   const lines = useCart((s) => s.lines);
   const charges = useBagCharges();
   const days = useDays();
@@ -22,7 +22,7 @@ export function BagGoalLine({ couponOn, onShop }: { couponOn: boolean; onShop?: 
   const { goal, bulkFrom } = freeDelivery(lines, charges, days);
   const every = (b: { perDollarCents: number | null; capCents: number }): string =>
     `every ${formatUsd(b.perDollarCents ?? 0)} more saves $1 more, up to ${formatUsd(b.capCents)}`;
-  const bulkTalk = goal.kind === 'free' && goal.bulk.capCents > 0 && !couponOn;
+  const bulkTalk = goal.kind === 'free' && goal.bulk.capCents > 0;
   const capped = goal.kind === 'free' && goal.bulk.capped;
   const words =
     goal.kind === 'free-gap'
