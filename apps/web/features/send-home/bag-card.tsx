@@ -39,7 +39,7 @@ export function SendHomeCard({ baseTotalCents }: { baseTotalCents: number | null
   useEffect(() => {
     if (!view || store.started) return;
     const saved = view.settings.loved_ones[0]?.id ?? null;
-    store.start(view.roundUpCents, !view.settings.in_bag, saved, saved ? null : deviceLovedOne());
+    store.start(view.cents, !view.settings.in_bag, saved, saved ? null : deviceLovedOne());
   }, [view, store]);
 
   if (!view || !store.started) return null;
@@ -124,7 +124,7 @@ export function SendHomeCard({ baseTotalCents }: { baseTotalCents: number | null
             cents={view.cents}
             roundUpCents={view.roundUpCents}
             roundUpTotalCents={view.roundUpTotalCents}
-            maxCents={view.settings.max_cents}
+            maxCents={view.maxCents}
             onPick={store.setCents}
           />
         </div>

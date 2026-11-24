@@ -93,11 +93,11 @@ export const SETTING_GROUPS: SettingGroup[] = [
     ],
   },
   {
-    title: 'Send home (D-205)',
-    note: 'A gift in rupees to someone in India, added in the bag beside the goods (never part of the free line, savings, coupons or tax) and paid out by hand from Admin → Send home. Empty rate = Send home is off everywhere. The rupees a gift promises are its dollars × the rate, to the rupee, fixed at payment (Q-65).',
+    title: 'Send home (D-205, D-206)',
+    note: 'A gift in rupees to someone in India, added in the bag beside the goods (never part of the free line, savings, coupons or tax), never more than the order itself, and paid out by hand from Admin → Send home. The rate is checked every day (Admin → Send home shows it); a gift promises its dollars × that rate less what IWC keeps, to the rupee, fixed at payment. What IWC keeps is stated in the Terms only. Closed while the rate is more than three days old.',
     fields: [
-      { key: 'send_home_inr_per_usd', label: 'Rupees per gift dollar (₹; empty = off)', kind: 'number' },
-      { key: 'send_home_max_cents', label: 'Largest gift ($; empty = $100)', kind: 'usd' },
+      { key: 'send_home_open', label: 'Send home open (1 = on; empty or 0 = off)', kind: 'int' },
+      { key: 'send_home_keep_pct', label: 'IWC keeps of each gift (%; founder 2026-11-24: 3)', kind: 'pct' },
       { key: 'send_home_month_cap_cents', label: 'Most one customer sends in a month ($; empty = no cap)', kind: 'usd' },
       { key: 'send_home_hold_hours', label: "A first order's gift waits (hours; empty = 0, Q-66)", kind: 'int' },
     ],

@@ -36,6 +36,14 @@ const deskGiftSchema = z.object({
 export type DeskGift = z.infer<typeof deskGiftSchema>;
 
 const queueSchema = z.object({
+  /** D-206: the day's rate, when it was checked, and whether Send home is open now. */
+  rate: z.object({
+    inr_per_usd: z.coerce.number().nullable(),
+    at: z.string().nullable(),
+    keep_pct: z.coerce.number().nullable(),
+    open: z.boolean(),
+    live: z.boolean(),
+  }),
   counts: z.object({ to_send: z.number().int(), to_send_inr_paise: z.number().int(), on_hold: z.number().int() }),
   gifts: z.array(deskGiftSchema),
 });

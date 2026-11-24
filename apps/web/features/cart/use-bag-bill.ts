@@ -40,7 +40,6 @@ export function useBagBill(fetchOffers = true): BagBill {
   const bulkCents = charges ? bulkSavingCents(subtotalCents, charges.bulkFromCents, charges.bulk) : 0;
   const found = picked ? offers?.coupons.find((c) => c.code === picked) : undefined;
   const coupon = found && offers && couponStanding(found, offers, subtotalCents, bulkCents).kind === 'usable' ? found : null;
-  const giftCents = useGiftCents();
   // D-205: the gift is added after everything else, so the goods' sum is the same with or without it
   const quote = (gift: number) =>
     charges && lines.length > 0
@@ -61,6 +60,7 @@ export function useBagBill(fetchOffers = true): BagBill {
         )
       : null;
   const goods = quote(0);
+  const giftCents = useGiftCents(goods?.totalCents ?? null);
   const breakdown = giftCents > 0 ? quote(giftCents) : goods;
   return {
     subtotalCents,

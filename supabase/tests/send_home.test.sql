@@ -3,7 +3,11 @@
 begin;
 select tests.setup();
 
-update public.pricing_settings set send_home_inr_per_usd = 92, send_home_hold_hours = null, cancel_fee_pct = 0 where id = 1;
+-- D-206: open, today's rate 92 (checked now), IWC keeps 3%: a gift dollar promises ₹89.24
+update public.pricing_settings
+   set send_home_open = 1, send_home_inr_per_usd = 92, send_home_rate_at = now(), send_home_keep_pct = 3,
+       send_home_hold_hours = null, cancel_fee_pct = 0
+ where id = 1;
 with v as (insert into public.product_variants (product_id, sku, label, qty_listed, price_cents)
            values (tests.id('p_live'), 'TEST-GIFT-1', 'Gift size', 20, 5000) returning id)
 select tests.remember('v_gift', (select id from v));
@@ -86,11 +90,11 @@ select tests.assert(
   'and never the whole UPI, who sent it, the rate or the hold');
 select tests.assert((select count(*) = 1 from public.loved_ones), 'the owner sees their loved ones');
 select tests.assert(
-  (select (s ->> 'inr_per_usd')::numeric = 92 and (s ->> 'max_cents')::int = 10000
+  (select (s ->> 'inr_per_usd')::numeric = 89.24 and not s ? 'keep_pct'
           and jsonb_array_length(s -> 'loved_ones') = 1 and s -> 'loved_ones' -> 0 ->> 'call_name' = 'Maa'
           and s -> 'loved_ones' -> 0 ->> 'upi_masked' = '98470·····' and not (s -> 'loved_ones' -> 0) ? 'upi'
    from public.store_send_home() s),
-  'the bag reads the rate, the cap and Maa');
+  'the bag reads the rupees a dollar promises (less what IWC keeps, never the 3% itself) and Maa');
 select tests.assert(
   (select (d -> 'order' ->> 'home_gift_cents')::int = 400 and d -> 'home_gift' ->> 'customer_status' = 'sending'
           and (d -> 'home_gift' -> 'so_far' ->> 'inr_paise')::int = 36800
@@ -200,4 +204,29 @@ select tests.assert(
    from public.checkout_send_home(tests.id('cust_b'), 'cust.b@example.test',
                                   (select id from public.loved_ones where profile_id = tests.id('cust_a') limit 1)) c),
   'checkout reads this month''s gifts and never another customer''s loved one');
+-- ---------------------------------------------------------------- D-206: never more than the order, the day's rate
+select tests.assert_fails(
+  $$select pg_temp.gift_order(tests.id('cust_b'), 'cust.b@example.test', 'pi_gift_big', jsonb_build_object(
+      'usd_cents', 5100, 'inr_per_usd', 92, 'keep_pct', 3, 'inr_paise', 455100, 'relation', 'didi', 'call_name', 'Didi', 'upi', 'didi@ybl'))$$,
+  'gift_over_order', 'a gift worth more than the order is refused');
+select tests.assert(
+  (select keep_pct = 0 from public.home_gifts where order_id = tests.id('o1')),
+  'a gift records what IWC kept (0 when the checkout did not say)');
+select tests.assert(
+  (select (c ->> 'rupees_per_usd')::numeric = 89.24 and (c ->> 'keep_pct')::numeric = 3
+   from public.checkout_send_home(tests.id('cust_a'), 'cust.a@example.test', null) c),
+  'checkout reads the promised rate, the day''s rate and the 3% to store on the gift');
+update public.pricing_settings set send_home_rate_at = now() - interval '4 days' where id = 1;
+select tests.assert((select public.store_send_home() is null), 'a rate older than three days closes Send home');
+update public.pricing_settings set send_home_rate_at = now(), send_home_open = 0 where id = 1;
+select tests.assert((select public.store_send_home() is null), 'and so does Settings'' switch');
+select set_config('request.jwt.claims', '{"role": "service_role"}', true);
+select public.set_send_home_rate(91.37);
+select tests.assert(
+  (select send_home_inr_per_usd = 91.37 and send_home_rate_at > now() - interval '1 minute' from public.pricing_settings where id = 1),
+  'the daily check writes the day''s rate and when');
+select tests.assert_fails($$select public.set_send_home_rate(120)$$, 'rate_jumped', 'a rate 10% away from the last is refused');
+select tests.assert_fails($$select public.set_send_home_rate(5)$$, 'rate_out_of_range', 'and one that cannot be rupees a dollar');
+select tests.act_as(tests.id('cust_a'));
+select tests.assert_fails($$select public.set_send_home_rate(91)$$, 'admin_only', 'a customer cannot set it');
 rollback;

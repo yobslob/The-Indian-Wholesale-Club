@@ -25,8 +25,8 @@ export type LovedOne = z.infer<typeof lovedOneSchema>;
 
 export const sendHomeSchema = z
   .object({
+    /** Rupees per gift dollar as promised (D-206: the day's rate less what IWC keeps). */
     inr_per_usd: z.coerce.number().positive(),
-    max_cents: z.number().int().positive(),
     signed_in: z.boolean(),
     in_bag: z.boolean(),
     loved_ones: z.array(

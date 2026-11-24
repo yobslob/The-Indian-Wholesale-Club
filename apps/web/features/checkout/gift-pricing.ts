@@ -31,8 +31,9 @@ export type CheckoutGift = z.infer<typeof checkoutGiftSchema>;
 export type GiftResult = { ok: true; gift: HomeGiftInput | null } | { ok: false; message: string };
 
 /**
- * plan §2 rules 3, 4, 11: the rate, the caps and the UPI checked again here, the rupees worked out here (never from the
- * browser). An empty rate is Send home off: the gift is dropped and the quote shows the bag without it.
+ * plan §2 rules 3, 4, 11, D-206: the rate, the monthly cap and the UPI checked again here, the rupees worked out here
+ * (never from the browser). Send home closed: the gift is dropped and the quote shows the bag without it. That the gift
+ * is no more than the order is checked by the caller, which has the order's total.
  */
 export async function priceGift(
   service: IwcClient,
@@ -45,9 +46,9 @@ export async function priceGift(
     email: who.email,
     lovedOneId: gift.lovedOneId ?? null,
   });
-  const inrPaise = giftInrPaise(gift.cents, settings.inr_per_usd);
-  if (settings.inr_per_usd === null || inrPaise === null) return { ok: true, gift: null };
-  if (gift.cents > settings.max_cents) return { ok: false, message: words.tooMuch(formatUsd(settings.max_cents)) };
+  // D-206: the promised rate is the day's less what IWC keeps; null = Send home is closed, so the gift is dropped
+  const inrPaise = giftInrPaise(gift.cents, settings.rupees_per_usd);
+  if (settings.rupees_per_usd === null || settings.inr_per_usd === null || inrPaise === null) return { ok: true, gift: null };
   if (settings.month_cap_cents !== null && settings.month_used_cents + gift.cents > settings.month_cap_cents)
     return { ok: false, message: words.monthCap(formatUsd(settings.month_cap_cents)) };
 
@@ -67,6 +68,7 @@ export async function priceGift(
     gift: {
       usdCents: gift.cents,
       inrPerUsd: settings.inr_per_usd,
+      keepPct: settings.keep_pct,
       inrPaise,
       relation: person.relation,
       callName: person.callName.trim().slice(0, 20),

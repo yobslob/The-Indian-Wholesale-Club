@@ -9,6 +9,8 @@ import {
 } from '@repo/shared/domain';
 
 import { LinePhoto } from '@/features/cart/bag-lines';
+import { OrderGift } from '@/features/send-home/order-gift';
+import { SEND_HOME_WORDS } from '@/features/send-home/words';
 import { SITE_NAME } from '@/lib/site';
 
 import { InvoiceA } from './invoice-a';
@@ -188,6 +190,8 @@ export function OrderView({ order }: { order: OrderDetail }): React.JSX.Element 
         <ul className="border-line m-0 list-none border-t p-0">{order.items.map(itemRow)}</ul>
       )}
 
+      {order.home_gift ? <OrderGift gift={order.home_gift} /> : null}
+
       <dl className="font-ui ml-auto grid max-w-[360px] gap-1.5 text-sm">
         <div className="flex justify-between">
           <dt className="text-ink-muted">Subtotal</dt>
@@ -210,6 +214,12 @@ export function OrderView({ order }: { order: OrderDetail }): React.JSX.Element 
           <dt className="text-ink-muted">Sales tax</dt>
           <dd className="m-0">{formatUsd(o.tax_cents)}</dd>
         </div>
+        {o.home_gift_cents > 0 ? (
+          <div className="flex justify-between">
+            <dt className="text-ink-muted">{SEND_HOME_WORDS.bill.line}</dt>
+            <dd className="m-0">{formatUsd(o.home_gift_cents)}</dd>
+          </div>
+        ) : null}
         <div className="border-line flex justify-between border-t pt-2 text-base font-bold">
           <dt>Total</dt>
           <dd className="m-0">{formatUsd(o.total_cents)}</dd>

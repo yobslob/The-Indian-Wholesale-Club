@@ -61,7 +61,7 @@ select tests.assert(
           'change_delivery_window', 'change_shipment_window', 'deliver_order', 'deliver_shipment',
           'dev_preview', 'is_admin', 'is_product_visible', 'is_worker', 'item_refund_cents',
           'keep_after_delay', 'mark_pickup', 'refund_order_item',
-          'review_eligibility', 'ship_order', 'ship_shipment', 'shipment_cancel_cents', 'store_bag_charges', 'store_browse', 'store_home', 'store_my_order', 'store_my_people', 'store_next_delivery',
+          'review_eligibility', 'set_send_home_rate', 'ship_order', 'ship_shipment', 'shipment_cancel_cents', 'store_bag_charges', 'store_browse', 'store_home', 'store_my_order', 'store_my_people', 'store_next_delivery',
           'store_policy', 'store_product_page', 'store_recipe', 'store_recipes', 'store_region_head',
           'store_region_page', 'store_search', 'store_search_hints', 'store_search_page', 'store_send_home', 'store_type_rows',
           

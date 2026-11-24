@@ -6,6 +6,8 @@ import { getCheckoutContext } from '@repo/db/server';
 import { getBagCharges, heavyOf, smallOrderOf } from '@repo/db/store';
 import {
   emailSchema,
+  formatUsd,
+  giftFitsOrder,
   promoDiscountCents,
   quoteCheckout,
   shippingAddressSchema,
@@ -13,6 +15,7 @@ import {
 } from '@repo/shared/domain';
 
 import { MAX_QTY_PER_LINE } from '@/features/cart/limits';
+import { SEND_HOME_WORDS } from '@/features/send-home/words';
 
 import { checkoutGiftSchema, priceGift } from './gift-pricing';
 import { stockProblems } from './stock';
@@ -189,9 +192,14 @@ export async function priceCart(
   const coins = request.useCoins ? (context.coins ?? 0) : 0;
   if (!gifted.ok) return { ok: false, problem: { kind: 'gift', message: gifted.message } };
   const homeGift = gifted.gift;
-  const breakdown = quoteCheckout(quoteLines, quotePromo, shipping, quoteTax, coins, homeGift?.usdCents ?? 0);
+  const goodsOnly = quoteCheckout(quoteLines, quotePromo, shipping, quoteTax, coins);
   // No price for shipping yet: checkout stays closed rather than guessing a fee.
-  if (!breakdown) return { ok: false, problem: { kind: 'closed' } };
+  if (!goodsOnly) return { ok: false, problem: { kind: 'closed' } };
+  // D-206: a gift is never worth more than the order itself
+  if (homeGift && !giftFitsOrder(homeGift.usdCents, goodsOnly.totalCents)) {
+    return { ok: false, problem: { kind: 'gift', message: SEND_HOME_WORDS.problems.tooMuch(formatUsd(goodsOnly.totalCents)) } };
+  }
+  const breakdown = homeGift ? quoteCheckout(quoteLines, quotePromo, shipping, quoteTax, coins, homeGift.usdCents)! : goodsOnly;
   // A smallest order is still a setting (D-109); since D-111 it is unset and small bags pay the charges instead.
   const minOrderCents = context.shipping.min_order_cents;
   if (minOrderCents !== null && breakdown.subtotalCents < minOrderCents) {

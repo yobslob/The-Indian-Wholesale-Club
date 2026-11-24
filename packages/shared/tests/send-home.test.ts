@@ -3,12 +3,15 @@ import { describe, it } from 'node:test';
 
 import {
   billOf,
+  checkUpi,
   customerGiftStatus,
   formatInr,
   giftChipsCents,
+  giftFitsOrder,
   giftInrPaise,
   giftLineOf,
   maskUpi,
+  promisedRate,
   quoteCheckout,
   roundUpGiftCents,
   upiNote,
@@ -32,9 +35,25 @@ describe('Send home: the round-up (D-205, plan §2 rule 3)', () => {
     assert.deepEqual(giftChipsCents(8500), [400, 900, 1900]);
     assert.deepEqual(giftChipsCents(8000), [900, 1900]);
   });
+
+  it('never more than the order (D-206)', () => {
+    assert.deepEqual(giftChipsCents(1500), [400, 900]);
+    assert.deepEqual(giftChipsCents(650), []);
+    assert.equal(giftFitsOrder(1500, 1500), true);
+    assert.equal(giftFitsOrder(1501, 1500), false);
+    assert.equal(giftFitsOrder(0, 1500), false);
+  });
 });
 
-describe('Send home: the rupees (plan §2 rule 4)', () => {
+describe('Send home: the rupees (plan §2 rule 4, D-206)', () => {
+  it("promises the day's rate less the 3% IWC keeps", () => {
+    assert.equal(promisedRate(92, 3), 89.24);
+    assert.equal(giftInrPaise(400, promisedRate(92, 3)), 35700);
+    assert.equal(giftInrPaise(500, promisedRate(83.37, 3)), 40400);
+    assert.equal(promisedRate(null, 3), null);
+    assert.equal(promisedRate(92, 0), 92);
+  });
+
   it('is dollars × the rate, rounded to the rupee; no rate, no gift', () => {
     assert.equal(giftInrPaise(400, 92), 36800);
     assert.equal(giftInrPaise(500, 92), 46000);
@@ -59,6 +78,15 @@ describe('Send home: UPI (plan §4.2)', () => {
     assert.equal(upiOf('lakshmi@'), null);
     assert.equal(upiOf('@okhdfc'), null);
     assert.equal(upiOf('a b@okhdfc'), null);
+  });
+
+  it('checks a UPI ID as it is typed (D-206)', () => {
+    assert.deepEqual(checkUpi(''), { kind: 'empty' });
+    assert.deepEqual(checkUpi('lakshmi'), { kind: 'bad' });
+    assert.deepEqual(checkUpi('98470 12345'), { kind: 'mobile' });
+    assert.deepEqual(checkUpi('lakshmi.m@okhdfcbank'), { kind: 'known', app: 'Google Pay' });
+    assert.deepEqual(checkUpi('papa@YBL'), { kind: 'known', app: 'PhonePe' });
+    assert.deepEqual(checkUpi('papa@okhdfc'), { kind: 'unknown', handle: 'okhdfc' });
   });
 
   it('masks it for the customer', () => {

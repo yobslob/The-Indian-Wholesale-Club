@@ -33,7 +33,7 @@ export const GIFT_LINE_MAX = 30;
 export const UPI_NOTE_MAX = 50;
 /** The smallest round-up gift (plan §2 rule 3): under it the round-up goes to the 9 after. */
 export const ROUND_UP_MIN_CENTS = 300;
-/** The fixed chips after the round-up (Q-65: Claude's draft until the founder confirms). */
+/** The fixed chips after the round-up (D-205; D-206 left them as drafted). */
 export const GIFT_CHIPS_CENTS = [900, 1900] as const;
 
 /**
@@ -49,13 +49,28 @@ export function roundUpGiftCents(totalCents: number): number {
   return target - totalCents;
 }
 
-/** The chips the bag offers: the round-up first, then $9 and $19 unless one of them is the round-up itself. */
+/**
+ * The chips the bag offers: the round-up first, then $9 and $19 unless one of them is the round-up itself; none worth
+ * more than the order itself (D-206). Empty for a bag too small for any of them.
+ */
 export function giftChipsCents(totalCents: number): number[] {
   const round = roundUpGiftCents(totalCents);
-  return [round, ...GIFT_CHIPS_CENTS.filter((c) => c !== round)];
+  return [round, ...GIFT_CHIPS_CENTS.filter((c) => c !== round)].filter((c) => c <= totalCents);
 }
 
-/** The rupees a gift promises, in paise, rounded to the rupee (plan §2 rule 4). Null when no rate is set (off). */
+/** D-206: a gift is never more than the order's own total (before the gift). */
+export const giftFitsOrder = (giftCents: number, orderCents: number): boolean => giftCents > 0 && giftCents <= orderCents;
+
+/**
+ * D-206: the rupees one gift dollar promises: the day's rate less what IWC keeps for sending it (3%). The store is only
+ * ever given this figure, never the 3% itself.
+ */
+export function promisedRate(inrPerUsd: number | null, keepPct: number): number | null {
+  if (inrPerUsd === null || !(inrPerUsd > 0)) return null;
+  return inrPerUsd * (1 - Math.min(Math.max(keepPct, 0), 50) / 100);
+}
+
+/** The rupees a gift promises, in paise, rounded to the rupee (plan §2 rule 4), at the promised rate. Null when off. */
 export function giftInrPaise(usdCents: number, inrPerUsd: number | null): number | null {
   if (inrPerUsd === null || !(inrPerUsd > 0)) return null;
   if (!Number.isInteger(usdCents) || usdCents < 0) throw new RangeError('usdCents must be a non-negative integer');
@@ -78,6 +93,42 @@ export function upiOf(text: string): Upi | null {
   else if (digits.length === 12 && digits.startsWith('91')) digits = digits.slice(2);
   else if (digits.length === 11 && digits.startsWith('0')) digits = digits.slice(1);
   return /^[6-9]\d{9}$/.test(digits) ? { kind: 'mobile', value: digits } : null;
+}
+
+/**
+ * D-206, the UPI checker: handles UPI apps and banks use (not every one there is: an unknown handle is a warning to look
+ * again, never a refusal). Whether the account exists needs a payouts provider (Q-67).
+ */
+export const UPI_HANDLES: Record<string, string> = {
+  okhdfcbank: 'Google Pay', okicici: 'Google Pay', oksbi: 'Google Pay', okaxis: 'Google Pay',
+  ybl: 'PhonePe', ibl: 'PhonePe', axl: 'PhonePe',
+  paytm: 'Paytm', pthdfc: 'Paytm', ptsbi: 'Paytm', ptaxis: 'Paytm', ptyes: 'Paytm',
+  apl: 'Amazon Pay', yapl: 'Amazon Pay', rapl: 'Amazon Pay',
+  upi: 'BHIM', ikwik: 'MobiKwik', freecharge: 'Freecharge', fam: 'FamPay', jupiteraxis: 'Jupiter', naviaxis: 'Navi',
+  waicici: 'WhatsApp', waaxis: 'WhatsApp', wahdfcbank: 'WhatsApp', wasbi: 'WhatsApp', superyes: 'super.money',
+  sbi: 'SBI', icici: 'ICICI Bank', hdfcbank: 'HDFC Bank', axisbank: 'Axis Bank', kotak: 'Kotak', kbl: 'Karnataka Bank',
+  pnb: 'PNB', barodampay: 'Bank of Baroda', unionbank: 'Union Bank', cnrb: 'Canara Bank', idfcbank: 'IDFC First',
+  federal: 'Federal Bank', yesbank: 'Yes Bank', indus: 'IndusInd', rbl: 'RBL Bank', aubank: 'AU Bank', idbi: 'IDBI Bank',
+  boi: 'Bank of India', mahb: 'Bank of Maharashtra', indianbank: 'Indian Bank', iob: 'Indian Overseas Bank',
+  ucobank: 'UCO Bank', centralbank: 'Central Bank', dbs: 'DBS', hsbc: 'HSBC', sc: 'Standard Chartered',
+  equitas: 'Equitas', ujjivan: 'Ujjivan', airtel: 'Airtel', jio: 'Jio', postbank: 'India Post',
+};
+
+export type UpiCheck =
+  | { kind: 'empty' }
+  | { kind: 'bad' }
+  | { kind: 'mobile' }
+  | { kind: 'known'; app: string }
+  | { kind: 'unknown'; handle: string };
+
+export function checkUpi(text: string): UpiCheck {
+  if (!text.trim()) return { kind: 'empty' };
+  const upi = upiOf(text);
+  if (!upi) return { kind: 'bad' };
+  if (upi.kind === 'mobile') return { kind: 'mobile' };
+  const handle = upi.value.slice(upi.value.indexOf('@') + 1);
+  const app = UPI_HANDLES[handle];
+  return app ? { kind: 'known', app } : { kind: 'unknown', handle };
 }
 
 /** What a customer sees of a UPI ID: "98470·····", "lak···@okhdfc". The full ID is for the India desk only. */

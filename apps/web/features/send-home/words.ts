@@ -47,6 +47,13 @@ export const SEND_HOME_WORDS = {
     removeAndGo: 'Remove the gift and continue',
     close: 'Close',
   },
+  upiCheck: {
+    empty: 'Like name@okhdfcbank, or their 10-digit mobile.',
+    bad: 'Not a UPI ID: it looks like name@bank, or a UPI number is a 10-digit Indian mobile.',
+    mobile: 'A UPI number (their mobile).',
+    known: (app: string) => `A valid UPI ID (${app}).`,
+    unknown: (handle: string) => `We don't know @${handle}. Check the spelling with them.`,
+  },
   postcard: {
     stamp: 'Sent home with IWC',
     headline: (inr: string, name: string) => `${inr} is on its way to ${name}.`,
@@ -60,6 +67,12 @@ export const SEND_HOME_WORDS = {
     soFar: 'Sent home with IWC so far',
     times: (n: number, name: string) => `${n} ${n === 1 ? 'time' : 'times'} to ${name}`,
     seeAll: 'Your people at home',
+  },
+  bar: {
+    sending: (name: string) => `Sending to ${name}`,
+    sent: (name: string, owner: 'her' | 'his' | 'their') => `Reached ${name}: it's in ${owner} UPI`,
+    refunded: "Couldn't send: refunded to your card",
+    reference: (last4: string) => `UPI reference ending ${last4}`,
   },
   people: {
     title: 'Your people at home',
@@ -79,7 +92,7 @@ export const SEND_HOME_WORDS = {
     off: 'Send home is not open right now.',
   },
   problems: {
-    tooMuch: (max: string) => `A gift home can be up to ${max}. Change the amount or remove it.`,
+    tooMuch: (order: string) => `A gift home can be up to your order's own total, ${order}. Change the amount or remove it.`,
     monthCap: (cap: string) => `Gifts home are up to ${cap} a month. Change the amount or remove it.`,
     noOne: "Tell us who it's for, or remove the gift.",
     badUpi: "That UPI ID or number doesn't look right. Check it, or remove the gift.",
@@ -100,6 +113,12 @@ export const SEND_HOME_WORDS = {
     heldUntil: (when: string) => `On hold until ${when} (a first order)`,
     heldDispute: 'On hold: this customer has an open dispute',
     empty: 'Nothing here.',
+    checkRate: "Check today's rate",
+    rateLine: (rate: string, when: string, keep: number) => `Today's rate ₹${rate} a dollar, checked ${when}; IWC keeps ${keep}%.`,
+    noRate: 'No rate checked yet.',
+    open: 'Send home is open.',
+    closed: 'Send home is closed (Settings → Send home open).',
+    closedOld: 'Send home is closed until the rate is checked again (it is more than three days old).',
   },
   emails: {
     sentSubject: (inr: string, name: string) => `${inr} reached ${name}`,

@@ -3,6 +3,7 @@
 import {
   formatInr,
   giftChipsCents,
+  giftFitsOrder,
   giftInrPaise,
   RELATION_NAMES,
   roundUpGiftCents,
@@ -36,12 +37,20 @@ function personOf(state: GiftState, settings: SendHome): GiftPerson | null {
   return null;
 }
 
+/**
+ * D-206: never more than the order. A gift fixed on a bag that has since shrunk below it falls back to the largest chip
+ * the bag still allows (none: no gift).
+ */
+function fitted(cents: number, orderCents: number): number {
+  return giftFitsOrder(cents, orderCents) ? cents : (giftChipsCents(orderCents)[0] ?? 0);
+}
+
 /** The gift the bill adds now: only once the bag's card has shown it, in the US (rule 5), and while it is not removed. */
-export function useGiftCents(): number {
+export function useGiftCents(orderCents: number | null): number {
   const settings = useSendHome(false);
   const { market } = useMoney();
   const { started, removed, cents } = useGiftStore();
-  return settings && market === 'us' && started && !removed ? cents : 0;
+  return settings && market === 'us' && started && !removed && orderCents !== null ? fitted(cents, orderCents) : 0;
 }
 
 export interface GiftView {
@@ -52,6 +61,8 @@ export interface GiftView {
   roundUpCents: number;
   roundUpTotalCents: number;
   chips: number[];
+  /** Other stops here: the order's own total (D-206). */
+  maxCents: number;
   person: GiftPerson | null;
 }
 
@@ -62,7 +73,9 @@ export function useGiftView(baseTotalCents: number | null): GiftView | null {
   const state = useGiftStore();
   if (!settings || market !== 'us' || baseTotalCents === null) return null;
   const roundUpCents = roundUpGiftCents(baseTotalCents);
-  const cents = state.started ? state.cents : roundUpCents;
+  const chips = giftChipsCents(baseTotalCents);
+  if (chips.length === 0) return null; // a bag too small for any gift (D-206)
+  const cents = state.started ? fitted(state.cents, baseTotalCents) : chips[0]!;
   return {
     settings,
     added: state.started && !state.removed,
@@ -70,7 +83,8 @@ export function useGiftView(baseTotalCents: number | null): GiftView | null {
     inrPaise: giftInrPaise(cents, settings.inr_per_usd) ?? 0,
     roundUpCents,
     roundUpTotalCents: baseTotalCents + roundUpCents,
-    chips: giftChipsCents(baseTotalCents).filter((c) => c <= settings.max_cents),
+    chips,
+    maxCents: baseTotalCents,
     person: personOf(state, settings),
   };
 }

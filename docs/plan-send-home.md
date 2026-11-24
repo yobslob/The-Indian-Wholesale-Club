@@ -42,6 +42,13 @@ File it with this reading (Claude's, proposed): $84 → $89 is a gift of $5; the
 same fixed rate as beta pricing (D-128). The default amount is the **round-up** (§2 rule 3): a bag of $85.00 rounds up
 to $89 with a $4 gift, a bag of $84.00 with a $5 gift. Q-65 asks him to confirm.
 
+**D-206 (the founder's answers to Q-65 and part of Q-66, 2026-11-24) changes this plan where they differ:** the rate is
+the day's, checked every morning (not a fixed ₹92); IWC keeps 3% of each gift, so the rupees shown are dollars × the
+day's rate × 0.97, and the 3% is written in the Terms only; a gift is never more than the order (no $100 cap); Settings
+has an on/off switch; the customer sees one bar that fills when the desk marks the gift sent (not Paid → Sending → In her
+UPI, and no time anywhere); the sheet and the desk have a UPI checker. Examples below that say ₹368 for $4 now read
+about ₹357 at ₹92.
+
 ---
 
 ## 1. The idea in one paragraph

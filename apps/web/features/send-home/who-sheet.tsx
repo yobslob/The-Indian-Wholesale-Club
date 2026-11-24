@@ -7,6 +7,7 @@ import { formatInr, giftInrPaise, GIFT_LINE_MAX, giftLineOf, RELATION_NAMES, upi
 
 import { rememberOnDevice, useGiftStore } from './gift-store';
 import { forgetSendHome, sendHomeNow } from './settings';
+import { UpiCheck } from './upi-check';
 import { SEND_HOME_WORDS } from './words';
 
 const W = SEND_HOME_WORDS.sheet;
@@ -139,9 +140,7 @@ export function WhoSheet({ relation, then }: { relation: Relation | null; then: 
               onBlur={() => setUpiTouched(true)}
               onChange={(e) => setUpi(e.target.value)}
             />
-            <span id={`${id}-u`} className={upiTouched && !upiOk ? 'font-ui text-danger text-[12px] font-normal' : hint}>
-              {upiTouched && !upiOk ? W.upiBad : W.upiHint}
-            </span>
+            <UpiCheck value={upi} id={`${id}-u`} touched={upiTouched} />
           </label>
           <label className={label}>
             {W.region}

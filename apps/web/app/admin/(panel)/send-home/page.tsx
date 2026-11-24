@@ -1,9 +1,10 @@
 import { getSendHomeQueue, SEND_HOME_TABS, type DeskGift, type SendHomeTab } from '@repo/db/admin';
 import { formatInr } from '@repo/shared/domain';
 
+import { checkRateAction } from '@/features/admin/actions/send-home';
 import { requireAdminPage } from '@/features/admin/guard';
 import { GiftCard } from '@/features/admin/send-home/gift-card';
-import { Empty, PageHead, Tabs } from '@/features/admin/ui';
+import { Empty, PageHead, secondaryButton, Tabs } from '@/features/admin/ui';
 import { SEND_HOME_WORDS } from '@/features/send-home/words';
 
 type SearchParams = Promise<{ tab?: string }>;
@@ -50,7 +51,20 @@ export default async function SendHomePage({ searchParams }: { searchParams: Sea
       <PageHead
         title={W.title}
         sub={tab === 'to_send' ? `${W.oldestFirst} · ${W.today(formatInr(queue.counts.to_send_inr_paise))}` : undefined}
+        actions={
+          <form action={checkRateAction}>
+            <button type="submit" className={secondaryButton}>
+              {W.checkRate}
+            </button>
+          </form>
+        }
       />
+      <p className="font-ui text-ink-muted -mt-2 mb-4 text-[13px]">
+        {queue.rate.inr_per_usd !== null && queue.rate.at
+          ? W.rateLine(queue.rate.inr_per_usd.toFixed(2), ago(queue.rate.at, now), queue.rate.keep_pct ?? 0)
+          : W.noRate}{' '}
+        {queue.rate.live ? W.open : queue.rate.open ? W.closedOld : W.closed}
+      </p>
       <Tabs items={tabs} current={tab} />
       {queue.gifts.length === 0 ? (
         <Empty>{W.empty}</Empty>

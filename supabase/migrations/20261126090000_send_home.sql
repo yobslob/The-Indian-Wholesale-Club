@@ -1,19 +1,36 @@
 -- D-205, Send home: a gift in rupees to a loved one in India, paid with the order (docs/plan-send-home.md §5).
 -- The gift sits beside the goods and never inside them (non-negotiable 5): its own column on the order, added to the total
 -- last, never part of the subtotal, a saving, Shipping or tax. Customers read only their own rows, through store_*
--- objects (D-017); the India desk pays by hand and records it here. An empty rate turns it off everywhere (D-047).
+-- objects (D-017); the India desk pays by hand and records it here. D-206: the rate is the day's, checked by a timer;
+-- IWC keeps 3% of each gift (the Terms say so, nothing else does); a gift is never more than the order; Settings opens it.
 -- Size: two small tables (a row per gift and per loved one); no page-cache writes (the bag, checkout and account are
 -- dynamic).
 
--- ---------------------------------------------------------------- settings (empty = not decided, Q-65, Q-66)
+-- ---------------------------------------------------------------- settings (D-206; empty = not decided, Q-66)
 
 alter table public.pricing_settings
-  add column send_home_inr_per_usd numeric(6, 2) check (send_home_inr_per_usd is null or send_home_inr_per_usd > 0),
-  add column send_home_max_cents integer check (send_home_max_cents is null or send_home_max_cents > 0),
+  add column send_home_open integer check (send_home_open is null or send_home_open in (0, 1)),
+  add column send_home_inr_per_usd numeric(10, 4) check (send_home_inr_per_usd is null or send_home_inr_per_usd > 0),
+  add column send_home_rate_at timestamptz,
+  add column send_home_keep_pct numeric(5, 2) check (send_home_keep_pct is null or send_home_keep_pct between 0 and 50),
   add column send_home_month_cap_cents integer check (send_home_month_cap_cents is null or send_home_month_cap_cents > 0),
   add column send_home_hold_hours integer check (send_home_hold_hours is null or send_home_hold_hours between 0 and 720);
+update public.pricing_settings set send_home_keep_pct = 3 where id = 1;  -- the founder, 2026-11-24 (D-206)
+comment on column public.pricing_settings.send_home_open is 'D-206: 1 = Send home is open; empty or 0 = off.';
 comment on column public.pricing_settings.send_home_inr_per_usd is
-  'D-205: rupees a gift dollar promises. Empty = Send home is off everywhere.';
+  'D-206: the day''s rupees per US dollar, written by the daily check (set_send_home_rate) with send_home_rate_at.';
+comment on column public.pricing_settings.send_home_keep_pct is
+  'D-206: what IWC keeps of each gift for sending it (3). Stated in the Terms only, never on the store.';
+
+-- D-206: open, with a rate checked in the last three days (an old rate would promise the wrong rupees). The rupees per
+-- gift dollar a customer is promised are the day's rate less what IWC keeps.
+create function public._send_home_rate() returns numeric
+language sql stable security definer set search_path = public, pg_temp as $$
+  select s.send_home_inr_per_usd * (1 - coalesce(s.send_home_keep_pct, 0) / 100)
+  from public.pricing_settings s
+  where s.id = 1 and s.send_home_open = 1 and s.send_home_inr_per_usd is not null
+    and s.send_home_rate_at > now() - interval '3 days';
+$$;
 
 -- The account's switch (plan §4.7): off = the bag's card starts removed.
 alter table public.profiles add column send_home_in_bag boolean not null default true;
@@ -49,7 +66,8 @@ create table public.home_gifts (
   note text not null default '' check (length(note) <= 30),
   sender_first_name text not null default '' check (length(sender_first_name) <= 40),
   usd_cents integer not null check (usd_cents > 0),
-  inr_per_usd numeric(6, 2) not null check (inr_per_usd > 0),
+  inr_per_usd numeric(10, 4) not null check (inr_per_usd > 0),                  -- the day's rate at payment
+  keep_pct numeric(5, 2) not null default 0 check (keep_pct between 0 and 50),  -- what IWC kept (D-206)
   inr_paise integer not null check (inr_paise > 0 and inr_paise % 100 = 0),       -- promised at payment, to the rupee
   status text not null check (status in ('on_hold', 'to_send', 'sent', 'failed', 'refunded', 'cancelled')),
   hold_until timestamptz,
@@ -203,11 +221,12 @@ begin
      where o.id <> p_order and o.payment_status in ('paid', 'partially_refunded')
        and (o.user_id = v_order.user_id or o.email = v_order.email));
   insert into public.home_gifts (order_id, profile_id, loved_one_id, call_name, relation, upi, region_name, note,
-                                 sender_first_name, usd_cents, inr_per_usd, inr_paise, status, hold_until)
+                                 sender_first_name, usd_cents, inr_per_usd, keep_pct, inr_paise, status, hold_until)
   values (p_order, v_order.user_id, v_loved, v_name, v_relation, v_upi,
           (select r.name from public.regions r where r.id = v_region), v_note,
           left(coalesce(p_gift ->> 'sender_first_name', ''), 40),
-          (p_gift ->> 'usd_cents')::integer, (p_gift ->> 'inr_per_usd')::numeric, (p_gift ->> 'inr_paise')::integer,
+          (p_gift ->> 'usd_cents')::integer, (p_gift ->> 'inr_per_usd')::numeric,
+          coalesce((p_gift ->> 'keep_pct')::numeric, 0), (p_gift ->> 'inr_paise')::integer,
           case when v_first and coalesce(v_hold, 0) > 0 then 'on_hold' else 'to_send' end,
           case when v_first and coalesce(v_hold, 0) > 0 then now() + make_interval(hours => v_hold) end);
 end $$;
@@ -227,6 +246,10 @@ begin
   if v_cents <= 0 then
     return query select g.order_id, g.order_number from public._create_order_goods(p_order - 'home_gift') g;
     return;
+  end if;
+  -- D-206: never more than the order itself
+  if v_cents > (p_order ->> 'total_cents')::integer - v_cents then
+    raise exception 'gift_over_order' using errcode = 'P0001';
   end if;
   -- the goods are checked exactly as before, on the total without the gift
   select g.order_id, g.order_number into v_id, v_number
@@ -324,9 +347,9 @@ grant execute on function public.guest_order_lookup(text, text) to service_role;
 -- The bag's card: is Send home on, its limits, and a signed-in customer's loved ones with their last gift (plan §4.3).
 create function public.store_send_home() returns jsonb
 language sql stable security definer set search_path = public, pg_temp as $$
-  select case when s.send_home_inr_per_usd is null then null else jsonb_build_object(
-    'inr_per_usd', s.send_home_inr_per_usd,
-    'max_cents', coalesce(s.send_home_max_cents, 10000),  -- Q-65: $100 until the founder sets it
+  select case when public._send_home_rate() is null then null else jsonb_build_object(
+    -- rupees per gift dollar as promised (the day's rate less what IWC keeps, which is never sent to the store)
+    'inr_per_usd', public._send_home_rate(),
     'signed_in', auth.uid() is not null,
     'in_bag', coalesce((select p.send_home_in_bag from public.profiles p where p.id = auth.uid()), true),
     'loved_ones', coalesce((
@@ -348,7 +371,7 @@ $$;
 create function public.store_my_people() returns jsonb
 language sql stable security definer set search_path = public, pg_temp as $$
   select jsonb_build_object(
-    'on', s.send_home_inr_per_usd is not null,
+    'on', public._send_home_rate() is not null,
     'in_bag', coalesce((select p.send_home_in_bag from public.profiles p where p.id = auth.uid()), true),
     'total', (select jsonb_build_object('inr_paise', coalesce(sum(g.inr_paise), 0), 'times', count(*),
                                         'usd_cents', coalesce(sum(g.usd_cents), 0), 'since', min(g.sent_at))
@@ -386,8 +409,9 @@ grant select on public.store_orders to authenticated;
 create function public.checkout_send_home(p_user uuid, p_email text, p_loved_one uuid) returns jsonb
 language sql stable security definer set search_path = public, pg_temp as $$
   select jsonb_build_object(
+    'rupees_per_usd', public._send_home_rate(),   -- null = off
     'inr_per_usd', s.send_home_inr_per_usd,
-    'max_cents', coalesce(s.send_home_max_cents, 10000),
+    'keep_pct', coalesce(s.send_home_keep_pct, 0),
     'month_cap_cents', s.send_home_month_cap_cents,
     'month_used_cents', (select coalesce(sum(g.usd_cents), 0) from public.home_gifts g join public.orders o on o.id = g.order_id
                           where g.status in ('on_hold', 'to_send', 'sent')
@@ -427,6 +451,10 @@ begin
     with open_gifts as materialized (
       select g.*, public._home_gift_held(g) as held from public.home_gifts g where g.status in ('on_hold', 'to_send'))
     select jsonb_build_object(
+      'rate', (select jsonb_build_object('inr_per_usd', x.send_home_inr_per_usd, 'at', x.send_home_rate_at,
+                                         'keep_pct', x.send_home_keep_pct, 'open', coalesce(x.send_home_open, 0) = 1,
+                                         'live', public._send_home_rate() is not null)
+                 from public.pricing_settings x where x.id = 1),
       'counts', jsonb_build_object(
         'to_send', (select count(*) from open_gifts where not held),
         'to_send_inr_paise', (select coalesce(sum(inr_paise), 0) from open_gifts where not held),
@@ -533,5 +561,60 @@ revoke all on function public._home_gift_held(public.home_gifts), public.admin_s
   from public, anon, authenticated;
 grant execute on function public.admin_send_home(text), public.admin_home_gift_sent(uuid, text),
   public.admin_home_gift_failed(uuid, text, text, integer) to authenticated;
+
+-- ---------------------------------------------------------------- the day's rate (D-206)
+
+-- Written only by the daily check (the website's /api/internal/send-home-rate, service role), or the admin's Check now
+-- through the same route. A rate far from the last one is refused, so one bad answer never prices gifts.
+create function public.set_send_home_rate(p_rate numeric) returns void
+language plpgsql security definer set search_path = public, pg_temp as $$
+declare
+  v_last numeric;
+begin
+  if coalesce(auth.role(), '') <> 'service_role' and not public.is_admin() then
+    raise exception 'admin_only' using errcode = '42501';
+  end if;
+  if p_rate is null or p_rate < 40 or p_rate > 250 then
+    raise exception 'rate_out_of_range' using errcode = 'P0001';
+  end if;
+  -- the jump check compares with a recent rate only, so a rate left unchecked for a week can always be caught up
+  select send_home_inr_per_usd into v_last from public.pricing_settings
+   where id = 1 and send_home_rate_at > now() - interval '7 days';
+  if v_last is not null and abs(p_rate - v_last) / v_last > 0.1 then
+    raise exception 'rate_jumped' using errcode = 'P0001';
+  end if;
+  update public.pricing_settings set send_home_inr_per_usd = round(p_rate, 4), send_home_rate_at = now() where id = 1;
+end $$;
+
+-- The timer: once a day, through the website (the same Vault secrets as the payment sweep and the email timer).
+create function public._kick_send_home_rate() returns void
+language plpgsql security definer set search_path = public, pg_temp as $$
+declare
+  v_url text;
+  v_secret text;
+begin
+  select decrypted_secret into v_url from vault.decrypted_secrets where name = 'iwc_site_url';
+  select decrypted_secret into v_secret from vault.decrypted_secrets where name = 'iwc_outbox_secret';
+  if v_url is null or v_secret is null then
+    return;
+  end if;
+  perform net.http_post(
+    url := rtrim(v_url, '/') || '/api/internal/send-home-rate',
+    headers := jsonb_build_object('Authorization', 'Bearer ' || v_secret, 'Content-Type', 'application/json'),
+    body := '{}'::jsonb);
+end $$;
+
+do $$
+begin
+  if exists (select 1 from pg_available_extensions where name = 'pg_net')
+     and exists (select 1 from pg_extension where extname = 'pg_cron') then
+    create extension if not exists pg_net with schema extensions;
+    perform cron.schedule('iwc-send-home-rate', '15 3 * * *', 'select public._kick_send_home_rate()');
+  end if;
+end $$;
+
+revoke all on function public._send_home_rate(), public.set_send_home_rate(numeric), public._kick_send_home_rate()
+  from public, anon, authenticated;
+grant execute on function public.set_send_home_rate(numeric) to authenticated, service_role;  -- admin or the server
 
 notify pgrst, 'reload schema';

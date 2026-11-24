@@ -7,6 +7,7 @@ import { formatInr, formatUsd, upiNote, upiPayLink } from '@repo/shared/domain';
 import { giftFailedAction, markGiftSentAction, type GiftActionState } from '@/features/admin/actions/send-home';
 import { ConfirmButton } from '@/features/admin/confirm';
 import { button, input, panel, secondaryButton } from '@/features/admin/styles';
+import { UpiCheck } from '@/features/send-home/upi-check';
 import { SEND_HOME_WORDS } from '@/features/send-home/words';
 
 import type { DeskGift } from '@repo/db/admin';
@@ -70,6 +71,7 @@ export function GiftCard({
         </div>
         <p className="font-display m-0 text-[24px] font-bold leading-none">{inr}</p>
       </div>
+      <UpiCheck value={gift.upi} />
       <div className="flex items-center gap-2">
         <code className="bg-canvas border-line min-w-0 flex-1 truncate rounded-[9px] border px-3 py-2.5 text-[14px]">
           {gift.upi}

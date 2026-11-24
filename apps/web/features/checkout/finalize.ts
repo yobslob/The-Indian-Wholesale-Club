@@ -60,6 +60,7 @@ export const pendingCheckoutSchema = z.object({
     .object({
       usdCents: z.number().int().positive(),
       inrPerUsd: z.number().positive(),
+      keepPct: z.number().min(0).default(0),
       inrPaise: z.number().int().positive(),
       relation: z.enum(RELATIONS),
       callName: z.string(),

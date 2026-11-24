@@ -5,6 +5,7 @@ import { z } from 'zod';
 
 import { getHomeGiftForRefund, markHomeGiftSent, recordHomeGiftFailed } from '@repo/db/admin';
 
+import { checkDayRate } from '@/features/send-home/day-rate';
 import { stripeServer } from '@/lib/stripe';
 
 import { sendEmailsSoon } from '../emails-soon';
@@ -65,4 +66,11 @@ export async function giftFailedAction(giftId: string, reason: string): Promise<
     refundedTotalCents: refundedTotal,
   });
   done(gift.order_id);
+}
+
+/** D-206: check the day's rate now (the timer does it every morning). The database refuses a rate that jumped. */
+export async function checkRateAction(): Promise<void> {
+  const { client } = await requireAdminAction();
+  await checkDayRate(client);
+  revalidatePath('/admin/send-home');
 }
