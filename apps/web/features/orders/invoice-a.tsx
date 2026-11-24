@@ -74,6 +74,7 @@ export function InvoiceA({ data: d }: { data: InvoiceAData }): React.JSX.Element
           <p>{text(a, 'fullName')}</p>
           <p>{[text(a, 'line1'), text(a, 'line2')].filter(Boolean).join(', ')}</p>
           <p>{[text(a, 'city'), [text(a, 'state'), text(a, 'zipCode')].filter(Boolean).join(' ')].filter(Boolean).join(', ')}</p>
+          {text(a, 'country') && text(a, 'country') !== 'US' ? <p>{text(a, 'country')}</p> : null}
           <p>{d.email}</p>
         </div>
         <div>

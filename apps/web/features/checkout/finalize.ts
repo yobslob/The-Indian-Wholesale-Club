@@ -226,7 +226,8 @@ export async function finalizeOrder(
   }
   // D-114: a signed-in customer's address is kept for their next checkout. Never fails the order.
   const address = shippingAddressSchema.safeParse(input.shippingAddress);
-  if (input.userId && address.success) {
+  // saved addresses are US addresses (the table's own check); an address abroad is not kept yet (D-208)
+  if (input.userId && address.success && address.data.country === 'US') {
     await rememberOrderAddress(service, input.userId, address.data).catch((error: unknown) =>
       logger.warn('checkout.address_not_saved', { orderNumber: result.orderNumber, error: errorMessage(error) }),
     );

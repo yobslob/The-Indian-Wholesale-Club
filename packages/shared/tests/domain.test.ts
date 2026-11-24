@@ -277,7 +277,7 @@ describe('checkout quote (flows.md §3, D-041, D-073)', () => {
   });
 });
 
-describe('shipping address (US only)', () => {
+describe('shipping address (D-208: the US with its checks, any other country with its own)', () => {
   it('normalises a valid address', () => {
     const parsed = shippingAddressSchema.parse({
       fullName: ' Asha Rao ',
@@ -295,7 +295,22 @@ describe('shipping address (US only)', () => {
       state: 'NJ',
       zipCode: '08817',
       phone: null,
+      country: 'US',
     });
+  });
+
+  it('takes an address abroad with a free region and postal code', () => {
+    const de = shippingAddressSchema.parse({
+      fullName: 'Priya Iyer',
+      line1: 'Hauptstraße 5',
+      city: 'Berlin',
+      zipCode: '10115',
+      country: 'de',
+    });
+    assert.equal(de.country, 'DE');
+    assert.equal(de.state, '');
+    assert.equal(shippingAddressSchema.safeParse({ ...de, zipCode: 'SW1A 1AA', country: 'GB', state: 'London' }).success, true);
+    assert.equal(shippingAddressSchema.safeParse({ ...de, zipCode: '' }).success, false);
   });
 
   it('rejects non-US states and ZIPs', () => {

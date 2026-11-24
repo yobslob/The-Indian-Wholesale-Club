@@ -83,12 +83,18 @@ const SEND_HOME = {
 };
 
 /** The database as priceCart reads it: its three functions, nothing else. */
-function fakeClient(ctx: unknown, bag: unknown, sendHome: unknown = SEND_HOME): { client: IwcClient; calls: string[] } {
+function fakeClient(
+  ctx: unknown,
+  bag: unknown,
+  sendHome: unknown = SEND_HOME,
+  world: unknown = null,
+): { client: IwcClient; calls: string[] } {
   const calls: string[] = [];
   const client = {
     rpc: (name: string) => {
       calls.push(name);
-      const data = name === 'checkout_context' ? ctx : name === 'checkout_send_home' ? sendHome : bag;
+      const data =
+        name === 'checkout_context' ? ctx : name === 'checkout_send_home' ? sendHome : name === 'store_country_prices' ? world : bag;
       return Promise.resolve({ data, error: null });
     },
   } as unknown as IwcClient;
@@ -269,5 +275,45 @@ describe('the 5% saving at checkout (D-208)', () => {
     const r = await run(OPEN, { gift: { lovedOne: { ...MAA, upi: 'nope' } } });
     assert.equal(r.ok, false);
     if (!r.ok) assert.equal(r.problem.kind, 'gift');
+  });
+});
+
+describe('checkout from another country (D-208)', () => {
+  let priceCart: typeof PriceCart;
+  let schema: typeof RequestSchema;
+  before(async () => {
+    const M = Module as unknown as { _load: (request: string, ...rest: unknown[]) => unknown };
+    const load = M._load;
+    M._load = (request, ...rest) => (request === 'server-only' ? {} : load(request, ...rest));
+    const pricing = await import('../features/checkout/pricing');
+    priceCart = pricing.priceCart;
+    schema = pricing.checkoutRequestSchema;
+  });
+  const UK = { line1: '1 High St', line2: null, city: 'London', state: '', zipCode: 'SW1A 1AA', country: 'GB', fullName: 'Priya Iyer', phone: null };
+
+  it("prices each piece at the country's price and asks for no US tax", async () => {
+    const world = { country: 'GB', variants: { [KURTA]: { price: 7200, heavy: 0 } }, products: {}, recipes: {} };
+    const { client, calls } = fakeClient(context([variant(KURTA, 8500)]), charges(), SEND_HOME, world);
+    const r = await priceCart(client, schema.parse({ ...body([{ variantId: KURTA, quantity: 2 }]), address: UK }));
+    assert.ok(r.ok);
+    assert.equal(r.quote.lines[0]!.unitPriceCents, 7200);
+    assert.equal(r.quote.breakdown.subtotalCents, 14400);
+    assert.equal(r.quote.breakdown.taxCents, 0);
+    assert.ok(calls.includes('store_country_prices'));
+  });
+
+  it('refuses a country IWC does not sell in', async () => {
+    const { client } = fakeClient(context([variant(KURTA, 8500)]), charges(), SEND_HOME, null);
+    const r = await priceCart(client, schema.parse({ ...body([{ variantId: KURTA, quantity: 1 }]), address: { ...UK, country: 'RU' } }));
+    assert.equal(r.ok, false);
+    if (!r.ok) assert.equal(r.problem.kind, 'country');
+  });
+
+  it('leaves a US address exactly as it was (no country read)', async () => {
+    const { client, calls } = fakeClient(context([variant(KURTA, 8500)]), charges());
+    const r = await priceCart(client, schema.parse(body([{ variantId: KURTA, quantity: 1 }])));
+    assert.ok(r.ok);
+    assert.equal(r.quote.lines[0]!.unitPriceCents, 8500);
+    assert.ok(!calls.includes('store_country_prices'));
   });
 });

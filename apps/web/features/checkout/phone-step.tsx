@@ -2,7 +2,9 @@
 
 import { useState } from 'react';
 
-import { formatUsPhone, usPhoneDigits } from '@repo/shared/domain';
+import { anyPhone, formatUsPhone } from '@repo/shared/domain';
+
+import { useMoney } from '@/features/shell/market';
 
 import { field, input, note, primary } from './step';
 
@@ -19,19 +21,21 @@ function UsFlag(): React.JSX.Element {
 }
 
 /**
- * Step 1 (D-087): the phone number, +1 with the US flag; required, for delivery only, no code sent. We deliver only in
- * the US, so the country is fixed.
+ * Step 1 (D-087): the phone number, +1 with the US flag in the US; required, for delivery only, no code sent. D-208:
+ * abroad, a number with its country code (+44 …); a US number is still taken anywhere.
  */
 export function PhoneStep({ value, onDone }: { value: string | null; onDone: (digits: string) => void }): React.JSX.Element {
   const [error, setError] = useState<string | null>(null);
+  const { market } = useMoney();
+  const abroad = market !== 'us' || (value?.startsWith('+') ?? false);
   return (
     <form
       noValidate
       onSubmit={(e) => {
         e.preventDefault();
-        const digits = usPhoneDigits(String(new FormData(e.currentTarget).get('phone') ?? ''));
+        const digits = anyPhone(String(new FormData(e.currentTarget).get('phone') ?? ''));
         if (!digits) {
-          setError('Enter a 10-digit US phone number.');
+          setError(abroad ? 'Enter your phone number with its country code, like +44 20 7946 0958.' : 'Enter a 10-digit US phone number.');
           return;
         }
         setError(null);
@@ -40,24 +44,39 @@ export function PhoneStep({ value, onDone }: { value: string | null; onDone: (di
     >
       <label className={field}>
         Phone number
-        <span className="mt-1.5 flex">
-          <span className="border-line bg-surface inline-flex min-h-12 items-center gap-1.5 rounded-l-md border border-r-0 px-3 text-[15px] font-medium">
-            <UsFlag />
-            <span className="sr-only">United States</span>+1
-          </span>
+        {abroad ? (
           <input
             name="phone"
             type="tel"
             inputMode="tel"
-            autoComplete="tel-national"
+            autoComplete="tel"
             required
-            defaultValue={value ? formatUsPhone(value).slice(3) : undefined}
-            placeholder="(732) 555-0142"
+            defaultValue={value ? (value.startsWith('+') ? value : formatUsPhone(value)) : undefined}
+            placeholder="+44 20 7946 0958"
             aria-invalid={error ? true : undefined}
             aria-describedby={error ? 'phone-error' : undefined}
-            className={`${input} mt-0 rounded-l-none`}
+            className={input}
           />
-        </span>
+        ) : (
+          <span className="mt-1.5 flex">
+            <span className="border-line bg-surface inline-flex min-h-12 items-center gap-1.5 rounded-l-md border border-r-0 px-3 text-[15px] font-medium">
+              <UsFlag />
+              <span className="sr-only">United States</span>+1
+            </span>
+            <input
+              name="phone"
+              type="tel"
+              inputMode="tel"
+              autoComplete="tel-national"
+              required
+              defaultValue={value ? formatUsPhone(value).slice(3) : undefined}
+              placeholder="(732) 555-0142"
+              aria-invalid={error ? true : undefined}
+              aria-describedby={error ? 'phone-error' : undefined}
+              className={`${input} mt-0 rounded-l-none`}
+            />
+          </span>
+        )}
       </label>
       {error ? (
         <p id="phone-error" className="text-danger -mt-2 mb-3 text-sm" role="alert">

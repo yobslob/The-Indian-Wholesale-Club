@@ -4,6 +4,9 @@ import { useEffect, useState } from 'react';
 
 import { US_STATES } from '@repo/shared/domain';
 
+import { useMoney } from '@/features/shell/market';
+
+import { CountryField, DeliveryAbroad } from './delivery-abroad';
 import { field, input, note, primary } from './step';
 
 export interface Delivery {
@@ -14,6 +17,8 @@ export interface Delivery {
   state: string;
   line1: string;
   line2: string;
+  /** D-208: the country (lower-case code; empty = the visitor's). */
+  country: string;
 }
 
 type Lookup =
@@ -21,13 +26,16 @@ type Lookup =
 
 /** One line for the folded step: "Meera Nair · 12 Oak St, Edison, NJ 08817". */
 export function deliverySummary(d: Delivery): string {
-  return `${d.fullName} · ${d.line1}${d.line2 ? ` ${d.line2}` : ''}, ${d.city}, ${d.state} ${d.zipCode}`;
+  const place = [d.city, d.state, d.zipCode].filter(Boolean).join(d.country && d.country !== 'us' ? ', ' : ' ');
+  const country = d.country && d.country !== 'us' ? `, ${d.country.toUpperCase()}` : '';
+  return `${d.fullName} · ${d.line1}${d.line2 ? ` ${d.line2}` : ''}, ${place}${country}`;
 }
 
 /**
  * Step 2 (D-087): name, email (confirmations and guest tracking), the ZIP code with the city and state filled in from
- * our own list (D-098, /api/zip; editable, and an unknown ZIP asks for them), street and apartment. Coupons are chosen
- * in the bag (D-192). Continue to payment hands the details up; the parent prices the bag on the server.
+ * our own list (D-098, /api/zip; editable, and an unknown ZIP asks for them), street and apartment. D-208: the country
+ * first (the visitor's to start with); any other than the US has its own fields (delivery-abroad.tsx). Continue to
+ * payment hands the details up; the parent prices the bag on the server, in that country.
  */
 export function DeliveryStep({
   value,
@@ -40,6 +48,8 @@ export function DeliveryStep({
   error: string | null;
   onDone: (d: Delivery) => void;
 }): React.JSX.Element {
+  const { market } = useMoney();
+  const [country, setCountry] = useState(value.country || market);
   const [zip, setZip] = useState(value.zipCode);
   const [city, setCity] = useState(value.city);
   const [state, setState] = useState(value.state);
@@ -72,6 +82,8 @@ export function DeliveryStep({
   }, [zip, value.zipCode, value.city]);
 
   const askPlace = editPlace || lookup.kind === 'unknown';
+  if (country !== 'us')
+    return <DeliveryAbroad value={value} country={country} onCountry={setCountry} busy={busy} error={error} onDone={onDone} />;
   return (
     <form
       onSubmit={(e) => {
@@ -91,9 +103,11 @@ export function DeliveryStep({
           state,
           line1: text('line1'),
           line2: text('line2'),
+          country: 'us',
         });
       }}
     >
+      <CountryField value={country} onChange={setCountry} />
       <label className={field}>
         Full name
         <input
@@ -217,7 +231,7 @@ export function DeliveryStep({
         {busy ? 'Checking your bag…' : 'Continue to payment'}
       </button>
       <p className={note}>
-        US addresses only. You will see the total and delivery window before paying.
+        You will see the total and delivery window before paying.
       </p>
     </form>
   );

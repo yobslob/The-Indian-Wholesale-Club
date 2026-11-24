@@ -2,7 +2,7 @@
 
 import { useEffect, useRef, useState, useSyncExternalStore } from 'react';
 
-import { formatUsd, formatUsPhone, usPhoneDigits } from '@repo/shared/domain';
+import { anyPhone, formatAnyPhone, formatUsd } from '@repo/shared/domain';
 
 import { BillCard } from '@/features/cart/bill-card';
 import { EmptyLine } from '@/features/cart/cart-view';
@@ -26,7 +26,7 @@ import { useCheckoutPayment } from './use-checkout-payment';
 import type { SummaryLine } from './last-order';
 import type { CheckoutQuote, CheckoutRequestBody, SavedAddress, SavedDetails, StockProblemLine } from './types';
 
-const NO_DELIVERY: Delivery = { fullName: '', email: '', zipCode: '', city: '', state: '', line1: '', line2: '' };
+const NO_DELIVERY: Delivery = { fullName: '', email: '', zipCode: '', city: '', state: '', line1: '', line2: '', country: '' };
 
 const WIDE = '(min-width: 900px)';
 const onWidth = (tell: () => void): (() => void) => {
@@ -41,13 +41,22 @@ const useWide = (): boolean => useSyncExternalStore(onWidth, () => window.matchM
 /** D-114: the delivery form filled from a saved address. */
 function deliveryFrom(a: SavedAddress | null, email: string): Delivery {
   if (!a) return { ...NO_DELIVERY, email };
-  return { fullName: a.fullName, email, zipCode: a.zipCode, city: a.city, state: a.state, line1: a.line1, line2: a.line2 ?? '' };
+  return { fullName: a.fullName, email, zipCode: a.zipCode, city: a.city, state: a.state, line1: a.line1, line2: a.line2 ?? '', country: 'us' };
 }
 
 /** A-8: the delivery form as it was sent with a saved checkout. */
 function deliveryOf(body: Pick<CheckoutRequestBody, 'address' | 'email'>): Delivery {
   const a = body.address;
-  return { fullName: a.fullName, email: body.email, zipCode: a.zipCode, city: a.city, state: a.state, line1: a.line1, line2: a.line2 ?? '' };
+  return {
+    fullName: a.fullName,
+    email: body.email,
+    zipCode: a.zipCode,
+    city: a.city,
+    state: a.state ?? '',
+    line1: a.line1,
+    line2: a.line2 ?? '',
+    country: (a.country ?? 'US').toLowerCase(),
+  };
 }
 
 /**
@@ -68,7 +77,7 @@ export function CheckoutFlow({ saved }: { saved: SavedDetails | null }): React.J
   const wide = useWide();
   const [mounted, setMounted] = useState(false);
   const first = saved?.addresses[0] ?? null;
-  const savedPhone = first?.phone ? usPhoneDigits(first.phone) : null;
+  const savedPhone = first?.phone ? anyPhone(first.phone) : null;
   const [at, setAt] = useState<1 | 2 | 3>(savedPhone ? 2 : 1);
   const [phone, setPhone] = useState<string | null>(savedPhone);
   const [delivery, setDelivery] = useState<Delivery>(() => deliveryFrom(first, saved?.email ?? ''));
@@ -111,7 +120,7 @@ export function CheckoutFlow({ saved }: { saved: SavedDetails | null }): React.J
       // D-192: back from changing the bag: what was typed stays typed
       const details = saved ? null : readDetails();
       if (details) {
-        const digits = details.address.phone ? usPhoneDigits(details.address.phone) : null;
+        const digits = details.address.phone ? anyPhone(details.address.phone) : null;
         if (digits) setPhone(digits);
         setDelivery(deliveryOf(details));
         setFormVersion((v) => v + 1);
@@ -120,7 +129,7 @@ export function CheckoutFlow({ saved }: { saved: SavedDetails | null }): React.J
       return;
     }
     const digits = resume.request.address.phone
-      ? usPhoneDigits(resume.request.address.phone)
+      ? anyPhone(resume.request.address.phone)
       : null;
     if (digits) setPhone(digits);
     setDelivery(deliveryOf(resume.request));
@@ -158,7 +167,9 @@ export function CheckoutFlow({ saved }: { saved: SavedDetails | null }): React.J
         city: d.city,
         state: d.state,
         zipCode: d.zipCode,
-        phone: phone ? formatUsPhone(phone) : null,
+        phone: phone ? formatAnyPhone(phone) : null,
+        // D-208: the address's country prices the bag (its freight) and decides the tax
+        country: (d.country || 'us').toUpperCase(),
       },
       lines: lines.map((l) => ({ variantId: l.variantId, quantity: l.quantity })),
       promoCode: null,
@@ -234,7 +245,7 @@ export function CheckoutFlow({ saved }: { saved: SavedDetails | null }): React.J
           n={1}
           title="Phone"
           state={stateOf(1)}
-          summary={phone ? formatUsPhone(phone) : ''}
+          summary={phone ? formatAnyPhone(phone) : ''}
           onEdit={edit(1)}
         >
           <PhoneStep
@@ -258,7 +269,7 @@ export function CheckoutFlow({ saved }: { saved: SavedDetails | null }): React.J
             onPick={(a) => {
               setPicked(a?.id ?? 'new');
               setDelivery((d) => deliveryFrom(a, d.email));
-              const digits = a?.phone ? usPhoneDigits(a.phone) : null;
+              const digits = a?.phone ? anyPhone(a.phone) : null;
               if (digits) setPhone(digits);
             }}
           />
