@@ -93,12 +93,11 @@ export const SETTING_GROUPS: SettingGroup[] = [
     ],
   },
   {
-    title: 'Send home (D-205, D-206)',
-    note: 'A gift in rupees to someone in India, added in the bag beside the goods (never part of the free line, savings, coupons or tax), never more than the order itself, and paid out by hand from Admin → Send home. The rate is checked every day (Admin → Send home shows it); a gift promises its dollars × that rate less what IWC keeps, to the rupee, fixed at payment. What IWC keeps is stated in the Terms only. Closed while the rate is more than three days old.',
+    title: 'Your 5% and Send home (D-208)',
+    note: "Every order saves this % of its goods, paid by IWC out of what it makes on the order, never added to what the customer pays. The customer sends it home in rupees (Admin → Send home pays it out by hand at the day's rate, nothing taken off) or keeps it as Coins. Send home needs a rate checked in the last three days: switching it on here checks today's rate at once, and a timer checks it every morning.",
     fields: [
-      { key: 'send_home_open', label: 'Send home open (1 = on; empty or 0 = off)', kind: 'int' },
-      { key: 'send_home_keep_pct', label: 'IWC keeps of each gift (%; founder 2026-11-24: 3)', kind: 'pct' },
-      { key: 'send_home_month_cap_cents', label: 'Most one customer sends in a month ($; empty = no cap)', kind: 'usd' },
+      { key: 'save_pct', label: 'Every order saves (% of its goods; founder 2026-11-24: 5; empty = none)', kind: 'pct' },
+      { key: 'send_home_open', label: 'Send home open (1 = on; empty or 0 = off: the saving can only be kept as Coins)', kind: 'int' },
       { key: 'send_home_hold_hours', label: "A first order's gift waits (hours; empty = 0, Q-66)", kind: 'int' },
     ],
   },

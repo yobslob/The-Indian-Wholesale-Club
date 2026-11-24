@@ -192,7 +192,7 @@ the navbar's ads as the Maa–Behen ad (D-209). *Done when* `node scripts/check.
 charges exactly what it charged before; with Maa it charges the same and makes one `to_send` gift of ₹(4.25 × rate);
 cancelling before sending removes either; no coupon field shows anywhere; e2e covers both at 390 px.
 
-**Phase 2: the country on Profile.** The flag for every market, the Profile row and sheet, `profiles.country`, the
+**Phase 2: the country on Profile** (built 2026-11-24 with the four markets of today; Phase 3 widens the list; `profiles.country` not added: the cookie is enough). The flag for every market, the Profile row and sheet, `profiles.country`, the
 cookie. *Done when* a US visitor sees the US flag on the Profile icon, changes to Canada from Profile and every price
 turns CA$; e2e at 390 px.
 

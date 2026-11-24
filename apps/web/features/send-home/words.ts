@@ -128,11 +128,12 @@ export const SEND_HOME_WORDS = {
     heldDispute: 'On hold: this customer has an open dispute',
     empty: 'Nothing here.',
     checkRate: "Check today's rate",
-    rateLine: (rate: string, when: string, keep: number) => `Today's rate ₹${rate} a dollar, checked ${when}; IWC keeps ${keep}%.`,
+    rateLine: (rate: string, when: string) => `Today's rate ₹${rate} a dollar, checked ${when}.`,
     noRate: 'No rate checked yet.',
     open: 'Send home is open.',
     closed: 'Send home is closed (Settings → Send home open).',
     closedOld: 'Send home is closed until the rate is checked again (it is more than three days old).',
+    closedNoRate: "Send home is switched on but no rate is checked yet, so customers can only keep their 5%: press Check today's rate.",
   },
   emails: {
     sentSubject: (inr: string, name: string) => `${inr} reached ${name}`,

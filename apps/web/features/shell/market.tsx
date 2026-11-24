@@ -127,10 +127,8 @@ export function CheckoutCurrencyNote(): React.JSX.Element | null {
   );
 }
 
-/** D-199: the menu's first line abroad, the flag and the switch; nothing in the US (the footer has the switch). */
-export function MenuMarket(): React.JSX.Element | null {
-  const { market } = useMoney();
-  if (market === 'us') return null;
+/** D-199, D-208: the menu's first line, the flag and the switch, in every country (the US included). */
+export function MenuMarket(): React.JSX.Element {
   return (
     <div className="site-panel-market">
       <span className="site-flag" aria-hidden="true" />

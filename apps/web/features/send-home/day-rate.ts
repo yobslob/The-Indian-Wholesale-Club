@@ -9,7 +9,8 @@ import type { IwcClient } from '@repo/db';
  * no key; Claude's proposed source, D-206's interpretation). Written with set_send_home_rate, which refuses a rate out of
  * range or 10% from the last, so one bad answer never prices gifts.
  */
-export const RATE_SOURCE = 'https://api.frankfurter.app/latest?from=USD&to=INR';
+// The source moved to frankfurter.dev (the old address answers 301 since 2026), so it is called there directly
+export const RATE_SOURCE = 'https://api.frankfurter.dev/v1/latest?from=USD&to=INR';
 
 export async function checkDayRate(client: IwcClient): Promise<number> {
   const res = await fetch(RATE_SOURCE, { cache: 'no-store', signal: AbortSignal.timeout(10_000) });

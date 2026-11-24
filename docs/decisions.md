@@ -539,7 +539,7 @@ What it means for the build:
 - Written as the store writes a window: "7 – 12 delivery days".
 - The founder can still change the days in Admin → Settings → Delivery at any time; the docs that stated "7 delivery days" now say 7 – 12.
 
-**D-208 · 2026-11-24 · founder: no money sent for customers; 5% of every bag saved, sent home by IWC or kept as Coins; coupons go; the flag always on Profile; IWC open in every country with ShipGlobal freight by country** · Supersedes D-205's and D-206's customer-paid gift (the desk, the sheet, the UPI checker and the daily rate stay), D-191's and D-192's coupons, D-193's 10% off; changes D-199 (the flag for every country) and D-197/D-198 (every country, not three); answers Q-61's courier and countries. The plan is `docs/plan-world.md` (§2 holds every rule).
+**D-208 · 2026-11-24 · founder: no money sent for customers; 5% of every bag saved, sent home by IWC or kept as Coins; coupons go; the flag always on Profile; IWC open in every country with ShipGlobal freight by country** · Supersedes D-205's and D-206's customer-paid gift (the desk, the sheet, the UPI checker and the daily rate stay), D-191's and D-192's coupons, D-193's 10% off; changes D-199 (the flag for every country) and D-197/D-198 (every country, not three); answers Q-61's courier and countries. The plan is `docs/plan-world.md` (§2 holds every rule). · confirmed by D-210 (no % taken off the gift)
 
 Founder, verbatim: "The functioning changed:
 
@@ -572,3 +572,11 @@ What it means for the build:
 - **Delivery days (Q-70):** every country shows the US's days from Settings: food 7 – 12, clothing and home & gifts 12 – 16 business days (D-187, D-207, non-negotiable 4). No days per country.
 - **Duties (Q-72):** "Duties paid. Nothing to pay at your door." (D-161) shows in every country. IWC pays any duty or import tax the courier bills; the customer never pays one at the door.
 *Interpretation (proposed, confirm when Phase 4 starts):* "maa bhen" read as Maa and Behen (sister) in the ad's words, while the bag's chips stay Maa · Papa · Didi · Someone else · Keep it; duties abroad are paid from IWC's ShipGlobal wallet when ShipGlobal bills them (its cheapest services mostly say "Duties may apply", so this is a cost the prices do not include, worth watching in Insights).
+
+**D-210 · 2026-11-24 · founder: no % is taken off the gift; the gift replaces the discount and comes out of what IWC makes on the order** · Confirms D-208's "IWC pays it" (nothing kept, D-206's 3% gone everywhere)
+
+Founder, verbatim: "also we are not taking any % off the gift, you got confused, The gift is basically the replacement of discount, the gift is some cut from what we are making off of the customer"
+
+What it means for the build:
+- The 5% saving is IWC's own cut from its margin on the order, in place of the coupons' discount: the customer pays the same, and whatever goes home goes in full (rupees = dollars × the day's rate, to the rupee).
+- No 3% anywhere: the Terms' Send home paragraph (D-206) is rewritten for the saving, Settings no longer shows "IWC keeps", and Admin → Send home's rate line no longer says what IWC keeps (`send_home_keep_pct` stays 0, D-208's migration).

@@ -280,6 +280,11 @@
     background: center / cover no-repeat;
     box-shadow: 0 0 0 1.5px theme('colors.paper');
   }
+  /* D-208: the flag shows for every country, the US included */
+  html[data-market='us'] .site-flag {
+    display: block;
+    background-image: url('/flags/us.svg');
+  }
   html[data-market='ca'] .site-flag {
     display: block;
     background-image: url('/flags/ca.svg');
