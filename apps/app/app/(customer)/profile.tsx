@@ -6,6 +6,7 @@ import { Pressable, ScrollView, Text, View } from 'react-native';
 import tokens from '@repo/tokens';
 
 import { Screen } from '@/components/ui';
+import { CountryRow } from '@/features/account/country-row';
 import { AddressCards, OrderCards, YourDetails } from '@/features/account/profile-sections';
 import { SignInCard } from '@/features/auth/sign-in-card';
 import { HelpSheet } from '@/features/info/help-sheet';
@@ -49,6 +50,8 @@ export default function ProfileScreen(): React.JSX.Element {
 
   return (
     <Screen back={false} title="Profile">
+      {/* D-208: the country, always */}
+      <CountryRow />
       {session ? (
         <>
           <ScrollView horizontal showsHorizontalScrollIndicator={false} className="-mx-4" contentContainerClassName="gap-2 px-4">

@@ -60,3 +60,20 @@ describe('app checkout request (flows.md §3)', () => {
     assert.deepEqual(badState, { error: 'Choose a US state' });
   });
 });
+
+describe('app checkout request abroad (D-208)', () => {
+  it("sends the address's country and keeps a region as typed", () => {
+    const result = toCheckoutRequest(
+      { ...valid, city: 'Berlin', state: 'Berlin', zipCode: '10115', country: 'de' },
+      [line],
+    );
+    assert.ok('body' in result);
+    assert.equal(result.body.address.country, 'DE');
+    assert.equal(result.body.address.state, 'Berlin');
+    assert.equal(result.body.promoCode, null);
+  });
+
+  it('a US address still needs a US ZIP', () => {
+    assert.ok('error' in toCheckoutRequest({ ...valid, zipCode: 'SW1A 1AA' }, [line]));
+  });
+});

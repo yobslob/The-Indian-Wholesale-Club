@@ -2,13 +2,15 @@ import { useRouter } from 'expo-router';
 import { useEffect, useMemo, useState } from 'react';
 import { Pressable, Text, View } from 'react-native';
 
-import { choose, formatUsd, isAvailable, optionAxes, selectionOf, wasCents } from '@repo/shared/domain';
+import { choose, isAvailable, optionAxes, selectionOf, wasCents } from '@repo/shared/domain';
+
 
 import type { BuyBarState } from './buy-bar';
 import type { Product, Variant } from '@repo/db/store';
 
 import { Button } from '@/components/ui';
 import { MAX_QTY_PER_LINE, useBag } from '@/features/cart/store';
+import { useCountry } from '@/features/shell/country';
 
 function Choice({
   label,
@@ -67,6 +69,8 @@ export function AddToBag({
 
   const axes = useMemo(() => optionAxes(variants), [variants]);
   const variant = variants.find((v) => v.id === variantId);
+  // D-208: the option's price (and its heavy-item shipping) in the shopper's country
+  const money = useCountry();
   const left = variant?.available ?? 0;
   const addToBag = (): void => {
     if (!variant) return;
@@ -79,7 +83,8 @@ export function AddToBag({
         regionSlug: product.region_slug,
         regionName: product.region_name,
         variantLabel: variant.label,
-        unitPriceCents: variant.price_cents,
+        unitPriceCents: money.cents(variant.price_cents, { variant: variant.id }) ?? variant.price_cents,
+        priceCountry: money.cents(variant.price_cents, { variant: variant.id }) === null ? 'us' : money.country,
         imagePath: product.primary_image_path,
       },
       quantity,
@@ -93,7 +98,10 @@ export function AddToBag({
       variant
         ? {
             name: product.name,
-            detail: variants.length > 1 ? `${formatUsd(variant.price_cents)} · ${variant.label}` : formatUsd(variant.price_cents),
+            detail:
+              variants.length > 1
+                ? `${money.format(variant.price_cents, { variant: variant.id })} · ${variant.label}`
+                : money.format(variant.price_cents, { variant: variant.id }),
             soldOut: left <= 0,
             added,
             add: addToBag,
@@ -118,9 +126,9 @@ export function AddToBag({
       <Text className="font-ui-semibold text-ink text-[22px]">
         {/* D-190: as on the website's product page */}
         {product.offer ? (
-          <Text className="font-body text-ink-muted text-[18px] line-through">{formatUsd(wasCents(variant.price_cents, product.product_type))} </Text>
+          <Text className="font-body text-ink-muted text-[18px] line-through">{money.format(wasCents(money.cents(variant.price_cents, { variant: variant.id }) ?? variant.price_cents, product.product_type))} </Text>
         ) : null}
-        <Text className={product.offer ? 'text-brand' : undefined}>{formatUsd(variant.price_cents)}</Text>
+        <Text className={product.offer ? 'text-brand' : undefined}>{money.format(variant.price_cents, { variant: variant.id })}</Text>
       </Text>
       {/* founder 2026-10-24: heavy cookware's other half, added in the bag and at checkout */}
       {variant.heavy_cents > 0 ? (
@@ -128,7 +136,7 @@ export function AddToBag({
           <Text className="bg-paper border-line font-ui-semibold text-ink overflow-hidden rounded-full border px-2.5 py-1 text-xs">
             Heavy-item shipping
           </Text>
-          <Text className="font-body text-ink-muted text-sm">+ {formatUsd(variant.heavy_cents)}, added at checkout</Text>
+          <Text className="font-body text-ink-muted text-sm">+ {money.format(variant.heavy_cents, { variant: variant.id, heavy: true })}, added at checkout</Text>
         </View>
       ) : null}
       {axes.map((axis) => (

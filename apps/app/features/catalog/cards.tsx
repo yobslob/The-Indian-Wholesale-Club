@@ -11,13 +11,14 @@ import Animated, {
   withTiming,
 } from 'react-native-reanimated';
 
-import { formatUsd, regionSegment, wasCents } from '@repo/shared/domain';
+import { regionSegment, wasCents } from '@repo/shared/domain';
 import tokens from '@repo/tokens';
 
 import type { ProductCard as ProductCardData, RegionProductCard } from '@repo/db/store';
 
 import { Photo } from '@/components/photo';
 import { useBag } from '@/features/cart/store';
+import { useCountry } from '@/features/shell/country';
 import { useDeliveryLine } from '@/features/shell/days';
 
 type CardData = ProductCardData & Partial<Pick<RegionProductCard, 'available' | 'quick_add'>>;
@@ -125,6 +126,9 @@ export const ProductCard = memo(function ProductCard({
 }): React.JSX.Element {
   const width = layout === 'row' ? 'w-[164px]' : layout === 'fill' ? 'flex-1' : 'w-[48%]';
   const days = useDeliveryLine(product.product_type);
+  // D-208: the card's price in the shopper's country (its own, asked for abroad)
+  const money = useCountry();
+  const local = money.cents(product.price_cents, { product: product.id });
   return (
     <View className={`${width} gap-2.5`}>
       <View>
@@ -172,8 +176,8 @@ export const ProductCard = memo(function ProductCard({
         </Text>
         <Text className="font-body text-ink-muted text-[12.5px]">
           {/* D-190: as on the website's card */}
-          {product.offer ? <Text className="line-through">{formatUsd(wasCents(product.price_cents, product.product_type))} </Text> : null}
-          <Text className={product.offer ? 'font-ui-semibold text-brand' : undefined}>{formatUsd(product.price_cents)}</Text>
+          {product.offer && local !== null ? <Text className="line-through">{money.format(wasCents(local, product.product_type))} </Text> : null}
+          <Text className={product.offer ? 'font-ui-semibold text-brand' : undefined}>{money.format(product.price_cents, { product: product.id })}</Text>
           {product.region_name ? ` · ${product.region_name}` : null}
         </Text>
         {days ? <Text className="font-body text-ink-muted text-[12px]">{days}</Text> : null}

@@ -21,6 +21,8 @@ export interface BagLine {
   unitPriceCents: number;
   imagePath: string | null;
   quantity: number;
+  /** D-208: the country unitPriceCents is for (absent: the US); country-bag.ts keeps it the shopper's. */
+  priceCountry?: string;
 }
 
 interface BagState {
@@ -28,6 +30,8 @@ interface BagState {
   add: (line: Omit<BagLine, 'quantity'>, quantity: number) => void;
   setQuantity: (variantId: string, quantity: number) => void;
   clear: () => void;
+  /** D-208: lines priced again in `country`. */
+  reprice: (country: string, prices: Record<string, number>) => void;
 }
 
 export const useBag = create<BagState>()(
@@ -50,6 +54,12 @@ export const useBag = create<BagState>()(
         ),
       };
     }),
+  reprice: (country, prices) =>
+    set((state) => ({
+      lines: state.lines.map((l) =>
+        prices[l.variantId] === undefined ? l : { ...l, unitPriceCents: prices[l.variantId]!, priceCountry: country },
+      ),
+    })),
   setQuantity: (variantId, quantity) =>
     set((state) => ({
       lines:
