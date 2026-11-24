@@ -1,6 +1,6 @@
 # Plan: Cook at home, recipes with a one-tap kit (handoff for the next agent)
 
-*Built on 2026-11-23 (D-203); D-204 changed it the same day: Home's arches gave way to a Cook at home row, a recipe publishes without a photo and with the cheapest listing by default (Publish all), 100 more recipes (`catalogue/recipes-101-200.csv`) and dry swaps for fresh herbs. Where this plan and D-204 differ, D-204 holds.*
+*Built on 2026-11-23 (D-203); D-204 changed it the same day: Home's arches gave way to a Cook at home row, a recipe publishes without a photo and with the cheapest listing by default (Publish all), 100 more recipes (`catalogue/recipes-101-200.csv`) and dry swaps for fresh herbs. Where this plan and D-204 differ, D-204 holds. On 2026-11-25 the founder asked for 300 more (§7: `catalogue/recipes-201-500.csv`).*
 
 *Written 2026-11-23 by Claude from the repo at `main` (da3f727) and the founder's idea of the same day; updated the same
 day with the founder's answers to §10 (now binding, folded into every section). Status: **nothing built.** Read all of
@@ -292,6 +292,12 @@ mode button present.
   home versions of each dish; nothing regional is invented (D-012), and all of it stays a draft until approved.
 - **The founder:** imports each file, adds photos named by slug (§5.3), checks the matches, approves the words,
   publishes, pins one to Home. The agent never writes to the hosted database (CLAUDE.md).
+- **300 more** (founder, 2026-11-25: "give me 300 more recipes/snacks/kits that fit the description"): Claude's picks,
+  `catalogue/recipes-drafts-11.json` to `-25.json` (ranks 201 – 500, 20 a file), listed in `catalogue/recipes-201-500.csv`
+  with the same columns. Dishes and states the first 200 left out (30 states and All of India; Lakshadweep, Mizoram,
+  Tripura and Nagaland new among them), same rules: D-204's dry swaps, local lines for anything fresh, dairy, oily,
+  meaty or liquid, words drafts until approved. Pantry items they need that the Blinkit list lacked were added to it
+  (cloves, masoor dal, ragi flour, jowar atta, makhana and 27 more).
 
 ## 8. Later (not in this plan; founder decides)
 A "about $x a plate" line from `grams_used` and each pack's net quantity; recipes in site search; recipe rows on state
