@@ -1,0 +1,1323 @@
+[
+  {
+    "slug": "double-ka-meetha",
+    "name": "Double Ka Meetha",
+    "kind": "sweets",
+    "state": "Telangana",
+    "rank": 441,
+    "blurb": "Hyderabad's fried bread soaked in saffron syrup and topped with thickened milk.",
+    "minutes": 40,
+    "soak_hours": null,
+    "serves": 4,
+    "effort": "medium",
+    "ingredients": [
+      {
+        "label": "Saffron",
+        "amount": "a pinch",
+        "source": "iwc",
+        "match_words": "saffron"
+      },
+      {
+        "label": "Green cardamom",
+        "amount": "4",
+        "source": "iwc",
+        "match_words": "green cardamom"
+      },
+      {
+        "label": "Cashews",
+        "amount": "2 tbsp",
+        "source": "iwc",
+        "match_words": "cashews"
+      },
+      {
+        "label": "Almonds",
+        "amount": "2 tbsp",
+        "source": "iwc",
+        "match_words": "almonds"
+      },
+      {
+        "label": "Bread",
+        "amount": "6 slices",
+        "source": "local"
+      },
+      {
+        "label": "Milk",
+        "amount": "2 cups",
+        "source": "local"
+      },
+      {
+        "label": "Sugar",
+        "amount": "¾ cup",
+        "source": "local"
+      },
+      {
+        "label": "Ghee",
+        "amount": "for frying",
+        "source": "local"
+      }
+    ],
+    "steps": [
+      {
+        "text": "Cut the bread into triangles and fry in ghee until golden.",
+        "minutes": 10
+      },
+      {
+        "text": "Make a light syrup of half the sugar with saffron and cardamom; dip the bread.",
+        "minutes": 8
+      },
+      {
+        "text": "Reduce the milk with the rest of the sugar until thick.",
+        "minutes": 20
+      },
+      {
+        "text": "Pour the milk over the bread and top with fried nuts.",
+        "minutes": 2
+      }
+    ]
+  },
+  {
+    "slug": "khubani-ka-meetha",
+    "name": "Khubani Ka Meetha",
+    "kind": "sweets",
+    "state": "Telangana",
+    "rank": 442,
+    "blurb": "Hyderabad's dried apricot compote, served at weddings with cream.",
+    "minutes": 45,
+    "soak_hours": 8,
+    "serves": 6,
+    "effort": "easy",
+    "ingredients": [
+      {
+        "label": "Dried apricots",
+        "amount": "250 g",
+        "source": "iwc",
+        "match_words": "dried apricots"
+      },
+      {
+        "label": "Almonds",
+        "amount": "2 tbsp",
+        "source": "iwc",
+        "match_words": "almonds"
+      },
+      {
+        "label": "Sugar",
+        "amount": "¼ cup",
+        "source": "local"
+      },
+      {
+        "label": "Cream",
+        "amount": "for serving",
+        "source": "local"
+      }
+    ],
+    "steps": [
+      {
+        "text": "Soak the apricots overnight. Stone them and keep the kernels if you like.",
+        "minutes": 10
+      },
+      {
+        "text": "Cook the apricots in the soaking water with the sugar until soft and jammy.",
+        "minutes": 30
+      },
+      {
+        "text": "Mash part of them, leaving some whole.",
+        "minutes": 2
+      },
+      {
+        "text": "Serve cold with cream and almonds.",
+        "minutes": null
+      }
+    ]
+  },
+  {
+    "slug": "sheer-khurma",
+    "name": "Sheer Khurma",
+    "kind": "sweets",
+    "state": "All of India",
+    "rank": 443,
+    "blurb": "Vermicelli cooked in milk with dates and nuts. Made on Eid morning.",
+    "minutes": 35,
+    "soak_hours": null,
+    "serves": 6,
+    "effort": "easy",
+    "ingredients": [
+      {
+        "label": "Vermicelli",
+        "amount": "½ cup",
+        "source": "iwc",
+        "match_words": "vermicelli"
+      },
+      {
+        "label": "Dates",
+        "amount": "8",
+        "source": "iwc",
+        "match_words": "dates"
+      },
+      {
+        "label": "Almonds",
+        "amount": "3 tbsp",
+        "source": "iwc",
+        "match_words": "almonds"
+      },
+      {
+        "label": "Pistachios",
+        "amount": "2 tbsp",
+        "source": "iwc",
+        "match_words": "pistachios"
+      },
+      {
+        "label": "Cashews",
+        "amount": "2 tbsp",
+        "source": "iwc",
+        "match_words": "cashews"
+      },
+      {
+        "label": "Saffron",
+        "amount": "a pinch",
+        "source": "iwc",
+        "match_words": "saffron"
+      },
+      {
+        "label": "Green cardamom",
+        "amount": "4",
+        "source": "iwc",
+        "match_words": "green cardamom"
+      },
+      {
+        "label": "Full-fat milk",
+        "amount": "1 litre",
+        "source": "local"
+      },
+      {
+        "label": "Sugar",
+        "amount": "⅓ cup",
+        "source": "local"
+      },
+      {
+        "label": "Ghee",
+        "amount": "2 tbsp",
+        "source": "local"
+      }
+    ],
+    "steps": [
+      {
+        "text": "Fry the nuts and chopped dates in ghee; set aside.",
+        "minutes": 4
+      },
+      {
+        "text": "Fry the vermicelli in the same ghee until golden.",
+        "minutes": 3
+      },
+      {
+        "text": "Add the milk and simmer until the vermicelli is soft and the milk thickens.",
+        "minutes": 20
+      },
+      {
+        "text": "Add the sugar, saffron, cardamom and the nuts.",
+        "minutes": 3
+      }
+    ]
+  },
+  {
+    "slug": "mishti-doi",
+    "name": "Mishti Doi",
+    "kind": "sweets",
+    "state": "West Bengal",
+    "rank": 444,
+    "blurb": "Bengal's sweet yogurt, set with caramelised sugar in clay pots.",
+    "minutes": 30,
+    "soak_hours": 8,
+    "serves": 4,
+    "effort": "medium",
+    "ingredients": [
+      {
+        "label": "Green cardamom",
+        "amount": "2",
+        "source": "iwc",
+        "match_words": "green cardamom"
+      },
+      {
+        "label": "Full-fat milk",
+        "amount": "1 litre",
+        "source": "local"
+      },
+      {
+        "label": "Sugar",
+        "amount": "½ cup",
+        "source": "local"
+      },
+      {
+        "label": "Yogurt (starter)",
+        "amount": "2 tbsp",
+        "source": "local"
+      }
+    ],
+    "steps": [
+      {
+        "text": "Reduce the milk to two-thirds.",
+        "minutes": 20
+      },
+      {
+        "text": "Caramelise half the sugar until amber; stir it into the milk with the rest of the sugar.",
+        "minutes": 5
+      },
+      {
+        "text": "Cool to lukewarm and stir in the starter and crushed cardamom.",
+        "minutes": 3
+      },
+      {
+        "text": "Pour into pots and set in a warm place for eight hours; chill.",
+        "minutes": null
+      }
+    ]
+  },
+  {
+    "slug": "sandesh",
+    "name": "Sandesh",
+    "kind": "sweets",
+    "state": "West Bengal",
+    "rank": 445,
+    "blurb": "Soft fresh chhena kneaded with sugar and cooked briefly. Bengal's everyday sweet.",
+    "minutes": 40,
+    "soak_hours": null,
+    "serves": 4,
+    "effort": "medium",
+    "ingredients": [
+      {
+        "label": "Green cardamom",
+        "amount": "2",
+        "source": "iwc",
+        "match_words": "green cardamom"
+      },
+      {
+        "label": "Pistachios",
+        "amount": "1 tbsp",
+        "source": "iwc",
+        "match_words": "pistachios"
+      },
+      {
+        "label": "Saffron",
+        "amount": "a pinch",
+        "source": "iwc",
+        "match_words": "saffron"
+      },
+      {
+        "label": "Full-fat milk",
+        "amount": "1 litre",
+        "source": "local"
+      },
+      {
+        "label": "Lemon",
+        "amount": "1",
+        "source": "local"
+      },
+      {
+        "label": "Sugar",
+        "amount": "¼ cup",
+        "source": "local"
+      }
+    ],
+    "steps": [
+      {
+        "text": "Boil the milk and split it with lemon juice; strain through cloth and rinse. Hang for 30 minutes.",
+        "minutes": 35
+      },
+      {
+        "text": "Knead the chhena with the sugar until smooth.",
+        "minutes": 5
+      },
+      {
+        "text": "Cook on low, stirring, until it just leaves the pan.",
+        "minutes": 5
+      },
+      {
+        "text": "Add cardamom, cool slightly, shape and top with pistachio and saffron.",
+        "minutes": 8
+      }
+    ]
+  },
+  {
+    "slug": "patishapta",
+    "name": "Patishapta",
+    "kind": "sweets",
+    "state": "West Bengal",
+    "rank": 446,
+    "blurb": "Thin Bengali crêpes rolled around coconut and jaggery. Made for Poush Sankranti.",
+    "minutes": 45,
+    "soak_hours": 1,
+    "serves": 4,
+    "effort": "medium",
+    "ingredients": [
+      {
+        "label": "Rice flour",
+        "amount": "½ cup",
+        "source": "iwc",
+        "match_words": "rice flour"
+      },
+      {
+        "label": "Maida",
+        "amount": "½ cup",
+        "source": "iwc",
+        "match_words": "maida"
+      },
+      {
+        "label": "Sooji",
+        "amount": "¼ cup",
+        "source": "iwc",
+        "match_words": "sooji"
+      },
+      {
+        "label": "Desiccated coconut",
+        "amount": "1½ cups",
+        "source": "iwc",
+        "match_words": "desiccated coconut"
+      },
+      {
+        "label": "Jaggery",
+        "amount": "¾ cup",
+        "source": "iwc",
+        "match_words": "jaggery"
+      },
+      {
+        "label": "Green cardamom",
+        "amount": "2",
+        "source": "iwc",
+        "match_words": "green cardamom"
+      },
+      {
+        "label": "Milk",
+        "amount": "1½ cups",
+        "source": "local"
+      },
+      {
+        "label": "Ghee",
+        "amount": "2 tbsp",
+        "source": "local"
+      }
+    ],
+    "steps": [
+      {
+        "text": "Whisk the flours, sooji and milk into a thin batter; rest an hour.",
+        "minutes": 60
+      },
+      {
+        "text": "Cook the coconut with jaggery and cardamom until sticky.",
+        "minutes": 10
+      },
+      {
+        "text": "Spread a thin crêpe on a greased pan; lay filling along one side and roll.",
+        "minutes": 20
+      },
+      {
+        "text": "Cook until lightly spotted.",
+        "minutes": 5
+      }
+    ]
+  },
+  {
+    "slug": "rasabali",
+    "name": "Rasabali",
+    "kind": "sweets",
+    "state": "Odisha",
+    "rank": 447,
+    "blurb": "Fried flat chhena discs soaked in thickened, cardamom milk. Offered at Kendrapara's temple.",
+    "minutes": 50,
+    "soak_hours": null,
+    "serves": 4,
+    "effort": "medium",
+    "ingredients": [
+      {
+        "label": "Sooji",
+        "amount": "1 tbsp",
+        "source": "iwc",
+        "match_words": "sooji"
+      },
+      {
+        "label": "Green cardamom",
+        "amount": "3",
+        "source": "iwc",
+        "match_words": "green cardamom"
+      },
+      {
+        "label": "Pistachios",
+        "amount": "1 tbsp",
+        "source": "iwc",
+        "match_words": "pistachios"
+      },
+      {
+        "label": "Full-fat milk",
+        "amount": "1.5 litres",
+        "source": "local"
+      },
+      {
+        "label": "Lemon",
+        "amount": "1",
+        "source": "local"
+      },
+      {
+        "label": "Sugar",
+        "amount": "½ cup",
+        "source": "local"
+      },
+      {
+        "label": "Ghee",
+        "amount": "for frying",
+        "source": "local"
+      }
+    ],
+    "steps": [
+      {
+        "text": "Split a litre of milk with lemon, drain the chhena and knead it with sooji until smooth.",
+        "minutes": 25
+      },
+      {
+        "text": "Shape small flat discs and fry in ghee until brown.",
+        "minutes": 10
+      },
+      {
+        "text": "Reduce the remaining milk with sugar and cardamom until thick.",
+        "minutes": 15
+      },
+      {
+        "text": "Soak the discs in the milk for an hour; top with pistachios.",
+        "minutes": null
+      }
+    ]
+  },
+  {
+    "slug": "kalakand",
+    "name": "Kalakand",
+    "kind": "sweets",
+    "state": "Rajasthan",
+    "rank": 448,
+    "blurb": "Soft, grainy milk cake from Alwar, made by cooking milk with crumbled chhena.",
+    "minutes": 50,
+    "soak_hours": null,
+    "serves": 6,
+    "effort": "medium",
+    "ingredients": [
+      {
+        "label": "Green cardamom",
+        "amount": "3",
+        "source": "iwc",
+        "match_words": "green cardamom"
+      },
+      {
+        "label": "Pistachios",
+        "amount": "2 tbsp",
+        "source": "iwc",
+        "match_words": "pistachios"
+      },
+      {
+        "label": "Full-fat milk",
+        "amount": "1.5 litres",
+        "source": "local"
+      },
+      {
+        "label": "Lemon",
+        "amount": "½",
+        "source": "local"
+      },
+      {
+        "label": "Sugar",
+        "amount": "⅓ cup",
+        "source": "local"
+      }
+    ],
+    "steps": [
+      {
+        "text": "Split half a litre of milk with lemon; drain the chhena without squeezing it dry.",
+        "minutes": 10
+      },
+      {
+        "text": "Reduce the rest of the milk to a third.",
+        "minutes": 30
+      },
+      {
+        "text": "Add the chhena and sugar; cook until it thickens into a grainy mass.",
+        "minutes": 10
+      },
+      {
+        "text": "Spread in a greased tray, top with pistachio and cardamom, set and cut.",
+        "minutes": null
+      }
+    ]
+  },
+  {
+    "slug": "mathura-peda",
+    "name": "Mathura Peda",
+    "kind": "sweets",
+    "state": "Uttar Pradesh",
+    "rank": 449,
+    "blurb": "Browned khoya pedas from Mathura, rolled in powdered sugar.",
+    "minutes": 40,
+    "soak_hours": null,
+    "serves": 12,
+    "effort": "medium",
+    "ingredients": [
+      {
+        "label": "Green cardamom",
+        "amount": "4",
+        "source": "iwc",
+        "match_words": "green cardamom"
+      },
+      {
+        "label": "Khoya (mawa)",
+        "amount": "400 g",
+        "source": "local"
+      },
+      {
+        "label": "Powdered sugar",
+        "amount": "½ cup",
+        "source": "local"
+      },
+      {
+        "label": "Ghee",
+        "amount": "1 tbsp",
+        "source": "local"
+      },
+      {
+        "label": "Milk",
+        "amount": "2 tbsp",
+        "source": "local"
+      }
+    ],
+    "steps": [
+      {
+        "text": "Crumble the khoya and cook it with ghee on low, stirring, until deep brown.",
+        "minutes": 20
+      },
+      {
+        "text": "Add the milk and cook until it comes together; cool to warm.",
+        "minutes": 5
+      },
+      {
+        "text": "Knead in most of the sugar and the cardamom.",
+        "minutes": 3
+      },
+      {
+        "text": "Shape pedas and roll them in the rest of the sugar.",
+        "minutes": 10
+      }
+    ]
+  },
+  {
+    "slug": "chiroti",
+    "name": "Chiroti",
+    "kind": "sweets",
+    "state": "Karnataka",
+    "rank": 450,
+    "blurb": "Flaky layered pastry from Karnataka weddings, fried and dusted with sugar.",
+    "minutes": 50,
+    "soak_hours": null,
+    "serves": 8,
+    "effort": "weekend",
+    "ingredients": [
+      {
+        "label": "Maida",
+        "amount": "2 cups",
+        "source": "iwc",
+        "match_words": "maida"
+      },
+      {
+        "label": "Sooji",
+        "amount": "2 tbsp",
+        "source": "iwc",
+        "match_words": "sooji"
+      },
+      {
+        "label": "Rice flour",
+        "amount": "2 tbsp",
+        "source": "iwc",
+        "match_words": "rice flour"
+      },
+      {
+        "label": "Green cardamom",
+        "amount": "3",
+        "source": "iwc",
+        "match_words": "green cardamom"
+      },
+      {
+        "label": "Ghee",
+        "amount": "¼ cup, and for frying",
+        "source": "local"
+      },
+      {
+        "label": "Powdered sugar",
+        "amount": "½ cup",
+        "source": "local"
+      },
+      {
+        "label": "Milk",
+        "amount": "to soak",
+        "source": "local"
+      }
+    ],
+    "steps": [
+      {
+        "text": "Knead the maida, sooji and a spoon of ghee with water into a stiff dough; rest 30 minutes.",
+        "minutes": 30
+      },
+      {
+        "text": "Roll three sheets, spread each with a paste of ghee and rice flour, stack, roll up tightly and cut into slices.",
+        "minutes": 10
+      },
+      {
+        "text": "Roll each slice gently and fry on low until crisp and layered.",
+        "minutes": 20
+      },
+      {
+        "text": "Dust with sugar and cardamom; serve with warm milk on top.",
+        "minutes": null
+      }
+    ]
+  },
+  {
+    "slug": "ela-ada",
+    "name": "Ela Ada",
+    "kind": "sweets",
+    "state": "Kerala",
+    "rank": 451,
+    "blurb": "Rice flour parcels filled with coconut and jaggery, steamed in banana leaves.",
+    "minutes": 40,
+    "soak_hours": null,
+    "serves": 6,
+    "effort": "easy",
+    "ingredients": [
+      {
+        "label": "Rice flour",
+        "amount": "1½ cups",
+        "source": "iwc",
+        "match_words": "rice flour"
+      },
+      {
+        "label": "Desiccated coconut",
+        "amount": "1 cup",
+        "source": "iwc",
+        "match_words": "desiccated coconut"
+      },
+      {
+        "label": "Jaggery",
+        "amount": "¾ cup",
+        "source": "iwc",
+        "match_words": "jaggery"
+      },
+      {
+        "label": "Green cardamom",
+        "amount": "3",
+        "source": "iwc",
+        "match_words": "green cardamom"
+      },
+      {
+        "label": "Banana leaves",
+        "amount": "6 pieces",
+        "source": "local"
+      },
+      {
+        "label": "Ghee",
+        "amount": "1 tsp",
+        "source": "local"
+      }
+    ],
+    "steps": [
+      {
+        "text": "Knead the rice flour with hot water, salt and ghee into a soft dough.",
+        "minutes": 6
+      },
+      {
+        "text": "Cook the coconut with jaggery and cardamom until thick.",
+        "minutes": 10
+      },
+      {
+        "text": "Spread a thin layer of dough on a piece of banana leaf, add filling on one half and fold the leaf.",
+        "minutes": 10
+      },
+      {
+        "text": "Steam for 15 minutes.",
+        "minutes": 15
+      }
+    ]
+  },
+  {
+    "slug": "palada-payasam",
+    "name": "Palada Payasam",
+    "kind": "sweets",
+    "state": "Kerala",
+    "rank": 452,
+    "blurb": "Kerala's pink milk payasam of rice ada, slow-cooked for the sadya.",
+    "minutes": 70,
+    "soak_hours": null,
+    "serves": 6,
+    "effort": "weekend",
+    "ingredients": [
+      {
+        "label": "Rice ada",
+        "amount": "½ cup",
+        "source": "iwc",
+        "match_words": "rice ada"
+      },
+      {
+        "label": "Green cardamom",
+        "amount": "3",
+        "source": "iwc",
+        "match_words": "green cardamom"
+      },
+      {
+        "label": "Full-fat milk",
+        "amount": "1.5 litres",
+        "source": "local"
+      },
+      {
+        "label": "Sugar",
+        "amount": "¾ cup",
+        "source": "local"
+      },
+      {
+        "label": "Ghee",
+        "amount": "1 tbsp",
+        "source": "local"
+      }
+    ],
+    "steps": [
+      {
+        "text": "Boil the ada in water for ten minutes; rinse in cold water.",
+        "minutes": 12
+      },
+      {
+        "text": "Boil the milk and sugar and simmer on low, stirring, until it turns pale pink and thick.",
+        "minutes": 45
+      },
+      {
+        "text": "Add the ada and cook until soft.",
+        "minutes": 10
+      },
+      {
+        "text": "Finish with ghee and cardamom.",
+        "minutes": null
+      }
+    ]
+  },
+  {
+    "slug": "parippu-pradhaman",
+    "name": "Parippu Pradhaman",
+    "kind": "sweets",
+    "state": "Kerala",
+    "rank": 453,
+    "blurb": "Roasted moong dal cooked in jaggery and coconut milk, with fried coconut bits.",
+    "minutes": 50,
+    "soak_hours": null,
+    "serves": 6,
+    "effort": "medium",
+    "ingredients": [
+      {
+        "label": "Moong dal",
+        "amount": "¾ cup",
+        "source": "iwc",
+        "match_words": "moong dal"
+      },
+      {
+        "label": "Jaggery",
+        "amount": "1 cup",
+        "source": "iwc",
+        "match_words": "jaggery"
+      },
+      {
+        "label": "Cashews",
+        "amount": "2 tbsp",
+        "source": "iwc",
+        "match_words": "cashews"
+      },
+      {
+        "label": "Desiccated coconut",
+        "amount": "2 tbsp",
+        "source": "iwc",
+        "match_words": "desiccated coconut"
+      },
+      {
+        "label": "Green cardamom",
+        "amount": "3",
+        "source": "iwc",
+        "match_words": "green cardamom"
+      },
+      {
+        "label": "Dry ginger powder",
+        "amount": "¼ tsp",
+        "source": "iwc",
+        "match_words": "dry ginger powder"
+      },
+      {
+        "label": "Coconut milk",
+        "amount": "2 cups",
+        "source": "local"
+      },
+      {
+        "label": "Ghee",
+        "amount": "3 tbsp",
+        "source": "local"
+      }
+    ],
+    "steps": [
+      {
+        "text": "Roast the dal until golden; cook it soft.",
+        "minutes": 25
+      },
+      {
+        "text": "Melt the jaggery in a little water, strain and add to the dal; cook until thick.",
+        "minutes": 10
+      },
+      {
+        "text": "Add the coconut milk, cardamom and dry ginger; heat without boiling.",
+        "minutes": 5
+      },
+      {
+        "text": "Fry the cashews and coconut in ghee and pour over.",
+        "minutes": 3
+      }
+    ]
+  },
+  {
+    "slug": "adhirasam",
+    "name": "Adhirasam",
+    "kind": "sweets",
+    "state": "Tamil Nadu",
+    "rank": 454,
+    "blurb": "Tamil Diwali sweet: rice flour and jaggery dough patted thin and fried. The dough rests a day.",
+    "minutes": 60,
+    "soak_hours": 3,
+    "serves": 10,
+    "effort": "weekend",
+    "ingredients": [
+      {
+        "label": "Raw rice",
+        "amount": "2 cups",
+        "source": "iwc",
+        "match_words": "raw rice"
+      },
+      {
+        "label": "Jaggery",
+        "amount": "1 cup",
+        "source": "iwc",
+        "match_words": "jaggery"
+      },
+      {
+        "label": "Green cardamom",
+        "amount": "4",
+        "source": "iwc",
+        "match_words": "green cardamom"
+      },
+      {
+        "label": "Sesame seeds",
+        "amount": "1 tsp",
+        "source": "iwc",
+        "match_words": "sesame seeds"
+      },
+      {
+        "label": "Ghee",
+        "amount": "1 tbsp",
+        "source": "local"
+      },
+      {
+        "label": "Oil",
+        "amount": "for frying",
+        "source": "local"
+      }
+    ],
+    "steps": [
+      {
+        "text": "Soak the rice for three hours, drain, dry on a cloth until just damp and grind to a fine flour.",
+        "minutes": 20
+      },
+      {
+        "text": "Cook the jaggery with half a cup of water to a soft-ball syrup; stir in the flour, cardamom, sesame and ghee. Rest overnight.",
+        "minutes": 15
+      },
+      {
+        "text": "Pat small balls into thin discs on greased plastic.",
+        "minutes": 10
+      },
+      {
+        "text": "Fry on low; press each with a ladle to squeeze out the extra oil.",
+        "minutes": 20
+      }
+    ]
+  },
+  {
+    "slug": "gujiya",
+    "name": "Gujiya",
+    "kind": "sweets",
+    "state": "Uttar Pradesh",
+    "rank": 455,
+    "blurb": "Half-moon pastries filled with khoya, coconut and nuts. Made for Holi.",
+    "minutes": 70,
+    "soak_hours": null,
+    "serves": 12,
+    "effort": "weekend",
+    "ingredients": [
+      {
+        "label": "Maida",
+        "amount": "2 cups",
+        "source": "iwc",
+        "match_words": "maida"
+      },
+      {
+        "label": "Desiccated coconut",
+        "amount": "¼ cup",
+        "source": "iwc",
+        "match_words": "desiccated coconut"
+      },
+      {
+        "label": "Almonds",
+        "amount": "2 tbsp",
+        "source": "iwc",
+        "match_words": "almonds"
+      },
+      {
+        "label": "Cashews",
+        "amount": "2 tbsp",
+        "source": "iwc",
+        "match_words": "cashews"
+      },
+      {
+        "label": "Raisins",
+        "amount": "2 tbsp",
+        "source": "iwc",
+        "match_words": "raisins"
+      },
+      {
+        "label": "Green cardamom",
+        "amount": "4",
+        "source": "iwc",
+        "match_words": "green cardamom"
+      },
+      {
+        "label": "Khoya (mawa)",
+        "amount": "200 g",
+        "source": "local"
+      },
+      {
+        "label": "Powdered sugar",
+        "amount": "½ cup",
+        "source": "local"
+      },
+      {
+        "label": "Ghee",
+        "amount": "¼ cup, and for frying",
+        "source": "local"
+      }
+    ],
+    "steps": [
+      {
+        "text": "Knead the maida with ghee and cold water into a firm dough; rest.",
+        "minutes": 15
+      },
+      {
+        "text": "Roast the khoya until light brown; cool and mix with sugar, coconut, chopped nuts, raisins and cardamom.",
+        "minutes": 12
+      },
+      {
+        "text": "Roll small rounds, fill, fold and crimp the edges.",
+        "minutes": 25
+      },
+      {
+        "text": "Fry on low until crisp and pale gold.",
+        "minutes": 20
+      }
+    ]
+  },
+  {
+    "slug": "kada-prasad",
+    "name": "Kada Prasad",
+    "kind": "sweets",
+    "state": "Punjab",
+    "rank": 456,
+    "blurb": "The gurdwara's wheat halwa: equal parts atta, ghee and sugar.",
+    "minutes": 25,
+    "soak_hours": null,
+    "serves": 6,
+    "effort": "easy",
+    "ingredients": [
+      {
+        "label": "Atta",
+        "amount": "1 cup",
+        "source": "iwc",
+        "match_words": "atta"
+      },
+      {
+        "label": "Ghee",
+        "amount": "1 cup",
+        "source": "local"
+      },
+      {
+        "label": "Sugar",
+        "amount": "1 cup",
+        "source": "local"
+      }
+    ],
+    "steps": [
+      {
+        "text": "Boil the sugar with three cups of water until dissolved.",
+        "minutes": 5
+      },
+      {
+        "text": "Roast the atta in the ghee on low, stirring all the time, until deep golden.",
+        "minutes": 15
+      },
+      {
+        "text": "Pour in the hot syrup carefully; it will splutter.",
+        "minutes": 1
+      },
+      {
+        "text": "Stir until it thickens and leaves the pan.",
+        "minutes": 5
+      }
+    ]
+  },
+  {
+    "slug": "badam-halwa",
+    "name": "Badam Halwa",
+    "kind": "sweets",
+    "state": "All of India",
+    "rank": 457,
+    "blurb": "Blanched almonds ground and cooked with ghee, milk and saffron until glossy.",
+    "minutes": 45,
+    "soak_hours": 4,
+    "serves": 6,
+    "effort": "medium",
+    "ingredients": [
+      {
+        "label": "Almonds",
+        "amount": "1½ cups",
+        "source": "iwc",
+        "match_words": "almonds"
+      },
+      {
+        "label": "Saffron",
+        "amount": "a pinch",
+        "source": "iwc",
+        "match_words": "saffron"
+      },
+      {
+        "label": "Green cardamom",
+        "amount": "3",
+        "source": "iwc",
+        "match_words": "green cardamom"
+      },
+      {
+        "label": "Milk",
+        "amount": "1 cup",
+        "source": "local"
+      },
+      {
+        "label": "Sugar",
+        "amount": "¾ cup",
+        "source": "local"
+      },
+      {
+        "label": "Ghee",
+        "amount": "½ cup",
+        "source": "local"
+      }
+    ],
+    "steps": [
+      {
+        "text": "Soak the almonds four hours; peel and grind with the milk to a fine paste.",
+        "minutes": 10
+      },
+      {
+        "text": "Cook the paste with sugar, stirring all the time, until thick.",
+        "minutes": 15
+      },
+      {
+        "text": "Add the ghee little by little and keep stirring until it leaves the pan and shines.",
+        "minutes": 15
+      },
+      {
+        "text": "Finish with saffron and cardamom.",
+        "minutes": null
+      }
+    ]
+  },
+  {
+    "slug": "lauki-halwa",
+    "name": "Lauki Halwa",
+    "kind": "sweets",
+    "state": "All of India",
+    "rank": 458,
+    "blurb": "Grated bottle gourd cooked down in milk with sugar and cardamom.",
+    "minutes": 45,
+    "soak_hours": null,
+    "serves": 4,
+    "effort": "easy",
+    "ingredients": [
+      {
+        "label": "Cashews",
+        "amount": "2 tbsp",
+        "source": "iwc",
+        "match_words": "cashews"
+      },
+      {
+        "label": "Green cardamom",
+        "amount": "3",
+        "source": "iwc",
+        "match_words": "green cardamom"
+      },
+      {
+        "label": "Pistachios",
+        "amount": "1 tbsp",
+        "source": "iwc",
+        "match_words": "pistachios"
+      },
+      {
+        "label": "Bottle gourd",
+        "amount": "1 medium",
+        "source": "local"
+      },
+      {
+        "label": "Full-fat milk",
+        "amount": "2 cups",
+        "source": "local"
+      },
+      {
+        "label": "Sugar",
+        "amount": "½ cup",
+        "source": "local"
+      },
+      {
+        "label": "Ghee",
+        "amount": "3 tbsp",
+        "source": "local"
+      }
+    ],
+    "steps": [
+      {
+        "text": "Grate the gourd and cook it in ghee until the raw smell goes.",
+        "minutes": 10
+      },
+      {
+        "text": "Add the milk and cook until absorbed.",
+        "minutes": 25
+      },
+      {
+        "text": "Add the sugar and cook until thick and glossy.",
+        "minutes": 8
+      },
+      {
+        "text": "Finish with cardamom and nuts.",
+        "minutes": null
+      }
+    ]
+  },
+  {
+    "slug": "anarsa",
+    "name": "Anarsa",
+    "kind": "sweets",
+    "state": "All of India",
+    "rank": 459,
+    "blurb": "Rice and jaggery cookies rolled in poppy seeds, made at Diwali. Start two or three days ahead: the rice soaks.",
+    "minutes": 45,
+    "soak_hours": 48,
+    "serves": 10,
+    "effort": "weekend",
+    "ingredients": [
+      {
+        "label": "Raw rice",
+        "amount": "1 cup",
+        "source": "iwc",
+        "match_words": "raw rice"
+      },
+      {
+        "label": "Jaggery",
+        "amount": "¾ cup",
+        "source": "iwc",
+        "match_words": "jaggery"
+      },
+      {
+        "label": "Poppy seeds",
+        "amount": "¼ cup",
+        "source": "iwc",
+        "match_words": "poppy seeds"
+      },
+      {
+        "label": "Ghee",
+        "amount": "1 tbsp, and for frying",
+        "source": "local"
+      }
+    ],
+    "steps": [
+      {
+        "text": "Soak the rice for two to three days, changing the water daily. Drain, dry until just damp and grind to a fine flour.",
+        "minutes": 20
+      },
+      {
+        "text": "Knead the flour with grated jaggery and ghee into a dough; rest overnight.",
+        "minutes": 10
+      },
+      {
+        "text": "Press small balls flat into poppy seeds on one side.",
+        "minutes": 10
+      },
+      {
+        "text": "Fry, poppy side up, on low until golden. Don't turn them.",
+        "minutes": 15
+      }
+    ]
+  },
+  {
+    "slug": "bal-mithai",
+    "name": "Bal Mithai",
+    "kind": "sweets",
+    "state": "Uttarakhand",
+    "rank": 460,
+    "blurb": "Kumaon's brown khoya fudge coated in little white sugar balls. Almora's sweet.",
+    "minutes": 50,
+    "soak_hours": null,
+    "serves": 10,
+    "effort": "medium",
+    "ingredients": [
+      {
+        "label": "Green cardamom",
+        "amount": "3",
+        "source": "iwc",
+        "match_words": "green cardamom"
+      },
+      {
+        "label": "Sugar-coated balls (chini dana)",
+        "amount": "½ cup",
+        "source": "local"
+      },
+      {
+        "label": "Khoya (mawa)",
+        "amount": "400 g",
+        "source": "local"
+      },
+      {
+        "label": "Sugar",
+        "amount": "½ cup",
+        "source": "local"
+      },
+      {
+        "label": "Ghee",
+        "amount": "1 tbsp",
+        "source": "local"
+      }
+    ],
+    "steps": [
+      {
+        "text": "Cook the khoya with ghee on low until deep chocolate brown.",
+        "minutes": 25
+      },
+      {
+        "text": "Add the sugar and cook until it thickens again.",
+        "minutes": 8
+      },
+      {
+        "text": "Spread in a greased tray, set and cut into bars.",
+        "minutes": null
+      },
+      {
+        "text": "Roll each bar in the sugar balls.",
+        "minutes": 10
+      }
+    ]
+  }
+]
