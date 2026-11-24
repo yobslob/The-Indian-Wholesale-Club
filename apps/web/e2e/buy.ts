@@ -51,8 +51,10 @@ export async function buyDemoProduct(page: Page): Promise<string> {
   if (await postal.isVisible().catch(() => false)) await postal.fill('08817');
   await clickPay(page);
 
-  await expect(page).toHaveURL(/\/checkout\/success\?order=/, { timeout: 45_000 });
-  await expect(page.getByRole('heading', { name: /Clear a shelf|Thank you!/ })).toBeVisible();
+  // The thank-you page has the order number in its address when the order was made before the page opened, and the
+  // payment's id when the page confirmed it itself (use-order-status.ts, a slow or busy moment): both are a success.
+  await expect(page).toHaveURL(/\/checkout\/success\?(order=|payment_intent=)/, { timeout: 45_000 });
+  await expect(page.getByRole('heading', { name: /Clear a shelf|Thank you!/ })).toBeVisible({ timeout: 70_000 });
   // The fuller thank-you (D-087): the pieces and the total from this tab's priced bag.
   await expect(page.getByRole('heading', { name: 'Your order' })).toBeVisible();
   const orderNumber = (await page.locator('strong').filter({ hasText: ORDER_NUMBER }).textContent())?.trim() ?? '';
