@@ -2,7 +2,7 @@
 
 *Written 2026-11-24 by Claude from the repo at `main` (ae05e9e) and the founder's message and answers of the same day.
 Status: **nothing built.** Read all of it, then `CLAUDE.md`. Each phase ships alone and leaves the store working. The
-founder's words are filed as **D-208** (`docs/decisions.md`); §2 is what they mean for the build. Where this plan and
+founder's words are filed as **D-208** (`docs/decisions.md`); §2 is what they mean for the build. D-209 (the same day) answers its questions. Where this plan and
 an older one disagree (`plan-send-home.md`, `plan-international.md`), this one holds.*
 
 The founder, verbatim (2026-11-24):
@@ -70,8 +70,8 @@ on the Profile icon everywhere, the US included, with the country switch on the 
    - Never "cashback", "refund", "transfer", "remittance", "donation" (glossary).
 7. **The look stays** (founder: "all the existing designs stay like how they are"): the bag card keeps D-205's light
    paper, wine border, stitched edge, gold arc and chip sizes; the sheet, the postcard and `/account/people` keep
-   theirs. Only the words and the amount chips change. The Home bohni band (first-order 10%) keeps its design with the
-   5% words (Q-68).
+   theirs. Only the words and the amount chips change. Home's bohni band and the navbar's first-order ads keep their designs and become
+   the Maa–Behen ad for the 5% (D-209).
 8. **US and abroad alike:** the saving works in every open country, shown in the visitor's currency (D-198 shows
    savings in $; Q-71 asks whether to keep that).
 
@@ -86,7 +86,8 @@ on the Profile icon everywhere, the US included, with the country switch on the 
 11. **The countries:** every destination in ShipGlobal's list (246 besides India, §5) **except** uninhabited places
     (Antarctica, Bouvet Island, Heard and McDonald Islands, French Southern Territories, South Georgia, US Minor
     Outlying Islands) and countries a US seller may not sell to (Cuba, Iran, North Korea, Syria; Russia and Belarus
-    until the lawyer says: Q-69). A country with no ShipGlobal rate is closed.
+    as the founder confirmed, D-209), and Pakistan (no ShipGlobal service). A country with no ShipGlobal rate is closed. Food is
+    open wherever ShipGlobal takes it (D-209).
 12. **Only the freight changes** (founder: "all the costs will be constant except for shipping"): the price formula
     (D-128) stays with the country's freight in place of ₹2 a gram:
     `price = (shop ₹ ÷ 0.90 + priced weight g × country ₹/kg ÷ 1000) ÷ divisor ÷ 92`. The US stays at **₹2,000 a kg**
@@ -105,14 +106,11 @@ on the Profile icon everywhere, the US included, with the country switch on the 
     freight difference.
 15. **Currency:** Canada, Australia and New Zealand keep their own dollars (D-197); every other country sees US dollars
     written **US$** (so "$" never reads as a local dollar). Checkout, orders, emails and invoices stay in US dollars.
-16. **Delivery days by country** (non-negotiable 4: from Settings, never hard-coded): each country row has its own food
-    and standard business days, seeded as today's US days moved by the difference between that country's service days
-    and the US's 7 – 10 (FedEx 4 – 7: three days sooner; WorldWide 13 – 18: 6 – 8 days later), never below the India
-    leg: Q-70 asks the founder to confirm. The pages read the visitor's country row.
-17. **Honest at the door:** the cheapest service abroad is mostly "Duties may apply". Abroad, every "Duties paid.
-    Nothing to pay at your door." line (D-161, Q-46) is replaced by the founder's line for duties (Q-72); until he
-    gives one, checkout abroad says "Your country may charge import duty or tax on delivery." (draft) and the US is
-    unchanged. No sales tax is charged outside the US.
+16. **Delivery days are the same everywhere** (D-209, non-negotiable 4): every country shows Settings' food (7 – 12)
+    and standard (12 – 16) business days, as the US does. `ship_countries` keeps the service's days for the admin only.
+17. **Duties paid everywhere** (D-209): "Duties paid. Nothing to pay at your door." (D-161) shows in every country,
+    and IWC pays any duty or import tax ShipGlobal bills (its cheapest services mostly say "Duties may apply": a cost
+    outside the prices; Insights shows duties paid by country). No sales tax is charged outside the US.
 18. **The country comes from** a choice (cookie, Profile, footer) or else the visitor's IP country (`x-vercel-ip-country`,
     read in the small fetch that already brings the flag, D-199), else the time zone (today's `MARKET_SCRIPT`), else the
     US. No permission is asked.
@@ -139,7 +137,7 @@ on the Profile icon everywhere, the US included, with the country switch on the 
 | The bill and its sum | `domain/checkout.ts` (`quoteCheckout`), `domain/bill.ts`, `features/cart/bill-card.tsx` |
 | Checkout's address (US only: ZIP list, states) | `features/checkout/delivery-step.tsx`, `zip-codes.json`, `pricing.ts` |
 | Delivery days from Settings | `pricing_settings` food and standard days (D-187, D-207) |
-| IDs | D-208 is this plan; Q-68 – Q-72 are new (§7); latest migration `20261127090000_food_7_to_12_days.sql` |
+| IDs | D-208 is this plan, D-209 its answers; Q-71 is open (§7); latest migration `20261127090000_food_7_to_12_days.sql` |
 
 ## 4. Design (words in §2 rule 6; the look is D-205's)
 
@@ -173,14 +171,14 @@ What the rates say:
 - **The cheapest service is often FedEx (4 – 7 days)**, faster than ShipGlobal WorldWide (13 – 18 days) and cheaper at
   1 kg; ShipGlobal Direct (7 – 14 days) where it exists.
 - **Pakistan:** no service ("No Services Available"), so it is closed.
-- Only 1 kg was read; heavier parcels may cost less a kg. Whether each service takes food is not shown (Q-69). US example: ShipGlobal Direct Commercial, 7 – 10 days, ₹1,289 + ₹200 = ₹1,489 → ₹1,500 (not used: the US
+- Only 1 kg was read; heavier parcels may cost less a kg. Whether each service takes food is not shown (D-209: food open wherever ShipGlobal takes it). US example: ShipGlobal Direct Commercial, 7 – 10 days, ₹1,289 + ₹200 = ₹1,489 → ₹1,500 (not used: the US
 stays at ₹2,000, founder). Quotes are a day's prices; Admin → Settings → Countries lets the founder change any row.
 *Note:* the US "Direct Commercial" service warns "a tariff fee will be charged" (US tariffs on Indian goods): not part
 of this change, the US keeps today's prices.
 
 ## 6. Phases (each ships alone; the store works after every one)
 
-**Phase 0: file and ask.** D-208 filed with `/record-answer`; Q-68 – Q-72 in `docs/questions.md`; glossary ("Your
+**Phase 0: file and ask.** D-208 and D-209 filed with `/record-answer`; Q-71 in `docs/questions.md`; glossary ("Your
 5%", Coins); `docs/status.md`. *Done when* the docs audit passes.
 
 **Phase 1: Save 5% (US, live store).** Migration: `order_savings` (`order_id` unique, `save_cents`, `outcome` `gift` |
@@ -189,8 +187,8 @@ of this change, the US keeps today's prices.
 `create_order` writes the saving (gift or Coins) in the same transaction; cancel takes it back. Shared:
 `saveCents(goods, pct)` (unit-tested), the old gift path removed from `quoteCheckout` (total = as before Send home).
 Web: the card's new words and chips, the sheet's buttons, checkout's line, thank-you and order page, `/account/people`
-history showing both outcomes, coupons removed from the bag, checkout and admin (the tables stay), the bohni band's
-words (Q-68). *Done when* `node scripts/check.mjs` is green; a test order of $85 goods with Keep it adds 425 Coins and
+history showing both outcomes, coupons removed from the bag, checkout and admin (the tables stay), the bohni band and
+the navbar's ads as the Maa–Behen ad (D-209). *Done when* `node scripts/check.mjs` is green; a test order of $85 goods with Keep it adds 425 Coins and
 charges exactly what it charged before; with Maa it charges the same and makes one `to_send` gift of ₹(4.25 × rate);
 cancelling before sending removes either; no coupon field shows anywhere; e2e covers both at 390 px.
 
@@ -207,19 +205,15 @@ sees US$ prices with Germany's freight and Germany's days, the US sees exactly t
 of Home and a product page), and `/cart`'s first-load JS grows by ≤ 3 KB.
 
 **Phase 4: orders from every country.** The international address step; the server prices by the address's country;
-no sales tax outside the US; the duties line abroad (Q-72); Stripe in USD; emails and invoices with the country; the
+no sales tax outside the US; "Duties paid" abroad too (D-209); Stripe in USD; emails and invoices with the country; the
 admin order shows the country, the ShipGlobal service and the rate used; the desk books ShipGlobal by hand. *Done
 when* a test order to Germany pays the German price, gets German days, no tax, and shows correctly to the admin; a US
 order is unchanged; e2e covers both.
 
 **Phase 5: the app.** The same card, Profile country and prices abroad in `apps/app`.
 
-## 7. Open questions (filed in `docs/questions.md`)
+## 7. Open questions (filed in `docs/questions.md`; Q-68, Q-69, Q-70 and Q-72 answered by D-209)
 
 | # | Question | Until answered |
 |---|---|---|
-| Q-68 | Home's **bohni band** is the first-order 10% coupon: with coupons gone, does it say "Save 5% on every bag. Send it home or keep it." in the same design, or leave Home? | the same band with the 5% words |
-| Q-69 | **Where IWC may not sell:** Cuba, Iran, North Korea, Syria are closed (US sanctions); Russia and Belarus too until the lawyer says. Any others? And may **food** go to Australia and New Zealand (strict biosecurity) and every other country? | closed as listed; food open where ShipGlobal takes it |
-| Q-70 | **Delivery days abroad:** today's US days moved by the difference between each country's cheapest service and the US's 7 – 10 days (FedEx 4 – 7: three days sooner; WorldWide 13 – 18: standard 18 – 24, food 13 – 20 business days)? | as proposed, editable per country in Settings |
 | Q-71 | **Savings abroad:** D-198 shows coupons and savings in $ abroad. Show "You're saving" in the visitor's currency (CA$6.01) or keep $? | the visitor's currency |
-| Q-72 | **Duties abroad:** ShipGlobal's cheapest service mostly says "Duties may apply". What should checkout and the product page say abroad, and is any of it IWC's to pay? | "Your country may charge import duty or tax on delivery." (draft); nothing paid by IWC |

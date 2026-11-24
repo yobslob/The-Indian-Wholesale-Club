@@ -554,5 +554,21 @@ What it means for the build:
 - **The customer never pays for a gift:** the amount chips, ×, Remove and the bill's Sent home line go. The bag's Send home card keeps its look and says "You're saving $4.25 on this bag." with Maa · Papa · Didi · Someone else · Keep it (words: plan §2 rule 6).
 - **Coupons go** from the bag, checkout, the admin and the first-order 10% (the tables stay for past orders); struck prices, the bulk saving and Coins stay.
 - **The flag on the Profile icon for every visitor, the US included**, and a Country row on Profile to change it.
-- **Every country ShipGlobal serves is open**, minus uninhabited places and sanctioned countries (Q-69). Only the freight in the price changes: the country's cheapest ShipGlobal 1 kg quote rounded up to the next ₹500 replaces ₹2,000 a kg in D-128's formula; the US stays at ₹2,000. The bag's Shipping, the free and bulk lines, retailer charges, Coins and the 5% are the same everywhere. Prices abroad are worked out from the stored US price and the listing's priced weight, never stored per country. Delivery days per country in Settings (Q-70). Customers never see ShipGlobal or the rate.
+- **Every country ShipGlobal serves is open**, minus uninhabited places and sanctioned countries (D-209). Only the freight in the price changes: the country's cheapest ShipGlobal 1 kg quote rounded up to the next ₹500 replaces ₹2,000 a kg in D-128's formula; the US stays at ₹2,000. The bag's Shipping, the free and bulk lines, retailer charges, Coins and the 5% are the same everywhere. Prices abroad are worked out from the stored US price and the listing's priced weight, never stored per country. Delivery days per country in Settings (Q-70). Customers never see ShipGlobal or the rate.
 *Interpretation (proposed, confirm when Phase 1 starts):* "order value" read as the goods (his answer); "per kg charge" read as the cheapest service's 1 kg quote with its fixed fee; "the nearest next 500" as rupees a kg, rounded up; heavy-item shipping follows the country rate (it is freight); countries other than Canada, Australia and New Zealand see US dollars written US$; Home's bohni band keeps its design with the 5% words (Q-68).
+
+**D-209 · 2026-11-24 · founder (was Q-68, Q-69, Q-70, Q-72): the coupon ads become a Maa–Behen ad; the closed countries as proposed; the US's delivery days in every country; duties paid everywhere** · Answers D-208's questions; changes D-208's per-country days and its duties line
+
+Founder, verbatim: "1. change the coupon advertisement to maa bhen advertisement,
+2. yes what u assumed
+3. put 7-12 days globally
+4. no duties"
+
+Then, on Claude's two follow-up choices: "Same as US everywhere" (days) and ""Duties paid" everywhere" (duties).
+
+What it means for the build:
+- **The coupon ads (Q-68):** Home's bohni band and the first-order ads under the navbar (D-193) keep their designs and become an ad for the 5%: send it to Maa or Behen. Words are Claude's drafts in `first-order.ts` and `first-order-art.tsx` (D-012), for example kicker "Your 5%", headline "Every bag saves 5%. Send it to Maa or Behen.", button "Start your bag".
+- **Closed countries (Q-69), as proposed:** Cuba, Iran, North Korea, Syria, Russia and Belarus, the uninhabited places in plan-world §2 rule 11, and Pakistan (no ShipGlobal service). Food is open wherever ShipGlobal takes it.
+- **Delivery days (Q-70):** every country shows the US's days from Settings: food 7 – 12, clothing and home & gifts 12 – 16 business days (D-187, D-207, non-negotiable 4). No days per country.
+- **Duties (Q-72):** "Duties paid. Nothing to pay at your door." (D-161) shows in every country. IWC pays any duty or import tax the courier bills; the customer never pays one at the door.
+*Interpretation (proposed, confirm when Phase 4 starts):* "maa bhen" read as Maa and Behen (sister) in the ad's words, while the bag's chips stay Maa · Papa · Didi · Someone else · Keep it; duties abroad are paid from IWC's ShipGlobal wallet when ShipGlobal bills them (its cheapest services mostly say "Duties may apply", so this is a cost the prices do not include, worth watching in Insights).
