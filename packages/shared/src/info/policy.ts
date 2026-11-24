@@ -27,7 +27,7 @@ export const pct = (n: number): string => `${Number(n.toFixed(3))}%`;
 export const dayRange = (from: number | null, to: number | null): string | null =>
   from !== null && to !== null ? (from === to ? `${from} days` : `${from} to ${to} days`) : null;
 
-/** D-187: "7 delivery days", "12 to 16 delivery days"; null when the days are not set. */
+/** D-187: "7 to 12 delivery days", "12 to 16 delivery days"; null when the days are not set. */
 export const deliveryDays = (from: number | null, to: number | null): string | null =>
   from !== null && to !== null ? (from === to ? `${from} delivery days` : `${from} to ${to} delivery days`) : null;
 

@@ -54,7 +54,7 @@ export function LinePhoto({ path, href, className }: { path: string | null; href
  * The bag's lines (D-086): a small photo (it and the name open the product), the option and state, the stepper, the
  * line's price and Remove. `compact` is the panel's and phones' two-row layout. Prices are for display only:
  * checkout re-prices every line on the server (D-038). D-187: the lines sit under their shipment and delivery days,
- * never a date: "Shipment 1 · Food · 7 delivery days", "Shipment 2 · Clothing and home & gifts · 12 – 16 delivery days".
+ * never a date: "Shipment 1 · Food · 7 – 12 delivery days", "Shipment 2 · Clothing and home & gifts · 12 – 16 delivery days".
  */
 export function BagLines({ compact = false }: { compact?: boolean }): React.JSX.Element {
   const lines = useCart((s) => s.lines);

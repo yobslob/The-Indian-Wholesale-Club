@@ -50,7 +50,7 @@ export default async function TodayPage(): Promise<React.JSX.Element> {
       { n: recipesMissing, what: 'Recipes with a missing piece', sub: 'Pick another listing for the line', go: 'Open recipes', href: '/admin/recipes?health=missing' },
     ],
     india: [
-      // D-154: food is bought within 2 hours and ships the next day; the 7 delivery days depend on it
+      // D-154: food is bought within 2 hours and ships the next day; the food delivery days depend on it
       {
         n: food.open,
         what: 'Food shipments to send',

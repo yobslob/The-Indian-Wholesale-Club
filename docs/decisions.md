@@ -529,3 +529,12 @@ What it means for the build:
 - **The customer sees a bar**, filled when the desk marks the gift sent; no time is promised anywhere.
 - **A UPI checker:** as the UPI ID is typed, the sheet says whether it is a UPI ID or UPI number at all and whether its handle (`@okhdfcbank`, `@ybl`, `@paytm`…) is one UPI apps use; the desk sees the same check. The desk pays by hand from the UPI ID shown.
 *Interpretation (proposed, confirm when convenient):* the rate source is the European Central Bank's daily reference rate through Frankfurter (`api.frankfurter.app`, free, no key), the mid-market rate; "order value" is the order's total before the gift; the UPI checker can tell a well-formed ID with a known handle, not whether the account exists (that needs a payouts provider, Q-67).
+
+**D-207 · 2026-11-24 · founder: food comes in 7 – 12 delivery days, not 7** · Changes D-187's food days (7 – 7).
+
+Founder, verbatim: "remove 7 days from everywhere on website and replace it with 7-12 days."
+
+What it means for the build:
+- Every page, the bag, the panel, checkout, the hero and the app say the days from Settings (non-negotiable 4), so the change is Settings' food days: 7 – 12 business days (migration `20261127090000_food_7_to_12_days`, only when they are still 7 – 7). New orders' food dates follow it; orders already placed keep theirs.
+- Written as the store writes a window: "7 – 12 delivery days".
+- The founder can still change the days in Admin → Settings → Delivery at any time; the docs that stated "7 delivery days" now say 7 – 12.

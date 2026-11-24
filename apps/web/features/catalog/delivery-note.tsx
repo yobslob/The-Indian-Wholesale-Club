@@ -3,7 +3,7 @@ import { DUTIES_PAID } from '@repo/shared/domain';
 import { DutiesStamp } from './duties-stamp';
 
 /**
- * D-187: the delivery line of a product page, in delivery days, never a date ("At your door in 7 delivery days."): the
+ * D-187: the delivery line of a product page, in delivery days, never a date ("At your door in 7 – 12 delivery days."): the
  * days come from Settings (non-negotiable 4), the FAQ says what a delivery day is. A piece already in the US (D-072)
  * counts its own days from the warehouse. Then "Duties paid. Nothing to pay at your door." with its stamp (D-161).
  */
@@ -11,7 +11,7 @@ export function DeliveryNote({
   days,
   fromUs = null,
 }: {
-  /** "7 delivery days", "12 – 16 delivery days"; null when the days are not set. */
+  /** "7 – 12 delivery days", "12 – 16 delivery days"; null when the days are not set. */
   days: string | null;
   /** A US piece's days ("3 – 7 days"); null for a piece coming from India. */
   fromUs?: string | null;

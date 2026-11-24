@@ -5,7 +5,7 @@ import { formatDeliveryWindow, type ProductType } from '@repo/shared/domain';
 import { useDeliveryLine } from '@/features/shell/days';
 
 /**
- * D-187: "Arrives in 7 delivery days" for food, "Arrives in 12 – 16 delivery days" for the rest (Settings' days, never
+ * D-187: "Arrives in 7 – 12 delivery days" for food, "Arrives in 12 – 16 delivery days" for the rest (Settings' days, never
  * typed); the FAQ says what a delivery day is. A piece already in the US (D-072) has its own window: today + the US
  * delivery days.
  */

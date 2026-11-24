@@ -24,7 +24,7 @@ export function DaysProvider({ children }: { children: React.ReactNode }): React
   return <DaysContext.Provider value={lines}>{children}</DaysContext.Provider>;
 }
 
-/** "7 delivery days" for food, "12 – 16 delivery days" for the rest; null until Settings' days are known. */
+/** "7 – 12 delivery days" for food, "12 – 16 delivery days" for the rest; null until Settings' days are known. */
 export function useDeliveryLine(productType: ProductType): string | null {
   const lines = useContext(DaysContext);
   return productType === 'food' ? lines.food : lines.standard;

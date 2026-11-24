@@ -6,7 +6,7 @@ import { orderNumberShown } from './flows';
 import { CARDS, continueToPayment, ownCaller, payWith } from './pay';
 
 /**
- * D-187: every food piece comes in 7 delivery days. A bag of food under and over $49.99, food with a saree (two
+ * D-187: every food piece comes in 7 – 12 delivery days (D-207). A bag of food under and over $49.99, food with a saree (two
  * shipments, shown in the bag without dates and at checkout with them), an address outside the 48 states and DC (one
  * shipment), and the order page. A food fixture (placeholder, kept across runs and archived after each) is made for it.
  */
@@ -83,12 +83,12 @@ async function details(page: Page, zip: string, place: string): Promise<void> {
 
 const DATE = /\b(Jan|Feb|Mar|Apr|May|Jun|Jul|Aug|Sep|Oct|Nov|Dec) \d/;
 
-test('a food piece says 7 delivery days, with no date and nothing live', async ({ page, request }) => {
+test('a food piece says 7 – 12 delivery days, with no date and nothing live', async ({ page, request }) => {
   await refreshStore(request);
   const sockets: string[] = [];
   page.on('websocket', (ws) => sockets.push(ws.url()));
   await page.goto(`/states/india/${SNACK}`);
-  await expect(page.getByText('7 delivery days').first()).toBeVisible();
+  await expect(page.getByText('7 – 12 delivery days').first()).toBeVisible();
   await expect(page.getByText('Duties paid. Nothing to pay at your door.')).toBeVisible();
   await expect(page.locator('.week-strip')).toHaveCount(0);
   await page.waitForLoadState('networkidle');
@@ -102,7 +102,7 @@ test('food under and over $49.99, then a saree: one bar, two shipments, delivery
   await page.goto('/cart');
   const main = page.getByRole('main');
   // $10 of food: shipping is charged, one goal
-  await expect(page.getByRole('heading', { name: /^Food · 7 delivery days/ })).toBeVisible();
+  await expect(page.getByRole('heading', { name: /^Food · 7 – 12 delivery days/ })).toBeVisible();
   await expect(main.getByText('Add $39.99 more for free delivery')).toBeVisible();
   for (let i = 0; i < 4; i += 1) await page.getByRole('button', { name: 'One more' }).click();
   // $50: free
@@ -111,7 +111,7 @@ test('food under and over $49.99, then a saree: one bar, two shipments, delivery
 
   await addSaree(page);
   await page.goto('/cart');
-  const first = page.getByRole('heading', { name: /^Shipment 1 · Food · 7 delivery days/ });
+  const first = page.getByRole('heading', { name: /^Shipment 1 · Food · 7 – 12 delivery days/ });
   const second = page.getByRole('heading', { name: /^Shipment 2 · Clothing and home & gifts · 12 – 16 delivery days/ });
   await expect(first).toBeVisible();
   await expect(second).toBeVisible();

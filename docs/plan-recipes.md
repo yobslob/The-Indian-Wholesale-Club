@@ -59,7 +59,7 @@ changes: a kit is a shortcut to products the store already sells.
    the same customer-safe columns the cards already show. No shop, source, shop price or billed weight in any recipe
    payload or page source.
 6. **Honest** (D-004, D-008): a recipe's state is shown only when it has one ("All of India" otherwise, like an
-   all-India listing, D-121). Delivery says "7 delivery days" from Settings' food days (non-negotiable 4), never a date.
+   all-India listing, D-121). Delivery says "7 – 12 delivery days" from Settings' food days (non-negotiable 4), never a date.
    **Dish photos are the founder's, with no AI label** (answer 4): he adds them by the dish's name (§5.3).
 7. **Words are drafts** (D-012, D-019, D-059): every recipe's name, line, ingredient amounts and steps are Claude's
    draft (`content_status = 'draft'`) until the founder approves them in the admin. The voice rule applies: short, plain,
@@ -116,7 +116,7 @@ Header kicker "Cook at home", heading "What you'd order out, made in your kitche
 masalas and dals come from India, all in one tap. You bring the onions."). Chips: All · Snacks · Breakfast · Dinner ·
 Sweets · Chai & drinks (only kinds with a live recipe show). A two-column grid of recipe cards: photo (4 : 5) with the
 time on it, name (Cinzel), "<state> · serves n", "~~$y~~ **Kit $x** · n pieces" (rule 2). A small "How a kit works" card at the end
-(open a dish, untick what you have, add the rest; food arrives in 7 delivery days). Chips filter without a reload
+(open a dish, untick what you have, add the rest; food arrives in 7 – 12 delivery days). Chips filter without a reload
 (D-136), through `?kind=`.
 
 ### 4.3 `/recipes/<slug>`, a recipe
@@ -124,7 +124,7 @@ Top to bottom on a phone:
 1. Dish photo, full width, about 300 px; no caption.
 2. Chips: the state (links to its state page) and the kind. Name (Cinzel, 30 px). One line. Three facts: Time, Serves,
    Effort (easy, medium, weekend).
-3. **The kit from IWC** card: "7 delivery days" (Settings); "Untick what's already in your kitchen."; one row per IWC
+3. **The kit from IWC** card: "7 – 12 delivery days" (Settings); "Untick what's already in your kitchen."; one row per IWC
    line: checkbox (44 px target), the listing's photo, its name, "<pack> · uses <amount>", its price, "Other packs" when
    the product has more than one live variant (opens the existing option sheet). A row already in the bag shows the
    card's − n + instead of a checkbox (D-140). Every line starts ticked. An unavailable line shows "Not available right
