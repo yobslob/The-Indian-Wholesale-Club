@@ -1,0 +1,1934 @@
+[
+  {
+    "slug": "mirchi-ka-salan",
+    "name": "Mirchi ka Salan",
+    "kind": "dinner",
+    "state": "Telangana",
+    "rank": 121,
+    "blurb": "Long green chillies in a tangy peanut, sesame and coconut gravy. Biryani’s best friend.",
+    "minutes": 40,
+    "soak_hours": null,
+    "serves": 4,
+    "effort": "medium",
+    "ingredients": [
+      {
+        "label": "Peanuts",
+        "amount": "¼ cup",
+        "source": "iwc",
+        "match_words": "peanuts"
+      },
+      {
+        "label": "Sesame seeds",
+        "amount": "2 tbsp",
+        "source": "iwc",
+        "match_words": "sesame seeds"
+      },
+      {
+        "label": "Desiccated coconut",
+        "amount": "2 tbsp",
+        "source": "iwc",
+        "match_words": "desiccated coconut"
+      },
+      {
+        "label": "Tamarind",
+        "amount": "a small ball",
+        "source": "iwc",
+        "match_words": "tamarind"
+      },
+      {
+        "label": "Cumin seeds",
+        "amount": "1 tsp",
+        "source": "iwc",
+        "match_words": "cumin seeds"
+      },
+      {
+        "label": "Mustard seeds",
+        "amount": "½ tsp",
+        "source": "iwc",
+        "match_words": "mustard seeds"
+      },
+      {
+        "label": "Kalonji",
+        "amount": "½ tsp",
+        "source": "iwc",
+        "match_words": "kalonji"
+      },
+      {
+        "label": "Kashmiri chilli powder",
+        "amount": "1 tsp",
+        "source": "iwc",
+        "match_words": "kashmiri chilli powder"
+      },
+      {
+        "label": "Turmeric",
+        "amount": "½ tsp",
+        "source": "iwc",
+        "match_words": "turmeric"
+      },
+      {
+        "label": "Large green chillies",
+        "amount": "8",
+        "source": "local"
+      },
+      {
+        "label": "Onion",
+        "amount": "1",
+        "source": "local"
+      },
+      {
+        "label": "Ginger-garlic paste",
+        "amount": "1 tbsp",
+        "source": "local"
+      },
+      {
+        "label": "Oil",
+        "amount": "5 tbsp",
+        "source": "local"
+      },
+      {
+        "label": "Curry leaves",
+        "amount": "a sprig",
+        "source": "local"
+      },
+      {
+        "label": "Red chilli powder",
+        "amount": "½ tsp",
+        "source": "iwc",
+        "match_words": "red chilli powder",
+        "instead_of": "Large green chillies"
+      },
+      {
+        "label": "Dry ginger powder",
+        "amount": "½ tsp",
+        "source": "iwc",
+        "match_words": "dry ginger powder",
+        "instead_of": "Ginger-garlic paste"
+      },
+      {
+        "label": "Garlic powder",
+        "amount": "½ tsp",
+        "source": "iwc",
+        "match_words": "garlic powder",
+        "instead_of": "Ginger-garlic paste"
+      },
+      {
+        "label": "Dried curry leaves",
+        "amount": "1 tbsp",
+        "source": "iwc",
+        "match_words": "curry leaves",
+        "instead_of": "Curry leaves"
+      }
+    ],
+    "steps": [
+      {
+        "text": "Dry roast the peanuts, sesame and coconut and grind to a paste with water.",
+        "minutes": 8
+      },
+      {
+        "text": "Slit the chillies and fry them in oil until blistered. Set aside.",
+        "minutes": 5
+      },
+      {
+        "text": "In the same oil splutter the mustard, cumin and kalonji, add the curry leaves and onion and fry golden.",
+        "minutes": 8
+      },
+      {
+        "text": "Add the ginger-garlic paste, chilli powder, turmeric, the paste and tamarind water. Cook until the oil rises.",
+        "minutes": 12
+      },
+      {
+        "text": "Add the chillies and simmer five minutes.",
+        "minutes": 5
+      }
+    ]
+  },
+  {
+    "slug": "bagara-baingan",
+    "name": "Bagara Baingan",
+    "kind": "dinner",
+    "state": "Telangana",
+    "rank": 122,
+    "blurb": "Small eggplants in a nutty, tangy gravy of peanuts, sesame and tamarind.",
+    "minutes": 45,
+    "soak_hours": null,
+    "serves": 4,
+    "effort": "medium",
+    "ingredients": [
+      {
+        "label": "Peanuts",
+        "amount": "¼ cup",
+        "source": "iwc",
+        "match_words": "peanuts"
+      },
+      {
+        "label": "Sesame seeds",
+        "amount": "2 tbsp",
+        "source": "iwc",
+        "match_words": "sesame seeds"
+      },
+      {
+        "label": "Desiccated coconut",
+        "amount": "2 tbsp",
+        "source": "iwc",
+        "match_words": "desiccated coconut"
+      },
+      {
+        "label": "Tamarind",
+        "amount": "a small ball",
+        "source": "iwc",
+        "match_words": "tamarind"
+      },
+      {
+        "label": "Whole coriander",
+        "amount": "1 tbsp",
+        "source": "iwc",
+        "match_words": "whole coriander"
+      },
+      {
+        "label": "Cumin seeds",
+        "amount": "1 tsp",
+        "source": "iwc",
+        "match_words": "cumin seeds"
+      },
+      {
+        "label": "Kalonji",
+        "amount": "½ tsp",
+        "source": "iwc",
+        "match_words": "kalonji"
+      },
+      {
+        "label": "Kashmiri chilli powder",
+        "amount": "1 tsp",
+        "source": "iwc",
+        "match_words": "kashmiri chilli powder"
+      },
+      {
+        "label": "Turmeric",
+        "amount": "½ tsp",
+        "source": "iwc",
+        "match_words": "turmeric"
+      },
+      {
+        "label": "Jaggery",
+        "amount": "1 tsp",
+        "source": "iwc",
+        "match_words": "jaggery"
+      },
+      {
+        "label": "Small eggplants",
+        "amount": "8",
+        "source": "local"
+      },
+      {
+        "label": "Onion",
+        "amount": "1",
+        "source": "local"
+      },
+      {
+        "label": "Ginger-garlic paste",
+        "amount": "1 tbsp",
+        "source": "local"
+      },
+      {
+        "label": "Oil",
+        "amount": "5 tbsp",
+        "source": "local"
+      },
+      {
+        "label": "Curry leaves",
+        "amount": "a sprig",
+        "source": "local"
+      },
+      {
+        "label": "Dry ginger powder",
+        "amount": "½ tsp",
+        "source": "iwc",
+        "match_words": "dry ginger powder",
+        "instead_of": "Ginger-garlic paste"
+      },
+      {
+        "label": "Garlic powder",
+        "amount": "½ tsp",
+        "source": "iwc",
+        "match_words": "garlic powder",
+        "instead_of": "Ginger-garlic paste"
+      },
+      {
+        "label": "Dried curry leaves",
+        "amount": "1 tbsp",
+        "source": "iwc",
+        "match_words": "curry leaves",
+        "instead_of": "Curry leaves"
+      }
+    ],
+    "steps": [
+      {
+        "text": "Roast the peanuts, sesame, coconut, coriander and cumin and grind with water to a paste.",
+        "minutes": 8
+      },
+      {
+        "text": "Slit the eggplants into quarters, keeping the stems, and fry until soft outside.",
+        "minutes": 10
+      },
+      {
+        "text": "Fry the kalonji, curry leaves and onion in the same oil until golden.",
+        "minutes": 8
+      },
+      {
+        "text": "Add the ginger-garlic paste, chilli, turmeric, the paste, tamarind water, jaggery and salt.",
+        "minutes": 10
+      },
+      {
+        "text": "Add the eggplants and simmer until tender and the oil floats.",
+        "minutes": 10
+      }
+    ]
+  },
+  {
+    "slug": "pulihora",
+    "name": "Pulihora",
+    "kind": "dinner",
+    "state": "Andhra Pradesh",
+    "rank": 123,
+    "blurb": "Rice tossed with tamarind, peanuts and a crackling tempering. Temple food, travel food.",
+    "minutes": 40,
+    "soak_hours": null,
+    "serves": 4,
+    "effort": "easy",
+    "ingredients": [
+      {
+        "label": "Sona masoori",
+        "amount": "1½ cups",
+        "source": "iwc",
+        "match_words": "sona masoori"
+      },
+      {
+        "label": "Tamarind",
+        "amount": "a lemon-sized ball",
+        "source": "iwc",
+        "match_words": "tamarind"
+      },
+      {
+        "label": "Peanuts",
+        "amount": "¼ cup",
+        "source": "iwc",
+        "match_words": "peanuts"
+      },
+      {
+        "label": "Chana dal",
+        "amount": "1 tbsp",
+        "source": "iwc",
+        "match_words": "chana dal"
+      },
+      {
+        "label": "Urad dal",
+        "amount": "1 tbsp",
+        "source": "iwc",
+        "match_words": "urad dal"
+      },
+      {
+        "label": "Mustard seeds",
+        "amount": "1 tsp",
+        "source": "iwc",
+        "match_words": "mustard seeds"
+      },
+      {
+        "label": "Red chilli whole",
+        "amount": "4",
+        "source": "iwc",
+        "match_words": "red chilli whole"
+      },
+      {
+        "label": "Hing",
+        "amount": "a pinch",
+        "source": "iwc",
+        "match_words": "hing"
+      },
+      {
+        "label": "Turmeric",
+        "amount": "½ tsp",
+        "source": "iwc",
+        "match_words": "turmeric"
+      },
+      {
+        "label": "Jaggery",
+        "amount": "1 tsp",
+        "source": "iwc",
+        "match_words": "jaggery"
+      },
+      {
+        "label": "Oil",
+        "amount": "4 tbsp",
+        "source": "local"
+      },
+      {
+        "label": "Curry leaves",
+        "amount": "2 sprigs",
+        "source": "local"
+      },
+      {
+        "label": "Green chillies",
+        "amount": "3",
+        "source": "local"
+      },
+      {
+        "label": "Dried curry leaves",
+        "amount": "1 tbsp",
+        "source": "iwc",
+        "match_words": "curry leaves",
+        "instead_of": "Curry leaves"
+      },
+      {
+        "label": "Red chilli powder",
+        "amount": "½ tsp",
+        "source": "iwc",
+        "match_words": "red chilli powder",
+        "instead_of": "Green chillies"
+      }
+    ],
+    "steps": [
+      {
+        "text": "Cook the rice, spread it out to cool and toss with a spoon of oil and turmeric.",
+        "minutes": 20
+      },
+      {
+        "text": "Soak the tamarind in warm water and squeeze out a thick pulp.",
+        "minutes": 10
+      },
+      {
+        "text": "Fry the peanuts, dals, mustard seeds, red chillies, curry leaves and green chillies in oil.",
+        "minutes": 4
+      },
+      {
+        "text": "Add the hing, turmeric, tamarind pulp, jaggery and salt and cook until thick.",
+        "minutes": 8
+      },
+      {
+        "text": "Mix into the rice. It tastes best after an hour’s rest.",
+        "minutes": null
+      }
+    ]
+  },
+  {
+    "slug": "pesarattu",
+    "name": "Pesarattu",
+    "kind": "breakfast",
+    "state": "Andhra Pradesh",
+    "rank": 124,
+    "blurb": "Green moong crêpes with ginger and chilli. Andhra’s protein breakfast.",
+    "minutes": 25,
+    "soak_hours": 6,
+    "serves": 4,
+    "effort": "easy",
+    "ingredients": [
+      {
+        "label": "Green moong",
+        "amount": "1 cup",
+        "source": "iwc",
+        "match_words": "green moong"
+      },
+      {
+        "label": "Raw rice",
+        "amount": "2 tbsp",
+        "source": "iwc",
+        "match_words": "raw rice"
+      },
+      {
+        "label": "Cumin seeds",
+        "amount": "1 tsp",
+        "source": "iwc",
+        "match_words": "cumin seeds"
+      },
+      {
+        "label": "Ginger",
+        "amount": "1 inch",
+        "source": "local"
+      },
+      {
+        "label": "Green chillies",
+        "amount": "3",
+        "source": "local"
+      },
+      {
+        "label": "Onion",
+        "amount": "1",
+        "source": "local"
+      },
+      {
+        "label": "Oil",
+        "amount": "3 tbsp",
+        "source": "local"
+      },
+      {
+        "label": "Dry ginger powder",
+        "amount": "½ tsp",
+        "source": "iwc",
+        "match_words": "dry ginger powder",
+        "instead_of": "Ginger"
+      },
+      {
+        "label": "Red chilli powder",
+        "amount": "½ tsp",
+        "source": "iwc",
+        "match_words": "red chilli powder",
+        "instead_of": "Green chillies"
+      }
+    ],
+    "steps": [
+      {
+        "text": "Soak the moong and rice for 6 hours.",
+        "minutes": null
+      },
+      {
+        "text": "Grind with ginger, chillies, cumin and salt to a thick batter.",
+        "minutes": 8
+      },
+      {
+        "text": "Spread thin on a hot pan, scatter onion, drizzle oil and cook until crisp.",
+        "minutes": 3
+      },
+      {
+        "text": "Fold and serve with ginger chutney.",
+        "minutes": null
+      }
+    ]
+  },
+  {
+    "slug": "punugulu",
+    "name": "Punugulu",
+    "kind": "snacks",
+    "state": "Andhra Pradesh",
+    "rank": 125,
+    "blurb": "Small fritters of dosa batter, crisp outside and soft inside.",
+    "minutes": 25,
+    "soak_hours": 6,
+    "serves": 4,
+    "effort": "easy",
+    "ingredients": [
+      {
+        "label": "Dosa rice",
+        "amount": "1 cup",
+        "source": "iwc",
+        "match_words": "dosa rice"
+      },
+      {
+        "label": "Urad dal",
+        "amount": "¼ cup",
+        "source": "iwc",
+        "match_words": "urad dal"
+      },
+      {
+        "label": "Rice flour",
+        "amount": "2 tbsp",
+        "source": "iwc",
+        "match_words": "rice flour"
+      },
+      {
+        "label": "Cumin seeds",
+        "amount": "½ tsp",
+        "source": "iwc",
+        "match_words": "cumin seeds"
+      },
+      {
+        "label": "Onion",
+        "amount": "1",
+        "source": "local"
+      },
+      {
+        "label": "Green chillies",
+        "amount": "2",
+        "source": "local"
+      },
+      {
+        "label": "Ginger",
+        "amount": "½ inch",
+        "source": "local"
+      },
+      {
+        "label": "Curry leaves",
+        "amount": "a sprig",
+        "source": "local"
+      },
+      {
+        "label": "Oil",
+        "amount": "for frying",
+        "source": "local"
+      },
+      {
+        "label": "Red chilli powder",
+        "amount": "½ tsp",
+        "source": "iwc",
+        "match_words": "red chilli powder",
+        "instead_of": "Green chillies"
+      },
+      {
+        "label": "Dry ginger powder",
+        "amount": "½ tsp",
+        "source": "iwc",
+        "match_words": "dry ginger powder",
+        "instead_of": "Ginger"
+      },
+      {
+        "label": "Dried curry leaves",
+        "amount": "1 tbsp",
+        "source": "iwc",
+        "match_words": "curry leaves",
+        "instead_of": "Curry leaves"
+      }
+    ],
+    "steps": [
+      {
+        "text": "Soak the rice and urad dal for 6 hours, grind to a thick batter and ferment overnight. Leftover dosa batter works too.",
+        "minutes": null
+      },
+      {
+        "text": "Stir in the rice flour, onion, chillies, ginger, curry leaves, cumin and salt.",
+        "minutes": 3
+      },
+      {
+        "text": "Drop small spoonfuls into hot oil and fry until golden.",
+        "minutes": 15
+      },
+      {
+        "text": "Serve with peanut or ginger chutney.",
+        "minutes": null
+      }
+    ]
+  },
+  {
+    "slug": "avial",
+    "name": "Avial",
+    "kind": "dinner",
+    "state": "Kerala",
+    "rank": 126,
+    "blurb": "Mixed vegetables in coconut and yogurt with curry leaves and raw coconut oil.",
+    "minutes": 40,
+    "soak_hours": null,
+    "serves": 4,
+    "effort": "easy",
+    "ingredients": [
+      {
+        "label": "Cumin seeds",
+        "amount": "1 tsp",
+        "source": "iwc",
+        "match_words": "cumin seeds"
+      },
+      {
+        "label": "Turmeric",
+        "amount": "½ tsp",
+        "source": "iwc",
+        "match_words": "turmeric"
+      },
+      {
+        "label": "Mixed vegetables (drumstick, raw banana, carrot, beans, yam)",
+        "amount": "4 cups",
+        "source": "local"
+      },
+      {
+        "label": "Coconut (fresh)",
+        "amount": "1 cup grated",
+        "source": "local"
+      },
+      {
+        "label": "Yogurt",
+        "amount": "½ cup",
+        "source": "local"
+      },
+      {
+        "label": "Green chillies",
+        "amount": "3",
+        "source": "local"
+      },
+      {
+        "label": "Curry leaves",
+        "amount": "2 sprigs",
+        "source": "local"
+      },
+      {
+        "label": "Coconut oil",
+        "amount": "2 tbsp",
+        "source": "local"
+      },
+      {
+        "label": "Desiccated coconut",
+        "amount": "1 cup grated",
+        "source": "iwc",
+        "match_words": "desiccated coconut",
+        "instead_of": "Coconut (fresh)"
+      },
+      {
+        "label": "Red chilli powder",
+        "amount": "½ tsp",
+        "source": "iwc",
+        "match_words": "red chilli powder",
+        "instead_of": "Green chillies"
+      },
+      {
+        "label": "Dried curry leaves",
+        "amount": "1 tbsp",
+        "source": "iwc",
+        "match_words": "curry leaves",
+        "instead_of": "Curry leaves"
+      }
+    ],
+    "steps": [
+      {
+        "text": "Cut the vegetables into finger lengths and cook with turmeric, salt and a little water until just tender.",
+        "minutes": 15
+      },
+      {
+        "text": "Coarsely grind the coconut, cumin and green chillies without water.",
+        "minutes": 3
+      },
+      {
+        "text": "Add the paste to the vegetables and cook two minutes.",
+        "minutes": 3
+      },
+      {
+        "text": "Take off the heat and stir in the whisked yogurt, curry leaves and coconut oil.",
+        "minutes": null
+      }
+    ]
+  },
+  {
+    "slug": "kerala-fish-curry",
+    "name": "Kerala Fish Curry",
+    "kind": "dinner",
+    "state": "Kerala",
+    "rank": 127,
+    "blurb": "Fish in a red, sour curry, soured with kudampuli or kokum. Best the next day.",
+    "minutes": 40,
+    "soak_hours": null,
+    "serves": 4,
+    "effort": "easy",
+    "ingredients": [
+      {
+        "label": "Kudampuli or kokum",
+        "amount": "4 pieces",
+        "source": "iwc",
+        "match_words": "kokum"
+      },
+      {
+        "label": "Kashmiri chilli powder",
+        "amount": "2 tbsp",
+        "source": "iwc",
+        "match_words": "kashmiri chilli powder"
+      },
+      {
+        "label": "Turmeric",
+        "amount": "½ tsp",
+        "source": "iwc",
+        "match_words": "turmeric"
+      },
+      {
+        "label": "Fenugreek seeds",
+        "amount": "¼ tsp",
+        "source": "iwc",
+        "match_words": "fenugreek seeds"
+      },
+      {
+        "label": "Mustard seeds",
+        "amount": "½ tsp",
+        "source": "iwc",
+        "match_words": "mustard seeds"
+      },
+      {
+        "label": "Coriander powder",
+        "amount": "1 tsp",
+        "source": "iwc",
+        "match_words": "coriander powder"
+      },
+      {
+        "label": "Fish",
+        "amount": "500 g",
+        "source": "local"
+      },
+      {
+        "label": "Shallots",
+        "amount": "10",
+        "source": "local"
+      },
+      {
+        "label": "Ginger",
+        "amount": "1 inch",
+        "source": "local"
+      },
+      {
+        "label": "Garlic",
+        "amount": "6 cloves",
+        "source": "local"
+      },
+      {
+        "label": "Coconut oil",
+        "amount": "3 tbsp",
+        "source": "local"
+      },
+      {
+        "label": "Curry leaves",
+        "amount": "2 sprigs",
+        "source": "local"
+      },
+      {
+        "label": "Dry ginger powder",
+        "amount": "½ tsp",
+        "source": "iwc",
+        "match_words": "dry ginger powder",
+        "instead_of": "Ginger"
+      },
+      {
+        "label": "Garlic powder",
+        "amount": "½ tsp",
+        "source": "iwc",
+        "match_words": "garlic powder",
+        "instead_of": "Garlic"
+      },
+      {
+        "label": "Dried curry leaves",
+        "amount": "1 tbsp",
+        "source": "iwc",
+        "match_words": "curry leaves",
+        "instead_of": "Curry leaves"
+      }
+    ],
+    "steps": [
+      {
+        "text": "Soak the kokum in a cup of warm water.",
+        "minutes": 10
+      },
+      {
+        "text": "Heat the coconut oil, splutter the mustard and fenugreek, add the shallots, ginger, garlic and curry leaves and fry soft.",
+        "minutes": 8
+      },
+      {
+        "text": "Add the chilli, turmeric and coriander mixed to a paste with water. Cook until the oil separates.",
+        "minutes": 5
+      },
+      {
+        "text": "Add the kokum with its water and salt and bring to a boil.",
+        "minutes": 5
+      },
+      {
+        "text": "Add the fish and simmer, shaking the pot, until cooked.",
+        "minutes": 10
+      }
+    ]
+  },
+  {
+    "slug": "thoran",
+    "name": "Thoran",
+    "kind": "dinner",
+    "state": "Kerala",
+    "rank": 128,
+    "blurb": "Finely chopped cabbage stir-fried with coconut, mustard seeds and curry leaves.",
+    "minutes": 20,
+    "soak_hours": null,
+    "serves": 4,
+    "effort": "easy",
+    "ingredients": [
+      {
+        "label": "Mustard seeds",
+        "amount": "1 tsp",
+        "source": "iwc",
+        "match_words": "mustard seeds"
+      },
+      {
+        "label": "Urad dal",
+        "amount": "1 tsp",
+        "source": "iwc",
+        "match_words": "urad dal"
+      },
+      {
+        "label": "Turmeric",
+        "amount": "¼ tsp",
+        "source": "iwc",
+        "match_words": "turmeric"
+      },
+      {
+        "label": "Cumin seeds",
+        "amount": "½ tsp",
+        "source": "iwc",
+        "match_words": "cumin seeds"
+      },
+      {
+        "label": "Cabbage",
+        "amount": "½ head",
+        "source": "local"
+      },
+      {
+        "label": "Coconut (fresh)",
+        "amount": "½ cup grated",
+        "source": "local"
+      },
+      {
+        "label": "Green chillies",
+        "amount": "2",
+        "source": "local"
+      },
+      {
+        "label": "Curry leaves",
+        "amount": "a sprig",
+        "source": "local"
+      },
+      {
+        "label": "Coconut oil",
+        "amount": "1 tbsp",
+        "source": "local"
+      },
+      {
+        "label": "Garlic",
+        "amount": "2 cloves",
+        "source": "local"
+      },
+      {
+        "label": "Desiccated coconut",
+        "amount": "½ cup grated",
+        "source": "iwc",
+        "match_words": "desiccated coconut",
+        "instead_of": "Coconut (fresh)"
+      },
+      {
+        "label": "Red chilli powder",
+        "amount": "½ tsp",
+        "source": "iwc",
+        "match_words": "red chilli powder",
+        "instead_of": "Green chillies"
+      },
+      {
+        "label": "Dried curry leaves",
+        "amount": "1 tbsp",
+        "source": "iwc",
+        "match_words": "curry leaves",
+        "instead_of": "Curry leaves"
+      },
+      {
+        "label": "Garlic powder",
+        "amount": "½ tsp",
+        "source": "iwc",
+        "match_words": "garlic powder",
+        "instead_of": "Garlic"
+      }
+    ],
+    "steps": [
+      {
+        "text": "Crush the coconut, cumin, garlic and chillies together.",
+        "minutes": 3
+      },
+      {
+        "text": "Splutter the mustard and urad dal in oil and add the curry leaves.",
+        "minutes": 2
+      },
+      {
+        "text": "Add the cabbage, turmeric and salt and cook covered until just soft.",
+        "minutes": 8
+      },
+      {
+        "text": "Stir in the coconut mix and cook two minutes more.",
+        "minutes": 2
+      }
+    ]
+  },
+  {
+    "slug": "idiyappam",
+    "name": "Idiyappam",
+    "kind": "breakfast",
+    "state": "Kerala",
+    "rank": 129,
+    "blurb": "Steamed rice noodles, soft and light. Eat them with stew or sweet coconut milk.",
+    "minutes": 40,
+    "soak_hours": null,
+    "serves": 4,
+    "effort": "medium",
+    "ingredients": [
+      {
+        "label": "Rice flour",
+        "amount": "2 cups",
+        "source": "iwc",
+        "match_words": "rice flour"
+      },
+      {
+        "label": "Oil",
+        "amount": "1 tsp",
+        "source": "local"
+      },
+      {
+        "label": "Coconut (fresh)",
+        "amount": "½ cup grated",
+        "source": "local"
+      },
+      {
+        "label": "Desiccated coconut",
+        "amount": "½ cup grated",
+        "source": "iwc",
+        "match_words": "desiccated coconut",
+        "instead_of": "Coconut (fresh)"
+      }
+    ],
+    "steps": [
+      {
+        "text": "Boil 2 cups of water with salt and a teaspoon of oil.",
+        "minutes": 5
+      },
+      {
+        "text": "Pour it over the rice flour and stir, then knead to a soft, smooth dough.",
+        "minutes": 8
+      },
+      {
+        "text": "Press through an idiyappam maker onto greased plates. Top with coconut.",
+        "minutes": 15
+      },
+      {
+        "text": "Steam for 8 minutes.",
+        "minutes": 8
+      }
+    ]
+  },
+  {
+    "slug": "unniyappam",
+    "name": "Unniyappam",
+    "kind": "sweets",
+    "state": "Kerala",
+    "rank": 130,
+    "blurb": "Sweet rice, jaggery and banana fritters made in an appe pan. Temple festival treats.",
+    "minutes": 50,
+    "soak_hours": null,
+    "serves": 4,
+    "effort": "medium",
+    "ingredients": [
+      {
+        "label": "Rice flour",
+        "amount": "1 cup",
+        "source": "iwc",
+        "match_words": "rice flour"
+      },
+      {
+        "label": "Jaggery",
+        "amount": "¾ cup",
+        "source": "iwc",
+        "match_words": "jaggery"
+      },
+      {
+        "label": "Green cardamom",
+        "amount": "3",
+        "source": "iwc",
+        "match_words": "green cardamom"
+      },
+      {
+        "label": "Sesame seeds",
+        "amount": "1 tsp",
+        "source": "iwc",
+        "match_words": "sesame seeds"
+      },
+      {
+        "label": "Desiccated coconut",
+        "amount": "2 tbsp",
+        "source": "iwc",
+        "match_words": "desiccated coconut"
+      },
+      {
+        "label": "Baking soda",
+        "amount": "a pinch",
+        "source": "iwc",
+        "match_words": "baking soda"
+      },
+      {
+        "label": "Ripe bananas",
+        "amount": "2",
+        "source": "local"
+      },
+      {
+        "label": "Ghee",
+        "amount": "for frying",
+        "source": "local"
+      }
+    ],
+    "steps": [
+      {
+        "text": "Melt the jaggery in ¼ cup of water and strain.",
+        "minutes": 5
+      },
+      {
+        "text": "Mix the rice flour, mashed banana, jaggery syrup, cardamom, sesame, coconut, soda and a pinch of salt into a thick batter. Rest 30 minutes.",
+        "minutes": 30
+      },
+      {
+        "text": "Heat ghee in each hollow of an appe pan and fill with batter.",
+        "minutes": null
+      },
+      {
+        "text": "Cook, turning, until golden all over.",
+        "minutes": 15
+      }
+    ]
+  },
+  {
+    "slug": "sulaimani-tea",
+    "name": "Sulaimani Tea",
+    "kind": "drinks",
+    "state": "Kerala",
+    "rank": 131,
+    "blurb": "Black tea with lemon and cardamom. Malabar’s after-meal tea.",
+    "minutes": 8,
+    "soak_hours": null,
+    "serves": 2,
+    "effort": "easy",
+    "ingredients": [
+      {
+        "label": "Assam tea",
+        "amount": "1 tsp",
+        "source": "iwc",
+        "match_words": "assam tea"
+      },
+      {
+        "label": "Green cardamom",
+        "amount": "2",
+        "source": "iwc",
+        "match_words": "green cardamom"
+      },
+      {
+        "label": "Lemon",
+        "amount": "½",
+        "source": "local"
+      },
+      {
+        "label": "Sugar",
+        "amount": "2 tsp",
+        "source": "local"
+      },
+      {
+        "label": "Mint",
+        "amount": "a few leaves",
+        "source": "local"
+      },
+      {
+        "label": "Amchur",
+        "amount": "1 tsp",
+        "source": "iwc",
+        "match_words": "amchur",
+        "instead_of": "Lemon"
+      },
+      {
+        "label": "Dried mint leaves",
+        "amount": "1 tsp",
+        "source": "iwc",
+        "match_words": "mint leaves",
+        "instead_of": "Mint"
+      }
+    ],
+    "steps": [
+      {
+        "text": "Boil 2 cups of water with the crushed cardamom.",
+        "minutes": 3
+      },
+      {
+        "text": "Add the tea, turn off the heat and steep one minute. Strain.",
+        "minutes": 2
+      },
+      {
+        "text": "Stir in the sugar and lemon juice and add mint.",
+        "minutes": null
+      }
+    ]
+  },
+  {
+    "slug": "banana-chips",
+    "name": "Banana Chips",
+    "kind": "snacks",
+    "state": "Kerala",
+    "rank": 132,
+    "blurb": "Raw banana sliced thin and fried in coconut oil.",
+    "minutes": 30,
+    "soak_hours": null,
+    "serves": 4,
+    "effort": "easy",
+    "ingredients": [
+      {
+        "label": "Turmeric",
+        "amount": "½ tsp",
+        "source": "iwc",
+        "match_words": "turmeric"
+      },
+      {
+        "label": "Raw bananas",
+        "amount": "4",
+        "source": "local"
+      },
+      {
+        "label": "Coconut oil",
+        "amount": "for frying",
+        "source": "local"
+      }
+    ],
+    "steps": [
+      {
+        "text": "Peel the bananas and soak them in water with the turmeric for 10 minutes. Dry well.",
+        "minutes": 10
+      },
+      {
+        "text": "Slice very thin straight into hot coconut oil.",
+        "minutes": null
+      },
+      {
+        "text": "Fry until crisp, adding a spoon of salty water to the oil near the end.",
+        "minutes": 15
+      },
+      {
+        "text": "Drain and cool.",
+        "minutes": null
+      }
+    ]
+  },
+  {
+    "slug": "kara-kuzhambu",
+    "name": "Kara Kuzhambu",
+    "kind": "dinner",
+    "state": "Tamil Nadu",
+    "rank": 133,
+    "blurb": "A thick, tangy tamarind curry with shallots and garlic. Keeps for days.",
+    "minutes": 40,
+    "soak_hours": null,
+    "serves": 4,
+    "effort": "easy",
+    "ingredients": [
+      {
+        "label": "Tamarind",
+        "amount": "a lemon-sized ball",
+        "source": "iwc",
+        "match_words": "tamarind"
+      },
+      {
+        "label": "Sambar powder",
+        "amount": "2 tbsp",
+        "source": "iwc",
+        "match_words": "sambar powder"
+      },
+      {
+        "label": "Mustard seeds",
+        "amount": "1 tsp",
+        "source": "iwc",
+        "match_words": "mustard seeds"
+      },
+      {
+        "label": "Fenugreek seeds",
+        "amount": "½ tsp",
+        "source": "iwc",
+        "match_words": "fenugreek seeds"
+      },
+      {
+        "label": "Urad dal",
+        "amount": "1 tsp",
+        "source": "iwc",
+        "match_words": "urad dal"
+      },
+      {
+        "label": "Turmeric",
+        "amount": "½ tsp",
+        "source": "iwc",
+        "match_words": "turmeric"
+      },
+      {
+        "label": "Jaggery",
+        "amount": "1 tsp",
+        "source": "iwc",
+        "match_words": "jaggery"
+      },
+      {
+        "label": "Shallots",
+        "amount": "15",
+        "source": "local"
+      },
+      {
+        "label": "Garlic",
+        "amount": "10 cloves",
+        "source": "local"
+      },
+      {
+        "label": "Tomato",
+        "amount": "1",
+        "source": "local"
+      },
+      {
+        "label": "Sesame oil",
+        "amount": "4 tbsp",
+        "source": "local"
+      },
+      {
+        "label": "Curry leaves",
+        "amount": "a sprig",
+        "source": "local"
+      },
+      {
+        "label": "Garlic powder",
+        "amount": "½ tsp",
+        "source": "iwc",
+        "match_words": "garlic powder",
+        "instead_of": "Garlic"
+      },
+      {
+        "label": "Dried curry leaves",
+        "amount": "1 tbsp",
+        "source": "iwc",
+        "match_words": "curry leaves",
+        "instead_of": "Curry leaves"
+      }
+    ],
+    "steps": [
+      {
+        "text": "Soak the tamarind in two cups of warm water and squeeze out the juice.",
+        "minutes": 10
+      },
+      {
+        "text": "Heat the sesame oil, splutter the mustard, fenugreek and urad dal and add the curry leaves.",
+        "minutes": 2
+      },
+      {
+        "text": "Fry the shallots and garlic until golden, then the tomato until soft.",
+        "minutes": 8
+      },
+      {
+        "text": "Add the sambar powder, turmeric, tamarind water, jaggery and salt.",
+        "minutes": 2
+      },
+      {
+        "text": "Simmer until thick and the oil floats.",
+        "minutes": 15
+      }
+    ]
+  },
+  {
+    "slug": "curd-rice",
+    "name": "Curd Rice",
+    "kind": "dinner",
+    "state": "Tamil Nadu",
+    "rank": 134,
+    "blurb": "Soft rice in cool yogurt with a mustard and curry leaf tempering. The meal’s last course.",
+    "minutes": 25,
+    "soak_hours": null,
+    "serves": 3,
+    "effort": "easy",
+    "ingredients": [
+      {
+        "label": "Sona masoori",
+        "amount": "1 cup",
+        "source": "iwc",
+        "match_words": "sona masoori"
+      },
+      {
+        "label": "Mustard seeds",
+        "amount": "1 tsp",
+        "source": "iwc",
+        "match_words": "mustard seeds"
+      },
+      {
+        "label": "Urad dal",
+        "amount": "1 tsp",
+        "source": "iwc",
+        "match_words": "urad dal"
+      },
+      {
+        "label": "Hing",
+        "amount": "a pinch",
+        "source": "iwc",
+        "match_words": "hing"
+      },
+      {
+        "label": "Yogurt",
+        "amount": "2 cups",
+        "source": "local"
+      },
+      {
+        "label": "Milk",
+        "amount": "½ cup",
+        "source": "local"
+      },
+      {
+        "label": "Ginger",
+        "amount": "½ inch",
+        "source": "local"
+      },
+      {
+        "label": "Green chillies",
+        "amount": "1",
+        "source": "local"
+      },
+      {
+        "label": "Curry leaves",
+        "amount": "a sprig",
+        "source": "local"
+      },
+      {
+        "label": "Oil",
+        "amount": "1 tbsp",
+        "source": "local"
+      },
+      {
+        "label": "Dry ginger powder",
+        "amount": "½ tsp",
+        "source": "iwc",
+        "match_words": "dry ginger powder",
+        "instead_of": "Ginger"
+      },
+      {
+        "label": "Red chilli powder",
+        "amount": "½ tsp",
+        "source": "iwc",
+        "match_words": "red chilli powder",
+        "instead_of": "Green chillies"
+      },
+      {
+        "label": "Dried curry leaves",
+        "amount": "1 tbsp",
+        "source": "iwc",
+        "match_words": "curry leaves",
+        "instead_of": "Curry leaves"
+      }
+    ],
+    "steps": [
+      {
+        "text": "Cook the rice soft and mash it lightly while warm.",
+        "minutes": 20
+      },
+      {
+        "text": "Cool, then mix in the yogurt, milk and salt.",
+        "minutes": 2
+      },
+      {
+        "text": "Temper the mustard, urad dal, hing, chilli, ginger and curry leaves in oil and pour over.",
+        "minutes": 2
+      },
+      {
+        "text": "Serve cool.",
+        "minutes": null
+      }
+    ]
+  },
+  {
+    "slug": "adai",
+    "name": "Adai",
+    "kind": "breakfast",
+    "state": "Tamil Nadu",
+    "rank": 135,
+    "blurb": "Thick crêpes of mixed dals and rice, crisp at the edges.",
+    "minutes": 30,
+    "soak_hours": 4,
+    "serves": 4,
+    "effort": "easy",
+    "ingredients": [
+      {
+        "label": "Raw rice",
+        "amount": "½ cup",
+        "source": "iwc",
+        "match_words": "raw rice"
+      },
+      {
+        "label": "Toor dal",
+        "amount": "¼ cup",
+        "source": "iwc",
+        "match_words": "toor dal"
+      },
+      {
+        "label": "Chana dal",
+        "amount": "¼ cup",
+        "source": "iwc",
+        "match_words": "chana dal"
+      },
+      {
+        "label": "Urad dal",
+        "amount": "2 tbsp",
+        "source": "iwc",
+        "match_words": "urad dal"
+      },
+      {
+        "label": "Red chilli whole",
+        "amount": "4",
+        "source": "iwc",
+        "match_words": "red chilli whole"
+      },
+      {
+        "label": "Hing",
+        "amount": "a pinch",
+        "source": "iwc",
+        "match_words": "hing"
+      },
+      {
+        "label": "Ginger",
+        "amount": "1 inch",
+        "source": "local"
+      },
+      {
+        "label": "Curry leaves",
+        "amount": "a sprig",
+        "source": "local"
+      },
+      {
+        "label": "Onion",
+        "amount": "1",
+        "source": "local"
+      },
+      {
+        "label": "Oil",
+        "amount": "3 tbsp",
+        "source": "local"
+      },
+      {
+        "label": "Dry ginger powder",
+        "amount": "½ tsp",
+        "source": "iwc",
+        "match_words": "dry ginger powder",
+        "instead_of": "Ginger"
+      },
+      {
+        "label": "Dried curry leaves",
+        "amount": "1 tbsp",
+        "source": "iwc",
+        "match_words": "curry leaves",
+        "instead_of": "Curry leaves"
+      }
+    ],
+    "steps": [
+      {
+        "text": "Soak the rice and dals together for 4 hours.",
+        "minutes": null
+      },
+      {
+        "text": "Grind coarsely with the chillies, ginger, hing and salt.",
+        "minutes": 8
+      },
+      {
+        "text": "Stir in the onion and curry leaves.",
+        "minutes": null
+      },
+      {
+        "text": "Spread thick on a hot pan, make a hole in the middle, drizzle oil and cook both sides until crisp.",
+        "minutes": 6
+      }
+    ]
+  },
+  {
+    "slug": "semiya-upma",
+    "name": "Semiya Upma",
+    "kind": "breakfast",
+    "state": "Tamil Nadu",
+    "rank": 136,
+    "blurb": "Vermicelli cooked like upma with vegetables and a mustard tempering.",
+    "minutes": 20,
+    "soak_hours": null,
+    "serves": 3,
+    "effort": "easy",
+    "ingredients": [
+      {
+        "label": "Vermicelli",
+        "amount": "1½ cups",
+        "source": "iwc",
+        "match_words": "vermicelli"
+      },
+      {
+        "label": "Mustard seeds",
+        "amount": "1 tsp",
+        "source": "iwc",
+        "match_words": "mustard seeds"
+      },
+      {
+        "label": "Urad dal",
+        "amount": "1 tsp",
+        "source": "iwc",
+        "match_words": "urad dal"
+      },
+      {
+        "label": "Chana dal",
+        "amount": "1 tsp",
+        "source": "iwc",
+        "match_words": "chana dal"
+      },
+      {
+        "label": "Cashews",
+        "amount": "1 tbsp",
+        "source": "iwc",
+        "match_words": "cashews"
+      },
+      {
+        "label": "Onion",
+        "amount": "1",
+        "source": "local"
+      },
+      {
+        "label": "Carrots and peas",
+        "amount": "½ cup",
+        "source": "local"
+      },
+      {
+        "label": "Green chillies",
+        "amount": "2",
+        "source": "local"
+      },
+      {
+        "label": "Ginger",
+        "amount": "½ inch",
+        "source": "local"
+      },
+      {
+        "label": "Curry leaves",
+        "amount": "a sprig",
+        "source": "local"
+      },
+      {
+        "label": "Ghee or oil",
+        "amount": "2 tbsp",
+        "source": "local"
+      },
+      {
+        "label": "Lemon",
+        "amount": "½",
+        "source": "local"
+      },
+      {
+        "label": "Red chilli powder",
+        "amount": "½ tsp",
+        "source": "iwc",
+        "match_words": "red chilli powder",
+        "instead_of": "Green chillies"
+      },
+      {
+        "label": "Dry ginger powder",
+        "amount": "½ tsp",
+        "source": "iwc",
+        "match_words": "dry ginger powder",
+        "instead_of": "Ginger"
+      },
+      {
+        "label": "Dried curry leaves",
+        "amount": "1 tbsp",
+        "source": "iwc",
+        "match_words": "curry leaves",
+        "instead_of": "Curry leaves"
+      },
+      {
+        "label": "Amchur",
+        "amount": "1 tsp",
+        "source": "iwc",
+        "match_words": "amchur",
+        "instead_of": "Lemon"
+      }
+    ],
+    "steps": [
+      {
+        "text": "Roast the vermicelli in a spoon of ghee until golden. Set aside.",
+        "minutes": 4
+      },
+      {
+        "text": "Splutter the mustard, dals and cashews and add the curry leaves, chillies, ginger and onion.",
+        "minutes": 4
+      },
+      {
+        "text": "Add the vegetables, 2½ cups of water and salt and bring to a boil.",
+        "minutes": 5
+      },
+      {
+        "text": "Stir in the vermicelli and cook covered until the water is absorbed. Add lemon.",
+        "minutes": 5
+      }
+    ]
+  },
+  {
+    "slug": "sakkarai-pongal",
+    "name": "Sakkarai Pongal",
+    "kind": "sweets",
+    "state": "Tamil Nadu",
+    "rank": 137,
+    "blurb": "Rice and moong dal cooked with jaggery, ghee and cardamom. Pongal day’s sweet.",
+    "minutes": 40,
+    "soak_hours": null,
+    "serves": 4,
+    "effort": "easy",
+    "ingredients": [
+      {
+        "label": "Raw rice",
+        "amount": "½ cup",
+        "source": "iwc",
+        "match_words": "raw rice"
+      },
+      {
+        "label": "Moong dal",
+        "amount": "¼ cup",
+        "source": "iwc",
+        "match_words": "moong dal"
+      },
+      {
+        "label": "Jaggery",
+        "amount": "¾ cup",
+        "source": "iwc",
+        "match_words": "jaggery"
+      },
+      {
+        "label": "Green cardamom",
+        "amount": "3",
+        "source": "iwc",
+        "match_words": "green cardamom"
+      },
+      {
+        "label": "Cashews",
+        "amount": "10",
+        "source": "iwc",
+        "match_words": "cashews"
+      },
+      {
+        "label": "Raisins",
+        "amount": "1 tbsp",
+        "source": "iwc",
+        "match_words": "raisins"
+      },
+      {
+        "label": "Ghee",
+        "amount": "4 tbsp",
+        "source": "local"
+      },
+      {
+        "label": "Milk",
+        "amount": "1 cup",
+        "source": "local"
+      }
+    ],
+    "steps": [
+      {
+        "text": "Roast the moong dal lightly. Pressure cook it with the rice, milk and 2 cups of water until soft.",
+        "minutes": 20
+      },
+      {
+        "text": "Melt the jaggery in ¼ cup of water, strain it into the rice and cook, mashing, until thick.",
+        "minutes": 8
+      },
+      {
+        "text": "Fry the cashews and raisins in ghee and pour over with the cardamom.",
+        "minutes": 3
+      }
+    ]
+  },
+  {
+    "slug": "paruppu-vadai",
+    "name": "Paruppu Vadai",
+    "kind": "snacks",
+    "state": "Tamil Nadu",
+    "rank": 138,
+    "blurb": "Crunchy chana dal fritters with fennel, onion and curry leaves.",
+    "minutes": 30,
+    "soak_hours": 2,
+    "serves": 4,
+    "effort": "easy",
+    "ingredients": [
+      {
+        "label": "Chana dal",
+        "amount": "1 cup",
+        "source": "iwc",
+        "match_words": "chana dal"
+      },
+      {
+        "label": "Fennel seeds",
+        "amount": "1 tsp",
+        "source": "iwc",
+        "match_words": "fennel seeds"
+      },
+      {
+        "label": "Red chilli whole",
+        "amount": "3",
+        "source": "iwc",
+        "match_words": "red chilli whole"
+      },
+      {
+        "label": "Hing",
+        "amount": "a pinch",
+        "source": "iwc",
+        "match_words": "hing"
+      },
+      {
+        "label": "Onion",
+        "amount": "1",
+        "source": "local"
+      },
+      {
+        "label": "Ginger",
+        "amount": "1 inch",
+        "source": "local"
+      },
+      {
+        "label": "Curry leaves",
+        "amount": "a sprig",
+        "source": "local"
+      },
+      {
+        "label": "Coriander",
+        "amount": "a handful",
+        "source": "local"
+      },
+      {
+        "label": "Oil",
+        "amount": "for frying",
+        "source": "local"
+      },
+      {
+        "label": "Dry ginger powder",
+        "amount": "½ tsp",
+        "source": "iwc",
+        "match_words": "dry ginger powder",
+        "instead_of": "Ginger"
+      },
+      {
+        "label": "Dried curry leaves",
+        "amount": "1 tbsp",
+        "source": "iwc",
+        "match_words": "curry leaves",
+        "instead_of": "Curry leaves"
+      },
+      {
+        "label": "Coriander powder",
+        "amount": "1 tsp",
+        "source": "iwc",
+        "match_words": "coriander powder",
+        "instead_of": "Coriander"
+      }
+    ],
+    "steps": [
+      {
+        "text": "Soak the dal for 2 hours and drain.",
+        "minutes": null
+      },
+      {
+        "text": "Grind coarsely with the chillies, fennel and ginger, without water.",
+        "minutes": 5
+      },
+      {
+        "text": "Mix in the onion, curry leaves, coriander, hing and salt. Shape flat discs.",
+        "minutes": 8
+      },
+      {
+        "text": "Fry on medium heat until golden and crisp.",
+        "minutes": 12
+      }
+    ]
+  },
+  {
+    "slug": "murukku",
+    "name": "Murukku",
+    "kind": "snacks",
+    "state": "Tamil Nadu",
+    "rank": 139,
+    "blurb": "Rice and urad flour spirals, crisp with cumin and sesame.",
+    "minutes": 50,
+    "soak_hours": null,
+    "serves": 6,
+    "effort": "medium",
+    "ingredients": [
+      {
+        "label": "Rice flour",
+        "amount": "2 cups",
+        "source": "iwc",
+        "match_words": "rice flour"
+      },
+      {
+        "label": "Urad dal",
+        "amount": "¼ cup",
+        "source": "iwc",
+        "match_words": "urad dal"
+      },
+      {
+        "label": "Cumin seeds",
+        "amount": "1 tsp",
+        "source": "iwc",
+        "match_words": "cumin seeds"
+      },
+      {
+        "label": "Sesame seeds",
+        "amount": "1 tsp",
+        "source": "iwc",
+        "match_words": "sesame seeds"
+      },
+      {
+        "label": "Hing",
+        "amount": "a pinch",
+        "source": "iwc",
+        "match_words": "hing"
+      },
+      {
+        "label": "Butter",
+        "amount": "2 tbsp",
+        "source": "local"
+      },
+      {
+        "label": "Oil",
+        "amount": "for frying",
+        "source": "local"
+      }
+    ],
+    "steps": [
+      {
+        "text": "Dry roast the urad dal until light gold and grind it to a fine flour.",
+        "minutes": 8
+      },
+      {
+        "text": "Mix with the rice flour, cumin, sesame, hing, salt and butter, and knead with water to a soft dough.",
+        "minutes": 5
+      },
+      {
+        "text": "Press spirals through a murukku press.",
+        "minutes": 15
+      },
+      {
+        "text": "Fry on medium heat until golden and the sizzling stops.",
+        "minutes": 20
+      }
+    ]
+  },
+  {
+    "slug": "neer-dosa",
+    "name": "Neer Dosa",
+    "kind": "breakfast",
+    "state": "Karnataka",
+    "rank": 140,
+    "blurb": "Paper-thin, lacy rice crêpes. Just rice, water and salt.",
+    "minutes": 30,
+    "soak_hours": 4,
+    "serves": 4,
+    "effort": "easy",
+    "ingredients": [
+      {
+        "label": "Raw rice",
+        "amount": "1½ cups",
+        "source": "iwc",
+        "match_words": "raw rice"
+      },
+      {
+        "label": "Coconut (fresh)",
+        "amount": "¼ cup grated",
+        "source": "local"
+      },
+      {
+        "label": "Oil",
+        "amount": "2 tbsp",
+        "source": "local"
+      },
+      {
+        "label": "Desiccated coconut",
+        "amount": "¼ cup grated",
+        "source": "iwc",
+        "match_words": "desiccated coconut",
+        "instead_of": "Coconut (fresh)"
+      }
+    ],
+    "steps": [
+      {
+        "text": "Soak the rice for 4 hours.",
+        "minutes": null
+      },
+      {
+        "text": "Grind with the coconut and water to a smooth, very thin batter. Add salt.",
+        "minutes": 8
+      },
+      {
+        "text": "Pour the batter onto a hot greased pan from the edge inward and swirl to fill.",
+        "minutes": null
+      },
+      {
+        "text": "Cover for a minute until set and white. Fold and serve with chutney.",
+        "minutes": 2
+      }
+    ]
+  }
+]

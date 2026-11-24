@@ -87,7 +87,7 @@ const cached = <T>(key: string[], tags: string[], load: () => Promise<T>): Promi
 
 // v2: Home's album (D-113); a new key so no entry cached before it (without the album) is read back. v3: its recipe
 // (D-203), only Home's own entry read again.
-export const getHomeCached = () => cached(['store-home-v3'], [homeTag], () => getHome(storeClient()));
+export const getHomeCached = () => cached(['store-home-v4'], [homeTag], () => getHome(storeClient()));
 
 /** D-203: the shelf, refreshed when a recipe is published, changed or its kit's pieces change (features/admin/refresh-recipes.ts). */
 export const getRecipesCached = () => cached(['store-recipes'], [recipesTag], () => getRecipes(storeClient()));

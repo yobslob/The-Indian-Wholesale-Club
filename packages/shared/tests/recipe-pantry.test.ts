@@ -1,6 +1,6 @@
 /**
  * The Blinkit pantry list (D-203, plan §5.6, `tools/sourcing-runner/targets/recipe-pantry.csv`): one target per distinct
- * pantry item the 100 drafted recipes' kits need, on Blinkit only, a few listings each, and a Must match that leaves out
+ * pantry item the 200 drafted recipes' kits and swaps need (D-204), on Blinkit only, a few listings each, and a Must match that leaves out
  * dairy, liquids, frozen food and meat (meat and dairy words allowed only where the item's own name says them, as in a
  * masala's name: D-200's rule).
  */
@@ -8,10 +8,17 @@ import assert from 'node:assert/strict';
 import { readFileSync } from 'node:fs';
 import { describe, it } from 'node:test';
 
-import { parseTargetsCsv, targetMatcher, type SourcingTarget, type TargetRow } from '../src/sourcing/auto';
+import {
+  parseTargetsCsv,
+  targetMatcher,
+  type SourcingTarget,
+  type TargetRow,
+} from '../src/sourcing/auto';
 
 const root = new URL('../../../', import.meta.url);
-const { rows, errors } = parseTargetsCsv(readFileSync(new URL('tools/sourcing-runner/targets/recipe-pantry.csv', root), 'utf8'));
+const { rows, errors } = parseTargetsCsv(
+  readFileSync(new URL('tools/sourcing-runner/targets/recipe-pantry.csv', root), 'utf8'),
+);
 
 const target = (row: TargetRow): SourcingTarget => ({
   id: '00000000-0000-4000-8000-000000000001',
@@ -34,8 +41,12 @@ const fits = (item: string, title: string): boolean => {
 };
 
 const kitItems = new Set(
-  [1, 2, 3, 4, 5].flatMap((n) =>
-    (JSON.parse(readFileSync(new URL(`catalogue/recipes-drafts-${n}.json`, root), 'utf8')) as { ingredients: { source: string; match_words?: string }[] }[])
+  [1, 2, 3, 4, 5, 6, 7, 8, 9, 10].flatMap((n) =>
+    (
+      JSON.parse(readFileSync(new URL(`catalogue/recipes-drafts-${n}.json`, root), 'utf8')) as {
+        ingredients: { source: string; match_words?: string }[];
+      }[]
+    )
       .flatMap((d) => d.ingredients)
       .filter((l) => l.source === 'iwc')
       .map((l) => l.match_words!),
@@ -70,5 +81,10 @@ describe('the Blinkit pantry list (D-203)', () => {
     assert.ok(fits('chicken masala', 'MDH Chicken Masala 100 g'));
     assert.ok(!fits('chicken masala', 'Frozen Chicken Masala Curry'));
     assert.ok(!fits('saffron', 'Saffron Syrup 750 ml'));
+    assert.ok(fits('coriander powder', 'Catch Dhania Powder 100 g'));
+    assert.ok(fits('broken wheat', 'Aashirvaad Daliya 500 g'));
+    assert.ok(fits('green moong', 'Tata Sampann Green Moong Whole 500 g'));
+    assert.ok(!fits('green moong', 'Tata Sampann Moong Dal 500 g'));
+    assert.ok(fits('curry leaves', 'Dried Curry Leaves 50 g'));
   });
 });

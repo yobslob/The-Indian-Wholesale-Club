@@ -1,6 +1,6 @@
 -- =============================================================================
 -- DEV ONLY (INV-8). D-203, Cook at home: four placeholder recipes and the pantry pieces their kits hold, so the
--- shelf, a recipe page and Home's middle window can be seen and tested locally. Every row is fake
+-- shelf, a recipe page and Home's Cook at home row can be seen and tested locally. Every row is fake
 -- (is_placeholder = true): prices, stock, amounts and steps are DEV PLACEHOLDERS, not recipes the founder approved.
 -- The photo files don't exist locally; the pages fall back to their drawings.
 -- =============================================================================
@@ -16,7 +16,8 @@ from (values
   ('00000000-0000-4000-8000-000000000404', 'demo-chai-masala', 'Demo Chai Masala', null, 'masala-blends', 399, 9000),
   ('00000000-0000-4000-8000-000000000405', 'demo-assam-tea', 'Demo Assam Tea', 'assam', 'tea-and-drinks', 599, 15000),
   ('00000000-0000-4000-8000-000000000406', 'demo-thick-poha', 'Demo Thick Poha', 'madhya-pradesh', 'rice-flours-and-staples', 299, 6000),
-  ('00000000-0000-4000-8000-000000000407', 'demo-rajma', 'Demo Rajma', 'punjab', 'rice-flours-and-staples', 449, 11000)
+  ('00000000-0000-4000-8000-000000000407', 'demo-rajma', 'Demo Rajma', 'punjab', 'rice-flours-and-staples', 449, 11000),
+  ('00000000-0000-4000-8000-000000000408', 'demo-coriander-powder', 'Demo Coriander Powder', null, 'ground-spices', 199, 4000)
 ) as p (id, slug, name, region_slug, category_slug, price_cents, shop_price_paise)
 left join public.regions r on r.slug = p.region_slug
 join public.categories c on c.slug = p.category_slug;
@@ -31,7 +32,8 @@ values
   ('00000000-0000-4000-8000-000000000451', '00000000-0000-4000-8000-000000000405', 'DEMO-AT-250', '250 g', '{"pack": "250 g"}', 40, null),
   ('00000000-0000-4000-8000-000000000461', '00000000-0000-4000-8000-000000000406', 'DEMO-TP-500', '500 g', '{"pack": "500 g"}', 40, null),
   -- sold out: its recipe line shows "Not available right now" and drops out of the kit
-  ('00000000-0000-4000-8000-000000000471', '00000000-0000-4000-8000-000000000407', 'DEMO-RJ-500', '500 g', '{"pack": "500 g"}', 0, null);
+  ('00000000-0000-4000-8000-000000000471', '00000000-0000-4000-8000-000000000407', 'DEMO-RJ-500', '500 g', '{"pack": "500 g"}', 0, null),
+  ('00000000-0000-4000-8000-000000000481', '00000000-0000-4000-8000-000000000408', 'DEMO-CP-100', '100 g', '{"pack": "100 g"}', 40, null);
 
 insert into public.recipes (id, slug, name, region_id, kind, blurb, minutes, soak_hours, serves, effort, photo_path,
                             steps, content_status, sort, is_placeholder)
@@ -68,7 +70,12 @@ values
   ('00000000-0000-4000-8000-000000000503', 2, 'Onion', '1', 'local', null, ''),
   ('00000000-0000-4000-8000-000000000504', 1, 'Rajma', '1 cup', 'iwc', '00000000-0000-4000-8000-000000000471', 'rajma'),
   ('00000000-0000-4000-8000-000000000504', 2, 'Kashmiri chilli powder', '1 tsp', 'iwc', '00000000-0000-4000-8000-000000000431', 'kashmiri chilli'),
-  ('00000000-0000-4000-8000-000000000504', 3, 'Tomatoes', '3', 'local', null, '');
+  ('00000000-0000-4000-8000-000000000504', 3, 'Tomatoes', '3', 'local', null, ''),
+  ('00000000-0000-4000-8000-000000000501', 7, 'Coriander', 'a handful', 'local', null, '');
+
+-- D-204: a dry swap for the fresh coriander, offered unticked and outside the kit's price
+insert into public.recipe_ingredients (recipe_id, sort, label, amount, source, variant_id, match_words, instead_of)
+values ('00000000-0000-4000-8000-000000000501', 8, 'Coriander powder', '1 tsp', 'iwc', '00000000-0000-4000-8000-000000000481', 'coriander powder', 'Coriander');
 
 update public.recipes set status = 'live'
 where id in ('00000000-0000-4000-8000-000000000501', '00000000-0000-4000-8000-000000000502',

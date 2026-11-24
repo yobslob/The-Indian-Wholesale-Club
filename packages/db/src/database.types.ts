@@ -756,14 +756,14 @@ isOneToOne: false
                   ]
                 },"recipe_ingredients": {
                   Row: {
-                    "amount": string,"grams_used": number | null,"id": string,"label": string,"match_words": string,"product_id": string | null,"recipe_id": string,"sort": number,"source": string,"variant_id": string | null
+                    "amount": string,"grams_used": number | null,"id": string,"instead_of": string | null,"label": string,"match_words": string,"product_id": string | null,"recipe_id": string,"sort": number,"source": string,"variant_id": string | null
                   }
                   ComputedFields: never
                   Insert: {
-                    "amount"?: string,"grams_used"?: number | null,"id"?: string,"label": string,"match_words"?: string,"product_id"?: string | null,"recipe_id": string,"sort"?: number,"source": string,"variant_id"?: string | null
+                    "amount"?: string,"grams_used"?: number | null,"id"?: string,"instead_of"?: string | null,"label": string,"match_words"?: string,"product_id"?: string | null,"recipe_id": string,"sort"?: number,"source": string,"variant_id"?: string | null
                   }
                   Update: {
-                    "amount"?: string,"grams_used"?: number | null,"id"?: string,"label"?: string,"match_words"?: string,"product_id"?: string | null,"recipe_id"?: string,"sort"?: number,"source"?: string,"variant_id"?: string | null
+                    "amount"?: string,"grams_used"?: number | null,"id"?: string,"instead_of"?: string | null,"label"?: string,"match_words"?: string,"product_id"?: string | null,"recipe_id"?: string,"sort"?: number,"source"?: string,"variant_id"?: string | null
                   }
                   Relationships: [
                     {
@@ -1709,6 +1709,9 @@ isOneToOne: false
 "_recipe_blockers":
 { Args: { "p_id": string }; Returns: (string)[]
                            },
+"_recipe_cheapest_variant":
+{ Args: { "p_words": string }; Returns: string
+                           },
 "_record_cancel":
 { Args: { "p_amount": number,"p_note": string,"p_order": string }; Returns: undefined
                            },
@@ -1785,7 +1788,7 @@ isOneToOne: false
 "_store_card_options":
 { Args: { "p_product": string }; Returns: Json
                            },
-"_store_home_recipe":
+"_store_home_recipes":
 { Args: Record<PropertyKey, never>; Returns: Json
                            },
 "_store_pack":
@@ -1901,6 +1904,9 @@ isOneToOne: false
                            },
 "admin_recipes_missing_piece":
 { Args: Record<PropertyKey, never>; Returns: number
+                           },
+"admin_recipes_publish_all":
+{ Args: { "p_after"?: string,"p_limit"?: number }; Returns: Json
                            },
 "admin_rename_listings":
 { Args: { "p_items": Json }; Returns: number

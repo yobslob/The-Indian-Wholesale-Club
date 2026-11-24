@@ -1,0 +1,1670 @@
+[
+  {
+    "slug": "masor-tenga",
+    "name": "Masor Tenga",
+    "kind": "dinner",
+    "state": "Assam",
+    "rank": 181,
+    "blurb": "A light, sour fish curry with tomatoes and lemon. Assam’s summer favourite.",
+    "minutes": 30,
+    "soak_hours": null,
+    "serves": 4,
+    "effort": "easy",
+    "ingredients": [
+      {
+        "label": "Fenugreek seeds",
+        "amount": "½ tsp",
+        "source": "iwc",
+        "match_words": "fenugreek seeds"
+      },
+      {
+        "label": "Turmeric",
+        "amount": "½ tsp",
+        "source": "iwc",
+        "match_words": "turmeric"
+      },
+      {
+        "label": "Fish",
+        "amount": "500 g",
+        "source": "local"
+      },
+      {
+        "label": "Tomatoes",
+        "amount": "3",
+        "source": "local"
+      },
+      {
+        "label": "Lemon",
+        "amount": "1",
+        "source": "local"
+      },
+      {
+        "label": "Mustard oil",
+        "amount": "3 tbsp",
+        "source": "local"
+      },
+      {
+        "label": "Green chillies",
+        "amount": "2",
+        "source": "local"
+      },
+      {
+        "label": "Coriander",
+        "amount": "a handful",
+        "source": "local"
+      },
+      {
+        "label": "Amchur",
+        "amount": "1 tsp",
+        "source": "iwc",
+        "match_words": "amchur",
+        "instead_of": "Lemon"
+      },
+      {
+        "label": "Red chilli powder",
+        "amount": "½ tsp",
+        "source": "iwc",
+        "match_words": "red chilli powder",
+        "instead_of": "Green chillies"
+      },
+      {
+        "label": "Coriander powder",
+        "amount": "1 tsp",
+        "source": "iwc",
+        "match_words": "coriander powder",
+        "instead_of": "Coriander"
+      }
+    ],
+    "steps": [
+      {
+        "text": "Rub the fish with turmeric and salt and fry lightly in mustard oil.",
+        "minutes": 8
+      },
+      {
+        "text": "In the same oil add the fenugreek seeds, then the chopped tomatoes and slit chillies, and cook to a pulp.",
+        "minutes": 8
+      },
+      {
+        "text": "Add two cups of water and bring to a boil. Slide in the fish and simmer.",
+        "minutes": 8
+      },
+      {
+        "text": "Squeeze in the lemon and add coriander.",
+        "minutes": null
+      }
+    ]
+  },
+  {
+    "slug": "til-pitha",
+    "name": "Til Pitha",
+    "kind": "sweets",
+    "state": "Assam",
+    "rank": 182,
+    "blurb": "Rolled rice crêpes filled with black sesame and jaggery. Bihu’s sweet.",
+    "minutes": 60,
+    "soak_hours": 6,
+    "serves": 6,
+    "effort": "medium",
+    "ingredients": [
+      {
+        "label": "Sticky rice or raw rice",
+        "amount": "1 cup",
+        "source": "iwc",
+        "match_words": "raw rice"
+      },
+      {
+        "label": "Sesame seeds",
+        "amount": "½ cup",
+        "source": "iwc",
+        "match_words": "sesame seeds"
+      },
+      {
+        "label": "Jaggery",
+        "amount": "½ cup",
+        "source": "iwc",
+        "match_words": "jaggery"
+      }
+    ],
+    "steps": [
+      {
+        "text": "Drain the soaked rice, dry it for an hour and grind to a fine, slightly damp flour.",
+        "minutes": null
+      },
+      {
+        "text": "Roast the sesame, crush it and mix with grated jaggery.",
+        "minutes": 8
+      },
+      {
+        "text": "Spread a thin layer of flour on a hot pan. It sets into a crêpe.",
+        "minutes": null
+      },
+      {
+        "text": "Put filling in the middle, roll it up while hot and lift it off. Repeat.",
+        "minutes": 40
+      }
+    ]
+  },
+  {
+    "slug": "jadoh",
+    "name": "Jadoh",
+    "kind": "dinner",
+    "state": "Meghalaya",
+    "rank": 183,
+    "blurb": "Khasi rice cooked with pork, ginger and turmeric.",
+    "minutes": 60,
+    "soak_hours": null,
+    "serves": 4,
+    "effort": "medium",
+    "ingredients": [
+      {
+        "label": "Raw rice",
+        "amount": "1½ cups",
+        "source": "iwc",
+        "match_words": "raw rice"
+      },
+      {
+        "label": "Turmeric",
+        "amount": "1 tsp",
+        "source": "iwc",
+        "match_words": "turmeric"
+      },
+      {
+        "label": "Black pepper",
+        "amount": "1 tsp",
+        "source": "iwc",
+        "match_words": "black pepper"
+      },
+      {
+        "label": "Bay leaf",
+        "amount": "2",
+        "source": "iwc",
+        "match_words": "bay leaf"
+      },
+      {
+        "label": "Pork with some fat",
+        "amount": "500 g",
+        "source": "local"
+      },
+      {
+        "label": "Onions",
+        "amount": "2",
+        "source": "local"
+      },
+      {
+        "label": "Ginger",
+        "amount": "2 inch",
+        "source": "local"
+      },
+      {
+        "label": "Garlic",
+        "amount": "6 cloves",
+        "source": "local"
+      },
+      {
+        "label": "Oil",
+        "amount": "1 tbsp",
+        "source": "local"
+      },
+      {
+        "label": "Dry ginger powder",
+        "amount": "½ tsp",
+        "source": "iwc",
+        "match_words": "dry ginger powder",
+        "instead_of": "Ginger"
+      },
+      {
+        "label": "Garlic powder",
+        "amount": "½ tsp",
+        "source": "iwc",
+        "match_words": "garlic powder",
+        "instead_of": "Garlic"
+      }
+    ],
+    "steps": [
+      {
+        "text": "Wash the rice and soak it for 20 minutes.",
+        "minutes": 20
+      },
+      {
+        "text": "Cook the pork with a little oil until the fat renders.",
+        "minutes": 15
+      },
+      {
+        "text": "Add the onions, ginger, garlic, turmeric, pepper and bay leaves and fry well.",
+        "minutes": 8
+      },
+      {
+        "text": "Add the drained rice and 3 cups of water. Cover and cook until the rice is done.",
+        "minutes": 20
+      }
+    ]
+  },
+  {
+    "slug": "chak-hao-kheer",
+    "name": "Chak-hao Kheer",
+    "kind": "sweets",
+    "state": "Manipur",
+    "rank": 184,
+    "blurb": "Manipur’s black rice pudding, deep purple and nutty.",
+    "minutes": 60,
+    "soak_hours": 3,
+    "serves": 4,
+    "effort": "easy",
+    "ingredients": [
+      {
+        "label": "Black rice",
+        "amount": "½ cup",
+        "source": "iwc",
+        "match_words": "black rice"
+      },
+      {
+        "label": "Green cardamom",
+        "amount": "3",
+        "source": "iwc",
+        "match_words": "green cardamom"
+      },
+      {
+        "label": "Cashews",
+        "amount": "2 tbsp",
+        "source": "iwc",
+        "match_words": "cashews"
+      },
+      {
+        "label": "Raisins",
+        "amount": "1 tbsp",
+        "source": "iwc",
+        "match_words": "raisins"
+      },
+      {
+        "label": "Milk",
+        "amount": "1 litre",
+        "source": "local"
+      },
+      {
+        "label": "Sugar",
+        "amount": "½ cup",
+        "source": "local"
+      }
+    ],
+    "steps": [
+      {
+        "text": "Soak the black rice for 3 hours.",
+        "minutes": null
+      },
+      {
+        "text": "Boil the milk, add the rice and cook on low, stirring often, until soft and thick.",
+        "minutes": 45
+      },
+      {
+        "text": "Add the sugar, cardamom, cashews and raisins and cook five minutes.",
+        "minutes": 5
+      },
+      {
+        "text": "Serve warm or cold.",
+        "minutes": null
+      }
+    ]
+  },
+  {
+    "slug": "sel-roti",
+    "name": "Sel Roti",
+    "kind": "sweets",
+    "state": "Sikkim",
+    "rank": 185,
+    "blurb": "Ring-shaped sweet rice bread, crisp outside and soft within. Made for Tihar.",
+    "minutes": 60,
+    "soak_hours": 6,
+    "serves": 6,
+    "effort": "medium",
+    "ingredients": [
+      {
+        "label": "Raw rice",
+        "amount": "2 cups",
+        "source": "iwc",
+        "match_words": "raw rice"
+      },
+      {
+        "label": "Green cardamom",
+        "amount": "3",
+        "source": "iwc",
+        "match_words": "green cardamom"
+      },
+      {
+        "label": "Sugar",
+        "amount": "½ cup",
+        "source": "local"
+      },
+      {
+        "label": "Ghee",
+        "amount": "2 tbsp",
+        "source": "local"
+      },
+      {
+        "label": "Ripe banana",
+        "amount": "1",
+        "source": "local"
+      },
+      {
+        "label": "Milk",
+        "amount": "½ cup",
+        "source": "local"
+      },
+      {
+        "label": "Oil",
+        "amount": "for frying",
+        "source": "local"
+      }
+    ],
+    "steps": [
+      {
+        "text": "Drain the soaked rice and grind with the sugar, banana, ghee and milk to a thick, smooth batter.",
+        "minutes": 10
+      },
+      {
+        "text": "Add the cardamom and rest 30 minutes.",
+        "minutes": 30
+      },
+      {
+        "text": "Pour the batter in a ring into hot oil.",
+        "minutes": null
+      },
+      {
+        "text": "Fry on both sides until golden.",
+        "minutes": 20
+      }
+    ]
+  },
+  {
+    "slug": "luchi-and-aloor-dom",
+    "name": "Luchi and Aloor Dom",
+    "kind": "breakfast",
+    "state": "West Bengal",
+    "rank": 186,
+    "blurb": "Puffy maida puris with a spiced potato curry. A Bengali Sunday breakfast.",
+    "minutes": 55,
+    "soak_hours": null,
+    "serves": 4,
+    "effort": "medium",
+    "ingredients": [
+      {
+        "label": "Maida",
+        "amount": "2 cups",
+        "source": "iwc",
+        "match_words": "maida"
+      },
+      {
+        "label": "Cumin seeds",
+        "amount": "1 tsp",
+        "source": "iwc",
+        "match_words": "cumin seeds"
+      },
+      {
+        "label": "Bay leaf",
+        "amount": "1",
+        "source": "iwc",
+        "match_words": "bay leaf"
+      },
+      {
+        "label": "Kashmiri chilli powder",
+        "amount": "1 tsp",
+        "source": "iwc",
+        "match_words": "kashmiri chilli powder"
+      },
+      {
+        "label": "Turmeric",
+        "amount": "½ tsp",
+        "source": "iwc",
+        "match_words": "turmeric"
+      },
+      {
+        "label": "Roasted cumin",
+        "amount": "1 tsp",
+        "source": "iwc",
+        "match_words": "roasted cumin"
+      },
+      {
+        "label": "Garam masala",
+        "amount": "½ tsp",
+        "source": "iwc",
+        "match_words": "garam masala"
+      },
+      {
+        "label": "Baby potatoes",
+        "amount": "500 g",
+        "source": "local"
+      },
+      {
+        "label": "Tomato",
+        "amount": "1",
+        "source": "local"
+      },
+      {
+        "label": "Ginger",
+        "amount": "1 inch",
+        "source": "local"
+      },
+      {
+        "label": "Ghee",
+        "amount": "2 tbsp",
+        "source": "local"
+      },
+      {
+        "label": "Oil",
+        "amount": "for frying",
+        "source": "local"
+      },
+      {
+        "label": "Sugar",
+        "amount": "½ tsp",
+        "source": "local"
+      },
+      {
+        "label": "Dry ginger powder",
+        "amount": "½ tsp",
+        "source": "iwc",
+        "match_words": "dry ginger powder",
+        "instead_of": "Ginger"
+      }
+    ],
+    "steps": [
+      {
+        "text": "Knead the maida with salt, 2 tbsp oil and water into a stiff dough. Rest it.",
+        "minutes": 15
+      },
+      {
+        "text": "Boil and peel the potatoes and fry them in oil until golden.",
+        "minutes": 15
+      },
+      {
+        "text": "Fry the cumin and bay leaf, add the ginger, tomato and spices, then the potatoes, sugar and a little water. Cook until coated and finish with roasted cumin and ghee.",
+        "minutes": 10
+      },
+      {
+        "text": "Roll small discs and deep fry until puffed.",
+        "minutes": 15
+      }
+    ]
+  },
+  {
+    "slug": "ghugni",
+    "name": "Ghugni",
+    "kind": "snacks",
+    "state": "West Bengal",
+    "rank": 187,
+    "blurb": "Dried yellow peas in a spicy curry, topped with onion and tamarind.",
+    "minutes": 45,
+    "soak_hours": 8,
+    "serves": 4,
+    "effort": "easy",
+    "ingredients": [
+      {
+        "label": "Yellow peas",
+        "amount": "1 cup",
+        "source": "iwc",
+        "match_words": "yellow peas"
+      },
+      {
+        "label": "Cumin seeds",
+        "amount": "1 tsp",
+        "source": "iwc",
+        "match_words": "cumin seeds"
+      },
+      {
+        "label": "Bay leaf",
+        "amount": "1",
+        "source": "iwc",
+        "match_words": "bay leaf"
+      },
+      {
+        "label": "Turmeric",
+        "amount": "½ tsp",
+        "source": "iwc",
+        "match_words": "turmeric"
+      },
+      {
+        "label": "Kashmiri chilli powder",
+        "amount": "1 tsp",
+        "source": "iwc",
+        "match_words": "kashmiri chilli powder"
+      },
+      {
+        "label": "Roasted cumin",
+        "amount": "1 tsp",
+        "source": "iwc",
+        "match_words": "roasted cumin"
+      },
+      {
+        "label": "Garam masala",
+        "amount": "½ tsp",
+        "source": "iwc",
+        "match_words": "garam masala"
+      },
+      {
+        "label": "Tamarind chutney",
+        "amount": "2 tbsp",
+        "source": "iwc",
+        "match_words": "tamarind chutney"
+      },
+      {
+        "label": "Onions",
+        "amount": "2",
+        "source": "local"
+      },
+      {
+        "label": "Tomato",
+        "amount": "1",
+        "source": "local"
+      },
+      {
+        "label": "Ginger",
+        "amount": "1 inch",
+        "source": "local"
+      },
+      {
+        "label": "Potato",
+        "amount": "1",
+        "source": "local"
+      },
+      {
+        "label": "Mustard oil",
+        "amount": "2 tbsp",
+        "source": "local"
+      },
+      {
+        "label": "Green chillies",
+        "amount": "2",
+        "source": "local"
+      },
+      {
+        "label": "Coriander",
+        "amount": "a handful",
+        "source": "local"
+      },
+      {
+        "label": "Dry ginger powder",
+        "amount": "½ tsp",
+        "source": "iwc",
+        "match_words": "dry ginger powder",
+        "instead_of": "Ginger"
+      },
+      {
+        "label": "Red chilli powder",
+        "amount": "½ tsp",
+        "source": "iwc",
+        "match_words": "red chilli powder",
+        "instead_of": "Green chillies"
+      },
+      {
+        "label": "Coriander powder",
+        "amount": "1 tsp",
+        "source": "iwc",
+        "match_words": "coriander powder",
+        "instead_of": "Coriander"
+      }
+    ],
+    "steps": [
+      {
+        "text": "Pressure cook the soaked peas with turmeric and salt until soft.",
+        "minutes": 20
+      },
+      {
+        "text": "Fry the cumin and bay leaf, then an onion, the ginger and tomato with the chilli powder. Add the diced potato.",
+        "minutes": 10
+      },
+      {
+        "text": "Add the peas and a cup of water and simmer until thick.",
+        "minutes": 12
+      },
+      {
+        "text": "Top with raw onion, chillies, coriander, roasted cumin and tamarind chutney.",
+        "minutes": null
+      }
+    ]
+  },
+  {
+    "slug": "aloo-ke-gutke",
+    "name": "Aloo ke Gutke",
+    "kind": "snacks",
+    "state": "Uttarakhand",
+    "rank": 188,
+    "blurb": "Potatoes tossed with cumin, red chillies and mustard oil. Kumaon’s snack.",
+    "minutes": 25,
+    "soak_hours": null,
+    "serves": 4,
+    "effort": "easy",
+    "ingredients": [
+      {
+        "label": "Cumin seeds (or jakhiya)",
+        "amount": "1 tsp",
+        "source": "iwc",
+        "match_words": "cumin seeds"
+      },
+      {
+        "label": "Red chilli whole",
+        "amount": "3",
+        "source": "iwc",
+        "match_words": "red chilli whole"
+      },
+      {
+        "label": "Turmeric",
+        "amount": "½ tsp",
+        "source": "iwc",
+        "match_words": "turmeric"
+      },
+      {
+        "label": "Kashmiri chilli powder",
+        "amount": "1 tsp",
+        "source": "iwc",
+        "match_words": "kashmiri chilli powder"
+      },
+      {
+        "label": "Coriander powder",
+        "amount": "1 tsp",
+        "source": "iwc",
+        "match_words": "coriander powder"
+      },
+      {
+        "label": "Potatoes",
+        "amount": "5",
+        "source": "local"
+      },
+      {
+        "label": "Mustard oil",
+        "amount": "3 tbsp",
+        "source": "local"
+      },
+      {
+        "label": "Coriander",
+        "amount": "a handful",
+        "source": "local"
+      }
+    ],
+    "steps": [
+      {
+        "text": "Boil the potatoes until just done, peel and cube them.",
+        "minutes": 15
+      },
+      {
+        "text": "Heat the mustard oil until it smokes and add the cumin and red chillies.",
+        "minutes": 2
+      },
+      {
+        "text": "Add the turmeric, chilli and coriander powder, then the potatoes and salt. Toss until crisp at the edges.",
+        "minutes": 8
+      },
+      {
+        "text": "Add coriander.",
+        "minutes": null
+      }
+    ]
+  },
+  {
+    "slug": "chana-chaat",
+    "name": "Chana Chaat",
+    "kind": "snacks",
+    "state": "All of India",
+    "rank": 189,
+    "blurb": "Chickpeas tossed with onion, tomato, chaat masala and lemon.",
+    "minutes": 30,
+    "soak_hours": 8,
+    "serves": 2,
+    "effort": "easy",
+    "ingredients": [
+      {
+        "label": "Kabuli chana",
+        "amount": "1 cup",
+        "source": "iwc",
+        "match_words": "kabuli chana"
+      },
+      {
+        "label": "Chaat masala",
+        "amount": "1 tsp",
+        "source": "iwc",
+        "match_words": "chaat masala"
+      },
+      {
+        "label": "Roasted cumin",
+        "amount": "½ tsp",
+        "source": "iwc",
+        "match_words": "roasted cumin"
+      },
+      {
+        "label": "Kala namak",
+        "amount": "a pinch",
+        "source": "iwc",
+        "match_words": "kala namak"
+      },
+      {
+        "label": "Tamarind chutney",
+        "amount": "1 tbsp",
+        "source": "iwc",
+        "match_words": "tamarind chutney"
+      },
+      {
+        "label": "Onion",
+        "amount": "1",
+        "source": "local"
+      },
+      {
+        "label": "Tomato",
+        "amount": "1",
+        "source": "local"
+      },
+      {
+        "label": "Cucumber",
+        "amount": "½",
+        "source": "local"
+      },
+      {
+        "label": "Green chillies",
+        "amount": "1",
+        "source": "local"
+      },
+      {
+        "label": "Lemon",
+        "amount": "1",
+        "source": "local"
+      },
+      {
+        "label": "Coriander",
+        "amount": "a handful",
+        "source": "local"
+      },
+      {
+        "label": "Red chilli powder",
+        "amount": "½ tsp",
+        "source": "iwc",
+        "match_words": "red chilli powder",
+        "instead_of": "Green chillies"
+      },
+      {
+        "label": "Amchur",
+        "amount": "1 tsp",
+        "source": "iwc",
+        "match_words": "amchur",
+        "instead_of": "Lemon"
+      },
+      {
+        "label": "Coriander powder",
+        "amount": "1 tsp",
+        "source": "iwc",
+        "match_words": "coriander powder",
+        "instead_of": "Coriander"
+      }
+    ],
+    "steps": [
+      {
+        "text": "Pressure cook the soaked chana until soft. Cool.",
+        "minutes": 25
+      },
+      {
+        "text": "Toss with the chopped vegetables, chillies and coriander.",
+        "minutes": 5
+      },
+      {
+        "text": "Add the chaat masala, cumin, kala namak, chutney and lemon.",
+        "minutes": null
+      }
+    ]
+  },
+  {
+    "slug": "hara-bhara-kabab",
+    "name": "Hara Bhara Kabab",
+    "kind": "snacks",
+    "state": "All of India",
+    "rank": 190,
+    "blurb": "Green patties of spinach, peas and potato. Crisp outside, soft inside.",
+    "minutes": 35,
+    "soak_hours": null,
+    "serves": 4,
+    "effort": "easy",
+    "ingredients": [
+      {
+        "label": "Besan",
+        "amount": "3 tbsp",
+        "source": "iwc",
+        "match_words": "besan"
+      },
+      {
+        "label": "Chaat masala",
+        "amount": "1 tsp",
+        "source": "iwc",
+        "match_words": "chaat masala"
+      },
+      {
+        "label": "Cumin seeds",
+        "amount": "½ tsp",
+        "source": "iwc",
+        "match_words": "cumin seeds"
+      },
+      {
+        "label": "Garam masala",
+        "amount": "½ tsp",
+        "source": "iwc",
+        "match_words": "garam masala"
+      },
+      {
+        "label": "Cashews",
+        "amount": "8",
+        "source": "iwc",
+        "match_words": "cashews"
+      },
+      {
+        "label": "Spinach",
+        "amount": "2 cups",
+        "source": "local"
+      },
+      {
+        "label": "Green peas",
+        "amount": "½ cup",
+        "source": "local"
+      },
+      {
+        "label": "Potatoes",
+        "amount": "2",
+        "source": "local"
+      },
+      {
+        "label": "Green chillies",
+        "amount": "2",
+        "source": "local"
+      },
+      {
+        "label": "Ginger",
+        "amount": "1 inch",
+        "source": "local"
+      },
+      {
+        "label": "Coriander",
+        "amount": "a handful",
+        "source": "local"
+      },
+      {
+        "label": "Oil",
+        "amount": "3 tbsp",
+        "source": "local"
+      },
+      {
+        "label": "Red chilli powder",
+        "amount": "½ tsp",
+        "source": "iwc",
+        "match_words": "red chilli powder",
+        "instead_of": "Green chillies"
+      },
+      {
+        "label": "Dry ginger powder",
+        "amount": "½ tsp",
+        "source": "iwc",
+        "match_words": "dry ginger powder",
+        "instead_of": "Ginger"
+      },
+      {
+        "label": "Coriander powder",
+        "amount": "1 tsp",
+        "source": "iwc",
+        "match_words": "coriander powder",
+        "instead_of": "Coriander"
+      }
+    ],
+    "steps": [
+      {
+        "text": "Blanch the spinach and peas, squeeze dry and chop fine.",
+        "minutes": 8
+      },
+      {
+        "text": "Mix with the mashed boiled potatoes, ginger, chillies, coriander, toasted besan, spices and salt.",
+        "minutes": 8
+      },
+      {
+        "text": "Shape patties and press a cashew into each.",
+        "minutes": 8
+      },
+      {
+        "text": "Shallow fry until crisp on both sides.",
+        "minutes": 10
+      }
+    ]
+  },
+  {
+    "slug": "namak-pare",
+    "name": "Namak Pare",
+    "kind": "snacks",
+    "state": "All of India",
+    "rank": 191,
+    "blurb": "Crisp, salted diamonds of fried dough with ajwain.",
+    "minutes": 40,
+    "soak_hours": null,
+    "serves": 6,
+    "effort": "easy",
+    "ingredients": [
+      {
+        "label": "Maida",
+        "amount": "2 cups",
+        "source": "iwc",
+        "match_words": "maida"
+      },
+      {
+        "label": "Ajwain",
+        "amount": "1 tsp",
+        "source": "iwc",
+        "match_words": "ajwain"
+      },
+      {
+        "label": "Kalonji",
+        "amount": "½ tsp",
+        "source": "iwc",
+        "match_words": "kalonji"
+      },
+      {
+        "label": "Ghee",
+        "amount": "3 tbsp",
+        "source": "local"
+      },
+      {
+        "label": "Oil",
+        "amount": "for frying",
+        "source": "local"
+      }
+    ],
+    "steps": [
+      {
+        "text": "Mix the maida, salt, ajwain, kalonji and ghee and knead with water into a stiff dough. Rest it.",
+        "minutes": 15
+      },
+      {
+        "text": "Roll out thin and cut into diamonds.",
+        "minutes": 8
+      },
+      {
+        "text": "Fry on medium-low heat until golden and crisp.",
+        "minutes": 15
+      }
+    ]
+  },
+  {
+    "slug": "methi-matar-malai",
+    "name": "Methi Matar Malai",
+    "kind": "dinner",
+    "state": "All of India",
+    "rank": 192,
+    "blurb": "Peas in a creamy white gravy with kasuri methi.",
+    "minutes": 35,
+    "soak_hours": null,
+    "serves": 4,
+    "effort": "easy",
+    "ingredients": [
+      {
+        "label": "Kasuri methi",
+        "amount": "2 tbsp",
+        "source": "iwc",
+        "match_words": "kasuri methi"
+      },
+      {
+        "label": "Cashews",
+        "amount": "¼ cup",
+        "source": "iwc",
+        "match_words": "cashews"
+      },
+      {
+        "label": "Green cardamom",
+        "amount": "2",
+        "source": "iwc",
+        "match_words": "green cardamom"
+      },
+      {
+        "label": "Garam masala",
+        "amount": "½ tsp",
+        "source": "iwc",
+        "match_words": "garam masala"
+      },
+      {
+        "label": "White pepper",
+        "amount": "½ tsp",
+        "source": "iwc",
+        "match_words": "white pepper"
+      },
+      {
+        "label": "Green peas",
+        "amount": "2 cups",
+        "source": "local"
+      },
+      {
+        "label": "Onion",
+        "amount": "1",
+        "source": "local"
+      },
+      {
+        "label": "Cream",
+        "amount": "½ cup",
+        "source": "local"
+      },
+      {
+        "label": "Milk",
+        "amount": "½ cup",
+        "source": "local"
+      },
+      {
+        "label": "Butter",
+        "amount": "2 tbsp",
+        "source": "local"
+      },
+      {
+        "label": "Ginger",
+        "amount": "1 inch",
+        "source": "local"
+      },
+      {
+        "label": "Green chillies",
+        "amount": "2",
+        "source": "local"
+      },
+      {
+        "label": "Dry ginger powder",
+        "amount": "½ tsp",
+        "source": "iwc",
+        "match_words": "dry ginger powder",
+        "instead_of": "Ginger"
+      },
+      {
+        "label": "Red chilli powder",
+        "amount": "½ tsp",
+        "source": "iwc",
+        "match_words": "red chilli powder",
+        "instead_of": "Green chillies"
+      }
+    ],
+    "steps": [
+      {
+        "text": "Boil the onion, cashews and cardamom in water for 10 minutes and grind smooth.",
+        "minutes": 12
+      },
+      {
+        "text": "Cook the paste in butter with the ginger and chillies until it smells cooked.",
+        "minutes": 6
+      },
+      {
+        "text": "Add the milk, peas, salt and white pepper and simmer.",
+        "minutes": 8
+      },
+      {
+        "text": "Crush the kasuri methi in and add the cream and garam masala.",
+        "minutes": 3
+      }
+    ]
+  },
+  {
+    "slug": "veg-pulao",
+    "name": "Veg Pulao",
+    "kind": "dinner",
+    "state": "All of India",
+    "rank": 193,
+    "blurb": "Basmati cooked with vegetables and whole spices. Quick and gentle.",
+    "minutes": 45,
+    "soak_hours": null,
+    "serves": 4,
+    "effort": "easy",
+    "ingredients": [
+      {
+        "label": "Basmati rice",
+        "amount": "1½ cups",
+        "source": "iwc",
+        "match_words": "basmati rice"
+      },
+      {
+        "label": "Whole garam masala",
+        "amount": "1 tsp",
+        "source": "iwc",
+        "match_words": "whole garam masala"
+      },
+      {
+        "label": "Bay leaf",
+        "amount": "2",
+        "source": "iwc",
+        "match_words": "bay leaf"
+      },
+      {
+        "label": "Cumin seeds",
+        "amount": "1 tsp",
+        "source": "iwc",
+        "match_words": "cumin seeds"
+      },
+      {
+        "label": "Mixed vegetables",
+        "amount": "2 cups",
+        "source": "local"
+      },
+      {
+        "label": "Onion",
+        "amount": "1",
+        "source": "local"
+      },
+      {
+        "label": "Ghee",
+        "amount": "2 tbsp",
+        "source": "local"
+      },
+      {
+        "label": "Ginger-garlic paste",
+        "amount": "1 tsp",
+        "source": "local"
+      },
+      {
+        "label": "Green chillies",
+        "amount": "2",
+        "source": "local"
+      },
+      {
+        "label": "Dry ginger powder",
+        "amount": "½ tsp",
+        "source": "iwc",
+        "match_words": "dry ginger powder",
+        "instead_of": "Ginger-garlic paste"
+      },
+      {
+        "label": "Garlic powder",
+        "amount": "½ tsp",
+        "source": "iwc",
+        "match_words": "garlic powder",
+        "instead_of": "Ginger-garlic paste"
+      },
+      {
+        "label": "Red chilli powder",
+        "amount": "½ tsp",
+        "source": "iwc",
+        "match_words": "red chilli powder",
+        "instead_of": "Green chillies"
+      }
+    ],
+    "steps": [
+      {
+        "text": "Soak the rice for 20 minutes.",
+        "minutes": 20
+      },
+      {
+        "text": "Fry the cumin, bay leaves and whole spices in ghee, then the onion until golden.",
+        "minutes": 6
+      },
+      {
+        "text": "Add the ginger-garlic paste, chillies and vegetables and fry two minutes.",
+        "minutes": 3
+      },
+      {
+        "text": "Add the rice, 2¾ cups of water and salt. Cover and cook until done.",
+        "minutes": 15
+      }
+    ]
+  },
+  {
+    "slug": "rava-ladoo",
+    "name": "Rava Ladoo",
+    "kind": "sweets",
+    "state": "All of India",
+    "rank": 194,
+    "blurb": "Semolina, coconut and cardamom ladoos with ghee.",
+    "minutes": 30,
+    "soak_hours": null,
+    "serves": 8,
+    "effort": "easy",
+    "ingredients": [
+      {
+        "label": "Sooji",
+        "amount": "1 cup",
+        "source": "iwc",
+        "match_words": "sooji"
+      },
+      {
+        "label": "Desiccated coconut",
+        "amount": "½ cup",
+        "source": "iwc",
+        "match_words": "desiccated coconut"
+      },
+      {
+        "label": "Green cardamom",
+        "amount": "4",
+        "source": "iwc",
+        "match_words": "green cardamom"
+      },
+      {
+        "label": "Cashews",
+        "amount": "10",
+        "source": "iwc",
+        "match_words": "cashews"
+      },
+      {
+        "label": "Raisins",
+        "amount": "1 tbsp",
+        "source": "iwc",
+        "match_words": "raisins"
+      },
+      {
+        "label": "Ghee",
+        "amount": "½ cup",
+        "source": "local"
+      },
+      {
+        "label": "Sugar",
+        "amount": "¾ cup",
+        "source": "local"
+      },
+      {
+        "label": "Milk",
+        "amount": "3 tbsp",
+        "source": "local"
+      }
+    ],
+    "steps": [
+      {
+        "text": "Roast the cashews and raisins in ghee. Set aside.",
+        "minutes": 3
+      },
+      {
+        "text": "Roast the sooji in the ghee until fragrant, add the coconut and roast two minutes.",
+        "minutes": 10
+      },
+      {
+        "text": "Add the powdered sugar, cardamom and nuts and sprinkle in the warm milk.",
+        "minutes": 2
+      },
+      {
+        "text": "Shape into ladoos while warm.",
+        "minutes": 10
+      }
+    ]
+  },
+  {
+    "slug": "seviyan-kheer",
+    "name": "Seviyan Kheer",
+    "kind": "sweets",
+    "state": "All of India",
+    "rank": 195,
+    "blurb": "Vermicelli cooked in milk with cardamom and nuts. Eid morning.",
+    "minutes": 25,
+    "soak_hours": null,
+    "serves": 4,
+    "effort": "easy",
+    "ingredients": [
+      {
+        "label": "Vermicelli",
+        "amount": "½ cup",
+        "source": "iwc",
+        "match_words": "vermicelli"
+      },
+      {
+        "label": "Green cardamom",
+        "amount": "3",
+        "source": "iwc",
+        "match_words": "green cardamom"
+      },
+      {
+        "label": "Almonds",
+        "amount": "1 tbsp",
+        "source": "iwc",
+        "match_words": "almonds"
+      },
+      {
+        "label": "Pistachios",
+        "amount": "1 tbsp",
+        "source": "iwc",
+        "match_words": "pistachios"
+      },
+      {
+        "label": "Raisins",
+        "amount": "1 tbsp",
+        "source": "iwc",
+        "match_words": "raisins"
+      },
+      {
+        "label": "Saffron",
+        "amount": "a pinch",
+        "source": "iwc",
+        "match_words": "saffron"
+      },
+      {
+        "label": "Milk",
+        "amount": "1 litre",
+        "source": "local"
+      },
+      {
+        "label": "Sugar",
+        "amount": "⅓ cup",
+        "source": "local"
+      },
+      {
+        "label": "Ghee",
+        "amount": "1 tbsp",
+        "source": "local"
+      }
+    ],
+    "steps": [
+      {
+        "text": "Roast the vermicelli in ghee until golden.",
+        "minutes": 4
+      },
+      {
+        "text": "Add the milk and simmer until the vermicelli is soft and the milk thickens.",
+        "minutes": 15
+      },
+      {
+        "text": "Add the sugar, cardamom, saffron and nuts.",
+        "minutes": 3
+      }
+    ]
+  },
+  {
+    "slug": "malai-kulfi",
+    "name": "Malai Kulfi",
+    "kind": "sweets",
+    "state": "All of India",
+    "rank": 196,
+    "blurb": "Slow-reduced milk frozen with cardamom and pistachio. No churning.",
+    "minutes": 60,
+    "soak_hours": null,
+    "serves": 6,
+    "effort": "medium",
+    "ingredients": [
+      {
+        "label": "Pistachios",
+        "amount": "2 tbsp",
+        "source": "iwc",
+        "match_words": "pistachios"
+      },
+      {
+        "label": "Almonds",
+        "amount": "2 tbsp",
+        "source": "iwc",
+        "match_words": "almonds"
+      },
+      {
+        "label": "Green cardamom",
+        "amount": "4",
+        "source": "iwc",
+        "match_words": "green cardamom"
+      },
+      {
+        "label": "Saffron",
+        "amount": "a pinch",
+        "source": "iwc",
+        "match_words": "saffron"
+      },
+      {
+        "label": "Full-fat milk",
+        "amount": "1 litre",
+        "source": "local"
+      },
+      {
+        "label": "Sugar",
+        "amount": "⅓ cup",
+        "source": "local"
+      }
+    ],
+    "steps": [
+      {
+        "text": "Simmer the milk, stirring, until it reduces to less than half.",
+        "minutes": 50
+      },
+      {
+        "text": "Add the sugar, saffron, cardamom and nuts, cook five minutes and cool.",
+        "minutes": 5
+      },
+      {
+        "text": "Pour into moulds and freeze for 8 hours.",
+        "minutes": null
+      }
+    ]
+  },
+  {
+    "slug": "bebinca",
+    "name": "Bebinca",
+    "kind": "sweets",
+    "state": "Goa",
+    "rank": 197,
+    "blurb": "Layered coconut and egg pudding, cooked one layer at a time. Christmas in Goa.",
+    "minutes": 180,
+    "soak_hours": null,
+    "serves": 10,
+    "effort": "weekend",
+    "ingredients": [
+      {
+        "label": "Maida",
+        "amount": "1 cup",
+        "source": "iwc",
+        "match_words": "maida"
+      },
+      {
+        "label": "Nutmeg",
+        "amount": "½ tsp",
+        "source": "iwc",
+        "match_words": "nutmeg"
+      },
+      {
+        "label": "Coconut milk",
+        "amount": "2 cups",
+        "source": "local"
+      },
+      {
+        "label": "Egg yolks",
+        "amount": "10",
+        "source": "local"
+      },
+      {
+        "label": "Sugar",
+        "amount": "1½ cups",
+        "source": "local"
+      },
+      {
+        "label": "Ghee",
+        "amount": "½ cup",
+        "source": "local"
+      }
+    ],
+    "steps": [
+      {
+        "text": "Whisk the sugar into the coconut milk until it dissolves. Beat in the yolks, then the flour and nutmeg.",
+        "minutes": 10
+      },
+      {
+        "text": "Heat the grill. Pour a thin layer into a greased dish and grill until set and brown.",
+        "minutes": 10
+      },
+      {
+        "text": "Spoon ghee over it, pour the next layer and grill again. Repeat until the batter is used up.",
+        "minutes": 150
+      },
+      {
+        "text": "Cool fully, turn out and slice.",
+        "minutes": null
+      }
+    ]
+  },
+  {
+    "slug": "haldi-doodh",
+    "name": "Haldi Doodh",
+    "kind": "drinks",
+    "state": "All of India",
+    "rank": 198,
+    "blurb": "Warm milk with turmeric, pepper and dry ginger. For colds and bedtime.",
+    "minutes": 10,
+    "soak_hours": null,
+    "serves": 2,
+    "effort": "easy",
+    "ingredients": [
+      {
+        "label": "Turmeric",
+        "amount": "1 tsp",
+        "source": "iwc",
+        "match_words": "turmeric"
+      },
+      {
+        "label": "Black pepper",
+        "amount": "a pinch",
+        "source": "iwc",
+        "match_words": "black pepper"
+      },
+      {
+        "label": "Dry ginger powder",
+        "amount": "¼ tsp",
+        "source": "iwc",
+        "match_words": "dry ginger powder"
+      },
+      {
+        "label": "Green cardamom",
+        "amount": "2",
+        "source": "iwc",
+        "match_words": "green cardamom"
+      },
+      {
+        "label": "Jaggery",
+        "amount": "2 tsp",
+        "source": "iwc",
+        "match_words": "jaggery"
+      },
+      {
+        "label": "Milk",
+        "amount": "2 cups",
+        "source": "local"
+      }
+    ],
+    "steps": [
+      {
+        "text": "Simmer the milk with the turmeric, pepper, dry ginger and crushed cardamom for five minutes.",
+        "minutes": 6
+      },
+      {
+        "text": "Stir in the jaggery off the heat and strain.",
+        "minutes": 1
+      }
+    ]
+  },
+  {
+    "slug": "jaljeera",
+    "name": "Jaljeera",
+    "kind": "drinks",
+    "state": "All of India",
+    "rank": 199,
+    "blurb": "A cool, tangy cumin and mint drink. Summer in a glass.",
+    "minutes": 10,
+    "soak_hours": null,
+    "serves": 4,
+    "effort": "easy",
+    "ingredients": [
+      {
+        "label": "Jaljeera powder",
+        "amount": "2 tbsp",
+        "source": "iwc",
+        "match_words": "jaljeera"
+      },
+      {
+        "label": "Roasted cumin",
+        "amount": "1 tsp",
+        "source": "iwc",
+        "match_words": "roasted cumin"
+      },
+      {
+        "label": "Kala namak",
+        "amount": "½ tsp",
+        "source": "iwc",
+        "match_words": "kala namak"
+      },
+      {
+        "label": "Boondi",
+        "amount": "2 tbsp",
+        "source": "iwc",
+        "match_words": "boondi"
+      },
+      {
+        "label": "Mint",
+        "amount": "a handful",
+        "source": "local"
+      },
+      {
+        "label": "Lemon",
+        "amount": "1",
+        "source": "local"
+      },
+      {
+        "label": "Dried mint leaves",
+        "amount": "1 tsp",
+        "source": "iwc",
+        "match_words": "mint leaves",
+        "instead_of": "Mint"
+      },
+      {
+        "label": "Amchur",
+        "amount": "1 tsp",
+        "source": "iwc",
+        "match_words": "amchur",
+        "instead_of": "Lemon"
+      }
+    ],
+    "steps": [
+      {
+        "text": "Crush the mint with a little water.",
+        "minutes": 2
+      },
+      {
+        "text": "Stir in the jaljeera powder, roasted cumin, kala namak, lemon and 4 cups of cold water.",
+        "minutes": 3
+      },
+      {
+        "text": "Top with boondi and serve chilled.",
+        "minutes": null
+      }
+    ]
+  },
+  {
+    "slug": "badam-milk",
+    "name": "Badam Milk",
+    "kind": "drinks",
+    "state": "All of India",
+    "rank": 200,
+    "blurb": "Milk with ground almonds, saffron and cardamom, warm or chilled.",
+    "minutes": 15,
+    "soak_hours": null,
+    "serves": 2,
+    "effort": "easy",
+    "ingredients": [
+      {
+        "label": "Almonds",
+        "amount": "15",
+        "source": "iwc",
+        "match_words": "almonds"
+      },
+      {
+        "label": "Saffron",
+        "amount": "a pinch",
+        "source": "iwc",
+        "match_words": "saffron"
+      },
+      {
+        "label": "Green cardamom",
+        "amount": "2",
+        "source": "iwc",
+        "match_words": "green cardamom"
+      },
+      {
+        "label": "Milk",
+        "amount": "2 cups",
+        "source": "local"
+      },
+      {
+        "label": "Sugar",
+        "amount": "2 tbsp",
+        "source": "local"
+      }
+    ],
+    "steps": [
+      {
+        "text": "Soak the almonds in hot water, peel and grind with a little milk.",
+        "minutes": 10
+      },
+      {
+        "text": "Simmer the milk with the paste, saffron, cardamom and sugar for five minutes.",
+        "minutes": 6
+      },
+      {
+        "text": "Serve warm or chilled.",
+        "minutes": null
+      }
+    ]
+  }
+]
