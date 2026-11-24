@@ -107,7 +107,7 @@ select tests.assert(
 select tests.assert((select count(*) = 0 from public.home_gifts), 'the gifts table shows a customer nothing (admin only)');
 select tests.assert_fails($$select public.admin_send_home('to_send')$$, 'admin_only', 'nor the desk''s queue');
 update public.profiles set send_home_in_bag = false where id = tests.id('cust_a');
-select tests.assert((select not (s ->> 'in_bag')::boolean from public.store_send_home() s), 'the account''s switch');
+select tests.assert((select (s ->> 'in_bag')::boolean from public.store_send_home() s), 'the account''s switch is retired (D-208: nothing is added to the bag)');
 
 select tests.act_as(tests.id('cust_b'));
 select tests.assert(
@@ -217,9 +217,9 @@ select tests.assert(
    from public.checkout_send_home(tests.id('cust_a'), 'cust.a@example.test', null) c),
   'checkout reads the promised rate, the day''s rate and the 3% to store on the gift');
 update public.pricing_settings set send_home_rate_at = now() - interval '4 days' where id = 1;
-select tests.assert((select public.store_send_home() is null), 'a rate older than three days closes Send home');
+select tests.assert((select s -> 'inr_per_usd' = 'null'::jsonb from public.store_send_home() s), 'a rate older than three days closes Send home (the saving stays, D-208)');
 update public.pricing_settings set send_home_rate_at = now(), send_home_open = 0 where id = 1;
-select tests.assert((select public.store_send_home() is null), 'and so does Settings'' switch');
+select tests.assert((select s -> 'inr_per_usd' = 'null'::jsonb from public.store_send_home() s), 'and so does Settings'' switch');
 select set_config('request.jwt.claims', '{"role": "service_role"}', true);
 select public.set_send_home_rate(91.37);
 select tests.assert(
