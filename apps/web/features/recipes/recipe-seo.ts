@@ -43,7 +43,10 @@ export function recipeJsonLdText(r: RecipePage, base: string): string {
     recipeYield: `${r.serves} servings`,
     recipeCategory: r.kind,
     recipeCuisine: 'Indian',
-    recipeIngredient: r.lines.map((l) => [l.amount, l.label].filter(Boolean).join(' ')),
+    // D-204: a swap is an offer, not one of the recipe's ingredients
+    recipeIngredient: r.lines
+      .filter((l) => l.source === 'local' || !l.instead_of)
+      .map((l) => [l.amount, l.label].filter(Boolean).join(' ')),
     recipeInstructions: r.steps.map((s) => ({ '@type': 'HowToStep', text: s.text })),
     datePublished: r.published_at ?? undefined,
   };

@@ -35,6 +35,7 @@ export default async function RecipeEditPage({ params }: { params: Promise<{ id:
     source: l.source === 'iwc' ? 'iwc' : 'local',
     variant_id: l.variant_id,
     match_words: l.match_words,
+    instead_of: l.instead_of ?? '',
     listing: l.product_variants
       ? {
           name: l.product_variants.products?.name ?? '',

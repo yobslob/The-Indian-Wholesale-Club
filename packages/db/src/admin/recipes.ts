@@ -1,5 +1,7 @@
 import { ALL_OF_INDIA, type RecipeDraft } from '@repo/shared/domain';
 
+import { z } from 'zod';
+
 import { unwrap, type IwcClient } from '../client';
 
 /**
@@ -7,7 +9,8 @@ import { unwrap, type IwcClient } from '../client';
  * database (`_recipe_publish_guard`); these only read and write.
  */
 
-const LISTING = 'product_variants(id, label, is_active, qty_listed, qty_reserved, price_cents, products(id, name, status, price_cents))';
+const LISTING =
+  'product_variants(id, label, is_active, qty_listed, qty_reserved, price_cents, products(id, name, status, price_cents))';
 
 export type RecipeRow = Awaited<ReturnType<typeof listRecipes>>[number];
 export type RecipeAdmin = NonNullable<Awaited<ReturnType<typeof getRecipeAdmin>>>;
@@ -18,8 +21,10 @@ export async function listRecipes(client: IwcClient) {
   return unwrap(
     await client
       .from('recipes')
-      .select(`id, slug, name, kind, status, content_status, home_rank, photo_path, sort, updated_at, regions(name),
-               recipe_ingredients(source, variant_id, ${LISTING})`)
+      .select(
+        `id, slug, name, kind, status, content_status, home_rank, photo_path, sort, updated_at, regions(name),
+               recipe_ingredients(source, variant_id, instead_of, ${LISTING})`,
+      )
       .order('sort')
       .order('name'),
   );
@@ -29,7 +34,9 @@ export async function getRecipeAdmin(client: IwcClient, id: string) {
   const rows = unwrap(
     await client
       .from('recipes')
-      .select(`*, regions(name), recipe_ingredients(id, sort, label, amount, source, variant_id, match_words, ${LISTING})`)
+      .select(
+        `*, regions(name), recipe_ingredients(id, sort, label, amount, source, variant_id, match_words, instead_of, ${LISTING})`,
+      )
       .eq('id', id)
       .limit(1),
   );
@@ -43,7 +50,12 @@ export async function getRecipeAdmin(client: IwcClient, id: string) {
 export function lineHealth(line: {
   source: string;
   variant_id: string | null;
-  product_variants: { is_active: boolean; qty_listed: number; qty_reserved: number; products: { status: string } | null } | null;
+  product_variants: {
+    is_active: boolean;
+    qty_listed: number;
+    qty_reserved: number;
+    products: { status: string } | null;
+  } | null;
 }): 'local' | 'ok' | 'sold_out' | 'gone' | 'unmatched' {
   if (line.source === 'local') return 'local';
   if (!line.variant_id || !line.product_variants) return 'unmatched';
@@ -72,6 +84,8 @@ export interface RecipeLineInput {
   source: 'iwc' | 'local';
   variant_id: string | null;
   match_words: string;
+  /** D-204: the fresh, local line this IWC line can stand in for; null for a main line. */
+  instead_of: string | null;
 }
 
 export async function createRecipe(client: IwcClient, fields: RecipeFields): Promise<string> {
@@ -84,7 +98,11 @@ export async function updateRecipe(client: IwcClient, id: string, fields: Partia
 }
 
 /** The lines as the editor holds them, in order (replaced as a whole: a recipe has a few dozen at most). */
-export async function saveRecipeLines(client: IwcClient, recipeId: string, lines: RecipeLineInput[]) {
+export async function saveRecipeLines(
+  client: IwcClient,
+  recipeId: string,
+  lines: RecipeLineInput[],
+) {
   unwrap(await client.from('recipe_ingredients').delete().eq('recipe_id', recipeId));
   if (lines.length === 0) return;
   unwrap(
@@ -97,21 +115,40 @@ export async function saveRecipeLines(client: IwcClient, recipeId: string, lines
         source: l.source,
         variant_id: l.source === 'iwc' ? l.variant_id : null,
         match_words: l.match_words,
+        instead_of: l.source === 'iwc' ? l.instead_of : null,
       })),
     ),
   );
 }
 
-export async function setRecipeLineListing(client: IwcClient, lineId: string, variantId: string | null) {
-  unwrap(await client.from('recipe_ingredients').update({ variant_id: variantId, product_id: null }).eq('id', lineId));
+export async function setRecipeLineListing(
+  client: IwcClient,
+  lineId: string,
+  variantId: string | null,
+) {
+  unwrap(
+    await client
+      .from('recipe_ingredients')
+      .update({ variant_id: variantId, product_id: null })
+      .eq('id', lineId),
+  );
 }
 
-export async function setRecipeStatus(client: IwcClient, id: string, status: 'draft' | 'live' | 'archived') {
+export async function setRecipeStatus(
+  client: IwcClient,
+  id: string,
+  status: 'draft' | 'live' | 'archived',
+) {
   unwrap(await client.from('recipes').update({ status }).eq('id', id));
 }
 
 export async function approveRecipeWords(client: IwcClient, id: string, approved: boolean) {
-  unwrap(await client.from('recipes').update({ content_status: approved ? 'approved' : 'draft' }).eq('id', id));
+  unwrap(
+    await client
+      .from('recipes')
+      .update({ content_status: approved ? 'approved' : 'draft' })
+      .eq('id', id),
+  );
 }
 
 export async function setRecipePhoto(client: IwcClient, id: string, path: string | null) {
@@ -123,13 +160,31 @@ export async function pinRecipe(client: IwcClient, id: string | null) {
   unwrap(await client.rpc('admin_pin_recipe', { p_id: id as string }));
 }
 
-/** Why it can't go live: words_not_approved, no_photo, no_iwc_line, line_without_live_listing. */
+/** Why it can't go live: words_not_approved, no_iwc_line (D-204: no main piece with a live listing). */
 export async function recipeBlockers(client: IwcClient, id: string): Promise<string[]> {
   return unwrap(await client.rpc('admin_recipe_blockers', { p_id: id })) ?? [];
 }
 
 export async function recipeMatches(client: IwcClient, words: string, limit = 5) {
   return unwrap(await client.rpc('admin_recipe_matches', { p_words: words, p_limit: limit })) ?? [];
+}
+
+const publishAllSchema = z.object({
+  published: z.array(z.string()),
+  blocked: z.array(z.object({ slug: z.string(), why: z.array(z.string()) })),
+  lines_filled: z.number().int(),
+  next: z.string().nullable(),
+});
+
+/**
+ * Publish all (D-204), one batch: draft recipes after `after` by address; empty lines take the cheapest in-stock match,
+ * words approved, live when a piece can be bought. `next` is where the next batch starts (null: done).
+ */
+export async function publishAllRecipes(client: IwcClient, after: string | null, limit = 15) {
+  const data = unwrap(
+    await client.rpc('admin_recipes_publish_all', { p_after: after as string, p_limit: limit }),
+  );
+  return publishAllSchema.parse(data);
 }
 
 /** Today: live recipes with a piece gone or sold out. */
@@ -148,7 +203,8 @@ export async function recipesUsingProducts(client: IwcClient, productIds: string
   );
   const out = new Map<string, { slug: string; onHome: boolean }>();
   for (const r of rows) {
-    if (r.recipes?.status === 'live') out.set(r.recipes.slug, { slug: r.recipes.slug, onHome: r.recipes.home_rank !== null });
+    if (r.recipes?.status === 'live')
+      out.set(r.recipes.slug, { slug: r.recipes.slug, onHome: r.recipes.home_rank !== null });
   }
   return [...out.values()];
 }
@@ -158,16 +214,29 @@ export async function recipeSlugs(client: IwcClient) {
   return unwrap(await client.from('recipes').select('id, slug, photo_path, status, home_rank'));
 }
 
-/** Adds drafted recipes (status and words draft); a slug already there is left alone. */
+/**
+ * Adds drafted recipes (status and words draft). A slug already there is replaced while it is still a draft with draft
+ * words (D-204: a later file carries the swaps); once published or approved it is left alone.
+ */
 export async function addRecipeDrafts(client: IwcClient, drafts: RecipeDraft[]) {
   const regions = unwrap(await client.from('regions').select('id, name'));
   const byName = new Map(regions.map((r) => [r.name.toLowerCase(), r.id]));
-  const existing = new Set((await recipeSlugs(client)).map((r) => r.slug));
+  const existing = new Map(
+    unwrap(await client.from('recipes').select('id, slug, status, content_status')).map((r) => [
+      r.slug,
+      r,
+    ]),
+  );
   const added: { id: string; slug: string }[] = [];
+  const replaced: string[] = [];
   const skipped: { slug: string; why: string }[] = [];
   for (const d of drafts) {
-    if (existing.has(d.slug)) {
-      skipped.push({ slug: d.slug, why: 'already there' });
+    const there = existing.get(d.slug);
+    if (there && (there.status !== 'draft' || there.content_status !== 'draft')) {
+      skipped.push({
+        slug: d.slug,
+        why: there.status === 'live' ? 'already live' : 'already there, words approved',
+      });
       continue;
     }
     const allIndia = d.state.toLowerCase() === ALL_OF_INDIA.toLowerCase();
@@ -176,7 +245,7 @@ export async function addRecipeDrafts(client: IwcClient, drafts: RecipeDraft[]) 
       skipped.push({ slug: d.slug, why: `no state called "${d.state}"` });
       continue;
     }
-    const id = await createRecipe(client, {
+    const fields: RecipeFields = {
       slug: d.slug,
       name: d.name,
       region_id: regionId,
@@ -188,7 +257,14 @@ export async function addRecipeDrafts(client: IwcClient, drafts: RecipeDraft[]) 
       effort: d.effort,
       steps: d.steps,
       sort: d.rank ?? 1000,
-    });
+    };
+    let id: string;
+    if (there) {
+      id = there.id;
+      await updateRecipe(client, id, fields);
+    } else {
+      id = await createRecipe(client, fields);
+    }
     await saveRecipeLines(
       client,
       id,
@@ -198,10 +274,12 @@ export async function addRecipeDrafts(client: IwcClient, drafts: RecipeDraft[]) 
         source: l.source,
         variant_id: null,
         match_words: l.source === 'iwc' ? (l.match_words ?? l.label).toLowerCase() : '',
+        instead_of: l.source === 'iwc' ? (l.instead_of ?? null) : null,
       })),
     );
-    existing.add(d.slug);
-    added.push({ id, slug: d.slug });
+    if (there) replaced.push(d.slug);
+    else added.push({ id, slug: d.slug });
+    existing.set(d.slug, { id, slug: d.slug, status: 'draft', content_status: 'draft' });
   }
-  return { added, skipped };
+  return { added, replaced, skipped };
 }

@@ -15,12 +15,24 @@ export interface EditorLine {
   source: 'iwc' | 'local';
   variant_id: string | null;
   match_words: string;
+  /** D-204: a swap for a fresh, local line ("Coriander"); empty for a main line. */
+  instead_of: string;
   listing: { name: string; label: string; price_cents: number; health: string } | null;
 }
 
-const HEALTH: Record<string, string> = { ok: '', sold_out: ' · sold out', gone: ' · not live', unmatched: '' };
+const HEALTH: Record<string, string> = {
+  ok: '',
+  sold_out: ' · sold out',
+  gone: ' · not live',
+  unmatched: '',
+};
 
-const fromMatch = (m: Match): EditorLine['listing'] => ({ name: m.product_name, label: m.variant_label, price_cents: m.price_cents, health: 'ok' });
+const fromMatch = (m: Match): EditorLine['listing'] => ({
+  name: m.product_name,
+  label: m.variant_label,
+  price_cents: m.price_cents,
+  health: 'ok',
+});
 
 /**
  * The ingredients table (plan §4.4): ingredient, amount, IWC or Local, and for an IWC line the listing in the kit or
@@ -72,18 +84,40 @@ export function RecipeLines({
         {lines.map((l, i) => (
           <li key={l.key} className="space-y-2 py-3">
             <div className="grid grid-cols-[1fr_110px] gap-2 md:grid-cols-[1fr_120px_150px_auto]">
-              <input className={input} value={l.label} maxLength={80} aria-label={`Ingredient ${i + 1}`} onChange={(e) => set(l.key, { label: e.target.value })} />
-              <input className={input} value={l.amount} maxLength={40} aria-label={`Ingredient ${i + 1} amount`} placeholder="2 tbsp" onChange={(e) => set(l.key, { amount: e.target.value })} />
+              <input
+                className={input}
+                value={l.label}
+                maxLength={80}
+                aria-label={`Ingredient ${i + 1}`}
+                onChange={(e) => set(l.key, { label: e.target.value })}
+              />
+              <input
+                className={input}
+                value={l.amount}
+                maxLength={40}
+                aria-label={`Ingredient ${i + 1} amount`}
+                placeholder="2 tbsp"
+                onChange={(e) => set(l.key, { amount: e.target.value })}
+              />
               <select
                 className={input}
                 value={l.source}
                 aria-label={`Ingredient ${i + 1} from`}
-                onChange={(e) => set(l.key, { source: e.target.value as 'iwc' | 'local', ...(e.target.value === 'local' ? { variant_id: null, listing: null } : {}) })}
+                onChange={(e) =>
+                  set(l.key, {
+                    source: e.target.value as 'iwc' | 'local',
+                    ...(e.target.value === 'local' ? { variant_id: null, listing: null } : {}),
+                  })
+                }
               >
                 <option value="iwc">IWC (in the kit)</option>
                 <option value="local">Local store</option>
               </select>
-              <button type="button" className={`${linkButton} text-sm`} onClick={() => onChange(lines.filter((x) => x.key !== l.key))}>
+              <button
+                type="button"
+                className={`${linkButton} text-sm`}
+                onClick={() => onChange(lines.filter((x) => x.key !== l.key))}
+              >
                 Remove
               </button>
             </div>
@@ -95,7 +129,9 @@ export function RecipeLines({
                     {HEALTH[l.listing.health] ?? ''}
                   </span>
                 ) : (
-                  <span className="text-caution">Not on IWC yet · on the Blinkit pantry list</span>
+                  <span className="text-caution">
+                    Not on IWC yet · customers see it as one to buy locally
+                  </span>
                 )}{' '}
                 <button
                   type="button"
@@ -110,7 +146,25 @@ export function RecipeLines({
                 </button>
                 <label className="text-ink-muted ml-3 inline-flex items-center gap-1 text-xs">
                   Match words
-                  <input className="border-line rounded border px-1.5 py-0.5" value={l.match_words} maxLength={120} onChange={(e) => set(l.key, { match_words: e.target.value })} />
+                  <input
+                    className="border-line rounded border px-1.5 py-0.5"
+                    value={l.match_words}
+                    maxLength={120}
+                    onChange={(e) => set(l.key, { match_words: e.target.value })}
+                  />
+                </label>
+                <label
+                  className="text-ink-muted ml-3 inline-flex items-center gap-1 text-xs"
+                  title="A dry swap for a fresh ingredient: offered unticked, outside the kit's price"
+                >
+                  Swap for
+                  <input
+                    className="border-line w-28 rounded border px-1.5 py-0.5"
+                    value={l.instead_of}
+                    maxLength={80}
+                    placeholder="(main line)"
+                    onChange={(e) => set(l.key, { instead_of: e.target.value })}
+                  />
                 </label>
                 {(suggestions[l.key] ?? []).length > 0 ? (
                   <MatchList matches={suggestions[l.key]!} onPick={(m) => choose(l.key, m)} />
@@ -124,7 +178,12 @@ export function RecipeLines({
                         start(async () => setFound(await findListingsAction(words)));
                       }}
                     >
-                      <input className={input} value={words} onChange={(e) => setWords(e.target.value)} aria-label="Search live food listings" />
+                      <input
+                        className={input}
+                        value={words}
+                        onChange={(e) => setWords(e.target.value)}
+                        aria-label="Search live food listings"
+                      />
                       <button type="submit" className={secondaryButton} disabled={pending}>
                         Find
                       </button>
@@ -141,7 +200,20 @@ export function RecipeLines({
         type="button"
         className={secondaryButton}
         onClick={() =>
-          onChange([...lines, { key: crypto.randomUUID(), id: null, label: '', amount: '', source: 'iwc', variant_id: null, match_words: '', listing: null }])
+          onChange([
+            ...lines,
+            {
+              key: crypto.randomUUID(),
+              id: null,
+              label: '',
+              amount: '',
+              source: 'iwc',
+              variant_id: null,
+              match_words: '',
+              instead_of: '',
+              listing: null,
+            },
+          ])
         }
       >
         Add an ingredient
@@ -150,12 +222,21 @@ export function RecipeLines({
   );
 }
 
-function MatchList({ matches, onPick }: { matches: Match[]; onPick: (m: Match) => void }): React.JSX.Element | null {
+function MatchList({
+  matches,
+  onPick,
+}: {
+  matches: Match[];
+  onPick: (m: Match) => void;
+}): React.JSX.Element | null {
   if (matches.length === 0) return null;
   return (
     <ul className="border-line mt-2 rounded-md border">
       {matches.map((m) => (
-        <li key={m.variant_id} className="border-line flex items-center gap-2 border-b px-2 py-1.5 last:border-b-0">
+        <li
+          key={m.variant_id}
+          className="border-line flex items-center gap-2 border-b px-2 py-1.5 last:border-b-0"
+        >
           <span className="min-w-0 flex-1 truncate">
             {m.product_name} · {m.variant_label}
           </span>

@@ -8,9 +8,8 @@ import { button, secondaryButton } from '../styles';
 
 const BLOCKERS: Record<string, string> = {
   words_not_approved: 'The words are not approved yet.',
-  no_photo: 'No photo yet (Add photos by name on the Recipes page, or below).',
-  no_iwc_line: 'Nothing in the kit yet: mark at least one ingredient IWC.',
-  line_without_live_listing: 'A kit line has no live listing: pick one, or wait for its Blinkit listing and Match again.',
+  no_iwc_line:
+    'Nothing in the kit can be bought yet: pick a live listing for at least one IWC ingredient.',
 };
 
 /**
@@ -45,7 +44,11 @@ export function RecipeStatusBar({
       className={`rounded-[14px] border px-[18px] py-4 ${status === 'live' ? 'border-positive/30 bg-positive/[0.06]' : 'border-caution/25 bg-caution/[0.06]'}`}
     >
       <p className="font-semibold">
-        {status === 'live' ? 'Live on the store' : status === 'archived' ? 'Archived' : 'Draft: customers don’t see it'}
+        {status === 'live'
+          ? 'Live on the store'
+          : status === 'archived'
+            ? 'Archived'
+            : 'Draft: customers don’t see it'}
         {onHome ? ' · on Home’s window' : ''}
       </p>
       {status !== 'live' && blockers.length > 0 ? (
@@ -55,19 +58,31 @@ export function RecipeStatusBar({
           ))}
         </ul>
       ) : null}
-      {status === 'live' && blockers.includes('line_without_live_listing') ? (
-        <p className="text-caution mt-1 text-sm">A piece in its kit is gone: customers see it as not available.</p>
-      ) : null}
       <div className="mt-3 flex flex-wrap gap-2">
-        <button type="button" className={secondaryButton} disabled={pending} onClick={() => run(() => approveRecipeAction(recipeId, !approved))}>
+        <button
+          type="button"
+          className={secondaryButton}
+          disabled={pending}
+          onClick={() => run(() => approveRecipeAction(recipeId, !approved))}
+        >
           {approved ? 'Words approved · undo' : 'Approve the words'}
         </button>
         {status === 'live' ? (
-          <button type="button" className={secondaryButton} disabled={pending} onClick={() => run(() => setRecipeStatusAction(recipeId, 'draft'))}>
+          <button
+            type="button"
+            className={secondaryButton}
+            disabled={pending}
+            onClick={() => run(() => setRecipeStatusAction(recipeId, 'draft'))}
+          >
             Take off the store
           </button>
         ) : (
-          <button type="button" className={button} disabled={pending || blockers.length > 0} onClick={() => run(() => setRecipeStatusAction(recipeId, 'live'))}>
+          <button
+            type="button"
+            className={button}
+            disabled={pending || blockers.length > 0}
+            onClick={() => run(() => setRecipeStatusAction(recipeId, 'live'))}
+          >
             Publish
           </button>
         )}
@@ -84,12 +99,22 @@ export function RecipeStatusBar({
           </label>
         ) : null}
         {status === 'draft' ? (
-          <button type="button" className={secondaryButton} disabled={pending} onClick={() => run(() => setRecipeStatusAction(recipeId, 'archived'))}>
+          <button
+            type="button"
+            className={secondaryButton}
+            disabled={pending}
+            onClick={() => run(() => setRecipeStatusAction(recipeId, 'archived'))}
+          >
             Archive
           </button>
         ) : null}
         {status === 'archived' ? (
-          <button type="button" className={secondaryButton} disabled={pending} onClick={() => run(() => setRecipeStatusAction(recipeId, 'draft'))}>
+          <button
+            type="button"
+            className={secondaryButton}
+            disabled={pending}
+            onClick={() => run(() => setRecipeStatusAction(recipeId, 'draft'))}
+          >
             Back to drafts
           </button>
         ) : null}

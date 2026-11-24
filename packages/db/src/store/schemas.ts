@@ -2,7 +2,7 @@ import { z } from 'zod';
 
 import { PRODUCT_TYPES } from '@repo/shared/domain';
 
-import { homeRecipeSchema } from './recipes';
+import { recipeCardSchema } from './recipes';
 
 /**
  * Shapes of everything the customer side reads (store_* views and functions).
@@ -157,8 +157,8 @@ export const homeSchema = z.object({
   just_listed_types: z.record(z.array(regionProductCardSchema)),
   /** D-140 (L7): Home's band, from the store's policy. */
   band: z.object({ free_min_cents: z.number().int().nullable(), return_claim_days: z.number().int().nullable() }).nullable(),
-  /** D-203: the recipe on Home's middle window; null keeps today's windows. Optional until migration 20261124090000. */
-  recipe: homeRecipeSchema.nullable().default(null),
+  /** D-204: Home's Cook at home row (the pinned recipe first); empty hides the section. */
+  recipes: z.array(recipeCardSchema).default([]),
 });
 
 /** A region album photo (D-051): only the file and what it shows. */

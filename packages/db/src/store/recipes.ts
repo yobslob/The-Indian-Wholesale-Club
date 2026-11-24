@@ -1,6 +1,6 @@
 /**
- * D-203, Cook at home: customer-safe recipe reads (store_recipes, store_recipe; the Home window's recipe comes with
- * store_home). Only what the cards and the bag's line need (D-017, INV-1).
+ * D-203, Cook at home: customer-safe recipe reads (store_recipes, store_recipe; Home's row comes with store_home).
+ * Only what the cards and the bag's line need (D-017, INV-1).
  */
 import { z } from 'zod';
 
@@ -13,16 +13,6 @@ export type RecipeEffort = (typeof RECIPE_EFFORTS)[number];
 
 const recipeKind = z.enum(RECIPE_KINDS);
 const recipeEffort = z.enum(RECIPE_EFFORTS);
-
-/** Home's middle window: the pinned recipe, or null (ship dark: Home keeps today's windows). */
-export const homeRecipeSchema = z.object({
-  slug: z.string(),
-  name: z.string(),
-  blurb: z.string(),
-  region_name: z.string().nullable(),
-  photo_path: z.string().nullable(),
-  kit_cents: z.number().int(),
-});
 
 export const recipeCardSchema = z.object({
   slug: z.string(),
@@ -42,15 +32,24 @@ export const recipeCardSchema = z.object({
   kit_count: z.number().int(),
 });
 
-export const recipeStepSchema = z.object({ text: z.string(), minutes: z.number().nullable().optional() });
+export const recipeStepSchema = z.object({
+  text: z.string(),
+  minutes: z.number().nullable().optional(),
+});
 
-const localLineSchema = z.object({ source: z.literal('local'), label: z.string(), amount: z.string() });
+const localLineSchema = z.object({
+  source: z.literal('local'),
+  label: z.string(),
+  amount: z.string(),
+});
 
 /** An IWC line: what the bag's line needs (bagLine), plus whether it can be bought. */
 const iwcLineSchema = z.object({
   source: z.literal('iwc'),
   label: z.string(),
   amount: z.string(),
+  /** D-204: a swap: the fresh, local line it can stand in for (offered unticked, outside the kit's price). */
+  instead_of: z.string().nullable().default(null),
   available: z.boolean(),
   variant_id: z.string().uuid().nullable(),
   product_id: z.string().uuid().nullable(),
@@ -75,7 +74,6 @@ export const recipePageSchema = recipeCardSchema.extend({
   lines: z.array(recipeLineSchema),
 });
 
-export type HomeRecipe = z.infer<typeof homeRecipeSchema>;
 export type RecipeCard = z.infer<typeof recipeCardSchema>;
 export type RecipeStep = z.infer<typeof recipeStepSchema>;
 export type RecipeLine = z.infer<typeof recipeLineSchema>;

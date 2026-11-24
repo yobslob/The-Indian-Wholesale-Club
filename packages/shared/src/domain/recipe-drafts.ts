@@ -3,18 +3,25 @@ import { z } from 'zod';
 /**
  * D-203: a drafted recipe as Admin → Recipes → Add drafts from a file reads it (`catalogue/recipes-drafts-*.json`,
  * plan §7). Every word stays Claude's draft (`content_status = 'draft'`) until the founder approves it in the admin.
- * Fresh things, dairy, oil, meat and anything liquid are `local` lines (D-135: liquids are not sent).
+ * Fresh things, dairy, oil, meat and anything liquid are `local` lines (D-135: liquids are not sent); a fresh herb or
+ * spice may carry a dry swap from IWC (D-204).
  */
 
 export const ALL_OF_INDIA = 'All of India';
 
-export const recipeDraftLineSchema = z.object({
-  label: z.string().trim().min(1).max(80),
-  amount: z.string().trim().max(40).default(''),
-  source: z.enum(['iwc', 'local']),
-  /** The words Match looks for in listing names (IWC lines only; defaults to the label). */
-  match_words: z.string().trim().max(120).optional(),
-});
+export const recipeDraftLineSchema = z
+  .object({
+    label: z.string().trim().min(1).max(80),
+    amount: z.string().trim().max(40).default(''),
+    source: z.enum(['iwc', 'local']),
+    /** The words Match looks for in listing names (IWC lines only; defaults to the label). */
+    match_words: z.string().trim().max(120).optional(),
+    /** D-204: a dry swap for a fresh, local line (its label, as "Coriander"); IWC lines only. */
+    instead_of: z.string().trim().min(1).max(80).optional(),
+  })
+  .refine((l) => !l.instead_of || l.source === 'iwc', {
+    message: 'only an IWC line can be a swap',
+  });
 
 export const recipeDraftSchema = z.object({
   slug: z
@@ -34,7 +41,12 @@ export const recipeDraftSchema = z.object({
   rank: z.number().int().min(1).max(10_000).optional(),
   ingredients: z.array(recipeDraftLineSchema).min(1).max(40),
   steps: z
-    .array(z.object({ text: z.string().trim().min(1).max(600), minutes: z.number().int().min(0).max(1440).nullable() }))
+    .array(
+      z.object({
+        text: z.string().trim().min(1).max(600),
+        minutes: z.number().int().min(0).max(1440).nullable(),
+      }),
+    )
     .min(1)
     .max(30),
 });

@@ -64,12 +64,6 @@ export function kitPiecesToAdd<T extends KitPiece>(
   return out;
 }
 
-/** Home's window lead: "<dish> kit" when the name is 12 characters or fewer, else "the whole kit" (plan §4.1). */
-export function kitLead(name: string): string {
-  const n = name.trim();
-  return n.length <= 12 ? `${n} kit` : 'the whole kit';
-}
-
 /** The page's "Time" fact: "40 min", "1 h 15 min", plus the soak ("+ 8 h soak"). */
 export function recipeTime(minutes: number, soakHours: number | null = null): string {
   const h = Math.floor(minutes / 60);

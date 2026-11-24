@@ -170,6 +170,13 @@
         "label": "Lemon",
         "amount": "2",
         "source": "local"
+      },
+      {
+        "label": "Amchur",
+        "amount": "1 tsp",
+        "source": "iwc",
+        "match_words": "amchur",
+        "instead_of": "Lemon"
       }
     ],
     "steps": [
@@ -227,6 +234,13 @@
         "label": "Lemon",
         "amount": "1",
         "source": "local"
+      },
+      {
+        "label": "Amchur",
+        "amount": "1 tsp",
+        "source": "iwc",
+        "match_words": "amchur",
+        "instead_of": "Lemon"
       }
     ],
     "steps": [
