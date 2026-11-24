@@ -106,9 +106,9 @@ on the Profile icon everywhere, the US included, with the country switch on the 
 15. **Currency:** Canada, Australia and New Zealand keep their own dollars (D-197); every other country sees US dollars
     written **US$** (so "$" never reads as a local dollar). Checkout, orders, emails and invoices stay in US dollars.
 16. **Delivery days by country** (non-negotiable 4: from Settings, never hard-coded): each country row has its own food
-    and standard business days, seeded as today's US days plus the extra transit of that country's service over the
-    US's (US 7 – 10 days; WorldWide 13 – 18 days adds 6 – 8): Q-70 asks the founder to confirm. The pages read the
-    visitor's country row.
+    and standard business days, seeded as today's US days moved by the difference between that country's service days
+    and the US's 7 – 10 (FedEx 4 – 7: three days sooner; WorldWide 13 – 18: 6 – 8 days later), never below the India
+    leg: Q-70 asks the founder to confirm. The pages read the visitor's country row.
 17. **Honest at the door:** the cheapest service abroad is mostly "Duties may apply". Abroad, every "Duties paid.
     Nothing to pay at your door." line (D-161, Q-46) is replaced by the founder's line for duties (Q-72); until he
     gives one, checkout abroad says "Your country may charge import duty or tax on delivery." (draft) and the US is
@@ -159,10 +159,21 @@ on the Profile icon everywhere, the US included, with the country switch on the 
 
 ## 5. The ShipGlobal rates (read 2026-11-24)
 
-Read from the founder's own ShipGlobal account (Rate Calculator, dead weight 1 kg and 5 kg, no size, no postcode) for
-every destination in its list. The raw quotes, the cheapest service per country, its days and the rounded rate are
-in `catalogue/shipglobal-rates-2026-11-24.csv` (columns `iso3, name, service, days_min, days_max, inr_1kg, inr_5kg,
-inr_per_kg`). US example: ShipGlobal Direct Commercial, 7 – 10 days, ₹1,289 + ₹200 = ₹1,489 → ₹1,500 (not used: the US
+Read from the founder's own ShipGlobal account (Rate Calculator, dead weight 1 kg, no size, no postcode) for all 246
+destinations in its list besides India, through the page's own form. The cheapest service per country, its days, the
+1 kg quote (base + fixed fee) and the rate rounded up to the next ₹500 are in
+`catalogue/shipglobal-rates-2026-11-24.csv` (columns `iso3, name, service, days_min, days_max, inr_1kg, inr_per_kg`).
+14 countries quoted the same as their neighbour in the list and were quoted again: the same each time.
+What the rates say:
+- **27 countries come out cheaper than the US's ₹2,000:** Singapore and Malaysia ₹500; the UK, UAE, Hong Kong and Macau
+  ₹1,000; Canada, Australia, Japan, the Philippines, Taiwan, Brunei and most of the EU ₹1,500. Their prices will be
+  *lower* than the US's (the founder's rule: only freight changes).
+- **Most of Africa, Latin America and the islands are ₹3,500 – ₹4,000**, and a few ₹5,000 – ₹6,000 (Argentina, Jersey,
+  Guernsey, the Isle of Man, Aland, Svalbard, the Vatican): a 1 kg food piece there costs $20 – $55 more than in the US.
+- **The cheapest service is often FedEx (4 – 7 days)**, faster than ShipGlobal WorldWide (13 – 18 days) and cheaper at
+  1 kg; ShipGlobal Direct (7 – 14 days) where it exists.
+- **Pakistan:** no service ("No Services Available"), so it is closed.
+- Only 1 kg was read; heavier parcels may cost less a kg. Whether each service takes food is not shown (Q-69). US example: ShipGlobal Direct Commercial, 7 – 10 days, ₹1,289 + ₹200 = ₹1,489 → ₹1,500 (not used: the US
 stays at ₹2,000, founder). Quotes are a day's prices; Admin → Settings → Countries lets the founder change any row.
 *Note:* the US "Direct Commercial" service warns "a tariff fee will be charged" (US tariffs on Indian goods): not part
 of this change, the US keeps today's prices.
@@ -209,6 +220,6 @@ order is unchanged; e2e covers both.
 |---|---|---|
 | Q-68 | Home's **bohni band** is the first-order 10% coupon: with coupons gone, does it say "Save 5% on every bag. Send it home or keep it." in the same design, or leave Home? | the same band with the 5% words |
 | Q-69 | **Where IWC may not sell:** Cuba, Iran, North Korea, Syria are closed (US sanctions); Russia and Belarus too until the lawyer says. Any others? And may **food** go to Australia and New Zealand (strict biosecurity) and every other country? | closed as listed; food open where ShipGlobal takes it |
-| Q-70 | **Delivery days abroad:** today's US days plus the extra transit of each country's cheapest service (WorldWide 13 – 18 days → standard 18 – 24, food 13 – 20 business days)? | as proposed, editable per country in Settings |
+| Q-70 | **Delivery days abroad:** today's US days moved by the difference between each country's cheapest service and the US's 7 – 10 days (FedEx 4 – 7: three days sooner; WorldWide 13 – 18: standard 18 – 24, food 13 – 20 business days)? | as proposed, editable per country in Settings |
 | Q-71 | **Savings abroad:** D-198 shows coupons and savings in $ abroad. Show "You're saving" in the visitor's currency (CA$6.01) or keep $? | the visitor's currency |
 | Q-72 | **Duties abroad:** ShipGlobal's cheapest service mostly says "Duties may apply". What should checkout and the product page say abroad, and is any of it IWC's to pay? | "Your country may charge import duty or tax on delivery." (draft); nothing paid by IWC |

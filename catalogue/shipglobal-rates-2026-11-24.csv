@@ -1,0 +1,247 @@
+iso3,name,service,days_min,days_max,inr_1kg,inr_per_kg
+AFG,Afghanistan,Fedex,4,7,2666,3000
+ALA,Aland Islands,ShipGlobal WorldWide,13,18,5053,5500
+ALB,Albania,Fedex,4,7,3052,3500
+DZA,Algeria,Fedex,4,7,3505,4000
+ASM,American Samoa,Fedex,4,7,3375,3500
+AND,Andorra,UPS,4,7,2741,3000
+AGO,Angola,Fedex,4,7,3505,4000
+AIA,Anguilla,Fedex,4,7,3357,3500
+ATA,Antarctica,ShipGlobal WorldWide,13,18,3972,4000
+ATG,Antigua And Barbuda,Fedex,4,7,3357,3500
+ARG,Argentina,ShipGlobal WorldWide,13,18,4877,5000
+ARM,Armenia,Fedex,4,7,3052,3500
+ABW,Aruba,Fedex,4,7,3357,3500
+AUS,Australia,ShipGlobal Direct,7,10,1033,1500
+AUT,Austria,ShipGlobal Direct,9,12,1336,1500
+AZE,Azerbaijan,Fedex,4,7,3052,3500
+BHS,Bahamas The,Fedex,4,7,3357,3500
+BHR,Bahrain,Fedex,4,7,2557,3000
+BGD,Bangladesh,Fedex,4,7,2475,2500
+BRB,Barbados,Fedex,4,7,3357,3500
+BLR,Belarus,Fedex,4,7,3052,3500
+BEL,Belgium,ShipGlobal Direct,10,14,1386,1500
+BLZ,Belize,Fedex,4,7,3357,3500
+BEN,Benin,Fedex,4,7,3505,4000
+BMU,Bermuda,Fedex,4,7,3357,3500
+BTN,Bhutan,Fedex,4,7,2475,2500
+BOL,Bolivia,Fedex,4,7,3357,3500
+BES,"Bonaire, Sint Eustatius and Saba",Fedex,4,7,3357,3500
+BIH,Bosnia and Herzegovina,Fedex,4,7,3052,3500
+BWA,Botswana,Fedex,4,7,3505,4000
+BVT,Bouvet Island,ShipGlobal WorldWide,13,18,3769,4000
+BRA,Brazil,ShipGlobal WorldWide,13,18,2791,3000
+IOT,British Indian Ocean Territory,ShipGlobal WorldWide,13,18,3441,3500
+BRN,Brunei,ShipGlobal Direct,7,9,1049,1500
+BGR,Bulgaria,ShipGlobal Direct,9,12,1533,2000
+BFA,Burkina Faso,Fedex,4,7,3505,4000
+BDI,Burundi,Fedex,4,7,3505,4000
+KHM,Cambodia,Fedex,4,7,3375,3500
+CMR,Cameroon,Fedex,4,7,3505,4000
+CAN,Canada,ShipGlobal CA Post Special,8,12,1116,1500
+CPV,Cape Verde,Fedex,4,7,3505,4000
+CYM,Cayman Islands,Fedex,4,7,3357,3500
+CAF,Central African Republic,Fedex,4,7,3505,4000
+TCD,Chad,Fedex,4,7,3505,4000
+CHL,Chile,Fedex,4,7,3357,3500
+CHN,China,ShipGlobal WorldWide,13,18,2565,3000
+CXR,Christmas Island,ShipGlobal WorldWide,13,18,3867,4000
+CCK,Cocos (Keeling) Islands,ShipGlobal WorldWide,13,18,3867,4000
+COL,Colombia,Fedex,4,7,3357,3500
+COM,Comoros,ShipGlobal WorldWide,13,18,3769,4000
+COG,Congo,Fedex,4,7,3505,4000
+COK,Cook Islands,Fedex,4,7,3375,3500
+CRI,Costa Rica,Fedex,4,7,3357,3500
+CIV,Cote D'Ivoire (Ivory Coast),Fedex,4,7,3505,4000
+HRV,Croatia,ShipGlobal Direct,10,14,1706,2000
+CUB,Cuba,ShipGlobal WorldWide,13,18,3972,4000
+CUW,Curaçao,Fedex,4,7,3357,3500
+CYP,Cyprus,ShipGlobal Direct,9,12,2815,3000
+CZE,Czech Republic,ShipGlobal Direct,10,14,1310,1500
+COD,Democratic Republic of the Congo,Fedex,4,7,3505,4000
+DNK,Denmark,ShipGlobal Direct,10,14,1474,1500
+DJI,Djibouti,Fedex,4,7,3505,4000
+DMA,Dominica,Fedex,4,7,3357,3500
+DOM,Dominican Republic,Fedex,4,7,3357,3500
+TLS,East Timor,Fedex,4,7,3375,3500
+ECU,Ecuador,Fedex,4,7,3357,3500
+EGY,Egypt,Fedex,4,7,2666,3000
+SLV,El Salvador,Fedex,4,7,3357,3500
+GNQ,Equatorial Guinea,Fedex,4,7,3505,4000
+ERI,Eritrea,Fedex,4,7,3505,4000
+EST,Estonia,ShipGlobal Direct,10,14,2086,2500
+ETH,Ethiopia,Fedex,4,7,3505,4000
+FLK,Falkland Islands,ShipGlobal WorldWide,13,18,3972,4000
+FRO,Faroe Islands,Fedex,4,7,2958,3000
+FJI,Fiji Islands,Fedex,4,7,3375,3500
+FIN,Finland,ShipGlobal Direct,9,12,1940,2000
+FRA,France,ShipGlobal Direct,9,12,1390,1500
+GUF,French Guiana,Fedex,4,7,3357,3500
+PYF,French Polynesia,Fedex,4,7,3375,3500
+ATF,French Southern Territories,UPS,4,7,5874,6000
+GAB,Gabon,Fedex,4,7,3505,4000
+GMB,Gambia The,Fedex,4,7,3505,4000
+GEO,Georgia,Fedex,4,7,3052,3500
+DEU,Germany,ShipGlobal Direct,9,12,1230,1500
+GHA,Ghana,Fedex,4,7,3505,4000
+GIB,Gibraltar,Fedex,4,7,3052,3500
+GRC,Greece,ShipGlobal Direct,9,12,1492,1500
+GRL,Greenland,Fedex,4,7,2958,3000
+GRD,Grenada,Fedex,4,7,3357,3500
+GLP,Guadeloupe,Fedex,4,7,3357,3500
+GTM,Guatemala,Fedex,4,7,3357,3500
+GGY,Guernsey and Alderney,UPS,4,7,4795,5000
+GIN,Guinea,Fedex,4,7,3505,4000
+GNB,Guinea-Bissau,Fedex,4,7,3505,4000
+GUY,Guyana,Fedex,4,7,3357,3500
+HTI,Haiti,Fedex,4,7,3357,3500
+HMD,Heard Island and McDonald Islands,ShipGlobal WorldWide,13,18,3867,4000
+HND,Honduras,Fedex,4,7,3357,3500
+HKG,Hong Kong S.A.R.,ShipGlobal Direct,7,9,918,1000
+HUN,Hungary,ShipGlobal Direct,10,14,1415,1500
+ISL,Iceland,ShipGlobal WorldWide,13,18,2450,2500
+IDN,Indonesia,ShipGlobal Direct,7,9,1630,2000
+IRN,Iran,Fedex,4,7,2666,3000
+IRQ,Iraq,Fedex,4,7,2666,3000
+IRL,Ireland,ShipGlobal WorldWide,13,18,2363,2500
+ISR,Israel,ShipGlobal WorldWide,13,18,2761,3000
+ITA,Italy,ShipGlobal Direct,9,12,1454,1500
+JAM,Jamaica,Fedex,4,7,3357,3500
+JPN,Japan,ShipGlobal Direct,7,9,1236,1500
+JEY,Jersey,UPS,4,7,4795,5000
+JOR,Jordan,Fedex,4,7,2666,3000
+KAZ,Kazakhstan,Fedex,4,7,3052,3500
+KEN,Kenya,Fedex,4,7,3505,4000
+KIR,Kiribati,Fedex,4,7,3338,3500
+XKX,Kosovo,ShipGlobal WorldWide,13,18,3673,4000
+KWT,Kuwait,Fedex,4,7,2557,3000
+KGZ,Kyrgyzstan,Fedex,4,7,3052,3500
+LAO,Laos,Fedex,4,7,3375,3500
+LVA,Latvia,ShipGlobal Direct,10,14,2248,2500
+LBN,Lebanon,Fedex,4,7,2666,3000
+LSO,Lesotho,Fedex,4,7,3505,4000
+LBR,Liberia,Fedex,4,7,3505,4000
+LBY,Libya,Fedex,4,7,3505,4000
+LIE,Liechtenstein,UPS,4,7,2741,3000
+LTU,Lithuania,ShipGlobal Direct,10,14,1950,2000
+LUX,Luxembourg,ShipGlobal Direct,9,12,1416,1500
+MAC,Macau S.A.R.,ShipGlobal Direct,7,9,918,1000
+MKD,Macedonia,Fedex,4,7,3052,3500
+MDG,Madagascar,Fedex,4,7,3505,4000
+MWI,Malawi,Fedex,4,7,3505,4000
+MYS,Malaysia,ShipGlobal Direct,8,12,423,500
+MDV,Maldives,Fedex,4,7,2475,2500
+MLI,Mali,Fedex,4,7,3505,4000
+MLT,Malta,Fedex,4,7,3052,3500
+IMN,Man (Isle of),UPS,4,7,5874,6000
+MHL,Marshall Islands,Fedex,4,7,3375,3500
+MTQ,Martinique,Fedex,4,7,3357,3500
+MRT,Mauritania,Fedex,4,7,3505,4000
+MUS,Mauritius,Fedex,4,7,3505,4000
+MYT,Mayotte,ShipGlobal WorldWide,13,18,3769,4000
+MEX,Mexico,UPS,4,7,2985,3000
+FSM,Micronesia,Fedex,4,7,3375,3500
+MDA,Moldova,Fedex,4,7,3052,3500
+MCO,Monaco,UPS,4,7,2741,3000
+MNG,Mongolia,Fedex,4,7,3375,3500
+MNE,Montenegro,Fedex,4,7,3052,3500
+MSR,Montserrat,Fedex,4,7,3357,3500
+MAR,Morocco,Fedex,4,7,3505,4000
+MOZ,Mozambique,Fedex,4,7,3505,4000
+MMR,Myanmar,Fedex,4,7,2666,3000
+NAM,Namibia,Fedex,4,7,3505,4000
+NRU,Nauru,ShipGlobal WorldWide,13,18,3867,4000
+NPL,Nepal,Fedex,4,7,2475,2500
+NLD,Netherlands,ShipGlobal Direct,10,14,1306,1500
+NCL,New Caledonia,Fedex,4,7,3375,3500
+NZL,New Zealand,UPS,4,7,3172,3500
+NIC,Nicaragua,Fedex,4,7,3357,3500
+NER,Niger,Fedex,4,7,3505,4000
+NGA,Nigeria,Fedex,4,7,3505,4000
+NIU,Niue,ShipGlobal WorldWide,13,18,3867,4000
+NFK,Norfolk Island,ShipGlobal WorldWide,13,18,3867,4000
+PRK,North Korea,ShipGlobal WorldWide,13,18,3441,3500
+MNP,Northern Mariana Islands,ShipGlobal WorldWide,13,18,3867,4000
+NOR,Norway,UPS Promotional,4,7,2526,3000
+OMN,Oman,Fedex,4,7,2557,3000
+PAK,Pakistan,,,,,
+PLW,Palau,Fedex,4,7,3375,3500
+PSE,Palestinian Territory Occupied,Fedex,4,7,2666,3000
+PAN,Panama,Fedex,4,7,3357,3500
+PNG,Papua new Guinea,Fedex,4,7,3375,3500
+PRY,Paraguay,Fedex,4,7,3357,3500
+PER,Peru,Fedex,4,7,3357,3500
+PHL,Philippines,ShipGlobal Direct,7,9,1236,1500
+PCN,Pitcairn Island,ShipGlobal WorldWide,13,18,3867,4000
+POL,Poland,ShipGlobal Direct,10,14,1138,1500
+PRT,Portugal,ShipGlobal Direct,10,14,1282,1500
+QAT,Qatar,Fedex,4,7,2557,3000
+REU,Reunion,Fedex,4,7,3505,4000
+ROU,Romania,ShipGlobal Direct,9,12,1645,2000
+RUS,Russia,Fedex,4,7,3052,3500
+RWA,Rwanda,Fedex,4,7,3505,4000
+SHN,Saint Helena,ShipGlobal WorldWide,13,18,3769,4000
+KNA,Saint Kitts And Nevis,Fedex,4,7,3357,3500
+LCA,Saint Lucia,Fedex,4,7,3357,3500
+SPM,Saint Pierre and Miquelon,ShipGlobal WorldWide,13,18,3972,4000
+VCT,Saint Vincent And The Grenadines,Fedex,4,7,3357,3500
+BLM,Saint-Barthelemy,ShipGlobal WorldWide,13,18,3972,4000
+MAF,Saint-Martin (French part),Fedex,4,7,3357,3500
+WSM,Samoa,Fedex,4,7,3375,3500
+SMR,San Marino,UPS,4,7,2741,3000
+STP,Sao Tome and Principe,ShipGlobal WorldWide,13,18,3769,4000
+SAU,Saudi Arabia,Fedex,4,7,2666,3000
+SEN,Senegal,Fedex,4,7,3505,4000
+SRB,Serbia,Fedex,4,7,3052,3500
+SYC,Seychelles,Fedex,4,7,3505,4000
+SLE,Sierra Leone,Fedex,4,7,3505,4000
+SGP,Singapore,ShipGlobal Direct,7,10,465,500
+SXM,Sint Maarten (Dutch part),ShipGlobal WorldWide,13,18,3972,4000
+SVK,Slovakia,ShipGlobal Direct,9,12,1442,1500
+SVN,Slovenia,ShipGlobal Direct,10,14,1628,2000
+SLB,Solomon Islands,Fedex,4,7,3375,3500
+SOM,Somalia,ShipGlobal WorldWide,13,18,3769,4000
+ZAF,South Africa,Fedex,4,7,2935,3000
+SGS,South Georgia,Fedex,4,7,3052,3500
+KOR,South Korea,ShipGlobal WorldWide,13,18,2550,3000
+SSD,South Sudan,Fedex,4,7,3505,4000
+ESP,Spain,ShipGlobal Direct,10,14,1287,1500
+LKA,Sri Lanka,Fedex,4,7,2475,2500
+SDN,Sudan,Fedex,4,7,3505,4000
+SUR,Suriname,Fedex,4,7,3357,3500
+SJM,Svalbard And Jan Mayen Islands,ShipGlobal WorldWide,13,18,5053,5500
+SWZ,Swaziland,Fedex,4,7,3505,4000
+SWE,Sweden,ShipGlobal WorldWide,13,18,2041,2500
+CHE,Switzerland,ShipGlobal WorldWide,13,18,2304,2500
+SYR,Syria,Fedex,4,7,2666,3000
+TWN,Taiwan,ShipGlobal Direct,7,9,1049,1500
+TJK,Tajikistan,ShipGlobal WorldWide,13,18,3441,3500
+TZA,Tanzania,Fedex,4,7,3505,4000
+THA,Thailand,ShipGlobal Direct,7,9,1630,2000
+TGO,Togo,Fedex,4,7,3505,4000
+TKL,Tokelau,ShipGlobal WorldWide,13,18,3867,4000
+TON,Tonga,Fedex,4,7,3375,3500
+TTO,Trinidad And Tobago,Fedex,4,7,3357,3500
+TUN,Tunisia,Fedex,4,7,3505,4000
+TUR,Turkey,ShipGlobal WorldWide,13,18,2530,3000
+TKM,Turkmenistan,Fedex,4,7,2666,3000
+TCA,Turks And Caicos Islands,Fedex,4,7,3357,3500
+TUV,Tuvalu,Fedex,4,7,3375,3500
+UGA,Uganda,Fedex,4,7,3505,4000
+UKR,Ukraine,Fedex,4,7,3052,3500
+ARE,United Arab Emirates,ShipGlobal Direct,4,7,692,1000
+GBR,United Kingdom,ShipGlobal Direct,7,10,831,1000
+USA,United States,ShipGlobal Direct Commercial,7,10,1489,1500
+UMI,United States Minor Outlying Islands,ShipGlobal WorldWide,13,18,3867,4000
+URY,Uruguay,Fedex,4,7,3357,3500
+UZB,Uzbekistan,Fedex,4,7,3052,3500
+VUT,Vanuatu,Fedex,4,7,3375,3500
+VAT,Vatican City State (Holy See),ShipGlobal WorldWide,13,18,5053,5500
+VEN,Venezuela,Fedex,4,7,3357,3500
+VNM,Vietnam,UPS,4,7,2935,3000
+VGB,Virgin Islands (British),Fedex,4,7,3357,3500
+WLF,Wallis And Futuna Islands,ShipGlobal WorldWide,13,18,3867,4000
+ESH,Western Sahara,ShipGlobal WorldWide,13,18,3769,4000
+YEM,Yemen,Fedex,4,7,2666,3000
+ZMB,Zambia,Fedex,4,7,3505,4000
+ZWE,Zimbabwe,Fedex,4,7,3505,4000
