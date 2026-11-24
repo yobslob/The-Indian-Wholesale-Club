@@ -34,7 +34,7 @@ CA$, A$ and NZ$ per US$1: 1.4130, 1.4570, 1.8060 (mid-market, 2026-11-06/07). Vi
 ## Delivery (Settings → Delivery; D-187, `flows.md` §1)
 | Number | Value | Notes |
 |---|---|---|
-| Food delivery days | 7 – 7, business days | Monday to Friday, from the order day. Empty = checkout cannot quote a date |
+| Food delivery days | 7 – 12, business days (D-207; 7 – 7 until then) | Monday to Friday, from the order day. Empty = checkout cannot quote a date |
 | Clothing and home & gifts delivery days | 12 – 16, business days | the same |
 | Already in the US: days to the door | Settings, **calendar days** | US clearance stays as it was (`domestic_days_*`); the only delivery number not in business days |
 

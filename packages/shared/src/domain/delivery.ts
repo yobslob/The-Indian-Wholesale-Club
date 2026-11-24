@@ -11,7 +11,7 @@ const monthDay = new Intl.DateTimeFormat('en-US', { month: 'short', day: 'numeri
 
 /** "Oct 30 – Nov 4" */
 export function formatDeliveryWindow(from: string, to: string): string {
-  // one day (food is exactly 7 delivery days): "Oct 29", not "Oct 29 – Oct 29"
+  // one day (a window of one day): "Oct 29", not "Oct 29 – Oct 29"
   if (from === to) return monthDay.format(parseDate(from));
   return `${monthDay.format(parseDate(from))} – ${monthDay.format(parseDate(to))}`;
 }

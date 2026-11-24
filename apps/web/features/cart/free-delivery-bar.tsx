@@ -24,7 +24,7 @@ import { cartCount, useCart, type CartLine } from './store';
  * saving until its cap (D-119, from $99.99, D-187). A tap opens the bag. Not on the bag page, which shows the same bars
  * in its summary. One goal, one bar (founder, 2026-10-24; bag-goal.ts).
  * D-161 (the homesick plan): the bar is a flight path, India to a little house, "$12.40 more and the flight's on us",
- * and each add says "Coming home in 7 delivery days" for three seconds. The look is `.fd-*` in globals.css.
+ * and each add says "Coming home in 7 – 12 delivery days" for three seconds. The look is `.fd-*` in globals.css.
  * Founder 2026-10-30: the goal is picked from the bag as it is now, from its first draw (charges.ts, bag-goal.ts), and
  * past the free line the bar keeps its full part to the house while the pill grows a second part for the bulk saving.
  */
@@ -172,7 +172,7 @@ function GoalWords({ goal }: { goal: BagGoal }): React.JSX.Element | null {
 }
 
 /**
- * "Coming home in 7 delivery days" for three seconds after each add (the plan's toast, D-161, D-187): the newest piece's
+ * "Coming home in 7 – 12 delivery days" for three seconds after each add (the plan's toast, D-161, D-187): the newest piece's
  * delivery days from Settings. Nothing on the first draw.
  */
 function useComingHome(count: number, newest: CartLine | undefined): { key: number; days: string } | null {

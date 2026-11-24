@@ -248,13 +248,13 @@ runner in `tools/sourcing-runner/` (its README says how to set it up on the PC a
   price, or stop using that shop (the next cheapest in-stock source takes over).
 - **Fast shops (D-148, D-162, D-187; admin only).** `sourcing_shops.quick_delivery` marks the shops whose pieces reach the
   hub within the hour (Blinkit, BigBasket, Zepto, Instamart; set by a migration, no screen yet). Food is bought from them
-  when it can be, which is what makes 7 delivery days true: a listing that can be bought whole from the fast shops (every
+  when it can be, which is what makes the food delivery days true: a listing that can be bought whole from the fast shops (every
   option with a usable source has one there: in stock, no price held, inside the delivery limit) is bought there, even when a
   backup elsewhere is cheaper, when it is added and at every weekly check (`_sourcing_settle`, `_quick_sourceable`, which
   covers home listings too, so their prices don't move); a fast shop sold out or held hands the piece to its backup. Listings
   settled before: `pnpm quick:sources` (`ops.md` §Sourcing runner). The first batch's CSV was
   `tools/sourcing-runner/out/blinkit-7-day.csv` (gitignored), added through Add targets from a CSV and run with
-  `pnpm sourcing run --type food` / `--type home`. **Every food listing promises 7 delivery days whichever shop it comes from**
+  `pnpm sourcing run --type food` / `--type home`. **Every food listing promises 7 – 12 delivery days (D-207) whichever shop it comes from**
   (plan §7): Today's food watch flags late buys.
 - **Shops.** Each shop the runner searches, the types it sells, the delivery days used when its page shows none, on or
   off, its last good run and its last problem (a shop that changed its page shows up here first).

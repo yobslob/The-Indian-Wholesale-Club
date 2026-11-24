@@ -98,5 +98,5 @@ test("D-187: Home's sections in the founder's order, with no second store", asyn
   expect(text).not.toMatch(/7-day/i);
   expect(text).not.toMatch(/order by/i);
   await expect(page.locator('#just-listed-food')).toHaveCount(0);
-  expect(await page.evaluate(() => getComputedStyle(document.documentElement).getPropertyValue('--days-food'))).toContain('7 delivery days');
+  expect(await page.evaluate(() => getComputedStyle(document.documentElement).getPropertyValue('--days-food'))).toContain('7 – 12 delivery days');
 });

@@ -21,7 +21,7 @@ Indians living in the US miss home, and specifically the clothing, food and thin
 **What the customer sees** (the whole customer-side story, D-003):
 1. Pick your home region.
 2. Browse its clothing, food and gifts, then order and pay in USD.
-3. Receive it in the US: food in 7 delivery days, clothing and home & gifts in 12 – 16. Checkout shows the estimated dates
+3. Receive it in the US: food in 7 – 12 delivery days (D-207), clothing and home & gifts in 12 – 16. Checkout shows the estimated dates
    before payment (D-008, D-187).
 
 **What happens behind the scenes** (admin only, never on a customer surface, D-003 and D-187):
@@ -81,8 +81,8 @@ confusion. If you need a concept that isn't here, add it (and a decision if it's
 | **category** | a browse group inside a type (Sarees, Kurtas, Masalas…) | `categories` | category name | collection |
 | **source** | the online shop's product page an imported pilot listing was copied from (D-110). **Admin only** | `products.source_url`, `source_site`, `source_checked_at` | never shown | link, origin (origin is the region, D-004) |
 | **pickup** | one ordered piece on the buy list, from To order to At the hub (D-187: a pickup **is** the buy list). **Admin only** | `pickups` | never shown | collection, sourcing |
-| **food shipment** | the part of an order that is food: its own parcel, 7 delivery days, bought within 2 hours and shipped by the next day (D-187) | `order_shipments.kind = 'food'`, `food_ids` | "Shipment 1 · Food" | 7-day shipment, quick shipment |
-| **delivery day** | a working day, Monday to Friday, counted from the order day; flight delays are not part of the promise; said on store pages instead of a date and explained only in the FAQ (D-187) | `_add_business_days`, `addBusinessDays`, `food_delivery_days_*`, `delivery_days_*` | "7 delivery days", "12 – 16 delivery days" | business day (in customer copy), working day (in customer copy) |
+| **food shipment** | the part of an order that is food: its own parcel, 7 – 12 delivery days (D-207), bought within 2 hours and shipped by the next day (D-187) | `order_shipments.kind = 'food'`, `food_ids` | "Shipment 1 · Food" | 7-day shipment, quick shipment |
+| **delivery day** | a working day, Monday to Friday, counted from the order day; flight delays are not part of the promise; said on store pages instead of a date and explained only in the FAQ (D-187) | `_add_business_days`, `addBusinessDays`, `food_delivery_days_*`, `delivery_days_*` | "7 – 12 delivery days", "12 – 16 delivery days" | business day (in customer copy), working day (in customer copy) |
 | **model folder** | a model for the face swap on new clothing photos: only a folder on the laptop, `IWC_MODELS/house-models/w-1…, m-1…` (w = women, m = men), with its `front.jpg` (D-187) | `tools/photo-worker` | never named | mannequin, avatar |
 | **small-order charges** | below the free-shipping line, a bag's **Shipping**, struck through at $0.00 from the line up (D-111, D-112); **Retailer charges** always paid (D-191; Settings) | `store_bag_charges()`, `orders.retailer_charge_cents` | "Shipping", "Retailer charges" | small order fee, surcharge |
 | **bulk saving** | from its own line up ($99.99, D-187), a % of the amount over the line taken off the bag, up to a cap; after the cap, pieces add at full price (D-119) | `bulk_saving_from_cents`, `bulk_saving_pct`, `bulk_saving_cap_cents`, `orders.bulk_saving_cents` |

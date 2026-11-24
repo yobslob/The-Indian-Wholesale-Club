@@ -486,3 +486,12 @@ What it means for the build (`docs/plan-recipes.md` §2 holds every rule):
 - **The window's words** are approved as drafted (answer 7): "Cook at home", "<dish> kit", "Get the recipe", "Recipe's on us."
 - **Cost:** two small tables (a few hundred KB at 100 recipes); one page per recipe and `/recipes` in the page cache, refreshed only when a recipe or a piece in its kit changes (D-145).
 *Interpretation (proposed, confirm when convenient):* "nothing start unticked" also means a customer can still untick a piece they already have (the kit card says "Untick what's already in your kitchen."); open points are Q-63 and Q-64.
+
+**D-207 · 2026-11-24 · founder: food comes in 7 – 12 delivery days, not 7** · Changes D-187's food days (7 – 7). Numbered after the recipes and Send home decisions, which are on branches not merged yet.
+
+Founder, verbatim: "remove 7 days from everywhere on website and replace it with 7-12 days."
+
+What it means for the build:
+- Every page, the bag, the panel, checkout, the hero and the app say the days from Settings (non-negotiable 4), so the change is Settings' food days: 7 – 12 business days (migration `20261126080000_food_7_to_12_days`, only when they are still 7 – 7). New orders' food dates follow it; orders already placed keep theirs.
+- Written as the store writes a window: "7 – 12 delivery days".
+- The founder can still change the days in Admin → Settings → Delivery at any time; the docs that stated "7 delivery days" now say 7 – 12.

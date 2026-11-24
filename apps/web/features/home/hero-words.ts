@@ -15,7 +15,7 @@ export const HERO = {
   accent: 'achaar.',
   /** Followed by "<days> delivery days". */
   when: 'From India to your door in',
-  /** After the days, small: only food comes in 7 (D-186). */
+  /** After the days, small: only food comes in 7 – 12 (D-186, D-207). */
   onFood: '(on food)',
   /** The button: its small top line, then "from <free line>". */
   free: 'Free delivery',

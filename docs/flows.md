@@ -13,7 +13,7 @@ customer orders ──► we buy it from the online shop ──► at the hub �
   `products.source_site`, admin only). Nothing is held in India: a piece is bought when it sells.
 - **A delivery day is a working day, Monday to Friday, counted from the order day.** Weekends do not count; US public
   holidays do (the founder may change that later); a late flight is not part of the promise, and we email a new date
-  (§7). Food takes 7 delivery days, clothing and home & gifts 12 – 16 (Settings, in business days;
+  (§7). Food takes 7 – 12 delivery days (D-207), clothing and home & gifts 12 – 16 (Settings, in business days;
   `_add_business_days` in SQL, its twin `addBusinessDays` in `packages/shared/src/domain/delivery.ts`, tested against the
   same 20 cases). Already in the US (§7d) stays in calendar days.
 - **A bag with food and other pieces is always two shipments:** 1 = food, 2 = clothing and home & gifts. An address outside
@@ -44,7 +44,7 @@ weight (D-129); clothing also needs who it is for and its care. Food follows its
    each is sorted; fixing the last re-prices at once and moves the same payment.
 2. The server computes the **delivery window** from today and Settings' days, in business days: food, and the rest. It is
    shown before payment as "Estimated delivery" (D-008), with both shipments for a split bag. Store pages say only
-   "7 delivery days" and "12 – 16 delivery days", never a calendar date (founder, plan §10 Y-5). Pickups, the buy list,
+   "7 – 12 delivery days" and "12 – 16 delivery days", never a calendar date (founder, plan §10 Y-5). Pickups, the buy list,
    are made as the order is created (§4).
 3. Payment: a Stripe PaymentIntent (USD) for exactly that total. The priced checkout is stored in `pending_orders` with it.
    After payment the server verifies amount, currency and status with Stripe, then creates the order **from the stored
