@@ -1,0 +1,1772 @@
+[
+  {
+    "slug": "pyaaz-paratha",
+    "name": "Pyaaz Paratha",
+    "kind": "breakfast",
+    "state": "Punjab",
+    "rank": 321,
+    "blurb": "Paratha stuffed with raw onion, green chilli and spices.",
+    "minutes": 30,
+    "soak_hours": null,
+    "serves": 4,
+    "effort": "easy",
+    "ingredients": [
+      {
+        "label": "Atta",
+        "amount": "2 cups",
+        "source": "iwc",
+        "match_words": "atta"
+      },
+      {
+        "label": "Ajwain",
+        "amount": "½ tsp",
+        "source": "iwc",
+        "match_words": "ajwain"
+      },
+      {
+        "label": "Red chilli powder",
+        "amount": "½ tsp",
+        "source": "iwc",
+        "match_words": "red chilli powder"
+      },
+      {
+        "label": "Amchur",
+        "amount": "½ tsp",
+        "source": "iwc",
+        "match_words": "amchur"
+      },
+      {
+        "label": "Garam masala",
+        "amount": "½ tsp",
+        "source": "iwc",
+        "match_words": "garam masala"
+      },
+      {
+        "label": "Onions",
+        "amount": "2",
+        "source": "local"
+      },
+      {
+        "label": "Green chillies",
+        "amount": "2",
+        "source": "local"
+      },
+      {
+        "label": "Coriander",
+        "amount": "a handful",
+        "source": "local"
+      },
+      {
+        "label": "Ghee",
+        "amount": "for cooking",
+        "source": "local"
+      },
+      {
+        "label": "Coriander powder",
+        "amount": "1 tsp",
+        "source": "iwc",
+        "match_words": "coriander powder",
+        "instead_of": "Coriander"
+      }
+    ],
+    "steps": [
+      {
+        "text": "Knead the atta into a soft dough; rest.",
+        "minutes": 15
+      },
+      {
+        "text": "Mix the finely chopped onions with chillies, coriander, spices and salt just before stuffing.",
+        "minutes": 3
+      },
+      {
+        "text": "Stuff and roll gently.",
+        "minutes": 8
+      },
+      {
+        "text": "Cook on a hot tawa with ghee until crisp.",
+        "minutes": 10
+      }
+    ]
+  },
+  {
+    "slug": "set-dosa",
+    "name": "Set Dosa",
+    "kind": "breakfast",
+    "state": "Karnataka",
+    "rank": 322,
+    "blurb": "Soft, spongy dosas served in sets of three with chutney and sagu.",
+    "minutes": 30,
+    "soak_hours": 6,
+    "serves": 4,
+    "effort": "medium",
+    "ingredients": [
+      {
+        "label": "Dosa rice",
+        "amount": "2 cups",
+        "source": "iwc",
+        "match_words": "dosa rice"
+      },
+      {
+        "label": "Urad dal",
+        "amount": "¼ cup",
+        "source": "iwc",
+        "match_words": "urad dal"
+      },
+      {
+        "label": "Poha",
+        "amount": "½ cup",
+        "source": "iwc",
+        "match_words": "poha"
+      },
+      {
+        "label": "Fenugreek seeds",
+        "amount": "1 tsp",
+        "source": "iwc",
+        "match_words": "fenugreek seeds"
+      },
+      {
+        "label": "Oil or ghee",
+        "amount": "for cooking",
+        "source": "local"
+      }
+    ],
+    "steps": [
+      {
+        "text": "Soak the rice, urad dal and fenugreek for six hours; soak the poha for 30 minutes before grinding.",
+        "minutes": null
+      },
+      {
+        "text": "Grind everything to a smooth batter and ferment overnight.",
+        "minutes": 10
+      },
+      {
+        "text": "Pour a ladle onto a hot tawa and spread a little; keep it thick.",
+        "minutes": 2
+      },
+      {
+        "text": "Cover and cook one side only until the top is set and full of holes.",
+        "minutes": 3
+      }
+    ]
+  },
+  {
+    "slug": "ragi-dosa",
+    "name": "Ragi Dosa",
+    "kind": "breakfast",
+    "state": "Karnataka",
+    "rank": 323,
+    "blurb": "Instant finger millet dosa with onion and green chilli. Crisp and lacy.",
+    "minutes": 25,
+    "soak_hours": null,
+    "serves": 4,
+    "effort": "easy",
+    "ingredients": [
+      {
+        "label": "Ragi flour",
+        "amount": "1 cup",
+        "source": "iwc",
+        "match_words": "ragi flour"
+      },
+      {
+        "label": "Rice flour",
+        "amount": "¼ cup",
+        "source": "iwc",
+        "match_words": "rice flour"
+      },
+      {
+        "label": "Sooji",
+        "amount": "2 tbsp",
+        "source": "iwc",
+        "match_words": "sooji"
+      },
+      {
+        "label": "Cumin seeds",
+        "amount": "½ tsp",
+        "source": "iwc",
+        "match_words": "cumin seeds"
+      },
+      {
+        "label": "Onion",
+        "amount": "1",
+        "source": "local"
+      },
+      {
+        "label": "Green chillies",
+        "amount": "2",
+        "source": "local"
+      },
+      {
+        "label": "Curry leaves",
+        "amount": "a sprig",
+        "source": "local"
+      },
+      {
+        "label": "Yogurt",
+        "amount": "2 tbsp",
+        "source": "local"
+      },
+      {
+        "label": "Oil",
+        "amount": "for cooking",
+        "source": "local"
+      },
+      {
+        "label": "Red chilli powder",
+        "amount": "½ tsp",
+        "source": "iwc",
+        "match_words": "red chilli powder",
+        "instead_of": "Green chillies"
+      },
+      {
+        "label": "Dried curry leaves",
+        "amount": "1 tbsp",
+        "source": "iwc",
+        "match_words": "curry leaves",
+        "instead_of": "Curry leaves"
+      }
+    ],
+    "steps": [
+      {
+        "text": "Whisk the flours, sooji, yogurt and salt into a thin, runny batter; rest 15 minutes.",
+        "minutes": 15
+      },
+      {
+        "text": "Stir in the onion, chillies, cumin and curry leaves.",
+        "minutes": 2
+      },
+      {
+        "text": "Pour the batter from a height onto a hot tawa to fill in like lace.",
+        "minutes": 2
+      },
+      {
+        "text": "Drizzle oil and cook until crisp.",
+        "minutes": 3
+      }
+    ]
+  },
+  {
+    "slug": "benne-dosa",
+    "name": "Benne Dosa",
+    "kind": "breakfast",
+    "state": "Karnataka",
+    "rank": 324,
+    "blurb": "Davangere's thick, butter-soaked dosa, crisp outside and soft inside.",
+    "minutes": 40,
+    "soak_hours": 6,
+    "serves": 4,
+    "effort": "medium",
+    "ingredients": [
+      {
+        "label": "Dosa rice",
+        "amount": "2 cups",
+        "source": "iwc",
+        "match_words": "dosa rice"
+      },
+      {
+        "label": "Urad dal",
+        "amount": "½ cup",
+        "source": "iwc",
+        "match_words": "urad dal"
+      },
+      {
+        "label": "Poha",
+        "amount": "¼ cup",
+        "source": "iwc",
+        "match_words": "poha"
+      },
+      {
+        "label": "Fenugreek seeds",
+        "amount": "1 tsp",
+        "source": "iwc",
+        "match_words": "fenugreek seeds"
+      },
+      {
+        "label": "Chana dal",
+        "amount": "1 tbsp",
+        "source": "iwc",
+        "match_words": "chana dal"
+      },
+      {
+        "label": "Butter",
+        "amount": "6 tbsp",
+        "source": "local"
+      }
+    ],
+    "steps": [
+      {
+        "text": "Soak the rice, dals and fenugreek for six hours with the poha. Grind and ferment overnight.",
+        "minutes": 10
+      },
+      {
+        "text": "Spread a thick dosa on a hot cast-iron tawa.",
+        "minutes": 2
+      },
+      {
+        "text": "Pour plenty of butter on top and around the edge.",
+        "minutes": 1
+      },
+      {
+        "text": "Cook until deep golden underneath; fold and serve with more butter.",
+        "minutes": 4
+      }
+    ]
+  },
+  {
+    "slug": "kuzhi-paniyaram",
+    "name": "Kuzhi Paniyaram",
+    "kind": "breakfast",
+    "state": "Tamil Nadu",
+    "rank": 325,
+    "blurb": "Little round dumplings from leftover dosa batter, cooked in a dimpled pan.",
+    "minutes": 30,
+    "soak_hours": null,
+    "serves": 4,
+    "effort": "easy",
+    "ingredients": [
+      {
+        "label": "Mustard seeds",
+        "amount": "1 tsp",
+        "source": "iwc",
+        "match_words": "mustard seeds"
+      },
+      {
+        "label": "Urad dal",
+        "amount": "1 tsp",
+        "source": "iwc",
+        "match_words": "urad dal"
+      },
+      {
+        "label": "Chana dal",
+        "amount": "1 tsp",
+        "source": "iwc",
+        "match_words": "chana dal"
+      },
+      {
+        "label": "Hing",
+        "amount": "a pinch",
+        "source": "iwc",
+        "match_words": "hing"
+      },
+      {
+        "label": "Dosa batter",
+        "amount": "3 cups",
+        "source": "local"
+      },
+      {
+        "label": "Onion",
+        "amount": "1",
+        "source": "local"
+      },
+      {
+        "label": "Green chillies",
+        "amount": "2",
+        "source": "local"
+      },
+      {
+        "label": "Ginger",
+        "amount": "½ inch",
+        "source": "local"
+      },
+      {
+        "label": "Curry leaves",
+        "amount": "a sprig",
+        "source": "local"
+      },
+      {
+        "label": "Oil",
+        "amount": "3 tbsp",
+        "source": "local"
+      },
+      {
+        "label": "Red chilli powder",
+        "amount": "½ tsp",
+        "source": "iwc",
+        "match_words": "red chilli powder",
+        "instead_of": "Green chillies"
+      },
+      {
+        "label": "Dry ginger powder",
+        "amount": "½ tsp",
+        "source": "iwc",
+        "match_words": "dry ginger powder",
+        "instead_of": "Ginger"
+      },
+      {
+        "label": "Dried curry leaves",
+        "amount": "1 tbsp",
+        "source": "iwc",
+        "match_words": "curry leaves",
+        "instead_of": "Curry leaves"
+      }
+    ],
+    "steps": [
+      {
+        "text": "Fry the mustard, dals, hing, onion, chillies, ginger and curry leaves; stir into the batter.",
+        "minutes": 5
+      },
+      {
+        "text": "Heat the paniyaram pan and drop a little oil in each hollow.",
+        "minutes": 2
+      },
+      {
+        "text": "Fill each hollow three-quarters with batter; cook until golden underneath.",
+        "minutes": 4
+      },
+      {
+        "text": "Turn each one with a skewer and cook the other side.",
+        "minutes": 4
+      }
+    ]
+  },
+  {
+    "slug": "godhuma-dosa",
+    "name": "Godhuma Dosa",
+    "kind": "breakfast",
+    "state": "Tamil Nadu",
+    "rank": 326,
+    "blurb": "Instant wheat flour dosa. No grinding, no fermenting.",
+    "minutes": 20,
+    "soak_hours": null,
+    "serves": 3,
+    "effort": "easy",
+    "ingredients": [
+      {
+        "label": "Atta",
+        "amount": "1 cup",
+        "source": "iwc",
+        "match_words": "atta"
+      },
+      {
+        "label": "Rice flour",
+        "amount": "¼ cup",
+        "source": "iwc",
+        "match_words": "rice flour"
+      },
+      {
+        "label": "Cumin seeds",
+        "amount": "½ tsp",
+        "source": "iwc",
+        "match_words": "cumin seeds"
+      },
+      {
+        "label": "Black pepper",
+        "amount": "½ tsp",
+        "source": "iwc",
+        "match_words": "black pepper"
+      },
+      {
+        "label": "Onion",
+        "amount": "1",
+        "source": "local"
+      },
+      {
+        "label": "Green chillies",
+        "amount": "1",
+        "source": "local"
+      },
+      {
+        "label": "Curry leaves",
+        "amount": "a sprig",
+        "source": "local"
+      },
+      {
+        "label": "Oil",
+        "amount": "for cooking",
+        "source": "local"
+      },
+      {
+        "label": "Red chilli powder",
+        "amount": "½ tsp",
+        "source": "iwc",
+        "match_words": "red chilli powder",
+        "instead_of": "Green chillies"
+      },
+      {
+        "label": "Dried curry leaves",
+        "amount": "1 tbsp",
+        "source": "iwc",
+        "match_words": "curry leaves",
+        "instead_of": "Curry leaves"
+      }
+    ],
+    "steps": [
+      {
+        "text": "Whisk the atta, rice flour and salt with water into a thin batter.",
+        "minutes": 5
+      },
+      {
+        "text": "Add the onion, chilli, cumin, crushed pepper and curry leaves.",
+        "minutes": 2
+      },
+      {
+        "text": "Pour from the edge inward on a hot tawa, filling the gaps.",
+        "minutes": 2
+      },
+      {
+        "text": "Drizzle oil and cook until crisp.",
+        "minutes": 3
+      }
+    ]
+  },
+  {
+    "slug": "kanchipuram-idli",
+    "name": "Kanchipuram Idli",
+    "kind": "breakfast",
+    "state": "Tamil Nadu",
+    "rank": 327,
+    "blurb": "Temple-style idli spiced with pepper, cumin, ginger and cashews, steamed in cups.",
+    "minutes": 35,
+    "soak_hours": 6,
+    "serves": 4,
+    "effort": "medium",
+    "ingredients": [
+      {
+        "label": "Idli rava",
+        "amount": "1½ cups",
+        "source": "iwc",
+        "match_words": "idli rava"
+      },
+      {
+        "label": "Urad dal",
+        "amount": "½ cup",
+        "source": "iwc",
+        "match_words": "urad dal"
+      },
+      {
+        "label": "Black pepper",
+        "amount": "1 tsp",
+        "source": "iwc",
+        "match_words": "black pepper"
+      },
+      {
+        "label": "Cumin seeds",
+        "amount": "1 tsp",
+        "source": "iwc",
+        "match_words": "cumin seeds"
+      },
+      {
+        "label": "Dry ginger powder",
+        "amount": "½ tsp",
+        "source": "iwc",
+        "match_words": "dry ginger powder"
+      },
+      {
+        "label": "Cashews",
+        "amount": "2 tbsp",
+        "source": "iwc",
+        "match_words": "cashews"
+      },
+      {
+        "label": "Hing",
+        "amount": "a pinch",
+        "source": "iwc",
+        "match_words": "hing"
+      },
+      {
+        "label": "Ghee",
+        "amount": "2 tbsp",
+        "source": "local"
+      },
+      {
+        "label": "Curry leaves",
+        "amount": "a sprig",
+        "source": "local"
+      },
+      {
+        "label": "Yogurt",
+        "amount": "2 tbsp",
+        "source": "local"
+      },
+      {
+        "label": "Dried curry leaves",
+        "amount": "1 tbsp",
+        "source": "iwc",
+        "match_words": "curry leaves",
+        "instead_of": "Curry leaves"
+      }
+    ],
+    "steps": [
+      {
+        "text": "Soak and grind the urad dal; mix with the soaked idli rava, salt and yogurt; ferment overnight.",
+        "minutes": 10
+      },
+      {
+        "text": "Fry the pepper, cumin, cashews, hing and curry leaves in ghee; stir into the batter with the dry ginger.",
+        "minutes": 3
+      },
+      {
+        "text": "Pour into greased cups or bowls.",
+        "minutes": 3
+      },
+      {
+        "text": "Steam for 20 minutes.",
+        "minutes": 20
+      }
+    ]
+  },
+  {
+    "slug": "upma-kozhukattai",
+    "name": "Upma Kozhukattai",
+    "kind": "breakfast",
+    "state": "Tamil Nadu",
+    "rank": 328,
+    "blurb": "Rice rava cooked like upma, shaped into dumplings and steamed.",
+    "minutes": 35,
+    "soak_hours": null,
+    "serves": 4,
+    "effort": "easy",
+    "ingredients": [
+      {
+        "label": "Idli rava",
+        "amount": "1 cup",
+        "source": "iwc",
+        "match_words": "idli rava"
+      },
+      {
+        "label": "Desiccated coconut",
+        "amount": "3 tbsp",
+        "source": "iwc",
+        "match_words": "desiccated coconut"
+      },
+      {
+        "label": "Mustard seeds",
+        "amount": "1 tsp",
+        "source": "iwc",
+        "match_words": "mustard seeds"
+      },
+      {
+        "label": "Urad dal",
+        "amount": "1 tsp",
+        "source": "iwc",
+        "match_words": "urad dal"
+      },
+      {
+        "label": "Chana dal",
+        "amount": "1 tsp",
+        "source": "iwc",
+        "match_words": "chana dal"
+      },
+      {
+        "label": "Red chilli whole",
+        "amount": "2",
+        "source": "iwc",
+        "match_words": "red chilli whole"
+      },
+      {
+        "label": "Hing",
+        "amount": "a pinch",
+        "source": "iwc",
+        "match_words": "hing"
+      },
+      {
+        "label": "Curry leaves",
+        "amount": "a sprig",
+        "source": "local"
+      },
+      {
+        "label": "Oil",
+        "amount": "2 tbsp",
+        "source": "local"
+      },
+      {
+        "label": "Dried curry leaves",
+        "amount": "1 tbsp",
+        "source": "iwc",
+        "match_words": "curry leaves",
+        "instead_of": "Curry leaves"
+      }
+    ],
+    "steps": [
+      {
+        "text": "Fry the mustard, dals, chillies, hing and curry leaves in oil.",
+        "minutes": 2
+      },
+      {
+        "text": "Add 2½ cups of water and salt; bring to a boil.",
+        "minutes": 4
+      },
+      {
+        "text": "Stir in the rava and coconut; cook until it thickens and comes together. Cool slightly.",
+        "minutes": 8
+      },
+      {
+        "text": "Shape into ovals and steam for ten minutes.",
+        "minutes": 12
+      }
+    ]
+  },
+  {
+    "slug": "arisi-upma",
+    "name": "Arisi Upma",
+    "kind": "breakfast",
+    "state": "Tamil Nadu",
+    "rank": 329,
+    "blurb": "Coarsely ground rice and toor dal cooked with coconut and a tempering.",
+    "minutes": 30,
+    "soak_hours": null,
+    "serves": 4,
+    "effort": "easy",
+    "ingredients": [
+      {
+        "label": "Raw rice",
+        "amount": "1 cup",
+        "source": "iwc",
+        "match_words": "raw rice"
+      },
+      {
+        "label": "Toor dal",
+        "amount": "2 tbsp",
+        "source": "iwc",
+        "match_words": "toor dal"
+      },
+      {
+        "label": "Black pepper",
+        "amount": "1 tsp",
+        "source": "iwc",
+        "match_words": "black pepper"
+      },
+      {
+        "label": "Cumin seeds",
+        "amount": "1 tsp",
+        "source": "iwc",
+        "match_words": "cumin seeds"
+      },
+      {
+        "label": "Desiccated coconut",
+        "amount": "¼ cup",
+        "source": "iwc",
+        "match_words": "desiccated coconut"
+      },
+      {
+        "label": "Mustard seeds",
+        "amount": "1 tsp",
+        "source": "iwc",
+        "match_words": "mustard seeds"
+      },
+      {
+        "label": "Urad dal",
+        "amount": "1 tsp",
+        "source": "iwc",
+        "match_words": "urad dal"
+      },
+      {
+        "label": "Red chilli whole",
+        "amount": "2",
+        "source": "iwc",
+        "match_words": "red chilli whole"
+      },
+      {
+        "label": "Curry leaves",
+        "amount": "a sprig",
+        "source": "local"
+      },
+      {
+        "label": "Coconut oil",
+        "amount": "2 tbsp",
+        "source": "local"
+      },
+      {
+        "label": "Dried curry leaves",
+        "amount": "1 tbsp",
+        "source": "iwc",
+        "match_words": "curry leaves",
+        "instead_of": "Curry leaves"
+      }
+    ],
+    "steps": [
+      {
+        "text": "Grind the rice, dal, pepper and cumin to a coarse rava.",
+        "minutes": 3
+      },
+      {
+        "text": "Temper the mustard, urad dal, chillies and curry leaves in coconut oil.",
+        "minutes": 2
+      },
+      {
+        "text": "Add three cups of water, salt and coconut; bring to a boil.",
+        "minutes": 4
+      },
+      {
+        "text": "Stir in the rava, cover and cook on low until soft.",
+        "minutes": 15
+      }
+    ]
+  },
+  {
+    "slug": "lemon-sevai",
+    "name": "Lemon Sevai",
+    "kind": "breakfast",
+    "state": "Karnataka",
+    "rank": 330,
+    "blurb": "Rice noodles tossed with lemon, peanuts and a tempering.",
+    "minutes": 25,
+    "soak_hours": null,
+    "serves": 3,
+    "effort": "easy",
+    "ingredients": [
+      {
+        "label": "Vermicelli",
+        "amount": "2 cups",
+        "source": "iwc",
+        "match_words": "vermicelli"
+      },
+      {
+        "label": "Peanuts",
+        "amount": "2 tbsp",
+        "source": "iwc",
+        "match_words": "peanuts"
+      },
+      {
+        "label": "Chana dal",
+        "amount": "1 tsp",
+        "source": "iwc",
+        "match_words": "chana dal"
+      },
+      {
+        "label": "Urad dal",
+        "amount": "1 tsp",
+        "source": "iwc",
+        "match_words": "urad dal"
+      },
+      {
+        "label": "Mustard seeds",
+        "amount": "1 tsp",
+        "source": "iwc",
+        "match_words": "mustard seeds"
+      },
+      {
+        "label": "Turmeric",
+        "amount": "¼ tsp",
+        "source": "iwc",
+        "match_words": "turmeric"
+      },
+      {
+        "label": "Hing",
+        "amount": "a pinch",
+        "source": "iwc",
+        "match_words": "hing"
+      },
+      {
+        "label": "Lemon",
+        "amount": "1",
+        "source": "local"
+      },
+      {
+        "label": "Green chillies",
+        "amount": "2",
+        "source": "local"
+      },
+      {
+        "label": "Ginger",
+        "amount": "½ inch",
+        "source": "local"
+      },
+      {
+        "label": "Curry leaves",
+        "amount": "a sprig",
+        "source": "local"
+      },
+      {
+        "label": "Oil",
+        "amount": "2 tbsp",
+        "source": "local"
+      },
+      {
+        "label": "Red chilli powder",
+        "amount": "½ tsp",
+        "source": "iwc",
+        "match_words": "red chilli powder",
+        "instead_of": "Green chillies"
+      },
+      {
+        "label": "Dry ginger powder",
+        "amount": "½ tsp",
+        "source": "iwc",
+        "match_words": "dry ginger powder",
+        "instead_of": "Ginger"
+      },
+      {
+        "label": "Dried curry leaves",
+        "amount": "1 tbsp",
+        "source": "iwc",
+        "match_words": "curry leaves",
+        "instead_of": "Curry leaves"
+      }
+    ],
+    "steps": [
+      {
+        "text": "Cook the rice vermicelli in boiling water, drain and spread out.",
+        "minutes": 6
+      },
+      {
+        "text": "Fry the peanuts, dals, mustard, hing, chillies, ginger and curry leaves; add turmeric.",
+        "minutes": 3
+      },
+      {
+        "text": "Toss in the vermicelli with salt.",
+        "minutes": 2
+      },
+      {
+        "text": "Squeeze over the lemon and mix.",
+        "minutes": null
+      }
+    ]
+  },
+  {
+    "slug": "mangalore-buns",
+    "name": "Mangalore Buns",
+    "kind": "breakfast",
+    "state": "Karnataka",
+    "rank": 331,
+    "blurb": "Slightly sweet, fluffy puris made with ripe banana. Udupi's breakfast with chutney.",
+    "minutes": 30,
+    "soak_hours": 6,
+    "serves": 4,
+    "effort": "medium",
+    "ingredients": [
+      {
+        "label": "Maida",
+        "amount": "2 cups",
+        "source": "iwc",
+        "match_words": "maida"
+      },
+      {
+        "label": "Cumin seeds",
+        "amount": "1 tsp",
+        "source": "iwc",
+        "match_words": "cumin seeds"
+      },
+      {
+        "label": "Baking soda",
+        "amount": "¼ tsp",
+        "source": "iwc",
+        "match_words": "baking soda"
+      },
+      {
+        "label": "Ripe bananas",
+        "amount": "2",
+        "source": "local"
+      },
+      {
+        "label": "Yogurt",
+        "amount": "¼ cup",
+        "source": "local"
+      },
+      {
+        "label": "Sugar",
+        "amount": "3 tbsp",
+        "source": "local"
+      },
+      {
+        "label": "Oil",
+        "amount": "for frying",
+        "source": "local"
+      }
+    ],
+    "steps": [
+      {
+        "text": "Mash the bananas with sugar, yogurt, cumin, soda and salt; knead in the maida to a soft dough without water.",
+        "minutes": 10
+      },
+      {
+        "text": "Rest covered for six hours or overnight.",
+        "minutes": null
+      },
+      {
+        "text": "Roll into thick rounds.",
+        "minutes": 5
+      },
+      {
+        "text": "Fry in hot oil until they puff and turn golden.",
+        "minutes": 10
+      }
+    ]
+  },
+  {
+    "slug": "jolada-rotti",
+    "name": "Jolada Rotti",
+    "kind": "breakfast",
+    "state": "Karnataka",
+    "rank": 332,
+    "blurb": "North Karnataka's thin jowar flatbreads, patted by hand. Kept for days.",
+    "minutes": 35,
+    "soak_hours": null,
+    "serves": 4,
+    "effort": "medium",
+    "ingredients": [
+      {
+        "label": "Jowar atta",
+        "amount": "2 cups",
+        "source": "iwc",
+        "match_words": "jowar atta"
+      },
+      {
+        "label": "Water",
+        "amount": "1¼ cups",
+        "source": "local"
+      }
+    ],
+    "steps": [
+      {
+        "text": "Boil the water with a pinch of salt, add the flour, stir and cover off the heat for five minutes.",
+        "minutes": 6
+      },
+      {
+        "text": "Knead the warm dough until smooth.",
+        "minutes": 5
+      },
+      {
+        "text": "Pat each ball out thin on a floured board.",
+        "minutes": 10
+      },
+      {
+        "text": "Cook on a hot tawa, wipe the top with water, turn and cook until spotted.",
+        "minutes": 12
+      }
+    ]
+  },
+  {
+    "slug": "uggani",
+    "name": "Uggani",
+    "kind": "breakfast",
+    "state": "Andhra Pradesh",
+    "rank": 333,
+    "blurb": "Rayalaseema's puffed rice upma with roasted chana and peanuts.",
+    "minutes": 20,
+    "soak_hours": null,
+    "serves": 3,
+    "effort": "easy",
+    "ingredients": [
+      {
+        "label": "Puffed rice",
+        "amount": "4 cups",
+        "source": "iwc",
+        "match_words": "puffed rice"
+      },
+      {
+        "label": "Roasted chana",
+        "amount": "2 tbsp",
+        "source": "iwc",
+        "match_words": "roasted chana"
+      },
+      {
+        "label": "Peanuts",
+        "amount": "2 tbsp",
+        "source": "iwc",
+        "match_words": "peanuts"
+      },
+      {
+        "label": "Mustard seeds",
+        "amount": "1 tsp",
+        "source": "iwc",
+        "match_words": "mustard seeds"
+      },
+      {
+        "label": "Chana dal",
+        "amount": "1 tsp",
+        "source": "iwc",
+        "match_words": "chana dal"
+      },
+      {
+        "label": "Turmeric",
+        "amount": "¼ tsp",
+        "source": "iwc",
+        "match_words": "turmeric"
+      },
+      {
+        "label": "Red chilli powder",
+        "amount": "½ tsp",
+        "source": "iwc",
+        "match_words": "red chilli powder"
+      },
+      {
+        "label": "Onions",
+        "amount": "2",
+        "source": "local"
+      },
+      {
+        "label": "Green chillies",
+        "amount": "2",
+        "source": "local"
+      },
+      {
+        "label": "Tomato",
+        "amount": "1",
+        "source": "local"
+      },
+      {
+        "label": "Curry leaves",
+        "amount": "a sprig",
+        "source": "local"
+      },
+      {
+        "label": "Oil",
+        "amount": "2 tbsp",
+        "source": "local"
+      },
+      {
+        "label": "Dried curry leaves",
+        "amount": "1 tbsp",
+        "source": "iwc",
+        "match_words": "curry leaves",
+        "instead_of": "Curry leaves"
+      }
+    ],
+    "steps": [
+      {
+        "text": "Soak the puffed rice in water for a minute and squeeze it dry.",
+        "minutes": 2
+      },
+      {
+        "text": "Fry the mustard, dal, peanuts, chillies and curry leaves; add the onions and tomato.",
+        "minutes": 6
+      },
+      {
+        "text": "Add turmeric, chilli powder and salt, then the puffed rice.",
+        "minutes": 2
+      },
+      {
+        "text": "Toss well and top with powdered roasted chana.",
+        "minutes": 2
+      }
+    ]
+  },
+  {
+    "slug": "dadpe-pohe",
+    "name": "Dadpe Pohe",
+    "kind": "breakfast",
+    "state": "Maharashtra",
+    "rank": 334,
+    "blurb": "Thin poha not cooked at all, softened with coconut, onion and lemon. Pune's quick breakfast.",
+    "minutes": 15,
+    "soak_hours": null,
+    "serves": 3,
+    "effort": "easy",
+    "ingredients": [
+      {
+        "label": "Poha",
+        "amount": "2 cups",
+        "source": "iwc",
+        "match_words": "poha"
+      },
+      {
+        "label": "Desiccated coconut",
+        "amount": "½ cup",
+        "source": "iwc",
+        "match_words": "desiccated coconut"
+      },
+      {
+        "label": "Peanuts",
+        "amount": "2 tbsp",
+        "source": "iwc",
+        "match_words": "peanuts"
+      },
+      {
+        "label": "Mustard seeds",
+        "amount": "½ tsp",
+        "source": "iwc",
+        "match_words": "mustard seeds"
+      },
+      {
+        "label": "Turmeric",
+        "amount": "¼ tsp",
+        "source": "iwc",
+        "match_words": "turmeric"
+      },
+      {
+        "label": "Hing",
+        "amount": "a pinch",
+        "source": "iwc",
+        "match_words": "hing"
+      },
+      {
+        "label": "Onion",
+        "amount": "1",
+        "source": "local"
+      },
+      {
+        "label": "Green chillies",
+        "amount": "2",
+        "source": "local"
+      },
+      {
+        "label": "Lemon",
+        "amount": "½",
+        "source": "local"
+      },
+      {
+        "label": "Sugar",
+        "amount": "1 tsp",
+        "source": "local"
+      },
+      {
+        "label": "Oil",
+        "amount": "1 tbsp",
+        "source": "local"
+      },
+      {
+        "label": "Coriander",
+        "amount": "a handful",
+        "source": "local"
+      },
+      {
+        "label": "Red chilli powder",
+        "amount": "½ tsp",
+        "source": "iwc",
+        "match_words": "red chilli powder",
+        "instead_of": "Green chillies"
+      },
+      {
+        "label": "Amchur",
+        "amount": "1 tsp",
+        "source": "iwc",
+        "match_words": "amchur",
+        "instead_of": "Lemon"
+      },
+      {
+        "label": "Coriander powder",
+        "amount": "1 tsp",
+        "source": "iwc",
+        "match_words": "coriander powder",
+        "instead_of": "Coriander"
+      }
+    ],
+    "steps": [
+      {
+        "text": "Mix the poha with coconut, onion, salt, sugar and lemon. Press down and leave 15 minutes.",
+        "minutes": 15
+      },
+      {
+        "text": "Fry the peanuts, mustard, hing, chillies and turmeric.",
+        "minutes": 2
+      },
+      {
+        "text": "Pour over the poha and toss.",
+        "minutes": 1
+      },
+      {
+        "text": "Finish with coriander.",
+        "minutes": null
+      }
+    ]
+  },
+  {
+    "slug": "amboli",
+    "name": "Amboli",
+    "kind": "breakfast",
+    "state": "Maharashtra",
+    "rank": 335,
+    "blurb": "Malvani rice and urad pancakes, soft and slightly sour.",
+    "minutes": 25,
+    "soak_hours": 6,
+    "serves": 4,
+    "effort": "medium",
+    "ingredients": [
+      {
+        "label": "Raw rice",
+        "amount": "1½ cups",
+        "source": "iwc",
+        "match_words": "raw rice"
+      },
+      {
+        "label": "Urad dal",
+        "amount": "½ cup",
+        "source": "iwc",
+        "match_words": "urad dal"
+      },
+      {
+        "label": "Fenugreek seeds",
+        "amount": "1 tsp",
+        "source": "iwc",
+        "match_words": "fenugreek seeds"
+      },
+      {
+        "label": "Poha",
+        "amount": "½ cup",
+        "source": "iwc",
+        "match_words": "poha"
+      },
+      {
+        "label": "Oil",
+        "amount": "for cooking",
+        "source": "local"
+      }
+    ],
+    "steps": [
+      {
+        "text": "Soak the rice, dal and fenugreek for six hours; add the poha before grinding.",
+        "minutes": null
+      },
+      {
+        "text": "Grind to a batter and ferment overnight.",
+        "minutes": 10
+      },
+      {
+        "text": "Spread on a hot tawa, keeping it a little thick.",
+        "minutes": 2
+      },
+      {
+        "text": "Cover, cook until set, then flip briefly.",
+        "minutes": 4
+      }
+    ]
+  },
+  {
+    "slug": "goan-bhaji-pav",
+    "name": "Goan Bhaji Pav",
+    "kind": "breakfast",
+    "state": "Goa",
+    "rank": 336,
+    "blurb": "Goa's breakfast of white peas curry in coconut, eaten with fresh pav.",
+    "minutes": 40,
+    "soak_hours": 6,
+    "serves": 4,
+    "effort": "medium",
+    "ingredients": [
+      {
+        "label": "White peas",
+        "amount": "1 cup",
+        "source": "iwc",
+        "match_words": "white peas"
+      },
+      {
+        "label": "Desiccated coconut",
+        "amount": "¾ cup",
+        "source": "iwc",
+        "match_words": "desiccated coconut"
+      },
+      {
+        "label": "Kashmiri chilli whole",
+        "amount": "4",
+        "source": "iwc",
+        "match_words": "kashmiri chilli whole"
+      },
+      {
+        "label": "Whole coriander",
+        "amount": "1 tbsp",
+        "source": "iwc",
+        "match_words": "whole coriander"
+      },
+      {
+        "label": "Cumin seeds",
+        "amount": "1 tsp",
+        "source": "iwc",
+        "match_words": "cumin seeds"
+      },
+      {
+        "label": "Black pepper",
+        "amount": "½ tsp",
+        "source": "iwc",
+        "match_words": "black pepper"
+      },
+      {
+        "label": "Turmeric",
+        "amount": "½ tsp",
+        "source": "iwc",
+        "match_words": "turmeric"
+      },
+      {
+        "label": "Tamarind",
+        "amount": "a small piece",
+        "source": "iwc",
+        "match_words": "tamarind"
+      },
+      {
+        "label": "Onions",
+        "amount": "2",
+        "source": "local"
+      },
+      {
+        "label": "Potatoes",
+        "amount": "2",
+        "source": "local"
+      },
+      {
+        "label": "Pav",
+        "amount": "8",
+        "source": "local"
+      },
+      {
+        "label": "Oil",
+        "amount": "3 tbsp",
+        "source": "local"
+      }
+    ],
+    "steps": [
+      {
+        "text": "Soak the peas for six hours and cook them soft with the potatoes.",
+        "minutes": 25
+      },
+      {
+        "text": "Roast the coconut, chillies, coriander, cumin, pepper and one onion; grind with turmeric and tamarind.",
+        "minutes": 12
+      },
+      {
+        "text": "Fry the other onion, add the paste and fry until it smells cooked.",
+        "minutes": 6
+      },
+      {
+        "text": "Add the peas, potatoes and water; simmer. Serve with pav.",
+        "minutes": 10
+      }
+    ]
+  },
+  {
+    "slug": "pathiri",
+    "name": "Pathiri",
+    "kind": "breakfast",
+    "state": "Kerala",
+    "rank": 337,
+    "blurb": "Malabar's paper-thin rice flour flatbreads, soft and eaten with chicken curry.",
+    "minutes": 40,
+    "soak_hours": null,
+    "serves": 4,
+    "effort": "medium",
+    "ingredients": [
+      {
+        "label": "Rice flour",
+        "amount": "2 cups",
+        "source": "iwc",
+        "match_words": "rice flour"
+      },
+      {
+        "label": "Coconut milk",
+        "amount": "¼ cup",
+        "source": "local"
+      },
+      {
+        "label": "Ghee",
+        "amount": "1 tsp",
+        "source": "local"
+      }
+    ],
+    "steps": [
+      {
+        "text": "Boil 2 cups of water with salt and ghee; stir in the rice flour off the heat. Cover five minutes.",
+        "minutes": 6
+      },
+      {
+        "text": "Knead the warm dough until very smooth.",
+        "minutes": 5
+      },
+      {
+        "text": "Roll each ball as thin as you can, dusting with flour.",
+        "minutes": 12
+      },
+      {
+        "text": "Cook on a hot tawa until it puffs; dip briefly in coconut milk to keep it soft.",
+        "minutes": 12
+      }
+    ]
+  },
+  {
+    "slug": "kachori-sabzi",
+    "name": "Kachori Sabzi",
+    "kind": "breakfast",
+    "state": "Uttar Pradesh",
+    "rank": 338,
+    "blurb": "Crisp urad dal kachoris with a thin, hot potato curry. Banaras' street breakfast.",
+    "minutes": 60,
+    "soak_hours": 3,
+    "serves": 4,
+    "effort": "weekend",
+    "ingredients": [
+      {
+        "label": "Maida",
+        "amount": "2 cups",
+        "source": "iwc",
+        "match_words": "maida"
+      },
+      {
+        "label": "Urad dal",
+        "amount": "½ cup",
+        "source": "iwc",
+        "match_words": "urad dal"
+      },
+      {
+        "label": "Fennel seeds",
+        "amount": "1 tsp",
+        "source": "iwc",
+        "match_words": "fennel seeds"
+      },
+      {
+        "label": "Cumin seeds",
+        "amount": "1 tsp",
+        "source": "iwc",
+        "match_words": "cumin seeds"
+      },
+      {
+        "label": "Hing",
+        "amount": "¼ tsp",
+        "source": "iwc",
+        "match_words": "hing"
+      },
+      {
+        "label": "Red chilli powder",
+        "amount": "1½ tsp",
+        "source": "iwc",
+        "match_words": "red chilli powder"
+      },
+      {
+        "label": "Coriander powder",
+        "amount": "1 tsp",
+        "source": "iwc",
+        "match_words": "coriander powder"
+      },
+      {
+        "label": "Amchur",
+        "amount": "½ tsp",
+        "source": "iwc",
+        "match_words": "amchur"
+      },
+      {
+        "label": "Turmeric",
+        "amount": "½ tsp",
+        "source": "iwc",
+        "match_words": "turmeric"
+      },
+      {
+        "label": "Potatoes",
+        "amount": "4",
+        "source": "local"
+      },
+      {
+        "label": "Tomatoes",
+        "amount": "2",
+        "source": "local"
+      },
+      {
+        "label": "Ginger",
+        "amount": "1 inch",
+        "source": "local"
+      },
+      {
+        "label": "Ghee",
+        "amount": "3 tbsp",
+        "source": "local"
+      },
+      {
+        "label": "Oil",
+        "amount": "for frying",
+        "source": "local"
+      },
+      {
+        "label": "Dry ginger powder",
+        "amount": "½ tsp",
+        "source": "iwc",
+        "match_words": "dry ginger powder",
+        "instead_of": "Ginger"
+      }
+    ],
+    "steps": [
+      {
+        "text": "Soak the urad dal for three hours; grind coarse and fry it with fennel, hing and half the chilli powder until dry.",
+        "minutes": 15
+      },
+      {
+        "text": "Knead the maida with ghee and salt into a firm dough; stuff with the dal and roll small.",
+        "minutes": 15
+      },
+      {
+        "text": "For the curry, fry cumin and ginger, add the tomatoes and powders, then mashed boiled potatoes and plenty of water. Simmer.",
+        "minutes": 15
+      },
+      {
+        "text": "Fry the kachoris on low heat until crisp.",
+        "minutes": 15
+      }
+    ]
+  },
+  {
+    "slug": "chura-matar",
+    "name": "Chura Matar",
+    "kind": "breakfast",
+    "state": "Uttar Pradesh",
+    "rank": 339,
+    "blurb": "Varanasi's winter poha with green peas, ghee and a little sugar.",
+    "minutes": 20,
+    "soak_hours": null,
+    "serves": 3,
+    "effort": "easy",
+    "ingredients": [
+      {
+        "label": "Poha",
+        "amount": "2 cups",
+        "source": "iwc",
+        "match_words": "poha"
+      },
+      {
+        "label": "Cumin seeds",
+        "amount": "1 tsp",
+        "source": "iwc",
+        "match_words": "cumin seeds"
+      },
+      {
+        "label": "Cashews",
+        "amount": "2 tbsp",
+        "source": "iwc",
+        "match_words": "cashews"
+      },
+      {
+        "label": "Raisins",
+        "amount": "1 tbsp",
+        "source": "iwc",
+        "match_words": "raisins"
+      },
+      {
+        "label": "Garam masala",
+        "amount": "½ tsp",
+        "source": "iwc",
+        "match_words": "garam masala"
+      },
+      {
+        "label": "Green peas",
+        "amount": "1 cup",
+        "source": "local"
+      },
+      {
+        "label": "Ginger",
+        "amount": "1 inch",
+        "source": "local"
+      },
+      {
+        "label": "Green chillies",
+        "amount": "2",
+        "source": "local"
+      },
+      {
+        "label": "Ghee",
+        "amount": "2 tbsp",
+        "source": "local"
+      },
+      {
+        "label": "Lemon",
+        "amount": "½",
+        "source": "local"
+      },
+      {
+        "label": "Sugar",
+        "amount": "1 tsp",
+        "source": "local"
+      },
+      {
+        "label": "Dry ginger powder",
+        "amount": "½ tsp",
+        "source": "iwc",
+        "match_words": "dry ginger powder",
+        "instead_of": "Ginger"
+      },
+      {
+        "label": "Red chilli powder",
+        "amount": "½ tsp",
+        "source": "iwc",
+        "match_words": "red chilli powder",
+        "instead_of": "Green chillies"
+      },
+      {
+        "label": "Amchur",
+        "amount": "1 tsp",
+        "source": "iwc",
+        "match_words": "amchur",
+        "instead_of": "Lemon"
+      }
+    ],
+    "steps": [
+      {
+        "text": "Rinse the poha and drain.",
+        "minutes": 2
+      },
+      {
+        "text": "Fry the cumin, cashews and raisins in ghee; add ginger, chillies and peas and cook until soft.",
+        "minutes": 8
+      },
+      {
+        "text": "Add the poha, salt, sugar and garam masala; toss gently.",
+        "minutes": 3
+      },
+      {
+        "text": "Finish with lemon.",
+        "minutes": null
+      }
+    ]
+  },
+  {
+    "slug": "chilka-roti",
+    "name": "Chilka Roti",
+    "kind": "breakfast",
+    "state": "Jharkhand",
+    "rank": 340,
+    "blurb": "Jharkhand's thin rice and chana dal pancake, eaten with chutney.",
+    "minutes": 25,
+    "soak_hours": 6,
+    "serves": 4,
+    "effort": "easy",
+    "ingredients": [
+      {
+        "label": "Raw rice",
+        "amount": "1 cup",
+        "source": "iwc",
+        "match_words": "raw rice"
+      },
+      {
+        "label": "Chana dal",
+        "amount": "½ cup",
+        "source": "iwc",
+        "match_words": "chana dal"
+      },
+      {
+        "label": "Cumin seeds",
+        "amount": "½ tsp",
+        "source": "iwc",
+        "match_words": "cumin seeds"
+      },
+      {
+        "label": "Green chillies",
+        "amount": "2",
+        "source": "local"
+      },
+      {
+        "label": "Ginger",
+        "amount": "½ inch",
+        "source": "local"
+      },
+      {
+        "label": "Oil",
+        "amount": "for cooking",
+        "source": "local"
+      },
+      {
+        "label": "Red chilli powder",
+        "amount": "½ tsp",
+        "source": "iwc",
+        "match_words": "red chilli powder",
+        "instead_of": "Green chillies"
+      },
+      {
+        "label": "Dry ginger powder",
+        "amount": "½ tsp",
+        "source": "iwc",
+        "match_words": "dry ginger powder",
+        "instead_of": "Ginger"
+      }
+    ],
+    "steps": [
+      {
+        "text": "Soak the rice and dal for six hours.",
+        "minutes": null
+      },
+      {
+        "text": "Grind with chillies, ginger and salt to a smooth batter.",
+        "minutes": 5
+      },
+      {
+        "text": "Spread thin on a hot greased tawa.",
+        "minutes": 2
+      },
+      {
+        "text": "Cook both sides until light brown.",
+        "minutes": 4
+      }
+    ]
+  }
+]

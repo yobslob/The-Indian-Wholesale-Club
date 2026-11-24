@@ -1,6 +1,6 @@
 /**
  * The Blinkit pantry list (D-203, plan §5.6, `tools/sourcing-runner/targets/recipe-pantry.csv`): one target per distinct
- * pantry item the 200 drafted recipes' kits and swaps need (D-204), on Blinkit only, a few listings each, and a Must match that leaves out
+ * pantry item the 500 drafted recipes' kits and swaps need (D-204), on Blinkit only, a few listings each, and a Must match that leaves out
  * dairy, liquids, frozen food and meat (meat and dairy words allowed only where the item's own name says them, as in a
  * masala's name: D-200's rule).
  */
@@ -41,7 +41,7 @@ const fits = (item: string, title: string): boolean => {
 };
 
 const kitItems = new Set(
-  [1, 2, 3, 4, 5, 6, 7, 8, 9, 10].flatMap((n) =>
+  Array.from({ length: 25 }, (_, i) => i + 1).flatMap((n) =>
     (
       JSON.parse(readFileSync(new URL(`catalogue/recipes-drafts-${n}.json`, root), 'utf8')) as {
         ingredients: { source: string; match_words?: string }[];
@@ -86,5 +86,10 @@ describe('the Blinkit pantry list (D-203)', () => {
     assert.ok(fits('green moong', 'Tata Sampann Green Moong Whole 500 g'));
     assert.ok(!fits('green moong', 'Tata Sampann Moong Dal 500 g'));
     assert.ok(fits('curry leaves', 'Dried Curry Leaves 50 g'));
+    assert.ok(fits('cloves', 'Catch Laung 50 g'));
+    assert.ok(!fits('cloves', 'Peeled Garlic Cloves 100 g'));
+    assert.ok(fits('ragi flour', 'Pro Nature Ragi Atta 500 g'));
+    assert.ok(fits('masoor dal', 'Tata Sampann Masoor Dal 1 kg'));
+    assert.ok(!fits('dried apricots', 'Apricot Jam 450 g'));
   });
 });
