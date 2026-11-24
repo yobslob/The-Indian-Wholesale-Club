@@ -135,6 +135,27 @@
       background-position: 16px 0;
     }
   }
+  /* D-205: Send home's gold thread sews itself between the dollars and the rupees; still for reduced motion */
+  .gift-sew {
+    stroke-dasharray: 4 4;
+    animation: gift-sew 2.4s linear infinite;
+  }
+  @media (prefers-reduced-motion: reduce) {
+    .gift-sew {
+      animation: none;
+    }
+  }
+  @keyframes gift-sew {
+    to {
+      stroke-dashoffset: -48;
+    }
+  }
+  /* D-205: the handwritten note and the customer's line. No font file is loaded for it (none is committed yet): the
+     device's own handwriting face, else its cursive */
+  .font-hand {
+    font-family: 'Caveat', 'Segoe Print', 'Bradley Hand', 'Snell Roundhand', cursive;
+    font-weight: 600;
+  }
   @keyframes rise-in {
     from {
       opacity: 0;

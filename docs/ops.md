@@ -76,6 +76,11 @@ The same two Vault secrets drive the **payment sweep** (F-2, migration `20261108
 every 10 minutes checks (one index lookup) for an unreconciled checkout due a look and, only then, calls
 `/api/internal/payment-sweep`; without the secrets it does nothing, and a paid customer whose device and webhook both
 failed waits for a Stripe webhook resend. Its first run after deploy also looks at the last 2 days' unreconciled checkouts.
+They also drive **Send home's daily rate** (D-206, migration `20261126090000`): pg_cron `iwc-send-home-rate` at 03:15 UTC
+calls `/api/internal/send-home-rate`, which reads the day's US dollar to rupee rate from Frankfurter (the European
+Central Bank's reference rate, `api.frankfurter.app`, free, no key) and writes it with `set_send_home_rate` (refused
+out of range or 10% from a recent rate). Admin → Send home shows the rate and can check it now. Without the secrets
+or with the source down, the rate ages; past three days Send home closes by itself.
 
 ## Database workflow (from R3)
 - Schema changes = a new file in `supabase/migrations/`. Never edit an applied migration.
@@ -193,7 +198,8 @@ nothing to move. Supabase's guide "Backup and restore using the CLI" (Platform �
    `select cron.schedule('iwc-search-words', '17 */6 * * *', 'select public.refresh_search_words()');`, and since D-187
    `select cron.schedule('iwc-tidy', '37 8 * * *', 'select public._tidy()');` (the payment
    sweep's `iwc-payment-sweep` comes with its migration when it runs on the new project; restored after it, schedule
-   it too: `select cron.schedule('iwc-payment-sweep', '*/10 * * * *', 'select public._kick_payment_sweep()');`); check
+   it too: `select cron.schedule('iwc-payment-sweep', '*/10 * * * *', 'select public._kick_payment_sweep()');`, and
+   likewise `select cron.schedule('iwc-send-home-rate', '15 3 * * *', 'select public._kick_send_home_rate()');`); check
    with `select jobname, schedule from cron.job;`. And the Vault (its key stays
    with the old project): the two `vault.create_secret` lines of §Email timer, with the new site URL.
 6. Authentication: site URL, Redirect URLs, the two email templates (step 8 of §Going live). Accounts and passwords

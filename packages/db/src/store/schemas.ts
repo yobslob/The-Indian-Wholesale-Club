@@ -2,7 +2,8 @@ import { z } from 'zod';
 
 import { PRODUCT_TYPES } from '@repo/shared/domain';
 
-import { homeRecipeSchema } from './recipes';
+import { recipeCardSchema } from './recipes';
+import { orderHomeGiftSchema } from './send-home';
 
 /**
  * Shapes of everything the customer side reads (store_* views and functions).
@@ -157,8 +158,8 @@ export const homeSchema = z.object({
   just_listed_types: z.record(z.array(regionProductCardSchema)),
   /** D-140 (L7): Home's band, from the store's policy. */
   band: z.object({ free_min_cents: z.number().int().nullable(), return_claim_days: z.number().int().nullable() }).nullable(),
-  /** D-203: the recipe on Home's middle window; null keeps today's windows. Optional until migration 20261124090000. */
-  recipe: homeRecipeSchema.nullable().default(null),
+  /** D-204: Home's Cook at home row (the pinned recipe first); empty hides the section. */
+  recipes: z.array(recipeCardSchema).default([]),
 });
 
 /** A region album photo (D-051): only the file and what it shows. */
@@ -255,6 +256,8 @@ export const orderSummarySchema = z.object({
   created_at: isoDateTime,
   shipping_method: z.enum(['standard', 'express']),
   refunded_cents: z.number().int(),
+  /** D-205: the Send home gift inside total_cents (0: none). */
+  home_gift_cents: z.number().int().default(0),
 });
 
 export const orderItemSchema = z.object({
@@ -335,6 +338,8 @@ export const orderDetailSchema = z.object({
   /** D-154: one or two shipments. */
   shipments: z.array(orderShipmentSchema).default([]),
   actions: orderActionsSchema.nullable().default(null),
+  /** D-205: the order's Send home gift, with what has gone home so far. */
+  home_gift: orderHomeGiftSchema.nullable().default(null),
 });
 
 export type DeliveryWindow = z.infer<typeof deliveryWindowSchema>;

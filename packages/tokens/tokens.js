@@ -19,6 +19,7 @@ module.exports = {
     'positive-soft': '#D5EFD8', // D-192: what can be used or was saved: a coupon, the saving under the total
     caution: '#8A5A00',
     danger: '#B91C1C',
+    'gift-thread': '#C9973F', // D-205: Send home's sewing arc and arrow, decoration only (never text: not AA)
   },
   radius: { sm: '6px', md: '16px', lg: '22px', pill: '999px' },
   duration: { fast: '120ms', base: '200ms', slow: '320ms' },

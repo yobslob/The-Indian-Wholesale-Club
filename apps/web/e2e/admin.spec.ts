@@ -111,3 +111,44 @@ test('the buying screens and Settings load, and the removed pages are gone', asy
     expect(response?.status(), path).toBe(404);
   }
 });
+
+/**
+ * D-204: Publish all. A draft recipe with no listing picked and draft words goes live in one press: its ingredient
+ * takes the cheapest in-stock match (the seed's coriander powder), its words are approved and its page is up without
+ * a photo. The recipe is removed afterwards so the other flows see the seed's four.
+ */
+test('Publish all puts a draft recipe live with the cheapest listing', async ({ page }) => {
+  const slug = `${E2E_SLUG_PREFIX}dhania-${Date.now().toString(36)}`;
+  const service = serviceClient();
+  const { data: recipe, error } = await service
+    .from('recipes')
+    .insert({ slug, name: 'E2E Dhania Rice', kind: 'dinner', steps: [{ text: 'Cook the rice.', minutes: 20 }] })
+    .select('id')
+    .single();
+  if (error) throw error;
+  try {
+    const { error: lineError } = await service
+      .from('recipe_ingredients')
+      .insert({ recipe_id: recipe.id, sort: 1, label: 'Coriander powder', amount: '1 tsp', source: 'iwc', match_words: 'coriander powder' });
+    if (lineError) throw lineError;
+
+    await signIn(page);
+    await page.goto('/admin/recipes');
+    await page.getByRole('button', { name: /^Publish all \d+ drafts?$/ }).click();
+    await expect(page.getByRole('status').filter({ hasText: 'published' })).toContainText(/\d+ published · [1-9]\d* ingredients? matched/);
+
+    const { data: after } = await service
+      .from('recipes')
+      .select('status, content_status, photo_path, recipe_ingredients(variant_id)')
+      .eq('id', recipe.id)
+      .single();
+    expect(after).toMatchObject({ status: 'live', content_status: 'approved', photo_path: null });
+    expect(after?.recipe_ingredients[0]?.variant_id).toBe('00000000-0000-4000-8000-000000000481');
+
+    await page.goto(`/recipes/${slug}`);
+    await expect(page.getByRole('heading', { name: 'E2E Dhania Rice' })).toBeVisible();
+    await expect(page.locator('#kit')).toContainText('Demo Coriander Powder');
+  } finally {
+    await service.from('recipes').delete().eq('id', recipe.id);
+  }
+});

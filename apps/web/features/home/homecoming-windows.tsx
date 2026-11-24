@@ -2,38 +2,23 @@ import Link from 'next/link';
 
 import { dayDate } from '@repo/shared/domain';
 
-import { StorePhoto } from '@/features/catalog/store-photo';
-import { Money } from '@/features/shell/market';
 import { Flight } from '@/features/visuals/flight';
-import { VisualSlot, slotShown } from '@/features/visuals/visual-slot';
-import { mediaUrl } from '@/lib/site';
+import { VisualSlot } from '@/features/visuals/visual-slot';
 
-import { Arrow, ArchLine, Leaf, Pumpkin, WindowArt } from './homecoming-art';
-import { archesFor, SEASON, WIDE, type Arch, type Tone } from './homecoming-hooks';
-
-import type { HomeRecipe } from '@repo/db/store';
+import { Arrow, Leaf } from './homecoming-art';
+import { SEASON, WIDE } from './homecoming-hooks';
 
 /**
- * Home's windows, dressed for the season: Homecoming, for Thanksgiving (D-196; built for Diwali, founder 2026-10-31,
- * D-174: "convert this into an ad/banner types component … arch windows for each category … show this airplane flying
- * inside somewhere the card"). A row of arch windows, the doors of home, under a garland of autumn leaves, one per
- * hook (homecoming-hooks.ts), each with its drawing and a pumpkin on the sill. The wide one is a dusk: a garland of
+ * Home's season window: Homecoming, for Thanksgiving (D-196; built for Diwali, founder 2026-10-31, D-174: "convert this
+ * into an ad/banner types component … show this airplane flying inside somewhere the card"). A dusk: a garland of
  * leaves along its top, two leaves drifting down and the flight crossing it with its banner (the free line,
- * flight.tsx): home, on its way over. At every width the arches sit in a row (founder 2026-11-02, D-177: no sliding).
- * D-179: Home shows the arches under the hero and the dusk after the album, as separate sections. Server-drawn; the
- * only client part is the flight. Loops move transform and opacity only, pause off screen (`data-album`, motion.tsx)
- * and stop with reduced motion.
+ * flight.tsx): home, on its way over. D-204: the row of three arch windows under the hero gave way to Cook at home
+ * (founder 2026-11-23: "let's remove the windows and put something else, just for recipes"). Server-drawn; the only
+ * client part is the flight. Loops move transform and opacity only, pause off screen (`data-album`, motion.tsx) and
+ * stop with reduced motion.
  */
 
 const LEAVES = 17;
-
-// written out in full: Tailwind keeps a components-layer rule only when its class appears whole in the source, so a
-// built `hc-arch--${tone}` left the windows without their colours
-const TONE: Record<Tone, string> = {
-  pumpkin: 'hc-arch--pumpkin',
-  olive: 'hc-arch--olive',
-  paper: 'hc-arch--paper',
-};
 
 /** A garland: a thread with autumn leaves hanging from it, each swaying out of step. */
 export function Garland(): React.JSX.Element {
@@ -95,87 +80,6 @@ export function HomecomingDusk({ free }: { free: string | null }): React.JSX.Ele
             <Flight free={free} compact />
           </div>
         </div>
-      </div>
-    </section>
-  );
-}
-
-/** Whether a window draws a photo in its top: the recipe's own, else its slot (slots.ts). */
-const hasPhoto = (a: Arch): boolean => Boolean(a.recipe?.photo) || slotShown(a.slot);
-
-/**
- * The three arch windows under their toran: Clothing, Snacks and the neighbourhood's shelves (D-174 – D-176); with a
- * recipe on Home, Clothing, Cook at home (the main one) and Snacks (D-203).
- */
-export function HomecomingArches({ recipe = null }: { recipe?: HomeRecipe | null }): React.JSX.Element {
-  const arches = archesFor(recipe);
-  return (
-    <section aria-label={SEASON.arches} className="hc" data-album="">
-      <div className="hc-bunting" aria-hidden="true" />
-      <div className={`hc-row${recipe ? ' hc-row--main' : ''}`}>
-        {arches.map((a) => (
-          <Link
-            key={a.id}
-            href={a.href}
-            prefetch={false}
-            className={`hc-arch ${TONE[a.tone]}${hasPhoto(a) ? ' hc-arch--photo' : ''}${a.recipe ? ' hc-arch--main' : ''}`}
-          >
-            <span className="hc-arch-shape">
-              {/* D-175: the founder's photo fills the arch's top (the view through the window); else the drawing.
-                  D-203: the recipe's own dish photo first. */}
-              {a.recipe?.photo ? (
-                <span className="hc-photo hc-photo--dish" aria-hidden="true">
-                  <StorePhoto src={mediaUrl(a.recipe.photo)} alt="" sizes="(min-width: 768px) 34vw, 40vw" className="object-cover" />
-                </span>
-              ) : (
-                <VisualSlot id={a.slot} className="hc-photo" />
-              )}
-              <ArchLine />
-              {a.recipe ? <span className="sr-only">{a.recipe.label}, </span> : null}
-              <span className="hc-kicker font-ui" aria-hidden={a.recipe ? true : undefined}>
-                {a.kicker}
-              </span>
-              {hasPhoto(a) ? null : <WindowArt art={a.art} />}
-              {a.recipe ? (
-                <span className="hc-dish" aria-hidden="true">
-                  <span className="hc-dish-name font-display">{a.recipe.name}</span>
-                  <span className="hc-dish-line font-ui">{a.recipe.line}</span>
-                </span>
-              ) : null}
-              {a.lead ? (
-                <span className="hc-hook">
-                  <span className="hc-lead font-ui" aria-hidden={a.recipe ? true : undefined}>
-                    {a.lead}
-                  </span>
-                  <span className="hc-big font-heading">
-                    {a.cents !== undefined ? <Money cents={a.cents} /> : a.big}
-                    {/* D-203 answer 5: every kit struck through, display only */}
-                    {a.recipe && a.cents !== undefined ? (
-                      <s className="hc-was font-ui">
-                        <span className="sr-only">, was </span>
-                        <Money cents={a.cents} wasOf="food" />
-                      </s>
-                    ) : null}
-                  </span>
-                </span>
-              ) : (
-                <span className="hc-hook hc-hook--words font-heading">{a.big}</span>
-              )}
-              {a.tag ? (
-                <span className="hc-tag font-ui" aria-hidden={a.recipe ? true : undefined}>
-                  {a.tag}
-                </span>
-              ) : null}
-              {/* D-176: the button is the arch's own link, drawn; the whole window stays the target */}
-              <span className="hc-go font-ui">
-                {a.recipe ? ', ' : null}
-                {a.cta}
-                <Arrow />
-              </span>
-              <Pumpkin />
-            </span>
-          </Link>
-        ))}
       </div>
     </section>
   );

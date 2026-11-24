@@ -28,6 +28,7 @@ const base: OrderDetail = {
     created_at: '2026-10-06T10:00:00Z',
     shipping_method: 'standard',
     refunded_cents: 0,
+    home_gift_cents: 0,
   },
   items: [
     {
@@ -46,6 +47,7 @@ const base: OrderDetail = {
   events: [],
   shipments: [],
   actions: { can_cancel: false, cancel_refund_cents: null, delay_open: true, delay_refund_cents: 5400, returns: [] },
+  home_gift: null,
 };
 const url = 'https://iwc.example/orders/IWC-261006-ABCDEF0123';
 const ctx: EmailContext = {
@@ -133,6 +135,7 @@ const split: OrderDetail = {
       carrier: null, tracking_number: null, shipped_at: null, item_ids: [base.items[0]!.id] },
   ],
   actions: { can_cancel: false, cancel_refund_cents: null, delay_open: true, delay_refund_cents: 6862, delay_shipment: 2, returns: [] },
+  home_gift: null,
 };
 
 describe('two shipments (D-154)', () => {

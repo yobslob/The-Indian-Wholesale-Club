@@ -3,13 +3,17 @@
 import Link from 'next/link';
 import { useEffect, useRef, useState, useSyncExternalStore } from 'react';
 
-import { formatUsd, formatUsPhone, usPhoneDigits, type CheckoutOffers } from '@repo/shared/domain';
+import { formatInr, formatUsd, formatUsPhone, usPhoneDigits, type CheckoutOffers } from '@repo/shared/domain';
 
 import { BillCard } from '@/features/cart/bill-card';
 import { EmptyLine } from '@/features/cart/cart-view';
 import { setOffers } from '@/features/cart/offers';
 import { cartCount, cartSubtotalCents, useCart } from '@/features/cart/store';
 import { useBagBill } from '@/features/cart/use-bag-bill';
+import { useGiftStore } from '@/features/send-home/gift-store';
+import { SheetHost } from '@/features/send-home/sheet-host';
+import { giftNeedsName, giftRequestBody, useGiftDetail } from '@/features/send-home/use-gift';
+import { SEND_HOME_WORDS } from '@/features/send-home/words';
 import { CheckoutCurrencyNote } from '@/features/shell/market';
 
 import { BagSummary, billOfQuote, QuoteDelivery } from './bag-summary';
@@ -72,6 +76,7 @@ function whyOff(code: string, quote: CheckoutQuote, offers: CheckoutOffers | nul
 export function CheckoutFlow({ saved }: { saved: SavedDetails | null }): React.JSX.Element {
   const lines = useCart((s) => s.lines);
   const bag = useBagBill(false);
+  const bagGiftDetail = useGiftDetail(bag.goodsTotalCents);
   const wide = useWide();
   const [mounted, setMounted] = useState(false);
   const first = saved?.addresses[0] ?? null;
@@ -110,6 +115,8 @@ export function CheckoutFlow({ saved }: { saved: SavedDetails | null }): React.J
 
   useEffect(() => {
     setMounted(true);
+    // D-205 rule 7: payment never opens with an unnamed gift: who it's for, or remove it, first
+    if (giftNeedsName()) useGiftStore.getState().ask(null);
     // A-8 / A-4: resume a checkout this tab started for this same bag, with any message from a failed payment.
     const state = useCart.getState();
     const resume = readCheckout(state.lines);
@@ -136,7 +143,7 @@ export function CheckoutFlow({ saved }: { saved: SavedDetails | null }): React.J
     setNotice(message);
     setAt(2);
     // the coupon is the bag's: it may have changed since this payment was held, whose amount then moves
-    void go({ ...resume.request, promoCode: state.promoCode, useCoins: true }, resume.clientSecret);
+    void go({ ...resume.request, promoCode: state.promoCode, useCoins: true, gift: giftRequestBody() }, resume.clientSecret);
     // Once, on arrival.
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, []);
@@ -178,7 +185,14 @@ export function CheckoutFlow({ saved }: { saved: SavedDetails | null }): React.J
       // what counts on the bag; with no offers to judge by, the server decides
       promoCode: bag.offers ? (bag.coupon?.code ?? null) : bag.picked,
       useCoins: true,
+      gift: giftRequestBody(),
     });
+  }
+
+  /** D-205 (§4.4): Remove on the bill's Send home line takes the gift off and prices the bag again at once. */
+  function removeGift(): void {
+    useGiftStore.getState().setRemoved(true);
+    if (request) void go({ ...request, gift: null });
   }
 
   /** Y-3: Remove (keep 0) or Keep n. The bag changes at once; with the last line fixed the server prices it again. */
@@ -204,6 +218,10 @@ export function CheckoutFlow({ saved }: { saved: SavedDetails | null }): React.J
   const subtotal = cartSubtotalCents(lines);
   const total = quote ? quote.breakdown.totalCents : (bag.bill?.totalCents ?? subtotal);
   const signIn = bag.offers?.coins === null ? '/login?next=/checkout' : undefined;
+  const giftDetail = quote?.homeGift
+    ? SEND_HOME_WORDS.bill.lineTo(formatInr(quote.homeGift.inrPaise), quote.homeGift.callName)
+    : bagGiftDetail;
+  const gift = { detail: giftDetail, onRemove: removeGift };
 
   return (
     <div className="grid items-start gap-[clamp(12px,2.4vw,40px)] min-[900px]:grid-cols-[minmax(0,1.25fr)_minmax(0,1fr)]">
@@ -236,6 +254,7 @@ export function CheckoutFlow({ saved }: { saved: SavedDetails | null }): React.J
               updating={bag.updating}
               signInHref={signIn}
               linesOnly={!wide && quote !== null}
+              gift={gift}
             />
           </div>
         ) : null}
@@ -298,7 +317,7 @@ export function CheckoutFlow({ saved }: { saved: SavedDetails | null }): React.J
           {quote && !wide ? (
             <div className="mb-4 grid gap-3">
               <QuoteDelivery quote={quote} lines={summaryLines} />
-              <BillCard bill={billOfQuote(quote)} subtotalCents={subtotal} usd />
+              <BillCard bill={billOfQuote(quote)} subtotalCents={subtotal} usd gift={gift} />
             </div>
           ) : null}
           <PaymentStep
@@ -309,6 +328,7 @@ export function CheckoutFlow({ saved }: { saved: SavedDetails | null }): React.J
             onPrice={(body) => void go(body)}
           />
         </Step>
+        <SheetHost />
       </div>
     </div>
   );

@@ -54,6 +54,13 @@
         "label": "Oil",
         "amount": "3 tbsp",
         "source": "local"
+      },
+      {
+        "label": "Dry ginger powder",
+        "amount": "½ tsp",
+        "source": "iwc",
+        "match_words": "dry ginger powder",
+        "instead_of": "Ginger"
       }
     ],
     "steps": [
@@ -126,6 +133,20 @@
         "label": "Ghee",
         "amount": "2 tbsp",
         "source": "local"
+      },
+      {
+        "label": "Dry ginger powder",
+        "amount": "½ tsp",
+        "source": "iwc",
+        "match_words": "dry ginger powder",
+        "instead_of": "Ginger-garlic paste"
+      },
+      {
+        "label": "Garlic powder",
+        "amount": "½ tsp",
+        "source": "iwc",
+        "match_words": "garlic powder",
+        "instead_of": "Ginger-garlic paste"
       }
     ],
     "steps": [
@@ -208,6 +229,13 @@
         "label": "Onions",
         "amount": "1",
         "source": "local"
+      },
+      {
+        "label": "Garlic powder",
+        "amount": "½ tsp",
+        "source": "iwc",
+        "match_words": "garlic powder",
+        "instead_of": "Garlic"
       }
     ],
     "steps": [
@@ -517,6 +545,20 @@
         "label": "Oil",
         "amount": "4 tbsp",
         "source": "local"
+      },
+      {
+        "label": "Dry ginger powder",
+        "amount": "½ tsp",
+        "source": "iwc",
+        "match_words": "dry ginger powder",
+        "instead_of": "Ginger-garlic paste"
+      },
+      {
+        "label": "Garlic powder",
+        "amount": "½ tsp",
+        "source": "iwc",
+        "match_words": "garlic powder",
+        "instead_of": "Ginger-garlic paste"
       }
     ],
     "steps": [
@@ -1061,6 +1103,13 @@
         "label": "Green chillies",
         "amount": "3",
         "source": "local"
+      },
+      {
+        "label": "Red chilli powder",
+        "amount": "½ tsp",
+        "source": "iwc",
+        "match_words": "red chilli powder",
+        "instead_of": "Green chillies"
       }
     ],
     "steps": [
@@ -1142,6 +1191,13 @@
         "label": "Oil",
         "amount": "4 tbsp",
         "source": "local"
+      },
+      {
+        "label": "Desiccated coconut",
+        "amount": "¼ cup grated",
+        "source": "iwc",
+        "match_words": "desiccated coconut",
+        "instead_of": "Coconut"
       }
     ],
     "steps": [
@@ -1427,6 +1483,13 @@
         "label": "Curry leaves",
         "amount": "a sprig",
         "source": "local"
+      },
+      {
+        "label": "Dried curry leaves",
+        "amount": "1 tbsp",
+        "source": "iwc",
+        "match_words": "curry leaves",
+        "instead_of": "Curry leaves"
       }
     ],
     "steps": [
@@ -1509,6 +1572,20 @@
         "label": "Ghee",
         "amount": "1 tbsp",
         "source": "local"
+      },
+      {
+        "label": "Garlic powder",
+        "amount": "½ tsp",
+        "source": "iwc",
+        "match_words": "garlic powder",
+        "instead_of": "Garlic"
+      },
+      {
+        "label": "Coriander powder",
+        "amount": "1 tsp",
+        "source": "iwc",
+        "match_words": "coriander powder",
+        "instead_of": "Coriander"
       }
     ],
     "steps": [

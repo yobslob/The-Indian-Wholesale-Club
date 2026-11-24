@@ -2,32 +2,43 @@ import assert from 'node:assert/strict';
 import { readFileSync } from 'node:fs';
 import { describe, it } from 'node:test';
 
-import { ALL_OF_INDIA, recipeDraftFileSchema, slugFromFileName, type RecipeDraft } from '../src/domain';
+import {
+  ALL_OF_INDIA,
+  recipeDraftFileSchema,
+  slugFromFileName,
+  type RecipeDraft,
+} from '../src/domain';
 
 /**
- * D-203, plan §7: the 100 drafted recipes (catalogue/recipes-drafts-1..5.json) import as they are, match the chosen
- * list (catalogue/recipes-100.csv), name only states the store has, and never put in a kit what IWC can't send
- * (fresh, dairy, oil, meat or anything liquid: D-135).
+ * D-203, plan §7: the drafted recipes (catalogue/recipes-drafts-1..10.json; D-204 added 6..10) import as they are,
+ * match their lists (catalogue/recipes-100.csv, recipes-101-200.csv), name only states the store has, and never put
+ * in a kit what IWC can't send (fresh, dairy, oil, meat or anything liquid: D-135). A dry swap stands in only for a
+ * fresh, local line of its own recipe (D-204).
  */
 const root = new URL('../../../', import.meta.url);
 const read = (path: string): string => readFileSync(new URL(path, root), 'utf8');
 
-const drafts: RecipeDraft[] = [1, 2, 3, 4, 5].flatMap((n) =>
+const drafts: RecipeDraft[] = [1, 2, 3, 4, 5, 6, 7, 8, 9, 10].flatMap((n) =>
   recipeDraftFileSchema.parse(JSON.parse(read(`catalogue/recipes-drafts-${n}.json`))),
 );
-const csv = read('catalogue/recipes-100.csv')
-  .trim()
-  .split(/\r?\n/)
-  .slice(1)
-  .map((line) => line.split(','));
-const regions = new Set([...read('supabase/seed/regions.sql').matchAll(/\('[a-z-]+', '([^']+)'/g)].map((m) => m[1]!));
+const csv = ['catalogue/recipes-100.csv', 'catalogue/recipes-101-200.csv'].flatMap((file) =>
+  read(file)
+    .trim()
+    .split(/\r?\n/)
+    .slice(1)
+    .map((line) => line.split(',')),
+);
+const regions = new Set(
+  [...read('supabase/seed/regions.sql').matchAll(/\('[a-z-]+', '([^']+)'/g)].map((m) => m[1]!),
+);
 
 const NOT_IN_A_KIT =
   /\b(milk|oil|ghee|butter|cream|yogu?rt|curd|water|buttermilk|chicken|mutton|fish|eggs?|paneer|meat|mince|vinegar|soy sauce|coconut milk|fresh)\b/i;
 
-describe('the 100 drafted recipes (D-203)', () => {
-  it('five files of 20 that import, one per dish on the list, in its order', () => {
-    assert.equal(drafts.length, 100);
+describe('the 200 drafted recipes (D-203, D-204)', () => {
+  it('ten files of 20 that import, one per dish on the lists, in their order', () => {
+    assert.equal(drafts.length, 200);
+    assert.equal(new Set(drafts.map((d) => d.slug)).size, 200);
     assert.deepEqual(
       drafts.map((d) => d.slug),
       csv.map((c) => c[1]),
@@ -42,7 +53,8 @@ describe('the 100 drafted recipes (D-203)', () => {
   });
 
   it('every state is one the store has, or All of India', () => {
-    for (const d of drafts) assert.ok(d.state === ALL_OF_INDIA || regions.has(d.state), `${d.slug}: ${d.state}`);
+    for (const d of drafts)
+      assert.ok(d.state === ALL_OF_INDIA || regions.has(d.state), `${d.slug}: ${d.state}`);
   });
 
   it('every recipe has a kit, and nothing fresh, dairy, oily, meaty or liquid is in one', () => {
@@ -50,9 +62,37 @@ describe('the 100 drafted recipes (D-203)', () => {
       const kit = d.ingredients.filter((l) => l.source === 'iwc');
       assert.ok(kit.length > 0, `${d.slug} has no IWC line`);
       // a masala's name may say chicken or butter (D-200's rule): it is a dry blend
-      for (const l of kit) if (!/masala/i.test(l.label)) assert.doesNotMatch(l.label, NOT_IN_A_KIT, `${d.slug}: ${l.label}`);
-      for (const l of kit) assert.ok((l.match_words ?? '').length > 0, `${d.slug}: ${l.label} has no match words`);
+      for (const l of kit)
+        if (!/masala/i.test(l.label))
+          assert.doesNotMatch(l.label, NOT_IN_A_KIT, `${d.slug}: ${l.label}`);
+      for (const l of kit)
+        assert.ok((l.match_words ?? '').length > 0, `${d.slug}: ${l.label} has no match words`);
     }
+  });
+
+  it('a swap stands in for a fresh, local line of its own recipe and is never also a main piece (D-204)', () => {
+    let swaps = 0;
+    for (const d of drafts) {
+      const local = new Set(d.ingredients.filter((l) => l.source === 'local').map((l) => l.label));
+      const main = new Set(
+        d.ingredients.filter((l) => l.source === 'iwc' && !l.instead_of).map((l) => l.match_words),
+      );
+      for (const l of d.ingredients.filter((x) => x.instead_of)) {
+        swaps += 1;
+        assert.ok(
+          local.has(l.instead_of!),
+          `${d.slug}: ${l.label} stands in for ${l.instead_of}, not a local line`,
+        );
+        assert.ok(!main.has(l.match_words), `${d.slug}: ${l.label} is already in the kit`);
+      }
+    }
+    assert.ok(swaps > 100);
+    const biryani = drafts.find((d) => d.slug === 'chicken-biryani')!;
+    assert.ok(
+      biryani.ingredients.some(
+        (l) => l.label === 'Coriander powder' && l.instead_of === 'Coriander',
+      ),
+    );
   });
 
   it('the voice rule: none of the banned words (storefront.md §Voice)', () => {

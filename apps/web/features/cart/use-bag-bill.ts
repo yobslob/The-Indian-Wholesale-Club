@@ -2,6 +2,8 @@
 
 import { billOf, bulkSavingCents, couponStanding, quoteCheckout, type Bill, type CheckoutOffers, type PublicCoupon } from '@repo/shared/domain';
 
+import { useGiftCents } from '@/features/send-home/use-gift';
+
 import { bagKey, useBagCharges } from './charges';
 import { useOffers } from './offers';
 import { cartSubtotalCents, useCart } from './store';
@@ -21,6 +23,8 @@ export interface BagBill {
   coupon: PublicCoupon | null;
   /** The bulk saving this bag has without a coupon: a coupon has to beat it. */
   bulkCents: number;
+  /** D-205: the bag's total before any Send home gift (the round-up is worked out from it); null until the charges are in. */
+  goodsTotalCents: number | null;
 }
 
 /**
@@ -36,7 +40,8 @@ export function useBagBill(fetchOffers = true): BagBill {
   const bulkCents = charges ? bulkSavingCents(subtotalCents, charges.bulkFromCents, charges.bulk) : 0;
   const found = picked ? offers?.coupons.find((c) => c.code === picked) : undefined;
   const coupon = found && offers && couponStanding(found, offers, subtotalCents, bulkCents).kind === 'usable' ? found : null;
-  const breakdown =
+  // D-205: the gift is added after everything else, so the goods' sum is the same with or without it
+  const quote = (gift: number) =>
     charges && lines.length > 0
       ? quoteCheckout(
           lines.map((l) => ({ unitPriceCents: l.unitPriceCents, quantity: l.quantity })),
@@ -51,8 +56,12 @@ export function useBagBill(fetchOffers = true): BagBill {
           },
           null,
           offers?.coins ?? 0,
+          gift,
         )
       : null;
+  const goods = quote(0);
+  const giftCents = useGiftCents(goods?.totalCents ?? null);
+  const breakdown = giftCents > 0 ? quote(giftCents) : goods;
   return {
     subtotalCents,
     bill: breakdown ? billOf(breakdown, coupon?.code ?? null, false) : null,
@@ -63,5 +72,6 @@ export function useBagBill(fetchOffers = true): BagBill {
     picked,
     coupon,
     bulkCents,
+    goodsTotalCents: goods?.totalCents ?? null,
   };
 }

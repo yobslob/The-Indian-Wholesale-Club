@@ -14,13 +14,15 @@ export const SECTIONS = [
  * The profile's sections (D-089): a list on the left on desktop, pill tabs on phones; each section has its own address,
  * so links and Back work. The current one is marked for screen readers too.
  */
-export function ProfileNav({ variant }: { variant: 'side' | 'tabs' }): React.JSX.Element {
+export function ProfileNav({ variant, people = false }: { variant: 'side' | 'tabs'; people?: boolean }): React.JSX.Element {
   const path = usePathname();
+  // D-205: Your people at home, once Send home is open
+  const sections = people ? [...SECTIONS, { href: '/account/people', label: 'People at home' } as const] : SECTIONS;
   const current = (href: string): boolean => (href === '/account' ? path === '/account' : path.startsWith(href));
   if (variant === 'side') {
     return (
       <nav aria-label="Account" className="font-ui grid gap-1">
-        {SECTIONS.map((s) => (
+        {sections.map((s) => (
           <Link
             key={s.href}
             href={s.href}
@@ -35,7 +37,7 @@ export function ProfileNav({ variant }: { variant: 'side' | 'tabs' }): React.JSX
   }
   return (
     <nav aria-label="Account" className="no-scrollbar font-ui -mx-[var(--gut)] mb-[18px] flex gap-2 overflow-x-auto px-[var(--gut)]">
-      {SECTIONS.map((s) => (
+      {sections.map((s) => (
         <Link
           key={s.href}
           href={s.href}

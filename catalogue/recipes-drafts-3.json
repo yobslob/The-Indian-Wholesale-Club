@@ -120,6 +120,20 @@
         "label": "Oil",
         "amount": "for frying",
         "source": "local"
+      },
+      {
+        "label": "Dry ginger powder",
+        "amount": "½ tsp",
+        "source": "iwc",
+        "match_words": "dry ginger powder",
+        "instead_of": "Ginger"
+      },
+      {
+        "label": "Dried curry leaves",
+        "amount": "1 tbsp",
+        "source": "iwc",
+        "match_words": "curry leaves",
+        "instead_of": "Curry leaves"
       }
     ],
     "steps": [
@@ -197,6 +211,13 @@
         "label": "Ghee or oil",
         "amount": "2 tbsp",
         "source": "local"
+      },
+      {
+        "label": "Red chilli powder",
+        "amount": "½ tsp",
+        "source": "iwc",
+        "match_words": "red chilli powder",
+        "instead_of": "Green chillies"
       }
     ],
     "steps": [
@@ -285,6 +306,20 @@
         "label": "Oil",
         "amount": "2 tbsp",
         "source": "local"
+      },
+      {
+        "label": "Amchur",
+        "amount": "1 tsp",
+        "source": "iwc",
+        "match_words": "amchur",
+        "instead_of": "Lemon"
+      },
+      {
+        "label": "Coriander powder",
+        "amount": "1 tsp",
+        "source": "iwc",
+        "match_words": "coriander powder",
+        "instead_of": "Coriander"
       }
     ],
     "steps": [
@@ -493,6 +528,13 @@
         "label": "Ginger",
         "amount": "1 inch",
         "source": "local"
+      },
+      {
+        "label": "Dry ginger powder",
+        "amount": "½ tsp",
+        "source": "iwc",
+        "match_words": "dry ginger powder",
+        "instead_of": "Ginger"
       }
     ],
     "steps": [
@@ -564,6 +606,13 @@
         "label": "Green chillies",
         "amount": "2",
         "source": "local"
+      },
+      {
+        "label": "Red chilli powder",
+        "amount": "½ tsp",
+        "source": "iwc",
+        "match_words": "red chilli powder",
+        "instead_of": "Green chillies"
       }
     ],
     "steps": [
@@ -780,6 +829,13 @@
         "label": "Green chillies",
         "amount": "2",
         "source": "local"
+      },
+      {
+        "label": "Red chilli powder",
+        "amount": "½ tsp",
+        "source": "iwc",
+        "match_words": "red chilli powder",
+        "instead_of": "Green chillies"
       }
     ],
     "steps": [
@@ -856,6 +912,20 @@
         "label": "Ghee",
         "amount": "2 tbsp",
         "source": "local"
+      },
+      {
+        "label": "Red chilli powder",
+        "amount": "½ tsp",
+        "source": "iwc",
+        "match_words": "red chilli powder",
+        "instead_of": "Green chillies"
+      },
+      {
+        "label": "Amchur",
+        "amount": "1 tsp",
+        "source": "iwc",
+        "match_words": "amchur",
+        "instead_of": "Lemon"
       }
     ],
     "steps": [
@@ -947,6 +1017,20 @@
         "label": "Lemon",
         "amount": "½",
         "source": "local"
+      },
+      {
+        "label": "Coriander powder",
+        "amount": "1 tsp",
+        "source": "iwc",
+        "match_words": "coriander powder",
+        "instead_of": "Coriander"
+      },
+      {
+        "label": "Amchur",
+        "amount": "1 tsp",
+        "source": "iwc",
+        "match_words": "amchur",
+        "instead_of": "Lemon"
       }
     ],
     "steps": [
@@ -1014,6 +1098,13 @@
         "label": "Green chutney herbs",
         "amount": "mint and coriander",
         "source": "local"
+      },
+      {
+        "label": "Dried mint leaves",
+        "amount": "1 tbsp",
+        "source": "iwc",
+        "match_words": "mint leaves",
+        "instead_of": "Green chutney herbs"
       }
     ],
     "steps": [
@@ -1086,6 +1177,13 @@
         "label": "Pomegranate",
         "amount": "a handful",
         "source": "local"
+      },
+      {
+        "label": "Anardana powder",
+        "amount": "1 tsp",
+        "source": "iwc",
+        "match_words": "anardana powder",
+        "instead_of": "Pomegranate"
       }
     ],
     "steps": [
@@ -1167,6 +1265,20 @@
         "label": "Oil",
         "amount": "for the pan",
         "source": "local"
+      },
+      {
+        "label": "Dried mint leaves",
+        "amount": "1 tsp",
+        "source": "iwc",
+        "match_words": "mint leaves",
+        "instead_of": "Mint"
+      },
+      {
+        "label": "Coriander powder",
+        "amount": "1 tsp",
+        "source": "iwc",
+        "match_words": "coriander powder",
+        "instead_of": "Coriander"
       }
     ],
     "steps": [
@@ -1234,6 +1346,13 @@
         "label": "Oil",
         "amount": "for frying",
         "source": "local"
+      },
+      {
+        "label": "Dried mint leaves",
+        "amount": "1 tsp",
+        "source": "iwc",
+        "match_words": "mint leaves",
+        "instead_of": "Mint"
       }
     ],
     "steps": [
@@ -1377,6 +1496,20 @@
         "label": "Oil",
         "amount": "2 tbsp",
         "source": "local"
+      },
+      {
+        "label": "Red chilli powder",
+        "amount": "½ tsp",
+        "source": "iwc",
+        "match_words": "red chilli powder",
+        "instead_of": "Green chillies"
+      },
+      {
+        "label": "Dried curry leaves",
+        "amount": "1 tbsp",
+        "source": "iwc",
+        "match_words": "curry leaves",
+        "instead_of": "Curry leaves"
       }
     ],
     "steps": [

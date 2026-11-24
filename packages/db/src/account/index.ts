@@ -9,6 +9,8 @@ import { z } from 'zod';
 import { unwrap, type IwcClient } from '../client';
 import { productCardSchema, type ProductCard } from '../store/schemas';
 
+export * from './send-home';
+
 export async function getMyProfile(client: IwcClient, userId: string) {
   return unwrap(
     await client

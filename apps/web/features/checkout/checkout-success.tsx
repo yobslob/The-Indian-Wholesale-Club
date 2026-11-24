@@ -3,7 +3,10 @@
 import Link from 'next/link';
 import { useEffect, useState } from 'react';
 
-import { doorDate } from '@repo/shared/domain';
+import { doorDate, formatInr } from '@repo/shared/domain';
+
+import { Postcard } from '@/features/send-home/postcard';
+import { SEND_HOME_WORDS } from '@/features/send-home/words';
 
 import { BagSummary } from './bag-summary';
 import { CalendarLink } from './calendar-link';
@@ -103,6 +106,12 @@ export function CheckoutSuccess({
         {signedIn ? null : (
           <p className="text-ink-muted text-sm">You&apos;ll need the email you used to open it.</p>
         )}
+        {/* D-205 §4.5: the gift's postcard, from this tab's priced bag */}
+        {order?.quote.homeGift ? (
+          <div className="pt-2">
+            <Postcard gift={order.quote.homeGift} state={order.state ?? null} signedIn={signedIn} />
+          </div>
+        ) : null}
       </div>
       {order ? (
         <div className="lg:pt-2">
@@ -111,6 +120,11 @@ export function CheckoutSuccess({
             lines={order.lines}
             subtotalCents={order.quote.breakdown.subtotalCents}
             quote={order.quote}
+            gift={
+              order.quote.homeGift
+                ? { detail: SEND_HOME_WORDS.bill.lineTo(formatInr(order.quote.homeGift.inrPaise), order.quote.homeGift.callName) }
+                : null
+            }
           />
         </div>
       ) : null}

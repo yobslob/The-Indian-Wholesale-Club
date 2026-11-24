@@ -20,6 +20,8 @@ export interface Bill {
   heavyWasCents: number;
   /** Null until the address says which state's tax applies. */
   taxCents: number | null;
+  /** D-205: Send home, its own line after Sales tax, outside the goods (0: no gift). */
+  homeGiftCents: number;
   totalCents: number;
   /** Everything taken off: a note under the total, never part of the sum. */
   savingCents: number;
@@ -27,7 +29,7 @@ export interface Bill {
 
 /** A saved order from before D-191 may lack the newer parts: they count as none. */
 type Breakdown = Pick<CheckoutBreakdown, 'subtotalCents' | 'discountCents' | 'shippingCents' | 'taxCents' | 'totalCents'> &
-  Partial<Pick<CheckoutBreakdown, 'bulkSavingCents' | 'coinsUsed' | 'retailerCents' | 'heavyCents' | 'heavyShownCents'>> & {
+  Partial<Pick<CheckoutBreakdown, 'bulkSavingCents' | 'coinsUsed' | 'retailerCents' | 'heavyCents' | 'heavyShownCents' | 'homeGiftCents'>> & {
     waivedCents?: { shipping: number };
   };
 
@@ -50,6 +52,7 @@ export function billOf(b: Breakdown, couponCode: string | null, taxKnown: boolea
     heavyCents,
     heavyWasCents,
     taxCents: taxKnown ? b.taxCents : null,
+    homeGiftCents: b.homeGiftCents ?? 0,
     totalCents: b.totalCents,
     savingCents: shippingWasCents + (heavyWasCents ? heavyWasCents - heavyCents : 0) + bulkCents + b.discountCents + coins,
   };

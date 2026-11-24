@@ -1,5 +1,7 @@
 # Plan: Cook at home, recipes with a one-tap kit (handoff for the next agent)
 
+*Built on 2026-11-23 (D-203); D-204 changed it the same day: Home's arches gave way to a Cook at home row, a recipe publishes without a photo and with the cheapest listing by default (Publish all), 100 more recipes (`catalogue/recipes-101-200.csv`) and dry swaps for fresh herbs. Where this plan and D-204 differ, D-204 holds.*
+
 *Written 2026-11-23 by Claude from the repo at `main` (da3f727) and the founder's idea of the same day; updated the same
 day with the founder's answers to §10 (now binding, folded into every section). Status: **nothing built.** Read all of
 it, then `CLAUDE.md`. The 100 dishes are in `catalogue/recipes-100.csv` (§7). Each phase ships alone and leaves the store working. The mockups (Home's
