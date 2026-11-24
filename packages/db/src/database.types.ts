@@ -1052,6 +1052,20 @@ isOneToOne: false
                   Relationships: [
                     
                   ]
+                },"ship_countries": {
+                  Row: {
+                    "days_max": number | null,"days_min": number | null,"inr_per_kg": number | null,"inr_quote_1kg": number | null,"iso2": string,"iso3": string,"name": string,"open": boolean,"quoted_at": string,"service": string | null
+                  }
+                  ComputedFields: never
+                  Insert: {
+                    "days_max"?: number | null,"days_min"?: number | null,"inr_per_kg"?: number | null,"inr_quote_1kg"?: number | null,"iso2": string,"iso3": string,"name": string,"open"?: boolean,"quoted_at"?: string,"service"?: string | null
+                  }
+                  Update: {
+                    "days_max"?: number | null,"days_min"?: number | null,"inr_per_kg"?: number | null,"inr_quote_1kg"?: number | null,"iso2"?: string,"iso3"?: string,"name"?: string,"open"?: boolean,"quoted_at"?: string,"service"?: string | null
+                  }
+                  Relationships: [
+                    
+                  ]
                 },"shop_bill_lines": {
                   Row: {
                     "bill_id": string,"id": string,"kind": string,"label": string,"order_item_id": string | null,"quantity": number,"shop": string | null,"shop_order_ref": string | null,"sort_order": number,"unit_paise": number
@@ -1652,6 +1666,15 @@ isOneToOne: false
 "_cancel_shipment":
 { Args: { "p_amount": number,"p_note": string,"p_shipment": string,"p_why": string }; Returns: undefined
                            },
+"_country_heavy_cents":
+{ Args: { "p_country": string,"p_variant": string }; Returns: number
+                           },
+"_country_price_cents":
+{ Args: { "p_country": string,"p_variant": string }; Returns: number
+                           },
+"_country_rate":
+{ Args: { "p_country": string }; Returns: number
+                           },
 "_create_order_goods":
 { Args: { "p_order": Json }; Returns: {
               "order_id": string,"order_number": string
@@ -2129,10 +2152,16 @@ isOneToOne: false
 { Args: { "p_reason": string,"p_shipment": string }; Returns: number
                            },
 "store_bag_charges":
-{ Args: { "p_discount_cents"?: number,"p_items": Json,"p_line1"?: string,"p_state"?: string }; Returns: Json
+{ Args: { "p_country"?: string,"p_discount_cents"?: number,"p_items": Json,"p_line1"?: string,"p_state"?: string }; Returns: Json
                            },
 "store_browse":
 { Args: { "p_category"?: string,"p_for"?: string,"p_limit"?: number,"p_max_cents"?: number,"p_min_cents"?: number,"p_offset"?: number,"p_region"?: string,"p_sizes"?: string,"p_sort"?: string,"p_sub"?: string,"p_type": string }; Returns: Json
+                           },
+"store_countries":
+{ Args: Record<PropertyKey, never>; Returns: Json
+                           },
+"store_country_prices":
+{ Args: { "p_country": string,"p_products"?: (string)[],"p_recipes"?: (string)[],"p_variants"?: (string)[] }; Returns: Json
                            },
 "store_home":
 { Args: Record<PropertyKey, never>; Returns: Json

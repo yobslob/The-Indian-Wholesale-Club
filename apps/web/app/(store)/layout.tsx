@@ -1,5 +1,6 @@
 import { NO_RATES } from '@repo/shared/domain';
 
+import { CountryBag } from '@/features/cart/country-bag';
 import { FreeDeliveryBar } from '@/features/cart/free-delivery-bar';
 import { getStorePolicyCached, isDemoStoreCached } from '@/features/catalog/data';
 import { deliveryDaysLabel } from '@/features/catalog/delivery-days';
@@ -52,6 +53,7 @@ export default async function StoreLayout({
       <style dangerouslySetInnerHTML={{ __html: cardDays }} />
       <DaysProvider value={days} />
       <MarketProvider value={policy?.fx ?? NO_RATES} />
+      <CountryBag />
       <div className="site-top">
         {demo ? <DemoBanner /> : null}
         <SiteHeader />

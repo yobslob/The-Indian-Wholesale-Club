@@ -261,17 +261,16 @@
     padding: 0;
   }
 
-  /* D-197: store pages are cached with US prices; a price drawn for another market than the visitor's
-     (html[data-market], set before the first paint) stays hidden until it is redrawn (features/shell/market.tsx), so a
-     Canadian never sees a US price first. The US is never hidden. */
-  html[data-market='ca'] .money:not([data-m='ca']),
-  html[data-market='au'] .money:not([data-m='au']),
-  html[data-market='nz'] .money:not([data-m='nz']) {
+  /* D-197, D-208: store pages are cached with US prices; abroad a price stays hidden until it is drawn for the visitor's
+     country (html[data-market], set before the first paint; `data-m` is set only once that country's price is in,
+     features/shell/market.tsx), so nobody abroad sees a US price first. The US is never hidden. */
+  html[data-market]:not([data-market='us']) .money:not([data-m]),
+  html[data-market]:not([data-market='us']) .money[data-m='us'] {
     visibility: hidden;
   }
 
-  /* D-199: the visitor's flag abroad, on the Profile icon and in the menu; nothing in the US. CSS only, from
-     html[data-market], so cached pages stay the same for everyone and only the visitor's flag is fetched. */
+  /* D-199, D-208: the visitor's flag, on the Profile icon and in the menu, in every country. CSS only: MARKET_SCRIPT and
+     setMarket put the flag's address in --flag, so cached pages stay the same for everyone and only that flag is fetched. */
   .site-flag {
     display: none;
     width: 16px;
@@ -280,22 +279,9 @@
     background: center / cover no-repeat;
     box-shadow: 0 0 0 1.5px theme('colors.paper');
   }
-  /* D-208: the flag shows for every country, the US included */
-  html[data-market='us'] .site-flag {
+  html[data-market] .site-flag {
     display: block;
-    background-image: url('/flags/us.svg');
-  }
-  html[data-market='ca'] .site-flag {
-    display: block;
-    background-image: url('/flags/ca.svg');
-  }
-  html[data-market='au'] .site-flag {
-    display: block;
-    background-image: url('/flags/au.svg');
-  }
-  html[data-market='nz'] .site-flag {
-    display: block;
-    background-image: url('/flags/nz.svg');
+    background-image: var(--flag, url('/flags/us.svg'));
   }
   .site-icon > .site-flag {
     position: absolute;

@@ -34,7 +34,7 @@ export function FinishingDrawer({
   onChange: (next: BrowseQuery) => void;
 }): React.JSX.Element {
   const id = `touches-${index}`;
-  const from = Math.min(...items.map((p) => p.price_cents));
+  const cheapest = items.length ? items.reduce((a, b) => (b.price_cents < a.price_cents ? b : a)) : null;
   const next = withFilter(query, { category: 'accessories' });
   return (
     <section
@@ -48,7 +48,7 @@ export function FinishingDrawer({
         <h2 id={`${id}-h`} className="font-heading m-0 text-[clamp(22px,1.8vw,30px)] font-medium leading-tight tracking-[-0.02em]">
           Finishing touches{' '}
           <span className={styles.from}>
-            <span className={styles.dot}>· </span>from <Money cents={from} whole />
+            <span className={styles.dot}>· </span>from {cheapest ? <Money cents={cheapest.price_cents} of={{ product: cheapest.id }} whole /> : null}
           </span>
         </h2>
         <a

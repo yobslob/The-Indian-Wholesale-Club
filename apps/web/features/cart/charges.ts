@@ -15,7 +15,10 @@ import {
   type SmallOrderCharges,
 } from '@repo/shared/domain';
 
+import { useMoney } from '@/features/shell/market';
+
 import { cartSubtotalCents, useCart, type CartLine } from './store';
+
 
 import type { ShellDays } from '@/features/shell/days';
 
@@ -65,6 +68,12 @@ export const bagKey = (lines: CartLine[]): string =>
     .sort()
     .join(',');
 
+/** D-208: the charges' key: the bag, and the country abroad (a heavy piece's charge is that country's). */
+export const chargesKey = (lines: CartLine[], market: string): string => {
+  const items = bagKey(lines);
+  return items && market !== 'us' ? `${items}@${market}` : items;
+};
+
 function parse(data: unknown, key: string): BagCharges | null {
   if (typeof data !== 'object' || data === null) return null;
   const d = data as Record<string, unknown>;
@@ -101,7 +110,10 @@ function parse(data: unknown, key: string): BagCharges | null {
  */
 export function useBagCharges(): BagCharges | null {
   const lines = useCart((s) => s.lines);
-  const key = bagKey(lines);
+  // D-208: a heavy piece's Heavy-item shipping is the visitor's country's (its freight), so the country is in the key
+  const { market } = useMoney();
+  const items = bagKey(lines);
+  const key = chargesKey(lines, market);
   const { key: have, charges } = useChargesStore();
   useEffect(() => {
     if (!key || key === have || key === requested) return;
@@ -112,7 +124,7 @@ export function useBagCharges(): BagCharges | null {
     const wait = useChargesStore.getState().charges ? 250 : 0;
     pending = setTimeout(() => {
       pending = null;
-      fetch(`/api/bag-charges?items=${encodeURIComponent(key)}`)
+      fetch(`/api/bag-charges?items=${encodeURIComponent(items)}${market !== 'us' ? `&country=${market}` : ''}`)
         .then((r) => (r.ok ? r.json() : null))
         .then((data: unknown) => {
           const parsed = parse(data, key);
@@ -129,7 +141,7 @@ export function useBagCharges(): BagCharges | null {
           if (requested === key) requested = '';
         });
     }, wait);
-  }, [key, have]);
+  }, [key, have, items, market]);
   return key ? charges : null;
 }
 

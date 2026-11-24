@@ -10,7 +10,7 @@ import { flyToBag } from '@/features/cart/fly-to-bag';
 import { MAX_QTY_PER_LINE } from '@/features/cart/limits';
 import { cartSubtotalCents, useCart } from '@/features/cart/store';
 import { StorePhoto } from '@/features/catalog/store-photo';
-import { Money } from '@/features/shell/market';
+import { Money, useMoney } from '@/features/shell/market';
 import { mediaUrl } from '@/lib/site';
 
 import type { RecipeIwcLine } from '@repo/db/store';
@@ -44,11 +44,12 @@ export function KitCard({
   freeMinCents: number | null;
 }): React.JSX.Element {
   const hydrated = useHydrated();
-  const pieces: Piece[] = lines.map((l) => ({
-    ...l,
-    variantId: l.variant_id,
-    priceCents: l.price_cents,
-  }));
+  const money = useMoney();
+  // D-208: each piece at its price in the visitor's country (the US: as the page has it), so the total and Add follow
+  const pieces: Piece[] = lines.map((l) => {
+    const local = l.variant_id && l.price_cents !== null ? money.cents(l.price_cents, { variant: l.variant_id }) : null;
+    return { ...l, variantId: l.variant_id, priceCents: local ?? l.price_cents };
+  });
   // D-204: a swap starts unticked: it stands in for something fresh the customer may have
   const [ticked, setTicked] = useState(
     () =>
@@ -68,6 +69,8 @@ export function KitCard({
   const inBag = new Set(held.keys());
   const toAdd = kitPiecesToAdd(pieces, ticked, inBag);
   const total = kitTotal(toAdd);
+  // abroad the total waits for every ticked piece's own price (hidden until then); `cents` is already that sum
+  const kitOf = money.market === 'us' ? undefined : { variants: toAdd.flatMap((p) => (p.variantId ? [p.variantId] : [])) };
   const gap =
     freeMinCents === null ? null : freeMinCents - cartSubtotalCents(shownBag) - total.cents;
 
@@ -120,10 +123,10 @@ export function KitCard({
     <>
       {total.cents > 0 ? (
         <s className="text-ink-muted mr-1.5 text-[0.85em] font-normal" aria-label="Was">
-          <Money cents={total.cents} wasOf="food" />
+          <Money cents={total.cents} of={kitOf} wasOf="food" />
         </s>
       ) : null}
-      <Money cents={total.cents} />
+      <Money cents={total.cents} of={kitOf} />
     </>
   );
 
@@ -237,7 +240,7 @@ export function KitCard({
                     ) : null}
                   </span>
                   <span className="font-ui text-[15px] font-semibold">
-                    {p.available && p.priceCents !== null ? <Money cents={p.priceCents} /> : null}
+                    {p.available && p.priceCents !== null ? <Money cents={p.priceCents} of={p.variantId ? { variant: p.variantId } : undefined} /> : null}
                   </span>
                 </li>
               );

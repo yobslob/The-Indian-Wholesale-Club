@@ -2,7 +2,10 @@
 
 import { billOf, bulkSavingCents, quoteCheckout, type Bill, type CheckoutOffers, type PublicCoupon } from '@repo/shared/domain';
 
-import { bagKey, useBagCharges } from './charges';
+import { useMoney } from '@/features/shell/market';
+
+import { chargesKey, useBagCharges } from './charges';
+import { linePricedFor } from './country-bag';
 import { useOffers } from './offers';
 import { cartSubtotalCents, useCart } from './store';
 
@@ -32,6 +35,7 @@ export interface BagBill {
  */
 export function useBagBill(fetchOffers = true): BagBill {
   const lines = useCart((s) => s.lines);
+  const { market } = useMoney();
   const charges = useBagCharges();
   const { offers, failed, retry } = useOffers(fetchOffers);
   const subtotalCents = cartSubtotalCents(lines);
@@ -56,7 +60,8 @@ export function useBagBill(fetchOffers = true): BagBill {
   return {
     subtotalCents,
     bill: breakdown ? billOf(breakdown, null, false) : null,
-    updating: Boolean(charges && charges.key !== bagKey(lines)),
+    // D-208: also while a line is still priced for another country (country-bag.ts is pricing it)
+    updating: Boolean(charges && charges.key !== chargesKey(lines, market)) || lines.some((l) => !linePricedFor(l, market)),
     offers,
     failed,
     retry,

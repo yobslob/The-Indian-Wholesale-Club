@@ -74,8 +74,21 @@ describe('the currency abroad (D-197)', () => {
     assert.equal(linked.market, 'au');
     assert.match(linked.cookie, /^iwc_market=au;/);
     assert.equal(runScript({ zone: 'Australia/Sydney', cookie: 'a=1; iwc_market=us' }).market, 'us');
-    assert.equal(runScript({ zone: 'America/Toronto', search: '?market=xx' }).market, 'ca');
+    assert.equal(runScript({ zone: 'America/Toronto', search: '?market=x1' }).market, 'ca');
+    // D-208: any country's code (the database says which are open; a closed one falls back to the US on the page)
+    assert.equal(runScript({ zone: 'America/New_York', search: '?market=de' }).market, 'de');
+    assert.equal(runScript({ zone: 'America/New_York', cookie: 'iwc_market=gb' }).market, 'gb');
     // a guess is never stored
     assert.equal(runScript({ zone: 'America/Toronto' }).cookie, '');
+  });
+});
+
+describe('every country (D-208)', () => {
+  it('writes US$ where a country has no dollars of its own, and its own where it has', () => {
+    assert.equal(formatMoney(1999, 'de', RATES), 'US$19.99');
+    assert.equal(formatMoney(1999, 'gb', RATES), 'US$19.99');
+    assert.equal(formatMoney(1999, 'ca', RATES), 'CA$28.25');
+    assert.equal(formatMoney(1999, 'us', RATES), '$19.99');
+    assert.equal(formatWas(1999, 'food', 'de', RATES), `US${formatUsd(wasCents(1999, 'food'))}`);
   });
 });

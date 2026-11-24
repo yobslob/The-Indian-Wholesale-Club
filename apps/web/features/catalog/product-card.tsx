@@ -66,10 +66,14 @@ export function ProductCard({
   // launch QA B-9: an all lower-case shop title reads in title case (display only)
   const name = displayTitle(product.name);
   // launch QA B-1: the price its options say, "From" the lowest in stock when they differ (as the product page says it);
-  // D-197: in the visitor's dollars
+  // D-197, D-208: in the visitor's country (abroad its own price, asked for by the card's id)
   const range = product.options?.length ? priceRange(product.options) : null;
   const price = (
-    <Money cents={range?.fromCents ?? product.price_cents} from={range ? range.varies : product.price_varies === true} />
+    <Money
+      cents={range?.fromCents ?? product.price_cents}
+      of={{ product: product.id }}
+      from={range ? range.varies : product.price_varies === true}
+    />
   );
   // D-190: struck through beside the price it is worked out from (`.was`, globals.css)
   const lowest = range?.fromCents ?? product.price_cents;
@@ -137,7 +141,7 @@ export function ProductCard({
         <span className={`product-card-meta text-ink-muted ${small ? 'text-[13px]' : 'text-sm'}`}>
           {product.offer ? (
             <s className="was">
-              <Money cents={lowest} wasOf={product.product_type} />
+              <Money cents={lowest} of={{ product: product.id }} wasOf={product.product_type} />
             </s>
           ) : null}
           {product.offer ? <span className="now">{price}</span> : price}

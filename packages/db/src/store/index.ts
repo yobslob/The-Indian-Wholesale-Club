@@ -38,6 +38,7 @@ export * from './recipes';
 export * from './schemas';
 export * from './search';
 export * from './send-home';
+export * from './countries';
 
 /** Home + /states: all 36 regions, the tiles and Home's rows (1 round trip). */
 export async function getHome(client: IwcClient): Promise<HomeData> {
@@ -365,7 +366,7 @@ export async function getBagCharges(
   client: IwcClient,
   items: { variantId: string; quantity: number }[],
   /** D-154: at checkout, the promo's discount and the address decide the food shipment too. */
-  at: { discountCents?: number; state?: string; line1?: string } = {},
+  at: { discountCents?: number; state?: string; line1?: string; country?: string } = {},
 ): Promise<BagCharges> {
   const data = unwrap(
     await client.rpc('store_bag_charges', {
@@ -373,6 +374,8 @@ export async function getBagCharges(
       ...(at.discountCents ? { p_discount_cents: at.discountCents } : {}),
       ...(at.state ? { p_state: at.state } : {}),
       ...(at.line1 ? { p_line1: at.line1 } : {}),
+      // D-208: abroad, a heavy piece's Heavy-item shipping at that country's freight
+      ...(at.country && at.country !== 'us' ? { p_country: at.country } : {}),
     }),
   );
   return bagChargesSchema.parse(data);

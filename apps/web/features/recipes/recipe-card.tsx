@@ -46,10 +46,10 @@ export function RecipeCard({ recipe, size = 'md' }: { recipe: Recipe; size?: 'md
       </span>
       <span className="font-ui mt-0.5 block text-[14px]">
         <s className="text-ink-muted mr-1.5" aria-label="Was">
-          <Money cents={recipe.kit_cents} wasOf="food" />
+          <Money cents={recipe.kit_cents} of={{ recipe: recipe.slug }} wasOf="food" />
         </s>
         <b className="font-semibold">
-          Kit <Money cents={recipe.kit_cents} />
+          Kit <Money cents={recipe.kit_cents} of={{ recipe: recipe.slug }} />
         </b>
         <span className="text-ink-muted"> · {recipe.kit_count} pieces</span>
       </span>

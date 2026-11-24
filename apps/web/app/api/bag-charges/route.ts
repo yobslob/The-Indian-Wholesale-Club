@@ -21,14 +21,17 @@ const itemsParam = z
  * `shipments` says whether the food travels apart. Never which shop decides it.
  */
 export async function GET(request: Request): Promise<NextResponse> {
-  const items = itemsParam.safeParse(new URL(request.url).searchParams.get('items') ?? '');
+  const url = new URL(request.url);
+  const items = itemsParam.safeParse(url.searchParams.get('items') ?? '');
+  // D-208: the visitor's country, for a heavy piece's Heavy-item shipping (its freight); the US when absent
+  const country = /^[a-z]{2}$/.test(url.searchParams.get('country') ?? '') ? url.searchParams.get('country')! : undefined;
   if (!items.success)
     return NextResponse.json(
       { error: 'items: <variant id>:<quantity>, comma separated' },
       { status: 400 },
     );
   try {
-    const charges = await getBagCharges(storeClient(), items.data);
+    const charges = await getBagCharges(storeClient(), items.data, { country });
     return NextResponse.json(charges, {
       headers: {
         'cache-control': 'public, max-age=60, s-maxage=60',
