@@ -48,7 +48,7 @@ test('the doors go where they say, and the header turns cream past the hero', as
   await expect(poster).toContainText(/Pass the\s*achaar\./);
   await expect(poster).toHaveAttribute('href', '/food');
   await expect(poster).toContainText(/Free delivery from \$49\.99/);
-  await expect(poster).toContainText(/From India to your door in 7\s+delivery days \(on food\)/);
+  await expect(poster).toContainText(/From India to your door in 7 – 12\s+delivery days \(on food\)/);
   // D-183: the old offer is gone from the hero (it stays in the season's dusk further down)
   await expect(hero.getByText(/under \$99/i)).toHaveCount(0);
   const color = (): Promise<string> => page.locator('.site-header').evaluate((el) => getComputedStyle(el).color);
