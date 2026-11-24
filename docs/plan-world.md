@@ -196,20 +196,20 @@ cancelling before sending removes either; no coupon field shows anywhere; e2e co
 cookie. *Done when* a US visitor sees the US flag on the Profile icon, changes to Canada from Profile and every price
 turns CA$; e2e at 390 px.
 
-**Phase 3: every country, prices only (orders still US).** `ship_countries` and its seed; Admin → Settings →
+**Phase 3: every country, prices only** (built 2026-11-25: prices abroad are read per visit from `store_country_prices`, not worked out in the browser, since `price_weight_g` on a page would break non-negotiable 1; Admin → Countries instead of Settings → Countries; no days per country, D-209). `ship_countries` and its seed; Admin → Settings →
 Countries; `price_weight_g` in the store views; the shared price-abroad function and its SQL twin (tests: the US price
 unchanged for every listing in the seed; a 1 kg food piece at ₹5,500 = US price + 1 kg × ₹3,500 ÷ 0.8 ÷ 92 = +$47.55);
 markets widened from four to the open list (US$ for the rest); the IP country in the flag fetch. Abroad, checkout still says orders open soon (D-197). *Done when* checks are green, a German visitor
 sees US$ prices with Germany's freight and the same days as the US, the US sees exactly today's prices and pages (diff the HTML
 of Home and a product page), and `/cart`'s first-load JS grows by ≤ 3 KB.
 
-**Phase 4: orders from every country.** The international address step; the server prices by the address's country;
+**Phase 4: orders from every country** (built 2026-11-25; saved addresses stay US-only). The international address step; the server prices by the address's country;
 no sales tax outside the US; "Duties paid" abroad too (D-209); Stripe in USD; emails and invoices with the country; the
 admin order shows the country, the ShipGlobal service and the rate used; the desk books ShipGlobal by hand. *Done
 when* a test order to Germany pays the German price, gets the same days, no tax, "Duties paid", and shows correctly to the admin; a US
 order is unchanged; e2e covers both.
 
-**Phase 5: the app.** The same card, Profile country and prices abroad in `apps/app`.
+**Phase 5: the app** (built 2026-11-25, not tried on a phone: EAS has no Android builds until 2026-12-01). The 5% card keeps the saving as Coins (sending home is on the website for now), Profile's Country row, prices and checkout abroad.
 
 ## 7. Open questions (filed in `docs/questions.md`; Q-68, Q-69, Q-70 and Q-72 answered by D-209)
 

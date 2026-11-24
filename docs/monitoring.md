@@ -10,7 +10,7 @@ A number past its **budget** is a warning (look for the cause that week); past t
 | Service | What to read (where) | Budget a month | Line (act) | Usual causes when it climbs |
 |---|---|---|---|---|
 | Vercel | ISR writes (Usage → ISR) | 100,000 | 150,000 | the store's fallback refresh (a day since D-189: each page visited after it is written again), crawlers walking pages `robots.ts` should keep them off, an admin action refreshing more than the pages it moved (`refreshProductPages`, `POST /admin/revalidate`), publishing more than 100 drafts at once (the whole store), bulk edits of many live listings, many deploys in a day, a page that changes on every request; check that D-145's narrow refreshes still hold (`features/admin/refresh-listings.ts`) |
-| Vercel | Function invocations (Usage → Functions) | 500,000 | 750,000 | a bot crawling search or `/api/browse` (rate limits; robots.txt keeps polite ones off `/search` since D-160), an uncached page, the uptime ping set too often |
+| Vercel | Function invocations (Usage → Functions) | 500,000 | 750,000 | a bot crawling search or `/api/browse` (rate limits; robots.txt keeps polite ones off `/search` since D-160), an uncached page, the uptime ping set too often; D-208: visitors outside the US (each page they open asks `/api/country/prices` once, and `/api/country` once a tab; US visitors ask neither) |
 | Vercel | Active CPU | 2 h | 3 h | a slow server render (see §3), image work on the server (there should be none) |
 | Vercel | Fast data transfer / origin transfer | 50 GB / 5 GB | 75 GB / 7.5 GB | photos served without the CDN (`x-vercel-cache` should say HIT, `ops.md` §Photos) |
 | Vercel | Image transformations | 0 | 1,000 | someone added `next/image` with Vercel's loader (D-140 forbids it) |
