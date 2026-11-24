@@ -172,6 +172,11 @@ export interface CheckoutBreakdown {
   heavyCents: number;
   heavyShownCents: number;
   taxCents: number;
+  /**
+   * D-205: Send home, beside the goods: added after tax, never part of the free line, a saving, a coupon or tax. Only
+   * there when there is a gift, so every quote without one is exactly as before.
+   */
+  homeGiftCents?: number;
   totalCents: number;
   promoApplied: boolean;
   /** D-191: the coupon was left off because the bulk saving is at least as much. */
@@ -186,7 +191,8 @@ function assertCents(value: number, name: string): void {
 /**
  * Returns null when the chosen shipping option has no price set: checkout must
  * refuse rather than guess a fee. Throws on impossible input. Tax (D-073) is the delivery state's rate on the taxable
- * lines' share of (subtotal - discount + shipping); none where IWC is not registered.
+ * lines' share of (subtotal - discount + shipping); none where IWC is not registered. A Send home gift (D-205) is added to
+ * the total last, so nothing above it moves.
  */
 export function quoteCheckout(
   lines: readonly QuoteLine[],
@@ -194,7 +200,9 @@ export function quoteCheckout(
   shipping: ShippingSettings,
   tax: QuoteTax | null = null,
   coins = 0,
+  giftCents = 0,
 ): CheckoutBreakdown | null {
+  assertCents(giftCents, 'giftCents');
   if (lines.length === 0) throw new RangeError('A quote needs at least one line');
   let subtotalCents = 0;
   let taxableCents = 0;
@@ -245,7 +253,7 @@ export function quoteCheckout(
     ? Math.round(((goods + shippingCents + retailerCents + heavy.cents) * taxableShare * tax.ratePct) / 100)
     : 0;
 
-  return {
+  const breakdown: CheckoutBreakdown = {
     subtotalCents,
     discountCents,
     bulkSavingCents: bulkCents,
@@ -259,10 +267,11 @@ export function quoteCheckout(
     heavyCents: heavy.cents,
     heavyShownCents: heavy.shownCents,
     taxCents,
-    totalCents: goods + shippingCents + retailerCents + heavy.cents + taxCents,
+    totalCents: goods + shippingCents + retailerCents + heavy.cents + taxCents + giftCents,
     promoApplied,
     promoBeatenByBulk: promoReached && !promoApplied,
   };
+  return giftCents > 0 ? { ...breakdown, homeGiftCents: giftCents } : breakdown;
 }
 
 /** The promo's discount on a subtotal (0 below its minimum). The server works it out before asking for the bag's charges. */

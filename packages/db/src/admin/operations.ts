@@ -68,7 +68,9 @@ export async function getAdminOrder(client: IwcClient, id: string) {
               source:product_sources(site, item_url, price_paise, in_stock, delivery_days))),
           events:order_events(id, kind, visible_to_customer, message, internal_note, actor, created_at, shipment_id),
           shipments:order_shipments!order_shipments_order_id_fkey(id, seq, kind, status, est_delivery_from, est_delivery_to,
-            shipping_cents, carrier, tracking_number, shipped_at)`,
+            shipping_cents, carrier, tracking_number, shipped_at),
+          home_gift:home_gifts(id, call_name, relation, region_name, upi, note, usd_cents, inr_paise, status, hold_until,
+            sent_at, utr, failed_reason, refund_id)`,
       )
       .eq('id', id)
       .maybeSingle(),

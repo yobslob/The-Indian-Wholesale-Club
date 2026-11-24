@@ -16,6 +16,7 @@ import { errorMessage, logger } from '@/lib/logger';
 import { mediaUrl, SITE_NAME } from '@/lib/site';
 
 import { adminNewOrderHtml, adminNewOrderSubject } from './admin-new-order';
+import { homeGiftEmail } from './home-gift';
 import { orderConfirmationHtml, orderConfirmationSubject } from './order-confirmation';
 import { orderUpdateEmail } from './order-update';
 import { isReservedAddress } from './reserved';
@@ -64,6 +65,8 @@ function compose(row: OutboxRow, order: OrderDetail): { subject: string; html: s
     return { subject: orderConfirmationSubject(order), html: orderConfirmationHtml(order, ctx) };
   }
   if (row.kind === 'admin_new_order') return { subject: adminNewOrderSubject(order), html: adminNewOrderHtml(order, ctx) };
+  // D-205: Send home reached them, or came back to the card
+  if (row.kind === 'home_gift_sent' || row.kind === 'home_gift_failed') return homeGiftEmail(row.kind, order, ctx);
   const { kind, shipment } = row.payload as { kind?: unknown; shipment?: unknown };
   if (row.kind !== 'order_update' || typeof kind !== 'string') throw new Error(`Unsupported outbox row (${row.kind})`);
   // D-154: an update about one of two shipments names it

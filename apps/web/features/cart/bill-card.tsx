@@ -4,6 +4,7 @@ import Link from 'next/link';
 
 import { formatUsd, type Bill } from '@repo/shared/domain';
 
+import { SEND_HOME_WORDS } from '@/features/send-home/words';
 import { useMoney } from '@/features/shell/market';
 
 /** The wallet's little coin (D-192). */
@@ -45,6 +46,7 @@ export function BillCard({
   updating = false,
   signInHref,
   usd = false,
+  gift = null,
 }: {
   bill: Bill | null;
   subtotalCents: number;
@@ -53,6 +55,8 @@ export function BillCard({
   signInHref?: string;
   /** Checkout: in US dollars, what the card is charged (D-197); the bag shows the visitor's dollars. */
   usd?: boolean;
+  /** D-205: the Send home line's words ("₹368 to Maa") and, at checkout, its Remove. */
+  gift?: { detail: string | null; onRemove?: () => void } | null;
 }): React.JSX.Element {
   const { format: fmt } = useMoney(usd);
   return (
@@ -113,6 +117,23 @@ export function BillCard({
               </Row>
             ) : null}
             {bill.taxCents !== null ? <Row label="Sales tax">{fmt(bill.taxCents)}</Row> : null}
+            {bill.homeGiftCents > 0 ? (
+              <Row
+                label={
+                  <>
+                    {SEND_HOME_WORDS.bill.line}
+                    {gift?.detail ? ` · ${gift.detail}` : ''}
+                    {gift?.onRemove ? (
+                      <button type="button" onClick={gift.onRemove} className="text-ink ml-2 min-h-6 text-[12.5px] font-medium underline underline-offset-[3px]">
+                        {SEND_HOME_WORDS.bill.remove}
+                      </button>
+                    ) : null}
+                  </>
+                }
+              >
+                {fmt(bill.homeGiftCents)}
+              </Row>
+            ) : null}
             <div className="border-line text-ink mt-1 flex items-baseline justify-between gap-3 border-t pt-3 text-base font-bold">
               <dt>{billTotalLabel(bill)}</dt>
               <dd className="m-0">{fmt(bill.totalCents)}</dd>

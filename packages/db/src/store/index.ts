@@ -37,6 +37,7 @@ import {
 export * from './recipes';
 export * from './schemas';
 export * from './search';
+export * from './send-home';
 
 /** Home + /states: all 36 regions, the tiles and Home's rows (1 round trip). */
 export async function getHome(client: IwcClient): Promise<HomeData> {

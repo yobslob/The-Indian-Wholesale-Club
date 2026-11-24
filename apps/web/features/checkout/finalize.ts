@@ -13,7 +13,7 @@ import {
   redeemPromo,
   rememberOrderAddress,
 } from '@repo/db/server';
-import { shippingAddressSchema } from '@repo/shared/domain';
+import { RELATIONS, shippingAddressSchema } from '@repo/shared/domain';
 
 import { revalidateAfterSale } from '@/features/catalog/revalidate';
 import { alertDollars, sendAlert } from '@/lib/alert';
@@ -55,6 +55,24 @@ export const pendingCheckoutSchema = z.object({
   shippingMethod: z.enum(['standard', 'express']).default('standard'),
   /** The product pages to refresh after the sale; absent in checkouts stored before 2026-10-06. */
   pages: z.array(z.object({ regionSlug: z.string().nullable(), productSlug: z.string() })).default([]),
+  /** D-205: the Send home gift, inside totalCents (absent before it existed). */
+  homeGift: z
+    .object({
+      usdCents: z.number().int().positive(),
+      inrPerUsd: z.number().positive(),
+      keepPct: z.number().min(0).default(0),
+      inrPaise: z.number().int().positive(),
+      relation: z.enum(RELATIONS),
+      callName: z.string(),
+      upi: z.string(),
+      regionId: z.string().uuid().nullable(),
+      note: z.string(),
+      senderFirstName: z.string(),
+      lovedOneId: z.string().uuid().nullable(),
+      save: z.boolean(),
+    })
+    .nullable()
+    .default(null),
 });
 export type PendingCheckout = z.infer<typeof pendingCheckoutSchema>;
 

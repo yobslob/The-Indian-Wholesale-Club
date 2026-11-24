@@ -1,5 +1,7 @@
 import { formatUsd } from '@repo/shared/domain';
 
+import { SEND_HOME_WORDS } from '@/features/send-home/words';
+
 /**
  * Invoice A, the customer's (D-140, plan F4): what the customer paid, from the order only, so it can never show
  * operations data (D-003). Its number is "A-" and the order number. Refunds appear as credit notes under the total.
@@ -22,6 +24,8 @@ export interface InvoiceAData {
   /** Heavy-item shipping, inside shippingCents (founder 2026-10-24; the admin's copy knows it apart). */
   heavyCents?: number;
   taxCents: number;
+  /** D-205: a Send home gift, shown after the tax as not a purchase (0 or absent: none). */
+  homeGiftCents?: number;
   totalCents: number;
   refundedCents: number;
   sellerName: string;
@@ -47,6 +51,7 @@ export function InvoiceA({ data: d }: { data: InvoiceAData }): React.JSX.Element
     lines.push([d.express ? 'Express shipping' : d.shippingCents > 0 ? 'Shipping & retailer charges' : 'Shipping', d.shippingCents === 0 ? 'Free' : formatUsd(d.shippingCents)]);
   }
   lines.push(['Sales tax', formatUsd(d.taxCents)]);
+  if ((d.homeGiftCents ?? 0) > 0) lines.push([SEND_HOME_WORDS.bill.invoice, formatUsd(d.homeGiftCents!)]);
 
   return (
     <article className="font-body text-ink mx-auto max-w-[760px] text-[13px] leading-[1.45]" aria-label={`Invoice A-${d.orderNumber}`}>

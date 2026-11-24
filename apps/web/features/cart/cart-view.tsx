@@ -3,6 +3,9 @@
 import Link from 'next/link';
 import { useEffect, useState } from 'react';
 
+import { SendHomeCard } from '@/features/send-home/bag-card';
+import { CheckoutLink } from '@/features/send-home/checkout-link';
+import { useGiftDetail } from '@/features/send-home/use-gift';
 import { useMoney } from '@/features/shell/market';
 
 import { BagGoalLine } from './bag-goal-line';
@@ -28,15 +31,26 @@ export function EmptyLine(): React.JSX.Element {
   );
 }
 
-/** D-192: the goal, the coupons and the bill, in that order, on the bag page and in the panel alike. */
-export function BagExtras({ bag, onShop }: { bag: BagBill; onShop?: () => void }): React.JSX.Element {
+/**
+ * D-192: the goal, the coupons and the bill, in that order, on the bag page and in the panel alike. D-205: on the bag page
+ * only, Send home's card sits above the bill.
+ */
+export function BagExtras({ bag, onShop, gift = false }: { bag: BagBill; onShop?: () => void; gift?: boolean }): React.JSX.Element {
   const charges = useBagCharges();
   const free = charges?.freeMinCents ?? null;
+  const detail = useGiftDetail(bag.goodsTotalCents);
   return (
     <div className="grid gap-3">
       <BagGoalLine couponOn={bag.coupon !== null} onShop={onShop} />
       <CouponCard bag={bag} freeGap={free !== null && bag.subtotalCents < free} onShop={onShop} />
-      <BillCard bill={bag.bill} subtotalCents={bag.subtotalCents} updating={bag.updating} signInHref={bag.offers?.coins === null ? '/login?next=/cart' : undefined} />
+      {gift ? <SendHomeCard baseTotalCents={bag.goodsTotalCents} /> : null}
+      <BillCard
+        bill={bag.bill}
+        subtotalCents={bag.subtotalCents}
+        updating={bag.updating}
+        signInHref={bag.offers?.coins === null ? '/login?next=/cart' : undefined}
+        gift={{ detail }}
+      />
     </div>
   );
 }
@@ -103,17 +117,13 @@ function FilledBag(): React.JSX.Element {
       <div className="grid items-start gap-3 min-[900px]:grid-cols-[minmax(0,1.25fr)_minmax(0,1fr)] min-[900px]:gap-8">
         <BagLines />
         <div className="grid gap-3 min-[900px]:sticky min-[900px]:top-[calc(var(--top-h)+16px)]">
-          <BagExtras bag={bag} />
-          <Link href="/checkout" className={`${checkoutButton} press hidden w-full min-[900px]:inline-grid`}>
-            Checkout
-          </Link>
+          <BagExtras bag={bag} gift />
+          <CheckoutLink className={`${checkoutButton} press hidden w-full min-[900px]:inline-grid`}>Checkout</CheckoutLink>
         </div>
       </div>
       <div className="bg-paper border-line sticky bottom-[max(8px,env(safe-area-inset-bottom))] z-10 mt-3 flex items-center justify-between gap-4 rounded-[20px] border py-2 pl-4 pr-2 shadow-[0_6px_24px_rgba(30,27,22,0.16)] min-[900px]:hidden">
         <TotalNow bag={bag} />
-        <Link href="/checkout" className={`${checkoutButton} press h-12 px-8`}>
-          Checkout
-        </Link>
+        <CheckoutLink className={`${checkoutButton} press h-12 px-8`}>Checkout</CheckoutLink>
       </div>
     </div>
   );

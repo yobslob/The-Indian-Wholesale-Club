@@ -23,6 +23,8 @@ function groups(): [string, Item[]][] {
         { href: '/admin/orders', label: 'Orders', count: 'ordersToShip', hint: 'Arrived · to ship' },
         // D-140: sold pieces to order from their shops
         { href: '/admin/to-order', label: 'To order', count: 'toOrder', hint: 'Pieces to order from shops' },
+        // D-205: gifts home to pay from the desk's UPI app
+        { href: '/admin/send-home', label: 'Send home', count: 'sendHome', hint: 'Gifts to send' },
       ],
     ],
     [

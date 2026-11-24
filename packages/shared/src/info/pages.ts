@@ -167,6 +167,10 @@ const terms = (): Block[] => [
   p('Before you pay, you see an estimated delivery window. If it moves later, we email you, and you can keep your order with the new date or cancel it for a full refund. If a piece you ordered turns out to be unavailable, we refund it.'),
   h('Cancelling and returns'),
   p('You can cancel until your order leaves India, and return pieces after delivery, as set out on ', { link: 'Shipping & returns', to: '/shipping-returns' }, '. Your order page always shows what you would get back before you ask.'),
+  // D-206: the only place the store states what IWC keeps of a Send home gift (send_home_keep_pct, 3). Claude's words,
+  // written at the founder's request; the IWC lawyer reviews them.
+  h('Send home gifts'),
+  p('You can add a gift for someone in India to your order. You pay it in US dollars with the order, and it is not part of what you buy: no shipping, saving, coupon or tax applies to it, and it can be no more than the order itself. We send it in rupees to the UPI ID or UPI number you give us, at that day’s exchange rate, and keep 3% of it for sending it. The rupees shown before you pay are what they receive. If we cannot send it, we refund the gift to your card.'),
   h('Reviews'),
   p('We read every review before it appears. Only buyers who received the product can add photos.'),
   h('Your account'),

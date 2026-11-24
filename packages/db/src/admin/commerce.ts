@@ -100,19 +100,22 @@ export interface WaitingCounts {
   drafts: number;
   reviews: number;
   returns: number;
+  /** D-205: Send home gifts not sent yet (to send or on hold). */
+  sendHome: number;
 }
 
 export async function getWaitingCounts(client: IwcClient): Promise<WaitingCounts> {
   const head = { count: 'exact', head: true } as const;
-  const [ordersToShip, toOrder, drafts, reviews, returns] = await Promise.all([
+  const [ordersToShip, toOrder, drafts, reviews, returns, sendHome] = await Promise.all([
     countRows(client.from('orders').select('id', head).eq('status', 'arrived')),
     // the To order list's own rule (paid, open orders, active lines), so the sidebar and the list agree
     client.rpc('admin_to_order', undefined, { get: true }).then((r) => unwrap(r).length),
     countRows(client.from('products').select('id', head).eq('status', 'draft')),
     countRows(client.from('reviews').select('id', head).eq('status', 'pending')),
     countRows(client.from('returns').select('id', head).eq('status', 'requested')),
+    countRows(client.from('home_gifts').select('id', head).in('status', ['to_send', 'on_hold'])),
   ]);
-  return { ordersToShip, toOrder, drafts, reviews, returns };
+  return { ordersToShip, toOrder, drafts, reviews, returns, sendHome };
 }
 
 /**

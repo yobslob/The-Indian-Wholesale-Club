@@ -74,6 +74,8 @@ export default async function TodayPage(): Promise<React.JSX.Element> {
         href: '/admin/to-order',
         urgent: true,
       },
+      // D-205: gifts home, paid from the desk's UPI app (to send or on hold)
+      { n: counts.sendHome, what: 'Send home: gifts to send', sub: 'Pay each from your UPI app, then mark it sent', go: 'Send them', href: '/admin/send-home' },
       { n: pipeline.ordered, what: 'Ordered, on the way to the hub', sub: 'Mark each at the hub when it arrives', go: 'Open', href: '/admin/to-order?view=ordered' },
       { n: pipeline.toWeigh, what: 'At the hub, to weigh', go: 'Weigh them', href: '/admin/to-order?view=weigh' },
       { n: pipeline.held, what: 'Prices held for you', sub: "A shop's price jumped; accept it or stop using that shop", go: 'Review', href: '/admin/import/auto' },

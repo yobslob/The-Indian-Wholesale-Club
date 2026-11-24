@@ -1,4 +1,6 @@
-import { CUSTOMER_STATUS_LABEL, formatDeliveryWindow, formatUsd } from '@repo/shared/domain';
+import { CUSTOMER_STATUS_LABEL, formatDeliveryWindow, formatInr, formatUsd } from '@repo/shared/domain';
+
+import { SEND_HOME_WORDS } from '@/features/send-home/words';
 
 import { button, escapeHtml, frame, paragraph, pieces, small, totals, type EmailContext } from './frame';
 import { arrives, piecesOf, shipmentName } from './shipments';
@@ -35,8 +37,11 @@ export function orderConfirmationHtml(order: OrderDetail, ctx: EmailContext): st
   rows.push(
     [o.shipping_method === 'express' ? 'Express shipping' : o.shipping_cents > 0 ? 'Shipping & retailer charges' : 'Shipping', formatUsd(o.shipping_cents)],
     ['Sales tax', formatUsd(o.tax_cents)],
-    ['Total', formatUsd(o.total_cents)],
   );
+  // D-205: the gift is its own line, after the tax and outside the goods
+  if (o.home_gift_cents > 0) rows.push([SEND_HOME_WORDS.bill.invoice, formatUsd(o.home_gift_cents)]);
+  rows.push(['Total', formatUsd(o.total_cents)]);
+  const gift = order.home_gift;
   const body = [
     paragraph(
       `Thank you. Your order <strong>${escapeHtml(o.order_number)}</strong> is ${escapeHtml(CUSTOMER_STATUS_LABEL[o.customer_status].toLowerCase())}.${
@@ -52,6 +57,7 @@ export function orderConfirmationHtml(order: OrderDetail, ctx: EmailContext): st
         ])
       : [window ? paragraph(`Estimated delivery: <strong>${escapeHtml(window)}</strong>`) : '', pieces(order.items, ctx)]),
     totals(rows),
+    gift ? paragraph(escapeHtml(SEND_HOME_WORDS.emails.confirmation(formatInr(gift.inr_paise), gift.call_name))) : '',
     small(`Shipping to:<br>${addressLines(o.shipping_address).map(escapeHtml).join('<br>')}`),
     button(`${ctx.siteUrl}/orders/${encodeURIComponent(o.order_number)}`, 'See your order'),
   ].join('\n');
