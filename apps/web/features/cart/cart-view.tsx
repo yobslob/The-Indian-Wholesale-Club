@@ -4,6 +4,7 @@ import Link from 'next/link';
 import { useEffect, useState } from 'react';
 
 import { SendHomeCard } from '@/features/send-home/bag-card';
+import { CheckoutLink, SavingBillLine } from '@/features/send-home/bill-line';
 import { useMoney } from '@/features/shell/market';
 
 import { BagGoalLine } from './bag-goal-line';
@@ -41,6 +42,7 @@ export function BagExtras({ bag, onShop, gift = false }: { bag: BagBill; onShop?
         subtotalCents={bag.subtotalCents}
         updating={bag.updating}
         signInHref={bag.offers?.coins === null ? '/login?next=/cart' : undefined}
+        after={gift ? <SavingBillLine goodsCents={bag.saveBaseCents} /> : null}
       />
     </div>
   );
@@ -109,16 +111,16 @@ function FilledBag(): React.JSX.Element {
         <BagLines />
         <div className="grid gap-3 min-[900px]:sticky min-[900px]:top-[calc(var(--top-h)+16px)]">
           <BagExtras bag={bag} gift />
-          <Link href="/checkout" className={`${checkoutButton} press hidden w-full min-[900px]:inline-grid`}>
+          <CheckoutLink goodsCents={bag.saveBaseCents} className={`${checkoutButton} press hidden w-full min-[900px]:inline-grid`}>
             Checkout
-          </Link>
+          </CheckoutLink>
         </div>
       </div>
       <div className="bg-paper border-line sticky bottom-[max(8px,env(safe-area-inset-bottom))] z-10 mt-3 flex items-center justify-between gap-4 rounded-[20px] border py-2 pl-4 pr-2 shadow-[0_6px_24px_rgba(30,27,22,0.16)] min-[900px]:hidden">
         <TotalNow bag={bag} />
-        <Link href="/checkout" className={`${checkoutButton} press h-12 px-8`}>
+        <CheckoutLink goodsCents={bag.saveBaseCents} className={`${checkoutButton} press h-12 px-8`}>
           Checkout
-        </Link>
+        </CheckoutLink>
       </div>
     </div>
   );

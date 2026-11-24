@@ -4,17 +4,28 @@
  * Never "tip", "donation", "remittance" or "transfer" (docs/product.md §Glossary).
  */
 export const SEND_HOME_WORDS = {
-  /** D-208: the bag's card for the 5% saving (Claude's draft, as plan-world §2 rule 6 has it). */
+  /** D-211: the bag's card for the 5% saving, one question with two answers (Claude's draft, the founder's pick of screen 9). */
   card: {
-    kicker: 'Your 5%',
-    head: (usd: string) => `You're saving ${usd} on this bag.`,
-    ask: (inr: string) => `Send it home as ${inr}, or keep it for your next order.`,
-    to: (inr: string, name: string) => `${inr} goes to ${name}'s UPI after you pay.`,
-    closed: 'It goes into your Coins for your next order.',
+    kicker: 'Your 5% back',
+    head: (usd: string) => `You get ${usd} back`,
+    sub: '5% of your items, paid by IWC. Your total stays the same.',
+    question: 'Where should it go?',
     keep: 'Keep it',
+    keepSub: (coins: string) => `${coins} Coins, off your next order`,
+    send: 'Send it home',
+    sendTo: (name: string) => `Send it to ${name}`,
+    sendSub: 'IWC sends it to family in India, by UPI',
+    sendSubTo: (name: string) => `IWC sends it to ${name}'s UPI after you pay`,
+    sendSubLast: (owner: string, inr: string, date: string) => `To ${owner} UPI after you pay · last time ${inr}, ${date}`,
+    closed: 'It goes into your Coins for your next order.',
+    whoChips: 'Who gets it',
+    to: 'To',
     someoneElse: 'Someone else',
-    whoChips: 'Where your saving goes',
-    lastTime: (inr: string, date: string) => `Last time: ${inr} on ${date}.`,
+    /** The bill's quiet line under the total, outside the sum. */
+    bill: 'After you pay, your 5% back',
+    billCoins: (usd: string) => `${usd} to your Coins`,
+    billTo: (inr: string, name: string) => `${inr} to ${name}`,
+    billPick: (inr: string) => `pick who gets ${inr}`,
   },
   /** D-208: checkout's one line above Pay. */
   checkout: {

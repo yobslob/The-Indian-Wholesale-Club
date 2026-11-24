@@ -56,16 +56,30 @@ async function payWithTestCard(page: Page): Promise<string> {
   return (await page.locator('strong').filter({ hasText: ORDER_NUMBER }).textContent())?.trim() ?? '';
 }
 
-test('a guest keeps the 5% by default: nothing joins the bill, Checkout goes straight on, the Coins wait', async ({ page }) => {
+test('a guest starts on Send it home; Keep it hides the names; Checkout asks who first, Keep it instead goes on to Coins', async ({ page }) => {
   await page.setViewportSize({ width: 390, height: 844 });
   await bagWithSaree(page);
-  const card = page.getByRole('region', { name: 'Your 5%' });
-  await expect(card.getByRole('heading', { name: /^You're saving \$[\d.]+ on this bag\.$/ })).toBeVisible();
-  await expect(card.getByRole('button', { name: 'Keep it' })).toHaveAttribute('aria-pressed', 'true');
-  await expect(page.getByRole('region', { name: 'Bill' }).getByText(/^Sent home/)).toHaveCount(0);
+  const card = page.getByRole('region', { name: 'Your 5% back' });
+  const bill = page.getByRole('region', { name: 'Bill' });
+  await expect(card.getByRole('heading', { name: /^You get \$[\d.]+ back$/ })).toBeVisible();
+  // D-211: Send it home is picked from the start, its names showing; nothing joins the bill's sum
+  await expect(card.getByRole('radio', { name: /Send it home/ })).toHaveAttribute('aria-checked', 'true');
+  await expect(card.getByRole('group', { name: 'Who gets it' })).toBeVisible();
+  await expect(bill.getByText(/^pick who gets ₹[\d,]+$/)).toBeVisible();
+  await expect(bill.getByText(/^Sent home/)).toHaveCount(0);
+  // Keep it hides the names; Send it home brings them back
+  await card.getByRole('radio', { name: /Keep it/ }).click();
+  await expect(card.getByRole('group', { name: 'Who gets it' })).toHaveCount(0);
+  await expect(bill.getByText(/^\$[\d.]+ to your Coins$/)).toBeVisible();
+  await card.getByRole('radio', { name: /Send it home/ }).click();
+  await expect(card.getByRole('group', { name: 'Who gets it' })).toBeVisible();
+  // nobody named: Checkout asks who first
   await page.getByRole('link', { name: 'Checkout' }).first().click();
+  const sheet = page.getByRole('dialog', { name: "Who's it for?" });
+  await expect(sheet).toBeVisible();
+  await expect(page).toHaveURL(/\/cart$/);
+  await sheet.getByRole('button', { name: 'Keep it instead' }).click();
   await expect(page).toHaveURL(/\/checkout$/);
-  await expect(page.getByRole('dialog', { name: "Who's it for?" })).toHaveCount(0);
 
   // Pricing and paying need Stripe's test keys (checkout answers 503 without them, as in CI)
   test.skip(!stripeTestKeysPresent(), 'Stripe test keys are not set: checkout cannot price or pay');
@@ -86,7 +100,7 @@ test('a guest keeps the 5% by default: nothing joins the bill, Checkout goes str
 test('Maa: the sheet names her, the 5% goes home by IWC, the customer pays the same', async ({ page }) => {
   await page.setViewportSize({ width: 390, height: 844 });
   await bagWithSaree(page);
-  const card = page.getByRole('region', { name: 'Your 5%' });
+  const card = page.getByRole('region', { name: 'Your 5% back' });
   const total = await page.getByRole('region', { name: 'Bill' }).getByText(/^\$[\d,.]+$/).last().textContent();
   await card.getByRole('button', { name: 'Maa' }).click();
   const sheet = page.getByRole('dialog', { name: "Who's it for?" });
@@ -94,7 +108,9 @@ test('Maa: the sheet names her, the 5% goes home by IWC, the customer pays the s
   await sheet.getByLabel('Their UPI ID or UPI number').fill('lakshmi.m@okhdfcbank');
   await expect(sheet.getByText('A valid UPI ID (Google Pay).')).toBeVisible();
   await sheet.getByRole('button', { name: /^Send ₹[\d,]+ to Maa$/ }).click();
-  await expect(card.getByText(/^₹[\d,]+ goes to Maa's UPI after you pay\./)).toBeVisible();
+  await expect(card.getByRole('radio', { name: /Send it to Maa/ })).toHaveAttribute('aria-checked', 'true');
+  await expect(card.getByText("IWC sends it to Maa's UPI after you pay")).toBeVisible();
+  await expect(page.getByRole('region', { name: 'Bill' }).getByText(/^₹[\d,]+ to Maa$/)).toBeVisible();
   await expect(page.getByRole('region', { name: 'Bill' }).getByText(/^\$[\d,.]+$/).last()).toHaveText(total ?? '');
 
   test.skip(!stripeTestKeysPresent(), 'Stripe test keys are not set: checkout cannot price or pay');

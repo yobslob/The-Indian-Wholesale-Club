@@ -16,7 +16,7 @@ import { storeClient } from '@/lib/supabase/store';
 export async function GET(
   request: Request,
 ): Promise<NextResponse<{ sendHome: SendHome } | { regions: { id: string; name: string }[] } | { error: string }>> {
-  const limited = limitRequestLocal(request.headers, 'browse');
+  const limited = limitRequestLocal(request.headers, 'sendHome');
   if (limited) return limited;
   try {
     // the sheet's "Where's home?": the 36 states and UTs, the same for everyone (D-002), kept by the CDN a day

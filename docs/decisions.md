@@ -539,7 +539,7 @@ What it means for the build:
 - Written as the store writes a window: "7 – 12 delivery days".
 - The founder can still change the days in Admin → Settings → Delivery at any time; the docs that stated "7 delivery days" now say 7 – 12.
 
-**D-208 · 2026-11-24 · founder: no money sent for customers; 5% of every bag saved, sent home by IWC or kept as Coins; coupons go; the flag always on Profile; IWC open in every country with ShipGlobal freight by country** · Supersedes D-205's and D-206's customer-paid gift (the desk, the sheet, the UPI checker and the daily rate stay), D-191's and D-192's coupons, D-193's 10% off; changes D-199 (the flag for every country) and D-197/D-198 (every country, not three); answers Q-61's courier and countries. The plan is `docs/plan-world.md` (§2 holds every rule). · confirmed by D-210 (no % taken off the gift)
+**D-208 · 2026-11-24 · founder: no money sent for customers; 5% of every bag saved, sent home by IWC or kept as Coins; coupons go; the flag always on Profile; IWC open in every country with ShipGlobal freight by country** · Supersedes D-205's and D-206's customer-paid gift (the desk, the sheet, the UPI checker and the daily rate stay), D-191's and D-192's coupons, D-193's 10% off; changes D-199 (the flag for every country) and D-197/D-198 (every country, not three); answers Q-61's courier and countries. The plan is `docs/plan-world.md` (§2 holds every rule). · confirmed by D-210 (no % taken off the gift) · its card words and Keep-by-default changed by D-211
 
 Founder, verbatim: "The functioning changed:
 
@@ -580,3 +580,17 @@ Founder, verbatim: "also we are not taking any % off the gift, you got confused,
 What it means for the build:
 - The 5% saving is IWC's own cut from its margin on the order, in place of the coupons' discount: the customer pays the same, and whatever goes home goes in full (rupees = dollars × the day's rate, to the rupee).
 - No 3% anywhere: the Terms' Send home paragraph (D-206) is rewritten for the saving, Settings no longer shows "IWC keeps", and Admin → Send home's rate line no longer says what IWC keeps (`send_home_keep_pct` stays 0, D-208's migration).
+
+**D-211 · 2026-11-25 · founder: the 5% card asks one question with two answers; it starts on Send it home; Keep it hides the names** · Changes D-208's card words and its "Keep is the default" (plan-world §2 rules 2 and 6, §4)
+
+Founder, verbatim, on the live card ("YOUR 5% · You're saving $1.10 on this bag." with Maa · Papa · Didi · Someone else · Keep it): "This is not very good design, this is not ergonomic user friendly easy to understand. this is confusing. Please make it ergonomic, design it again properly."
+
+Then, on Claude's two redesigned screens (the design canvas, screens 8 and 9): "I very much like the 9th slide, do one thing remove the 8th slide and by default keep the 9th slide, when the user clicks on keep it, hide the maa papa didi buttons." And: "you do it yourself and then open a PR"
+
+What it means for the build (`apps/web/features/send-home/bag-card.tsx`, `bill-line.tsx`, `words.ts`):
+- **What it is, said first:** a "5%" badge, **"You get $1.10 back"** and "5% of your items, paid by IWC. Your total stays the same." The live headline "You're saving $1.10 on this bag." read as a discount the bill never showed, beside the bill's own "You're saving" box.
+- **One question, two answers:** "Where should it go?" with two radio rows, each with its amount: **Keep it** ("110 Coins, off your next order", $1.10) and **Send it home** ("IWC sends it to family in India, by UPI", ₹102). Picking a person makes the row **"Send it to Maa"** ("IWC sends it to Maa's UPI after you pay", or "To her UPI after you pay · last time ₹460, Nov 2").
+- **Starts on Send it home** (screen 9 by default): a returning sender on their last loved one; a first-timer with nobody picked yet. Supersedes D-208's "Keep is the default".
+- **The names show only while Send it home is picked:** Maa · Papa · Didi · Someone else (or the saved loved ones) under "To", inside the Send row; **Keep it hides them**, Send it home brings them back.
+- **The bill repeats the choice** under the total, outside the sum: "After you pay, your 5% back · $1.10 to your Coins" / "₹102 to Maa" / "pick who gets ₹102". Still nothing joins the sum (D-208).
+*Interpretation (proposed, confirm when convenient):* a first-timer on Send it home with nobody picked who taps Checkout gets the "Who's it for?" sheet first (its last line "Keep it instead"), so no one pays believing the 5% goes home when it would go to Coins; reaching checkout another way (the bag panel) keeps it as Coins, which checkout's line says. The app's card follows in its own change.

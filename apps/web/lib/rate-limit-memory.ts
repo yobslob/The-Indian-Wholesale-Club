@@ -13,6 +13,9 @@ export const RULES = {
   webhook: { limit: 120, windowMs: 60_000 },
   /** See all's filters and Show more (/api/browse, D-136): a person clicks a few a minute; this server only. */
   browse: { limit: 120, windowMs: 60_000 },
+  /** The bag's Send home card (/api/send-home, D-205): one read per tab every five minutes; its own count, so the
+   * country fetch every page makes (also 'browse') never hides the card; this server only. */
+  sendHome: { limit: 60, windowMs: 60_000 },
   /** A card's + reading its options (/api/card-options, D-145): one per piece pressed; this server only. */
   cardOptions: { limit: 240, windowMs: 60_000 },
   /** The search boxes' suggestions list (/api/search/hints, D-160): one per visitor, then the CDN's; this server only. */

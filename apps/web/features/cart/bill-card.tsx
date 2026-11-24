@@ -47,6 +47,7 @@ export function BillCard({
   signInHref,
   usd = false,
   gift = null,
+  after = null,
 }: {
   bill: Bill | null;
   subtotalCents: number;
@@ -57,6 +58,8 @@ export function BillCard({
   usd?: boolean;
   /** D-205: the Send home line's words ("₹368 to Maa") and, at checkout, its Remove. */
   gift?: { detail: string | null; onRemove?: () => void } | null;
+  /** D-211: a quiet line under everything, outside the sum (the bag's 5% back). */
+  after?: React.ReactNode;
 }): React.JSX.Element {
   const { format: fmt } = useMoney(usd);
   return (
@@ -152,6 +155,7 @@ export function BillCard({
           <span>{formatUsd(bill.savingCents)}</span>
         </p>
       ) : null}
+      {bill ? after : null}
     </section>
   );
 }

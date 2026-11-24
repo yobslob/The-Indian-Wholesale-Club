@@ -29,7 +29,19 @@ const useSettingsStore = create<State>(() => {
   return { at: last?.at ?? 0, value: last?.value, loading: false };
 });
 
-async function read(): Promise<void> {
+/** The read in flight: the card, the bill's line and both Checkout buttons ask at once, and share one request. */
+let inFlight: Promise<void> | null = null;
+/** A failed read is tried again after this, not at once (a refused read would otherwise ask in a loop). */
+const RETRY_MS = 30_000;
+
+function read(): Promise<void> {
+  inFlight ??= readOnce().finally(() => {
+    inFlight = null;
+  });
+  return inFlight;
+}
+
+async function readOnce(): Promise<void> {
   useSettingsStore.setState({ loading: true });
   try {
     const res = await fetch('/api/send-home', { cache: 'no-store' });
@@ -43,8 +55,8 @@ async function read(): Promise<void> {
       // storage blocked: the next page asks again
     }
   } catch {
-    // no card this time: the bag works as before
-    useSettingsStore.setState({ loading: false, value: useSettingsStore.getState().value ?? null });
+    // no card this time: the bag works as before, and asks again in a little while
+    useSettingsStore.setState({ at: Date.now() - KEEP_MS + RETRY_MS, loading: false, value: useSettingsStore.getState().value ?? null });
   }
 }
 
