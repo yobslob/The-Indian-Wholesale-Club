@@ -1,0 +1,2128 @@
+[
+  {
+    "slug": "kanji-vada",
+    "name": "Kanji Vada",
+    "kind": "snacks",
+    "state": "Rajasthan",
+    "rank": 361,
+    "blurb": "Moong dal vadas soaked in a sour mustard water that ferments for two days. Made for Holi.",
+    "minutes": 30,
+    "soak_hours": 48,
+    "serves": 4,
+    "effort": "medium",
+    "ingredients": [
+      {
+        "label": "Moong dal",
+        "amount": "1 cup",
+        "source": "iwc",
+        "match_words": "moong dal"
+      },
+      {
+        "label": "Mustard seeds",
+        "amount": "2 tbsp",
+        "source": "iwc",
+        "match_words": "mustard seeds"
+      },
+      {
+        "label": "Red chilli powder",
+        "amount": "1 tsp",
+        "source": "iwc",
+        "match_words": "red chilli powder"
+      },
+      {
+        "label": "Hing",
+        "amount": "¼ tsp",
+        "source": "iwc",
+        "match_words": "hing"
+      },
+      {
+        "label": "Kala namak",
+        "amount": "1 tsp",
+        "source": "iwc",
+        "match_words": "kala namak"
+      },
+      {
+        "label": "Water",
+        "amount": "6 cups",
+        "source": "local"
+      },
+      {
+        "label": "Oil",
+        "amount": "for frying",
+        "source": "local"
+      }
+    ],
+    "steps": [
+      {
+        "text": "Grind the mustard seeds coarsely and stir them with chilli powder, hing, kala namak and salt into boiled, cooled water. Leave in a jar in the sun for two days.",
+        "minutes": 5
+      },
+      {
+        "text": "Soak the dal four hours and grind it thick; whisk until light.",
+        "minutes": 10
+      },
+      {
+        "text": "Fry small vadas, then soak them in warm water for ten minutes and squeeze.",
+        "minutes": 15
+      },
+      {
+        "text": "Drop the vadas into the kanji and leave for a few hours before serving.",
+        "minutes": null
+      }
+    ]
+  },
+  {
+    "slug": "muthia",
+    "name": "Muthia",
+    "kind": "snacks",
+    "state": "Gujarat",
+    "rank": 362,
+    "blurb": "Steamed rolls of flour and grated vegetables, sliced and tempered with sesame.",
+    "minutes": 45,
+    "soak_hours": null,
+    "serves": 4,
+    "effort": "easy",
+    "ingredients": [
+      {
+        "label": "Atta",
+        "amount": "1 cup",
+        "source": "iwc",
+        "match_words": "atta"
+      },
+      {
+        "label": "Besan",
+        "amount": "½ cup",
+        "source": "iwc",
+        "match_words": "besan"
+      },
+      {
+        "label": "Sooji",
+        "amount": "2 tbsp",
+        "source": "iwc",
+        "match_words": "sooji"
+      },
+      {
+        "label": "Sesame seeds",
+        "amount": "1 tbsp",
+        "source": "iwc",
+        "match_words": "sesame seeds"
+      },
+      {
+        "label": "Mustard seeds",
+        "amount": "1 tsp",
+        "source": "iwc",
+        "match_words": "mustard seeds"
+      },
+      {
+        "label": "Turmeric",
+        "amount": "½ tsp",
+        "source": "iwc",
+        "match_words": "turmeric"
+      },
+      {
+        "label": "Red chilli powder",
+        "amount": "1 tsp",
+        "source": "iwc",
+        "match_words": "red chilli powder"
+      },
+      {
+        "label": "Baking soda",
+        "amount": "a pinch",
+        "source": "iwc",
+        "match_words": "baking soda"
+      },
+      {
+        "label": "Hing",
+        "amount": "a pinch",
+        "source": "iwc",
+        "match_words": "hing"
+      },
+      {
+        "label": "Bottle gourd or methi leaves",
+        "amount": "1½ cups",
+        "source": "local"
+      },
+      {
+        "label": "Yogurt",
+        "amount": "2 tbsp",
+        "source": "local"
+      },
+      {
+        "label": "Ginger",
+        "amount": "1 inch",
+        "source": "local"
+      },
+      {
+        "label": "Green chillies",
+        "amount": "2",
+        "source": "local"
+      },
+      {
+        "label": "Sugar",
+        "amount": "1 tsp",
+        "source": "local"
+      },
+      {
+        "label": "Oil",
+        "amount": "3 tbsp",
+        "source": "local"
+      },
+      {
+        "label": "Dry ginger powder",
+        "amount": "½ tsp",
+        "source": "iwc",
+        "match_words": "dry ginger powder",
+        "instead_of": "Ginger"
+      }
+    ],
+    "steps": [
+      {
+        "text": "Mix the flours, grated gourd, ginger, chillies, yogurt, spices, sugar, soda, salt and a spoon of oil into a soft dough.",
+        "minutes": 5
+      },
+      {
+        "text": "Shape into logs and steam for 20 minutes. Cool and slice.",
+        "minutes": 25
+      },
+      {
+        "text": "Crackle the mustard, sesame and hing in oil.",
+        "minutes": 2
+      },
+      {
+        "text": "Toss the slices in it until crisp at the edges.",
+        "minutes": 5
+      }
+    ]
+  },
+  {
+    "slug": "handvo",
+    "name": "Handvo",
+    "kind": "snacks",
+    "state": "Gujarat",
+    "rank": 363,
+    "blurb": "Savoury rice and lentil cake with bottle gourd, baked or cooked in a pan with a sesame crust.",
+    "minutes": 60,
+    "soak_hours": 6,
+    "serves": 4,
+    "effort": "medium",
+    "ingredients": [
+      {
+        "label": "Raw rice",
+        "amount": "1 cup",
+        "source": "iwc",
+        "match_words": "raw rice"
+      },
+      {
+        "label": "Toor dal",
+        "amount": "¼ cup",
+        "source": "iwc",
+        "match_words": "toor dal"
+      },
+      {
+        "label": "Chana dal",
+        "amount": "¼ cup",
+        "source": "iwc",
+        "match_words": "chana dal"
+      },
+      {
+        "label": "Urad dal",
+        "amount": "2 tbsp",
+        "source": "iwc",
+        "match_words": "urad dal"
+      },
+      {
+        "label": "Sesame seeds",
+        "amount": "2 tbsp",
+        "source": "iwc",
+        "match_words": "sesame seeds"
+      },
+      {
+        "label": "Mustard seeds",
+        "amount": "1 tsp",
+        "source": "iwc",
+        "match_words": "mustard seeds"
+      },
+      {
+        "label": "Turmeric",
+        "amount": "½ tsp",
+        "source": "iwc",
+        "match_words": "turmeric"
+      },
+      {
+        "label": "Eno",
+        "amount": "1 tsp",
+        "source": "iwc",
+        "match_words": "eno"
+      },
+      {
+        "label": "Hing",
+        "amount": "a pinch",
+        "source": "iwc",
+        "match_words": "hing"
+      },
+      {
+        "label": "Bottle gourd",
+        "amount": "1 cup grated",
+        "source": "local"
+      },
+      {
+        "label": "Yogurt",
+        "amount": "½ cup",
+        "source": "local"
+      },
+      {
+        "label": "Ginger",
+        "amount": "1 inch",
+        "source": "local"
+      },
+      {
+        "label": "Green chillies",
+        "amount": "2",
+        "source": "local"
+      },
+      {
+        "label": "Oil",
+        "amount": "4 tbsp",
+        "source": "local"
+      },
+      {
+        "label": "Dry ginger powder",
+        "amount": "½ tsp",
+        "source": "iwc",
+        "match_words": "dry ginger powder",
+        "instead_of": "Ginger"
+      },
+      {
+        "label": "Red chilli powder",
+        "amount": "½ tsp",
+        "source": "iwc",
+        "match_words": "red chilli powder",
+        "instead_of": "Green chillies"
+      }
+    ],
+    "steps": [
+      {
+        "text": "Soak the rice and dals six hours, grind coarse with yogurt and ferment overnight.",
+        "minutes": 10
+      },
+      {
+        "text": "Mix in the gourd, ginger, chillies, turmeric and salt; add the Eno just before cooking.",
+        "minutes": 5
+      },
+      {
+        "text": "Crackle the mustard, sesame and hing in oil in a heavy pan; pour in the batter.",
+        "minutes": 2
+      },
+      {
+        "text": "Cover and cook on low until set and crusty underneath, then flip and cook the other side.",
+        "minutes": 40
+      }
+    ]
+  },
+  {
+    "slug": "methi-na-gota",
+    "name": "Methi Na Gota",
+    "kind": "snacks",
+    "state": "Gujarat",
+    "rank": 364,
+    "blurb": "Dakor's fluffy fenugreek fritters with crushed pepper and coriander.",
+    "minutes": 25,
+    "soak_hours": null,
+    "serves": 4,
+    "effort": "easy",
+    "ingredients": [
+      {
+        "label": "Besan",
+        "amount": "1½ cups",
+        "source": "iwc",
+        "match_words": "besan"
+      },
+      {
+        "label": "Sooji",
+        "amount": "2 tbsp",
+        "source": "iwc",
+        "match_words": "sooji"
+      },
+      {
+        "label": "Black pepper",
+        "amount": "1 tsp",
+        "source": "iwc",
+        "match_words": "black pepper"
+      },
+      {
+        "label": "Whole coriander",
+        "amount": "1 tbsp",
+        "source": "iwc",
+        "match_words": "whole coriander"
+      },
+      {
+        "label": "Baking soda",
+        "amount": "¼ tsp",
+        "source": "iwc",
+        "match_words": "baking soda"
+      },
+      {
+        "label": "Methi leaves",
+        "amount": "1 cup",
+        "source": "local"
+      },
+      {
+        "label": "Green chillies",
+        "amount": "2",
+        "source": "local"
+      },
+      {
+        "label": "Ginger",
+        "amount": "1 inch",
+        "source": "local"
+      },
+      {
+        "label": "Banana",
+        "amount": "½ ripe",
+        "source": "local"
+      },
+      {
+        "label": "Sugar",
+        "amount": "1 tsp",
+        "source": "local"
+      },
+      {
+        "label": "Oil",
+        "amount": "for frying",
+        "source": "local"
+      },
+      {
+        "label": "Kasuri methi",
+        "amount": "1 tbsp",
+        "source": "iwc",
+        "match_words": "kasuri methi",
+        "instead_of": "Methi leaves"
+      },
+      {
+        "label": "Red chilli powder",
+        "amount": "½ tsp",
+        "source": "iwc",
+        "match_words": "red chilli powder",
+        "instead_of": "Green chillies"
+      },
+      {
+        "label": "Dry ginger powder",
+        "amount": "½ tsp",
+        "source": "iwc",
+        "match_words": "dry ginger powder",
+        "instead_of": "Ginger"
+      }
+    ],
+    "steps": [
+      {
+        "text": "Mix the besan, sooji, chopped methi, crushed pepper and coriander, ginger, chillies, mashed banana, sugar and salt.",
+        "minutes": 5
+      },
+      {
+        "text": "Add water to make a thick batter and rest ten minutes.",
+        "minutes": 10
+      },
+      {
+        "text": "Stir in the soda and a spoon of hot oil.",
+        "minutes": 1
+      },
+      {
+        "text": "Drop small balls into hot oil and fry until golden.",
+        "minutes": 10
+      }
+    ]
+  },
+  {
+    "slug": "fafda",
+    "name": "Fafda",
+    "kind": "snacks",
+    "state": "Gujarat",
+    "rank": 365,
+    "blurb": "Crisp besan strips with ajwain, pressed out by hand. Gujarat's Sunday breakfast with jalebi.",
+    "minutes": 40,
+    "soak_hours": null,
+    "serves": 4,
+    "effort": "medium",
+    "ingredients": [
+      {
+        "label": "Besan",
+        "amount": "2 cups",
+        "source": "iwc",
+        "match_words": "besan"
+      },
+      {
+        "label": "Ajwain",
+        "amount": "1 tsp",
+        "source": "iwc",
+        "match_words": "ajwain"
+      },
+      {
+        "label": "Turmeric",
+        "amount": "¼ tsp",
+        "source": "iwc",
+        "match_words": "turmeric"
+      },
+      {
+        "label": "Baking soda",
+        "amount": "¼ tsp",
+        "source": "iwc",
+        "match_words": "baking soda"
+      },
+      {
+        "label": "Black pepper",
+        "amount": "½ tsp",
+        "source": "iwc",
+        "match_words": "black pepper"
+      },
+      {
+        "label": "Oil",
+        "amount": "3 tbsp, and for frying",
+        "source": "local"
+      },
+      {
+        "label": "Green chillies",
+        "amount": "4",
+        "source": "local"
+      },
+      {
+        "label": "Red chilli powder",
+        "amount": "½ tsp",
+        "source": "iwc",
+        "match_words": "red chilli powder",
+        "instead_of": "Green chillies"
+      }
+    ],
+    "steps": [
+      {
+        "text": "Knead the besan with ajwain, turmeric, soda, salt, oil and water into a smooth, soft dough.",
+        "minutes": 8
+      },
+      {
+        "text": "Rest ten minutes, then knead again with oiled hands.",
+        "minutes": 10
+      },
+      {
+        "text": "Press a small ball along a wooden board with the heel of your palm into a long thin strip; lift it with a knife.",
+        "minutes": 15
+      },
+      {
+        "text": "Fry until crisp. Fry the green chillies too. Sprinkle pepper.",
+        "minutes": 10
+      }
+    ]
+  },
+  {
+    "slug": "khichu",
+    "name": "Khichu",
+    "kind": "snacks",
+    "state": "Gujarat",
+    "rank": 366,
+    "blurb": "Soft rice flour dough cooked with cumin and chilli, eaten hot with oil and pickle masala.",
+    "minutes": 25,
+    "soak_hours": null,
+    "serves": 3,
+    "effort": "easy",
+    "ingredients": [
+      {
+        "label": "Rice flour",
+        "amount": "1 cup",
+        "source": "iwc",
+        "match_words": "rice flour"
+      },
+      {
+        "label": "Cumin seeds",
+        "amount": "1 tsp",
+        "source": "iwc",
+        "match_words": "cumin seeds"
+      },
+      {
+        "label": "Ajwain",
+        "amount": "½ tsp",
+        "source": "iwc",
+        "match_words": "ajwain"
+      },
+      {
+        "label": "Baking soda",
+        "amount": "a pinch",
+        "source": "iwc",
+        "match_words": "baking soda"
+      },
+      {
+        "label": "Achar masala",
+        "amount": "1 tsp",
+        "source": "iwc",
+        "match_words": "achar masala"
+      },
+      {
+        "label": "Green chillies",
+        "amount": "2",
+        "source": "local"
+      },
+      {
+        "label": "Oil",
+        "amount": "2 tbsp",
+        "source": "local"
+      },
+      {
+        "label": "Red chilli powder",
+        "amount": "½ tsp",
+        "source": "iwc",
+        "match_words": "red chilli powder",
+        "instead_of": "Green chillies"
+      }
+    ],
+    "steps": [
+      {
+        "text": "Boil 2½ cups of water with cumin, ajwain, chillies, soda and salt.",
+        "minutes": 5
+      },
+      {
+        "text": "Lower the heat and stir in the rice flour with a rolling pin handle until no lumps remain.",
+        "minutes": 3
+      },
+      {
+        "text": "Cover and steam on low for ten minutes.",
+        "minutes": 10
+      },
+      {
+        "text": "Serve hot drizzled with oil and achar masala.",
+        "minutes": null
+      }
+    ]
+  },
+  {
+    "slug": "sev-khamani",
+    "name": "Sev Khamani",
+    "kind": "snacks",
+    "state": "Gujarat",
+    "rank": 367,
+    "blurb": "Surat's crumbled chana dal khaman, tempered and topped with sev and pomegranate.",
+    "minutes": 40,
+    "soak_hours": 4,
+    "serves": 4,
+    "effort": "easy",
+    "ingredients": [
+      {
+        "label": "Chana dal",
+        "amount": "1 cup",
+        "source": "iwc",
+        "match_words": "chana dal"
+      },
+      {
+        "label": "Mustard seeds",
+        "amount": "1 tsp",
+        "source": "iwc",
+        "match_words": "mustard seeds"
+      },
+      {
+        "label": "Sesame seeds",
+        "amount": "1 tsp",
+        "source": "iwc",
+        "match_words": "sesame seeds"
+      },
+      {
+        "label": "Turmeric",
+        "amount": "¼ tsp",
+        "source": "iwc",
+        "match_words": "turmeric"
+      },
+      {
+        "label": "Hing",
+        "amount": "a pinch",
+        "source": "iwc",
+        "match_words": "hing"
+      },
+      {
+        "label": "Sev",
+        "amount": "½ cup",
+        "source": "iwc",
+        "match_words": "sev"
+      },
+      {
+        "label": "Eno",
+        "amount": "1 tsp",
+        "source": "iwc",
+        "match_words": "eno"
+      },
+      {
+        "label": "Ginger",
+        "amount": "1 inch",
+        "source": "local"
+      },
+      {
+        "label": "Green chillies",
+        "amount": "3",
+        "source": "local"
+      },
+      {
+        "label": "Lemon",
+        "amount": "1",
+        "source": "local"
+      },
+      {
+        "label": "Sugar",
+        "amount": "1 tbsp",
+        "source": "local"
+      },
+      {
+        "label": "Pomegranate",
+        "amount": "3 tbsp",
+        "source": "local"
+      },
+      {
+        "label": "Oil",
+        "amount": "2 tbsp",
+        "source": "local"
+      },
+      {
+        "label": "Coriander",
+        "amount": "a handful",
+        "source": "local"
+      },
+      {
+        "label": "Dry ginger powder",
+        "amount": "½ tsp",
+        "source": "iwc",
+        "match_words": "dry ginger powder",
+        "instead_of": "Ginger"
+      },
+      {
+        "label": "Red chilli powder",
+        "amount": "½ tsp",
+        "source": "iwc",
+        "match_words": "red chilli powder",
+        "instead_of": "Green chillies"
+      },
+      {
+        "label": "Amchur",
+        "amount": "1 tsp",
+        "source": "iwc",
+        "match_words": "amchur",
+        "instead_of": "Lemon"
+      },
+      {
+        "label": "Anardana powder",
+        "amount": "1 tsp",
+        "source": "iwc",
+        "match_words": "anardana powder",
+        "instead_of": "Pomegranate"
+      },
+      {
+        "label": "Coriander powder",
+        "amount": "1 tsp",
+        "source": "iwc",
+        "match_words": "coriander powder",
+        "instead_of": "Coriander"
+      }
+    ],
+    "steps": [
+      {
+        "text": "Soak the dal four hours; grind coarse with ginger and chillies.",
+        "minutes": 10
+      },
+      {
+        "text": "Add turmeric, salt and Eno; steam for 15 minutes. Cool and crumble.",
+        "minutes": 20
+      },
+      {
+        "text": "Temper the mustard, sesame and hing; pour over with sugar, lemon and a little water.",
+        "minutes": 3
+      },
+      {
+        "text": "Top with sev, pomegranate and coriander.",
+        "minutes": null
+      }
+    ]
+  },
+  {
+    "slug": "patra",
+    "name": "Patra",
+    "kind": "snacks",
+    "state": "Gujarat",
+    "rank": 368,
+    "blurb": "Colocasia leaves spread with sweet-sour besan paste, rolled, steamed and sliced.",
+    "minutes": 60,
+    "soak_hours": null,
+    "serves": 4,
+    "effort": "medium",
+    "ingredients": [
+      {
+        "label": "Besan",
+        "amount": "1 cup",
+        "source": "iwc",
+        "match_words": "besan"
+      },
+      {
+        "label": "Tamarind",
+        "amount": "a small ball",
+        "source": "iwc",
+        "match_words": "tamarind"
+      },
+      {
+        "label": "Jaggery",
+        "amount": "2 tbsp",
+        "source": "iwc",
+        "match_words": "jaggery"
+      },
+      {
+        "label": "Red chilli powder",
+        "amount": "1 tsp",
+        "source": "iwc",
+        "match_words": "red chilli powder"
+      },
+      {
+        "label": "Turmeric",
+        "amount": "½ tsp",
+        "source": "iwc",
+        "match_words": "turmeric"
+      },
+      {
+        "label": "Coriander powder",
+        "amount": "1 tsp",
+        "source": "iwc",
+        "match_words": "coriander powder"
+      },
+      {
+        "label": "Mustard seeds",
+        "amount": "1 tsp",
+        "source": "iwc",
+        "match_words": "mustard seeds"
+      },
+      {
+        "label": "Sesame seeds",
+        "amount": "1 tbsp",
+        "source": "iwc",
+        "match_words": "sesame seeds"
+      },
+      {
+        "label": "Colocasia (arbi) leaves",
+        "amount": "8",
+        "source": "local"
+      },
+      {
+        "label": "Ginger",
+        "amount": "1 inch",
+        "source": "local"
+      },
+      {
+        "label": "Oil",
+        "amount": "3 tbsp",
+        "source": "local"
+      },
+      {
+        "label": "Dry ginger powder",
+        "amount": "½ tsp",
+        "source": "iwc",
+        "match_words": "dry ginger powder",
+        "instead_of": "Ginger"
+      }
+    ],
+    "steps": [
+      {
+        "text": "Make a thick paste of besan, tamarind water, jaggery, ginger, the powders and salt.",
+        "minutes": 5
+      },
+      {
+        "text": "Lay a leaf vein side up, spread the paste, add another leaf and repeat. Fold the sides in and roll tightly.",
+        "minutes": 15
+      },
+      {
+        "text": "Steam the rolls for 25 minutes. Cool and slice.",
+        "minutes": 30
+      },
+      {
+        "text": "Temper the mustard and sesame; toss the slices in it.",
+        "minutes": 4
+      }
+    ]
+  },
+  {
+    "slug": "poha-chivda",
+    "name": "Poha Chivda",
+    "kind": "snacks",
+    "state": "Maharashtra",
+    "rank": 369,
+    "blurb": "Thin poha roasted crisp with peanuts, curry leaves and a little sugar. Keeps for weeks in a jar.",
+    "minutes": 20,
+    "soak_hours": null,
+    "serves": 6,
+    "effort": "easy",
+    "ingredients": [
+      {
+        "label": "Poha",
+        "amount": "4 cups",
+        "source": "iwc",
+        "match_words": "poha"
+      },
+      {
+        "label": "Peanuts",
+        "amount": "½ cup",
+        "source": "iwc",
+        "match_words": "peanuts"
+      },
+      {
+        "label": "Roasted chana",
+        "amount": "¼ cup",
+        "source": "iwc",
+        "match_words": "roasted chana"
+      },
+      {
+        "label": "Cashews",
+        "amount": "2 tbsp",
+        "source": "iwc",
+        "match_words": "cashews"
+      },
+      {
+        "label": "Raisins",
+        "amount": "2 tbsp",
+        "source": "iwc",
+        "match_words": "raisins"
+      },
+      {
+        "label": "Mustard seeds",
+        "amount": "1 tsp",
+        "source": "iwc",
+        "match_words": "mustard seeds"
+      },
+      {
+        "label": "Turmeric",
+        "amount": "½ tsp",
+        "source": "iwc",
+        "match_words": "turmeric"
+      },
+      {
+        "label": "Red chilli powder",
+        "amount": "1 tsp",
+        "source": "iwc",
+        "match_words": "red chilli powder"
+      },
+      {
+        "label": "Hing",
+        "amount": "a pinch",
+        "source": "iwc",
+        "match_words": "hing"
+      },
+      {
+        "label": "Curry leaves",
+        "amount": "3 sprigs",
+        "source": "local"
+      },
+      {
+        "label": "Green chillies",
+        "amount": "3",
+        "source": "local"
+      },
+      {
+        "label": "Oil",
+        "amount": "3 tbsp",
+        "source": "local"
+      },
+      {
+        "label": "Sugar",
+        "amount": "1 tbsp",
+        "source": "local"
+      },
+      {
+        "label": "Dried curry leaves",
+        "amount": "1 tbsp",
+        "source": "iwc",
+        "match_words": "curry leaves",
+        "instead_of": "Curry leaves"
+      }
+    ],
+    "steps": [
+      {
+        "text": "Dry roast the thin poha on low until crisp.",
+        "minutes": 10
+      },
+      {
+        "text": "Fry the peanuts, chana, cashews, raisins, mustard, hing, chillies and curry leaves in oil.",
+        "minutes": 4
+      },
+      {
+        "text": "Add the turmeric and chilli powder, then the poha, sugar and salt; toss well.",
+        "minutes": 3
+      },
+      {
+        "text": "Cool completely before storing.",
+        "minutes": null
+      }
+    ]
+  },
+  {
+    "slug": "kothimbir-vadi",
+    "name": "Kothimbir Vadi",
+    "kind": "snacks",
+    "state": "Maharashtra",
+    "rank": 370,
+    "blurb": "Steamed and fried coriander and besan squares from Maharashtra.",
+    "minutes": 40,
+    "soak_hours": null,
+    "serves": 4,
+    "effort": "easy",
+    "ingredients": [
+      {
+        "label": "Besan",
+        "amount": "1 cup",
+        "source": "iwc",
+        "match_words": "besan"
+      },
+      {
+        "label": "Rice flour",
+        "amount": "2 tbsp",
+        "source": "iwc",
+        "match_words": "rice flour"
+      },
+      {
+        "label": "Sesame seeds",
+        "amount": "1 tbsp",
+        "source": "iwc",
+        "match_words": "sesame seeds"
+      },
+      {
+        "label": "Turmeric",
+        "amount": "½ tsp",
+        "source": "iwc",
+        "match_words": "turmeric"
+      },
+      {
+        "label": "Red chilli powder",
+        "amount": "1 tsp",
+        "source": "iwc",
+        "match_words": "red chilli powder"
+      },
+      {
+        "label": "Cumin seeds",
+        "amount": "1 tsp",
+        "source": "iwc",
+        "match_words": "cumin seeds"
+      },
+      {
+        "label": "Coriander",
+        "amount": "2 big bunches",
+        "source": "local"
+      },
+      {
+        "label": "Green chillies",
+        "amount": "2",
+        "source": "local"
+      },
+      {
+        "label": "Ginger",
+        "amount": "1 inch",
+        "source": "local"
+      },
+      {
+        "label": "Garlic",
+        "amount": "3 cloves",
+        "source": "local"
+      },
+      {
+        "label": "Oil",
+        "amount": "for shallow frying",
+        "source": "local"
+      },
+      {
+        "label": "Dry ginger powder",
+        "amount": "½ tsp",
+        "source": "iwc",
+        "match_words": "dry ginger powder",
+        "instead_of": "Ginger"
+      },
+      {
+        "label": "Garlic powder",
+        "amount": "½ tsp",
+        "source": "iwc",
+        "match_words": "garlic powder",
+        "instead_of": "Garlic"
+      }
+    ],
+    "steps": [
+      {
+        "text": "Mix the chopped coriander, besan, rice flour, sesame, spices, crushed ginger, garlic, chillies and salt with a little water into a thick dough.",
+        "minutes": 5
+      },
+      {
+        "text": "Press into a greased tray and steam for 20 minutes.",
+        "minutes": 22
+      },
+      {
+        "text": "Cool and cut into squares.",
+        "minutes": 5
+      },
+      {
+        "text": "Shallow fry until crisp on both sides.",
+        "minutes": 8
+      }
+    ]
+  },
+  {
+    "slug": "bhakarwadi",
+    "name": "Bhakarwadi",
+    "kind": "snacks",
+    "state": "Maharashtra",
+    "rank": 371,
+    "blurb": "Pune's spiral snack: crisp dough rolled with a sweet, hot coconut and sesame filling.",
+    "minutes": 60,
+    "soak_hours": null,
+    "serves": 6,
+    "effort": "weekend",
+    "ingredients": [
+      {
+        "label": "Maida",
+        "amount": "1½ cups",
+        "source": "iwc",
+        "match_words": "maida"
+      },
+      {
+        "label": "Besan",
+        "amount": "½ cup",
+        "source": "iwc",
+        "match_words": "besan"
+      },
+      {
+        "label": "Desiccated coconut",
+        "amount": "½ cup",
+        "source": "iwc",
+        "match_words": "desiccated coconut"
+      },
+      {
+        "label": "Sesame seeds",
+        "amount": "3 tbsp",
+        "source": "iwc",
+        "match_words": "sesame seeds"
+      },
+      {
+        "label": "Poppy seeds",
+        "amount": "1 tbsp",
+        "source": "iwc",
+        "match_words": "poppy seeds"
+      },
+      {
+        "label": "Fennel seeds",
+        "amount": "1 tsp",
+        "source": "iwc",
+        "match_words": "fennel seeds"
+      },
+      {
+        "label": "Red chilli powder",
+        "amount": "1½ tsp",
+        "source": "iwc",
+        "match_words": "red chilli powder"
+      },
+      {
+        "label": "Garam masala",
+        "amount": "1 tsp",
+        "source": "iwc",
+        "match_words": "garam masala"
+      },
+      {
+        "label": "Amchur",
+        "amount": "1 tsp",
+        "source": "iwc",
+        "match_words": "amchur"
+      },
+      {
+        "label": "Sugar",
+        "amount": "1 tbsp",
+        "source": "local"
+      },
+      {
+        "label": "Oil",
+        "amount": "3 tbsp, and for frying",
+        "source": "local"
+      }
+    ],
+    "steps": [
+      {
+        "text": "Knead the maida, besan, salt and oil with water into a stiff dough; rest 20 minutes.",
+        "minutes": 20
+      },
+      {
+        "text": "Roast the coconut, sesame, poppy and fennel; crush with the powders, sugar and salt.",
+        "minutes": 6
+      },
+      {
+        "text": "Roll the dough thin, brush with water, spread the filling and roll tightly into a log. Cut into small pieces and press each lightly.",
+        "minutes": 15
+      },
+      {
+        "text": "Fry on low heat until crisp and golden.",
+        "minutes": 20
+      }
+    ]
+  },
+  {
+    "slug": "veg-frankie",
+    "name": "Veg Frankie",
+    "kind": "snacks",
+    "state": "Maharashtra",
+    "rank": 372,
+    "blurb": "Mumbai's wrap of spiced potato, onion and chutney in a soft flatbread.",
+    "minutes": 30,
+    "soak_hours": null,
+    "serves": 4,
+    "effort": "easy",
+    "ingredients": [
+      {
+        "label": "Maida",
+        "amount": "1 cup",
+        "source": "iwc",
+        "match_words": "maida"
+      },
+      {
+        "label": "Atta",
+        "amount": "½ cup",
+        "source": "iwc",
+        "match_words": "atta"
+      },
+      {
+        "label": "Chaat masala",
+        "amount": "1 tsp",
+        "source": "iwc",
+        "match_words": "chaat masala"
+      },
+      {
+        "label": "Kashmiri chilli powder",
+        "amount": "1 tsp",
+        "source": "iwc",
+        "match_words": "kashmiri chilli powder"
+      },
+      {
+        "label": "Garam masala",
+        "amount": "½ tsp",
+        "source": "iwc",
+        "match_words": "garam masala"
+      },
+      {
+        "label": "Amchur",
+        "amount": "½ tsp",
+        "source": "iwc",
+        "match_words": "amchur"
+      },
+      {
+        "label": "Potatoes",
+        "amount": "3",
+        "source": "local"
+      },
+      {
+        "label": "Onion",
+        "amount": "1",
+        "source": "local"
+      },
+      {
+        "label": "Capsicum",
+        "amount": "1",
+        "source": "local"
+      },
+      {
+        "label": "Green chutney",
+        "amount": "¼ cup",
+        "source": "local"
+      },
+      {
+        "label": "Vinegar",
+        "amount": "1 tbsp",
+        "source": "local"
+      },
+      {
+        "label": "Oil",
+        "amount": "2 tbsp",
+        "source": "local"
+      }
+    ],
+    "steps": [
+      {
+        "text": "Knead the flours with salt and water into a soft dough; roll and cook thin rotis lightly.",
+        "minutes": 15
+      },
+      {
+        "text": "Mash the boiled potatoes with the powders and shape into logs; pan-fry until crisp.",
+        "minutes": 10
+      },
+      {
+        "text": "Soak the sliced onion in vinegar with chilli powder.",
+        "minutes": 2
+      },
+      {
+        "text": "Spread chutney on a roti, add the potato, onion and capsicum, sprinkle chaat masala and roll up.",
+        "minutes": 3
+      }
+    ]
+  },
+  {
+    "slug": "bombay-sandwich",
+    "name": "Bombay Sandwich",
+    "kind": "snacks",
+    "state": "Maharashtra",
+    "rank": 373,
+    "blurb": "Bread with green chutney, sliced vegetables and sandwich masala, grilled or not.",
+    "minutes": 15,
+    "soak_hours": null,
+    "serves": 2,
+    "effort": "easy",
+    "ingredients": [
+      {
+        "label": "Chaat masala",
+        "amount": "1 tsp",
+        "source": "iwc",
+        "match_words": "chaat masala"
+      },
+      {
+        "label": "Roasted cumin",
+        "amount": "½ tsp",
+        "source": "iwc",
+        "match_words": "roasted cumin"
+      },
+      {
+        "label": "Black pepper",
+        "amount": "¼ tsp",
+        "source": "iwc",
+        "match_words": "black pepper"
+      },
+      {
+        "label": "Bread",
+        "amount": "6 slices",
+        "source": "local"
+      },
+      {
+        "label": "Butter",
+        "amount": "2 tbsp",
+        "source": "local"
+      },
+      {
+        "label": "Green chutney",
+        "amount": "¼ cup",
+        "source": "local"
+      },
+      {
+        "label": "Boiled potato",
+        "amount": "1",
+        "source": "local"
+      },
+      {
+        "label": "Cucumber",
+        "amount": "1",
+        "source": "local"
+      },
+      {
+        "label": "Tomato",
+        "amount": "1",
+        "source": "local"
+      },
+      {
+        "label": "Onion",
+        "amount": "1",
+        "source": "local"
+      }
+    ],
+    "steps": [
+      {
+        "text": "Butter the bread and spread with green chutney.",
+        "minutes": 3
+      },
+      {
+        "text": "Layer thin slices of potato, cucumber, tomato and onion.",
+        "minutes": 5
+      },
+      {
+        "text": "Sprinkle chaat masala, cumin, pepper and salt between the layers.",
+        "minutes": 1
+      },
+      {
+        "text": "Close and grill until crisp, or eat as it is.",
+        "minutes": 5
+      }
+    ]
+  },
+  {
+    "slug": "masala-pav",
+    "name": "Masala Pav",
+    "kind": "snacks",
+    "state": "Maharashtra",
+    "rank": 374,
+    "blurb": "Pav split and tossed on the tawa in buttery pav bhaji masala, onion and tomato.",
+    "minutes": 20,
+    "soak_hours": null,
+    "serves": 4,
+    "effort": "easy",
+    "ingredients": [
+      {
+        "label": "Pav bhaji masala",
+        "amount": "1½ tbsp",
+        "source": "iwc",
+        "match_words": "pav bhaji masala"
+      },
+      {
+        "label": "Kashmiri chilli powder",
+        "amount": "1 tsp",
+        "source": "iwc",
+        "match_words": "kashmiri chilli powder"
+      },
+      {
+        "label": "Pav",
+        "amount": "8",
+        "source": "local"
+      },
+      {
+        "label": "Butter",
+        "amount": "4 tbsp",
+        "source": "local"
+      },
+      {
+        "label": "Onion",
+        "amount": "1",
+        "source": "local"
+      },
+      {
+        "label": "Tomatoes",
+        "amount": "2",
+        "source": "local"
+      },
+      {
+        "label": "Capsicum",
+        "amount": "½",
+        "source": "local"
+      },
+      {
+        "label": "Garlic",
+        "amount": "4 cloves",
+        "source": "local"
+      },
+      {
+        "label": "Lemon",
+        "amount": "½",
+        "source": "local"
+      },
+      {
+        "label": "Coriander",
+        "amount": "a handful",
+        "source": "local"
+      },
+      {
+        "label": "Garlic powder",
+        "amount": "½ tsp",
+        "source": "iwc",
+        "match_words": "garlic powder",
+        "instead_of": "Garlic"
+      },
+      {
+        "label": "Amchur",
+        "amount": "1 tsp",
+        "source": "iwc",
+        "match_words": "amchur",
+        "instead_of": "Lemon"
+      },
+      {
+        "label": "Coriander powder",
+        "amount": "1 tsp",
+        "source": "iwc",
+        "match_words": "coriander powder",
+        "instead_of": "Coriander"
+      }
+    ],
+    "steps": [
+      {
+        "text": "Melt butter, fry the garlic, onion and capsicum, add the tomatoes and mash.",
+        "minutes": 6
+      },
+      {
+        "text": "Add pav bhaji masala, chilli powder and salt; cook to a thick masala.",
+        "minutes": 4
+      },
+      {
+        "text": "Slit the pav and press them into the masala on both sides.",
+        "minutes": 4
+      },
+      {
+        "text": "Finish with lemon and coriander.",
+        "minutes": null
+      }
+    ]
+  },
+  {
+    "slug": "chicken-lollipop",
+    "name": "Chicken Lollipop",
+    "kind": "snacks",
+    "state": "All of India",
+    "rank": 375,
+    "blurb": "Frenched chicken wings in a hot red batter, fried crisp. An Indo-Chinese party starter.",
+    "minutes": 45,
+    "soak_hours": null,
+    "serves": 4,
+    "effort": "medium",
+    "ingredients": [
+      {
+        "label": "Cornflour",
+        "amount": "¼ cup",
+        "source": "iwc",
+        "match_words": "cornflour"
+      },
+      {
+        "label": "Maida",
+        "amount": "2 tbsp",
+        "source": "iwc",
+        "match_words": "maida"
+      },
+      {
+        "label": "Kashmiri chilli powder",
+        "amount": "1½ tsp",
+        "source": "iwc",
+        "match_words": "kashmiri chilli powder"
+      },
+      {
+        "label": "Black pepper",
+        "amount": "½ tsp",
+        "source": "iwc",
+        "match_words": "black pepper"
+      },
+      {
+        "label": "Manchurian masala",
+        "amount": "1 tsp",
+        "source": "iwc",
+        "match_words": "manchurian masala"
+      },
+      {
+        "label": "Chicken wings",
+        "amount": "12",
+        "source": "local"
+      },
+      {
+        "label": "Egg",
+        "amount": "1",
+        "source": "local"
+      },
+      {
+        "label": "Ginger-garlic paste",
+        "amount": "1 tbsp",
+        "source": "local"
+      },
+      {
+        "label": "Soy sauce",
+        "amount": "1 tbsp",
+        "source": "local"
+      },
+      {
+        "label": "Vinegar",
+        "amount": "1 tsp",
+        "source": "local"
+      },
+      {
+        "label": "Oil",
+        "amount": "for frying",
+        "source": "local"
+      },
+      {
+        "label": "Dry ginger powder",
+        "amount": "½ tsp",
+        "source": "iwc",
+        "match_words": "dry ginger powder",
+        "instead_of": "Ginger-garlic paste"
+      },
+      {
+        "label": "Garlic powder",
+        "amount": "½ tsp",
+        "source": "iwc",
+        "match_words": "garlic powder",
+        "instead_of": "Ginger-garlic paste"
+      }
+    ],
+    "steps": [
+      {
+        "text": "Push the meat down each wing bone to shape a lollipop.",
+        "minutes": 10
+      },
+      {
+        "text": "Coat with ginger-garlic paste, soy, vinegar, chilli powder, pepper, Manchurian masala and salt. Rest 30 minutes.",
+        "minutes": 30
+      },
+      {
+        "text": "Add the egg, cornflour and maida to make a sticky coating.",
+        "minutes": 2
+      },
+      {
+        "text": "Fry until crisp and cooked through.",
+        "minutes": 12
+      }
+    ]
+  },
+  {
+    "slug": "chilli-paneer",
+    "name": "Chilli Paneer",
+    "kind": "snacks",
+    "state": "All of India",
+    "rank": 376,
+    "blurb": "Crisp paneer tossed with peppers, onion and chilli in a soy glaze.",
+    "minutes": 30,
+    "soak_hours": null,
+    "serves": 4,
+    "effort": "easy",
+    "ingredients": [
+      {
+        "label": "Cornflour",
+        "amount": "¼ cup",
+        "source": "iwc",
+        "match_words": "cornflour"
+      },
+      {
+        "label": "Maida",
+        "amount": "2 tbsp",
+        "source": "iwc",
+        "match_words": "maida"
+      },
+      {
+        "label": "Kashmiri chilli powder",
+        "amount": "1 tsp",
+        "source": "iwc",
+        "match_words": "kashmiri chilli powder"
+      },
+      {
+        "label": "Black pepper",
+        "amount": "½ tsp",
+        "source": "iwc",
+        "match_words": "black pepper"
+      },
+      {
+        "label": "Paneer",
+        "amount": "250 g",
+        "source": "local"
+      },
+      {
+        "label": "Capsicum",
+        "amount": "1",
+        "source": "local"
+      },
+      {
+        "label": "Onion",
+        "amount": "1",
+        "source": "local"
+      },
+      {
+        "label": "Spring onions",
+        "amount": "3",
+        "source": "local"
+      },
+      {
+        "label": "Green chillies",
+        "amount": "3",
+        "source": "local"
+      },
+      {
+        "label": "Garlic",
+        "amount": "6 cloves",
+        "source": "local"
+      },
+      {
+        "label": "Soy sauce",
+        "amount": "2 tbsp",
+        "source": "local"
+      },
+      {
+        "label": "Vinegar",
+        "amount": "1 tsp",
+        "source": "local"
+      },
+      {
+        "label": "Tomato ketchup",
+        "amount": "1 tbsp",
+        "source": "local"
+      },
+      {
+        "label": "Oil",
+        "amount": "for frying",
+        "source": "local"
+      },
+      {
+        "label": "Red chilli powder",
+        "amount": "½ tsp",
+        "source": "iwc",
+        "match_words": "red chilli powder",
+        "instead_of": "Green chillies"
+      },
+      {
+        "label": "Garlic powder",
+        "amount": "½ tsp",
+        "source": "iwc",
+        "match_words": "garlic powder",
+        "instead_of": "Garlic"
+      }
+    ],
+    "steps": [
+      {
+        "text": "Coat the paneer cubes in cornflour, maida, chilli powder and salt with a little water; fry until crisp.",
+        "minutes": 10
+      },
+      {
+        "text": "Fry the garlic and chillies on high heat; add the onion and capsicum.",
+        "minutes": 3
+      },
+      {
+        "text": "Add soy, vinegar, ketchup and pepper; thicken with a spoon of cornflour in water.",
+        "minutes": 3
+      },
+      {
+        "text": "Toss in the paneer and spring onions.",
+        "minutes": 2
+      }
+    ]
+  },
+  {
+    "slug": "veg-manchurian",
+    "name": "Veg Manchurian",
+    "kind": "snacks",
+    "state": "All of India",
+    "rank": 377,
+    "blurb": "Fried cabbage and carrot balls in a garlicky soy sauce.",
+    "minutes": 40,
+    "soak_hours": null,
+    "serves": 4,
+    "effort": "medium",
+    "ingredients": [
+      {
+        "label": "Cornflour",
+        "amount": "½ cup",
+        "source": "iwc",
+        "match_words": "cornflour"
+      },
+      {
+        "label": "Maida",
+        "amount": "3 tbsp",
+        "source": "iwc",
+        "match_words": "maida"
+      },
+      {
+        "label": "Black pepper",
+        "amount": "½ tsp",
+        "source": "iwc",
+        "match_words": "black pepper"
+      },
+      {
+        "label": "Manchurian masala",
+        "amount": "1 tbsp",
+        "source": "iwc",
+        "match_words": "manchurian masala"
+      },
+      {
+        "label": "Cabbage",
+        "amount": "2 cups",
+        "source": "local"
+      },
+      {
+        "label": "Carrot",
+        "amount": "1",
+        "source": "local"
+      },
+      {
+        "label": "Spring onions",
+        "amount": "4",
+        "source": "local"
+      },
+      {
+        "label": "Garlic",
+        "amount": "8 cloves",
+        "source": "local"
+      },
+      {
+        "label": "Ginger",
+        "amount": "1 inch",
+        "source": "local"
+      },
+      {
+        "label": "Green chillies",
+        "amount": "2",
+        "source": "local"
+      },
+      {
+        "label": "Soy sauce",
+        "amount": "2 tbsp",
+        "source": "local"
+      },
+      {
+        "label": "Oil",
+        "amount": "for frying",
+        "source": "local"
+      },
+      {
+        "label": "Garlic powder",
+        "amount": "½ tsp",
+        "source": "iwc",
+        "match_words": "garlic powder",
+        "instead_of": "Garlic"
+      },
+      {
+        "label": "Dry ginger powder",
+        "amount": "½ tsp",
+        "source": "iwc",
+        "match_words": "dry ginger powder",
+        "instead_of": "Ginger"
+      },
+      {
+        "label": "Red chilli powder",
+        "amount": "½ tsp",
+        "source": "iwc",
+        "match_words": "red chilli powder",
+        "instead_of": "Green chillies"
+      }
+    ],
+    "steps": [
+      {
+        "text": "Mix the grated cabbage and carrot with half the cornflour, the maida, pepper and salt; shape small balls.",
+        "minutes": 10
+      },
+      {
+        "text": "Fry the balls until crisp.",
+        "minutes": 10
+      },
+      {
+        "text": "Fry the garlic, ginger and chillies on high; add soy, Manchurian masala and a cup of water.",
+        "minutes": 4
+      },
+      {
+        "text": "Thicken with cornflour in water, add the balls and spring onions.",
+        "minutes": 3
+      }
+    ]
+  },
+  {
+    "slug": "honey-chilli-potato",
+    "name": "Honey Chilli Potato",
+    "kind": "snacks",
+    "state": "All of India",
+    "rank": 378,
+    "blurb": "Crisp potato fingers in a sticky sweet and hot glaze with sesame.",
+    "minutes": 35,
+    "soak_hours": null,
+    "serves": 4,
+    "effort": "easy",
+    "ingredients": [
+      {
+        "label": "Cornflour",
+        "amount": "¼ cup",
+        "source": "iwc",
+        "match_words": "cornflour"
+      },
+      {
+        "label": "Kashmiri chilli powder",
+        "amount": "1 tsp",
+        "source": "iwc",
+        "match_words": "kashmiri chilli powder"
+      },
+      {
+        "label": "Red chilli flakes",
+        "amount": "1 tsp",
+        "source": "iwc",
+        "match_words": "red chilli flakes"
+      },
+      {
+        "label": "Sesame seeds",
+        "amount": "1 tbsp",
+        "source": "iwc",
+        "match_words": "sesame seeds"
+      },
+      {
+        "label": "Potatoes",
+        "amount": "3",
+        "source": "local"
+      },
+      {
+        "label": "Garlic",
+        "amount": "5 cloves",
+        "source": "local"
+      },
+      {
+        "label": "Spring onions",
+        "amount": "3",
+        "source": "local"
+      },
+      {
+        "label": "Honey",
+        "amount": "2 tbsp",
+        "source": "local"
+      },
+      {
+        "label": "Soy sauce",
+        "amount": "1 tbsp",
+        "source": "local"
+      },
+      {
+        "label": "Tomato ketchup",
+        "amount": "1 tbsp",
+        "source": "local"
+      },
+      {
+        "label": "Oil",
+        "amount": "for frying",
+        "source": "local"
+      },
+      {
+        "label": "Garlic powder",
+        "amount": "½ tsp",
+        "source": "iwc",
+        "match_words": "garlic powder",
+        "instead_of": "Garlic"
+      }
+    ],
+    "steps": [
+      {
+        "text": "Parboil the potato fingers for three minutes; drain and coat in cornflour, chilli powder and salt.",
+        "minutes": 8
+      },
+      {
+        "text": "Fry until crisp.",
+        "minutes": 10
+      },
+      {
+        "text": "Fry the garlic, add soy, ketchup and chilli flakes; take off the heat and stir in the honey.",
+        "minutes": 3
+      },
+      {
+        "text": "Toss the potatoes, sesame and spring onions in the glaze.",
+        "minutes": 2
+      }
+    ]
+  },
+  {
+    "slug": "seekh-kebab",
+    "name": "Seekh Kebab",
+    "kind": "snacks",
+    "state": "All of India",
+    "rank": 379,
+    "blurb": "Spiced minced meat pressed onto skewers and grilled until charred.",
+    "minutes": 40,
+    "soak_hours": null,
+    "serves": 4,
+    "effort": "medium",
+    "ingredients": [
+      {
+        "label": "Garam masala",
+        "amount": "1 tsp",
+        "source": "iwc",
+        "match_words": "garam masala"
+      },
+      {
+        "label": "Kashmiri chilli powder",
+        "amount": "1 tsp",
+        "source": "iwc",
+        "match_words": "kashmiri chilli powder"
+      },
+      {
+        "label": "Roasted cumin",
+        "amount": "1 tsp",
+        "source": "iwc",
+        "match_words": "roasted cumin"
+      },
+      {
+        "label": "Coriander powder",
+        "amount": "1 tsp",
+        "source": "iwc",
+        "match_words": "coriander powder"
+      },
+      {
+        "label": "Besan",
+        "amount": "2 tbsp",
+        "source": "iwc",
+        "match_words": "besan"
+      },
+      {
+        "label": "Chaat masala",
+        "amount": "1 tsp",
+        "source": "iwc",
+        "match_words": "chaat masala"
+      },
+      {
+        "label": "Minced mutton or chicken",
+        "amount": "500 g",
+        "source": "local"
+      },
+      {
+        "label": "Onion",
+        "amount": "1",
+        "source": "local"
+      },
+      {
+        "label": "Ginger-garlic paste",
+        "amount": "1 tbsp",
+        "source": "local"
+      },
+      {
+        "label": "Green chillies",
+        "amount": "2",
+        "source": "local"
+      },
+      {
+        "label": "Mint",
+        "amount": "a handful",
+        "source": "local"
+      },
+      {
+        "label": "Coriander",
+        "amount": "a handful",
+        "source": "local"
+      },
+      {
+        "label": "Butter",
+        "amount": "2 tbsp",
+        "source": "local"
+      },
+      {
+        "label": "Dry ginger powder",
+        "amount": "½ tsp",
+        "source": "iwc",
+        "match_words": "dry ginger powder",
+        "instead_of": "Ginger-garlic paste"
+      },
+      {
+        "label": "Garlic powder",
+        "amount": "½ tsp",
+        "source": "iwc",
+        "match_words": "garlic powder",
+        "instead_of": "Ginger-garlic paste"
+      },
+      {
+        "label": "Red chilli powder",
+        "amount": "½ tsp",
+        "source": "iwc",
+        "match_words": "red chilli powder",
+        "instead_of": "Green chillies"
+      },
+      {
+        "label": "Dried mint leaves",
+        "amount": "1 tsp",
+        "source": "iwc",
+        "match_words": "mint leaves",
+        "instead_of": "Mint"
+      }
+    ],
+    "steps": [
+      {
+        "text": "Squeeze the grated onion dry and mix with the mince, toasted besan, spices, herbs, chillies and salt. Knead well and chill 20 minutes.",
+        "minutes": 25
+      },
+      {
+        "text": "Press around skewers with wet hands.",
+        "minutes": 5
+      },
+      {
+        "text": "Grill or pan-cook, turning, and brush with butter until charred.",
+        "minutes": 12
+      },
+      {
+        "text": "Sprinkle chaat masala.",
+        "minutes": null
+      }
+    ]
+  },
+  {
+    "slug": "galouti-kebab",
+    "name": "Galouti Kebab",
+    "kind": "snacks",
+    "state": "Uttar Pradesh",
+    "rank": 380,
+    "blurb": "Lucknow's melt-in-the-mouth mutton kebab, minced very fine and pan-fried in ghee.",
+    "minutes": 60,
+    "soak_hours": 4,
+    "serves": 4,
+    "effort": "weekend",
+    "ingredients": [
+      {
+        "label": "Garam masala",
+        "amount": "1 tsp",
+        "source": "iwc",
+        "match_words": "garam masala"
+      },
+      {
+        "label": "Green cardamom",
+        "amount": "4",
+        "source": "iwc",
+        "match_words": "green cardamom"
+      },
+      {
+        "label": "Mace",
+        "amount": "a pinch",
+        "source": "iwc",
+        "match_words": "mace"
+      },
+      {
+        "label": "Saffron",
+        "amount": "a pinch",
+        "source": "iwc",
+        "match_words": "saffron"
+      },
+      {
+        "label": "Fried onions",
+        "amount": "¼ cup",
+        "source": "iwc",
+        "match_words": "fried onions"
+      },
+      {
+        "label": "Besan",
+        "amount": "1 tbsp",
+        "source": "iwc",
+        "match_words": "besan"
+      },
+      {
+        "label": "Kashmiri chilli powder",
+        "amount": "1 tsp",
+        "source": "iwc",
+        "match_words": "kashmiri chilli powder"
+      },
+      {
+        "label": "Minced mutton (fine)",
+        "amount": "500 g",
+        "source": "local"
+      },
+      {
+        "label": "Raw papaya paste",
+        "amount": "2 tbsp",
+        "source": "local"
+      },
+      {
+        "label": "Ginger-garlic paste",
+        "amount": "1 tbsp",
+        "source": "local"
+      },
+      {
+        "label": "Ghee",
+        "amount": "4 tbsp",
+        "source": "local"
+      },
+      {
+        "label": "Milk",
+        "amount": "2 tbsp",
+        "source": "local"
+      },
+      {
+        "label": "Dry ginger powder",
+        "amount": "½ tsp",
+        "source": "iwc",
+        "match_words": "dry ginger powder",
+        "instead_of": "Ginger-garlic paste"
+      },
+      {
+        "label": "Garlic powder",
+        "amount": "½ tsp",
+        "source": "iwc",
+        "match_words": "garlic powder",
+        "instead_of": "Ginger-garlic paste"
+      }
+    ],
+    "steps": [
+      {
+        "text": "Mix the mince with papaya paste and ginger-garlic paste; rest four hours in the fridge.",
+        "minutes": null
+      },
+      {
+        "text": "Grind the fried onions, cardamom, mace and saffron in milk; add with the toasted besan, spices and salt; mix until smooth as paste.",
+        "minutes": 10
+      },
+      {
+        "text": "Shape small flat patties with wet hands.",
+        "minutes": 10
+      },
+      {
+        "text": "Cook in ghee on low heat, two minutes a side.",
+        "minutes": 15
+      }
+    ]
+  }
+]
