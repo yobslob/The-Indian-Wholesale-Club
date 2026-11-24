@@ -5,6 +5,8 @@ import { revalidatePath, revalidateTag } from 'next/cache';
 import { getPricingSettings, updateBusinessDetails, updatePricingSettings } from '@repo/db/admin';
 
 import { STORE_TAG } from '@/features/catalog/data';
+import { checkDayRate } from '@/features/send-home/day-rate';
+import { logger, errorMessage } from '@/lib/logger';
 
 import { requireAdminAction } from '../guard';
 import { SETTING_FIELDS, storedValue } from '../settings-fields';
@@ -29,6 +31,12 @@ export async function updatePricingSettingsAction(form: FormData): Promise<void>
   if (Object.keys(patch).length > 0) {
     await updatePricingSettings(client, { ...patch, updated_by: user.id });
     revalidateTag(STORE_TAG); // the free line, delivery days and prices the store shows
+  }
+  // D-208: Send home switched on checks today's rate at once (the timer only runs at 03:15 UTC); a failed check leaves
+  // it closed until the timer or Admin → Send home's Check now
+  if (patch.send_home_open === 1) {
+    await checkDayRate(client).catch((error: unknown) => logger.warn('send_home.rate_on_open_failed', { error: errorMessage(error) }));
+    revalidatePath('/admin/send-home');
   }
   revalidatePath('/admin/settings');
 }

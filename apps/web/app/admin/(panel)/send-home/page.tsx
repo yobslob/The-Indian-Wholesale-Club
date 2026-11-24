@@ -61,9 +61,9 @@ export default async function SendHomePage({ searchParams }: { searchParams: Sea
       />
       <p className="font-ui text-ink-muted -mt-2 mb-4 text-[13px]">
         {queue.rate.inr_per_usd !== null && queue.rate.at
-          ? W.rateLine(queue.rate.inr_per_usd.toFixed(2), ago(queue.rate.at, now), queue.rate.keep_pct ?? 0)
+          ? W.rateLine(queue.rate.inr_per_usd.toFixed(2), ago(queue.rate.at, now))
           : W.noRate}{' '}
-        {queue.rate.live ? W.open : queue.rate.open ? W.closedOld : W.closed}
+        {queue.rate.live ? W.open : !queue.rate.open ? W.closed : queue.rate.inr_per_usd === null ? W.closedNoRate : W.closedOld}
       </p>
       <Tabs items={tabs} current={tab} />
       {queue.gifts.length === 0 ? (

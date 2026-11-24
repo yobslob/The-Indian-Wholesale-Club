@@ -22,7 +22,7 @@ test.afterAll(async () => {
 
 async function bagWithSaree(page: Page): Promise<void> {
   await page.goto(`/states/${DEMO_PRODUCT.region}/${DEMO_PRODUCT.slug}`);
-  await page.getByRole('button', { name: 'Add to bag' }).click();
+  await page.getByRole('button', { name: 'Add to bag' }).first().click();
   await page.getByRole('link', { name: 'View bag' }).click();
   await expect(page).toHaveURL(/\/cart$/);
 }

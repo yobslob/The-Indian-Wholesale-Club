@@ -5,6 +5,7 @@ import {
   CUSTOMER_STATUS_LABEL,
   CUSTOMER_TIMELINE,
   formatDeliveryWindow,
+  formatInr,
   formatUsd,
   orderEventLabel,
   timelineIndex,
@@ -92,6 +93,21 @@ export function OrderView({
         {step >= 0 ? <Timeline order={order} step={step} /> : null}
       </View>
 
+      {/* D-208: the order's 5% saving: where it went */}
+      {order.saving ? (
+        <View className="bg-paper border-brand/60 mt-3 gap-1 rounded-[18px] border p-4">
+          <Text className="font-ui-semibold text-ink-muted text-[10px] uppercase tracking-[1.6px]">Your 5%</Text>
+          <Text className="font-heading text-ink text-[16px]">
+            {order.saving.taken_back
+              ? 'This order was cancelled, so its saving was too.'
+              : order.saving.outcome === 'gift' && order.home_gift
+                ? `${formatInr(order.home_gift.inr_paise)} is on its way to ${order.home_gift.call_name}.`
+                : order.saving.credited
+                  ? `${order.saving.save_cents.toLocaleString('en-US')} Coins added. They come off your next order.`
+                  : `${order.saving.save_cents.toLocaleString('en-US')} Coins are waiting for you. Make an account with this email to use them.`}
+          </Text>
+        </View>
+      ) : null}
       {order.actions ? (
         <OrderChoices
           actions={order.actions}

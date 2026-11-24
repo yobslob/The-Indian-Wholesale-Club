@@ -3,7 +3,7 @@ import { useEffect, useState } from 'react';
 import { Pressable, Text, View } from 'react-native';
 
 import { listMyAddresses } from '@repo/db/account';
-import { formatUsd, formatUsPhone } from '@repo/shared/domain';
+import { formatAnyPhone, formatUsd } from '@repo/shared/domain';
 
 import type { BagLine } from '@/features/cart/store';
 import type { Details } from '@/features/checkout/request';
@@ -22,7 +22,10 @@ import { useSession } from '@/lib/session';
 import { supabase } from '@/lib/supabase';
 
 /** "Meera Nair · 12 Oak St, Edison, NJ 08817" for the folded delivery step. */
-const deliveryLine = (d: Details): string => `${d.fullName} · ${d.line1}${d.line2 ? ` ${d.line2}` : ''}, ${d.city}, ${d.state} ${d.zipCode}`;
+const deliveryLine = (d: Details): string =>
+  `${d.fullName} · ${d.line1}${d.line2 ? ` ${d.line2}` : ''}, ${[d.city, d.state, d.zipCode].filter(Boolean).join(' ')}${
+    d.country && d.country !== 'us' ? `, ${d.country.toUpperCase()}` : ''
+  }`;
 
 /**
  * Checkout (D-087, D-095): 1. phone → 2. delivery → 3. payment on one screen, each opening when the one before is
@@ -67,7 +70,7 @@ export default function CheckoutScreen(): React.JSX.Element {
 
   async function continueToPayment(): Promise<void> {
     setFormError(null);
-    const result = toCheckoutRequest({ ...details, phone: phone ? formatUsPhone(phone) : '' }, lines);
+    const result = toCheckoutRequest({ ...details, phone: phone ? formatAnyPhone(phone) : '' }, lines);
     if ('error' in result) return setFormError(result.error);
     await checkout.start(result.body);
     setAt(3);
@@ -152,7 +155,7 @@ export default function CheckoutScreen(): React.JSX.Element {
       {bagOpen ? <BagSummary title="Your bag" lines={lines} quote={quote} /> : null}
       <StockProblems problems={stock} />
       <View className="border-line border-b">
-        <Step n={1} title="Phone" state={stateOf(1)} summary={phone ? formatUsPhone(phone) : ''} onEdit={edit(1)}>
+        <Step n={1} title="Phone" state={stateOf(1)} summary={phone ? formatAnyPhone(phone) : ''} onEdit={edit(1)}>
           <PhoneStep
             value={phone}
             onDone={(digits) => {

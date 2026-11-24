@@ -36,12 +36,15 @@ test.describe('a Canadian clock', () => {
 test.describe('an Australian clock', () => {
   test.use({ timezoneId: 'Australia/Sydney' });
 
-  test('shows A$, and the footer switch brings back US dollars for good', async ({ page }) => {
+  test("shows A$, and Profile's country (the footer's Change) brings back US dollars for good", async ({ page }) => {
     const price = await firstCardPrice(page);
     await expect(price).toHaveText(/^(From )?A\$[\d,]+\.\d{2}$/);
-    await page.locator('footer select').first().selectOption('us');
-    await expect(price).toHaveText(/^(From )?\$[\d,]+\.\d{2}$/);
-    await page.reload();
+    const back = page.url();
+    await page.locator('footer').getByRole('link', { name: 'Change' }).first().click();
+    const row = page.getByRole('region', { name: 'Country' });
+    await row.getByRole('button', { name: 'Change' }).click();
+    await row.getByRole('radio', { name: /United States/ }).click();
+    await page.goto(back);
     await expect(page.locator('html')).toHaveAttribute('data-market', 'us');
     await expect(page.locator('.product-card .product-card-meta .money:not(s .money)').first()).toHaveText(/^(From )?\$[\d,]+\.\d{2}$/);
   });
@@ -56,5 +59,20 @@ test.describe('a US clock', () => {
     await expect(price).toHaveText(/^(From )?\$[\d,]+\.\d{2}$/);
     const nz = await firstCardPrice(page, '?market=nz');
     await expect(nz).toHaveText(/^(From )?NZ\$[\d,]+\.\d{2}$/);
+  });
+});
+
+test.describe('a German visitor (D-208)', () => {
+  test.use({ timezoneId: 'Europe/Berlin' });
+
+  test("sees US$ prices with Germany's own freight, and the US its own", async ({ page }) => {
+    const us = await firstCardPrice(page, '?market=us');
+    const usText = (await us.textContent()) ?? '';
+    const de = await firstCardPrice(page, '?market=de');
+    await expect(page.locator('html')).toHaveAttribute('data-market', 'de');
+    await expect(de).toHaveText(/^(From )?US\$[\d,]+\.\d{2}$/);
+    await expect(de).toBeVisible();
+    // Germany's freight (₹1,500 a kg) is below the US's ₹2,000: its prices differ from the US's
+    expect((await de.textContent())?.replace('US', '')).not.toBe(usText);
   });
 });

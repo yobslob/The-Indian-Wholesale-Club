@@ -8,7 +8,9 @@ import { useShallow } from 'zustand/react/shallow';
 import { flyToBag } from '@/features/cart/fly-to-bag';
 import { MAX_QTY_PER_LINE } from '@/features/cart/limits';
 import { useCart } from '@/features/cart/store';
+import { useCountryVariants } from '@/features/shell/country-variants';
 import { mediaUrl } from '@/lib/site';
+
 
 import { bagLine, loadCardOptions, optionPhoto, preloadCardOptions, ribbonWidth } from './card-options';
 
@@ -113,10 +115,12 @@ export function QuickAdd({
   }, [choices, loaded, product.id, held]);
 
   // older cached cards carry only quick_add (one choice)
-  const options: CardOption[] =
+  const pageOptions: CardOption[] =
     loaded ??
     given ??
     (quickAdd ? [{ id: quickAdd.variant_id, label: quickAdd.label, options: {}, price_cents: quickAdd.price_cents, available: available ?? 1 }] : []);
+  // D-208: priced in the visitor's country (the bag line takes that price; the bag reprices any line still on another)
+  const { variants: options } = useCountryVariants(pageOptions);
   const many = loaded ? loaded.length : (choices ?? options.length);
   // the options, read first when the page left them out
   const need = async (): Promise<CardOption[] | null> => {

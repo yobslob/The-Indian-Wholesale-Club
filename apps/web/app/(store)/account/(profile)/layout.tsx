@@ -1,6 +1,7 @@
 import { getSendHome } from '@repo/db/store';
 
 import { signOutAction } from '@/features/account/actions';
+import { CountryRow } from '@/features/account/country-row';
 import { ProfileNav } from '@/features/account/profile-nav';
 import { customerOrNull } from '@/features/account/session';
 import { SignInCard } from '@/features/auth/sign-in-card';
@@ -14,7 +15,14 @@ const signOut = 'font-ui text-ink-muted min-h-11 text-sm font-medium';
  */
 export default async function ProfileLayout({ children }: { children: React.ReactNode }): Promise<React.JSX.Element> {
   const me = await customerOrNull();
-  if (!me) return <SignInCard />;
+  // D-208: the country is always on Profile, signed in or not
+  if (!me)
+    return (
+      <div>
+        <CountryRow />
+        <SignInCard />
+      </div>
+    );
   // D-205: the section shows once Send home is open (one small read; never fails the page)
   const people = (await getSendHome(me.client).catch(() => null)) !== null;
   return (
@@ -35,6 +43,7 @@ export default async function ProfileLayout({ children }: { children: React.Reac
           <div className="min-[821px]:hidden">
             <ProfileNav variant="tabs" people={people} />
           </div>
+          <CountryRow />
           {children}
           <form action={signOutAction} className="mt-7 min-[821px]:hidden">
             <button type="submit" className={`${signOut} underline underline-offset-[3px]`}>

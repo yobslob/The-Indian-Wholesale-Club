@@ -2,7 +2,7 @@
 
 import Link from 'next/link';
 
-import { formatUsd } from '@repo/shared/domain';
+import { e164Phone, formatUsd } from '@repo/shared/domain';
 
 import { PaymentForm } from './payment-form';
 
@@ -69,14 +69,15 @@ export function PaymentStep({
         billing={{
           name: delivery.fullName,
           email: delivery.email,
-          phone: phone ? `+1${phone}` : undefined,
+          phone: phone ? e164Phone(phone) : undefined,
           address: {
             line1: delivery.line1,
             line2: delivery.line2 || undefined,
             city: delivery.city,
-            state: delivery.state,
+            state: delivery.state || undefined,
             postal_code: delivery.zipCode,
-            country: 'US',
+            // D-208: the address's country (the US when the form had none)
+            country: (delivery.country || 'us').toUpperCase(),
           },
         }}
       />

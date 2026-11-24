@@ -2,14 +2,18 @@ import { Link, useRouter } from 'expo-router';
 import { Pressable, Text, View } from 'react-native';
 
 import { getHome } from '@repo/db/store';
-import { bagGroups, formatUsd, parseBagShipments, regionSegment } from '@repo/shared/domain';
+import { bagGroups, parseBagShipments, regionSegment } from '@repo/shared/domain';
+
 
 import { Photo } from '@/components/photo';
 import { Body, Button, Label, Screen } from '@/components/ui';
 import { bagKey, ChargeRows, useBagCharges } from '@/features/cart/charges';
+import { useBagInCountry } from '@/features/cart/country-bag';
+import { SavingCard } from '@/features/cart/saving-card';
 import { bagSubtotalCents, MAX_QTY_PER_LINE, useBag, type BagLine } from '@/features/cart/store';
 import { ProductRow } from '@/features/catalog/product-row';
 import { StampGrid } from '@/features/regions/stamps';
+import { useCountry } from '@/features/shell/country';
 import { useDeliveryLine } from '@/features/shell/days';
 import { supabase } from '@/lib/supabase';
 import { useQuery } from '@/lib/use-query';
@@ -46,6 +50,9 @@ function EmptyBag(): React.JSX.Element {
 export default function BagScreen(): React.JSX.Element {
   const router = useRouter();
   const { lines, setQuantity } = useBag();
+  // D-208: the lines in the shopper's country (priced again after a change of country), US$ abroad
+  const priced = useBagInCountry();
+  const money = useCountry();
   const charges = useBagCharges();
   // An earlier bag's answer never decides what this bag's lines promise (founder 2026-10-30)
   const facts = charges?.bagKey === bagKey(lines) ? parseBagShipments(charges) : null;
@@ -82,7 +89,7 @@ export default function BagScreen(): React.JSX.Element {
                   </Pressable>
                 </Link>
                 <Text className="font-ui-semibold text-ink text-[15px]">
-                  {formatUsd(line.unitPriceCents * line.quantity)}
+                  {priced ? money.format(line.unitPriceCents * line.quantity) : '…'}
                 </Text>
               </View>
               <View className="flex-row items-center justify-between">
@@ -167,10 +174,11 @@ export default function BagScreen(): React.JSX.Element {
             <View className="flex-row items-baseline justify-between gap-3">
               <Text className="font-ui text-ink text-base">Subtotal</Text>
               <Text className="font-ui-semibold text-ink text-base">
-                {formatUsd(bagSubtotalCents(lines))}
+                {priced ? money.format(bagSubtotalCents(lines)) : '…'}
               </Text>
             </View>
             <ChargeRows />
+            <SavingCard goodsCents={bagSubtotalCents(lines)} />
             <Body muted>Tax and delivery dates are shown at checkout.</Body>
           </View>
           <Button label="Checkout" onPress={() => router.push('/checkout')} />

@@ -21,6 +21,8 @@ function addressLines(address: Record<string, unknown>): string[] {
     text('line1'),
     text('line2'),
     [text('city'), [text('state'), text('zipCode')].filter(Boolean).join(' ')].filter(Boolean).join(', '),
+    // D-208: an address abroad says its country
+    text('country') && text('country') !== 'US' ? text('country') : '',
   ].filter(Boolean);
 }
 

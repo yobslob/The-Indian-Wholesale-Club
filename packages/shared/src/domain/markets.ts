@@ -11,17 +11,23 @@ import type { ProductType } from './product-types';
  * and the admin stay in US dollars. No permission is asked: the country comes from the device's time zone, a
  * `?market=` link or the footer's switch (MARKET_SCRIPT below, run before the first paint).
  */
+/**
+ * D-208: the visitor's country, any country IWC sells in (a lower-case ISO 3166 code; the open list is the database's,
+ * store_countries). The US is 'us'. Canada, Australia and New Zealand also have their own dollars (D-197); every other
+ * country sees US dollars written US$. Its prices carry its own freight (store_country_prices).
+ */
+export type Market = string;
+/** The countries with their own currency on the store (D-197), in the order the footer listed them. */
 export const MARKETS = ['us', 'ca', 'au', 'nz'] as const;
-export type Market = (typeof MARKETS)[number];
-export type AbroadMarket = Exclude<Market, 'us'>;
+export type AbroadMarket = 'ca' | 'au' | 'nz';
 
 /** US dollars to each currency, from Settings; null when not set (that market's prices then show in US dollars). */
 export type MarketRates = Record<AbroadMarket, number | null>;
 export const NO_RATES: MarketRates = { ca: null, au: null, nz: null };
 
 /** The founder's prefixes (2026-11-10): the US is just "$". */
-export const MARKET_PREFIX: Record<Market, string> = { us: '$', ca: 'CA$', au: 'A$', nz: 'NZ$' };
-export const MARKET_NAME: Record<Market, string> = {
+export const MARKET_PREFIX: Record<(typeof MARKETS)[number], string> = { us: '$', ca: 'CA$', au: 'A$', nz: 'NZ$' };
+export const MARKET_NAME: Record<(typeof MARKETS)[number], string> = {
   us: 'United States',
   ca: 'Canada',
   au: 'Australia',
@@ -31,12 +37,19 @@ export const MARKET_NAME: Record<Market, string> = {
 /** The cookie a choice is kept in (a `?market=` link or the footer's switch); a time-zone guess is never stored. */
 export const MARKET_COOKIE = 'iwc_market';
 
-export const isMarket = (value: unknown): value is Market =>
-  typeof value === 'string' && (MARKETS as readonly string[]).includes(value);
+/** A country code as the store keeps it (the database says which are open). */
+export const isMarket = (value: unknown): value is Market => typeof value === 'string' && /^[a-z]{2}$/.test(value);
+
+const hasOwnCurrency = (market: Market): market is AbroadMarket => market === 'ca' || market === 'au' || market === 'nz';
+
+/** "$" in the US, CA$ / A$ / NZ$ where they have their own dollars, else US$ (D-208: "$" never reads as a local dollar). */
+export function marketPrefix(market: Market): string {
+  return market === 'us' ? '$' : hasOwnCurrency(market) ? MARKET_PREFIX[market] : 'US$';
+}
 
 /** The rate a market's prices use; null for the US, or when the rate is not set. */
 export function marketRate(market: Market, rates: MarketRates): number | null {
-  if (market === 'us') return null;
+  if (!hasOwnCurrency(market)) return null;
   const rate = rates[market];
   return typeof rate === 'number' && Number.isFinite(rate) && rate > 0 ? rate : null;
 }
@@ -44,12 +57,14 @@ export function marketRate(market: Market, rates: MarketRates): number | null {
 /** US cents × the rate, to the cent (half a cent away from zero, so a minus amount mirrors its plus one). */
 const convert = (usdCents: number, rate: number): number => Math.sign(usdCents) * Math.round(Math.abs(usdCents) * rate);
 
-const withPrefix = (cents: number, market: Market): string => formatUsd(cents).replace('$', MARKET_PREFIX[market]);
+const withPrefix = (cents: number, market: Market): string => formatUsd(cents).replace('$', marketPrefix(market));
+/** US dollars as a country without its own currency sees them: "US$12.50" (the US and Canada… without a rate: "$"). */
+const usdFor = (cents: number, market: Market): string => (market === 'us' || hasOwnCurrency(market) ? formatUsd(cents) : withPrefix(cents, market));
 
 /** "$12.50" in the US (exactly formatUsd), "CA$17.66" in Canada: the US price × the rate, to the cent. */
 export function formatMoney(usdCents: number, market: Market, rates: MarketRates): string {
   const rate = marketRate(market, rates);
-  return rate === null ? formatUsd(usdCents) : withPrefix(convert(usdCents, rate), market);
+  return rate === null ? usdFor(usdCents, market) : withPrefix(convert(usdCents, rate), market);
 }
 
 /**
@@ -59,7 +74,7 @@ export function formatMoney(usdCents: number, market: Market, rates: MarketRates
  */
 export function formatWas(usdCents: number, type: ProductType | null | undefined, market: Market, rates: MarketRates): string {
   const rate = marketRate(market, rates);
-  return rate === null ? formatUsd(wasCents(usdCents, type)) : withPrefix(wasCents(convert(usdCents, rate), type), market);
+  return rate === null ? usdFor(wasCents(usdCents, type), market) : withPrefix(wasCents(convert(usdCents, rate), type), market);
 }
 
 /** Canada's IANA time zones (the `Canada/*` aliases are matched by their prefix). */
@@ -110,8 +125,8 @@ export function marketFromTimeZone(zone: string | null | undefined): Market {
 }
 
 /**
- * Inline in <head> (app/layout.tsx), before the first paint: sets <html data-market>. A `?market=` link wins and is
+ * Inline in <head> (app/layout.tsx), before the first paint: sets <html data-market> and the flag (`--flag`, D-208). A `?market=` link wins and is
  * kept in the cookie, then the cookie, then the time zone. The same rules as marketFromTimeZone (markets.test.ts runs
  * this very script against it). No request, no permission prompt.
  */
-export const MARKET_SCRIPT = `(function(){try{var d=document.documentElement,k=${JSON.stringify(MARKET_COOKIE)},m=null,q=/[?&]market=(us|ca|au|nz)(?:&|$)/.exec(location.search);if(q){m=q[1];document.cookie=k+'='+m+';path=/;max-age=31536000;samesite=lax'}else{var c=new RegExp('(?:^|; )'+k+'=(us|ca|au|nz)(?:;|$)').exec(document.cookie);if(c)m=c[1]}if(!m){var z='';try{z=Intl.DateTimeFormat().resolvedOptions().timeZone||''}catch(e){}m=${AU_ZONE}.test(z)?'au':${NZ_ZONE}.test(z)?'nz':(${CA_ZONE}.test(z)||${JSON.stringify(CANADA_ZONES)}.indexOf(z)>=0)?'ca':'us'}d.setAttribute('data-market',m)}catch(e){}})();`;
+export const MARKET_SCRIPT = `(function(){try{var d=document.documentElement,k=${JSON.stringify(MARKET_COOKIE)},m=null,q=/[?&]market=([a-z]{2})(?:&|$)/.exec(location.search);if(q){m=q[1];document.cookie=k+'='+m+';path=/;max-age=31536000;samesite=lax'}else{var c=new RegExp('(?:^|; )'+k+'=([a-z]{2})(?:;|$)').exec(document.cookie);if(c)m=c[1]}if(!m){try{var s=sessionStorage.getItem('iwc_market_ip');if(s&&/^[a-z]{2}$/.test(s))m=s}catch(e){}}if(!m){var z='';try{z=Intl.DateTimeFormat().resolvedOptions().timeZone||''}catch(e){}m=${AU_ZONE}.test(z)?'au':${NZ_ZONE}.test(z)?'nz':(${CA_ZONE}.test(z)||${JSON.stringify(CANADA_ZONES)}.indexOf(z)>=0)?'ca':'us'}d.setAttribute('data-market',m);d.style&&d.style.setProperty('--flag','url(/flags/'+m+'.svg)')}catch(e){}})();`;

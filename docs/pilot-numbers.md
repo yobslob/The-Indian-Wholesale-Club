@@ -16,8 +16,9 @@ Every automatic price = (shop ₹ ÷ 0.90 + weight g × ₹2) ÷ the category's 
 - Products → Download Excel gives name, Indian price, category, weight, US price and margin.
 - **Struck-through prices (D-190):** Settings → Prices, 55% of the listings priced by the rules (0 = none; picked from the listing's id). The struck figure = price × 1.2 food, × 1.4 clothing, × 1.5 home & gifts, the price plus its margin. Display only: what is charged is the price.
 
-## Prices abroad (Settings → Prices abroad, D-197)
-CA$, A$ and NZ$ per US$1: 1.4130, 1.4570, 1.8060 (mid-market, 2026-11-06/07). Visitors there see every price × the rate, to the cent; nothing charged changes (checkout stays in US dollars). Empty = that country sees US dollars.
+## Prices abroad (D-208, Admin → Countries; currencies: Settings → Prices abroad, D-197)
+- **Freight by country (D-208):** a piece's price in a country = its US price + its priced weight × (that country's ₹ a kg − ₹2,000) ÷ (920 × the category's divisor), to the cent: the ₹2 a gram inside D-128's formula becomes the country's ShipGlobal rate (the cheapest 1 kg quote, rounded up to the next ₹500, read 2026-11-24; `catalogue/shipglobal-rates-2026-11-24.csv`). The US stays at ₹2,000 (founder); Singapore and Malaysia ₹500, the UK and UAE ₹1,000, most of the EU, Canada, Australia and Japan ₹1,500, most of Africa, Latin America and the islands ₹3,500 – ₹4,000. Heavy-item shipping takes the same freight. Shipping ($18.62 a billed kg), the free and bulk lines, retailer charges, Coins and the 5% are the same everywhere. 233 countries open (D-209). Checkout charges the country's price, in US dollars, with no US sales tax abroad; duties are paid by IWC (D-209).
+- **Currencies (D-197):** CA$, A$ and NZ$ per US$1: 1.4130, 1.4570, 1.8060 (mid-market, 2026-11-06/07): visitors there see their country's prices × the rate, to the cent. Every other country sees US dollars written US$. Empty rate = that country sees US dollars.
 
 ## The bag's charges (Settings → Bag charges)
 | Number | On production | Notes |

@@ -23,6 +23,8 @@ const PROBLEM_MESSAGE = {
   // The website lists each line with Remove or Keep n; the old app shows only this sentence.
   stock: 'Some items in your bag just sold out or have fewer left. Please change your bag to go on.',
   closed: 'Checkout is not open right now. Please try again soon.',
+  // D-208: a country IWC does not sell in (D-209)
+  country: "We don't deliver to that country yet. Please choose another address.",
 } as const;
 
 /** The website sends the payment it already holds this visit, so a re-price keeps it (launch QA A-5). */

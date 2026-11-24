@@ -3,11 +3,14 @@ import { Text, View } from 'react-native';
 import { getBagCharges, heavyOf, smallOrderOf, type BagCharges } from '@repo/db/store';
 import { bagChargesAt, bagGoal, bulkProgress, formatUsd, heavyShippingAt } from '@repo/shared/domain';
 
+import { useCountry } from '../shell/country';
+
 import { MeterLine } from './meter-line';
 import { bagSubtotalCents, useBag, type BagLine } from './store';
 
 import { supabase } from '@/lib/supabase';
 import { useQuery } from '@/lib/use-query';
+
 
 export const bagKey = (lines: BagLine[]): string =>
   lines
@@ -22,11 +25,14 @@ export type KeyedCharges = BagCharges & { bagKey: string };
 export function useBagCharges(): KeyedCharges | null {
   const lines = useBag((s) => s.lines);
   const key = bagKey(lines);
-  const { data } = useQuery(`bag-charges:${key}`, () =>
+  // D-208: a heavy piece's Heavy-item shipping is the shopper's country's (its freight)
+  const { country } = useCountry();
+  const { data } = useQuery(`bag-charges:${key}@${country}`, () =>
     key
       ? getBagCharges(
           supabase,
           lines.map((l) => ({ variantId: l.variantId, quantity: l.quantity })),
+          { country },
         ).then((charges): KeyedCharges => ({ ...charges, bagKey: key }))
       : Promise.resolve(null),
   );

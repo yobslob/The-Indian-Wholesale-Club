@@ -14,7 +14,10 @@ export interface Details {
   state: string;
   zipCode: string;
   phone: string;
+  /** D-208: coupons are gone; kept so older saved details still parse, never sent. */
   promoCode: string;
+  /** D-208: the address's country (lower-case code; empty = the US). */
+  country: string;
 }
 
 export const EMPTY_DETAILS: Details = {
@@ -27,6 +30,7 @@ export const EMPTY_DETAILS: Details = {
   zipCode: '',
   phone: '',
   promoCode: '',
+  country: '',
 };
 
 /** "nj", "NJ" or "New Jersey" → "NJ"; anything else is left for the schema to reject. */
@@ -48,7 +52,12 @@ export function toCheckoutRequest(
   const email = emailSchema.safeParse(details.email);
   if (!email.success)
     return { error: email.error.issues[0]?.message ?? 'Enter a valid email address' };
-  const address = shippingAddressSchema.safeParse({ ...details, state: stateCode(details.state) });
+  const country = (details.country || 'us').toUpperCase();
+  const address = shippingAddressSchema.safeParse({
+    ...details,
+    state: country === 'US' ? stateCode(details.state) : details.state,
+    country,
+  });
   if (!address.success)
     return { error: address.error.issues[0]?.message ?? 'Please check your address' };
   return {
@@ -56,7 +65,7 @@ export function toCheckoutRequest(
       email: email.data,
       address: address.data,
       lines: lines.map((l) => ({ variantId: l.variantId, quantity: l.quantity })),
-      promoCode: details.promoCode.trim() || null,
+      promoCode: null, // D-208: no coupons
       useCoins: true, // D-191: this bill draws their line
     },
   };

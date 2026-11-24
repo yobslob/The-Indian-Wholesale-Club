@@ -18,6 +18,7 @@ import {
 import { flyToBag } from '@/features/cart/fly-to-bag';
 import { MAX_QTY_PER_LINE } from '@/features/cart/limits';
 import { useCart } from '@/features/cart/store';
+import { useCountryVariants } from '@/features/shell/country-variants';
 import { Money, useMoney } from '@/features/shell/market';
 import { mediaUrl } from '@/lib/site';
 
@@ -53,9 +54,11 @@ const stepButton = 'grid size-11 place-items-center text-lg font-medium disabled
  * Launch QA B-1: until a pick the price is "From $x" (the lowest in stock) when the options differ, so the price shown
  * is never one the bag then changes; after the pick it is that option's price, the one the bag line gets.
  */
-export function AddToCart({ product, variants, media, delivery }: Props): React.JSX.Element {
+export function AddToCart({ product, variants: pageVariants, media, delivery }: Props): React.JSX.Element {
   // D-197: before any early return (rules of hooks)
   const money = useMoney();
+  // D-208: the options priced in the visitor's country (the US: as the page has them)
+  const { variants, ready: pricesReady } = useCountryVariants(pageVariants);
   const add = useCart((s) => s.add);
   const lines = useCart((s) => s.lines);
   const setLook = useLook((s) => s.setLook);
@@ -152,7 +155,7 @@ export function AddToCart({ product, variants, media, delivery }: Props): React.
         {/* D-197: hidden until drawn in the visitor's dollars (.money) */}
         <p
           data-testid="product-price"
-          data-m={money.ready ? money.market : undefined}
+          data-m={money.ready && pricesReady ? money.market : undefined}
           className={was ? 'money now m-0' : 'money m-0'}
         >
           {price}

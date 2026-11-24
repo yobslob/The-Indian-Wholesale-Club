@@ -50,6 +50,7 @@ function groups(): [string, Item[]][] {
       [
         { href: '/admin/insights', label: 'Insights' },
         { href: '/admin/settings', label: 'Settings' },
+        { href: '/admin/countries', label: 'Countries' },
       ],
     ],
   ];

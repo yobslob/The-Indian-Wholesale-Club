@@ -3,6 +3,7 @@ import 'server-only';
 import { z } from 'zod';
 
 import { getCheckoutContext, getCheckoutSendHome } from '@repo/db/server';
+import { getCountryPrices } from '@repo/db/store';
 import { getBagCharges, heavyOf, smallOrderOf } from '@repo/db/store';
 import {
   emailSchema,
@@ -109,11 +110,18 @@ export async function priceCart(
   }
   const ids = [...quantities.keys()];
   // D-208: the saving's settings (and a saved loved one) are read beside checkout's own context, so no wait is added
-  const [context, sendHome] = await Promise.all([
-    getCheckoutContext(service, ids, request.promoCode ?? null, request.address.state, { userId, email: request.email }),
+  // D-208: the address's country prices the pieces (its freight) and decides the tax (US states only, D-073)
+  const country = request.address.country;
+  const abroad = country !== 'US';
+  const [context, sendHome, local] = await Promise.all([
+    getCheckoutContext(service, ids, request.promoCode ?? null, abroad ? null : request.address.state, { userId, email: request.email }),
     getCheckoutSendHome(service, { userId, email: request.email, lovedOneId: request.gift?.lovedOneId ?? null }),
+    abroad ? getCountryPrices(service, country.toLowerCase(), { variants: ids, products: [], recipes: [] }) : Promise.resolve(undefined),
   ]);
+  if (local === null) return { ok: false, problem: { kind: 'country' } };
   const byId = new Map(context.variants.map((v) => [v.variant_id, v]));
+  // a piece's price in the order's country (create_order checks the same)
+  const priceOf = (id: string, us: number): number => local?.variants[id]?.price ?? us;
 
   const stock = stockProblems(context, quantities);
   if (stock.length > 0) return { ok: false, problem: { kind: 'stock', lines: stock } };
@@ -129,8 +137,8 @@ export async function priceCart(
       variantLabel: v.label,
       regionName: v.region_name,
       quantity,
-      unitPriceCents: v.price_cents,
-      totalCents: v.price_cents * quantity,
+      unitPriceCents: priceOf(id, v.price_cents),
+      totalCents: priceOf(id, v.price_cents) * quantity,
     };
   });
 
@@ -168,8 +176,9 @@ export async function priceCart(
     ids.map((variantId) => ({ variantId, quantity: quantities.get(variantId)! })),
     {
       discountCents: promoDiscountCents(subtotal, quotePromo),
-      state: request.address.state,
+      state: abroad ? undefined : request.address.state,
       line1: request.address.line1,
+      country: country.toLowerCase(),
     },
   );
   const shipments = charges.shipments ?? null;

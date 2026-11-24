@@ -5,6 +5,7 @@ import {
   cancelRefundCents,
   exportCancelCents,
   getAdminOrder,
+  getShipCountry,
   getShopBill,
   itemRefundCents,
   shipmentCancelCents,
@@ -54,6 +55,9 @@ export default async function AdminOrderPage({ params }: { params: Params }): Pr
   if (!order) notFound();
   const n = order.order_number;
   const address = order.shipping_address as Record<string, string | null>;
+  // D-208: an order abroad goes with that country's ShipGlobal service (admin only, never on the store)
+  const abroad = address.country && address.country !== 'US' ? address.country : null;
+  const route = abroad ? await getShipCountry(client, abroad).catch(() => null) : null;
   // Refund amounts come from the database rules (D-042), shown before anyone clicks.
   const unavailable = order.items.filter((i) => i.status === 'unavailable');
   // D-154: an order of two shipments runs each on its own; once its food is bought it is not cancelled whole.
@@ -141,7 +145,19 @@ export default async function AdminOrderPage({ params }: { params: Params }): Pr
                 )}
               </dd>
               <dt className="text-ink-muted">Ship to</dt>
-              <dd>{[address.line1, address.line2, address.city, [address.state, address.zipCode].filter(Boolean).join(' ')].filter(Boolean).join(', ')}</dd>
+              <dd>
+                {[address.line1, address.line2, address.city, [address.state, address.zipCode].filter(Boolean).join(' '), address.country && address.country !== 'US' ? address.country : null]
+                  .filter(Boolean)
+                  .join(', ')}
+              </dd>
+              {route ? (
+                <>
+                  <dt className="text-ink-muted">ShipGlobal</dt>
+                  <dd>
+                    {route.name}: {route.service ?? 'no service'} ({route.days_min}–{route.days_max} days), priced at ₹{route.inr_per_kg?.toLocaleString('en-IN')} a kg
+                  </dd>
+                </>
+              ) : null}
               <dt className="text-ink-muted">Promised</dt>
               <dd>{dateRange(order.est_delivery_from, order.est_delivery_to)}</dd>
               {order.tracking_number ? (

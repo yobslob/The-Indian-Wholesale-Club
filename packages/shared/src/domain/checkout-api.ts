@@ -16,6 +16,8 @@ export interface CheckoutRequestBody {
     state: string;
     zipCode: string;
     phone?: string | null;
+    /** D-208: the address's country (ISO code); the US when absent (an older app). */
+    country?: string;
   };
   lines: { variantId: string; quantity: number }[];
   promoCode?: string | null;
@@ -131,6 +133,8 @@ export type CheckoutProblem =
   /** The bag is below the smallest order (D-109). */
   | { kind: 'below_minimum'; minOrderCents: number; subtotalCents: number }
   | { kind: 'closed' }
+  /** D-208: the address is in a country IWC does not sell in. */
+  | { kind: 'country' }
   /** D-208: the saving cannot go home as asked (its UPI, no one named); the customer can keep it instead. */
   | { kind: 'gift'; message: string };
 

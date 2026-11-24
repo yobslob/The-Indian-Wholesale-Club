@@ -23,6 +23,8 @@ export interface CartLine {
   quantity: number;
   /** D-140: clothing, food or home (lines added before it have none). */
   productType?: string;
+  /** D-208: the country unitPriceCents is for (absent: the US, or not yet repriced); country-bag.ts keeps it the visitor's. */
+  priceCountry?: string;
 }
 
 interface CartState {
@@ -32,6 +34,8 @@ interface CartState {
   setQuantity: (variantId: string, quantity: number) => void;
   remove: (variantId: string) => void;
   setPromoCode: (code: string | null) => void;
+  /** D-208: every line's price in `country` (pieces it has no price for keep theirs). */
+  reprice: (country: string, prices: Record<string, number>) => void;
   clear: () => void;
 }
 
@@ -69,6 +73,12 @@ export const useCart = create<CartState>()(
       remove: (variantId) =>
         set((state) => ({ lines: state.lines.filter((l) => l.variantId !== variantId) })),
       setPromoCode: (code) => set({ promoCode: code ? code.trim().toUpperCase() : null }),
+      reprice: (country, prices) =>
+        set((state) => ({
+          lines: state.lines.map((l) =>
+            prices[l.variantId] === undefined ? l : { ...l, unitPriceCents: prices[l.variantId]!, priceCountry: country },
+          ),
+        })),
       clear: () => set({ lines: [], promoCode: null }),
     }),
     { name: 'iwc-cart', version: 1 },

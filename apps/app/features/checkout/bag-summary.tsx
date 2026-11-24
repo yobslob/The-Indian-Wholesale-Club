@@ -63,7 +63,12 @@ export function BagSummary({ title, lines, quote }: { title: string; lines: BagL
             <Text className="font-ui-semibold text-ink text-base">Total</Text>
             <Text className="font-ui-semibold text-ink text-base">{formatUsd(b.totalCents)}</Text>
           </View>
-          {quote.promoRejected ? <Text className="text-caution font-body text-sm">That promo code can&apos;t be used on this order.</Text> : null}
+          {/* D-208: where the 5% saving goes (the app keeps it as Coins; never part of the total) */}
+          {quote.saving ? (
+            <Text className="font-body text-ink-muted text-sm">
+              Your {formatUsd(quote.saving.cents)} saving goes to {quote.saving.to === 'home' && quote.saving.callName ? quote.saving.callName : 'your Coins'}.
+            </Text>
+          ) : null}
           <View className="bg-paper rounded-xl px-3.5 py-3">
             {quote.shipments?.length ? (
               // D-187: a bag with food and other pieces comes in two parcels, each with its own window
