@@ -35,7 +35,8 @@ async function delivery(page: Page): Promise<void> {
   await expect(page.getByText('✓ Edison, NJ')).toBeVisible();
   await page.locator('input[name="line1"]').fill('1 Test Street');
   await page.getByRole('button', { name: 'Continue to payment' }).click();
-  await expect(page.getByText('Estimated delivery:')).toBeVisible();
+  // pricing makes the payment with Stripe: the first one after a fresh server can take several seconds
+  await expect(page.getByText('Estimated delivery:')).toBeVisible({ timeout: 20_000 });
 }
 
 test('a first-time guest: the bag opens with the round-up added, Checkout asks who, the postcard after paying', async ({ page }) => {
@@ -57,9 +58,11 @@ test('a first-time guest: the bag opens with the round-up added, Checkout asks w
   await sheet.getByRole('button', { name: /^Send ₹[\d,]+ to Maa$/ }).click();
   await expect(page).toHaveURL(/\/checkout$/);
 
+  // Pricing and paying need Stripe's test keys (checkout answers 503 without them, as in CI): the bag and the sheet above
+  // are checked everywhere, the rest where the keys are set.
+  test.skip(!stripeTestKeysPresent(), 'Stripe test keys are not set: checkout cannot price or pay');
   await delivery(page);
   await expect(page.getByRole('region', { name: 'Bill' }).getByText(/^Sent home · ₹[\d,]+ to Maa/).first()).toBeVisible();
-  test.skip(!stripeTestKeysPresent(), 'Stripe test keys are not set: the payment itself is not tried');
   const card4242 = page.getByRole('main').locator('iframe:not([aria-hidden="true"])').first().contentFrame();
   const number = card4242.locator('[name="number"]');
   const cardTab = card4242.getByRole('button', { name: 'Card', exact: true });
