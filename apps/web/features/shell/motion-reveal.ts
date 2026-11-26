@@ -4,7 +4,7 @@
  * ([data-album]) animates only while on screen. Only what is below the fold is ever hidden, so nothing on screen
  * flickers, and without JavaScript everything is visible. Nothing here runs with reduced motion (motion.tsx).
  *
- * Parts a page draws later (Home's rows and map as they come near, launch QA C-2) join through `enhanceMotion`
+ * Parts a page draws later (Home's album and map as they come near, launch QA C-2) join through `enhanceMotion`
  * once they are in the DOM: anything of theirs not yet past the reveal line starts hidden and reveals as it enters,
  * like the rest of the page.
  */

@@ -28,15 +28,15 @@ test.describe('reduced motion', () => {
 test.describe('with motion', () => {
   test.use({ reducedMotion: 'no-preference' });
 
-  test("the browser's own scrolling (Y-6), and images below the fold reveal once scrolled to", async ({ page }) => {
+  test("the browser's own scrolling (Y-6), and what is below the fold reveals once scrolled to", async ({ page }) => {
     await page.goto('/');
     await expect(page.locator('html')).not.toHaveClass(/lenis/);
-    // launch QA C-2: Home's rows draw as they come near, after the first scroll
     await page.mouse.wheel(0, 400);
-    const firstCard = page.locator('#just-listed [data-reveal]').first();
-    await expect(firstCard).not.toHaveAttribute('data-reveal', 'in');
-    await firstCard.scrollIntoViewIfNeeded();
-    await expect(firstCard).toHaveAttribute('data-reveal', 'in');
+    // Pick your home's heading, far below the first screen (Home's rows, the old target, left with D-212)
+    const heading = page.locator('#pick-home');
+    await expect(heading).not.toHaveAttribute('data-reveal', 'in');
+    await heading.scrollIntoViewIfNeeded();
+    await expect(heading).toHaveAttribute('data-reveal', 'in');
   });
 });
 

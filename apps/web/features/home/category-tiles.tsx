@@ -11,11 +11,16 @@ import { TILE_PHOTOS } from './tile-photos';
 
 import type { HomeData } from '@repo/db/store';
 
+/** Every square: the photos' own grey behind them, a hairline of wine round it. */
+const tile = 'border-brand relative block aspect-square overflow-hidden rounded-lg border bg-[#e0dada]';
+
 /**
  * D-187: Home's category tiles, biggest first, each with its photo and its count: the founder's own (tile-photos.ts),
  * else the photo of its newest piece. A tile opens that category's See all page (/food?category=sweets); Shirts and
  * Tops share a category and open it for men or women (D-190). From store_home(), so no read of its own. Server-drawn.
  * D-195: Traditional wear comes first when there is clothing: Clothing with only the pieces from a state.
+ * Founder 2026-11-26: the new photos show whole (no zoom, no crop, no zoom on hover) on their own grey, and every square
+ * has a very thin wine border.
  */
 export function CategoryTiles({ categories }: { categories: HomeData['categories'] }): React.JSX.Element | null {
   if (categories.length < 2) return null;
@@ -28,13 +33,13 @@ export function CategoryTiles({ categories }: { categories: HomeData['categories
         {categories.some((c) => c.product_type === 'clothing') ? (
           <li>
             <Link href={`/clothing?state=${ANY_STATE}`} prefetch={false} className="group block">
-              <span className="bg-land relative block aspect-square overflow-hidden rounded-lg">
+              <span className={tile}>
                 {TILE_PHOTOS['traditional-wear'] ? (
                   <StorePhoto
                     src={TILE_PHOTOS['traditional-wear']}
                     alt=""
                     sizes="(min-width: 1024px) 16vw, (min-width: 640px) 25vw, 33vw"
-                    className="object-cover transition-transform duration-500 group-hover:scale-[1.04]"
+                    className="object-cover"
                   />
                 ) : null}
               </span>
@@ -45,7 +50,8 @@ export function CategoryTiles({ categories }: { categories: HomeData['categories
         ) : null}
         {categories.map((c) => {
           const key = c.for ? `${c.slug}:${c.for}` : c.slug;
-          const photo = TILE_PHOTOS[key] ?? (c.image_path ? mediaUrl(c.image_path) : null);
+          const own = TILE_PHOTOS[key];
+          const photo = own ?? (c.image_path ? mediaUrl(c.image_path) : null);
           const path = PRODUCT_TYPE_PATH[c.product_type];
           return (
             <li key={key}>
@@ -55,13 +61,14 @@ export function CategoryTiles({ categories }: { categories: HomeData['categories
                 className="group block"
               >
                 {/* founder 2026-10-31: no shelf under the tiles */}
-                <span className="bg-land relative block aspect-square overflow-hidden rounded-lg">
+                <span className={tile}>
                   {photo ? (
                     <StorePhoto
                       src={photo}
                       alt=""
                       sizes="(min-width: 1024px) 16vw, (min-width: 640px) 25vw, 33vw"
-                      className="object-cover transition-transform duration-500 group-hover:scale-[1.04]"
+                      // the founder's photo whole; a newest piece's photo still fills the square
+                      className={own ? 'object-contain' : 'object-cover'}
                     />
                   ) : null}
                 </span>
