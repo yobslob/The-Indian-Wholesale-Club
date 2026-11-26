@@ -86,7 +86,12 @@ describe('checkout API answers become messages, never throws (launch QA A-2, A-3
       new Promise((_resolve, reject) => {
         init?.signal?.addEventListener('abort', () => reject(init.signal?.reason));
       });
-    const r = await postJson('/api/checkout', {}, okSchema, { timeoutMs: 20, fetchImpl });
+    // AbortSignal.timeout's timer does not keep Node's event loop alive, and nothing else here does: without this the
+    // loop could empty before the 20 ms passed and the runner cancelled the test (main's CI, 2026-11-26)
+    const keepAlive = setTimeout(() => undefined, 5000);
+    const r = await postJson('/api/checkout', {}, okSchema, { timeoutMs: 20, fetchImpl }).finally(() =>
+      clearTimeout(keepAlive),
+    );
     assert.equal(r.ok, false);
     if (!r.ok) {
       assert.equal(r.timedOut, true);
