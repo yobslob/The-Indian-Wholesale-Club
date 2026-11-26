@@ -7,14 +7,15 @@ import { expect, test } from '@playwright/test';
  */
 test.use({ reducedMotion: 'reduce' });
 
-test('a row scrolls sideways; See all opens its list', async ({ page }) => {
-  await page.goto('/');
-  // launch QA C-2: Home draws its rows as they come near
-  await page.locator('#just-listed').scrollIntoViewIfNeeded();
-  const list = page.getByRole('list', { name: 'Just listed: Clothing' });
+test('a row scrolls sideways', async ({ page }) => {
+  // the empty bag's Just listed (D-086): Home's rows, where this ran before, left with D-212
+  await page.goto('/cart');
+  const row = page.locator('#just-listed');
+  await row.scrollIntoViewIfNeeded();
+  const list = row.locator('ul').first();
   const size = await list.evaluate((el) => ({ scroll: el.scrollWidth, box: el.clientWidth }));
   expect(size.scroll).toBeGreaterThan(size.box);
-  await page.getByRole('button', { name: 'Scroll Just listed: Clothing on' }).click();
+  await row.getByRole('button', { name: 'Scroll Just listed on' }).click();
   await expect.poll(() => list.evaluate((el) => el.scrollLeft)).toBeGreaterThan(0);
 });
 
@@ -105,30 +106,23 @@ test('filters and the endless scroll change only the cards, never the page (D-13
   expect(await page.evaluate(() => (window as unknown as { kept?: boolean }).kept)).toBe(true);
 });
 
-test("Home's Just listed is a row per type, each with its own See all (D-140)", async ({ page }) => {
-  await page.goto('/');
-  // launch QA C-2: Home draws its rows as they come near
-  await page.locator('#just-listed').scrollIntoViewIfNeeded();
-  const section = page.locator('#just-listed');
-  await expect(section.getByRole('tab')).toHaveCount(0);
-  const clothing = section.getByRole('region', { name: 'Clothing' });
-  await expect(clothing.getByRole('list', { name: 'Just listed: Clothing' })).toBeVisible();
-  const seeAll = clothing.getByRole('link', { name: /See all/ });
+test('a row fits the page and scrolls inside it; its See all opens the list (D-140)', async ({ page }) => {
+  await page.goto('/cart');
+  const row = page.locator('#just-listed');
+  await row.scrollIntoViewIfNeeded();
+  const seeAll = row.getByRole('link', { name: /See all/ });
   await expect(seeAll).toHaveAttribute('href', '/clothing');
-  // each row fits the page and scrolls inside it; See all sits on screen (a plain grid once made the rows 2,244 px
-  // wide on a phone: the page bled sideways, the rows could not scroll and See all was off the page)
+  // the row fits the page and scrolls inside it; See all sits on screen (a plain grid once made Home's rows 2,244 px
+  // wide on a phone: the rows could not scroll and See all was off the page)
   for (const width of [375, 1280]) {
     await page.setViewportSize({ width, height: 900 });
-    const list = clothing.getByRole('list', { name: 'Just listed: Clothing' });
-    const fit = await page.evaluate(() => document.documentElement.scrollWidth - document.documentElement.clientWidth);
-    expect(fit).toBeLessThanOrEqual(0);
+    const list = row.locator('ul').first();
     const size = await list.evaluate((el) => ({ scroll: el.scrollWidth, box: el.clientWidth }));
     expect(size.box).toBeLessThanOrEqual(width);
     expect(size.scroll).toBeGreaterThan(size.box);
     const box = await seeAll.boundingBox();
     expect(box && box.x + box.width).toBeLessThanOrEqual(width);
   }
-  // by keyboard: the Home hero's scroll effects can move the row under a mouse pointer mid-click
   await seeAll.focus();
   await page.keyboard.press('Enter');
   await expect(page).toHaveURL(/\/clothing$/);

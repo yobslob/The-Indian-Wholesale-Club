@@ -48,8 +48,8 @@ Short on purpose (the audit warns past 10 KB): **replace** lines when something 
 - **Free shipping from $49.99** on every bag; bulk saving and the heavy-item discount stay at $99.99. No price changes
   (rehearsed: 0 differences of 29,212 options).
 - **Stock is checked at checkout** (Remove / Keep n, payment locked until sorted) on the website and in the app.
-- **Home (dressed for Homecoming, D-196, once released):** hero → the season's arches → mosaic → the first-order band (D-193) → Shop by category (Traditional wear first, D-195) → the season's dusk → What everyone missed this week → The
-  kirana counter → Just listed Clothing → Just listed Home & gifts → Pick your home → the delivery band.
+- **Home (dressed for Homecoming, D-196, once released):** hero → the season's arches → mosaic → the first-order band (D-193) → Shop by category (Traditional wear first, D-195) → the season's dusk → Pick your home → the delivery band. Since D-212
+  (branch `feat/ad-gharwalo`) no product rows, and the band says "Aapka Order, Gharwalo ka profit" with no number or %.
 - **App 1.1.0** is built for this; whether it is published is not recorded here. The old app keeps working as a customer app (shims marked
   `TODO(D-187)`); **its admin mode breaks** with the release.
 

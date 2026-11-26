@@ -6,9 +6,7 @@ import { CookAtHome } from '@/features/home/cook-at-home';
 import { DeliveryBand } from '@/features/home/delivery-band';
 import { FirstOrderBand } from '@/features/home/first-order-band';
 import { HomeHero } from '@/features/home/home-hero';
-import { HomeRow } from '@/features/home/home-row';
 import { HomecomingDusk } from '@/features/home/homecoming-windows';
-import { JustListed } from '@/features/home/just-listed';
 import { LazyAlbum, LazyPickHome } from '@/features/home/lazy-sections';
 import { ALBUM_MINIMUM } from '@/features/regions/region-album';
 
@@ -19,12 +17,12 @@ export const metadata: Metadata = { alternates: { canonical: '/' } };
 
 /**
  * Home (D-187, the founder's order; dressed for Homecoming, D-196): the hero, Cook at home (D-204), the album of all of India (the drifting mosaic),
- * the first-order band, the category tiles, the season's dusk with the flight inside, What everyone missed this week, The kirana counter, Just
- * listed Clothing and Home & gifts, Pick your home and the delivery band.
+ * the first-order band, the category tiles, the season's dusk with the flight inside, Pick your home and the delivery band. The founder
+ * took the product rows off Home on 2026-11-26 (What everyone missed this week, The kirana counter, Just listed Clothing and Home & gifts).
  * One cached store_home() call (PR-1, PR-2). Runs edge to edge (data-bleed); sections keep the gutter. Launch QA C-2: the
- * first screen, Cook at home, the season's window, the tiles, the headings and the band are server-rendered; the album, Pick your home's
- * map and stamps and every row's cards are drawn in the browser as they come near (features/home/lazy-sections.tsx), from
- * data the page carries, so the page stays one cached page.
+ * first screen, Cook at home, the season's window, the tiles, the headings and the band are server-rendered; the album and Pick your
+ * home's map and stamps are drawn in the browser as they come near (features/home/lazy-sections.tsx), from data the page carries, so
+ * the page stays one cached page.
  */
 export default async function HomePage(): Promise<React.JSX.Element> {
   const [home, policy] = await Promise.all([getHomeCached(), getStorePolicyCached()]);
@@ -50,14 +48,6 @@ export default async function HomePage(): Promise<React.JSX.Element> {
               : null
           }
         />
-        <HomeRow
-          id="most-ordered"
-          title="What everyone missed this week"
-          products={home.most_ordered}
-        />
-        {/* D-161: the small treats that top a bag up to the line */}
-        <HomeRow id="under-5" title="The kirana counter" sub="Under $5" products={home.under_5} />
-        <JustListed home={home} />
       </div>
 
       <section
@@ -69,6 +59,7 @@ export default async function HomePage(): Promise<React.JSX.Element> {
           <h2
             id="pick-home"
             className="font-heading text-[clamp(26px,2.2vw,38px)] font-medium leading-tight tracking-[-0.025em]"
+            data-reveal=""
           >
             Pick your home
           </h2>

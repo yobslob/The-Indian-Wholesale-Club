@@ -557,7 +557,7 @@ What it means for the build:
 - **Every country ShipGlobal serves is open**, minus uninhabited places and sanctioned countries (D-209). Only the freight in the price changes: the country's cheapest ShipGlobal 1 kg quote rounded up to the next ₹500 replaces ₹2,000 a kg in D-128's formula; the US stays at ₹2,000. The bag's Shipping, the free and bulk lines, retailer charges, Coins and the 5% are the same everywhere. Prices abroad are worked out from the stored US price and the listing's priced weight, never stored per country. Delivery days per country in Settings (Q-70). Customers never see ShipGlobal or the rate.
 *Interpretation (proposed, confirm when Phase 1 starts):* "order value" read as the goods (his answer); "per kg charge" read as the cheapest service's 1 kg quote with its fixed fee; "the nearest next 500" as rupees a kg, rounded up; heavy-item shipping follows the country rate (it is freight); countries other than Canada, Australia and New Zealand see US dollars written US$; Home's bohni band keeps its design with the 5% words (Q-68).
 
-**D-209 · 2026-11-24 · founder (was Q-68, Q-69, Q-70, Q-72): the coupon ads become a Maa–Behen ad; the closed countries as proposed; the US's delivery days in every country; duties paid everywhere** · Answers D-208's questions; changes D-208's per-country days and its duties line
+**D-209 · 2026-11-24 · founder (was Q-68, Q-69, Q-70, Q-72): the coupon ads become a Maa–Behen ad; the closed countries as proposed; the US's delivery days in every country; duties paid everywhere** · Answers D-208's questions; changes D-208's per-country days and its duties line · its band and dusk words changed by D-212 (the navbar's ads keep them)
 
 Founder, verbatim: "1. change the coupon advertisement to maa bhen advertisement,
 2. yes what u assumed
@@ -594,3 +594,12 @@ What it means for the build (`apps/web/features/send-home/bag-card.tsx`, `bill-l
 - **The names show only while Send it home is picked:** Maa · Papa · Didi · Someone else (or the saved loved ones) under "To", inside the Send row; **Keep it hides them**, Send it home brings them back.
 - **The bill repeats the choice** under the total, outside the sum: "After you pay, your 5% back · $1.10 to your Coins" / "₹102 to Maa" / "pick who gets ₹102". Still nothing joins the sum (D-208).
 *Interpretation (proposed, confirm when convenient):* a first-timer on Send it home with nobody picked who taps Checkout gets the "Who's it for?" sheet first (its last line "Keep it instead"), so no one pays believing the 5% goes home when it would go to Coins; reaching checkout another way (the bag panel) keeps it as Coins, which checkout's line says. The app's card follows in its own change.
+
+**D-212 · 2026-11-26 · founder: Home's band says "Aapka Order, Gharwalo ka profit", no number or %; no product rows under it** · Changes D-209's words on Home's band and the season's dusk flip, and D-187's Home order (its four rows go)
+
+Founder, verbatim: "1. remove all the horizontal rows selling under the ad(I suppose they are kirana counter, just listed and home decor). 2. In the ad it should be "Aapka Order, Gharwalo ka profit" instead of every bag saves you 5%. I don't need any number or % on it. also suggest me lines in the chat."
+
+What it means for the build:
+- **Home loses its product rows:** What everyone missed this week, The kirana counter, Just listed Clothing and Just listed Home & gifts (`app/(store)/page.tsx`). "All the horizontal rows" read as all four, What everyone missed this week included. `store_home()` still returns them: the app's Home and the empty bag's and search's Just listed read them.
+- **The band (`features/home/first-order.ts`):** "Aapka Order, Gharwalo ka profit" as the headline; the kicker "Send it home" in place of "Your 5%"; the envelope's coin shows ₹ in place of 5%. The season's dusk turns over to "Aapka Order, Gharwalo ka profit." in place of "Every bag saves 5% for Maa or Behen."
+*Interpretation (proposed, confirm when convenient):* the kicker and the ₹ coin are Claude's draft (D-012). The ads under the navbar (D-193's drawings, "SAVE 5% for Maa, Behen") are left as they are until the founder says they are "the ad" too.

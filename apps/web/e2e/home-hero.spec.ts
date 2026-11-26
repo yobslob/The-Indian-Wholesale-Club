@@ -65,9 +65,6 @@ test("D-187: Home's sections in the founder's order, with no second store", asyn
     'section[aria-label="Shop for Thanksgiving"]',
     '#categories',
     'section[aria-label="Homecoming at IWC"]',
-    '#most-ordered',
-    '#under-5',
-    '#just-listed',
     '#pick',
     'aside[aria-label="How buying works"]',
   ];
@@ -80,7 +77,9 @@ test("D-187: Home's sections in the founder's order, with no second store", asyn
       }),
     order,
   );
-  expect(tops.map((t) => t.s)).toEqual(expect.arrayContaining(['[data-home-hero]', '#just-listed', '#pick']));
+  expect(tops.map((t) => t.s)).toEqual(expect.arrayContaining(['[data-home-hero]', '#pick']));
+  // D-212: no product rows on Home (What everyone missed this week, The kirana counter, Just listed)
+  await expect(page.locator('#most-ordered, #under-5, #just-listed')).toHaveCount(0);
   for (let i = 1; i < tops.length; i += 1) expect(tops[i]!.top, `${tops[i]!.s} after ${tops[i - 1]!.s}`).toBeGreaterThan(tops[i - 1]!.top);
 
   if (tops.some((t) => t.s === '#categories')) {
@@ -97,6 +96,5 @@ test("D-187: Home's sections in the founder's order, with no second store", asyn
   const text = await page.locator('body').innerText();
   expect(text).not.toMatch(/7-day/i);
   expect(text).not.toMatch(/order by/i);
-  await expect(page.locator('#just-listed-food')).toHaveCount(0);
   expect(await page.evaluate(() => getComputedStyle(document.documentElement).getPropertyValue('--days-food'))).toContain('7 – 12 delivery days');
 });

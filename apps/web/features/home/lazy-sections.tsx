@@ -2,11 +2,11 @@
 
 import { useNear, useNearComponent } from './use-near';
 
-import type { HomeData, ProductCard, RegionCard, RegionProductCard } from '@repo/db/store';
+import type { HomeData, RegionCard } from '@repo/db/store';
 
 /**
- * Home's parts below the first screen, drawn in the browser as they come near (launch QA C-2): the album, Pick your
- * home and the product rows. Home sent all of them as HTML and again as React's data (753 KB, 180 images, 2,614
+ * Home's parts below the first screen, drawn in the browser as they come near (launch QA C-2): the album and Pick your
+ * home (the product rows left Home on 2026-11-26). Home sent all of them as HTML and again as React's data (753 KB, 180 images, 2,614
  * elements), most of it never seen on a phone. Now the page carries only their data (photo paths, the states, the
  * cards), each part's code loads at the first scroll, and each draws half a screen before it is seen, in today's
  * layout, order and look. Until then a box of the part's height holds its place, so nothing below it moves.
@@ -15,24 +15,15 @@ import type { HomeData, ProductCard, RegionCard, RegionProductCard } from '@repo
 
 type AlbumPhoto = HomeData['album'][number];
 type StampRegion = Pick<RegionCard, 'slug' | 'name' | 'is_live' | 'accent_color' | 'hero_image_path'>;
-/** A card as the rows draw it (product-row.tsx). */
-export type RowCard = ProductCard & Partial<Pick<RegionProductCard, 'available' | 'quick_add'>>;
-interface StripProps {
-  products: RowCard[];
-  label: string;
-}
 
 const loadAlbum = (): Promise<React.ComponentType<{ photos: AlbumPhoto[]; regionName: string; reveal?: boolean }>> =>
   import('@/features/regions/region-album').then((m) => m.RegionAlbum);
 const loadPick = (): Promise<React.ComponentType<{ regions: RegionCard[] }>> =>
   import('@/features/regions/pick-home').then((m) => m.PickHome);
-const loadStrip = (): Promise<React.ComponentType<StripProps>> =>
-  import('@/features/catalog/product-row').then((m) => m.ProductStrip);
 /** At the first scroll every part's code starts loading, so the album right under the photo is ready in time. */
 const warm = (): void => {
   void loadAlbum();
   void loadPick();
-  void loadStrip();
 };
 
 /** The album of all of India (region-album.tsx), its box exactly the album's height (globals.css `.album`). */
@@ -71,25 +62,4 @@ export function LazyPickHome({ regions }: { regions: StampRegion[] }): React.JSX
     );
   }
   return <div ref={ref} aria-hidden="true" className="min-h-[1250px] min-[1101px]:min-h-[800px]" />;
-}
-
-/** A row of product cards (product-row.tsx ProductStrip); its box is one card high, at the row's card width. */
-export function LazyStrip(props: StripProps): React.JSX.Element {
-  const [ref, near] = useNear<HTMLDivElement>(warm);
-  const [Strip, box] = useNearComponent(near, loadStrip);
-  if (Strip) {
-    return (
-      <div ref={box}>
-        <Strip {...props} />
-      </div>
-    );
-  }
-  return (
-    <div ref={ref} aria-hidden="true" className="pb-1">
-      <div className="w-[148px] sm:w-[clamp(176px,23vw,304px)]">
-        <div className="aspect-[3/4]" />
-        <div className="h-[86px]" />
-      </div>
-    </div>
-  );
 }
