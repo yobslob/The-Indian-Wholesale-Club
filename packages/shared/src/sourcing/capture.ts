@@ -124,6 +124,11 @@ export const sourcedProductSchema = z.object({
   variants: z.array(sourcedVariantSchema).max(60).default([]),
   /** The delivery promise as the page prints it (delivery.ts turns it into days). */
   deliveryText: z.string().max(300).nullable().default(null),
+  /**
+   * A page of one pack: the shop's own pack field ("900 g": Blinkit's unit, Zepto's pack size, Instamart's quantity,
+   * BigBasket's w). Before 2026-11-27 it was dropped and the weight read from the title ("27g High Protein Oats").
+   */
+  pack: z.string().max(80).nullable().optional(),
 });
 export type SourcedProduct = z.infer<typeof sourcedProductSchema>;
 

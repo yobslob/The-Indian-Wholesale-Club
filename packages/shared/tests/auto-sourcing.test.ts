@@ -624,7 +624,7 @@ describe('shop readers', () => {
     );
     assert.deepEqual(
       blinkitItem({ a: { product_id: '289037', price: 107, inventory: 0 } }, '289037'),
-      { pricePaise: 10700, mrpPaise: null, inStock: false },
+      { pricePaise: 10700, mrpPaise: null, inStock: false, pack: null },
     );
   });
   it('BigBasket: products and their pack sizes; "not delivering" is out of stock', () => {

@@ -7,8 +7,10 @@ import { PRODUCT_TYPES } from '@repo/shared/domain';
 import {
   lookPlanSchema,
   planSchema,
+  verifyPlanSchema,
   weightPlanSchema,
   type SourcingPlan,
+  type VerifyListing,
   type WeightPlan,
   type WeightWrite,
 } from '@repo/shared/sourcing/auto';
@@ -224,6 +226,35 @@ export class Db implements FoodPassDb {
 
   targetDone(target: string, note: string | null): Promise<void> {
     return this.rpc('worker_sourcing_target_done', { p_target: target, p_note: note });
+  }
+
+  /** `pnpm sourcing verify`: listings that came from a shop, by id after `after` (migration 20261130090000). */
+  async verifyPlan(
+    type: ProductType | null,
+    after: string | null,
+    limit: number,
+    drafts: boolean,
+  ): Promise<VerifyListing[]> {
+    try {
+      return verifyPlanSchema.parse(
+        await this.rpc('worker_verify_plan', { p_type: type, p_after: after, p_limit: limit, p_drafts: drafts }),
+      );
+    } catch (error) {
+      if (!/could not find the function|schema cache/i.test(String(error))) throw error;
+      throw new Error(
+        `${this.host} has no worker_verify_plan yet: run the Deploy workflow (migration 20261130090000_verify_sources)`,
+      );
+    }
+  }
+
+  /** The shop's title where none was kept (or only the name was); worker only, never shown. */
+  setShopTitles(titles: { product_id: string; title: string }[]): Promise<number> {
+    return this.rpc('worker_set_shop_titles', { p_titles: titles });
+  }
+
+  /** A food name cut at its title's first "|", made again; only while the name is still `from`. */
+  setFoodNames(names: { product_id: string; from: string; to: string }[]): Promise<number> {
+    return this.rpc('worker_set_food_names', { p_names: names });
   }
 
   checked(product: string, results: unknown) {

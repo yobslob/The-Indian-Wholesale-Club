@@ -15,3 +15,4 @@ export * from './weights';
 export * from './food-weights';
 export * from './home-weights';
 export * from './shop-rest';
+export * from './verify';

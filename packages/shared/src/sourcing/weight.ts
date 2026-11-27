@@ -46,11 +46,29 @@ function toGrams(amount: number, unit: string): { grams: number; liquid: boolean
 const ok = (grams: number): number | null =>
   grams >= 1 && grams <= 50_000 ? Math.round(grams) : null;
 
-/** Lower case, Amazon's invisible marks gone, "1,000" as 1000, "1.0 kilograms" kept. */
+/**
+ * A nutrient claim is not the pack: "27g High Protein Oats" is a 900 g pack, "25g Protein + 14g Fibre" too (founder,
+ * 2026-11-27: Pro.Fitness oats priced on 27 g). Grams of protein or fibre up to 100 g, either side of the word
+ * ("Protein 27 g"), and up to 10 g of sugar, fat or carbs ("0g Sugar", "0 g Trans Fat"); never "Sugar Free" or a kilo.
+ */
+const NUTRIENT_FILL = '(?:[\\s-]*(?:of|high|hi|added|plant|plant-based|whey|dietary|total|complete|real|pure|natural|veg|vegan|trans))*';
+const GRAMS = '(\\d+(?:\\.\\d+)?)\\s*(?:grams?|gms?|gm|gr|g)(?![a-z])';
+const PROTEIN_AFTER = new RegExp(`${GRAMS}[\\s-]*${NUTRIENT_FILL}[\\s-]*(?:protein|fib(?:re|er)s?)(?![a-z])(?![\\s-]*(?:free|less))`, 'g');
+const PROTEIN_BEFORE = new RegExp(`(?:protein|fib(?:re|er))\\s*(?:[:=\\-–]|of)?\\s*${GRAMS}`, 'g');
+const OTHER_AFTER = new RegExp(`${GRAMS}[\\s-]*${NUTRIENT_FILL}[\\s-]*(?:sugars?|fats?|carbs?|carbohydrates?|cholesterol)(?![a-z])(?![\\s-]*(?:free|less))`, 'g');
+
+export function withoutNutrients(text: string): string {
+  return text
+    .replace(PROTEIN_AFTER, (m, n: string) => (Number(n) <= 100 ? ' ' : m))
+    .replace(PROTEIN_BEFORE, (m, n: string) => (Number(n) <= 100 ? ' ' : m))
+    .replace(OTHER_AFTER, (m, n: string) => (Number(n) <= 10 ? ' ' : m));
+}
+
+/** Lower case, Amazon's invisible marks gone, "1,000" as 1000, "1.0 kilograms" kept, nutrient claims out. */
 function clean(text: string): string {
   let t = text.toLowerCase().replace(/[‎‏‪-‮ ]/g, ' ');
   while (/\d,\d{3}(?!\d)/.test(t)) t = t.replace(/(\d),(\d{3})(?!\d)/, '$1$2');
-  return t;
+  return withoutNutrients(t);
 }
 
 /**
