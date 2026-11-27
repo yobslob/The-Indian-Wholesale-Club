@@ -1,3 +1,5 @@
+import { hasCopies, photoJpegUrl } from '@repo/shared/domain';
+
 import { mediaUrl, SITE_NAME } from '@/lib/site';
 
 import type { RecipePage } from '@repo/db/store';
@@ -8,7 +10,12 @@ import type { Metadata } from 'next';
  * time, servings, every ingredient (from IWC and from the local store) and the steps. No listing, shop or price (D-003).
  */
 
-const sharePhoto = (path: string | null): string | null => (path ? mediaUrl(path) : null);
+/** A stored photo exists only as AVIF copies: link its 1200 px JPEG, as product pages do (the original is not kept). */
+const sharePhoto = (path: string | null): string | null => {
+  if (!path) return null;
+  const url = mediaUrl(path);
+  return hasCopies(url) ? photoJpegUrl(url, 1200) : url;
+};
 
 export function recipeMetadata(r: RecipePage): Metadata {
   const title = `${r.name} recipe`;

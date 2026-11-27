@@ -3,7 +3,7 @@
 import { useRouter } from 'next/navigation';
 import { useState, useTransition } from 'react';
 
-import { formatUsd, kitTotal } from '@repo/shared/domain';
+import { formatUsd, kitTotal, photoUrl } from '@repo/shared/domain';
 
 import { saveRecipeAction, type RecipeForm } from '../actions/recipes';
 import { button, input, linkButton, panel, secondaryButton } from '../styles';
@@ -93,7 +93,8 @@ export function RecipeEditor({
               <div className="flex items-center gap-3">
                 {/* eslint-disable-next-line @next/next/no-img-element -- the admin's own preview */}
                 <img
-                  src={photo.url}
+                  // a stored photo exists only as its AVIF copies (the original .jpg is not kept)
+                  src={photoUrl(photo.url, 160)}
                   alt=""
                   className="bg-surface size-20 rounded-md object-cover"
                 />
