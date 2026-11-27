@@ -151,8 +151,27 @@ begin
   perform tests.remember('r_all', v_id);
   insert into public.recipe_ingredients (recipe_id, sort, label, source, match_words) values
     (v_id, 1, 'Masala', 'iwc', 'test pav bhaji'), (v_id, 2, 'Moon dust', 'iwc', 'zzz no such thing'),
-    (v_id, 3, 'Dal', 'iwc', 'test toor dal');
+    (v_id, 3, 'Dal', 'iwc', 'test toor dal'), (v_id, 4, 'Haji', 'iwc', 'haji');
+  insert into public.recipe_ingredients (recipe_id, sort, label, source, match_words, instead_of) values
+    (v_id, 5, 'Dust, dry', 'iwc', 'zzz no such thing', 'Moon dust');
+  -- D-213: an import fills its drafts' lines with the cheapest listing and moves nothing
+  insert into public.recipes (slug, name, kind) values ('test-import-fill', 'Test import', 'snacks') returning id into v_id;
+  perform tests.remember('r_import', v_id);
+  insert into public.recipe_ingredients (recipe_id, sort, label, source, match_words) values
+    (v_id, 1, 'Masala', 'iwc', 'Pav-Bhaji masala'), (v_id, 2, 'Moon dust', 'iwc', 'zzz no such thing');
 end $$;
+set local role authenticated;
+select tests.act_as(tests.id('admin'));
+select tests.assert(public.admin_recipes_fill_cheapest(array[tests.id('r_import')]) = 1,
+  'D-213: after an import each draft line takes its cheapest listing');
+select tests.assert(
+  (select variant_id = tests.id('v_masala') from public.recipe_ingredients where recipe_id = tests.id('r_import') and label = 'Masala'),
+  'D-213: words match whatever the punctuation and case');
+select tests.assert(
+  (select source = 'iwc' and variant_id is null from public.recipe_ingredients
+   where recipe_id = tests.id('r_import') and label = 'Moon dust'),
+  'D-213: an import moves nothing to the local shop');
+reset role;
 set local role authenticated;
 select tests.act_as(tests.id('admin'));
 create temp table publish_run on commit drop as select public.admin_recipes_publish_all(null, 50) as j;
@@ -164,9 +183,17 @@ select tests.assert(
   (select variant_id = tests.id('v_masala') from public.recipe_ingredients where recipe_id = tests.id('r_all') and label = 'Masala'),
   'an empty line takes the cheapest in-stock match');
 select tests.assert(
-  (select bool_and(variant_id is null) from public.recipe_ingredients
+  (select bool_and(source = 'local' and variant_id is null) from public.recipe_ingredients
    where recipe_id = tests.id('r_all') and label in ('Moon dust', 'Dal')),
-  'a line with no in-stock match stays empty');
+  'D-213: a main line with no in-stock match moves to the local shop');
+select tests.assert(
+  (select source = 'local' from public.recipe_ingredients where recipe_id = tests.id('r_all') and label = 'Haji'),
+  'D-213: a word matches at the start of a word only ("haji" is not "bhaji")');
+select tests.assert(
+  (select source = 'iwc' and variant_id is null from public.recipe_ingredients
+   where recipe_id = tests.id('r_all') and label = 'Dust, dry'),
+  'D-213: a swap with no listing stays a hidden swap');
+select tests.assert((select (j ->> 'lines_local')::int >= 3 from publish_run), 'Publish all counts the lines moved to local');
 select tests.assert(
   (select content_status = 'approved' and status = 'live' from public.recipes where id = tests.id('r_all')),
   'its words are approved and it is live');

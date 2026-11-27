@@ -1782,8 +1782,8 @@ isOneToOne: false
 "_recipe_blockers":
 { Args: { "p_id": string }; Returns: (string)[]
                            },
-"_recipe_cheapest_variant":
-{ Args: { "p_words": string }; Returns: string
+"_recipe_fill_cheapest":
+{ Args: { "p_ids": (string)[],"p_to_local": boolean }; Returns: (number)[]
                            },
 "_record_cancel":
 { Args: { "p_amount": number,"p_note": string,"p_order": string }; Returns: undefined
@@ -1974,6 +1974,9 @@ isOneToOne: false
 { Args: { "p_limit"?: number,"p_words": string }; Returns: {
               "available": number,"price_cents": number,"product_id": string,"product_name": string,"variant_id": string,"variant_label": string
             }[]
+                           },
+"admin_recipes_fill_cheapest":
+{ Args: { "p_ids": (string)[] }; Returns: number
                            },
 "admin_recipes_missing_piece":
 { Args: Record<PropertyKey, never>; Returns: number

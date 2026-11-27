@@ -173,18 +173,29 @@ const publishAllSchema = z.object({
   published: z.array(z.string()),
   blocked: z.array(z.object({ slug: z.string(), why: z.array(z.string()) })),
   lines_filled: z.number().int(),
+  lines_local: z.number().int().default(0),
   next: z.string().nullable(),
 });
 
 /**
- * Publish all (D-204), one batch: draft recipes after `after` by address; empty lines take the cheapest in-stock match,
- * words approved, live when a piece can be bought. `next` is where the next batch starts (null: done).
+ * Publish all (D-204, D-213), one batch: draft recipes after `after` by address; every line without an in-stock listing
+ * takes the cheapest match, a main line with none moves to the local shop, the words are approved and each recipe with
+ * a piece to sell goes live. `next` is where the next batch starts (null: done).
  */
 export async function publishAllRecipes(client: IwcClient, after: string | null, limit = 15) {
   const data = unwrap(
     await client.rpc('admin_recipes_publish_all', { p_after: after as string, p_limit: limit }),
   );
   return publishAllSchema.parse(data);
+}
+
+/** D-213: after an import, each draft line takes its cheapest in-stock listing (nothing moves to local yet). */
+export async function fillCheapestListings(client: IwcClient, ids: string[]): Promise<number> {
+  let filled = 0;
+  for (let i = 0; i < ids.length; i += 100) {
+    filled += unwrap(await client.rpc('admin_recipes_fill_cheapest', { p_ids: ids.slice(i, i + 100) })) ?? 0;
+  }
+  return filled;
 }
 
 /** Today: live recipes with a piece gone or sold out. */
@@ -230,6 +241,7 @@ export async function addRecipeDrafts(client: IwcClient, drafts: RecipeDraft[]) 
   const added: { id: string; slug: string }[] = [];
   const replaced: string[] = [];
   const skipped: { slug: string; why: string }[] = [];
+  const touched: string[] = [];
   for (const d of drafts) {
     const there = existing.get(d.slug);
     if (there && (there.status !== 'draft' || there.content_status !== 'draft')) {
@@ -280,6 +292,9 @@ export async function addRecipeDrafts(client: IwcClient, drafts: RecipeDraft[]) 
     if (there) replaced.push(d.slug);
     else added.push({ id, slug: d.slug });
     existing.set(d.slug, { id, slug: d.slug, status: 'draft', content_status: 'draft' });
+    touched.push(id);
   }
-  return { added, replaced, skipped };
+  // D-213: the editor opens on each line's cheapest listing ("by default")
+  const filled = await fillCheapestListings(client, touched);
+  return { added, replaced, skipped, filled };
 }
