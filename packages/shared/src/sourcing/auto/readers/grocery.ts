@@ -56,7 +56,7 @@ export function blinkitOffers(state: unknown, eta: string | null): Offer[] {
 export function blinkitItem(
   state: unknown,
   id: string,
-): { pricePaise: number | null; mrpPaise: number | null; inStock: boolean | null } | null {
+): { pricePaise: number | null; mrpPaise: number | null; inStock: boolean | null; pack: string | null } | null {
   const hits = collect(state, (o) => str(o.product_id) === id && 'price' in o);
   const best = hits.find((o) => 'inventory' in o) ?? hits[0];
   if (!best) return null;
@@ -65,6 +65,8 @@ export function blinkitItem(
     pricePaise: rupees(best.price),
     mrpPaise: rupees(best.mrp),
     inStock: inv === null ? (best.is_sold_out === true ? false : null) : inv > 0,
+    // the pack as the shop sells it ("900 g"), as its search answer's `unit`
+    pack: str(best.unit) || str(hits.find((o) => str(o.unit))?.unit) || null,
   };
 }
 

@@ -111,6 +111,40 @@ To run it every day: Task Scheduler → Create Task → "Daily" at a quiet hour,
 `/c pnpm sourcing run` and "Start in" `C:\kod\root`, "Run only when user is logged on" (the browser opens
 off-screen).
 
+## Verify: stock, weight and name from each listing's own page (D-213)
+
+One pass over every live listing that came from a shop: each of its pages is read once (as the weekly check reads it),
+and what the shop shows decides three things. Needs migration `20261130090000_verify_sources` (the Deploy workflow).
+
+- **Stock and price** (always written, except with `--dry`): through the weekly check's own rules (D-118). An option
+  that no source has in stock (its shop and every backup) goes to 0 left: its card says **Sold out** and checkout
+  refuses it. A page that fails twice counts as gone; a robot check changes nothing (the listing waits for the next
+  pass). Before this, every food run used `--targets`, so the weekly check never ran: the log says "0 checks due" on
+  every run since 2026-10-24, and D-180 had set every live piece to 10.
+- **The pack's weight** (food; written with `--fix-weights`): the shop's own pack field (Blinkit's unit, Zepto's pack
+  size, Instamart's quantity, BigBasket's pack, a family page's pack), else a "Net Quantity" row or a "Net Wt." line.
+  Within 3% it is left alone. A weight weighed at the hub or typed by an admin is never changed. When only the title's
+  numbers say otherwise, the row says `check` and nothing is written.
+- **The shop's title and a cut name**: the title is kept for every listing that has none (the runner never kept it);
+  with `--fix-names` a food name cut at the title's first "|" ("Samrat" → "Samrat Bikaneri Sev") is made again, only
+  while the name is still the one it read.
+
+Every option is one row of `out/verify-<type>-<time>.csv` (stored and page weight, where it was read, the verdict, in
+stock or not), whatever was written. Where the pass got to is kept in `out/verify-progress.json`, so the same command
+goes on after a stop (Ctrl+C finishes the page of 50 it is on); a finished pass starts over next time.
+
+```
+pnpm sourcing verify --type food --dry --limit 100                 read 100, write nothing: look at the CSV
+pnpm sourcing verify --type food                                    stock and shop titles; weights and names reported
+pnpm sourcing verify --type food --fix-weights --fix-names          the same, and the weights and names fixed
+pnpm sourcing verify --type food --site amazon.in                   one shop's listings only (a second machine)
+```
+
+How long a pass takes is not measured yet. Shops run side by side, each one page at a time with 2.5–4 s between pages, so
+Amazon (about half of food) sets the pace: expect most of a day for the first pass. Run it once
+now, then every few days (Task Scheduler, as for `run`): quick-shop stock moves daily. `--drafts` takes drafts too;
+`--from-start` begins again.
+
 ## Savana and NEWME (D-170, D-171)
 
 Both shops are taken whole (founder, 2026-10-31: "I want all of savana and newme, It doesn't matter if they are made

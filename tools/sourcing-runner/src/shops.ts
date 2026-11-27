@@ -107,6 +107,8 @@ function groceryRead(
       mrpPaise: own.mrpPaise,
       inStock: own.inStock,
       variants: family.length > 1 ? packVariants(family) : [],
+      // one pack: its own pack field, never the title's numbers (2026-11-27)
+      pack: own.pack ?? null,
     },
     pageDays: parseDeliveryDays(eta, now),
   };

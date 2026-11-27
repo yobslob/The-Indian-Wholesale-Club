@@ -42,11 +42,28 @@ export function sanitizeText(text: string): string {
     .trim();
 }
 
-/** A name without the pack size, the shop's tags or a trailing "| …". */
-export function listingName(title: string): string {
-  const clean = title
+/**
+ * The part of a "Brand | Product | tags" title that names the piece: the shop's "|" ends the name, unless what comes
+ * before it is only the brand ("Samrat | Bikaneri Sev | 400g" was named "Samrat", founder 2026-11-27): then the next
+ * part joins it. Only the brand: one word, or every word in the page's brand.
+ */
+export function beforeTheBar(title: string, brand?: string | null): string {
+  const parts = title.split(/\s*\|\s+/);
+  if (parts.length < 2) return title;
+  const first = parts[0]!.trim();
+  const words = first.toLowerCase().split(/\s+/).filter(Boolean);
+  const brandWords = new Set((brand ?? '').toLowerCase().split(/\s+/).filter(Boolean));
+  const onlyBrand = words.length <= 1 || (brandWords.size > 0 && words.every((w) => brandWords.has(w)));
+  if (!onlyBrand || !parts[1]?.trim()) return first;
+  // the next part up to its own dash or comma, six words at most ("Dum Aloo Masala - Premium Blend for …")
+  const next = parts[1].split(/\s[-–:]\s|,\s/)[0]!.trim().split(/\s+/).slice(0, 6).join(' ');
+  return next.toLowerCase().startsWith(first.toLowerCase()) ? next : `${first} ${next}`;
+}
+
+/** A name without the pack size, the shop's tags or a trailing "| …" (the brand kept with its piece). */
+export function listingName(title: string, brand?: string | null): string {
+  const clean = beforeTheBar(title, brand)
     .replace(/^\s*amazon brand\s*[-–:]\s*/i, '')
-    .replace(/\s*[|]\s.*$/, '')
     .replace(/\(\s*(pack of \d+|\d+(\.\d+)?\s*(g|gm|gms|kg|ml|l|pcs)[^)]*)\)/gi, ' ')
     .replace(
       /\s+[-–,]\s*(pack of )?\d+(\.\d+)?\s*(g|gm|gms|grams?|kg|kgs|ml|l|litres?|pcs|pieces)\b.*$/i,
@@ -185,7 +202,9 @@ export function buildListing(input: {
     }));
   }
   if (!items.length && product.pricePaise) {
-    const grams = target.product_type === 'clothing' ? null : packGrams(product.title);
+    // the shop's own pack field first ("900 g"); the title only when the page has none (its "27g Protein" is no pack)
+    const grams =
+      target.product_type === 'clothing' ? null : (packGrams(product.pack ?? '') ?? packGrams(product.title));
     const options: VariantOptions = grams ? { pack: formatPack(grams) } : {};
     items = [
       {
@@ -281,7 +300,10 @@ export function buildListing(input: {
     [bullets.map((b) => `• ${b}`).join('\n'), product.description].join('\n\n'),
   );
   // D-140 (L1): IWC's name, not the shop's title: no brand or shop, about six words (food keeps its brand, D-139)
-  const name = listingName(cleanTitle(product.title, { brand: product.brand, productType: target.product_type }));
+  const name = listingName(
+    cleanTitle(product.title, { brand: product.brand, productType: target.product_type }),
+    product.brand,
+  );
   const { attributes, complete, missing } = attributesFor(product, target.product_type);
   // D-172: Savana's care is read only where it is certain (readers/savana.ts); the rest is left out, not drafted
   if (shop.reader === 'savana' && !complete) return { skip: `not sure of its ${missing.join(', ')}` };

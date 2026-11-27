@@ -24,7 +24,7 @@ export interface CheckTotals {
   errors: number;
 }
 
-async function readPage(
+export async function readPage(
   ctx: RunContext,
   site: string,
   url: string,
