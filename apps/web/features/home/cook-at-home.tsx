@@ -12,7 +12,7 @@ import type { RecipeCard as Recipe } from '@repo/db/store';
  * home page"): right under the hero, a row of recipe cards (the pinned one first, then the shelf's order; 12 from
  * store_home), each with its kit price, and the way to every recipe. Server-drawn like the shelf; a phone slides the
  * row, a wide screen shows six. Hidden while no recipe is live.
- * D-213 (founder 2026-11-27: "on the home page make the categories for recipe"): the kinds as links above the cards,
+ * D-214 (founder 2026-11-27: "on the home page make the categories for recipe"): the kinds as links above the cards,
  * each opening the shelf on that kind (`/recipes?kind=snacks`, which the shelf's chips read).
  */
 export function CookAtHome({ recipes }: { recipes: Recipe[] }): React.JSX.Element | null {

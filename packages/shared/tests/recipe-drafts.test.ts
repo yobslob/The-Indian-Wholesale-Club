@@ -11,7 +11,7 @@ import {
 
 /**
  * D-203, plan §7: the drafted recipes (catalogue/recipes-drafts-1..47.json; D-204 added 6..10, the founder's 300 more
- * of 2026-11-25 added 11..25, D-213's snacks of 2026-11-27 added 26..47) import as they are, match their lists
+ * of 2026-11-25 added 11..25, D-214's snacks of 2026-11-27 added 26..47) import as they are, match their lists
  * (catalogue/recipes-100.csv, recipes-101-200.csv, recipes-201-500.csv, recipes-501-925.csv), have no two dishes alike by slug or name, name only states the store has, and never put
  * in a kit what IWC can't send (fresh, dairy, oil, meat or anything liquid: D-135). A dry swap stands in only for a
  * fresh, local line of its own recipe (D-204).
@@ -43,7 +43,7 @@ const regions = new Set(
 const NOT_IN_A_KIT =
   /\b(milk|oil|ghee|butter|cream|yogu?rt|curd|water|buttermilk|chicken|mutton|fish|eggs?|paneer|meat|mince|vinegar|soy sauce|coconut milk|fresh)\b/i;
 
-describe('the 925 drafted recipes (D-203, D-204, D-213)', () => {
+describe('the 925 drafted recipes (D-203, D-204, D-214)', () => {
   it('47 files of up to 20 that import, one per dish on the lists, in their order', () => {
     assert.equal(drafts.length, TOTAL);
     assert.equal(new Set(drafts.map((d) => d.slug)).size, TOTAL);

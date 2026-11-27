@@ -1,4 +1,4 @@
-// node --test tools/recipe-photos/pick.test.mjs: the recipe photo runner's choices (D-213).
+// node --test tools/recipe-photos/pick.test.mjs: the recipe photo runner's choices (D-214).
 import assert from 'node:assert/strict';
 import { test } from 'node:test';
 

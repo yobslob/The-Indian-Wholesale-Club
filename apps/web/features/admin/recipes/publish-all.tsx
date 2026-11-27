@@ -10,7 +10,7 @@ const WHY: Record<string, string> = { no_iwc_line: 'no piece of its kit is on IW
 
 /**
  * Publish all (D-204, founder 2026-11-23: "Publish all … in listings pick the cheapest one on our website by default and
- * publish, I will change later if required"; D-213: a line with no listing moves to the local shop). Repeats the batch
+ * publish, I will change later if required"; D-214: a line with no listing moves to the local shop). Repeats the batch
  * until every draft has been through (D-146), then lists what is still waiting and why.
  */
 export function RecipesPublishAll({ drafts }: { drafts: number }): React.JSX.Element {

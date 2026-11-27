@@ -19,6 +19,15 @@ import { errorText, log, setLogTag, ShopStats } from './log';
 import { heapFull, heapText, isChild, keepRunning, RESTART_CODE } from './memory';
 import { describeNetError, resolveOverHttps } from './net';
 import { Redo } from './redo';
+import {
+  emptyTotals,
+  progressOf,
+  saveProgress,
+  totalsText,
+  verifyCsv,
+  verifyPage,
+  type VerifyOptions,
+} from './verify';
 import { fillWeights } from './weights';
 
 import type { ProductType } from '@repo/shared/domain';
@@ -41,6 +50,8 @@ import type { SourcingPlan } from '@repo/shared/sourcing/auto';
  *   pnpm sourcing liquids [--dry]        only the liquid check (D-135): liquids archived, shown as coming soon
  *   pnpm sourcing try "kasuri methi" --type food    a dry run: what it would add, nothing written
  *   pnpm sourcing doctor                 tests the road to Supabase and the worker sign-in
+ *   pnpm sourcing verify --type food     every listing's own shop pages read once: stock (sold out where no shop has
+ *                                        it), the pack's weight and the shop's title (README.md §Verify)
  * Windows Task Scheduler runs `run` once a day (README.md).
  */
 
@@ -533,6 +544,97 @@ async function looks(): Promise<number> {
   return 0;
 }
 
+/**
+ * `pnpm sourcing verify` (founder, 2026-11-27): every listing from a shop, its own pages read once (verify.ts). Pages
+ * of 50 listings, a fresh browser every 200; where it got to is kept (out/verify-progress.json), so the same command
+ * goes on after a stop and starts over once a pass is done.
+ */
+async function verify(args: string[]): Promise<number> {
+  const env = loadEnv(true);
+  const type = (flag(args, '--type') ?? 'food') as ProductType;
+  if (!(PRODUCT_TYPES as readonly string[]).includes(type))
+    throw new Error(`--type is one of ${PRODUCT_TYPES.join(', ')}`);
+  const site = flag(args, '--site')?.replace(/^https?:\/\/(www\.)?/, '').replace(/\/.*$/, '') ?? null;
+  const limit = Number(flag(args, '--limit')) || Number.POSITIVE_INFINITY;
+  const drafts = args.includes('--drafts');
+  const opts: VerifyOptions = {
+    dry: args.includes('--dry'),
+    fixWeights: args.includes('--fix-weights') && type === 'food',
+    fixNames: args.includes('--fix-names') && type === 'food',
+    csv: verifyCsv(site ? `${type}-${site}` : type),
+  };
+  const key = site ? `${type}:${site}` : type;
+  setLogTag(`verify ${key}`);
+  const db = await Db.signIn(env);
+  let after = flag(args, '--after') ?? (args.includes('--from-start') ? null : progressOf(key));
+  log(
+    `verify: ${key}${after ? `, going on after ${after}` : ', from the start'}; ` +
+      (opts.dry
+        ? 'a dry run: nothing written'
+        : `stock and shop titles written${opts.fixWeights ? ', weights fixed' : ''}${opts.fixNames ? ', names fixed' : ''}`) +
+      `; every option in ${opts.csv}`,
+  );
+  const t = emptyTotals();
+  let seen = 0;
+  let ended = false;
+  let stopping = false;
+  process.once('SIGINT', () => {
+    if (stopping) process.exit(130);
+    stopping = true;
+    log('verify: stopping after this page (Ctrl+C again stops at once); the same command goes on from here');
+  });
+  while (!ended && !stopping && seen < limit) {
+    const context = await openBrowser(env, { images: false, profile: profileFor(env, type) });
+    const ctx: RunContext = {
+      db,
+      plan: {
+        settings: {
+          max_delivery_days: 3,
+          listings_per_target: 3,
+          check_every_days: 7,
+          qty_per_variant: 10,
+          targets_per_run: 1,
+          max_rise_pct: 60,
+          max_drop_pct: 50,
+          auto_publish: false,
+        },
+        shops: DEFAULT_SHOPS,
+        targets: [],
+        checks: [],
+        known: [],
+      },
+      lanes: new Lanes(context),
+      stats: new ShopStats(),
+      known: new Set(),
+      now: new Date(),
+    };
+    try {
+      for (let n = 0; n < 200 && !stopping && seen < limit; ) {
+        const page = await db.verifyPlan(type, after, Math.min(50, limit - seen), drafts);
+        if (!page.length) {
+          ended = true;
+          break;
+        }
+        // --site: only listings every source of which is on that shop (one machine per shop)
+        const todo = site ? page.filter((l) => l.sources.every((s) => s.site === site)) : page;
+        await verifyPage(ctx, todo, opts, t);
+        after = page[page.length - 1]!.product_id;
+        seen += page.length;
+        n += page.length;
+        if (!opts.dry) saveProgress(key, after);
+        log(`verify: ${seen} read so far; ${totalsText(t, opts)}`);
+      }
+      log(`shops: ${JSON.stringify(ctx.stats.toJSON())}`);
+    } finally {
+      await context.close();
+    }
+  }
+  // a whole pass done: the next one starts over (run it again a few days later; stock moves every day)
+  if (ended && !opts.dry) saveProgress(key, null);
+  log(`verify: ${ended ? 'the pass is done' : `stopped after ${after}`}. ${totalsText(t, opts)}. Every option: ${opts.csv}`);
+  return 0;
+}
+
 /** `run` in this process: the photo budget it starts with (D-171), then its runners one after another (memory.ts). */
 function supervise(runArgs: string[]): Promise<number> {
   const gb = flag(runArgs, '--photo-gb');
@@ -541,7 +643,9 @@ function supervise(runArgs: string[]): Promise<number> {
 }
 
 const main =
-  command === 'looks'
+  command === 'verify'
+    ? verify(args)
+    : command === 'looks'
     ? looks()
     : command === 'liquids'
     ? liquids()
@@ -564,7 +668,7 @@ const main =
                   : null;
 if (!main) {
   console.log(
-    'Usage: pnpm sourcing setup [--type clothing|food|home] | looks --type clothing|food|home | doctor | classes | food [--all] | home [--dry] [--all] [--limit N] | liquids [--dry] [--all] | run [--checks|--targets] [--type clothing|food|home [--shops nishorama.com]] | try "<query>" --type food|clothing|home [--match "regex"]',
+    'Usage: pnpm sourcing setup [--type clothing|food|home] | verify --type food [--dry] [--fix-weights] [--fix-names] [--limit N] [--site amazon.in] [--drafts] [--from-start] | looks --type clothing|food|home | doctor | classes | food [--all] | home [--dry] [--all] [--limit N] | liquids [--dry] [--all] | run [--checks|--targets] [--type clothing|food|home [--shops nishorama.com]] | try "<query>" --type food|clothing|home [--match "regex"]',
   );
   process.exit(2);
 }

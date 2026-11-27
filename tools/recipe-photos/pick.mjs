@@ -1,5 +1,5 @@
 /**
- * The recipe photo runner's choices (D-213), kept pure so `pick.test.mjs` can check them: what to search for, and which
+ * The recipe photo runner's choices (D-214), kept pure so `pick.test.mjs` can check them: what to search for, and which
  * of Magnific Stock's results is "a good photo" for a dish.
  */
 

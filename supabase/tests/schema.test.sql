@@ -69,9 +69,9 @@ select tests.assert(
           
           'worker_clothing_plan', 'worker_description_plan', 'worker_description_set', 'worker_estimate_plan', 'worker_food_plan', 'worker_food_prices', 'worker_home_plan', 'worker_label_plan', 'worker_liquid_plan', 'worker_look_photo_plan', 'worker_look_photo_tag', 'worker_look_photos_add', 'worker_look_photos_undo', 'worker_may_add_photos', 'worker_photo_redo_drop', 'worker_photo_redo_plan',
           'worker_photo_redo_scene', 'worker_photo_redo_set', 'worker_photo_stems_in_use', 'worker_product_wears', 'worker_set_class_weights',
-          'worker_set_estimates', 'worker_set_food_weights', 'worker_set_home_weights', 'worker_set_liquids', 'worker_set_origin', 'worker_set_weights', 'worker_sourcing_add',
+          'worker_set_estimates', 'worker_set_food_names', 'worker_set_food_weights', 'worker_set_home_weights', 'worker_set_liquids', 'worker_set_origin', 'worker_set_shop_titles', 'worker_set_weights', 'worker_sourcing_add',
           'worker_sourcing_checked', 'worker_sourcing_log', 'worker_sourcing_media', 'worker_sourcing_plan',
-          'worker_sourcing_target_done', 'worker_sourcing_target_release', 'worker_weight_plan', 'worker_weight_references', 'worker_weights_tried'],
+          'worker_sourcing_target_done', 'worker_sourcing_target_release', 'worker_verify_plan', 'worker_weight_plan', 'worker_weight_references', 'worker_weights_tried'],
   'signed-in users can execute only store, admin- and worker-checked functions (never create_order)');
 
 rollback;

@@ -1,6 +1,6 @@
 #!/usr/bin/env node
 /**
- * The recipe photo runner (D-213, founder 2026-11-27: "scrape from magnific.com because I have permission from their
+ * The recipe photo runner (D-214, founder 2026-11-27: "scrape from magnific.com because I have permission from their
  * website"). For every drafted recipe without a photo yet, it asks Magnific Stock's API (formerly Freepik's) for photos
  * of the dish, picks the best one (pick.mjs) and saves it as out/<slug>.jpg, the name Admin → Recipes → Add photos by
  * name reads. When the run ends, that folder is the push: drop it on Add photos by name, which makes each photo's two

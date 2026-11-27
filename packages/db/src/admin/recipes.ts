@@ -178,7 +178,7 @@ const publishAllSchema = z.object({
 });
 
 /**
- * Publish all (D-204, D-213), one batch: draft recipes after `after` by address; every line without an in-stock listing
+ * Publish all (D-204, D-214), one batch: draft recipes after `after` by address; every line without an in-stock listing
  * takes the cheapest match, a main line with none moves to the local shop, the words are approved and each recipe with
  * a piece to sell goes live. `next` is where the next batch starts (null: done).
  */
@@ -189,7 +189,7 @@ export async function publishAllRecipes(client: IwcClient, after: string | null,
   return publishAllSchema.parse(data);
 }
 
-/** D-213: after an import, each draft line takes its cheapest in-stock listing (nothing moves to local yet). */
+/** D-214: after an import, each draft line takes its cheapest in-stock listing (nothing moves to local yet). */
 export async function fillCheapestListings(client: IwcClient, ids: string[]): Promise<number> {
   let filled = 0;
   for (let i = 0; i < ids.length; i += 100) {
@@ -294,7 +294,7 @@ export async function addRecipeDrafts(client: IwcClient, drafts: RecipeDraft[]) 
     existing.set(d.slug, { id, slug: d.slug, status: 'draft', content_status: 'draft' });
     touched.push(id);
   }
-  // D-213: the editor opens on each line's cheapest listing ("by default")
+  // D-214: the editor opens on each line's cheapest listing ("by default")
   const filled = await fillCheapestListings(client, touched);
   return { added, replaced, skipped, filled };
 }

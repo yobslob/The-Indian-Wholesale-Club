@@ -1,4 +1,4 @@
--- D-213 (founder 2026-11-27): "On admin's recipe, publish all is not working, a recipe is not taking the cheapest listing
+-- D-214 (founder 2026-11-27): "On admin's recipe, publish all is not working, a recipe is not taking the cheapest listing
 -- by default. If no listing is found move it to local shop."
 --
 -- Publish all looked each line up on its own through the store views (one scan of every food listing per line): a

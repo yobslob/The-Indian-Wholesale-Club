@@ -2307,6 +2307,9 @@ isOneToOne: false
 "worker_set_estimates":
 { Args: { "p_estimates": Json }; Returns: Json
                            },
+"worker_set_food_names":
+{ Args: { "p_names": Json }; Returns: number
+                           },
 "worker_set_food_weights":
 { Args: { "p_weights": Json }; Returns: number
                            },
@@ -2318,6 +2321,9 @@ isOneToOne: false
                            },
 "worker_set_origin":
 { Args: { "p_made_in": string,"p_product": string }; Returns: boolean
+                           },
+"worker_set_shop_titles":
+{ Args: { "p_titles": Json }; Returns: number
                            },
 "worker_set_weights":
 { Args: { "p_weights": Json }; Returns: number
@@ -2342,6 +2348,9 @@ isOneToOne: false
                            },
 "worker_sourcing_target_release":
 { Args: { "p_note"?: string,"p_target": string }; Returns: undefined
+                           },
+"worker_verify_plan":
+{ Args: { "p_after"?: string,"p_drafts"?: boolean,"p_limit"?: number,"p_type"?: Database["public"]['Enums']["product_type"] }; Returns: Json
                            },
 "worker_weight_plan":
 { Args: { "p_limit"?: number,"p_types"?: (Database["public"]['Enums']["product_type"])[] }; Returns: Json
