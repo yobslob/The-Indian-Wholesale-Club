@@ -2,7 +2,8 @@
  * Where the recipe photo runner looks (D-214). Each source searches for a dish and downloads a result; results come back
  * in one shape for pick.mjs: { id, title, url, author, licences, image: { type, orientation }, stats: { downloads } }.
  *
- * - pixabay (free, the default): Pixabay's own API with a free key (pixabay.com/api/docs, shown there once logged in).
+ * - openverse (free, no key, the default): openverse.mjs.
+ * - pixabay (free): Pixabay's own API with a free key (pixabay.com/api/docs, shown there once logged in).
  *   Its Content License lets a business use the photos without paying or crediting. Its rules, kept here: searches
  *   cached for 24 hours, no bursts of automated queries (one search a second at most), only the picked photo is
  *   downloaded, and it is kept on our own store (no hotlinking).
@@ -18,10 +19,10 @@ import { searchTerm } from './pick.mjs';
 /** Seconds between two Pixabay photo downloads. */
 const PIXABAY_GAP = 15;
 const DAY = 24 * 60 * 60 * 1000;
-const pause = (ms) => new Promise((r) => setTimeout(r, ms));
+export const pause = (ms) => new Promise((r) => setTimeout(r, ms));
 
 /** Calls at least `ms` apart. */
-function spaced(ms) {
+export function spaced(ms) {
   let last = 0;
   return async () => {
     await pause(Math.max(0, last + ms - Date.now()));
@@ -29,11 +30,16 @@ function spaced(ms) {
   };
 }
 
-async function getJson(url, headers, label) {
+/** Who is asking, for sites that want to know (Wikimedia's photos refuse a download without it). */
+export const AGENT = 'IWC-recipe-photos/1.0';
+
+export async function getJson(url, headers, label) {
   for (let attempt = 1; ; attempt++) {
     const res = await fetch(url, { headers });
-    if (res.status === 429 && attempt < 5) {
-      await new Promise((r) => setTimeout(r, Number(res.headers.get('retry-after') ?? 15) * 1000));
+    // a short wait is waited out; a day's limit (Openverse's 1,000 searches) is not
+    const wait = Number(res.headers.get('retry-after') ?? 15);
+    if (res.status === 429 && attempt < 5 && wait <= 120) {
+      await pause(wait * 1000);
       continue;
     }
     if (!res.ok) throw new Error(`${label}: HTTP ${res.status} ${(await res.text()).slice(0, 200)}`);
@@ -45,10 +51,10 @@ async function getJson(url, headers, label) {
  * A photo saved to `file`. A refusal for going too fast (HTTP 429: Pixabay's image links answer it to quick downloads,
  * founder's first run 2026-11-27) waits and tries again, longer each time, before the recipe counts as failed.
  */
-async function save(url, file, label) {
+export async function save(url, file, label) {
   let res;
   for (const wait of [30, 60, 120, 240, null]) {
-    res = await fetch(url);
+    res = await fetch(url, { headers: { 'User-Agent': AGENT } });
     if (res.status !== 429 || wait === null) break;
     console.log(`     ${label}: the site asks to slow down, waiting ${wait} s`);
     await pause(wait * 1000);
@@ -59,7 +65,7 @@ async function save(url, file, label) {
   writeFileSync(file, Buffer.from(await res.arrayBuffer()));
 }
 
-const frame = (w, h) => (!w || !h ? 'unknown' : Math.abs(w - h) / Math.max(w, h) < 0.1 ? 'square' : w > h ? 'horizontal' : 'vertical');
+export const frame = (w, h) => (!w || !h ? 'unknown' : Math.abs(w - h) / Math.max(w, h) < 0.1 ? 'square' : w > h ? 'horizontal' : 'vertical');
 
 /**
  * Pixabay's search, cached for a day in `cacheDir`, at most one search a second (its API rules), and one photo
