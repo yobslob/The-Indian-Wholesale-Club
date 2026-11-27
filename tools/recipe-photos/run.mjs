@@ -79,12 +79,22 @@ console.log(
   `${source.name}: ${recipes.length} recipes, ${todo.length} without a photo here; taking ${Math.min(todo.length, limit)}.`,
 );
 
+/** Each recipe's photo id so far (credits.csv), so two recipes never get the same photo. */
+const photoOf = new Map();
+for (const line of readFileSync(credits, 'utf8').split(/\r?\n/).slice(1)) {
+  const m = line.match(/^"([^"]*)","(?:[^"]|"")*","([^"]*)","([^"]*)"/);
+  if (m && m[2] === source.name) photoOf.set(m[1], m[3]);
+}
+
 let saved = 0;
 let notFound = 0;
 let failed = 0;
 for (const r of todo.slice(0, limit)) {
   try {
-    const pick = best(await source.search(r.name), r.name);
+    const used = new Set([...photoOf].filter(([slug]) => slug !== r.slug).map(([, id]) => id));
+    // the template's words first ("samosa indian food"); the name alone when none of those is a photo of the dish
+    let pick = best(await source.search(r.name), r.name, used);
+    if (!pick && template !== '{name}') pick = best(await source.search(r.name, true), r.name, used);
     if (!pick) {
       notFound++;
       appendFileSync(missed, `${r.slug}\t${r.name}\n`);
@@ -97,6 +107,7 @@ for (const r of todo.slice(0, limit)) {
       [r.slug, r.name, source.name, pick.id, pick.title, pick.author?.name, pick.url, licences(pick)].map(cell).join(',') +
         '\n',
     );
+    photoOf.set(r.slug, String(pick.id));
     saved++;
     console.log(`  ✓  ${r.slug}: ${pick.title}`);
   } catch (error) {
