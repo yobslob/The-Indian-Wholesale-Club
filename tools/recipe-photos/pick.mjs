@@ -53,7 +53,7 @@ export function best(results, name) {
   return top;
 }
 
-/** The licence links a result came with, for the credits file. */
+/** The licence links a result came with, for the credits file (sources.mjs names them `licences`). */
 export function licences(result) {
-  return (result?.licenses ?? []).map((l) => `${l.type}: ${l.url}`).join(' | ');
+  return (result?.licences ?? result?.licenses ?? []).map((l) => `${l.type}: ${l.url}`).join(' | ');
 }
