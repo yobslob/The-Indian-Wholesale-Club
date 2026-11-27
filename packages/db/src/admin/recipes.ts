@@ -1,4 +1,4 @@
-import { ALL_OF_INDIA, type RecipeDraft } from '@repo/shared/domain';
+import { ALL_OF_INDIA, type PhotoCredit, type RecipeDraft } from '@repo/shared/domain';
 
 import { z } from 'zod';
 
@@ -151,8 +151,14 @@ export async function approveRecipeWords(client: IwcClient, id: string, approved
   );
 }
 
-export async function setRecipePhoto(client: IwcClient, id: string, path: string | null) {
-  unwrap(await client.from('recipes').update({ photo_path: path }).eq('id', id));
+/** A recipe's photo and its credit (D-214: an openly licensed photo's; null for the founder's own, clearing an old one). */
+export async function setRecipePhoto(
+  client: IwcClient,
+  id: string,
+  path: string | null,
+  credit: PhotoCredit | null = null,
+) {
+  unwrap(await client.from('recipes').update({ photo_path: path, photo_credit: credit }).eq('id', id));
 }
 
 /** One recipe on Home's window at a time; null takes it off. */

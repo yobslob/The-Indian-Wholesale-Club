@@ -2,6 +2,7 @@
  * D-203, Cook at home: customer-safe recipe reads (store_recipes, store_recipe; Home's row comes with store_home).
  * Only what the cards and the bag's line need (D-017, INV-1).
  */
+import { photoCreditSchema } from '@repo/shared/domain';
 import { z } from 'zod';
 
 import { unwrap, type IwcClient } from '../client';
@@ -68,6 +69,8 @@ const iwcLineSchema = z.object({
 export const recipeLineSchema = z.discriminatedUnion('source', [localLineSchema, iwcLineSchema]);
 
 export const recipePageSchema = recipeCardSchema.extend({
+  /** D-214: an openly licensed photo's credit, shown under it; null for the founder's own photos. */
+  photo_credit: photoCreditSchema.nullable().catch(null).default(null),
   steps: z.array(recipeStepSchema),
   published_at: z.string().nullable(),
   updated_at: z.string(),
