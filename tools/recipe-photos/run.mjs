@@ -1,22 +1,22 @@
 #!/usr/bin/env node
 /**
  * The recipe photo runner (D-214). For every drafted recipe without a photo yet, it searches a photo source's own API
- * for the dish (sources.mjs: Pexels, free; or Magnific Stock, paid), picks the best result (pick.mjs) and saves it as
+ * for the dish (sources.mjs: Pixabay or Pexels, free; or Magnific Stock, paid), picks the best result (pick.mjs) and saves it as
  * out/<slug>.jpg, the name Admin → Recipes → Add photos by name reads. When the run ends, that folder is the push: drop
  * it on Add photos by name, which makes each photo's two AVIF copies and refreshes the live pages (the runner itself
  * never writes to the store or the database).
  *
- * Usage (from C:\kod\root):  pnpm photos:recipes [--source pexels|magnific] [--limit 50] [--only samosa,pav-bhaji]
+ * Usage (from C:\kod\root):  pnpm photos:recipes [--source pixabay|pexels|magnific] [--limit 50] [--only samosa,pav-bhaji]
  *                            [--again] [--term "{name} snack"]
- * tools/recipe-photos/.env (not in git): PEXELS_API_KEY=… (free) and/or MAGNIFIC_API_KEY=… (paid). Without --source,
- * Pexels when its key is there. A run carries on from where the last one stopped.
+ * tools/recipe-photos/.env (not in git): PIXABAY_API_KEY=… (free), PEXELS_API_KEY=… (free) and/or MAGNIFIC_API_KEY=…
+ * (paid). Without --source, the first of those whose key is there. A run carries on from where the last one stopped.
  */
 import { appendFileSync, existsSync, mkdirSync, readdirSync, readFileSync, writeFileSync } from 'node:fs';
 import { dirname, join } from 'node:path';
 import { fileURLToPath } from 'node:url';
 
 import { best, licences } from './pick.mjs';
-import { magnific, pexels } from './sources.mjs';
+import { magnific, pexels, pixabay } from './sources.mjs';
 
 const HERE = dirname(fileURLToPath(import.meta.url));
 const REPO = join(HERE, '..', '..');
@@ -39,17 +39,25 @@ if (existsSync(envFile))
     const m = line.match(/^\s*([A-Z_]+)\s*=\s*(.*?)\s*$/);
     if (m && !process.env[m[1]]) process.env[m[1]] = m[2].replace(/^["']|["']$/g, '');
   }
-const choice = opt('source') ?? (process.env.PEXELS_API_KEY ? 'pexels' : process.env.MAGNIFIC_API_KEY ? 'magnific' : 'pexels');
-const keyName = choice === 'magnific' ? 'MAGNIFIC_API_KEY' : 'PEXELS_API_KEY';
-const key = process.env[keyName];
-if (!key || !['pexels', 'magnific'].includes(choice)) {
+const KEYS = { pixabay: 'PIXABAY_API_KEY', pexels: 'PEXELS_API_KEY', magnific: 'MAGNIFIC_API_KEY' };
+const choice = opt('source') ?? Object.keys(KEYS).find((s) => process.env[KEYS[s]]) ?? 'pixabay';
+const keyName = KEYS[choice];
+const key = keyName && process.env[keyName];
+if (!key) {
   console.error(
-    `Write ${keyName}=… in tools/recipe-photos/.env and run again.` +
-      (choice === 'pexels' ? ' A Pexels key is free: https://www.pexels.com/api/ (sign up, then Your API key).' : ''),
+    keyName
+      ? `Write ${keyName}=… in tools/recipe-photos/.env and run again.` +
+          (choice === 'pixabay' ? ' A Pixabay key is free: sign up at pixabay.com, then open pixabay.com/api/docs.' : '')
+      : `--source is pixabay, pexels or magnific.`,
   );
   process.exit(2);
 }
-const source = choice === 'magnific' ? magnific(key, template) : pexels(key, template);
+const source =
+  choice === 'magnific'
+    ? magnific(key, template)
+    : choice === 'pexels'
+      ? pexels(key, template)
+      : pixabay(key, template, join(OUT, '.cache'));
 
 /** Every drafted recipe, in the drafts' order (catalogue/recipes-drafts-*.json). */
 const recipes = readdirSync(join(REPO, 'catalogue'))

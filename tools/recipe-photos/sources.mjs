@@ -2,11 +2,16 @@
  * Where the recipe photo runner looks (D-214). Each source searches for a dish and downloads a result; results come back
  * in one shape for pick.mjs: { id, title, url, author, licences, image: { type, orientation }, stats: { downloads } }.
  *
- * - pexels (free): Pexels' own API with a free key (pexels.com/api). Its licence lets a business use the photos without
- *   paying or crediting; credits.csv keeps the photographer and page anyway.
+ * - pixabay (free, the default): Pixabay's own API with a free key (pixabay.com/api/docs, shown there once logged in).
+ *   Its Content License lets a business use the photos without paying or crediting. Its rules, kept here: searches
+ *   cached for 24 hours, no bursts of automated queries (one search a second at most), only the picked photo is
+ *   downloaded, and it is kept on our own store (no hotlinking).
+ * - pexels (free): Pexels' own API with a free key (pexels.com/api; new keys paused since 2026-11). Its licence lets a
+ *   business use the photos without paying or crediting; credits.csv keeps the photographer and page anyway.
  * - magnific (paid): Magnific Stock's API (formerly Freepik's), which spends the account's API credits.
  */
-import { writeFileSync } from 'node:fs';
+import { existsSync, mkdirSync, readFileSync, statSync, writeFileSync } from 'node:fs';
+import { join } from 'node:path';
 
 import { searchTerm } from './pick.mjs';
 
@@ -31,6 +36,45 @@ async function save(url, file, label) {
 }
 
 const frame = (w, h) => (!w || !h ? 'unknown' : Math.abs(w - h) / Math.max(w, h) < 0.1 ? 'square' : w > h ? 'horizontal' : 'vertical');
+
+const DAY = 24 * 60 * 60 * 1000;
+const pause = (ms) => new Promise((r) => setTimeout(r, ms));
+
+/** Pixabay's search, cached for a day in `cacheDir` and at most one call a second (its API rules). */
+export function pixabay(key, template, cacheDir) {
+  mkdirSync(cacheDir, { recursive: true });
+  let last = 0;
+  async function find(q) {
+    const file = join(cacheDir, `pixabay-${q.toLowerCase().replace(/[^a-z0-9]+/g, '-').slice(0, 80)}.json`);
+    if (existsSync(file) && Date.now() - statSync(file).mtimeMs < DAY) return JSON.parse(readFileSync(file, 'utf8'));
+    await pause(Math.max(0, last + 1000 - Date.now()));
+    last = Date.now();
+    const params = new URLSearchParams({ key, q: q.slice(0, 100), image_type: 'photo', category: 'food', safesearch: 'true', per_page: '40' });
+    const data = await getJson(`https://pixabay.com/api/?${params}`, {}, 'pixabay search');
+    writeFileSync(file, JSON.stringify(data));
+    return data;
+  }
+  return {
+    name: 'pixabay',
+    async search(dish) {
+      // the template first ("samosa indian food"); a name of its own when that finds nothing
+      let hits = (await find(searchTerm(dish, template))).hits ?? [];
+      if (!hits.length) hits = (await find(dish)).hits ?? [];
+      return hits.map((h) => ({
+        id: h.id,
+        // Pixabay's tags ("biryani, rice, indian food") stand in for a title
+        title: h.tags ?? '',
+        url: h.pageURL,
+        author: { name: h.user },
+        licences: [{ type: 'pixabay', url: 'https://pixabay.com/service/license-summary/' }],
+        image: { type: h.type === 'photo' ? 'photo' : h.type, orientation: frame(h.imageWidth, h.imageHeight) },
+        stats: { downloads: h.downloads ?? 0 },
+        download: h.largeImageURL,
+      }));
+    },
+    download: (result, file) => save(result.download, file, `pixabay ${result.id}`),
+  };
+}
 
 export function pexels(key, template) {
   const headers = { Authorization: key };

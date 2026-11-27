@@ -59,7 +59,7 @@ should be; report a mismatch instead of picking a side. "Done/works/fixed" needs
 `apps/app` Expo app · `packages/shared` pure logic (`domain`, `sourcing`, `info`) · `packages/db` typed
 queries (`store`/`account`/`admin`/`server`) · `packages/tokens` design tokens · `supabase/` migrations, seed,
 SQL tests · `scripts/` (`check.mjs` = verification, `docs-audit.mjs`, the founder's one-off and ops scripts) ·
-`tools/` the founder's machines: `sourcing-runner` (India PC), `weight-estimator` (laptop GPU), `photo-worker` (GPU) and `photo-redo` (every listing's photos made again, D-163) and `recipe-photos` (a photo per recipe from Pexels or Magnific Stock, D-214) ·
+`tools/` the founder's machines: `sourcing-runner` (India PC), `weight-estimator` (laptop GPU), `photo-worker` (GPU) and `photo-redo` (every listing's photos made again, D-163) and `recipe-photos` (a photo per recipe from Pixabay, Pexels or Magnific Stock, D-214) ·
 `catalogue/` the demo catalogue behind the local seed. `docs/archive/` is history; `.ignore` keeps it out of searches. The
 old mockups left the repo: `C:\kod\iwc-removed-2026-11-04\design.zip`.
 
