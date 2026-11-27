@@ -844,14 +844,14 @@ isOneToOne: false
                   ]
                 },"recipes": {
                   Row: {
-                    "blurb": string,"content_status": string,"created_at": string,"effort": string,"home_rank": number | null,"id": string,"is_placeholder": boolean,"kind": string,"minutes": number,"name": string,"photo_path": string | null,"published_at": string | null,"region_id": string | null,"serves": number,"slug": string,"soak_hours": number | null,"sort": number,"status": string,"steps": NonNullable<Json>,"updated_at": string
+                    "blurb": string,"content_status": string,"created_at": string,"effort": string,"home_rank": number | null,"id": string,"is_placeholder": boolean,"kind": string,"minutes": number,"name": string,"photo_credit": Json | null,"photo_path": string | null,"published_at": string | null,"region_id": string | null,"serves": number,"slug": string,"soak_hours": number | null,"sort": number,"status": string,"steps": NonNullable<Json>,"updated_at": string
                   }
                   ComputedFields: never
                   Insert: {
-                    "blurb"?: string,"content_status"?: string,"created_at"?: string,"effort"?: string,"home_rank"?: number | null,"id"?: string,"is_placeholder"?: boolean,"kind": string,"minutes"?: number,"name": string,"photo_path"?: string | null,"published_at"?: string | null,"region_id"?: string | null,"serves"?: number,"slug": string,"soak_hours"?: number | null,"sort"?: number,"status"?: string,"steps"?: NonNullable<Json>,"updated_at"?: string
+                    "blurb"?: string,"content_status"?: string,"created_at"?: string,"effort"?: string,"home_rank"?: number | null,"id"?: string,"is_placeholder"?: boolean,"kind": string,"minutes"?: number,"name": string,"photo_credit"?: Json | null,"photo_path"?: string | null,"published_at"?: string | null,"region_id"?: string | null,"serves"?: number,"slug": string,"soak_hours"?: number | null,"sort"?: number,"status"?: string,"steps"?: NonNullable<Json>,"updated_at"?: string
                   }
                   Update: {
-                    "blurb"?: string,"content_status"?: string,"created_at"?: string,"effort"?: string,"home_rank"?: number | null,"id"?: string,"is_placeholder"?: boolean,"kind"?: string,"minutes"?: number,"name"?: string,"photo_path"?: string | null,"published_at"?: string | null,"region_id"?: string | null,"serves"?: number,"slug"?: string,"soak_hours"?: number | null,"sort"?: number,"status"?: string,"steps"?: NonNullable<Json>,"updated_at"?: string
+                    "blurb"?: string,"content_status"?: string,"created_at"?: string,"effort"?: string,"home_rank"?: number | null,"id"?: string,"is_placeholder"?: boolean,"kind"?: string,"minutes"?: number,"name"?: string,"photo_credit"?: Json | null,"photo_path"?: string | null,"published_at"?: string | null,"region_id"?: string | null,"serves"?: number,"slug"?: string,"soak_hours"?: number | null,"sort"?: number,"status"?: string,"steps"?: NonNullable<Json>,"updated_at"?: string
                   }
                   Relationships: [
                     {

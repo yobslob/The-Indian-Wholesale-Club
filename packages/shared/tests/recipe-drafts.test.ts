@@ -4,6 +4,7 @@ import { describe, it } from 'node:test';
 
 import {
   ALL_OF_INDIA,
+  creditsFromCsv,
   recipeDraftFileSchema,
   slugFromFileName,
   type RecipeDraft,
@@ -117,5 +118,34 @@ describe('the 925 drafted recipes (D-203, D-204, D-214)', () => {
   it('a photo file name finds its recipe (Add photos by name)', () => {
     assert.equal(slugFromFileName('Pav Bhaji.JPG'), 'pav-bhaji');
     assert.equal(slugFromFileName('chicken_biryani.png'), 'chicken-biryani');
+  });
+});
+
+describe('D-214: photo credits from the runner credits.csv', () => {
+  const csv = [
+    'slug,name,source,id,title,author,page,licences',
+    '"dal-makhani","Dal Makhani","openverse","a1","Dal makhani","TarnishedPath","https://commons.wikimedia.org/w/index.php?curid=161833506","CC BY-SA 4.0: https://creativecommons.org/licenses/by-sa/4.0/"',
+    '"samosa","Samosa","pixabay","143622","food, samosa","Ashish","https://pixabay.com/photos/x-143622/","pixabay: https://pixabay.com/service/license-summary/"',
+    '"pav-bhaji","Pav Bhaji","openverse","b2","Pav bhaji, ""Mumbai"" style","A, B","https://www.flickr.com/photos/x/1","CC BY 2.0: https://creativecommons.org/licenses/by/2.0/"',
+    '"idli","Idli","openverse","c3","Idli","","https://www.flickr.com/photos/x/2","CC BY 2.0: https://creativecommons.org/licenses/by/2.0/"',
+    '"dal-makhani","Dal Makhani","openverse","a9","Dal makhani again","Someone","https://www.flickr.com/photos/y/9","CC0 1.0: https://creativecommons.org/publicdomain/zero/1.0/"',
+  ].join('\r\n');
+  const credits = creditsFromCsv(csv);
+
+  it('keeps the credited licences, quotes and commas included; a later row for a slug wins', () => {
+    assert.deepEqual(credits.get('pav-bhaji'), {
+      title: 'Pav bhaji, "Mumbai" style',
+      author: 'A, B',
+      source_url: 'https://www.flickr.com/photos/x/1',
+      licence: 'CC BY 2.0',
+      licence_url: 'https://creativecommons.org/licenses/by/2.0/',
+    });
+    assert.equal(credits.get('dal-makhani')?.title, 'Dal makhani again');
+  });
+
+  it("leaves out Pixabay's (no credit asked) and a row with no author", () => {
+    assert.equal(credits.has('samosa'), false);
+    assert.equal(credits.has('idli'), false);
+    assert.equal(credits.size, 2);
   });
 });

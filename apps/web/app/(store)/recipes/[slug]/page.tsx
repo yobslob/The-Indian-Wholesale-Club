@@ -9,6 +9,7 @@ import { StorePhoto } from '@/features/catalog/store-photo';
 import { CookMode } from '@/features/recipes/cook-mode';
 import { KadaiArt } from '@/features/recipes/kadai-art';
 import { KitCard } from '@/features/recipes/kit-card';
+import { PhotoCreditLine } from '@/features/recipes/photo-credit';
 import { KIND_LABEL, RecipeCard } from '@/features/recipes/recipe-card';
 import { recipeJsonLdText, recipeMetadata } from '@/features/recipes/recipe-seo';
 import { siteUrl } from '@/lib/env';
@@ -54,10 +55,13 @@ export default async function RecipePage({ params }: { params: Params }): Promis
   return (
     <article className="mx-auto max-w-3xl space-y-[clamp(18px,2.4vw,32px)] pb-28 md:pb-10">
       <script type="application/ld+json" dangerouslySetInnerHTML={{ __html: recipeJsonLdText(recipe, siteUrl()) }} />
-      <div className="bg-land relative -mx-[var(--gut)] h-[300px] overflow-hidden md:mx-0 md:h-[420px] md:rounded-lg">
-        <KadaiArt className="text-ink-muted/40 absolute inset-0 m-auto h-1/3 w-1/3" />
-        {recipe.photo_path ? <StorePhoto src={mediaUrl(recipe.photo_path)} alt={recipe.name} sizes="(min-width: 768px) 768px, 100vw" priority className="object-cover" /> : null}
-      </div>
+      <figure>
+        <div className="bg-land relative -mx-[var(--gut)] h-[300px] overflow-hidden md:mx-0 md:h-[420px] md:rounded-lg">
+          <KadaiArt className="text-ink-muted/40 absolute inset-0 m-auto h-1/3 w-1/3" />
+          {recipe.photo_path ? <StorePhoto src={mediaUrl(recipe.photo_path)} alt={recipe.name} sizes="(min-width: 768px) 768px, 100vw" priority className="object-cover" /> : null}
+        </div>
+        {recipe.photo_path && recipe.photo_credit ? <PhotoCreditLine credit={recipe.photo_credit} /> : null}
+      </figure>
 
       <header>
         <p className="font-ui flex flex-wrap gap-2 text-[13px] font-medium">

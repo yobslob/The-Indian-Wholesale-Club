@@ -83,6 +83,15 @@ select tests.assert_fails(
   $q$insert into public.recipes (slug, name, kind, steps) values ('test-bad-steps', 'Bad', 'snacks', '[{"minutes": 3}]')$q$,
   'recipes_steps_shape', 'a step needs its words');
 
+-- D-214: an openly licensed photo's credit
+update public.recipes set photo_path = 'recipes/test-pav-bhaji/x.jpg', photo_credit = jsonb_build_object(
+  'title', 'Pav bhaji from Mumbai', 'author', 'A. Photographer', 'source_url', 'https://commons.wikimedia.org/x',
+  'licence', 'CC BY-SA 4.0', 'licence_url', 'https://creativecommons.org/licenses/by-sa/4.0/')
+ where slug = 'test-pav-bhaji';
+select tests.assert_fails(
+  $q$update public.recipes set photo_credit = '{"title": "No author"}' where slug = 'test-pav-bhaji'$q$,
+  'recipes_photo_credit_check', 'D-214: a photo credit needs its author, licence and page');
+
 -- Customers read the store functions only
 set local role anon;
 select tests.assert_fails('select * from public.recipes', '42501', 'INV-1: visitors can''t read recipes');
@@ -118,6 +127,10 @@ select tests.assert(
   not exists (select 1 from tests.json_keys(public.store_recipes()) k where k = any (tests.forbidden_keys())),
   'INV-1: no operations fields on the shelf');
 select tests.assert(jsonb_array_length(public.store_recipes('sweets')) = 0, 'the shelf filters by kind');
+select tests.assert(
+  public.store_recipe('test-pav-bhaji') #>> '{photo_credit,author}' = 'A. Photographer'
+  and public.store_recipe('test-pav-bhaji') #>> '{photo_credit,licence}' = 'CC BY-SA 4.0',
+  'D-214: a recipe page carries its photo''s credit');
 select tests.assert(
   exists (select 1 from jsonb_array_elements(public.store_home() -> 'recipes') c where c ->> 'slug' = 'test-pav-bhaji'),
   'Home''s row lists the live recipes');

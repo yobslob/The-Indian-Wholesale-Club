@@ -18,7 +18,7 @@ import {
   setRecipeStatus,
   updateRecipe,
 } from '@repo/db/admin';
-import { recipeDraftFileSchema, slugFromFileName } from '@repo/shared/domain';
+import { photoCreditSchema, recipeDraftFileSchema, slugFromFileName } from '@repo/shared/domain';
 
 import { refreshRecipes } from '@/features/admin/refresh-recipes';
 import { errorMessage } from '@/lib/logger';
@@ -302,6 +302,11 @@ export async function recipePhotoByNameAction(form: FormData): Promise<Result & 
         ? all.find((r) => r.id === forId)
         : all.find((r) => r.slug === slug);
     if (!recipe) return { error: `no recipe called "${slug}"` };
+    // D-214: the photo's credit from the runner's credits.csv, when its licence asks for one
+    const creditText = form.get('credit');
+    const credit =
+      typeof creditText === 'string' && creditText ? photoCreditSchema.safeParse(JSON.parse(creditText)) : null;
+    if (credit && !credit.success) return { error: 'its credit in credits.csv is not complete' };
     const path = await storePhoto(
       client,
       'product-media',
@@ -309,7 +314,7 @@ export async function recipePhotoByNameAction(form: FormData): Promise<Result & 
       file,
       file.type,
     );
-    await setRecipePhoto(client, recipe.id, path);
+    await setRecipePhoto(client, recipe.id, path, credit?.data ?? null);
     if (recipe.photo_path)
       await removePhotos(client, 'product-media', [recipe.photo_path]).catch(() => undefined);
     await afterChange(client, recipe.id, recipe.status === 'live');
