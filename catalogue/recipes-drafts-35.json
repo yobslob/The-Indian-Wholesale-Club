@@ -1213,5 +1213,511 @@
         "minutes": 10
       }
     ]
+  },
+  {
+    "slug": "paneer-tikka-roll",
+    "name": "Paneer Tikka Roll",
+    "kind": "snacks",
+    "state": "Delhi",
+    "rank": 695,
+    "blurb": "Charred paneer tikka, onion and mint chutney rolled in a flaky paratha.",
+    "minutes": 40,
+    "soak_hours": null,
+    "serves": 4,
+    "effort": "medium",
+    "ingredients": [
+      {
+        "label": "Tikka masala",
+        "amount": "1½ tbsp",
+        "source": "iwc",
+        "match_words": "tikka masala"
+      },
+      {
+        "label": "Maida",
+        "amount": "2 cups",
+        "source": "iwc",
+        "match_words": "maida"
+      },
+      {
+        "label": "Chaat masala",
+        "amount": "1 tsp",
+        "source": "iwc",
+        "match_words": "chaat masala"
+      },
+      {
+        "label": "Paneer",
+        "amount": "250 g",
+        "source": "local"
+      },
+      {
+        "label": "Yogurt",
+        "amount": "¼ cup",
+        "source": "local"
+      },
+      {
+        "label": "Onion",
+        "amount": "1",
+        "source": "local"
+      },
+      {
+        "label": "Mint",
+        "amount": "a handful",
+        "source": "local"
+      },
+      {
+        "label": "Oil",
+        "amount": "3 tbsp",
+        "source": "local"
+      },
+      {
+        "label": "Dried mint leaves",
+        "amount": "1 tsp",
+        "source": "iwc",
+        "match_words": "mint leaves",
+        "instead_of": "Mint"
+      }
+    ],
+    "steps": [
+      {
+        "text": "Coat the paneer in yogurt, tikka masala and salt and sear in a hot pan until charred.",
+        "minutes": 12
+      },
+      {
+        "text": "Knead the maida with salt, oil and water; roll and cook thin parathas.",
+        "minutes": 15
+      },
+      {
+        "text": "Fill with paneer, sliced onion, chaat masala and mint chutney, and roll.",
+        "minutes": 5
+      }
+    ]
+  },
+  {
+    "slug": "chicken-tikka-roll",
+    "name": "Chicken Tikka Roll",
+    "kind": "snacks",
+    "state": "Delhi",
+    "rank": 696,
+    "blurb": "Smoky chicken tikka with onion and green chutney, wrapped in a paratha.",
+    "minutes": 50,
+    "soak_hours": null,
+    "serves": 4,
+    "effort": "medium",
+    "ingredients": [
+      {
+        "label": "Tikka masala",
+        "amount": "2 tbsp",
+        "source": "iwc",
+        "match_words": "tikka masala"
+      },
+      {
+        "label": "Maida",
+        "amount": "2 cups",
+        "source": "iwc",
+        "match_words": "maida"
+      },
+      {
+        "label": "Chaat masala",
+        "amount": "1 tsp",
+        "source": "iwc",
+        "match_words": "chaat masala"
+      },
+      {
+        "label": "Boneless chicken",
+        "amount": "400 g",
+        "source": "local"
+      },
+      {
+        "label": "Yogurt",
+        "amount": "½ cup",
+        "source": "local"
+      },
+      {
+        "label": "Onion",
+        "amount": "1",
+        "source": "local"
+      },
+      {
+        "label": "Mint",
+        "amount": "a handful",
+        "source": "local"
+      },
+      {
+        "label": "Lemon",
+        "amount": "1",
+        "source": "local"
+      },
+      {
+        "label": "Oil",
+        "amount": "3 tbsp",
+        "source": "local"
+      },
+      {
+        "label": "Dried mint leaves",
+        "amount": "1 tsp",
+        "source": "iwc",
+        "match_words": "mint leaves",
+        "instead_of": "Mint"
+      },
+      {
+        "label": "Amchur",
+        "amount": "1 tsp",
+        "source": "iwc",
+        "match_words": "amchur",
+        "instead_of": "Lemon"
+      }
+    ],
+    "steps": [
+      {
+        "text": "Marinate the chicken in yogurt, tikka masala, lemon and salt for thirty minutes, then sear until charred.",
+        "minutes": 40
+      },
+      {
+        "text": "Cook thin parathas from a soft maida dough.",
+        "minutes": 15
+      },
+      {
+        "text": "Roll the chicken in them with onion, chaat masala and mint chutney.",
+        "minutes": 5
+      }
+    ]
+  },
+  {
+    "slug": "egg-chicken-roll",
+    "name": "Egg Chicken Roll",
+    "kind": "snacks",
+    "state": "West Bengal",
+    "rank": 697,
+    "blurb": "Kolkata's roll: a paratha fried with egg, filled with spiced chicken, onion and chilli.",
+    "minutes": 50,
+    "soak_hours": null,
+    "serves": 4,
+    "effort": "medium",
+    "ingredients": [
+      {
+        "label": "Chicken masala",
+        "amount": "1 tbsp",
+        "source": "iwc",
+        "match_words": "chicken masala"
+      },
+      {
+        "label": "Maida",
+        "amount": "2 cups",
+        "source": "iwc",
+        "match_words": "maida"
+      },
+      {
+        "label": "Chaat masala",
+        "amount": "1 tsp",
+        "source": "iwc",
+        "match_words": "chaat masala"
+      },
+      {
+        "label": "Boneless chicken",
+        "amount": "300 g",
+        "source": "local"
+      },
+      {
+        "label": "Eggs",
+        "amount": "4",
+        "source": "local"
+      },
+      {
+        "label": "Onion",
+        "amount": "1",
+        "source": "local"
+      },
+      {
+        "label": "Green chillies",
+        "amount": "2",
+        "source": "local"
+      },
+      {
+        "label": "Lemon",
+        "amount": "1",
+        "source": "local"
+      },
+      {
+        "label": "Oil",
+        "amount": "4 tbsp",
+        "source": "local"
+      },
+      {
+        "label": "Red chilli powder",
+        "amount": "½ tsp",
+        "source": "iwc",
+        "match_words": "red chilli powder",
+        "instead_of": "Green chillies"
+      },
+      {
+        "label": "Amchur",
+        "amount": "1 tsp",
+        "source": "iwc",
+        "match_words": "amchur",
+        "instead_of": "Lemon"
+      }
+    ],
+    "steps": [
+      {
+        "text": "Cook the chicken pieces with the masala and salt until dry.",
+        "minutes": 15
+      },
+      {
+        "text": "Cook each paratha, pour a beaten egg over and flip so it sets onto it.",
+        "minutes": 15
+      },
+      {
+        "text": "Fill with chicken, onion, chillies, chaat masala and lemon, and roll tight.",
+        "minutes": 5
+      }
+    ]
+  },
+  {
+    "slug": "mutton-seekh-roll",
+    "name": "Mutton Seekh Roll",
+    "kind": "snacks",
+    "state": "Uttar Pradesh",
+    "rank": 698,
+    "blurb": "Lucknow-style seekh kebabs rolled in a rumali or paratha with onion and chutney.",
+    "minutes": 50,
+    "soak_hours": null,
+    "serves": 4,
+    "effort": "medium",
+    "ingredients": [
+      {
+        "label": "Garam masala",
+        "amount": "1 tsp",
+        "source": "iwc",
+        "match_words": "garam masala"
+      },
+      {
+        "label": "Red chilli powder",
+        "amount": "1 tsp",
+        "source": "iwc",
+        "match_words": "red chilli powder"
+      },
+      {
+        "label": "Maida",
+        "amount": "2 cups",
+        "source": "iwc",
+        "match_words": "maida"
+      },
+      {
+        "label": "Mutton mince",
+        "amount": "400 g",
+        "source": "local"
+      },
+      {
+        "label": "Onion",
+        "amount": "2",
+        "source": "local"
+      },
+      {
+        "label": "Ginger-garlic paste",
+        "amount": "1 tbsp",
+        "source": "local"
+      },
+      {
+        "label": "Mint",
+        "amount": "a handful",
+        "source": "local"
+      },
+      {
+        "label": "Oil",
+        "amount": "3 tbsp",
+        "source": "local"
+      },
+      {
+        "label": "Dry ginger powder",
+        "amount": "½ tsp",
+        "source": "iwc",
+        "match_words": "dry ginger powder",
+        "instead_of": "Ginger-garlic paste"
+      },
+      {
+        "label": "Garlic powder",
+        "amount": "½ tsp",
+        "source": "iwc",
+        "match_words": "garlic powder",
+        "instead_of": "Ginger-garlic paste"
+      },
+      {
+        "label": "Dried mint leaves",
+        "amount": "1 tsp",
+        "source": "iwc",
+        "match_words": "mint leaves",
+        "instead_of": "Mint"
+      }
+    ],
+    "steps": [
+      {
+        "text": "Mix the mince with grated onion, ginger-garlic paste, spices and salt; shape on skewers and grill.",
+        "minutes": 25
+      },
+      {
+        "text": "Cook thin parathas.",
+        "minutes": 15
+      },
+      {
+        "text": "Roll each kebab in a paratha with sliced onion and mint chutney.",
+        "minutes": 5
+      }
+    ]
+  },
+  {
+    "slug": "aloo-tikki-roll",
+    "name": "Aloo Tikki Roll",
+    "kind": "snacks",
+    "state": "All of India",
+    "rank": 699,
+    "blurb": "A crisp potato tikki, onion and chutneys rolled in a soft roti.",
+    "minutes": 40,
+    "soak_hours": null,
+    "serves": 4,
+    "effort": "easy",
+    "ingredients": [
+      {
+        "label": "Chaat masala",
+        "amount": "1 tsp",
+        "source": "iwc",
+        "match_words": "chaat masala"
+      },
+      {
+        "label": "Garam masala",
+        "amount": "½ tsp",
+        "source": "iwc",
+        "match_words": "garam masala"
+      },
+      {
+        "label": "Atta",
+        "amount": "2 cups",
+        "source": "iwc",
+        "match_words": "atta"
+      },
+      {
+        "label": "Potatoes",
+        "amount": "4",
+        "source": "local"
+      },
+      {
+        "label": "Onion",
+        "amount": "1",
+        "source": "local"
+      },
+      {
+        "label": "Mint",
+        "amount": "a handful",
+        "source": "local"
+      },
+      {
+        "label": "Oil",
+        "amount": "3 tbsp",
+        "source": "local"
+      },
+      {
+        "label": "Dried mint leaves",
+        "amount": "1 tsp",
+        "source": "iwc",
+        "match_words": "mint leaves",
+        "instead_of": "Mint"
+      }
+    ],
+    "steps": [
+      {
+        "text": "Mash boiled potatoes with the spices and salt, shape tikkis and shallow-fry until crisp.",
+        "minutes": 20
+      },
+      {
+        "text": "Cook rotis from a soft atta dough.",
+        "minutes": 12
+      },
+      {
+        "text": "Roll each tikki in a roti with onion, chaat masala and mint chutney.",
+        "minutes": 5
+      }
+    ]
+  },
+  {
+    "slug": "soya-chaap-roll",
+    "name": "Soya Chaap Roll",
+    "kind": "snacks",
+    "state": "Delhi",
+    "rank": 700,
+    "blurb": "Delhi's street roll of charred soya chaap, onion and mint mayo in a paratha.",
+    "minutes": 45,
+    "soak_hours": null,
+    "serves": 4,
+    "effort": "medium",
+    "ingredients": [
+      {
+        "label": "Tandoori masala",
+        "amount": "1½ tbsp",
+        "source": "iwc",
+        "match_words": "tandoori masala"
+      },
+      {
+        "label": "Maida",
+        "amount": "2 cups",
+        "source": "iwc",
+        "match_words": "maida"
+      },
+      {
+        "label": "Chaat masala",
+        "amount": "1 tsp",
+        "source": "iwc",
+        "match_words": "chaat masala"
+      },
+      {
+        "label": "Soya chaap sticks",
+        "amount": "6",
+        "source": "local"
+      },
+      {
+        "label": "Yogurt",
+        "amount": "¼ cup",
+        "source": "local"
+      },
+      {
+        "label": "Onion",
+        "amount": "1",
+        "source": "local"
+      },
+      {
+        "label": "Mint",
+        "amount": "a handful",
+        "source": "local"
+      },
+      {
+        "label": "Mayonnaise",
+        "amount": "3 tbsp",
+        "source": "local"
+      },
+      {
+        "label": "Oil",
+        "amount": "3 tbsp",
+        "source": "local"
+      },
+      {
+        "label": "Dried mint leaves",
+        "amount": "1 tsp",
+        "source": "iwc",
+        "match_words": "mint leaves",
+        "instead_of": "Mint"
+      }
+    ],
+    "steps": [
+      {
+        "text": "Boil the chaap, cut into pieces, coat in yogurt and tandoori masala and sear until charred.",
+        "minutes": 20
+      },
+      {
+        "text": "Cook parathas from a soft maida dough.",
+        "minutes": 15
+      },
+      {
+        "text": "Fill with chaap, onion, chaat masala and mayonnaise mixed with chopped mint.",
+        "minutes": 5
+      }
+    ]
   }
 ]

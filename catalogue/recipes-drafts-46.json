@@ -1,0 +1,1255 @@
+[
+  {
+    "slug": "masala-macaroni",
+    "name": "Masala Macaroni",
+    "kind": "snacks",
+    "state": "All of India",
+    "rank": 901,
+    "blurb": "Indian-style macaroni cooked with onion, tomato, capsicum and garam masala, a kids' favourite.",
+    "minutes": 25,
+    "soak_hours": null,
+    "serves": 3,
+    "effort": "easy",
+    "ingredients": [
+      {
+        "label": "Garam masala",
+        "amount": "½ tsp",
+        "source": "iwc",
+        "match_words": "garam masala"
+      },
+      {
+        "label": "Red chilli powder",
+        "amount": "½ tsp",
+        "source": "iwc",
+        "match_words": "red chilli powder"
+      },
+      {
+        "label": "Turmeric",
+        "amount": "¼ tsp",
+        "source": "iwc",
+        "match_words": "turmeric"
+      },
+      {
+        "label": "Macaroni",
+        "amount": "200 g",
+        "source": "local"
+      },
+      {
+        "label": "Onion",
+        "amount": "1",
+        "source": "local"
+      },
+      {
+        "label": "Tomatoes",
+        "amount": "2",
+        "source": "local"
+      },
+      {
+        "label": "Capsicum",
+        "amount": "1",
+        "source": "local"
+      },
+      {
+        "label": "Tomato ketchup",
+        "amount": "2 tbsp",
+        "source": "local"
+      },
+      {
+        "label": "Oil",
+        "amount": "2 tbsp",
+        "source": "local"
+      }
+    ],
+    "steps": [
+      {
+        "text": "Boil the macaroni until just done and drain.",
+        "minutes": 10
+      },
+      {
+        "text": "Cook the onion, capsicum and tomatoes with the spices and salt.",
+        "minutes": 8
+      },
+      {
+        "text": "Toss in the macaroni and ketchup until coated.",
+        "minutes": 3
+      }
+    ]
+  },
+  {
+    "slug": "tomato-sev",
+    "name": "Tomato Sev",
+    "kind": "snacks",
+    "state": "Gujarat",
+    "rank": 902,
+    "blurb": "Fine besan sev with tomato and a little chilli, tangy and orange.",
+    "minutes": 40,
+    "soak_hours": null,
+    "serves": 8,
+    "effort": "medium",
+    "ingredients": [
+      {
+        "label": "Besan",
+        "amount": "2 cups",
+        "source": "iwc",
+        "match_words": "besan"
+      },
+      {
+        "label": "Red chilli powder",
+        "amount": "1 tsp",
+        "source": "iwc",
+        "match_words": "red chilli powder"
+      },
+      {
+        "label": "Hing",
+        "amount": "a pinch",
+        "source": "iwc",
+        "match_words": "hing"
+      },
+      {
+        "label": "Citric acid",
+        "amount": "¼ tsp",
+        "source": "iwc",
+        "match_words": "citric acid"
+      },
+      {
+        "label": "Tomatoes",
+        "amount": "2",
+        "source": "local"
+      },
+      {
+        "label": "Oil",
+        "amount": "for frying",
+        "source": "local"
+      }
+    ],
+    "steps": [
+      {
+        "text": "Blend the tomatoes smooth and strain.",
+        "minutes": 5
+      },
+      {
+        "text": "Knead the besan, spices, salt and two tablespoons of oil with the purée into a soft dough.",
+        "minutes": 5
+      },
+      {
+        "text": "Press through the fine sev mould into hot oil and fry until crisp.",
+        "minutes": 25
+      }
+    ]
+  },
+  {
+    "slug": "nylon-sev",
+    "name": "Nylon Sev",
+    "kind": "snacks",
+    "state": "Gujarat",
+    "rank": 903,
+    "blurb": "The finest, softest sev, made for sev puri and chaat.",
+    "minutes": 35,
+    "soak_hours": null,
+    "serves": 8,
+    "effort": "medium",
+    "ingredients": [
+      {
+        "label": "Besan",
+        "amount": "2 cups",
+        "source": "iwc",
+        "match_words": "besan"
+      },
+      {
+        "label": "Turmeric",
+        "amount": "¼ tsp",
+        "source": "iwc",
+        "match_words": "turmeric"
+      },
+      {
+        "label": "Hing",
+        "amount": "a pinch",
+        "source": "iwc",
+        "match_words": "hing"
+      },
+      {
+        "label": "Ajwain",
+        "amount": "½ tsp",
+        "source": "iwc",
+        "match_words": "ajwain"
+      },
+      {
+        "label": "Oil",
+        "amount": "for frying",
+        "source": "local"
+      }
+    ],
+    "steps": [
+      {
+        "text": "Mix the besan with turmeric, hing, crushed ajwain, salt and three tablespoons of oil.",
+        "minutes": 3
+      },
+      {
+        "text": "Knead into a soft, smooth dough with water.",
+        "minutes": 5
+      },
+      {
+        "text": "Press through the finest plate into hot oil and fry briefly.",
+        "minutes": 25
+      }
+    ]
+  },
+  {
+    "slug": "pudina-sev",
+    "name": "Pudina Sev",
+    "kind": "snacks",
+    "state": "Gujarat",
+    "rank": 904,
+    "blurb": "Green sev flavoured with mint and green chilli.",
+    "minutes": 40,
+    "soak_hours": null,
+    "serves": 8,
+    "effort": "medium",
+    "ingredients": [
+      {
+        "label": "Besan",
+        "amount": "2 cups",
+        "source": "iwc",
+        "match_words": "besan"
+      },
+      {
+        "label": "Dried mint leaves",
+        "amount": "2 tbsp",
+        "source": "iwc",
+        "match_words": "mint leaves"
+      },
+      {
+        "label": "Chaat masala",
+        "amount": "1 tsp",
+        "source": "iwc",
+        "match_words": "chaat masala"
+      },
+      {
+        "label": "Hing",
+        "amount": "a pinch",
+        "source": "iwc",
+        "match_words": "hing"
+      },
+      {
+        "label": "Mint",
+        "amount": "1 cup",
+        "source": "local"
+      },
+      {
+        "label": "Green chillies",
+        "amount": "2",
+        "source": "local"
+      },
+      {
+        "label": "Oil",
+        "amount": "for frying",
+        "source": "local"
+      },
+      {
+        "label": "Red chilli powder",
+        "amount": "½ tsp",
+        "source": "iwc",
+        "match_words": "red chilli powder",
+        "instead_of": "Green chillies"
+      }
+    ],
+    "steps": [
+      {
+        "text": "Blend the mint and chillies smooth.",
+        "minutes": 5
+      },
+      {
+        "text": "Knead the besan, dried mint, hing, salt and oil with the purée into a soft dough.",
+        "minutes": 5
+      },
+      {
+        "text": "Press into hot oil, fry and toss with chaat masala.",
+        "minutes": 25
+      }
+    ]
+  },
+  {
+    "slug": "masala-khakhra",
+    "name": "Masala Khakhra",
+    "kind": "snacks",
+    "state": "Gujarat",
+    "rank": 905,
+    "blurb": "Thin, crisp whole wheat khakhra with chilli, turmeric and ajwain.",
+    "minutes": 45,
+    "soak_hours": null,
+    "serves": 6,
+    "effort": "medium",
+    "ingredients": [
+      {
+        "label": "Atta",
+        "amount": "2 cups",
+        "source": "iwc",
+        "match_words": "atta"
+      },
+      {
+        "label": "Red chilli powder",
+        "amount": "1 tsp",
+        "source": "iwc",
+        "match_words": "red chilli powder"
+      },
+      {
+        "label": "Turmeric",
+        "amount": "½ tsp",
+        "source": "iwc",
+        "match_words": "turmeric"
+      },
+      {
+        "label": "Ajwain",
+        "amount": "½ tsp",
+        "source": "iwc",
+        "match_words": "ajwain"
+      },
+      {
+        "label": "Sesame seeds",
+        "amount": "1 tbsp",
+        "source": "iwc",
+        "match_words": "sesame seeds"
+      },
+      {
+        "label": "Oil",
+        "amount": "2 tbsp",
+        "source": "local"
+      },
+      {
+        "label": "Milk",
+        "amount": "¼ cup",
+        "source": "local"
+      }
+    ],
+    "steps": [
+      {
+        "text": "Knead the atta with the spices, sesame, salt, oil, milk and water into a stiff dough.",
+        "minutes": 10
+      },
+      {
+        "text": "Roll paper-thin rounds.",
+        "minutes": 15
+      },
+      {
+        "text": "Roast on a low tawa, pressing with a cloth, until crisp and spotted.",
+        "minutes": 20
+      }
+    ]
+  },
+  {
+    "slug": "jeera-khakhra",
+    "name": "Jeera Khakhra",
+    "kind": "snacks",
+    "state": "Gujarat",
+    "rank": 906,
+    "blurb": "Crisp cumin khakhra, plain and good with tea or pickle.",
+    "minutes": 45,
+    "soak_hours": null,
+    "serves": 6,
+    "effort": "medium",
+    "ingredients": [
+      {
+        "label": "Atta",
+        "amount": "2 cups",
+        "source": "iwc",
+        "match_words": "atta"
+      },
+      {
+        "label": "Cumin seeds",
+        "amount": "1 tbsp",
+        "source": "iwc",
+        "match_words": "cumin seeds"
+      },
+      {
+        "label": "Black pepper",
+        "amount": "½ tsp",
+        "source": "iwc",
+        "match_words": "black pepper"
+      },
+      {
+        "label": "Oil",
+        "amount": "2 tbsp",
+        "source": "local"
+      },
+      {
+        "label": "Milk",
+        "amount": "¼ cup",
+        "source": "local"
+      }
+    ],
+    "steps": [
+      {
+        "text": "Knead the atta with cumin, pepper, salt, oil, milk and water into a stiff dough.",
+        "minutes": 10
+      },
+      {
+        "text": "Roll paper-thin.",
+        "minutes": 15
+      },
+      {
+        "text": "Roast slowly on a tawa, pressing, until crisp.",
+        "minutes": 20
+      }
+    ]
+  },
+  {
+    "slug": "masala-mathri",
+    "name": "Masala Mathri",
+    "kind": "snacks",
+    "state": "Rajasthan",
+    "rank": 907,
+    "blurb": "Flaky mathri with chilli, cumin and kasuri methi.",
+    "minutes": 45,
+    "soak_hours": null,
+    "serves": 8,
+    "effort": "medium",
+    "ingredients": [
+      {
+        "label": "Maida",
+        "amount": "2 cups",
+        "source": "iwc",
+        "match_words": "maida"
+      },
+      {
+        "label": "Kasuri methi",
+        "amount": "1 tbsp",
+        "source": "iwc",
+        "match_words": "kasuri methi"
+      },
+      {
+        "label": "Red chilli powder",
+        "amount": "1 tsp",
+        "source": "iwc",
+        "match_words": "red chilli powder"
+      },
+      {
+        "label": "Cumin seeds",
+        "amount": "1 tsp",
+        "source": "iwc",
+        "match_words": "cumin seeds"
+      },
+      {
+        "label": "Ghee",
+        "amount": "¼ cup",
+        "source": "local"
+      },
+      {
+        "label": "Oil",
+        "amount": "for frying",
+        "source": "local"
+      }
+    ],
+    "steps": [
+      {
+        "text": "Rub the ghee into the maida with the spices and salt; knead stiff with water.",
+        "minutes": 10
+      },
+      {
+        "text": "Roll small discs and prick them.",
+        "minutes": 15
+      },
+      {
+        "text": "Fry on low heat until crisp.",
+        "minutes": 20
+      }
+    ]
+  },
+  {
+    "slug": "atta-namak-pare",
+    "name": "Atta Namak Pare",
+    "kind": "snacks",
+    "state": "Punjab",
+    "rank": 908,
+    "blurb": "Crisp diamond crackers of whole wheat with ajwain and pepper.",
+    "minutes": 40,
+    "soak_hours": null,
+    "serves": 8,
+    "effort": "easy",
+    "ingredients": [
+      {
+        "label": "Atta",
+        "amount": "2 cups",
+        "source": "iwc",
+        "match_words": "atta"
+      },
+      {
+        "label": "Ajwain",
+        "amount": "1 tsp",
+        "source": "iwc",
+        "match_words": "ajwain"
+      },
+      {
+        "label": "Black pepper",
+        "amount": "½ tsp",
+        "source": "iwc",
+        "match_words": "black pepper"
+      },
+      {
+        "label": "Ghee",
+        "amount": "3 tbsp",
+        "source": "local"
+      },
+      {
+        "label": "Oil",
+        "amount": "for frying",
+        "source": "local"
+      }
+    ],
+    "steps": [
+      {
+        "text": "Rub the ghee into the atta with ajwain, crushed pepper and salt; knead stiff.",
+        "minutes": 10
+      },
+      {
+        "text": "Roll out and cut into diamonds.",
+        "minutes": 10
+      },
+      {
+        "text": "Fry on low heat until crisp.",
+        "minutes": 15
+      }
+    ]
+  },
+  {
+    "slug": "butter-murukku",
+    "name": "Butter Murukku",
+    "kind": "snacks",
+    "state": "Tamil Nadu",
+    "rank": 909,
+    "blurb": "Soft, melt-in-the-mouth murukku of rice flour, roasted gram and butter.",
+    "minutes": 45,
+    "soak_hours": null,
+    "serves": 8,
+    "effort": "medium",
+    "ingredients": [
+      {
+        "label": "Rice flour",
+        "amount": "2 cups",
+        "source": "iwc",
+        "match_words": "rice flour"
+      },
+      {
+        "label": "Roasted chana",
+        "amount": "½ cup",
+        "source": "iwc",
+        "match_words": "roasted chana"
+      },
+      {
+        "label": "Cumin seeds",
+        "amount": "1 tsp",
+        "source": "iwc",
+        "match_words": "cumin seeds"
+      },
+      {
+        "label": "Hing",
+        "amount": "a pinch",
+        "source": "iwc",
+        "match_words": "hing"
+      },
+      {
+        "label": "Butter",
+        "amount": "3 tbsp",
+        "source": "local"
+      },
+      {
+        "label": "Oil",
+        "amount": "for frying",
+        "source": "local"
+      }
+    ],
+    "steps": [
+      {
+        "text": "Grind the roasted chana fine and mix with rice flour, cumin, hing, salt and butter.",
+        "minutes": 5
+      },
+      {
+        "text": "Knead into a soft dough with water.",
+        "minutes": 5
+      },
+      {
+        "text": "Press star-plate spirals into hot oil and fry until crisp.",
+        "minutes": 30
+      }
+    ]
+  },
+  {
+    "slug": "mullu-murukku",
+    "name": "Mullu Murukku",
+    "kind": "snacks",
+    "state": "Tamil Nadu",
+    "rank": 910,
+    "blurb": "Thorny-edged murukku of rice and moong flour, crunchy and light.",
+    "minutes": 45,
+    "soak_hours": null,
+    "serves": 8,
+    "effort": "medium",
+    "ingredients": [
+      {
+        "label": "Rice flour",
+        "amount": "2 cups",
+        "source": "iwc",
+        "match_words": "rice flour"
+      },
+      {
+        "label": "Moong dal",
+        "amount": "¼ cup",
+        "source": "iwc",
+        "match_words": "moong dal"
+      },
+      {
+        "label": "Cumin seeds",
+        "amount": "1 tsp",
+        "source": "iwc",
+        "match_words": "cumin seeds"
+      },
+      {
+        "label": "Hing",
+        "amount": "a pinch",
+        "source": "iwc",
+        "match_words": "hing"
+      },
+      {
+        "label": "Butter",
+        "amount": "2 tbsp",
+        "source": "local"
+      },
+      {
+        "label": "Oil",
+        "amount": "for frying",
+        "source": "local"
+      }
+    ],
+    "steps": [
+      {
+        "text": "Roast and grind the moong dal fine; mix with rice flour, cumin, hing, salt and butter.",
+        "minutes": 8
+      },
+      {
+        "text": "Knead into a soft dough with water.",
+        "minutes": 5
+      },
+      {
+        "text": "Press through the mullu plate into hot oil and fry until crisp.",
+        "minutes": 30
+      }
+    ]
+  },
+  {
+    "slug": "thenkuzhal",
+    "name": "Thenkuzhal",
+    "kind": "snacks",
+    "state": "Tamil Nadu",
+    "rank": 911,
+    "blurb": "Smooth, crisp rice and urad murukku, made for Deepavali.",
+    "minutes": 45,
+    "soak_hours": null,
+    "serves": 8,
+    "effort": "medium",
+    "ingredients": [
+      {
+        "label": "Rice flour",
+        "amount": "2 cups",
+        "source": "iwc",
+        "match_words": "rice flour"
+      },
+      {
+        "label": "Urad dal",
+        "amount": "¼ cup",
+        "source": "iwc",
+        "match_words": "urad dal"
+      },
+      {
+        "label": "Cumin seeds",
+        "amount": "1 tsp",
+        "source": "iwc",
+        "match_words": "cumin seeds"
+      },
+      {
+        "label": "Hing",
+        "amount": "a pinch",
+        "source": "iwc",
+        "match_words": "hing"
+      },
+      {
+        "label": "Butter",
+        "amount": "1 tbsp",
+        "source": "local"
+      },
+      {
+        "label": "Oil",
+        "amount": "for frying",
+        "source": "local"
+      }
+    ],
+    "steps": [
+      {
+        "text": "Roast and grind the urad dal fine; mix with rice flour, cumin, hing, salt and butter.",
+        "minutes": 8
+      },
+      {
+        "text": "Knead into a soft dough.",
+        "minutes": 5
+      },
+      {
+        "text": "Press round-hole spirals into hot oil and fry until crisp.",
+        "minutes": 30
+      }
+    ]
+  },
+  {
+    "slug": "bhajani-chakli",
+    "name": "Bhajani Chakli",
+    "kind": "snacks",
+    "state": "Maharashtra",
+    "rank": 912,
+    "blurb": "Maharashtra's chakli of roasted multigrain bhajani flour, crunchy and nutty.",
+    "minutes": 50,
+    "soak_hours": null,
+    "serves": 8,
+    "effort": "medium",
+    "ingredients": [
+      {
+        "label": "Thalipeeth bhajani",
+        "amount": "2 cups",
+        "source": "iwc",
+        "match_words": "thalipeeth bhajani"
+      },
+      {
+        "label": "Red chilli powder",
+        "amount": "1 tsp",
+        "source": "iwc",
+        "match_words": "red chilli powder"
+      },
+      {
+        "label": "Sesame seeds",
+        "amount": "1 tbsp",
+        "source": "iwc",
+        "match_words": "sesame seeds"
+      },
+      {
+        "label": "Ajwain",
+        "amount": "½ tsp",
+        "source": "iwc",
+        "match_words": "ajwain"
+      },
+      {
+        "label": "Turmeric",
+        "amount": "¼ tsp",
+        "source": "iwc",
+        "match_words": "turmeric"
+      },
+      {
+        "label": "Oil",
+        "amount": "for frying",
+        "source": "local"
+      }
+    ],
+    "steps": [
+      {
+        "text": "Mix the bhajani with the spices, sesame, salt and two tablespoons of hot oil.",
+        "minutes": 5
+      },
+      {
+        "text": "Knead with warm water into a soft dough.",
+        "minutes": 5
+      },
+      {
+        "text": "Press spirals onto paper, slide into hot oil and fry until crisp.",
+        "minutes": 35
+      }
+    ]
+  },
+  {
+    "slug": "makhana-chivda",
+    "name": "Makhana Chivda",
+    "kind": "snacks",
+    "state": "Bihar",
+    "rank": 913,
+    "blurb": "Roasted fox nuts with peanuts, cashews and curry leaves, light and crunchy.",
+    "minutes": 20,
+    "soak_hours": null,
+    "serves": 6,
+    "effort": "easy",
+    "ingredients": [
+      {
+        "label": "Makhana",
+        "amount": "3 cups",
+        "source": "iwc",
+        "match_words": "makhana"
+      },
+      {
+        "label": "Peanuts",
+        "amount": "¼ cup",
+        "source": "iwc",
+        "match_words": "peanuts"
+      },
+      {
+        "label": "Cashews",
+        "amount": "¼ cup",
+        "source": "iwc",
+        "match_words": "cashews"
+      },
+      {
+        "label": "Turmeric",
+        "amount": "¼ tsp",
+        "source": "iwc",
+        "match_words": "turmeric"
+      },
+      {
+        "label": "Red chilli powder",
+        "amount": "½ tsp",
+        "source": "iwc",
+        "match_words": "red chilli powder"
+      },
+      {
+        "label": "Curry leaves",
+        "amount": "a sprig",
+        "source": "local"
+      },
+      {
+        "label": "Ghee",
+        "amount": "2 tbsp",
+        "source": "local"
+      },
+      {
+        "label": "Dried curry leaves",
+        "amount": "1 tbsp",
+        "source": "iwc",
+        "match_words": "curry leaves",
+        "instead_of": "Curry leaves"
+      }
+    ],
+    "steps": [
+      {
+        "text": "Roast the makhana in a dry pan until crisp.",
+        "minutes": 8
+      },
+      {
+        "text": "Fry the peanuts, cashews and curry leaves in ghee; add turmeric and chilli powder.",
+        "minutes": 5
+      },
+      {
+        "text": "Toss in the makhana with salt.",
+        "minutes": 2
+      }
+    ]
+  },
+  {
+    "slug": "sabudana-chivda",
+    "name": "Sabudana Chivda",
+    "kind": "snacks",
+    "state": "Maharashtra",
+    "rank": 914,
+    "blurb": "A fasting chivda of fried sago pearls, potato sticks and peanuts.",
+    "minutes": 30,
+    "soak_hours": null,
+    "serves": 6,
+    "effort": "easy",
+    "ingredients": [
+      {
+        "label": "Sabudana",
+        "amount": "1 cup",
+        "source": "iwc",
+        "match_words": "sabudana"
+      },
+      {
+        "label": "Peanuts",
+        "amount": "½ cup",
+        "source": "iwc",
+        "match_words": "peanuts"
+      },
+      {
+        "label": "Rock salt",
+        "amount": "1 tsp",
+        "source": "iwc",
+        "match_words": "rock salt"
+      },
+      {
+        "label": "Red chilli powder",
+        "amount": "½ tsp",
+        "source": "iwc",
+        "match_words": "red chilli powder"
+      },
+      {
+        "label": "Potatoes",
+        "amount": "2",
+        "source": "local"
+      },
+      {
+        "label": "Curry leaves",
+        "amount": "a sprig",
+        "source": "local"
+      },
+      {
+        "label": "Oil",
+        "amount": "for frying",
+        "source": "local"
+      },
+      {
+        "label": "Dried curry leaves",
+        "amount": "1 tbsp",
+        "source": "iwc",
+        "match_words": "curry leaves",
+        "instead_of": "Curry leaves"
+      }
+    ],
+    "steps": [
+      {
+        "text": "Fry the dry sabudana in small batches until it puffs white.",
+        "minutes": 10
+      },
+      {
+        "text": "Fry the grated potato until crisp, then the peanuts and curry leaves.",
+        "minutes": 15
+      },
+      {
+        "text": "Toss everything with rock salt, chilli powder and a pinch of sugar.",
+        "minutes": 2
+      }
+    ]
+  },
+  {
+    "slug": "peri-peri-makhana",
+    "name": "Peri Peri Makhana",
+    "kind": "snacks",
+    "state": "Bihar",
+    "rank": 915,
+    "blurb": "Fox nuts roasted in ghee and tossed in a hot peri peri spice.",
+    "minutes": 15,
+    "soak_hours": null,
+    "serves": 4,
+    "effort": "easy",
+    "ingredients": [
+      {
+        "label": "Makhana",
+        "amount": "3 cups",
+        "source": "iwc",
+        "match_words": "makhana"
+      },
+      {
+        "label": "Kashmiri chilli powder",
+        "amount": "1 tsp",
+        "source": "iwc",
+        "match_words": "kashmiri chilli powder"
+      },
+      {
+        "label": "Garlic powder",
+        "amount": "½ tsp",
+        "source": "iwc",
+        "match_words": "garlic powder"
+      },
+      {
+        "label": "Amchur",
+        "amount": "½ tsp",
+        "source": "iwc",
+        "match_words": "amchur"
+      },
+      {
+        "label": "Red chilli flakes",
+        "amount": "¼ tsp",
+        "source": "iwc",
+        "match_words": "red chilli flakes"
+      },
+      {
+        "label": "Ghee",
+        "amount": "1 tbsp",
+        "source": "local"
+      }
+    ],
+    "steps": [
+      {
+        "text": "Roast the makhana in ghee on low heat until crisp.",
+        "minutes": 8
+      },
+      {
+        "text": "Toss with the spices, a pinch of sugar and salt.",
+        "minutes": 2
+      },
+      {
+        "text": "Cool before storing.",
+        "minutes": 5
+      }
+    ]
+  },
+  {
+    "slug": "pudina-makhana",
+    "name": "Pudina Makhana",
+    "kind": "snacks",
+    "state": "Bihar",
+    "rank": 916,
+    "blurb": "Fox nuts roasted and tossed with dried mint and chaat masala.",
+    "minutes": 15,
+    "soak_hours": null,
+    "serves": 4,
+    "effort": "easy",
+    "ingredients": [
+      {
+        "label": "Makhana",
+        "amount": "3 cups",
+        "source": "iwc",
+        "match_words": "makhana"
+      },
+      {
+        "label": "Dried mint leaves",
+        "amount": "1 tbsp",
+        "source": "iwc",
+        "match_words": "mint leaves"
+      },
+      {
+        "label": "Chaat masala",
+        "amount": "1 tsp",
+        "source": "iwc",
+        "match_words": "chaat masala"
+      },
+      {
+        "label": "Black pepper",
+        "amount": "¼ tsp",
+        "source": "iwc",
+        "match_words": "black pepper"
+      },
+      {
+        "label": "Ghee",
+        "amount": "1 tbsp",
+        "source": "local"
+      }
+    ],
+    "steps": [
+      {
+        "text": "Roast the makhana in ghee until crisp.",
+        "minutes": 8
+      },
+      {
+        "text": "Crush the dried mint and toss it in with chaat masala, pepper and salt.",
+        "minutes": 2
+      },
+      {
+        "text": "Cool before storing.",
+        "minutes": 5
+      }
+    ]
+  },
+  {
+    "slug": "aloo-chips",
+    "name": "Aloo Chips",
+    "kind": "snacks",
+    "state": "All of India",
+    "rank": 917,
+    "blurb": "Thin homemade potato chips with salt, chilli and chaat masala.",
+    "minutes": 40,
+    "soak_hours": null,
+    "serves": 4,
+    "effort": "easy",
+    "ingredients": [
+      {
+        "label": "Red chilli powder",
+        "amount": "½ tsp",
+        "source": "iwc",
+        "match_words": "red chilli powder"
+      },
+      {
+        "label": "Chaat masala",
+        "amount": "1 tsp",
+        "source": "iwc",
+        "match_words": "chaat masala"
+      },
+      {
+        "label": "Potatoes",
+        "amount": "3",
+        "source": "local"
+      },
+      {
+        "label": "Oil",
+        "amount": "for frying",
+        "source": "local"
+      }
+    ],
+    "steps": [
+      {
+        "text": "Slice the potatoes paper-thin into cold water and soak twenty minutes.",
+        "minutes": 20
+      },
+      {
+        "text": "Drain, dry completely and fry in batches until crisp.",
+        "minutes": 15
+      },
+      {
+        "text": "Toss with salt, chilli and chaat masala.",
+        "minutes": 1
+      }
+    ]
+  },
+  {
+    "slug": "sweet-potato-chips",
+    "name": "Sweet Potato Chips",
+    "kind": "snacks",
+    "state": "All of India",
+    "rank": 918,
+    "blurb": "Thin sweet potato chips with salt, pepper and a pinch of chilli.",
+    "minutes": 35,
+    "soak_hours": null,
+    "serves": 4,
+    "effort": "easy",
+    "ingredients": [
+      {
+        "label": "Black pepper",
+        "amount": "½ tsp",
+        "source": "iwc",
+        "match_words": "black pepper"
+      },
+      {
+        "label": "Red chilli powder",
+        "amount": "¼ tsp",
+        "source": "iwc",
+        "match_words": "red chilli powder"
+      },
+      {
+        "label": "Chaat masala",
+        "amount": "½ tsp",
+        "source": "iwc",
+        "match_words": "chaat masala"
+      },
+      {
+        "label": "Sweet potatoes",
+        "amount": "2",
+        "source": "local"
+      },
+      {
+        "label": "Oil",
+        "amount": "for frying",
+        "source": "local"
+      }
+    ],
+    "steps": [
+      {
+        "text": "Slice the sweet potatoes very thin and pat dry.",
+        "minutes": 10
+      },
+      {
+        "text": "Fry in batches until crisp.",
+        "minutes": 15
+      },
+      {
+        "text": "Toss with the spices and salt.",
+        "minutes": 1
+      }
+    ]
+  },
+  {
+    "slug": "arbi-chips",
+    "name": "Arbi Chips",
+    "kind": "snacks",
+    "state": "Uttar Pradesh",
+    "rank": 919,
+    "blurb": "Colocasia root sliced thin and fried into crisp chips with ajwain salt.",
+    "minutes": 35,
+    "soak_hours": null,
+    "serves": 4,
+    "effort": "easy",
+    "ingredients": [
+      {
+        "label": "Ajwain",
+        "amount": "½ tsp",
+        "source": "iwc",
+        "match_words": "ajwain"
+      },
+      {
+        "label": "Red chilli powder",
+        "amount": "½ tsp",
+        "source": "iwc",
+        "match_words": "red chilli powder"
+      },
+      {
+        "label": "Amchur",
+        "amount": "¼ tsp",
+        "source": "iwc",
+        "match_words": "amchur"
+      },
+      {
+        "label": "Arbi",
+        "amount": "300 g",
+        "source": "local"
+      },
+      {
+        "label": "Oil",
+        "amount": "for frying",
+        "source": "local"
+      }
+    ],
+    "steps": [
+      {
+        "text": "Peel the arbi, slice thin and pat dry.",
+        "minutes": 10
+      },
+      {
+        "text": "Fry in batches until crisp.",
+        "minutes": 15
+      },
+      {
+        "text": "Toss with crushed ajwain, chilli, amchur and salt.",
+        "minutes": 1
+      }
+    ]
+  },
+  {
+    "slug": "masala-chana",
+    "name": "Masala Chana",
+    "kind": "snacks",
+    "state": "All of India",
+    "rank": 920,
+    "blurb": "Roasted chana tossed with oil, chilli, amchur and black salt.",
+    "minutes": 10,
+    "soak_hours": null,
+    "serves": 4,
+    "effort": "easy",
+    "ingredients": [
+      {
+        "label": "Roasted chana",
+        "amount": "2 cups",
+        "source": "iwc",
+        "match_words": "roasted chana"
+      },
+      {
+        "label": "Red chilli powder",
+        "amount": "½ tsp",
+        "source": "iwc",
+        "match_words": "red chilli powder"
+      },
+      {
+        "label": "Amchur",
+        "amount": "½ tsp",
+        "source": "iwc",
+        "match_words": "amchur"
+      },
+      {
+        "label": "Kala namak",
+        "amount": "½ tsp",
+        "source": "iwc",
+        "match_words": "kala namak"
+      },
+      {
+        "label": "Oil",
+        "amount": "1 tsp",
+        "source": "local"
+      },
+      {
+        "label": "Lemon",
+        "amount": "½",
+        "source": "local"
+      }
+    ],
+    "steps": [
+      {
+        "text": "Warm the roasted chana in a pan with the oil.",
+        "minutes": 3
+      },
+      {
+        "text": "Toss with the spices and a few drops of lemon.",
+        "minutes": 1
+      },
+      {
+        "text": "Cool before storing.",
+        "minutes": 3
+      }
+    ]
+  }
+]

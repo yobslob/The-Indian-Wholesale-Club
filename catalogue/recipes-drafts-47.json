@@ -1,0 +1,309 @@
+[
+  {
+    "slug": "navratan-mixture",
+    "name": "Navratan Mixture",
+    "kind": "snacks",
+    "state": "Gujarat",
+    "rank": 921,
+    "blurb": "A nine-part namkeen of sev, boondi, chana dal, moong dal, peanuts, poha and nuts.",
+    "minutes": 50,
+    "soak_hours": null,
+    "serves": 10,
+    "effort": "weekend",
+    "ingredients": [
+      {
+        "label": "Besan",
+        "amount": "2 cups",
+        "source": "iwc",
+        "match_words": "besan"
+      },
+      {
+        "label": "Chana dal",
+        "amount": "¼ cup",
+        "source": "iwc",
+        "match_words": "chana dal"
+      },
+      {
+        "label": "Moong dal",
+        "amount": "¼ cup",
+        "source": "iwc",
+        "match_words": "moong dal"
+      },
+      {
+        "label": "Peanuts",
+        "amount": "¼ cup",
+        "source": "iwc",
+        "match_words": "peanuts"
+      },
+      {
+        "label": "Poha",
+        "amount": "1 cup",
+        "source": "iwc",
+        "match_words": "poha"
+      },
+      {
+        "label": "Cashews",
+        "amount": "¼ cup",
+        "source": "iwc",
+        "match_words": "cashews"
+      },
+      {
+        "label": "Raisins",
+        "amount": "2 tbsp",
+        "source": "iwc",
+        "match_words": "raisins"
+      },
+      {
+        "label": "Red chilli powder",
+        "amount": "1 tsp",
+        "source": "iwc",
+        "match_words": "red chilli powder"
+      },
+      {
+        "label": "Curry leaves",
+        "amount": "2 sprigs",
+        "source": "local"
+      },
+      {
+        "label": "Oil",
+        "amount": "for frying",
+        "source": "local"
+      },
+      {
+        "label": "Dried curry leaves",
+        "amount": "1 tbsp",
+        "source": "iwc",
+        "match_words": "curry leaves",
+        "instead_of": "Curry leaves"
+      }
+    ],
+    "steps": [
+      {
+        "text": "Make sev and boondi from besan dough and batter.",
+        "minutes": 25
+      },
+      {
+        "text": "Fry the soaked and dried dals, then the poha, peanuts, cashews, raisins and curry leaves.",
+        "minutes": 20
+      },
+      {
+        "text": "Toss everything with chilli powder, salt and a pinch of sugar.",
+        "minutes": 3
+      }
+    ]
+  },
+  {
+    "slug": "khatta-meetha-mixture",
+    "name": "Khatta Meetha Mixture",
+    "kind": "snacks",
+    "state": "Delhi",
+    "rank": 922,
+    "blurb": "Sweet and sour namkeen of sev, boondi, peanuts and raisins with amchur and sugar.",
+    "minutes": 45,
+    "soak_hours": null,
+    "serves": 10,
+    "effort": "medium",
+    "ingredients": [
+      {
+        "label": "Besan",
+        "amount": "2 cups",
+        "source": "iwc",
+        "match_words": "besan"
+      },
+      {
+        "label": "Peanuts",
+        "amount": "¼ cup",
+        "source": "iwc",
+        "match_words": "peanuts"
+      },
+      {
+        "label": "Raisins",
+        "amount": "¼ cup",
+        "source": "iwc",
+        "match_words": "raisins"
+      },
+      {
+        "label": "Amchur",
+        "amount": "1 tsp",
+        "source": "iwc",
+        "match_words": "amchur"
+      },
+      {
+        "label": "Red chilli powder",
+        "amount": "½ tsp",
+        "source": "iwc",
+        "match_words": "red chilli powder"
+      },
+      {
+        "label": "Oil",
+        "amount": "for frying",
+        "source": "local"
+      }
+    ],
+    "steps": [
+      {
+        "text": "Make sev and boondi from besan dough and batter.",
+        "minutes": 25
+      },
+      {
+        "text": "Fry the peanuts and raisins.",
+        "minutes": 5
+      },
+      {
+        "text": "Toss with amchur, chilli, salt and powdered sugar.",
+        "minutes": 3
+      }
+    ]
+  },
+  {
+    "slug": "aloo-lachha",
+    "name": "Aloo Lachha",
+    "kind": "snacks",
+    "state": "All of India",
+    "rank": 923,
+    "blurb": "Fine fried potato sticks with salt and pepper, for chaat or munching.",
+    "minutes": 35,
+    "soak_hours": null,
+    "serves": 6,
+    "effort": "easy",
+    "ingredients": [
+      {
+        "label": "Black pepper",
+        "amount": "½ tsp",
+        "source": "iwc",
+        "match_words": "black pepper"
+      },
+      {
+        "label": "Chaat masala",
+        "amount": "½ tsp",
+        "source": "iwc",
+        "match_words": "chaat masala"
+      },
+      {
+        "label": "Potatoes",
+        "amount": "4",
+        "source": "local"
+      },
+      {
+        "label": "Oil",
+        "amount": "for frying",
+        "source": "local"
+      }
+    ],
+    "steps": [
+      {
+        "text": "Grate the potatoes into long shreds, rinse well and dry completely.",
+        "minutes": 15
+      },
+      {
+        "text": "Fry in batches until crisp.",
+        "minutes": 15
+      },
+      {
+        "text": "Toss with pepper, chaat masala and salt.",
+        "minutes": 1
+      }
+    ]
+  },
+  {
+    "slug": "jeera-biscuit",
+    "name": "Jeera Biscuit",
+    "kind": "snacks",
+    "state": "Karnataka",
+    "rank": 924,
+    "blurb": "The Iyengar bakery's salty-sweet cumin biscuits, for dipping in tea.",
+    "minutes": 50,
+    "soak_hours": null,
+    "serves": 8,
+    "effort": "medium",
+    "ingredients": [
+      {
+        "label": "Maida",
+        "amount": "2 cups",
+        "source": "iwc",
+        "match_words": "maida"
+      },
+      {
+        "label": "Cumin seeds",
+        "amount": "1 tbsp",
+        "source": "iwc",
+        "match_words": "cumin seeds"
+      },
+      {
+        "label": "Baking soda",
+        "amount": "¼ tsp",
+        "source": "iwc",
+        "match_words": "baking soda"
+      },
+      {
+        "label": "Butter",
+        "amount": "½ cup",
+        "source": "local"
+      },
+      {
+        "label": "Milk",
+        "amount": "3 tbsp",
+        "source": "local"
+      }
+    ],
+    "steps": [
+      {
+        "text": "Cream the butter with a little sugar and a teaspoon of salt; add the milk.",
+        "minutes": 5
+      },
+      {
+        "text": "Fold in the maida, soda and roasted cumin to a soft dough; chill.",
+        "minutes": 20
+      },
+      {
+        "text": "Roll, cut and bake at 180°C until pale golden.",
+        "minutes": 20
+      }
+    ]
+  },
+  {
+    "slug": "bharuchi-sing",
+    "name": "Bharuchi Sing",
+    "kind": "snacks",
+    "state": "Gujarat",
+    "rank": 925,
+    "blurb": "Bharuch's famous salted peanuts, soaked in salt water and slow-roasted.",
+    "minutes": 30,
+    "soak_hours": null,
+    "serves": 6,
+    "effort": "easy",
+    "ingredients": [
+      {
+        "label": "Peanuts",
+        "amount": "2 cups",
+        "source": "iwc",
+        "match_words": "peanuts"
+      },
+      {
+        "label": "Turmeric",
+        "amount": "¼ tsp",
+        "source": "iwc",
+        "match_words": "turmeric"
+      },
+      {
+        "label": "Warm water",
+        "amount": "1 cup",
+        "source": "local"
+      }
+    ],
+    "steps": [
+      {
+        "text": "Soak the peanuts in warm salted water with turmeric for ten minutes and drain.",
+        "minutes": 10
+      },
+      {
+        "text": "Roast slowly in a heavy pan, stirring, until dry and crisp.",
+        "minutes": 20
+      },
+      {
+        "text": "Cool completely before storing.",
+        "minutes": 10
+      }
+    ]
+  }
+]

@@ -1,0 +1,1593 @@
+[
+  {
+    "slug": "baby-corn-65",
+    "name": "Baby Corn 65",
+    "kind": "snacks",
+    "state": "Tamil Nadu",
+    "rank": 801,
+    "blurb": "Baby corn in the spicy red 65 coat, fried crisp.",
+    "minutes": 25,
+    "soak_hours": null,
+    "serves": 4,
+    "effort": "easy",
+    "ingredients": [
+      {
+        "label": "Chicken 65 masala",
+        "amount": "1½ tbsp",
+        "source": "iwc",
+        "match_words": "chicken 65 masala"
+      },
+      {
+        "label": "Cornflour",
+        "amount": "3 tbsp",
+        "source": "iwc",
+        "match_words": "cornflour"
+      },
+      {
+        "label": "Rice flour",
+        "amount": "1 tbsp",
+        "source": "iwc",
+        "match_words": "rice flour"
+      },
+      {
+        "label": "Baby corn",
+        "amount": "200 g",
+        "source": "local"
+      },
+      {
+        "label": "Ginger-garlic paste",
+        "amount": "1 tsp",
+        "source": "local"
+      },
+      {
+        "label": "Curry leaves",
+        "amount": "a sprig",
+        "source": "local"
+      },
+      {
+        "label": "Oil",
+        "amount": "for frying",
+        "source": "local"
+      },
+      {
+        "label": "Dry ginger powder",
+        "amount": "½ tsp",
+        "source": "iwc",
+        "match_words": "dry ginger powder",
+        "instead_of": "Ginger-garlic paste"
+      },
+      {
+        "label": "Garlic powder",
+        "amount": "½ tsp",
+        "source": "iwc",
+        "match_words": "garlic powder",
+        "instead_of": "Ginger-garlic paste"
+      },
+      {
+        "label": "Dried curry leaves",
+        "amount": "1 tbsp",
+        "source": "iwc",
+        "match_words": "curry leaves",
+        "instead_of": "Curry leaves"
+      }
+    ],
+    "steps": [
+      {
+        "text": "Halve and blanch the baby corn.",
+        "minutes": 5
+      },
+      {
+        "text": "Coat with the masala, flours, ginger-garlic paste and salt.",
+        "minutes": 3
+      },
+      {
+        "text": "Fry until crisp and toss with curry leaves.",
+        "minutes": 10
+      }
+    ]
+  },
+  {
+    "slug": "salt-and-pepper-prawns",
+    "name": "Salt and Pepper Prawns",
+    "kind": "snacks",
+    "state": "West Bengal",
+    "rank": 802,
+    "blurb": "Kolkata Chinese prawns, fried crisp and tossed with garlic, chilli and lots of pepper.",
+    "minutes": 25,
+    "soak_hours": null,
+    "serves": 4,
+    "effort": "easy",
+    "ingredients": [
+      {
+        "label": "Cornflour",
+        "amount": "3 tbsp",
+        "source": "iwc",
+        "match_words": "cornflour"
+      },
+      {
+        "label": "Black pepper",
+        "amount": "1½ tsp",
+        "source": "iwc",
+        "match_words": "black pepper"
+      },
+      {
+        "label": "Red chilli flakes",
+        "amount": "½ tsp",
+        "source": "iwc",
+        "match_words": "red chilli flakes"
+      },
+      {
+        "label": "Prawns",
+        "amount": "400 g",
+        "source": "local"
+      },
+      {
+        "label": "Garlic",
+        "amount": "6 cloves",
+        "source": "local"
+      },
+      {
+        "label": "Green chillies",
+        "amount": "2",
+        "source": "local"
+      },
+      {
+        "label": "Spring onions",
+        "amount": "2",
+        "source": "local"
+      },
+      {
+        "label": "Oil",
+        "amount": "for frying",
+        "source": "local"
+      },
+      {
+        "label": "Garlic powder",
+        "amount": "½ tsp",
+        "source": "iwc",
+        "match_words": "garlic powder",
+        "instead_of": "Garlic"
+      },
+      {
+        "label": "Red chilli powder",
+        "amount": "½ tsp",
+        "source": "iwc",
+        "match_words": "red chilli powder",
+        "instead_of": "Green chillies"
+      }
+    ],
+    "steps": [
+      {
+        "text": "Toss the prawns with cornflour and salt and fry crisp.",
+        "minutes": 8
+      },
+      {
+        "text": "Fry the chopped garlic and chillies in a spoon of oil.",
+        "minutes": 2
+      },
+      {
+        "text": "Toss the prawns with them, the pepper, chilli flakes and spring onion.",
+        "minutes": 1
+      }
+    ]
+  },
+  {
+    "slug": "salt-and-pepper-mushroom",
+    "name": "Salt and Pepper Mushroom",
+    "kind": "snacks",
+    "state": "All of India",
+    "rank": 803,
+    "blurb": "Crisp mushrooms tossed with garlic, chilli and cracked pepper.",
+    "minutes": 25,
+    "soak_hours": null,
+    "serves": 3,
+    "effort": "easy",
+    "ingredients": [
+      {
+        "label": "Cornflour",
+        "amount": "3 tbsp",
+        "source": "iwc",
+        "match_words": "cornflour"
+      },
+      {
+        "label": "Black pepper",
+        "amount": "1 tsp",
+        "source": "iwc",
+        "match_words": "black pepper"
+      },
+      {
+        "label": "Red chilli flakes",
+        "amount": "½ tsp",
+        "source": "iwc",
+        "match_words": "red chilli flakes"
+      },
+      {
+        "label": "Button mushrooms",
+        "amount": "250 g",
+        "source": "local"
+      },
+      {
+        "label": "Garlic",
+        "amount": "6 cloves",
+        "source": "local"
+      },
+      {
+        "label": "Spring onions",
+        "amount": "2",
+        "source": "local"
+      },
+      {
+        "label": "Oil",
+        "amount": "for frying",
+        "source": "local"
+      },
+      {
+        "label": "Garlic powder",
+        "amount": "½ tsp",
+        "source": "iwc",
+        "match_words": "garlic powder",
+        "instead_of": "Garlic"
+      }
+    ],
+    "steps": [
+      {
+        "text": "Coat the mushrooms in cornflour, salt and a splash of water and fry crisp.",
+        "minutes": 10
+      },
+      {
+        "text": "Fry the garlic in a spoon of oil.",
+        "minutes": 2
+      },
+      {
+        "text": "Toss with the mushrooms, pepper, chilli flakes and spring onion.",
+        "minutes": 1
+      }
+    ]
+  },
+  {
+    "slug": "salt-and-pepper-chicken",
+    "name": "Salt and Pepper Chicken",
+    "kind": "snacks",
+    "state": "West Bengal",
+    "rank": 804,
+    "blurb": "Crisp chicken pieces tossed with garlic, green chilli and cracked pepper.",
+    "minutes": 30,
+    "soak_hours": null,
+    "serves": 4,
+    "effort": "easy",
+    "ingredients": [
+      {
+        "label": "Cornflour",
+        "amount": "¼ cup",
+        "source": "iwc",
+        "match_words": "cornflour"
+      },
+      {
+        "label": "Black pepper",
+        "amount": "1½ tsp",
+        "source": "iwc",
+        "match_words": "black pepper"
+      },
+      {
+        "label": "Red chilli flakes",
+        "amount": "½ tsp",
+        "source": "iwc",
+        "match_words": "red chilli flakes"
+      },
+      {
+        "label": "Boneless chicken",
+        "amount": "400 g",
+        "source": "local"
+      },
+      {
+        "label": "Eggs",
+        "amount": "1",
+        "source": "local"
+      },
+      {
+        "label": "Garlic",
+        "amount": "6 cloves",
+        "source": "local"
+      },
+      {
+        "label": "Green chillies",
+        "amount": "2",
+        "source": "local"
+      },
+      {
+        "label": "Oil",
+        "amount": "for frying",
+        "source": "local"
+      },
+      {
+        "label": "Garlic powder",
+        "amount": "½ tsp",
+        "source": "iwc",
+        "match_words": "garlic powder",
+        "instead_of": "Garlic"
+      },
+      {
+        "label": "Red chilli powder",
+        "amount": "½ tsp",
+        "source": "iwc",
+        "match_words": "red chilli powder",
+        "instead_of": "Green chillies"
+      }
+    ],
+    "steps": [
+      {
+        "text": "Coat the chicken in egg, cornflour and salt and fry crisp.",
+        "minutes": 12
+      },
+      {
+        "text": "Fry the garlic and chillies.",
+        "minutes": 2
+      },
+      {
+        "text": "Toss everything with the pepper and chilli flakes.",
+        "minutes": 1
+      }
+    ]
+  },
+  {
+    "slug": "salt-and-pepper-paneer",
+    "name": "Salt and Pepper Paneer",
+    "kind": "snacks",
+    "state": "All of India",
+    "rank": 805,
+    "blurb": "Crisp paneer tossed with garlic, capsicum and cracked pepper.",
+    "minutes": 20,
+    "soak_hours": null,
+    "serves": 3,
+    "effort": "easy",
+    "ingredients": [
+      {
+        "label": "Cornflour",
+        "amount": "3 tbsp",
+        "source": "iwc",
+        "match_words": "cornflour"
+      },
+      {
+        "label": "Black pepper",
+        "amount": "1 tsp",
+        "source": "iwc",
+        "match_words": "black pepper"
+      },
+      {
+        "label": "Red chilli flakes",
+        "amount": "½ tsp",
+        "source": "iwc",
+        "match_words": "red chilli flakes"
+      },
+      {
+        "label": "Paneer",
+        "amount": "250 g",
+        "source": "local"
+      },
+      {
+        "label": "Capsicum",
+        "amount": "1",
+        "source": "local"
+      },
+      {
+        "label": "Garlic",
+        "amount": "4 cloves",
+        "source": "local"
+      },
+      {
+        "label": "Oil",
+        "amount": "for frying",
+        "source": "local"
+      },
+      {
+        "label": "Garlic powder",
+        "amount": "½ tsp",
+        "source": "iwc",
+        "match_words": "garlic powder",
+        "instead_of": "Garlic"
+      }
+    ],
+    "steps": [
+      {
+        "text": "Coat the paneer in cornflour and salt and fry crisp.",
+        "minutes": 8
+      },
+      {
+        "text": "Stir-fry garlic and capsicum.",
+        "minutes": 3
+      },
+      {
+        "text": "Toss with the paneer, pepper and chilli flakes.",
+        "minutes": 1
+      }
+    ]
+  },
+  {
+    "slug": "honey-chilli-cauliflower",
+    "name": "Honey Chilli Cauliflower",
+    "kind": "snacks",
+    "state": "All of India",
+    "rank": 806,
+    "blurb": "Crisp cauliflower in a sweet, hot honey-chilli glaze with sesame.",
+    "minutes": 30,
+    "soak_hours": null,
+    "serves": 4,
+    "effort": "easy",
+    "ingredients": [
+      {
+        "label": "Cornflour",
+        "amount": "¼ cup",
+        "source": "iwc",
+        "match_words": "cornflour"
+      },
+      {
+        "label": "Maida",
+        "amount": "2 tbsp",
+        "source": "iwc",
+        "match_words": "maida"
+      },
+      {
+        "label": "Red chilli flakes",
+        "amount": "1 tsp",
+        "source": "iwc",
+        "match_words": "red chilli flakes"
+      },
+      {
+        "label": "Sesame seeds",
+        "amount": "1 tsp",
+        "source": "iwc",
+        "match_words": "sesame seeds"
+      },
+      {
+        "label": "Cauliflower",
+        "amount": "1 small",
+        "source": "local"
+      },
+      {
+        "label": "Honey",
+        "amount": "2 tbsp",
+        "source": "local"
+      },
+      {
+        "label": "Garlic",
+        "amount": "4 cloves",
+        "source": "local"
+      },
+      {
+        "label": "Soy sauce",
+        "amount": "1 tbsp",
+        "source": "local"
+      },
+      {
+        "label": "Oil",
+        "amount": "for frying",
+        "source": "local"
+      },
+      {
+        "label": "Garlic powder",
+        "amount": "½ tsp",
+        "source": "iwc",
+        "match_words": "garlic powder",
+        "instead_of": "Garlic"
+      }
+    ],
+    "steps": [
+      {
+        "text": "Blanch the florets, coat in a batter of the flours and salt and fry crisp.",
+        "minutes": 15
+      },
+      {
+        "text": "Cook the garlic, then the soy sauce, honey and chilli flakes into a glaze.",
+        "minutes": 3
+      },
+      {
+        "text": "Toss the cauliflower through and scatter sesame.",
+        "minutes": 1
+      }
+    ]
+  },
+  {
+    "slug": "honey-chilli-chicken",
+    "name": "Honey Chilli Chicken",
+    "kind": "snacks",
+    "state": "All of India",
+    "rank": 807,
+    "blurb": "Crisp chicken strips tossed in a sticky honey, chilli and garlic glaze.",
+    "minutes": 35,
+    "soak_hours": null,
+    "serves": 4,
+    "effort": "medium",
+    "ingredients": [
+      {
+        "label": "Cornflour",
+        "amount": "¼ cup",
+        "source": "iwc",
+        "match_words": "cornflour"
+      },
+      {
+        "label": "Red chilli flakes",
+        "amount": "1 tsp",
+        "source": "iwc",
+        "match_words": "red chilli flakes"
+      },
+      {
+        "label": "Sesame seeds",
+        "amount": "1 tsp",
+        "source": "iwc",
+        "match_words": "sesame seeds"
+      },
+      {
+        "label": "Boneless chicken",
+        "amount": "400 g",
+        "source": "local"
+      },
+      {
+        "label": "Eggs",
+        "amount": "1",
+        "source": "local"
+      },
+      {
+        "label": "Honey",
+        "amount": "2 tbsp",
+        "source": "local"
+      },
+      {
+        "label": "Garlic",
+        "amount": "4 cloves",
+        "source": "local"
+      },
+      {
+        "label": "Soy sauce",
+        "amount": "1 tbsp",
+        "source": "local"
+      },
+      {
+        "label": "Oil",
+        "amount": "for frying",
+        "source": "local"
+      },
+      {
+        "label": "Garlic powder",
+        "amount": "½ tsp",
+        "source": "iwc",
+        "match_words": "garlic powder",
+        "instead_of": "Garlic"
+      }
+    ],
+    "steps": [
+      {
+        "text": "Coat the chicken strips in egg, cornflour and salt and fry crisp.",
+        "minutes": 12
+      },
+      {
+        "text": "Cook garlic, soy sauce, honey and chilli flakes into a glaze.",
+        "minutes": 3
+      },
+      {
+        "text": "Toss the chicken through and finish with sesame.",
+        "minutes": 1
+      }
+    ]
+  },
+  {
+    "slug": "honey-chilli-lotus-stem",
+    "name": "Honey Chilli Lotus Stem",
+    "kind": "snacks",
+    "state": "All of India",
+    "rank": 808,
+    "blurb": "Thin lotus stem slices fried crisp and glazed with honey, chilli and sesame.",
+    "minutes": 35,
+    "soak_hours": null,
+    "serves": 4,
+    "effort": "medium",
+    "ingredients": [
+      {
+        "label": "Cornflour",
+        "amount": "¼ cup",
+        "source": "iwc",
+        "match_words": "cornflour"
+      },
+      {
+        "label": "Red chilli flakes",
+        "amount": "1 tsp",
+        "source": "iwc",
+        "match_words": "red chilli flakes"
+      },
+      {
+        "label": "Sesame seeds",
+        "amount": "1 tsp",
+        "source": "iwc",
+        "match_words": "sesame seeds"
+      },
+      {
+        "label": "Lotus stem",
+        "amount": "250 g",
+        "source": "local"
+      },
+      {
+        "label": "Honey",
+        "amount": "2 tbsp",
+        "source": "local"
+      },
+      {
+        "label": "Garlic",
+        "amount": "4 cloves",
+        "source": "local"
+      },
+      {
+        "label": "Soy sauce",
+        "amount": "1 tbsp",
+        "source": "local"
+      },
+      {
+        "label": "Oil",
+        "amount": "for frying",
+        "source": "local"
+      },
+      {
+        "label": "Garlic powder",
+        "amount": "½ tsp",
+        "source": "iwc",
+        "match_words": "garlic powder",
+        "instead_of": "Garlic"
+      }
+    ],
+    "steps": [
+      {
+        "text": "Slice the lotus stem thin, boil three minutes, dry and coat in cornflour; fry until crisp.",
+        "minutes": 15
+      },
+      {
+        "text": "Cook garlic, soy sauce, honey and chilli flakes into a glaze.",
+        "minutes": 3
+      },
+      {
+        "text": "Toss the lotus stem through and scatter sesame.",
+        "minutes": 1
+      }
+    ]
+  },
+  {
+    "slug": "schezwan-paneer",
+    "name": "Schezwan Paneer",
+    "kind": "snacks",
+    "state": "All of India",
+    "rank": 809,
+    "blurb": "Crisp paneer tossed in a hot, garlicky schezwan sauce.",
+    "minutes": 30,
+    "soak_hours": null,
+    "serves": 4,
+    "effort": "easy",
+    "ingredients": [
+      {
+        "label": "Cornflour",
+        "amount": "3 tbsp",
+        "source": "iwc",
+        "match_words": "cornflour"
+      },
+      {
+        "label": "Red chilli whole",
+        "amount": "8",
+        "source": "iwc",
+        "match_words": "red chilli whole"
+      },
+      {
+        "label": "Garlic powder",
+        "amount": "½ tsp",
+        "source": "iwc",
+        "match_words": "garlic powder"
+      },
+      {
+        "label": "Paneer",
+        "amount": "250 g",
+        "source": "local"
+      },
+      {
+        "label": "Capsicum",
+        "amount": "1",
+        "source": "local"
+      },
+      {
+        "label": "Garlic",
+        "amount": "6 cloves",
+        "source": "local"
+      },
+      {
+        "label": "Soy sauce",
+        "amount": "1 tbsp",
+        "source": "local"
+      },
+      {
+        "label": "Oil",
+        "amount": "for frying",
+        "source": "local"
+      }
+    ],
+    "steps": [
+      {
+        "text": "Soak and blend the chillies with garlic, soy sauce and a little oil into a schezwan paste.",
+        "minutes": 8
+      },
+      {
+        "text": "Coat the paneer in cornflour and fry crisp.",
+        "minutes": 8
+      },
+      {
+        "text": "Stir-fry the capsicum with the paste and toss the paneer through.",
+        "minutes": 4
+      }
+    ]
+  },
+  {
+    "slug": "schezwan-chicken",
+    "name": "Schezwan Chicken",
+    "kind": "snacks",
+    "state": "All of India",
+    "rank": 810,
+    "blurb": "Fried chicken tossed in a fiery schezwan sauce with onion and capsicum.",
+    "minutes": 35,
+    "soak_hours": null,
+    "serves": 4,
+    "effort": "medium",
+    "ingredients": [
+      {
+        "label": "Cornflour",
+        "amount": "¼ cup",
+        "source": "iwc",
+        "match_words": "cornflour"
+      },
+      {
+        "label": "Red chilli whole",
+        "amount": "10",
+        "source": "iwc",
+        "match_words": "red chilli whole"
+      },
+      {
+        "label": "Black pepper",
+        "amount": "½ tsp",
+        "source": "iwc",
+        "match_words": "black pepper"
+      },
+      {
+        "label": "Boneless chicken",
+        "amount": "400 g",
+        "source": "local"
+      },
+      {
+        "label": "Eggs",
+        "amount": "1",
+        "source": "local"
+      },
+      {
+        "label": "Onion",
+        "amount": "1",
+        "source": "local"
+      },
+      {
+        "label": "Garlic",
+        "amount": "6 cloves",
+        "source": "local"
+      },
+      {
+        "label": "Soy sauce",
+        "amount": "1 tbsp",
+        "source": "local"
+      },
+      {
+        "label": "Oil",
+        "amount": "for frying",
+        "source": "local"
+      },
+      {
+        "label": "Garlic powder",
+        "amount": "½ tsp",
+        "source": "iwc",
+        "match_words": "garlic powder",
+        "instead_of": "Garlic"
+      }
+    ],
+    "steps": [
+      {
+        "text": "Blend the soaked chillies with garlic, soy sauce and oil into a schezwan paste.",
+        "minutes": 8
+      },
+      {
+        "text": "Coat the chicken in egg, cornflour and pepper and fry crisp.",
+        "minutes": 12
+      },
+      {
+        "text": "Stir-fry onion with the paste and toss the chicken through.",
+        "minutes": 4
+      }
+    ]
+  },
+  {
+    "slug": "schezwan-mushroom",
+    "name": "Schezwan Mushroom",
+    "kind": "snacks",
+    "state": "All of India",
+    "rank": 811,
+    "blurb": "Crisp mushrooms in a hot schezwan sauce with spring onion.",
+    "minutes": 30,
+    "soak_hours": null,
+    "serves": 3,
+    "effort": "easy",
+    "ingredients": [
+      {
+        "label": "Cornflour",
+        "amount": "3 tbsp",
+        "source": "iwc",
+        "match_words": "cornflour"
+      },
+      {
+        "label": "Red chilli whole",
+        "amount": "8",
+        "source": "iwc",
+        "match_words": "red chilli whole"
+      },
+      {
+        "label": "Black pepper",
+        "amount": "½ tsp",
+        "source": "iwc",
+        "match_words": "black pepper"
+      },
+      {
+        "label": "Button mushrooms",
+        "amount": "250 g",
+        "source": "local"
+      },
+      {
+        "label": "Garlic",
+        "amount": "6 cloves",
+        "source": "local"
+      },
+      {
+        "label": "Spring onions",
+        "amount": "2",
+        "source": "local"
+      },
+      {
+        "label": "Soy sauce",
+        "amount": "1 tbsp",
+        "source": "local"
+      },
+      {
+        "label": "Oil",
+        "amount": "for frying",
+        "source": "local"
+      },
+      {
+        "label": "Garlic powder",
+        "amount": "½ tsp",
+        "source": "iwc",
+        "match_words": "garlic powder",
+        "instead_of": "Garlic"
+      }
+    ],
+    "steps": [
+      {
+        "text": "Blend the soaked chillies with garlic, soy sauce and oil into a paste.",
+        "minutes": 8
+      },
+      {
+        "text": "Coat the mushrooms in cornflour batter and fry crisp.",
+        "minutes": 10
+      },
+      {
+        "text": "Toss in the paste with spring onion.",
+        "minutes": 3
+      }
+    ]
+  },
+  {
+    "slug": "garlic-chicken",
+    "name": "Garlic Chicken",
+    "kind": "snacks",
+    "state": "All of India",
+    "rank": 812,
+    "blurb": "Crisp chicken in a sticky sauce heavy with fried garlic.",
+    "minutes": 30,
+    "soak_hours": null,
+    "serves": 4,
+    "effort": "easy",
+    "ingredients": [
+      {
+        "label": "Cornflour",
+        "amount": "¼ cup",
+        "source": "iwc",
+        "match_words": "cornflour"
+      },
+      {
+        "label": "Black pepper",
+        "amount": "½ tsp",
+        "source": "iwc",
+        "match_words": "black pepper"
+      },
+      {
+        "label": "Red chilli flakes",
+        "amount": "½ tsp",
+        "source": "iwc",
+        "match_words": "red chilli flakes"
+      },
+      {
+        "label": "Boneless chicken",
+        "amount": "400 g",
+        "source": "local"
+      },
+      {
+        "label": "Eggs",
+        "amount": "1",
+        "source": "local"
+      },
+      {
+        "label": "Garlic",
+        "amount": "12 cloves",
+        "source": "local"
+      },
+      {
+        "label": "Spring onions",
+        "amount": "2",
+        "source": "local"
+      },
+      {
+        "label": "Soy sauce",
+        "amount": "1 tbsp",
+        "source": "local"
+      },
+      {
+        "label": "Oil",
+        "amount": "for frying",
+        "source": "local"
+      },
+      {
+        "label": "Garlic powder",
+        "amount": "½ tsp",
+        "source": "iwc",
+        "match_words": "garlic powder",
+        "instead_of": "Garlic"
+      }
+    ],
+    "steps": [
+      {
+        "text": "Coat the chicken in egg, cornflour, pepper and salt and fry crisp.",
+        "minutes": 12
+      },
+      {
+        "text": "Fry the chopped garlic until golden, add soy sauce, chilli flakes and a cornflour slurry.",
+        "minutes": 4
+      },
+      {
+        "text": "Toss the chicken through with spring onion.",
+        "minutes": 1
+      }
+    ]
+  },
+  {
+    "slug": "chicken-spring-roll",
+    "name": "Chicken Spring Roll",
+    "kind": "snacks",
+    "state": "All of India",
+    "rank": 813,
+    "blurb": "Crisp rolls with shredded chicken, cabbage and carrot.",
+    "minutes": 50,
+    "soak_hours": null,
+    "serves": 6,
+    "effort": "medium",
+    "ingredients": [
+      {
+        "label": "Maida",
+        "amount": "1 cup",
+        "source": "iwc",
+        "match_words": "maida"
+      },
+      {
+        "label": "Cornflour",
+        "amount": "2 tbsp",
+        "source": "iwc",
+        "match_words": "cornflour"
+      },
+      {
+        "label": "Black pepper",
+        "amount": "½ tsp",
+        "source": "iwc",
+        "match_words": "black pepper"
+      },
+      {
+        "label": "Boneless chicken",
+        "amount": "200 g",
+        "source": "local"
+      },
+      {
+        "label": "Cabbage",
+        "amount": "2 cups shredded",
+        "source": "local"
+      },
+      {
+        "label": "Carrot",
+        "amount": "1",
+        "source": "local"
+      },
+      {
+        "label": "Soy sauce",
+        "amount": "1 tbsp",
+        "source": "local"
+      },
+      {
+        "label": "Oil",
+        "amount": "for frying",
+        "source": "local"
+      }
+    ],
+    "steps": [
+      {
+        "text": "Make thin crêpes from a runny maida and cornflour batter.",
+        "minutes": 20
+      },
+      {
+        "text": "Stir-fry shredded cooked chicken with cabbage, carrot, soy sauce, pepper and salt.",
+        "minutes": 6
+      },
+      {
+        "text": "Roll, seal and fry until crisp.",
+        "minutes": 20
+      }
+    ]
+  },
+  {
+    "slug": "paneer-spring-roll",
+    "name": "Paneer Spring Roll",
+    "kind": "snacks",
+    "state": "All of India",
+    "rank": 814,
+    "blurb": "Crisp spring rolls with paneer, cabbage and capsicum.",
+    "minutes": 50,
+    "soak_hours": null,
+    "serves": 6,
+    "effort": "medium",
+    "ingredients": [
+      {
+        "label": "Maida",
+        "amount": "1 cup",
+        "source": "iwc",
+        "match_words": "maida"
+      },
+      {
+        "label": "Cornflour",
+        "amount": "2 tbsp",
+        "source": "iwc",
+        "match_words": "cornflour"
+      },
+      {
+        "label": "Black pepper",
+        "amount": "½ tsp",
+        "source": "iwc",
+        "match_words": "black pepper"
+      },
+      {
+        "label": "Paneer",
+        "amount": "150 g",
+        "source": "local"
+      },
+      {
+        "label": "Cabbage",
+        "amount": "2 cups shredded",
+        "source": "local"
+      },
+      {
+        "label": "Capsicum",
+        "amount": "1",
+        "source": "local"
+      },
+      {
+        "label": "Soy sauce",
+        "amount": "1 tbsp",
+        "source": "local"
+      },
+      {
+        "label": "Oil",
+        "amount": "for frying",
+        "source": "local"
+      }
+    ],
+    "steps": [
+      {
+        "text": "Make thin crêpes from a runny maida and cornflour batter.",
+        "minutes": 20
+      },
+      {
+        "text": "Stir-fry the vegetables and grated paneer with soy sauce, pepper and salt.",
+        "minutes": 5
+      },
+      {
+        "text": "Roll, seal and fry until crisp.",
+        "minutes": 20
+      }
+    ]
+  },
+  {
+    "slug": "golden-fried-prawns",
+    "name": "Golden Fried Prawns",
+    "kind": "snacks",
+    "state": "All of India",
+    "rank": 815,
+    "blurb": "Prawns in a light, crisp batter, fried golden and served with chilli sauce.",
+    "minutes": 30,
+    "soak_hours": null,
+    "serves": 4,
+    "effort": "easy",
+    "ingredients": [
+      {
+        "label": "Maida",
+        "amount": "½ cup",
+        "source": "iwc",
+        "match_words": "maida"
+      },
+      {
+        "label": "Cornflour",
+        "amount": "¼ cup",
+        "source": "iwc",
+        "match_words": "cornflour"
+      },
+      {
+        "label": "Black pepper",
+        "amount": "½ tsp",
+        "source": "iwc",
+        "match_words": "black pepper"
+      },
+      {
+        "label": "Baking soda",
+        "amount": "a pinch",
+        "source": "iwc",
+        "match_words": "baking soda"
+      },
+      {
+        "label": "Prawns",
+        "amount": "400 g",
+        "source": "local"
+      },
+      {
+        "label": "Garlic",
+        "amount": "2 cloves",
+        "source": "local"
+      },
+      {
+        "label": "Eggs",
+        "amount": "1",
+        "source": "local"
+      },
+      {
+        "label": "Oil",
+        "amount": "for frying",
+        "source": "local"
+      },
+      {
+        "label": "Garlic powder",
+        "amount": "½ tsp",
+        "source": "iwc",
+        "match_words": "garlic powder",
+        "instead_of": "Garlic"
+      }
+    ],
+    "steps": [
+      {
+        "text": "Marinate the prawns with grated garlic, pepper and salt.",
+        "minutes": 10
+      },
+      {
+        "text": "Whisk the flours, soda, egg and cold water into a light batter.",
+        "minutes": 3
+      },
+      {
+        "text": "Dip and fry until golden.",
+        "minutes": 8
+      }
+    ]
+  },
+  {
+    "slug": "chicken-wontons",
+    "name": "Chicken Wontons",
+    "kind": "snacks",
+    "state": "West Bengal",
+    "rank": 816,
+    "blurb": "Kolkata Chinatown's crisp fried wontons with a ginger chicken filling.",
+    "minutes": 45,
+    "soak_hours": null,
+    "serves": 4,
+    "effort": "medium",
+    "ingredients": [
+      {
+        "label": "Maida",
+        "amount": "1½ cups",
+        "source": "iwc",
+        "match_words": "maida"
+      },
+      {
+        "label": "Black pepper",
+        "amount": "½ tsp",
+        "source": "iwc",
+        "match_words": "black pepper"
+      },
+      {
+        "label": "Cornflour",
+        "amount": "1 tbsp",
+        "source": "iwc",
+        "match_words": "cornflour"
+      },
+      {
+        "label": "Chicken mince",
+        "amount": "250 g",
+        "source": "local"
+      },
+      {
+        "label": "Ginger",
+        "amount": "1 inch",
+        "source": "local"
+      },
+      {
+        "label": "Spring onions",
+        "amount": "2",
+        "source": "local"
+      },
+      {
+        "label": "Soy sauce",
+        "amount": "1 tsp",
+        "source": "local"
+      },
+      {
+        "label": "Oil",
+        "amount": "for frying",
+        "source": "local"
+      },
+      {
+        "label": "Dry ginger powder",
+        "amount": "½ tsp",
+        "source": "iwc",
+        "match_words": "dry ginger powder",
+        "instead_of": "Ginger"
+      }
+    ],
+    "steps": [
+      {
+        "text": "Make a stiff maida dough, roll very thin and cut into squares.",
+        "minutes": 15
+      },
+      {
+        "text": "Mix the mince with ginger, spring onion, soy sauce, pepper, cornflour and salt.",
+        "minutes": 5
+      },
+      {
+        "text": "Fill, fold and fry until crisp.",
+        "minutes": 15
+      }
+    ]
+  },
+  {
+    "slug": "veg-wontons",
+    "name": "Veg Wontons",
+    "kind": "snacks",
+    "state": "All of India",
+    "rank": 817,
+    "blurb": "Crisp fried wontons with a cabbage, carrot and ginger filling.",
+    "minutes": 45,
+    "soak_hours": null,
+    "serves": 4,
+    "effort": "medium",
+    "ingredients": [
+      {
+        "label": "Maida",
+        "amount": "1½ cups",
+        "source": "iwc",
+        "match_words": "maida"
+      },
+      {
+        "label": "Black pepper",
+        "amount": "½ tsp",
+        "source": "iwc",
+        "match_words": "black pepper"
+      },
+      {
+        "label": "Cornflour",
+        "amount": "1 tbsp",
+        "source": "iwc",
+        "match_words": "cornflour"
+      },
+      {
+        "label": "Cabbage",
+        "amount": "1½ cups",
+        "source": "local"
+      },
+      {
+        "label": "Carrot",
+        "amount": "1",
+        "source": "local"
+      },
+      {
+        "label": "Ginger",
+        "amount": "1 inch",
+        "source": "local"
+      },
+      {
+        "label": "Soy sauce",
+        "amount": "1 tsp",
+        "source": "local"
+      },
+      {
+        "label": "Oil",
+        "amount": "for frying",
+        "source": "local"
+      },
+      {
+        "label": "Dry ginger powder",
+        "amount": "½ tsp",
+        "source": "iwc",
+        "match_words": "dry ginger powder",
+        "instead_of": "Ginger"
+      }
+    ],
+    "steps": [
+      {
+        "text": "Make a stiff maida dough, roll very thin and cut into squares.",
+        "minutes": 15
+      },
+      {
+        "text": "Stir-fry the chopped vegetables with ginger, soy sauce, pepper and salt; bind with cornflour.",
+        "minutes": 6
+      },
+      {
+        "text": "Fill, fold and fry until crisp.",
+        "minutes": 15
+      }
+    ]
+  },
+  {
+    "slug": "chilli-potato",
+    "name": "Chilli Potato",
+    "kind": "snacks",
+    "state": "All of India",
+    "rank": 818,
+    "blurb": "Crisp potato fingers tossed in a hot chilli-garlic sauce with capsicum.",
+    "minutes": 30,
+    "soak_hours": null,
+    "serves": 4,
+    "effort": "easy",
+    "ingredients": [
+      {
+        "label": "Cornflour",
+        "amount": "¼ cup",
+        "source": "iwc",
+        "match_words": "cornflour"
+      },
+      {
+        "label": "Red chilli flakes",
+        "amount": "1 tsp",
+        "source": "iwc",
+        "match_words": "red chilli flakes"
+      },
+      {
+        "label": "Kashmiri chilli powder",
+        "amount": "½ tsp",
+        "source": "iwc",
+        "match_words": "kashmiri chilli powder"
+      },
+      {
+        "label": "Potatoes",
+        "amount": "3",
+        "source": "local"
+      },
+      {
+        "label": "Capsicum",
+        "amount": "1",
+        "source": "local"
+      },
+      {
+        "label": "Onion",
+        "amount": "1",
+        "source": "local"
+      },
+      {
+        "label": "Garlic",
+        "amount": "4 cloves",
+        "source": "local"
+      },
+      {
+        "label": "Soy sauce",
+        "amount": "1 tbsp",
+        "source": "local"
+      },
+      {
+        "label": "Oil",
+        "amount": "for frying",
+        "source": "local"
+      },
+      {
+        "label": "Garlic powder",
+        "amount": "½ tsp",
+        "source": "iwc",
+        "match_words": "garlic powder",
+        "instead_of": "Garlic"
+      }
+    ],
+    "steps": [
+      {
+        "text": "Cut the potatoes into fingers, parboil, coat in cornflour and fry crisp.",
+        "minutes": 18
+      },
+      {
+        "text": "Stir-fry garlic, onion and capsicum with soy sauce and the chilli.",
+        "minutes": 4
+      },
+      {
+        "text": "Toss the potatoes through.",
+        "minutes": 1
+      }
+    ]
+  },
+  {
+    "slug": "chilli-soya",
+    "name": "Chilli Soya",
+    "kind": "snacks",
+    "state": "All of India",
+    "rank": 819,
+    "blurb": "Soya chunks fried crisp and tossed with chilli, capsicum and soy.",
+    "minutes": 35,
+    "soak_hours": null,
+    "serves": 4,
+    "effort": "easy",
+    "ingredients": [
+      {
+        "label": "Soya chunks",
+        "amount": "1 cup",
+        "source": "iwc",
+        "match_words": "soya chunks"
+      },
+      {
+        "label": "Cornflour",
+        "amount": "¼ cup",
+        "source": "iwc",
+        "match_words": "cornflour"
+      },
+      {
+        "label": "Red chilli flakes",
+        "amount": "1 tsp",
+        "source": "iwc",
+        "match_words": "red chilli flakes"
+      },
+      {
+        "label": "Capsicum",
+        "amount": "1",
+        "source": "local"
+      },
+      {
+        "label": "Onion",
+        "amount": "1",
+        "source": "local"
+      },
+      {
+        "label": "Garlic",
+        "amount": "4 cloves",
+        "source": "local"
+      },
+      {
+        "label": "Soy sauce",
+        "amount": "1 tbsp",
+        "source": "local"
+      },
+      {
+        "label": "Oil",
+        "amount": "for frying",
+        "source": "local"
+      },
+      {
+        "label": "Garlic powder",
+        "amount": "½ tsp",
+        "source": "iwc",
+        "match_words": "garlic powder",
+        "instead_of": "Garlic"
+      }
+    ],
+    "steps": [
+      {
+        "text": "Boil the soya chunks, squeeze, coat in cornflour and fry crisp.",
+        "minutes": 15
+      },
+      {
+        "text": "Stir-fry garlic, onion and capsicum with soy sauce and chilli flakes.",
+        "minutes": 4
+      },
+      {
+        "text": "Toss the soya through.",
+        "minutes": 1
+      }
+    ]
+  },
+  {
+    "slug": "chilli-egg",
+    "name": "Chilli Egg",
+    "kind": "snacks",
+    "state": "West Bengal",
+    "rank": 820,
+    "blurb": "Kolkata's chilli egg: boiled eggs, batter-fried and tossed with green chilli and soy.",
+    "minutes": 30,
+    "soak_hours": null,
+    "serves": 4,
+    "effort": "easy",
+    "ingredients": [
+      {
+        "label": "Cornflour",
+        "amount": "¼ cup",
+        "source": "iwc",
+        "match_words": "cornflour"
+      },
+      {
+        "label": "Black pepper",
+        "amount": "½ tsp",
+        "source": "iwc",
+        "match_words": "black pepper"
+      },
+      {
+        "label": "Red chilli flakes",
+        "amount": "½ tsp",
+        "source": "iwc",
+        "match_words": "red chilli flakes"
+      },
+      {
+        "label": "Eggs",
+        "amount": "6",
+        "source": "local"
+      },
+      {
+        "label": "Green chillies",
+        "amount": "4",
+        "source": "local"
+      },
+      {
+        "label": "Onion",
+        "amount": "1",
+        "source": "local"
+      },
+      {
+        "label": "Garlic",
+        "amount": "4 cloves",
+        "source": "local"
+      },
+      {
+        "label": "Soy sauce",
+        "amount": "1 tbsp",
+        "source": "local"
+      },
+      {
+        "label": "Oil",
+        "amount": "for frying",
+        "source": "local"
+      },
+      {
+        "label": "Red chilli powder",
+        "amount": "½ tsp",
+        "source": "iwc",
+        "match_words": "red chilli powder",
+        "instead_of": "Green chillies"
+      },
+      {
+        "label": "Garlic powder",
+        "amount": "½ tsp",
+        "source": "iwc",
+        "match_words": "garlic powder",
+        "instead_of": "Garlic"
+      }
+    ],
+    "steps": [
+      {
+        "text": "Hard-boil and quarter the eggs; coat in cornflour batter and fry.",
+        "minutes": 20
+      },
+      {
+        "text": "Stir-fry garlic, onion and chillies with soy sauce and chilli flakes.",
+        "minutes": 4
+      },
+      {
+        "text": "Toss the eggs through gently.",
+        "minutes": 1
+      }
+    ]
+  }
+]
