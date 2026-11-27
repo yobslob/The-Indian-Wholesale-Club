@@ -117,3 +117,5 @@ begin
     'published', to_jsonb(v_published), 'blocked', v_blocked, 'lines_filled', v_done[1], 'lines_local', v_done[2],
     'next', case when cardinality(v_ids) = v_limit then v_last end);
 end $$;
+
+notify pgrst, 'reload schema';
