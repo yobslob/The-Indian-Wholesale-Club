@@ -40,3 +40,19 @@ test('the best result, or null when none shows the dish', () => {
   assert.equal(best([photo('Pizza')], 'Samosa'), null);
   assert.equal(licences(results[0]), 'premium: https://example.test/licence');
 });
+
+test("founder, 2026-11-27: a photo holding only some of the dish's words is not the dish", () => {
+  const naan = photo('butter, wild garlic, wild garlic butter, herbs, nature', 5000);
+  const dal = photo('daal, chana, lentils, indian, cuisine, dal, food', 5000);
+  assert.equal(best([naan], 'Butter Garlic Naan'), null);
+  assert.equal(best([dal], 'Dal Makhani'), null);
+  assert.equal(best([photo('naans, garlic, butter, indian bread')], 'Butter Garlic Naan').title, 'naans, garlic, butter, indian bread');
+  // whole words only: "naan" is not in "naanwala"
+  assert.equal(best([photo('naanwala garlic butter shop')], 'Butter Garlic Naan'), null);
+});
+
+test('a photo another recipe already has is skipped', () => {
+  const one = photo('tandoori chicken, tikka', 900);
+  const two = photo('tandoori chicken on a grill', 10);
+  assert.equal(best([one, two], 'Tandoori Chicken', new Set([String(one.id)])), two);
+});

@@ -15,6 +15,20 @@ import { join } from 'node:path';
 
 import { searchTerm } from './pick.mjs';
 
+/** Seconds between two Pixabay photo downloads. */
+const PIXABAY_GAP = 15;
+const DAY = 24 * 60 * 60 * 1000;
+const pause = (ms) => new Promise((r) => setTimeout(r, ms));
+
+/** Calls at least `ms` apart. */
+function spaced(ms) {
+  let last = 0;
+  return async () => {
+    await pause(Math.max(0, last + ms - Date.now()));
+    last = Date.now();
+  };
+}
+
 async function getJson(url, headers, label) {
   for (let attempt = 1; ; attempt++) {
     const res = await fetch(url, { headers });
@@ -27,8 +41,18 @@ async function getJson(url, headers, label) {
   }
 }
 
+/**
+ * A photo saved to `file`. A refusal for going too fast (HTTP 429: Pixabay's image links answer it to quick downloads,
+ * founder's first run 2026-11-27) waits and tries again, longer each time, before the recipe counts as failed.
+ */
 async function save(url, file, label) {
-  const res = await fetch(url);
+  let res;
+  for (const wait of [30, 60, 120, 240, null]) {
+    res = await fetch(url);
+    if (res.status !== 429 || wait === null) break;
+    console.log(`     ${label}: the site asks to slow down, waiting ${wait} s`);
+    await pause(wait * 1000);
+  }
   if (!res.ok) throw new Error(`${label}: download HTTP ${res.status}`);
   const type = res.headers.get('content-type') ?? '';
   if (!/image\/(jpeg|png|webp)/.test(type)) throw new Error(`${label}: ${type || 'no type'}, not a photo`);
@@ -37,18 +61,18 @@ async function save(url, file, label) {
 
 const frame = (w, h) => (!w || !h ? 'unknown' : Math.abs(w - h) / Math.max(w, h) < 0.1 ? 'square' : w > h ? 'horizontal' : 'vertical');
 
-const DAY = 24 * 60 * 60 * 1000;
-const pause = (ms) => new Promise((r) => setTimeout(r, ms));
-
-/** Pixabay's search, cached for a day in `cacheDir` and at most one call a second (its API rules). */
+/**
+ * Pixabay's search, cached for a day in `cacheDir`, at most one search a second (its API rules), and one photo
+ * download every PIXABAY_GAP seconds (its image links refuse quick downloads).
+ */
 export function pixabay(key, template, cacheDir) {
   mkdirSync(cacheDir, { recursive: true });
-  let last = 0;
+  const searchTurn = spaced(1000);
+  const downloadTurn = spaced(PIXABAY_GAP * 1000);
   async function find(q) {
     const file = join(cacheDir, `pixabay-${q.toLowerCase().replace(/[^a-z0-9]+/g, '-').slice(0, 80)}.json`);
     if (existsSync(file) && Date.now() - statSync(file).mtimeMs < DAY) return JSON.parse(readFileSync(file, 'utf8'));
-    await pause(Math.max(0, last + 1000 - Date.now()));
-    last = Date.now();
+    await searchTurn();
     const params = new URLSearchParams({ key, q: q.slice(0, 100), image_type: 'photo', category: 'food', safesearch: 'true', per_page: '40' });
     const data = await getJson(`https://pixabay.com/api/?${params}`, {}, 'pixabay search');
     writeFileSync(file, JSON.stringify(data));
@@ -56,10 +80,8 @@ export function pixabay(key, template, cacheDir) {
   }
   return {
     name: 'pixabay',
-    async search(dish) {
-      // the template first ("samosa indian food"); a name of its own when that finds nothing
-      let hits = (await find(searchTerm(dish, template))).hits ?? [];
-      if (!hits.length) hits = (await find(dish)).hits ?? [];
+    async search(dish, plain = false) {
+      const hits = (await find(searchTerm(dish, plain ? '{name}' : template))).hits ?? [];
       return hits.map((h) => ({
         id: h.id,
         // Pixabay's tags ("biryani, rice, indian food") stand in for a title
@@ -72,7 +94,10 @@ export function pixabay(key, template, cacheDir) {
         download: h.largeImageURL,
       }));
     },
-    download: (result, file) => save(result.download, file, `pixabay ${result.id}`),
+    async download(result, file) {
+      await downloadTurn();
+      await save(result.download, file, `pixabay ${result.id}`);
+    },
   };
 }
 
@@ -80,8 +105,8 @@ export function pexels(key, template) {
   const headers = { Authorization: key };
   return {
     name: 'pexels',
-    async search(dish) {
-      const q = new URLSearchParams({ query: searchTerm(dish, template), per_page: '40' });
+    async search(dish, plain = false) {
+      const q = new URLSearchParams({ query: searchTerm(dish, plain ? '{name}' : template), per_page: '40' });
       const data = await getJson(`https://api.pexels.com/v1/search?${q}`, headers, 'pexels search');
       return (data.photos ?? []).map((p) => ({
         id: p.id,
@@ -104,8 +129,8 @@ export function magnific(key, template) {
   const headers = { 'x-magnific-api-key': key, 'Accept-Language': 'en-US' };
   return {
     name: 'magnific',
-    async search(dish) {
-      const q = new URLSearchParams({ term: searchTerm(dish, template), limit: '30', order: 'relevance' });
+    async search(dish, plain = false) {
+      const q = new URLSearchParams({ term: searchTerm(dish, plain ? '{name}' : template), limit: '30', order: 'relevance' });
       q.set('filters[content_type][photo]', '1');
       q.set('filters[people][exclude]', '1');
       const data = await getJson(`${api}/resources?${q}`, headers, 'magnific search');

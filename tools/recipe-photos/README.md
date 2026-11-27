@@ -30,11 +30,17 @@ Nothing here writes to the photo store or the database: the run ends with a fold
 | `pnpm photos:recipes --term "{name} snack"` | other search words (`{name}` is the recipe's name; default `{name} indian food`) |
 | `pnpm photos:recipes --source magnific` | Magnific Stock instead of Pixabay (paid credits); `--source pexels` for Pexels |
 
-For each recipe it searches photos (Magnific: without people), takes the result whose title (Pixabay: its tags; Pexels: its description)
-holds the most of the dish's words, then the most downloaded, then a square or wide frame (`pick.mjs`), and saves it
+For each recipe it searches photos (Magnific: without people) and keeps only those whose title (Pixabay: its tags;
+Pexels: its description) holds **every** word of the dish's name as a whole word ("Butter Garlic Naan" needs butter,
+garlic and naan; a photo of wild-garlic butter is not it). Of those it takes the one naming the dish first, then the
+most downloaded, then a square or wide frame, never a photo another recipe already has (`pick.mjs`). When the
+template's words find none, it searches the name alone. It saves it
 at 1,500 px as `out/<slug>.jpg`. It carries on where the last run stopped. Pixabay searches by its photos' tags, so a
 regional dish often has none: the runner then searches the name alone, and what still has none goes to
-`not-found.txt`. Pixabay allows 100 searches a minute (the runner makes one a second); Pexels 200 an hour;
+`not-found.txt`. Pixabay allows 100 searches a minute (the runner makes one a second) and its image links refuse quick downloads
+(HTTP 429), so the runner downloads one photo every 15 seconds (even 6 s was refused 4 times in 6) and, refused, waits
+30 s, 1, 2 and 4 minutes before it counts the recipe as failed (about 4 hours for all 925: leave it running; a
+failed recipe is tried again by the next run); Pexels 200 an hour;
 Magnific spends credits. A wrong key, an empty balance or a plan
 without the API stops the run at the first recipe.
 

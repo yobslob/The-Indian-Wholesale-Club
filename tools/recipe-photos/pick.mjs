@@ -20,30 +20,36 @@ export function nameWords(name) {
     .filter((w) => w.length > 1 && !FILLER.has(w));
 }
 
+/** A word as a whole word of the title or tags, plurals too: "naan" in "naans, bread", never in "naanwala". */
+const holds = (title, w) => new RegExp(`(^|[^a-z0-9])${w}(s|es)?([^a-z0-9]|$)`).test(title);
+
 /**
- * A result's score: mostly how many of the dish's words its title holds (a photo of "samosa" for Samosa Chaat beats a
- * photo of a plate of chaat), then how popular it is, and a square or landscape frame (the recipe card is square, the
- * page wide). Anything not a photo, or with people in it, scores nothing: it is a dish photo we want.
+ * A result's score, or 0 when it is not a photo of the dish: its title (or tags) must hold every word of the dish's
+ * name. Founder, 2026-11-27: "butter garlic naan and dal makhani photo is wrong": a photo of wild-garlic butter held
+ * two of three words, a plate of chana dal one of two. Then: the dish named among its first tags (a photo's main
+ * subject comes first), how popular it is, a square or landscape frame (the recipe card is square, the page wide).
+ * Anything not a photo, or with people in it, scores less or nothing.
  */
 export function score(result, words) {
   const image = result?.image ?? {};
   if (image.type && image.type !== 'photo') return 0;
   const title = String(result?.title ?? '').toLowerCase();
-  const hits = words.filter((w) => title.includes(w)).length;
-  if (words.length > 0 && hits === 0) return 0;
-  const share = words.length === 0 ? 0 : hits / words.length;
+  if (words.length === 0 || !words.every((w) => holds(title, w))) return 0;
+  const lead = title.split(',').slice(0, 3).join(',');
+  const first = words.filter((w) => holds(lead, w)).length / words.length;
   const downloads = Number(result?.stats?.downloads ?? 0);
   const frame = image.orientation === 'square' ? 0.6 : image.orientation === 'horizontal' ? 0.4 : 0;
   const people = /\b(woman|man|girl|boy|people|person|hands?|chef|family)\b/.test(title) ? 0.5 : 0;
-  return share * 10 + Math.log10(downloads + 1) * 0.6 + frame - people;
+  return 10 + first * 2 + Math.log10(downloads + 1) * 0.6 + frame - people;
 }
 
-/** The best result for a dish, or null when none of them is a photo of it. */
-export function best(results, name) {
+/** The best result for a dish, or null when none of them is a photo of it; `used`: photo ids another recipe has. */
+export function best(results, name, used = new Set()) {
   const words = nameWords(name);
   let top = null;
   let topScore = 0;
   for (const r of results ?? []) {
+    if (used.has(String(r.id))) continue;
     const s = score(r, words);
     if (s > topScore) {
       top = r;
