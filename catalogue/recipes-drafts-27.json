@@ -1,0 +1,1628 @@
+[
+  {
+    "slug": "doddapatre-bajji",
+    "name": "Doddapatre Bajji",
+    "kind": "snacks",
+    "state": "Karnataka",
+    "rank": 521,
+    "blurb": "Leaves of Indian borage fried in batter, with a mild oregano taste.",
+    "minutes": 20,
+    "soak_hours": null,
+    "serves": 4,
+    "effort": "easy",
+    "ingredients": [
+      {
+        "label": "Besan",
+        "amount": "1 cup",
+        "source": "iwc",
+        "match_words": "besan"
+      },
+      {
+        "label": "Rice flour",
+        "amount": "2 tbsp",
+        "source": "iwc",
+        "match_words": "rice flour"
+      },
+      {
+        "label": "Red chilli powder",
+        "amount": "1 tsp",
+        "source": "iwc",
+        "match_words": "red chilli powder"
+      },
+      {
+        "label": "Ajwain",
+        "amount": "½ tsp",
+        "source": "iwc",
+        "match_words": "ajwain"
+      },
+      {
+        "label": "Doddapatre leaves",
+        "amount": "15",
+        "source": "local"
+      },
+      {
+        "label": "Oil",
+        "amount": "for frying",
+        "source": "local"
+      }
+    ],
+    "steps": [
+      {
+        "text": "Wash the leaves and dry them well.",
+        "minutes": 5
+      },
+      {
+        "text": "Make a batter of besan, rice flour, chilli powder, ajwain, salt and water.",
+        "minutes": 3
+      },
+      {
+        "text": "Dip each leaf and fry until crisp.",
+        "minutes": 10
+      }
+    ]
+  },
+  {
+    "slug": "mutta-bajji",
+    "name": "Mutta Bajji",
+    "kind": "snacks",
+    "state": "Kerala",
+    "rank": 522,
+    "blurb": "Halved boiled eggs fried in a spicy batter, sold in every Kerala tea shop.",
+    "minutes": 30,
+    "soak_hours": null,
+    "serves": 4,
+    "effort": "easy",
+    "ingredients": [
+      {
+        "label": "Besan",
+        "amount": "¾ cup",
+        "source": "iwc",
+        "match_words": "besan"
+      },
+      {
+        "label": "Rice flour",
+        "amount": "2 tbsp",
+        "source": "iwc",
+        "match_words": "rice flour"
+      },
+      {
+        "label": "Kashmiri chilli powder",
+        "amount": "1 tsp",
+        "source": "iwc",
+        "match_words": "kashmiri chilli powder"
+      },
+      {
+        "label": "Hing",
+        "amount": "a pinch",
+        "source": "iwc",
+        "match_words": "hing"
+      },
+      {
+        "label": "Baking soda",
+        "amount": "a pinch",
+        "source": "iwc",
+        "match_words": "baking soda"
+      },
+      {
+        "label": "Eggs",
+        "amount": "4",
+        "source": "local"
+      },
+      {
+        "label": "Oil",
+        "amount": "for frying",
+        "source": "local"
+      }
+    ],
+    "steps": [
+      {
+        "text": "Hard-boil the eggs, peel and halve them.",
+        "minutes": 12
+      },
+      {
+        "text": "Whisk the besan, rice flour, chilli powder, hing, soda, salt and water into a thick batter.",
+        "minutes": 3
+      },
+      {
+        "text": "Dip the halves and fry until golden.",
+        "minutes": 10
+      }
+    ]
+  },
+  {
+    "slug": "bread-roll",
+    "name": "Bread Roll",
+    "kind": "snacks",
+    "state": "Delhi",
+    "rank": 523,
+    "blurb": "Bread slices wrapped around spiced potato and fried golden, a north Indian tea-shop classic.",
+    "minutes": 35,
+    "soak_hours": null,
+    "serves": 4,
+    "effort": "medium",
+    "ingredients": [
+      {
+        "label": "Cumin seeds",
+        "amount": "½ tsp",
+        "source": "iwc",
+        "match_words": "cumin seeds"
+      },
+      {
+        "label": "Red chilli powder",
+        "amount": "1 tsp",
+        "source": "iwc",
+        "match_words": "red chilli powder"
+      },
+      {
+        "label": "Garam masala",
+        "amount": "½ tsp",
+        "source": "iwc",
+        "match_words": "garam masala"
+      },
+      {
+        "label": "Amchur",
+        "amount": "½ tsp",
+        "source": "iwc",
+        "match_words": "amchur"
+      },
+      {
+        "label": "Potatoes",
+        "amount": "3",
+        "source": "local"
+      },
+      {
+        "label": "Bread slices",
+        "amount": "8",
+        "source": "local"
+      },
+      {
+        "label": "Green chillies",
+        "amount": "2",
+        "source": "local"
+      },
+      {
+        "label": "Coriander",
+        "amount": "a handful",
+        "source": "local"
+      },
+      {
+        "label": "Oil",
+        "amount": "for frying",
+        "source": "local"
+      },
+      {
+        "label": "Coriander powder",
+        "amount": "1 tsp",
+        "source": "iwc",
+        "match_words": "coriander powder",
+        "instead_of": "Coriander"
+      }
+    ],
+    "steps": [
+      {
+        "text": "Boil and mash the potatoes; mix in the spices, chillies, coriander and salt.",
+        "minutes": 15
+      },
+      {
+        "text": "Trim the bread, dip each slice in water, squeeze and wrap it round an oval of the filling.",
+        "minutes": 10
+      },
+      {
+        "text": "Fry until golden and crisp all over.",
+        "minutes": 10
+      }
+    ]
+  },
+  {
+    "slug": "rava-vada",
+    "name": "Rava Vada",
+    "kind": "snacks",
+    "state": "Karnataka",
+    "rank": 524,
+    "blurb": "Instant vadas of semolina, curd, onion and curry leaves, no grinding needed.",
+    "minutes": 25,
+    "soak_hours": null,
+    "serves": 4,
+    "effort": "easy",
+    "ingredients": [
+      {
+        "label": "Sooji",
+        "amount": "1 cup",
+        "source": "iwc",
+        "match_words": "sooji"
+      },
+      {
+        "label": "Rice flour",
+        "amount": "2 tbsp",
+        "source": "iwc",
+        "match_words": "rice flour"
+      },
+      {
+        "label": "Cumin seeds",
+        "amount": "½ tsp",
+        "source": "iwc",
+        "match_words": "cumin seeds"
+      },
+      {
+        "label": "Black pepper",
+        "amount": "½ tsp",
+        "source": "iwc",
+        "match_words": "black pepper"
+      },
+      {
+        "label": "Yogurt",
+        "amount": "½ cup",
+        "source": "local"
+      },
+      {
+        "label": "Onion",
+        "amount": "1",
+        "source": "local"
+      },
+      {
+        "label": "Green chillies",
+        "amount": "2",
+        "source": "local"
+      },
+      {
+        "label": "Ginger",
+        "amount": "1 inch",
+        "source": "local"
+      },
+      {
+        "label": "Curry leaves",
+        "amount": "a sprig",
+        "source": "local"
+      },
+      {
+        "label": "Oil",
+        "amount": "for frying",
+        "source": "local"
+      },
+      {
+        "label": "Red chilli powder",
+        "amount": "½ tsp",
+        "source": "iwc",
+        "match_words": "red chilli powder",
+        "instead_of": "Green chillies"
+      },
+      {
+        "label": "Dry ginger powder",
+        "amount": "½ tsp",
+        "source": "iwc",
+        "match_words": "dry ginger powder",
+        "instead_of": "Ginger"
+      },
+      {
+        "label": "Dried curry leaves",
+        "amount": "1 tbsp",
+        "source": "iwc",
+        "match_words": "curry leaves",
+        "instead_of": "Curry leaves"
+      }
+    ],
+    "steps": [
+      {
+        "text": "Mix the sooji with the yogurt and salt and rest ten minutes.",
+        "minutes": 10
+      },
+      {
+        "text": "Add the rice flour, chopped onion, chillies, ginger, curry leaves, cumin and pepper.",
+        "minutes": 3
+      },
+      {
+        "text": "Shape small flat vadas with wet hands and fry until golden.",
+        "minutes": 12
+      }
+    ]
+  },
+  {
+    "slug": "keerai-vadai",
+    "name": "Keerai Vadai",
+    "kind": "snacks",
+    "state": "Tamil Nadu",
+    "rank": 525,
+    "blurb": "Chana dal and spinach vadas, coarse and crunchy, with a fennel note.",
+    "minutes": 40,
+    "soak_hours": 2,
+    "serves": 4,
+    "effort": "medium",
+    "ingredients": [
+      {
+        "label": "Chana dal",
+        "amount": "1 cup",
+        "source": "iwc",
+        "match_words": "chana dal"
+      },
+      {
+        "label": "Fennel seeds",
+        "amount": "1 tsp",
+        "source": "iwc",
+        "match_words": "fennel seeds"
+      },
+      {
+        "label": "Red chilli whole",
+        "amount": "3",
+        "source": "iwc",
+        "match_words": "red chilli whole"
+      },
+      {
+        "label": "Hing",
+        "amount": "a pinch",
+        "source": "iwc",
+        "match_words": "hing"
+      },
+      {
+        "label": "Spinach",
+        "amount": "1 cup chopped",
+        "source": "local"
+      },
+      {
+        "label": "Onion",
+        "amount": "1",
+        "source": "local"
+      },
+      {
+        "label": "Curry leaves",
+        "amount": "a sprig",
+        "source": "local"
+      },
+      {
+        "label": "Oil",
+        "amount": "for frying",
+        "source": "local"
+      },
+      {
+        "label": "Dried curry leaves",
+        "amount": "1 tbsp",
+        "source": "iwc",
+        "match_words": "curry leaves",
+        "instead_of": "Curry leaves"
+      }
+    ],
+    "steps": [
+      {
+        "text": "Soak the dal two hours, drain and grind coarsely with the chillies and fennel, no water.",
+        "minutes": 10
+      },
+      {
+        "text": "Mix in the spinach, chopped onion, curry leaves, hing and salt.",
+        "minutes": 5
+      },
+      {
+        "text": "Pat into flat discs and fry until crisp and brown.",
+        "minutes": 15
+      }
+    ]
+  },
+  {
+    "slug": "thavala-vadai",
+    "name": "Thavala Vadai",
+    "kind": "snacks",
+    "state": "Tamil Nadu",
+    "rank": 526,
+    "blurb": "A Tanjore vada of mixed dals and rice, coarse, crisp and full of curry leaves.",
+    "minutes": 45,
+    "soak_hours": 2,
+    "serves": 4,
+    "effort": "medium",
+    "ingredients": [
+      {
+        "label": "Chana dal",
+        "amount": "½ cup",
+        "source": "iwc",
+        "match_words": "chana dal"
+      },
+      {
+        "label": "Toor dal",
+        "amount": "¼ cup",
+        "source": "iwc",
+        "match_words": "toor dal"
+      },
+      {
+        "label": "Urad dal",
+        "amount": "2 tbsp",
+        "source": "iwc",
+        "match_words": "urad dal"
+      },
+      {
+        "label": "Raw rice",
+        "amount": "2 tbsp",
+        "source": "iwc",
+        "match_words": "raw rice"
+      },
+      {
+        "label": "Red chilli whole",
+        "amount": "3",
+        "source": "iwc",
+        "match_words": "red chilli whole"
+      },
+      {
+        "label": "Hing",
+        "amount": "a pinch",
+        "source": "iwc",
+        "match_words": "hing"
+      },
+      {
+        "label": "Onion",
+        "amount": "1",
+        "source": "local"
+      },
+      {
+        "label": "Curry leaves",
+        "amount": "a sprig",
+        "source": "local"
+      },
+      {
+        "label": "Coconut (fresh)",
+        "amount": "2 tbsp",
+        "source": "local"
+      },
+      {
+        "label": "Oil",
+        "amount": "for frying",
+        "source": "local"
+      },
+      {
+        "label": "Dried curry leaves",
+        "amount": "1 tbsp",
+        "source": "iwc",
+        "match_words": "curry leaves",
+        "instead_of": "Curry leaves"
+      },
+      {
+        "label": "Desiccated coconut",
+        "amount": "2 tbsp",
+        "source": "iwc",
+        "match_words": "desiccated coconut",
+        "instead_of": "Coconut (fresh)"
+      }
+    ],
+    "steps": [
+      {
+        "text": "Soak the dals and rice together two hours, drain and grind coarsely with the chillies.",
+        "minutes": 10
+      },
+      {
+        "text": "Mix in the onion, curry leaves, coconut, hing and salt.",
+        "minutes": 5
+      },
+      {
+        "text": "Shape into flat vadas and fry over medium heat until crisp.",
+        "minutes": 15
+      }
+    ]
+  },
+  {
+    "slug": "vazhaipoo-vadai",
+    "name": "Vazhaipoo Vadai",
+    "kind": "snacks",
+    "state": "Tamil Nadu",
+    "rank": 527,
+    "blurb": "Banana flower and chana dal vadas, a little bitter and very crisp.",
+    "minutes": 50,
+    "soak_hours": 2,
+    "serves": 4,
+    "effort": "medium",
+    "ingredients": [
+      {
+        "label": "Chana dal",
+        "amount": "1 cup",
+        "source": "iwc",
+        "match_words": "chana dal"
+      },
+      {
+        "label": "Fennel seeds",
+        "amount": "1 tsp",
+        "source": "iwc",
+        "match_words": "fennel seeds"
+      },
+      {
+        "label": "Red chilli whole",
+        "amount": "3",
+        "source": "iwc",
+        "match_words": "red chilli whole"
+      },
+      {
+        "label": "Turmeric",
+        "amount": "¼ tsp",
+        "source": "iwc",
+        "match_words": "turmeric"
+      },
+      {
+        "label": "Banana flower",
+        "amount": "1 small",
+        "source": "local"
+      },
+      {
+        "label": "Onion",
+        "amount": "1",
+        "source": "local"
+      },
+      {
+        "label": "Curry leaves",
+        "amount": "a sprig",
+        "source": "local"
+      },
+      {
+        "label": "Buttermilk",
+        "amount": "1 cup",
+        "source": "local"
+      },
+      {
+        "label": "Oil",
+        "amount": "for frying",
+        "source": "local"
+      },
+      {
+        "label": "Dried curry leaves",
+        "amount": "1 tbsp",
+        "source": "iwc",
+        "match_words": "curry leaves",
+        "instead_of": "Curry leaves"
+      }
+    ],
+    "steps": [
+      {
+        "text": "Clean the banana flower florets, chop and keep in buttermilk so they don't darken.",
+        "minutes": 15
+      },
+      {
+        "text": "Grind the soaked dal coarsely with the chillies and fennel; add the squeezed florets, onion, curry leaves, turmeric and salt.",
+        "minutes": 10
+      },
+      {
+        "text": "Shape and fry until golden.",
+        "minutes": 15
+      }
+    ]
+  },
+  {
+    "slug": "ulli-vada",
+    "name": "Ulli Vada",
+    "kind": "snacks",
+    "state": "Kerala",
+    "rank": 528,
+    "blurb": "Kerala's onion fritter: thin onion, ginger and chilli held together with a little besan.",
+    "minutes": 25,
+    "soak_hours": null,
+    "serves": 4,
+    "effort": "easy",
+    "ingredients": [
+      {
+        "label": "Besan",
+        "amount": "½ cup",
+        "source": "iwc",
+        "match_words": "besan"
+      },
+      {
+        "label": "Rice flour",
+        "amount": "2 tbsp",
+        "source": "iwc",
+        "match_words": "rice flour"
+      },
+      {
+        "label": "Kashmiri chilli powder",
+        "amount": "1 tsp",
+        "source": "iwc",
+        "match_words": "kashmiri chilli powder"
+      },
+      {
+        "label": "Hing",
+        "amount": "a pinch",
+        "source": "iwc",
+        "match_words": "hing"
+      },
+      {
+        "label": "Onions",
+        "amount": "3",
+        "source": "local"
+      },
+      {
+        "label": "Ginger",
+        "amount": "1 inch",
+        "source": "local"
+      },
+      {
+        "label": "Green chillies",
+        "amount": "2",
+        "source": "local"
+      },
+      {
+        "label": "Curry leaves",
+        "amount": "a sprig",
+        "source": "local"
+      },
+      {
+        "label": "Oil",
+        "amount": "for frying",
+        "source": "local"
+      },
+      {
+        "label": "Dry ginger powder",
+        "amount": "½ tsp",
+        "source": "iwc",
+        "match_words": "dry ginger powder",
+        "instead_of": "Ginger"
+      },
+      {
+        "label": "Red chilli powder",
+        "amount": "½ tsp",
+        "source": "iwc",
+        "match_words": "red chilli powder",
+        "instead_of": "Green chillies"
+      },
+      {
+        "label": "Dried curry leaves",
+        "amount": "1 tbsp",
+        "source": "iwc",
+        "match_words": "curry leaves",
+        "instead_of": "Curry leaves"
+      }
+    ],
+    "steps": [
+      {
+        "text": "Slice the onions thin and rub with salt until soft and wet.",
+        "minutes": 5
+      },
+      {
+        "text": "Add the ginger, chillies, curry leaves, flours, chilli powder and hing; squeeze together.",
+        "minutes": 3
+      },
+      {
+        "text": "Flatten small portions and fry until crisp and brown.",
+        "minutes": 15
+      }
+    ]
+  },
+  {
+    "slug": "cabbage-vada",
+    "name": "Cabbage Vada",
+    "kind": "snacks",
+    "state": "Karnataka",
+    "rank": 529,
+    "blurb": "Udupi's cabbage and dal vada, fried crisp and eaten hot with coconut chutney.",
+    "minutes": 45,
+    "soak_hours": 2,
+    "serves": 4,
+    "effort": "medium",
+    "ingredients": [
+      {
+        "label": "Chana dal",
+        "amount": "½ cup",
+        "source": "iwc",
+        "match_words": "chana dal"
+      },
+      {
+        "label": "Urad dal",
+        "amount": "¼ cup",
+        "source": "iwc",
+        "match_words": "urad dal"
+      },
+      {
+        "label": "Red chilli whole",
+        "amount": "3",
+        "source": "iwc",
+        "match_words": "red chilli whole"
+      },
+      {
+        "label": "Hing",
+        "amount": "a pinch",
+        "source": "iwc",
+        "match_words": "hing"
+      },
+      {
+        "label": "Cabbage",
+        "amount": "1½ cups shredded",
+        "source": "local"
+      },
+      {
+        "label": "Ginger",
+        "amount": "1 inch",
+        "source": "local"
+      },
+      {
+        "label": "Curry leaves",
+        "amount": "a sprig",
+        "source": "local"
+      },
+      {
+        "label": "Coriander",
+        "amount": "a handful",
+        "source": "local"
+      },
+      {
+        "label": "Oil",
+        "amount": "for frying",
+        "source": "local"
+      },
+      {
+        "label": "Dry ginger powder",
+        "amount": "½ tsp",
+        "source": "iwc",
+        "match_words": "dry ginger powder",
+        "instead_of": "Ginger"
+      },
+      {
+        "label": "Dried curry leaves",
+        "amount": "1 tbsp",
+        "source": "iwc",
+        "match_words": "curry leaves",
+        "instead_of": "Curry leaves"
+      },
+      {
+        "label": "Coriander powder",
+        "amount": "1 tsp",
+        "source": "iwc",
+        "match_words": "coriander powder",
+        "instead_of": "Coriander"
+      }
+    ],
+    "steps": [
+      {
+        "text": "Soak the dals two hours and grind coarsely with the chillies and ginger.",
+        "minutes": 10
+      },
+      {
+        "text": "Mix in the cabbage, curry leaves, coriander, hing and salt.",
+        "minutes": 5
+      },
+      {
+        "text": "Shape into flat vadas and fry until crisp.",
+        "minutes": 15
+      }
+    ]
+  },
+  {
+    "slug": "mokkajonna-garelu",
+    "name": "Mokkajonna Garelu",
+    "kind": "snacks",
+    "state": "Andhra Pradesh",
+    "rank": 530,
+    "blurb": "Andhra corn vadas, sweet from fresh corn and sharp from ginger and chilli.",
+    "minutes": 30,
+    "soak_hours": null,
+    "serves": 4,
+    "effort": "easy",
+    "ingredients": [
+      {
+        "label": "Rice flour",
+        "amount": "2 tbsp",
+        "source": "iwc",
+        "match_words": "rice flour"
+      },
+      {
+        "label": "Cumin seeds",
+        "amount": "½ tsp",
+        "source": "iwc",
+        "match_words": "cumin seeds"
+      },
+      {
+        "label": "Red chilli powder",
+        "amount": "½ tsp",
+        "source": "iwc",
+        "match_words": "red chilli powder"
+      },
+      {
+        "label": "Sweet corn kernels",
+        "amount": "2 cups",
+        "source": "local"
+      },
+      {
+        "label": "Onion",
+        "amount": "1",
+        "source": "local"
+      },
+      {
+        "label": "Green chillies",
+        "amount": "2",
+        "source": "local"
+      },
+      {
+        "label": "Ginger",
+        "amount": "1 inch",
+        "source": "local"
+      },
+      {
+        "label": "Coriander",
+        "amount": "a handful",
+        "source": "local"
+      },
+      {
+        "label": "Oil",
+        "amount": "for frying",
+        "source": "local"
+      },
+      {
+        "label": "Dry ginger powder",
+        "amount": "½ tsp",
+        "source": "iwc",
+        "match_words": "dry ginger powder",
+        "instead_of": "Ginger"
+      },
+      {
+        "label": "Coriander powder",
+        "amount": "1 tsp",
+        "source": "iwc",
+        "match_words": "coriander powder",
+        "instead_of": "Coriander"
+      }
+    ],
+    "steps": [
+      {
+        "text": "Grind the corn coarsely with the chillies and ginger, no water.",
+        "minutes": 5
+      },
+      {
+        "text": "Mix in the onion, coriander, rice flour, cumin, chilli powder and salt.",
+        "minutes": 3
+      },
+      {
+        "text": "Flatten into small discs and fry until golden.",
+        "minutes": 15
+      }
+    ]
+  },
+  {
+    "slug": "kalmi-vada",
+    "name": "Kalmi Vada",
+    "kind": "snacks",
+    "state": "Rajasthan",
+    "rank": 531,
+    "blurb": "Rajasthan's chana dal vada, fried, sliced and fried again until it shatters.",
+    "minutes": 45,
+    "soak_hours": 3,
+    "serves": 4,
+    "effort": "medium",
+    "ingredients": [
+      {
+        "label": "Chana dal",
+        "amount": "1 cup",
+        "source": "iwc",
+        "match_words": "chana dal"
+      },
+      {
+        "label": "Fennel seeds",
+        "amount": "1 tsp",
+        "source": "iwc",
+        "match_words": "fennel seeds"
+      },
+      {
+        "label": "Whole coriander",
+        "amount": "1 tsp",
+        "source": "iwc",
+        "match_words": "whole coriander"
+      },
+      {
+        "label": "Red chilli powder",
+        "amount": "1 tsp",
+        "source": "iwc",
+        "match_words": "red chilli powder"
+      },
+      {
+        "label": "Hing",
+        "amount": "a pinch",
+        "source": "iwc",
+        "match_words": "hing"
+      },
+      {
+        "label": "Ginger",
+        "amount": "1 inch",
+        "source": "local"
+      },
+      {
+        "label": "Green chillies",
+        "amount": "2",
+        "source": "local"
+      },
+      {
+        "label": "Oil",
+        "amount": "for frying",
+        "source": "local"
+      },
+      {
+        "label": "Dry ginger powder",
+        "amount": "½ tsp",
+        "source": "iwc",
+        "match_words": "dry ginger powder",
+        "instead_of": "Ginger"
+      }
+    ],
+    "steps": [
+      {
+        "text": "Soak the dal three hours and grind coarsely with ginger and chillies.",
+        "minutes": 10
+      },
+      {
+        "text": "Add the crushed fennel and coriander, chilli powder, hing and salt; shape into thick patties and fry half-done.",
+        "minutes": 12
+      },
+      {
+        "text": "Cool, slice each into strips and fry again until crisp.",
+        "minutes": 12
+      }
+    ]
+  },
+  {
+    "slug": "alasande-vade",
+    "name": "Alasande Vade",
+    "kind": "snacks",
+    "state": "Karnataka",
+    "rank": 532,
+    "blurb": "Black-eyed bean vadas from Karnataka, nutty and crisp.",
+    "minutes": 40,
+    "soak_hours": 4,
+    "serves": 4,
+    "effort": "medium",
+    "ingredients": [
+      {
+        "label": "Lobia",
+        "amount": "1 cup",
+        "source": "iwc",
+        "match_words": "lobia"
+      },
+      {
+        "label": "Red chilli whole",
+        "amount": "3",
+        "source": "iwc",
+        "match_words": "red chilli whole"
+      },
+      {
+        "label": "Hing",
+        "amount": "a pinch",
+        "source": "iwc",
+        "match_words": "hing"
+      },
+      {
+        "label": "Cumin seeds",
+        "amount": "½ tsp",
+        "source": "iwc",
+        "match_words": "cumin seeds"
+      },
+      {
+        "label": "Onion",
+        "amount": "1",
+        "source": "local"
+      },
+      {
+        "label": "Ginger",
+        "amount": "1 inch",
+        "source": "local"
+      },
+      {
+        "label": "Curry leaves",
+        "amount": "a sprig",
+        "source": "local"
+      },
+      {
+        "label": "Oil",
+        "amount": "for frying",
+        "source": "local"
+      },
+      {
+        "label": "Dry ginger powder",
+        "amount": "½ tsp",
+        "source": "iwc",
+        "match_words": "dry ginger powder",
+        "instead_of": "Ginger"
+      },
+      {
+        "label": "Dried curry leaves",
+        "amount": "1 tbsp",
+        "source": "iwc",
+        "match_words": "curry leaves",
+        "instead_of": "Curry leaves"
+      }
+    ],
+    "steps": [
+      {
+        "text": "Soak the beans four hours, drain and grind coarsely with the chillies and ginger.",
+        "minutes": 10
+      },
+      {
+        "text": "Mix in the onion, curry leaves, cumin, hing and salt.",
+        "minutes": 3
+      },
+      {
+        "text": "Shape small vadas and fry until golden.",
+        "minutes": 15
+      }
+    ]
+  },
+  {
+    "slug": "malvani-vade",
+    "name": "Malvani Vade",
+    "kind": "snacks",
+    "state": "Maharashtra",
+    "rank": 533,
+    "blurb": "Puffy fried breads of rice and lentil flour from the Konkan coast, eaten with chicken curry or alone with tea.",
+    "minutes": 40,
+    "soak_hours": null,
+    "serves": 6,
+    "effort": "medium",
+    "ingredients": [
+      {
+        "label": "Rice flour",
+        "amount": "2 cups",
+        "source": "iwc",
+        "match_words": "rice flour"
+      },
+      {
+        "label": "Urad dal",
+        "amount": "2 tbsp",
+        "source": "iwc",
+        "match_words": "urad dal"
+      },
+      {
+        "label": "Fenugreek seeds",
+        "amount": "½ tsp",
+        "source": "iwc",
+        "match_words": "fenugreek seeds"
+      },
+      {
+        "label": "Whole coriander",
+        "amount": "1 tsp",
+        "source": "iwc",
+        "match_words": "whole coriander"
+      },
+      {
+        "label": "Turmeric",
+        "amount": "¼ tsp",
+        "source": "iwc",
+        "match_words": "turmeric"
+      },
+      {
+        "label": "Warm water",
+        "amount": "to knead",
+        "source": "local"
+      },
+      {
+        "label": "Oil",
+        "amount": "for frying",
+        "source": "local"
+      }
+    ],
+    "steps": [
+      {
+        "text": "Dry-roast the urad dal, fenugreek and coriander, grind fine and mix with the rice flour, turmeric and salt.",
+        "minutes": 10
+      },
+      {
+        "text": "Knead into a soft dough with warm water and rest it.",
+        "minutes": 15
+      },
+      {
+        "text": "Press small discs on a wet cloth and fry until they puff.",
+        "minutes": 15
+      }
+    ]
+  },
+  {
+    "slug": "nadru-monje",
+    "name": "Nadru Monje",
+    "kind": "snacks",
+    "state": "Jammu and Kashmir",
+    "rank": 534,
+    "blurb": "Kashmir's lotus stem fritters, crisp batter around crunchy slices.",
+    "minutes": 30,
+    "soak_hours": null,
+    "serves": 4,
+    "effort": "easy",
+    "ingredients": [
+      {
+        "label": "Besan",
+        "amount": "½ cup",
+        "source": "iwc",
+        "match_words": "besan"
+      },
+      {
+        "label": "Rice flour",
+        "amount": "¼ cup",
+        "source": "iwc",
+        "match_words": "rice flour"
+      },
+      {
+        "label": "Kashmiri chilli powder",
+        "amount": "1 tsp",
+        "source": "iwc",
+        "match_words": "kashmiri chilli powder"
+      },
+      {
+        "label": "Fennel powder",
+        "amount": "½ tsp",
+        "source": "iwc",
+        "match_words": "fennel powder"
+      },
+      {
+        "label": "Ajwain",
+        "amount": "½ tsp",
+        "source": "iwc",
+        "match_words": "ajwain"
+      },
+      {
+        "label": "Lotus stem",
+        "amount": "250 g",
+        "source": "local"
+      },
+      {
+        "label": "Oil",
+        "amount": "for frying",
+        "source": "local"
+      }
+    ],
+    "steps": [
+      {
+        "text": "Peel the lotus stem, slice it on a slant and boil for five minutes.",
+        "minutes": 10
+      },
+      {
+        "text": "Make a thick batter of the flours, spices, salt and water.",
+        "minutes": 3
+      },
+      {
+        "text": "Coat the slices and fry until crisp.",
+        "minutes": 12
+      }
+    ]
+  },
+  {
+    "slug": "kuttu-pakora",
+    "name": "Kuttu Pakora",
+    "kind": "snacks",
+    "state": "Uttar Pradesh",
+    "rank": 535,
+    "blurb": "Fasting-day fritters of buckwheat flour and potato, with rock salt.",
+    "minutes": 25,
+    "soak_hours": null,
+    "serves": 4,
+    "effort": "easy",
+    "ingredients": [
+      {
+        "label": "Kuttu atta",
+        "amount": "1 cup",
+        "source": "iwc",
+        "match_words": "kuttu atta"
+      },
+      {
+        "label": "Rock salt",
+        "amount": "1 tsp",
+        "source": "iwc",
+        "match_words": "rock salt"
+      },
+      {
+        "label": "Red chilli powder",
+        "amount": "½ tsp",
+        "source": "iwc",
+        "match_words": "red chilli powder"
+      },
+      {
+        "label": "Cumin seeds",
+        "amount": "½ tsp",
+        "source": "iwc",
+        "match_words": "cumin seeds"
+      },
+      {
+        "label": "Potatoes",
+        "amount": "2",
+        "source": "local"
+      },
+      {
+        "label": "Green chillies",
+        "amount": "2",
+        "source": "local"
+      },
+      {
+        "label": "Oil",
+        "amount": "for frying",
+        "source": "local"
+      }
+    ],
+    "steps": [
+      {
+        "text": "Slice the potatoes thin.",
+        "minutes": 5
+      },
+      {
+        "text": "Whisk the kuttu atta, rock salt, chilli powder, cumin and chillies with water into a batter.",
+        "minutes": 3
+      },
+      {
+        "text": "Dip the slices and fry until crisp.",
+        "minutes": 12
+      }
+    ]
+  },
+  {
+    "slug": "kumro-phool-bora",
+    "name": "Kumro Phool Bora",
+    "kind": "snacks",
+    "state": "West Bengal",
+    "rank": 536,
+    "blurb": "Pumpkin flowers in a thin rice-flour batter, a Bengali summer treat.",
+    "minutes": 20,
+    "soak_hours": null,
+    "serves": 4,
+    "effort": "easy",
+    "ingredients": [
+      {
+        "label": "Besan",
+        "amount": "¼ cup",
+        "source": "iwc",
+        "match_words": "besan"
+      },
+      {
+        "label": "Rice flour",
+        "amount": "¼ cup",
+        "source": "iwc",
+        "match_words": "rice flour"
+      },
+      {
+        "label": "Kalonji",
+        "amount": "½ tsp",
+        "source": "iwc",
+        "match_words": "kalonji"
+      },
+      {
+        "label": "Red chilli powder",
+        "amount": "½ tsp",
+        "source": "iwc",
+        "match_words": "red chilli powder"
+      },
+      {
+        "label": "Turmeric",
+        "amount": "¼ tsp",
+        "source": "iwc",
+        "match_words": "turmeric"
+      },
+      {
+        "label": "Pumpkin flowers",
+        "amount": "12",
+        "source": "local"
+      },
+      {
+        "label": "Mustard oil",
+        "amount": "for frying",
+        "source": "local"
+      }
+    ],
+    "steps": [
+      {
+        "text": "Remove the stems and centres of the flowers and rinse gently.",
+        "minutes": 5
+      },
+      {
+        "text": "Make a thin batter of the flours, kalonji, spices, salt and water.",
+        "minutes": 3
+      },
+      {
+        "text": "Dip and fry until crisp.",
+        "minutes": 10
+      }
+    ]
+  },
+  {
+    "slug": "posto-bora",
+    "name": "Posto Bora",
+    "kind": "snacks",
+    "state": "West Bengal",
+    "rank": 537,
+    "blurb": "Fritters of ground poppy seeds and green chilli, a West Bengal favourite with dal and rice.",
+    "minutes": 20,
+    "soak_hours": 1,
+    "serves": 4,
+    "effort": "easy",
+    "ingredients": [
+      {
+        "label": "Poppy seeds",
+        "amount": "½ cup",
+        "source": "iwc",
+        "match_words": "poppy seeds"
+      },
+      {
+        "label": "Rice flour",
+        "amount": "1 tbsp",
+        "source": "iwc",
+        "match_words": "rice flour"
+      },
+      {
+        "label": "Turmeric",
+        "amount": "¼ tsp",
+        "source": "iwc",
+        "match_words": "turmeric"
+      },
+      {
+        "label": "Onion",
+        "amount": "1",
+        "source": "local"
+      },
+      {
+        "label": "Green chillies",
+        "amount": "2",
+        "source": "local"
+      },
+      {
+        "label": "Mustard oil",
+        "amount": "for frying",
+        "source": "local"
+      },
+      {
+        "label": "Red chilli powder",
+        "amount": "½ tsp",
+        "source": "iwc",
+        "match_words": "red chilli powder",
+        "instead_of": "Green chillies"
+      }
+    ],
+    "steps": [
+      {
+        "text": "Soak the poppy seeds an hour and grind to a thick paste.",
+        "minutes": 10
+      },
+      {
+        "text": "Mix with the chopped onion, chillies, rice flour, turmeric and salt.",
+        "minutes": 3
+      },
+      {
+        "text": "Shape small flat boras and shallow-fry until golden.",
+        "minutes": 10
+      }
+    ]
+  },
+  {
+    "slug": "phuluri",
+    "name": "Phuluri",
+    "kind": "snacks",
+    "state": "West Bengal",
+    "rank": 538,
+    "blurb": "Small, airy besan dumplings fried for Kolkata's evening telebhaja.",
+    "minutes": 25,
+    "soak_hours": null,
+    "serves": 4,
+    "effort": "easy",
+    "ingredients": [
+      {
+        "label": "Besan",
+        "amount": "1 cup",
+        "source": "iwc",
+        "match_words": "besan"
+      },
+      {
+        "label": "Kalonji",
+        "amount": "½ tsp",
+        "source": "iwc",
+        "match_words": "kalonji"
+      },
+      {
+        "label": "Red chilli powder",
+        "amount": "½ tsp",
+        "source": "iwc",
+        "match_words": "red chilli powder"
+      },
+      {
+        "label": "Baking soda",
+        "amount": "a pinch",
+        "source": "iwc",
+        "match_words": "baking soda"
+      },
+      {
+        "label": "Green chillies",
+        "amount": "2",
+        "source": "local"
+      },
+      {
+        "label": "Mustard oil",
+        "amount": "for frying",
+        "source": "local"
+      }
+    ],
+    "steps": [
+      {
+        "text": "Whisk the besan with water for a few minutes until light.",
+        "minutes": 5
+      },
+      {
+        "text": "Add the kalonji, chilli powder, soda, chopped chillies and salt.",
+        "minutes": 2
+      },
+      {
+        "text": "Drop small spoonfuls into hot oil and fry until puffed and golden.",
+        "minutes": 12
+      }
+    ]
+  },
+  {
+    "slug": "matar-chaat",
+    "name": "Matar Chaat",
+    "kind": "snacks",
+    "state": "Delhi",
+    "rank": 539,
+    "blurb": "Old Delhi's dried white peas, soft and tangy, topped with onion, ginger and chaat masala.",
+    "minutes": 40,
+    "soak_hours": 8,
+    "serves": 4,
+    "effort": "easy",
+    "ingredients": [
+      {
+        "label": "White peas",
+        "amount": "1 cup",
+        "source": "iwc",
+        "match_words": "white peas"
+      },
+      {
+        "label": "Chaat masala",
+        "amount": "1½ tsp",
+        "source": "iwc",
+        "match_words": "chaat masala"
+      },
+      {
+        "label": "Roasted cumin",
+        "amount": "1 tsp",
+        "source": "iwc",
+        "match_words": "roasted cumin"
+      },
+      {
+        "label": "Tamarind chutney",
+        "amount": "3 tbsp",
+        "source": "iwc",
+        "match_words": "tamarind chutney"
+      },
+      {
+        "label": "Red chilli powder",
+        "amount": "½ tsp",
+        "source": "iwc",
+        "match_words": "red chilli powder"
+      },
+      {
+        "label": "Onion",
+        "amount": "1",
+        "source": "local"
+      },
+      {
+        "label": "Ginger",
+        "amount": "1 inch",
+        "source": "local"
+      },
+      {
+        "label": "Green chillies",
+        "amount": "2",
+        "source": "local"
+      },
+      {
+        "label": "Lemon",
+        "amount": "1",
+        "source": "local"
+      },
+      {
+        "label": "Coriander",
+        "amount": "a handful",
+        "source": "local"
+      },
+      {
+        "label": "Dry ginger powder",
+        "amount": "½ tsp",
+        "source": "iwc",
+        "match_words": "dry ginger powder",
+        "instead_of": "Ginger"
+      },
+      {
+        "label": "Amchur",
+        "amount": "1 tsp",
+        "source": "iwc",
+        "match_words": "amchur",
+        "instead_of": "Lemon"
+      },
+      {
+        "label": "Coriander powder",
+        "amount": "1 tsp",
+        "source": "iwc",
+        "match_words": "coriander powder",
+        "instead_of": "Coriander"
+      }
+    ],
+    "steps": [
+      {
+        "text": "Soak the peas overnight and pressure-cook with salt until soft but whole.",
+        "minutes": 25
+      },
+      {
+        "text": "Mash a few, then mix in the chaat masala, cumin and chilli powder.",
+        "minutes": 3
+      },
+      {
+        "text": "Top with tamarind chutney, onion, ginger strips, chillies, coriander and lemon.",
+        "minutes": 3
+      }
+    ]
+  },
+  {
+    "slug": "kulle-chaat",
+    "name": "Kulle Chaat",
+    "kind": "snacks",
+    "state": "Delhi",
+    "rank": 540,
+    "blurb": "Old Delhi's hollowed cucumber, tomato and potato cups filled with chickpeas and pomegranate.",
+    "minutes": 30,
+    "soak_hours": null,
+    "serves": 4,
+    "effort": "medium",
+    "ingredients": [
+      {
+        "label": "Kabuli chana",
+        "amount": "½ cup",
+        "source": "iwc",
+        "match_words": "kabuli chana"
+      },
+      {
+        "label": "Chaat masala",
+        "amount": "1 tsp",
+        "source": "iwc",
+        "match_words": "chaat masala"
+      },
+      {
+        "label": "Kala namak",
+        "amount": "½ tsp",
+        "source": "iwc",
+        "match_words": "kala namak"
+      },
+      {
+        "label": "Roasted cumin",
+        "amount": "½ tsp",
+        "source": "iwc",
+        "match_words": "roasted cumin"
+      },
+      {
+        "label": "Potatoes",
+        "amount": "2",
+        "source": "local"
+      },
+      {
+        "label": "Cucumber",
+        "amount": "1",
+        "source": "local"
+      },
+      {
+        "label": "Tomatoes",
+        "amount": "2",
+        "source": "local"
+      },
+      {
+        "label": "Pomegranate",
+        "amount": "½",
+        "source": "local"
+      },
+      {
+        "label": "Lemon",
+        "amount": "1",
+        "source": "local"
+      },
+      {
+        "label": "Anardana powder",
+        "amount": "1 tsp",
+        "source": "iwc",
+        "match_words": "anardana powder",
+        "instead_of": "Pomegranate"
+      },
+      {
+        "label": "Amchur",
+        "amount": "1 tsp",
+        "source": "iwc",
+        "match_words": "amchur",
+        "instead_of": "Lemon"
+      }
+    ],
+    "steps": [
+      {
+        "text": "Soak and boil the chana until soft, or use cooked chana.",
+        "minutes": 20
+      },
+      {
+        "text": "Boil and halve the potatoes; cut the cucumber and tomatoes into cups and scoop out the centres.",
+        "minutes": 10
+      },
+      {
+        "text": "Fill with chana and pomegranate, dust with the spices and squeeze lemon over.",
+        "minutes": 5
+      }
+    ]
+  }
+]

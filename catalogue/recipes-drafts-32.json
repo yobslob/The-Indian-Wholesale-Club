@@ -1,0 +1,1746 @@
+[
+  {
+    "slug": "erachi-pathiri",
+    "name": "Erachi Pathiri",
+    "kind": "snacks",
+    "state": "Kerala",
+    "rank": 621,
+    "blurb": "Malabar's fried pastry pockets with a spiced mince filling, made for iftar.",
+    "minutes": 60,
+    "soak_hours": null,
+    "serves": 6,
+    "effort": "weekend",
+    "ingredients": [
+      {
+        "label": "Maida",
+        "amount": "2 cups",
+        "source": "iwc",
+        "match_words": "maida"
+      },
+      {
+        "label": "Garam masala",
+        "amount": "1 tsp",
+        "source": "iwc",
+        "match_words": "garam masala"
+      },
+      {
+        "label": "Kashmiri chilli powder",
+        "amount": "1 tsp",
+        "source": "iwc",
+        "match_words": "kashmiri chilli powder"
+      },
+      {
+        "label": "Fennel powder",
+        "amount": "½ tsp",
+        "source": "iwc",
+        "match_words": "fennel powder"
+      },
+      {
+        "label": "Chicken mince",
+        "amount": "300 g",
+        "source": "local"
+      },
+      {
+        "label": "Onions",
+        "amount": "2",
+        "source": "local"
+      },
+      {
+        "label": "Ginger-garlic paste",
+        "amount": "1 tbsp",
+        "source": "local"
+      },
+      {
+        "label": "Green chillies",
+        "amount": "2",
+        "source": "local"
+      },
+      {
+        "label": "Curry leaves",
+        "amount": "a sprig",
+        "source": "local"
+      },
+      {
+        "label": "Oil",
+        "amount": "for frying",
+        "source": "local"
+      },
+      {
+        "label": "Dry ginger powder",
+        "amount": "½ tsp",
+        "source": "iwc",
+        "match_words": "dry ginger powder",
+        "instead_of": "Ginger-garlic paste"
+      },
+      {
+        "label": "Garlic powder",
+        "amount": "½ tsp",
+        "source": "iwc",
+        "match_words": "garlic powder",
+        "instead_of": "Ginger-garlic paste"
+      },
+      {
+        "label": "Red chilli powder",
+        "amount": "½ tsp",
+        "source": "iwc",
+        "match_words": "red chilli powder",
+        "instead_of": "Green chillies"
+      },
+      {
+        "label": "Dried curry leaves",
+        "amount": "1 tbsp",
+        "source": "iwc",
+        "match_words": "curry leaves",
+        "instead_of": "Curry leaves"
+      }
+    ],
+    "steps": [
+      {
+        "text": "Knead the maida with salt, oil and water and rest it.",
+        "minutes": 10
+      },
+      {
+        "text": "Cook the onions, ginger-garlic paste, chillies and curry leaves, add the mince and spices and cook dry.",
+        "minutes": 20
+      },
+      {
+        "text": "Roll thin rounds, fill, cover with a second round, seal and fry until golden.",
+        "minutes": 25
+      }
+    ]
+  },
+  {
+    "slug": "nethili-fry",
+    "name": "Nethili Fry",
+    "kind": "snacks",
+    "state": "Tamil Nadu",
+    "rank": 622,
+    "blurb": "Chennai's crisp fried anchovies in a red chilli and rice flour coat.",
+    "minutes": 30,
+    "soak_hours": null,
+    "serves": 4,
+    "effort": "easy",
+    "ingredients": [
+      {
+        "label": "Red chilli powder",
+        "amount": "2 tsp",
+        "source": "iwc",
+        "match_words": "red chilli powder"
+      },
+      {
+        "label": "Turmeric",
+        "amount": "¼ tsp",
+        "source": "iwc",
+        "match_words": "turmeric"
+      },
+      {
+        "label": "Rice flour",
+        "amount": "3 tbsp",
+        "source": "iwc",
+        "match_words": "rice flour"
+      },
+      {
+        "label": "Fennel powder",
+        "amount": "½ tsp",
+        "source": "iwc",
+        "match_words": "fennel powder"
+      },
+      {
+        "label": "Anchovies",
+        "amount": "300 g",
+        "source": "local"
+      },
+      {
+        "label": "Ginger-garlic paste",
+        "amount": "1 tsp",
+        "source": "local"
+      },
+      {
+        "label": "Lemon",
+        "amount": "1",
+        "source": "local"
+      },
+      {
+        "label": "Curry leaves",
+        "amount": "a sprig",
+        "source": "local"
+      },
+      {
+        "label": "Oil",
+        "amount": "for frying",
+        "source": "local"
+      },
+      {
+        "label": "Dry ginger powder",
+        "amount": "½ tsp",
+        "source": "iwc",
+        "match_words": "dry ginger powder",
+        "instead_of": "Ginger-garlic paste"
+      },
+      {
+        "label": "Garlic powder",
+        "amount": "½ tsp",
+        "source": "iwc",
+        "match_words": "garlic powder",
+        "instead_of": "Ginger-garlic paste"
+      },
+      {
+        "label": "Amchur",
+        "amount": "1 tsp",
+        "source": "iwc",
+        "match_words": "amchur",
+        "instead_of": "Lemon"
+      },
+      {
+        "label": "Dried curry leaves",
+        "amount": "1 tbsp",
+        "source": "iwc",
+        "match_words": "curry leaves",
+        "instead_of": "Curry leaves"
+      }
+    ],
+    "steps": [
+      {
+        "text": "Clean the anchovies and pat dry.",
+        "minutes": 10
+      },
+      {
+        "text": "Toss with the spices, rice flour, ginger-garlic paste, lemon and salt.",
+        "minutes": 3
+      },
+      {
+        "text": "Fry in batches with curry leaves until crisp.",
+        "minutes": 12
+      }
+    ]
+  },
+  {
+    "slug": "chegodilu",
+    "name": "Chegodilu",
+    "kind": "snacks",
+    "state": "Andhra Pradesh",
+    "rank": 623,
+    "blurb": "Crunchy rice-flour rings with sesame and moong dal, a Telugu festive snack.",
+    "minutes": 50,
+    "soak_hours": null,
+    "serves": 8,
+    "effort": "medium",
+    "ingredients": [
+      {
+        "label": "Rice flour",
+        "amount": "2 cups",
+        "source": "iwc",
+        "match_words": "rice flour"
+      },
+      {
+        "label": "Moong dal",
+        "amount": "2 tbsp",
+        "source": "iwc",
+        "match_words": "moong dal"
+      },
+      {
+        "label": "Sesame seeds",
+        "amount": "1 tbsp",
+        "source": "iwc",
+        "match_words": "sesame seeds"
+      },
+      {
+        "label": "Red chilli powder",
+        "amount": "1 tsp",
+        "source": "iwc",
+        "match_words": "red chilli powder"
+      },
+      {
+        "label": "Ajwain",
+        "amount": "½ tsp",
+        "source": "iwc",
+        "match_words": "ajwain"
+      },
+      {
+        "label": "Butter",
+        "amount": "1 tbsp",
+        "source": "local"
+      },
+      {
+        "label": "Oil",
+        "amount": "for frying",
+        "source": "local"
+      }
+    ],
+    "steps": [
+      {
+        "text": "Boil water with salt, butter and the soaked moong dal; add the rice flour and stir to a dough.",
+        "minutes": 10
+      },
+      {
+        "text": "Add sesame, chilli powder and ajwain and knead smooth.",
+        "minutes": 5
+      },
+      {
+        "text": "Roll thin ropes, join into rings and fry slowly until crisp.",
+        "minutes": 30
+      }
+    ]
+  },
+  {
+    "slug": "aloo-chop",
+    "name": "Aloo Chop",
+    "kind": "snacks",
+    "state": "West Bengal",
+    "rank": 624,
+    "blurb": "Kolkata's spiced mashed potato balls in a thin besan batter, sold at every telebhaja stall.",
+    "minutes": 40,
+    "soak_hours": null,
+    "serves": 6,
+    "effort": "easy",
+    "ingredients": [
+      {
+        "label": "Besan",
+        "amount": "1 cup",
+        "source": "iwc",
+        "match_words": "besan"
+      },
+      {
+        "label": "Roasted cumin",
+        "amount": "1 tsp",
+        "source": "iwc",
+        "match_words": "roasted cumin"
+      },
+      {
+        "label": "Red chilli powder",
+        "amount": "1 tsp",
+        "source": "iwc",
+        "match_words": "red chilli powder"
+      },
+      {
+        "label": "Kalonji",
+        "amount": "½ tsp",
+        "source": "iwc",
+        "match_words": "kalonji"
+      },
+      {
+        "label": "Peanuts",
+        "amount": "2 tbsp",
+        "source": "iwc",
+        "match_words": "peanuts"
+      },
+      {
+        "label": "Potatoes",
+        "amount": "4",
+        "source": "local"
+      },
+      {
+        "label": "Ginger",
+        "amount": "1 inch",
+        "source": "local"
+      },
+      {
+        "label": "Green chillies",
+        "amount": "2",
+        "source": "local"
+      },
+      {
+        "label": "Coriander",
+        "amount": "a handful",
+        "source": "local"
+      },
+      {
+        "label": "Mustard oil",
+        "amount": "for frying",
+        "source": "local"
+      },
+      {
+        "label": "Dry ginger powder",
+        "amount": "½ tsp",
+        "source": "iwc",
+        "match_words": "dry ginger powder",
+        "instead_of": "Ginger"
+      },
+      {
+        "label": "Coriander powder",
+        "amount": "1 tsp",
+        "source": "iwc",
+        "match_words": "coriander powder",
+        "instead_of": "Coriander"
+      }
+    ],
+    "steps": [
+      {
+        "text": "Boil and mash the potatoes with cumin, chilli powder, crushed peanuts, ginger, chillies, coriander and salt.",
+        "minutes": 15
+      },
+      {
+        "text": "Shape into flat rounds.",
+        "minutes": 5
+      },
+      {
+        "text": "Dip in a besan batter with kalonji and fry until golden.",
+        "minutes": 15
+      }
+    ]
+  },
+  {
+    "slug": "mochar-chop",
+    "name": "Mochar Chop",
+    "kind": "snacks",
+    "state": "West Bengal",
+    "rank": 625,
+    "blurb": "Banana flower croquettes from Bengal, spiced, crumbed and fried.",
+    "minutes": 60,
+    "soak_hours": null,
+    "serves": 6,
+    "effort": "weekend",
+    "ingredients": [
+      {
+        "label": "Garam masala",
+        "amount": "1 tsp",
+        "source": "iwc",
+        "match_words": "garam masala"
+      },
+      {
+        "label": "Roasted cumin",
+        "amount": "1 tsp",
+        "source": "iwc",
+        "match_words": "roasted cumin"
+      },
+      {
+        "label": "Red chilli powder",
+        "amount": "1 tsp",
+        "source": "iwc",
+        "match_words": "red chilli powder"
+      },
+      {
+        "label": "Peanuts",
+        "amount": "2 tbsp",
+        "source": "iwc",
+        "match_words": "peanuts"
+      },
+      {
+        "label": "Raisins",
+        "amount": "1 tbsp",
+        "source": "iwc",
+        "match_words": "raisins"
+      },
+      {
+        "label": "Banana flower",
+        "amount": "1",
+        "source": "local"
+      },
+      {
+        "label": "Potatoes",
+        "amount": "2",
+        "source": "local"
+      },
+      {
+        "label": "Ginger",
+        "amount": "1 inch",
+        "source": "local"
+      },
+      {
+        "label": "Breadcrumbs",
+        "amount": "1 cup",
+        "source": "local"
+      },
+      {
+        "label": "Mustard oil",
+        "amount": "for frying",
+        "source": "local"
+      },
+      {
+        "label": "Dry ginger powder",
+        "amount": "½ tsp",
+        "source": "iwc",
+        "match_words": "dry ginger powder",
+        "instead_of": "Ginger"
+      }
+    ],
+    "steps": [
+      {
+        "text": "Clean the florets, boil with salt and turmeric and chop fine.",
+        "minutes": 25
+      },
+      {
+        "text": "Cook with mashed potato, ginger, spices, peanuts, raisins and a pinch of sugar until dry.",
+        "minutes": 10
+      },
+      {
+        "text": "Shape, coat in a flour and water paste and breadcrumbs, and fry.",
+        "minutes": 15
+      }
+    ]
+  },
+  {
+    "slug": "dimer-devil",
+    "name": "Dimer Devil",
+    "kind": "snacks",
+    "state": "West Bengal",
+    "rank": 626,
+    "blurb": "Kolkata's egg chop: a boiled egg wrapped in spiced potato or mince, crumbed and fried.",
+    "minutes": 50,
+    "soak_hours": null,
+    "serves": 6,
+    "effort": "medium",
+    "ingredients": [
+      {
+        "label": "Garam masala",
+        "amount": "1 tsp",
+        "source": "iwc",
+        "match_words": "garam masala"
+      },
+      {
+        "label": "Red chilli powder",
+        "amount": "1 tsp",
+        "source": "iwc",
+        "match_words": "red chilli powder"
+      },
+      {
+        "label": "Roasted cumin",
+        "amount": "½ tsp",
+        "source": "iwc",
+        "match_words": "roasted cumin"
+      },
+      {
+        "label": "Eggs",
+        "amount": "6",
+        "source": "local"
+      },
+      {
+        "label": "Potatoes",
+        "amount": "3",
+        "source": "local"
+      },
+      {
+        "label": "Onion",
+        "amount": "1",
+        "source": "local"
+      },
+      {
+        "label": "Ginger",
+        "amount": "1 inch",
+        "source": "local"
+      },
+      {
+        "label": "Breadcrumbs",
+        "amount": "1 cup",
+        "source": "local"
+      },
+      {
+        "label": "Oil",
+        "amount": "for frying",
+        "source": "local"
+      },
+      {
+        "label": "Dry ginger powder",
+        "amount": "½ tsp",
+        "source": "iwc",
+        "match_words": "dry ginger powder",
+        "instead_of": "Ginger"
+      }
+    ],
+    "steps": [
+      {
+        "text": "Hard-boil four eggs and halve them.",
+        "minutes": 12
+      },
+      {
+        "text": "Cook the onion and ginger, add mashed potato, spices and salt.",
+        "minutes": 8
+      },
+      {
+        "text": "Wrap each half egg in the potato, dip in the beaten remaining eggs, roll in crumbs and fry.",
+        "minutes": 20
+      }
+    ]
+  },
+  {
+    "slug": "fish-kobiraji",
+    "name": "Fish Kobiraji",
+    "kind": "snacks",
+    "state": "West Bengal",
+    "rank": 627,
+    "blurb": "Kolkata's crumbed fish fillet wrapped in a lacy net of fried egg.",
+    "minutes": 50,
+    "soak_hours": null,
+    "serves": 4,
+    "effort": "medium",
+    "ingredients": [
+      {
+        "label": "Black pepper",
+        "amount": "1 tsp",
+        "source": "iwc",
+        "match_words": "black pepper"
+      },
+      {
+        "label": "Garam masala",
+        "amount": "½ tsp",
+        "source": "iwc",
+        "match_words": "garam masala"
+      },
+      {
+        "label": "Cornflour",
+        "amount": "2 tbsp",
+        "source": "iwc",
+        "match_words": "cornflour"
+      },
+      {
+        "label": "Fish fillets",
+        "amount": "4",
+        "source": "local"
+      },
+      {
+        "label": "Ginger-garlic paste",
+        "amount": "1 tsp",
+        "source": "local"
+      },
+      {
+        "label": "Mint",
+        "amount": "a handful",
+        "source": "local"
+      },
+      {
+        "label": "Lemon",
+        "amount": "1",
+        "source": "local"
+      },
+      {
+        "label": "Eggs",
+        "amount": "3",
+        "source": "local"
+      },
+      {
+        "label": "Breadcrumbs",
+        "amount": "1 cup",
+        "source": "local"
+      },
+      {
+        "label": "Oil",
+        "amount": "for frying",
+        "source": "local"
+      },
+      {
+        "label": "Dry ginger powder",
+        "amount": "½ tsp",
+        "source": "iwc",
+        "match_words": "dry ginger powder",
+        "instead_of": "Ginger-garlic paste"
+      },
+      {
+        "label": "Garlic powder",
+        "amount": "½ tsp",
+        "source": "iwc",
+        "match_words": "garlic powder",
+        "instead_of": "Ginger-garlic paste"
+      },
+      {
+        "label": "Dried mint leaves",
+        "amount": "1 tsp",
+        "source": "iwc",
+        "match_words": "mint leaves",
+        "instead_of": "Mint"
+      },
+      {
+        "label": "Amchur",
+        "amount": "1 tsp",
+        "source": "iwc",
+        "match_words": "amchur",
+        "instead_of": "Lemon"
+      }
+    ],
+    "steps": [
+      {
+        "text": "Marinate the fillets with ginger-garlic paste, ground mint, pepper, garam masala, lemon and salt.",
+        "minutes": 20
+      },
+      {
+        "text": "Dip in egg, coat in crumbs and fry until golden.",
+        "minutes": 10
+      },
+      {
+        "text": "Whisk the remaining eggs with cornflour and drizzle into the hot oil in threads; lift the lacy net round each fillet.",
+        "minutes": 10
+      }
+    ]
+  },
+  {
+    "slug": "begun-bhaja",
+    "name": "Begun Bhaja",
+    "kind": "snacks",
+    "state": "West Bengal",
+    "rank": 628,
+    "blurb": "Thick eggplant slices rubbed with turmeric and chilli and fried in mustard oil, eaten with rice and dal.",
+    "minutes": 25,
+    "soak_hours": null,
+    "serves": 4,
+    "effort": "easy",
+    "ingredients": [
+      {
+        "label": "Turmeric",
+        "amount": "½ tsp",
+        "source": "iwc",
+        "match_words": "turmeric"
+      },
+      {
+        "label": "Red chilli powder",
+        "amount": "1 tsp",
+        "source": "iwc",
+        "match_words": "red chilli powder"
+      },
+      {
+        "label": "Rice flour",
+        "amount": "2 tbsp",
+        "source": "iwc",
+        "match_words": "rice flour"
+      },
+      {
+        "label": "Large eggplant",
+        "amount": "1",
+        "source": "local"
+      },
+      {
+        "label": "Mustard oil",
+        "amount": "¼ cup",
+        "source": "local"
+      }
+    ],
+    "steps": [
+      {
+        "text": "Slice the eggplant into thick rounds and score them.",
+        "minutes": 5
+      },
+      {
+        "text": "Rub with turmeric, chilli powder, salt and a pinch of sugar, then dust with rice flour.",
+        "minutes": 5
+      },
+      {
+        "text": "Fry in mustard oil until soft inside and browned on both sides.",
+        "minutes": 12
+      }
+    ]
+  },
+  {
+    "slug": "mangsher-chop",
+    "name": "Mangsher Chop",
+    "kind": "snacks",
+    "state": "West Bengal",
+    "rank": 629,
+    "blurb": "Kolkata's spiced mutton croquettes in a crisp crumb coat.",
+    "minutes": 60,
+    "soak_hours": null,
+    "serves": 6,
+    "effort": "weekend",
+    "ingredients": [
+      {
+        "label": "Garam masala",
+        "amount": "1 tsp",
+        "source": "iwc",
+        "match_words": "garam masala"
+      },
+      {
+        "label": "Red chilli powder",
+        "amount": "1 tsp",
+        "source": "iwc",
+        "match_words": "red chilli powder"
+      },
+      {
+        "label": "Roasted cumin",
+        "amount": "1 tsp",
+        "source": "iwc",
+        "match_words": "roasted cumin"
+      },
+      {
+        "label": "Raisins",
+        "amount": "1 tbsp",
+        "source": "iwc",
+        "match_words": "raisins"
+      },
+      {
+        "label": "Mutton mince",
+        "amount": "300 g",
+        "source": "local"
+      },
+      {
+        "label": "Potatoes",
+        "amount": "2",
+        "source": "local"
+      },
+      {
+        "label": "Onion",
+        "amount": "1",
+        "source": "local"
+      },
+      {
+        "label": "Ginger-garlic paste",
+        "amount": "1 tbsp",
+        "source": "local"
+      },
+      {
+        "label": "Eggs",
+        "amount": "2",
+        "source": "local"
+      },
+      {
+        "label": "Breadcrumbs",
+        "amount": "1 cup",
+        "source": "local"
+      },
+      {
+        "label": "Oil",
+        "amount": "for frying",
+        "source": "local"
+      },
+      {
+        "label": "Dry ginger powder",
+        "amount": "½ tsp",
+        "source": "iwc",
+        "match_words": "dry ginger powder",
+        "instead_of": "Ginger-garlic paste"
+      },
+      {
+        "label": "Garlic powder",
+        "amount": "½ tsp",
+        "source": "iwc",
+        "match_words": "garlic powder",
+        "instead_of": "Ginger-garlic paste"
+      }
+    ],
+    "steps": [
+      {
+        "text": "Cook the onion, ginger-garlic paste, mince and spices until dry.",
+        "minutes": 20
+      },
+      {
+        "text": "Wrap balls of mince in mashed potato with a raisin inside.",
+        "minutes": 10
+      },
+      {
+        "text": "Dip in egg, roll in breadcrumbs and fry until golden.",
+        "minutes": 15
+      }
+    ]
+  },
+  {
+    "slug": "rava-dhokla",
+    "name": "Rava Dhokla",
+    "kind": "snacks",
+    "state": "Gujarat",
+    "rank": 630,
+    "blurb": "Instant semolina dhokla with a mustard and curry leaf tempering.",
+    "minutes": 35,
+    "soak_hours": null,
+    "serves": 4,
+    "effort": "easy",
+    "ingredients": [
+      {
+        "label": "Sooji",
+        "amount": "1 cup",
+        "source": "iwc",
+        "match_words": "sooji"
+      },
+      {
+        "label": "Eno",
+        "amount": "1 tsp",
+        "source": "iwc",
+        "match_words": "eno"
+      },
+      {
+        "label": "Mustard seeds",
+        "amount": "1 tsp",
+        "source": "iwc",
+        "match_words": "mustard seeds"
+      },
+      {
+        "label": "Sesame seeds",
+        "amount": "1 tsp",
+        "source": "iwc",
+        "match_words": "sesame seeds"
+      },
+      {
+        "label": "Yogurt",
+        "amount": "¾ cup",
+        "source": "local"
+      },
+      {
+        "label": "Ginger",
+        "amount": "1 inch",
+        "source": "local"
+      },
+      {
+        "label": "Green chillies",
+        "amount": "2",
+        "source": "local"
+      },
+      {
+        "label": "Curry leaves",
+        "amount": "a sprig",
+        "source": "local"
+      },
+      {
+        "label": "Oil",
+        "amount": "2 tbsp",
+        "source": "local"
+      },
+      {
+        "label": "Dry ginger powder",
+        "amount": "½ tsp",
+        "source": "iwc",
+        "match_words": "dry ginger powder",
+        "instead_of": "Ginger"
+      },
+      {
+        "label": "Red chilli powder",
+        "amount": "½ tsp",
+        "source": "iwc",
+        "match_words": "red chilli powder",
+        "instead_of": "Green chillies"
+      },
+      {
+        "label": "Dried curry leaves",
+        "amount": "1 tbsp",
+        "source": "iwc",
+        "match_words": "curry leaves",
+        "instead_of": "Curry leaves"
+      }
+    ],
+    "steps": [
+      {
+        "text": "Mix the sooji with yogurt, grated ginger, chillies, salt and water; rest fifteen minutes.",
+        "minutes": 15
+      },
+      {
+        "text": "Stir in the eno and steam in a greased plate for fifteen minutes.",
+        "minutes": 15
+      },
+      {
+        "text": "Temper mustard seeds, sesame and curry leaves and pour over; cut into squares.",
+        "minutes": 3
+      }
+    ]
+  },
+  {
+    "slug": "idada",
+    "name": "Idada",
+    "kind": "snacks",
+    "state": "Gujarat",
+    "rank": 631,
+    "blurb": "White dhokla of fermented rice and urad dal, dusted with black pepper.",
+    "minutes": 40,
+    "soak_hours": 6,
+    "serves": 6,
+    "effort": "medium",
+    "ingredients": [
+      {
+        "label": "Raw rice",
+        "amount": "1 cup",
+        "source": "iwc",
+        "match_words": "raw rice"
+      },
+      {
+        "label": "Urad dal",
+        "amount": "¼ cup",
+        "source": "iwc",
+        "match_words": "urad dal"
+      },
+      {
+        "label": "Black pepper",
+        "amount": "1 tsp",
+        "source": "iwc",
+        "match_words": "black pepper"
+      },
+      {
+        "label": "Eno",
+        "amount": "1 tsp",
+        "source": "iwc",
+        "match_words": "eno"
+      },
+      {
+        "label": "Yogurt",
+        "amount": "¼ cup",
+        "source": "local"
+      },
+      {
+        "label": "Ginger",
+        "amount": "1 inch",
+        "source": "local"
+      },
+      {
+        "label": "Green chillies",
+        "amount": "2",
+        "source": "local"
+      },
+      {
+        "label": "Oil",
+        "amount": "1 tbsp",
+        "source": "local"
+      },
+      {
+        "label": "Dry ginger powder",
+        "amount": "½ tsp",
+        "source": "iwc",
+        "match_words": "dry ginger powder",
+        "instead_of": "Ginger"
+      },
+      {
+        "label": "Red chilli powder",
+        "amount": "½ tsp",
+        "source": "iwc",
+        "match_words": "red chilli powder",
+        "instead_of": "Green chillies"
+      }
+    ],
+    "steps": [
+      {
+        "text": "Soak the rice and dal six hours, grind with yogurt to a batter and ferment overnight.",
+        "minutes": 15
+      },
+      {
+        "text": "Add ginger, chillies, salt, oil and eno and steam in a thin layer for twelve minutes.",
+        "minutes": 15
+      },
+      {
+        "text": "Dust with crushed pepper and cut into squares.",
+        "minutes": 3
+      }
+    ]
+  },
+  {
+    "slug": "moong-dal-dhokla",
+    "name": "Moong Dal Dhokla",
+    "kind": "snacks",
+    "state": "Gujarat",
+    "rank": 632,
+    "blurb": "Soft, yellow dhokla of moong dal, light enough for every day.",
+    "minutes": 40,
+    "soak_hours": 4,
+    "serves": 4,
+    "effort": "easy",
+    "ingredients": [
+      {
+        "label": "Moong dal",
+        "amount": "1 cup",
+        "source": "iwc",
+        "match_words": "moong dal"
+      },
+      {
+        "label": "Eno",
+        "amount": "1 tsp",
+        "source": "iwc",
+        "match_words": "eno"
+      },
+      {
+        "label": "Turmeric",
+        "amount": "¼ tsp",
+        "source": "iwc",
+        "match_words": "turmeric"
+      },
+      {
+        "label": "Mustard seeds",
+        "amount": "1 tsp",
+        "source": "iwc",
+        "match_words": "mustard seeds"
+      },
+      {
+        "label": "Ginger",
+        "amount": "1 inch",
+        "source": "local"
+      },
+      {
+        "label": "Green chillies",
+        "amount": "2",
+        "source": "local"
+      },
+      {
+        "label": "Lemon",
+        "amount": "½",
+        "source": "local"
+      },
+      {
+        "label": "Curry leaves",
+        "amount": "a sprig",
+        "source": "local"
+      },
+      {
+        "label": "Oil",
+        "amount": "2 tbsp",
+        "source": "local"
+      },
+      {
+        "label": "Dry ginger powder",
+        "amount": "½ tsp",
+        "source": "iwc",
+        "match_words": "dry ginger powder",
+        "instead_of": "Ginger"
+      },
+      {
+        "label": "Red chilli powder",
+        "amount": "½ tsp",
+        "source": "iwc",
+        "match_words": "red chilli powder",
+        "instead_of": "Green chillies"
+      },
+      {
+        "label": "Amchur",
+        "amount": "1 tsp",
+        "source": "iwc",
+        "match_words": "amchur",
+        "instead_of": "Lemon"
+      },
+      {
+        "label": "Dried curry leaves",
+        "amount": "1 tbsp",
+        "source": "iwc",
+        "match_words": "curry leaves",
+        "instead_of": "Curry leaves"
+      }
+    ],
+    "steps": [
+      {
+        "text": "Soak the dal four hours and grind with ginger and chillies to a smooth batter.",
+        "minutes": 10
+      },
+      {
+        "text": "Add turmeric, salt, lemon and eno and steam fifteen minutes.",
+        "minutes": 15
+      },
+      {
+        "text": "Temper mustard seeds and curry leaves and pour over.",
+        "minutes": 3
+      }
+    ]
+  },
+  {
+    "slug": "bombil-fry",
+    "name": "Bombil Fry",
+    "kind": "snacks",
+    "state": "Maharashtra",
+    "rank": 633,
+    "blurb": "Mumbai's Bombay duck, flattened, crusted with semolina and fried crisp.",
+    "minutes": 30,
+    "soak_hours": null,
+    "serves": 4,
+    "effort": "easy",
+    "ingredients": [
+      {
+        "label": "Red chilli powder",
+        "amount": "2 tsp",
+        "source": "iwc",
+        "match_words": "red chilli powder"
+      },
+      {
+        "label": "Turmeric",
+        "amount": "¼ tsp",
+        "source": "iwc",
+        "match_words": "turmeric"
+      },
+      {
+        "label": "Sooji",
+        "amount": "½ cup",
+        "source": "iwc",
+        "match_words": "sooji"
+      },
+      {
+        "label": "Rice flour",
+        "amount": "2 tbsp",
+        "source": "iwc",
+        "match_words": "rice flour"
+      },
+      {
+        "label": "Bombil",
+        "amount": "8",
+        "source": "local"
+      },
+      {
+        "label": "Ginger-garlic paste",
+        "amount": "1 tsp",
+        "source": "local"
+      },
+      {
+        "label": "Lemon",
+        "amount": "1",
+        "source": "local"
+      },
+      {
+        "label": "Oil",
+        "amount": "4 tbsp",
+        "source": "local"
+      },
+      {
+        "label": "Dry ginger powder",
+        "amount": "½ tsp",
+        "source": "iwc",
+        "match_words": "dry ginger powder",
+        "instead_of": "Ginger-garlic paste"
+      },
+      {
+        "label": "Garlic powder",
+        "amount": "½ tsp",
+        "source": "iwc",
+        "match_words": "garlic powder",
+        "instead_of": "Ginger-garlic paste"
+      },
+      {
+        "label": "Amchur",
+        "amount": "1 tsp",
+        "source": "iwc",
+        "match_words": "amchur",
+        "instead_of": "Lemon"
+      }
+    ],
+    "steps": [
+      {
+        "text": "Clean the bombil, press it flat between cloths to remove water.",
+        "minutes": 10
+      },
+      {
+        "text": "Marinate with chilli powder, turmeric, ginger-garlic paste, lemon and salt.",
+        "minutes": 10
+      },
+      {
+        "text": "Coat in sooji and rice flour and shallow-fry until crisp.",
+        "minutes": 10
+      }
+    ]
+  },
+  {
+    "slug": "kolambi-rava-fry",
+    "name": "Kolambi Rava Fry",
+    "kind": "snacks",
+    "state": "Maharashtra",
+    "rank": 634,
+    "blurb": "Konkan prawns in a red marinade, crusted with semolina and fried.",
+    "minutes": 25,
+    "soak_hours": null,
+    "serves": 4,
+    "effort": "easy",
+    "ingredients": [
+      {
+        "label": "Kashmiri chilli powder",
+        "amount": "1½ tsp",
+        "source": "iwc",
+        "match_words": "kashmiri chilli powder"
+      },
+      {
+        "label": "Turmeric",
+        "amount": "¼ tsp",
+        "source": "iwc",
+        "match_words": "turmeric"
+      },
+      {
+        "label": "Sooji",
+        "amount": "½ cup",
+        "source": "iwc",
+        "match_words": "sooji"
+      },
+      {
+        "label": "Malvani masala",
+        "amount": "1 tsp",
+        "source": "iwc",
+        "match_words": "malvani masala"
+      },
+      {
+        "label": "Prawns",
+        "amount": "400 g",
+        "source": "local"
+      },
+      {
+        "label": "Ginger-garlic paste",
+        "amount": "1 tsp",
+        "source": "local"
+      },
+      {
+        "label": "Lemon",
+        "amount": "1",
+        "source": "local"
+      },
+      {
+        "label": "Oil",
+        "amount": "4 tbsp",
+        "source": "local"
+      },
+      {
+        "label": "Dry ginger powder",
+        "amount": "½ tsp",
+        "source": "iwc",
+        "match_words": "dry ginger powder",
+        "instead_of": "Ginger-garlic paste"
+      },
+      {
+        "label": "Garlic powder",
+        "amount": "½ tsp",
+        "source": "iwc",
+        "match_words": "garlic powder",
+        "instead_of": "Ginger-garlic paste"
+      },
+      {
+        "label": "Amchur",
+        "amount": "1 tsp",
+        "source": "iwc",
+        "match_words": "amchur",
+        "instead_of": "Lemon"
+      }
+    ],
+    "steps": [
+      {
+        "text": "Marinate the prawns with the spices, ginger-garlic paste, lemon and salt.",
+        "minutes": 10
+      },
+      {
+        "text": "Roll in sooji.",
+        "minutes": 3
+      },
+      {
+        "text": "Shallow-fry until crisp, a minute or two each side.",
+        "minutes": 8
+      }
+    ]
+  },
+  {
+    "slug": "goan-prawn-rissois",
+    "name": "Goan Prawn Rissois",
+    "kind": "snacks",
+    "state": "Goa",
+    "rank": 635,
+    "blurb": "Goan half-moon pastries with a creamy prawn filling, crumbed and fried for Christmas.",
+    "minutes": 75,
+    "soak_hours": null,
+    "serves": 6,
+    "effort": "weekend",
+    "ingredients": [
+      {
+        "label": "Maida",
+        "amount": "2 cups",
+        "source": "iwc",
+        "match_words": "maida"
+      },
+      {
+        "label": "Black pepper",
+        "amount": "½ tsp",
+        "source": "iwc",
+        "match_words": "black pepper"
+      },
+      {
+        "label": "Nutmeg",
+        "amount": "a pinch",
+        "source": "iwc",
+        "match_words": "nutmeg"
+      },
+      {
+        "label": "Prawns",
+        "amount": "250 g",
+        "source": "local"
+      },
+      {
+        "label": "Milk",
+        "amount": "1 cup",
+        "source": "local"
+      },
+      {
+        "label": "Butter",
+        "amount": "3 tbsp",
+        "source": "local"
+      },
+      {
+        "label": "Onion",
+        "amount": "1",
+        "source": "local"
+      },
+      {
+        "label": "Eggs",
+        "amount": "2",
+        "source": "local"
+      },
+      {
+        "label": "Breadcrumbs",
+        "amount": "1 cup",
+        "source": "local"
+      },
+      {
+        "label": "Oil",
+        "amount": "for frying",
+        "source": "local"
+      }
+    ],
+    "steps": [
+      {
+        "text": "Make a dough of one cup of maida, butter, salt and water; rest it.",
+        "minutes": 10
+      },
+      {
+        "text": "Cook the onion and chopped prawns in butter, stir in two tablespoons of maida and the milk to a thick sauce; season with pepper and nutmeg and cool.",
+        "minutes": 15
+      },
+      {
+        "text": "Fill rounds of dough, seal into half-moons, dip in egg, crumb and fry.",
+        "minutes": 30
+      }
+    ]
+  },
+  {
+    "slug": "choris-pao",
+    "name": "Choris Pao",
+    "kind": "snacks",
+    "state": "Goa",
+    "rank": 636,
+    "blurb": "Goan pork sausage cooked with onion and potato and stuffed into fresh pao.",
+    "minutes": 30,
+    "soak_hours": null,
+    "serves": 4,
+    "effort": "easy",
+    "ingredients": [
+      {
+        "label": "Cumin seeds",
+        "amount": "½ tsp",
+        "source": "iwc",
+        "match_words": "cumin seeds"
+      },
+      {
+        "label": "Red chilli powder",
+        "amount": "½ tsp",
+        "source": "iwc",
+        "match_words": "red chilli powder"
+      },
+      {
+        "label": "Goan pork sausages",
+        "amount": "4",
+        "source": "local"
+      },
+      {
+        "label": "Onions",
+        "amount": "2",
+        "source": "local"
+      },
+      {
+        "label": "Potato",
+        "amount": "1",
+        "source": "local"
+      },
+      {
+        "label": "Pao",
+        "amount": "4",
+        "source": "local"
+      }
+    ],
+    "steps": [
+      {
+        "text": "Squeeze the sausage meat out of its casing and cook it in its own fat.",
+        "minutes": 8
+      },
+      {
+        "text": "Add the sliced onions, diced boiled potato and cumin; cook until the onions are soft.",
+        "minutes": 10
+      },
+      {
+        "text": "Fill split pao with the hot sausage mix.",
+        "minutes": 2
+      }
+    ]
+  },
+  {
+    "slug": "mackerel-recheado",
+    "name": "Mackerel Recheado",
+    "kind": "snacks",
+    "state": "Goa",
+    "rank": 637,
+    "blurb": "Whole mackerel stuffed with Goa's sour red recheado masala and pan-fried.",
+    "minutes": 40,
+    "soak_hours": null,
+    "serves": 4,
+    "effort": "medium",
+    "ingredients": [
+      {
+        "label": "Kashmiri chilli whole",
+        "amount": "10",
+        "source": "iwc",
+        "match_words": "kashmiri chilli whole"
+      },
+      {
+        "label": "Cumin seeds",
+        "amount": "1 tsp",
+        "source": "iwc",
+        "match_words": "cumin seeds"
+      },
+      {
+        "label": "Black pepper",
+        "amount": "½ tsp",
+        "source": "iwc",
+        "match_words": "black pepper"
+      },
+      {
+        "label": "Cloves",
+        "amount": "4",
+        "source": "iwc",
+        "match_words": "cloves"
+      },
+      {
+        "label": "Cinnamon",
+        "amount": "1 inch",
+        "source": "iwc",
+        "match_words": "cinnamon"
+      },
+      {
+        "label": "Turmeric",
+        "amount": "½ tsp",
+        "source": "iwc",
+        "match_words": "turmeric"
+      },
+      {
+        "label": "Mackerel",
+        "amount": "4",
+        "source": "local"
+      },
+      {
+        "label": "Garlic",
+        "amount": "6 cloves",
+        "source": "local"
+      },
+      {
+        "label": "Ginger",
+        "amount": "1 inch",
+        "source": "local"
+      },
+      {
+        "label": "Vinegar",
+        "amount": "¼ cup",
+        "source": "local"
+      },
+      {
+        "label": "Oil",
+        "amount": "4 tbsp",
+        "source": "local"
+      },
+      {
+        "label": "Garlic powder",
+        "amount": "½ tsp",
+        "source": "iwc",
+        "match_words": "garlic powder",
+        "instead_of": "Garlic"
+      },
+      {
+        "label": "Dry ginger powder",
+        "amount": "½ tsp",
+        "source": "iwc",
+        "match_words": "dry ginger powder",
+        "instead_of": "Ginger"
+      }
+    ],
+    "steps": [
+      {
+        "text": "Grind the chillies, cumin, pepper, cloves, cinnamon, turmeric, garlic and ginger with the vinegar to a thick paste.",
+        "minutes": 10
+      },
+      {
+        "text": "Slit the cleaned mackerel and fill the cuts and belly with the paste.",
+        "minutes": 10
+      },
+      {
+        "text": "Pan-fry until crisp on both sides.",
+        "minutes": 15
+      }
+    ]
+  },
+  {
+    "slug": "ros-omelette",
+    "name": "Ros Omelette",
+    "kind": "snacks",
+    "state": "Goa",
+    "rank": 638,
+    "blurb": "Goa's street omelette drowned in a spicy chicken xacuti gravy, eaten with pao.",
+    "minutes": 40,
+    "soak_hours": null,
+    "serves": 2,
+    "effort": "medium",
+    "ingredients": [
+      {
+        "label": "Chicken masala",
+        "amount": "1 tbsp",
+        "source": "iwc",
+        "match_words": "chicken masala"
+      },
+      {
+        "label": "Desiccated coconut",
+        "amount": "¼ cup",
+        "source": "iwc",
+        "match_words": "desiccated coconut"
+      },
+      {
+        "label": "Poppy seeds",
+        "amount": "1 tsp",
+        "source": "iwc",
+        "match_words": "poppy seeds"
+      },
+      {
+        "label": "Red chilli powder",
+        "amount": "1 tsp",
+        "source": "iwc",
+        "match_words": "red chilli powder"
+      },
+      {
+        "label": "Eggs",
+        "amount": "4",
+        "source": "local"
+      },
+      {
+        "label": "Onions",
+        "amount": "2",
+        "source": "local"
+      },
+      {
+        "label": "Tomato",
+        "amount": "1",
+        "source": "local"
+      },
+      {
+        "label": "Chicken",
+        "amount": "150 g",
+        "source": "local"
+      },
+      {
+        "label": "Pao",
+        "amount": "4",
+        "source": "local"
+      },
+      {
+        "label": "Oil",
+        "amount": "3 tbsp",
+        "source": "local"
+      }
+    ],
+    "steps": [
+      {
+        "text": "Roast the coconut and poppy seeds, grind with a little water; cook with onion, tomato, the chicken masala, chilli powder and diced chicken into a gravy.",
+        "minutes": 25
+      },
+      {
+        "text": "Make two thin onion omelettes.",
+        "minutes": 6
+      },
+      {
+        "text": "Pour the gravy over the omelettes and serve with pao.",
+        "minutes": 2
+      }
+    ]
+  },
+  {
+    "slug": "aktori",
+    "name": "Aktori",
+    "kind": "snacks",
+    "state": "Himachal Pradesh",
+    "rank": 639,
+    "blurb": "Himachal's buckwheat pancakes with spinach, a hill snack for festivals.",
+    "minutes": 25,
+    "soak_hours": null,
+    "serves": 4,
+    "effort": "easy",
+    "ingredients": [
+      {
+        "label": "Kuttu atta",
+        "amount": "1 cup",
+        "source": "iwc",
+        "match_words": "kuttu atta"
+      },
+      {
+        "label": "Ajwain",
+        "amount": "½ tsp",
+        "source": "iwc",
+        "match_words": "ajwain"
+      },
+      {
+        "label": "Red chilli powder",
+        "amount": "½ tsp",
+        "source": "iwc",
+        "match_words": "red chilli powder"
+      },
+      {
+        "label": "Spinach",
+        "amount": "1 cup",
+        "source": "local"
+      },
+      {
+        "label": "Ghee",
+        "amount": "2 tbsp",
+        "source": "local"
+      }
+    ],
+    "steps": [
+      {
+        "text": "Whisk the kuttu atta with chopped spinach, ajwain, chilli powder, salt and water into a thick batter.",
+        "minutes": 5
+      },
+      {
+        "text": "Spread thick pancakes on a hot tawa with ghee.",
+        "minutes": 10
+      },
+      {
+        "text": "Cook both sides until crisp at the edges.",
+        "minutes": 6
+      }
+    ]
+  },
+  {
+    "slug": "chausela",
+    "name": "Chausela",
+    "kind": "snacks",
+    "state": "Chhattisgarh",
+    "rank": 640,
+    "blurb": "Chhattisgarh's soft rice-flour puris, eaten with chutney or a curry.",
+    "minutes": 35,
+    "soak_hours": null,
+    "serves": 4,
+    "effort": "easy",
+    "ingredients": [
+      {
+        "label": "Rice flour",
+        "amount": "2 cups",
+        "source": "iwc",
+        "match_words": "rice flour"
+      },
+      {
+        "label": "Cumin seeds",
+        "amount": "½ tsp",
+        "source": "iwc",
+        "match_words": "cumin seeds"
+      },
+      {
+        "label": "Ajwain",
+        "amount": "¼ tsp",
+        "source": "iwc",
+        "match_words": "ajwain"
+      },
+      {
+        "label": "Onion",
+        "amount": "1",
+        "source": "local"
+      },
+      {
+        "label": "Green chillies",
+        "amount": "2",
+        "source": "local"
+      },
+      {
+        "label": "Oil",
+        "amount": "for frying",
+        "source": "local"
+      },
+      {
+        "label": "Red chilli powder",
+        "amount": "½ tsp",
+        "source": "iwc",
+        "match_words": "red chilli powder",
+        "instead_of": "Green chillies"
+      }
+    ],
+    "steps": [
+      {
+        "text": "Boil water with salt, add the rice flour and stir to a dough; cover and cool.",
+        "minutes": 10
+      },
+      {
+        "text": "Knead with chopped onion, chillies, cumin and ajwain.",
+        "minutes": 5
+      },
+      {
+        "text": "Pat small rounds on a wet sheet and fry until puffed.",
+        "minutes": 15
+      }
+    ]
+  }
+]

@@ -1,6 +1,6 @@
 /**
  * The Blinkit pantry list (D-203, plan §5.6, `tools/sourcing-runner/targets/recipe-pantry.csv`): one target per distinct
- * pantry item the 500 drafted recipes' kits and swaps need (D-204), on Blinkit only, a few listings each, and a Must match that leaves out
+ * pantry item the 694 drafted recipes' kits and swaps need (D-204), on Blinkit only, a few listings each, and a Must match that leaves out
  * dairy, liquids, frozen food and meat (meat and dairy words allowed only where the item's own name says them, as in a
  * masala's name: D-200's rule).
  */
@@ -41,7 +41,7 @@ const fits = (item: string, title: string): boolean => {
 };
 
 const kitItems = new Set(
-  Array.from({ length: 25 }, (_, i) => i + 1).flatMap((n) =>
+  Array.from({ length: 35 }, (_, i) => i + 1).flatMap((n) =>
     (
       JSON.parse(readFileSync(new URL(`catalogue/recipes-drafts-${n}.json`, root), 'utf8')) as {
         ingredients: { source: string; match_words?: string }[];
