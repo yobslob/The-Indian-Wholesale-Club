@@ -484,6 +484,8 @@ Migration 20261130090000 (D-213, `pnpm sourcing verify`): `worker_verify_plan(ty
 
 Migration 20261201090000 (D-214): `_recipe_cheapest_variant` is gone. `_recipe_fill_cheapest(ids, to_local)` reads the in-stock food options once and gives every IWC line of those recipes that has no in-stock listing the cheapest option whose name has each match word at the start of a word; with `to_local`, main lines still without one become local lines (words kept) and a swap stays as it is; returns `{filled, moved}`. `admin_recipes_fill_cheapest(ids)` (≤ 100 drafts a call, nothing moved): run after Add drafts from a file. `admin_recipes_publish_all` does one lookup a batch with `to_local` and also returns `lines_local`.
 
+Migration 20261202090000 (D-214, production's Publish all timed out): `_recipe_fill_cheapest` looks each distinct set of match words up once, with one `LIKE ALL` of `% word%` patterns per listing, the same start-of-a-word rule (20,000 listings: 0.2 s for 15 recipes, 0.5 s for 100; it was 7.5 s and 48 s).
+
 ## Business functions (the only way to do these things)
 | Function | Who | Does (flows.md) |
 |---|---|---|
