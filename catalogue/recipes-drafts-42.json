@@ -1,0 +1,1631 @@
+[
+  {
+    "slug": "chilli-gobi",
+    "name": "Chilli Gobi",
+    "kind": "snacks",
+    "state": "All of India",
+    "rank": 821,
+    "blurb": "Batter-fried cauliflower in a hot chilli sauce with capsicum.",
+    "minutes": 30,
+    "soak_hours": null,
+    "serves": 4,
+    "effort": "easy",
+    "ingredients": [
+      {
+        "label": "Cornflour",
+        "amount": "¼ cup",
+        "source": "iwc",
+        "match_words": "cornflour"
+      },
+      {
+        "label": "Maida",
+        "amount": "2 tbsp",
+        "source": "iwc",
+        "match_words": "maida"
+      },
+      {
+        "label": "Red chilli flakes",
+        "amount": "1 tsp",
+        "source": "iwc",
+        "match_words": "red chilli flakes"
+      },
+      {
+        "label": "Cauliflower",
+        "amount": "1 small",
+        "source": "local"
+      },
+      {
+        "label": "Capsicum",
+        "amount": "1",
+        "source": "local"
+      },
+      {
+        "label": "Garlic",
+        "amount": "4 cloves",
+        "source": "local"
+      },
+      {
+        "label": "Soy sauce",
+        "amount": "1 tbsp",
+        "source": "local"
+      },
+      {
+        "label": "Oil",
+        "amount": "for frying",
+        "source": "local"
+      },
+      {
+        "label": "Garlic powder",
+        "amount": "½ tsp",
+        "source": "iwc",
+        "match_words": "garlic powder",
+        "instead_of": "Garlic"
+      }
+    ],
+    "steps": [
+      {
+        "text": "Blanch the florets, coat in batter and fry crisp.",
+        "minutes": 15
+      },
+      {
+        "text": "Stir-fry garlic and capsicum with soy sauce and chilli flakes.",
+        "minutes": 4
+      },
+      {
+        "text": "Toss the cauliflower through.",
+        "minutes": 1
+      }
+    ]
+  },
+  {
+    "slug": "chilli-idli",
+    "name": "Chilli Idli",
+    "kind": "snacks",
+    "state": "Tamil Nadu",
+    "rank": 822,
+    "blurb": "Idli cubes fried crisp and tossed with onion, capsicum and chilli sauce.",
+    "minutes": 20,
+    "soak_hours": null,
+    "serves": 3,
+    "effort": "easy",
+    "ingredients": [
+      {
+        "label": "Red chilli flakes",
+        "amount": "1 tsp",
+        "source": "iwc",
+        "match_words": "red chilli flakes"
+      },
+      {
+        "label": "Cornflour",
+        "amount": "1 tbsp",
+        "source": "iwc",
+        "match_words": "cornflour"
+      },
+      {
+        "label": "Idlis",
+        "amount": "6",
+        "source": "local"
+      },
+      {
+        "label": "Onion",
+        "amount": "1",
+        "source": "local"
+      },
+      {
+        "label": "Capsicum",
+        "amount": "1",
+        "source": "local"
+      },
+      {
+        "label": "Soy sauce",
+        "amount": "1 tbsp",
+        "source": "local"
+      },
+      {
+        "label": "Tomato ketchup",
+        "amount": "1 tbsp",
+        "source": "local"
+      },
+      {
+        "label": "Oil",
+        "amount": "for frying",
+        "source": "local"
+      }
+    ],
+    "steps": [
+      {
+        "text": "Cube the idlis and fry until golden.",
+        "minutes": 10
+      },
+      {
+        "text": "Stir-fry onion and capsicum with soy sauce, ketchup, chilli flakes and a cornflour slurry.",
+        "minutes": 4
+      },
+      {
+        "text": "Toss the idli through.",
+        "minutes": 1
+      }
+    ]
+  },
+  {
+    "slug": "pepper-chicken",
+    "name": "Pepper Chicken",
+    "kind": "snacks",
+    "state": "Tamil Nadu",
+    "rank": 823,
+    "blurb": "A dry chicken fry heavy with black pepper, curry leaves and fennel.",
+    "minutes": 35,
+    "soak_hours": null,
+    "serves": 4,
+    "effort": "easy",
+    "ingredients": [
+      {
+        "label": "Black pepper",
+        "amount": "1 tbsp",
+        "source": "iwc",
+        "match_words": "black pepper"
+      },
+      {
+        "label": "Fennel seeds",
+        "amount": "1 tsp",
+        "source": "iwc",
+        "match_words": "fennel seeds"
+      },
+      {
+        "label": "Turmeric",
+        "amount": "¼ tsp",
+        "source": "iwc",
+        "match_words": "turmeric"
+      },
+      {
+        "label": "Boneless chicken",
+        "amount": "500 g",
+        "source": "local"
+      },
+      {
+        "label": "Onions",
+        "amount": "2",
+        "source": "local"
+      },
+      {
+        "label": "Ginger-garlic paste",
+        "amount": "1 tbsp",
+        "source": "local"
+      },
+      {
+        "label": "Curry leaves",
+        "amount": "2 sprigs",
+        "source": "local"
+      },
+      {
+        "label": "Oil",
+        "amount": "3 tbsp",
+        "source": "local"
+      },
+      {
+        "label": "Dry ginger powder",
+        "amount": "½ tsp",
+        "source": "iwc",
+        "match_words": "dry ginger powder",
+        "instead_of": "Ginger-garlic paste"
+      },
+      {
+        "label": "Garlic powder",
+        "amount": "½ tsp",
+        "source": "iwc",
+        "match_words": "garlic powder",
+        "instead_of": "Ginger-garlic paste"
+      },
+      {
+        "label": "Dried curry leaves",
+        "amount": "1 tbsp",
+        "source": "iwc",
+        "match_words": "curry leaves",
+        "instead_of": "Curry leaves"
+      }
+    ],
+    "steps": [
+      {
+        "text": "Cook the onions with fennel and curry leaves, then the ginger-garlic paste.",
+        "minutes": 8
+      },
+      {
+        "text": "Add the chicken, turmeric and salt and cook covered until done.",
+        "minutes": 15
+      },
+      {
+        "text": "Add the crushed pepper and fry until dry and dark.",
+        "minutes": 5
+      }
+    ]
+  },
+  {
+    "slug": "chicken-seekh-kebab",
+    "name": "Chicken Seekh Kebab",
+    "kind": "snacks",
+    "state": "Delhi",
+    "rank": 824,
+    "blurb": "Juicy minced chicken kebabs with onion, chilli and garam masala, grilled on skewers.",
+    "minutes": 40,
+    "soak_hours": null,
+    "serves": 4,
+    "effort": "medium",
+    "ingredients": [
+      {
+        "label": "Garam masala",
+        "amount": "1 tsp",
+        "source": "iwc",
+        "match_words": "garam masala"
+      },
+      {
+        "label": "Kashmiri chilli powder",
+        "amount": "1 tsp",
+        "source": "iwc",
+        "match_words": "kashmiri chilli powder"
+      },
+      {
+        "label": "Roasted cumin",
+        "amount": "1 tsp",
+        "source": "iwc",
+        "match_words": "roasted cumin"
+      },
+      {
+        "label": "Chaat masala",
+        "amount": "1 tsp",
+        "source": "iwc",
+        "match_words": "chaat masala"
+      },
+      {
+        "label": "Chicken mince",
+        "amount": "500 g",
+        "source": "local"
+      },
+      {
+        "label": "Onion",
+        "amount": "1",
+        "source": "local"
+      },
+      {
+        "label": "Ginger-garlic paste",
+        "amount": "1 tbsp",
+        "source": "local"
+      },
+      {
+        "label": "Green chillies",
+        "amount": "2",
+        "source": "local"
+      },
+      {
+        "label": "Coriander",
+        "amount": "a handful",
+        "source": "local"
+      },
+      {
+        "label": "Butter",
+        "amount": "2 tbsp",
+        "source": "local"
+      },
+      {
+        "label": "Dry ginger powder",
+        "amount": "½ tsp",
+        "source": "iwc",
+        "match_words": "dry ginger powder",
+        "instead_of": "Ginger-garlic paste"
+      },
+      {
+        "label": "Garlic powder",
+        "amount": "½ tsp",
+        "source": "iwc",
+        "match_words": "garlic powder",
+        "instead_of": "Ginger-garlic paste"
+      },
+      {
+        "label": "Red chilli powder",
+        "amount": "½ tsp",
+        "source": "iwc",
+        "match_words": "red chilli powder",
+        "instead_of": "Green chillies"
+      },
+      {
+        "label": "Coriander powder",
+        "amount": "1 tsp",
+        "source": "iwc",
+        "match_words": "coriander powder",
+        "instead_of": "Coriander"
+      }
+    ],
+    "steps": [
+      {
+        "text": "Mix the mince with grated onion squeezed dry, ginger-garlic paste, chillies, coriander, spices and salt; chill.",
+        "minutes": 15
+      },
+      {
+        "text": "Press onto skewers.",
+        "minutes": 10
+      },
+      {
+        "text": "Grill, basting with butter, until cooked; finish with chaat masala.",
+        "minutes": 15
+      }
+    ]
+  },
+  {
+    "slug": "paneer-seekh-kebab",
+    "name": "Paneer Seekh Kebab",
+    "kind": "snacks",
+    "state": "Punjab",
+    "rank": 825,
+    "blurb": "Grated paneer and potato kebabs with capsicum and spice, grilled on skewers.",
+    "minutes": 35,
+    "soak_hours": null,
+    "serves": 4,
+    "effort": "medium",
+    "ingredients": [
+      {
+        "label": "Besan",
+        "amount": "3 tbsp",
+        "source": "iwc",
+        "match_words": "besan"
+      },
+      {
+        "label": "Garam masala",
+        "amount": "1 tsp",
+        "source": "iwc",
+        "match_words": "garam masala"
+      },
+      {
+        "label": "Chaat masala",
+        "amount": "1 tsp",
+        "source": "iwc",
+        "match_words": "chaat masala"
+      },
+      {
+        "label": "Kasuri methi",
+        "amount": "1 tsp",
+        "source": "iwc",
+        "match_words": "kasuri methi"
+      },
+      {
+        "label": "Paneer",
+        "amount": "250 g",
+        "source": "local"
+      },
+      {
+        "label": "Potato",
+        "amount": "1",
+        "source": "local"
+      },
+      {
+        "label": "Capsicum",
+        "amount": "½",
+        "source": "local"
+      },
+      {
+        "label": "Ginger",
+        "amount": "1 inch",
+        "source": "local"
+      },
+      {
+        "label": "Butter",
+        "amount": "2 tbsp",
+        "source": "local"
+      },
+      {
+        "label": "Dry ginger powder",
+        "amount": "½ tsp",
+        "source": "iwc",
+        "match_words": "dry ginger powder",
+        "instead_of": "Ginger"
+      }
+    ],
+    "steps": [
+      {
+        "text": "Mix the grated paneer with mashed potato, chopped capsicum, ginger, roasted besan, spices and salt.",
+        "minutes": 8
+      },
+      {
+        "text": "Shape onto skewers.",
+        "minutes": 10
+      },
+      {
+        "text": "Grill, basting with butter, until golden.",
+        "minutes": 12
+      }
+    ]
+  },
+  {
+    "slug": "lahsuni-chicken-tikka",
+    "name": "Lahsuni Chicken Tikka",
+    "kind": "snacks",
+    "state": "Punjab",
+    "rank": 826,
+    "blurb": "Chicken tikka marinated with lots of garlic, charred and smoky.",
+    "minutes": 50,
+    "soak_hours": null,
+    "serves": 4,
+    "effort": "medium",
+    "ingredients": [
+      {
+        "label": "Tandoori masala",
+        "amount": "1 tbsp",
+        "source": "iwc",
+        "match_words": "tandoori masala"
+      },
+      {
+        "label": "Kashmiri chilli powder",
+        "amount": "1 tsp",
+        "source": "iwc",
+        "match_words": "kashmiri chilli powder"
+      },
+      {
+        "label": "Garlic powder",
+        "amount": "1 tsp",
+        "source": "iwc",
+        "match_words": "garlic powder"
+      },
+      {
+        "label": "Chaat masala",
+        "amount": "1 tsp",
+        "source": "iwc",
+        "match_words": "chaat masala"
+      },
+      {
+        "label": "Boneless chicken",
+        "amount": "500 g",
+        "source": "local"
+      },
+      {
+        "label": "Yogurt",
+        "amount": "½ cup",
+        "source": "local"
+      },
+      {
+        "label": "Garlic",
+        "amount": "12 cloves",
+        "source": "local"
+      },
+      {
+        "label": "Lemon",
+        "amount": "1",
+        "source": "local"
+      },
+      {
+        "label": "Butter",
+        "amount": "2 tbsp",
+        "source": "local"
+      },
+      {
+        "label": "Amchur",
+        "amount": "1 tsp",
+        "source": "iwc",
+        "match_words": "amchur",
+        "instead_of": "Lemon"
+      }
+    ],
+    "steps": [
+      {
+        "text": "Pound the garlic and mix with yogurt, spices, lemon and salt.",
+        "minutes": 5
+      },
+      {
+        "text": "Marinate the chicken at least thirty minutes and skewer it.",
+        "minutes": 30
+      },
+      {
+        "text": "Grill, basting with butter, until charred; dust with chaat masala.",
+        "minutes": 15
+      }
+    ]
+  },
+  {
+    "slug": "achari-chicken-tikka",
+    "name": "Achari Chicken Tikka",
+    "kind": "snacks",
+    "state": "Punjab",
+    "rank": 827,
+    "blurb": "Chicken tikka in a pickle-spiced marinade of mustard, fennel and kalonji.",
+    "minutes": 50,
+    "soak_hours": null,
+    "serves": 4,
+    "effort": "medium",
+    "ingredients": [
+      {
+        "label": "Achar masala",
+        "amount": "2 tbsp",
+        "source": "iwc",
+        "match_words": "achar masala"
+      },
+      {
+        "label": "Kashmiri chilli powder",
+        "amount": "1 tsp",
+        "source": "iwc",
+        "match_words": "kashmiri chilli powder"
+      },
+      {
+        "label": "Kasuri methi",
+        "amount": "1 tsp",
+        "source": "iwc",
+        "match_words": "kasuri methi"
+      },
+      {
+        "label": "Boneless chicken",
+        "amount": "500 g",
+        "source": "local"
+      },
+      {
+        "label": "Yogurt",
+        "amount": "½ cup",
+        "source": "local"
+      },
+      {
+        "label": "Mustard oil",
+        "amount": "2 tbsp",
+        "source": "local"
+      },
+      {
+        "label": "Ginger-garlic paste",
+        "amount": "1 tbsp",
+        "source": "local"
+      },
+      {
+        "label": "Lemon",
+        "amount": "1",
+        "source": "local"
+      },
+      {
+        "label": "Dry ginger powder",
+        "amount": "½ tsp",
+        "source": "iwc",
+        "match_words": "dry ginger powder",
+        "instead_of": "Ginger-garlic paste"
+      },
+      {
+        "label": "Garlic powder",
+        "amount": "½ tsp",
+        "source": "iwc",
+        "match_words": "garlic powder",
+        "instead_of": "Ginger-garlic paste"
+      },
+      {
+        "label": "Amchur",
+        "amount": "1 tsp",
+        "source": "iwc",
+        "match_words": "amchur",
+        "instead_of": "Lemon"
+      }
+    ],
+    "steps": [
+      {
+        "text": "Mix the yogurt with achar masala, chilli powder, kasuri methi, mustard oil, ginger-garlic paste, lemon and salt.",
+        "minutes": 5
+      },
+      {
+        "text": "Marinate the chicken thirty minutes and skewer it.",
+        "minutes": 30
+      },
+      {
+        "text": "Grill until charred.",
+        "minutes": 15
+      }
+    ]
+  },
+  {
+    "slug": "kalimirch-chicken-tikka",
+    "name": "Kalimirch Chicken Tikka",
+    "kind": "snacks",
+    "state": "Delhi",
+    "rank": 828,
+    "blurb": "Creamy chicken tikka with a strong crushed black pepper crust.",
+    "minutes": 50,
+    "soak_hours": null,
+    "serves": 4,
+    "effort": "medium",
+    "ingredients": [
+      {
+        "label": "Black pepper",
+        "amount": "1 tbsp",
+        "source": "iwc",
+        "match_words": "black pepper"
+      },
+      {
+        "label": "Cashews",
+        "amount": "2 tbsp",
+        "source": "iwc",
+        "match_words": "cashews"
+      },
+      {
+        "label": "Garam masala",
+        "amount": "½ tsp",
+        "source": "iwc",
+        "match_words": "garam masala"
+      },
+      {
+        "label": "Boneless chicken",
+        "amount": "500 g",
+        "source": "local"
+      },
+      {
+        "label": "Yogurt",
+        "amount": "½ cup",
+        "source": "local"
+      },
+      {
+        "label": "Cream",
+        "amount": "¼ cup",
+        "source": "local"
+      },
+      {
+        "label": "Ginger-garlic paste",
+        "amount": "1 tbsp",
+        "source": "local"
+      },
+      {
+        "label": "Butter",
+        "amount": "2 tbsp",
+        "source": "local"
+      },
+      {
+        "label": "Dry ginger powder",
+        "amount": "½ tsp",
+        "source": "iwc",
+        "match_words": "dry ginger powder",
+        "instead_of": "Ginger-garlic paste"
+      },
+      {
+        "label": "Garlic powder",
+        "amount": "½ tsp",
+        "source": "iwc",
+        "match_words": "garlic powder",
+        "instead_of": "Ginger-garlic paste"
+      }
+    ],
+    "steps": [
+      {
+        "text": "Mix yogurt, cream, ground cashews, ginger-garlic paste, garam masala, crushed pepper and salt.",
+        "minutes": 5
+      },
+      {
+        "text": "Marinate the chicken thirty minutes and skewer it.",
+        "minutes": 30
+      },
+      {
+        "text": "Grill, basting with butter, until golden.",
+        "minutes": 15
+      }
+    ]
+  },
+  {
+    "slug": "kasoori-chicken-tikka",
+    "name": "Kasoori Chicken Tikka",
+    "kind": "snacks",
+    "state": "Punjab",
+    "rank": 829,
+    "blurb": "Chicken tikka scented heavily with dried fenugreek leaves.",
+    "minutes": 50,
+    "soak_hours": null,
+    "serves": 4,
+    "effort": "medium",
+    "ingredients": [
+      {
+        "label": "Kasuri methi",
+        "amount": "2 tbsp",
+        "source": "iwc",
+        "match_words": "kasuri methi"
+      },
+      {
+        "label": "Tandoori masala",
+        "amount": "1 tbsp",
+        "source": "iwc",
+        "match_words": "tandoori masala"
+      },
+      {
+        "label": "Kashmiri chilli powder",
+        "amount": "1 tsp",
+        "source": "iwc",
+        "match_words": "kashmiri chilli powder"
+      },
+      {
+        "label": "Boneless chicken",
+        "amount": "500 g",
+        "source": "local"
+      },
+      {
+        "label": "Yogurt",
+        "amount": "½ cup",
+        "source": "local"
+      },
+      {
+        "label": "Cream",
+        "amount": "2 tbsp",
+        "source": "local"
+      },
+      {
+        "label": "Ginger-garlic paste",
+        "amount": "1 tbsp",
+        "source": "local"
+      },
+      {
+        "label": "Butter",
+        "amount": "2 tbsp",
+        "source": "local"
+      },
+      {
+        "label": "Dry ginger powder",
+        "amount": "½ tsp",
+        "source": "iwc",
+        "match_words": "dry ginger powder",
+        "instead_of": "Ginger-garlic paste"
+      },
+      {
+        "label": "Garlic powder",
+        "amount": "½ tsp",
+        "source": "iwc",
+        "match_words": "garlic powder",
+        "instead_of": "Ginger-garlic paste"
+      }
+    ],
+    "steps": [
+      {
+        "text": "Crush the kasuri methi and mix with yogurt, cream, spices, ginger-garlic paste and salt.",
+        "minutes": 5
+      },
+      {
+        "text": "Marinate the chicken and skewer it.",
+        "minutes": 30
+      },
+      {
+        "text": "Grill, basting with butter, until charred.",
+        "minutes": 15
+      }
+    ]
+  },
+  {
+    "slug": "pudina-paneer-tikka",
+    "name": "Pudina Paneer Tikka",
+    "kind": "snacks",
+    "state": "Punjab",
+    "rank": 830,
+    "blurb": "Paneer in a green marinade of mint and coriander, grilled until charred.",
+    "minutes": 35,
+    "soak_hours": null,
+    "serves": 4,
+    "effort": "easy",
+    "ingredients": [
+      {
+        "label": "Chaat masala",
+        "amount": "1 tsp",
+        "source": "iwc",
+        "match_words": "chaat masala"
+      },
+      {
+        "label": "Garam masala",
+        "amount": "½ tsp",
+        "source": "iwc",
+        "match_words": "garam masala"
+      },
+      {
+        "label": "Besan",
+        "amount": "1 tbsp",
+        "source": "iwc",
+        "match_words": "besan"
+      },
+      {
+        "label": "Paneer",
+        "amount": "400 g",
+        "source": "local"
+      },
+      {
+        "label": "Mint",
+        "amount": "1 cup",
+        "source": "local"
+      },
+      {
+        "label": "Coriander",
+        "amount": "½ cup",
+        "source": "local"
+      },
+      {
+        "label": "Green chillies",
+        "amount": "2",
+        "source": "local"
+      },
+      {
+        "label": "Yogurt",
+        "amount": "½ cup",
+        "source": "local"
+      },
+      {
+        "label": "Oil",
+        "amount": "1 tbsp",
+        "source": "local"
+      },
+      {
+        "label": "Dried mint leaves",
+        "amount": "1 tsp",
+        "source": "iwc",
+        "match_words": "mint leaves",
+        "instead_of": "Mint"
+      },
+      {
+        "label": "Coriander powder",
+        "amount": "1 tsp",
+        "source": "iwc",
+        "match_words": "coriander powder",
+        "instead_of": "Coriander"
+      },
+      {
+        "label": "Red chilli powder",
+        "amount": "½ tsp",
+        "source": "iwc",
+        "match_words": "red chilli powder",
+        "instead_of": "Green chillies"
+      }
+    ],
+    "steps": [
+      {
+        "text": "Blend the mint, coriander and chillies and mix with yogurt, roasted besan, spices, oil and salt.",
+        "minutes": 5
+      },
+      {
+        "text": "Coat the paneer and rest twenty minutes.",
+        "minutes": 20
+      },
+      {
+        "text": "Skewer and grill until charred.",
+        "minutes": 10
+      }
+    ]
+  },
+  {
+    "slug": "kalimirch-paneer-tikka",
+    "name": "Kalimirch Paneer Tikka",
+    "kind": "snacks",
+    "state": "Delhi",
+    "rank": 831,
+    "blurb": "Creamy paneer tikka with a crushed black pepper coat.",
+    "minutes": 35,
+    "soak_hours": null,
+    "serves": 4,
+    "effort": "easy",
+    "ingredients": [
+      {
+        "label": "Black pepper",
+        "amount": "2 tsp",
+        "source": "iwc",
+        "match_words": "black pepper"
+      },
+      {
+        "label": "Cashews",
+        "amount": "2 tbsp",
+        "source": "iwc",
+        "match_words": "cashews"
+      },
+      {
+        "label": "Chaat masala",
+        "amount": "½ tsp",
+        "source": "iwc",
+        "match_words": "chaat masala"
+      },
+      {
+        "label": "Paneer",
+        "amount": "400 g",
+        "source": "local"
+      },
+      {
+        "label": "Cream",
+        "amount": "¼ cup",
+        "source": "local"
+      },
+      {
+        "label": "Yogurt",
+        "amount": "¼ cup",
+        "source": "local"
+      },
+      {
+        "label": "Butter",
+        "amount": "1 tbsp",
+        "source": "local"
+      }
+    ],
+    "steps": [
+      {
+        "text": "Mix cream, yogurt, ground cashews, crushed pepper and salt.",
+        "minutes": 3
+      },
+      {
+        "text": "Coat the paneer and rest twenty minutes.",
+        "minutes": 20
+      },
+      {
+        "text": "Skewer and grill, basting with butter.",
+        "minutes": 10
+      }
+    ]
+  },
+  {
+    "slug": "peshawari-paneer-tikka",
+    "name": "Peshawari Paneer Tikka",
+    "kind": "snacks",
+    "state": "Punjab",
+    "rank": 832,
+    "blurb": "Paneer in a spiced yogurt marinade with crushed coriander and dried pomegranate.",
+    "minutes": 35,
+    "soak_hours": null,
+    "serves": 4,
+    "effort": "easy",
+    "ingredients": [
+      {
+        "label": "Whole coriander",
+        "amount": "1 tbsp",
+        "source": "iwc",
+        "match_words": "whole coriander"
+      },
+      {
+        "label": "Anardana powder",
+        "amount": "1 tsp",
+        "source": "iwc",
+        "match_words": "anardana powder"
+      },
+      {
+        "label": "Kashmiri chilli powder",
+        "amount": "1 tsp",
+        "source": "iwc",
+        "match_words": "kashmiri chilli powder"
+      },
+      {
+        "label": "Garam masala",
+        "amount": "½ tsp",
+        "source": "iwc",
+        "match_words": "garam masala"
+      },
+      {
+        "label": "Paneer",
+        "amount": "400 g",
+        "source": "local"
+      },
+      {
+        "label": "Yogurt",
+        "amount": "½ cup",
+        "source": "local"
+      },
+      {
+        "label": "Onion",
+        "amount": "1",
+        "source": "local"
+      },
+      {
+        "label": "Oil",
+        "amount": "1 tbsp",
+        "source": "local"
+      }
+    ],
+    "steps": [
+      {
+        "text": "Crush the roasted coriander and mix with yogurt, anardana, spices, oil and salt.",
+        "minutes": 5
+      },
+      {
+        "text": "Coat the paneer and onion and rest twenty minutes.",
+        "minutes": 20
+      },
+      {
+        "text": "Skewer and grill until charred.",
+        "minutes": 10
+      }
+    ]
+  },
+  {
+    "slug": "afghani-paneer-tikka",
+    "name": "Afghani Paneer Tikka",
+    "kind": "snacks",
+    "state": "Delhi",
+    "rank": 833,
+    "blurb": "Mild, creamy paneer tikka with cashew and white pepper.",
+    "minutes": 35,
+    "soak_hours": null,
+    "serves": 4,
+    "effort": "easy",
+    "ingredients": [
+      {
+        "label": "Cashews",
+        "amount": "3 tbsp",
+        "source": "iwc",
+        "match_words": "cashews"
+      },
+      {
+        "label": "White pepper",
+        "amount": "½ tsp",
+        "source": "iwc",
+        "match_words": "white pepper"
+      },
+      {
+        "label": "Green cardamom",
+        "amount": "3",
+        "source": "iwc",
+        "match_words": "green cardamom"
+      },
+      {
+        "label": "Paneer",
+        "amount": "400 g",
+        "source": "local"
+      },
+      {
+        "label": "Cream",
+        "amount": "¼ cup",
+        "source": "local"
+      },
+      {
+        "label": "Yogurt",
+        "amount": "¼ cup",
+        "source": "local"
+      },
+      {
+        "label": "Butter",
+        "amount": "1 tbsp",
+        "source": "local"
+      }
+    ],
+    "steps": [
+      {
+        "text": "Grind the cashews and cardamom and mix with cream, yogurt, pepper and salt.",
+        "minutes": 5
+      },
+      {
+        "text": "Coat the paneer and rest twenty minutes.",
+        "minutes": 20
+      },
+      {
+        "text": "Skewer and grill until golden.",
+        "minutes": 10
+      }
+    ]
+  },
+  {
+    "slug": "hariyali-paneer-tikka",
+    "name": "Hariyali Paneer Tikka",
+    "kind": "snacks",
+    "state": "Punjab",
+    "rank": 834,
+    "blurb": "Paneer tikka in a spinach, mint and coriander marinade.",
+    "minutes": 35,
+    "soak_hours": null,
+    "serves": 4,
+    "effort": "easy",
+    "ingredients": [
+      {
+        "label": "Chaat masala",
+        "amount": "1 tsp",
+        "source": "iwc",
+        "match_words": "chaat masala"
+      },
+      {
+        "label": "Garam masala",
+        "amount": "½ tsp",
+        "source": "iwc",
+        "match_words": "garam masala"
+      },
+      {
+        "label": "Kasuri methi",
+        "amount": "1 tsp",
+        "source": "iwc",
+        "match_words": "kasuri methi"
+      },
+      {
+        "label": "Paneer",
+        "amount": "400 g",
+        "source": "local"
+      },
+      {
+        "label": "Spinach",
+        "amount": "1 cup",
+        "source": "local"
+      },
+      {
+        "label": "Mint",
+        "amount": "½ cup",
+        "source": "local"
+      },
+      {
+        "label": "Coriander",
+        "amount": "½ cup",
+        "source": "local"
+      },
+      {
+        "label": "Yogurt",
+        "amount": "½ cup",
+        "source": "local"
+      },
+      {
+        "label": "Oil",
+        "amount": "1 tbsp",
+        "source": "local"
+      },
+      {
+        "label": "Dried mint leaves",
+        "amount": "1 tsp",
+        "source": "iwc",
+        "match_words": "mint leaves",
+        "instead_of": "Mint"
+      },
+      {
+        "label": "Coriander powder",
+        "amount": "1 tsp",
+        "source": "iwc",
+        "match_words": "coriander powder",
+        "instead_of": "Coriander"
+      }
+    ],
+    "steps": [
+      {
+        "text": "Blanch the spinach and blend with the herbs; mix with yogurt, spices, oil and salt.",
+        "minutes": 8
+      },
+      {
+        "text": "Coat the paneer and rest twenty minutes.",
+        "minutes": 20
+      },
+      {
+        "text": "Skewer and grill until charred.",
+        "minutes": 10
+      }
+    ]
+  },
+  {
+    "slug": "paneer-shashlik",
+    "name": "Paneer Shashlik",
+    "kind": "snacks",
+    "state": "Delhi",
+    "rank": 835,
+    "blurb": "Paneer, capsicum, onion and tomato on skewers in a tangy tandoori marinade.",
+    "minutes": 40,
+    "soak_hours": null,
+    "serves": 4,
+    "effort": "easy",
+    "ingredients": [
+      {
+        "label": "Tandoori masala",
+        "amount": "1 tbsp",
+        "source": "iwc",
+        "match_words": "tandoori masala"
+      },
+      {
+        "label": "Kasuri methi",
+        "amount": "1 tsp",
+        "source": "iwc",
+        "match_words": "kasuri methi"
+      },
+      {
+        "label": "Chaat masala",
+        "amount": "1 tsp",
+        "source": "iwc",
+        "match_words": "chaat masala"
+      },
+      {
+        "label": "Paneer",
+        "amount": "300 g",
+        "source": "local"
+      },
+      {
+        "label": "Capsicum",
+        "amount": "2",
+        "source": "local"
+      },
+      {
+        "label": "Onion",
+        "amount": "1",
+        "source": "local"
+      },
+      {
+        "label": "Tomato",
+        "amount": "1",
+        "source": "local"
+      },
+      {
+        "label": "Yogurt",
+        "amount": "½ cup",
+        "source": "local"
+      },
+      {
+        "label": "Oil",
+        "amount": "1 tbsp",
+        "source": "local"
+      }
+    ],
+    "steps": [
+      {
+        "text": "Mix the yogurt with tandoori masala, kasuri methi, oil and salt.",
+        "minutes": 3
+      },
+      {
+        "text": "Coat the paneer and vegetables and thread onto skewers.",
+        "minutes": 20
+      },
+      {
+        "text": "Grill until charred and finish with chaat masala.",
+        "minutes": 12
+      }
+    ]
+  },
+  {
+    "slug": "malai-mushroom-tikka",
+    "name": "Malai Mushroom Tikka",
+    "kind": "snacks",
+    "state": "Delhi",
+    "rank": 836,
+    "blurb": "Mushrooms in a creamy cashew and pepper marinade, grilled.",
+    "minutes": 35,
+    "soak_hours": null,
+    "serves": 4,
+    "effort": "easy",
+    "ingredients": [
+      {
+        "label": "Cashews",
+        "amount": "2 tbsp",
+        "source": "iwc",
+        "match_words": "cashews"
+      },
+      {
+        "label": "White pepper",
+        "amount": "½ tsp",
+        "source": "iwc",
+        "match_words": "white pepper"
+      },
+      {
+        "label": "Garam masala",
+        "amount": "½ tsp",
+        "source": "iwc",
+        "match_words": "garam masala"
+      },
+      {
+        "label": "Button mushrooms",
+        "amount": "300 g",
+        "source": "local"
+      },
+      {
+        "label": "Cream",
+        "amount": "¼ cup",
+        "source": "local"
+      },
+      {
+        "label": "Yogurt",
+        "amount": "¼ cup",
+        "source": "local"
+      },
+      {
+        "label": "Butter",
+        "amount": "1 tbsp",
+        "source": "local"
+      }
+    ],
+    "steps": [
+      {
+        "text": "Mix cream, yogurt, ground cashews, pepper, garam masala and salt.",
+        "minutes": 3
+      },
+      {
+        "text": "Coat the mushrooms and rest fifteen minutes.",
+        "minutes": 15
+      },
+      {
+        "text": "Skewer and grill, basting with butter.",
+        "minutes": 12
+      }
+    ]
+  },
+  {
+    "slug": "bharwan-khumb",
+    "name": "Bharwan Khumb",
+    "kind": "snacks",
+    "state": "Punjab",
+    "rank": 837,
+    "blurb": "Large mushrooms stuffed with spiced paneer and roasted in a tandoori coat.",
+    "minutes": 40,
+    "soak_hours": null,
+    "serves": 4,
+    "effort": "medium",
+    "ingredients": [
+      {
+        "label": "Tandoori masala",
+        "amount": "1 tbsp",
+        "source": "iwc",
+        "match_words": "tandoori masala"
+      },
+      {
+        "label": "Garam masala",
+        "amount": "½ tsp",
+        "source": "iwc",
+        "match_words": "garam masala"
+      },
+      {
+        "label": "Chaat masala",
+        "amount": "1 tsp",
+        "source": "iwc",
+        "match_words": "chaat masala"
+      },
+      {
+        "label": "Large mushrooms",
+        "amount": "12",
+        "source": "local"
+      },
+      {
+        "label": "Paneer",
+        "amount": "100 g",
+        "source": "local"
+      },
+      {
+        "label": "Yogurt",
+        "amount": "½ cup",
+        "source": "local"
+      },
+      {
+        "label": "Coriander",
+        "amount": "a handful",
+        "source": "local"
+      },
+      {
+        "label": "Oil",
+        "amount": "1 tbsp",
+        "source": "local"
+      },
+      {
+        "label": "Coriander powder",
+        "amount": "1 tsp",
+        "source": "iwc",
+        "match_words": "coriander powder",
+        "instead_of": "Coriander"
+      }
+    ],
+    "steps": [
+      {
+        "text": "Remove the stalks, chop them and mix with grated paneer, coriander, garam masala and salt.",
+        "minutes": 8
+      },
+      {
+        "text": "Fill the caps and coat them in yogurt with tandoori masala and oil.",
+        "minutes": 10
+      },
+      {
+        "text": "Roast at 220°C until charred; finish with chaat masala.",
+        "minutes": 15
+      }
+    ]
+  },
+  {
+    "slug": "tandoori-chicken-wings",
+    "name": "Tandoori Chicken Wings",
+    "kind": "snacks",
+    "state": "All of India",
+    "rank": 838,
+    "blurb": "Chicken wings in tandoori marinade, roasted until charred.",
+    "minutes": 50,
+    "soak_hours": null,
+    "serves": 4,
+    "effort": "easy",
+    "ingredients": [
+      {
+        "label": "Tandoori masala",
+        "amount": "2 tbsp",
+        "source": "iwc",
+        "match_words": "tandoori masala"
+      },
+      {
+        "label": "Kashmiri chilli powder",
+        "amount": "1 tsp",
+        "source": "iwc",
+        "match_words": "kashmiri chilli powder"
+      },
+      {
+        "label": "Chaat masala",
+        "amount": "1 tsp",
+        "source": "iwc",
+        "match_words": "chaat masala"
+      },
+      {
+        "label": "Chicken wings",
+        "amount": "750 g",
+        "source": "local"
+      },
+      {
+        "label": "Yogurt",
+        "amount": "½ cup",
+        "source": "local"
+      },
+      {
+        "label": "Ginger-garlic paste",
+        "amount": "1 tbsp",
+        "source": "local"
+      },
+      {
+        "label": "Lemon",
+        "amount": "1",
+        "source": "local"
+      },
+      {
+        "label": "Butter",
+        "amount": "1 tbsp",
+        "source": "local"
+      },
+      {
+        "label": "Dry ginger powder",
+        "amount": "½ tsp",
+        "source": "iwc",
+        "match_words": "dry ginger powder",
+        "instead_of": "Ginger-garlic paste"
+      },
+      {
+        "label": "Garlic powder",
+        "amount": "½ tsp",
+        "source": "iwc",
+        "match_words": "garlic powder",
+        "instead_of": "Ginger-garlic paste"
+      },
+      {
+        "label": "Amchur",
+        "amount": "1 tsp",
+        "source": "iwc",
+        "match_words": "amchur",
+        "instead_of": "Lemon"
+      }
+    ],
+    "steps": [
+      {
+        "text": "Marinate the wings with yogurt, spices, ginger-garlic paste, lemon and salt for thirty minutes.",
+        "minutes": 30
+      },
+      {
+        "text": "Roast at 220°C, turning once and basting with butter.",
+        "minutes": 25
+      },
+      {
+        "text": "Dust with chaat masala.",
+        "minutes": 1
+      }
+    ]
+  },
+  {
+    "slug": "tandoori-soya-chaap",
+    "name": "Tandoori Soya Chaap",
+    "kind": "snacks",
+    "state": "Delhi",
+    "rank": 839,
+    "blurb": "Soya chaap in a red tandoori marinade, charred on a grill.",
+    "minutes": 40,
+    "soak_hours": null,
+    "serves": 4,
+    "effort": "easy",
+    "ingredients": [
+      {
+        "label": "Tandoori masala",
+        "amount": "2 tbsp",
+        "source": "iwc",
+        "match_words": "tandoori masala"
+      },
+      {
+        "label": "Kasuri methi",
+        "amount": "1 tsp",
+        "source": "iwc",
+        "match_words": "kasuri methi"
+      },
+      {
+        "label": "Chaat masala",
+        "amount": "1 tsp",
+        "source": "iwc",
+        "match_words": "chaat masala"
+      },
+      {
+        "label": "Soya chaap sticks",
+        "amount": "8",
+        "source": "local"
+      },
+      {
+        "label": "Yogurt",
+        "amount": "½ cup",
+        "source": "local"
+      },
+      {
+        "label": "Ginger-garlic paste",
+        "amount": "1 tsp",
+        "source": "local"
+      },
+      {
+        "label": "Oil",
+        "amount": "2 tbsp",
+        "source": "local"
+      },
+      {
+        "label": "Onion",
+        "amount": "1",
+        "source": "local"
+      },
+      {
+        "label": "Dry ginger powder",
+        "amount": "½ tsp",
+        "source": "iwc",
+        "match_words": "dry ginger powder",
+        "instead_of": "Ginger-garlic paste"
+      },
+      {
+        "label": "Garlic powder",
+        "amount": "½ tsp",
+        "source": "iwc",
+        "match_words": "garlic powder",
+        "instead_of": "Ginger-garlic paste"
+      }
+    ],
+    "steps": [
+      {
+        "text": "Boil the chaap five minutes and cut into pieces.",
+        "minutes": 10
+      },
+      {
+        "text": "Coat in yogurt, tandoori masala, kasuri methi, ginger-garlic paste, oil and salt; rest twenty minutes.",
+        "minutes": 20
+      },
+      {
+        "text": "Grill until charred and serve with onion and chaat masala.",
+        "minutes": 10
+      }
+    ]
+  },
+  {
+    "slug": "afghani-soya-chaap",
+    "name": "Afghani Soya Chaap",
+    "kind": "snacks",
+    "state": "Delhi",
+    "rank": 840,
+    "blurb": "Grilled soya chaap tossed in a creamy, peppery Afghani sauce.",
+    "minutes": 40,
+    "soak_hours": null,
+    "serves": 4,
+    "effort": "easy",
+    "ingredients": [
+      {
+        "label": "Cashews",
+        "amount": "2 tbsp",
+        "source": "iwc",
+        "match_words": "cashews"
+      },
+      {
+        "label": "White pepper",
+        "amount": "½ tsp",
+        "source": "iwc",
+        "match_words": "white pepper"
+      },
+      {
+        "label": "Garam masala",
+        "amount": "½ tsp",
+        "source": "iwc",
+        "match_words": "garam masala"
+      },
+      {
+        "label": "Soya chaap sticks",
+        "amount": "8",
+        "source": "local"
+      },
+      {
+        "label": "Cream",
+        "amount": "½ cup",
+        "source": "local"
+      },
+      {
+        "label": "Butter",
+        "amount": "2 tbsp",
+        "source": "local"
+      }
+    ],
+    "steps": [
+      {
+        "text": "Boil the chaap and grill or pan-roast it with butter until golden.",
+        "minutes": 15
+      },
+      {
+        "text": "Warm the cream with butter, ground cashews, pepper, garam masala and salt.",
+        "minutes": 5
+      },
+      {
+        "text": "Toss the chaap in the sauce.",
+        "minutes": 2
+      }
+    ]
+  }
+]

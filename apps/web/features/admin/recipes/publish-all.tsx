@@ -6,12 +6,12 @@ import { useState } from 'react';
 import { publishAllAction } from '../actions/recipes';
 import { button } from '../styles';
 
-const WHY: Record<string, string> = { no_iwc_line: 'nothing in its kit is on IWC yet' };
+const WHY: Record<string, string> = { no_iwc_line: 'no piece of its kit is on IWC yet' };
 
 /**
  * Publish all (D-204, founder 2026-11-23: "Publish all … in listings pick the cheapest one on our website by default and
- * publish, I will change later if required"). Repeats the batch until every draft has been through (D-146), then
- * lists what is still waiting and why.
+ * publish, I will change later if required"; D-214: a line with no listing moves to the local shop). Repeats the batch
+ * until every draft has been through (D-146), then lists what is still waiting and why.
  */
 export function RecipesPublishAll({ drafts }: { drafts: number }): React.JSX.Element {
   const router = useRouter();
@@ -19,6 +19,7 @@ export function RecipesPublishAll({ drafts }: { drafts: number }): React.JSX.Ele
   const [done, setDone] = useState<{
     published: number;
     filled: number;
+    local: number;
     blocked: string[];
     error: string | null;
   } | null>(null);
@@ -28,6 +29,7 @@ export function RecipesPublishAll({ drafts }: { drafts: number }): React.JSX.Ele
     let after: string | null = null;
     let published = 0;
     let filled = 0;
+    let local = 0;
     const blocked: string[] = [];
     let error: string | null = null;
     for (let i = 0; i < 100; i++) {
@@ -38,14 +40,15 @@ export function RecipesPublishAll({ drafts }: { drafts: number }): React.JSX.Ele
       }
       published += r.published.length;
       filled += r.filled;
+      local += r.local;
       blocked.push(
         ...r.blocked.map((b) => `${b.slug}: ${b.why.map((w) => WHY[w] ?? w).join(', ')}`),
       );
-      setDone({ published, filled, blocked: [...blocked], error: null });
+      setDone({ published, filled, local, blocked: [...blocked], error: null });
       if (!r.next) break;
       after = r.next;
     }
-    setDone({ published, filled, blocked, error });
+    setDone({ published, filled, local, blocked, error });
     setBusy(false);
     router.refresh();
   }
@@ -64,7 +67,8 @@ export function RecipesPublishAll({ drafts }: { drafts: number }): React.JSX.Ele
         <div className="text-sm" role="status">
           {done.error ? <p className="text-danger">{done.error}</p> : null}
           <p>
-            {done.published} published · {done.filled} ingredients matched to the cheapest listing.
+            {done.published} published · {done.filled} ingredients matched to the cheapest listing ·{' '}
+            {done.local} with no listing moved to the local shop.
           </p>
           {done.blocked.length ? (
             <p className="text-ink-muted">Still drafts: {done.blocked.join('; ')}</p>

@@ -27,8 +27,9 @@ type Piece = RecipeIwcLine & { variantId: string | null; priceCents: number | nu
 
 /**
  * The kit from IWC (D-203, plan §4.3): every piece starts ticked (answer 6); untick what's already in the kitchen. Dry
- * swaps for fresh things (D-204) follow, unticked. A
- * piece already in the bag shows the card's − n + instead (D-140) and is never added twice. The total and its struck
+ * swaps for fresh things (D-204) follow, unticked. A piece already in the bag shows a tick where its box was and a
+ * − n + under its price (D-140; founder 2026-11-27: the old upright + n − beside the photo read badly) and is never
+ * added twice; with nothing left to add the foot counts what is in the bag. The total and its struck
  * figure (food's factor, every kit: answer 5) are what Add puts in the bag. Prices are for display: checkout re-prices
  * every line on the server (D-038). A sticky bar stands in for the card while it is off the screen (phones).
  */
@@ -69,6 +70,8 @@ export function KitCard({
   const inBag = new Set(held.keys());
   const toAdd = kitPiecesToAdd(pieces, ticked, inBag);
   const total = kitTotal(toAdd);
+  // the kit's pieces already in the bag: what the foot says once there is nothing left to add (never "0 pieces $0.00")
+  const kitInBag = new Set(pieces.flatMap((p) => (p.variantId && held.has(p.variantId) ? [p.variantId] : []))).size;
   // abroad the total waits for every ticked piece's own price (hidden until then); `cents` is already that sum
   const kitOf = money.market === 'us' ? undefined : { variants: toAdd.flatMap((p) => (p.variantId ? [p.variantId] : [])) };
   const gap =
@@ -156,31 +159,15 @@ export function KitCard({
                 <li
                   key={`${id ?? 'x'}-${i}`}
                   data-swap={p.instead_of ? '' : undefined}
-                  className={`grid grid-cols-[44px_52px_1fr_auto] items-center gap-3 py-3 ${p.available ? '' : 'opacity-60'}`}
+                  className={`grid grid-cols-[44px_52px_minmax(0,1fr)_auto] items-center gap-x-3 py-3 ${p.available ? '' : 'opacity-60'}`}
                 >
                   {id && n ? (
+                    // in the bag: a tick where its box was (its − n + sits under the price)
                     <span
-                      className="font-ui flex flex-col items-center text-[13px] font-semibold"
-                      aria-label={`${p.label}: ${n} in your bag`}
+                      aria-hidden="true"
+                      className="bg-brand text-on-brand mx-auto grid size-6 place-items-center rounded-full text-[13px] font-bold"
                     >
-                      <button
-                        type="button"
-                        className="size-7 rounded-full border"
-                        aria-label={`One more ${p.label}`}
-                        disabled={n >= MAX_QTY_PER_LINE}
-                        onClick={() => setQuantity(id, n + 1)}
-                      >
-                        +
-                      </button>
-                      <span aria-live="polite">{n}</span>
-                      <button
-                        type="button"
-                        className="size-7 rounded-full border"
-                        aria-label={`One less ${p.label}`}
-                        onClick={() => setQuantity(id, n - 1)}
-                      >
-                        −
-                      </button>
+                      ✓
                     </span>
                   ) : (
                     <label className="flex size-11 cursor-pointer items-center justify-center">
@@ -210,7 +197,7 @@ export function KitCard({
                         No fresh ones at hand?
                       </span>
                     ) : null}
-                    <span className="block truncate text-[15px] font-semibold">
+                    <span className="line-clamp-2 block text-[15px] font-semibold leading-snug">
                       {href && p.available ? (
                         <Link href={href} className="hover:underline">
                           {p.product_name ?? p.label}
@@ -239,21 +226,56 @@ export function KitCard({
                       </Link>
                     ) : null}
                   </span>
-                  <span className="font-ui text-[15px] font-semibold">
-                    {p.available && p.priceCents !== null ? <Money cents={p.priceCents} of={p.variantId ? { variant: p.variantId } : undefined} /> : null}
+                  <span className="font-ui flex flex-col items-end gap-1.5 text-[15px] font-semibold">
+                    {p.available && p.priceCents !== null ? (
+                      <Money cents={p.priceCents} of={p.variantId ? { variant: p.variantId } : undefined} />
+                    ) : null}
+                    {id && n ? (
+                      <span
+                        className="border-line rounded-pill inline-flex h-8 items-center border text-[13px]"
+                        aria-label={`${p.label}: ${n} in your bag`}
+                      >
+                        <button
+                          type="button"
+                          className="grid size-8 place-items-center"
+                          aria-label={`One less ${p.label}`}
+                          onClick={() => setQuantity(id, n - 1)}
+                        >
+                          −
+                        </button>
+                        <span aria-live="polite" className="min-w-4 text-center">
+                          {n}
+                        </span>
+                        <button
+                          type="button"
+                          className="grid size-8 place-items-center disabled:opacity-40"
+                          aria-label={`One more ${p.label}`}
+                          disabled={n >= MAX_QTY_PER_LINE}
+                          onClick={() => setQuantity(id, n + 1)}
+                        >
+                          +
+                        </button>
+                      </span>
+                    ) : null}
                   </span>
                 </li>
               );
             },
           )}
         </ul>
-        <div className="border-line mt-2 flex items-baseline justify-between border-t pt-3">
+        <div className="border-line mt-2 flex items-baseline justify-between gap-3 border-t pt-3">
           <span className="text-ink-muted text-sm">
-            {total.count} {total.count === 1 ? 'piece' : 'pieces'}
+            {total.count > 0
+              ? `${total.count} ${total.count === 1 ? 'piece' : 'pieces'}`
+              : kitInBag > 0
+                ? `${kitInBag} ${kitInBag === 1 ? 'piece' : 'pieces'} in your bag`
+                : 'Nothing ticked'}
           </span>
-          <span className="font-ui text-[20px] font-semibold" data-testid="kit-total">
-            <Price />
-          </span>
+          {total.count > 0 ? (
+            <span className="font-ui text-[20px] font-semibold" data-testid="kit-total">
+              <Price />
+            </span>
+          ) : null}
         </div>
         {gap !== null && total.cents > 0 ? (
           <p className="text-ink-muted mt-1 text-right text-[13px]">
@@ -267,7 +289,7 @@ export function KitCard({
             In your bag. Happy cooking.
             <Link
               href="/cart"
-              className="bg-ink text-paper font-ui rounded-pill px-4 py-2 text-[14px] font-medium"
+              className="bg-ink text-paper font-ui rounded-pill shrink-0 whitespace-nowrap px-4 py-2 text-[14px] font-medium"
             >
               View bag
             </Link>

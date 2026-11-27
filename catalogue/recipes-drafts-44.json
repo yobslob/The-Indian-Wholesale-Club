@@ -1,0 +1,1812 @@
+[
+  {
+    "slug": "pomfret-tawa-fry",
+    "name": "Pomfret Tawa Fry",
+    "kind": "snacks",
+    "state": "Maharashtra",
+    "rank": 861,
+    "blurb": "Whole pomfret in a red chilli and turmeric rub, crisp-fried on the tawa.",
+    "minutes": 30,
+    "soak_hours": null,
+    "serves": 4,
+    "effort": "easy",
+    "ingredients": [
+      {
+        "label": "Kashmiri chilli powder",
+        "amount": "2 tsp",
+        "source": "iwc",
+        "match_words": "kashmiri chilli powder"
+      },
+      {
+        "label": "Turmeric",
+        "amount": "¼ tsp",
+        "source": "iwc",
+        "match_words": "turmeric"
+      },
+      {
+        "label": "Sooji",
+        "amount": "½ cup",
+        "source": "iwc",
+        "match_words": "sooji"
+      },
+      {
+        "label": "Pomfret",
+        "amount": "2",
+        "source": "local"
+      },
+      {
+        "label": "Ginger-garlic paste",
+        "amount": "1 tsp",
+        "source": "local"
+      },
+      {
+        "label": "Lemon",
+        "amount": "1",
+        "source": "local"
+      },
+      {
+        "label": "Oil",
+        "amount": "4 tbsp",
+        "source": "local"
+      },
+      {
+        "label": "Dry ginger powder",
+        "amount": "½ tsp",
+        "source": "iwc",
+        "match_words": "dry ginger powder",
+        "instead_of": "Ginger-garlic paste"
+      },
+      {
+        "label": "Garlic powder",
+        "amount": "½ tsp",
+        "source": "iwc",
+        "match_words": "garlic powder",
+        "instead_of": "Ginger-garlic paste"
+      },
+      {
+        "label": "Amchur",
+        "amount": "1 tsp",
+        "source": "iwc",
+        "match_words": "amchur",
+        "instead_of": "Lemon"
+      }
+    ],
+    "steps": [
+      {
+        "text": "Score the fish and rub with the spices, ginger-garlic paste, lemon and salt.",
+        "minutes": 15
+      },
+      {
+        "text": "Coat in sooji.",
+        "minutes": 3
+      },
+      {
+        "text": "Shallow-fry until crisp on both sides.",
+        "minutes": 12
+      }
+    ]
+  },
+  {
+    "slug": "fish-fingers",
+    "name": "Fish Fingers",
+    "kind": "snacks",
+    "state": "All of India",
+    "rank": 862,
+    "blurb": "Strips of fish in a spiced crumb coat, fried golden. A Kolkata cabin favourite.",
+    "minutes": 35,
+    "soak_hours": null,
+    "serves": 4,
+    "effort": "easy",
+    "ingredients": [
+      {
+        "label": "Black pepper",
+        "amount": "½ tsp",
+        "source": "iwc",
+        "match_words": "black pepper"
+      },
+      {
+        "label": "Red chilli powder",
+        "amount": "½ tsp",
+        "source": "iwc",
+        "match_words": "red chilli powder"
+      },
+      {
+        "label": "Maida",
+        "amount": "3 tbsp",
+        "source": "iwc",
+        "match_words": "maida"
+      },
+      {
+        "label": "Boneless fish",
+        "amount": "400 g",
+        "source": "local"
+      },
+      {
+        "label": "Lemon",
+        "amount": "1",
+        "source": "local"
+      },
+      {
+        "label": "Eggs",
+        "amount": "2",
+        "source": "local"
+      },
+      {
+        "label": "Breadcrumbs",
+        "amount": "1 cup",
+        "source": "local"
+      },
+      {
+        "label": "Oil",
+        "amount": "for frying",
+        "source": "local"
+      },
+      {
+        "label": "Amchur",
+        "amount": "1 tsp",
+        "source": "iwc",
+        "match_words": "amchur",
+        "instead_of": "Lemon"
+      }
+    ],
+    "steps": [
+      {
+        "text": "Cut the fish into strips and marinate with lemon, the spices and salt.",
+        "minutes": 10
+      },
+      {
+        "text": "Dust with maida, dip in egg and roll in breadcrumbs.",
+        "minutes": 10
+      },
+      {
+        "text": "Fry until golden.",
+        "minutes": 8
+      }
+    ]
+  },
+  {
+    "slug": "kodi-vepudu",
+    "name": "Kodi Vepudu",
+    "kind": "snacks",
+    "state": "Andhra Pradesh",
+    "rank": 863,
+    "blurb": "Andhra's dry, fiery chicken fry with curry leaves and green chilli.",
+    "minutes": 45,
+    "soak_hours": null,
+    "serves": 4,
+    "effort": "medium",
+    "ingredients": [
+      {
+        "label": "Red chilli powder",
+        "amount": "2 tsp",
+        "source": "iwc",
+        "match_words": "red chilli powder"
+      },
+      {
+        "label": "Garam masala",
+        "amount": "1 tsp",
+        "source": "iwc",
+        "match_words": "garam masala"
+      },
+      {
+        "label": "Coriander powder",
+        "amount": "1 tsp",
+        "source": "iwc",
+        "match_words": "coriander powder"
+      },
+      {
+        "label": "Turmeric",
+        "amount": "¼ tsp",
+        "source": "iwc",
+        "match_words": "turmeric"
+      },
+      {
+        "label": "Chicken",
+        "amount": "500 g",
+        "source": "local"
+      },
+      {
+        "label": "Onions",
+        "amount": "2",
+        "source": "local"
+      },
+      {
+        "label": "Ginger-garlic paste",
+        "amount": "1 tbsp",
+        "source": "local"
+      },
+      {
+        "label": "Green chillies",
+        "amount": "4",
+        "source": "local"
+      },
+      {
+        "label": "Curry leaves",
+        "amount": "2 sprigs",
+        "source": "local"
+      },
+      {
+        "label": "Oil",
+        "amount": "4 tbsp",
+        "source": "local"
+      },
+      {
+        "label": "Dry ginger powder",
+        "amount": "½ tsp",
+        "source": "iwc",
+        "match_words": "dry ginger powder",
+        "instead_of": "Ginger-garlic paste"
+      },
+      {
+        "label": "Garlic powder",
+        "amount": "½ tsp",
+        "source": "iwc",
+        "match_words": "garlic powder",
+        "instead_of": "Ginger-garlic paste"
+      },
+      {
+        "label": "Dried curry leaves",
+        "amount": "1 tbsp",
+        "source": "iwc",
+        "match_words": "curry leaves",
+        "instead_of": "Curry leaves"
+      }
+    ],
+    "steps": [
+      {
+        "text": "Marinate the chicken with turmeric, chilli powder, ginger-garlic paste and salt.",
+        "minutes": 15
+      },
+      {
+        "text": "Fry the onions, chillies and curry leaves, add the chicken and cook covered until done.",
+        "minutes": 20
+      },
+      {
+        "text": "Add the coriander powder and garam masala and fry until dry and dark.",
+        "minutes": 8
+      }
+    ]
+  },
+  {
+    "slug": "mutton-chops-fry",
+    "name": "Mutton Chops Fry",
+    "kind": "snacks",
+    "state": "Telangana",
+    "rank": 864,
+    "blurb": "Mutton chops cooked tender with spices, then fried until browned.",
+    "minutes": 70,
+    "soak_hours": null,
+    "serves": 4,
+    "effort": "weekend",
+    "ingredients": [
+      {
+        "label": "Garam masala",
+        "amount": "1 tsp",
+        "source": "iwc",
+        "match_words": "garam masala"
+      },
+      {
+        "label": "Red chilli powder",
+        "amount": "1½ tsp",
+        "source": "iwc",
+        "match_words": "red chilli powder"
+      },
+      {
+        "label": "Black pepper",
+        "amount": "1 tsp",
+        "source": "iwc",
+        "match_words": "black pepper"
+      },
+      {
+        "label": "Turmeric",
+        "amount": "½ tsp",
+        "source": "iwc",
+        "match_words": "turmeric"
+      },
+      {
+        "label": "Mutton chops",
+        "amount": "500 g",
+        "source": "local"
+      },
+      {
+        "label": "Ginger-garlic paste",
+        "amount": "1 tbsp",
+        "source": "local"
+      },
+      {
+        "label": "Yogurt",
+        "amount": "¼ cup",
+        "source": "local"
+      },
+      {
+        "label": "Lemon",
+        "amount": "1",
+        "source": "local"
+      },
+      {
+        "label": "Oil",
+        "amount": "4 tbsp",
+        "source": "local"
+      },
+      {
+        "label": "Dry ginger powder",
+        "amount": "½ tsp",
+        "source": "iwc",
+        "match_words": "dry ginger powder",
+        "instead_of": "Ginger-garlic paste"
+      },
+      {
+        "label": "Garlic powder",
+        "amount": "½ tsp",
+        "source": "iwc",
+        "match_words": "garlic powder",
+        "instead_of": "Ginger-garlic paste"
+      },
+      {
+        "label": "Amchur",
+        "amount": "1 tsp",
+        "source": "iwc",
+        "match_words": "amchur",
+        "instead_of": "Lemon"
+      }
+    ],
+    "steps": [
+      {
+        "text": "Pressure-cook the chops with ginger-garlic paste, turmeric, salt and a little water until tender.",
+        "minutes": 30
+      },
+      {
+        "text": "Coat in yogurt, the spices and lemon.",
+        "minutes": 5
+      },
+      {
+        "text": "Fry in a hot pan until browned on both sides.",
+        "minutes": 12
+      }
+    ]
+  },
+  {
+    "slug": "egg-masala-fry",
+    "name": "Egg Masala Fry",
+    "kind": "snacks",
+    "state": "Andhra Pradesh",
+    "rank": 865,
+    "blurb": "Boiled eggs scored and fried in a hot, dry onion and chilli masala.",
+    "minutes": 25,
+    "soak_hours": null,
+    "serves": 4,
+    "effort": "easy",
+    "ingredients": [
+      {
+        "label": "Red chilli powder",
+        "amount": "1 tsp",
+        "source": "iwc",
+        "match_words": "red chilli powder"
+      },
+      {
+        "label": "Garam masala",
+        "amount": "½ tsp",
+        "source": "iwc",
+        "match_words": "garam masala"
+      },
+      {
+        "label": "Turmeric",
+        "amount": "¼ tsp",
+        "source": "iwc",
+        "match_words": "turmeric"
+      },
+      {
+        "label": "Eggs",
+        "amount": "6",
+        "source": "local"
+      },
+      {
+        "label": "Onions",
+        "amount": "2",
+        "source": "local"
+      },
+      {
+        "label": "Curry leaves",
+        "amount": "a sprig",
+        "source": "local"
+      },
+      {
+        "label": "Oil",
+        "amount": "3 tbsp",
+        "source": "local"
+      },
+      {
+        "label": "Dried curry leaves",
+        "amount": "1 tbsp",
+        "source": "iwc",
+        "match_words": "curry leaves",
+        "instead_of": "Curry leaves"
+      }
+    ],
+    "steps": [
+      {
+        "text": "Hard-boil, peel and score the eggs; fry them briefly with turmeric and chilli.",
+        "minutes": 15
+      },
+      {
+        "text": "Cook the onions and curry leaves until brown, add garam masala and salt.",
+        "minutes": 8
+      },
+      {
+        "text": "Toss the eggs in the masala until coated.",
+        "minutes": 3
+      }
+    ]
+  },
+  {
+    "slug": "bangda-fry",
+    "name": "Bangda Fry",
+    "kind": "snacks",
+    "state": "Maharashtra",
+    "rank": 866,
+    "blurb": "Malvani mackerel in a red masala and rice flour crust, shallow-fried.",
+    "minutes": 30,
+    "soak_hours": null,
+    "serves": 4,
+    "effort": "easy",
+    "ingredients": [
+      {
+        "label": "Malvani masala",
+        "amount": "1 tbsp",
+        "source": "iwc",
+        "match_words": "malvani masala"
+      },
+      {
+        "label": "Turmeric",
+        "amount": "¼ tsp",
+        "source": "iwc",
+        "match_words": "turmeric"
+      },
+      {
+        "label": "Rice flour",
+        "amount": "¼ cup",
+        "source": "iwc",
+        "match_words": "rice flour"
+      },
+      {
+        "label": "Sooji",
+        "amount": "2 tbsp",
+        "source": "iwc",
+        "match_words": "sooji"
+      },
+      {
+        "label": "Mackerel",
+        "amount": "4",
+        "source": "local"
+      },
+      {
+        "label": "Ginger-garlic paste",
+        "amount": "1 tsp",
+        "source": "local"
+      },
+      {
+        "label": "Lemon",
+        "amount": "1",
+        "source": "local"
+      },
+      {
+        "label": "Oil",
+        "amount": "4 tbsp",
+        "source": "local"
+      },
+      {
+        "label": "Dry ginger powder",
+        "amount": "½ tsp",
+        "source": "iwc",
+        "match_words": "dry ginger powder",
+        "instead_of": "Ginger-garlic paste"
+      },
+      {
+        "label": "Garlic powder",
+        "amount": "½ tsp",
+        "source": "iwc",
+        "match_words": "garlic powder",
+        "instead_of": "Ginger-garlic paste"
+      },
+      {
+        "label": "Amchur",
+        "amount": "1 tsp",
+        "source": "iwc",
+        "match_words": "amchur",
+        "instead_of": "Lemon"
+      }
+    ],
+    "steps": [
+      {
+        "text": "Slash the mackerel and marinate with the masala, turmeric, ginger-garlic paste, lemon and salt.",
+        "minutes": 15
+      },
+      {
+        "text": "Coat in rice flour and sooji.",
+        "minutes": 3
+      },
+      {
+        "text": "Shallow-fry until crisp.",
+        "minutes": 12
+      }
+    ]
+  },
+  {
+    "slug": "karimeen-fry",
+    "name": "Karimeen Fry",
+    "kind": "snacks",
+    "state": "Kerala",
+    "rank": 867,
+    "blurb": "Kerala's pearl spot fish in a red chilli and pepper masala, fried in coconut oil.",
+    "minutes": 40,
+    "soak_hours": null,
+    "serves": 4,
+    "effort": "medium",
+    "ingredients": [
+      {
+        "label": "Kashmiri chilli powder",
+        "amount": "2 tsp",
+        "source": "iwc",
+        "match_words": "kashmiri chilli powder"
+      },
+      {
+        "label": "Black pepper",
+        "amount": "1 tsp",
+        "source": "iwc",
+        "match_words": "black pepper"
+      },
+      {
+        "label": "Turmeric",
+        "amount": "¼ tsp",
+        "source": "iwc",
+        "match_words": "turmeric"
+      },
+      {
+        "label": "Karimeen",
+        "amount": "4",
+        "source": "local"
+      },
+      {
+        "label": "Ginger-garlic paste",
+        "amount": "1 tbsp",
+        "source": "local"
+      },
+      {
+        "label": "Shallots",
+        "amount": "4",
+        "source": "local"
+      },
+      {
+        "label": "Curry leaves",
+        "amount": "2 sprigs",
+        "source": "local"
+      },
+      {
+        "label": "Lemon",
+        "amount": "1",
+        "source": "local"
+      },
+      {
+        "label": "Coconut oil",
+        "amount": "4 tbsp",
+        "source": "local"
+      },
+      {
+        "label": "Dry ginger powder",
+        "amount": "½ tsp",
+        "source": "iwc",
+        "match_words": "dry ginger powder",
+        "instead_of": "Ginger-garlic paste"
+      },
+      {
+        "label": "Garlic powder",
+        "amount": "½ tsp",
+        "source": "iwc",
+        "match_words": "garlic powder",
+        "instead_of": "Ginger-garlic paste"
+      },
+      {
+        "label": "Dried curry leaves",
+        "amount": "1 tbsp",
+        "source": "iwc",
+        "match_words": "curry leaves",
+        "instead_of": "Curry leaves"
+      },
+      {
+        "label": "Amchur",
+        "amount": "1 tsp",
+        "source": "iwc",
+        "match_words": "amchur",
+        "instead_of": "Lemon"
+      }
+    ],
+    "steps": [
+      {
+        "text": "Grind the shallots with the spices, ginger-garlic paste, lemon and salt.",
+        "minutes": 5
+      },
+      {
+        "text": "Score the fish and rub the paste into it; rest twenty minutes.",
+        "minutes": 20
+      },
+      {
+        "text": "Fry in coconut oil with curry leaves until crisp.",
+        "minutes": 12
+      }
+    ]
+  },
+  {
+    "slug": "kanava-fry",
+    "name": "Kanava Fry",
+    "kind": "snacks",
+    "state": "Kerala",
+    "rank": 868,
+    "blurb": "Kerala squid rings fried with chilli, pepper and curry leaves.",
+    "minutes": 30,
+    "soak_hours": null,
+    "serves": 4,
+    "effort": "easy",
+    "ingredients": [
+      {
+        "label": "Kashmiri chilli powder",
+        "amount": "1½ tsp",
+        "source": "iwc",
+        "match_words": "kashmiri chilli powder"
+      },
+      {
+        "label": "Black pepper",
+        "amount": "1 tsp",
+        "source": "iwc",
+        "match_words": "black pepper"
+      },
+      {
+        "label": "Rice flour",
+        "amount": "2 tbsp",
+        "source": "iwc",
+        "match_words": "rice flour"
+      },
+      {
+        "label": "Squid",
+        "amount": "400 g",
+        "source": "local"
+      },
+      {
+        "label": "Ginger-garlic paste",
+        "amount": "1 tsp",
+        "source": "local"
+      },
+      {
+        "label": "Curry leaves",
+        "amount": "a sprig",
+        "source": "local"
+      },
+      {
+        "label": "Lemon",
+        "amount": "1",
+        "source": "local"
+      },
+      {
+        "label": "Coconut oil",
+        "amount": "3 tbsp",
+        "source": "local"
+      },
+      {
+        "label": "Dry ginger powder",
+        "amount": "½ tsp",
+        "source": "iwc",
+        "match_words": "dry ginger powder",
+        "instead_of": "Ginger-garlic paste"
+      },
+      {
+        "label": "Garlic powder",
+        "amount": "½ tsp",
+        "source": "iwc",
+        "match_words": "garlic powder",
+        "instead_of": "Ginger-garlic paste"
+      },
+      {
+        "label": "Dried curry leaves",
+        "amount": "1 tbsp",
+        "source": "iwc",
+        "match_words": "curry leaves",
+        "instead_of": "Curry leaves"
+      },
+      {
+        "label": "Amchur",
+        "amount": "1 tsp",
+        "source": "iwc",
+        "match_words": "amchur",
+        "instead_of": "Lemon"
+      }
+    ],
+    "steps": [
+      {
+        "text": "Clean the squid and cut into rings.",
+        "minutes": 10
+      },
+      {
+        "text": "Toss with the spices, ginger-garlic paste, lemon, rice flour and salt.",
+        "minutes": 3
+      },
+      {
+        "text": "Fry quickly in coconut oil with curry leaves.",
+        "minutes": 6
+      }
+    ]
+  },
+  {
+    "slug": "meen-varuthathu",
+    "name": "Meen Varuthathu",
+    "kind": "snacks",
+    "state": "Kerala",
+    "rank": 869,
+    "blurb": "Kerala fish fry: thick slices rubbed with red masala and fried in coconut oil.",
+    "minutes": 35,
+    "soak_hours": null,
+    "serves": 4,
+    "effort": "easy",
+    "ingredients": [
+      {
+        "label": "Kashmiri chilli powder",
+        "amount": "2 tsp",
+        "source": "iwc",
+        "match_words": "kashmiri chilli powder"
+      },
+      {
+        "label": "Black pepper",
+        "amount": "½ tsp",
+        "source": "iwc",
+        "match_words": "black pepper"
+      },
+      {
+        "label": "Turmeric",
+        "amount": "¼ tsp",
+        "source": "iwc",
+        "match_words": "turmeric"
+      },
+      {
+        "label": "Fish steaks",
+        "amount": "500 g",
+        "source": "local"
+      },
+      {
+        "label": "Ginger-garlic paste",
+        "amount": "1 tsp",
+        "source": "local"
+      },
+      {
+        "label": "Curry leaves",
+        "amount": "a sprig",
+        "source": "local"
+      },
+      {
+        "label": "Lemon",
+        "amount": "1",
+        "source": "local"
+      },
+      {
+        "label": "Coconut oil",
+        "amount": "4 tbsp",
+        "source": "local"
+      },
+      {
+        "label": "Dry ginger powder",
+        "amount": "½ tsp",
+        "source": "iwc",
+        "match_words": "dry ginger powder",
+        "instead_of": "Ginger-garlic paste"
+      },
+      {
+        "label": "Garlic powder",
+        "amount": "½ tsp",
+        "source": "iwc",
+        "match_words": "garlic powder",
+        "instead_of": "Ginger-garlic paste"
+      },
+      {
+        "label": "Dried curry leaves",
+        "amount": "1 tbsp",
+        "source": "iwc",
+        "match_words": "curry leaves",
+        "instead_of": "Curry leaves"
+      },
+      {
+        "label": "Amchur",
+        "amount": "1 tsp",
+        "source": "iwc",
+        "match_words": "amchur",
+        "instead_of": "Lemon"
+      }
+    ],
+    "steps": [
+      {
+        "text": "Make a paste of the spices, ginger-garlic paste, lemon and salt.",
+        "minutes": 3
+      },
+      {
+        "text": "Rub it into the fish and rest twenty minutes.",
+        "minutes": 20
+      },
+      {
+        "text": "Fry in coconut oil with curry leaves until crisp.",
+        "minutes": 12
+      }
+    ]
+  },
+  {
+    "slug": "macher-chop",
+    "name": "Macher Chop",
+    "kind": "snacks",
+    "state": "West Bengal",
+    "rank": 870,
+    "blurb": "Bengali fish croquettes of flaked fish and potato, spiced and crumbed.",
+    "minutes": 50,
+    "soak_hours": null,
+    "serves": 6,
+    "effort": "medium",
+    "ingredients": [
+      {
+        "label": "Garam masala",
+        "amount": "1 tsp",
+        "source": "iwc",
+        "match_words": "garam masala"
+      },
+      {
+        "label": "Roasted cumin",
+        "amount": "1 tsp",
+        "source": "iwc",
+        "match_words": "roasted cumin"
+      },
+      {
+        "label": "Red chilli powder",
+        "amount": "1 tsp",
+        "source": "iwc",
+        "match_words": "red chilli powder"
+      },
+      {
+        "label": "Raisins",
+        "amount": "1 tbsp",
+        "source": "iwc",
+        "match_words": "raisins"
+      },
+      {
+        "label": "Fish fillets",
+        "amount": "300 g",
+        "source": "local"
+      },
+      {
+        "label": "Potatoes",
+        "amount": "2",
+        "source": "local"
+      },
+      {
+        "label": "Onion",
+        "amount": "1",
+        "source": "local"
+      },
+      {
+        "label": "Ginger",
+        "amount": "1 inch",
+        "source": "local"
+      },
+      {
+        "label": "Eggs",
+        "amount": "2",
+        "source": "local"
+      },
+      {
+        "label": "Breadcrumbs",
+        "amount": "1 cup",
+        "source": "local"
+      },
+      {
+        "label": "Mustard oil",
+        "amount": "for frying",
+        "source": "local"
+      },
+      {
+        "label": "Dry ginger powder",
+        "amount": "½ tsp",
+        "source": "iwc",
+        "match_words": "dry ginger powder",
+        "instead_of": "Ginger"
+      }
+    ],
+    "steps": [
+      {
+        "text": "Poach and flake the fish; cook with onion, ginger, mashed potato, the spices, raisins and salt until dry.",
+        "minutes": 20
+      },
+      {
+        "text": "Shape ovals, dip in egg and coat in crumbs.",
+        "minutes": 10
+      },
+      {
+        "text": "Fry until golden.",
+        "minutes": 12
+      }
+    ]
+  },
+  {
+    "slug": "echor-chop",
+    "name": "Echor Chop",
+    "kind": "snacks",
+    "state": "West Bengal",
+    "rank": 871,
+    "blurb": "Bengali croquettes of young jackfruit, spiced and crumbed.",
+    "minutes": 50,
+    "soak_hours": null,
+    "serves": 6,
+    "effort": "medium",
+    "ingredients": [
+      {
+        "label": "Garam masala",
+        "amount": "1 tsp",
+        "source": "iwc",
+        "match_words": "garam masala"
+      },
+      {
+        "label": "Roasted cumin",
+        "amount": "1 tsp",
+        "source": "iwc",
+        "match_words": "roasted cumin"
+      },
+      {
+        "label": "Red chilli powder",
+        "amount": "1 tsp",
+        "source": "iwc",
+        "match_words": "red chilli powder"
+      },
+      {
+        "label": "Peanuts",
+        "amount": "2 tbsp",
+        "source": "iwc",
+        "match_words": "peanuts"
+      },
+      {
+        "label": "Raw jackfruit",
+        "amount": "400 g",
+        "source": "local"
+      },
+      {
+        "label": "Potato",
+        "amount": "1",
+        "source": "local"
+      },
+      {
+        "label": "Ginger",
+        "amount": "1 inch",
+        "source": "local"
+      },
+      {
+        "label": "Breadcrumbs",
+        "amount": "1 cup",
+        "source": "local"
+      },
+      {
+        "label": "Mustard oil",
+        "amount": "for frying",
+        "source": "local"
+      },
+      {
+        "label": "Dry ginger powder",
+        "amount": "½ tsp",
+        "source": "iwc",
+        "match_words": "dry ginger powder",
+        "instead_of": "Ginger"
+      }
+    ],
+    "steps": [
+      {
+        "text": "Boil the jackfruit until soft and mash with the potato.",
+        "minutes": 20
+      },
+      {
+        "text": "Cook with ginger, the spices, crushed peanuts, salt and a little sugar until dry.",
+        "minutes": 10
+      },
+      {
+        "text": "Shape, coat in a flour paste and crumbs, and fry.",
+        "minutes": 15
+      }
+    ]
+  },
+  {
+    "slug": "kolkata-chicken-cutlet",
+    "name": "Kolkata Chicken Cutlet",
+    "kind": "snacks",
+    "state": "West Bengal",
+    "rank": 872,
+    "blurb": "Kolkata's flattened chicken breast, marinated, crumbed and fried, eaten with kasundi.",
+    "minutes": 45,
+    "soak_hours": null,
+    "serves": 4,
+    "effort": "medium",
+    "ingredients": [
+      {
+        "label": "Black pepper",
+        "amount": "1 tsp",
+        "source": "iwc",
+        "match_words": "black pepper"
+      },
+      {
+        "label": "Garam masala",
+        "amount": "½ tsp",
+        "source": "iwc",
+        "match_words": "garam masala"
+      },
+      {
+        "label": "Maida",
+        "amount": "3 tbsp",
+        "source": "iwc",
+        "match_words": "maida"
+      },
+      {
+        "label": "Chicken breasts",
+        "amount": "2",
+        "source": "local"
+      },
+      {
+        "label": "Onion",
+        "amount": "1",
+        "source": "local"
+      },
+      {
+        "label": "Ginger-garlic paste",
+        "amount": "1 tbsp",
+        "source": "local"
+      },
+      {
+        "label": "Green chillies",
+        "amount": "2",
+        "source": "local"
+      },
+      {
+        "label": "Eggs",
+        "amount": "2",
+        "source": "local"
+      },
+      {
+        "label": "Breadcrumbs",
+        "amount": "1 cup",
+        "source": "local"
+      },
+      {
+        "label": "Oil",
+        "amount": "for frying",
+        "source": "local"
+      },
+      {
+        "label": "Dry ginger powder",
+        "amount": "½ tsp",
+        "source": "iwc",
+        "match_words": "dry ginger powder",
+        "instead_of": "Ginger-garlic paste"
+      },
+      {
+        "label": "Garlic powder",
+        "amount": "½ tsp",
+        "source": "iwc",
+        "match_words": "garlic powder",
+        "instead_of": "Ginger-garlic paste"
+      },
+      {
+        "label": "Red chilli powder",
+        "amount": "½ tsp",
+        "source": "iwc",
+        "match_words": "red chilli powder",
+        "instead_of": "Green chillies"
+      }
+    ],
+    "steps": [
+      {
+        "text": "Butterfly and beat the chicken thin; marinate with ground onion, ginger-garlic paste, chillies, the spices and salt.",
+        "minutes": 30
+      },
+      {
+        "text": "Dust with maida, dip in egg and press into crumbs.",
+        "minutes": 10
+      },
+      {
+        "text": "Fry until golden.",
+        "minutes": 10
+      }
+    ]
+  },
+  {
+    "slug": "fish-orly",
+    "name": "Fish Orly",
+    "kind": "snacks",
+    "state": "West Bengal",
+    "rank": 873,
+    "blurb": "Kolkata's fish in a light, puffy batter, fried golden.",
+    "minutes": 35,
+    "soak_hours": null,
+    "serves": 4,
+    "effort": "easy",
+    "ingredients": [
+      {
+        "label": "Maida",
+        "amount": "½ cup",
+        "source": "iwc",
+        "match_words": "maida"
+      },
+      {
+        "label": "Cornflour",
+        "amount": "2 tbsp",
+        "source": "iwc",
+        "match_words": "cornflour"
+      },
+      {
+        "label": "Black pepper",
+        "amount": "½ tsp",
+        "source": "iwc",
+        "match_words": "black pepper"
+      },
+      {
+        "label": "Baking soda",
+        "amount": "a pinch",
+        "source": "iwc",
+        "match_words": "baking soda"
+      },
+      {
+        "label": "Fish fillets",
+        "amount": "400 g",
+        "source": "local"
+      },
+      {
+        "label": "Lemon",
+        "amount": "1",
+        "source": "local"
+      },
+      {
+        "label": "Eggs",
+        "amount": "1",
+        "source": "local"
+      },
+      {
+        "label": "Oil",
+        "amount": "for frying",
+        "source": "local"
+      },
+      {
+        "label": "Amchur",
+        "amount": "1 tsp",
+        "source": "iwc",
+        "match_words": "amchur",
+        "instead_of": "Lemon"
+      }
+    ],
+    "steps": [
+      {
+        "text": "Cut the fish into strips and marinate with lemon, pepper and salt.",
+        "minutes": 10
+      },
+      {
+        "text": "Whisk the flours, soda, egg and cold water into a light batter.",
+        "minutes": 3
+      },
+      {
+        "text": "Dip and fry until puffed and golden.",
+        "minutes": 8
+      }
+    ]
+  },
+  {
+    "slug": "chicken-kabiraji",
+    "name": "Chicken Kabiraji",
+    "kind": "snacks",
+    "state": "West Bengal",
+    "rank": 874,
+    "blurb": "Kolkata's crumbed chicken cutlet wrapped in a lacy net of fried egg.",
+    "minutes": 50,
+    "soak_hours": null,
+    "serves": 4,
+    "effort": "medium",
+    "ingredients": [
+      {
+        "label": "Black pepper",
+        "amount": "1 tsp",
+        "source": "iwc",
+        "match_words": "black pepper"
+      },
+      {
+        "label": "Garam masala",
+        "amount": "½ tsp",
+        "source": "iwc",
+        "match_words": "garam masala"
+      },
+      {
+        "label": "Cornflour",
+        "amount": "2 tbsp",
+        "source": "iwc",
+        "match_words": "cornflour"
+      },
+      {
+        "label": "Chicken breasts",
+        "amount": "2",
+        "source": "local"
+      },
+      {
+        "label": "Ginger-garlic paste",
+        "amount": "1 tbsp",
+        "source": "local"
+      },
+      {
+        "label": "Eggs",
+        "amount": "3",
+        "source": "local"
+      },
+      {
+        "label": "Breadcrumbs",
+        "amount": "1 cup",
+        "source": "local"
+      },
+      {
+        "label": "Oil",
+        "amount": "for frying",
+        "source": "local"
+      },
+      {
+        "label": "Dry ginger powder",
+        "amount": "½ tsp",
+        "source": "iwc",
+        "match_words": "dry ginger powder",
+        "instead_of": "Ginger-garlic paste"
+      },
+      {
+        "label": "Garlic powder",
+        "amount": "½ tsp",
+        "source": "iwc",
+        "match_words": "garlic powder",
+        "instead_of": "Ginger-garlic paste"
+      }
+    ],
+    "steps": [
+      {
+        "text": "Beat the chicken thin and marinate with ginger-garlic paste, the spices and salt.",
+        "minutes": 20
+      },
+      {
+        "text": "Dip in egg, coat in crumbs and fry.",
+        "minutes": 10
+      },
+      {
+        "text": "Drizzle the remaining egg whisked with cornflour into the hot oil and lift the lacy net round each cutlet.",
+        "minutes": 10
+      }
+    ]
+  },
+  {
+    "slug": "sambar-vada",
+    "name": "Sambar Vada",
+    "kind": "snacks",
+    "state": "Tamil Nadu",
+    "rank": 875,
+    "blurb": "Crisp medu vadas soaked in hot sambar, eaten with a spoon.",
+    "minutes": 50,
+    "soak_hours": 4,
+    "serves": 4,
+    "effort": "medium",
+    "ingredients": [
+      {
+        "label": "Urad dal",
+        "amount": "1 cup",
+        "source": "iwc",
+        "match_words": "urad dal"
+      },
+      {
+        "label": "Toor dal",
+        "amount": "½ cup",
+        "source": "iwc",
+        "match_words": "toor dal"
+      },
+      {
+        "label": "Sambar powder",
+        "amount": "2 tbsp",
+        "source": "iwc",
+        "match_words": "sambar powder"
+      },
+      {
+        "label": "Tamarind",
+        "amount": "1 tbsp",
+        "source": "iwc",
+        "match_words": "tamarind"
+      },
+      {
+        "label": "Mustard seeds",
+        "amount": "1 tsp",
+        "source": "iwc",
+        "match_words": "mustard seeds"
+      },
+      {
+        "label": "Onion",
+        "amount": "1",
+        "source": "local"
+      },
+      {
+        "label": "Tomato",
+        "amount": "1",
+        "source": "local"
+      },
+      {
+        "label": "Curry leaves",
+        "amount": "a sprig",
+        "source": "local"
+      },
+      {
+        "label": "Oil",
+        "amount": "for frying",
+        "source": "local"
+      },
+      {
+        "label": "Dried curry leaves",
+        "amount": "1 tbsp",
+        "source": "iwc",
+        "match_words": "curry leaves",
+        "instead_of": "Curry leaves"
+      }
+    ],
+    "steps": [
+      {
+        "text": "Grind the soaked urad dal fluffy with salt and fry vadas.",
+        "minutes": 25
+      },
+      {
+        "text": "Cook the toor dal soft; simmer with onion, tomato, tamarind water and sambar powder; temper mustard seeds and curry leaves.",
+        "minutes": 25
+      },
+      {
+        "text": "Soak the vadas in hot sambar for a few minutes before serving.",
+        "minutes": 5
+      }
+    ]
+  },
+  {
+    "slug": "rasam-vada",
+    "name": "Rasam Vada",
+    "kind": "snacks",
+    "state": "Tamil Nadu",
+    "rank": 876,
+    "blurb": "Medu vadas soaked in a thin, peppery rasam.",
+    "minutes": 45,
+    "soak_hours": 4,
+    "serves": 4,
+    "effort": "medium",
+    "ingredients": [
+      {
+        "label": "Urad dal",
+        "amount": "1 cup",
+        "source": "iwc",
+        "match_words": "urad dal"
+      },
+      {
+        "label": "Rasam powder",
+        "amount": "1½ tbsp",
+        "source": "iwc",
+        "match_words": "rasam powder"
+      },
+      {
+        "label": "Tamarind",
+        "amount": "1 tbsp",
+        "source": "iwc",
+        "match_words": "tamarind"
+      },
+      {
+        "label": "Black pepper",
+        "amount": "½ tsp",
+        "source": "iwc",
+        "match_words": "black pepper"
+      },
+      {
+        "label": "Tomatoes",
+        "amount": "2",
+        "source": "local"
+      },
+      {
+        "label": "Curry leaves",
+        "amount": "a sprig",
+        "source": "local"
+      },
+      {
+        "label": "Coriander",
+        "amount": "a handful",
+        "source": "local"
+      },
+      {
+        "label": "Oil",
+        "amount": "for frying",
+        "source": "local"
+      },
+      {
+        "label": "Dried curry leaves",
+        "amount": "1 tbsp",
+        "source": "iwc",
+        "match_words": "curry leaves",
+        "instead_of": "Curry leaves"
+      },
+      {
+        "label": "Coriander powder",
+        "amount": "1 tsp",
+        "source": "iwc",
+        "match_words": "coriander powder",
+        "instead_of": "Coriander"
+      }
+    ],
+    "steps": [
+      {
+        "text": "Grind the soaked urad dal fluffy and fry vadas.",
+        "minutes": 25
+      },
+      {
+        "text": "Boil tamarind water with tomatoes, rasam powder, pepper and salt; temper with curry leaves.",
+        "minutes": 15
+      },
+      {
+        "text": "Soak the vadas in hot rasam and finish with coriander.",
+        "minutes": 5
+      }
+    ]
+  },
+  {
+    "slug": "thayir-vadai",
+    "name": "Thayir Vadai",
+    "kind": "snacks",
+    "state": "Tamil Nadu",
+    "rank": 877,
+    "blurb": "South Indian curd vadas with a mustard, curry leaf and coconut tempering.",
+    "minutes": 45,
+    "soak_hours": 4,
+    "serves": 4,
+    "effort": "medium",
+    "ingredients": [
+      {
+        "label": "Urad dal",
+        "amount": "1 cup",
+        "source": "iwc",
+        "match_words": "urad dal"
+      },
+      {
+        "label": "Mustard seeds",
+        "amount": "1 tsp",
+        "source": "iwc",
+        "match_words": "mustard seeds"
+      },
+      {
+        "label": "Red chilli whole",
+        "amount": "2",
+        "source": "iwc",
+        "match_words": "red chilli whole"
+      },
+      {
+        "label": "Hing",
+        "amount": "a pinch",
+        "source": "iwc",
+        "match_words": "hing"
+      },
+      {
+        "label": "Yogurt",
+        "amount": "2 cups",
+        "source": "local"
+      },
+      {
+        "label": "Coconut (fresh)",
+        "amount": "2 tbsp",
+        "source": "local"
+      },
+      {
+        "label": "Ginger",
+        "amount": "1 inch",
+        "source": "local"
+      },
+      {
+        "label": "Curry leaves",
+        "amount": "a sprig",
+        "source": "local"
+      },
+      {
+        "label": "Oil",
+        "amount": "for frying",
+        "source": "local"
+      },
+      {
+        "label": "Desiccated coconut",
+        "amount": "2 tbsp",
+        "source": "iwc",
+        "match_words": "desiccated coconut",
+        "instead_of": "Coconut (fresh)"
+      },
+      {
+        "label": "Dry ginger powder",
+        "amount": "½ tsp",
+        "source": "iwc",
+        "match_words": "dry ginger powder",
+        "instead_of": "Ginger"
+      },
+      {
+        "label": "Dried curry leaves",
+        "amount": "1 tbsp",
+        "source": "iwc",
+        "match_words": "curry leaves",
+        "instead_of": "Curry leaves"
+      }
+    ],
+    "steps": [
+      {
+        "text": "Grind the soaked dal fluffy with ginger and fry vadas; soak them in warm water.",
+        "minutes": 25
+      },
+      {
+        "text": "Whisk the yogurt with ground coconut and salt; squeeze the vadas and lay them in it.",
+        "minutes": 10
+      },
+      {
+        "text": "Temper mustard seeds, chillies, hing and curry leaves and pour over.",
+        "minutes": 3
+      }
+    ]
+  },
+  {
+    "slug": "batata-vada",
+    "name": "Batata Vada",
+    "kind": "snacks",
+    "state": "Maharashtra",
+    "rank": 878,
+    "blurb": "Maharashtra's spiced potato balls in besan batter, the vada of vada pav, eaten alone with chutney.",
+    "minutes": 40,
+    "soak_hours": null,
+    "serves": 4,
+    "effort": "easy",
+    "ingredients": [
+      {
+        "label": "Besan",
+        "amount": "1 cup",
+        "source": "iwc",
+        "match_words": "besan"
+      },
+      {
+        "label": "Turmeric",
+        "amount": "¼ tsp",
+        "source": "iwc",
+        "match_words": "turmeric"
+      },
+      {
+        "label": "Mustard seeds",
+        "amount": "½ tsp",
+        "source": "iwc",
+        "match_words": "mustard seeds"
+      },
+      {
+        "label": "Hing",
+        "amount": "a pinch",
+        "source": "iwc",
+        "match_words": "hing"
+      },
+      {
+        "label": "Potatoes",
+        "amount": "4",
+        "source": "local"
+      },
+      {
+        "label": "Garlic",
+        "amount": "4 cloves",
+        "source": "local"
+      },
+      {
+        "label": "Ginger",
+        "amount": "1 inch",
+        "source": "local"
+      },
+      {
+        "label": "Green chillies",
+        "amount": "2",
+        "source": "local"
+      },
+      {
+        "label": "Curry leaves",
+        "amount": "a sprig",
+        "source": "local"
+      },
+      {
+        "label": "Oil",
+        "amount": "for frying",
+        "source": "local"
+      },
+      {
+        "label": "Garlic powder",
+        "amount": "½ tsp",
+        "source": "iwc",
+        "match_words": "garlic powder",
+        "instead_of": "Garlic"
+      },
+      {
+        "label": "Dry ginger powder",
+        "amount": "½ tsp",
+        "source": "iwc",
+        "match_words": "dry ginger powder",
+        "instead_of": "Ginger"
+      },
+      {
+        "label": "Red chilli powder",
+        "amount": "½ tsp",
+        "source": "iwc",
+        "match_words": "red chilli powder",
+        "instead_of": "Green chillies"
+      },
+      {
+        "label": "Dried curry leaves",
+        "amount": "1 tbsp",
+        "source": "iwc",
+        "match_words": "curry leaves",
+        "instead_of": "Curry leaves"
+      }
+    ],
+    "steps": [
+      {
+        "text": "Temper mustard seeds, hing, curry leaves, crushed garlic, ginger and chillies; add mashed potato, turmeric and salt.",
+        "minutes": 12
+      },
+      {
+        "text": "Shape balls and dip in salted besan batter.",
+        "minutes": 5
+      },
+      {
+        "text": "Fry until golden.",
+        "minutes": 12
+      }
+    ]
+  },
+  {
+    "slug": "egg-bonda",
+    "name": "Egg Bonda",
+    "kind": "snacks",
+    "state": "Kerala",
+    "rank": 879,
+    "blurb": "Whole boiled eggs in a spiced besan batter, fried golden.",
+    "minutes": 30,
+    "soak_hours": null,
+    "serves": 4,
+    "effort": "easy",
+    "ingredients": [
+      {
+        "label": "Besan",
+        "amount": "¾ cup",
+        "source": "iwc",
+        "match_words": "besan"
+      },
+      {
+        "label": "Kashmiri chilli powder",
+        "amount": "1 tsp",
+        "source": "iwc",
+        "match_words": "kashmiri chilli powder"
+      },
+      {
+        "label": "Hing",
+        "amount": "a pinch",
+        "source": "iwc",
+        "match_words": "hing"
+      },
+      {
+        "label": "Eggs",
+        "amount": "5",
+        "source": "local"
+      },
+      {
+        "label": "Oil",
+        "amount": "for frying",
+        "source": "local"
+      }
+    ],
+    "steps": [
+      {
+        "text": "Hard-boil and peel the eggs.",
+        "minutes": 12
+      },
+      {
+        "text": "Whisk the besan with chilli powder, hing, salt and water into a thick batter.",
+        "minutes": 3
+      },
+      {
+        "text": "Dip the whole eggs and fry until golden.",
+        "minutes": 10
+      }
+    ]
+  },
+  {
+    "slug": "rava-bonda",
+    "name": "Rava Bonda",
+    "kind": "snacks",
+    "state": "Karnataka",
+    "rank": 880,
+    "blurb": "Quick semolina and curd bondas with onion, ginger and coconut.",
+    "minutes": 25,
+    "soak_hours": null,
+    "serves": 4,
+    "effort": "easy",
+    "ingredients": [
+      {
+        "label": "Sooji",
+        "amount": "1 cup",
+        "source": "iwc",
+        "match_words": "sooji"
+      },
+      {
+        "label": "Rice flour",
+        "amount": "2 tbsp",
+        "source": "iwc",
+        "match_words": "rice flour"
+      },
+      {
+        "label": "Baking soda",
+        "amount": "a pinch",
+        "source": "iwc",
+        "match_words": "baking soda"
+      },
+      {
+        "label": "Yogurt",
+        "amount": "½ cup",
+        "source": "local"
+      },
+      {
+        "label": "Onion",
+        "amount": "1",
+        "source": "local"
+      },
+      {
+        "label": "Ginger",
+        "amount": "1 inch",
+        "source": "local"
+      },
+      {
+        "label": "Coconut (fresh)",
+        "amount": "2 tbsp",
+        "source": "local"
+      },
+      {
+        "label": "Curry leaves",
+        "amount": "a sprig",
+        "source": "local"
+      },
+      {
+        "label": "Oil",
+        "amount": "for frying",
+        "source": "local"
+      },
+      {
+        "label": "Dry ginger powder",
+        "amount": "½ tsp",
+        "source": "iwc",
+        "match_words": "dry ginger powder",
+        "instead_of": "Ginger"
+      },
+      {
+        "label": "Desiccated coconut",
+        "amount": "2 tbsp",
+        "source": "iwc",
+        "match_words": "desiccated coconut",
+        "instead_of": "Coconut (fresh)"
+      },
+      {
+        "label": "Dried curry leaves",
+        "amount": "1 tbsp",
+        "source": "iwc",
+        "match_words": "curry leaves",
+        "instead_of": "Curry leaves"
+      }
+    ],
+    "steps": [
+      {
+        "text": "Mix the sooji with yogurt and salt and rest fifteen minutes.",
+        "minutes": 15
+      },
+      {
+        "text": "Add rice flour, soda, onion, ginger, coconut and curry leaves.",
+        "minutes": 3
+      },
+      {
+        "text": "Drop small balls into hot oil and fry until golden.",
+        "minutes": 10
+      }
+    ]
+  }
+]

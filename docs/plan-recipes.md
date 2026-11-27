@@ -298,6 +298,13 @@ mode button present.
   Tripura and Nagaland new among them), same rules: D-204's dry swaps, local lines for anything fresh, dairy, oily,
   meaty or liquid, words drafts until approved. Pantry items they need that the Blinkit list lacked were added to it
   (cloves, masoor dal, ragi flour, jowar atta, makhana and 27 more).
+- **425 snacks** (D-214, founder 2026-11-27: "Find 500 more most loved snacks recipe", then "fill the 306 more with
+  popular variants"): Claude's picks, `catalogue/recipes-drafts-26.json` to `-47.json` (ranks 501 – 925), listed in
+  `catalogue/recipes-501-925.csv`. Ranks 501 – 694: every well-known Indian snack the first 500 left out (pakoras and
+  vadas, chaats and street food, namkeen and chips, the coasts' fries and cutlets, kebabs and tikkas, Indo-Chinese
+  starters, fasting snacks). Ranks 695 – 925: the popular variants menus sell under their own names (paneer, chicken and
+  kurkure momos; kathi rolls; fish, mushroom and egg 65; soya chaap four ways; samosa pav, cheese vada pav). 75 short of
+  500: past these, variants are invented combinations. One new pantry row (methi khakhra).
 
 ## 8. Later (not in this plan; founder decides)
 A "about $x a plate" line from `grams_used` and each pack's net quantity; recipes in site search; recipe rows on state

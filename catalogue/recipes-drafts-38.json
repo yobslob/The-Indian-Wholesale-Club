@@ -1,0 +1,1501 @@
+[
+  {
+    "slug": "corn-tikki",
+    "name": "Corn Tikki",
+    "kind": "snacks",
+    "state": "All of India",
+    "rank": 741,
+    "blurb": "Sweet corn and potato tikkis, crisp outside, with a little chilli.",
+    "minutes": 30,
+    "soak_hours": null,
+    "serves": 4,
+    "effort": "easy",
+    "ingredients": [
+      {
+        "label": "Cornflour",
+        "amount": "2 tbsp",
+        "source": "iwc",
+        "match_words": "cornflour"
+      },
+      {
+        "label": "Chaat masala",
+        "amount": "1 tsp",
+        "source": "iwc",
+        "match_words": "chaat masala"
+      },
+      {
+        "label": "Red chilli powder",
+        "amount": "½ tsp",
+        "source": "iwc",
+        "match_words": "red chilli powder"
+      },
+      {
+        "label": "Sweet corn kernels",
+        "amount": "1 cup",
+        "source": "local"
+      },
+      {
+        "label": "Potatoes",
+        "amount": "2",
+        "source": "local"
+      },
+      {
+        "label": "Green chillies",
+        "amount": "1",
+        "source": "local"
+      },
+      {
+        "label": "Coriander",
+        "amount": "a handful",
+        "source": "local"
+      },
+      {
+        "label": "Oil",
+        "amount": "3 tbsp",
+        "source": "local"
+      },
+      {
+        "label": "Coriander powder",
+        "amount": "1 tsp",
+        "source": "iwc",
+        "match_words": "coriander powder",
+        "instead_of": "Coriander"
+      }
+    ],
+    "steps": [
+      {
+        "text": "Mash boiled potatoes with crushed corn, cornflour, spices, chilli, coriander and salt.",
+        "minutes": 8
+      },
+      {
+        "text": "Shape patties.",
+        "minutes": 5
+      },
+      {
+        "text": "Shallow-fry until crisp.",
+        "minutes": 12
+      }
+    ]
+  },
+  {
+    "slug": "soya-tikki",
+    "name": "Soya Tikki",
+    "kind": "snacks",
+    "state": "All of India",
+    "rank": 742,
+    "blurb": "Patties of minced soya chunks and potato, high in protein and crisp.",
+    "minutes": 35,
+    "soak_hours": null,
+    "serves": 4,
+    "effort": "easy",
+    "ingredients": [
+      {
+        "label": "Soya chunks",
+        "amount": "1 cup",
+        "source": "iwc",
+        "match_words": "soya chunks"
+      },
+      {
+        "label": "Garam masala",
+        "amount": "1 tsp",
+        "source": "iwc",
+        "match_words": "garam masala"
+      },
+      {
+        "label": "Besan",
+        "amount": "2 tbsp",
+        "source": "iwc",
+        "match_words": "besan"
+      },
+      {
+        "label": "Potatoes",
+        "amount": "2",
+        "source": "local"
+      },
+      {
+        "label": "Onion",
+        "amount": "1",
+        "source": "local"
+      },
+      {
+        "label": "Ginger",
+        "amount": "1 inch",
+        "source": "local"
+      },
+      {
+        "label": "Oil",
+        "amount": "3 tbsp",
+        "source": "local"
+      },
+      {
+        "label": "Dry ginger powder",
+        "amount": "½ tsp",
+        "source": "iwc",
+        "match_words": "dry ginger powder",
+        "instead_of": "Ginger"
+      }
+    ],
+    "steps": [
+      {
+        "text": "Boil the soya chunks, squeeze and mince them.",
+        "minutes": 10
+      },
+      {
+        "text": "Mix with mashed potato, onion, ginger, besan, garam masala and salt; shape patties.",
+        "minutes": 8
+      },
+      {
+        "text": "Shallow-fry until golden.",
+        "minutes": 12
+      }
+    ]
+  },
+  {
+    "slug": "chana-dal-tikki",
+    "name": "Chana Dal Tikki",
+    "kind": "snacks",
+    "state": "Uttar Pradesh",
+    "rank": 743,
+    "blurb": "Potato tikkis with a spiced chana dal centre, the chaat stall kind.",
+    "minutes": 40,
+    "soak_hours": 2,
+    "serves": 4,
+    "effort": "medium",
+    "ingredients": [
+      {
+        "label": "Chana dal",
+        "amount": "¼ cup",
+        "source": "iwc",
+        "match_words": "chana dal"
+      },
+      {
+        "label": "Roasted cumin",
+        "amount": "1 tsp",
+        "source": "iwc",
+        "match_words": "roasted cumin"
+      },
+      {
+        "label": "Red chilli powder",
+        "amount": "½ tsp",
+        "source": "iwc",
+        "match_words": "red chilli powder"
+      },
+      {
+        "label": "Amchur",
+        "amount": "½ tsp",
+        "source": "iwc",
+        "match_words": "amchur"
+      },
+      {
+        "label": "Potatoes",
+        "amount": "4",
+        "source": "local"
+      },
+      {
+        "label": "Ginger",
+        "amount": "1 inch",
+        "source": "local"
+      },
+      {
+        "label": "Oil",
+        "amount": "3 tbsp",
+        "source": "local"
+      },
+      {
+        "label": "Dry ginger powder",
+        "amount": "½ tsp",
+        "source": "iwc",
+        "match_words": "dry ginger powder",
+        "instead_of": "Ginger"
+      }
+    ],
+    "steps": [
+      {
+        "text": "Cook the soaked dal until just soft and dry, then season with ginger, cumin, chilli, amchur and salt.",
+        "minutes": 15
+      },
+      {
+        "text": "Wrap balls of salted mashed potato round spoonfuls of dal and flatten.",
+        "minutes": 10
+      },
+      {
+        "text": "Shallow-fry slowly until crisp.",
+        "minutes": 15
+      }
+    ]
+  },
+  {
+    "slug": "matar-tikki",
+    "name": "Matar Tikki",
+    "kind": "snacks",
+    "state": "Uttar Pradesh",
+    "rank": 744,
+    "blurb": "Green pea and potato patties with ginger and chilli.",
+    "minutes": 30,
+    "soak_hours": null,
+    "serves": 4,
+    "effort": "easy",
+    "ingredients": [
+      {
+        "label": "Garam masala",
+        "amount": "½ tsp",
+        "source": "iwc",
+        "match_words": "garam masala"
+      },
+      {
+        "label": "Amchur",
+        "amount": "½ tsp",
+        "source": "iwc",
+        "match_words": "amchur"
+      },
+      {
+        "label": "Cornflour",
+        "amount": "2 tbsp",
+        "source": "iwc",
+        "match_words": "cornflour"
+      },
+      {
+        "label": "Green peas",
+        "amount": "1 cup",
+        "source": "local"
+      },
+      {
+        "label": "Potatoes",
+        "amount": "2",
+        "source": "local"
+      },
+      {
+        "label": "Ginger",
+        "amount": "1 inch",
+        "source": "local"
+      },
+      {
+        "label": "Green chillies",
+        "amount": "2",
+        "source": "local"
+      },
+      {
+        "label": "Oil",
+        "amount": "3 tbsp",
+        "source": "local"
+      },
+      {
+        "label": "Dry ginger powder",
+        "amount": "½ tsp",
+        "source": "iwc",
+        "match_words": "dry ginger powder",
+        "instead_of": "Ginger"
+      },
+      {
+        "label": "Red chilli powder",
+        "amount": "½ tsp",
+        "source": "iwc",
+        "match_words": "red chilli powder",
+        "instead_of": "Green chillies"
+      }
+    ],
+    "steps": [
+      {
+        "text": "Mash the cooked peas coarsely with boiled potato, ginger, chillies, spices, cornflour and salt.",
+        "minutes": 8
+      },
+      {
+        "text": "Shape patties.",
+        "minutes": 5
+      },
+      {
+        "text": "Shallow-fry until golden.",
+        "minutes": 12
+      }
+    ]
+  },
+  {
+    "slug": "rajma-tikki",
+    "name": "Rajma Tikki",
+    "kind": "snacks",
+    "state": "Punjab",
+    "rank": 745,
+    "blurb": "Patties of mashed kidney beans and potato, spiced like rajma.",
+    "minutes": 35,
+    "soak_hours": 8,
+    "serves": 4,
+    "effort": "easy",
+    "ingredients": [
+      {
+        "label": "Rajma",
+        "amount": "½ cup",
+        "source": "iwc",
+        "match_words": "rajma"
+      },
+      {
+        "label": "Rajma masala",
+        "amount": "1 tsp",
+        "source": "iwc",
+        "match_words": "rajma masala"
+      },
+      {
+        "label": "Besan",
+        "amount": "2 tbsp",
+        "source": "iwc",
+        "match_words": "besan"
+      },
+      {
+        "label": "Potato",
+        "amount": "1",
+        "source": "local"
+      },
+      {
+        "label": "Onion",
+        "amount": "1",
+        "source": "local"
+      },
+      {
+        "label": "Coriander",
+        "amount": "a handful",
+        "source": "local"
+      },
+      {
+        "label": "Oil",
+        "amount": "3 tbsp",
+        "source": "local"
+      },
+      {
+        "label": "Coriander powder",
+        "amount": "1 tsp",
+        "source": "iwc",
+        "match_words": "coriander powder",
+        "instead_of": "Coriander"
+      }
+    ],
+    "steps": [
+      {
+        "text": "Pressure-cook the soaked rajma until soft; drain and mash with the potato.",
+        "minutes": 20
+      },
+      {
+        "text": "Mix in onion, coriander, rajma masala, besan and salt; shape patties.",
+        "minutes": 5
+      },
+      {
+        "text": "Shallow-fry until crisp.",
+        "minutes": 12
+      }
+    ]
+  },
+  {
+    "slug": "vrat-aloo-tikki",
+    "name": "Vrat Aloo Tikki",
+    "kind": "snacks",
+    "state": "Uttar Pradesh",
+    "rank": 746,
+    "blurb": "Fasting potato tikkis bound with singhara atta and rock salt.",
+    "minutes": 30,
+    "soak_hours": null,
+    "serves": 4,
+    "effort": "easy",
+    "ingredients": [
+      {
+        "label": "Singhara atta",
+        "amount": "3 tbsp",
+        "source": "iwc",
+        "match_words": "singhara atta"
+      },
+      {
+        "label": "Rock salt",
+        "amount": "1 tsp",
+        "source": "iwc",
+        "match_words": "rock salt"
+      },
+      {
+        "label": "Cumin seeds",
+        "amount": "½ tsp",
+        "source": "iwc",
+        "match_words": "cumin seeds"
+      },
+      {
+        "label": "Potatoes",
+        "amount": "4",
+        "source": "local"
+      },
+      {
+        "label": "Green chillies",
+        "amount": "2",
+        "source": "local"
+      },
+      {
+        "label": "Ghee",
+        "amount": "3 tbsp",
+        "source": "local"
+      },
+      {
+        "label": "Red chilli powder",
+        "amount": "½ tsp",
+        "source": "iwc",
+        "match_words": "red chilli powder",
+        "instead_of": "Green chillies"
+      }
+    ],
+    "steps": [
+      {
+        "text": "Mash boiled potatoes with singhara atta, rock salt, cumin and chillies.",
+        "minutes": 8
+      },
+      {
+        "text": "Shape tikkis.",
+        "minutes": 5
+      },
+      {
+        "text": "Shallow-fry in ghee until crisp.",
+        "minutes": 12
+      }
+    ]
+  },
+  {
+    "slug": "paneer-cutlet",
+    "name": "Paneer Cutlet",
+    "kind": "snacks",
+    "state": "All of India",
+    "rank": 747,
+    "blurb": "Crumbed paneer and vegetable cutlets, crisp and soft.",
+    "minutes": 35,
+    "soak_hours": null,
+    "serves": 4,
+    "effort": "easy",
+    "ingredients": [
+      {
+        "label": "Garam masala",
+        "amount": "½ tsp",
+        "source": "iwc",
+        "match_words": "garam masala"
+      },
+      {
+        "label": "Chaat masala",
+        "amount": "1 tsp",
+        "source": "iwc",
+        "match_words": "chaat masala"
+      },
+      {
+        "label": "Cornflour",
+        "amount": "3 tbsp",
+        "source": "iwc",
+        "match_words": "cornflour"
+      },
+      {
+        "label": "Paneer",
+        "amount": "200 g",
+        "source": "local"
+      },
+      {
+        "label": "Potato",
+        "amount": "1",
+        "source": "local"
+      },
+      {
+        "label": "Carrot",
+        "amount": "1",
+        "source": "local"
+      },
+      {
+        "label": "Breadcrumbs",
+        "amount": "1 cup",
+        "source": "local"
+      },
+      {
+        "label": "Oil",
+        "amount": "for frying",
+        "source": "local"
+      }
+    ],
+    "steps": [
+      {
+        "text": "Mix the grated paneer with mashed potato, grated carrot, spices and salt; shape cutlets.",
+        "minutes": 10
+      },
+      {
+        "text": "Dip in cornflour slurry and coat in breadcrumbs.",
+        "minutes": 5
+      },
+      {
+        "text": "Fry until golden.",
+        "minutes": 10
+      }
+    ]
+  },
+  {
+    "slug": "soya-cutlet",
+    "name": "Soya Cutlet",
+    "kind": "snacks",
+    "state": "All of India",
+    "rank": 748,
+    "blurb": "Minced soya and vegetable cutlets with a crisp crumb coat.",
+    "minutes": 40,
+    "soak_hours": null,
+    "serves": 4,
+    "effort": "easy",
+    "ingredients": [
+      {
+        "label": "Soya chunks",
+        "amount": "1 cup",
+        "source": "iwc",
+        "match_words": "soya chunks"
+      },
+      {
+        "label": "Garam masala",
+        "amount": "1 tsp",
+        "source": "iwc",
+        "match_words": "garam masala"
+      },
+      {
+        "label": "Cornflour",
+        "amount": "3 tbsp",
+        "source": "iwc",
+        "match_words": "cornflour"
+      },
+      {
+        "label": "Potatoes",
+        "amount": "2",
+        "source": "local"
+      },
+      {
+        "label": "Onion",
+        "amount": "1",
+        "source": "local"
+      },
+      {
+        "label": "Breadcrumbs",
+        "amount": "1 cup",
+        "source": "local"
+      },
+      {
+        "label": "Oil",
+        "amount": "for frying",
+        "source": "local"
+      }
+    ],
+    "steps": [
+      {
+        "text": "Boil, squeeze and mince the soya; mix with mashed potato, onion, garam masala and salt.",
+        "minutes": 12
+      },
+      {
+        "text": "Shape, dip in cornflour slurry and coat in crumbs.",
+        "minutes": 8
+      },
+      {
+        "text": "Fry until golden.",
+        "minutes": 10
+      }
+    ]
+  },
+  {
+    "slug": "mutton-cutlet",
+    "name": "Mutton Cutlet",
+    "kind": "snacks",
+    "state": "Kerala",
+    "rank": 749,
+    "blurb": "Kerala's spiced mutton mince and potato cutlets, crumbed and fried.",
+    "minutes": 50,
+    "soak_hours": null,
+    "serves": 6,
+    "effort": "medium",
+    "ingredients": [
+      {
+        "label": "Garam masala",
+        "amount": "1 tsp",
+        "source": "iwc",
+        "match_words": "garam masala"
+      },
+      {
+        "label": "Black pepper",
+        "amount": "1 tsp",
+        "source": "iwc",
+        "match_words": "black pepper"
+      },
+      {
+        "label": "Meat masala",
+        "amount": "1 tbsp",
+        "source": "iwc",
+        "match_words": "meat masala"
+      },
+      {
+        "label": "Mutton mince",
+        "amount": "300 g",
+        "source": "local"
+      },
+      {
+        "label": "Potatoes",
+        "amount": "2",
+        "source": "local"
+      },
+      {
+        "label": "Onion",
+        "amount": "1",
+        "source": "local"
+      },
+      {
+        "label": "Eggs",
+        "amount": "2",
+        "source": "local"
+      },
+      {
+        "label": "Breadcrumbs",
+        "amount": "1 cup",
+        "source": "local"
+      },
+      {
+        "label": "Oil",
+        "amount": "for frying",
+        "source": "local"
+      }
+    ],
+    "steps": [
+      {
+        "text": "Cook the mince with onion and spices until dry; mix with mashed potato and salt.",
+        "minutes": 25
+      },
+      {
+        "text": "Shape, dip in egg and coat in crumbs.",
+        "minutes": 10
+      },
+      {
+        "text": "Fry until golden.",
+        "minutes": 12
+      }
+    ]
+  },
+  {
+    "slug": "prawn-cutlet",
+    "name": "Prawn Cutlet",
+    "kind": "snacks",
+    "state": "West Bengal",
+    "rank": 750,
+    "blurb": "Kolkata's butterflied prawns, flattened, crumbed and fried.",
+    "minutes": 45,
+    "soak_hours": null,
+    "serves": 4,
+    "effort": "medium",
+    "ingredients": [
+      {
+        "label": "Black pepper",
+        "amount": "½ tsp",
+        "source": "iwc",
+        "match_words": "black pepper"
+      },
+      {
+        "label": "Garam masala",
+        "amount": "½ tsp",
+        "source": "iwc",
+        "match_words": "garam masala"
+      },
+      {
+        "label": "Maida",
+        "amount": "2 tbsp",
+        "source": "iwc",
+        "match_words": "maida"
+      },
+      {
+        "label": "Large prawns",
+        "amount": "8",
+        "source": "local"
+      },
+      {
+        "label": "Ginger-garlic paste",
+        "amount": "1 tsp",
+        "source": "local"
+      },
+      {
+        "label": "Lemon",
+        "amount": "1",
+        "source": "local"
+      },
+      {
+        "label": "Eggs",
+        "amount": "2",
+        "source": "local"
+      },
+      {
+        "label": "Breadcrumbs",
+        "amount": "1 cup",
+        "source": "local"
+      },
+      {
+        "label": "Oil",
+        "amount": "for frying",
+        "source": "local"
+      },
+      {
+        "label": "Dry ginger powder",
+        "amount": "½ tsp",
+        "source": "iwc",
+        "match_words": "dry ginger powder",
+        "instead_of": "Ginger-garlic paste"
+      },
+      {
+        "label": "Garlic powder",
+        "amount": "½ tsp",
+        "source": "iwc",
+        "match_words": "garlic powder",
+        "instead_of": "Ginger-garlic paste"
+      },
+      {
+        "label": "Amchur",
+        "amount": "1 tsp",
+        "source": "iwc",
+        "match_words": "amchur",
+        "instead_of": "Lemon"
+      }
+    ],
+    "steps": [
+      {
+        "text": "Butterfly the prawns, beat them flat and marinate with ginger-garlic paste, lemon, spices and salt.",
+        "minutes": 15
+      },
+      {
+        "text": "Dust with maida, dip in egg and press into crumbs.",
+        "minutes": 10
+      },
+      {
+        "text": "Fry until golden.",
+        "minutes": 8
+      }
+    ]
+  },
+  {
+    "slug": "egg-cutlet",
+    "name": "Egg Cutlet",
+    "kind": "snacks",
+    "state": "Kerala",
+    "rank": 751,
+    "blurb": "Boiled eggs halved and wrapped in spiced potato, crumbed and fried.",
+    "minutes": 40,
+    "soak_hours": null,
+    "serves": 4,
+    "effort": "easy",
+    "ingredients": [
+      {
+        "label": "Garam masala",
+        "amount": "½ tsp",
+        "source": "iwc",
+        "match_words": "garam masala"
+      },
+      {
+        "label": "Black pepper",
+        "amount": "½ tsp",
+        "source": "iwc",
+        "match_words": "black pepper"
+      },
+      {
+        "label": "Turmeric",
+        "amount": "¼ tsp",
+        "source": "iwc",
+        "match_words": "turmeric"
+      },
+      {
+        "label": "Eggs",
+        "amount": "5",
+        "source": "local"
+      },
+      {
+        "label": "Potatoes",
+        "amount": "3",
+        "source": "local"
+      },
+      {
+        "label": "Onion",
+        "amount": "1",
+        "source": "local"
+      },
+      {
+        "label": "Breadcrumbs",
+        "amount": "1 cup",
+        "source": "local"
+      },
+      {
+        "label": "Oil",
+        "amount": "for frying",
+        "source": "local"
+      }
+    ],
+    "steps": [
+      {
+        "text": "Hard-boil four eggs and halve them; cook the onion with the spices and mash in the potatoes.",
+        "minutes": 15
+      },
+      {
+        "text": "Wrap each half egg in the potato, dip in the last egg beaten and coat in crumbs.",
+        "minutes": 10
+      },
+      {
+        "text": "Fry until golden.",
+        "minutes": 10
+      }
+    ]
+  },
+  {
+    "slug": "bread-cutlet",
+    "name": "Bread Cutlet",
+    "kind": "snacks",
+    "state": "All of India",
+    "rank": 752,
+    "blurb": "Quick cutlets of soaked bread, potato and vegetables.",
+    "minutes": 30,
+    "soak_hours": null,
+    "serves": 4,
+    "effort": "easy",
+    "ingredients": [
+      {
+        "label": "Garam masala",
+        "amount": "½ tsp",
+        "source": "iwc",
+        "match_words": "garam masala"
+      },
+      {
+        "label": "Chaat masala",
+        "amount": "1 tsp",
+        "source": "iwc",
+        "match_words": "chaat masala"
+      },
+      {
+        "label": "Red chilli powder",
+        "amount": "½ tsp",
+        "source": "iwc",
+        "match_words": "red chilli powder"
+      },
+      {
+        "label": "Bread slices",
+        "amount": "4",
+        "source": "local"
+      },
+      {
+        "label": "Potatoes",
+        "amount": "2",
+        "source": "local"
+      },
+      {
+        "label": "Carrot",
+        "amount": "1",
+        "source": "local"
+      },
+      {
+        "label": "Onion",
+        "amount": "1",
+        "source": "local"
+      },
+      {
+        "label": "Oil",
+        "amount": "3 tbsp",
+        "source": "local"
+      }
+    ],
+    "steps": [
+      {
+        "text": "Soak the bread, squeeze it and mash with boiled potatoes, grated carrot, onion, spices and salt.",
+        "minutes": 8
+      },
+      {
+        "text": "Shape cutlets.",
+        "minutes": 5
+      },
+      {
+        "text": "Shallow-fry until crisp.",
+        "minutes": 12
+      }
+    ]
+  },
+  {
+    "slug": "paneer-puff",
+    "name": "Paneer Puff",
+    "kind": "snacks",
+    "state": "Karnataka",
+    "rank": 753,
+    "blurb": "Bakery puffs filled with spiced paneer and capsicum.",
+    "minutes": 50,
+    "soak_hours": null,
+    "serves": 6,
+    "effort": "medium",
+    "ingredients": [
+      {
+        "label": "Garam masala",
+        "amount": "½ tsp",
+        "source": "iwc",
+        "match_words": "garam masala"
+      },
+      {
+        "label": "Red chilli powder",
+        "amount": "½ tsp",
+        "source": "iwc",
+        "match_words": "red chilli powder"
+      },
+      {
+        "label": "Kasuri methi",
+        "amount": "1 tsp",
+        "source": "iwc",
+        "match_words": "kasuri methi"
+      },
+      {
+        "label": "Puff pastry sheets",
+        "amount": "2",
+        "source": "local"
+      },
+      {
+        "label": "Paneer",
+        "amount": "200 g",
+        "source": "local"
+      },
+      {
+        "label": "Onion",
+        "amount": "1",
+        "source": "local"
+      },
+      {
+        "label": "Capsicum",
+        "amount": "1",
+        "source": "local"
+      },
+      {
+        "label": "Oil",
+        "amount": "1 tbsp",
+        "source": "local"
+      }
+    ],
+    "steps": [
+      {
+        "text": "Cook the onion and capsicum, add crumbled paneer, the spices and salt.",
+        "minutes": 8
+      },
+      {
+        "text": "Cool, fill squares of pastry and fold.",
+        "minutes": 10
+      },
+      {
+        "text": "Bake at 200°C until puffed and golden.",
+        "minutes": 25
+      }
+    ]
+  },
+  {
+    "slug": "chicken-puff",
+    "name": "Chicken Puff",
+    "kind": "snacks",
+    "state": "Kerala",
+    "rank": 754,
+    "blurb": "Flaky bakery puffs with a peppery chicken masala filling.",
+    "minutes": 55,
+    "soak_hours": null,
+    "serves": 6,
+    "effort": "medium",
+    "ingredients": [
+      {
+        "label": "Chicken masala",
+        "amount": "1 tbsp",
+        "source": "iwc",
+        "match_words": "chicken masala"
+      },
+      {
+        "label": "Black pepper",
+        "amount": "½ tsp",
+        "source": "iwc",
+        "match_words": "black pepper"
+      },
+      {
+        "label": "Fennel powder",
+        "amount": "½ tsp",
+        "source": "iwc",
+        "match_words": "fennel powder"
+      },
+      {
+        "label": "Puff pastry sheets",
+        "amount": "2",
+        "source": "local"
+      },
+      {
+        "label": "Boneless chicken",
+        "amount": "250 g",
+        "source": "local"
+      },
+      {
+        "label": "Onions",
+        "amount": "2",
+        "source": "local"
+      },
+      {
+        "label": "Ginger-garlic paste",
+        "amount": "1 tsp",
+        "source": "local"
+      },
+      {
+        "label": "Curry leaves",
+        "amount": "a sprig",
+        "source": "local"
+      },
+      {
+        "label": "Oil",
+        "amount": "2 tbsp",
+        "source": "local"
+      },
+      {
+        "label": "Dry ginger powder",
+        "amount": "½ tsp",
+        "source": "iwc",
+        "match_words": "dry ginger powder",
+        "instead_of": "Ginger-garlic paste"
+      },
+      {
+        "label": "Garlic powder",
+        "amount": "½ tsp",
+        "source": "iwc",
+        "match_words": "garlic powder",
+        "instead_of": "Ginger-garlic paste"
+      },
+      {
+        "label": "Dried curry leaves",
+        "amount": "1 tbsp",
+        "source": "iwc",
+        "match_words": "curry leaves",
+        "instead_of": "Curry leaves"
+      }
+    ],
+    "steps": [
+      {
+        "text": "Cook the onions, ginger-garlic paste, curry leaves, minced chicken and spices until dry.",
+        "minutes": 20
+      },
+      {
+        "text": "Cool, fill pastry squares and fold.",
+        "minutes": 10
+      },
+      {
+        "text": "Bake at 200°C until golden.",
+        "minutes": 25
+      }
+    ]
+  },
+  {
+    "slug": "bread-pizza",
+    "name": "Bread Pizza",
+    "kind": "snacks",
+    "state": "All of India",
+    "rank": 755,
+    "blurb": "Bread topped with sauce, vegetables and cheese, toasted on a tawa. The Indian kids' favourite.",
+    "minutes": 20,
+    "soak_hours": null,
+    "serves": 4,
+    "effort": "easy",
+    "ingredients": [
+      {
+        "label": "Red chilli flakes",
+        "amount": "½ tsp",
+        "source": "iwc",
+        "match_words": "red chilli flakes"
+      },
+      {
+        "label": "Black pepper",
+        "amount": "¼ tsp",
+        "source": "iwc",
+        "match_words": "black pepper"
+      },
+      {
+        "label": "Bread slices",
+        "amount": "6",
+        "source": "local"
+      },
+      {
+        "label": "Pizza sauce",
+        "amount": "¼ cup",
+        "source": "local"
+      },
+      {
+        "label": "Cheese",
+        "amount": "1 cup grated",
+        "source": "local"
+      },
+      {
+        "label": "Capsicum",
+        "amount": "1",
+        "source": "local"
+      },
+      {
+        "label": "Onion",
+        "amount": "1",
+        "source": "local"
+      },
+      {
+        "label": "Butter",
+        "amount": "1 tbsp",
+        "source": "local"
+      }
+    ],
+    "steps": [
+      {
+        "text": "Butter the bread lightly and spread with pizza sauce.",
+        "minutes": 3
+      },
+      {
+        "text": "Top with chopped onion, capsicum and cheese.",
+        "minutes": 3
+      },
+      {
+        "text": "Cook covered on a tawa until the base is crisp and the cheese melts; finish with chilli flakes and pepper.",
+        "minutes": 8
+      }
+    ]
+  },
+  {
+    "slug": "cheese-masala-toast",
+    "name": "Cheese Masala Toast",
+    "kind": "snacks",
+    "state": "Maharashtra",
+    "rank": 756,
+    "blurb": "Mumbai's masala toast with spiced potato and a thick layer of cheese.",
+    "minutes": 25,
+    "soak_hours": null,
+    "serves": 2,
+    "effort": "easy",
+    "ingredients": [
+      {
+        "label": "Mustard seeds",
+        "amount": "½ tsp",
+        "source": "iwc",
+        "match_words": "mustard seeds"
+      },
+      {
+        "label": "Turmeric",
+        "amount": "¼ tsp",
+        "source": "iwc",
+        "match_words": "turmeric"
+      },
+      {
+        "label": "Pav bhaji masala",
+        "amount": "½ tsp",
+        "source": "iwc",
+        "match_words": "pav bhaji masala"
+      },
+      {
+        "label": "Potatoes",
+        "amount": "2",
+        "source": "local"
+      },
+      {
+        "label": "Bread slices",
+        "amount": "4",
+        "source": "local"
+      },
+      {
+        "label": "Cheese",
+        "amount": "½ cup grated",
+        "source": "local"
+      },
+      {
+        "label": "Butter",
+        "amount": "2 tbsp",
+        "source": "local"
+      },
+      {
+        "label": "Mint",
+        "amount": "a handful",
+        "source": "local"
+      },
+      {
+        "label": "Dried mint leaves",
+        "amount": "1 tsp",
+        "source": "iwc",
+        "match_words": "mint leaves",
+        "instead_of": "Mint"
+      }
+    ],
+    "steps": [
+      {
+        "text": "Make a potato filling with mustard seeds, turmeric, pav bhaji masala and salt.",
+        "minutes": 12
+      },
+      {
+        "text": "Spread mint chutney and the potato on the bread, cover with cheese and close.",
+        "minutes": 3
+      },
+      {
+        "text": "Toast with butter until crisp.",
+        "minutes": 6
+      }
+    ]
+  },
+  {
+    "slug": "corn-cheese-toast",
+    "name": "Corn Cheese Toast",
+    "kind": "snacks",
+    "state": "All of India",
+    "rank": 757,
+    "blurb": "Bread topped with creamy corn, cheese and chilli, grilled until golden.",
+    "minutes": 15,
+    "soak_hours": null,
+    "serves": 2,
+    "effort": "easy",
+    "ingredients": [
+      {
+        "label": "Red chilli flakes",
+        "amount": "½ tsp",
+        "source": "iwc",
+        "match_words": "red chilli flakes"
+      },
+      {
+        "label": "Black pepper",
+        "amount": "¼ tsp",
+        "source": "iwc",
+        "match_words": "black pepper"
+      },
+      {
+        "label": "Sweet corn kernels",
+        "amount": "½ cup",
+        "source": "local"
+      },
+      {
+        "label": "Cheese",
+        "amount": "½ cup grated",
+        "source": "local"
+      },
+      {
+        "label": "Bread slices",
+        "amount": "4",
+        "source": "local"
+      },
+      {
+        "label": "Butter",
+        "amount": "1 tbsp",
+        "source": "local"
+      }
+    ],
+    "steps": [
+      {
+        "text": "Mix the corn with cheese, pepper and chilli flakes.",
+        "minutes": 2
+      },
+      {
+        "text": "Spread on buttered bread.",
+        "minutes": 2
+      },
+      {
+        "text": "Cook covered on a tawa or grill until the cheese melts.",
+        "minutes": 8
+      }
+    ]
+  },
+  {
+    "slug": "chilli-garlic-toast",
+    "name": "Chilli Garlic Toast",
+    "kind": "snacks",
+    "state": "All of India",
+    "rank": 758,
+    "blurb": "Bread with garlic butter, green chilli and cheese, toasted crisp.",
+    "minutes": 15,
+    "soak_hours": null,
+    "serves": 2,
+    "effort": "easy",
+    "ingredients": [
+      {
+        "label": "Red chilli flakes",
+        "amount": "½ tsp",
+        "source": "iwc",
+        "match_words": "red chilli flakes"
+      },
+      {
+        "label": "Garlic powder",
+        "amount": "½ tsp",
+        "source": "iwc",
+        "match_words": "garlic powder"
+      },
+      {
+        "label": "Bread slices",
+        "amount": "4",
+        "source": "local"
+      },
+      {
+        "label": "Butter",
+        "amount": "2 tbsp",
+        "source": "local"
+      },
+      {
+        "label": "Garlic",
+        "amount": "4 cloves",
+        "source": "local"
+      },
+      {
+        "label": "Green chillies",
+        "amount": "1",
+        "source": "local"
+      },
+      {
+        "label": "Cheese",
+        "amount": "¼ cup grated",
+        "source": "local"
+      },
+      {
+        "label": "Red chilli powder",
+        "amount": "½ tsp",
+        "source": "iwc",
+        "match_words": "red chilli powder",
+        "instead_of": "Green chillies"
+      }
+    ],
+    "steps": [
+      {
+        "text": "Mash the butter with crushed garlic, chopped chilli, garlic powder and chilli flakes.",
+        "minutes": 3
+      },
+      {
+        "text": "Spread on the bread and top with cheese.",
+        "minutes": 2
+      },
+      {
+        "text": "Toast until crisp.",
+        "minutes": 8
+      }
+    ]
+  },
+  {
+    "slug": "bombay-toast",
+    "name": "Bombay Toast",
+    "kind": "snacks",
+    "state": "Maharashtra",
+    "rank": 759,
+    "blurb": "The savoury French toast of Mumbai's cafes: bread dipped in spiced egg and pan-fried.",
+    "minutes": 15,
+    "soak_hours": null,
+    "serves": 2,
+    "effort": "easy",
+    "ingredients": [
+      {
+        "label": "Red chilli powder",
+        "amount": "¼ tsp",
+        "source": "iwc",
+        "match_words": "red chilli powder"
+      },
+      {
+        "label": "Turmeric",
+        "amount": "a pinch",
+        "source": "iwc",
+        "match_words": "turmeric"
+      },
+      {
+        "label": "Black pepper",
+        "amount": "¼ tsp",
+        "source": "iwc",
+        "match_words": "black pepper"
+      },
+      {
+        "label": "Eggs",
+        "amount": "2",
+        "source": "local"
+      },
+      {
+        "label": "Bread slices",
+        "amount": "4",
+        "source": "local"
+      },
+      {
+        "label": "Onion",
+        "amount": "1",
+        "source": "local"
+      },
+      {
+        "label": "Green chillies",
+        "amount": "1",
+        "source": "local"
+      },
+      {
+        "label": "Butter",
+        "amount": "1 tbsp",
+        "source": "local"
+      }
+    ],
+    "steps": [
+      {
+        "text": "Beat the eggs with chopped onion, chilli, coriander, the spices and salt.",
+        "minutes": 3
+      },
+      {
+        "text": "Dip the bread slices on both sides.",
+        "minutes": 2
+      },
+      {
+        "text": "Fry in butter until golden.",
+        "minutes": 8
+      }
+    ]
+  },
+  {
+    "slug": "veg-grilled-sandwich",
+    "name": "Veg Grilled Sandwich",
+    "kind": "snacks",
+    "state": "Maharashtra",
+    "rank": 760,
+    "blurb": "Mumbai's grilled sandwich with chutney, potato, cucumber, tomato and sandwich masala.",
+    "minutes": 20,
+    "soak_hours": null,
+    "serves": 2,
+    "effort": "easy",
+    "ingredients": [
+      {
+        "label": "Chaat masala",
+        "amount": "1 tsp",
+        "source": "iwc",
+        "match_words": "chaat masala"
+      },
+      {
+        "label": "Black pepper",
+        "amount": "¼ tsp",
+        "source": "iwc",
+        "match_words": "black pepper"
+      },
+      {
+        "label": "Bread slices",
+        "amount": "4",
+        "source": "local"
+      },
+      {
+        "label": "Potato",
+        "amount": "1",
+        "source": "local"
+      },
+      {
+        "label": "Cucumber",
+        "amount": "½",
+        "source": "local"
+      },
+      {
+        "label": "Tomato",
+        "amount": "1",
+        "source": "local"
+      },
+      {
+        "label": "Butter",
+        "amount": "1 tbsp",
+        "source": "local"
+      },
+      {
+        "label": "Mint",
+        "amount": "a handful",
+        "source": "local"
+      },
+      {
+        "label": "Dried mint leaves",
+        "amount": "1 tsp",
+        "source": "iwc",
+        "match_words": "mint leaves",
+        "instead_of": "Mint"
+      }
+    ],
+    "steps": [
+      {
+        "text": "Spread butter and mint chutney on the bread.",
+        "minutes": 3
+      },
+      {
+        "text": "Layer sliced boiled potato, cucumber and tomato, seasoning each with chaat masala and pepper.",
+        "minutes": 5
+      },
+      {
+        "text": "Grill until crisp and golden.",
+        "minutes": 6
+      }
+    ]
+  }
+]

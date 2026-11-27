@@ -1,0 +1,1543 @@
+[
+  {
+    "slug": "aloo-pakora",
+    "name": "Aloo Pakora",
+    "kind": "snacks",
+    "state": "All of India",
+    "rank": 501,
+    "blurb": "Thin potato slices in a spiced besan batter, fried crisp. The first thing made when it rains.",
+    "minutes": 25,
+    "soak_hours": null,
+    "serves": 4,
+    "effort": "easy",
+    "ingredients": [
+      {
+        "label": "Besan",
+        "amount": "1 cup",
+        "source": "iwc",
+        "match_words": "besan"
+      },
+      {
+        "label": "Ajwain",
+        "amount": "½ tsp",
+        "source": "iwc",
+        "match_words": "ajwain"
+      },
+      {
+        "label": "Red chilli powder",
+        "amount": "1 tsp",
+        "source": "iwc",
+        "match_words": "red chilli powder"
+      },
+      {
+        "label": "Turmeric",
+        "amount": "¼ tsp",
+        "source": "iwc",
+        "match_words": "turmeric"
+      },
+      {
+        "label": "Chaat masala",
+        "amount": "1 tsp",
+        "source": "iwc",
+        "match_words": "chaat masala"
+      },
+      {
+        "label": "Potatoes",
+        "amount": "2",
+        "source": "local"
+      },
+      {
+        "label": "Coriander",
+        "amount": "a handful",
+        "source": "local"
+      },
+      {
+        "label": "Oil",
+        "amount": "for frying",
+        "source": "local"
+      },
+      {
+        "label": "Coriander powder",
+        "amount": "1 tsp",
+        "source": "iwc",
+        "match_words": "coriander powder",
+        "instead_of": "Coriander"
+      }
+    ],
+    "steps": [
+      {
+        "text": "Whisk the besan, ajwain, chilli powder, turmeric and salt with water into a thick batter.",
+        "minutes": 3
+      },
+      {
+        "text": "Slice the potatoes thin and dip each slice in the batter.",
+        "minutes": 5
+      },
+      {
+        "text": "Fry in hot oil until golden, then sprinkle with chaat masala and coriander.",
+        "minutes": 12
+      }
+    ]
+  },
+  {
+    "slug": "gobi-pakora",
+    "name": "Gobi Pakora",
+    "kind": "snacks",
+    "state": "Punjab",
+    "rank": 502,
+    "blurb": "Cauliflower florets in a crisp besan coat, made in every Punjabi kitchen on a winter evening.",
+    "minutes": 30,
+    "soak_hours": null,
+    "serves": 4,
+    "effort": "easy",
+    "ingredients": [
+      {
+        "label": "Besan",
+        "amount": "1 cup",
+        "source": "iwc",
+        "match_words": "besan"
+      },
+      {
+        "label": "Rice flour",
+        "amount": "2 tbsp",
+        "source": "iwc",
+        "match_words": "rice flour"
+      },
+      {
+        "label": "Kashmiri chilli powder",
+        "amount": "1 tsp",
+        "source": "iwc",
+        "match_words": "kashmiri chilli powder"
+      },
+      {
+        "label": "Ajwain",
+        "amount": "½ tsp",
+        "source": "iwc",
+        "match_words": "ajwain"
+      },
+      {
+        "label": "Garam masala",
+        "amount": "½ tsp",
+        "source": "iwc",
+        "match_words": "garam masala"
+      },
+      {
+        "label": "Cauliflower",
+        "amount": "1 small",
+        "source": "local"
+      },
+      {
+        "label": "Ginger",
+        "amount": "1 inch",
+        "source": "local"
+      },
+      {
+        "label": "Oil",
+        "amount": "for frying",
+        "source": "local"
+      },
+      {
+        "label": "Dry ginger powder",
+        "amount": "½ tsp",
+        "source": "iwc",
+        "match_words": "dry ginger powder",
+        "instead_of": "Ginger"
+      }
+    ],
+    "steps": [
+      {
+        "text": "Blanch the florets in salted boiling water for two minutes and drain well.",
+        "minutes": 5
+      },
+      {
+        "text": "Make a thick batter of the besan, rice flour, spices, grated ginger, salt and water.",
+        "minutes": 3
+      },
+      {
+        "text": "Coat the florets and fry until crisp and golden.",
+        "minutes": 15
+      }
+    ]
+  },
+  {
+    "slug": "palak-pakora",
+    "name": "Palak Pakora",
+    "kind": "snacks",
+    "state": "All of India",
+    "rank": 503,
+    "blurb": "Whole spinach leaves dipped in batter and fried until they crackle.",
+    "minutes": 20,
+    "soak_hours": null,
+    "serves": 4,
+    "effort": "easy",
+    "ingredients": [
+      {
+        "label": "Besan",
+        "amount": "1 cup",
+        "source": "iwc",
+        "match_words": "besan"
+      },
+      {
+        "label": "Rice flour",
+        "amount": "2 tbsp",
+        "source": "iwc",
+        "match_words": "rice flour"
+      },
+      {
+        "label": "Red chilli powder",
+        "amount": "1 tsp",
+        "source": "iwc",
+        "match_words": "red chilli powder"
+      },
+      {
+        "label": "Ajwain",
+        "amount": "½ tsp",
+        "source": "iwc",
+        "match_words": "ajwain"
+      },
+      {
+        "label": "Chaat masala",
+        "amount": "1 tsp",
+        "source": "iwc",
+        "match_words": "chaat masala"
+      },
+      {
+        "label": "Spinach",
+        "amount": "1 bunch",
+        "source": "local"
+      },
+      {
+        "label": "Oil",
+        "amount": "for frying",
+        "source": "local"
+      }
+    ],
+    "steps": [
+      {
+        "text": "Wash the spinach leaves and pat them completely dry.",
+        "minutes": 5
+      },
+      {
+        "text": "Make a smooth batter of the besan, rice flour, chilli powder, ajwain, salt and water.",
+        "minutes": 3
+      },
+      {
+        "text": "Dip each leaf, fry until crisp and dust with chaat masala.",
+        "minutes": 10
+      }
+    ]
+  },
+  {
+    "slug": "corn-pakora",
+    "name": "Corn Pakora",
+    "kind": "snacks",
+    "state": "All of India",
+    "rank": 504,
+    "blurb": "Sweet corn, onion and green chilli bound with besan and fried in small spoonfuls.",
+    "minutes": 25,
+    "soak_hours": null,
+    "serves": 4,
+    "effort": "easy",
+    "ingredients": [
+      {
+        "label": "Besan",
+        "amount": "½ cup",
+        "source": "iwc",
+        "match_words": "besan"
+      },
+      {
+        "label": "Rice flour",
+        "amount": "3 tbsp",
+        "source": "iwc",
+        "match_words": "rice flour"
+      },
+      {
+        "label": "Red chilli powder",
+        "amount": "1 tsp",
+        "source": "iwc",
+        "match_words": "red chilli powder"
+      },
+      {
+        "label": "Cumin seeds",
+        "amount": "½ tsp",
+        "source": "iwc",
+        "match_words": "cumin seeds"
+      },
+      {
+        "label": "Sweet corn kernels",
+        "amount": "1½ cups",
+        "source": "local"
+      },
+      {
+        "label": "Onion",
+        "amount": "1",
+        "source": "local"
+      },
+      {
+        "label": "Green chillies",
+        "amount": "2",
+        "source": "local"
+      },
+      {
+        "label": "Coriander",
+        "amount": "a handful",
+        "source": "local"
+      },
+      {
+        "label": "Oil",
+        "amount": "for frying",
+        "source": "local"
+      },
+      {
+        "label": "Coriander powder",
+        "amount": "1 tsp",
+        "source": "iwc",
+        "match_words": "coriander powder",
+        "instead_of": "Coriander"
+      }
+    ],
+    "steps": [
+      {
+        "text": "Pulse half the corn coarsely and mix it with the whole kernels, chopped onion, chillies and coriander.",
+        "minutes": 5
+      },
+      {
+        "text": "Add the besan, rice flour, spices and salt with only a splash of water.",
+        "minutes": 3
+      },
+      {
+        "text": "Drop spoonfuls into hot oil and fry until golden.",
+        "minutes": 15
+      }
+    ]
+  },
+  {
+    "slug": "baingan-pakora",
+    "name": "Baingan Pakora",
+    "kind": "snacks",
+    "state": "All of India",
+    "rank": 505,
+    "blurb": "Rounds of eggplant in a thick spiced batter, soft inside and crisp outside.",
+    "minutes": 25,
+    "soak_hours": null,
+    "serves": 4,
+    "effort": "easy",
+    "ingredients": [
+      {
+        "label": "Besan",
+        "amount": "1 cup",
+        "source": "iwc",
+        "match_words": "besan"
+      },
+      {
+        "label": "Ajwain",
+        "amount": "½ tsp",
+        "source": "iwc",
+        "match_words": "ajwain"
+      },
+      {
+        "label": "Red chilli powder",
+        "amount": "1 tsp",
+        "source": "iwc",
+        "match_words": "red chilli powder"
+      },
+      {
+        "label": "Turmeric",
+        "amount": "¼ tsp",
+        "source": "iwc",
+        "match_words": "turmeric"
+      },
+      {
+        "label": "Amchur",
+        "amount": "½ tsp",
+        "source": "iwc",
+        "match_words": "amchur"
+      },
+      {
+        "label": "Large eggplant",
+        "amount": "1",
+        "source": "local"
+      },
+      {
+        "label": "Oil",
+        "amount": "for frying",
+        "source": "local"
+      }
+    ],
+    "steps": [
+      {
+        "text": "Slice the eggplant into thin rounds and salt them for ten minutes.",
+        "minutes": 10
+      },
+      {
+        "text": "Make a thick batter with the besan, spices, salt and water.",
+        "minutes": 3
+      },
+      {
+        "text": "Pat the slices dry, dip and fry until golden on both sides.",
+        "minutes": 12
+      }
+    ]
+  },
+  {
+    "slug": "mix-veg-pakora",
+    "name": "Mix Veg Pakora",
+    "kind": "snacks",
+    "state": "All of India",
+    "rank": 506,
+    "blurb": "Shredded onion, potato, cabbage and spinach fried together in loose, crunchy clusters.",
+    "minutes": 25,
+    "soak_hours": null,
+    "serves": 4,
+    "effort": "easy",
+    "ingredients": [
+      {
+        "label": "Besan",
+        "amount": "1 cup",
+        "source": "iwc",
+        "match_words": "besan"
+      },
+      {
+        "label": "Rice flour",
+        "amount": "2 tbsp",
+        "source": "iwc",
+        "match_words": "rice flour"
+      },
+      {
+        "label": "Red chilli powder",
+        "amount": "1 tsp",
+        "source": "iwc",
+        "match_words": "red chilli powder"
+      },
+      {
+        "label": "Ajwain",
+        "amount": "½ tsp",
+        "source": "iwc",
+        "match_words": "ajwain"
+      },
+      {
+        "label": "Garam masala",
+        "amount": "½ tsp",
+        "source": "iwc",
+        "match_words": "garam masala"
+      },
+      {
+        "label": "Onion",
+        "amount": "1",
+        "source": "local"
+      },
+      {
+        "label": "Potato",
+        "amount": "1",
+        "source": "local"
+      },
+      {
+        "label": "Cabbage",
+        "amount": "1 cup shredded",
+        "source": "local"
+      },
+      {
+        "label": "Spinach",
+        "amount": "a handful",
+        "source": "local"
+      },
+      {
+        "label": "Green chillies",
+        "amount": "2",
+        "source": "local"
+      },
+      {
+        "label": "Oil",
+        "amount": "for frying",
+        "source": "local"
+      }
+    ],
+    "steps": [
+      {
+        "text": "Shred the vegetables thin, salt them and leave for five minutes to let out water.",
+        "minutes": 5
+      },
+      {
+        "text": "Add the besan, rice flour and spices and mix with your hands; no extra water.",
+        "minutes": 3
+      },
+      {
+        "text": "Drop small clusters into hot oil and fry until crisp.",
+        "minutes": 15
+      }
+    ]
+  },
+  {
+    "slug": "shimla-mirch-pakora",
+    "name": "Shimla Mirch Pakora",
+    "kind": "snacks",
+    "state": "All of India",
+    "rank": 507,
+    "blurb": "Capsicum rings in besan batter, a little sweet from the pepper and hot from the chilli.",
+    "minutes": 25,
+    "soak_hours": null,
+    "serves": 4,
+    "effort": "easy",
+    "ingredients": [
+      {
+        "label": "Besan",
+        "amount": "1 cup",
+        "source": "iwc",
+        "match_words": "besan"
+      },
+      {
+        "label": "Rice flour",
+        "amount": "2 tbsp",
+        "source": "iwc",
+        "match_words": "rice flour"
+      },
+      {
+        "label": "Kashmiri chilli powder",
+        "amount": "1 tsp",
+        "source": "iwc",
+        "match_words": "kashmiri chilli powder"
+      },
+      {
+        "label": "Ajwain",
+        "amount": "½ tsp",
+        "source": "iwc",
+        "match_words": "ajwain"
+      },
+      {
+        "label": "Chaat masala",
+        "amount": "1 tsp",
+        "source": "iwc",
+        "match_words": "chaat masala"
+      },
+      {
+        "label": "Capsicum",
+        "amount": "2",
+        "source": "local"
+      },
+      {
+        "label": "Oil",
+        "amount": "for frying",
+        "source": "local"
+      }
+    ],
+    "steps": [
+      {
+        "text": "Cut the capsicum into rings and remove the seeds.",
+        "minutes": 5
+      },
+      {
+        "text": "Make a thick batter with the besan, rice flour, spices, salt and water.",
+        "minutes": 3
+      },
+      {
+        "text": "Dip the rings, fry until golden and sprinkle with chaat masala.",
+        "minutes": 12
+      }
+    ]
+  },
+  {
+    "slug": "cabbage-pakora",
+    "name": "Cabbage Pakora",
+    "kind": "snacks",
+    "state": "All of India",
+    "rank": 508,
+    "blurb": "Shredded cabbage and onion fried into crunchy fritters, quick and cheap.",
+    "minutes": 25,
+    "soak_hours": null,
+    "serves": 4,
+    "effort": "easy",
+    "ingredients": [
+      {
+        "label": "Besan",
+        "amount": "1 cup",
+        "source": "iwc",
+        "match_words": "besan"
+      },
+      {
+        "label": "Rice flour",
+        "amount": "2 tbsp",
+        "source": "iwc",
+        "match_words": "rice flour"
+      },
+      {
+        "label": "Red chilli powder",
+        "amount": "1 tsp",
+        "source": "iwc",
+        "match_words": "red chilli powder"
+      },
+      {
+        "label": "Fennel seeds",
+        "amount": "½ tsp",
+        "source": "iwc",
+        "match_words": "fennel seeds"
+      },
+      {
+        "label": "Cabbage",
+        "amount": "2 cups shredded",
+        "source": "local"
+      },
+      {
+        "label": "Onion",
+        "amount": "1",
+        "source": "local"
+      },
+      {
+        "label": "Green chillies",
+        "amount": "2",
+        "source": "local"
+      },
+      {
+        "label": "Curry leaves",
+        "amount": "a sprig",
+        "source": "local"
+      },
+      {
+        "label": "Oil",
+        "amount": "for frying",
+        "source": "local"
+      },
+      {
+        "label": "Dried curry leaves",
+        "amount": "1 tbsp",
+        "source": "iwc",
+        "match_words": "curry leaves",
+        "instead_of": "Curry leaves"
+      }
+    ],
+    "steps": [
+      {
+        "text": "Mix the cabbage, sliced onion, chillies and torn curry leaves with salt and leave for five minutes.",
+        "minutes": 5
+      },
+      {
+        "text": "Add the besan, rice flour, chilli powder and fennel and squeeze together.",
+        "minutes": 3
+      },
+      {
+        "text": "Fry small clusters until crisp and brown.",
+        "minutes": 15
+      }
+    ]
+  },
+  {
+    "slug": "mushroom-pakora",
+    "name": "Mushroom Pakora",
+    "kind": "snacks",
+    "state": "All of India",
+    "rank": 509,
+    "blurb": "Button mushrooms in a peppery besan batter, juicy inside.",
+    "minutes": 25,
+    "soak_hours": null,
+    "serves": 4,
+    "effort": "easy",
+    "ingredients": [
+      {
+        "label": "Besan",
+        "amount": "1 cup",
+        "source": "iwc",
+        "match_words": "besan"
+      },
+      {
+        "label": "Cornflour",
+        "amount": "2 tbsp",
+        "source": "iwc",
+        "match_words": "cornflour"
+      },
+      {
+        "label": "Black pepper",
+        "amount": "½ tsp",
+        "source": "iwc",
+        "match_words": "black pepper"
+      },
+      {
+        "label": "Red chilli powder",
+        "amount": "1 tsp",
+        "source": "iwc",
+        "match_words": "red chilli powder"
+      },
+      {
+        "label": "Garlic powder",
+        "amount": "½ tsp",
+        "source": "iwc",
+        "match_words": "garlic powder"
+      },
+      {
+        "label": "Button mushrooms",
+        "amount": "200 g",
+        "source": "local"
+      },
+      {
+        "label": "Oil",
+        "amount": "for frying",
+        "source": "local"
+      }
+    ],
+    "steps": [
+      {
+        "text": "Wipe the mushrooms clean and halve the large ones.",
+        "minutes": 5
+      },
+      {
+        "text": "Whisk the besan, cornflour, spices and salt with water into a thick batter.",
+        "minutes": 3
+      },
+      {
+        "text": "Coat the mushrooms and fry until golden and crisp.",
+        "minutes": 12
+      }
+    ]
+  },
+  {
+    "slug": "methi-pakora",
+    "name": "Methi Pakora",
+    "kind": "snacks",
+    "state": "Rajasthan",
+    "rank": 510,
+    "blurb": "Fresh fenugreek leaves in besan, a little bitter and very good with tea.",
+    "minutes": 25,
+    "soak_hours": null,
+    "serves": 4,
+    "effort": "easy",
+    "ingredients": [
+      {
+        "label": "Besan",
+        "amount": "1 cup",
+        "source": "iwc",
+        "match_words": "besan"
+      },
+      {
+        "label": "Red chilli powder",
+        "amount": "1 tsp",
+        "source": "iwc",
+        "match_words": "red chilli powder"
+      },
+      {
+        "label": "Ajwain",
+        "amount": "½ tsp",
+        "source": "iwc",
+        "match_words": "ajwain"
+      },
+      {
+        "label": "Coriander powder",
+        "amount": "1 tsp",
+        "source": "iwc",
+        "match_words": "coriander powder"
+      },
+      {
+        "label": "Methi leaves",
+        "amount": "2 cups",
+        "source": "local"
+      },
+      {
+        "label": "Onion",
+        "amount": "1",
+        "source": "local"
+      },
+      {
+        "label": "Green chillies",
+        "amount": "2",
+        "source": "local"
+      },
+      {
+        "label": "Oil",
+        "amount": "for frying",
+        "source": "local"
+      },
+      {
+        "label": "Kasuri methi",
+        "amount": "1 tbsp",
+        "source": "iwc",
+        "match_words": "kasuri methi",
+        "instead_of": "Methi leaves"
+      }
+    ],
+    "steps": [
+      {
+        "text": "Chop the methi leaves and onion and mix with the chillies and salt.",
+        "minutes": 5
+      },
+      {
+        "text": "Add the besan and spices and a little water for a thick mix.",
+        "minutes": 3
+      },
+      {
+        "text": "Drop spoonfuls into hot oil and fry until crisp.",
+        "minutes": 15
+      }
+    ]
+  },
+  {
+    "slug": "pudina-pakora",
+    "name": "Pudina Pakora",
+    "kind": "snacks",
+    "state": "Uttar Pradesh",
+    "rank": 511,
+    "blurb": "Mint and onion fritters, cool from the mint and hot from the chilli.",
+    "minutes": 20,
+    "soak_hours": null,
+    "serves": 4,
+    "effort": "easy",
+    "ingredients": [
+      {
+        "label": "Besan",
+        "amount": "1 cup",
+        "source": "iwc",
+        "match_words": "besan"
+      },
+      {
+        "label": "Red chilli powder",
+        "amount": "1 tsp",
+        "source": "iwc",
+        "match_words": "red chilli powder"
+      },
+      {
+        "label": "Chaat masala",
+        "amount": "1 tsp",
+        "source": "iwc",
+        "match_words": "chaat masala"
+      },
+      {
+        "label": "Ajwain",
+        "amount": "½ tsp",
+        "source": "iwc",
+        "match_words": "ajwain"
+      },
+      {
+        "label": "Mint",
+        "amount": "1 cup leaves",
+        "source": "local"
+      },
+      {
+        "label": "Onion",
+        "amount": "1",
+        "source": "local"
+      },
+      {
+        "label": "Green chillies",
+        "amount": "2",
+        "source": "local"
+      },
+      {
+        "label": "Oil",
+        "amount": "for frying",
+        "source": "local"
+      },
+      {
+        "label": "Dried mint leaves",
+        "amount": "1 tsp",
+        "source": "iwc",
+        "match_words": "mint leaves",
+        "instead_of": "Mint"
+      }
+    ],
+    "steps": [
+      {
+        "text": "Chop the mint and onion and mix with the chillies, besan, spices and salt.",
+        "minutes": 5
+      },
+      {
+        "text": "Add just enough water to bind.",
+        "minutes": 2
+      },
+      {
+        "text": "Fry spoonfuls until crisp and serve with chaat masala on top.",
+        "minutes": 12
+      }
+    ]
+  },
+  {
+    "slug": "arbi-pakora",
+    "name": "Arbi Pakora",
+    "kind": "snacks",
+    "state": "Uttar Pradesh",
+    "rank": 512,
+    "blurb": "Boiled colocasia slices in a spicy coat, fried twice so they stay crisp.",
+    "minutes": 35,
+    "soak_hours": null,
+    "serves": 4,
+    "effort": "easy",
+    "ingredients": [
+      {
+        "label": "Besan",
+        "amount": "½ cup",
+        "source": "iwc",
+        "match_words": "besan"
+      },
+      {
+        "label": "Rice flour",
+        "amount": "¼ cup",
+        "source": "iwc",
+        "match_words": "rice flour"
+      },
+      {
+        "label": "Ajwain",
+        "amount": "½ tsp",
+        "source": "iwc",
+        "match_words": "ajwain"
+      },
+      {
+        "label": "Red chilli powder",
+        "amount": "1 tsp",
+        "source": "iwc",
+        "match_words": "red chilli powder"
+      },
+      {
+        "label": "Amchur",
+        "amount": "1 tsp",
+        "source": "iwc",
+        "match_words": "amchur"
+      },
+      {
+        "label": "Arbi",
+        "amount": "300 g",
+        "source": "local"
+      },
+      {
+        "label": "Oil",
+        "amount": "for frying",
+        "source": "local"
+      }
+    ],
+    "steps": [
+      {
+        "text": "Boil the arbi until just tender, peel and slice into thick rounds.",
+        "minutes": 15
+      },
+      {
+        "text": "Coat with a thick batter of the flours, spices, salt and a little water.",
+        "minutes": 3
+      },
+      {
+        "text": "Fry until golden, rest a minute, then fry again for extra crunch.",
+        "minutes": 15
+      }
+    ]
+  },
+  {
+    "slug": "kaju-pakoda",
+    "name": "Kaju Pakoda",
+    "kind": "snacks",
+    "state": "Tamil Nadu",
+    "rank": 513,
+    "blurb": "Whole cashews in a spicy besan and rice flour coat, a wedding-snack favourite.",
+    "minutes": 25,
+    "soak_hours": null,
+    "serves": 4,
+    "effort": "easy",
+    "ingredients": [
+      {
+        "label": "Cashews",
+        "amount": "1 cup",
+        "source": "iwc",
+        "match_words": "cashews"
+      },
+      {
+        "label": "Besan",
+        "amount": "½ cup",
+        "source": "iwc",
+        "match_words": "besan"
+      },
+      {
+        "label": "Rice flour",
+        "amount": "¼ cup",
+        "source": "iwc",
+        "match_words": "rice flour"
+      },
+      {
+        "label": "Red chilli powder",
+        "amount": "1 tsp",
+        "source": "iwc",
+        "match_words": "red chilli powder"
+      },
+      {
+        "label": "Hing",
+        "amount": "a pinch",
+        "source": "iwc",
+        "match_words": "hing"
+      },
+      {
+        "label": "Curry leaves",
+        "amount": "2 sprigs",
+        "source": "local"
+      },
+      {
+        "label": "Butter",
+        "amount": "1 tbsp",
+        "source": "local"
+      },
+      {
+        "label": "Oil",
+        "amount": "for frying",
+        "source": "local"
+      },
+      {
+        "label": "Dried curry leaves",
+        "amount": "1 tbsp",
+        "source": "iwc",
+        "match_words": "curry leaves",
+        "instead_of": "Curry leaves"
+      }
+    ],
+    "steps": [
+      {
+        "text": "Rub the butter into the besan, rice flour, chilli powder, hing and salt.",
+        "minutes": 3
+      },
+      {
+        "text": "Add the cashews and sprinkle in water, a spoon at a time, until the flour coats them in lumps.",
+        "minutes": 3
+      },
+      {
+        "text": "Fry in small batches until crisp, then fry the curry leaves and mix them in.",
+        "minutes": 15
+      }
+    ]
+  },
+  {
+    "slug": "peanut-pakoda",
+    "name": "Peanut Pakoda",
+    "kind": "snacks",
+    "state": "Tamil Nadu",
+    "rank": 514,
+    "blurb": "Peanuts in a crunchy spiced coating, made in big batches for the evening.",
+    "minutes": 25,
+    "soak_hours": null,
+    "serves": 4,
+    "effort": "easy",
+    "ingredients": [
+      {
+        "label": "Peanuts",
+        "amount": "1 cup",
+        "source": "iwc",
+        "match_words": "peanuts"
+      },
+      {
+        "label": "Besan",
+        "amount": "½ cup",
+        "source": "iwc",
+        "match_words": "besan"
+      },
+      {
+        "label": "Rice flour",
+        "amount": "3 tbsp",
+        "source": "iwc",
+        "match_words": "rice flour"
+      },
+      {
+        "label": "Red chilli powder",
+        "amount": "1 tsp",
+        "source": "iwc",
+        "match_words": "red chilli powder"
+      },
+      {
+        "label": "Garam masala",
+        "amount": "¼ tsp",
+        "source": "iwc",
+        "match_words": "garam masala"
+      },
+      {
+        "label": "Curry leaves",
+        "amount": "a sprig",
+        "source": "local"
+      },
+      {
+        "label": "Oil",
+        "amount": "for frying",
+        "source": "local"
+      },
+      {
+        "label": "Dried curry leaves",
+        "amount": "1 tbsp",
+        "source": "iwc",
+        "match_words": "curry leaves",
+        "instead_of": "Curry leaves"
+      }
+    ],
+    "steps": [
+      {
+        "text": "Toss the peanuts with the flours, spices and salt.",
+        "minutes": 2
+      },
+      {
+        "text": "Sprinkle with water until every peanut is coated.",
+        "minutes": 3
+      },
+      {
+        "text": "Fry in small batches over medium heat until crisp, adding the curry leaves at the end.",
+        "minutes": 15
+      }
+    ]
+  },
+  {
+    "slug": "ragi-pakoda",
+    "name": "Ragi Pakoda",
+    "kind": "snacks",
+    "state": "Karnataka",
+    "rank": 515,
+    "blurb": "Finger millet and onion fritters from Karnataka, dark and crisp.",
+    "minutes": 25,
+    "soak_hours": null,
+    "serves": 4,
+    "effort": "easy",
+    "ingredients": [
+      {
+        "label": "Ragi flour",
+        "amount": "1 cup",
+        "source": "iwc",
+        "match_words": "ragi flour"
+      },
+      {
+        "label": "Rice flour",
+        "amount": "2 tbsp",
+        "source": "iwc",
+        "match_words": "rice flour"
+      },
+      {
+        "label": "Red chilli powder",
+        "amount": "1 tsp",
+        "source": "iwc",
+        "match_words": "red chilli powder"
+      },
+      {
+        "label": "Cumin seeds",
+        "amount": "½ tsp",
+        "source": "iwc",
+        "match_words": "cumin seeds"
+      },
+      {
+        "label": "Onions",
+        "amount": "2",
+        "source": "local"
+      },
+      {
+        "label": "Green chillies",
+        "amount": "2",
+        "source": "local"
+      },
+      {
+        "label": "Curry leaves",
+        "amount": "a sprig",
+        "source": "local"
+      },
+      {
+        "label": "Coriander",
+        "amount": "a handful",
+        "source": "local"
+      },
+      {
+        "label": "Oil",
+        "amount": "for frying",
+        "source": "local"
+      },
+      {
+        "label": "Dried curry leaves",
+        "amount": "1 tbsp",
+        "source": "iwc",
+        "match_words": "curry leaves",
+        "instead_of": "Curry leaves"
+      },
+      {
+        "label": "Coriander powder",
+        "amount": "1 tsp",
+        "source": "iwc",
+        "match_words": "coriander powder",
+        "instead_of": "Coriander"
+      }
+    ],
+    "steps": [
+      {
+        "text": "Slice the onions thin and rub them with salt until they soften.",
+        "minutes": 5
+      },
+      {
+        "text": "Add the ragi, rice flour, spices, chillies and herbs and squeeze into a stiff mix.",
+        "minutes": 3
+      },
+      {
+        "text": "Fry small clusters until crisp.",
+        "minutes": 15
+      }
+    ]
+  },
+  {
+    "slug": "rice-pakora",
+    "name": "Rice Pakora",
+    "kind": "snacks",
+    "state": "All of India",
+    "rank": 516,
+    "blurb": "Yesterday's rice mashed with onion and spices, fried into crunchy fritters.",
+    "minutes": 20,
+    "soak_hours": null,
+    "serves": 4,
+    "effort": "easy",
+    "ingredients": [
+      {
+        "label": "Besan",
+        "amount": "½ cup",
+        "source": "iwc",
+        "match_words": "besan"
+      },
+      {
+        "label": "Sooji",
+        "amount": "2 tbsp",
+        "source": "iwc",
+        "match_words": "sooji"
+      },
+      {
+        "label": "Red chilli powder",
+        "amount": "1 tsp",
+        "source": "iwc",
+        "match_words": "red chilli powder"
+      },
+      {
+        "label": "Cumin seeds",
+        "amount": "½ tsp",
+        "source": "iwc",
+        "match_words": "cumin seeds"
+      },
+      {
+        "label": "Cooked rice",
+        "amount": "1½ cups",
+        "source": "local"
+      },
+      {
+        "label": "Onion",
+        "amount": "1",
+        "source": "local"
+      },
+      {
+        "label": "Green chillies",
+        "amount": "2",
+        "source": "local"
+      },
+      {
+        "label": "Coriander",
+        "amount": "a handful",
+        "source": "local"
+      },
+      {
+        "label": "Oil",
+        "amount": "for frying",
+        "source": "local"
+      },
+      {
+        "label": "Coriander powder",
+        "amount": "1 tsp",
+        "source": "iwc",
+        "match_words": "coriander powder",
+        "instead_of": "Coriander"
+      }
+    ],
+    "steps": [
+      {
+        "text": "Mash the rice lightly and mix in the chopped onion, chillies and coriander.",
+        "minutes": 5
+      },
+      {
+        "text": "Add the besan, sooji, spices and salt to make a thick mix.",
+        "minutes": 3
+      },
+      {
+        "text": "Drop spoonfuls into hot oil and fry until golden.",
+        "minutes": 12
+      }
+    ]
+  },
+  {
+    "slug": "soya-chunks-pakora",
+    "name": "Soya Chunks Pakora",
+    "kind": "snacks",
+    "state": "All of India",
+    "rank": 517,
+    "blurb": "Soaked soya chunks in a spicy batter, chewy and crisp at once.",
+    "minutes": 30,
+    "soak_hours": null,
+    "serves": 4,
+    "effort": "easy",
+    "ingredients": [
+      {
+        "label": "Soya chunks",
+        "amount": "1 cup",
+        "source": "iwc",
+        "match_words": "soya chunks"
+      },
+      {
+        "label": "Besan",
+        "amount": "½ cup",
+        "source": "iwc",
+        "match_words": "besan"
+      },
+      {
+        "label": "Cornflour",
+        "amount": "2 tbsp",
+        "source": "iwc",
+        "match_words": "cornflour"
+      },
+      {
+        "label": "Kashmiri chilli powder",
+        "amount": "1 tsp",
+        "source": "iwc",
+        "match_words": "kashmiri chilli powder"
+      },
+      {
+        "label": "Garam masala",
+        "amount": "½ tsp",
+        "source": "iwc",
+        "match_words": "garam masala"
+      },
+      {
+        "label": "Ginger-garlic paste",
+        "amount": "1 tsp",
+        "source": "local"
+      },
+      {
+        "label": "Oil",
+        "amount": "for frying",
+        "source": "local"
+      },
+      {
+        "label": "Dry ginger powder",
+        "amount": "½ tsp",
+        "source": "iwc",
+        "match_words": "dry ginger powder",
+        "instead_of": "Ginger-garlic paste"
+      },
+      {
+        "label": "Garlic powder",
+        "amount": "½ tsp",
+        "source": "iwc",
+        "match_words": "garlic powder",
+        "instead_of": "Ginger-garlic paste"
+      }
+    ],
+    "steps": [
+      {
+        "text": "Boil the soya chunks for five minutes, cool and squeeze out the water.",
+        "minutes": 8
+      },
+      {
+        "text": "Mix with the ginger-garlic paste, besan, cornflour, spices, salt and a splash of water.",
+        "minutes": 3
+      },
+      {
+        "text": "Fry until crisp and deep golden.",
+        "minutes": 12
+      }
+    ]
+  },
+  {
+    "slug": "kaddu-ke-pakode",
+    "name": "Kaddu ke Pakode",
+    "kind": "snacks",
+    "state": "Uttar Pradesh",
+    "rank": 518,
+    "blurb": "Thin slices of red pumpkin in a light batter, sweet and salty together.",
+    "minutes": 25,
+    "soak_hours": null,
+    "serves": 4,
+    "effort": "easy",
+    "ingredients": [
+      {
+        "label": "Besan",
+        "amount": "1 cup",
+        "source": "iwc",
+        "match_words": "besan"
+      },
+      {
+        "label": "Ajwain",
+        "amount": "½ tsp",
+        "source": "iwc",
+        "match_words": "ajwain"
+      },
+      {
+        "label": "Red chilli powder",
+        "amount": "1 tsp",
+        "source": "iwc",
+        "match_words": "red chilli powder"
+      },
+      {
+        "label": "Chaat masala",
+        "amount": "1 tsp",
+        "source": "iwc",
+        "match_words": "chaat masala"
+      },
+      {
+        "label": "Red pumpkin",
+        "amount": "250 g",
+        "source": "local"
+      },
+      {
+        "label": "Oil",
+        "amount": "for frying",
+        "source": "local"
+      }
+    ],
+    "steps": [
+      {
+        "text": "Peel the pumpkin and cut it into thin slices.",
+        "minutes": 5
+      },
+      {
+        "text": "Make a batter of besan, ajwain, chilli powder, salt and water.",
+        "minutes": 3
+      },
+      {
+        "text": "Dip the slices and fry until crisp; finish with chaat masala.",
+        "minutes": 12
+      }
+    ]
+  },
+  {
+    "slug": "tomato-bajji",
+    "name": "Tomato Bajji",
+    "kind": "snacks",
+    "state": "Andhra Pradesh",
+    "rank": 519,
+    "blurb": "Firm tomato slices fried in batter, then topped with onion, peanuts and chutney powder on Andhra streets.",
+    "minutes": 30,
+    "soak_hours": null,
+    "serves": 4,
+    "effort": "medium",
+    "ingredients": [
+      {
+        "label": "Besan",
+        "amount": "1 cup",
+        "source": "iwc",
+        "match_words": "besan"
+      },
+      {
+        "label": "Rice flour",
+        "amount": "2 tbsp",
+        "source": "iwc",
+        "match_words": "rice flour"
+      },
+      {
+        "label": "Red chilli powder",
+        "amount": "1 tsp",
+        "source": "iwc",
+        "match_words": "red chilli powder"
+      },
+      {
+        "label": "Chutney podi",
+        "amount": "2 tbsp",
+        "source": "iwc",
+        "match_words": "chutney podi"
+      },
+      {
+        "label": "Peanuts",
+        "amount": "2 tbsp",
+        "source": "iwc",
+        "match_words": "peanuts"
+      },
+      {
+        "label": "Firm tomatoes",
+        "amount": "3",
+        "source": "local"
+      },
+      {
+        "label": "Onion",
+        "amount": "1",
+        "source": "local"
+      },
+      {
+        "label": "Lemon",
+        "amount": "1",
+        "source": "local"
+      },
+      {
+        "label": "Oil",
+        "amount": "for frying",
+        "source": "local"
+      },
+      {
+        "label": "Amchur",
+        "amount": "1 tsp",
+        "source": "iwc",
+        "match_words": "amchur",
+        "instead_of": "Lemon"
+      }
+    ],
+    "steps": [
+      {
+        "text": "Slice the tomatoes thick and make a batter with the besan, rice flour, chilli powder and salt.",
+        "minutes": 5
+      },
+      {
+        "text": "Dip and fry the slices until golden.",
+        "minutes": 12
+      },
+      {
+        "text": "Top each with chopped onion, crushed roasted peanuts, chutney podi and a squeeze of lemon.",
+        "minutes": 3
+      }
+    ]
+  },
+  {
+    "slug": "chow-chow-bajji",
+    "name": "Chow Chow Bajji",
+    "kind": "snacks",
+    "state": "Karnataka",
+    "rank": 520,
+    "blurb": "Chayote slices fried in a spicy batter, the way Bengaluru's darshinis make them.",
+    "minutes": 25,
+    "soak_hours": null,
+    "serves": 4,
+    "effort": "easy",
+    "ingredients": [
+      {
+        "label": "Besan",
+        "amount": "1 cup",
+        "source": "iwc",
+        "match_words": "besan"
+      },
+      {
+        "label": "Rice flour",
+        "amount": "2 tbsp",
+        "source": "iwc",
+        "match_words": "rice flour"
+      },
+      {
+        "label": "Red chilli powder",
+        "amount": "1 tsp",
+        "source": "iwc",
+        "match_words": "red chilli powder"
+      },
+      {
+        "label": "Hing",
+        "amount": "a pinch",
+        "source": "iwc",
+        "match_words": "hing"
+      },
+      {
+        "label": "Ajwain",
+        "amount": "½ tsp",
+        "source": "iwc",
+        "match_words": "ajwain"
+      },
+      {
+        "label": "Chow chow",
+        "amount": "1",
+        "source": "local"
+      },
+      {
+        "label": "Oil",
+        "amount": "for frying",
+        "source": "local"
+      }
+    ],
+    "steps": [
+      {
+        "text": "Peel the chow chow and slice it thin.",
+        "minutes": 5
+      },
+      {
+        "text": "Whisk the besan, rice flour, spices, salt and water into a smooth batter.",
+        "minutes": 3
+      },
+      {
+        "text": "Dip the slices and fry until crisp.",
+        "minutes": 12
+      }
+    ]
+  }
+]

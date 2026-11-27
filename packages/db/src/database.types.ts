@@ -1782,8 +1782,8 @@ isOneToOne: false
 "_recipe_blockers":
 { Args: { "p_id": string }; Returns: (string)[]
                            },
-"_recipe_cheapest_variant":
-{ Args: { "p_words": string }; Returns: string
+"_recipe_fill_cheapest":
+{ Args: { "p_ids": (string)[],"p_to_local": boolean }; Returns: (number)[]
                            },
 "_record_cancel":
 { Args: { "p_amount": number,"p_note": string,"p_order": string }; Returns: undefined
@@ -1974,6 +1974,9 @@ isOneToOne: false
 { Args: { "p_limit"?: number,"p_words": string }; Returns: {
               "available": number,"price_cents": number,"product_id": string,"product_name": string,"variant_id": string,"variant_label": string
             }[]
+                           },
+"admin_recipes_fill_cheapest":
+{ Args: { "p_ids": (string)[] }; Returns: number
                            },
 "admin_recipes_missing_piece":
 { Args: Record<PropertyKey, never>; Returns: number
@@ -2304,6 +2307,9 @@ isOneToOne: false
 "worker_set_estimates":
 { Args: { "p_estimates": Json }; Returns: Json
                            },
+"worker_set_food_names":
+{ Args: { "p_names": Json }; Returns: number
+                           },
 "worker_set_food_weights":
 { Args: { "p_weights": Json }; Returns: number
                            },
@@ -2315,6 +2321,9 @@ isOneToOne: false
                            },
 "worker_set_origin":
 { Args: { "p_made_in": string,"p_product": string }; Returns: boolean
+                           },
+"worker_set_shop_titles":
+{ Args: { "p_titles": Json }; Returns: number
                            },
 "worker_set_weights":
 { Args: { "p_weights": Json }; Returns: number
@@ -2339,6 +2348,9 @@ isOneToOne: false
                            },
 "worker_sourcing_target_release":
 { Args: { "p_note"?: string,"p_target": string }; Returns: undefined
+                           },
+"worker_verify_plan":
+{ Args: { "p_after"?: string,"p_drafts"?: boolean,"p_limit"?: number,"p_type"?: Database["public"]['Enums']["product_type"] }; Returns: Json
                            },
 "worker_weight_plan":
 { Args: { "p_limit"?: number,"p_types"?: (Database["public"]['Enums']["product_type"])[] }; Returns: Json

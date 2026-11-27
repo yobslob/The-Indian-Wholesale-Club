@@ -257,6 +257,7 @@ export async function publishAllAction(
     published: string[];
     blocked: { slug: string; why: string[] }[];
     filled: number;
+    local: number;
     next: string | null;
   }
 > {
@@ -273,10 +274,11 @@ export async function publishAllAction(
       published: r.published,
       blocked: r.blocked,
       filled: r.lines_filled,
+      local: r.lines_local,
       next: r.next,
     };
   } catch (error) {
-    return { ...fail(error), published: [], blocked: [], filled: 0, next: null };
+    return { ...fail(error), published: [], blocked: [], filled: 0, local: 0, next: null };
   }
 }
 

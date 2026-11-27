@@ -1,0 +1,1885 @@
+[
+  {
+    "slug": "tandoori-prawns",
+    "name": "Tandoori Prawns",
+    "kind": "snacks",
+    "state": "Punjab",
+    "rank": 661,
+    "blurb": "Large prawns in a tandoori marinade, grilled quickly so they stay juicy.",
+    "minutes": 35,
+    "soak_hours": null,
+    "serves": 4,
+    "effort": "easy",
+    "ingredients": [
+      {
+        "label": "Tandoori masala",
+        "amount": "1 tbsp",
+        "source": "iwc",
+        "match_words": "tandoori masala"
+      },
+      {
+        "label": "Kashmiri chilli powder",
+        "amount": "1 tsp",
+        "source": "iwc",
+        "match_words": "kashmiri chilli powder"
+      },
+      {
+        "label": "Ajwain",
+        "amount": "½ tsp",
+        "source": "iwc",
+        "match_words": "ajwain"
+      },
+      {
+        "label": "Chaat masala",
+        "amount": "1 tsp",
+        "source": "iwc",
+        "match_words": "chaat masala"
+      },
+      {
+        "label": "Large prawns",
+        "amount": "500 g",
+        "source": "local"
+      },
+      {
+        "label": "Yogurt",
+        "amount": "⅓ cup",
+        "source": "local"
+      },
+      {
+        "label": "Ginger-garlic paste",
+        "amount": "1 tsp",
+        "source": "local"
+      },
+      {
+        "label": "Lemon",
+        "amount": "1",
+        "source": "local"
+      },
+      {
+        "label": "Butter",
+        "amount": "1 tbsp",
+        "source": "local"
+      },
+      {
+        "label": "Dry ginger powder",
+        "amount": "½ tsp",
+        "source": "iwc",
+        "match_words": "dry ginger powder",
+        "instead_of": "Ginger-garlic paste"
+      },
+      {
+        "label": "Garlic powder",
+        "amount": "½ tsp",
+        "source": "iwc",
+        "match_words": "garlic powder",
+        "instead_of": "Ginger-garlic paste"
+      },
+      {
+        "label": "Amchur",
+        "amount": "1 tsp",
+        "source": "iwc",
+        "match_words": "amchur",
+        "instead_of": "Lemon"
+      }
+    ],
+    "steps": [
+      {
+        "text": "Marinate the prawns with lemon, ginger-garlic paste, yogurt, spices and salt for twenty minutes.",
+        "minutes": 20
+      },
+      {
+        "text": "Skewer and grill, basting with butter.",
+        "minutes": 8
+      },
+      {
+        "text": "Finish with chaat masala.",
+        "minutes": 1
+      }
+    ]
+  },
+  {
+    "slug": "shikampuri-kebab",
+    "name": "Shikampuri Kebab",
+    "kind": "snacks",
+    "state": "Telangana",
+    "rank": 662,
+    "blurb": "Hyderabad's mutton and chana dal kebabs with a hidden centre of hung curd and mint.",
+    "minutes": 70,
+    "soak_hours": 2,
+    "serves": 4,
+    "effort": "weekend",
+    "ingredients": [
+      {
+        "label": "Chana dal",
+        "amount": "¼ cup",
+        "source": "iwc",
+        "match_words": "chana dal"
+      },
+      {
+        "label": "Whole garam masala",
+        "amount": "1 tbsp",
+        "source": "iwc",
+        "match_words": "whole garam masala"
+      },
+      {
+        "label": "Red chilli whole",
+        "amount": "3",
+        "source": "iwc",
+        "match_words": "red chilli whole"
+      },
+      {
+        "label": "Mutton mince",
+        "amount": "400 g",
+        "source": "local"
+      },
+      {
+        "label": "Hung curd",
+        "amount": "¼ cup",
+        "source": "local"
+      },
+      {
+        "label": "Onion",
+        "amount": "1",
+        "source": "local"
+      },
+      {
+        "label": "Mint",
+        "amount": "a handful",
+        "source": "local"
+      },
+      {
+        "label": "Ginger-garlic paste",
+        "amount": "1 tbsp",
+        "source": "local"
+      },
+      {
+        "label": "Eggs",
+        "amount": "1",
+        "source": "local"
+      },
+      {
+        "label": "Oil",
+        "amount": "4 tbsp",
+        "source": "local"
+      },
+      {
+        "label": "Dried mint leaves",
+        "amount": "1 tsp",
+        "source": "iwc",
+        "match_words": "mint leaves",
+        "instead_of": "Mint"
+      },
+      {
+        "label": "Dry ginger powder",
+        "amount": "½ tsp",
+        "source": "iwc",
+        "match_words": "dry ginger powder",
+        "instead_of": "Ginger-garlic paste"
+      },
+      {
+        "label": "Garlic powder",
+        "amount": "½ tsp",
+        "source": "iwc",
+        "match_words": "garlic powder",
+        "instead_of": "Ginger-garlic paste"
+      }
+    ],
+    "steps": [
+      {
+        "text": "Cook the mince with the soaked dal, whole spices, chillies, ginger-garlic paste, salt and a little water until dry; grind with the egg.",
+        "minutes": 35
+      },
+      {
+        "text": "Mix the hung curd with chopped onion and mint.",
+        "minutes": 3
+      },
+      {
+        "text": "Fill flat rounds of the mince with the curd and shallow-fry until crisp.",
+        "minutes": 15
+      }
+    ]
+  },
+  {
+    "slug": "murgh-kalmi-kebab",
+    "name": "Murgh Kalmi Kebab",
+    "kind": "snacks",
+    "state": "Delhi",
+    "rank": 663,
+    "blurb": "Chicken thighs on the bone in a saffron and cream marinade, roasted until charred.",
+    "minutes": 60,
+    "soak_hours": null,
+    "serves": 4,
+    "effort": "medium",
+    "ingredients": [
+      {
+        "label": "Saffron",
+        "amount": "a pinch",
+        "source": "iwc",
+        "match_words": "saffron"
+      },
+      {
+        "label": "Garam masala",
+        "amount": "1 tsp",
+        "source": "iwc",
+        "match_words": "garam masala"
+      },
+      {
+        "label": "White pepper",
+        "amount": "½ tsp",
+        "source": "iwc",
+        "match_words": "white pepper"
+      },
+      {
+        "label": "Kashmiri chilli powder",
+        "amount": "1 tsp",
+        "source": "iwc",
+        "match_words": "kashmiri chilli powder"
+      },
+      {
+        "label": "Chicken thighs",
+        "amount": "8",
+        "source": "local"
+      },
+      {
+        "label": "Yogurt",
+        "amount": "½ cup",
+        "source": "local"
+      },
+      {
+        "label": "Cream",
+        "amount": "¼ cup",
+        "source": "local"
+      },
+      {
+        "label": "Ginger-garlic paste",
+        "amount": "1 tbsp",
+        "source": "local"
+      },
+      {
+        "label": "Butter",
+        "amount": "2 tbsp",
+        "source": "local"
+      },
+      {
+        "label": "Dry ginger powder",
+        "amount": "½ tsp",
+        "source": "iwc",
+        "match_words": "dry ginger powder",
+        "instead_of": "Ginger-garlic paste"
+      },
+      {
+        "label": "Garlic powder",
+        "amount": "½ tsp",
+        "source": "iwc",
+        "match_words": "garlic powder",
+        "instead_of": "Ginger-garlic paste"
+      }
+    ],
+    "steps": [
+      {
+        "text": "Slash the thighs and rub with ginger-garlic paste and salt.",
+        "minutes": 5
+      },
+      {
+        "text": "Coat in yogurt, cream, soaked saffron and spices; leave an hour.",
+        "minutes": 60
+      },
+      {
+        "text": "Roast at 220°C, basting with butter, until charred and cooked.",
+        "minutes": 30
+      }
+    ]
+  },
+  {
+    "slug": "tujji",
+    "name": "Tujji",
+    "kind": "snacks",
+    "state": "Jammu and Kashmir",
+    "rank": 664,
+    "blurb": "Srinagar's street barbecue: mutton chunks rubbed with salt and spice and grilled over coals.",
+    "minutes": 50,
+    "soak_hours": null,
+    "serves": 4,
+    "effort": "medium",
+    "ingredients": [
+      {
+        "label": "Kashmiri chilli powder",
+        "amount": "1½ tsp",
+        "source": "iwc",
+        "match_words": "kashmiri chilli powder"
+      },
+      {
+        "label": "Fennel powder",
+        "amount": "1 tsp",
+        "source": "iwc",
+        "match_words": "fennel powder"
+      },
+      {
+        "label": "Dry ginger powder",
+        "amount": "1 tsp",
+        "source": "iwc",
+        "match_words": "dry ginger powder"
+      },
+      {
+        "label": "Black pepper",
+        "amount": "½ tsp",
+        "source": "iwc",
+        "match_words": "black pepper"
+      },
+      {
+        "label": "Boneless mutton",
+        "amount": "500 g",
+        "source": "local"
+      },
+      {
+        "label": "Yogurt",
+        "amount": "¼ cup",
+        "source": "local"
+      },
+      {
+        "label": "Mustard oil",
+        "amount": "2 tbsp",
+        "source": "local"
+      },
+      {
+        "label": "Onion",
+        "amount": "1",
+        "source": "local"
+      },
+      {
+        "label": "Lemon",
+        "amount": "1",
+        "source": "local"
+      },
+      {
+        "label": "Amchur",
+        "amount": "1 tsp",
+        "source": "iwc",
+        "match_words": "amchur",
+        "instead_of": "Lemon"
+      }
+    ],
+    "steps": [
+      {
+        "text": "Marinate the mutton with the spices, yogurt, mustard oil and salt for at least an hour.",
+        "minutes": 60
+      },
+      {
+        "text": "Thread onto skewers and grill over high heat until charred and tender.",
+        "minutes": 20
+      },
+      {
+        "text": "Serve with onion rings and lemon.",
+        "minutes": 2
+      }
+    ]
+  },
+  {
+    "slug": "chicken-banjara-kebab",
+    "name": "Chicken Banjara Kebab",
+    "kind": "snacks",
+    "state": "Rajasthan",
+    "rank": 665,
+    "blurb": "Chicken in a hot, smoky marinade of red chilli, mustard oil and roasted spices.",
+    "minutes": 60,
+    "soak_hours": null,
+    "serves": 4,
+    "effort": "medium",
+    "ingredients": [
+      {
+        "label": "Kashmiri chilli powder",
+        "amount": "2 tsp",
+        "source": "iwc",
+        "match_words": "kashmiri chilli powder"
+      },
+      {
+        "label": "Red chilli whole",
+        "amount": "4",
+        "source": "iwc",
+        "match_words": "red chilli whole"
+      },
+      {
+        "label": "Whole coriander",
+        "amount": "1 tsp",
+        "source": "iwc",
+        "match_words": "whole coriander"
+      },
+      {
+        "label": "Cumin seeds",
+        "amount": "1 tsp",
+        "source": "iwc",
+        "match_words": "cumin seeds"
+      },
+      {
+        "label": "Kasuri methi",
+        "amount": "1 tsp",
+        "source": "iwc",
+        "match_words": "kasuri methi"
+      },
+      {
+        "label": "Boneless chicken",
+        "amount": "500 g",
+        "source": "local"
+      },
+      {
+        "label": "Yogurt",
+        "amount": "½ cup",
+        "source": "local"
+      },
+      {
+        "label": "Ginger-garlic paste",
+        "amount": "1 tbsp",
+        "source": "local"
+      },
+      {
+        "label": "Mustard oil",
+        "amount": "2 tbsp",
+        "source": "local"
+      },
+      {
+        "label": "Dry ginger powder",
+        "amount": "½ tsp",
+        "source": "iwc",
+        "match_words": "dry ginger powder",
+        "instead_of": "Ginger-garlic paste"
+      },
+      {
+        "label": "Garlic powder",
+        "amount": "½ tsp",
+        "source": "iwc",
+        "match_words": "garlic powder",
+        "instead_of": "Ginger-garlic paste"
+      }
+    ],
+    "steps": [
+      {
+        "text": "Roast the whole spices and grind them.",
+        "minutes": 5
+      },
+      {
+        "text": "Mix with yogurt, chilli powder, ginger-garlic paste, mustard oil, kasuri methi and salt; marinate the chicken an hour.",
+        "minutes": 60
+      },
+      {
+        "text": "Skewer and grill until charred.",
+        "minutes": 15
+      }
+    ]
+  },
+  {
+    "slug": "bhatti-da-murgh",
+    "name": "Bhatti da Murgh",
+    "kind": "snacks",
+    "state": "Punjab",
+    "rank": 666,
+    "blurb": "Punjab's roadside chicken, roasted whole in pieces in a clay oven with a coarse, smoky masala.",
+    "minutes": 70,
+    "soak_hours": null,
+    "serves": 4,
+    "effort": "weekend",
+    "ingredients": [
+      {
+        "label": "Whole garam masala",
+        "amount": "1 tbsp",
+        "source": "iwc",
+        "match_words": "whole garam masala"
+      },
+      {
+        "label": "Kashmiri chilli powder",
+        "amount": "2 tsp",
+        "source": "iwc",
+        "match_words": "kashmiri chilli powder"
+      },
+      {
+        "label": "Ajwain",
+        "amount": "½ tsp",
+        "source": "iwc",
+        "match_words": "ajwain"
+      },
+      {
+        "label": "Chaat masala",
+        "amount": "1 tsp",
+        "source": "iwc",
+        "match_words": "chaat masala"
+      },
+      {
+        "label": "Chicken pieces",
+        "amount": "1 kg",
+        "source": "local"
+      },
+      {
+        "label": "Yogurt",
+        "amount": "½ cup",
+        "source": "local"
+      },
+      {
+        "label": "Ginger-garlic paste",
+        "amount": "2 tbsp",
+        "source": "local"
+      },
+      {
+        "label": "Mustard oil",
+        "amount": "2 tbsp",
+        "source": "local"
+      },
+      {
+        "label": "Lemon",
+        "amount": "1",
+        "source": "local"
+      },
+      {
+        "label": "Dry ginger powder",
+        "amount": "½ tsp",
+        "source": "iwc",
+        "match_words": "dry ginger powder",
+        "instead_of": "Ginger-garlic paste"
+      },
+      {
+        "label": "Garlic powder",
+        "amount": "½ tsp",
+        "source": "iwc",
+        "match_words": "garlic powder",
+        "instead_of": "Ginger-garlic paste"
+      },
+      {
+        "label": "Amchur",
+        "amount": "1 tsp",
+        "source": "iwc",
+        "match_words": "amchur",
+        "instead_of": "Lemon"
+      }
+    ],
+    "steps": [
+      {
+        "text": "Toast and coarsely crush the whole spices.",
+        "minutes": 5
+      },
+      {
+        "text": "Marinate the chicken with them, chilli powder, ajwain, yogurt, ginger-garlic paste, mustard oil, lemon and salt for an hour.",
+        "minutes": 60
+      },
+      {
+        "text": "Roast very hot until charred; finish over a coal for smoke and dust with chaat masala.",
+        "minutes": 35
+      }
+    ]
+  },
+  {
+    "slug": "tandoori-pomfret",
+    "name": "Tandoori Pomfret",
+    "kind": "snacks",
+    "state": "Maharashtra",
+    "rank": 667,
+    "blurb": "Whole pomfret slashed, marinated in tandoori spice and roasted.",
+    "minutes": 45,
+    "soak_hours": null,
+    "serves": 4,
+    "effort": "medium",
+    "ingredients": [
+      {
+        "label": "Tandoori masala",
+        "amount": "1½ tbsp",
+        "source": "iwc",
+        "match_words": "tandoori masala"
+      },
+      {
+        "label": "Kashmiri chilli powder",
+        "amount": "1 tsp",
+        "source": "iwc",
+        "match_words": "kashmiri chilli powder"
+      },
+      {
+        "label": "Ajwain",
+        "amount": "½ tsp",
+        "source": "iwc",
+        "match_words": "ajwain"
+      },
+      {
+        "label": "Besan",
+        "amount": "1 tbsp",
+        "source": "iwc",
+        "match_words": "besan"
+      },
+      {
+        "label": "Pomfret",
+        "amount": "2",
+        "source": "local"
+      },
+      {
+        "label": "Yogurt",
+        "amount": "½ cup",
+        "source": "local"
+      },
+      {
+        "label": "Ginger-garlic paste",
+        "amount": "1 tsp",
+        "source": "local"
+      },
+      {
+        "label": "Lemon",
+        "amount": "1",
+        "source": "local"
+      },
+      {
+        "label": "Oil",
+        "amount": "2 tbsp",
+        "source": "local"
+      },
+      {
+        "label": "Dry ginger powder",
+        "amount": "½ tsp",
+        "source": "iwc",
+        "match_words": "dry ginger powder",
+        "instead_of": "Ginger-garlic paste"
+      },
+      {
+        "label": "Garlic powder",
+        "amount": "½ tsp",
+        "source": "iwc",
+        "match_words": "garlic powder",
+        "instead_of": "Ginger-garlic paste"
+      },
+      {
+        "label": "Amchur",
+        "amount": "1 tsp",
+        "source": "iwc",
+        "match_words": "amchur",
+        "instead_of": "Lemon"
+      }
+    ],
+    "steps": [
+      {
+        "text": "Slash the fish deeply and rub with lemon and salt.",
+        "minutes": 5
+      },
+      {
+        "text": "Coat in yogurt with the spices, roasted besan, ginger-garlic paste and oil; rest thirty minutes.",
+        "minutes": 30
+      },
+      {
+        "text": "Roast at 220°C until charred and cooked through.",
+        "minutes": 20
+      }
+    ]
+  },
+  {
+    "slug": "veg-spring-roll",
+    "name": "Veg Spring Roll",
+    "kind": "snacks",
+    "state": "All of India",
+    "rank": 668,
+    "blurb": "Crisp rolls filled with cabbage, carrot and noodles, the Indo-Chinese restaurant starter.",
+    "minutes": 50,
+    "soak_hours": null,
+    "serves": 6,
+    "effort": "medium",
+    "ingredients": [
+      {
+        "label": "Maida",
+        "amount": "1 cup",
+        "source": "iwc",
+        "match_words": "maida"
+      },
+      {
+        "label": "Cornflour",
+        "amount": "2 tbsp",
+        "source": "iwc",
+        "match_words": "cornflour"
+      },
+      {
+        "label": "Hakka noodles",
+        "amount": "50 g",
+        "source": "iwc",
+        "match_words": "hakka noodles"
+      },
+      {
+        "label": "Black pepper",
+        "amount": "½ tsp",
+        "source": "iwc",
+        "match_words": "black pepper"
+      },
+      {
+        "label": "Cabbage",
+        "amount": "2 cups shredded",
+        "source": "local"
+      },
+      {
+        "label": "Carrot",
+        "amount": "1",
+        "source": "local"
+      },
+      {
+        "label": "Capsicum",
+        "amount": "1",
+        "source": "local"
+      },
+      {
+        "label": "Garlic",
+        "amount": "4 cloves",
+        "source": "local"
+      },
+      {
+        "label": "Soy sauce",
+        "amount": "1 tbsp",
+        "source": "local"
+      },
+      {
+        "label": "Oil",
+        "amount": "for frying",
+        "source": "local"
+      },
+      {
+        "label": "Garlic powder",
+        "amount": "½ tsp",
+        "source": "iwc",
+        "match_words": "garlic powder",
+        "instead_of": "Garlic"
+      }
+    ],
+    "steps": [
+      {
+        "text": "Make thin crêpes from a runny batter of maida, a spoon of cornflour, salt and water, cooked one side only.",
+        "minutes": 20
+      },
+      {
+        "text": "Stir-fry the garlic and vegetables on high heat with boiled noodles, soy sauce, pepper and salt.",
+        "minutes": 6
+      },
+      {
+        "text": "Roll the filling in the crêpes, seal with cornflour paste and fry until crisp.",
+        "minutes": 20
+      }
+    ]
+  },
+  {
+    "slug": "crispy-corn",
+    "name": "Crispy Corn",
+    "kind": "snacks",
+    "state": "All of India",
+    "rank": 669,
+    "blurb": "Fried sweet corn tossed with onion, capsicum, chilli and pepper. A restaurant favourite.",
+    "minutes": 25,
+    "soak_hours": null,
+    "serves": 3,
+    "effort": "easy",
+    "ingredients": [
+      {
+        "label": "Cornflour",
+        "amount": "¼ cup",
+        "source": "iwc",
+        "match_words": "cornflour"
+      },
+      {
+        "label": "Rice flour",
+        "amount": "2 tbsp",
+        "source": "iwc",
+        "match_words": "rice flour"
+      },
+      {
+        "label": "Black pepper",
+        "amount": "½ tsp",
+        "source": "iwc",
+        "match_words": "black pepper"
+      },
+      {
+        "label": "Red chilli flakes",
+        "amount": "½ tsp",
+        "source": "iwc",
+        "match_words": "red chilli flakes"
+      },
+      {
+        "label": "Chaat masala",
+        "amount": "½ tsp",
+        "source": "iwc",
+        "match_words": "chaat masala"
+      },
+      {
+        "label": "Sweet corn kernels",
+        "amount": "2 cups",
+        "source": "local"
+      },
+      {
+        "label": "Onion",
+        "amount": "1",
+        "source": "local"
+      },
+      {
+        "label": "Capsicum",
+        "amount": "½",
+        "source": "local"
+      },
+      {
+        "label": "Garlic",
+        "amount": "3 cloves",
+        "source": "local"
+      },
+      {
+        "label": "Oil",
+        "amount": "for frying",
+        "source": "local"
+      },
+      {
+        "label": "Garlic powder",
+        "amount": "½ tsp",
+        "source": "iwc",
+        "match_words": "garlic powder",
+        "instead_of": "Garlic"
+      }
+    ],
+    "steps": [
+      {
+        "text": "Boil the corn three minutes, drain and dry; toss with cornflour, rice flour and salt.",
+        "minutes": 8
+      },
+      {
+        "text": "Fry in batches until crisp.",
+        "minutes": 10
+      },
+      {
+        "text": "Toss with sautéed garlic, onion and capsicum, pepper, chilli flakes and chaat masala.",
+        "minutes": 3
+      }
+    ]
+  },
+  {
+    "slug": "chilli-mushroom",
+    "name": "Chilli Mushroom",
+    "kind": "snacks",
+    "state": "All of India",
+    "rank": 670,
+    "blurb": "Batter-fried mushrooms tossed in a garlicky chilli sauce with spring onion and capsicum.",
+    "minutes": 30,
+    "soak_hours": null,
+    "serves": 3,
+    "effort": "easy",
+    "ingredients": [
+      {
+        "label": "Cornflour",
+        "amount": "¼ cup",
+        "source": "iwc",
+        "match_words": "cornflour"
+      },
+      {
+        "label": "Maida",
+        "amount": "2 tbsp",
+        "source": "iwc",
+        "match_words": "maida"
+      },
+      {
+        "label": "Black pepper",
+        "amount": "½ tsp",
+        "source": "iwc",
+        "match_words": "black pepper"
+      },
+      {
+        "label": "Red chilli flakes",
+        "amount": "1 tsp",
+        "source": "iwc",
+        "match_words": "red chilli flakes"
+      },
+      {
+        "label": "Button mushrooms",
+        "amount": "250 g",
+        "source": "local"
+      },
+      {
+        "label": "Capsicum",
+        "amount": "1",
+        "source": "local"
+      },
+      {
+        "label": "Onion",
+        "amount": "1",
+        "source": "local"
+      },
+      {
+        "label": "Garlic",
+        "amount": "6 cloves",
+        "source": "local"
+      },
+      {
+        "label": "Soy sauce",
+        "amount": "1 tbsp",
+        "source": "local"
+      },
+      {
+        "label": "Oil",
+        "amount": "for frying",
+        "source": "local"
+      },
+      {
+        "label": "Garlic powder",
+        "amount": "½ tsp",
+        "source": "iwc",
+        "match_words": "garlic powder",
+        "instead_of": "Garlic"
+      }
+    ],
+    "steps": [
+      {
+        "text": "Coat the mushrooms in a batter of cornflour, maida, pepper, salt and water; fry crisp.",
+        "minutes": 12
+      },
+      {
+        "text": "Stir-fry garlic, onion and capsicum on high heat with soy sauce, chilli flakes and a splash of water.",
+        "minutes": 4
+      },
+      {
+        "text": "Toss the mushrooms through and serve straight away.",
+        "minutes": 2
+      }
+    ]
+  },
+  {
+    "slug": "gobi-65",
+    "name": "Gobi 65",
+    "kind": "snacks",
+    "state": "Tamil Nadu",
+    "rank": 671,
+    "blurb": "Cauliflower in the red chilli and curry leaf coat of Chennai's chicken 65.",
+    "minutes": 35,
+    "soak_hours": null,
+    "serves": 4,
+    "effort": "easy",
+    "ingredients": [
+      {
+        "label": "Chicken 65 masala",
+        "amount": "2 tbsp",
+        "source": "iwc",
+        "match_words": "chicken 65 masala"
+      },
+      {
+        "label": "Cornflour",
+        "amount": "3 tbsp",
+        "source": "iwc",
+        "match_words": "cornflour"
+      },
+      {
+        "label": "Rice flour",
+        "amount": "2 tbsp",
+        "source": "iwc",
+        "match_words": "rice flour"
+      },
+      {
+        "label": "Kashmiri chilli powder",
+        "amount": "1 tsp",
+        "source": "iwc",
+        "match_words": "kashmiri chilli powder"
+      },
+      {
+        "label": "Cauliflower",
+        "amount": "1 small",
+        "source": "local"
+      },
+      {
+        "label": "Yogurt",
+        "amount": "2 tbsp",
+        "source": "local"
+      },
+      {
+        "label": "Ginger-garlic paste",
+        "amount": "1 tsp",
+        "source": "local"
+      },
+      {
+        "label": "Curry leaves",
+        "amount": "a sprig",
+        "source": "local"
+      },
+      {
+        "label": "Oil",
+        "amount": "for frying",
+        "source": "local"
+      },
+      {
+        "label": "Dry ginger powder",
+        "amount": "½ tsp",
+        "source": "iwc",
+        "match_words": "dry ginger powder",
+        "instead_of": "Ginger-garlic paste"
+      },
+      {
+        "label": "Garlic powder",
+        "amount": "½ tsp",
+        "source": "iwc",
+        "match_words": "garlic powder",
+        "instead_of": "Ginger-garlic paste"
+      },
+      {
+        "label": "Dried curry leaves",
+        "amount": "1 tbsp",
+        "source": "iwc",
+        "match_words": "curry leaves",
+        "instead_of": "Curry leaves"
+      }
+    ],
+    "steps": [
+      {
+        "text": "Blanch the florets three minutes and drain well.",
+        "minutes": 6
+      },
+      {
+        "text": "Coat with the masala, flours, chilli powder, yogurt, ginger-garlic paste and salt.",
+        "minutes": 5
+      },
+      {
+        "text": "Fry until crisp and toss with fried curry leaves.",
+        "minutes": 15
+      }
+    ]
+  },
+  {
+    "slug": "paneer-65",
+    "name": "Paneer 65",
+    "kind": "snacks",
+    "state": "Tamil Nadu",
+    "rank": 672,
+    "blurb": "Paneer cubes in a hot, red 65 coat, fried crisp with curry leaves and chilli.",
+    "minutes": 25,
+    "soak_hours": null,
+    "serves": 4,
+    "effort": "easy",
+    "ingredients": [
+      {
+        "label": "Chicken 65 masala",
+        "amount": "1½ tbsp",
+        "source": "iwc",
+        "match_words": "chicken 65 masala"
+      },
+      {
+        "label": "Cornflour",
+        "amount": "3 tbsp",
+        "source": "iwc",
+        "match_words": "cornflour"
+      },
+      {
+        "label": "Rice flour",
+        "amount": "1 tbsp",
+        "source": "iwc",
+        "match_words": "rice flour"
+      },
+      {
+        "label": "Paneer",
+        "amount": "300 g",
+        "source": "local"
+      },
+      {
+        "label": "Yogurt",
+        "amount": "2 tbsp",
+        "source": "local"
+      },
+      {
+        "label": "Ginger-garlic paste",
+        "amount": "1 tsp",
+        "source": "local"
+      },
+      {
+        "label": "Curry leaves",
+        "amount": "a sprig",
+        "source": "local"
+      },
+      {
+        "label": "Green chillies",
+        "amount": "2",
+        "source": "local"
+      },
+      {
+        "label": "Oil",
+        "amount": "for frying",
+        "source": "local"
+      },
+      {
+        "label": "Dry ginger powder",
+        "amount": "½ tsp",
+        "source": "iwc",
+        "match_words": "dry ginger powder",
+        "instead_of": "Ginger-garlic paste"
+      },
+      {
+        "label": "Garlic powder",
+        "amount": "½ tsp",
+        "source": "iwc",
+        "match_words": "garlic powder",
+        "instead_of": "Ginger-garlic paste"
+      },
+      {
+        "label": "Dried curry leaves",
+        "amount": "1 tbsp",
+        "source": "iwc",
+        "match_words": "curry leaves",
+        "instead_of": "Curry leaves"
+      },
+      {
+        "label": "Red chilli powder",
+        "amount": "½ tsp",
+        "source": "iwc",
+        "match_words": "red chilli powder",
+        "instead_of": "Green chillies"
+      }
+    ],
+    "steps": [
+      {
+        "text": "Coat the paneer with the masala, flours, yogurt, ginger-garlic paste and salt; rest ten minutes.",
+        "minutes": 10
+      },
+      {
+        "text": "Fry until crisp.",
+        "minutes": 8
+      },
+      {
+        "text": "Toss with fried curry leaves and slit chillies.",
+        "minutes": 2
+      }
+    ]
+  },
+  {
+    "slug": "chilli-baby-corn",
+    "name": "Chilli Baby Corn",
+    "kind": "snacks",
+    "state": "All of India",
+    "rank": 673,
+    "blurb": "Crisp-fried baby corn in a sticky chilli-garlic sauce.",
+    "minutes": 30,
+    "soak_hours": null,
+    "serves": 3,
+    "effort": "easy",
+    "ingredients": [
+      {
+        "label": "Cornflour",
+        "amount": "¼ cup",
+        "source": "iwc",
+        "match_words": "cornflour"
+      },
+      {
+        "label": "Maida",
+        "amount": "2 tbsp",
+        "source": "iwc",
+        "match_words": "maida"
+      },
+      {
+        "label": "Red chilli flakes",
+        "amount": "1 tsp",
+        "source": "iwc",
+        "match_words": "red chilli flakes"
+      },
+      {
+        "label": "Black pepper",
+        "amount": "½ tsp",
+        "source": "iwc",
+        "match_words": "black pepper"
+      },
+      {
+        "label": "Baby corn",
+        "amount": "200 g",
+        "source": "local"
+      },
+      {
+        "label": "Onion",
+        "amount": "1",
+        "source": "local"
+      },
+      {
+        "label": "Capsicum",
+        "amount": "1",
+        "source": "local"
+      },
+      {
+        "label": "Garlic",
+        "amount": "6 cloves",
+        "source": "local"
+      },
+      {
+        "label": "Soy sauce",
+        "amount": "1 tbsp",
+        "source": "local"
+      },
+      {
+        "label": "Oil",
+        "amount": "for frying",
+        "source": "local"
+      },
+      {
+        "label": "Garlic powder",
+        "amount": "½ tsp",
+        "source": "iwc",
+        "match_words": "garlic powder",
+        "instead_of": "Garlic"
+      }
+    ],
+    "steps": [
+      {
+        "text": "Halve the baby corn, blanch two minutes and coat in a batter of the flours, pepper and salt; fry crisp.",
+        "minutes": 12
+      },
+      {
+        "text": "Stir-fry garlic, onion and capsicum, add soy sauce, chilli flakes and a little cornflour slurry.",
+        "minutes": 4
+      },
+      {
+        "text": "Toss in the corn and serve hot.",
+        "minutes": 2
+      }
+    ]
+  },
+  {
+    "slug": "dragon-chicken",
+    "name": "Dragon Chicken",
+    "kind": "snacks",
+    "state": "Maharashtra",
+    "rank": 674,
+    "blurb": "Mumbai's Indo-Chinese chicken strips, fried and tossed in a red chilli sauce with cashews.",
+    "minutes": 35,
+    "soak_hours": null,
+    "serves": 4,
+    "effort": "medium",
+    "ingredients": [
+      {
+        "label": "Cornflour",
+        "amount": "¼ cup",
+        "source": "iwc",
+        "match_words": "cornflour"
+      },
+      {
+        "label": "Red chilli flakes",
+        "amount": "1½ tsp",
+        "source": "iwc",
+        "match_words": "red chilli flakes"
+      },
+      {
+        "label": "Kashmiri chilli powder",
+        "amount": "1 tsp",
+        "source": "iwc",
+        "match_words": "kashmiri chilli powder"
+      },
+      {
+        "label": "Cashews",
+        "amount": "¼ cup",
+        "source": "iwc",
+        "match_words": "cashews"
+      },
+      {
+        "label": "Boneless chicken",
+        "amount": "400 g",
+        "source": "local"
+      },
+      {
+        "label": "Eggs",
+        "amount": "1",
+        "source": "local"
+      },
+      {
+        "label": "Onion",
+        "amount": "1",
+        "source": "local"
+      },
+      {
+        "label": "Capsicum",
+        "amount": "1",
+        "source": "local"
+      },
+      {
+        "label": "Garlic",
+        "amount": "6 cloves",
+        "source": "local"
+      },
+      {
+        "label": "Soy sauce",
+        "amount": "1 tbsp",
+        "source": "local"
+      },
+      {
+        "label": "Oil",
+        "amount": "for frying",
+        "source": "local"
+      },
+      {
+        "label": "Garlic powder",
+        "amount": "½ tsp",
+        "source": "iwc",
+        "match_words": "garlic powder",
+        "instead_of": "Garlic"
+      }
+    ],
+    "steps": [
+      {
+        "text": "Coat the chicken strips with egg, cornflour, chilli powder and salt and fry crisp.",
+        "minutes": 12
+      },
+      {
+        "text": "Fry the cashews; stir-fry garlic, onion and capsicum with soy sauce and chilli flakes.",
+        "minutes": 5
+      },
+      {
+        "text": "Toss the chicken and cashews through on high heat.",
+        "minutes": 2
+      }
+    ]
+  },
+  {
+    "slug": "chicken-manchurian",
+    "name": "Chicken Manchurian",
+    "kind": "snacks",
+    "state": "All of India",
+    "rank": 675,
+    "blurb": "Fried chicken balls in a dark, garlicky Manchurian sauce.",
+    "minutes": 40,
+    "soak_hours": null,
+    "serves": 4,
+    "effort": "medium",
+    "ingredients": [
+      {
+        "label": "Cornflour",
+        "amount": "¼ cup",
+        "source": "iwc",
+        "match_words": "cornflour"
+      },
+      {
+        "label": "Manchurian masala",
+        "amount": "1 tbsp",
+        "source": "iwc",
+        "match_words": "manchurian masala"
+      },
+      {
+        "label": "Black pepper",
+        "amount": "½ tsp",
+        "source": "iwc",
+        "match_words": "black pepper"
+      },
+      {
+        "label": "Chicken mince",
+        "amount": "400 g",
+        "source": "local"
+      },
+      {
+        "label": "Eggs",
+        "amount": "1",
+        "source": "local"
+      },
+      {
+        "label": "Garlic",
+        "amount": "6 cloves",
+        "source": "local"
+      },
+      {
+        "label": "Ginger",
+        "amount": "1 inch",
+        "source": "local"
+      },
+      {
+        "label": "Spring onions",
+        "amount": "3",
+        "source": "local"
+      },
+      {
+        "label": "Soy sauce",
+        "amount": "2 tbsp",
+        "source": "local"
+      },
+      {
+        "label": "Oil",
+        "amount": "for frying",
+        "source": "local"
+      },
+      {
+        "label": "Garlic powder",
+        "amount": "½ tsp",
+        "source": "iwc",
+        "match_words": "garlic powder",
+        "instead_of": "Garlic"
+      },
+      {
+        "label": "Dry ginger powder",
+        "amount": "½ tsp",
+        "source": "iwc",
+        "match_words": "dry ginger powder",
+        "instead_of": "Ginger"
+      }
+    ],
+    "steps": [
+      {
+        "text": "Mix the mince with egg, cornflour, half the ginger and garlic, pepper and salt; fry small balls.",
+        "minutes": 15
+      },
+      {
+        "text": "Stir-fry the rest of the ginger and garlic with spring onion whites, add soy sauce, the masala and a cornflour slurry.",
+        "minutes": 5
+      },
+      {
+        "text": "Toss the balls through and finish with spring onion greens.",
+        "minutes": 2
+      }
+    ]
+  },
+  {
+    "slug": "chilli-fish",
+    "name": "Chilli Fish",
+    "kind": "snacks",
+    "state": "West Bengal",
+    "rank": 676,
+    "blurb": "Kolkata's Chinatown starter: fried fish cubes tossed with green chilli, garlic and soy.",
+    "minutes": 35,
+    "soak_hours": null,
+    "serves": 4,
+    "effort": "medium",
+    "ingredients": [
+      {
+        "label": "Cornflour",
+        "amount": "¼ cup",
+        "source": "iwc",
+        "match_words": "cornflour"
+      },
+      {
+        "label": "Black pepper",
+        "amount": "½ tsp",
+        "source": "iwc",
+        "match_words": "black pepper"
+      },
+      {
+        "label": "Red chilli flakes",
+        "amount": "½ tsp",
+        "source": "iwc",
+        "match_words": "red chilli flakes"
+      },
+      {
+        "label": "Firm fish fillets",
+        "amount": "400 g",
+        "source": "local"
+      },
+      {
+        "label": "Eggs",
+        "amount": "1",
+        "source": "local"
+      },
+      {
+        "label": "Green chillies",
+        "amount": "4",
+        "source": "local"
+      },
+      {
+        "label": "Garlic",
+        "amount": "6 cloves",
+        "source": "local"
+      },
+      {
+        "label": "Onion",
+        "amount": "1",
+        "source": "local"
+      },
+      {
+        "label": "Soy sauce",
+        "amount": "1 tbsp",
+        "source": "local"
+      },
+      {
+        "label": "Oil",
+        "amount": "for frying",
+        "source": "local"
+      },
+      {
+        "label": "Red chilli powder",
+        "amount": "½ tsp",
+        "source": "iwc",
+        "match_words": "red chilli powder",
+        "instead_of": "Green chillies"
+      },
+      {
+        "label": "Garlic powder",
+        "amount": "½ tsp",
+        "source": "iwc",
+        "match_words": "garlic powder",
+        "instead_of": "Garlic"
+      }
+    ],
+    "steps": [
+      {
+        "text": "Coat the fish cubes in egg, cornflour, pepper and salt and fry until crisp.",
+        "minutes": 12
+      },
+      {
+        "text": "Stir-fry garlic, onion and slit chillies with soy sauce and chilli flakes.",
+        "minutes": 4
+      },
+      {
+        "text": "Toss the fish through and serve.",
+        "minutes": 2
+      }
+    ]
+  },
+  {
+    "slug": "chilli-garlic-prawns",
+    "name": "Chilli Garlic Prawns",
+    "kind": "snacks",
+    "state": "All of India",
+    "rank": 677,
+    "blurb": "Prawns stir-fried fast with lots of garlic, chilli and spring onion.",
+    "minutes": 25,
+    "soak_hours": null,
+    "serves": 4,
+    "effort": "easy",
+    "ingredients": [
+      {
+        "label": "Red chilli flakes",
+        "amount": "1 tsp",
+        "source": "iwc",
+        "match_words": "red chilli flakes"
+      },
+      {
+        "label": "Black pepper",
+        "amount": "½ tsp",
+        "source": "iwc",
+        "match_words": "black pepper"
+      },
+      {
+        "label": "Cornflour",
+        "amount": "1 tbsp",
+        "source": "iwc",
+        "match_words": "cornflour"
+      },
+      {
+        "label": "Prawns",
+        "amount": "400 g",
+        "source": "local"
+      },
+      {
+        "label": "Garlic",
+        "amount": "10 cloves",
+        "source": "local"
+      },
+      {
+        "label": "Spring onions",
+        "amount": "3",
+        "source": "local"
+      },
+      {
+        "label": "Soy sauce",
+        "amount": "1 tbsp",
+        "source": "local"
+      },
+      {
+        "label": "Oil",
+        "amount": "2 tbsp",
+        "source": "local"
+      },
+      {
+        "label": "Garlic powder",
+        "amount": "½ tsp",
+        "source": "iwc",
+        "match_words": "garlic powder",
+        "instead_of": "Garlic"
+      }
+    ],
+    "steps": [
+      {
+        "text": "Toss the prawns with cornflour, pepper and salt.",
+        "minutes": 3
+      },
+      {
+        "text": "Fry the chopped garlic until golden, add chilli flakes and the prawns and cook on high heat.",
+        "minutes": 5
+      },
+      {
+        "text": "Add soy sauce and spring onions and toss.",
+        "minutes": 1
+      }
+    ]
+  },
+  {
+    "slug": "chicken-majestic",
+    "name": "Chicken Majestic",
+    "kind": "snacks",
+    "state": "Telangana",
+    "rank": 678,
+    "blurb": "Hyderabad's fried chicken strips tossed in a yogurt, green chilli and curry leaf sauce.",
+    "minutes": 40,
+    "soak_hours": null,
+    "serves": 4,
+    "effort": "medium",
+    "ingredients": [
+      {
+        "label": "Cornflour",
+        "amount": "3 tbsp",
+        "source": "iwc",
+        "match_words": "cornflour"
+      },
+      {
+        "label": "Red chilli powder",
+        "amount": "1 tsp",
+        "source": "iwc",
+        "match_words": "red chilli powder"
+      },
+      {
+        "label": "Garam masala",
+        "amount": "½ tsp",
+        "source": "iwc",
+        "match_words": "garam masala"
+      },
+      {
+        "label": "Black pepper",
+        "amount": "½ tsp",
+        "source": "iwc",
+        "match_words": "black pepper"
+      },
+      {
+        "label": "Boneless chicken",
+        "amount": "500 g",
+        "source": "local"
+      },
+      {
+        "label": "Yogurt",
+        "amount": "½ cup",
+        "source": "local"
+      },
+      {
+        "label": "Ginger-garlic paste",
+        "amount": "1 tbsp",
+        "source": "local"
+      },
+      {
+        "label": "Green chillies",
+        "amount": "4",
+        "source": "local"
+      },
+      {
+        "label": "Curry leaves",
+        "amount": "2 sprigs",
+        "source": "local"
+      },
+      {
+        "label": "Oil",
+        "amount": "for frying",
+        "source": "local"
+      },
+      {
+        "label": "Dry ginger powder",
+        "amount": "½ tsp",
+        "source": "iwc",
+        "match_words": "dry ginger powder",
+        "instead_of": "Ginger-garlic paste"
+      },
+      {
+        "label": "Garlic powder",
+        "amount": "½ tsp",
+        "source": "iwc",
+        "match_words": "garlic powder",
+        "instead_of": "Ginger-garlic paste"
+      },
+      {
+        "label": "Dried curry leaves",
+        "amount": "1 tbsp",
+        "source": "iwc",
+        "match_words": "curry leaves",
+        "instead_of": "Curry leaves"
+      }
+    ],
+    "steps": [
+      {
+        "text": "Marinate the chicken strips with ginger-garlic paste, chilli powder, pepper, cornflour and salt; fry until crisp.",
+        "minutes": 20
+      },
+      {
+        "text": "Fry the slit chillies and curry leaves, add the yogurt and garam masala and stir until it thickens.",
+        "minutes": 5
+      },
+      {
+        "text": "Toss the chicken in the sauce until coated.",
+        "minutes": 2
+      }
+    ]
+  },
+  {
+    "slug": "apollo-fish",
+    "name": "Apollo Fish",
+    "kind": "snacks",
+    "state": "Telangana",
+    "rank": 679,
+    "blurb": "Hyderabad's batter-fried fish tossed in a tangy yogurt, chilli and curry leaf sauce.",
+    "minutes": 40,
+    "soak_hours": null,
+    "serves": 4,
+    "effort": "medium",
+    "ingredients": [
+      {
+        "label": "Cornflour",
+        "amount": "3 tbsp",
+        "source": "iwc",
+        "match_words": "cornflour"
+      },
+      {
+        "label": "Maida",
+        "amount": "1 tbsp",
+        "source": "iwc",
+        "match_words": "maida"
+      },
+      {
+        "label": "Kashmiri chilli powder",
+        "amount": "1 tsp",
+        "source": "iwc",
+        "match_words": "kashmiri chilli powder"
+      },
+      {
+        "label": "Black pepper",
+        "amount": "½ tsp",
+        "source": "iwc",
+        "match_words": "black pepper"
+      },
+      {
+        "label": "Boneless fish",
+        "amount": "500 g",
+        "source": "local"
+      },
+      {
+        "label": "Eggs",
+        "amount": "1",
+        "source": "local"
+      },
+      {
+        "label": "Yogurt",
+        "amount": "¼ cup",
+        "source": "local"
+      },
+      {
+        "label": "Ginger-garlic paste",
+        "amount": "1 tbsp",
+        "source": "local"
+      },
+      {
+        "label": "Green chillies",
+        "amount": "4",
+        "source": "local"
+      },
+      {
+        "label": "Curry leaves",
+        "amount": "2 sprigs",
+        "source": "local"
+      },
+      {
+        "label": "Oil",
+        "amount": "for frying",
+        "source": "local"
+      },
+      {
+        "label": "Dry ginger powder",
+        "amount": "½ tsp",
+        "source": "iwc",
+        "match_words": "dry ginger powder",
+        "instead_of": "Ginger-garlic paste"
+      },
+      {
+        "label": "Garlic powder",
+        "amount": "½ tsp",
+        "source": "iwc",
+        "match_words": "garlic powder",
+        "instead_of": "Ginger-garlic paste"
+      },
+      {
+        "label": "Red chilli powder",
+        "amount": "½ tsp",
+        "source": "iwc",
+        "match_words": "red chilli powder",
+        "instead_of": "Green chillies"
+      },
+      {
+        "label": "Dried curry leaves",
+        "amount": "1 tbsp",
+        "source": "iwc",
+        "match_words": "curry leaves",
+        "instead_of": "Curry leaves"
+      }
+    ],
+    "steps": [
+      {
+        "text": "Marinate the fish with ginger-garlic paste, chilli powder, pepper and salt; coat in egg and flours and fry crisp.",
+        "minutes": 20
+      },
+      {
+        "text": "Fry the garlic, chillies and curry leaves, add yogurt and a splash of water and cook until thick.",
+        "minutes": 5
+      },
+      {
+        "text": "Toss the fish through.",
+        "minutes": 2
+      }
+    ]
+  },
+  {
+    "slug": "chinese-bhel",
+    "name": "Chinese Bhel",
+    "kind": "snacks",
+    "state": "Maharashtra",
+    "rank": 680,
+    "blurb": "Mumbai's street mash-up: crisp fried noodles tossed with cabbage, capsicum and a sweet chilli sauce.",
+    "minutes": 25,
+    "soak_hours": null,
+    "serves": 3,
+    "effort": "easy",
+    "ingredients": [
+      {
+        "label": "Hakka noodles",
+        "amount": "150 g",
+        "source": "iwc",
+        "match_words": "hakka noodles"
+      },
+      {
+        "label": "Cornflour",
+        "amount": "1 tbsp",
+        "source": "iwc",
+        "match_words": "cornflour"
+      },
+      {
+        "label": "Red chilli flakes",
+        "amount": "½ tsp",
+        "source": "iwc",
+        "match_words": "red chilli flakes"
+      },
+      {
+        "label": "Cabbage",
+        "amount": "1 cup shredded",
+        "source": "local"
+      },
+      {
+        "label": "Carrot",
+        "amount": "1",
+        "source": "local"
+      },
+      {
+        "label": "Capsicum",
+        "amount": "½",
+        "source": "local"
+      },
+      {
+        "label": "Spring onions",
+        "amount": "2",
+        "source": "local"
+      },
+      {
+        "label": "Soy sauce",
+        "amount": "1 tbsp",
+        "source": "local"
+      },
+      {
+        "label": "Tomato ketchup",
+        "amount": "2 tbsp",
+        "source": "local"
+      },
+      {
+        "label": "Oil",
+        "amount": "for frying",
+        "source": "local"
+      }
+    ],
+    "steps": [
+      {
+        "text": "Boil the noodles, drain, toss with cornflour and fry until crisp.",
+        "minutes": 15
+      },
+      {
+        "text": "Mix the soy sauce, ketchup and chilli flakes.",
+        "minutes": 2
+      },
+      {
+        "text": "Toss the noodles with the vegetables and sauce just before eating.",
+        "minutes": 2
+      }
+    ]
+  }
+]

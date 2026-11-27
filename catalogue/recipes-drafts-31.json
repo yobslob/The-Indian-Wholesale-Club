@@ -1,0 +1,1811 @@
+[
+  {
+    "slug": "nimki",
+    "name": "Nimki",
+    "kind": "snacks",
+    "state": "West Bengal",
+    "rank": 601,
+    "blurb": "Flaky diamond-shaped maida crackers with kalonji, eaten with tea through the festive season.",
+    "minutes": 40,
+    "soak_hours": null,
+    "serves": 8,
+    "effort": "medium",
+    "ingredients": [
+      {
+        "label": "Maida",
+        "amount": "2 cups",
+        "source": "iwc",
+        "match_words": "maida"
+      },
+      {
+        "label": "Kalonji",
+        "amount": "1 tsp",
+        "source": "iwc",
+        "match_words": "kalonji"
+      },
+      {
+        "label": "Ajwain",
+        "amount": "½ tsp",
+        "source": "iwc",
+        "match_words": "ajwain"
+      },
+      {
+        "label": "Ghee",
+        "amount": "3 tbsp",
+        "source": "local"
+      },
+      {
+        "label": "Oil",
+        "amount": "for frying",
+        "source": "local"
+      }
+    ],
+    "steps": [
+      {
+        "text": "Rub the ghee into the maida with kalonji, ajwain and salt; knead stiff with water.",
+        "minutes": 10
+      },
+      {
+        "text": "Roll out, cut into diamonds or fold into small triangles.",
+        "minutes": 15
+      },
+      {
+        "text": "Fry on low heat until crisp and golden.",
+        "minutes": 15
+      }
+    ]
+  },
+  {
+    "slug": "chuda-bhaja",
+    "name": "Chuda Bhaja",
+    "kind": "snacks",
+    "state": "Odisha",
+    "rank": 602,
+    "blurb": "Odisha's fried flattened rice with peanuts, onion and chilli, a tea-time mix.",
+    "minutes": 20,
+    "soak_hours": null,
+    "serves": 6,
+    "effort": "easy",
+    "ingredients": [
+      {
+        "label": "Poha",
+        "amount": "3 cups",
+        "source": "iwc",
+        "match_words": "poha"
+      },
+      {
+        "label": "Peanuts",
+        "amount": "½ cup",
+        "source": "iwc",
+        "match_words": "peanuts"
+      },
+      {
+        "label": "Turmeric",
+        "amount": "¼ tsp",
+        "source": "iwc",
+        "match_words": "turmeric"
+      },
+      {
+        "label": "Red chilli powder",
+        "amount": "1 tsp",
+        "source": "iwc",
+        "match_words": "red chilli powder"
+      },
+      {
+        "label": "Onion",
+        "amount": "1",
+        "source": "local"
+      },
+      {
+        "label": "Curry leaves",
+        "amount": "a sprig",
+        "source": "local"
+      },
+      {
+        "label": "Green chillies",
+        "amount": "2",
+        "source": "local"
+      },
+      {
+        "label": "Oil",
+        "amount": "for frying",
+        "source": "local"
+      },
+      {
+        "label": "Dried curry leaves",
+        "amount": "1 tbsp",
+        "source": "iwc",
+        "match_words": "curry leaves",
+        "instead_of": "Curry leaves"
+      }
+    ],
+    "steps": [
+      {
+        "text": "Fry the thin poha in batches until it puffs, and drain.",
+        "minutes": 8
+      },
+      {
+        "text": "Fry the peanuts and curry leaves.",
+        "minutes": 3
+      },
+      {
+        "text": "Toss with turmeric, chilli powder, salt, chopped onion and chillies just before eating.",
+        "minutes": 3
+      }
+    ]
+  },
+  {
+    "slug": "farali-chevdo",
+    "name": "Farali Chevdo",
+    "kind": "snacks",
+    "state": "Gujarat",
+    "rank": 603,
+    "blurb": "A fasting chivda of fried potato sticks, peanuts and raisins with rock salt.",
+    "minutes": 40,
+    "soak_hours": null,
+    "serves": 6,
+    "effort": "medium",
+    "ingredients": [
+      {
+        "label": "Peanuts",
+        "amount": "½ cup",
+        "source": "iwc",
+        "match_words": "peanuts"
+      },
+      {
+        "label": "Raisins",
+        "amount": "2 tbsp",
+        "source": "iwc",
+        "match_words": "raisins"
+      },
+      {
+        "label": "Cashews",
+        "amount": "2 tbsp",
+        "source": "iwc",
+        "match_words": "cashews"
+      },
+      {
+        "label": "Rock salt",
+        "amount": "1 tsp",
+        "source": "iwc",
+        "match_words": "rock salt"
+      },
+      {
+        "label": "Red chilli powder",
+        "amount": "½ tsp",
+        "source": "iwc",
+        "match_words": "red chilli powder"
+      },
+      {
+        "label": "Potatoes",
+        "amount": "4",
+        "source": "local"
+      },
+      {
+        "label": "Green chillies",
+        "amount": "2",
+        "source": "local"
+      },
+      {
+        "label": "Oil",
+        "amount": "for frying",
+        "source": "local"
+      }
+    ],
+    "steps": [
+      {
+        "text": "Grate the potatoes into long shreds, rinse well and dry completely.",
+        "minutes": 15
+      },
+      {
+        "text": "Fry in batches until crisp.",
+        "minutes": 15
+      },
+      {
+        "text": "Fry the peanuts, cashews, raisins and chillies; toss everything with rock salt, chilli powder and a little sugar.",
+        "minutes": 5
+      }
+    ]
+  },
+  {
+    "slug": "jamnagari-ghughra",
+    "name": "Jamnagari Ghughra",
+    "kind": "snacks",
+    "state": "Gujarat",
+    "rank": 604,
+    "blurb": "Jamnagar's spicy potato and pea pastries, served cut open with chutneys and sev.",
+    "minutes": 60,
+    "soak_hours": null,
+    "serves": 6,
+    "effort": "weekend",
+    "ingredients": [
+      {
+        "label": "Maida",
+        "amount": "2 cups",
+        "source": "iwc",
+        "match_words": "maida"
+      },
+      {
+        "label": "Garam masala",
+        "amount": "1 tsp",
+        "source": "iwc",
+        "match_words": "garam masala"
+      },
+      {
+        "label": "Red chilli powder",
+        "amount": "1 tsp",
+        "source": "iwc",
+        "match_words": "red chilli powder"
+      },
+      {
+        "label": "Amchur",
+        "amount": "1 tsp",
+        "source": "iwc",
+        "match_words": "amchur"
+      },
+      {
+        "label": "Tamarind chutney",
+        "amount": "¼ cup",
+        "source": "iwc",
+        "match_words": "tamarind chutney"
+      },
+      {
+        "label": "Sev",
+        "amount": "½ cup",
+        "source": "iwc",
+        "match_words": "sev"
+      },
+      {
+        "label": "Potatoes",
+        "amount": "3",
+        "source": "local"
+      },
+      {
+        "label": "Green peas",
+        "amount": "½ cup",
+        "source": "local"
+      },
+      {
+        "label": "Garlic",
+        "amount": "4 cloves",
+        "source": "local"
+      },
+      {
+        "label": "Oil",
+        "amount": "for frying",
+        "source": "local"
+      },
+      {
+        "label": "Garlic powder",
+        "amount": "½ tsp",
+        "source": "iwc",
+        "match_words": "garlic powder",
+        "instead_of": "Garlic"
+      }
+    ],
+    "steps": [
+      {
+        "text": "Knead the maida with salt and oil into a firm dough and rest it.",
+        "minutes": 10
+      },
+      {
+        "text": "Mash boiled potatoes and peas with garlic, spices and salt.",
+        "minutes": 10
+      },
+      {
+        "text": "Fill small rounds, crimp into half-moons and fry crisp; serve split with chutney and sev.",
+        "minutes": 30
+      }
+    ]
+  },
+  {
+    "slug": "khara-biscuit",
+    "name": "Khara Biscuit",
+    "kind": "snacks",
+    "state": "Karnataka",
+    "rank": 605,
+    "blurb": "Bengaluru Iyengar bakery biscuits, savoury with green chilli, curry leaves and coriander.",
+    "minutes": 60,
+    "soak_hours": null,
+    "serves": 8,
+    "effort": "weekend",
+    "ingredients": [
+      {
+        "label": "Maida",
+        "amount": "2 cups",
+        "source": "iwc",
+        "match_words": "maida"
+      },
+      {
+        "label": "Baking soda",
+        "amount": "¼ tsp",
+        "source": "iwc",
+        "match_words": "baking soda"
+      },
+      {
+        "label": "Cumin seeds",
+        "amount": "1 tsp",
+        "source": "iwc",
+        "match_words": "cumin seeds"
+      },
+      {
+        "label": "Butter",
+        "amount": "½ cup",
+        "source": "local"
+      },
+      {
+        "label": "Yogurt",
+        "amount": "2 tbsp",
+        "source": "local"
+      },
+      {
+        "label": "Green chillies",
+        "amount": "3",
+        "source": "local"
+      },
+      {
+        "label": "Ginger",
+        "amount": "1 inch",
+        "source": "local"
+      },
+      {
+        "label": "Curry leaves",
+        "amount": "a sprig",
+        "source": "local"
+      },
+      {
+        "label": "Coriander",
+        "amount": "a handful",
+        "source": "local"
+      },
+      {
+        "label": "Red chilli powder",
+        "amount": "½ tsp",
+        "source": "iwc",
+        "match_words": "red chilli powder",
+        "instead_of": "Green chillies"
+      },
+      {
+        "label": "Dry ginger powder",
+        "amount": "½ tsp",
+        "source": "iwc",
+        "match_words": "dry ginger powder",
+        "instead_of": "Ginger"
+      },
+      {
+        "label": "Dried curry leaves",
+        "amount": "1 tbsp",
+        "source": "iwc",
+        "match_words": "curry leaves",
+        "instead_of": "Curry leaves"
+      },
+      {
+        "label": "Coriander powder",
+        "amount": "1 tsp",
+        "source": "iwc",
+        "match_words": "coriander powder",
+        "instead_of": "Coriander"
+      }
+    ],
+    "steps": [
+      {
+        "text": "Cream the butter with a teaspoon of sugar and salt; add the curd, chopped chillies, ginger and herbs.",
+        "minutes": 10
+      },
+      {
+        "text": "Fold in the maida, soda and cumin to a soft dough; chill it.",
+        "minutes": 20
+      },
+      {
+        "text": "Roll thick, cut into rounds and bake at 180°C until golden.",
+        "minutes": 25
+      }
+    ]
+  },
+  {
+    "slug": "osmania-biscuit",
+    "name": "Osmania Biscuit",
+    "kind": "snacks",
+    "state": "Telangana",
+    "rank": 606,
+    "blurb": "Hyderabad's sweet-salty tea biscuits, short and buttery with a hint of cardamom.",
+    "minutes": 60,
+    "soak_hours": null,
+    "serves": 8,
+    "effort": "weekend",
+    "ingredients": [
+      {
+        "label": "Maida",
+        "amount": "2 cups",
+        "source": "iwc",
+        "match_words": "maida"
+      },
+      {
+        "label": "Custard powder",
+        "amount": "2 tbsp",
+        "source": "iwc",
+        "match_words": "custard powder"
+      },
+      {
+        "label": "Green cardamom",
+        "amount": "3",
+        "source": "iwc",
+        "match_words": "green cardamom"
+      },
+      {
+        "label": "Baking soda",
+        "amount": "¼ tsp",
+        "source": "iwc",
+        "match_words": "baking soda"
+      },
+      {
+        "label": "Butter",
+        "amount": "¾ cup",
+        "source": "local"
+      },
+      {
+        "label": "Milk",
+        "amount": "3 tbsp",
+        "source": "local"
+      }
+    ],
+    "steps": [
+      {
+        "text": "Cream the butter with half a cup of sugar and a teaspoon of salt.",
+        "minutes": 5
+      },
+      {
+        "text": "Fold in the maida, custard powder, ground cardamom, soda and milk to a soft dough; chill.",
+        "minutes": 20
+      },
+      {
+        "text": "Roll thick, cut rounds, brush with milk and bake at 170°C until pale golden.",
+        "minutes": 25
+      }
+    ]
+  },
+  {
+    "slug": "kuzhalappam",
+    "name": "Kuzhalappam",
+    "kind": "snacks",
+    "state": "Kerala",
+    "rank": 607,
+    "blurb": "Kerala's crisp rice-flour tubes with sesame and coconut, made for Christmas.",
+    "minutes": 60,
+    "soak_hours": null,
+    "serves": 8,
+    "effort": "weekend",
+    "ingredients": [
+      {
+        "label": "Rice flour",
+        "amount": "2 cups",
+        "source": "iwc",
+        "match_words": "rice flour"
+      },
+      {
+        "label": "Sesame seeds",
+        "amount": "1 tbsp",
+        "source": "iwc",
+        "match_words": "sesame seeds"
+      },
+      {
+        "label": "Cumin seeds",
+        "amount": "1 tsp",
+        "source": "iwc",
+        "match_words": "cumin seeds"
+      },
+      {
+        "label": "Coconut (fresh)",
+        "amount": "½ cup grated",
+        "source": "local"
+      },
+      {
+        "label": "Shallots",
+        "amount": "4",
+        "source": "local"
+      },
+      {
+        "label": "Garlic",
+        "amount": "3 cloves",
+        "source": "local"
+      },
+      {
+        "label": "Coconut oil",
+        "amount": "for frying",
+        "source": "local"
+      },
+      {
+        "label": "Desiccated coconut",
+        "amount": "½ cup grated",
+        "source": "iwc",
+        "match_words": "desiccated coconut",
+        "instead_of": "Coconut (fresh)"
+      },
+      {
+        "label": "Garlic powder",
+        "amount": "½ tsp",
+        "source": "iwc",
+        "match_words": "garlic powder",
+        "instead_of": "Garlic"
+      }
+    ],
+    "steps": [
+      {
+        "text": "Grind the coconut with shallots, garlic and cumin; cook with roasted rice flour, salt, sesame and hot water into a dough.",
+        "minutes": 15
+      },
+      {
+        "text": "Press small balls very thin in a greased plastic sheet.",
+        "minutes": 15
+      },
+      {
+        "text": "Wrap each round a stick into a tube and fry until crisp.",
+        "minutes": 30
+      }
+    ]
+  },
+  {
+    "slug": "ghoti-gorom",
+    "name": "Ghoti Gorom",
+    "kind": "snacks",
+    "state": "West Bengal",
+    "rank": 608,
+    "blurb": "Kolkata's paper-cone mix of chanachur, onion, tomato and lemon, sold from a pot on the vendor's head.",
+    "minutes": 10,
+    "soak_hours": null,
+    "serves": 3,
+    "effort": "easy",
+    "ingredients": [
+      {
+        "label": "Chanachur",
+        "amount": "2 cups",
+        "source": "iwc",
+        "match_words": "chanachur"
+      },
+      {
+        "label": "Roasted cumin",
+        "amount": "½ tsp",
+        "source": "iwc",
+        "match_words": "roasted cumin"
+      },
+      {
+        "label": "Red chilli powder",
+        "amount": "¼ tsp",
+        "source": "iwc",
+        "match_words": "red chilli powder"
+      },
+      {
+        "label": "Onion",
+        "amount": "1",
+        "source": "local"
+      },
+      {
+        "label": "Tomato",
+        "amount": "1",
+        "source": "local"
+      },
+      {
+        "label": "Green chillies",
+        "amount": "1",
+        "source": "local"
+      },
+      {
+        "label": "Lemon",
+        "amount": "1",
+        "source": "local"
+      },
+      {
+        "label": "Coriander",
+        "amount": "a handful",
+        "source": "local"
+      },
+      {
+        "label": "Amchur",
+        "amount": "1 tsp",
+        "source": "iwc",
+        "match_words": "amchur",
+        "instead_of": "Lemon"
+      },
+      {
+        "label": "Coriander powder",
+        "amount": "1 tsp",
+        "source": "iwc",
+        "match_words": "coriander powder",
+        "instead_of": "Coriander"
+      }
+    ],
+    "steps": [
+      {
+        "text": "Toss the chanachur with the chopped onion, tomato, chilli and coriander.",
+        "minutes": 3
+      },
+      {
+        "text": "Season with cumin, chilli powder and lemon.",
+        "minutes": 1
+      },
+      {
+        "text": "Serve at once in paper cones.",
+        "minutes": 1
+      }
+    ]
+  },
+  {
+    "slug": "kara-kozhukattai",
+    "name": "Kara Kozhukattai",
+    "kind": "snacks",
+    "state": "Tamil Nadu",
+    "rank": 609,
+    "blurb": "Steamed rice dumplings with a savoury filling of spiced, crumbled dal.",
+    "minutes": 45,
+    "soak_hours": 2,
+    "serves": 4,
+    "effort": "medium",
+    "ingredients": [
+      {
+        "label": "Rice flour",
+        "amount": "1 cup",
+        "source": "iwc",
+        "match_words": "rice flour"
+      },
+      {
+        "label": "Chana dal",
+        "amount": "½ cup",
+        "source": "iwc",
+        "match_words": "chana dal"
+      },
+      {
+        "label": "Mustard seeds",
+        "amount": "1 tsp",
+        "source": "iwc",
+        "match_words": "mustard seeds"
+      },
+      {
+        "label": "Red chilli whole",
+        "amount": "2",
+        "source": "iwc",
+        "match_words": "red chilli whole"
+      },
+      {
+        "label": "Hing",
+        "amount": "a pinch",
+        "source": "iwc",
+        "match_words": "hing"
+      },
+      {
+        "label": "Coconut (fresh)",
+        "amount": "¼ cup grated",
+        "source": "local"
+      },
+      {
+        "label": "Curry leaves",
+        "amount": "a sprig",
+        "source": "local"
+      },
+      {
+        "label": "Oil",
+        "amount": "1 tbsp",
+        "source": "local"
+      },
+      {
+        "label": "Desiccated coconut",
+        "amount": "¼ cup grated",
+        "source": "iwc",
+        "match_words": "desiccated coconut",
+        "instead_of": "Coconut (fresh)"
+      },
+      {
+        "label": "Dried curry leaves",
+        "amount": "1 tbsp",
+        "source": "iwc",
+        "match_words": "curry leaves",
+        "instead_of": "Curry leaves"
+      }
+    ],
+    "steps": [
+      {
+        "text": "Grind the soaked dal coarsely with the chillies and steam it ten minutes; crumble.",
+        "minutes": 20
+      },
+      {
+        "text": "Temper mustard seeds, hing and curry leaves, add the crumbled dal, coconut and salt.",
+        "minutes": 5
+      },
+      {
+        "text": "Cook the rice flour with hot salted water into a dough, fill small cups of it and steam ten minutes.",
+        "minutes": 20
+      }
+    ]
+  },
+  {
+    "slug": "verkadalai-sundal",
+    "name": "Verkadalai Sundal",
+    "kind": "snacks",
+    "state": "Tamil Nadu",
+    "rank": 610,
+    "blurb": "Boiled peanuts tempered with mustard, curry leaves and coconut, a Navaratri and beach snack.",
+    "minutes": 25,
+    "soak_hours": null,
+    "serves": 4,
+    "effort": "easy",
+    "ingredients": [
+      {
+        "label": "Peanuts",
+        "amount": "1 cup",
+        "source": "iwc",
+        "match_words": "peanuts"
+      },
+      {
+        "label": "Mustard seeds",
+        "amount": "1 tsp",
+        "source": "iwc",
+        "match_words": "mustard seeds"
+      },
+      {
+        "label": "Urad dal",
+        "amount": "1 tsp",
+        "source": "iwc",
+        "match_words": "urad dal"
+      },
+      {
+        "label": "Red chilli whole",
+        "amount": "2",
+        "source": "iwc",
+        "match_words": "red chilli whole"
+      },
+      {
+        "label": "Hing",
+        "amount": "a pinch",
+        "source": "iwc",
+        "match_words": "hing"
+      },
+      {
+        "label": "Coconut (fresh)",
+        "amount": "2 tbsp grated",
+        "source": "local"
+      },
+      {
+        "label": "Curry leaves",
+        "amount": "a sprig",
+        "source": "local"
+      },
+      {
+        "label": "Oil",
+        "amount": "1 tbsp",
+        "source": "local"
+      },
+      {
+        "label": "Desiccated coconut",
+        "amount": "2 tbsp grated",
+        "source": "iwc",
+        "match_words": "desiccated coconut",
+        "instead_of": "Coconut (fresh)"
+      },
+      {
+        "label": "Dried curry leaves",
+        "amount": "1 tbsp",
+        "source": "iwc",
+        "match_words": "curry leaves",
+        "instead_of": "Curry leaves"
+      }
+    ],
+    "steps": [
+      {
+        "text": "Boil the peanuts with salt until soft and drain.",
+        "minutes": 15
+      },
+      {
+        "text": "Temper mustard seeds, urad dal, chillies, hing and curry leaves in oil.",
+        "minutes": 2
+      },
+      {
+        "text": "Toss in the peanuts and coconut.",
+        "minutes": 2
+      }
+    ]
+  },
+  {
+    "slug": "kunukku",
+    "name": "Kunukku",
+    "kind": "snacks",
+    "state": "Kerala",
+    "rank": 611,
+    "blurb": "Kerala fritters made from leftover adai batter with onion and curry leaves.",
+    "minutes": 40,
+    "soak_hours": 4,
+    "serves": 4,
+    "effort": "medium",
+    "ingredients": [
+      {
+        "label": "Raw rice",
+        "amount": "½ cup",
+        "source": "iwc",
+        "match_words": "raw rice"
+      },
+      {
+        "label": "Chana dal",
+        "amount": "¼ cup",
+        "source": "iwc",
+        "match_words": "chana dal"
+      },
+      {
+        "label": "Toor dal",
+        "amount": "¼ cup",
+        "source": "iwc",
+        "match_words": "toor dal"
+      },
+      {
+        "label": "Urad dal",
+        "amount": "2 tbsp",
+        "source": "iwc",
+        "match_words": "urad dal"
+      },
+      {
+        "label": "Red chilli whole",
+        "amount": "3",
+        "source": "iwc",
+        "match_words": "red chilli whole"
+      },
+      {
+        "label": "Onion",
+        "amount": "1",
+        "source": "local"
+      },
+      {
+        "label": "Curry leaves",
+        "amount": "a sprig",
+        "source": "local"
+      },
+      {
+        "label": "Ginger",
+        "amount": "1 inch",
+        "source": "local"
+      },
+      {
+        "label": "Oil",
+        "amount": "for frying",
+        "source": "local"
+      },
+      {
+        "label": "Dried curry leaves",
+        "amount": "1 tbsp",
+        "source": "iwc",
+        "match_words": "curry leaves",
+        "instead_of": "Curry leaves"
+      },
+      {
+        "label": "Dry ginger powder",
+        "amount": "½ tsp",
+        "source": "iwc",
+        "match_words": "dry ginger powder",
+        "instead_of": "Ginger"
+      }
+    ],
+    "steps": [
+      {
+        "text": "Soak the rice and dals four hours and grind coarsely with chillies and ginger.",
+        "minutes": 10
+      },
+      {
+        "text": "Mix in chopped onion, curry leaves and salt.",
+        "minutes": 3
+      },
+      {
+        "text": "Drop small balls into hot oil and fry until crisp.",
+        "minutes": 15
+      }
+    ]
+  },
+  {
+    "slug": "kallumakkaya-nirachathu",
+    "name": "Kallumakkaya Nirachathu",
+    "kind": "snacks",
+    "state": "Kerala",
+    "rank": 612,
+    "blurb": "Malabar's stuffed mussels: rice dough packed into the shells, steamed and then fried in masala.",
+    "minutes": 60,
+    "soak_hours": null,
+    "serves": 4,
+    "effort": "weekend",
+    "ingredients": [
+      {
+        "label": "Rice flour",
+        "amount": "1 cup",
+        "source": "iwc",
+        "match_words": "rice flour"
+      },
+      {
+        "label": "Fennel seeds",
+        "amount": "½ tsp",
+        "source": "iwc",
+        "match_words": "fennel seeds"
+      },
+      {
+        "label": "Kashmiri chilli powder",
+        "amount": "1½ tsp",
+        "source": "iwc",
+        "match_words": "kashmiri chilli powder"
+      },
+      {
+        "label": "Turmeric",
+        "amount": "¼ tsp",
+        "source": "iwc",
+        "match_words": "turmeric"
+      },
+      {
+        "label": "Garam masala",
+        "amount": "½ tsp",
+        "source": "iwc",
+        "match_words": "garam masala"
+      },
+      {
+        "label": "Mussels in shell",
+        "amount": "20",
+        "source": "local"
+      },
+      {
+        "label": "Coconut (fresh)",
+        "amount": "½ cup grated",
+        "source": "local"
+      },
+      {
+        "label": "Shallots",
+        "amount": "6",
+        "source": "local"
+      },
+      {
+        "label": "Coconut oil",
+        "amount": "3 tbsp",
+        "source": "local"
+      },
+      {
+        "label": "Desiccated coconut",
+        "amount": "½ cup grated",
+        "source": "iwc",
+        "match_words": "desiccated coconut",
+        "instead_of": "Coconut (fresh)"
+      }
+    ],
+    "steps": [
+      {
+        "text": "Clean the mussels and open each shell slightly.",
+        "minutes": 15
+      },
+      {
+        "text": "Grind the coconut, shallots and fennel; mix with the rice flour, salt and warm water into a soft dough and stuff the shells.",
+        "minutes": 15
+      },
+      {
+        "text": "Steam fifteen minutes, take the mussels out of the shells, coat in the spices and shallow-fry.",
+        "minutes": 20
+      }
+    ]
+  },
+  {
+    "slug": "kerala-chicken-cutlet",
+    "name": "Kerala Chicken Cutlet",
+    "kind": "snacks",
+    "state": "Kerala",
+    "rank": 613,
+    "blurb": "Kerala's breadcrumbed chicken and potato cutlets, peppery and green with curry leaves, served at every wedding.",
+    "minutes": 50,
+    "soak_hours": null,
+    "serves": 6,
+    "effort": "medium",
+    "ingredients": [
+      {
+        "label": "Garam masala",
+        "amount": "1 tsp",
+        "source": "iwc",
+        "match_words": "garam masala"
+      },
+      {
+        "label": "Black pepper",
+        "amount": "1 tsp",
+        "source": "iwc",
+        "match_words": "black pepper"
+      },
+      {
+        "label": "Turmeric",
+        "amount": "¼ tsp",
+        "source": "iwc",
+        "match_words": "turmeric"
+      },
+      {
+        "label": "Chicken",
+        "amount": "300 g",
+        "source": "local"
+      },
+      {
+        "label": "Potatoes",
+        "amount": "2",
+        "source": "local"
+      },
+      {
+        "label": "Onion",
+        "amount": "1",
+        "source": "local"
+      },
+      {
+        "label": "Ginger",
+        "amount": "1 inch",
+        "source": "local"
+      },
+      {
+        "label": "Green chillies",
+        "amount": "2",
+        "source": "local"
+      },
+      {
+        "label": "Curry leaves",
+        "amount": "a sprig",
+        "source": "local"
+      },
+      {
+        "label": "Eggs",
+        "amount": "2",
+        "source": "local"
+      },
+      {
+        "label": "Breadcrumbs",
+        "amount": "1 cup",
+        "source": "local"
+      },
+      {
+        "label": "Oil",
+        "amount": "for frying",
+        "source": "local"
+      },
+      {
+        "label": "Dry ginger powder",
+        "amount": "½ tsp",
+        "source": "iwc",
+        "match_words": "dry ginger powder",
+        "instead_of": "Ginger"
+      },
+      {
+        "label": "Red chilli powder",
+        "amount": "½ tsp",
+        "source": "iwc",
+        "match_words": "red chilli powder",
+        "instead_of": "Green chillies"
+      },
+      {
+        "label": "Dried curry leaves",
+        "amount": "1 tbsp",
+        "source": "iwc",
+        "match_words": "curry leaves",
+        "instead_of": "Curry leaves"
+      }
+    ],
+    "steps": [
+      {
+        "text": "Boil the chicken with salt and turmeric and shred it; boil and mash the potatoes.",
+        "minutes": 25
+      },
+      {
+        "text": "Cook the onion, ginger, chillies and curry leaves, add the spices, chicken and potato and mix.",
+        "minutes": 8
+      },
+      {
+        "text": "Shape ovals, dip in egg, roll in breadcrumbs and fry until golden.",
+        "minutes": 15
+      }
+    ]
+  },
+  {
+    "slug": "kerala-fish-cutlet",
+    "name": "Kerala Fish Cutlet",
+    "kind": "snacks",
+    "state": "Kerala",
+    "rank": 614,
+    "blurb": "Flaked fish and potato cutlets with ginger and curry leaves, crumbed and fried.",
+    "minutes": 45,
+    "soak_hours": null,
+    "serves": 6,
+    "effort": "medium",
+    "ingredients": [
+      {
+        "label": "Garam masala",
+        "amount": "½ tsp",
+        "source": "iwc",
+        "match_words": "garam masala"
+      },
+      {
+        "label": "Black pepper",
+        "amount": "1 tsp",
+        "source": "iwc",
+        "match_words": "black pepper"
+      },
+      {
+        "label": "Turmeric",
+        "amount": "¼ tsp",
+        "source": "iwc",
+        "match_words": "turmeric"
+      },
+      {
+        "label": "Fish fillets",
+        "amount": "300 g",
+        "source": "local"
+      },
+      {
+        "label": "Potatoes",
+        "amount": "2",
+        "source": "local"
+      },
+      {
+        "label": "Onion",
+        "amount": "1",
+        "source": "local"
+      },
+      {
+        "label": "Ginger",
+        "amount": "1 inch",
+        "source": "local"
+      },
+      {
+        "label": "Green chillies",
+        "amount": "2",
+        "source": "local"
+      },
+      {
+        "label": "Curry leaves",
+        "amount": "a sprig",
+        "source": "local"
+      },
+      {
+        "label": "Eggs",
+        "amount": "2",
+        "source": "local"
+      },
+      {
+        "label": "Breadcrumbs",
+        "amount": "1 cup",
+        "source": "local"
+      },
+      {
+        "label": "Oil",
+        "amount": "for frying",
+        "source": "local"
+      },
+      {
+        "label": "Dry ginger powder",
+        "amount": "½ tsp",
+        "source": "iwc",
+        "match_words": "dry ginger powder",
+        "instead_of": "Ginger"
+      },
+      {
+        "label": "Red chilli powder",
+        "amount": "½ tsp",
+        "source": "iwc",
+        "match_words": "red chilli powder",
+        "instead_of": "Green chillies"
+      },
+      {
+        "label": "Dried curry leaves",
+        "amount": "1 tbsp",
+        "source": "iwc",
+        "match_words": "curry leaves",
+        "instead_of": "Curry leaves"
+      }
+    ],
+    "steps": [
+      {
+        "text": "Poach the fish with salt and turmeric, drain and flake; mash boiled potatoes.",
+        "minutes": 20
+      },
+      {
+        "text": "Cook the onion, ginger, chillies and curry leaves with the spices, then mix in the fish and potato.",
+        "minutes": 8
+      },
+      {
+        "text": "Shape, dip in egg, coat in crumbs and fry.",
+        "minutes": 15
+      }
+    ]
+  },
+  {
+    "slug": "egg-puff",
+    "name": "Egg Puff",
+    "kind": "snacks",
+    "state": "Kerala",
+    "rank": 615,
+    "blurb": "The bakery puff: flaky pastry round half a boiled egg and spicy onion masala.",
+    "minutes": 60,
+    "soak_hours": null,
+    "serves": 6,
+    "effort": "weekend",
+    "ingredients": [
+      {
+        "label": "Kashmiri chilli powder",
+        "amount": "1 tsp",
+        "source": "iwc",
+        "match_words": "kashmiri chilli powder"
+      },
+      {
+        "label": "Garam masala",
+        "amount": "½ tsp",
+        "source": "iwc",
+        "match_words": "garam masala"
+      },
+      {
+        "label": "Turmeric",
+        "amount": "¼ tsp",
+        "source": "iwc",
+        "match_words": "turmeric"
+      },
+      {
+        "label": "Fennel powder",
+        "amount": "½ tsp",
+        "source": "iwc",
+        "match_words": "fennel powder"
+      },
+      {
+        "label": "Puff pastry sheets",
+        "amount": "2",
+        "source": "local"
+      },
+      {
+        "label": "Eggs",
+        "amount": "4",
+        "source": "local"
+      },
+      {
+        "label": "Onions",
+        "amount": "2",
+        "source": "local"
+      },
+      {
+        "label": "Ginger-garlic paste",
+        "amount": "1 tsp",
+        "source": "local"
+      },
+      {
+        "label": "Curry leaves",
+        "amount": "a sprig",
+        "source": "local"
+      },
+      {
+        "label": "Oil",
+        "amount": "2 tbsp",
+        "source": "local"
+      },
+      {
+        "label": "Dry ginger powder",
+        "amount": "½ tsp",
+        "source": "iwc",
+        "match_words": "dry ginger powder",
+        "instead_of": "Ginger-garlic paste"
+      },
+      {
+        "label": "Garlic powder",
+        "amount": "½ tsp",
+        "source": "iwc",
+        "match_words": "garlic powder",
+        "instead_of": "Ginger-garlic paste"
+      },
+      {
+        "label": "Dried curry leaves",
+        "amount": "1 tbsp",
+        "source": "iwc",
+        "match_words": "curry leaves",
+        "instead_of": "Curry leaves"
+      }
+    ],
+    "steps": [
+      {
+        "text": "Cook the onions slowly with ginger-garlic paste and curry leaves, then add the spices and salt.",
+        "minutes": 15
+      },
+      {
+        "text": "Hard-boil and halve the eggs.",
+        "minutes": 12
+      },
+      {
+        "text": "Cut the pastry into squares, add masala and half an egg, fold, and bake at 200°C until puffed and golden.",
+        "minutes": 25
+      }
+    ]
+  },
+  {
+    "slug": "veg-puff",
+    "name": "Veg Puff",
+    "kind": "snacks",
+    "state": "Karnataka",
+    "rank": 616,
+    "blurb": "The Iyengar bakery's flaky pastry filled with spiced potato and peas.",
+    "minutes": 60,
+    "soak_hours": null,
+    "serves": 6,
+    "effort": "weekend",
+    "ingredients": [
+      {
+        "label": "Garam masala",
+        "amount": "½ tsp",
+        "source": "iwc",
+        "match_words": "garam masala"
+      },
+      {
+        "label": "Red chilli powder",
+        "amount": "1 tsp",
+        "source": "iwc",
+        "match_words": "red chilli powder"
+      },
+      {
+        "label": "Turmeric",
+        "amount": "¼ tsp",
+        "source": "iwc",
+        "match_words": "turmeric"
+      },
+      {
+        "label": "Coriander powder",
+        "amount": "1 tsp",
+        "source": "iwc",
+        "match_words": "coriander powder"
+      },
+      {
+        "label": "Puff pastry sheets",
+        "amount": "2",
+        "source": "local"
+      },
+      {
+        "label": "Potatoes",
+        "amount": "2",
+        "source": "local"
+      },
+      {
+        "label": "Green peas",
+        "amount": "½ cup",
+        "source": "local"
+      },
+      {
+        "label": "Carrot",
+        "amount": "1",
+        "source": "local"
+      },
+      {
+        "label": "Onion",
+        "amount": "1",
+        "source": "local"
+      },
+      {
+        "label": "Oil",
+        "amount": "2 tbsp",
+        "source": "local"
+      }
+    ],
+    "steps": [
+      {
+        "text": "Cook the onion, diced carrot and peas; add mashed boiled potato, spices and salt.",
+        "minutes": 15
+      },
+      {
+        "text": "Cool the filling.",
+        "minutes": 10
+      },
+      {
+        "text": "Fill squares of pastry, fold, brush and bake at 200°C until golden and flaky.",
+        "minutes": 25
+      }
+    ]
+  },
+  {
+    "slug": "bonda-soup",
+    "name": "Bonda Soup",
+    "kind": "snacks",
+    "state": "Karnataka",
+    "rank": 617,
+    "blurb": "Bengaluru's crisp urad bondas dropped into a thin, hot moong dal soup.",
+    "minutes": 45,
+    "soak_hours": 4,
+    "serves": 4,
+    "effort": "medium",
+    "ingredients": [
+      {
+        "label": "Urad dal",
+        "amount": "1 cup",
+        "source": "iwc",
+        "match_words": "urad dal"
+      },
+      {
+        "label": "Moong dal",
+        "amount": "½ cup",
+        "source": "iwc",
+        "match_words": "moong dal"
+      },
+      {
+        "label": "Black pepper",
+        "amount": "1 tsp",
+        "source": "iwc",
+        "match_words": "black pepper"
+      },
+      {
+        "label": "Turmeric",
+        "amount": "¼ tsp",
+        "source": "iwc",
+        "match_words": "turmeric"
+      },
+      {
+        "label": "Cumin seeds",
+        "amount": "1 tsp",
+        "source": "iwc",
+        "match_words": "cumin seeds"
+      },
+      {
+        "label": "Ginger",
+        "amount": "1 inch",
+        "source": "local"
+      },
+      {
+        "label": "Curry leaves",
+        "amount": "a sprig",
+        "source": "local"
+      },
+      {
+        "label": "Coconut (fresh)",
+        "amount": "2 tbsp",
+        "source": "local"
+      },
+      {
+        "label": "Oil",
+        "amount": "for frying",
+        "source": "local"
+      },
+      {
+        "label": "Dry ginger powder",
+        "amount": "½ tsp",
+        "source": "iwc",
+        "match_words": "dry ginger powder",
+        "instead_of": "Ginger"
+      },
+      {
+        "label": "Dried curry leaves",
+        "amount": "1 tbsp",
+        "source": "iwc",
+        "match_words": "curry leaves",
+        "instead_of": "Curry leaves"
+      },
+      {
+        "label": "Desiccated coconut",
+        "amount": "2 tbsp",
+        "source": "iwc",
+        "match_words": "desiccated coconut",
+        "instead_of": "Coconut (fresh)"
+      }
+    ],
+    "steps": [
+      {
+        "text": "Grind the soaked urad dal fluffy with ginger and salt; fry small bondas.",
+        "minutes": 20
+      },
+      {
+        "text": "Cook the moong dal with turmeric until soft and thin it with water into a soup; season with pepper and salt.",
+        "minutes": 20
+      },
+      {
+        "text": "Temper cumin and curry leaves, add to the soup and pour it over the bondas.",
+        "minutes": 3
+      }
+    ]
+  },
+  {
+    "slug": "kane-fry",
+    "name": "Kane Fry",
+    "kind": "snacks",
+    "state": "Karnataka",
+    "rank": 618,
+    "blurb": "Mangaluru's ladyfish in a red masala and semolina crust, fried crisp.",
+    "minutes": 30,
+    "soak_hours": null,
+    "serves": 4,
+    "effort": "easy",
+    "ingredients": [
+      {
+        "label": "Kashmiri chilli powder",
+        "amount": "2 tsp",
+        "source": "iwc",
+        "match_words": "kashmiri chilli powder"
+      },
+      {
+        "label": "Turmeric",
+        "amount": "¼ tsp",
+        "source": "iwc",
+        "match_words": "turmeric"
+      },
+      {
+        "label": "Sooji",
+        "amount": "½ cup",
+        "source": "iwc",
+        "match_words": "sooji"
+      },
+      {
+        "label": "Rice flour",
+        "amount": "2 tbsp",
+        "source": "iwc",
+        "match_words": "rice flour"
+      },
+      {
+        "label": "Ladyfish",
+        "amount": "500 g",
+        "source": "local"
+      },
+      {
+        "label": "Ginger-garlic paste",
+        "amount": "1 tsp",
+        "source": "local"
+      },
+      {
+        "label": "Lemon",
+        "amount": "1",
+        "source": "local"
+      },
+      {
+        "label": "Oil",
+        "amount": "4 tbsp",
+        "source": "local"
+      },
+      {
+        "label": "Dry ginger powder",
+        "amount": "½ tsp",
+        "source": "iwc",
+        "match_words": "dry ginger powder",
+        "instead_of": "Ginger-garlic paste"
+      },
+      {
+        "label": "Garlic powder",
+        "amount": "½ tsp",
+        "source": "iwc",
+        "match_words": "garlic powder",
+        "instead_of": "Ginger-garlic paste"
+      },
+      {
+        "label": "Amchur",
+        "amount": "1 tsp",
+        "source": "iwc",
+        "match_words": "amchur",
+        "instead_of": "Lemon"
+      }
+    ],
+    "steps": [
+      {
+        "text": "Clean the fish and marinate with chilli powder, turmeric, ginger-garlic paste, lemon and salt.",
+        "minutes": 15
+      },
+      {
+        "text": "Coat in the sooji and rice flour.",
+        "minutes": 3
+      },
+      {
+        "text": "Shallow-fry until crisp on both sides.",
+        "minutes": 10
+      }
+    ]
+  },
+  {
+    "slug": "prawn-ghee-roast",
+    "name": "Prawn Ghee Roast",
+    "kind": "snacks",
+    "state": "Karnataka",
+    "rank": 619,
+    "blurb": "Mangaluru's fiery red prawns roasted in ghee with tamarind and roasted spices.",
+    "minutes": 40,
+    "soak_hours": null,
+    "serves": 4,
+    "effort": "medium",
+    "ingredients": [
+      {
+        "label": "Kashmiri chilli whole",
+        "amount": "10",
+        "source": "iwc",
+        "match_words": "kashmiri chilli whole"
+      },
+      {
+        "label": "Whole coriander",
+        "amount": "1 tbsp",
+        "source": "iwc",
+        "match_words": "whole coriander"
+      },
+      {
+        "label": "Cumin seeds",
+        "amount": "1 tsp",
+        "source": "iwc",
+        "match_words": "cumin seeds"
+      },
+      {
+        "label": "Black pepper",
+        "amount": "½ tsp",
+        "source": "iwc",
+        "match_words": "black pepper"
+      },
+      {
+        "label": "Fenugreek seeds",
+        "amount": "¼ tsp",
+        "source": "iwc",
+        "match_words": "fenugreek seeds"
+      },
+      {
+        "label": "Tamarind",
+        "amount": "1 tsp",
+        "source": "iwc",
+        "match_words": "tamarind"
+      },
+      {
+        "label": "Prawns",
+        "amount": "500 g",
+        "source": "local"
+      },
+      {
+        "label": "Garlic",
+        "amount": "8 cloves",
+        "source": "local"
+      },
+      {
+        "label": "Ghee",
+        "amount": "4 tbsp",
+        "source": "local"
+      },
+      {
+        "label": "Curry leaves",
+        "amount": "a sprig",
+        "source": "local"
+      },
+      {
+        "label": "Lemon",
+        "amount": "½",
+        "source": "local"
+      },
+      {
+        "label": "Garlic powder",
+        "amount": "½ tsp",
+        "source": "iwc",
+        "match_words": "garlic powder",
+        "instead_of": "Garlic"
+      },
+      {
+        "label": "Dried curry leaves",
+        "amount": "1 tbsp",
+        "source": "iwc",
+        "match_words": "curry leaves",
+        "instead_of": "Curry leaves"
+      },
+      {
+        "label": "Amchur",
+        "amount": "1 tsp",
+        "source": "iwc",
+        "match_words": "amchur",
+        "instead_of": "Lemon"
+      }
+    ],
+    "steps": [
+      {
+        "text": "Marinate the prawns with turmeric, salt and lemon.",
+        "minutes": 10
+      },
+      {
+        "text": "Roast the chillies, coriander, cumin, pepper and fenugreek; grind with garlic and tamarind to a paste.",
+        "minutes": 10
+      },
+      {
+        "text": "Fry the paste in ghee until it darkens, add the prawns and curry leaves and cook until dry and glossy.",
+        "minutes": 12
+      }
+    ]
+  },
+  {
+    "slug": "kozhi-porichathu",
+    "name": "Kozhi Porichathu",
+    "kind": "snacks",
+    "state": "Kerala",
+    "rank": 620,
+    "blurb": "Kerala's spicy fried chicken, marinated red with chilli and pepper and fried with curry leaves.",
+    "minutes": 50,
+    "soak_hours": null,
+    "serves": 4,
+    "effort": "medium",
+    "ingredients": [
+      {
+        "label": "Kashmiri chilli powder",
+        "amount": "2 tbsp",
+        "source": "iwc",
+        "match_words": "kashmiri chilli powder"
+      },
+      {
+        "label": "Black pepper",
+        "amount": "1 tsp",
+        "source": "iwc",
+        "match_words": "black pepper"
+      },
+      {
+        "label": "Garam masala",
+        "amount": "1 tsp",
+        "source": "iwc",
+        "match_words": "garam masala"
+      },
+      {
+        "label": "Turmeric",
+        "amount": "½ tsp",
+        "source": "iwc",
+        "match_words": "turmeric"
+      },
+      {
+        "label": "Rice flour",
+        "amount": "2 tbsp",
+        "source": "iwc",
+        "match_words": "rice flour"
+      },
+      {
+        "label": "Cornflour",
+        "amount": "1 tbsp",
+        "source": "iwc",
+        "match_words": "cornflour"
+      },
+      {
+        "label": "Chicken",
+        "amount": "750 g",
+        "source": "local"
+      },
+      {
+        "label": "Ginger-garlic paste",
+        "amount": "1 tbsp",
+        "source": "local"
+      },
+      {
+        "label": "Lemon",
+        "amount": "1",
+        "source": "local"
+      },
+      {
+        "label": "Curry leaves",
+        "amount": "2 sprigs",
+        "source": "local"
+      },
+      {
+        "label": "Coconut oil",
+        "amount": "for frying",
+        "source": "local"
+      },
+      {
+        "label": "Dry ginger powder",
+        "amount": "½ tsp",
+        "source": "iwc",
+        "match_words": "dry ginger powder",
+        "instead_of": "Ginger-garlic paste"
+      },
+      {
+        "label": "Garlic powder",
+        "amount": "½ tsp",
+        "source": "iwc",
+        "match_words": "garlic powder",
+        "instead_of": "Ginger-garlic paste"
+      },
+      {
+        "label": "Amchur",
+        "amount": "1 tsp",
+        "source": "iwc",
+        "match_words": "amchur",
+        "instead_of": "Lemon"
+      },
+      {
+        "label": "Dried curry leaves",
+        "amount": "1 tbsp",
+        "source": "iwc",
+        "match_words": "curry leaves",
+        "instead_of": "Curry leaves"
+      }
+    ],
+    "steps": [
+      {
+        "text": "Marinate the chicken with the spices, flours, ginger-garlic paste, lemon and salt for at least thirty minutes.",
+        "minutes": 30
+      },
+      {
+        "text": "Fry in batches until cooked through and crisp.",
+        "minutes": 15
+      },
+      {
+        "text": "Fry the curry leaves and scatter them over.",
+        "minutes": 2
+      }
+    ]
+  }
+]
